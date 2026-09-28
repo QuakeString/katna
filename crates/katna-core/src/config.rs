@@ -212,6 +212,25 @@ pub struct General {
     /// autostart entry is the setting itself; this only stops the default
     /// from coming back after it was turned off.
     pub start_at_login_set: bool,
+    /// Words that, typed first in KRunner or GNOME's search with a space
+    /// after them, search the mail as Katna Mail's search box does
+    /// (`k budget`); `mail:` always does (§15.3).
+    pub search_triggers: Vec<String>,
+}
+
+impl General {
+    /// [`General::search_triggers`] from what was typed in Settings: words
+    /// apart by commas or spaces, each once, in lowercase.
+    pub fn parse_search_triggers(text: &str) -> Vec<String> {
+        let mut words: Vec<String> = Vec::new();
+        for word in text.split(|c: char| c == ',' || c.is_whitespace()) {
+            let word = word.trim_end_matches(':').to_lowercase();
+            if !word.is_empty() && !words.contains(&word) {
+                words.push(word);
+            }
+        }
+        words
+    }
 }
 
 /// How times show ([`General::clock`]).
@@ -238,6 +257,7 @@ impl Default for General {
             language: String::new(),
             clock: Clock::Language,
             start_at_login_set: false,
+            search_triggers: vec!["k".to_owned(), "m".to_owned()],
         }
     }
 }
@@ -405,6 +425,9 @@ pub struct MailView {
     pub sender_pictures: bool,
     /// Show a conversation with its newest message at the top.
     pub newest_first: bool,
+    /// Show the contact panel beside an open conversation, in windows wide
+    /// enough for it: the sender's mail, files and signature details.
+    pub contact_panel: bool,
     /// Open each message with its full headers (from, to, cc, date and
     /// subject) shown.
     pub full_headers: bool,
@@ -451,6 +474,47 @@ pub struct MailView {
     /// first account is the default where there is one.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub account_order: Vec<String>,
+    /// Translating mail into the reading language with Katna Server.
+    pub translation: TranslationSettings,
+    /// The newest open or click seen in Activity (the server's event
+    /// number), so the Activity button can count the ones after it.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub activity_seen: i64,
+}
+
+fn is_zero(n: &i64) -> bool {
+    *n == 0
+}
+
+/// Automatic translation (Settings > General > Translation;
+/// `docs/ARCHITECTURE.md` §16.4). Languages are LibreTranslate codes
+/// (`es`, `zh`, `zt`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TranslationSettings {
+    /// Offer to translate mail in other languages. Nothing is sent until
+    /// the user asks, or chose to always translate a language.
+    pub offer: bool,
+    /// The language mail is translated into; empty for the interface's.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub reading_language: String,
+    /// Languages translated as soon as a message opens.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub always: Vec<String>,
+    /// Languages never offered for translation.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub never: Vec<String>,
+}
+
+impl Default for TranslationSettings {
+    fn default() -> Self {
+        Self {
+            offer: true,
+            reading_language: String::new(),
+            always: Vec::new(),
+            never: Vec::new(),
+        }
+    }
 }
 
 impl Default for MailView {
@@ -468,6 +532,7 @@ impl Default for MailView {
             app_labels: true,
             sender_pictures: true,
             newest_first: false,
+            contact_panel: true,
             full_headers: false,
             full_names: false,
             open: OpenAttachments::default(),
@@ -484,6 +549,8 @@ impl Default for MailView {
             unified_inbox: false,
             current_account: String::new(),
             account_order: Vec::new(),
+            translation: TranslationSettings::default(),
+            activity_seen: 0,
         }
     }
 }
@@ -936,6 +1003,18 @@ mod tests {
         assert_eq!(config, Config::default());
         assert!(config.general.run_in_background);
         assert_eq!(config.sending.undo_send_seconds, 10);
+    }
+
+    #[test]
+    fn search_triggers_are_words() {
+        assert_eq!(Config::default().general.search_triggers, ["k", "m"]);
+        assert_eq!(
+            General::parse_search_triggers(" K, mail:  k find,,"),
+            ["k", "mail", "find"]
+        );
+        assert!(General::parse_search_triggers(" , ").is_empty());
+        let config = Config::parse("[general]\nsearch_triggers = []\n").unwrap();
+        assert!(config.general.search_triggers.is_empty());
     }
 
     #[test]

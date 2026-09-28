@@ -7,6 +7,7 @@
 settings-tab-general = Allgemein
 settings-tab-inbox = Posteingang
 settings-tab-accounts = Konten
+settings-tab-katna-account = Katna-Konto
 settings-tab-subscriptions = Abonnements
 settings-tab-appearance = Darstellung
 settings-tab-shortcuts = Tastenkombinationen
@@ -35,6 +36,14 @@ settings-general-full-headers = Vollständige Kopfzeilen anzeigen
 settings-general-full-headers-detail = Von, An, Cc, Datum und Betreff bei jeder Nachricht aufgeklappt
 settings-general-full-names = Vollständige Namen der Empfänger
 settings-general-full-names-detail = „an mich, Ada Lovelace“ statt „an mich, Ada“
+settings-translation = Übersetzung
+settings-translation-detail = E-Mails in einer anderen Sprache lassen sich in Ihrer lesen.
+settings-translation-offer = Übersetzung anbieten
+settings-translation-offer-detail = Der Text einer Nachricht geht nur dann zur Übersetzung an den Server von Katna, wenn Sie darum bitten oder ihre Sprache immer übersetzen lassen. Anhänge gehen nie mit.
+settings-translation-reading = Übersetzen in
+settings-translation-always = Immer übersetzen
+settings-translation-never = Nie anbieten für
+settings-translation-none = Noch keine. Wählen Sie sie in der Übersetzungsleiste einer Nachricht.
 settings-general-mark-read = Als gelesen markieren
 settings-general-mark-read-now = Sobald sie geöffnet wird
 settings-general-mark-read-1s = Wenn sie 1 Sekunde lang geöffnet ist
@@ -83,6 +92,9 @@ settings-general-tray = Katna im Systemabschnitt anzeigen
 settings-general-tray-detail = Mit der Anzahl ungelesener Nachrichten und einem Menü
 settings-general-unread-badge = Anzahl ungelesener Nachrichten am Symbol in der Kontrollleiste
 settings-general-unread-badge-detail = Wie viele Nachrichten im Posteingang ungelesen sind
+settings-general-search-triggers = Vom Desktop aus suchen
+settings-general-search-triggers-detail = Geben Sie in KRunner oder der GNOME-Suche eines dieser Wörter und ein Leerzeichen ein, dann das Gesuchte, um Ihre E-Mails so zu durchsuchen wie mit dem Suchfeld hier. Trennen Sie Wörter mit Kommas.
+settings-general-search-triggers-none = Keine Wörter; nur „mail:“ funktioniert
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = Falsch geschriebene Wörter werden unterst
 settings-compose-spell-desktop = Sprache der Arbeitsumgebung ({ $language })
 settings-compose-templates = Vorlagen
 settings-compose-templates-detail = Speichern Sie E-Mails, die Sie oft schreiben, und beginnen Sie damit eine neue E-Mail oder eine Antwort.
+settings-compose-no-templates = Noch keine Vorlagen. Wählen Sie in einer Nachricht Vorlagen und dann Als Vorlage speichern.
+settings-compose-template-new = Neu erstellen
+settings-compose-template-new-name = Neue Vorlage
+settings-compose-template-subject = Betreff
+settings-compose-template-text = Text der Vorlage
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} und {"{"}my name{"}"} werden mit dem Namen des Empfängers und Ihrem Namen ausgefüllt.
+settings-compose-template-remove-file = Anhang entfernen
+settings-compose-template-save = Speichern
+settings-compose-template-saved = Vorlage gespeichert
+settings-compose-template-needs-name = Geben Sie der Vorlage einen Namen
+settings-compose-template-delete = Vorlage löschen
+settings-compose-template-deleted = Vorlage gelöscht
+settings-compose-template-delete-failed = Die Vorlage konnte nicht gelöscht werden: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = Alle Tastenkombinationen haben wieder die Tasten i
 
 settings-general-language-summary = Sprache der App sowie von Datum und Zahlen
 settings-general-reading-summary = Neueste Nachricht zuerst, vollständige Kopfzeilen, vollständige Namen der Empfänger
+settings-translation-summary = E-Mails in anderen Sprachen mit dem Server von Katna in die gewählte Sprache übersetzen
 settings-general-mark-read-summary = Wann eine geöffnete Konversation als gelesen markiert wird: sofort, nach 1 oder 3 Sekunden oder von Hand
 settings-general-auto-advance-summary = Was sich öffnet, nachdem Sie die geöffnete Konversation gelöscht, archiviert oder verschoben haben: die nächste, die vorherige oder die Liste
 settings-general-reply-button-summary = Die Antwortschaltfläche neben jeder Nachricht antwortet allen
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = Die Signatur, mit der neue E-Mails begin
 settings-compose-for-replies-summary = Die Signatur, mit der Antworten und Weiterleitungen beginnen
 settings-compose-format-summary = Neue E-Mails in reinem Text schreiben
 settings-compose-spelling-summary = Rechtschreibung beim Schreiben prüfen und die Sprache des Wörterbuchs
-settings-compose-templates-summary = Demnächst: E-Mails speichern, die Sie oft schreiben, und damit eine neue E-Mail oder eine Antwort beginnen
+settings-general-search-triggers-summary = Wörter, mit denen KRunner oder die GNOME-Suche Ihre E-Mails durchsucht
+settings-compose-templates-summary = E-Mails speichern, die Sie oft schreiben, und damit eine neue E-Mail oder eine Antwort beginnen
 settings-feedback-crash-reports-summary = Absturzberichte auf diesem Computer speichern, wenn Katna Mail oder sein Hintergrunddienst abstürzt
 settings-feedback-saved-summary = Die auf diesem Computer gespeicherten Absturzberichte ansehen, kopieren oder löschen
 settings-feedback-help-improve-summary = Absturzberichte senden, um bei der Fehlerbehebung zu helfen; aus, solange Sie es nicht einschalten

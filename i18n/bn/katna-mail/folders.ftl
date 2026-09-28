@@ -9,15 +9,23 @@ nav-folders = ফোল্ডার
 nav-label-new = নতুন লেবেল তৈরি করুন
 nav-folder-new = নতুন ফোল্ডার তৈরি করুন
 nav-account-unnamed = অ্যাকাউন্ট { $number }
+nav-all-accounts = সব অ্যাকাউন্ট
+nav-expand = ফোল্ডার দেখান
+nav-collapse = ফোল্ডার লুকান
 nav-tab-new = { $count ->
     [one] { $count }টি নতুন
    *[other] { $count }টি নতুন
 }
+storage-used = { $total }-এর { $percent }% ব্যবহৃত
+storage-used-detail = { $address }: { $total }-এর { $used } ব্যবহৃত
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ইনবক্স
 folder-starred = তারকাচিহ্নিত
+folder-snoozed = স্নুজ করা
+folder-unread = অপঠিত
+folder-important = গুরুত্বপূর্ণ
 folder-drafts = খসড়া
 folder-sent = পাঠানো হয়েছে
 folder-archive = আর্কাইভ
@@ -25,6 +33,7 @@ folder-spam = স্প্যাম
 folder-trash = ট্র্যাশ
 folder-all-mail = সব মেল
 folder-scheduled = শিডিউল করা
+folder-activity = কার্যকলাপ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -77,6 +77,14 @@ security-missing-key = A fi kọ́kọ́rọ́ tí o kò ní buwọ́ lù ú, n�
 security-missing-key-id = A fi kọ́kọ́rọ́ tí o kò ní ({ $key }) buwọ́ lù ú, nítorí náà a kò lè ṣàyẹ̀wò rẹ̀
 security-signature-unavailable = A ti buwọ́ lù ú; fi { $tool } sórí ẹ̀rọ láti ṣàyẹ̀wò ìbuwọ́lù náà
 security-signature-error = A kò lè ṣàyẹ̀wò ìbuwọ́lù náà.
+tracking-opened = { $who } ti ṣí i nígbà { $count }, ìgbà tó kẹ́yìn ni { $when }
+tracking-opens-clicks = { $who } ti ṣí i nígbà { $opens }, ó sì ti tẹ̀lé ìjápọ̀ nígbà { $clicks }, ìgbà tó kẹ́yìn ni { $when }
+tracking-clicked = { $who } ti tẹ̀lé ìjápọ̀ nígbà { $clicks }, ìgbà tó kẹ́yìn ni { $when }
+tracking-maybe-opened = Ó ṣeé ṣe kí { $who } ti ṣí i (Apple Mail máa ń gbé àwọn àwòrán wọlé fún àṣírí)
+tracking-not-opened = { $who } kò tíì ṣí i
+tracking-receipt = { $who } ti fi ìwé-ẹ̀rí kíkà ránṣẹ́
+tracking-receipt-displayed = Ìwé-ẹ̀rí kíkà: { $who } ti ṣí ìfiránṣẹ́ rẹ
+tracking-receipt-other = Ìwé-ẹ̀rí kíkà: { $who } ti pa ìfiránṣẹ́ rẹ rẹ́ tàbí bójú tó o láìṣí i
 
 ## Remote images and pictures
 

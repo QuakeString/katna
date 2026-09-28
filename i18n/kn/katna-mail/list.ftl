@@ -28,6 +28,8 @@ list-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
 list-archive = ಆರ್ಕೈವ್ ಮಾಡಿ
 list-spam = ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಿ
 list-delete = ಅಳಿಸಿ
+list-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
+list-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
 list-newer = ಹೊಸದು
 list-older = ಹಳೆಯದು
 list-range = { $total } ರಲ್ಲಿ { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder } ನಲ್ಲಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
        *[other] { $folder } ನಲ್ಲಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ಓದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ಓದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ಓದದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ಓದದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+       *[message] { $count ->
+            [one] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+           *[other] ಪರದೆಯಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] ಓದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] ಓದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] ಓದದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] ಓದದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ಓದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ಓದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ಓದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ಓದದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ಓದದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ಓದದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂವಾದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
+       *[message] { $count ->
+            [one] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ { $count } ಸಂದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ
+           *[other] { $folder } ನಲ್ಲಿರುವ ನಕ್ಷತ್ರ ಹಾಕದಿರುವ ಎಲ್ಲಾ { $count } ಸಂದೇಶಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = ನಕ್ಷತ್ರ ಹಾಕಿಲ್ಲ
 row-important = ಪ್ರಮುಖ. ಪ್ರಮುಖವಲ್ಲ ಎಂದು ಗುರುತಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.
 row-mark-important = ಪ್ರಮುಖ ಎಂದು ಗುರುತಿಸಿ
 row-pinned = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಲಾಗಿದೆ
+row-tracking-none = ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗಿದೆ. ಇನ್ನೂ ತೆರೆದಿಲ್ಲ
+row-tracking-opened = { $recipients } ರಲ್ಲಿ { $opened } ಜನರು ತೆರೆದಿದ್ದಾರೆ
+row-tracking-clicked = { $recipients } ರಲ್ಲಿ { $opened } ಜನರು ತೆರೆದಿದ್ದಾರೆ, { $clicked } ಜನರು ಲಿಂಕ್ ತೆರೆದಿದ್ದಾರೆ
 row-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 row-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
+row-snoozed-until = { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = ಎಲ್ಲರಿಗೂ ಪ್ರತ್ಯುತ್ತರಿ�
 menu-forward = ಫಾರ್ವರ್ಡ್ ಮಾಡಿ
 menu-archive = ಆರ್ಕೈವ್ ಮಾಡಿ
 menu-delete = ಅಳಿಸಿ
+menu-delete-forever = ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ
+menu-move-to-inbox = ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಸರಿಸಿ
 menu-spam = ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಿ
+menu-not-spam = ಸ್ಪ್ಯಾಮ್ ಅಲ್ಲ
 menu-mark-read = ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ
 menu-mark-unread = ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಿ
 menu-mark-all-read = ಎಲ್ಲವನ್ನೂ ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ
@@ -240,6 +375,8 @@ menu-important = ಪ್ರಮುಖ ಎಂದು ಗುರುತಿಸಿ
 menu-not-important = ಪ್ರಮುಖವಲ್ಲ ಎಂದು ಗುರುತಿಸಿ
 menu-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 menu-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
+menu-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
+menu-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
 menu-print-all = ಎಲ್ಲವನ್ನೂ ಮುದ್ರಿಸಿ
 menu-new-window = ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ
 menu-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದವನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶವನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳನ್ನು { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳು ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿವೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳು ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಮರಳಿವೆ.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] ಸಂವಾದವನ್ನು ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಲಾಗಿದೆ.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] ಸಂದೇಶವನ್ನು ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಲಾಗಿದೆ.
        *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಲಾಗಿದೆ.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] ಸಂವಾದವನ್ನು ಸ್ಪ್ಯಾಮ್ ಅಲ್ಲ ಎಂದು ಗುರುತಿಸಿ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ.
+       *[other] { $count } ಸಂವಾದಗಳನ್ನು ಸ್ಪ್ಯಾಮ್ ಅಲ್ಲ ಎಂದು ಗುರುತಿಸಿ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ.
+    }
+   *[message] { $count ->
+        [one] ಸಂದೇಶವನ್ನು ಸ್ಪ್ಯಾಮ್ ಅಲ್ಲ ಎಂದು ಗುರುತಿಸಿ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ.
+       *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಸ್ಪ್ಯಾಮ್ ಅಲ್ಲ ಎಂದು ಗುರುತಿಸಿ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ.
     }
 }
 toast-deleted-forever = { $kind ->

@@ -9,12 +9,20 @@ nav-folders = ໂຟນເດີ
 nav-label-new = ສ້າງປ້າຍກຳກັບໃໝ່
 nav-folder-new = ສ້າງໂຟນເດີໃໝ່
 nav-account-unnamed = ບັນຊີ { $number }
+nav-all-accounts = ທຸກບັນຊີ
+nav-expand = ສະແດງໂຟນເດີ
+nav-collapse = ເຊື່ອງໂຟນເດີ
 nav-tab-new = ໃໝ່ { $count }
+storage-used = ໃຊ້ໄປ { $percent }% ຈາກ { $total }
+storage-used-detail = { $address }: ໃຊ້ໄປ { $used } ຈາກ { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 folder-starred = ຕິດດາວແລ້ວ
+folder-snoozed = ເລື່ອນເວລາໄວ້
+folder-unread = ຍັງບໍ່ໄດ້ອ່ານ
+folder-important = ສຳຄັນ
 folder-drafts = ສະບັບຮ່າງ
 folder-sent = ສົ່ງແລ້ວ
 folder-archive = ຈັດເກັບ
@@ -22,6 +30,7 @@ folder-spam = ສະແປມ
 folder-trash = ຖັງຂີ້ເຫຍື້ອ
 folder-all-mail = ອີເມວທັງໝົດ
 folder-scheduled = ຕັ້ງເວລາໄວ້
+folder-activity = ກິດຈະກຳ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -48,11 +48,12 @@ pub mod outbox;
 pub mod pictures;
 pub mod pop3;
 pub mod smtp;
+pub mod tracking;
 pub mod worker;
 
 pub use backend::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, FlagChanges, FlagState, Flags,
     Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MailSender,
-    MessageHeaders, Secret, Security, Wait,
+    MessageHeaders, Quota, Secret, Security, Wait,
 };
 pub use error::{Error, Result};

@@ -38,6 +38,9 @@ compose-scheduled = { $when } ට යැවීමට කාලසටහන් �
 compose-sent-archived = යවා සංරක්ෂණය කළා
 compose-sent = පණිවිඩය යැව්වා
 compose-discarded = කෙටුම්පත ඉවත දැමුවා
+compose-draft-saved = කෙටුම්පත සුරැකිණි
+compose-draft-failed = කෙටුම්පත සුරැකිය නොහැකි විය: { $error }
+compose-draft-not-opened = කෙටුම්පත විවෘත කළ නොහැකි විය.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = අමුණන්න
 compose-file-too-large = { $name } ඉතා විශාලයි: පණිවිඩයකට { $limit } දක්වා පමණක් රැගෙන යා හැක.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ඇමුණුම ඉවත් කරන්න
+compose-attachments-total = { $count ->
+    [one] ගොනු { $count }, { $size }
+   *[other] ගොනු { $count }, { $size }
+}
 compose-drop-files = ගොනු මෙහි දමන්න
 compose-drop-here = මෙහි දමන්න
 compose-paste-keep-formatting = හැඩතල ගැන්වීම තබා ගන්න
@@ -61,6 +68,12 @@ compose-encrypt = සංකේතනය කරන්න
 compose-encrypted = සංකේතනය කළා: ලබන්නන්ට පමණක් කියවිය හැක
 compose-sign = අත්සන් කරන්න
 compose-signed = අත්සන් කළා: එය ඔබෙන් බව ලබන්නන්ට පරීක්ෂා කළ හැක
+compose-track = විවෘත කිරීම් සහ ක්ලික් ලුහුබඳින්න
+compose-tracked = ලුහුබඳිමින්: එක් එක් ලබන්නා එය විවෘත කරන විට හෝ සබැඳියක් විවෘත කරන විට ඔබට පෙනේ
+compose-track-unavailable = අත්සන් කළ, සංකේතනය කළ සහ සරල පෙළ තැපැල් ලුහුබැඳිය නොහැක
+compose-track-sign-in = විවෘත කිරීම් සහ ක්ලික් ලුහුබැඳීමට Katna ගිණුමකට පුරනය වන්න
+compose-receipt = කියවූ බවට රිසිට්පතක් ඉල්ලන්න
+compose-receipt-on = කියවූ බවට රිසිට්පතක් ඉල්ලා ඇත: ලබන්නාගේ යෙදුම එකක් යවන ලෙස ඔවුන්ගෙන් ඉල්ලිය හැක
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = විෂයක් එක් කරන්න
 send-check-send-anyway = කෙසේ වෙතත් යවන්න
 recipient-not-valid = වලංගු ඊමේල් ලිපිනයක් නොවේ
 recipient-show-address = ලිපිනය පෙන්වන්න
+recipient-remove = ඉවත් කරන්න
 recipient-bad-title = ලිපිනය පරීක්ෂා කරන්න
 recipient-bad-text = “{ $address }” වලංගු ඊමේල් ලිපිනයක් නොවේ. යැවීමට පෙර එය නිවැරදි කරන්න හෝ ඉවත් කරන්න.
 recipient-bad-fix = නිවැරදි කරන්න

@@ -521,6 +521,7 @@ impl MailWindow {
             .child(div().flex_none().h(px(compose_room)))
             .children(head)
             .child(list)
+            .children(self.render_storage(th))
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();
         div()
@@ -988,6 +989,7 @@ pub(super) fn role_icon(role: Role) -> &'static str {
     match role {
         Role::Inbox => "inbox",
         Role::Flagged => "star",
+        Role::Snoozed => "schedule",
         Role::Drafts => "drafts",
         Role::Sent => "sent",
         Role::Archive => "archive",

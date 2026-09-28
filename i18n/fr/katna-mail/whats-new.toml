@@ -485,3 +485,240 @@ messages partent de votre premier compte, sauf si vous choisissez un
 autre compte par défaut dans Paramètres > Rédaction > Envoyer les
 nouveaux messages depuis.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Boîte de réception unifiée"
+text = """
+Activez Paramètres > Comptes > Boîte de réception unifiée pour voir
+ensemble les messages de tous vos comptes. « Tous les comptes » est en
+tête du volet des dossiers, avec une seule Boîte de réception, Non lus,
+Messages suivis, Importants, Messages envoyés, Brouillons et plus encore
+pour tous les comptes ; la flèche à côté de chacun ouvre une ligne par
+compte. Le nom de chaque compte a maintenant une flèche qui replie ses
+dossiers.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Des menus contextuels adaptés à chaque dossier"
+text = """
+Choisir un dossier ou un libellé sous Déplacer vers dans le menu du clic
+droit déplace maintenant le message, avec Annuler, y compris depuis les
+résultats de recherche. Dans Spam, Signaler comme spam devient Pas un
+spam. Corbeille propose Déplacer vers la boîte de réception et Supprimer
+définitivement, Archives propose Déplacer vers la boîte de réception, et
+Brouillons et Messages envoyés omettent les actions qui n’y ont pas de
+sens.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Réorganisez les comptes par glisser-déposer"
+text = """
+Dans Paramètres > Comptes, faire glisser un compte soulève désormais
+toute sa ligne, et les autres comptes s’écartent pour lui faire de la
+place. Monter et Descendre apparaissent quand vous pointez une ligne.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Les brouillons sont conservés"
+text = """
+Fermer un message en cours de rédaction l’enregistre désormais dans
+Brouillons, y compris sur votre serveur de messagerie, comme dans Gmail.
+Ouvrez-le depuis Brouillons pour continuer à écrire. Seul le bouton
+Corbeille le supprime, et Annuler le récupère.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "De la place pour de nombreuses pièces jointes"
+text = """
+Quel que soit le nombre de fichiers joints, la liste défile désormais au-dessus de la barre Envoyer au lieu de la recouvrir, montre le fichier le plus récent et indique le nombre de fichiers et leur taille totale.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Sélectionner les non lus ou suivis, comme dans Gmail"
+text = """
+Lus, Non lus, Suivis et Non suivis dans le menu Sélectionner cochent de
+nouveau les messages correspondants à l’écran. Une ligne au-dessus de la
+liste propose de sélectionner toutes les conversations correspondantes du
+dossier, et Effacer la sélection l’annule.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Les dossiers vous font quitter les Paramètres"
+text = """
+Quand les Paramètres sont ouverts, un clic sur un dossier ou sur l’icône
+Courrier ferme désormais les Paramètres et ouvre ce dossier, comme dans
+Gmail. La flèche de retour fonctionne toujours.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Déposez des images dans le texte"
+text = """
+Quand vous faites glisser une image sur un message, un curseur montre où elle arrivera, pour la déposer au milieu d’une phrase. Les autres fichiers affichent toujours la zone de dépôt des pièces jointes, et le dépôt fonctionne désormais après avoir tapé du texte.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Quitter ferme tout de suite"
+text = """
+Quitter dans le menu de l’icône de la zone de notification n’attend plus
+les messages encore en cours de synchronisation ou d’indexation : Katna et
+son icône se ferment aussitôt, et le reste se poursuit au prochain
+démarrage de Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Les détails du contact à côté de vos messages"
+text = """
+Dans une fenêtre large, une carte à côté de la conversation ouverte
+présente désormais l’expéditeur : son téléphone, son titre et son
+entreprise tirés de ses signatures, son heure locale, le volume de
+messages échangés, vos conversations récentes et les fichiers échangés.
+Cliquez sur une conversation ou un fichier pour l’ouvrir, ou sur une autre
+personne de la conversation pour l’afficher. Tout provient uniquement de
+vos messages sur cet ordinateur. Le bouton de contact dans la barre
+d’outils du volet de lecture masque la carte.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Espace utilisé"
+text = """
+Le bas du volet des dossiers indique à quel point l’espace de messagerie
+du compte est rempli, par exemple « 34 % utilisés sur 15 Go », quand son
+serveur de messagerie le communique.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Trouver des messages depuis KRunner et la recherche GNOME"
+text = """
+Tapez un nom dans KRunner (Alt+Space) ou dans la recherche des Activités
+pour écrire à cette personne, copier son adresse ou trouver ses messages.
+Les messages apparaissent quand leur objet ou leur expéditeur contient
+chaque mot tapé ; commencez par mail: pour chercher dans tous vos
+messages, comme dans le champ de recherche de Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Des modèles pour les messages que vous écrivez souvent"
+text = """
+Écrivez un message une fois et enregistrez-le avec le nouveau bouton
+Modèles de la fenêtre de rédaction, puis insérez-le en un clic dans
+n’importe quel nouveau message ou réponse. Écrivez {first name}, {name} ou
+{my name} et Katna les remplit pour chaque destinataire. Modifiez,
+renommez ou supprimez les modèles dans Paramètres > Rédaction.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Les messages programmés partent même ordinateur éteint"
+text = """
+Quand votre serveur de messagerie peut retenir un message jusqu’à une
+heure donnée, comme le fait Stalwart, Programmer l’envoi lui confie
+désormais le message une fois Annuler disparu, pour qu’il parte à l’heure
+même si cet ordinateur est éteint. Le menu de programmation indique si
+c’est votre serveur de messagerie ou Katna qui l’enverra.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Un survol plus léger"
+text = """
+La ligne sous le pointeur dans la liste de messages se soulève désormais
+avec une ombre légère, comme dans Gmail, au lieu d’une bande sombre en
+dessous.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Glissez les adresses entre À, Cc et Cci"
+text = """
+Faites glisser la pastille d’une adresse vers un autre champ pour la
+déplacer ; Cc et Cci s’ouvrent pendant le glissement, même masqués.
+Pointer une pastille affiche un x qui la retire.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Compte Katna"
+text = """
+Paramètres > Compte Katna vous permet de créer un compte sur le serveur de
+Katna lui-même, avec son propre mot de passe, jamais celui d’une
+messagerie. Les fonctions en ligne de Katna, comme les accusés de lecture
+et le suivi des liens, en auront besoin. Vous voyez les ordinateurs
+connectés et pouvez déconnecter n’importe lequel d’entre eux.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Là où vous en étiez"
+text = """
+Fermer Katna Mail puis le rouvrir rétablit l’application, le dossier et
+l’onglet de la boîte de réception que vous aviez ouverts, les dossiers que
+vous aviez dépliés et l’état replié ou non du volet des dossiers. Quitter
+Katna depuis la zone de notification le fait repartir de zéro.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Mise en attente et rappels de réponse"
+text = """
+Mettez une conversation en attente avec l’horloge de sa ligne ou depuis le
+menu du clic droit : elle patiente dans le dossier En attente et revient
+dans la boîte de réception, non lue, à l’heure choisie. À l’envoi, la
+flèche à côté d’Envoyer peut vous le rappeler si personne ne répond sous
+1, 3 ou 7 jours. Les deux fonctionnent tant que votre ordinateur est
+allumé, et rattrapent leur retard à son réveil.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Lisez vos messages dans votre langue"
+text = """
+Un message dans une autre langue affiche désormais un bouton Traduire
+au-dessus, et Afficher l’original le rétablit. Katna détecte la langue
+sur votre ordinateur ; le texte du message n’est envoyé au serveur de
+Katna pour être traduit que si vous le demandez. Paramètres > Général >
+Traduction choisit votre langue et celles à toujours traduire.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Sachez quand vos messages sont ouverts"
+text = """
+Activez l’œil à côté des destinataires pour voir quand chacun ouvre votre
+message ou suit un de ses liens, ou demandez plutôt un accusé de lecture.
+Les messages envoyés indiquent qui les a ouverts, et une notification
+vous prévient la première fois. Les deux sont désactivés pour chaque
+nouveau message, et le suivi nécessite un compte Katna (Paramètres >
+Compte Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Activité des messages suivis"
+text = """
+Activité, à côté du champ de recherche, montre combien de vos messages
+suivis ont été ouverts et combien de fois leurs liens ont été suivis,
+avec vos objets classés selon leur taux d’ouverture.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Cherchez dans vos messages depuis KRunner avec k"
+text = """
+Tapez k ou m, une espace, puis ce que vous cherchez dans KRunner ou la
+recherche de GNOME pour obtenir les mêmes résultats que dans le champ de
+recherche de Katna Mail, par exemple « k budget ». Choisissez vos propres
+mots dans Paramètres, sous Général.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Activité à côté du champ de recherche"
+text = """
+Le bouton Activité, à côté du champ de recherche, compte les nouvelles
+ouvertures et les nouveaux clics de vos messages suivis et indique qui a
+ouvert quoi et quels liens ont été suivis ; cliquez sur un élément pour
+ouvrir ce message. Détails montre les taux d’ouverture et de clics, les
+ouvertures par jour et vos meilleurs objets sur les 7 ou 30 derniers
+jours, depuis le début ou entre les dates de votre choix. Un message
+envoyé indique désormais combien de fois chaque personne l’a ouvert et a
+suivi un lien.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Statistiques de votre boîte aux lettres"
+text = """
+Activité > Détails montre aussi désormais combien de messages vous avez
+envoyés et reçus sur la période, à quelle fréquence et à quelle vitesse
+vous et les autres répondez, les personnes avec qui vous échangez le plus
+et quels jours et à quelles heures arrivent vos messages. Le calcul se
+fait sur votre ordinateur, à partir des messages que Katna a déjà.
+"""

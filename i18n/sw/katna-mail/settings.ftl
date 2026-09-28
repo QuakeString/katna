@@ -7,6 +7,7 @@
 settings-tab-general = Jumla
 settings-tab-inbox = Kikasha
 settings-tab-accounts = Akaunti
+settings-tab-katna-account = Akaunti ya Katna
 settings-tab-subscriptions = Usajili
 settings-tab-appearance = Mwonekano
 settings-tab-shortcuts = Njia za mkato
@@ -35,6 +36,14 @@ settings-general-full-headers = Onyesha vichwa kamili
 settings-general-full-headers-detail = Kutoka, kwa, nakala, tarehe na mada hufunguka kwenye kila ujumbe
 settings-general-full-names = Majina kamili ya wapokeaji
 settings-general-full-names-detail = “kwa mimi, Ada Lovelace” badala ya “kwa mimi, Ada”
+settings-translation = Tafsiri
+settings-translation-detail = Barua katika lugha nyingine inaweza kusomwa katika lugha yako.
+settings-translation-offer = Pendekeza kutafsiri
+settings-translation-offer-detail = Maandishi ya ujumbe huenda kwenye seva ya Katna ili yatafsiriwe, pale tu unapoomba au unapochagua kutafsiri lugha yake kila wakati. Viambatisho haviendi kamwe.
+settings-translation-reading = Tafsiri kwenda
+settings-translation-always = Tafsiri kila wakati
+settings-translation-never = Usipendekeze kamwe kwa
+settings-translation-none = Bado hakuna. Chagua kutoka kwenye upau wa Tafsiri wa ujumbe.
 settings-general-mark-read = Tia alama kuwa imesomwa
 settings-general-mark-read-now = Mara tu unapofunguliwa
 settings-general-mark-read-1s = Baada ya kufunguliwa kwa sekunde 1
@@ -83,6 +92,9 @@ settings-general-tray = Onyesha Katna kwenye trei ya mfumo
 settings-general-tray-detail = Pamoja na idadi ya ambazo hazijasomwa na menyu
 settings-general-unread-badge = Idadi ya ambazo hazijasomwa kwenye aikoni ya upau wa kazi
 settings-general-unread-badge-detail = Idadi ya jumbe za Kikasha ambazo hazijasomwa
+settings-general-search-triggers = Tafuta kutoka kwenye kompyuta ya mezani
+settings-general-search-triggers-detail = Andika mojawapo ya maneno haya na nafasi katika KRunner au utafutaji wa GNOME, kisha unachotafuta, ili kutafuta barua zako kama kisanduku cha utafutaji hapa kinavyofanya. Tenganisha maneno kwa koma.
+settings-general-search-triggers-none = Hakuna maneno; “mail:” pekee ndiyo hufanya kazi
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = Maneno yenye makosa ya tahajia hupigiwa ms
 settings-compose-spell-desktop = Lugha ya kompyuta ya mezani ({ $language })
 settings-compose-templates = Violezo
 settings-compose-templates-detail = Hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo.
+settings-compose-no-templates = Bado hakuna violezo. Katika ujumbe, chagua Violezo, kisha Hifadhi kama kiolezo.
+settings-compose-template-new = Unda mpya
+settings-compose-template-new-name = Kiolezo kipya
+settings-compose-template-subject = Mada
+settings-compose-template-text = Maandishi ya kiolezo
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} na {"{"}my name{"}"} hujazwa kwa jina la mpokeaji na jina lako.
+settings-compose-template-remove-file = Ondoa kiambatisho
+settings-compose-template-save = Hifadhi
+settings-compose-template-saved = Kiolezo kimehifadhiwa
+settings-compose-template-needs-name = Kipe kiolezo jina
+settings-compose-template-delete = Futa kiolezo
+settings-compose-template-deleted = Kiolezo kimefutwa
+settings-compose-template-delete-failed = Imeshindwa kufuta kiolezo: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = Kila njia ya mkato ina vitufe vya seti yake tena.
 
 settings-general-language-summary = Lugha ya programu, tarehe na nambari
 settings-general-reading-summary = Ujumbe mpya zaidi kwanza, vichwa kamili, majina kamili ya wapokeaji
+settings-translation-summary = Tafsiri barua za lugha nyingine kwa seva ya Katna, kwenda lugha unayochagua
 settings-general-mark-read-summary = Wakati mazungumzo yaliyofunguliwa yanapotiwa alama kuwa yamesomwa: papo hapo, baada ya sekunde 1 au 3, au kwa mkono
 settings-general-auto-advance-summary = Kinachofunguka baada ya kufuta, kuweka kwenye kumbukumbu au kuhamisha mazungumzo yaliyofunguliwa: yanayofuata, yaliyotangulia, au orodha
 settings-general-reply-button-summary = Kitufe cha kujibu kando ya kila ujumbe humjibu kila mtu
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = Sahihi ambayo barua mpya huanza nayo
 settings-compose-for-replies-summary = Sahihi ambayo majibu na barua zinazosambazwa huanza nayo
 settings-compose-format-summary = Andika barua mpya kwa maandishi matupu
 settings-compose-spelling-summary = Kagua tahajia wakati wa kuandika, na lugha ya kamusi
-settings-compose-templates-summary = Inakuja hivi karibuni: hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo
+settings-general-search-triggers-summary = Maneno yanayotafuta barua zako kutoka KRunner au utafutaji wa GNOME
+settings-compose-templates-summary = Hifadhi barua unazoandika mara kwa mara, na uanze barua mpya au jibu kutoka kwayo
 settings-feedback-crash-reports-summary = Hifadhi ripoti za kuacha kufanya kazi kwenye kompyuta hii Katna Mail au huduma yake ya chinichini inapoacha kufanya kazi
 settings-feedback-saved-summary = Tazama, nakili au futa ripoti za kuacha kufanya kazi zilizohifadhiwa kwenye kompyuta hii
 settings-feedback-help-improve-summary = Tuma ripoti za kuacha kufanya kazi ili kusaidia kurekebisha tatizo; imezimwa isipokuwa ukiiwasha

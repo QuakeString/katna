@@ -38,6 +38,9 @@ compose-scheduled = تمت جدولة الإرسال في { $when }
 compose-sent-archived = تم الإرسال والأرشفة
 compose-sent = تم إرسال الرسالة
 compose-discarded = تم تجاهل المسودة
+compose-draft-saved = تم حفظ المسودة
+compose-draft-failed = تعذّر حفظ المسودة: { $error }
+compose-draft-not-opened = تعذّر فتح المسودة.
 
 ## Attachments
 
@@ -46,6 +49,14 @@ compose-picker-attach = إرفاق
 compose-file-too-large = الملف { $name } كبير جدًا: يمكن أن تحمل الرسالة حتى { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = إزالة المرفق
+compose-attachments-total = { $count ->
+    [zero] { $count } ملف، { $size }
+    [one] ملف واحد، { $size }
+    [two] ملفان، { $size }
+    [few] { $count } ملفات، { $size }
+    [many] { $count } ملفًا، { $size }
+   *[other] { $count } ملف، { $size }
+}
 compose-drop-files = أفلت الملفات هنا
 compose-drop-here = أفلت هنا
 compose-paste-keep-formatting = الإبقاء على التنسيق
@@ -61,6 +72,12 @@ compose-encrypt = تشفير
 compose-encrypted = مشفّرة: لا يقرؤها إلا المستلمون
 compose-sign = توقيع
 compose-signed = موقّعة: يمكن للمستلمين التحقق من أنها منك
+compose-track = تتبُّع الفتح والنقرات
+compose-tracked = متتبَّعة: ترى متى يفتحها كل مستلم أو يتابع رابطًا فيها
+compose-track-unavailable = لا يمكن تتبُّع البريد الموقَّع أو المشفَّر أو ذي النص العادي
+compose-track-sign-in = سجّل الدخول إلى حساب Katna لتتبُّع الفتح والنقرات
+compose-receipt = طلب إشعار بالقراءة
+compose-receipt-on = طُلب إشعار بالقراءة: قد يطلب تطبيق المستلم منه إرساله
 
 ## Spelling
 
@@ -85,6 +102,7 @@ send-check-add-subject = إضافة موضوع
 send-check-send-anyway = الإرسال على أي حال
 recipient-not-valid = ليس عنوان بريد إلكتروني صالحًا
 recipient-show-address = إظهار العنوان
+recipient-remove = إزالة
 recipient-bad-title = تحقّق من العنوان
 recipient-bad-text = «{ $address }» ليس عنوان بريد إلكتروني صالحًا. صحّحه أو أزِله قبل الإرسال.
 recipient-bad-fix = تصحيح

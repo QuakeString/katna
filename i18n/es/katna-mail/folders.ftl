@@ -9,16 +9,24 @@ nav-folders = Carpetas
 nav-label-new = Crear etiqueta
 nav-folder-new = Crear carpeta
 nav-account-unnamed = Cuenta { $number }
+nav-all-accounts = Todas las cuentas
+nav-expand = Mostrar carpetas
+nav-collapse = Ocultar carpetas
 nav-tab-new = { $count ->
     [one] { $count } nuevo
     [many] { $count } de nuevos
    *[other] { $count } nuevos
 }
+storage-used = { $percent } % de { $total } usado
+storage-used-detail = { $address }: { $used } de { $total } usados
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Recibidos
 folder-starred = Destacados
+folder-snoozed = Pospuestos
+folder-unread = No leídos
+folder-important = Importantes
 folder-drafts = Borradores
 folder-sent = Enviados
 folder-archive = Archivo
@@ -26,6 +34,7 @@ folder-spam = Spam
 folder-trash = Papelera
 folder-all-mail = Todos
 folder-scheduled = Programados
+folder-activity = Actividad
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

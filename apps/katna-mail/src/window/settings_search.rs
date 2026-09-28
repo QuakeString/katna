@@ -78,6 +78,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-translation",
+        "settings-translation-summary",
+        "translate translation language foreign reading libretranslate always never",
+    ),
+    entry(
+        Section::General,
         "settings-general-mark-read",
         "settings-general-mark-read-summary",
         "read unread seen delay mark",
@@ -129,6 +135,12 @@ const ENTRIES: &[Entry] = &[
         "settings-general-desktop",
         "settings-general-desktop-summary",
         "tray badge unread count taskbar dock panel startup start login autostart launch boot",
+    ),
+    entry(
+        Section::General,
+        "settings-general-search-triggers",
+        "settings-general-search-triggers-summary",
+        "krunner gnome shell desktop search trigger keyword prefix word launcher",
     ),
     entry(
         Section::General,

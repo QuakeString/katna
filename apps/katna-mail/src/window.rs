@@ -18,11 +18,13 @@
 mod about;
 mod account_view;
 mod accounts;
+mod activity;
 mod add_account;
 mod apps;
 mod attachments;
 mod colors;
 mod compose;
+mod contact;
 mod context_menu;
 mod crash_notice;
 mod dark;
@@ -30,6 +32,7 @@ mod desktop;
 mod detached;
 mod download;
 mod feedback_page;
+mod katna_account;
 mod keymap;
 mod labels;
 mod language;
@@ -53,9 +56,13 @@ mod settings_page;
 mod settings_search;
 mod share_ask;
 mod sign_in_again;
+mod snooze;
+mod storage;
 mod tab_strip;
 mod tour;
+mod translate;
 mod unified;
+mod view_state;
 mod viewer;
 mod whats_new;
 
@@ -330,6 +337,9 @@ enum Act {
     Star(bool),
     Important(bool),
     Pin(bool),
+    /// Until then (Unix seconds).
+    Snooze(i64),
+    Unsnooze,
 }
 
 /// What the pointer rests on that opens the folded navigation.
@@ -396,6 +406,11 @@ pub struct MailWindow {
     config_path: PathBuf,
     mail: Result<Mail, OpenError>,
     accounts: Vec<Account>,
+    /// How full each account's mail storage is, when its server says.
+    quotas: HashMap<AccountId, katna_store::StorageQuota>,
+    /// The account the storage line last showed, kept while the list
+    /// shows no one account's folder.
+    storage_account: std::cell::Cell<Option<AccountId>>,
     tree: Tree,
     /// Unread mail per folder, counted in the background.
     unread: HashMap<FolderId, u64>,
@@ -429,10 +444,10 @@ pub struct MailWindow {
     /// the ticked ones. The banner offering the whole list follows this
     /// rather than the lines on screen, which the banner itself changes.
     page_pick: Option<usize>,
-    /// What the select menu ticked in the whole list ("Unread") and how
-    /// many lines, while those are still the ticked ones: the banner says
-    /// so.
-    picked: Option<(list::Pick, usize)>,
+    /// What Read, Unread, Starred or Unstarred in the select menu ticked,
+    /// while those are still the ticked ones: the banner says so and offers
+    /// the rest.
+    picked: Option<list::Picked>,
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,
@@ -447,6 +462,8 @@ pub struct MailWindow {
     main: Option<WeakEntity<Self>>,
     /// Remote images and sender pictures of the open conversation.
     remote: remote::Remote,
+    /// Translations of opened messages (the Translate bar).
+    translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
     /// Whether a conversation is open: in place of the list with two
@@ -468,6 +485,8 @@ pub struct MailWindow {
     menu: Option<Menu>,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
+    /// The snooze menu, or its date and time picker.
+    snooze_menu: Option<snooze::SnoozeMenu>,
     /// The navigation is open (not folded to the rail).
     nav_open: bool,
     /// The folded navigation is opened over the list while the pointer is
@@ -489,6 +508,8 @@ pub struct MailWindow {
     cards_width: f32,
     /// Reply, Reply all and Forward at the foot of a conversation.
     reply_row: reply_row::ReplyRow,
+    /// The contact panel beside the open conversation.
+    contact: contact::ContactPanel,
     /// The same once the layout's motion settles, so the lines change
     /// shape once rather than midway through it.
     cards_target: f32,
@@ -508,6 +529,8 @@ pub struct MailWindow {
     sign_in_again: sign_in_again::SignInAgain,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
+    /// Settings > Katna account, once shown.
+    katna: Option<katna_account::KatnaPage>,
     compose: Option<compose::Compose>,
     /// Attachment thumbnails and the attachment viewer.
     files: attachments::Files,
@@ -543,6 +566,14 @@ pub struct MailWindow {
     unsent: Option<compose::Unsent>,
     /// The spelling dictionary and scheduled mail of compose.
     writing: compose::Writing,
+    /// The list of opens and clicks under the Activity button, when open.
+    activity: Option<activity::Menu>,
+    /// The Activity report, when open.
+    activity_report: Option<activity::Report>,
+    /// Opens and clicks not seen in Activity yet.
+    activity_unseen: usize,
+    /// Where the Activity button is.
+    activity_button: std::rc::Rc<std::cell::Cell<Option<gpui::Bounds<gpui::Pixels>>>>,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
     /// The question before removing an account or deleting all data.
@@ -562,6 +593,9 @@ pub struct MailWindow {
     /// Phone, tablet or desktop, by the window's width.
     layout: layout::Layout,
     list_focus: FocusHandle,
+    /// The whole window: where the menu bar's actions start when the
+    /// keyboard focus is on something no longer drawn.
+    window_focus: FocusHandle,
     /// The message list: lines differ in height (attachment chips).
     list_state: ListState,
     /// The line whose "+N" attachments button has its list open.
@@ -575,10 +609,13 @@ pub struct MailWindow {
 }
 
 impl MailWindow {
+    /// The main window, showing what `shown` showed when the window last
+    /// closed, if anything.
     pub fn new(
         env: Environment,
         paths: Paths,
         font: Option<SharedString>,
+        shown: Option<katna_core::window::ViewState>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
@@ -587,8 +624,12 @@ impl MailWindow {
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
         this.load_tree();
+        if let Some(shown) = &shown {
+            this.restore_view(shown, cx);
+        }
         this.open_default_folder(cx);
         this.count_unread(cx);
+        this.count_activity();
         this.listen(cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
@@ -634,8 +675,11 @@ impl MailWindow {
             font,
             mail: Mail::open(&paths),
             remote: remote::Remote::load(&paths),
+            translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
             accounts: Vec::new(),
+            quotas: HashMap::new(),
+            storage_account: std::cell::Cell::new(None),
             paths,
             config,
             config_path,
@@ -677,6 +721,7 @@ impl MailWindow {
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
             context_menu: None,
+            snooze_menu: None,
             nav_open: true,
             nav_peek: false,
             peek_hover: (false, false),
@@ -688,6 +733,7 @@ impl MailWindow {
             split_drag: None,
             cards_width: 0.0,
             reply_row: reply_row::ReplyRow::new(),
+            contact: contact::ContactPanel::new(),
             cards_target: 0.0,
             settings_open: false,
             pane_hover: None,
@@ -698,6 +744,7 @@ impl MailWindow {
             crash_notice: None,
             sign_in_again: sign_in_again::SignInAgain::default(),
             saved_reports: None,
+            katna: None,
             compose: None,
             files: attachments::Files::default(),
             add_account: None,
@@ -717,6 +764,10 @@ impl MailWindow {
             language_picker: None,
             unsent: None,
             writing: compose::Writing::default(),
+            activity: None,
+            activity_report: None,
+            activity_unseen: 0,
+            activity_button: std::rc::Rc::default(),
             settings_page: None,
             danger: None,
             new_label: None,
@@ -729,6 +780,7 @@ impl MailWindow {
             desktop_colors,
             layout: layout::Layout::new(),
             list_focus: cx.focus_handle(),
+            window_focus: cx.focus_handle(),
             list_state: ListState::new(0, ListAlignment::Top, px(400.0)),
             files_menu: None,
             list_shape: (false, 0),
@@ -857,6 +909,7 @@ impl MailWindow {
             return;
         };
         self.accounts = mail.accounts();
+        self.quotas = mail.quotas();
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.expanded = self.tree.initially_expanded();
@@ -1606,6 +1659,7 @@ impl MailWindow {
         self.load_tree();
         self.expanded = expanded;
         self.rebuild_nav();
+        self.refresh_activity();
         let selected_key = self
             .selected
             .and_then(|ix| self.entries.get(ix))
@@ -1952,6 +2006,29 @@ impl MailWindow {
                 let undo = Command::Pin(ids.clone(), !on);
                 (Command::Pin(ids, on), Some(undo))
             }
+            Act::Snooze(until) => {
+                let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
+                let undo = Command::Unsnooze(ids.clone());
+                let advanced = self.remove_lines(&keys, cx);
+                if let Some(key) = advanced {
+                    self.undo_reopens.push((undo.clone(), key));
+                    if self.undo_reopens.len() > UNDO_STEPS {
+                        self.undo_reopens.remove(0);
+                    }
+                }
+                (Command::Snooze(ids, until), Some(undo))
+            }
+            Act::Unsnooze => {
+                let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
+                // Undo snoozes again until the same time, if it is still ahead.
+                let now = jiff::Timestamp::now().as_second();
+                let undo = mail
+                    .snoozed_until(&ids)
+                    .filter(|until| *until > now + 60)
+                    .map(|until| Command::Snooze(ids.clone(), until));
+                self.remove_lines(&keys, cx);
+                (Command::Unsnooze(ids), undo)
+            }
             Act::Archive | Act::Delete | Act::Spam | Act::MoveTo(_) => {
                 let ids: Vec<MessageId> = keys.iter().flat_map(|k| messages_in(*k)).collect();
                 let target = match act {
@@ -2023,6 +2100,12 @@ impl MailWindow {
             } else {
                 katna_i18n::tr!("toast-marked-unread", count = count as u64, kind = kind)
             }),
+            Act::Snooze(until) => Some(katna_i18n::tr!(
+                "toast-snoozed",
+                count = count as u64,
+                kind = kind,
+                when = snooze::describe(until, &self.tz)
+            )),
             Act::Spam if in_spam => Some(katna_i18n::tr!(
                 "toast-not-spam",
                 count = count as u64,
@@ -2498,7 +2581,10 @@ impl MailWindow {
             .h_full()
             .pr(px(margin))
             .pb(px(margin))
-            .child(row)
+            .flex()
+            .flex_row()
+            .child(div().flex_1().min_w_0().h_full().child(row))
+            .children(self.render_contact_panel(th, cx))
             .into_any_element()
     }
 }
@@ -2583,6 +2669,9 @@ impl Render for MailWindow {
         };
         let available =
             (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
+        // The contact panel takes its room from the list and the reader.
+        let (contact_room, contact_target) = self.tick_contact(available, window, reduce);
+        let available = (available - contact_room).max(200.0);
         self.cards_width = available;
         let reader_width = if self.split() {
             ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
@@ -2601,7 +2690,7 @@ impl Render for MailWindow {
         } else {
             0.0
         };
-        self.cards_target = (width - rail - nav - margin - settings).max(200.0);
+        self.cards_target = (width - rail - nav - margin - settings - contact_target).max(200.0);
 
         let settings = (settings_t > 0.001).then(|| self.render_settings(&th, settings_t, cx));
         let (docked_settings, floating_settings) = if settings_floats {
@@ -2643,7 +2732,7 @@ impl Render for MailWindow {
                 .flex_row_reverse()
                 .children(docked_settings)
                 .child(if self.settings_page.is_some() {
-                    self.render_settings_page(&th, cx)
+                    self.render_settings_page(&th, window, cx)
                 } else {
                     self.render_cards(&th, available, cx)
                 })
@@ -2722,6 +2811,8 @@ impl Render for MailWindow {
         };
         let compose = self.render_compose(&th, window, reduce, cx);
         let scheduled = self.render_scheduled(&th, window, cx);
+        let activity = self.render_activity_report(&th, window, cx);
+        let activity_menu = self.render_activity_menu(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
         let language_picker = self.render_language_picker(&th, window, cx);
         let add_account = self.render_add_account(&th, window, reduce, cx);
@@ -2736,6 +2827,7 @@ impl Render for MailWindow {
         let about = self.render_about(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
+        let snooze_menu = self.render_snooze_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
             None
@@ -2754,31 +2846,8 @@ impl Render for MailWindow {
             .size_full()
             .bg(rgba(th.backdrop))
             .text_color(rgba(th.text))
-            .on_action(cx.listener(Self::focus_next))
-            .on_action(cx.listener(Self::focus_previous))
-            .on_action(cx.listener(Self::focus_search))
-            .on_action(cx.listener(Self::focus_list))
-            .on_action(cx.listener(Self::toggle_navigation))
-            .on_action(cx.listener(Self::toggle_settings))
-            .on_action(cx.listener(Self::compose))
-            .on_action(cx.listener(Self::reload))
-            .on_action(cx.listener(Self::quit))
-            .on_action(cx.listener(Self::reply))
-            .on_action(cx.listener(Self::reply_all))
-            .on_action(cx.listener(Self::forward))
-            .on_action(cx.listener(Self::move_to))
-            .on_action(cx.listener(Self::select_all))
-            .on_action(cx.listener(Self::select_none))
-            .on_action(cx.listener(Self::undo_action))
-            .on_action(cx.listener(Self::go_to_inbox))
-            .on_action(cx.listener(Self::go_to_starred))
-            .on_action(cx.listener(Self::go_to_sent))
-            .on_action(cx.listener(Self::go_to_drafts))
-            .on_action(cx.listener(Self::go_to_all_mail))
-            .on_action(cx.listener(Self::open_settings))
-            .on_action(cx.listener(Self::show_shortcuts))
-            .on_action(cx.listener(Self::show_whats_new_action))
-            .on_action(cx.listener(Self::show_about))
+            // Where the menu bar's actions start when the focus is lost.
+            .child(div().absolute().size_0().track_focus(&self.window_focus))
             .child(content)
             .children(floating_settings)
             .children(fab)
@@ -2786,10 +2855,13 @@ impl Render for MailWindow {
             .children(search_panel)
             .children(compose)
             .children(scheduled)
+            .children(activity)
+            .children(activity_menu)
             .children(account_menu)
             .children(language_picker)
             .children(add_account)
             .children(context_menu)
+            .children(snooze_menu)
             .children(danger)
             .children(new_label)
             .children(crash_notice)
@@ -2813,7 +2885,14 @@ impl Render for MailWindow {
                 div()
                     .w_full()
                     .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
                     .child(self.render_search(&th, search_width, search_t, cx))
+                    .when(shape.phone < 0.5, |d| {
+                        d.children(self.render_activity_button(&th, cx))
+                    })
                     .into_any_element()
             }),
             end: if onboarding {
@@ -2839,6 +2918,36 @@ impl Render for MailWindow {
         } else {
             frame
         };
+        // The window's actions sit on its outermost element, so they run
+        // wherever the keyboard focus is: in the top bar, or on something
+        // that is no longer drawn (the list while Settings or a
+        // conversation fills the page), where GPUI starts from the root.
+        let frame = frame
+            .on_action(cx.listener(Self::focus_next))
+            .on_action(cx.listener(Self::focus_previous))
+            .on_action(cx.listener(Self::focus_search))
+            .on_action(cx.listener(Self::focus_list))
+            .on_action(cx.listener(Self::toggle_navigation))
+            .on_action(cx.listener(Self::toggle_settings))
+            .on_action(cx.listener(Self::compose))
+            .on_action(cx.listener(Self::reload))
+            .on_action(cx.listener(Self::quit))
+            .on_action(cx.listener(Self::reply))
+            .on_action(cx.listener(Self::reply_all))
+            .on_action(cx.listener(Self::forward))
+            .on_action(cx.listener(Self::move_to))
+            .on_action(cx.listener(Self::select_all))
+            .on_action(cx.listener(Self::select_none))
+            .on_action(cx.listener(Self::undo_action))
+            .on_action(cx.listener(Self::go_to_inbox))
+            .on_action(cx.listener(Self::go_to_starred))
+            .on_action(cx.listener(Self::go_to_sent))
+            .on_action(cx.listener(Self::go_to_drafts))
+            .on_action(cx.listener(Self::go_to_all_mail))
+            .on_action(cx.listener(Self::open_settings))
+            .on_action(cx.listener(Self::show_shortcuts))
+            .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::show_about));
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),

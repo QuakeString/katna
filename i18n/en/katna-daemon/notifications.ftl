@@ -21,6 +21,26 @@ notify-no-subject = (no subject)
 # The title of a notification about a message with no sender.
 notify-unknown-sender = Unknown sender
 
+## Reminders the user asked for (same buttons)
+
+# The title of a notification about snoozed mail that is back in the inbox.
+# Under it, one line per conversation: "Sender: Subject".
+notify-snooze-back = Back from snooze
+# The title of a follow-up reminder: nobody answered a message the user
+# sent and asked to be reminded about.
+notify-no-reply = No reply yet
+# Under it. $subject: the subject of the sent message.
+notify-no-reply-to = Nobody has replied to “{ $subject }”.
+
+## Open and click tracking (only for mail sent with "Track opens and clicks")
+
+# The title when a recipient first opens a tracked message. $who is the
+# recipient's name or address, $subject the message's subject.
+notify-tracking-opened = { $who } opened { $subject }
+# The title when a recipient first follows a link in a tracked message;
+# the text under it is the link.
+notify-tracking-clicked = { $who } clicked a link in { $subject }
+
 ## Its buttons
 
 notify-open = Open

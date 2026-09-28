@@ -77,6 +77,26 @@ security-missing-key = ایسی کلید سے دستخط شدہ جو آپ کے �
 security-missing-key-id = ایسی کلید ({ $key }) سے دستخط شدہ جو آپ کے پاس نہیں ہے، اس لیے جانچ نہیں ہو سکتی
 security-signature-unavailable = دستخط شدہ؛ دستخط کی جانچ کے لیے { $tool } انسٹال کریں
 security-signature-error = دستخط کی جانچ نہیں ہو سکی۔
+tracking-opened = { $who } نے اسے { $count ->
+    [one] ایک بار
+   *[other] { $count } بار
+} کھولا، آخری بار { $when }
+tracking-opens-clicks = { $who } نے اسے { $opens ->
+    [one] ایک بار
+   *[other] { $opens } بار
+} کھولا اور لنک { $clicks ->
+    [one] ایک بار
+   *[other] { $clicks } بار
+} کھولا، آخری بار { $when }
+tracking-clicked = { $who } نے لنک { $clicks ->
+    [one] ایک بار
+   *[other] { $clicks } بار
+} کھولا، آخری بار { $when }
+tracking-maybe-opened = { $who } نے شاید اسے کھولا ہو (Apple Mail پرائیویسی کے لیے تصاویر لوڈ کرتا ہے)
+tracking-not-opened = { $who } نے ابھی اسے نہیں کھولا
+tracking-receipt = { $who } نے پڑھنے کی رسید بھیجی
+tracking-receipt-displayed = پڑھنے کی رسید: { $who } نے آپ کا پیغام کھولا
+tracking-receipt-other = پڑھنے کی رسید: { $who } نے آپ کا پیغام کھولے بغیر حذف کیا یا نمٹا دیا
 
 ## Remote images and pictures
 

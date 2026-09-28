@@ -77,6 +77,26 @@ security-missing-key = Kusayinwe ngokhiye ongenawo, ngakho akukwazi ukuhlolwa
 security-missing-key-id = Kusayinwe ngokhiye ongenawo ({ $key }), ngakho akukwazi ukuhlolwa
 security-signature-unavailable = Kusayiniwe; faka i-{ $tool } ukuze uhlole isiginesha
 security-signature-error = Isiginesha ayikwazanga ukuhlolwa.
+tracking-opened = U-{ $who } uwuvule { $count ->
+    [one] kanye
+   *[other] izikhathi ezingu-{ $count }
+}, okokugcina { $when }
+tracking-opens-clicks = U-{ $who } uwuvule { $opens ->
+    [one] kanye
+   *[other] izikhathi ezingu-{ $opens }
+} futhi walandela isixhumanisi { $clicks ->
+    [one] kanye
+   *[other] izikhathi ezingu-{ $clicks }
+}, okokugcina { $when }
+tracking-clicked = U-{ $who } ulandele isixhumanisi { $clicks ->
+    [one] kanye
+   *[other] izikhathi ezingu-{ $clicks }
+}, okokugcina { $when }
+tracking-maybe-opened = Kungenzeka ukuthi u-{ $who } uwuvulile (i-Apple Mail ilayisha izithombe ngenxa yobumfihlo)
+tracking-not-opened = U-{ $who } akakawuvuli
+tracking-receipt = U-{ $who } uthumele isaziso sokufunda
+tracking-receipt-displayed = Isaziso sokufunda: u-{ $who } uvule umlayezo wakho
+tracking-receipt-other = Isaziso sokufunda: u-{ $who } ususile noma uphathe umlayezo wakho engawuvulanga
 
 ## Remote images and pictures
 

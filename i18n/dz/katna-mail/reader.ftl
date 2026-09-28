@@ -77,6 +77,22 @@ security-missing-key = ཁྱོད་ལུ་མེད་པའི་ལྡེ
 security-missing-key-id = ཁྱོད་ལུ་མེད་པའི་ལྡེ་མིག ({ $key }) གིས་མིང་རྟགས་བཀོད་ཡོདཔ་ལས་ ཞིབ་དཔྱད་འབད་མ་ཚུགས
 security-signature-unavailable = མིང་རྟགས་བཀོད་ཡོད། མིང་རྟགས་ཞིབ་དཔྱད་འབད་ནིའི་དོན་ལུ་ { $tool } གཞི་བཙུགས་འབད།
 security-signature-error = མིང་རྟགས་ཞིབ་དཔྱད་འབད་མ་ཚུགས།
+tracking-opened = { $who } གིས་ འདི་ { $count ->
+   *[other] ཚར་ { $count }
+} ཁ་ཕྱེ་ཡི། མཇུག་མཐའ་ { $when }
+tracking-opens-clicks = { $who } གིས་ འདི་ { $opens ->
+   *[other] ཚར་ { $opens }
+} ཁ་ཕྱེ་སྟེ་ འབྲེལ་མཐུད་ཅིག་ { $clicks ->
+   *[other] ཚར་ { $clicks }
+} ཁ་ཕྱེ་ཡི། མཇུག་མཐའ་ { $when }
+tracking-clicked = { $who } གིས་ འབྲེལ་མཐུད་ཅིག་ { $clicks ->
+   *[other] ཚར་ { $clicks }
+} ཁ་ཕྱེ་ཡི། མཇུག་མཐའ་ { $when }
+tracking-maybe-opened = { $who } གིས་ འདི་ཁ་ཕྱེ་ཡོདཔ་འོང་ (Apple Mail གིས་ སྒེར་དོན་གྱི་དོན་ལུ་ པར་ཚུ་མངོན་གསལ་འབདཝ་ཨིན)
+tracking-not-opened = { $who } གིས་ ད་ཚུན་ འདི་ཁ་མ་ཕྱེ་བས
+tracking-receipt = { $who } གིས་ ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་ གཏང་ཡི
+tracking-receipt-displayed = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་: { $who } གིས་ ཁྱོད་ཀྱི་འཕྲིན་དོན་ ཁ་ཕྱེ་ཡི
+tracking-receipt-other = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་: { $who } གིས་ ཁྱོད་ཀྱི་འཕྲིན་དོན་ ཁ་མ་ཕྱེ་བར་ བཏོན་གཏང་ཡི་ ཡང་ན་ ལཱ་འབད་ཡི
 
 ## Remote images and pictures
 

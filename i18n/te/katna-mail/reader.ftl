@@ -77,6 +77,26 @@ security-missing-key = మీ వద్ద లేని కీతో సంత�
 security-missing-key-id = మీ వద్ద లేని కీతో ({ $key }) సంతకం చేయబడింది, కాబట్టి చెక్ చేయడం సాధ్యం కాదు
 security-signature-unavailable = సంతకం చేయబడింది; సంతకాన్ని చెక్ చేయడానికి { $tool }ను ఇన్‌స్టాల్ చేయండి
 security-signature-error = సంతకాన్ని చెక్ చేయడం సాధ్యం కాలేదు.
+tracking-opened = { $who } దీన్ని { $count ->
+    [one] ఒకసారి
+   *[other] { $count } సార్లు
+} తెరిచారు, చివరిగా { $when }
+tracking-opens-clicks = { $who } దీన్ని { $opens ->
+    [one] ఒకసారి
+   *[other] { $opens } సార్లు
+} తెరిచారు, లింక్‌ను { $clicks ->
+    [one] ఒకసారి
+   *[other] { $clicks } సార్లు
+} తెరిచారు, చివరిగా { $when }
+tracking-clicked = { $who } లింక్‌ను { $clicks ->
+    [one] ఒకసారి
+   *[other] { $clicks } సార్లు
+} తెరిచారు, చివరిగా { $when }
+tracking-maybe-opened = { $who } దీన్ని తెరిచి ఉండవచ్చు (గోప్యత కోసం Apple Mail చిత్రాలను లోడ్ చేస్తుంది)
+tracking-not-opened = { $who } ఇంకా దీన్ని తెరవలేదు
+tracking-receipt = { $who } రీడ్ రసీదును పంపారు
+tracking-receipt-displayed = రీడ్ రసీదు: { $who } మీ మెసేజ్‌ను తెరిచారు
+tracking-receipt-other = రీడ్ రసీదు: { $who } మీ మెసేజ్‌ను తెరవకుండానే తొలగించారు లేదా నిర్వహించారు
 
 ## Remote images and pictures
 

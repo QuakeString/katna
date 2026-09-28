@@ -77,6 +77,26 @@ security-missing-key = നിങ്ങളുടെ പക്കൽ ഇല്ല�
 security-missing-key-id = നിങ്ങളുടെ പക്കൽ ഇല്ലാത്ത ഒരു കീ ({ $key }) ഉപയോഗിച്ച് ഒപ്പിട്ടതിനാൽ പരിശോധിക്കാനാകില്ല
 security-signature-unavailable = ഒപ്പിട്ടത്; ഒപ്പ് പരിശോധിക്കാൻ { $tool } ഇൻസ്റ്റാൾ ചെയ്യുക
 security-signature-error = ഒപ്പ് പരിശോധിക്കാനായില്ല.
+tracking-opened = { $who } ഇത് { $count ->
+    [one] ഒരിക്കൽ
+   *[other] { $count } തവണ
+} തുറന്നു, അവസാനം { $when }
+tracking-opens-clicks = { $who } ഇത് { $opens ->
+    [one] ഒരിക്കൽ
+   *[other] { $opens } തവണ
+} തുറക്കുകയും { $clicks ->
+    [one] ഒരിക്കൽ
+   *[other] { $clicks } തവണ
+} ലിങ്ക് തുറക്കുകയും ചെയ്തു, അവസാനം { $when }
+tracking-clicked = { $who } { $clicks ->
+    [one] ഒരിക്കൽ
+   *[other] { $clicks } തവണ
+} ലിങ്ക് തുറന്നു, അവസാനം { $when }
+tracking-maybe-opened = { $who } ഇത് തുറന്നിട്ടുണ്ടാകാം (സ്വകാര്യതയ്ക്കായി Apple Mail ചിത്രങ്ങൾ ലോഡ് ചെയ്യുന്നു)
+tracking-not-opened = { $who } ഇതുവരെ ഇത് തുറന്നിട്ടില്ല
+tracking-receipt = { $who } വായിച്ചതിന്റെ രസീത് അയച്ചു
+tracking-receipt-displayed = വായിച്ചതിന്റെ രസീത്: { $who } നിങ്ങളുടെ സന്ദേശം തുറന്നു
+tracking-receipt-other = വായിച്ചതിന്റെ രസീത്: { $who } നിങ്ങളുടെ സന്ദേശം തുറക്കാതെ ഇല്ലാതാക്കുകയോ കൈകാര്യം ചെയ്യുകയോ ചെയ്തു
 
 ## Remote images and pictures
 

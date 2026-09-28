@@ -38,6 +38,9 @@ compose-scheduled = ارسال برای { $when } زمان‌بندی شد
 compose-sent-archived = ارسال و بایگانی شد
 compose-sent = پیام ارسال شد
 compose-discarded = پیش‌نویس دور انداخته شد
+compose-draft-saved = پیش‌نویس ذخیره شد
+compose-draft-failed = پیش‌نویس ذخیره نشد: { $error }
+compose-draft-not-opened = پیش‌نویس باز نشد.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = پیوست
 compose-file-too-large = { $name } بیش از حد بزرگ است: هر پیام تا { $limit } جا دارد.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = حذف پیوست
+compose-attachments-total = { $count ->
+    [one] { $count } پرونده، { $size }
+   *[other] { $count } پرونده، { $size }
+}
 compose-drop-files = پرونده‌ها را اینجا رها کنید
 compose-drop-here = اینجا رها کنید
 compose-paste-keep-formatting = حفظ قالب‌بندی
@@ -61,6 +68,12 @@ compose-encrypt = رمزگذاری
 compose-encrypted = رمزگذاری‌شده: فقط گیرندگان می‌توانند آن را بخوانند
 compose-sign = امضا
 compose-signed = امضاشده: گیرندگان می‌توانند بررسی کنند که از طرف شماست
+compose-track = ردیابی باز شدن و کلیک‌ها
+compose-tracked = ردیابی‌شده: می‌بینید هر گیرنده چه زمانی آن را باز می‌کند یا پیوندی را دنبال می‌کند
+compose-track-unavailable = ایمیل امضاشده، رمزگذاری‌شده و متن ساده را نمی‌توان ردیابی کرد
+compose-track-sign-in = برای ردیابی باز شدن و کلیک‌ها، به یک حساب Katna وارد شوید
+compose-receipt = درخواست رسید خواندن
+compose-receipt-on = رسید خواندن درخواست شد: ممکن است برنامهٔ گیرنده از او بخواهد رسیدی بفرستد
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = افزودن موضوع
 send-check-send-anyway = در هر صورت ارسال شود
 recipient-not-valid = نشانی ایمیل معتبری نیست
 recipient-show-address = نمایش نشانی
+recipient-remove = حذف
 recipient-bad-title = نشانی را بررسی کنید
 recipient-bad-text = «{ $address }» نشانی ایمیل معتبری نیست. پیش از ارسال آن را درست یا حذف کنید.
 recipient-bad-fix = درست کردن

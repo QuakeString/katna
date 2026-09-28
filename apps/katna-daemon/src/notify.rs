@@ -106,6 +106,35 @@ impl NewMailNotices {
         });
     }
 
+    /// Shows that a tracked message was opened or a link in it followed,
+    /// when notifications are on. Open shows `message` (the copy in Sent),
+    /// when it is known.
+    pub(crate) async fn tracking(
+        &self,
+        summary: &str,
+        body: &str,
+        account: AccountId,
+        message: Option<MessageId>,
+    ) {
+        if !self.enabled.load(Ordering::Relaxed) {
+            return;
+        }
+        match self.notifier.tracking(summary, body).await {
+            Ok(id) => {
+                if let Some(message) = message {
+                    self.shown.lock().unwrap().insert(
+                        id,
+                        Shown {
+                            account,
+                            messages: vec![message],
+                        },
+                    );
+                }
+            }
+            Err(err) => tracing::warn!(%err, "could not show a tracking notification"),
+        }
+    }
+
     pub(crate) fn forget(&self, account: AccountId) {
         self.seen.lock().unwrap().remove(&account);
     }
@@ -141,6 +170,37 @@ impl NewMailNotices {
         }
         let handled = self.handled(&store.lock().unwrap(), Some(account));
         self.close(handled).await;
+    }
+
+    /// Shows a reminder about `messages` of `account` (not empty): mail
+    /// back from snooze, or a message nobody replied to. Its buttons act on
+    /// `messages`, and it closes once they are read or out of the inbox.
+    pub(crate) async fn remind(
+        &self,
+        store: &Mutex<Store>,
+        account: AccountId,
+        summary: &str,
+        lines: &[String],
+        messages: Vec<MessageId>,
+    ) {
+        let origin = store
+            .lock()
+            .unwrap()
+            .accounts()
+            .ok()
+            .and_then(|accounts| accounts.into_iter().find(|a| a.id == account))
+            .map(|a| a.address)
+            .unwrap_or_default();
+        let sound = self.sound.load(Ordering::Relaxed);
+        match self.notifier.reminder(&origin, summary, lines, sound).await {
+            Ok(id) => {
+                self.shown
+                    .lock()
+                    .unwrap()
+                    .insert(id, Shown { account, messages });
+            }
+            Err(err) => tracing::warn!(%err, "could not show a reminder"),
+        }
     }
 
     /// The account's address, its new mail and their IDs, if any.

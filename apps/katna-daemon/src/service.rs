@@ -6,11 +6,15 @@ use std::sync::Arc;
 
 use async_channel::Receiver;
 use katna_core::{AccountId, ids};
-use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, flag};
+use katna_dbus::{
+    AccountStatus, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account, OutboxItem,
+    TemplateItem, flag,
+};
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
 use crate::daemon::{CommandError, Daemon, Notice};
+use crate::translate::TranslateError;
 
 /// The object at `/in/invenia/katna/Pim1`.
 pub struct PimService {
@@ -33,6 +37,22 @@ impl From<CommandError> for fdo::Error {
             | CommandError::UnknownMessage(_)
             | CommandError::UnknownFolder(_) => Self::UnknownObject(message),
             CommandError::Failed(_) => Self::Failed(message),
+        }
+    }
+}
+
+/// The [`katna_dbus::translate_problem`] of a failed translation.
+fn problem(err: &TranslateError) -> &'static str {
+    use katna_dbus::translate_problem as p;
+    match err {
+        TranslateError::Off => p::OFF,
+        TranslateError::SameLanguage => p::SAME_LANGUAGE,
+        TranslateError::Unsupported(..) => p::UNSUPPORTED,
+        TranslateError::TooMany => p::TOO_MANY,
+        TranslateError::SignIn => p::SIGN_IN,
+        TranslateError::Server(err) => {
+            tracing::info!(%err, "translation failed");
+            p::FAILED
         }
     }
 }
@@ -170,6 +190,18 @@ macro_rules! pim_interface {
                 Ok(self.daemon.archive_messages(&ids(&messages))?)
             }
 
+            async fn snooze(&self, messages: Vec<i64>, until: i64) -> fdo::Result<()> {
+                Ok(self.daemon.snooze(&ids(&messages), until).await?)
+            }
+
+            async fn unsnooze(&self, messages: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.unsnooze(&ids(&messages))?)
+            }
+
+            async fn set_follow_up(&self, id: i64, after: i64) -> fdo::Result<()> {
+                Ok(self.daemon.set_follow_up(id, after)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,
@@ -179,6 +211,45 @@ macro_rules! pim_interface {
                 Ok(self
                     .daemon
                     .queue_send(AccountId(account), &message, delay)?)
+            }
+
+            async fn schedule_send(
+                &self,
+                account: i64,
+                message: Vec<u8>,
+                delay: u32,
+                at: i64,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .schedule_send(AccountId(account), &message, delay, at)?)
+            }
+
+            async fn server_hold_limit(&self, account: i64) -> fdo::Result<u64> {
+                Ok(self.daemon.server_hold_limit(AccountId(account)).await?)
+            }
+
+            async fn queue_tracked_send(
+                &self,
+                account: i64,
+                message: Vec<u8>,
+                delay: u32,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .queue_tracked_send(AccountId(account), &message, delay)?)
+            }
+
+            async fn save_template(&self, template: TemplateItem) -> fdo::Result<i64> {
+                Ok(self.daemon.save_template(template)?)
+            }
+
+            async fn rename_template(&self, id: i64, name: String) -> fdo::Result<bool> {
+                Ok(self.daemon.rename_template(id, &name)?)
+            }
+
+            async fn delete_template(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.delete_template(id)?)
             }
 
             async fn undo_send(&self, id: i64) -> fdo::Result<bool> {
@@ -220,6 +291,109 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sender_picture(&address).await?)
             }
 
+            async fn translate(
+                &self,
+                message: i64,
+                text: String,
+                source: String,
+                target: String,
+            ) -> (String, String, String) {
+                self.daemon
+                    .translate(MessageId(message), &text, &source, &target)
+                    .await
+                    .map_or_else(
+                        |err| (String::new(), String::new(), problem(&err).to_owned()),
+                        |done| (done.source, done.text, String::new()),
+                    )
+            }
+
+            async fn translation_sources(&self, target: String) -> (Vec<String>, String) {
+                match self.daemon.translation_sources(&target).await {
+                    Ok(sources) => (sources, String::new()),
+                    Err(err) => (Vec::new(), problem(&err).to_owned()),
+                }
+            }
+
+            async fn katna_account(&self) -> fdo::Result<KatnaAccount> {
+                Ok(self.daemon.katna()?.account().await?)
+            }
+
+            async fn katna_sign_up(
+                &self,
+                email: &str,
+                password: &str,
+            ) -> fdo::Result<KatnaAccount> {
+                let account = self.daemon.katna()?.sign_up(email, password).await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_sign_in(
+                &self,
+                email: &str,
+                password: &str,
+            ) -> fdo::Result<KatnaAccount> {
+                let account = self.daemon.katna()?.sign_in(email, password).await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_verify(&self, code: &str) -> fdo::Result<KatnaAccount> {
+                let account = self.daemon.katna()?.verify(code).await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_resend_code(&self) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.resend_code().await?)
+            }
+
+            async fn katna_sign_out(&self) -> fdo::Result<()> {
+                self.daemon.katna()?.sign_out().await?;
+                self.daemon.katna_changed();
+                Ok(())
+            }
+
+            async fn katna_devices(&self) -> fdo::Result<Vec<KatnaDevice>> {
+                Ok(self.daemon.katna()?.devices().await?)
+            }
+
+            async fn katna_sign_out_device(&self, id: &str) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.sign_out_device(id).await?)
+            }
+
+            async fn katna_change_password(&self, current: &str, new: &str) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.change_password(current, new).await?)
+            }
+
+            async fn katna_reset_password(&self, email: &str) -> fdo::Result<()> {
+                Ok(self.daemon.katna()?.reset_password(email).await?)
+            }
+
+            async fn katna_confirm_reset(
+                &self,
+                email: &str,
+                code: &str,
+                password: &str,
+            ) -> fdo::Result<KatnaAccount> {
+                let account = self
+                    .daemon
+                    .katna()?
+                    .confirm_reset(email, code, password)
+                    .await?;
+                self.daemon.katna_changed();
+                Ok(account)
+            }
+
+            async fn katna_delete_account(&self, password: &str) -> fdo::Result<()> {
+                self.daemon.katna()?.delete_account(password).await?;
+                self.daemon.katna_changed();
+                Ok(())
+            }
+
+            #[zbus(signal)]
+            async fn katna_account_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
             #[zbus(signal)]
             async fn accounts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
@@ -240,6 +414,9 @@ macro_rules! pim_interface {
                 emitter: &SignalEmitter<'_>,
                 metered: bool,
             ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn tracking_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -289,6 +466,8 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::MailChanged(id) => PimService::mail_changed(&emitter, id.0).await,
             Notice::OutboxChanged(id) => PimService::outbox_changed(&emitter, id).await,
             Notice::MeteredChanged(on) => PimService::metered_changed(&emitter, on).await,
+            Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
+            Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

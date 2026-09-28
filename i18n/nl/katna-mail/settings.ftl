@@ -7,6 +7,7 @@
 settings-tab-general = Algemeen
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
+settings-tab-katna-account = Katna-account
 settings-tab-subscriptions = Abonnementen
 settings-tab-appearance = Weergave
 settings-tab-shortcuts = Sneltoetsen
@@ -35,6 +36,14 @@ settings-general-full-headers = Volledige headers tonen
 settings-general-full-headers-detail = Van, aan, cc, datum en onderwerp open bij elk bericht
 settings-general-full-names = Volledige namen van ontvangers
 settings-general-full-names-detail = ‘aan mij, Ada Lovelace’ in plaats van ‘aan mij, Ada’
+settings-translation = Vertaling
+settings-translation-detail = E-mail in een andere taal kun je in de jouwe lezen.
+settings-translation-offer = Vertalen aanbieden
+settings-translation-offer-detail = De tekst van een bericht gaat naar de server van Katna om vertaald te worden, alleen als je erom vraagt of de taal ervan altijd laat vertalen. Bijlagen gaan nooit mee.
+settings-translation-reading = Vertalen naar
+settings-translation-always = Altijd vertalen
+settings-translation-never = Nooit aanbieden voor
+settings-translation-none = Nog geen. Kies ze in de vertaalbalk van een bericht.
 settings-general-mark-read = Markeren als gelezen
 settings-general-mark-read-now = Zodra het wordt geopend
 settings-general-mark-read-1s = Nadat het 1 seconde open is
@@ -83,6 +92,9 @@ settings-general-tray = Katna tonen in het systeemvak
 settings-general-tray-detail = Met het aantal ongelezen berichten en een menu
 settings-general-unread-badge = Aantal ongelezen op het taakbalkpictogram
 settings-general-unread-badge-detail = Hoeveel berichten in de inbox ongelezen zijn
+settings-general-search-triggers = Zoeken vanaf het bureaublad
+settings-general-search-triggers-detail = Typ een van deze woorden en een spatie in KRunner of de GNOME-zoekfunctie, en dan wat je zoekt, om in je e-mail te zoeken zoals het zoekvak hier doet. Scheid woorden met komma’s.
+settings-general-search-triggers-none = Geen woorden; alleen ‘mail:’ werkt
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = Verkeerd gespelde woorden worden onderstre
 settings-compose-spell-desktop = Taal van de desktop ({ $language })
 settings-compose-templates = Sjablonen
 settings-compose-templates-detail = Sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord.
+settings-compose-no-templates = Nog geen sjablonen. Kies in een bericht Sjablonen en daarna Opslaan als sjabloon.
+settings-compose-template-new = Nieuwe maken
+settings-compose-template-new-name = Nieuw sjabloon
+settings-compose-template-subject = Onderwerp
+settings-compose-template-text = Sjabloontekst
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} en {"{"}my name{"}"} worden ingevuld met de naam van de ontvanger en je eigen naam.
+settings-compose-template-remove-file = Bijlage verwijderen
+settings-compose-template-save = Opslaan
+settings-compose-template-saved = Sjabloon opgeslagen
+settings-compose-template-needs-name = Geef het sjabloon een naam
+settings-compose-template-delete = Sjabloon verwijderen
+settings-compose-template-deleted = Sjabloon verwijderd
+settings-compose-template-delete-failed = Kan het sjabloon niet verwijderen: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = Elke sneltoets heeft weer de toetsen van de set.
 
 settings-general-language-summary = Taal van de app, datums en getallen
 settings-general-reading-summary = Nieuwste bericht eerst, volledige headers, volledige namen van ontvangers
+settings-translation-summary = E-mail in andere talen vertalen met de server van Katna, naar de taal die je kiest
 settings-general-mark-read-summary = Wanneer een geopend gesprek als gelezen wordt gemarkeerd: meteen, na 1 of 3 seconden, of met de hand
 settings-general-auto-advance-summary = Wat er opent nadat je het geopende gesprek verwijdert, archiveert of verplaatst: het volgende, het vorige of de lijst
 settings-general-reply-button-summary = De antwoordknop naast elk bericht beantwoordt iedereen
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = De handtekening waarmee nieuwe e-mail be
 settings-compose-for-replies-summary = De handtekening waarmee antwoorden en doorgestuurde berichten beginnen
 settings-compose-format-summary = Nieuwe e-mail schrijven in platte tekst
 settings-compose-spelling-summary = Spelling controleren tijdens het schrijven, en de taal van het woordenboek
-settings-compose-templates-summary = Binnenkort: sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord
+settings-general-search-triggers-summary = Woorden die vanuit KRunner of de GNOME-zoekfunctie in je e-mail zoeken
+settings-compose-templates-summary = Sla e-mail op die je vaak schrijft, en begin daarmee een nieuwe e-mail of een antwoord
 settings-feedback-crash-reports-summary = Crashrapporten op deze computer bewaren als Katna Mail of de achtergrondservice crasht
 settings-feedback-saved-summary = De crashrapporten die op deze computer zijn bewaard bekijken, kopiëren of verwijderen
 settings-feedback-help-improve-summary = Crashrapporten versturen om te helpen oplossen wat er misging; uit tenzij je het aanzet

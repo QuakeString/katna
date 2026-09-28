@@ -7,6 +7,7 @@
 settings-tab-general = Allmänt
 settings-tab-inbox = Inkorg
 settings-tab-accounts = Konton
+settings-tab-katna-account = Katna-konto
 settings-tab-subscriptions = Prenumerationer
 settings-tab-appearance = Utseende
 settings-tab-shortcuts = Kortkommandon
@@ -35,6 +36,14 @@ settings-general-full-headers = Visa fullständiga rubriker
 settings-general-full-headers-detail = Från, till, kopia, datum och ämne visas i varje meddelande
 settings-general-full-names = Mottagarnas fullständiga namn
 settings-general-full-names-detail = ”till mig, Ada Lovelace” i stället för ”till mig, Ada”
+settings-translation = Översättning
+settings-translation-detail = E-post på ett annat språk kan läsas på ditt.
+settings-translation-offer = Erbjud översättning
+settings-translation-offer-detail = Ett meddelandes text skickas till Katnas server för att översättas, bara när du ber om det eller alltid översätter dess språk. Bilagor skickas aldrig.
+settings-translation-reading = Översätt till
+settings-translation-always = Översätt alltid
+settings-translation-never = Erbjud aldrig för
+settings-translation-none = Inga än. Välj i översättningsfältet ovanför ett meddelande.
 settings-general-mark-read = Markera som läst
 settings-general-mark-read-now = Så fort det öppnas
 settings-general-mark-read-1s = När det har varit öppet i 1 sekund
@@ -83,6 +92,9 @@ settings-general-tray = Visa Katna i systemfältet
 settings-general-tray-detail = Med antalet olästa och en meny
 settings-general-unread-badge = Antal olästa på aktivitetsfältets ikon
 settings-general-unread-badge-detail = Hur många meddelanden i inkorgen som är olästa
+settings-general-search-triggers = Sök från skrivbordet
+settings-general-search-triggers-detail = Skriv ett av de här orden och ett mellanslag i KRunner eller GNOME-sökningen, sedan det du letar efter, för att söka i din e-post som sökrutan här gör. Skilj orden åt med kommatecken.
+settings-general-search-triggers-none = Inga ord; bara ”mail:” fungerar
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = Felstavade ord stryks under, med förslag 
 settings-compose-spell-desktop = Skrivbordets språk ({ $language })
 settings-compose-templates = Mallar
 settings-compose-templates-detail = Spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den.
+settings-compose-no-templates = Inga mallar än. Välj Mallar i ett meddelande och sedan Spara som mall.
+settings-compose-template-new = Skapa ny
+settings-compose-template-new-name = Ny mall
+settings-compose-template-subject = Ämne
+settings-compose-template-text = Malltext
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} och {"{"}my name{"}"} fylls i med mottagarens och ditt namn.
+settings-compose-template-remove-file = Ta bort bilaga
+settings-compose-template-save = Spara
+settings-compose-template-saved = Mallen har sparats
+settings-compose-template-needs-name = Ge mallen ett namn
+settings-compose-template-delete = Radera mall
+settings-compose-template-deleted = Mallen har raderats
+settings-compose-template-delete-failed = Det gick inte att radera mallen: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = Alla kortkommandon har uppsättningens tangenter i
 
 settings-general-language-summary = Språk för appen, datum och tal
 settings-general-reading-summary = Nyaste meddelandet först, fullständiga rubriker, mottagarnas fullständiga namn
+settings-translation-summary = Översätt e-post på andra språk med Katnas server, till det språk du väljer
 settings-general-mark-read-summary = När en öppnad konversation markeras som läst: direkt, efter 1 eller 3 sekunder eller manuellt
 settings-general-auto-advance-summary = Vad som öppnas när du raderar, arkiverar eller flyttar den öppna konversationen: nästa, föregående eller listan
 settings-general-reply-button-summary = Svarsknappen bredvid varje meddelande svarar alla
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = Signaturen som ny e-post börjar med
 settings-compose-for-replies-summary = Signaturen som svar och vidarebefordringar börjar med
 settings-compose-format-summary = Skriv ny e-post med oformaterad text
 settings-compose-spelling-summary = Kontrollera stavningen medan du skriver, och ordlistans språk
-settings-compose-templates-summary = Kommer snart: spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den
+settings-general-search-triggers-summary = Ord som söker i din e-post från KRunner eller GNOME-sökningen
+settings-compose-templates-summary = Spara e-post du ofta skriver, och börja nya meddelanden eller svar utifrån den
 settings-feedback-crash-reports-summary = Spara kraschrapporter på den här datorn när Katna Mail eller dess bakgrundstjänst kraschar
 settings-feedback-saved-summary = Visa, kopiera eller radera kraschrapporterna som har sparats på den här datorn
 settings-feedback-help-improve-summary = Skicka kraschrapporter för att hjälpa till att rätta det som gick fel; av om du inte slår på det

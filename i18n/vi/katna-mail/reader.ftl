@@ -77,6 +77,14 @@ security-missing-key = Được ký bằng khóa mà bạn không có, nên khô
 security-missing-key-id = Được ký bằng khóa mà bạn không có ({ $key }), nên không thể kiểm tra
 security-signature-unavailable = Đã ký; hãy cài đặt { $tool } để kiểm tra chữ ký
 security-signature-error = Không thể kiểm tra chữ ký.
+tracking-opened = { $who } đã mở thư { $count } lần, lần cuối { $when }
+tracking-opens-clicks = { $who } đã mở thư { $opens } lần và mở liên kết { $clicks } lần, lần cuối { $when }
+tracking-clicked = { $who } đã mở liên kết { $clicks } lần, lần cuối { $when }
+tracking-maybe-opened = { $who } có thể đã mở thư (Apple Mail tải hình ảnh để bảo vệ quyền riêng tư)
+tracking-not-opened = { $who } chưa mở thư
+tracking-receipt = { $who } đã gửi xác nhận đã đọc
+tracking-receipt-displayed = Xác nhận đã đọc: { $who } đã mở thư của bạn
+tracking-receipt-other = Xác nhận đã đọc: { $who } đã xóa hoặc xử lý thư của bạn mà không mở
 
 ## Remote images and pictures
 

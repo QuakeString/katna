@@ -7,6 +7,7 @@
 settings-tab-general = সাধারণ
 settings-tab-inbox = ইনবক্স
 settings-tab-accounts = অ্যাকাউন্ট
+settings-tab-katna-account = Katna অ্যাকাউন্ট
 settings-tab-subscriptions = সাবস্ক্রিপশন
 settings-tab-appearance = চেহারা
 settings-tab-shortcuts = শর্টকাট
@@ -35,6 +36,14 @@ settings-general-full-headers = সম্পূর্ণ হেডার দে�
 settings-general-full-headers-detail = প্রতিটি মেসেজে প্রেরক, প্রাপক, cc, তারিখ ও বিষয় খোলা থাকে
 settings-general-full-names = প্রাপকদের পুরো নাম
 settings-general-full-names-detail = “প্রাপক: আমাকে, Ada”-এর বদলে “প্রাপক: আমাকে, Ada Lovelace”
+settings-translation = অনুবাদ
+settings-translation-detail = অন্য ভাষার মেল আপনার ভাষায় পড়া যায়।
+settings-translation-offer = অনুবাদের প্রস্তাব দিন
+settings-translation-offer-detail = মেসেজের টেক্সট অনুবাদের জন্য Katna-র সার্ভারে যায়, শুধু আপনি চাইলে বা তার ভাষা সবসময় অনুবাদ করালে। সংযুক্তি কখনও যায় না।
+settings-translation-reading = যে ভাষায় অনুবাদ হবে
+settings-translation-always = সবসময় অনুবাদ করুন
+settings-translation-never = কখনও প্রস্তাব দেবেন না
+settings-translation-none = এখনও কিছু নেই। কোনো মেসেজের অনুবাদ বার থেকে বেছে নিন।
 settings-general-mark-read = পঠিত হিসেবে চিহ্নিত করুন
 settings-general-mark-read-now = খোলার সাথে সাথেই
 settings-general-mark-read-1s = 1 সেকেন্ড খোলা থাকার পরে
@@ -83,6 +92,9 @@ settings-general-tray = সিস্টেম ট্রে-তে Katna দে�
 settings-general-tray-detail = অপঠিত সংখ্যা ও একটি মেনু সহ
 settings-general-unread-badge = টাস্কবারের আইকনে অপঠিত সংখ্যা
 settings-general-unread-badge-detail = ইনবক্সের কতগুলি মেসেজ অপঠিত
+settings-general-search-triggers = ডেস্কটপ থেকে খুঁজুন
+settings-general-search-triggers-detail = এখানকার অনুসন্ধান বক্সের মতো আপনার মেল খুঁজতে KRunner বা GNOME অনুসন্ধানে এই শব্দগুলির একটি আর একটি স্পেস টাইপ করুন, তারপর যা খুঁজতে চান। শব্দগুলি কমা দিয়ে আলাদা করুন।
+settings-general-search-triggers-none = কোনো শব্দ নেই; শুধু “mail:” কাজ করে
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = ভুল বানানের শব্�
 settings-compose-spell-desktop = ডেস্কটপের ভাষা ({ $language })
 settings-compose-templates = টেমপ্লেট
 settings-compose-templates-detail = যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন।
+settings-compose-no-templates = এখনও কোনো টেমপ্লেট নেই। একটি মেসেজে টেমপ্লেট বেছে নিন, তারপর টেমপ্লেট হিসেবে সেভ করুন।
+settings-compose-template-new = নতুন তৈরি করুন
+settings-compose-template-new-name = নতুন টেমপ্লেট
+settings-compose-template-subject = বিষয়
+settings-compose-template-text = টেমপ্লেটের লেখা
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} আর {"{"}my name{"}"} প্রাপকের ও আপনার নাম দিয়ে পূরণ করা হয়।
+settings-compose-template-remove-file = সংযুক্তি সরান
+settings-compose-template-save = সেভ করুন
+settings-compose-template-saved = টেমপ্লেট সেভ করা হয়েছে
+settings-compose-template-needs-name = টেমপ্লেটের একটি নাম দিন
+settings-compose-template-delete = টেমপ্লেট মুছুন
+settings-compose-template-deleted = টেমপ্লেট মুছে ফেলা হয়েছে
+settings-compose-template-delete-failed = টেমপ্লেট মোছা যায়নি: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = প্রতিটি শর্টকাট আব
 
 settings-general-language-summary = অ্যাপ, তারিখ ও সংখ্যার ভাষা
 settings-general-reading-summary = সবচেয়ে নতুন মেসেজ আগে, সম্পূর্ণ হেডার, প্রাপকদের পুরো নাম
+settings-translation-summary = অন্য ভাষার মেল Katna-র সার্ভার দিয়ে আপনার বেছে নেওয়া ভাষায় অনুবাদ করুন
 settings-general-mark-read-summary = খোলা কথোপকথন কখন পঠিত হিসেবে চিহ্নিত হবে: সাথে সাথে, 1 বা 3 সেকেন্ড পরে, বা নিজে হাতে
 settings-general-auto-advance-summary = খোলা কথোপকথন মুছে ফেলা, আর্কাইভ করা বা সরানোর পরে কী খুলবে: পরেরটি, আগেরটি, বা তালিকা
 settings-general-reply-button-summary = প্রতিটি মেসেজের পাশের উত্তর বোতাম সবাইকে উত্তর দেয়
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = নতুন মেল যে স্ব�
 settings-compose-for-replies-summary = উত্তর ও ফরোয়ার্ড যে স্বাক্ষর দিয়ে শুরু হয়
 settings-compose-format-summary = নতুন মেল সাধারণ টেক্সটে লিখুন
 settings-compose-spelling-summary = লেখার সময় বানান যাচাই, এবং অভিধানের ভাষা
-settings-compose-templates-summary = শীঘ্রই আসছে: যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন
+settings-general-search-triggers-summary = যে শব্দগুলি KRunner বা GNOME অনুসন্ধান থেকে আপনার মেল খোঁজে
+settings-compose-templates-summary = যে মেল আপনি প্রায়ই লেখেন তা সেভ করুন, আর সেখান থেকে নতুন মেল বা উত্তর শুরু করুন
 settings-feedback-crash-reports-summary = Katna Mail বা তার ব্যাকগ্রাউন্ড পরিষেবা ক্র্যাশ করলে এই কম্পিউটারে ক্র্যাশ রিপোর্ট সেভ করুন
 settings-feedback-saved-summary = এই কম্পিউটারে সেভ করা ক্র্যাশ রিপোর্ট দেখুন, কপি করুন বা মুছুন
 settings-feedback-help-improve-summary = কী ভুল হয়েছে তা ঠিক করতে সাহায্যের জন্য ক্র্যাশ রিপোর্ট পাঠান; আপনি চালু না করলে বন্ধ থাকে

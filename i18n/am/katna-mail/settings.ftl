@@ -7,6 +7,7 @@
 settings-tab-general = አጠቃላይ
 settings-tab-inbox = ገቢ መልዕክት ሳጥን
 settings-tab-accounts = መለያዎች
+settings-tab-katna-account = የKatna መለያ
 settings-tab-subscriptions = ምዝገባዎች
 settings-tab-appearance = መልክ
 settings-tab-shortcuts = አቋራጮች
@@ -35,6 +36,14 @@ settings-general-full-headers = ሙሉ ራስጌዎችን አሳይ
 settings-general-full-headers-detail = ከ፣ ለ፣ ግልባጭ፣ ቀን እና ርዕሰ ጉዳይ በእያንዳንዱ መልዕክት ላይ ክፍት ሆነው ይታያሉ
 settings-general-full-names = የተቀባዮች ሙሉ ስሞች
 settings-general-full-names-detail = «ለእኔ፣ Ada Lovelace» እንጂ «ለእኔ፣ Ada» አይደለም
+settings-translation = ትርጉም
+settings-translation-detail = በሌላ ቋንቋ ያለ ደብዳቤ በእርስዎ ቋንቋ ሊነበብ ይችላል።
+settings-translation-offer = ለመተርጎም አቅርብ
+settings-translation-offer-detail = የመልዕክት ጽሑፍ እንዲተረጎም ወደ Katna አገልጋይ የሚሄደው ሲጠይቁ ወይም ቋንቋውን ሁልጊዜ ሲያስተረጉሙ ብቻ ነው። አባሪዎች በጭራሽ አይሄዱም።
+settings-translation-reading = ተርጉም ወደ
+settings-translation-always = ሁልጊዜ ተርጉም
+settings-translation-never = በጭራሽ አታቅርብ ለ
+settings-translation-none = እስካሁን የለም። ከመልዕክት የትርጉም አሞሌ ይምረጡ።
 settings-general-mark-read = እንደተነበበ ምልክት አድርግ
 settings-general-mark-read-now = ልክ እንደተከፈተ
 settings-general-mark-read-1s = ለ1 ሰከንድ ከተከፈተ በኋላ
@@ -83,6 +92,9 @@ settings-general-tray = Katnaን በሥርዓት ትሪ ውስጥ አሳይ
 settings-general-tray-detail = ካልተነበቡ መልዕክቶች ብዛት እና ከምናሌ ጋር
 settings-general-unread-badge = በተግባር አሞሌ አዶ ላይ ያልተነበቡ መልዕክቶች ብዛት
 settings-general-unread-badge-detail = በገቢ መልዕክት ሳጥን ውስጥ ስንት መልዕክቶች እንዳልተነበቡ
+settings-general-search-triggers = ከዴስክቶፕ ፈልግ
+settings-general-search-triggers-detail = እዚህ ያለው የፍለጋ ሳጥን እንደሚያደርገው ደብዳቤዎን ለመፈለግ፣ በKRunner ወይም በGNOME ፍለጋ ውስጥ ከእነዚህ ቃላት አንዱን እና ክፍተት ይተይቡ፣ ከዚያም ሊያገኙት የሚፈልጉትን ይተይቡ። ቃላትን በኮማ ይለዩ።
+settings-general-search-triggers-none = ምንም ቃላት የሉም፤ «mail:» ብቻ ይሠራል
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = በስህተት የተጻፉ ቃላት ከ
 settings-compose-spell-desktop = የዴስክቶፑ ቋንቋ ({ $language })
 settings-compose-templates = አብነቶች
 settings-compose-templates-detail = ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ።
+settings-compose-no-templates = እስካሁን ምንም አብነት የለም። በመልዕክት ውስጥ አብነቶችን፣ ከዚያ እንደ አብነት አስቀምጥን ይምረጡ።
+settings-compose-template-new = አዲስ ፍጠር
+settings-compose-template-new-name = አዲስ አብነት
+settings-compose-template-subject = ርዕሰ ጉዳይ
+settings-compose-template-text = የአብነት ጽሑፍ
+settings-compose-template-fields = {"{"}first name{"}"}፣ {"{"}name{"}"} እና {"{"}my name{"}"} በተቀባዩ እና በእርስዎ ስም ይሞላሉ።
+settings-compose-template-remove-file = አባሪውን አስወግድ
+settings-compose-template-save = አስቀምጥ
+settings-compose-template-saved = አብነቱ ተቀምጧል
+settings-compose-template-needs-name = ለአብነቱ ስም ይስጡት
+settings-compose-template-delete = አብነቱን ሰርዝ
+settings-compose-template-deleted = አብነቱ ተሰርዟል
+settings-compose-template-delete-failed = አብነቱን መሰረዝ አልተቻለም፦ { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = እያንዳንዱ አቋራጭ የስብስቡን
 
 settings-general-language-summary = የመተግበሪያው፣ የቀኖች እና የቁጥሮች ቋንቋ
 settings-general-reading-summary = አዲሱ መልዕክት መጀመሪያ፣ ሙሉ ራስጌዎች፣ የተቀባዮች ሙሉ ስሞች
+settings-translation-summary = በሌሎች ቋንቋዎች ያለ ደብዳቤን በKatna አገልጋይ ወደሚመርጡት ቋንቋ ተርጉም
 settings-general-mark-read-summary = የተከፈተ ውይይት እንደተነበበ ምልክት የሚደረግበት ጊዜ፦ ወዲያውኑ፣ ከ1 ወይም 3 ሰከንዶች በኋላ፣ ወይም በእጅ
 settings-general-auto-advance-summary = የተከፈተውን ውይይት ከሰረዙ፣ በማህደር ካስቀመጡ ወይም ካንቀሳቀሱ በኋላ የሚከፈተው፦ ቀጣዩ፣ ቀዳሚው ወይም ዝርዝሩ
 settings-general-reply-button-summary = ከእያንዳንዱ መልዕክት አጠገብ ያለው የምላሽ አዝራር ለሁሉም ይመልሳል
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = አዲስ ደብዳቤ የሚጀምር�
 settings-compose-for-replies-summary = ምላሾች እና ማስተላለፎች የሚጀምሩበት ፊርማ
 settings-compose-format-summary = አዲስ ደብዳቤን በግልጽ ጽሑፍ ጻፍ
 settings-compose-spelling-summary = በሚጽፉበት ጊዜ ፊደል አጻጻፍን ማረጋገጥ፣ እና የመዝገበ ቃላቱ ቋንቋ
-settings-compose-templates-summary = በቅርቡ ይመጣል፦ ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ
+settings-general-search-triggers-summary = ደብዳቤዎን ከKRunner ወይም ከGNOME ፍለጋ የሚፈልጉ ቃላት
+settings-compose-templates-summary = ብዙ ጊዜ የሚጽፉትን ደብዳቤ ያስቀምጡ፣ እና አዲስ ደብዳቤ ወይም ምላሽ ከእሱ ይጀምሩ
 settings-feedback-crash-reports-summary = Katna Mail ወይም የጀርባ አገልግሎቱ ሲበላሽ የብልሽት ሪፖርቶችን በዚህ ኮምፒውተር ላይ አስቀምጥ
 settings-feedback-saved-summary = በዚህ ኮምፒውተር ላይ የተቀመጡ የብልሽት ሪፖርቶችን ይመልከቱ፣ ይቅዱ ወይም ይሰርዙ
 settings-feedback-help-improve-summary = የተበላሸውን ለማስተካከል እንዲያግዙ የብልሽት ሪፖርቶችን ላክ፤ ካላበሩት በስተቀር ጠፍቷል

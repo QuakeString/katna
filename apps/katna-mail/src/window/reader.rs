@@ -36,6 +36,7 @@ use crate::widgets::{
 };
 
 mod security;
+mod tracking;
 use security::Secured;
 
 /// The reading view shows at most this many lines of a body.
@@ -90,6 +91,14 @@ struct Part {
     /// that happened: each time starts a new height animation.
     from: f32,
     turns: u32,
+    /// Sent with open and click tracking: what its recipients did.
+    activity: Option<katna_store::MessageActivity>,
+    /// A read receipt for one of the user's messages; `None` inside
+    /// until looked at.
+    receipt: Option<Option<crate::receipts::Receipt>>,
+    /// The user's own message's `Message-ID`, when the conversation has a
+    /// read receipt to match it with.
+    message_id: Option<String>,
 }
 
 impl Part {
@@ -103,6 +112,9 @@ impl Part {
             height: Rc::default(),
             from: 0.0,
             turns: 0,
+            activity: None,
+            receipt: None,
+            message_id: None,
         }
     }
 
@@ -251,12 +263,52 @@ impl Conversation {
             .iter()
             .find_map(|p| p.row.as_ref().map(|r| r.subject.clone()))
             .unwrap_or_else(|| tr!("reader-no-subject"));
-        Self {
+        let mut conversation = Self {
             key,
             subject,
             parts,
             show_all: false,
+        };
+        conversation.read_tracking(mail);
+        conversation
+    }
+
+    /// Reads what the recipients of the user's tracked messages did, and
+    /// which messages are read receipts for the user's mail.
+    fn read_tracking(&mut self, mail: &Mail) {
+        let mine = |part: &Part| part.row.as_ref().is_some_and(|r| mail.is_me(&r.sender));
+        let any_mine = self.parts.iter().any(mine);
+        for part in &mut self.parts {
+            part.activity = part
+                .row
+                .as_ref()
+                .and_then(|r| r.tracking)
+                .and_then(|_| mail.activity(part.id));
+            if any_mine && part.receipt.is_none() {
+                part.receipt = Some((!mine(part)).then(|| mail.receipt(part.id)).flatten());
+            }
         }
+        let receipts = self
+            .parts
+            .iter()
+            .any(|p| matches!(p.receipt, Some(Some(_))));
+        for part in &mut self.parts {
+            if receipts && part.message_id.is_none() && mine(part) {
+                part.message_id = mail.message_id_header(part.id);
+            }
+        }
+    }
+
+    /// The read receipts in the conversation for `part`.
+    fn receipts_for(&self, part: &Part) -> Vec<&crate::receipts::Receipt> {
+        let Some(id) = &part.message_id else {
+            return Vec::new();
+        };
+        self.parts
+            .iter()
+            .filter_map(|p| p.receipt.as_ref()?.as_ref())
+            .filter(|r| r.original.as_ref() == Some(id))
+            .collect()
     }
 
     /// Reads the messages' flags again, keeping what is open.
@@ -283,6 +335,7 @@ impl Conversation {
                 },
             })
             .collect();
+        self.read_tracking(mail);
     }
 
     /// Open messages whose body is not stored yet.
@@ -499,6 +552,7 @@ impl MailWindow {
                 self.with_menu(more, Menu::ReaderMore, th, cx)
             })
             .child(div().flex_1())
+            .children(self.contact_toggle(th, cx))
             // Where the toolbar is short, both are in the More menu.
             .when(roomy, |d| {
                 d.child(
@@ -1064,6 +1118,8 @@ impl MailWindow {
                     })
                     .collect();
                 let attachments = self.attachment_cards(id, &listed, th, cx);
+                let translation = self.translation_bar(ix, id, &view.body, encrypted, th, cx);
+                let translated = self.translated_blocks(id);
                 div()
                     .flex()
                     .flex_col()
@@ -1084,6 +1140,7 @@ impl MailWindow {
                             .child(note)
                     }))
                     .children(banner)
+                    .children(translation)
                     .child({
                         // Selection follows the order messages are shown in.
                         let slot = match self.reader.as_ref() {
@@ -1091,7 +1148,8 @@ impl MailWindow {
                             _ => ix,
                         };
                         let mut pieces = self.text.pieces(slot, th);
-                        let text = match doc.as_ref() {
+                        let blocks = translated.as_ref().unwrap_or(blocks);
+                        let text = match doc.as_ref().filter(|_| translated.is_none()) {
                             Some(doc) => div().child(
                                 Painter::new(
                                     th,
@@ -1154,6 +1212,7 @@ impl MailWindow {
                             .ml(px(-PICTURE_COLUMN_INSET * self.reader_compact()))
                             .children(details_box)
                             .children(self.security_banner(part, th, cx))
+                            .children(self.tracking_banner(part, th))
                             .child(body),
                     ),
                 turn,
@@ -1418,7 +1477,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
 
 /// Splits a body into runs of quoted (`>`) and unquoted lines, at most
 /// `max_lines` lines in all. Returns whether lines were left out.
-fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool) {
+pub(super) fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool) {
     let mut blocks: Vec<(bool, String)> = Vec::new();
     let mut lines = body.lines();
     for line in lines.by_ref().take(max_lines) {

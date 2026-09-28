@@ -28,6 +28,8 @@ list-move-to = यहाँ सार्नुहोस्
 list-archive = संग्रह गर्नुहोस्
 list-spam = स्प्याम भनी रिपोर्ट गर्नुहोस्
 list-delete = मेटाउनुहोस्
+list-snooze = स्नुज गर्नुहोस्
+list-unsnooze = स्नुज हटाउनुहोस्
 list-newer = नयाँ
 list-older = पुरानो
 list-range = { $total } मध्ये { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder } का सबै { $count } सन्देश चयन गर्नुहोस्
        *[other] { $folder } का सबै { $count } सन्देशहरू चयन गर्नुहोस्
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } पढिएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } पढिएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } पढिएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } पढिएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } नपढिएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } नपढिएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } नपढिएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } नपढिएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा लगाइएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा लगाइएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा लगाइएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा लगाइएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा नलगाइएको वार्तालाप चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गरिएका छन्।
+        }
+       *[message] { $count ->
+            [one] स्क्रिनमा भएको { $count } तारा नलगाइएको सन्देश चयन गरिएको छ।
+           *[other] स्क्रिनमा भएका सबै { $count } तारा नलगाइएका सन्देशहरू चयन गरिएका छन्।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } पढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } पढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } पढिएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } पढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } नपढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } नपढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } नपढिएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } नपढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारा लगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } तारा लगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } तारा लगाइएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } तारा लगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } तारा नलगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $count } तारा नलगाइएको सन्देश चयन गर्नुहोस्
+           *[other] सबै { $count } तारा नलगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } पढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } पढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } पढिएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } पढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } नपढिएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } नपढिएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } नपढिएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } नपढिएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } तारा लगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा लगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } तारा लगाइएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा लगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } का { $count } तारा नलगाइएको वार्तालाप चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा नलगाइएका वार्तालापहरू चयन गर्नुहोस्
+        }
+       *[message] { $count ->
+            [one] { $folder } का { $count } तारा नलगाइएको सन्देश चयन गर्नुहोस्
+           *[other] { $folder } का सबै { $count } तारा नलगाइएका सन्देशहरू चयन गर्नुहोस्
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = तारा नलगाइएको
 row-important = महत्त्वपूर्ण। महत्त्वपूर्ण होइन भनी चिन्ह लगाउन क्लिक गर्नुहोस्।
 row-mark-important = महत्त्वपूर्ण भनी चिन्ह लगाउनुहोस्
 row-pinned = माथि पिन गरिएको
+row-tracking-none = ट्र्याक गरिएको। अझै खोलिएको छैन
+row-tracking-opened = { $recipients } मध्ये { $opened } जनाले खोले
+row-tracking-clicked = { $recipients } मध्ये { $opened } जनाले खोले, { $clicked } जनाले लिङ्क खोले
 row-pin = माथि पिन गर्नुहोस्
 row-unpin = अनपिन गर्नुहोस्
+row-snoozed-until = { $when } सम्म स्नुज गरिएको
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = सबैलाई जवाफ दिनुहोस्
 menu-forward = फर्वार्ड गर्नुहोस्
 menu-archive = संग्रह गर्नुहोस्
 menu-delete = मेटाउनुहोस्
+menu-delete-forever = सधैँका लागि मेटाउनुहोस्
+menu-move-to-inbox = इनबक्समा सार्नुहोस्
 menu-spam = स्प्याम भनी रिपोर्ट गर्नुहोस्
+menu-not-spam = स्प्याम होइन
 menu-mark-read = पढिएको भनी चिन्ह लगाउनुहोस्
 menu-mark-unread = नपढिएको भनी चिन्ह लगाउनुहोस्
 menu-mark-all-read = सबैलाई पढिएको भनी चिन्ह लगाउनुहोस्
@@ -240,6 +375,8 @@ menu-important = महत्त्वपूर्ण भनी चिन्ह 
 menu-not-important = महत्त्वपूर्ण होइन भनी चिन्ह लगाउनुहोस्
 menu-pin = माथि पिन गर्नुहोस्
 menu-unpin = अनपिन गर्नुहोस्
+menu-snooze = स्नुज गर्नुहोस्
+menu-unsnooze = स्नुज हटाउनुहोस्
 menu-print-all = सबै प्रिन्ट गर्नुहोस्
 menu-new-window = नयाँ विन्डोमा खोल्नुहोस्
 menu-move-to = यहाँ सार्नुहोस्
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } सन्देशहरू अनपिन गरिए।
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप { $when } सम्म स्नुज गरियो।
+       *[other] { $count } वार्तालापहरू { $when } सम्म स्नुज गरिए।
+    }
+   *[message] { $count ->
+        [one] सन्देश { $when } सम्म स्नुज गरियो।
+       *[other] { $count } सन्देशहरू { $when } सम्म स्नुज गरिए।
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालाप इनबक्समा फर्कियो।
+       *[other] { $count } वार्तालापहरू इनबक्समा फर्किए।
+    }
+   *[message] { $count ->
+        [one] सन्देश इनबक्समा फर्कियो।
+       *[other] { $count } सन्देशहरू इनबक्समा फर्किए।
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] वार्तालापलाई स्प्याम भनी रिपोर्ट गरियो।
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] सन्देशलाई स्प्याम भनी रिपोर्ट गरियो।
        *[other] { $count } सन्देशहरूलाई स्प्याम भनी रिपोर्ट गरियो।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] वार्तालापलाई स्प्याम होइन भनी चिन्ह लगाएर इनबक्समा सारियो।
+       *[other] { $count } वार्तालापहरूलाई स्प्याम होइन भनी चिन्ह लगाएर इनबक्समा सारियो।
+    }
+   *[message] { $count ->
+        [one] सन्देशलाई स्प्याम होइन भनी चिन्ह लगाएर इनबक्समा सारियो।
+       *[other] { $count } सन्देशहरूलाई स्प्याम होइन भनी चिन्ह लगाएर इनबक्समा सारियो।
     }
 }
 toast-deleted-forever = { $kind ->

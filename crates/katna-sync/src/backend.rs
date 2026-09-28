@@ -7,7 +7,7 @@ use std::{
     collections::HashMap, fmt, future::Future, ops::RangeInclusive, sync::Arc, time::Duration,
 };
 
-use crate::{Result, oauth::TokenSource};
+use crate::{Error, Result, oauth::TokenSource};
 
 /// How to reach a server.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -139,6 +139,14 @@ pub struct FolderStatus {
     pub uid_next: Option<u32>,
     /// Only when the server supports CONDSTORE.
     pub highest_modseq: Option<u64>,
+}
+
+/// How much of the account's mail storage is used, from the server's
+/// quota (IMAP QUOTA, RFC 9208). Both in bytes.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Quota {
+    pub used: u64,
+    pub limit: u64,
 }
 
 /// A mailbox address from a message header.
@@ -349,6 +357,15 @@ pub trait MailBackend: Send + 'static {
         folder: &str,
     ) -> impl Future<Output = Result<Vec<(u32, u32)>>> + Send;
 
+    /// Copies `uids` of the selected folder to `folder` (on Gmail: adds
+    /// its label). Returns `(old UID, new UID)` pairs when the server
+    /// reports them (UIDPLUS).
+    fn copy_messages(
+        &mut self,
+        uids: &[u32],
+        folder: &str,
+    ) -> impl Future<Output = Result<Vec<(u32, u32)>>> + Send;
+
     /// Deletes `uids` of the selected folder for good. Without UIDPLUS
     /// they are only marked `\Deleted`, so other clients' marks are kept.
     fn expunge(&mut self, uids: &[u32]) -> impl Future<Output = Result<()>> + Send;
@@ -419,6 +436,12 @@ pub trait MailBackend: Send + 'static {
         async { Ok(None) }
     }
 
+    /// The storage quota of the account's inbox. `Ok(None)` when the
+    /// server has no QUOTA extension or sets no storage limit.
+    fn quota(&mut self) -> impl Future<Output = Result<Option<Quota>>> + Send {
+        async { Ok(None) }
+    }
+
     /// Waits on the selected folder until the server reports a change,
     /// `max_wait` passes, or `interrupt` completes, whichever is first.
     /// Uses IMAP IDLE when the server has it and a single NOOP at the end
@@ -453,6 +476,27 @@ pub trait MailSender: Send + 'static {
         to: &[&str],
         message: Vec<u8>,
     ) -> impl Future<Output = Result<()>> + Send;
+
+    /// The longest time, in seconds, the server holds a message before
+    /// it goes out (SMTP `FUTURERELEASE`, RFC 4865), if it can. May ask
+    /// the server: some list it only after login.
+    fn hold_limit(&mut self) -> impl Future<Output = Result<Option<u64>>> + Send {
+        async { Ok(None) }
+    }
+
+    /// Like [`send`](Self::send), but the server holds the message until
+    /// `until` (Unix seconds). Only when [`hold_limit`](Self::hold_limit)
+    /// allows it; SMTP cannot take the message back afterwards.
+    fn send_held(
+        &mut self,
+        from: &str,
+        to: &[&str],
+        message: Vec<u8>,
+        until: i64,
+    ) -> impl Future<Output = Result<()>> + Send {
+        let _ = (from, to, message, until);
+        async { Err(Error::Rejected("the server cannot hold mail".into())) }
+    }
 
     fn quit(self) -> impl Future<Output = Result<()>> + Send;
 }

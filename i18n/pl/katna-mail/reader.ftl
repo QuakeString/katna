@@ -77,6 +77,34 @@ security-missing-key = Podpisano kluczem, którego nie masz, więc nie można te
 security-missing-key-id = Podpisano kluczem, którego nie masz ({ $key }), więc nie można tego sprawdzić
 security-signature-unavailable = Podpisano; zainstaluj { $tool }, aby sprawdzić podpis
 security-signature-error = Nie udało się sprawdzić podpisu.
+tracking-opened = Otwarte przez { $who } { $count ->
+    [one] raz
+    [few] { $count } razy
+    [many] { $count } razy
+   *[other] { $count } razy
+}, ostatnio { $when }
+tracking-opens-clicks = Otwarte przez { $who } { $opens ->
+    [one] raz
+    [few] { $opens } razy
+    [many] { $opens } razy
+   *[other] { $opens } razy
+}, link kliknięty { $clicks ->
+    [one] raz
+    [few] { $clicks } razy
+    [many] { $clicks } razy
+   *[other] { $clicks } razy
+}, ostatnio { $when }
+tracking-clicked = Link kliknięty przez { $who } { $clicks ->
+    [one] raz
+    [few] { $clicks } razy
+    [many] { $clicks } razy
+   *[other] { $clicks } razy
+}, ostatnio { $when }
+tracking-maybe-opened = Możliwe otwarcie przez { $who } (Apple Mail wczytuje obrazy dla ochrony prywatności)
+tracking-not-opened = Jeszcze nieotwarte przez { $who }
+tracking-receipt = Potwierdzenie przeczytania od { $who }
+tracking-receipt-displayed = Potwierdzenie przeczytania: Twoja wiadomość została otwarta przez { $who }
+tracking-receipt-other = Potwierdzenie przeczytania: Twoja wiadomość została usunięta lub obsłużona przez { $who } bez otwierania
 
 ## Remote images and pictures
 

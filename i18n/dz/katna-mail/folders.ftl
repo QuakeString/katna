@@ -9,12 +9,20 @@ nav-folders = སྣོད་འཛིན་ཚུ
 nav-label-new = ཁ་ཡིག་གསརཔ་གསར་བསྐྲུན་འབད།
 nav-folder-new = སྣོད་འཛིན་གསརཔ་གསར་བསྐྲུན་འབད།
 nav-account-unnamed = རྩིས་ཐོ་ { $number }
+nav-all-accounts = རྩིས་ཐོ་ཆ་མཉམ
+nav-expand = སྣོད་འཛིན་ཚུ་སྟོན།
+nav-collapse = སྣོད་འཛིན་ཚུ་སྦ།
 nav-tab-new = གསརཔ་ { $count }
+storage-used = { $total } ལས་ { $percent }% ལག་ལེན་འཐབ་ཡོདཔ
+storage-used-detail = { $address }: { $total } ལས་ { $used } ལག་ལེན་འཐབ་ཡོདཔ
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ནང་འབྱོར་སྒྲོམ
 folder-starred = སྐར་མ་བཀལ་ཡོདཔ
+folder-snoozed = ཤུལ་མར་བཞག་ཡོདཔ
+folder-unread = མ་ལྷག་པ
+folder-important = གལ་ཅན
 folder-drafts = ཟིན་བྲིས
 folder-sent = བཏང་ཡོདཔ
 folder-archive = ཡིག་མཛོད
@@ -22,6 +30,7 @@ folder-spam = སྤེམ
 folder-trash = གད་སྙིགས
 folder-all-mail = གློག་འཕྲིན་ཆ་མཉམ
 folder-scheduled = དུས་ཚོད་བཀོད་ཡོདཔ
+folder-activity = ལཱ་གི་རྣམ་པ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

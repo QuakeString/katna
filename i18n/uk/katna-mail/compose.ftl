@@ -38,6 +38,9 @@ compose-scheduled = Надсилання заплановано на { $when }
 compose-sent-archived = Надіслано й заархівовано
 compose-sent = Лист надіслано
 compose-discarded = Чернетку відкинуто
+compose-draft-saved = Чернетку збережено
+compose-draft-failed = Не вдалося зберегти чернетку: { $error }
+compose-draft-not-opened = Не вдалося відкрити чернетку.
 
 ## Attachments
 
@@ -46,6 +49,12 @@ compose-picker-attach = Вкласти
 compose-file-too-large = { $name } завеликий: лист може містити до { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Вилучити вкладення
+compose-attachments-total = { $count ->
+    [one] { $count } файл, { $size }
+    [few] { $count } файли, { $size }
+    [many] { $count } файлів, { $size }
+   *[other] { $count } файлу, { $size }
+}
 compose-drop-files = Перетягніть файли сюди
 compose-drop-here = Перетягніть сюди
 compose-paste-keep-formatting = Зберегти форматування
@@ -61,6 +70,12 @@ compose-encrypt = Зашифрувати
 compose-encrypted = Зашифровано: прочитати можуть лише одержувачі
 compose-sign = Підписати
 compose-signed = Підписано: одержувачі можуть перевірити, що лист від вас
+compose-track = Відстежувати відкриття й переходи
+compose-tracked = Відстежується: ви бачите, коли кожен одержувач відкриває лист або переходить за посиланням
+compose-track-unavailable = Підписані, зашифровані листи й листи звичайним текстом не можна відстежувати
+compose-track-sign-in = Увійдіть в обліковий запис Katna, щоб відстежувати відкриття й переходи
+compose-receipt = Запросити сповіщення про прочитання
+compose-receipt-on = Сповіщення про прочитання запрошено: програма одержувача може попросити його надіслати сповіщення
 
 ## Spelling
 
@@ -85,6 +100,7 @@ send-check-add-subject = Додати тему
 send-check-send-anyway = Усе одно надіслати
 recipient-not-valid = Недійсна адреса електронної пошти
 recipient-show-address = Показати адресу
+recipient-remove = Вилучити
 recipient-bad-title = Перевірте адресу
 recipient-bad-text = «{ $address }» — недійсна адреса електронної пошти. Виправте або вилучіть її перед надсиланням.
 recipient-bad-fix = Виправити

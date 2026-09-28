@@ -77,6 +77,26 @@ security-missing-key = با کلیدی امضا شده که آن را نداری
 security-missing-key-id = با کلیدی امضا شده که آن را ندارید ({ $key })، بنابراین بررسی آن ممکن نیست
 security-signature-unavailable = امضاشده؛ برای بررسی امضا { $tool } را نصب کنید
 security-signature-error = بررسی امضا ممکن نشد.
+tracking-opened = { $who } آن را { $count ->
+    [one] یک بار
+   *[other] { $count } بار
+} باز کرد، آخرین بار { $when }
+tracking-opens-clicks = { $who } آن را { $opens ->
+    [one] یک بار
+   *[other] { $opens } بار
+} باز کرد و { $clicks ->
+    [one] یک بار
+   *[other] { $clicks } بار
+} پیوندی را دنبال کرد، آخرین بار { $when }
+tracking-clicked = { $who } { $clicks ->
+    [one] یک بار
+   *[other] { $clicks } بار
+} پیوندی را دنبال کرد، آخرین بار { $when }
+tracking-maybe-opened = شاید { $who } آن را باز کرده باشد (Apple Mail برای حفظ حریم خصوصی تصاویر را بارگیری می‌کند)
+tracking-not-opened = { $who } هنوز آن را باز نکرده است
+tracking-receipt = { $who } رسید خواندن فرستاد
+tracking-receipt-displayed = رسید خواندن: { $who } پیام شما را باز کرد
+tracking-receipt-other = رسید خواندن: { $who } پیام شما را بدون باز کردن حذف کرد یا به آن رسیدگی کرد
 
 ## Remote images and pictures
 

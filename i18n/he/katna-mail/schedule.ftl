@@ -11,6 +11,8 @@ schedule-scheduled-messages = הודעות מתוזמנות ({ $count })
 
 schedule-title = תזמון שליחה
 schedule-zone-note = { $zone }. Katna שולחת אותה בזמן הזה, גם כשהאפליקציה סגורה.
+schedule-zone-note-server = { $zone }. שרת הדואר שלך ישלח אותה בזמן הזה, גם כשהמחשב כבוי. אחרי שהאפשרות לביטול נעלמת, אי אפשר לבטל את השליחה.
+schedule-zone-note-local = { $zone }. Katna תשלח אותה בזמן הזה, כל עוד המחשב הזה פועל.
 schedule-local-time = שעון מקומי
 schedule-this-morning = הבוקר
 schedule-this-afternoon = היום אחר הצהריים
@@ -28,6 +30,7 @@ schedule-no-such-time = השעה הזו לא קיימת כאן.
 
 schedule-no-subject = (ללא נושא)
 schedule-sends-at = תישלח { $when }
+schedule-server-sends-at = שרת הדואר שלך ישלח אותה { $when }
 schedule-cancel-send = ביטול השליחה
 schedule-nothing = אין הודעות מתוזמנות.
 schedule-close = סגירה

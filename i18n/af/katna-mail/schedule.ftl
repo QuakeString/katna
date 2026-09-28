@@ -11,6 +11,8 @@ schedule-scheduled-messages = Geskeduleerde boodskappe ({ $count })
 
 schedule-title = Skeduleer stuur
 schedule-zone-note = { $zone }. Katna stuur dit op daardie tyd, selfs as die toep toe is.
+schedule-zone-note-server = { $zone }. Jou e-posbediener sal dit op daardie tyd stuur, selfs as hierdie rekenaar af is. Sodra Ontdoen weg is, kan dit nie meer gekanselleer word nie.
+schedule-zone-note-local = { $zone }. Katna sal dit op daardie tyd stuur terwyl hierdie rekenaar aan is.
 schedule-local-time = Plaaslike tyd
 schedule-this-morning = Vanoggend
 schedule-this-afternoon = Vanmiddag
@@ -28,6 +30,7 @@ schedule-no-such-time = Daardie tyd bestaan nie hier nie.
 
 schedule-no-subject = (geen onderwerp)
 schedule-sends-at = Stuur { $when }
+schedule-server-sends-at = Jou e-posbediener stuur dit { $when }
 schedule-cancel-send = Kanselleer stuur
 schedule-nothing = Niks is geskeduleer nie.
 schedule-close = Maak toe

@@ -77,6 +77,26 @@ security-missing-key = An sa hannu da maɓallin da ba ku da shi, don haka ba za 
 security-missing-key-id = An sa hannu da maɓallin da ba ku da shi ({ $key }), don haka ba za a iya duba shi ba
 security-signature-unavailable = An sa hannu; shigar da { $tool } don duba sa hannun
 security-signature-error = Ba a iya duba sa hannun ba.
+tracking-opened = { $who } ya buɗe shi { $count ->
+    [one] sau ɗaya
+   *[other] sau { $count }
+}, na ƙarshe { $when }
+tracking-opens-clicks = { $who } ya buɗe shi { $opens ->
+    [one] sau ɗaya
+   *[other] sau { $opens }
+} kuma ya bi mahaɗi { $clicks ->
+    [one] sau ɗaya
+   *[other] sau { $clicks }
+}, na ƙarshe { $when }
+tracking-clicked = { $who } ya bi mahaɗi { $clicks ->
+    [one] sau ɗaya
+   *[other] sau { $clicks }
+}, na ƙarshe { $when }
+tracking-maybe-opened = Wataƙila { $who } ya buɗe shi (Apple Mail yana loda hotuna don sirri)
+tracking-not-opened = { $who } bai buɗe shi ba tukuna
+tracking-receipt = { $who } ya aiko da rasidin karantawa
+tracking-receipt-displayed = Rasidin karantawa: { $who } ya buɗe saƙonku
+tracking-receipt-other = Rasidin karantawa: { $who } ya share ko ya sarrafa saƙonku ba tare da ya buɗe shi ba
 
 ## Remote images and pictures
 

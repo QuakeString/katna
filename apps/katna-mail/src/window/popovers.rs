@@ -83,6 +83,8 @@ impl MailWindow {
         let closed = if self.context_menu.is_some() {
             self.close_context_menu(cx);
             true
+        } else if self.close_snooze_menu(cx) {
+            true
         } else if self.print_preview_open() {
             self.close_print_preview(window, cx);
             true
@@ -95,7 +97,8 @@ impl MailWindow {
         } else if self.about_open() {
             self.close_about(window, cx);
             true
-        } else if self.menu.take().is_some()
+        } else if self.dismiss_activity(cx)
+            || self.menu.take().is_some()
             || self.files_menu.take().is_some()
             || std::mem::take(&mut self.account_menu)
             || self.language_picker.take().is_some()

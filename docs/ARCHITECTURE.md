@@ -31,7 +31,8 @@ Merkuro).
 
 ### Non-goals (for now)
 
-- Windows / macOS builds.
+- macOS builds. Windows 10 and later is planned (owner, 27 September
+  2026; the Windows track in `IMPLEMENTATION_PLAN.md` §5).
 - Android / iOS builds for now; the design for later is §26.
 - Being a general Akonadi replacement that other apps plug into.
 - Exchange (EWS) support in the first releases.
@@ -220,6 +221,8 @@ outbox           (id, draft_message_id, send_at, state, per_recipient BOOL, atte
 notification     (notif_id, message_ids, account_id, created_at)   -- to close/update later
 pop3_uidl        (account_id, uidl, message_id NULL, first_seen)   -- POP3 downloads (v3)
 pin              (message_id, pinned_at)   -- pinned to the top of the list (v5)
+translation      (message_id, target, source, source_hash, text, created_at)
+                                            -- kept translations (v8, §16.4)
 ```
 
 `participant` is the key table for organizations (§8) and address search.
@@ -252,6 +255,16 @@ Mail schema v5 (`mail_v5.sql`) adds `pin`: messages pinned to the top of
 their folder's list (§13.5). Pins are Katna's own (IMAP has none), so they
 stay on this computer; a pinned conversation pins each message it had.
 
+Mail schema v6 (`mail_v6.sql`) adds `quota`: how full each account's mail
+storage is, from IMAP QUOTA (`GETQUOTAROOT INBOX`, the STORAGE resource),
+read on each full sync. The foot of the folder pane shows it for the
+account whose folder is open ("34% of 15 GB used"); accounts whose server
+reports no quota show nothing there. Sizes count in 1024s, as providers
+sell storage.
+
+Mail schema v7 (`mail_v7.sql`) adds `outbox.hold_until`: when scheduled
+mail goes out, for mail an SMTP server holds (§11, Send later).
+
 ### 5.4 Shared PIM schema (sketch)
 
 ```sql
@@ -263,6 +276,8 @@ contact          (id, display_name, vcard_uid, notes)
 contact_address  (contact_id, email_norm)
 org_member       (org_id, contact_id)
 suggestion       (id, kind, payload_json, state)          -- pending | accepted | dismissed
+template         (id, name, subject, html, text, updated_at)   -- mail templates (v2)
+template_attachment (template_id, position, name, mime, data)
 meta             (object_kind, object_id, plugin, value_json, version,
                   expires_at NULL, dirty BOOL)            -- see §10
 ```
@@ -729,7 +744,7 @@ from or adds to the sketch above:
   name (so a second instance never writes the index) and wakes it on every
   `MailChanged` notice. If the index cannot be opened, mail still syncs
   and the error is logged. Linking tantivy grows the daemon from 11.6 to
-  15.0 MB (then 14.3 MiB of a 15 MiB budget; it is 20 MiB now, §17.2).
+  15.0 MB (then 14.3 MiB of a 15 MiB budget; it is 50 MB now, §17.2).
   `katna_search::Indexer` runs updates on its own thread
   with its own read-only store connection: once at start, then on
   `Indexer::changed()` (the daemon calls it after each sync) and every 5 s
@@ -779,6 +794,9 @@ To, Cc and Bcc suggest addresses as the user types, like Gmail.
   stop with a "Check the address" dialog until it is fixed or removed. The
   chips live in `Compose.chips` (`compose/chips.rs`); drafts and sending
   still read the fields as one "a, b, c" text.
+  A chip can be dragged to another of To, Cc and Bcc (hidden Cc and Bcc
+  rows open while a chip is dragged), and pointing at one shows an x that
+  removes it.
 
 ## 8. Organizations (`katna-org`)
 
@@ -909,10 +927,43 @@ Features built on it:
 | Feature | Metadata | On expiry |
 |---|---|---|
 | Undo send | `{send_at: now + N s, undo: true}` on the draft (N = 5/10/20/30 s) | Send the draft. Undo = delete the metadata. The draft stays saved, so a crash does not lose it. |
-| Send later | `{send_at}` | Send the draft (daemon, or Katna Server if enabled and the machine is off). |
+| Send later | `{send_at}` | Send the draft (the SMTP server holds it when it has `FUTURERELEASE`; else the daemon, or Katna Server if enabled and the machine is off). |
 | Snooze | `{until}`, thread moved to a "Snoozed" folder | Move back to inbox, mark unread, notify. |
 | Reminder | `{remind_at, if_no_reply: true}` | Notify if nobody replied. |
 | Tracking | `{tracking_id, links[], events[]}` | — (events arrive from the server) |
+
+### 10.1 What runs today: snooze and follow-up reminders
+
+Decided September 2026: snooze, reminders and send later run **only while
+the computer is on**, and no server ever holds a mail password. So all of
+this is local; Katna Server only adds opened/clicked events (§16).
+
+- `katna-meta` types the values and runs the scheduler: it sleeps until
+  the next `expires_at`, but never more than a minute, because timers stop
+  while the computer sleeps and the wall clock does not; resuming also
+  wakes it. Values are in `pim.db`, so they survive restarts; one that fell
+  due while the computer was off fires when the daemon starts.
+- **Snooze** (`message`/`snooze`: `{until, back_to, snoozed_in}`): the
+  messages of the conversation in the folder it was snoozed from (the
+  Inbox, a label or Archive, never Sent, Drafts, Trash, Spam or All Mail)
+  move to the account's `Snoozed` folder, made on the server the first
+  time (a label on Gmail; a local folder for POP3). The folder is always
+  called `Snoozed` on the server so any language finds it; the app shows
+  its name translated. At `until` the messages that are still there move
+  back, unread, with one notification per account. `Unsnooze` (Undo)
+  moves them back at once without marking them unread. Gmail, Outlook.com,
+  Zoho and Yahoo do not share their own snooze over IMAP, so a snooze set
+  on their websites stays there.
+- **Follow-up** (`outbox`/`follow-up`: `{account, message_id, subject,
+  remind_at, after}`): set on an outbox entry right after `QueueSend`,
+  `after` seconds from when it is sent (1, 3, 7 days or custom). When due,
+  it finds the sent copy by `Message-ID`; if its conversation has anything
+  newer (a reply, or another message of the user's), it is dropped.
+  Otherwise the message is copied into the Inbox too (a label on Gmail),
+  marked unread and notified. `UndoSend` drops it.
+- **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
+  back from snooze or a reminder is listed as if it arrived at `at`, so it
+  sits on top of the Inbox like new mail.
 
 ## 11. Sending (outbox)
 
@@ -954,12 +1005,26 @@ Features built on it:
   brings the server's. Gmail files sent mail itself, so for an IMAP host
   under `gmail.com` or `googlemail.com` the copy is only forgotten. With
   no Sent folder, nothing is filed.
-- **Send later.** Schedule send queues the message with a delay until
-  the chosen time; the daemon holds it like an undo-send delay and sends
-  it on time with or without the app. The app lists queued messages
-  (`Outbox`, `OutboxChanged`) and counts one as scheduled when it is
-  still queued, has no error and is due later than the undo-send delay
-  would put it. Cancel is `UndoSend`, as for undo send.
+- **Send later.** The mail service's own feature comes first (plan 7.7):
+  `ScheduleSend(account, raw, delay, at)` queues the message for the
+  undo-send delay (`send_at`) with the chosen time in `hold_until`. After
+  the delay the outbox logs in to the SMTP server; one that lists
+  `FUTURERELEASE` (RFC 4865; Stalwart does, Gmail does not; some list it
+  only after login, so the daemon says EHLO again) gets it at once with
+  `MAIL FROM … HOLDUNTIL=<UTC time>` and sends it on time with this
+  computer off. The entry is then `sent` with `hold_until` kept, shown as
+  `held`, filed in Sent when that time passes, and it can no longer be
+  cancelled: SMTP cannot take mail back. A time beyond the server's
+  longest hold is handed over once it is within it; a server without
+  `FUTURERELEASE`, or a time less than a minute away, keeps the message
+  here, sent at `hold_until` while the daemon runs (the old path).
+  `ServerHoldLimit(account)` tells the schedule menu which applies: "Your
+  mail server will send it…" or "Katna will send it … while this
+  computer is on". The app lists queued and held messages (`Outbox`,
+  `OutboxChanged`, `send_at` being when it goes out) and counts one as
+  scheduled when it is held, or still queued with no error and due later
+  than the undo-send delay would put it. Cancel is `UndoSend`, as for
+  undo send, for mail not handed over yet.
 - **Drafts.** Closing a message saves it (`SaveDraft(account, raw)`): the
   app keeps one `Message-ID` for a message while it is written, and the
   daemon replaces every copy in the Drafts folder with that `Message-ID`,
@@ -1074,7 +1139,17 @@ depend on `<style>` sheets turn out to matter.
   In plain text mode only the text part goes.
 - Spell check with `spellbook` and the system's Hunspell dictionaries
   (`spell.rs`); added words are kept in `$XDG_CONFIG_HOME/katna/dictionary`.
-- Templates later.
+- Templates (`window/compose/templates.rs`, `window/settings_page/templates.rs`):
+  the compose bar's Templates button lists them, puts one in (its text
+  replaces the empty lines above the signature, or goes at the cursor; its
+  subject fills an empty one; its files join the attachments) and saves
+  the message as one (same name replaces). `{first name}`, `{name}` and
+  `{my name}` are filled from the first recipient and the sender when it
+  is put in, and again on Send for a recipient added later
+  (`templates.rs`). Settings > Compose edits, renames and deletes them.
+  They live in `pim.db` (subject, HTML with pictures as `data:` URIs,
+  plain text, attachments as BLOBs, 20 MB at most), written by the daemon
+  (`SaveTemplate`, `DeleteTemplate`) and read by the app from the store.
 
 ## 13. UI
 
@@ -1126,12 +1201,16 @@ GPUI global):
   window's surface cannot be copied from, panels stay opaque.
 
 **Window state.** The mail window opens as it closed: its size, maximized
-state and place (`katna_chrome::placement`, saved in
-`$XDG_STATE_HOME/katna/mail-window.toml` when the app quits). The state
+state and place (`katna_chrome::placement`), and what it showed: the app of
+the rail, the folder or unified list, the inbox tab, the folders opened in
+the folder pane and whether the pane was folded (`katna_core::window::
+ViewState`). Both are saved in `$XDG_STATE_HOME/katna/mail-window.toml`
+when the app quits, however it quits. Settings such as the reading pane,
+its width and the density live in the config file as before. The state
 belongs to one run of the Katna service, named by the daemon's process id
 and start time (which survive its re-exec after an update); once the
 service quits (the tray's Quit, logging out), the next start opens the
-window at its default size and place.
+window as on the first start.
 
 - Wayland does not let a window place itself. Katna's copy of GPUI
   (`vendor/gpui-pre-linux`) joins the window to an
@@ -1431,8 +1510,8 @@ Gemini or confidential mode):
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
   opens, and showing saved files in their folder), Folders & rules,
-  Compose (signatures, plain text, spelling and its language, templates
-  to come), MCP server, User feedback (turning crash reports and feedback off at any
+  Compose (signatures, plain text, spelling and its language,
+  templates), MCP server, User feedback (turning crash reports and feedback off at any
   time) and Experimental, always last. Subscription, Folders & rules and
   MCP server are still to come: their tabs are fainter and each shows a
   "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
@@ -1452,9 +1531,10 @@ Gemini or confidential mode):
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
   still wait to be asked for; and the new-mail sound is the notification's
-  `sound-name` hint, or `suppress-sound` when off. Katna never tracks
-  whether others open mail, so Mailspring's open and click tracking
-  settings have no counterpart.
+  `sound-name` hint, or `suppress-sound` when off. Open and click
+  tracking is not a setting: it is off for every new message and turned
+  on per message in compose (§16.1), so Mailspring's tracking defaults
+  have no counterpart.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
@@ -1780,6 +1860,22 @@ Gemini or confidential mode):
   portal's `SettingChanged`, and when `kdeglobals` or `gtk.css` change
   (checked every 2 s). A quick setting, *Desktop colors* (on by default,
   `mail.desktop_colors`), turns this off.
+- **Contact panel.** On a desktop, a card beside the open conversation
+  (300 px, the usual 16 px card gap, sliding in with the reading pane's
+  spring) shows one of its people: the newest sender other than the user,
+  or whoever is picked under "In this conversation". It shows their
+  picture (the sender pictures above), name and address; phone, title and
+  company from the signatures of their newest stored messages
+  (`profile.rs`: after a `-- ` line or a sign-off such as "Best regards",
+  never in quoted text); their time of day from the UTC offset of their
+  latest `Date` header; the mail exchanged over all accounts (server
+  copies counted once by `Message-ID`); the five newest conversations and
+  six newest files, which open the conversation or the viewer. Everything
+  is local (`katna_store::Store::contact_*`); outside data (LinkedIn, X,
+  company facts) is left for the Katna Server plan. It shows only while
+  the list and reader keep 900 px (600 px with the reader alone), never on
+  tablets and phones or in a conversation window; a button on the reader
+  toolbar turns it off (`mail.contact_panel`).
 - **Not there yet.** Drafts are not saved (closing a written message
   discards it and says so). Labels on a message being written and
   calendar invitations wait for their features.
@@ -2107,8 +2203,8 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
   with plural forms and a formatted number.
 - Folder and label names sort with `icu_collator` in the chosen language.
 
-The daemon does not format dates, so it links only Fluent (its 20 MB
-budget): the counts in its notifications and tray tooltip are written in
+The daemon does not format dates, so it links only Fluent (it was on a
+tight budget): the counts in its notifications and tray tooltip are written in
 Western digits whatever the language. Its text is in
 `i18n/<tag>/katna-daemon/`, embedded by its own build script; it applies
 `general.language` at start and again when Katna Mail asks it to reload
@@ -2267,10 +2363,14 @@ their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every accou
 `flagged`, `draft`, `forwarded`, `important`), `SetPinned(ax messages, b
 on)` (local only; more than ten pinned conversations is an error),
 `MoveMessages(ax, folder)`,
+`Snooze(ax messages, x until)`, `Unsnooze(ax messages)` and
+`SetFollowUp(x outbox, x after)` (§10.1),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
-detail; states in `katna_dbus::send_state`), `FetchImage(url) → ay` and
+detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
+→ x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
+templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
 `SenderPicture(address) → ay` (images for the reading pane, §12), and the
 signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and
@@ -2421,6 +2521,21 @@ Served by the daemon, pure Rust, from the same search index.
 | Organization | name, alias | Open organization view |
 | Event | title, attendees, location | Open event |
 
+As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
+addresses in the mail (the recipient-suggestion `ContactBook`, read in the
+background 20 s after start and again when mail changed, at most every 10
+minutes). Mail shows only when every word (three letters or more) starts a
+word of its subject or sender, outside Trash and Spam, one message per
+conversation; `mail:`, or a trigger word and a space (`k budget`;
+`general.search_triggers`, "k" and "m" by default, set in Settings >
+General and applied at `ReloadConfig`), runs the search box's query
+instead. Enter on a
+person writes to them (a `mailto:` link to Katna Mail); KRunner's buttons
+are Reply all on mail, Copy address (through Klipper) and Find mail on
+people. GNOME's "search in app" opens Katna Mail with the words in its
+search box (app action `search`). Organization results come with Phase 2.
+Answers take a few milliseconds on 60,000 messages.
+
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
 packages install it directly.
@@ -2501,6 +2616,15 @@ logic lives there.
 
 Optional. Self-hostable (container image) and offered as a hosted Pro service.
 
+Where a feature lives (owner, 27 September 2026): first the mail
+service's own feature when Katna can reach it over the protocols it speaks
+(IMAP, SMTP, Sieve, CardDAV, later JMAP; for example SMTP FUTURERELEASE for
+send later); otherwise locally in `katna-daemon`; Katna Server only for
+what can work neither way (open and link tracking, translation, Katna
+accounts). The server never holds mail logins or tokens; send later,
+snooze and reminders without server support run while the computer is on.
+Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
+
 | Function | Needs user mail credentials? |
 |---|---|
 | Open/link tracking + event stream | No |
@@ -2532,10 +2656,108 @@ Optional. Self-hostable (container image) and offered as a hosted Pro service.
 - Tracking events arrive at the daemon over the server's event stream and
   can raise notifications ("Acme opened *Proposal v2*").
 
-### 16.2 Stack
+**Implemented (server, `server/katna-server`):** axum + PostgreSQL behind
+Caddy (TLS), shipped as `ghcr.io/quakestring/katna-server` with a compose
+file; the owner runs it on his own server at `server.katna.invenia.in`
+(`katna_core::ids::TRACKING_SERVER_URL`; September 2026). Unknown pixel IDs still get the picture; links redirect
+only to targets stored with the ID (`http`/`https` only). Installs register
+without an account and get a bearer token (stored hashed); limits are 10
+new installs per address per hour and 5000 tracked copies per install per
+day. Each event is labelled `person`, `apple_proxy` (Apple's network or a
+bare `Mozilla/5.0` agent) or `scanner` (`HEAD`, bot-like agents, opens
+within 5 s or clicks within 30 s of sending); the address and user agent
+are read for the label and never stored. Events stream to the daemon as
+server-sent events numbered in order, resumed with `Last-Event-ID`.
+Everything is deleted after 180 days, and an install can delete its data.
+One server process (events are ordered within it). The API is in
+`server/katna-server/README.md`.
+
+**Implemented (daemon, `katna-sync::tracking`, `apps/katna-daemon/src/tracking.rs`):**
+a message queued with tracking (D-Bus `QueueTrackedSend`) that has an HTML
+part, is not signed or encrypted, and has at most 50 recipients (To, Cc and
+Bcc) goes out as one copy per recipient, each in its own SMTP transaction
+with the headers unchanged. Each copy's HTML gets the pixel before the
+first `<blockquote` and its links outside quotes rewritten; plain-text
+parts are left alone. A refused recipient does not stop the others and the
+send retries only the rest. Sent keeps one clean copy; on Gmail the
+tracked copies Gmail filed are found by `rfc822msgid:` plus a marker in the
+body and moved to Trash and deleted there (op `PurgeTracked`). Anything
+that stops tracking (no server, server error, too many recipients) sends
+the message once, untracked. The recipient mapping and events live in
+`pim.db` (schema v3). Tracking uses the Katna account token
+(`katna_account::Session::token`, §16.2) and server (`server_url`); the
+server takes it only while this computer is signed in to an account with a
+confirmed address, and otherwise the message goes out untracked. The first
+open or click by a person raises a notification whose Open shows the Sent
+copy.
+
+### 16.2 Katna accounts
+
+Every server feature needs a **Katna account**, like a Mailspring ID
+(decided September 2026). It is an email address and a password of its
+own on Katna Server; mail logins never go to the server.
+
+- **Server:** accounts with Argon2id password hashes; a six-digit code
+  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`)
+  confirms the address and resets a forgotten password (30 minutes, 5
+  wrong tries, stored hashed). An install signed in to an account is one
+  of its **devices**; any device can sign the others out, and changing or
+  resetting the password signs them out. Feature routes take the
+  `SignedIn` extractor, which needs a confirmed address. Unconfirmed
+  accounts go after a week; deleting an account deletes its devices and
+  their data. No plans or payments yet.
+- **Daemon:** `katna_account::Session` registers the install once, signs
+  in and out, and keeps the token and account address in the Secret
+  Service (`Secrets::server_token`). Other server features take their token
+  from `Session::token`. D-Bus: `KatnaAccount`, `KatnaSignUp`,
+  `KatnaSignIn`, `KatnaVerify`, `KatnaResendCode`, `KatnaSignOut`,
+  `KatnaDevices`, `KatnaSignOutDevice`, `KatnaChangePassword`,
+  `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`, signal
+  `KatnaAccountChanged`; errors carry `katna_dbus::katna_error` names.
+- **App:** Settings > Katna account. Features check
+  `MailWindow::katna_signed_in` and show `katna_sign_in_needed` ("Sign in
+  to use this") when not.
+
+### 16.3 Stack
 
 `axum` + PostgreSQL; WebSocket/SSE delta stream to `katna-daemon`; a
 scheduler for server-side actions; shared crates with the apps where useful.
+
+### 16.4 Automatic translation
+
+Katna Mail offers to translate a message that is not in the reading
+language (plan 7.8; decided 27 September 2026: LibreTranslate on the
+owner's server, over on-device models or DeepL).
+
+- **Server:** LibreTranslate (AGPL-3.0, upstream image, unmodified) runs as
+  its own container beside `katna-server`, on the compose file's internal
+  network only; which language models load is set there
+  (`LT_LOAD_ONLY`). `katna-server` passes `GET /api/v1/languages` and
+  `POST /api/v1/translate` / `/api/v1/detect` through for computers signed
+  in to a Katna account with a confirmed address (§16.2), with a daily
+  limit per account, and logs and keeps neither the text nor the
+  translation.
+- **Daemon:** `Translate(message, text, source, target)` on D-Bus. Katna
+  Mail finds the message's language on this computer (`katna-translate`,
+  whatlang; in the app, as its models would crowd the daemon's size
+  budget) and sends its plain text (HTML made plain, quotes and signature
+  kept; never attachments, headers or addresses). Mail already in the
+  reading language is never sent, and the daemon refuses it too. It sends
+  the text in
+  pieces of at most 4000 characters (40,000 in all) over rustls to
+  `katna_core::ids::TRACKING_SERVER_URL` (empty turns translation off),
+  with the Katna account's token (`katna_account::Session::token`), and
+  keeps the translation in `mail.db` (`translation`, keyed by message,
+  target and a hash of the text). Reset cache forgets them. Encrypted mail
+  is never offered for translation.
+- **App:** a bar above a message in another language: "Translate to
+  <reading language>", then "Show original"; while signed out it says to
+  sign in to a Katna account, with a button to Settings > Katna account.
+  Settings > General >
+  Translation: offer translations (on), the reading language (the UI
+  language by default), languages always translated (none by default, one
+  click from the bar) and languages never offered. The Settings text says
+  the mail's text goes to Katna's server.
 
 ## 17. Performance budget
 
@@ -2565,7 +2787,7 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 | Metric | Target |
 |---|---|
 | Katna Mail binary | ≤ 100 MB (100,000,000 bytes) |
-| `katna-daemon` binary | ≤ 20 MiB (21 MB) |
+| `katna-daemon` binary | ≤ 50 MB |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
 | Search latency | p50 < 20 ms, p99 < 50 ms on 1M messages |
@@ -2573,7 +2795,8 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 With sync, bodies, the op queue, sending and the search indexer,
 `katna-daemon` is 15.6 MB. tantivy is the biggest part. Its budget was
-15 MiB until sending came in; it is 20 MiB (September 2026) so features
+15 MiB until sending came in, then 20 MiB, and 50 MB since Katna
+Server's tracking and translation came in (September 2026), so features
 are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
 100 MB since the attachment viewers (September 2026), so features are
@@ -2741,7 +2964,7 @@ consent.
   `addr2line -f -C -e <unstripped binary> <offset - 1>` turns them into
   functions and lines, and later Sentry does the same with the debug files
   CI uploads. Keeping symbol names in the daemon costs 3.1 MB and would
-  break its 20 MB budget (§17), so it stays stripped. Katna Mail keeps its
+  cost more than it is worth (§17), so it stays stripped. Katna Mail keeps its
   function names (`strip = "debuginfo"` for that package only: 48 MB to
   56 MB of its 100 MB budget, no change in memory use since the symbol
   table is not loaded), so its panic backtraces and `coredumpctl` stacks

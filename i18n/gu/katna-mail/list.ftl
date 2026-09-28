@@ -28,6 +28,8 @@ list-move-to = આમાં ખસેડો
 list-archive = આર્કાઇવ કરો
 list-spam = સ્પામની જાણ કરો
 list-delete = ડિલીટ કરો
+list-snooze = સ્નૂઝ કરો
+list-unsnooze = સ્નૂઝ રદ કરો
 list-newer = નવા
 list-older = જૂના
 list-range = { $total } માંથી { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder } માંનો { $count } મેસેજ પસંદ કરો
        *[other] { $folder } માંના બધા { $count } મેસેજ પસંદ કરો
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } નહીં વાંચેલો મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકિત મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકિત મેસેજ પસંદ કરેલા છે.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરેલા છે.
+        }
+       *[message] { $count ->
+            [one] સ્ક્રીન પરનો { $count } તારાંકન વિનાનો મેસેજ પસંદ કરેલ છે.
+           *[other] સ્ક્રીન પરના બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરેલા છે.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } વાંચેલો મેસેજ પસંદ કરો
+           *[other] બધા { $count } વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } નહીં વાંચેલો મેસેજ પસંદ કરો
+           *[other] બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } તારાંકિત મેસેજ પસંદ કરો
+           *[other] બધા { $count } તારાંકિત મેસેજ પસંદ કરો
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરો
+           *[other] બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $count } તારાંકન વિનાનો મેસેજ પસંદ કરો
+           *[other] બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરો
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } વાંચેલો મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } નહીં વાંચેલો વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } નહીં વાંચેલા વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } નહીં વાંચેલો મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } નહીં વાંચેલા મેસેજ પસંદ કરો
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકિત વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકિત મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકિત મેસેજ પસંદ કરો
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકન વિનાનો વાર્તાલાપ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકન વિનાના વાર્તાલાપ પસંદ કરો
+        }
+       *[message] { $count ->
+            [one] { $folder } માંનો { $count } તારાંકન વિનાનો મેસેજ પસંદ કરો
+           *[other] { $folder } માંના બધા { $count } તારાંકન વિનાના મેસેજ પસંદ કરો
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = તારાંકિત નથી
 row-important = મહત્ત્વપૂર્ણ. મહત્ત્વપૂર્ણ નથી તરીકે ચિહ્નિત કરવા ક્લિક કરો.
 row-mark-important = મહત્ત્વપૂર્ણ તરીકે ચિહ્નિત કરો
 row-pinned = સૌથી ઉપર પિન કરેલ
+row-tracking-none = ટ્રૅક થાય છે. હજી ખોલ્યો નથી
+row-tracking-opened = { $recipients }માંથી { $opened }એ ખોલ્યો
+row-tracking-clicked = { $recipients }માંથી { $opened }એ ખોલ્યો, { $clicked }એ લિંક ખોલી
 row-pin = સૌથી ઉપર પિન કરો
 row-unpin = અનપિન કરો
+row-snoozed-until = { $when } સુધી સ્નૂઝ કરેલું
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = બધાને જવાબ આપો
 menu-forward = ફૉરવર્ડ કરો
 menu-archive = આર્કાઇવ કરો
 menu-delete = ડિલીટ કરો
+menu-delete-forever = કાયમ માટે ડિલીટ કરો
+menu-move-to-inbox = ઇનબૉક્સમાં ખસેડો
 menu-spam = સ્પામની જાણ કરો
+menu-not-spam = સ્પામ નથી
 menu-mark-read = વાંચેલા તરીકે ચિહ્નિત કરો
 menu-mark-unread = નહીં વાંચેલા તરીકે ચિહ્નિત કરો
 menu-mark-all-read = બધાને વાંચેલા તરીકે ચિહ્નિત કરો
@@ -240,6 +375,8 @@ menu-important = મહત્ત્વપૂર્ણ તરીકે ચિહ�
 menu-not-important = મહત્ત્વપૂર્ણ નથી તરીકે ચિહ્નિત કરો
 menu-pin = સૌથી ઉપર પિન કરો
 menu-unpin = અનપિન કરો
+menu-snooze = સ્નૂઝ કરો
+menu-unsnooze = સ્નૂઝ રદ કરો
 menu-print-all = બધું પ્રિન્ટ કરો
 menu-new-window = નવી વિન્ડોમાં ખોલો
 menu-move-to = આમાં ખસેડો
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } મેસેજ અનપિન કર્યા.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] વાર્તાલાપ { $when } સુધી સ્નૂઝ કર્યો.
+       *[other] { $count } વાર્તાલાપ { $when } સુધી સ્નૂઝ કર્યા.
+    }
+   *[message] { $count ->
+        [one] મેસેજ { $when } સુધી સ્નૂઝ કર્યો.
+       *[other] { $count } મેસેજ { $when } સુધી સ્નૂઝ કર્યા.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] વાર્તાલાપ ઇનબૉક્સમાં પાછો આવ્યો.
+       *[other] { $count } વાર્તાલાપ ઇનબૉક્સમાં પાછા આવ્યા.
+    }
+   *[message] { $count ->
+        [one] મેસેજ ઇનબૉક્સમાં પાછો આવ્યો.
+       *[other] { $count } મેસેજ ઇનબૉક્સમાં પાછા આવ્યા.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] વાર્તાલાપની સ્પામ તરીકે જાણ કરી.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] મેસેજની સ્પામ તરીકે જાણ કરી.
        *[other] { $count } મેસેજની સ્પામ તરીકે જાણ કરી.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] વાર્તાલાપને સ્પામ નથી તરીકે માર્ક કરી ઇનબૉક્સમાં ખસેડ્યો.
+       *[other] { $count } વાર્તાલાપને સ્પામ નથી તરીકે માર્ક કરી ઇનબૉક્સમાં ખસેડ્યા.
+    }
+   *[message] { $count ->
+        [one] મેસેજને સ્પામ નથી તરીકે માર્ક કરી ઇનબૉક્સમાં ખસેડ્યો.
+       *[other] { $count } મેસેજને સ્પામ નથી તરીકે માર્ક કરી ઇનબૉક્સમાં ખસેડ્યા.
     }
 }
 toast-deleted-forever = { $kind ->

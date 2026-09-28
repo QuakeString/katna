@@ -77,6 +77,14 @@ security-missing-key = ចុះហត្ថលេខាដោយសោដែល
 security-missing-key-id = ចុះហត្ថលេខាដោយសោដែលអ្នកមិនមាន ({ $key }) ដូច្នេះមិនអាចពិនិត្យបានទេ
 security-signature-unavailable = មានហត្ថលេខា។ ដំឡើង { $tool } ដើម្បីពិនិត្យហត្ថលេខា
 security-signature-error = មិនអាចពិនិត្យហត្ថលេខាបានទេ។
+tracking-opened = { $who } បានបើកវា { $count } ដង លើកចុងក្រោយ { $when }
+tracking-opens-clicks = { $who } បានបើកវា { $opens } ដង ហើយចុចតំណ { $clicks } ដង លើកចុងក្រោយ { $when }
+tracking-clicked = { $who } បានចុចតំណ { $clicks } ដង លើកចុងក្រោយ { $when }
+tracking-maybe-opened = { $who } ប្រហែលជាបានបើកវា (Apple Mail ផ្ទុករូបភាពដើម្បីឯកជនភាព)
+tracking-not-opened = { $who } មិនទាន់បានបើកវានៅឡើយទេ
+tracking-receipt = { $who } បានផ្ញើបង្កាន់ដៃអាន
+tracking-receipt-displayed = បង្កាន់ដៃអាន៖ { $who } បានបើកសាររបស់អ្នក
+tracking-receipt-other = បង្កាន់ដៃអាន៖ { $who } បានលុប ឬដោះស្រាយសាររបស់អ្នក ដោយមិនបានបើកវា
 
 ## Remote images and pictures
 

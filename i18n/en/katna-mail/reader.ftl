@@ -98,6 +98,36 @@ security-missing-key-id = Signed with a key you don't have ({ $key }), so it can
 security-signature-unavailable = Signed; install { $tool } to check the signature
 security-signature-error = The signature could not be checked.
 
+## Open and click tracking and read receipts (lines above a sent message)
+
+# $who: a recipient's name or address. $count: how many times.
+# $when: the latest time, as the list shows dates ("3:04 PM", "Tue").
+tracking-opened = { $who } opened it { $count ->
+    [one] once
+   *[other] { $count } times
+}, last { $when }
+# $opens and $clicks: how many times, as $count above.
+tracking-opens-clicks = { $who } opened it { $opens ->
+    [one] once
+   *[other] { $opens } times
+} and followed a link { $clicks ->
+    [one] once
+   *[other] { $clicks } times
+}, last { $when }
+# Followed a link with pictures turned off, so no open was seen.
+tracking-clicked = { $who } followed a link { $clicks ->
+    [one] once
+   *[other] { $clicks } times
+}, last { $when }
+# Apple Mail fetches pictures for privacy whether or not the mail is read.
+tracking-maybe-opened = { $who } may have opened it (Apple Mail loads pictures for privacy)
+tracking-not-opened = { $who } hasn't opened it yet
+# A read receipt came back from $who.
+tracking-receipt = { $who } sent a read receipt
+# On a read receipt itself.
+tracking-receipt-displayed = Read receipt: { $who } opened your message
+tracking-receipt-other = Read receipt: { $who } deleted or handled your message without opening it
+
 ## Remote images and pictures
 
 remote-hidden = Images in this message are hidden.

@@ -38,6 +38,9 @@ compose-scheduled = { $when } ରେ ପଠାଇବା ପାଇଁ ସମୟ �
 compose-sent-archived = ପଠାଗଲା ଓ ଆର୍କାଇଭ ହେଲା
 compose-sent = ମେସେଜ ପଠାଗଲା
 compose-discarded = ଡ୍ରାଫ୍ଟ ବାତିଲ ହେଲା
+compose-draft-saved = ଡ୍ରାଫ୍ଟ ସେଭ ହେଲା
+compose-draft-failed = ଡ୍ରାଫ୍ଟ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ: { $error }
+compose-draft-not-opened = ଡ୍ରାଫ୍ଟ ଖୋଲାଯାଇପାରିଲା ନାହିଁ।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = ଆଟାଚ କରନ୍ତୁ
 compose-file-too-large = { $name } ବହୁତ ବଡ଼: ଏକ ମେସେଜ { $limit } ପର୍ଯ୍ୟନ୍ତ ନେଇପାରେ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ
+compose-attachments-total = { $count ->
+    [one] { $count }ଟି ଫାଇଲ, { $size }
+   *[other] { $count }ଟି ଫାଇଲ, { $size }
+}
 compose-drop-files = ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଛାଡ଼ନ୍ତୁ
 compose-drop-here = ଏଠାରେ ଛାଡ଼ନ୍ତୁ
 compose-paste-keep-formatting = ଫର୍ମାଟିଂ ରଖନ୍ତୁ
@@ -61,6 +68,12 @@ compose-encrypt = ଏନକ୍ରିପ୍ଟ କରନ୍ତୁ
 compose-encrypted = ଏନକ୍ରିପ୍ଟ ହୋଇଛି: କେବଳ ପ୍ରାପକମାନେ ଏହାକୁ ପଢ଼ିପାରିବେ
 compose-sign = ଦସ୍ତଖତ କରନ୍ତୁ
 compose-signed = ଦସ୍ତଖତ ହୋଇଛି: ଏହା ଆପଣଙ୍କଠାରୁ ଆସିଛି ବୋଲି ପ୍ରାପକମାନେ ଯାଞ୍ଚ କରିପାରିବେ
+compose-track = ଖୋଲିବା ଓ କ୍ଲିକ ଟ୍ରାକ କରନ୍ତୁ
+compose-tracked = ଟ୍ରାକ ହେଉଛି: ପ୍ରତ୍ୟେକ ପ୍ରାପକ ଏହାକୁ କେବେ ଖୋଲନ୍ତି କିମ୍ବା ଲିଙ୍କ ଖୋଲନ୍ତି ଆପଣ ଦେଖିପାରିବେ
+compose-track-unavailable = ଦସ୍ତଖତ ହୋଇଥିବା, ଏନକ୍ରିପ୍ଟ ହୋଇଥିବା ଓ ସାଧା ଟେକ୍ସଟ ମେଲ ଟ୍ରାକ କରାଯାଇପାରିବ ନାହିଁ
+compose-track-sign-in = ଖୋଲିବା ଓ କ୍ଲିକ ଟ୍ରାକ କରିବାକୁ ଏକ Katna ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରନ୍ତୁ
+compose-receipt = ପଢ଼ିବା ରସିଦ ମାଗନ୍ତୁ
+compose-receipt-on = ପଢ଼ିବା ରସିଦ ମଗାଯାଇଛି: ପ୍ରାପକଙ୍କ ଆପ ତାଙ୍କୁ ଗୋଟିଏ ପଠାଇବାକୁ କହିପାରେ
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = ବିଷୟ ଯୋଗ କରନ୍ତୁ
 send-check-send-anyway = ତଥାପି ପଠାନ୍ତୁ
 recipient-not-valid = ବୈଧ ଇମେଲ ଠିକଣା ନୁହେଁ
 recipient-show-address = ଠିକଣା ଦେଖାନ୍ତୁ
+recipient-remove = ହଟାନ୍ତୁ
 recipient-bad-title = ଠିକଣା ଯାଞ୍ଚ କରନ୍ତୁ
 recipient-bad-text = “{ $address }” ଏକ ବୈଧ ଇମେଲ ଠିକଣା ନୁହେଁ। ପଠାଇବା ପୂର୍ବରୁ ଏହାକୁ ଠିକ କରନ୍ତୁ କିମ୍ବା କାଢ଼ି ଦିଅନ୍ତୁ।
 recipient-bad-fix = ଠିକ କରନ୍ତୁ

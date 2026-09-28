@@ -34,6 +34,11 @@ list-move-to = Move to
 list-archive = Archive
 list-spam = Report spam
 list-delete = Delete
+# Tooltip of the clock button on a line under the pointer: opens the
+# snooze times.
+list-snooze = Snooze
+# The same button in the Snoozed folder: brings the mail back now.
+list-unsnooze = Unsnooze
 # Tooltips of the page arrows: newer mail is on the previous page.
 list-newer = Newer
 list-older = Older
@@ -115,8 +120,136 @@ list-select-all-in = { $kind ->
     }
 }
 # After choosing Read, Unread, Starred or Unstarred in the select menu,
-# which ticks every such line of the list, loaded or not.
+# which ticks such lines on screen; the link then ticks every such line.
 # $pick: "read", "unread", "starred" or "unstarred".
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } read conversation on screen is selected.
+           *[other] All { $count } read conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } read message on screen is selected.
+           *[other] All { $count } read messages on screen are selected.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } unread conversation on screen is selected.
+           *[other] All { $count } unread conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } unread message on screen is selected.
+           *[other] All { $count } unread messages on screen are selected.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } starred conversation on screen is selected.
+           *[other] All { $count } starred conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } starred message on screen is selected.
+           *[other] All { $count } starred messages on screen are selected.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] The { $count } unstarred conversation on screen is selected.
+           *[other] All { $count } unstarred conversations on screen are selected.
+        }
+       *[message] { $count ->
+            [one] The { $count } unstarred message on screen is selected.
+           *[other] All { $count } unstarred messages on screen are selected.
+        }
+    }
+}
+# A link that ticks every such line, not only those on screen.
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } read conversation
+           *[other] Select all { $count } read conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } read message
+           *[other] Select all { $count } read messages
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unread conversation
+           *[other] Select all { $count } unread conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unread message
+           *[other] Select all { $count } unread messages
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } starred conversation
+           *[other] Select all { $count } starred conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } starred message
+           *[other] Select all { $count } starred messages
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unstarred conversation
+           *[other] Select all { $count } unstarred conversations
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unstarred message
+           *[other] Select all { $count } unstarred messages
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } read conversation in { $folder }
+           *[other] Select all { $count } read conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } read message in { $folder }
+           *[other] Select all { $count } read messages in { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unread conversation in { $folder }
+           *[other] Select all { $count } unread conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unread message in { $folder }
+           *[other] Select all { $count } unread messages in { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } starred conversation in { $folder }
+           *[other] Select all { $count } starred conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } starred message in { $folder }
+           *[other] Select all { $count } starred messages in { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Select the { $count } unstarred conversation in { $folder }
+           *[other] Select all { $count } unstarred conversations in { $folder }
+        }
+       *[message] { $count ->
+            [one] Select the { $count } unstarred message in { $folder }
+           *[other] Select all { $count } unstarred messages in { $folder }
+        }
+    }
+}
+# Once the link ticked every such line of the list.
 list-selected-picked = { $pick ->
     [read] { $kind ->
         [conversation] { $count ->
@@ -247,9 +380,17 @@ row-important = Important. Click to mark as not important.
 row-mark-important = Mark as important
 # Tooltip of the pin icon on a pinned line.
 row-pinned = Pinned to the top
+# Tooltips of the eye on a line of mail sent with open and click tracking.
+# $opened and $clicked: how many of its $recipients opened it or followed
+# a link in it.
+row-tracking-none = Tracked. Not opened yet
+row-tracking-opened = Opened by { $opened } of { $recipients }
+row-tracking-clicked = Opened by { $opened } of { $recipients }, a link followed by { $clicked }
 # Tooltips of the pin button shown on a line under the pointer.
 row-pin = Pin to top
 row-unpin = Unpin
+# Tooltip of the time on a snoozed line. $when: date and time it comes back.
+row-snoozed-until = Snoozed until { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -275,6 +416,10 @@ menu-important = Mark as important
 menu-not-important = Mark as not important
 menu-pin = Pin to top
 menu-unpin = Unpin
+# Opens the snooze times.
+menu-snooze = Snooze
+# In the Snoozed folder: brings the mail back to the inbox now.
+menu-unsnooze = Unsnooze
 # Prints every message of the open conversation.
 menu-print-all = Print all
 menu-new-window = Open in new window
@@ -377,6 +522,27 @@ toast-unpinned = { $kind ->
    *[message] { $count ->
         [one] Message unpinned.
        *[other] { $count } messages unpinned.
+    }
+}
+# $when: the date and time the mail comes back.
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation snoozed until { $when }.
+       *[other] { $count } conversations snoozed until { $when }.
+    }
+   *[message] { $count ->
+        [one] Message snoozed until { $when }.
+       *[other] { $count } messages snoozed until { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversation back in the inbox.
+       *[other] { $count } conversations back in the inbox.
+    }
+   *[message] { $count ->
+        [one] Message back in the inbox.
+       *[other] { $count } messages back in the inbox.
     }
 }
 toast-spam = { $kind ->

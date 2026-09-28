@@ -38,6 +38,9 @@ compose-scheduled = Stuur geskeduleer vir { $when }
 compose-sent-archived = Gestuur en geargiveer
 compose-sent = Boodskap gestuur
 compose-discarded = Konsep weggegooi
+compose-draft-saved = Konsep gestoor
+compose-draft-failed = Die konsep kon nie gestoor word nie: { $error }
+compose-draft-not-opened = Die konsep kon nie oopgemaak word nie.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Heg aan
 compose-file-too-large = { $name } is te groot: 'n boodskap kan tot { $limit } dra.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Verwyder aanhegsel
+compose-attachments-total = { $count ->
+    [one] { $count } lêer, { $size }
+   *[other] { $count } lêers, { $size }
+}
 compose-drop-files = Los lêers hier
 compose-drop-here = Los hier
 compose-paste-keep-formatting = Behou formatering
@@ -61,6 +68,12 @@ compose-encrypt = Enkripteer
 compose-encrypted = Geënkripteer: net die ontvangers kan dit lees
 compose-sign = Onderteken
 compose-signed = Onderteken: ontvangers kan nagaan dat dit van jou af kom
+compose-track = Spoor oopmaak en klikke na
+compose-tracked = Nagespoor: jy sien wanneer elke ontvanger dit oopmaak of 'n skakel volg
+compose-track-unavailable = Ondertekende, geënkripteerde en gewoneteks-e-pos kan nie nagespoor word nie
+compose-track-sign-in = Meld by 'n Katna-rekening aan om oopmaak en klikke na te spoor
+compose-receipt = Vra 'n leesbewys
+compose-receipt-on = Leesbewys gevra: die ontvanger se program vra hulle dalk om een te stuur
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Voeg onderwerp by
 send-check-send-anyway = Stuur in elk geval
 recipient-not-valid = Nie 'n geldige e-posadres nie
 recipient-show-address = Wys adres
+recipient-remove = Verwyder
 recipient-bad-title = Gaan die adres na
 recipient-bad-text = “{ $address }” is nie 'n geldige e-posadres nie. Maak dit reg of verwyder dit voor jy stuur.
 recipient-bad-fix = Maak reg

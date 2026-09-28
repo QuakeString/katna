@@ -38,6 +38,9 @@ compose-scheduled = { $when }에 전송 예약됨
 compose-sent-archived = 보내고 보관처리함
 compose-sent = 메일을 보냈습니다
 compose-discarded = 임시보관 메일을 삭제했습니다
+compose-draft-saved = 임시보관함에 저장했습니다
+compose-draft-failed = 임시보관 메일을 저장하지 못했습니다: { $error }
+compose-draft-not-opened = 임시보관 메일을 열지 못했습니다.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = 첨부
 compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에는 최대 { $limit }까지 담을 수 있습니다.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
+compose-attachments-total = 파일 { $count }개, { $size }
 compose-drop-files = 여기에 파일을 놓으세요
 compose-drop-here = 여기에 놓으세요
 compose-paste-keep-formatting = 서식 유지
@@ -61,6 +65,12 @@ compose-encrypt = 암호화
 compose-encrypted = 암호화됨: 받는사람만 읽을 수 있습니다
 compose-sign = 서명
 compose-signed = 서명됨: 받는사람이 보낸 사람이 나인지 확인할 수 있습니다
+compose-track = 열람 및 클릭 추적
+compose-tracked = 추적 중: 받는사람이 각각 언제 메일을 열거나 링크를 클릭했는지 볼 수 있습니다
+compose-track-unavailable = 서명, 암호화 또는 일반 텍스트 메일은 추적할 수 없습니다
+compose-track-sign-in = 열람 및 클릭을 추적하려면 Katna 계정에 로그인하세요
+compose-receipt = 읽음 확인 요청
+compose-receipt-on = 읽음 확인 요청됨: 받는사람의 앱에서 읽음 확인을 보낼지 물어볼 수 있습니다
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = 제목 추가
 send-check-send-anyway = 그래도 보내기
 recipient-not-valid = 올바른 이메일 주소가 아닙니다
 recipient-show-address = 주소 보기
+recipient-remove = 삭제
 recipient-bad-title = 주소를 확인하세요
 recipient-bad-text = “{ $address }”은(는) 올바른 이메일 주소가 아닙니다. 보내기 전에 수정하거나 삭제하세요.
 recipient-bad-fix = 수정

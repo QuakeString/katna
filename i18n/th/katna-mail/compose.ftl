@@ -38,6 +38,9 @@ compose-scheduled = กำหนดเวลาส่งไว้ที่ { $wh
 compose-sent-archived = ส่งและเก็บถาวรแล้ว
 compose-sent = ส่งข้อความแล้ว
 compose-discarded = ทิ้งฉบับร่างแล้ว
+compose-draft-saved = บันทึกฉบับร่างแล้ว
+compose-draft-failed = บันทึกฉบับร่างไม่ได้: { $error }
+compose-draft-not-opened = เปิดฉบับร่างไม่ได้
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = แนบ
 compose-file-too-large = { $name } ใหญ่เกินไป: ข้อความหนึ่งรับได้สูงสุด { $limit }
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
+compose-attachments-total = { $count } ไฟล์ รวม { $size }
 compose-drop-files = วางไฟล์ที่นี่
 compose-drop-here = วางที่นี่
 compose-paste-keep-formatting = คงการจัดรูปแบบไว้
@@ -61,6 +65,12 @@ compose-encrypt = เข้ารหัส
 compose-encrypted = เข้ารหัสแล้ว: มีเพียงผู้รับที่อ่านได้
 compose-sign = ลงลายเซ็น
 compose-signed = ลงลายเซ็นแล้ว: ผู้รับตรวจสอบได้ว่ามาจากคุณ
+compose-track = ติดตามการเปิดและการคลิก
+compose-tracked = ติดตามอยู่: คุณจะเห็นเมื่อผู้รับแต่ละคนเปิดอีเมลหรือคลิกลิงก์
+compose-track-unavailable = อีเมลที่ลงลายเซ็น เข้ารหัส หรือเป็นข้อความธรรมดา ติดตามไม่ได้
+compose-track-sign-in = ลงชื่อเข้าใช้บัญชี Katna เพื่อติดตามการเปิดและการคลิก
+compose-receipt = ขอใบตอบรับการอ่าน
+compose-receipt-on = ขอใบตอบรับการอ่านแล้ว: แอปของผู้รับอาจถามให้เขาส่งกลับมา
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = เพิ่มหัวเรื่อง
 send-check-send-anyway = ส่งเลย
 recipient-not-valid = ไม่ใช่ที่อยู่อีเมลที่ถูกต้อง
 recipient-show-address = แสดงที่อยู่
+recipient-remove = นำออก
 recipient-bad-title = ตรวจสอบที่อยู่
 recipient-bad-text = “{ $address }” ไม่ใช่ที่อยู่อีเมลที่ถูกต้อง โปรดแก้ไขหรือนำออกก่อนส่ง
 recipient-bad-fix = แก้ไข

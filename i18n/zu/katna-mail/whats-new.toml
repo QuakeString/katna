@@ -484,3 +484,247 @@ akho. Imeyili entsha iqala ku-akhawunti yakho yokuqala, ngaphandle uma
 ukhetha enye ezenzakalelayo ku-Izilungiselelo > Bhala > Thumela
 imilayezo emisha ivela ku-.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Ibhokisi lokungenayo elihlanganisiwe"
+text = """
+Vula Izilungiselelo > Ama-akhawunti > Ibhokisi lokungenayo
+elihlanganisiwe ukuze ubone imeyili yawo wonke ama-akhawunti akho
+ndawonye. “Wonke Ama-akhawunti” lihola iphaneli yamafolda: Ibhokisi
+lokungenayo, Okungafundiwe, Okunenkanyezi, Okubalulekile, Okuthunyelwe,
+Okusalungiswa nokunye, okukodwa kuwo wonke ama-akhawunti; umcibisholo
+oseduze kwesinye nesinye uvula umugqa owodwa nge-akhawunti ngayinye.
+Igama le-akhawunti ngayinye manje linomcibisholo ogoqa amafolda ayo.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Amamenyu okuchofoza ngakwesokudla afanela ifolda ngayinye"
+text = """
+Ukukhetha ifolda noma ilebula ngaphansi kokuthi Hambisa ku- kumenyu
+yokuchofoza ngakwesokudla manje kuyayihambisa imeyili, ngokuthi
+Hlehlisa, ngisho nasemiphumeleni yosesho. Ku-Ugaxekile, okuthi Bika
+ugaxekile kuba ngu-Akuyona ugaxekile. Udoti unikeza okuthi Hambisa
+kubhokisi lokungenayo nokuthi Susa unomphela, Ingobo yomlando inikeza
+okuthi Hambisa kubhokisi lokungenayo, kanti Okusalungiswa nokuthi
+Okuthunyelwe kushiya izinto ezingasebenzi lapho.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Hudula ama-akhawunti uwahlele"
+text = """
+Ku-Izilungiselelo > Ama-akhawunti, ukuhudula i-akhawunti manje
+kuphakamisa wonke umugqa wayo, futhi amanye ama-akhawunti ashelela
+eceleni ukwenza isikhala. Okuthi Hambisa phezulu nokuthi Hambisa phansi
+kuvela uma ukhomba umugqa.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Okusalungiswa kuyagcinwa"
+text = """
+Ukuvala umlayezo owubhalayo manje kuwulondoloza ku-Okusalungiswa,
+naseseva yakho yemeyili, njengaku-Gmail. Wuvule ku-Okusalungiswa ukuze
+uqhubeke ubhala. Inkinobho kadoti kuphela eyilahlayo, futhi okuthi
+Hlehlisa kuyibuyisa.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Isikhala sokunamathiselwe okuningi"
+text = """
+Noma ngabe unamathisela amafayela amangaki, uhlu manje luyaskrola
+ngaphezu kwebha ethi Thumela esikhundleni sokuyimboza, lubonisa ifayela
+elisha kakhulu, futhi lusho ukuthi mangaki amafayela nobukhulu bawo
+bebonke.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Khetha imeyili engafundiwe noma enenkanyezi, njengaku-Gmail"
+text = """
+Okufundiwe, Okungafundiwe, Okunenkanyezi kanye no-Okungenankanyezi
+kumenyu ethi Khetha kuphinde kumake imeyili efanayo esesikrinini. Umugqa
+ongaphezu kohlu unikeza ukukhetha yonke ingxoxo efanayo kufolda, futhi
+okuthi Sula okukhethiwe kukuhlehlisa.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Amafolda akukhipha ku-Izilungiselelo"
+text = """
+Uma i-Izilungiselelo ivuliwe, ukuchofoza ifolda noma isithonjana esithi
+Imeyili manje kuvala i-Izilungiselelo bese kuvula leyo folda,
+njengaku-Gmail. Umcibisholo othi Emuva usasebenza futhi.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Yehlisela izithombe embhalweni"
+text = """
+Ukuhudula isithombe phezu komlayezo kubonisa ikhesa lapho sizowela
+khona, ukuze ukwazi ukusiyehlisela phakathi komusho. Amanye amafayela
+asabonisa indawo yokwehlisela okunamathiselwe, futhi ukwehlisela manje
+kuyasebenza nangemva kokuthi uthayiphile.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Okuthi Phuma kuvala ngokushesha"
+text = """
+Okuthi Phuma kumenyu yesithonjana sethileyi akusalindi imeyili
+esavumelaniswa noma esakhelwa inkomba: i-Katna nesithonjana sayo
+sethileyi kuvala ngokushesha, futhi okusele kuqhubeka ngesikhathi
+esilandelayo lapho i-Katna iqala.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Imininingwane yoxhumana naye eceleni kwemeyili yakho"
+text = """
+Ewindini elibanzi, ikhadi eliseceleni kwengxoxo evuliwe manje libonisa
+umthumeli: ifoni yakhe, isikhundla nenkampani kusuka kumasiginesha akhe,
+isikhathi sakhe samanje, ukuthi nishintshisane ngemeyili engakanani,
+izingxoxo zenu zakamuva namafayela aphakathi kwenu. Chofoza ingxoxo noma
+ifayela ukuze ulivule, noma omunye umuntu wengxoxo ukuze umbone.
+Kufundwa kumeyili yakho kule khompyutha kuphela. Inkinobho yoxhumana
+naye kubha yamathuluzi yephaneli yokufunda iyalifihla.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Isitoreji esisetshenzisiwe"
+text = """
+Uma iseva yemeyili ikusho, ingaphansi lephaneli yamafolda libonisa
+ukuthi isitoreji semeyili se-akhawunti sigcwele kangakanani, njengokuthi
+“Kusetshenziswe 34% ku-15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Thola imeyili ku-KRunner nasekusesheni kwe-GNOME"
+text = """
+Thayipha igama ku-KRunner (Alt+Space) noma kusesho lwe-Activities ukuze
+ubhalele lowo muntu, ukopishe ikheli lakhe noma uthole imeyili yakhe.
+Imilayezo iyavela uma isihloko sayo noma umthumeli wayo kunawo wonke
+amagama owathayiphayo; qala nge-mail: ukuze useshe yonke imeyili yakho,
+njengasebhokisini lokusesha le-Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Izifanekiso zemeyili oyibhala kaningi"
+text = """
+Bhala umlayezo kanye bese uwulondoloza ngenkinobho entsha ethi
+Izifanekiso lapho ubhala khona, bese uwufaka kunoma iyiphi imeyili
+entsha noma impendulo ngokuchofoza kanye. Bhala {first name}, {name}
+noma {my name} bese i-Katna ikugcwalisela umamukeli ngamunye. Hlela,
+qamba kabusha noma susa izifanekiso ku-Izilungiselelo > Bhala.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Imeyili ehleliwe iyahamba ngisho noma ikhompyutha yakho icishiwe"
+text = """
+Uma iseva yakho yemeyili ingayibamba imeyili kuze kube yisikhathi
+esibekiwe, njengoba i-Stalwart ikwazi, u-Hlela ukuthumela manje unikeza
+iseva umlayezo uma u-Hlehlisa esenyamalele, ukuze uhambe ngesikhathi
+ngisho noma le khompyutha icishiwe. Imenyu yokuhlela ikutshela ukuthi
+uzothunyelwa iseva yakho yemeyili noma i-Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Ukukhomba okulula kakhulu"
+text = """
+Umugqa ongaphansi kwesikhombi ohlwini lwemeyili manje uyaphakama
+nesithunzi esifiphele, njengaku-Gmail, esikhundleni somugqa omnyama
+ngaphansi kwawo.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Hudula amakheli phakathi kuka-Ku, Cc no-Bcc"
+text = """
+Hudula i-chip yekheli uyise kwenye inkambu ukuze uyihambise; u-Cc
+no-Bcc bayavuleka ngenkathi uhudula, ngisho noma bafihliwe. Ukukhomba
+i-chip kubonisa u-x oyisusayo.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "I-akhawunti ye-Katna"
+text = """
+Izilungiselelo > I-akhawunti ye-Katna ikuvumela ukuthi udale i-akhawunti
+kuseva ye-Katna uqobo, enephasiwedi yayo, hhayi neze iphasiwedi yemeyili.
+Izici ze-inthanethi ze-Katna, njengezaziso zokufunda nokulandelela
+izixhumanisi, zizoyidinga. Ungabona amakhompyutha angenile futhi ukhiphe
+noma iyiphi yawo.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Ubuyela lapho ubukhona"
+text = """
+Ukuvala i-Katna Mail bese uyivula futhi kubuyisa uhlelo lokusebenza,
+ifolda nethebhu yebhokisi lokungenayo obekuvulile, amafolda obuwavulile
+nokuthi iphaneli yamafolda ibigoqiwe yini. Ukuphuma ku-Katna usuka
+kuthreyi kuyiqala kabusha.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Libazisa nezikhumbuzi zezimpendulo"
+text = """
+Libazisa ingxoxo ngewashi elisemugqeni wayo noma kumenyu yokuchofoza
+ngakwesokudla: ilinda kufolda ethi Okulibazisiwe bese ibuyela
+kubhokisi lokungenayo, ingafundiwe, ngesikhathi osikhethile. Uma
+uthumela, umcibisholo oseduze no-Thumela ungakukhumbuza uma kungekho
+ophendulayo zingakapheli izinsuku ezingu-1, 3 noma 7. Kokubili
+kuyasebenza uma ikhompyutha yakho ivuliwe, futhi kuqhubeka nalokho
+okusele ngemva kokuba ivuke.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Funda imeyili ngolimi lwakho"
+text = """
+Umlayezo osolunye ulimi manje ubonisa inkinobho yokuHumusha phezu kwawo,
+futhi u-Bonisa okwangempela uwubuyisela. I-Katna ithola ulimi
+kukhompyutha yakho; umbhalo womlayezo uya kuseva ye-Katna uqobo ukuze
+uhunyushwe kuphela uma ucela. Izilungiselelo > Okuvamile > Ukuhumusha
+kukhetha ulimi lwakho nalezo ezihlale zihunyushwa.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Bona lapho imeyili ivulwa"
+text = """
+Vula iso eliseduze nabamukeli ukuze ubone lapho ngamunye evula umlayezo
+wakho noma elandela isixhumanisi esikuwo, noma esikhundleni salokho cela
+isaziso sokufunda. Imeyili ethunyelwe ibonisa ukuthi ubani oyivulile,
+futhi isaziso sikwazisa okokuqala. Kokubili kuvaliwe kuyo yonke imilayezo
+emisha, futhi ukulandelela kudinga i-akhawunti ye-Katna (Izilungiselelo >
+I-akhawunti ye-Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Umsebenzi wemeyili elandelelwayo"
+text = """
+Umsebenzi eduze nebhokisi lokusesha ubonisa ukuthi mingaki
+imilayezo yakho elandelelwayo evuliwe nokuthi izixhumanisi zayo
+zilandelwe kangaki, izihloko zakho zihlelwe ngokuthi zivulwa kangaki.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Sesha imeyili yakho ku-KRunner ngokuthayipha k"
+text = """
+Thayipha k noma m, isikhala, bese uthayipha okufunayo ku-KRunner noma
+ekusesheni kwe-GNOME ukuze uthole imiphumela efanayo nebhokisi lokusesha
+le-Katna Mail, njengokuthi “k budget”. Khetha awakho amagama
+ku-Izilungiselelo > Okuvamile.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Umsebenzi eduze nebhokisi lokusesha"
+text = """
+Inkinobho ethi Umsebenzi eduze nebhokisi lokusesha ibala ukuvulwa
+nokuchofozwa okusha kwemeyili yakho elandelelwayo futhi ibonise ukuthi
+ubani ovule ini nokuthi yiziphi izixhumanisi azilandele; chofoza okukodwa
+ukuze uvule lowo mlayezo. Imininingwane ibonisa amazinga okuvulwa
+nokuchofozwa, ukuvulwa ngosuku nezihloko zakho ezihamba phambili
+ezinsukwini ezi-7 noma ezingu-30 ezedlule, sonke isikhathi noma izinsuku
+ozikhethayo. Umlayezo othunyelwe manje ubonisa ukuthi umuntu ngamunye
+uwuvule kangaki futhi walandela isixhumanisi kangaki.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Ukuqonda ibhokisi lemeyili"
+text = """
+Umsebenzi > Imininingwane manje ibonisa nokuthi uthumele futhi wamukela
+imeyili engakanani kuleso sikhathi, ukuthi wena nabanye niphendula
+kangaki futhi ngokushesha kangakanani, abantu obabhalela kakhulu,
+nokuthi imeyili yakho ifika ngaziphi izinsuku nangamaphi amahora.
+Kubalwa kukhompyutha yakho kusuka kumeyili i-Katna esenayo kakade.
+"""

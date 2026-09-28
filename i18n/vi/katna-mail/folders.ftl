@@ -9,12 +9,20 @@ nav-folders = Thư mục
 nav-label-new = Tạo nhãn mới
 nav-folder-new = Tạo thư mục mới
 nav-account-unnamed = Tài khoản { $number }
+nav-all-accounts = Tất cả tài khoản
+nav-expand = Hiện thư mục
+nav-collapse = Ẩn thư mục
 nav-tab-new = { $count } thư mới
+storage-used = Đã dùng { $percent }% trong { $total }
+storage-used-detail = { $address }: đã dùng { $used } trong { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Hộp thư đến
 folder-starred = Có gắn dấu sao
+folder-snoozed = Đã tạm ẩn
+folder-unread = Chưa đọc
+folder-important = Quan trọng
 folder-drafts = Thư nháp
 folder-sent = Đã gửi
 folder-archive = Lưu trữ
@@ -22,6 +30,7 @@ folder-spam = Thư rác
 folder-trash = Thùng rác
 folder-all-mail = Tất cả thư
 folder-scheduled = Đã lên lịch
+folder-activity = Hoạt động
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

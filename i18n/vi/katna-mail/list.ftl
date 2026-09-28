@@ -28,6 +28,8 @@ list-move-to = Di chuyển tới
 list-archive = Lưu trữ
 list-spam = Báo cáo thư rác
 list-delete = Xóa
+list-snooze = Tạm ẩn
+list-unsnooze = Bỏ tạm ẩn
 list-newer = Mới hơn
 list-older = Cũ hơn
 list-range = { $first }–{ $last } trong số { $total }
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] Chọn tất cả { $count } cuộc hội thoại trong { $folder }
    *[message] Chọn tất cả { $count } thư trong { $folder }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại đã đọc trên trang này.
+       *[message] Đã chọn tất cả { $count } thư đã đọc trên trang này.
+    }
+   *[unread] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại chưa đọc trên trang này.
+       *[message] Đã chọn tất cả { $count } thư chưa đọc trên trang này.
+    }
+    [starred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại có gắn dấu sao trên trang này.
+       *[message] Đã chọn tất cả { $count } thư có gắn dấu sao trên trang này.
+    }
+    [unstarred] { $kind ->
+        [conversation] Đã chọn tất cả { $count } cuộc hội thoại không có dấu sao trên trang này.
+       *[message] Đã chọn tất cả { $count } thư không có dấu sao trên trang này.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại đã đọc
+       *[message] Chọn tất cả { $count } thư đã đọc
+    }
+   *[unread] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại chưa đọc
+       *[message] Chọn tất cả { $count } thư chưa đọc
+    }
+    [starred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại có gắn dấu sao
+       *[message] Chọn tất cả { $count } thư có gắn dấu sao
+    }
+    [unstarred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại không có dấu sao
+       *[message] Chọn tất cả { $count } thư không có dấu sao
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại đã đọc trong { $folder }
+       *[message] Chọn tất cả { $count } thư đã đọc trong { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại chưa đọc trong { $folder }
+       *[message] Chọn tất cả { $count } thư chưa đọc trong { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại có gắn dấu sao trong { $folder }
+       *[message] Chọn tất cả { $count } thư có gắn dấu sao trong { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Chọn tất cả { $count } cuộc hội thoại không có dấu sao trong { $folder }
+       *[message] Chọn tất cả { $count } thư không có dấu sao trong { $folder }
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = Không có dấu sao
 row-important = Quan trọng. Nhấp để đánh dấu là không quan trọng.
 row-mark-important = Đánh dấu là quan trọng
 row-pinned = Đã ghim lên đầu
+row-tracking-none = Đang theo dõi. Chưa ai mở
+row-tracking-opened = { $opened } trên { $recipients } người đã mở
+row-tracking-clicked = { $opened } trên { $recipients } người đã mở, { $clicked } người đã mở liên kết
 row-pin = Ghim lên đầu
 row-unpin = Bỏ ghim
+row-snoozed-until = Tạm ẩn đến { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = Trả lời tất cả
 menu-forward = Chuyển tiếp
 menu-archive = Lưu trữ
 menu-delete = Xóa
+menu-delete-forever = Xóa vĩnh viễn
+menu-move-to-inbox = Chuyển vào Hộp thư đến
 menu-spam = Báo cáo thư rác
+menu-not-spam = Không phải thư rác
 menu-mark-read = Đánh dấu là đã đọc
 menu-mark-unread = Đánh dấu là chưa đọc
 menu-mark-all-read = Đánh dấu tất cả là đã đọc
@@ -162,6 +225,8 @@ menu-important = Đánh dấu là quan trọng
 menu-not-important = Đánh dấu là không quan trọng
 menu-pin = Ghim lên đầu
 menu-unpin = Bỏ ghim
+menu-snooze = Tạm ẩn
+menu-unsnooze = Bỏ tạm ẩn
 menu-print-all = In tất cả
 menu-new-window = Mở trong cửa sổ mới
 menu-move-to = Di chuyển tới
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] Đã bỏ ghim { $count } cuộc hội thoại.
    *[message] Đã bỏ ghim { $count } thư.
 }
+toast-snoozed = { $kind ->
+    [conversation] Đã tạm ẩn { $count } cuộc hội thoại đến { $when }.
+   *[message] Đã tạm ẩn { $count } thư đến { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] Đã đưa { $count } cuộc hội thoại trở lại Hộp thư đến.
+   *[message] Đã đưa { $count } thư trở lại Hộp thư đến.
+}
 toast-spam = { $kind ->
     [conversation] Đã báo cáo { $count } cuộc hội thoại là thư rác.
    *[message] Đã báo cáo { $count } thư là thư rác.
+}
+toast-not-spam = { $kind ->
+    [conversation] Đã đánh dấu { $count } cuộc hội thoại không phải thư rác và chuyển vào hộp thư đến.
+   *[message] Đã đánh dấu { $count } thư không phải thư rác và chuyển vào hộp thư đến.
 }
 toast-deleted-forever = { $kind ->
     [conversation] Đã xóa vĩnh viễn { $count } cuộc hội thoại.

@@ -7,6 +7,7 @@
 settings-tab-general = ทั่วไป
 settings-tab-inbox = กล่องจดหมาย
 settings-tab-accounts = บัญชี
+settings-tab-katna-account = บัญชี Katna
 settings-tab-subscriptions = การสมัครรับข้อมูล
 settings-tab-appearance = ลักษณะที่ปรากฏ
 settings-tab-shortcuts = แป้นพิมพ์ลัด
@@ -35,6 +36,14 @@ settings-general-full-headers = แสดงส่วนหัวแบบเต
 settings-general-full-headers-detail = แสดงจาก ถึง สำเนา วันที่ และหัวเรื่องในทุกข้อความ
 settings-general-full-names = ชื่อเต็มของผู้รับ
 settings-general-full-names-detail = “ถึง ฉัน, Ada Lovelace” แทน “ถึง ฉัน, Ada”
+settings-translation = การแปล
+settings-translation-detail = อ่านอีเมลภาษาอื่นเป็นภาษาของคุณได้
+settings-translation-offer = เสนอให้แปล
+settings-translation-offer-detail = เนื้อหาของข้อความจะส่งไปยังเซิร์ฟเวอร์ของ Katna เพื่อแปล เฉพาะเมื่อคุณขอหรือเลือกแปลภาษานั้นเสมอ ไฟล์แนบจะไม่ถูกส่งไปเลย
+settings-translation-reading = แปลเป็น
+settings-translation-always = แปลเสมอ
+settings-translation-never = ไม่ต้องเสนอสำหรับ
+settings-translation-none = ยังไม่มี เลือกได้จากแถบแปลของข้อความ
 settings-general-mark-read = ทำเครื่องหมายว่าอ่านแล้ว
 settings-general-mark-read-now = ทันทีที่เปิด
 settings-general-mark-read-1s = หลังจากเปิดไว้ 1 วินาที
@@ -77,6 +86,9 @@ settings-general-tray = แสดง Katna ในถาดระบบ
 settings-general-tray-detail = พร้อมจำนวนที่ยังไม่อ่านและเมนู
 settings-general-unread-badge = จำนวนที่ยังไม่อ่านบนไอคอนในแถบงาน
 settings-general-unread-badge-detail = จำนวนข้อความในกล่องจดหมายที่ยังไม่อ่าน
+settings-general-search-triggers = ค้นหาจากเดสก์ท็อป
+settings-general-search-triggers-detail = พิมพ์คำใดคำหนึ่งเหล่านี้และเว้นวรรคใน KRunner หรือการค้นหาของ GNOME แล้วตามด้วยสิ่งที่ต้องการหา เพื่อค้นหาอีเมลเหมือนช่องค้นหาที่นี่ คั่นคำด้วยจุลภาค
+settings-general-search-triggers-none = ไม่มีคำ ใช้ได้เฉพาะ “mail:”
 
 ## Settings > Inbox
 
@@ -182,6 +194,19 @@ settings-compose-spell-check-detail = คำที่สะกดผิดจะ
 settings-compose-spell-desktop = ภาษาของเดสก์ท็อป ({ $language })
 settings-compose-templates = เทมเพลต
 settings-compose-templates-detail = บันทึกอีเมลที่คุณเขียนบ่อย และใช้เริ่มอีเมลใหม่หรือการตอบกลับ
+settings-compose-no-templates = ยังไม่มีเทมเพลต ในข้อความ ให้เลือก “เทมเพลต” แล้วเลือก “บันทึกเป็นเทมเพลต”
+settings-compose-template-new = สร้างใหม่
+settings-compose-template-new-name = เทมเพลตใหม่
+settings-compose-template-subject = หัวเรื่อง
+settings-compose-template-text = ข้อความเทมเพลต
+settings-compose-template-fields = {"{"}first name{"}"} {"{"}name{"}"} และ {"{"}my name{"}"} จะถูกเติมด้วยชื่อของผู้รับและชื่อของคุณ
+settings-compose-template-remove-file = นำไฟล์แนบออก
+settings-compose-template-save = บันทึก
+settings-compose-template-saved = บันทึกเทมเพลตแล้ว
+settings-compose-template-needs-name = ตั้งชื่อให้เทมเพลต
+settings-compose-template-delete = ลบเทมเพลต
+settings-compose-template-deleted = ลบเทมเพลตแล้ว
+settings-compose-template-delete-failed = ลบเทมเพลตไม่ได้: { $error }
 
 ## Settings > Shortcuts
 
@@ -204,6 +229,7 @@ settings-shortcuts-restored = แป้นพิมพ์ลัดทั้ง�
 
 settings-general-language-summary = ภาษาของแอป วันที่ และตัวเลข
 settings-general-reading-summary = ข้อความใหม่สุดก่อน ส่วนหัวแบบเต็ม ชื่อเต็มของผู้รับ
+settings-translation-summary = แปลอีเมลภาษาอื่นด้วยเซิร์ฟเวอร์ของ Katna เป็นภาษาที่คุณเลือก
 settings-general-mark-read-summary = เวลาที่การสนทนาที่เปิดถูกทำเครื่องหมายว่าอ่านแล้ว: ทันที หลัง 1 หรือ 3 วินาที หรือทำเอง
 settings-general-auto-advance-summary = สิ่งที่จะเปิดหลังจากคุณลบ เก็บถาวร หรือย้ายการสนทนาที่เปิดอยู่: การสนทนาถัดไป ก่อนหน้า หรือรายการ
 settings-general-reply-button-summary = ปุ่มตอบกลับข้างแต่ละข้อความจะตอบกลับทุกคน
@@ -236,7 +262,8 @@ settings-compose-for-new-mail-summary = ลายเซ็นที่ใช้�
 settings-compose-for-replies-summary = ลายเซ็นที่ใช้เริ่มการตอบกลับและการส่งต่อ
 settings-compose-format-summary = เขียนอีเมลใหม่เป็นข้อความธรรมดา
 settings-compose-spelling-summary = ตรวจการสะกดขณะเขียน และภาษาของพจนานุกรม
-settings-compose-templates-summary = เร็วๆ นี้: บันทึกอีเมลที่คุณเขียนบ่อย และใช้เริ่มอีเมลใหม่หรือการตอบกลับ
+settings-general-search-triggers-summary = คำที่ใช้ค้นหาอีเมลจาก KRunner หรือการค้นหาของ GNOME
+settings-compose-templates-summary = บันทึกอีเมลที่คุณเขียนบ่อย และใช้เริ่มอีเมลใหม่หรือการตอบกลับ
 settings-feedback-crash-reports-summary = บันทึกรายงานข้อขัดข้องไว้ในคอมพิวเตอร์เครื่องนี้เมื่อ Katna Mail หรือบริการเบื้องหลังขัดข้อง
 settings-feedback-saved-summary = ดู คัดลอก หรือลบรายงานข้อขัดข้องที่บันทึกไว้ในคอมพิวเตอร์เครื่องนี้
 settings-feedback-help-improve-summary = ส่งรายงานข้อขัดข้องเพื่อช่วยแก้ไขปัญหา ปิดอยู่จนกว่าคุณจะเปิด

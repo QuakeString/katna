@@ -38,6 +38,9 @@ compose-scheduled = { $when } માટે મોકલવાનું શેડ
 compose-sent-archived = મોકલ્યો અને આર્કાઇવ કર્યો
 compose-sent = મેસેજ મોકલ્યો
 compose-discarded = ડ્રાફ્ટ કાઢી નાખ્યો
+compose-draft-saved = ડ્રાફ્ટ સેવ કર્યો
+compose-draft-failed = ડ્રાફ્ટ સેવ કરી શકાયો નહીં: { $error }
+compose-draft-not-opened = ડ્રાફ્ટ ખોલી શકાયો નહીં.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = જોડો
 compose-file-too-large = { $name } ખૂબ મોટી છે: એક મેસેજમાં વધુમાં વધુ { $limit } સમાઈ શકે.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = જોડાણ દૂર કરો
+compose-attachments-total = { $count ->
+    [one] { $count } ફાઇલ, { $size }
+   *[other] { $count } ફાઇલ, { $size }
+}
 compose-drop-files = ફાઇલો અહીં મૂકો
 compose-drop-here = અહીં મૂકો
 compose-paste-keep-formatting = ફૉર્મેટિંગ રાખો
@@ -61,6 +68,12 @@ compose-encrypt = એન્ક્રિપ્ટ કરો
 compose-encrypted = એન્ક્રિપ્ટ કરેલો: માત્ર પ્રાપ્તકર્તાઓ જ તે વાંચી શકે
 compose-sign = હસ્તાક્ષર કરો
 compose-signed = હસ્તાક્ષરિત: પ્રાપ્તકર્તાઓ ચકાસી શકે કે તે તમારા તરફથી છે
+compose-track = ખોલવાનું અને ક્લિક ટ્રૅક કરો
+compose-tracked = ટ્રૅક થાય છે: દરેક પ્રાપ્તકર્તા તેને ક્યારે ખોલે છે કે લિંક ખોલે છે, તે તમે જોશો
+compose-track-unavailable = હસ્તાક્ષરિત, એન્ક્રિપ્ટ કરેલી અને સાદા ટેક્સ્ટની મેઇલ ટ્રૅક કરી શકાતી નથી
+compose-track-sign-in = ખોલવાનું અને ક્લિક ટ્રૅક કરવા Katna એકાઉન્ટમાં સાઇન ઇન કરો
+compose-receipt = વાંચ્યાની રસીદ માગો
+compose-receipt-on = વાંચ્યાની રસીદ માગી છે: પ્રાપ્તકર્તાની ઍપ તેમને રસીદ મોકલવા કહી શકે છે
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = વિષય ઉમેરો
 send-check-send-anyway = તો પણ મોકલો
 recipient-not-valid = માન્ય ઇમેઇલ સરનામું નથી
 recipient-show-address = સરનામું બતાવો
+recipient-remove = કાઢી નાખો
 recipient-bad-title = સરનામું તપાસો
 recipient-bad-text = “{ $address }” માન્ય ઇમેઇલ સરનામું નથી. મોકલતા પહેલાં તેને સુધારો અથવા કાઢી નાખો.
 recipient-bad-fix = સુધારો

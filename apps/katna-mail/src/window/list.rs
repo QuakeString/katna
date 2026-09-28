@@ -40,6 +40,7 @@ use super::reader::Squeeze;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row, RowFile};
 use crate::format;
+use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
@@ -48,6 +49,31 @@ use crate::widgets::{
 
 const TAB_HEIGHT: f32 = 56.0;
 const TAB_MAX_WIDTH: f32 = 240.0;
+
+/// What Read, Unread, Starred or Unstarred in the select menu ticked: the
+/// matching lines on screen, then, from the banner's link, every matching
+/// line of the list, as Gmail does.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct Picked {
+    pub pick: Pick,
+    /// Matching lines on screen, ticked first.
+    pub on_screen: usize,
+    /// Every matching line of the list, loaded or not, for the link.
+    pub all: Vec<EntryKey>,
+    /// `all` is ticked, not only the lines on screen.
+    pub whole: bool,
+}
+
+impl Picked {
+    /// How many lines are ticked while this pick still holds.
+    fn ticked(&self) -> usize {
+        if self.whole {
+            self.all.len()
+        } else {
+            self.on_screen
+        }
+    }
+}
 
 /// What the select menu ticks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -955,7 +981,8 @@ impl MailWindow {
                     self.checked_all = true;
                 }
             }
-            // Every matching line of the list, loaded on screen or not.
+            // The matching lines on screen; the banner offers every
+            // matching line of the list, loaded or not.
             Pick::Read | Pick::Unread | Pick::Starred | Pick::Unstarred => {
                 let folder = self.listed_folder();
                 let show_recipients = self.show_recipients;
@@ -963,7 +990,10 @@ impl MailWindow {
                     Ok(mail) => mail.marks(&self.entries, folder, show_recipients),
                     Err(_) => Vec::new(),
                 };
-                for (entry, marks) in self.entries.iter().zip(marks) {
+                let visible = self.visible.start.min(self.entries.len())
+                    ..self.visible.end.min(self.entries.len());
+                let mut all = Vec::new();
+                for (ix, (entry, marks)) in self.entries.iter().zip(marks).enumerate() {
                     let pending = self.pending.get(&entry.key);
                     let unread = pending.and_then(|p| p.unread).unwrap_or(marks.unread);
                     let flagged = pending.and_then(|p| p.flagged).unwrap_or(marks.flagged);
@@ -974,17 +1004,31 @@ impl MailWindow {
                         _ => !flagged,
                     };
                     if take {
-                        self.checked.insert(entry.key);
+                        all.push(entry.key);
+                        if visible.contains(&ix) {
+                            self.checked.insert(entry.key);
+                        }
                     }
                 }
-                if self.checked.is_empty() {
+                if all.is_empty() {
                     self.show_snackbar(
                         pick_none_text(pick, self.config.mail.conversations),
                         None,
                         cx,
                     );
                 } else {
-                    self.picked = Some((pick, self.checked.len()));
+                    // None on screen: nothing to offer beyond, so take
+                    // them all at once.
+                    let whole = self.checked.is_empty() || self.checked.len() == all.len();
+                    if whole {
+                        self.checked.extend(all.iter().copied());
+                    }
+                    self.picked = Some(Picked {
+                        pick,
+                        on_screen: self.checked.len(),
+                        all,
+                        whole,
+                    });
                 }
             }
         }
@@ -998,8 +1042,8 @@ impl MailWindow {
         let page_checked = on_screen > 0 && self.page_pick == Some(on_screen);
         let picked = self
             .picked
-            .filter(|&(_, count)| count > 0 && count == on_screen)
-            .map(|(pick, _)| pick);
+            .as_ref()
+            .filter(|p| p.ticked() > 0 && p.ticked() == on_screen);
         if !(self.checked_all || page_checked || picked.is_some()) {
             return None;
         }
@@ -1011,24 +1055,51 @@ impl MailWindow {
         let folder = self.folder_name();
         let total = self.entries.len() as u64;
         let (text, link) = match (self.checked_all, folder) {
-            (false, folder) if let Some(pick) = picked => (
-                match folder {
-                    Some(folder) => tr!(
-                        "list-selected-picked-in",
-                        pick = pick_name(pick),
-                        count = on_screen as u64,
-                        kind = kind,
-                        folder = folder
+            (false, folder) if let Some(picked) = picked => {
+                let pick = pick_name(picked.pick);
+                let all = picked.all.len() as u64;
+                match (picked.whole, folder) {
+                    (true, Some(folder)) => (
+                        tr!(
+                            "list-selected-picked-in",
+                            pick = pick,
+                            count = all,
+                            kind = kind,
+                            folder = folder
+                        ),
+                        tr!("list-clear-selection"),
                     ),
-                    None => tr!(
-                        "list-selected-picked",
-                        pick = pick_name(pick),
-                        count = on_screen as u64,
-                        kind = kind
+                    (true, None) => (
+                        tr!(
+                            "list-selected-picked",
+                            pick = pick,
+                            count = all,
+                            kind = kind
+                        ),
+                        tr!("list-clear-selection"),
                     ),
-                },
-                tr!("list-clear-selection"),
-            ),
+                    (false, folder) => (
+                        tr!(
+                            "list-selected-picked-screen",
+                            pick = pick,
+                            count = on_screen as u64,
+                            kind = kind
+                        ),
+                        match folder {
+                            Some(folder) => tr!(
+                                "list-select-picked-in",
+                                pick = pick,
+                                count = all,
+                                kind = kind,
+                                folder = folder
+                            ),
+                            None => {
+                                tr!("list-select-picked", pick = pick, count = all, kind = kind)
+                            }
+                        },
+                    ),
+                }
+            }
             (true, Some(folder)) => (
                 tr!(
                     "list-selected-all-in",
@@ -1080,10 +1151,19 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .cursor_pointer()
                         .on_click(cx.listener(|this, _, _, cx| {
+                            let ticked = this.checked.len();
                             let picked = this
                                 .picked
-                                .is_some_and(|(_, count)| count == this.checked.len());
-                            if this.checked_all || picked {
+                                .as_ref()
+                                .filter(|p| p.ticked() == ticked)
+                                .map(|p| p.whole);
+                            if picked == Some(false)
+                                && let Some(picked) = this.picked.as_mut()
+                            {
+                                // "Select all 2,000 unread conversations".
+                                this.checked.extend(picked.all.iter().copied());
+                                picked.whole = true;
+                            } else if this.checked_all || picked.is_some() {
                                 this.checked.clear();
                                 this.checked_all = false;
                                 this.page_pick = None;
@@ -1328,7 +1408,7 @@ impl MailWindow {
                     .top_0()
                     .left_0()
                     .right_0()
-                    .h(px(8.0))
+                    .h(px(4.0))
                     .with_spring(
                         ("row-drop", ix),
                         SpringAnimation::new(ROW_LIFT).to(if under_hovered { 1.0 } else { 0.0 }),
@@ -1338,7 +1418,7 @@ impl MailWindow {
                                 el.bg(linear_gradient(
                                     180.0,
                                     linear_color_stop(
-                                        rgba(fade(shadow, 0.7 * s.clamp(0.0, 1.0))),
+                                        rgba(fade(shadow, 0.3 * s.clamp(0.0, 1.0))),
                                         0.0,
                                     ),
                                     linear_color_stop(rgba(fade(shadow, 0.0)), 1.0),
@@ -1381,17 +1461,17 @@ impl MailWindow {
                     if s > 0.001 {
                         el.bg(rgba(mix(background, lit, s))).shadow(vec![
                             BoxShadow {
-                                color: rgba(fade(shadow, 0.9 * s)).into(),
+                                color: rgba(fade(shadow, 0.5 * s)).into(),
                                 offset: point(px(0.0), px(1.0)),
-                                blur_radius: px(3.0),
+                                blur_radius: px(2.0),
                                 spread_radius: px(0.0),
                                 inset: false,
                             },
                             BoxShadow {
-                                color: rgba(fade(shadow, 0.5 * s)).into(),
-                                offset: point(px(0.0), px(2.0 * s)),
-                                blur_radius: px(8.0),
-                                spread_radius: px(1.0),
+                                color: rgba(fade(shadow, 0.25 * s)).into(),
+                                offset: point(px(0.0), px(1.0 * s)),
+                                blur_radius: px(3.0),
+                                spread_radius: px(0.0),
                                 inset: false,
                             },
                         ])
@@ -1411,8 +1491,10 @@ impl MailWindow {
             );
         };
         let now = jiff::Timestamp::now().as_second();
+        // Snoozed mail shows when it comes back instead.
         let date = row
-            .date
+            .snoozed_until
+            .or(row.date)
             .and_then(|d| format::local(d, &self.tz))
             .zip(format::local(now, &self.tz))
             .map(|(d, now)| format::list_date(d, now))
@@ -1568,7 +1650,26 @@ impl MailWindow {
                         .child(icon("pin-filled", th.accent, 16.0)),
                 )
             })
-            .child(date);
+            .map(|d| match row.snoozed_until {
+                Some(until) => d.text_color(rgba(th.accent)).child(
+                    div()
+                        .id(("row-snoozed", ix))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(4.0))
+                        .tooltip(tip(
+                            tr!(
+                                "row-snoozed-until",
+                                when = super::snooze::describe(until, &self.tz)
+                            ),
+                            th,
+                        ))
+                        .child(icon("schedule", th.accent, 16.0))
+                        .child(date),
+                ),
+                None => d.child(date),
+            });
 
         if stacked {
             let line_h = (line_height - 16.0) / 3.0;
@@ -1663,9 +1764,13 @@ impl MailWindow {
                                 .children(marker)
                                 .child(star)
                         })))
-                        .child(line(snippet).when(row.attachments && !has_chips, |d| {
-                            d.child(icon("attachment", th.text_faint, 16.0))
-                        }))
+                        .child(
+                            line(snippet)
+                                .when(row.attachments && !has_chips, |d| {
+                                    d.child(icon("attachment", th.text_faint, 16.0))
+                                })
+                                .children(tracking_mark(ix, &row, 16.0, th)),
+                        )
                         .when(has_chips, |d| {
                             let room = self.list_width() - lead_width - 12.0;
                             d.child(self.file_chips(ix, &row, 0.0, room, th, cx))
@@ -1727,6 +1832,7 @@ impl MailWindow {
                         .child(icon("attachment", th.text_faint, 18.0)),
                 )
             })
+            .children(tracking_mark(ix, &row, 18.0, th).map(|mark| div().pl(px(8.0)).child(mark)))
             .child(
                 div()
                     .flex_none()
@@ -1951,8 +2057,8 @@ impl MailWindow {
         [scrim, popover]
     }
 
-    /// Archive, delete, read/unread and pin buttons shown on the hovered
-    /// line in place of its date.
+    /// Archive, delete, read/unread, pin and snooze buttons shown on the
+    /// hovered line in place of its date.
     fn hover_actions(
         &self,
         ix: usize,
@@ -1963,7 +2069,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let button = |id: usize, name: &str, label: String| {
-            icon_button_colored(("row-action", ix * 4 + id), name, 18.0, th.text_dim, th)
+            icon_button_colored(("row-action", ix * 5 + id), name, 18.0, th.text_dim, th)
                 .size(px(32.0))
                 .tooltip(tip(label, th))
         };
@@ -2015,6 +2121,23 @@ impl MailWindow {
                     this.act(Act::Pin(!pinned), vec![key], cx);
                 })),
             )
+            .map(|d| match self.folder_role() {
+                Role::Snoozed => d.child(button(4, "inbox", tr!("list-unsnooze")).on_click(
+                    cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.act(Act::Unsnooze, vec![key], cx);
+                    }),
+                )),
+                Role::Drafts | Role::Sent | Role::Trash | Role::Junk => d,
+                _ => d.child(
+                    button(4, "schedule", tr!("list-snooze")).on_click(cx.listener(
+                        move |this, event: &gpui::ClickEvent, _, cx| {
+                            cx.stop_propagation();
+                            this.open_snooze_menu(vec![key], event.position(), cx);
+                        },
+                    )),
+                ),
+            })
             .with_animation(
                 ("row-actions", ix),
                 Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
@@ -2115,4 +2238,39 @@ fn pick_none_text(pick: Pick, conversations: bool) -> String {
         "message"
     };
     tr!("list-picked-none", pick = pick_name(pick), kind = kind)
+}
+
+/// The eye on a line of mail sent with open and click tracking: in the
+/// accent color once a recipient opened it, with who did in its tooltip.
+fn tracking_mark(ix: usize, row: &Row, size: f32, th: &Theme) -> Option<AnyElement> {
+    let tracked = row.tracking?;
+    let text = if tracked.clicked > 0 {
+        tr!(
+            "row-tracking-clicked",
+            opened = tracked.opened,
+            recipients = tracked.recipients,
+            clicked = tracked.clicked
+        )
+    } else if tracked.opened > 0 {
+        tr!(
+            "row-tracking-opened",
+            opened = tracked.opened,
+            recipients = tracked.recipients
+        )
+    } else {
+        tr!("row-tracking-none")
+    };
+    let color = if tracked.opened > 0 {
+        th.accent
+    } else {
+        th.text_faint
+    };
+    Some(
+        div()
+            .id(("row-tracking", ix))
+            .flex_none()
+            .child(icon("eye", color, size))
+            .tooltip(tip(text, th))
+            .into_any_element(),
+    )
 }

@@ -11,6 +11,11 @@ notify-new-emails = { $count ->
 notify-and-more = እና { $count } ተጨማሪ
 notify-no-subject = (ርዕሰ ጉዳይ የለም)
 notify-unknown-sender = ያልታወቀ ላኪ
+notify-snooze-back = ከማሸለብ ተመልሷል
+notify-no-reply = እስካሁን ምላሽ የለም
+notify-no-reply-to = ለ«{ $subject }» ማንም አልመለሰም።
+notify-tracking-opened = { $who } { $subject }ን ከፈተ
+notify-tracking-clicked = { $who } በ{ $subject } ውስጥ ያለ አገናኝ ጠቅ አደረገ
 
 ## Its buttons
 

@@ -38,6 +38,9 @@ compose-scheduled = { $when } ལུ་གཏང་ནི་གི་དུས�
 compose-sent-archived = བཏང་སྟེ་ཡིག་མཛོད་ནང་བཙུགས་ཡི
 compose-sent = འཕྲིན་དོན་བཏང་ཡི
 compose-discarded = ཟིན་བྲིས་བཏོན་གཏང་ཡི
+compose-draft-saved = ཟིན་བྲིས་སྲུང་བཞག་འབད་ཡི
+compose-draft-failed = ཟིན་བྲིས་སྲུང་བཞག་འབད་མ་ཚུགས: { $error }
+compose-draft-not-opened = ཟིན་བྲིས་ཁ་ཕྱེ་མ་ཚུགས།
 
 ## Attachments
 
@@ -46,6 +49,9 @@ compose-picker-attach = མཉམ་སྦྲགས།
 compose-file-too-large = { $name } འདི་ སྦོམ་དྲགས་པས། འཕྲིན་དོན་ཅིག་ནང་ { $limit } ཚུན་འབག་ཚུགས།
 compose-attachment-size = ({ $size })
 compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
+compose-attachments-total = { $count ->
+   *[other] ཡིག་སྣོད་ { $count }། { $size }
+}
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
 compose-drop-here = ནཱ་ལུ་བཀོག
 compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག
@@ -61,6 +67,12 @@ compose-encrypt = གསང་བཟོ་འབད།
 compose-encrypted = གསང་བཟོ་འབད་ཡོདཔ: ལེན་མི་ཚུ་གིས་རྐྱངམ་ཅིག་ ལྷག་ཚུགས
 compose-sign = མིང་རྟགས་བཀོད།
 compose-signed = མིང་རྟགས་བཀོད་ཡོདཔ: ལེན་མི་ཚུ་གིས་ ཁྱོད་ལས་ཨིནམ་ཞིབ་དཔྱད་འབད་ཚུགས
+compose-track = ཁ་ཕྱེ་མི་དང་ ཨེབ་གཏང་ཚུ་ རྗེས་འཚོལ་འབད།
+compose-tracked = རྗེས་འཚོལ་འབད་དོ: ལེན་མི་རེ་རེ་གིས་ ནམ་ཁ་ཕྱེཝ་ཨིན་ན་ ཡང་ན་ འབྲེལ་མཐུད་ནམ་ཁ་ཕྱེཝ་ཨིན་ན་ ཁྱོད་ཀྱིས་མཐོང་འོང་།
+compose-track-unavailable = མིང་རྟགས་བཀོད་མི་ གསང་བཟོ་འབད་མི་ དེ་ལས་ ཚིག་ཡིག་རྐྱང་པའི་གློག་འཕྲིན་ཚུ་ རྗེས་འཚོལ་འབད་མི་ཚུགས།
+compose-track-sign-in = ཁ་ཕྱེ་མི་དང་ ཨེབ་གཏང་ཚུ་ རྗེས་འཚོལ་འབད་ནིའི་དོན་ལུ་ Katna རྩིས་ཐོ་ནང་ ནང་བསྐྱོད་འབད།
+compose-receipt = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་ ཞུ།
+compose-receipt-on = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་ཞུ་ཡོདཔ: ལེན་མི་གི་གློག་རིམ་གྱིས་ ཁོང་ལུ་ གཏང་ནི་ཨིན་ན་ འདྲི་འོང་།
 
 ## Spelling
 
@@ -85,6 +97,7 @@ send-check-add-subject = དོན་ཚན་ཁ་སྐོང་རྐྱབ�
 send-check-send-anyway = ག་དེ་འབད་རུང་གཏང་།
 recipient-not-valid = ནུས་ཅན་གྱི་གློག་འཕྲིན་ཁ་བྱང་མེན།
 recipient-show-address = ཁ་བྱང་སྟོན།
+recipient-remove = བཏོན།
 recipient-bad-title = ཁ་བྱང་ཞིབ་དཔྱད་འབད།
 recipient-bad-text = “{ $address }” འདི་ ནུས་ཅན་གྱི་གློག་འཕྲིན་ཁ་བྱང་མེན། མ་གཏང་བའི་ཧེ་མ་ ནོར་བཅོས་འབད་ ཡང་ན་ བཏོན་གཏང་།
 recipient-bad-fix = ནོར་བཅོས་འབད།

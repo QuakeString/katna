@@ -38,6 +38,9 @@ compose-scheduled = { $when } に送信予約しました
 compose-sent-archived = 送信してアーカイブしました
 compose-sent = メッセージを送信しました
 compose-discarded = 下書きを破棄しました
+compose-draft-saved = 下書きを保存しました
+compose-draft-failed = 下書きを保存できませんでした: { $error }
+compose-draft-not-opened = 下書きを開けませんでした。
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = 添付
 compose-file-too-large = { $name } は大きすぎます。1 通のメッセージに添付できるのは { $limit } までです。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
+compose-attachments-total = ファイル { $count } 個、{ $size }
 compose-drop-files = ここにファイルをドロップ
 compose-drop-here = ここにドロップ
 compose-paste-keep-formatting = 書式を保持
@@ -61,6 +65,12 @@ compose-encrypt = 暗号化
 compose-encrypted = 暗号化済み: 受信者だけが読めます
 compose-sign = 署名
 compose-signed = 署名済み: あなたからのメールであることを受信者が確認できます
+compose-track = 開封とクリックを追跡
+compose-tracked = 追跡中: 各宛先がいつメールを開いたか、リンクをクリックしたかがわかります
+compose-track-unavailable = 署名付き、暗号化、プレーンテキストのメールは追跡できません
+compose-track-sign-in = 開封とクリックを追跡するには Katna アカウントにサインインしてください
+compose-receipt = 開封確認を要求
+compose-receipt-on = 開封確認を要求しました: 受信者のアプリで、開封確認を送るかどうか尋ねられる場合があります
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = 件名を追加
 send-check-send-anyway = このまま送信
 recipient-not-valid = 有効なメールアドレスではありません
 recipient-show-address = アドレスを表示
+recipient-remove = 削除
 recipient-bad-title = アドレスを確認してください
 recipient-bad-text = 「{ $address }」は有効なメールアドレスではありません。送信する前に修正するか削除してください。
 recipient-bad-fix = 修正

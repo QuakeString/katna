@@ -262,6 +262,29 @@ impl MailBatch<'_> {
         Ok(moved)
     }
 
+    /// Adds `message` to `folder` as well, where its UID is `uid` (`None`
+    /// until the server reports it): a copy, or a Gmail label. Returns
+    /// whether it was not there yet.
+    pub fn add_location(
+        &mut self,
+        message: MessageId,
+        folder: FolderId,
+        uid: Option<u32>,
+    ) -> Result<bool> {
+        let tx = self.tx();
+        let added = tx
+            .prepare_cached(
+                "INSERT OR IGNORE INTO message_location (message_id, folder_id, uid)
+                 VALUES (?1, ?2, ?3)",
+            )?
+            .execute(params![message.0, folder.0, uid])?
+            > 0;
+        if added {
+            journal::record(tx, ObjectKind::Message, message.0, ChangeOp::Update)?;
+        }
+        Ok(added)
+    }
+
     /// The message in `folder` with no known UID yet, if any: a local move
     /// the server has not confirmed.
     pub fn unconfirmed_in(&self, message: MessageId, folder: FolderId) -> Result<bool> {

@@ -28,6 +28,8 @@ list-move-to = ຍ້າຍໄປທີ່
 list-archive = ຈັດເກັບ
 list-spam = ລາຍງານສະແປມ
 list-delete = ລຶບ
+list-snooze = ເລື່ອນເວລາ
+list-unsnooze = ຍົກເລີກການເລື່ອນເວລາ
 list-newer = ໃໝ່ກວ່າ
 list-older = ເກົ່າກວ່າ
 list-range = { $first }–{ $last } ຈາກ { $total }
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] ເລືອກການສົນທະນາທັງໝົດ { $count } ລາຍການໃນ { $folder }
    *[message] ເລືອກຂໍ້ຄວາມທັງໝົດ { $count } ລາຍການໃນ { $folder }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນໜ້ານີ້ແລ້ວ.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການ
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການ
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການ
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການ
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການ
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ອ່ານແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ຕິດດາວແລ້ວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] ເລືອກການສົນທະນາທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+       *[message] ເລືອກຂໍ້ຄວາມທີ່ບໍ່ໄດ້ຕິດດາວທັງໝົດ { $count } ລາຍການໃນ { $folder }
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = ບໍ່ໄດ້ຕິດດາວ
 row-important = ສຳຄັນ. ຄລິກເພື່ອໝາຍວ່າບໍ່ສຳຄັນ.
 row-mark-important = ໝາຍວ່າສຳຄັນ
 row-pinned = ປັກໝຸດໄວ້ເທິງສຸດແລ້ວ
+row-tracking-none = ຕິດຕາມຢູ່. ຍັງບໍ່ໄດ້ເປີດ
+row-tracking-opened = ເປີດໂດຍ { $opened } ຈາກ { $recipients } ຄົນ
+row-tracking-clicked = ເປີດໂດຍ { $opened } ຈາກ { $recipients } ຄົນ, ຄລິກລິ້ງໂດຍ { $clicked } ຄົນ
 row-pin = ປັກໝຸດໄວ້ເທິງສຸດ
 row-unpin = ຖອນປັກໝຸດ
+row-snoozed-until = ເລື່ອນເວລາຈົນຮອດ { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = ຕອບກັບທັງໝົດ
 menu-forward = ສົ່ງຕໍ່
 menu-archive = ຈັດເກັບ
 menu-delete = ລຶບ
+menu-delete-forever = ລຶບຖາວອນ
+menu-move-to-inbox = ຍ້າຍໄປທີ່ກ່ອງຈົດໝາຍເຂົ້າ
 menu-spam = ລາຍງານສະແປມ
+menu-not-spam = ບໍ່ແມ່ນສະແປມ
 menu-mark-read = ໝາຍວ່າອ່ານແລ້ວ
 menu-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ
 menu-mark-all-read = ໝາຍທັງໝົດວ່າອ່ານແລ້ວ
@@ -162,6 +225,8 @@ menu-important = ໝາຍວ່າສຳຄັນ
 menu-not-important = ໝາຍວ່າບໍ່ສຳຄັນ
 menu-pin = ປັກໝຸດໄວ້ເທິງສຸດ
 menu-unpin = ຖອນປັກໝຸດ
+menu-snooze = ເລື່ອນເວລາ
+menu-unsnooze = ຍົກເລີກການເລື່ອນເວລາ
 menu-print-all = ພິມທັງໝົດ
 menu-new-window = ເປີດໃນໜ້າຕ່າງໃໝ່
 menu-move-to = ຍ້າຍໄປທີ່
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] ຖອນປັກໝຸດການສົນທະນາ { $count } ລາຍການແລ້ວ.
    *[message] ຖອນປັກໝຸດຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
 }
+toast-snoozed = { $kind ->
+    [conversation] ເລື່ອນເວລາການສົນທະນາ { $count } ລາຍການຈົນຮອດ { $when } ແລ້ວ.
+   *[message] ເລື່ອນເວລາຂໍ້ຄວາມ { $count } ລາຍການຈົນຮອດ { $when } ແລ້ວ.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] ການສົນທະນາ { $count } ລາຍການກັບມາຢູ່ກ່ອງຈົດໝາຍເຂົ້າແລ້ວ.
+   *[message] ຂໍ້ຄວາມ { $count } ລາຍການກັບມາຢູ່ກ່ອງຈົດໝາຍເຂົ້າແລ້ວ.
+}
 toast-spam = { $kind ->
     [conversation] ລາຍງານການສົນທະນາ { $count } ລາຍການວ່າເປັນສະແປມແລ້ວ.
    *[message] ລາຍງານຂໍ້ຄວາມ { $count } ລາຍການວ່າເປັນສະແປມແລ້ວ.
+}
+toast-not-spam = { $kind ->
+    [conversation] ໝາຍການສົນທະນາ { $count } ລາຍການວ່າບໍ່ແມ່ນສະແປມ ແລະ ຍ້າຍໄປກ່ອງຈົດໝາຍເຂົ້າແລ້ວ.
+   *[message] ໝາຍຂໍ້ຄວາມ { $count } ລາຍການວ່າບໍ່ແມ່ນສະແປມ ແລະ ຍ້າຍໄປກ່ອງຈົດໝາຍເຂົ້າແລ້ວ.
 }
 toast-deleted-forever = { $kind ->
     [conversation] ລຶບການສົນທະນາ { $count } ລາຍການຖາວອນແລ້ວ.

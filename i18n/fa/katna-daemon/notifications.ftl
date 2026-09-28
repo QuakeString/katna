@@ -8,6 +8,11 @@ notify-new-emails = { $count } ایمیل جدید
 notify-and-more = و { $count } مورد دیگر
 notify-no-subject = (بدون موضوع)
 notify-unknown-sender = فرستندهٔ ناشناس
+notify-snooze-back = بازگشت از تعویق
+notify-no-reply = هنوز پاسخی نیامده
+notify-no-reply-to = کسی به «{ $subject }» پاسخ نداده است.
+notify-tracking-opened = { $who } «{ $subject }» را باز کرد
+notify-tracking-clicked = { $who } روی پیوندی در «{ $subject }» کلیک کرد
 
 ## Its buttons
 

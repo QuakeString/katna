@@ -485,3 +485,243 @@ mo. Nagsisimula ang bagong mail sa una mong account, maliban kung pumili
 ka ng ibang default sa Mga setting > Mag-compose > Ipadala ang mga
 bagong mensahe mula sa.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Pinag-isang inbox"
+text = """
+I-on ang Mga setting > Mga Account > Pinag-isang inbox para makita nang
+sabay ang mail ng lahat ng iyong account. Nasa itaas ng pane ng folder
+ang “Lahat ng Account”, na may iisang Inbox, Hindi pa nabasa, Naka-star,
+Mahalaga, Naipadala, Mga Draft at iba pa para sa lahat ng account;
+binubuksan ng arrow sa tabi ng bawat isa ang isang linya bawat account.
+May arrow na ngayon ang pangalan ng bawat account na nagtitiklop sa mga
+folder nito.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Mga right-click menu na angkop sa bawat folder"
+text = """
+Ang pagpili ng folder o label sa ilalim ng Ilipat sa sa right-click menu
+ay naglilipat na ngayon ng mail, may I-undo, pati mula sa mga resulta ng
+paghahanap. Sa Spam, nagiging Hindi spam ang Iulat bilang spam. May
+Ilipat sa Inbox at I-delete nang permanente ang Basurahan, may Ilipat sa
+Inbox ang Archive, at hindi na ipinapakita ng Mga Draft at Naipadala ang
+mga item na hindi angkop doon.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "I-drag ang mga account para iayos"
+text = """
+Sa Mga setting > Mga Account, ang pag-drag ng account ay iniaangat na
+ngayon ang buong row nito, at gumigilid ang ibang account para
+magbigay-daan. Lumalabas ang Iakyat at Ibaba kapag itinuro mo ang isang
+row.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Naitatabi ang mga draft"
+text = """
+Kapag isinara mo ang mensaheng sinusulat mo, sine-save na ito ngayon sa
+Mga Draft, pati sa iyong mail server, gaya sa Gmail. Buksan ito mula sa
+Mga Draft para ituloy ang pagsusulat. Ang button ng basurahan lang ang
+nagtatapon nito, at ibinabalik ito ng I-undo.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "May puwang para sa maraming attachment"
+text = """
+Gaano man karami ang file na i-attach mo, nag-i-scroll na ngayon ang listahan sa itaas ng bar ng Ipadala sa halip na matakpan ito, ipinapakita ang pinakabagong file, at sinasabi kung ilan ang file at ang kabuuang laki nila.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Piliin ang hindi pa nabasa o naka-star, gaya ng sa Gmail"
+text = """
+Tsine-check na ulit ng Nabasa na, Hindi pa nabasa, Naka-star at Walang
+star sa menu na Piliin ang tumutugmang mail sa screen. Nag-aalok ang isang
+linya sa itaas ng listahan na piliin ang bawat tumutugmang usapan sa
+folder, at ina-undo ito ng I-clear ang pagpili.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Inaalis ka ng mga folder sa Mga setting"
+text = """
+Kapag bukas ang Mga setting, isinasara na ngayon ng pag-click sa isang
+folder o sa icon ng Mail ang Mga setting at binubuksan ang folder na iyon,
+gaya ng sa Gmail. Gumagana pa rin ang back arrow.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "I-drop ang mga larawan sa text"
+text = """
+Kapag nag-drag ka ng larawan sa ibabaw ng mensahe, may lumalabas na caret kung saan ito lalapag, kaya maaari mo itong i-drop sa gitna ng pangungusap. Ipinapakita pa rin ng ibang file ang drop area para sa mga attachment, at gumagana na ang pag-drop kahit nakapag-type ka na.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Agad na nagsasara ang Umalis"
+text = """
+Hindi na naghihintay ang Umalis sa menu ng icon sa system tray sa mail na
+nagsi-sync o ini-index pa: agad na nagsasara ang Katna at ang icon nito sa
+tray, at itutuloy ang natitira sa susunod na pagbukas ng Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Detalye ng contact sa tabi ng iyong mail"
+text = """
+Sa malapad na window, may card na ngayon sa tabi ng bukas na usapan na
+nagpapakita ng nagpadala: ang kanilang phone, titulo at kumpanya mula sa
+kanilang mga signature, ang oras nila ngayon, gaano karaming mail ang
+napagpalitan ninyo, ang mga kamakailang usapan ninyo at ang mga file sa
+pagitan ninyo. I-click ang isang usapan o file para buksan ito, o ang
+ibang tao sa usapan para makita sila. Binabasa lang ito mula sa mail mo sa
+computer na ito. Itinatago ito ng contact button sa toolbar ng pane ng
+pagbabasa.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Nagamit na storage"
+text = """
+Ipinapakita sa ibaba ng pane ng folder kung gaano na kapuno ang mail
+storage ng account, gaya ng “34% ng 15 GB ang nagamit”, kapag sinasabi ito
+ng mail server nito.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Maghanap ng mail mula sa KRunner at sa GNOME search"
+text = """
+Mag-type ng pangalan sa KRunner (Alt+Space) o sa search ng Activities para
+sumulat sa taong iyon, kopyahin ang address niya o hanapin ang mail niya.
+Lumalabas ang mga mensahe kapag nasa paksa o nagpadala nito ang bawat
+salitang tina-type mo; magsimula sa mail: para maghanap sa lahat ng mail
+mo, gaya sa search box ng Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Mga template para sa mail na madalas mong isinusulat"
+text = """
+Isulat nang isang beses ang mensahe at i-save ito gamit ang bagong button
+na Mga template sa window ng pag-compose, pagkatapos ay ilagay ito sa
+anumang bagong mail o sagot sa isang click. Isulat ang {first name},
+{name} o {my name} at pupunan ito ng Katna para sa bawat tatanggap.
+I-edit, palitan ang pangalan o i-delete ang mga template sa Mga setting >
+Mag-compose.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Naipapadala ang naka-iskedyul na mail kahit naka-off ang computer mo"
+text = """
+Kapag kayang hawakan ng iyong mail server ang mail hanggang sa itinakdang
+oras, gaya ng Stalwart, ipinapasa na ngayon ng I-iskedyul ang pagpapadala
+ang mensahe rito kapag nawala na ang I-undo, kaya naipapadala ito sa oras
+kahit naka-off ang computer na ito. Sinasabi ng menu ng iskedyul kung ang
+iyong mail server o ang Katna ang magpapadala nito.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Mas magaan na hover"
+text = """
+Umaangat na ngayon nang may malabong anino ang linyang nasa ilalim ng
+pointer sa listahan ng mail, gaya sa Gmail, sa halip na madilim na guhit
+sa ilalim nito.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "I-drag ang mga address sa pagitan ng Para kay, Cc at Bcc"
+text = """
+I-drag ang chip ng address sa ibang field para ilipat ito; bumubukas ang
+Cc at Bcc habang nagda-drag ka, kahit nakatago ang mga ito. Kapag itinuro
+mo ang isang chip, may lalabas na x na nag-aalis dito.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna account"
+text = """
+Sa Mga setting > Katna account, makakagawa ka ng account sa sariling
+server ng Katna, na may sariling password, hindi kailanman password ng
+mail. Kakailanganin ito ng mga online na feature ng Katna, gaya ng mga
+read receipt at pag-track ng link. Makikita mo ang mga computer na
+naka-sign in at mai-sign out ang alinman sa mga ito.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Balik kung nasaan ka"
+text = """
+Kapag isinara at binuksan ulit ang Katna Mail, babalik ang app, ang folder
+at ang tab ng inbox na bukas mo, ang mga folder na binuksan mo at kung
+nakatupi ang pane ng folder. Kapag ini-quit ang Katna mula sa system tray,
+magsisimula ito nang bago.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Snooze at mga paalala sa sagot"
+text = """
+I-snooze ang isang pag-uusap gamit ang orasan sa linya nito o mula sa
+right-click menu: maghihintay ito sa folder na Naka-snooze at babalik sa
+Inbox, hindi pa nababasa, sa oras na pinili mo. Kapag nagpapadala, ang
+arrow sa tabi ng Ipadala ay puwedeng magpaalala sa iyo kung walang sumagot
+sa loob ng 1, 3 o 7 araw. Parehong gumagana habang naka-on ang computer
+mo, at humahabol pagkagising nito.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Basahin ang mail sa wika mo"
+text = """
+Ang mensaheng nasa ibang wika ay may button na ngayon sa itaas nito para
+isalin, at ibinabalik ito ng Ipakita ang orihinal. Tinutukoy ng Katna ang
+wika sa computer mo; kapag hiniling mo lang saka napupunta ang text ng
+mensahe sa sariling server ng Katna para isalin. Sa Mga setting >
+Pangkalahatan > Pagsasalin mo pinipili ang wika mo at ang mga wikang
+palaging isasalin.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Alamin kung kailan binuksan ang mail"
+text = """
+I-on ang mata sa tabi ng mga tatanggap para makita kung kailan binubuksan
+ng bawat isa ang mensahe mo o sinusundan ang isang link dito, o humingi
+na lang ng read receipt. Ipinapakita ng naipadalang mail kung sino ang
+nagbukas nito, at sinasabihan ka ng isang notification sa unang
+pagkakataon. Parehong naka-off ang mga ito sa bawat bagong mensahe, at
+kailangan ng Katna account para sa tracking (Mga setting > Katna
+account).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktibidad ng naka-track na mail"
+text = """
+Ipinapakita ng Aktibidad sa tabi ng search box kung ilan sa mga
+naka-track mong mensahe ang nabuksan at kung gaano kadalas sinundan ang
+mga link nila, kasama ang mga subject line mo na nakaayos ayon sa kung
+gaano kadalas binubuksan ang mga ito.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Hanapin ang mail mo mula sa KRunner gamit ang k"
+text = """
+I-type ang k o m, isang space, at pagkatapos ang hahanapin sa KRunner o sa
+GNOME search para makuha ang parehong resulta ng search box ng Katna Mail,
+gaya ng “k budget”. Pumili ng sarili mong mga salita sa Mga setting sa
+ilalim ng Pangkalahatan.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktibidad sa tabi ng search box"
+text = """
+Binibilang ng button na Aktibidad sa tabi ng search box ang mga bagong
+pagbukas at pag-click sa naka-track mong mail, at inililista kung sino ang
+nagbukas ng ano at aling mga link ang sinundan nila; i-click ang isa para
+buksan ang mensaheng iyon. Ipinapakita ng Mga detalye ang open rate at
+click rate, ang mga pagbukas bawat araw at ang pinakamahuhusay mong
+subject line para sa huling 7 o 30 araw, lahat ng panahon o mga petsang
+pipiliin mo. Ipinapakita na ngayon ng naipadalang mensahe kung ilang
+beses ito binuksan ng bawat tao at sinundan ang isang link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Mga insight sa mailbox"
+text = """
+Ipinapakita na rin ngayon ng Aktibidad > Mga detalye kung gaano karaming
+mail ang ipinadala at natanggap mo sa panahong iyon, kung gaano kadalas at
+kabilis sumasagot ka at ang iba, ang mga taong pinakamadalas mong
+sinusulatan, at kung anong mga araw at oras dumarating ang mail mo.
+Binibilang ito sa computer mo mula sa mail na nasa Katna na.
+"""

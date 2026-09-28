@@ -9,15 +9,23 @@ nav-folders = ಫೋಲ್ಡರ್‌ಗಳು
 nav-label-new = ಹೊಸ ಲೇಬಲ್ ರಚಿಸಿ
 nav-folder-new = ಹೊಸ ಫೋಲ್ಡರ್ ರಚಿಸಿ
 nav-account-unnamed = ಖಾತೆ { $number }
+nav-all-accounts = ಎಲ್ಲಾ ಖಾತೆಗಳು
+nav-expand = ಫೋಲ್ಡರ್‌ಗಳನ್ನು ತೋರಿಸಿ
+nav-collapse = ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ
 nav-tab-new = { $count ->
     [one] { $count } ಹೊಸದು
    *[other] { $count } ಹೊಸವು
 }
+storage-used = { $total } ರಲ್ಲಿ { $percent }% ಬಳಸಲಾಗಿದೆ
+storage-used-detail = { $address }: { $total } ರಲ್ಲಿ { $used } ಬಳಸಲಾಗಿದೆ
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ಇನ್‌ಬಾಕ್ಸ್
 folder-starred = ನಕ್ಷತ್ರ ಹಾಕಿರುವುದು
+folder-snoozed = ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ
+folder-unread = ಓದದಿರುವುದು
+folder-important = ಪ್ರಮುಖ
 folder-drafts = ಡ್ರಾಫ್ಟ್‌ಗಳು
 folder-sent = ಕಳುಹಿಸಲಾಗಿದೆ
 folder-archive = ಆರ್ಕೈವ್
@@ -25,6 +33,7 @@ folder-spam = ಸ್ಪ್ಯಾಮ್
 folder-trash = ಅನುಪಯುಕ್ತ
 folder-all-mail = ಎಲ್ಲಾ ಮೇಲ್
 folder-scheduled = ನಿಗದಿಪಡಿಸಲಾಗಿದೆ
+folder-activity = ಚಟುವಟಿಕೆ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

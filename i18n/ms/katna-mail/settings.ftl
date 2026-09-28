@@ -7,6 +7,7 @@
 settings-tab-general = Umum
 settings-tab-inbox = Peti Masuk
 settings-tab-accounts = Akaun
+settings-tab-katna-account = Akaun Katna
 settings-tab-subscriptions = Langganan
 settings-tab-appearance = Penampilan
 settings-tab-shortcuts = Pintasan
@@ -35,6 +36,14 @@ settings-general-full-headers = Tunjukkan pengepala penuh
 settings-general-full-headers-detail = Daripada, kepada, sk, tarikh dan subjek dibuka pada setiap mesej
 settings-general-full-names = Nama penuh penerima
 settings-general-full-names-detail = “kepada saya, Ada Lovelace” dan bukannya “kepada saya, Ada”
+settings-translation = Terjemahan
+settings-translation-detail = Mel dalam bahasa lain boleh dibaca dalam bahasa anda.
+settings-translation-offer = Tawarkan terjemahan
+settings-translation-offer-detail = Teks mesej dihantar ke pelayan Katna untuk diterjemahkan, hanya apabila anda memintanya atau sentiasa menterjemahkan bahasanya. Lampiran tidak pernah dihantar.
+settings-translation-reading = Terjemahkan ke
+settings-translation-always = Sentiasa terjemahkan
+settings-translation-never = Jangan tawarkan untuk
+settings-translation-none = Belum ada. Pilih daripada bar terjemahan pada mesej.
 settings-general-mark-read = Tandai sebagai dibaca
 settings-general-mark-read-now = Sebaik sahaja dibuka
 settings-general-mark-read-1s = Selepas dibuka selama 1 saat
@@ -77,6 +86,9 @@ settings-general-tray = Tunjukkan Katna dalam dulang sistem
 settings-general-tray-detail = Dengan kiraan belum dibaca dan menu
 settings-general-unread-badge = Kiraan belum dibaca pada ikon bar tugas
 settings-general-unread-badge-detail = Berapa banyak mesej Peti Masuk yang belum dibaca
+settings-general-search-triggers = Cari dari desktop
+settings-general-search-triggers-detail = Taip salah satu perkataan ini dan satu ruang dalam KRunner atau carian GNOME, kemudian apa yang hendak dicari, untuk mencari mel anda seperti kotak carian di sini. Pisahkan perkataan dengan koma.
+settings-general-search-triggers-none = Tiada perkataan; hanya “mail:” berfungsi
 
 ## Settings > Inbox
 
@@ -182,6 +194,19 @@ settings-compose-spell-check-detail = Perkataan yang salah eja digariskan, denga
 settings-compose-spell-desktop = Bahasa desktop ({ $language })
 settings-compose-templates = Templat
 settings-compose-templates-detail = Simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya.
+settings-compose-no-templates = Belum ada templat. Dalam mesej, pilih Templat, kemudian Simpan sebagai templat.
+settings-compose-template-new = Cipta baharu
+settings-compose-template-new-name = Templat baharu
+settings-compose-template-subject = Subjek
+settings-compose-template-text = Teks templat
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} dan {"{"}my name{"}"} diisi dengan nama penerima dan nama anda.
+settings-compose-template-remove-file = Alih keluar lampiran
+settings-compose-template-save = Simpan
+settings-compose-template-saved = Templat disimpan
+settings-compose-template-needs-name = Beri templat itu nama
+settings-compose-template-delete = Padam templat
+settings-compose-template-deleted = Templat dipadamkan
+settings-compose-template-delete-failed = Tidak dapat memadam templat: { $error }
 
 ## Settings > Shortcuts
 
@@ -204,6 +229,7 @@ settings-shortcuts-restored = Setiap pintasan kembali menggunakan kekunci setnya
 
 settings-general-language-summary = Bahasa apl, tarikh dan nombor
 settings-general-reading-summary = Mesej terbaharu dahulu, pengepala penuh, nama penuh penerima
+settings-translation-summary = Terjemahkan mel dalam bahasa lain dengan pelayan Katna, ke bahasa yang anda pilih
 settings-general-mark-read-summary = Bila perbualan yang dibuka ditandai sebagai dibaca: serta-merta, selepas 1 atau 3 saat, atau secara manual
 settings-general-auto-advance-summary = Apa yang dibuka selepas anda memadam, mengarkib atau mengalihkan perbualan yang dibuka: yang seterusnya, yang sebelumnya atau senarai
 settings-general-reply-button-summary = Butang balas di sebelah setiap mesej membalas kepada semua orang
@@ -236,7 +262,8 @@ settings-compose-for-new-mail-summary = Tandatangan yang memulakan mel baharu
 settings-compose-for-replies-summary = Tandatangan yang memulakan balasan dan majuan
 settings-compose-format-summary = Tulis mel baharu dalam teks biasa
 settings-compose-spelling-summary = Semak ejaan semasa menulis, dan bahasa kamus
-settings-compose-templates-summary = Akan datang: simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya
+settings-general-search-triggers-summary = Perkataan yang mencari mel anda dari KRunner atau carian GNOME
+settings-compose-templates-summary = Simpan mel yang kerap anda tulis, dan mulakan mel baharu atau balasan daripadanya
 settings-feedback-crash-reports-summary = Simpan laporan ranap pada komputer ini apabila Katna Mail atau perkhidmatan latar belakangnya ranap
 settings-feedback-saved-summary = Lihat, salin atau padam laporan ranap yang disimpan pada komputer ini
 settings-feedback-help-improve-summary = Hantar laporan ranap untuk membantu membaiki masalah; dimatikan melainkan anda menghidupkannya

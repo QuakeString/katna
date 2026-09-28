@@ -11,6 +11,8 @@ schedule-scheduled-messages = Mensagens programadas ({ $count })
 
 schedule-title = Programar envio
 schedule-zone-note = { $zone }. O Katna envia nesse horário, mesmo com o app fechado.
+schedule-zone-note-server = { $zone }. Seu servidor de e-mail vai enviar nesse horário, mesmo com este computador desligado. Depois que o Desfazer sumir, não dá mais para cancelar.
+schedule-zone-note-local = { $zone }. O Katna vai enviar nesse horário se este computador estiver ligado.
 schedule-local-time = Horário local
 schedule-this-morning = Hoje de manhã
 schedule-this-afternoon = Hoje à tarde
@@ -28,6 +30,7 @@ schedule-no-such-time = Esse horário não existe aqui.
 
 schedule-no-subject = (sem assunto)
 schedule-sends-at = Envio: { $when }
+schedule-server-sends-at = Envio pelo servidor de e-mail: { $when }
 schedule-cancel-send = Cancelar envio
 schedule-nothing = Nada programado.
 schedule-close = Fechar

@@ -469,3 +469,238 @@ wake ili kutuma kutoka akaunti yako nyingine. Barua mpya huanza kutoka
 akaunti yako ya kwanza, isipokuwa uchague chaguomsingi nyingine katika
 Mipangilio > Tunga > Tuma jumbe mpya kutoka.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Kikasha kilichounganishwa"
+text = """
+Washa Mipangilio > Akaunti > Kikasha kilichounganishwa ili kuona barua
+za akaunti zako zote pamoja. “Akaunti Zote” iko juu ya kidirisha cha
+folda, ikiwa na Kikasha, Ambazo hazijasomwa, Zenye nyota, Muhimu,
+Zilizotumwa, Rasimu na zaidi, kimoja kwa akaunti zote; mshale ulio kando
+ya kila kimoja hufungua mstari mmoja kwa kila akaunti. Jina la kila
+akaunti sasa lina mshale unaokunja folda zake.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menyu za kubofya kulia zinazofaa kila folda"
+text = """
+Kuchagua folda au lebo chini ya Hamishia kwenye menyu ya kubofya kulia
+sasa huhamisha barua, pamoja na Tendua, hata kutoka kwenye matokeo ya
+utafutaji. Katika Taka, Ripoti taka inakuwa Si taka. Tupio lina Hamishia
+Kikasha na Futa kabisa, Kumbukumbu ina Hamishia Kikasha, na Rasimu na
+Zilizotumwa huacha vipengee visivyohusika hapo.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Buruta akaunti kuzipanga"
+text = """
+Katika Mipangilio > Akaunti, kuburuta akaunti sasa huinua safu yake
+yote, na akaunti nyingine husogea kando kutoa nafasi. Sogeza juu na
+Sogeza chini huonekana unapoelekeza kwenye safu.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Rasimu huhifadhiwa"
+text = """
+Kufunga ujumbe unaouandika sasa huuhifadhi kwenye Rasimu, hata kwenye
+seva yako ya barua, kama ilivyo kwenye Gmail. Ufungue kutoka Rasimu ili
+uendelee kuandika. Kitufe cha tupio pekee ndicho huutupa, na Tendua
+huurudisha.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Nafasi kwa viambatisho vingi"
+text = """
+Hata ukiambatisha faili ngapi, orodha sasa husogezwa juu ya upau wa Tuma
+badala ya kuupita, huonyesha faili jipya zaidi, na husema kuna faili
+ngapi na ukubwa wake wote.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Chagua barua ambazo hazijasomwa au zenye nyota, kama Gmail"
+text = """
+Zilizosomwa, Ambazo hazijasomwa, Zenye nyota na Zisizo na nyota kwenye
+menyu ya Chagua hutia tena alama barua zinazolingana zilizo kwenye
+skrini. Mstari juu ya orodha hutoa kuchagua kila mazungumzo
+yanayolingana kwenye folda, na Futa uteuzi hutendua hilo.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Folda hukutoa kwenye Mipangilio"
+text = """
+Mipangilio ikiwa wazi, kubofya folda au aikoni ya Barua sasa hufunga
+Mipangilio na kufungua folda hiyo, kama ilivyo kwenye Gmail. Mshale wa
+kurudi bado unafanya kazi pia.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Dondosha picha ndani ya maandishi"
+text = """
+Kuburuta picha juu ya ujumbe huonyesha kishale mahali itakapotua, ili
+uweze kuidondosha katikati ya sentensi. Faili nyingine bado huonyesha
+eneo la kudondosha viambatisho, na kudondosha sasa hufanya kazi hata
+baada ya kuandika.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Ondoka hufunga mara moja"
+text = """
+Ondoka kwenye menyu ya aikoni ya trei haisubiri tena barua ambazo bado
+zinasawazishwa au kuorodheshwa: Katna na aikoni yake ya trei hufungwa
+papo hapo, na kilichobaki huendelea Katna itakapoanza tena.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Maelezo ya mwasiliani kando ya barua zako"
+text = """
+Katika dirisha pana, kadi kando ya mazungumzo yaliyo wazi sasa
+humwonyesha mtumaji: simu yake, cheo na kampuni kutoka kwenye sahihi
+zake, saa ya mahali alipo, kiasi cha barua mlizobadilishana, mazungumzo
+yenu ya hivi karibuni na faili kati yenu. Bofya mazungumzo au faili ili
+kuvifungua, au mtu mwingine wa mazungumzo ili kumwona. Maelezo husomwa
+kutoka kwenye barua zako kwenye kompyuta hii pekee. Kitufe cha
+mwasiliani kwenye upau wa zana wa kidirisha cha kusoma hukificha.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Nafasi iliyotumika"
+text = """
+Seva ya barua ikieleza, sehemu ya chini ya kidirisha cha folda huonyesha
+jinsi hifadhi ya barua ya akaunti ilivyojaa, kama vile “Imetumika 34% ya
+15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Tafuta barua kutoka KRunner na utafutaji wa GNOME"
+text = """
+Andika jina katika KRunner (Alt+Space) au utafutaji wa Activities ili
+kumwandikia mtu huyo, kunakili anwani yake au kupata barua zake. Ujumbe
+huonekana wakati mada au mtumaji wake ana kila neno unaloandika; anza na
+mail: ili kutafuta katika barua zako zote, kama kwenye kisanduku cha
+kutafuta cha Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Violezo vya barua unazoandika mara kwa mara"
+text = """
+Andika ujumbe mara moja na uuhifadhi kwa kitufe kipya cha Violezo katika
+dirisha la kutunga, kisha uuweke katika barua mpya au jibu lolote kwa
+kubofya mara moja. Andika {first name}, {name} au {my name} na Katna
+itavijaza kwa kila mpokeaji. Hariri, badilisha jina au futa violezo
+katika Mipangilio > Tunga.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Barua zilizoratibiwa hutumwa kompyuta yako ikiwa imezimwa"
+text = """
+Seva yako ya barua inapoweza kushikilia barua hadi wakati uliowekwa, kama
+Stalwart inavyoweza, Ratibu kutuma sasa huikabidhi ujumbe baada ya Tendua
+kuondoka, ili utumwe kwa wakati hata kompyuta hii ikiwa imezimwa. Menyu
+ya ratiba inaonyesha kama seva yako ya barua au Katna ndiyo itakayoutuma.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Kuelekeza kwa wepesi zaidi"
+text = """
+Mstari ulio chini ya kielekezi katika orodha ya barua sasa huinuka kwa
+kivuli hafifu, kama katika Gmail, badala ya ukanda mweusi chini yake.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Buruta anwani kati ya Kwa, Nakala na Nakala fiche"
+text = """
+Buruta kipande cha anwani hadi sehemu nyingine ili kukihamisha; Nakala
+na Nakala fiche hufunguka unapoburuta, hata zikiwa zimefichwa. Kuelekeza
+kwenye kipande huonyesha x inayokiondoa.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Akaunti ya Katna"
+text = """
+Mipangilio > Akaunti ya Katna hukuwezesha kufungua akaunti kwenye seva
+ya Katna yenyewe, yenye nenosiri lake, kamwe si nenosiri la barua.
+Vipengele vya mtandaoni vya Katna, kama stakabadhi za kusoma na
+ufuatiliaji wa viungo, vitaihitaji. Unaweza kuona kompyuta zilizoingia
+na kutoa yoyote kati yake.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Rudi pale ulipokuwa"
+text = """
+Kufunga Katna Mail na kuifungua tena hurudisha programu, folda na
+kichupo cha kikasha ulichokuwa umefungua, folda ulizokuwa umezipanua na
+iwapo kidirisha cha folda kilikuwa kimekunjwa. Kuondoka Katna kutoka
+trei ya mfumo huianzisha upya kabisa.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Ahirisha na vikumbusho vya majibu"
+text = """
+Ahirisha mazungumzo kwa aikoni ya saa kwenye mstari wake au kutoka
+kwenye menyu ya kubofya kulia: yanasubiri kwenye folda ya
+Zilizoahirishwa na kurudi kwenye Kikasha, yakiwa hayajasomwa, wakati
+uliouchagua. Unapotuma, mshale ulio kando ya Tuma unaweza kukukumbusha
+ikiwa hakuna atakayejibu ndani ya siku 1, 3 au 7. Vyote hufanya kazi
+kompyuta yako ikiwa imewashwa, na hufidia vilivyokosa baada ya kuamka.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Soma barua katika lugha yako"
+text = """
+Ujumbe ulio katika lugha nyingine sasa unaonyesha kitufe cha Tafsiri juu
+yake, na Onyesha asili huurudisha kama ulivyokuwa. Katna hutambua lugha
+kwenye kompyuta yako; maandishi ya ujumbe huenda kwenye seva ya Katna
+yenyewe ili yatafsiriwe pale tu unapoomba. Mipangilio > Jumla > Tafsiri
+huchagua lugha yako na zile za kutafsiri kila wakati.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Ona barua inapofunguliwa"
+text = """
+Washa jicho karibu na wapokeaji ili uone kila mmoja anapofungua ujumbe
+wako au kufuata kiungo ndani yake, au omba stakabadhi ya kusoma badala
+yake. Barua zilizotumwa zinaonyesha nani amezifungua, na arifa
+inakujulisha mara ya kwanza. Vyote viwili vimezimwa kwa kila ujumbe
+mpya, na ufuatiliaji unahitaji akaunti ya Katna (Mipangilio > Akaunti ya
+Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Shughuli ya barua zinazofuatiliwa"
+text = """
+Shughuli karibu na kisanduku cha utafutaji inaonyesha ni ujumbe wako
+mingapi unaofuatiliwa imefunguliwa na mara ngapi viungo vyake
+vimefuatwa, pamoja na mada zako zikiwa zimepangwa kwa jinsi
+zinavyofunguliwa mara nyingi.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Tafuta barua zako kutoka KRunner kwa k"
+text = """
+Andika k au m, nafasi, kisha unachotafuta katika KRunner au utafutaji wa
+GNOME ili upate matokeo yale yale ya kisanduku cha utafutaji cha
+Katna Mail, kama “k budget”. Chagua maneno yako mwenyewe katika
+Mipangilio > Jumla.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Shughuli karibu na kisanduku cha utafutaji"
+text = """
+Kitufe cha Shughuli karibu na kisanduku cha utafutaji kinahesabu
+kufunguliwa na kubofya kwa mara mpya kwa barua zako zinazofuatiliwa na
+kuorodhesha nani alifungua nini na viungo gani alifuata; bofya kimoja
+kufungua ujumbe huo. Maelezo inaonyesha viwango vya kufunguliwa na
+kubofya, kufunguliwa kwa kila siku na mada zako bora kwa siku 7 au 30
+zilizopita, wakati wote au tarehe unazochagua. Ujumbe uliotumwa sasa
+unaonyesha mara ngapi kila mtu aliufungua na kufuata kiungo.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Maarifa kuhusu kisanduku cha barua"
+text = """
+Shughuli > Maelezo sasa pia inaonyesha kiasi cha barua ulizotuma na
+kupokea katika kipindi hicho, mara ngapi wewe na wengine mnajibu na kwa
+kasi gani, watu unaowaandikia zaidi, na siku na saa gani barua zako
+zinafika. Inahesabiwa kwenye kompyuta yako kutoka kwa barua ambazo
+Katna tayari inazo.
+"""

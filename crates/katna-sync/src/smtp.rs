@@ -10,8 +10,9 @@ use io_smtp::{
     coroutine::{SmtpCoroutine, SmtpCoroutineState as S, SmtpYield},
     message::SmtpMessageSend,
     rfc5321::{
-        SmtpDomain, SmtpEhloDomain, SmtpForwardPath, SmtpLocalPart, SmtpMailbox, SmtpReversePath,
-        quit::SmtpQuit,
+        SmtpAtom, SmtpDomain, SmtpEhloDomain, SmtpForwardPath, SmtpLocalPart, SmtpMailbox,
+        SmtpParameter, SmtpReversePath, data::SmtpData, ehlo::SmtpEhlo, mail::SmtpMail,
+        quit::SmtpQuit, rcpt::SmtpRcpt,
     },
     session::{
         SmtpSessionOpen, SmtpSessionOpenOptions, SmtpSessionOpenYield as O, SmtpSessionTransport,
@@ -28,6 +29,8 @@ use crate::{
 pub struct SmtpSender {
     conn: Conn,
     capabilities: Vec<String>,
+    /// The capabilities are the ones listed after login.
+    asked_again: bool,
 }
 
 impl SmtpSender {
@@ -108,6 +111,7 @@ impl SmtpSender {
         Ok(Self {
             conn,
             capabilities: session.capabilities.iter().map(|c| c.to_string()).collect(),
+            asked_again: false,
         })
     }
 
@@ -150,10 +154,76 @@ impl MailSender for SmtpSender {
             .await
     }
 
+    async fn hold_limit(&mut self) -> Result<Option<u64>> {
+        if let Some(limit) = future_release(&self.capabilities) {
+            return Ok(Some(limit));
+        }
+        if !self.asked_again {
+            // Stalwart lists FUTURERELEASE only to a logged-in client, and
+            // io-smtp keeps the list from before login. EHLO again: like
+            // RSET, it keeps the login.
+            let domain = SmtpEhloDomain::from(SmtpDomain(Cow::Borrowed("localhost")));
+            let capabilities = self.run(SmtpEhlo::new(domain)).await?;
+            self.capabilities = capabilities.iter().map(|c| c.to_string()).collect();
+            self.asked_again = true;
+        }
+        Ok(future_release(&self.capabilities))
+    }
+
+    async fn send_held(
+        &mut self,
+        from: &str,
+        to: &[&str],
+        message: Vec<u8>,
+        until: i64,
+    ) -> Result<()> {
+        // RFC 4865: the server keeps the message until `HOLDUNTIL`.
+        let keyword = SmtpAtom::parse(b"HOLDUNTIL")
+            .map_err(|_| Error::Protocol("HOLDUNTIL keyword".into()))?;
+        let hold = SmtpParameter {
+            keyword,
+            value: Some(Cow::Owned(rfc3339_utc(until))),
+        };
+        let reverse = SmtpReversePath::from(mailbox(from)?);
+        self.run(SmtpMail::new(reverse, vec![hold])).await?;
+        for addr in to {
+            let forward = SmtpForwardPath::from(mailbox(addr)?);
+            self.run(SmtpRcpt::new(forward, Vec::new())).await?;
+        }
+        self.run(SmtpData::new(message)).await
+    }
+
     async fn quit(mut self) -> Result<()> {
         self.run(SmtpQuit::new()).await?;
         self.conn.close().await
     }
+}
+
+/// The longest hold, in seconds, the server's `FUTURERELEASE` keyword
+/// allows (RFC 4865), if it has one.
+pub fn future_release(capabilities: &[String]) -> Option<u64> {
+    capabilities.iter().find_map(|line| {
+        let mut words = line.split_whitespace();
+        words
+            .next()
+            .is_some_and(|word| word.eq_ignore_ascii_case("FUTURERELEASE"))
+            .then(|| words.next()?.parse().ok())
+            .flatten()
+            .filter(|&max| max > 0)
+    })
+}
+
+/// `at` (Unix seconds) as an RFC 3339 time in UTC, for example
+/// `2026-09-28T09:00:00Z`.
+fn rfc3339_utc(at: i64) -> String {
+    let (year, month, day) = crate::outbox::civil_date(at.div_euclid(86_400));
+    let secs = at.rem_euclid(86_400);
+    format!(
+        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}Z",
+        secs / 3600,
+        secs / 60 % 60,
+        secs % 60
+    )
 }
 
 /// io-smtp's errors for refused commands (4xx and 5xx replies) all say
@@ -180,4 +250,25 @@ fn mailbox(addr: &str) -> Result<SmtpMailbox<'static>> {
         local_part: SmtpLocalPart(Cow::Owned(local.to_owned())),
         domain: SmtpEhloDomain::from(SmtpDomain(Cow::Owned(domain.0.into_owned()))),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn future_release_reads_the_longest_hold() {
+        let caps = |lines: &[&str]| lines.iter().map(|l| l.to_string()).collect::<Vec<_>>();
+        assert_eq!(
+            future_release(&caps(&[
+                "PIPELINING",
+                "FUTURERELEASE 604800 2026-10-04T17:09:25Z"
+            ])),
+            Some(604_800)
+        );
+        assert_eq!(future_release(&caps(&["PIPELINING", "DSN"])), None);
+        assert_eq!(future_release(&caps(&["FUTURERELEASE"])), None);
+        assert_eq!(rfc3339_utc(1_790_416_800), "2026-09-26T10:00:00Z");
+        assert_eq!(rfc3339_utc(951_782_400), "2000-02-29T00:00:00Z");
+    }
 }

@@ -77,6 +77,26 @@ security-missing-key = ඔබ සතු නැති යතුරකින් �
 security-missing-key-id = ඔබ සතු නැති යතුරකින් ({ $key }) අත්සන් කර ඇති නිසා පරීක්ෂා කළ නොහැක
 security-signature-unavailable = අත්සන් කර ඇත; අත්සන පරීක්ෂා කිරීමට { $tool } ස්ථාපනය කරන්න
 security-signature-error = අත්සන පරීක්ෂා කළ නොහැකි විය.
+tracking-opened = { $who } එය { $count ->
+    [one] එක් වරක්
+   *[other] වාර { $count }ක්
+} විවෘත කළා, අවසන් වරට { $when }
+tracking-opens-clicks = { $who } එය { $opens ->
+    [one] එක් වරක්
+   *[other] වාර { $opens }ක්
+} විවෘත කර සබැඳියක් { $clicks ->
+    [one] එක් වරක්
+   *[other] වාර { $clicks }ක්
+} විවෘත කළා, අවසන් වරට { $when }
+tracking-clicked = { $who } සබැඳියක් { $clicks ->
+    [one] එක් වරක්
+   *[other] වාර { $clicks }ක්
+} විවෘත කළා, අවසන් වරට { $when }
+tracking-maybe-opened = { $who } එය විවෘත කළා විය හැක (Apple Mail පෞද්ගලිකත්වය සඳහා පින්තූර පූරණය කරයි)
+tracking-not-opened = { $who } තවම එය විවෘත කර නැත
+tracking-receipt = { $who } කියවූ බවට රිසිට්පතක් එව්වා
+tracking-receipt-displayed = කියවූ බවට රිසිට්පත: { $who } ඔබේ පණිවිඩය විවෘත කළා
+tracking-receipt-other = කියවූ බවට රිසිට්පත: { $who } ඔබේ පණිවිඩය විවෘත නොකර මැකුවා හෝ හැසිරෙව්වා
 
 ## Remote images and pictures
 

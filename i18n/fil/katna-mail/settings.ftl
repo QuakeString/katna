@@ -7,6 +7,7 @@
 settings-tab-general = Pangkalahatan
 settings-tab-inbox = Inbox
 settings-tab-accounts = Mga Account
+settings-tab-katna-account = Katna account
 settings-tab-subscriptions = Mga Subscription
 settings-tab-appearance = Hitsura
 settings-tab-shortcuts = Mga Shortcut
@@ -35,6 +36,14 @@ settings-general-full-headers = Ipakita ang buong header
 settings-general-full-headers-detail = Nakabukas ang mula kay, para kay, cc, petsa at subject sa bawat mensahe
 settings-general-full-names = Buong pangalan ng mga tatanggap
 settings-general-full-names-detail = “para sa akin, Ada Lovelace” sa halip na “para sa akin, Ada”
+settings-translation = Pagsasalin
+settings-translation-detail = Mababasa sa wika mo ang mail na nasa ibang wika.
+settings-translation-offer = Mag-alok na isalin
+settings-translation-offer-detail = Napupunta sa server ng Katna ang text ng mensahe para isalin, kapag hiniling mo lang o kapag palagi mong isinasalin ang wika nito. Hindi kailanman ipinapadala ang mga attachment.
+settings-translation-reading = Isalin sa
+settings-translation-always = Palaging isalin
+settings-translation-never = Huwag kailanman mag-alok para sa
+settings-translation-none = Wala pa. Pumili mula sa bar na Isalin sa itaas ng isang mensahe.
 settings-general-mark-read = Markahan bilang nabasa na
 settings-general-mark-read-now = Sa sandaling mabuksan ito
 settings-general-mark-read-1s = Pagkatapos itong mabuksan nang 1 segundo
@@ -83,6 +92,9 @@ settings-general-tray = Ipakita ang Katna sa system tray
 settings-general-tray-detail = May bilang ng hindi pa nabasa at isang menu
 settings-general-unread-badge = Bilang ng hindi pa nabasa sa icon sa taskbar
 settings-general-unread-badge-detail = Ilang mensahe sa Inbox ang hindi pa nabasa
+settings-general-search-triggers = Maghanap mula sa desktop
+settings-general-search-triggers-detail = I-type ang isa sa mga salitang ito at isang space sa KRunner o sa GNOME search, pagkatapos ang hahanapin, para hanapin ang mail mo gaya ng ginagawa ng search box dito. Paghiwalayin ang mga salita gamit ang kuwit.
+settings-general-search-triggers-none = Walang salita; “mail:” lang ang gumagana
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = Sinasalungguhitan ang mga maling baybay na
 settings-compose-spell-desktop = Wika ng desktop ({ $language })
 settings-compose-templates = Mga template
 settings-compose-templates-detail = I-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito.
+settings-compose-no-templates = Wala pang template. Sa isang mensahe, piliin ang Mga template, pagkatapos ay I-save bilang template.
+settings-compose-template-new = Gumawa ng bago
+settings-compose-template-new-name = Bagong template
+settings-compose-template-subject = Paksa
+settings-compose-template-text = Teksto ng template
+settings-compose-template-fields = Pinupunan ang {"{"}first name{"}"}, {"{"}name{"}"} at {"{"}my name{"}"} ng pangalan ng tatanggap at ng pangalan mo.
+settings-compose-template-remove-file = Alisin ang attachment
+settings-compose-template-save = I-save
+settings-compose-template-saved = Na-save ang template
+settings-compose-template-needs-name = Bigyan ng pangalan ang template
+settings-compose-template-delete = I-delete ang template
+settings-compose-template-deleted = Na-delete ang template
+settings-compose-template-delete-failed = Hindi ma-delete ang template: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = Nasa mga key na ulit ng set nito ang bawat shortcu
 
 settings-general-language-summary = Wika ng app, mga petsa at numero
 settings-general-reading-summary = Pinakabagong mensahe muna, buong header, buong pangalan ng mga tatanggap
+settings-translation-summary = Isalin ang mail na nasa ibang wika gamit ang server ng Katna, sa wikang pipiliin mo
 settings-general-mark-read-summary = Kailan minamarkahang nabasa na ang nakabukas na pag-uusap: kaagad, pagkatapos ng 1 o 3 segundo, o mano-mano
 settings-general-auto-advance-summary = Ano ang bubukas pagkatapos mong i-delete, i-archive o ilipat ang nakabukas na pag-uusap: ang susunod, ang nakaraan, o ang listahan
 settings-general-reply-button-summary = Sumasagot sa lahat ang button na sumagot sa tabi ng bawat mensahe
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = Ang lagdang pinagsisimulan ng bagong mai
 settings-compose-for-replies-summary = Ang lagdang pinagsisimulan ng mga sagot at pagpapasa
 settings-compose-format-summary = Sumulat ng bagong mail sa plain text
 settings-compose-spelling-summary = Suriin ang pagbaybay habang sumusulat, at ang wika ng diksyunaryo
-settings-compose-templates-summary = Malapit na: i-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito
+settings-general-search-triggers-summary = Mga salitang naghahanap sa mail mo mula sa KRunner o sa GNOME search
+settings-compose-templates-summary = I-save ang mail na madalas mong isinusulat, at magsimula ng bagong mail o sagot mula rito
 settings-feedback-crash-reports-summary = Mag-save ng mga ulat ng pag-crash sa computer na ito kapag nag-crash ang Katna Mail o ang serbisyo nito sa background
 settings-feedback-saved-summary = Tingnan, kopyahin o i-delete ang mga ulat ng pag-crash na naka-save sa computer na ito
 settings-feedback-help-improve-summary = Magpadala ng mga ulat ng pag-crash para makatulong ayusin ang nagkaproblema; naka-off maliban kung i-on mo

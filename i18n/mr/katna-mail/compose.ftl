@@ -38,6 +38,9 @@ compose-scheduled = { $when } ला पाठवणे शेड्यूल �
 compose-sent-archived = पाठवले आणि संग्रहित केले
 compose-sent = मेसेज पाठवला
 compose-discarded = मसुदा टाकून दिला
+compose-draft-saved = मसुदा सेव्ह केला
+compose-draft-failed = मसुदा सेव्ह करता आला नाही: { $error }
+compose-draft-not-opened = मसुदा उघडता आला नाही.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = अटॅच करा
 compose-file-too-large = { $name } खूप मोठी आहे: एका मेसेजमध्ये जास्तीत जास्त { $limit } पाठवता येते.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = अटॅचमेंट काढा
+compose-attachments-total = { $count ->
+    [one] { $count } फाइल, { $size }
+   *[other] { $count } फाइल्स, { $size }
+}
 compose-drop-files = फाइल्स येथे सोडा
 compose-drop-here = येथे सोडा
 compose-paste-keep-formatting = फॉरमॅटिंग ठेवा
@@ -61,6 +68,12 @@ compose-encrypt = एन्क्रिप्ट करा
 compose-encrypted = एन्क्रिप्ट केलेले: फक्त प्राप्तकर्तेच वाचू शकतात
 compose-sign = स्वाक्षरी करा
 compose-signed = स्वाक्षरी केलेले: हा मेसेज तुमच्याकडूनच आहे हे प्राप्तकर्ते तपासू शकतात
+compose-track = उघडणे आणि क्लिक ट्रॅक करा
+compose-tracked = ट्रॅक होत आहे: प्रत्येक प्राप्तकर्ता तो कधी उघडतो किंवा लिंक उघडतो ते तुम्हाला दिसेल
+compose-track-unavailable = स्वाक्षरी केलेले, एन्क्रिप्ट केलेले आणि साध्या मजकुरातील मेल ट्रॅक करता येत नाहीत
+compose-track-sign-in = उघडणे आणि क्लिक ट्रॅक करण्यासाठी Katna खात्यात साइन इन करा
+compose-receipt = वाचल्याची पावती मागवा
+compose-receipt-on = वाचल्याची पावती मागवली: प्राप्तकर्त्याचे ॲप त्यांना ती पाठवण्यास सांगू शकते
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = विषय जोडा
 send-check-send-anyway = तरीही पाठवा
 recipient-not-valid = वैध ईमेल पत्ता नाही
 recipient-show-address = पत्ता दाखवा
+recipient-remove = काढा
 recipient-bad-title = पत्ता तपासा
 recipient-bad-text = “{ $address }” हा वैध ईमेल पत्ता नाही. पाठवण्यापूर्वी तो दुरुस्त करा किंवा काढून टाका.
 recipient-bad-fix = दुरुस्त करा

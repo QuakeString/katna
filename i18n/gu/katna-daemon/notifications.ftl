@@ -11,6 +11,11 @@ notify-new-emails = { $count ->
 notify-and-more = અને વધુ { $count }
 notify-no-subject = (કોઈ વિષય નથી)
 notify-unknown-sender = અજાણ્યા મોકલનાર
+notify-snooze-back = સ્નૂઝમાંથી પાછું આવ્યું
+notify-no-reply = હજી કોઈ જવાબ નથી
+notify-no-reply-to = “{ $subject }”નો કોઈએ જવાબ આપ્યો નથી.
+notify-tracking-opened = { $who }એ { $subject } ખોલ્યો
+notify-tracking-clicked = { $who }એ { $subject }માંની એક લિંક પર ક્લિક કર્યું
 
 ## Its buttons
 

@@ -89,6 +89,27 @@ pub mod state {
     pub const AUTH_FAILED: &str = "auth-failed";
 }
 
+/// A mail template for `SaveTemplate`; `id` 0 saves a new one.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct TemplateItem {
+    pub id: i64,
+    pub name: String,
+    pub subject: String,
+    /// The formatted body, pictures inside as `data:` URIs.
+    pub html: String,
+    /// The same body as plain text.
+    pub text: String,
+    pub attachments: Vec<TemplateFileItem>,
+}
+
+/// A file that goes with a template.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct TemplateFileItem {
+    pub name: String,
+    pub mime: String,
+    pub data: Vec<u8>,
+}
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -112,10 +133,63 @@ pub mod send_state {
     /// Being handed to the SMTP server; too late to undo.
     pub const SENDING: &str = "sending";
     pub const SENT: &str = "sent";
+    /// Scheduled mail the SMTP server holds until `send_at`; it cannot be
+    /// taken back.
+    pub const HELD: &str = "held";
     /// The server refused it for good.
     pub const FAILED: &str = "failed";
     /// Undone with `UndoSend`.
     pub const CANCELLED: &str = "cancelled";
+}
+
+/// The Katna account this computer is signed in to, from `KatnaAccount`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct KatnaAccount {
+    /// Signed in; the fields below are empty otherwise.
+    pub signed_in: bool,
+    pub email: String,
+    /// The address is confirmed with the mailed code. Server features
+    /// work only then.
+    pub verified: bool,
+}
+
+/// A computer signed in to the Katna account, from `KatnaDevices`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct KatnaDevice {
+    pub id: String,
+    /// Its host name.
+    pub name: String,
+    /// When it signed in and when it was last seen (Unix seconds).
+    pub signed_in_at: i64,
+    pub last_seen: i64,
+    /// It is this computer.
+    pub this: bool,
+}
+
+/// Why a Katna account command failed: the message of its D-Bus error,
+/// so the app can say it in the user's language.
+pub mod katna_error {
+    /// Wrong address or password (`AuthFailed`).
+    pub const WRONG_PASSWORD: &str = "wrong_password";
+    /// The address already has a Katna account.
+    pub const EXISTS: &str = "exists";
+    pub const BAD_EMAIL: &str = "bad_email";
+    /// Fewer than 8 characters.
+    pub const SHORT_PASSWORD: &str = "short_password";
+    pub const LONG_PASSWORD: &str = "long_password";
+    pub const WRONG_CODE: &str = "wrong_code";
+    /// The code expired or had too many wrong tries; ask for a new one.
+    pub const CODE_EXPIRED: &str = "code_expired";
+    /// Too many tries; wait a while.
+    pub const TOO_MANY: &str = "too_many";
+    /// The server could not mail the code.
+    pub const MAIL_FAILED: &str = "mail_failed";
+    /// Not signed in (any more).
+    pub const SIGN_IN: &str = "sign_in";
+    /// Katna Server could not be reached.
+    pub const OFFLINE: &str = "offline";
+    /// Anything else.
+    pub const SERVER: &str = "server";
 }
 
 /// Actions Katna Mail serves through `org.freedesktop.Application`
@@ -133,12 +207,15 @@ pub mod app_action {
     /// Open one message and start a reply to all; the parameter is its ID
     /// (`x`).
     pub const REPLY_ALL: &str = "reply-all";
+    /// Put a query in the search box and search; the parameter is the
+    /// query (`s`).
+    pub const SEARCH: &str = "search";
     /// Close the app.
     pub const QUIT: &str = "quit";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
-    /// message ID.
+    /// message ID, those of [`takes_text`] actions by the text.
     pub fn flag(action: &str) -> Option<&'static str> {
         match action {
             OPEN_INBOX => Some("--inbox"),
@@ -146,6 +223,7 @@ pub mod app_action {
             PREFERENCES => Some("--settings"),
             OPEN_MESSAGE => Some("--message"),
             REPLY_ALL => Some("--reply-all"),
+            SEARCH => Some("--search"),
             _ => None,
         }
     }
@@ -154,6 +232,29 @@ pub mod app_action {
     pub fn takes_message(action: &str) -> bool {
         matches!(action, OPEN_MESSAGE | REPLY_ALL)
     }
+
+    /// Whether `action`'s parameter is text.
+    pub fn takes_text(action: &str) -> bool {
+        action == SEARCH
+    }
+}
+
+/// Why `Translate` gave no translation: the third field of its answer,
+/// empty when it did.
+pub mod translate_problem {
+    /// This build has no translation server.
+    pub const OFF: &str = "off";
+    /// The message is already in the language asked for; nothing was sent.
+    pub const SAME_LANGUAGE: &str = "same-language";
+    /// The server cannot translate from that language into this one.
+    pub const UNSUPPORTED: &str = "unsupported";
+    /// Over the server's limit for now.
+    pub const TOO_MANY: &str = "too-many";
+    /// This computer is not signed in to a Katna account with a confirmed
+    /// address.
+    pub const SIGN_IN: &str = "sign-in";
+    /// The server could not be reached, or failed.
+    pub const FAILED: &str = "failed";
 }
 
 /// Message flag names for `SetFlags`.
@@ -231,9 +332,10 @@ macro_rules! pim_proxy {
 
             /// Deletes what was downloaded and can be downloaded again: the
             /// bodies and attachments of mail still on its IMAP server, the
-            /// search index (rebuilt at once) and sender pictures, then
-            /// syncs. Accounts, settings, flags, labels, pins and mail that
-            /// exists only on this computer stay; servers are not touched.
+            /// search index (rebuilt at once), sender pictures and
+            /// translations, then syncs. Accounts, settings, flags, labels,
+            /// pins and mail that exists only on this computer stay;
+            /// servers are not touched.
             /// Returns how many messages lost their body and how many bytes
             /// of mail were deleted.
             fn reset_cache(&self) -> zbus::Result<(u64, u64)>;
@@ -274,12 +376,60 @@ macro_rules! pim_proxy {
             /// Moves messages to the account's archive folder.
             fn archive_messages(&self, messages: &[i64]) -> zbus::Result<()>;
 
+            /// Snoozes messages until `until` (Unix seconds, at least a
+            /// minute ahead): they move to their account's `Snoozed` folder
+            /// (made on the server the first time, so that needs it once)
+            /// and come back where they were, unread, at that time, with a
+            /// notification. Messages already snoozed get the new time;
+            /// messages only in Sent, Drafts, Trash, Spam or All Mail stay.
+            /// The times are in `pim.db`'s `meta` table (`katna-meta`).
+            fn snooze(&self, messages: &[i64], until: i64) -> zbus::Result<()>;
+
+            /// Brings snoozed messages back where they were now, as they
+            /// are; others are left alone.
+            fn unsnooze(&self, messages: &[i64]) -> zbus::Result<()>;
+
+            /// Reminds the user `after` seconds after outbox entry `id` is
+            /// sent if nobody replied by then: the message then shows in
+            /// the Inbox too, unread and on top, with a notification. 0
+            /// takes the reminder back; `UndoSend` does too.
+            fn set_follow_up(&self, id: i64, after: i64) -> zbus::Result<()>;
+
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
             /// Adds `Date` and `Message-ID` when missing. Once sent it is
             /// filed in the Sent folder. Returns the outbox ID.
             fn queue_send(&self, account: i64, message: &[u8], delay: u32) -> zbus::Result<i64>;
 
+            /// Like `QueueSend`, for mail scheduled to go out at `at` (Unix
+            /// seconds): after `delay` seconds (undo send) it goes to an
+            /// SMTP server that holds mail until then (`ServerHoldLimit`),
+            /// or else it is sent at `at` while the daemon runs.
+            fn schedule_send(
+                &self,
+                account: i64,
+                message: &[u8],
+                delay: u32,
+                at: i64,
+            ) -> zbus::Result<i64>;
+
+            /// How long, in seconds, the SMTP server of `account` holds
+            /// mail to send later (RFC 4865 `FUTURERELEASE`); 0 when it
+            /// cannot. Logs in to ask the first time.
+            fn server_hold_limit(&self, account: i64) -> zbus::Result<u64>;
+
+            /// Like `QueueSend`, with open and click tracking: each
+            /// recipient gets their own tracked copy (`docs/ARCHITECTURE.md`
+            /// §11, §16.1). Mail that cannot be tracked (no HTML version,
+            /// signed or encrypted, over 50 recipients, tracking off, not
+            /// signed in to a Katna account or the server unreachable) goes
+            /// out untracked.
+            fn queue_tracked_send(
+                &self,
+                account: i64,
+                message: &[u8],
+                delay: u32,
+            ) -> zbus::Result<i64>;
             /// Takes a queued message back. Returns `false` when it is
             /// already being sent.
             fn undo_send(&self, id: i64) -> zbus::Result<bool>;
@@ -290,6 +440,18 @@ macro_rules! pim_proxy {
 
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
+
+            /// Saves a mail template on this computer, in place of the one
+            /// with its ID (0: a new one). Its name must not be empty, and
+            /// its attachments are at most 20 MB. Returns its ID. Apps read
+            /// templates from the store.
+            fn save_template(&self, template: &TemplateItem) -> zbus::Result<i64>;
+
+            /// Renames a template. Returns whether it exists.
+            fn rename_template(&self, id: i64, name: &str) -> zbus::Result<bool>;
+
+            /// Deletes a template. Returns whether it existed.
+            fn delete_template(&self, id: i64) -> zbus::Result<bool>;
 
             /// Saves `message` (RFC 5322, with `Bcc` if any) as a draft of
             /// `account` in its Drafts folder, here and on the server,
@@ -315,6 +477,28 @@ macro_rules! pim_proxy {
             /// addresses.
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
+            /// Translates `text`, the plain text of `message` (HTML made
+            /// plain, quotes and signature kept, never attachments), from
+            /// `source` into `target`, LibreTranslate codes such as `es`,
+            /// `en` or `zt`, with Katna Server. `source` is the language
+            /// the caller found in it on this computer (`auto` when
+            /// unclear): mail already in `target` is never sent. Returns
+            /// the language it was in, the translation, and a
+            /// [`translate_problem`] when there is none. Translations are
+            /// kept in the store, so asking again needs no server.
+            fn translate(
+                &self,
+                message: i64,
+                text: &str,
+                source: &str,
+                target: &str,
+            ) -> zbus::Result<(String, String, String)>;
+
+            /// The languages Katna Server can translate into `target`, and
+            /// a [`translate_problem`] when it could not be asked (`sign-in`
+            /// while this computer is not signed in to a Katna account).
+            fn translation_sources(&self, target: &str) -> zbus::Result<(Vec<String>, String)>;
+
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
@@ -322,6 +506,56 @@ macro_rules! pim_proxy {
             /// Whether the daemon saves data as on a metered network (no
             /// bodies downloaded ahead of time).
             fn metered(&self) -> zbus::Result<bool>;
+
+            /// The Katna account (for Katna Server's features) this
+            /// computer is signed in to. Asks the server, so it also
+            /// notices a sign-out from another computer; offline it answers
+            /// what it last knew.
+            fn katna_account(&self) -> zbus::Result<KatnaAccount>;
+
+            /// Creates a Katna account and signs this computer in; the
+            /// server mails a code for `KatnaVerify`. Errors carry a
+            /// [`katna_error`] name as their message, like every Katna
+            /// account command.
+            fn katna_sign_up(&self, email: &str, password: &str) -> zbus::Result<KatnaAccount>;
+
+            /// Signs this computer in to a Katna account.
+            fn katna_sign_in(&self, email: &str, password: &str) -> zbus::Result<KatnaAccount>;
+
+            /// Confirms the account's address with the mailed code.
+            fn katna_verify(&self, code: &str) -> zbus::Result<KatnaAccount>;
+
+            /// Mails a new code for `KatnaVerify`.
+            fn katna_resend_code(&self) -> zbus::Result<()>;
+
+            /// Signs this computer out. It stays registered with the server.
+            fn katna_sign_out(&self) -> zbus::Result<()>;
+
+            /// The computers signed in to the account.
+            fn katna_devices(&self) -> zbus::Result<Vec<KatnaDevice>>;
+
+            /// Signs another computer out.
+            fn katna_sign_out_device(&self, id: &str) -> zbus::Result<()>;
+
+            /// Changes the password; other computers are signed out.
+            fn katna_change_password(&self, current: &str, new: &str) -> zbus::Result<()>;
+
+            /// Mails a code for `KatnaConfirmReset` to `email`, if it has an
+            /// account.
+            fn katna_reset_password(&self, email: &str) -> zbus::Result<()>;
+
+            /// Sets a new password with the mailed code and signs this
+            /// computer in; other computers are signed out.
+            fn katna_confirm_reset(&self, email: &str, code: &str, password: &str)
+            -> zbus::Result<KatnaAccount>;
+
+            /// Deletes the Katna account and everything the server keeps for
+            /// it. Mail on this computer is not touched.
+            fn katna_delete_account(&self, password: &str) -> zbus::Result<()>;
+
+            /// `KatnaAccount` changed.
+            #[zbus(signal)]
+            fn katna_account_changed(&self) -> zbus::Result<()>;
 
             /// Accounts were added or removed.
             #[zbus(signal)]
@@ -342,6 +576,11 @@ macro_rules! pim_proxy {
             /// `Metered` changed.
             #[zbus(signal)]
             fn metered_changed(&self, metered: bool) -> zbus::Result<()>;
+
+            /// A tracked message was opened or a link in it followed; read
+            /// the tracking tables of the store again.
+            #[zbus(signal)]
+            fn tracking_changed(&self) -> zbus::Result<()>;
         }
     };
 }

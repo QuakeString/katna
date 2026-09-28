@@ -28,6 +28,8 @@ list-move-to = 移至
 list-archive = 封存
 list-spam = 檢舉垃圾郵件
 list-delete = 刪除
+list-snooze = 延後
+list-unsnooze = 取消延後
 list-newer = 較新
 list-older = 較舊
 list-range = 第 { $first }–{ $last } 列，共 { $total } 列
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] 選取「{ $folder }」中的全部 { $count } 個會話群組
    *[message] 選取「{ $folder }」中的全部 { $count } 封郵件
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] 已選取此頁上的全部 { $count } 個已讀取會話群組。
+       *[message] 已選取此頁上的全部 { $count } 封已讀取郵件。
+    }
+   *[unread] { $kind ->
+        [conversation] 已選取此頁上的全部 { $count } 個未讀取會話群組。
+       *[message] 已選取此頁上的全部 { $count } 封未讀取郵件。
+    }
+    [starred] { $kind ->
+        [conversation] 已選取此頁上的全部 { $count } 個已加星號的會話群組。
+       *[message] 已選取此頁上的全部 { $count } 封已加星號的郵件。
+    }
+    [unstarred] { $kind ->
+        [conversation] 已選取此頁上的全部 { $count } 個未加星號的會話群組。
+       *[message] 已選取此頁上的全部 { $count } 封未加星號的郵件。
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 選取全部 { $count } 個已讀取會話群組
+       *[message] 選取全部 { $count } 封已讀取郵件
+    }
+   *[unread] { $kind ->
+        [conversation] 選取全部 { $count } 個未讀取會話群組
+       *[message] 選取全部 { $count } 封未讀取郵件
+    }
+    [starred] { $kind ->
+        [conversation] 選取全部 { $count } 個已加星號的會話群組
+       *[message] 選取全部 { $count } 封已加星號的郵件
+    }
+    [unstarred] { $kind ->
+        [conversation] 選取全部 { $count } 個未加星號的會話群組
+       *[message] 選取全部 { $count } 封未加星號的郵件
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 選取「{ $folder }」中的全部 { $count } 個已讀取會話群組
+       *[message] 選取「{ $folder }」中的全部 { $count } 封已讀取郵件
+    }
+   *[unread] { $kind ->
+        [conversation] 選取「{ $folder }」中的全部 { $count } 個未讀取會話群組
+       *[message] 選取「{ $folder }」中的全部 { $count } 封未讀取郵件
+    }
+    [starred] { $kind ->
+        [conversation] 選取「{ $folder }」中的全部 { $count } 個已加星號的會話群組
+       *[message] 選取「{ $folder }」中的全部 { $count } 封已加星號的郵件
+    }
+    [unstarred] { $kind ->
+        [conversation] 選取「{ $folder }」中的全部 { $count } 個未加星號的會話群組
+       *[message] 選取「{ $folder }」中的全部 { $count } 封未加星號的郵件
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = 未加星號
 row-important = 重要。按一下即可標示為不重要。
 row-mark-important = 標示為重要
 row-pinned = 已置頂
+row-tracking-none = 已追蹤。尚未開啟
+row-tracking-opened = { $recipients } 人中有 { $opened } 人開啟
+row-tracking-clicked = { $recipients } 人中有 { $opened } 人開啟，{ $clicked } 人點開連結
 row-pin = 置頂
 row-unpin = 取消置頂
+row-snoozed-until = 延後至 { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = 全部回覆
 menu-forward = 轉寄
 menu-archive = 封存
 menu-delete = 刪除
+menu-delete-forever = 永久刪除
+menu-move-to-inbox = 移至收件匣
 menu-spam = 檢舉垃圾郵件
+menu-not-spam = 非垃圾郵件
 menu-mark-read = 標示為已讀取
 menu-mark-unread = 標示為未讀取
 menu-mark-all-read = 全部標示為已讀取
@@ -162,6 +225,8 @@ menu-important = 標示為重要
 menu-not-important = 標示為不重要
 menu-pin = 置頂
 menu-unpin = 取消置頂
+menu-snooze = 延後
+menu-unsnooze = 取消延後
 menu-print-all = 全部列印
 menu-new-window = 在新視窗中開啟
 menu-move-to = 移至
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] 已取消置頂 { $count } 個會話群組。
    *[message] 已取消置頂 { $count } 封郵件。
 }
+toast-snoozed = { $kind ->
+    [conversation] 已將 { $count } 個會話群組延後至 { $when }。
+   *[message] 已將 { $count } 封郵件延後至 { $when }。
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count } 個會話群組已返回收件匣。
+   *[message] { $count } 封郵件已返回收件匣。
+}
 toast-spam = { $kind ->
     [conversation] 已將 { $count } 個會話群組檢舉為垃圾郵件。
    *[message] 已將 { $count } 封郵件檢舉為垃圾郵件。
+}
+toast-not-spam = { $kind ->
+    [conversation] 已將 { $count } 個會話群組標示為非垃圾郵件並移至收件匣。
+   *[message] 已將 { $count } 封郵件標示為非垃圾郵件並移至收件匣。
 }
 toast-deleted-forever = { $kind ->
     [conversation] 已永久刪除 { $count } 個會話群組。

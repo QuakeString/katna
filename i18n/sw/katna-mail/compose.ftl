@@ -38,6 +38,9 @@ compose-scheduled = Kutuma kumeratibiwa { $when }
 compose-sent-archived = Umetumwa na kuwekwa kwenye kumbukumbu
 compose-sent = Ujumbe umetumwa
 compose-discarded = Rasimu imetupwa
+compose-draft-saved = Rasimu imehifadhiwa
+compose-draft-failed = Imeshindwa kuhifadhi rasimu: { $error }
+compose-draft-not-opened = Imeshindwa kufungua rasimu.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Ambatisha
 compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ondoa kiambatisho
+compose-attachments-total = { $count ->
+    [one] Faili { $count }, { $size }
+   *[other] Faili { $count }, { $size }
+}
 compose-drop-files = Dondosha faili hapa
 compose-drop-here = Dondosha hapa
 compose-paste-keep-formatting = Dumisha uumbizaji
@@ -61,6 +68,12 @@ compose-encrypt = Simba
 compose-encrypted = Umesimbwa: wapokeaji pekee wanaweza kuusoma
 compose-sign = Weka sahihi
 compose-signed = Una sahihi: wapokeaji wanaweza kuthibitisha kuwa umetoka kwako
+compose-track = Fuatilia kufunguliwa na kubofya
+compose-tracked = Unafuatiliwa: utaona kila mpokeaji anapoufungua au kufuata kiungo
+compose-track-unavailable = Barua yenye sahihi, iliyosimbwa au ya maandishi matupu haiwezi kufuatiliwa
+compose-track-sign-in = Ingia kwenye akaunti ya Katna ili kufuatilia kufunguliwa na kubofya
+compose-receipt = Omba stakabadhi ya kusoma
+compose-receipt-on = Stakabadhi ya kusoma imeombwa: programu ya mpokeaji inaweza kumwomba aitume
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Ongeza mada
 send-check-send-anyway = Tuma hata hivyo
 recipient-not-valid = Si anwani sahihi ya barua pepe
 recipient-show-address = Onyesha anwani
+recipient-remove = Ondoa
 recipient-bad-title = Kagua anwani
 recipient-bad-text = “{ $address }” si anwani sahihi ya barua pepe. Irekebishe au uiondoe kabla ya kutuma.
 recipient-bad-fix = Irekebishe

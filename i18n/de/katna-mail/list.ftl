@@ -28,6 +28,8 @@ list-move-to = Verschieben nach
 list-archive = Archivieren
 list-spam = Spam melden
 list-delete = Löschen
+list-snooze = Zurückstellen
+list-unsnooze = Nicht mehr zurückstellen
 list-newer = Neuer
 list-older = Älter
 list-range = { $first }–{ $last } von { $total }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] Die { $count } Nachricht in { $folder } auswählen
        *[other] Alle { $count } Nachrichten in { $folder } auswählen
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } gelesene Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } gelesenen Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } gelesene Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } gelesenen Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } ungelesene Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } ungelesene Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } ungelesenen Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } markierte Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } markierten Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } markierte Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } markierten Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } nicht markierte Konversation auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Konversationen auf dieser Seite sind ausgewählt.
+        }
+       *[message] { $count ->
+            [one] Die { $count } nicht markierte Nachricht auf dieser Seite ist ausgewählt.
+           *[other] Alle { $count } nicht markierten Nachrichten auf dieser Seite sind ausgewählt.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } gelesene Konversation auswählen
+           *[other] Alle { $count } gelesenen Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } gelesene Nachricht auswählen
+           *[other] Alle { $count } gelesenen Nachrichten auswählen
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } ungelesene Konversation auswählen
+           *[other] Alle { $count } ungelesenen Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } ungelesene Nachricht auswählen
+           *[other] Alle { $count } ungelesenen Nachrichten auswählen
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } markierte Konversation auswählen
+           *[other] Alle { $count } markierten Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } markierte Nachricht auswählen
+           *[other] Alle { $count } markierten Nachrichten auswählen
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } nicht markierte Konversation auswählen
+           *[other] Alle { $count } nicht markierten Konversationen auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } nicht markierte Nachricht auswählen
+           *[other] Alle { $count } nicht markierten Nachrichten auswählen
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } gelesene Konversation in { $folder } auswählen
+           *[other] Alle { $count } gelesenen Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } gelesene Nachricht in { $folder } auswählen
+           *[other] Alle { $count } gelesenen Nachrichten in { $folder } auswählen
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } ungelesene Konversation in { $folder } auswählen
+           *[other] Alle { $count } ungelesenen Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } ungelesene Nachricht in { $folder } auswählen
+           *[other] Alle { $count } ungelesenen Nachrichten in { $folder } auswählen
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } markierte Konversation in { $folder } auswählen
+           *[other] Alle { $count } markierten Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } markierte Nachricht in { $folder } auswählen
+           *[other] Alle { $count } markierten Nachrichten in { $folder } auswählen
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Die { $count } nicht markierte Konversation in { $folder } auswählen
+           *[other] Alle { $count } nicht markierten Konversationen in { $folder } auswählen
+        }
+       *[message] { $count ->
+            [one] Die { $count } nicht markierte Nachricht in { $folder } auswählen
+           *[other] Alle { $count } nicht markierten Nachrichten in { $folder } auswählen
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = Nicht markiert
 row-important = Wichtig. Klicken, um als nicht wichtig zu markieren.
 row-mark-important = Als wichtig markieren
 row-pinned = Oben angeheftet
+row-tracking-none = Verfolgt. Noch nicht geöffnet
+row-tracking-opened = Geöffnet: { $opened } von { $recipients }
+row-tracking-clicked = Geöffnet: { $opened } von { $recipients }, Link aufgerufen: { $clicked }
 row-pin = Oben anheften
 row-unpin = Nicht mehr anheften
+row-snoozed-until = Zurückgestellt bis { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = Allen antworten
 menu-forward = Weiterleiten
 menu-archive = Archivieren
 menu-delete = Löschen
+menu-delete-forever = Endgültig löschen
+menu-move-to-inbox = In den Posteingang verschieben
 menu-spam = Spam melden
+menu-not-spam = Kein Spam
 menu-mark-read = Als gelesen markieren
 menu-mark-unread = Als ungelesen markieren
 menu-mark-all-read = Alle als gelesen markieren
@@ -240,6 +375,8 @@ menu-important = Als wichtig markieren
 menu-not-important = Als nicht wichtig markieren
 menu-pin = Oben anheften
 menu-unpin = Nicht mehr anheften
+menu-snooze = Zurückstellen
+menu-unsnooze = Nicht mehr zurückstellen
 menu-print-all = Alle drucken
 menu-new-window = In neuem Fenster öffnen
 menu-move-to = Verschieben nach
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } Nachrichten nicht mehr angeheftet.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation bis { $when } zurückgestellt.
+       *[other] { $count } Konversationen bis { $when } zurückgestellt.
+    }
+   *[message] { $count ->
+        [one] Nachricht bis { $when } zurückgestellt.
+       *[other] { $count } Nachrichten bis { $when } zurückgestellt.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation wieder im Posteingang.
+       *[other] { $count } Konversationen wieder im Posteingang.
+    }
+   *[message] { $count ->
+        [one] Nachricht wieder im Posteingang.
+       *[other] { $count } Nachrichten wieder im Posteingang.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] Konversation als Spam gemeldet.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Nachricht als Spam gemeldet.
        *[other] { $count } Nachrichten als Spam gemeldet.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Konversation als kein Spam markiert und in den Posteingang verschoben.
+       *[other] { $count } Konversationen als kein Spam markiert und in den Posteingang verschoben.
+    }
+   *[message] { $count ->
+        [one] Nachricht als kein Spam markiert und in den Posteingang verschoben.
+       *[other] { $count } Nachrichten als kein Spam markiert und in den Posteingang verschoben.
     }
 }
 toast-deleted-forever = { $kind ->

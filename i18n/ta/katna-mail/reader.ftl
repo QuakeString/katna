@@ -77,6 +77,26 @@ security-missing-key = உங்களிடம் இல்லாத கீய�
 security-missing-key-id = உங்களிடம் இல்லாத கீயைக் ({ $key }) கொண்டு கையொப்பமிடப்பட்டுள்ளது, எனவே சரிபார்க்க முடியாது
 security-signature-unavailable = கையொப்பமிடப்பட்டது; கையொப்பத்தைச் சரிபார்க்க { $tool } ஐ நிறுவவும்
 security-signature-error = கையொப்பத்தைச் சரிபார்க்க முடியவில்லை.
+tracking-opened = { $who } இதை { $count ->
+    [one] ஒரு முறை
+   *[other] { $count } முறை
+} திறந்தார், கடைசியாக { $when }
+tracking-opens-clicks = { $who } இதை { $opens ->
+    [one] ஒரு முறை
+   *[other] { $opens } முறை
+} திறந்தார், லிங்க்கை { $clicks ->
+    [one] ஒரு முறை
+   *[other] { $clicks } முறை
+} திறந்தார், கடைசியாக { $when }
+tracking-clicked = { $who } லிங்க்கை { $clicks ->
+    [one] ஒரு முறை
+   *[other] { $clicks } முறை
+} திறந்தார், கடைசியாக { $when }
+tracking-maybe-opened = { $who } இதைத் திறந்திருக்கலாம் (தனியுரிமைக்காக Apple Mail படங்களை ஏற்றுகிறது)
+tracking-not-opened = { $who } இன்னும் இதைத் திறக்கவில்லை
+tracking-receipt = { $who } படித்த ரசீதை அனுப்பினார்
+tracking-receipt-displayed = படித்த ரசீது: { $who } உங்கள் மெசேஜைத் திறந்தார்
+tracking-receipt-other = படித்த ரசீது: { $who } உங்கள் மெசேஜைத் திறக்காமலே நீக்கினார் அல்லது கையாண்டார்
 
 ## Remote images and pictures
 

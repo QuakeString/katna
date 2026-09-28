@@ -52,7 +52,7 @@ impl MailWindow {
         }
     }
 
-    fn open_entry_in_window(&mut self, entry: Entry, cx: &mut Context<Self>) {
+    pub(super) fn open_entry_in_window(&mut self, entry: Entry, cx: &mut Context<Self>) {
         let title = self.line_subject(entry);
         let env = self.chrome.environment();
         let paths = self.paths.clone();
@@ -175,6 +175,8 @@ impl MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
+        let whats_new = self.render_whats_new(&th, window, reduce, cx);
+        let about = self.render_about(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
             .relative()
@@ -183,21 +185,19 @@ impl MailWindow {
             .when(!server_frame, |d| d.pt_0())
             .bg(rgba(th.backdrop))
             .text_color(rgba(th.text))
-            .on_action(cx.listener(Self::reply))
-            .on_action(cx.listener(Self::reply_all))
-            .on_action(cx.listener(Self::forward))
-            .on_action(cx.listener(Self::move_to))
-            .on_action(cx.listener(Self::undo_action))
-            .on_action(cx.listener(Self::quit))
+            // Where the menu bar's actions start when the focus is lost.
+            .child(div().absolute().size_0().track_focus(&self.window_focus))
             .child(card)
             .children(self.files.viewer.clone())
             .children(compose)
             .children(context_menu)
             .children(snackbar)
+            .children(whats_new)
+            .children(about)
             .into_any_element();
         // The desktop's own title bar already names the window.
         if server_frame {
-            let page = div().size_full().child(content);
+            let page = Self::detached_actions(div().size_full().child(content), cx);
             return match &self.font {
                 Some(font) => page.font_family(font.clone()).into_any_element(),
                 None => page.into_any_element(),
@@ -216,10 +216,23 @@ impl MailWindow {
             background: Some(th.backdrop),
             ..Bar::default()
         };
-        let frame = self.chrome.render_bar(bar, content, window, cx);
+        let frame = Self::detached_actions(self.chrome.render_bar(bar, content, window, cx), cx);
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),
         }
+    }
+
+    /// The conversation window's own actions, on its outermost element so
+    /// they run wherever the keyboard focus is.
+    fn detached_actions(page: gpui::Div, cx: &mut Context<Self>) -> gpui::Div {
+        page.on_action(cx.listener(Self::reply))
+            .on_action(cx.listener(Self::reply_all))
+            .on_action(cx.listener(Self::forward))
+            .on_action(cx.listener(Self::move_to))
+            .on_action(cx.listener(Self::undo_action))
+            .on_action(cx.listener(Self::quit))
+            .on_action(cx.listener(Self::show_whats_new_action))
+            .on_action(cx.listener(Self::show_about))
     }
 }

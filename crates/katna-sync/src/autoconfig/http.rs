@@ -218,16 +218,17 @@ async fn get_once(url: &str, tls: &Tls, max_body: usize, head: bool) -> Result<A
     parse_response(&response, max_body, head)
 }
 
-/// The status line and headers of a response, and where its body starts.
-struct Head {
+/// The start of an HTTP/1.1 response.
+struct Head<'a> {
     status: u16,
     chunked: bool,
     length: Option<usize>,
     location: Option<String>,
-    body: usize,
+    /// What follows the header.
+    rest: &'a [u8],
 }
 
-fn read_head(response: &[u8]) -> Result<Head> {
+fn parse_head(response: &[u8]) -> Result<Head<'_>> {
     let bad = |what: &str| Error::Protocol(format!("HTTP: {what}"));
     let end = response
         .windows(4)
@@ -245,7 +246,7 @@ fn read_head(response: &[u8]) -> Result<Head> {
         chunked: false,
         length: None,
         location: None,
-        body: end + 4,
+        rest: &response[end + 4..],
     };
     for line in lines {
         let Some((name, value)) = line.split_once(':') else {
@@ -262,45 +263,142 @@ fn read_head(response: &[u8]) -> Result<Head> {
     Ok(parsed)
 }
 
-/// The body of a response with head `head`; with `cut`, the response may
-/// end early.
-fn read_body(head: &Head, body: &[u8], cut: bool) -> Result<Vec<u8>> {
+/// The body after `head`; with `cut`, the response may end early and the
+/// body is cut to `max_body`.
+fn parse_body(head: &Head<'_>, max_body: usize, cut: bool) -> Result<Vec<u8>> {
     let bad = |what: &str| Error::Protocol(format!("HTTP: {what}"));
-    if head.chunked {
-        dechunk(body, cut).ok_or_else(|| bad("broken chunked body"))
+    let body = head.rest;
+    let mut body = if head.chunked {
+        dechunk(body, cut).ok_or_else(|| bad("broken chunked body"))?
     } else {
         match head.length {
-            Some(length) if length <= body.len() => Ok(body[..length].to_vec()),
-            Some(_) if cut => Ok(body.to_vec()),
-            Some(_) => Err(bad("body shorter than Content-Length")),
-            None => Ok(body.to_vec()),
+            Some(length) if length <= body.len() => body[..length].to_vec(),
+            Some(_) if cut => body.to_vec(),
+            Some(_) => return Err(bad("body shorter than Content-Length")),
+            None => body.to_vec(),
         }
-    }
-}
-
-/// Splits a whole HTTP/1.1 response into status, headers and body; with
-/// `cut`, the response may end early and the body is cut to `max_body`.
-fn parse_response(response: &[u8], max_body: usize, cut: bool) -> Result<Answer> {
-    let bad = |what: &str| Error::Protocol(format!("HTTP: {what}"));
-    let head = read_head(response)?;
-    match head.status {
-        200 => {}
-        301 | 302 | 303 | 307 | 308 => {
-            return head
-                .location
-                .map(Answer::Redirect)
-                .ok_or_else(|| bad("redirect without Location"));
-        }
-        other => return Ok(Answer::Status(other)),
-    }
-    let mut body = read_body(&head, &response[head.body..], cut)?;
+    };
     if body.len() > max_body {
         if !cut {
             return Err(bad("body too large"));
         }
         body.truncate(max_body);
     }
-    Ok(Answer::Body(body))
+    Ok(body)
+}
+
+/// Splits a whole HTTP/1.1 response into status, headers and body; with
+/// `cut`, the response may end early and the body is cut to `max_body`.
+fn parse_response(response: &[u8], max_body: usize, cut: bool) -> Result<Answer> {
+    let head = parse_head(response)?;
+    match head.status {
+        200 => {}
+        301 | 302 | 303 | 307 | 308 => {
+            return head
+                .location
+                .map(Answer::Redirect)
+                .ok_or_else(|| Error::Protocol("HTTP: redirect without Location".into()));
+        }
+        other => return Ok(Answer::Status(other)),
+    }
+    parse_body(&head, max_body, cut).map(Answer::Body)
+}
+
+/// Sends a request with a JSON body (or none) and returns the answer's
+/// status and body, whatever the status; redirects are not followed. For
+/// APIs such as Katna Server's. Besides `https`, `http` is allowed to
+/// `localhost` and `127.0.0.1` only, for a server under test.
+pub async fn request(
+    method: &str,
+    url: &str,
+    headers: &[(&str, &str)],
+    json: Option<&[u8]>,
+    tls: &Tls,
+    timeout: Duration,
+) -> Result<(u16, Vec<u8>)> {
+    let exchange = async {
+        let (parts, plain) = match url.strip_prefix("http://") {
+            Some(rest) => {
+                let parts = parse_url_loopback(rest)?;
+                if !matches!(parts.host, "localhost" | "127.0.0.1") {
+                    return Err(Error::Protocol(format!("{url}: http only to localhost")));
+                }
+                (parts, true)
+            }
+            None => (parse_url(url)?, false),
+        };
+        if !method.bytes().all(|b| b.is_ascii_uppercase()) {
+            return Err(Error::Protocol(format!("bad method {method}")));
+        }
+        let mut request = format!(
+            "{method} {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\n\
+             Accept: application/json\r\nConnection: close\r\n",
+            parts.path, parts.host
+        );
+        if let Some(body) = json {
+            request.push_str(&format!(
+                "Content-Type: application/json\r\nContent-Length: {}\r\n",
+                body.len()
+            ));
+        } else if method != "GET" {
+            request.push_str("Content-Length: 0\r\n");
+        }
+        for (name, value) in headers {
+            if name.contains(['\r', '\n', ':']) || value.contains(['\r', '\n']) {
+                return Err(Error::Protocol(format!("{url}: bad header {name}")));
+            }
+            request.push_str(&format!("{name}: {value}\r\n"));
+        }
+        request.push_str("\r\n");
+        let mut conn = Conn::new(tls.clone());
+        if plain {
+            conn.connect_tcp(parts.host, parts.port).await?;
+        } else {
+            conn.connect_tls(parts.host, parts.port).await?;
+        }
+        conn.write_all(request.as_bytes()).await?;
+        if let Some(body) = json {
+            conn.write_all(body).await?;
+        }
+        let mut response = Vec::new();
+        loop {
+            let chunk = conn.read().await?;
+            if chunk.is_empty() {
+                break;
+            }
+            response.extend_from_slice(chunk);
+            if response.len() > MAX_BODY + 64 * 1024 {
+                return Err(Error::Protocol(format!("{url}: answer too large")));
+            }
+        }
+        let _ = conn.close().await;
+        let head = parse_head(&response)?;
+        let body = parse_body(&head, MAX_BODY, false)?;
+        Ok((head.status, body))
+    };
+    exchange
+        .or(async {
+            async_io::Timer::after(timeout).await;
+            Err(Error::Timeout(timeout))
+        })
+        .await
+}
+
+/// The parts of `host[:port]/path` after `http://`.
+fn parse_url_loopback(rest: &str) -> Result<Url<'_>> {
+    let (authority, path) = match rest.find('/') {
+        Some(at) => rest.split_at(at),
+        None => (rest, "/"),
+    };
+    let (host, port) = match authority.rsplit_once(':') {
+        Some((host, port)) => (
+            host,
+            port.parse()
+                .map_err(|_| Error::Protocol(format!("{rest}: bad port")))?,
+        ),
+        None => (authority, 80),
+    };
+    Ok(Url { host, port, path })
 }
 
 /// Largest answer [`post_form`] reads; token answers are a few kilobytes.
@@ -363,8 +461,8 @@ pub async fn post_form(
             }
         }
         let _ = conn.close().await;
-        let head = read_head(&response)?;
-        let body = read_body(&head, &response[head.body..], false)?;
+        let head = parse_head(&response)?;
+        let body = parse_body(&head, MAX_FORM_ANSWER, false)?;
         Ok((head.status, body))
     };
     post.or(async {
@@ -487,6 +585,22 @@ mod tests {
         assert_eq!(
             form_encode(&[("a", "x y"), ("redirect_uri", "http://127.0.0.1:5/")]),
             "a=x%20y&redirect_uri=http%3A%2F%2F127.0.0.1%3A5%2F"
+        );
+    }
+
+    #[test]
+    fn any_status_keeps_its_body() {
+        let refused = b"HTTP/1.1 403 Forbidden\r\nContent-Length: 18\r\n\r\n{\"code\":\"sign_in\"}";
+        let head = parse_head(refused).unwrap();
+        assert_eq!(head.status, 403);
+        assert_eq!(
+            parse_body(&head, MAX_BODY, false).unwrap(),
+            b"{\"code\":\"sign_in\"}"
+        );
+        let url = parse_url_loopback("127.0.0.1:8080/api/v1/account").unwrap();
+        assert_eq!(
+            (url.host, url.port, url.path),
+            ("127.0.0.1", 8080, "/api/v1/account")
         );
     }
 

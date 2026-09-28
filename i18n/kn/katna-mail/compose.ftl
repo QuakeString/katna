@@ -38,6 +38,9 @@ compose-scheduled = { $when } ಕ್ಕೆ ಕಳುಹಿಸಲು ನಿಗದ
 compose-sent-archived = ಕಳುಹಿಸಲಾಗಿದೆ ಮತ್ತು ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ
 compose-sent = ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ
 compose-discarded = ಡ್ರಾಫ್ಟ್ ಅನ್ನು ತ್ಯಜಿಸಲಾಗಿದೆ
+compose-draft-saved = ಡ್ರಾಫ್ಟ್ ಉಳಿಸಲಾಗಿದೆ
+compose-draft-failed = ಡ್ರಾಫ್ಟ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
+compose-draft-not-opened = ಡ್ರಾಫ್ಟ್ ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = ಲಗತ್ತಿಸಿ
 compose-file-too-large = { $name } ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ: ಒಂದು ಸಂದೇಶವು { $limit } ವರೆಗೆ ಮಾತ್ರ ಒಯ್ಯಬಹುದು.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ಲಗತ್ತನ್ನು ತೆಗೆದುಹಾಕಿ
+compose-attachments-total = { $count ->
+    [one] { $count } ಫೈಲ್, { $size }
+   *[other] { $count } ಫೈಲ್‌ಗಳು, { $size }
+}
 compose-drop-files = ಫೈಲ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಬಿಡಿ
 compose-drop-here = ಇಲ್ಲಿ ಬಿಡಿ
 compose-paste-keep-formatting = ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಉಳಿಸಿಕೊಳ್ಳಿ
@@ -61,6 +68,12 @@ compose-encrypt = ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ
 compose-encrypted = ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ: ಸ್ವೀಕರಿಸುವವರು ಮಾತ್ರ ಇದನ್ನು ಓದಬಹುದು
 compose-sign = ಸಹಿ ಮಾಡಿ
 compose-signed = ಸಹಿ ಮಾಡಲಾಗಿದೆ: ಇದು ನಿಮ್ಮಿಂದ ಬಂದಿದೆ ಎಂದು ಸ್ವೀಕರಿಸುವವರು ಪರಿಶೀಲಿಸಬಹುದು
+compose-track = ತೆರೆಯುವಿಕೆ ಮತ್ತು ಕ್ಲಿಕ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ
+compose-tracked = ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ: ಪ್ರತಿ ಸ್ವೀಕರಿಸುವವರು ಇದನ್ನು ಯಾವಾಗ ತೆರೆಯುತ್ತಾರೆ ಅಥವಾ ಲಿಂಕ್ ತೆರೆಯುತ್ತಾರೆ ಎಂದು ನೀವು ನೋಡುತ್ತೀರಿ
+compose-track-unavailable = ಸಹಿ ಮಾಡಿದ, ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಮತ್ತು ಸಾದಾ ಪಠ್ಯ ಮೇಲ್ ಅನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ
+compose-track-sign-in = ತೆರೆಯುವಿಕೆ ಮತ್ತು ಕ್ಲಿಕ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Katna ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ
+compose-receipt = ಓದಿದ ರಸೀದಿಯನ್ನು ವಿನಂತಿಸಿ
+compose-receipt-on = ಓದಿದ ರಸೀದಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ: ಸ್ವೀಕರಿಸುವವರ ಆ್ಯಪ್ ಅದನ್ನು ಕಳುಹಿಸುವಂತೆ ಅವರನ್ನು ಕೇಳಬಹುದು
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = ವಿಷಯ ಸೇರಿಸಿ
 send-check-send-anyway = ಹೇಗಿದ್ದರೂ ಕಳುಹಿಸಿ
 recipient-not-valid = ಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸವಲ್ಲ
 recipient-show-address = ವಿಳಾಸ ತೋರಿಸಿ
+recipient-remove = ತೆಗೆದುಹಾಕಿ
 recipient-bad-title = ವಿಳಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ
 recipient-bad-text = “{ $address }” ಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸವಲ್ಲ. ಕಳುಹಿಸುವ ಮೊದಲು ಅದನ್ನು ಸರಿಪಡಿಸಿ ಅಥವಾ ತೆಗೆದುಹಾಕಿ.
 recipient-bad-fix = ಸರಿಪಡಿಸಿ

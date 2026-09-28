@@ -16,11 +16,14 @@ mod instance;
 mod mailto;
 mod outgoing;
 mod placement;
+mod profile;
+mod receipts;
 mod sidebar;
 mod signatures;
 mod spell;
 mod suggest;
 mod tabs;
+mod templates;
 mod theme;
 mod whats_new;
 mod widgets;
@@ -39,7 +42,7 @@ use katna_platform::font;
 use katna_ui::scale::desktop_px;
 
 const USAGE: &str = "\
-Usage: katna-mail [--data-dir DIR] [--search QUERY] [--compose | --inbox | --settings |
+Usage: katna-mail [--data-dir DIR] [--search QUERY | --compose | --inbox | --settings |
                   --message ID | --reply-all ID]
        katna-mail --background
 
@@ -49,7 +52,7 @@ the options ask; a second window does not open.
 Options:
   --data-dir DIR   Use DIR/data, DIR/config and DIR/cache instead of the
                    XDG directories (the same layout as katna-search-cli)
-  --search QUERY   Start with QUERY in the search box
+  --search QUERY   Search for QUERY (as KRunner and GNOME's search do)
   --open           Open the first conversation of the list
   --compose        Start a new message
   --inbox          Show the Inbox
@@ -80,7 +83,6 @@ fn main() -> ExitCode {
         return grammar::run_helper(&language, &given.next().unwrap_or_default());
     }
     let mut data_dir: Option<PathBuf> = None;
-    let mut search: Option<String> = None;
     let mut open_first = false;
     let mut request = None;
     let mut args = std::env::args_os().skip(1);
@@ -91,7 +93,7 @@ fn main() -> ExitCode {
                 None => return usage_error(),
             },
             Some("--search") => match args.next().and_then(|q| q.into_string().ok()) {
-                Some(query) => search = Some(query),
+                Some(query) => request = Some(instance::Request::Search(query)),
                 None => return usage_error(),
             },
             Some("--open") => open_first = true,
@@ -121,6 +123,8 @@ fn main() -> ExitCode {
             _ => return usage_error(),
         }
     }
+    // A search wins over opening the first conversation.
+    let open_first = open_first && !matches!(request, Some(instance::Request::Search(_)));
     // A private data directory gets a window of its own.
     let single = data_dir.is_none();
     let paths = match data_dir {
@@ -188,14 +192,12 @@ fn main() -> ExitCode {
                 env.clone(),
                 connection.clone(),
             );
-            placement.restore(&mut options, cx);
+            let shown = placement.restore(&mut options, cx);
             let opened = cx.open_window(options, |window, cx| {
                 cx.new(|cx| {
                     placement.follow(window, cx);
-                    let mut view = window::MailWindow::new(env, paths, font, window, cx);
-                    if let Some(query) = search {
-                        view.search_for(query, window, cx);
-                    } else if open_first {
+                    let mut view = window::MailWindow::new(env, paths, font, shown, window, cx);
+                    if open_first {
                         view.open_first(window, cx);
                     }
                     view

@@ -38,6 +38,9 @@ compose-scheduled = Naka-iskedyul ipadala sa { $when }
 compose-sent-archived = Naipadala at na-archive
 compose-sent = Naipadala ang mensahe
 compose-discarded = Itinapon ang draft
+compose-draft-saved = Na-save ang draft
+compose-draft-failed = Hindi ma-save ang draft: { $error }
+compose-draft-not-opened = Hindi mabuksan ang draft.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = I-attach
 compose-file-too-large = Masyadong malaki ang { $name }: hanggang { $limit } lang ang kaya ng isang mensahe.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alisin ang attachment
+compose-attachments-total = { $count ->
+    [one] { $count } file, { $size }
+   *[other] { $count } file, { $size }
+}
 compose-drop-files = I-drop dito ang mga file
 compose-drop-here = I-drop dito
 compose-paste-keep-formatting = Panatilihin ang format
@@ -61,6 +68,12 @@ compose-encrypt = I-encrypt
 compose-encrypted = Naka-encrypt: ang mga tatanggap lang ang makakabasa nito
 compose-sign = Lagdaan
 compose-signed = Nilagdaan: masusuri ng mga tatanggap na galing ito sa iyo
+compose-track = I-track ang mga pagbukas at pag-click
+compose-tracked = Naka-track: makikita mo kung kailan ito binubuksan ng bawat tatanggap o sinusundan ang isang link
+compose-track-unavailable = Hindi maita-track ang mail na may lagda, naka-encrypt o plain text
+compose-track-sign-in = Mag-sign in sa isang Katna account para ma-track ang mga pagbukas at pag-click
+compose-receipt = Humingi ng read receipt
+compose-receipt-on = Humingi ng read receipt: maaaring hilingin ng app ng tatanggap na magpadala sila nito
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Magdagdag ng paksa
 send-check-send-anyway = Ipadala pa rin
 recipient-not-valid = Hindi valid na email address
 recipient-show-address = Ipakita ang address
+recipient-remove = Alisin
 recipient-bad-title = Suriin ang address
 recipient-bad-text = Hindi valid na email address ang “{ $address }”. Ayusin o alisin ito bago ipadala.
 recipient-bad-fix = Ayusin

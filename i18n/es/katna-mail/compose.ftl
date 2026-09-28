@@ -38,6 +38,9 @@ compose-scheduled = Envío programado para { $when }
 compose-sent-archived = Enviado y archivado
 compose-sent = Mensaje enviado
 compose-discarded = Borrador descartado
+compose-draft-saved = Borrador guardado
+compose-draft-failed = No se ha podido guardar el borrador: { $error }
+compose-draft-not-opened = No se ha podido abrir el borrador.
 
 ## Attachments
 
@@ -46,6 +49,11 @@ compose-picker-attach = Adjuntar
 compose-file-too-large = { $name } es demasiado grande: un mensaje puede llevar hasta { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Quitar archivo adjunto
+compose-attachments-total = { $count ->
+    [one] { $count } archivo, { $size }
+    [many] { $count } de archivos, { $size }
+   *[other] { $count } archivos, { $size }
+}
 compose-drop-files = Suelta los archivos aquí
 compose-drop-here = Suelta aquí
 compose-paste-keep-formatting = Mantener formato
@@ -61,6 +69,12 @@ compose-encrypt = Cifrar
 compose-encrypted = Cifrado: solo los destinatarios pueden leerlo
 compose-sign = Firmar
 compose-signed = Firmado: los destinatarios pueden comprobar que es tuyo
+compose-track = Seguir aperturas y clics
+compose-tracked = Con seguimiento: verás cuándo lo abre cada destinatario o sigue un enlace
+compose-track-unavailable = No se puede hacer seguimiento del correo firmado, cifrado o de texto sin formato
+compose-track-sign-in = Inicia sesión en una cuenta de Katna para seguir aperturas y clics
+compose-receipt = Pedir confirmación de lectura
+compose-receipt-on = Confirmación de lectura pedida: la aplicación del destinatario puede pedirle que la envíe
 
 ## Spelling
 
@@ -85,6 +99,7 @@ send-check-add-subject = Añadir asunto
 send-check-send-anyway = Enviar de todos modos
 recipient-not-valid = No es una dirección de correo válida
 recipient-show-address = Mostrar dirección
+recipient-remove = Quitar
 recipient-bad-title = Revisa la dirección
 recipient-bad-text = «{ $address }» no es una dirección de correo válida. Corrígela o quítala antes de enviar.
 recipient-bad-fix = Corregir

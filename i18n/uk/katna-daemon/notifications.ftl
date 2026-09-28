@@ -13,6 +13,11 @@ notify-new-emails = { $count ->
 notify-and-more = і ще { $count }
 notify-no-subject = (без теми)
 notify-unknown-sender = Невідомий відправник
+notify-snooze-back = Повернулося з відкладених
+notify-no-reply = Відповіді ще немає
+notify-no-reply-to = Ніхто не відповів на «{ $subject }».
+notify-tracking-opened = { $who }: лист відкрито { $subject }
+notify-tracking-clicked = { $who } переходить за посиланням у листі { $subject }
 
 ## Its buttons
 

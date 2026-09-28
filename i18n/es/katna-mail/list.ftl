@@ -32,6 +32,8 @@ list-move-to = Mover a
 list-archive = Archivar
 list-spam = Marcar como spam
 list-delete = Eliminar
+list-snooze = Posponer
+list-unsnooze = Dejar de posponer
 list-newer = Más recientes
 list-older = Más antiguos
 list-range = { $first }–{ $last } de { $total }
@@ -110,6 +112,156 @@ list-select-all-in = { $kind ->
         [one] Seleccionar { $count } mensaje de { $folder }
         [many] Seleccionar los { $count } de mensajes de { $folder }
        *[other] Seleccionar los { $count } mensajes de { $folder }
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Se ha seleccionado { $count } conversación leída de esta página.
+            [many] Se han seleccionado las { $count } de conversaciones leídas de esta página.
+           *[other] Se han seleccionado las { $count } conversaciones leídas de esta página.
+        }
+       *[message] { $count ->
+            [one] Se ha seleccionado { $count } mensaje leído de esta página.
+            [many] Se han seleccionado los { $count } de mensajes leídos de esta página.
+           *[other] Se han seleccionado los { $count } mensajes leídos de esta página.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Se ha seleccionado { $count } conversación no leída de esta página.
+            [many] Se han seleccionado las { $count } de conversaciones no leídas de esta página.
+           *[other] Se han seleccionado las { $count } conversaciones no leídas de esta página.
+        }
+       *[message] { $count ->
+            [one] Se ha seleccionado { $count } mensaje no leído de esta página.
+            [many] Se han seleccionado los { $count } de mensajes no leídos de esta página.
+           *[other] Se han seleccionado los { $count } mensajes no leídos de esta página.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Se ha seleccionado { $count } conversación destacada de esta página.
+            [many] Se han seleccionado las { $count } de conversaciones destacadas de esta página.
+           *[other] Se han seleccionado las { $count } conversaciones destacadas de esta página.
+        }
+       *[message] { $count ->
+            [one] Se ha seleccionado { $count } mensaje destacado de esta página.
+            [many] Se han seleccionado los { $count } de mensajes destacados de esta página.
+           *[other] Se han seleccionado los { $count } mensajes destacados de esta página.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Se ha seleccionado { $count } conversación no destacada de esta página.
+            [many] Se han seleccionado las { $count } de conversaciones no destacadas de esta página.
+           *[other] Se han seleccionado las { $count } conversaciones no destacadas de esta página.
+        }
+       *[message] { $count ->
+            [one] Se ha seleccionado { $count } mensaje no destacado de esta página.
+            [many] Se han seleccionado los { $count } de mensajes no destacados de esta página.
+           *[other] Se han seleccionado los { $count } mensajes no destacados de esta página.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación leída
+            [many] Seleccionar las { $count } de conversaciones leídas
+           *[other] Seleccionar las { $count } conversaciones leídas
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje leído
+            [many] Seleccionar los { $count } de mensajes leídos
+           *[other] Seleccionar los { $count } mensajes leídos
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación no leída
+            [many] Seleccionar las { $count } de conversaciones no leídas
+           *[other] Seleccionar las { $count } conversaciones no leídas
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje no leído
+            [many] Seleccionar los { $count } de mensajes no leídos
+           *[other] Seleccionar los { $count } mensajes no leídos
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación destacada
+            [many] Seleccionar las { $count } de conversaciones destacadas
+           *[other] Seleccionar las { $count } conversaciones destacadas
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje destacado
+            [many] Seleccionar los { $count } de mensajes destacados
+           *[other] Seleccionar los { $count } mensajes destacados
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación no destacada
+            [many] Seleccionar las { $count } de conversaciones no destacadas
+           *[other] Seleccionar las { $count } conversaciones no destacadas
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje no destacado
+            [many] Seleccionar los { $count } de mensajes no destacados
+           *[other] Seleccionar los { $count } mensajes no destacados
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación leída de { $folder }
+            [many] Seleccionar las { $count } de conversaciones leídas de { $folder }
+           *[other] Seleccionar las { $count } conversaciones leídas de { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje leído de { $folder }
+            [many] Seleccionar los { $count } de mensajes leídos de { $folder }
+           *[other] Seleccionar los { $count } mensajes leídos de { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación no leída de { $folder }
+            [many] Seleccionar las { $count } de conversaciones no leídas de { $folder }
+           *[other] Seleccionar las { $count } conversaciones no leídas de { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje no leído de { $folder }
+            [many] Seleccionar los { $count } de mensajes no leídos de { $folder }
+           *[other] Seleccionar los { $count } mensajes no leídos de { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación destacada de { $folder }
+            [many] Seleccionar las { $count } de conversaciones destacadas de { $folder }
+           *[other] Seleccionar las { $count } conversaciones destacadas de { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje destacado de { $folder }
+            [many] Seleccionar los { $count } de mensajes destacados de { $folder }
+           *[other] Seleccionar los { $count } mensajes destacados de { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Seleccionar { $count } conversación no destacada de { $folder }
+            [many] Seleccionar las { $count } de conversaciones no destacadas de { $folder }
+           *[other] Seleccionar las { $count } conversaciones no destacadas de { $folder }
+        }
+       *[message] { $count ->
+            [one] Seleccionar { $count } mensaje no destacado de { $folder }
+            [many] Seleccionar los { $count } de mensajes no destacados de { $folder }
+           *[other] Seleccionar los { $count } mensajes no destacados de { $folder }
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -250,8 +402,12 @@ row-not-starred = No destacado
 row-important = Importante. Haz clic para marcarlo como no importante.
 row-mark-important = Marcar como importante
 row-pinned = Fijado arriba
+row-tracking-none = Con seguimiento. Aún sin abrir
+row-tracking-opened = Abierto por { $opened } de { $recipients }
+row-tracking-clicked = Abierto por { $opened } de { $recipients }, enlace seguido por { $clicked }
 row-pin = Fijar arriba
 row-unpin = No fijar
+row-snoozed-until = Pospuesto hasta { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -260,7 +416,10 @@ menu-reply-all = Responder a todos
 menu-forward = Reenviar
 menu-archive = Archivar
 menu-delete = Eliminar
+menu-delete-forever = Eliminar definitivamente
+menu-move-to-inbox = Mover a Recibidos
 menu-spam = Marcar como spam
+menu-not-spam = No es spam
 menu-mark-read = Marcar como leído
 menu-mark-unread = Marcar como no leído
 menu-mark-all-read = Marcar todo como leído
@@ -270,6 +429,8 @@ menu-important = Marcar como importante
 menu-not-important = Marcar como no importante
 menu-pin = Fijar arriba
 menu-unpin = No fijar
+menu-snooze = Posponer
+menu-unsnooze = Dejar de posponer
 menu-print-all = Imprimir todo
 menu-new-window = Abrir en una ventana nueva
 menu-move-to = Mover a
@@ -386,6 +547,30 @@ toast-unpinned = { $kind ->
        *[other] Se han dejado de fijar { $count } mensajes.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Conversación pospuesta hasta { $when }.
+        [many] { $count } de conversaciones pospuestas hasta { $when }.
+       *[other] { $count } conversaciones pospuestas hasta { $when }.
+    }
+   *[message] { $count ->
+        [one] Mensaje pospuesto hasta { $when }.
+        [many] { $count } de mensajes pospuestos hasta { $when }.
+       *[other] { $count } mensajes pospuestos hasta { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] La conversación ha vuelto a Recibidos.
+        [many] { $count } de conversaciones han vuelto a Recibidos.
+       *[other] { $count } conversaciones han vuelto a Recibidos.
+    }
+   *[message] { $count ->
+        [one] El mensaje ha vuelto a Recibidos.
+        [many] { $count } de mensajes han vuelto a Recibidos.
+       *[other] { $count } mensajes han vuelto a Recibidos.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] Se ha marcado la conversación como spam.
@@ -396,6 +581,18 @@ toast-spam = { $kind ->
         [one] Se ha marcado el mensaje como spam.
         [many] Se han marcado { $count } de mensajes como spam.
        *[other] Se han marcado { $count } mensajes como spam.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Se ha marcado la conversación como no spam y se ha movido a Recibidos.
+        [many] Se han marcado { $count } de conversaciones como no spam y se han movido a Recibidos.
+       *[other] Se han marcado { $count } conversaciones como no spam y se han movido a Recibidos.
+    }
+   *[message] { $count ->
+        [one] Se ha marcado el mensaje como no spam y se ha movido a Recibidos.
+        [many] Se han marcado { $count } de mensajes como no spam y se han movido a Recibidos.
+       *[other] Se han marcado { $count } mensajes como no spam y se han movido a Recibidos.
     }
 }
 toast-deleted-forever = { $kind ->

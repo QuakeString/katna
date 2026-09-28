@@ -28,6 +28,8 @@ list-move-to = இதற்கு நகர்த்து
 list-archive = காப்பகப்படுத்து
 list-spam = ஸ்பேம் எனப் புகாரளி
 list-delete = நீக்கு
+list-snooze = உறக்கநிலையில் வை
+list-unsnooze = உறக்கநிலையை நீக்கு
 list-newer = புதியவை
 list-older = பழையவை
 list-range = { $total } இல் { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder } இல் உள்ள { $count } மெசேஜைத் தேர்ந்தெடு
        *[other] { $folder } இல் உள்ள { $count } மெசேஜ்களையும் தேர்ந்தெடு
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] திரையில் உள்ள படித்த { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள படித்த { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+       *[message] { $count ->
+            [one] திரையில் உள்ள படித்த { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள படித்த { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] திரையில் உள்ள படிக்காத { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள படிக்காத { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+       *[message] { $count ->
+            [one] திரையில் உள்ள படிக்காத { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள படிக்காத { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] திரையில் உள்ள நட்சத்திரமிட்ட { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள நட்சத்திரமிட்ட { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+       *[message] { $count ->
+            [one] திரையில் உள்ள நட்சத்திரமிட்ட { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள நட்சத்திரமிட்ட { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] திரையில் உள்ள நட்சத்திரமிடாத { $count } உரையாடல் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள நட்சத்திரமிடாத { $count } உரையாடல்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+       *[message] { $count ->
+            [one] திரையில் உள்ள நட்சத்திரமிடாத { $count } மெசேஜ் தேர்ந்தெடுக்கப்பட்டுள்ளது.
+           *[other] திரையில் உள்ள நட்சத்திரமிடாத { $count } மெசேஜ்களும் தேர்ந்தெடுக்கப்பட்டுள்ளன.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] படித்த { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] படித்த { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] படித்த { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] படித்த { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] படிக்காத { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] படிக்காத { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] படிக்காத { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] படிக்காத { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] நட்சத்திரமிட்ட { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] நட்சத்திரமிட்ட { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] நட்சத்திரமிட்ட { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] நட்சத்திரமிட்ட { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] நட்சத்திரமிடாத { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] நட்சத்திரமிடாத { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] நட்சத்திரமிடாத { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] நட்சத்திரமிடாத { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } இல் உள்ள படித்த { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள படித்த { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] { $folder } இல் உள்ள படித்த { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள படித்த { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } இல் உள்ள படிக்காத { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள படிக்காத { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] { $folder } இல் உள்ள படிக்காத { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள படிக்காத { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } இல் உள்ள நட்சத்திரமிட்ட { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள நட்சத்திரமிட்ட { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] { $folder } இல் உள்ள நட்சத்திரமிட்ட { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள நட்சத்திரமிட்ட { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } இல் உள்ள நட்சத்திரமிடாத { $count } உரையாடலைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள நட்சத்திரமிடாத { $count } உரையாடல்களையும் தேர்ந்தெடு
+        }
+       *[message] { $count ->
+            [one] { $folder } இல் உள்ள நட்சத்திரமிடாத { $count } மெசேஜைத் தேர்ந்தெடு
+           *[other] { $folder } இல் உள்ள நட்சத்திரமிடாத { $count } மெசேஜ்களையும் தேர்ந்தெடு
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = நட்சத்திரமிடவில்லை
 row-important = முக்கியமானது. முக்கியமில்லாதது எனக் குறிக்கக் கிளிக் செய்யவும்.
 row-mark-important = முக்கியமானது எனக் குறி
 row-pinned = மேலே பின் செய்யப்பட்டது
+row-tracking-none = கண்காணிக்கப்படுகிறது. இன்னும் திறக்கப்படவில்லை
+row-tracking-opened = { $recipients } பேரில் { $opened } பேர் திறந்தனர்
+row-tracking-clicked = { $recipients } பேரில் { $opened } பேர் திறந்தனர், { $clicked } பேர் லிங்க்கைத் திறந்தனர்
 row-pin = மேலே பின் செய்
 row-unpin = பின்னை அகற்று
+row-snoozed-until = { $when } வரை உறக்கநிலையில்
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = அனைவருக்கும் பதிலளி
 menu-forward = முன்னனுப்பு
 menu-archive = காப்பகப்படுத்து
 menu-delete = நீக்கு
+menu-delete-forever = நிரந்தரமாக நீக்கு
+menu-move-to-inbox = இன்பாக்ஸுக்கு நகர்த்து
 menu-spam = ஸ்பேம் எனப் புகாரளி
+menu-not-spam = ஸ்பேம் அல்ல
 menu-mark-read = படித்ததாகக் குறி
 menu-mark-unread = படிக்காததாகக் குறி
 menu-mark-all-read = அனைத்தையும் படித்ததாகக் குறி
@@ -240,6 +375,8 @@ menu-important = முக்கியமானது எனக் குறி
 menu-not-important = முக்கியமில்லாதது எனக் குறி
 menu-pin = மேலே பின் செய்
 menu-unpin = பின்னை அகற்று
+menu-snooze = உறக்கநிலையில் வை
+menu-unsnooze = உறக்கநிலையை நீக்கு
 menu-print-all = அனைத்தையும் அச்சிடு
 menu-new-window = புதிய சாளரத்தில் திற
 menu-move-to = இதற்கு நகர்த்து
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } மெசேஜ்களின் பின் அகற்றப்பட்டது.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டது.
+       *[other] { $count } உரையாடல்கள் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் { $when } வரை உறக்கநிலையில் வைக்கப்பட்டன.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் இன்பாக்ஸுக்குத் திரும்பியது.
+       *[other] { $count } உரையாடல்கள் இன்பாக்ஸுக்குத் திரும்பின.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் இன்பாக்ஸுக்குத் திரும்பியது.
+       *[other] { $count } மெசேஜ்கள் இன்பாக்ஸுக்குத் திரும்பின.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] உரையாடல் ஸ்பேம் எனப் புகாரளிக்கப்பட்டது.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] மெசேஜ் ஸ்பேம் எனப் புகாரளிக்கப்பட்டது.
        *[other] { $count } மெசேஜ்கள் ஸ்பேம் எனப் புகாரளிக்கப்பட்டன.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] உரையாடல் ஸ்பேம் அல்ல எனக் குறிக்கப்பட்டு இன்பாக்ஸுக்கு நகர்த்தப்பட்டது.
+       *[other] { $count } உரையாடல்கள் ஸ்பேம் அல்ல எனக் குறிக்கப்பட்டு இன்பாக்ஸுக்கு நகர்த்தப்பட்டன.
+    }
+   *[message] { $count ->
+        [one] மெசேஜ் ஸ்பேம் அல்ல எனக் குறிக்கப்பட்டு இன்பாக்ஸுக்கு நகர்த்தப்பட்டது.
+       *[other] { $count } மெசேஜ்கள் ஸ்பேம் அல்ல எனக் குறிக்கப்பட்டு இன்பாக்ஸுக்கு நகர்த்தப்பட்டன.
     }
 }
 toast-deleted-forever = { $kind ->

@@ -38,6 +38,9 @@ compose-scheduled = { $when } တွင် ပို့ရန် အချိန
 compose-sent-archived = ပို့ပြီး မှတ်တမ်းသိမ်းပြီး
 compose-sent = မက်ဆေ့ဂျ် ပို့ပြီး
 compose-discarded = မူကြမ်းကို ပယ်လိုက်ပြီ
+compose-draft-saved = မူကြမ်းကို သိမ်းလိုက်ပြီ
+compose-draft-failed = မူကြမ်းကို သိမ်း၍ မရပါ- { $error }
+compose-draft-not-opened = မူကြမ်းကို ဖွင့်၍ မရပါ။
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = ပူးတွဲရန်
 compose-file-too-large = { $name } သည် ကြီးလွန်းသည်- မက်ဆေ့ဂျ်တစ်ခုတွင် { $limit } အထိသာ ပါနိုင်သည်။
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
+compose-attachments-total = ဖိုင် { $count } ခု၊ { $size }
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
 compose-drop-here = ဤနေရာတွင် ချပါ
 compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်
@@ -61,6 +65,12 @@ compose-encrypt = ကုဒ်ဝှက်ရန်
 compose-encrypted = ကုဒ်ဝှက်ထားသည်- လက်ခံသူများသာ ဖတ်နိုင်သည်
 compose-sign = လက်မှတ်ထိုးရန်
 compose-signed = လက်မှတ်ထိုးထားသည်- သင့်ထံမှ ဖြစ်ကြောင်း လက်ခံသူများ စစ်ဆေးနိုင်သည်
+compose-track = ဖွင့်ခြင်းနှင့် နှိပ်ခြင်းကို ခြေရာခံရန်
+compose-tracked = ခြေရာခံထားသည်- လက်ခံသူတစ်ဦးစီ ၎င်းကို ဖွင့်သည့်အချိန် သို့မဟုတ် လင့်ခ်ကို ဖွင့်သည့်အချိန်ကို သင် မြင်ရမည်
+compose-track-unavailable = လက်မှတ်ထိုးထားသော၊ ကုဒ်ဝှက်ထားသော နှင့် စာသားသက်သက် မေးလ်များကို ခြေရာခံ၍ မရပါ
+compose-track-sign-in = ဖွင့်ခြင်းနှင့် နှိပ်ခြင်းကို ခြေရာခံရန် Katna အကောင့်သို့ ဝင်ရောက်ပါ
+compose-receipt = ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက် တောင်းရန်
+compose-receipt-on = ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက် တောင်းထားသည်- လက်ခံသူ၏ အက်ပ်က ၎င်းကို ပို့ရန် သူတို့ကို မေးနိုင်သည်
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = ခေါင်းစဉ်ထည့်ရန်
 send-check-send-anyway = မည်သို့ပင်ဖြစ်စေ ပို့ရန်
 recipient-not-valid = မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ
 recipient-show-address = လိပ်စာ ပြရန်
+recipient-remove = ဖယ်ရှားရန်
 recipient-bad-title = လိပ်စာကို စစ်ဆေးပါ
 recipient-bad-text = “{ $address }” သည် မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ။ မပို့မီ ၎င်းကို ပြင်ပါ သို့မဟုတ် ဖယ်ရှားပါ။
 recipient-bad-fix = ပြင်ရန်

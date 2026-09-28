@@ -28,6 +28,8 @@ list-move-to = Bugharịa gaa
 list-archive = Chekwaa
 list-spam = Kọọ dị ka spam
 list-delete = Hichapụ
+list-snooze = Yigharịa
+list-unsnooze = Kagbuo iyigharị
 list-newer = Nke ọhụrụ
 list-older = Nke ochie
 list-range = { $first }–{ $last } n'ime { $total }
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] Họrọ mkparịta ụka { $count } niile dị na { $folder }
    *[message] Họrọ ozi { $count } niile dị na { $folder }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile agụrụ dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile agụrụ dị na ihuenyo.
+    }
+   *[unread] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile a gụghị dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile a gụghị dị na ihuenyo.
+    }
+    [starred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile nwere kpakpando dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile nwere kpakpando dị na ihuenyo.
+    }
+    [unstarred] { $kind ->
+        [conversation] Ahọrọla mkparịta ụka { $count } niile enweghị kpakpando dị na ihuenyo.
+       *[message] Ahọrọla ozi { $count } niile enweghị kpakpando dị na ihuenyo.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile agụrụ
+       *[message] Họrọ ozi { $count } niile agụrụ
+    }
+   *[unread] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile a gụghị
+       *[message] Họrọ ozi { $count } niile a gụghị
+    }
+    [starred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile nwere kpakpando
+       *[message] Họrọ ozi { $count } niile nwere kpakpando
+    }
+    [unstarred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile enweghị kpakpando
+       *[message] Họrọ ozi { $count } niile enweghị kpakpando
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile agụrụ dị na { $folder }
+       *[message] Họrọ ozi { $count } niile agụrụ dị na { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile a gụghị dị na { $folder }
+       *[message] Họrọ ozi { $count } niile a gụghị dị na { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile nwere kpakpando dị na { $folder }
+       *[message] Họrọ ozi { $count } niile nwere kpakpando dị na { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Họrọ mkparịta ụka { $count } niile enweghị kpakpando dị na { $folder }
+       *[message] Họrọ ozi { $count } niile enweghị kpakpando dị na { $folder }
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = Enweghị kpakpando
 row-important = Dị mkpa. Pịa ka ị kaa akara dị ka ọ dịghị mkpa.
 row-mark-important = Kaa akara dị ka ọ dị mkpa
 row-pinned = Akwụnyere n'elu
+row-tracking-none = A na-esochi ya. E megheghị ya ka
+row-tracking-opened = Mmadụ { $opened } n'ime { $recipients } mepere ya
+row-tracking-clicked = Mmadụ { $opened } n'ime { $recipients } mepere ya, mmadụ { $clicked } soro njikọ
 row-pin = Kwụnye n'elu
 row-unpin = Wepụ n'elu
+row-snoozed-until = E yigharịrị ruo { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = Zaa mmadụ niile
 menu-forward = Zigaa
 menu-archive = Chekwaa
 menu-delete = Hichapụ
+menu-delete-forever = Hichapụ ruo mgbe ebighị ebi
+menu-move-to-inbox = Bugharịa gaa Igbe ozi mbata
 menu-spam = Kọọ dị ka spam
+menu-not-spam = Ọ bụghị spam
 menu-mark-read = Kaa akara dị ka agụrụ
 menu-mark-unread = Kaa akara dị ka a gụghị
 menu-mark-all-read = Kaa akara na niile dị ka agụrụ
@@ -162,6 +225,8 @@ menu-important = Kaa akara dị ka ọ dị mkpa
 menu-not-important = Kaa akara dị ka ọ dịghị mkpa
 menu-pin = Kwụnye n'elu
 menu-unpin = Wepụ n'elu
+menu-snooze = Yigharịa
+menu-unsnooze = Kagbuo iyigharị
 menu-print-all = Bipụta niile
 menu-new-window = Mepee na windo ọhụrụ
 menu-move-to = Bugharịa gaa
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] Ewepụla mkparịta ụka { $count } n'elu.
    *[message] Ewepụla ozi { $count } n'elu.
 }
+toast-snoozed = { $kind ->
+    [conversation] E yigharịla mkparịta ụka { $count } ruo { $when }.
+   *[message] E yigharịla ozi { $count } ruo { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] Mkparịta ụka { $count } alọghachila n'Igbe ozi mbata.
+   *[message] Ozi { $count } alọghachila n'Igbe ozi mbata.
+}
 toast-spam = { $kind ->
     [conversation] Akọọla mkparịta ụka { $count } dị ka spam.
    *[message] Akọọla ozi { $count } dị ka spam.
+}
+toast-not-spam = { $kind ->
+    [conversation] Akaala mkparịta ụka { $count } dị ka ndị na-abụghị spam ma bugaa ha n'igbe ozi mbata.
+   *[message] Akaala ozi { $count } dị ka ndị na-abụghị spam ma bugaa ha n'igbe ozi mbata.
 }
 toast-deleted-forever = { $kind ->
     [conversation] Ehichapụla mkparịta ụka { $count } ruo mgbe ebighị ebi.

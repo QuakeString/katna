@@ -77,6 +77,26 @@ security-missing-key = আপোনাৰ ওচৰত নথকা এটা �
 security-missing-key-id = আপোনাৰ ওচৰত নথকা এটা কীৰে ({ $key }) স্বাক্ষৰিত, সেয়ে পৰীক্ষা কৰিব নোৱাৰি
 security-signature-unavailable = স্বাক্ষৰিত; স্বাক্ষৰ পৰীক্ষা কৰিবলৈ { $tool } ইনষ্টল কৰক
 security-signature-error = স্বাক্ষৰ পৰীক্ষা কৰিব পৰা নগ'ল।
+tracking-opened = { $who }-এ ইয়াক { $count ->
+    [one] এবাৰ
+   *[other] { $count } বাৰ
+} খুলিছে, শেষবাৰ { $when }
+tracking-opens-clicks = { $who }-এ ইয়াক { $opens ->
+    [one] এবাৰ
+   *[other] { $opens } বাৰ
+} খুলিছে আৰু { $clicks ->
+    [one] এবাৰ
+   *[other] { $clicks } বাৰ
+} লিংক অনুসৰণ কৰিছে, শেষবাৰ { $when }
+tracking-clicked = { $who }-এ { $clicks ->
+    [one] এবাৰ
+   *[other] { $clicks } বাৰ
+} লিংক অনুসৰণ কৰিছে, শেষবাৰ { $when }
+tracking-maybe-opened = { $who }-এ হয়তো ইয়াক খুলিছে (গোপনীয়তাৰ বাবে Apple Mail-এ ছবি ল'ড কৰে)
+tracking-not-opened = { $who }-এ এতিয়াও ইয়াক খোলা নাই
+tracking-receipt = { $who }-এ পঢ়াৰ ৰচিদ পঠিয়াইছে
+tracking-receipt-displayed = পঢ়াৰ ৰচিদ: { $who }-এ আপোনাৰ বাৰ্তা খুলিছে
+tracking-receipt-other = পঢ়াৰ ৰচিদ: { $who }-এ আপোনাৰ বাৰ্তা নোখোলাকৈ মচিছে বা ব্যৱস্থা লৈছে
 
 ## Remote images and pictures
 

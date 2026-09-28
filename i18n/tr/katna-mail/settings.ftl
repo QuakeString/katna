@@ -7,6 +7,7 @@
 settings-tab-general = Genel
 settings-tab-inbox = Gelen Kutusu
 settings-tab-accounts = Hesaplar
+settings-tab-katna-account = Katna hesabı
 settings-tab-subscriptions = Abonelikler
 settings-tab-appearance = Görünüm
 settings-tab-shortcuts = Kısayollar
@@ -35,6 +36,14 @@ settings-general-full-headers = Tüm üst bilgileri göster
 settings-general-full-headers-detail = Kimden, kime, bilgi, tarih ve konu her iletide açık olur
 settings-general-full-names = Alıcıların tam adları
 settings-general-full-names-detail = “alıcı: ben, Ada” yerine “alıcı: ben, Ada Lovelace”
+settings-translation = Çeviri
+settings-translation-detail = Başka bir dildeki postalar sizin dilinizde okunabilir.
+settings-translation-offer = Çevirmeyi öner
+settings-translation-offer-detail = Bir iletinin metni, yalnızca siz istediğinizde veya dilini her zaman çevirdiğinizde çevrilmek üzere Katna'nın sunucusuna gider. Ekler asla gitmez.
+settings-translation-reading = Şu dile çevir
+settings-translation-always = Her zaman çevir
+settings-translation-never = Şunlar için asla önerme
+settings-translation-none = Henüz yok. Bir iletinin Çevir çubuğundan seçin.
 settings-general-mark-read = Okundu olarak işaretle
 settings-general-mark-read-now = Açılır açılmaz
 settings-general-mark-read-1s = 1 saniye açık kaldıktan sonra
@@ -83,6 +92,9 @@ settings-general-tray = Katna'yı sistem tepsisinde göster
 settings-general-tray-detail = Okunmamış sayısı ve bir menüyle
 settings-general-unread-badge = Görev çubuğu simgesinde okunmamış sayısı
 settings-general-unread-badge-detail = Gelen Kutusu'nda kaç iletinin okunmadığı
+settings-general-search-triggers = Masaüstünden ara
+settings-general-search-triggers-detail = Postalarınızda buradaki arama kutusu gibi aramak için KRunner'a veya GNOME aramasına bu sözcüklerden birini ve bir boşluk, ardından aradığınız şeyi yazın. Sözcükleri virgülle ayırın.
+settings-general-search-triggers-none = Sözcük yok; yalnızca “mail:” çalışır
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = Yanlış yazılan kelimelerin altı çizil
 settings-compose-spell-desktop = Masaüstünün dili ({ $language })
 settings-compose-templates = Şablonlar
 settings-compose-templates-detail = Sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın.
+settings-compose-no-templates = Henüz şablon yok. Bir iletide Şablonlar'ı, ardından Şablon olarak kaydet'i seçin.
+settings-compose-template-new = Yeni oluştur
+settings-compose-template-new-name = Yeni şablon
+settings-compose-template-subject = Konu
+settings-compose-template-text = Şablon metni
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} ve {"{"}my name{"}"}, alıcının ve sizin adınızla doldurulur.
+settings-compose-template-remove-file = Eki kaldır
+settings-compose-template-save = Kaydet
+settings-compose-template-saved = Şablon kaydedildi
+settings-compose-template-needs-name = Şablona bir ad verin
+settings-compose-template-delete = Şablonu sil
+settings-compose-template-deleted = Şablon silindi
+settings-compose-template-delete-failed = Şablon silinemedi: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = Tüm kısayollar yeniden setlerinin tuşlarına d�
 
 settings-general-language-summary = Uygulamanın, tarihlerin ve sayıların dili
 settings-general-reading-summary = Önce en yeni ileti, tüm üst bilgiler, alıcıların tam adları
+settings-translation-summary = Başka dillerdeki postaları Katna'nın sunucusuyla seçtiğiniz dile çevirin
 settings-general-mark-read-summary = Açılan ileti dizisinin ne zaman okundu olarak işaretleneceği: hemen, 1 veya 3 saniye sonra ya da elle
 settings-general-auto-advance-summary = Açık ileti dizisini sildikten, arşivledikten veya taşıdıktan sonra ne açılacağı: sonraki, önceki ya da liste
 settings-general-reply-button-summary = Her iletinin yanındaki yanıtla düğmesi herkese yanıt verir
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = Yeni postaların başladığı imza
 settings-compose-for-replies-summary = Yanıtların ve yönlendirmelerin başladığı imza
 settings-compose-format-summary = Yeni postaları düz metin olarak yaz
 settings-compose-spelling-summary = Yazarken yazım denetimi ve sözlüğün dili
-settings-compose-templates-summary = Çok yakında: sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın
+settings-general-search-triggers-summary = KRunner'dan veya GNOME aramasından postalarınızda arayan sözcükler
+settings-compose-templates-summary = Sık yazdığınız postaları kaydedin ve yeni bir postaya veya yanıta onunla başlayın
 settings-feedback-crash-reports-summary = Katna Mail veya arka plan hizmeti çöktüğünde çökme raporlarını bu bilgisayara kaydet
 settings-feedback-saved-summary = Bu bilgisayara kaydedilen çökme raporlarını görüntüleyin, kopyalayın veya silin
 settings-feedback-help-improve-summary = Sorunun düzeltilmesine yardımcı olmak için çökme raporları gönderin; siz açmadıkça kapalı

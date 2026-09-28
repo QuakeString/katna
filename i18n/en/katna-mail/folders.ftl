@@ -26,12 +26,21 @@ nav-tab-new = { $count ->
     [one] { $count } new
    *[other] { $count } new
 }
+# Under the bar at the foot of the folder pane: how full the account's
+# mail storage is. $percent: a whole number such as “34”; $total: the
+# account's storage, such as “15 GB”.
+storage-used = { $percent }% of { $total } used
+# Tooltip of that bar. $address: the account; $used and $total: sizes
+# such as “5.1 GB” and “15 GB”.
+storage-used-detail = { $address }: { $used } of { $total } used
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Inbox
 # Starred (flagged) messages.
 folder-starred = Starred
+# Katna's folder of snoozed mail, which comes back to the inbox later.
+folder-snoozed = Snoozed
 # Unread messages of every account (in the unified inbox).
 folder-unread = Unread
 # Messages marked important (in the unified inbox).
@@ -46,6 +55,8 @@ folder-trash = Trash
 folder-all-mail = All mail
 # Messages scheduled to be sent later.
 folder-scheduled = Scheduled
+# How mail sent with open and click tracking did.
+folder-activity = Activity
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

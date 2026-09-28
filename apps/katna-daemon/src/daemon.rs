@@ -18,12 +18,17 @@ use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
     config::Metered,
 };
-use katna_dbus::{AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, state};
+use katna_dbus::{
+    AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
+};
 use katna_i18n::tr;
 use katna_search::IndexerWaker;
-use katna_store::{FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store};
+use katna_store::{
+    FolderId, Forgotten, MessageFlags, MessageId, Mode, SendState, Store, Template, TemplateFile,
+    Translation,
+};
 use katna_sync::{
-    Credentials, Endpoint, MailBackend,
+    Credentials, Endpoint, MailBackend, MailSender,
     autoconfig::{Discovered, Discovery},
     bodies,
     connection::Connection,
@@ -34,15 +39,41 @@ use katna_sync::{
     pictures::Pictures,
     pop3::{self, Pop3Client},
     smtp::SmtpSender,
+    tracking,
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
+use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+mod reminders;
+
+pub use reminders::{SNOOZED, is_snoozed_path};
 mod sign_in;
 
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;
+/// The longest template name, in characters.
+const MAX_TEMPLATE_NAME: usize = 200;
+/// The most a template's attachments may hold, in bytes (the session bus
+/// carries 32 MB at most).
+const MAX_TEMPLATE_FILES: usize = 20_000_000;
+
+/// A template name, trimmed; not empty and not too long.
+fn template_name(name: &str) -> Result<String, CommandError> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(CommandError::InvalidArgs(
+            "a template needs a name".to_owned(),
+        ));
+    }
+    if name.chars().count() > MAX_TEMPLATE_NAME {
+        return Err(CommandError::InvalidArgs(format!(
+            "a template name is at most {MAX_TEMPLATE_NAME} characters"
+        )));
+    }
+    Ok(name.to_owned())
+}
 
 /// How long a stopping worker may take to log out.
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -57,6 +88,10 @@ pub enum Notice {
     OutboxChanged(i64),
     /// Workers now act metered, or stopped doing so.
     MeteredChanged(bool),
+    /// The Katna account this computer is signed in to changed.
+    KatnaAccountChanged,
+    /// A tracked message was opened or a link in it followed.
+    TrackingChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -157,6 +192,9 @@ pub struct Daemon {
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
     send_errors: Mutex<HashMap<i64, String>>,
+    /// How long each account's SMTP server holds mail (FUTURERELEASE),
+    /// once asked; `None` when it cannot.
+    hold_limits: Mutex<HashMap<AccountId, Option<u64>>>,
     notices: Sender<Notice>,
     /// Connections for messages the user opens.
     on_demand: OnDemand,
@@ -164,6 +202,8 @@ pub struct Daemon {
     new_mail: OnceLock<Arc<NewMailNotices>>,
     /// The taskbar count and the tray, once they run.
     desktop: OnceLock<desktop::Handle>,
+    /// KRunner's and GNOME's search, for its trigger words.
+    finder: OnceLock<Arc<crate::desktop_search::Finder>>,
     /// Set once all data is being deleted: nothing starts any more.
     closing: AtomicBool,
     /// Set while the cache is being reset: workers start once it is done.
@@ -182,6 +222,13 @@ pub struct Daemon {
     rotated: (Sender<Rotated>, Receiver<Rotated>),
     /// Ends the browser sign-in under way, if any.
     signing_in: Mutex<Option<Sender<()>>>,
+    /// Tells the tracking event stream to look again (a tracked message
+    /// went out, or settings changed).
+    tracking_wake: (Sender<()>, Receiver<()>),
+    /// The languages Katna Server translates between, once asked.
+    translation_languages: crate::translate::Languages,
+    /// Wakes the scheduler of snooze and reminders, once it runs.
+    scheduler: OnceLock<katna_meta::Waker>,
 }
 
 /// A refresh token that replaced the account's old one.
@@ -216,10 +263,12 @@ impl Daemon {
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
+            hold_limits: Mutex::default(),
             notices,
             on_demand: OnDemand::default(),
             new_mail: OnceLock::new(),
             desktop: OnceLock::new(),
+            finder: OnceLock::new(),
             closing: AtomicBool::new(false),
             resetting: AtomicBool::new(false),
             indexer: OnceLock::new(),
@@ -228,6 +277,9 @@ impl Daemon {
             tokens: Mutex::default(),
             rotated: async_channel::unbounded(),
             signing_in: Mutex::default(),
+            tracking_wake: async_channel::bounded(1),
+            translation_languages: Default::default(),
+            scheduler: OnceLock::new(),
         });
         Ok((daemon, receiver))
     }
@@ -257,6 +309,11 @@ impl Daemon {
         let _ = self.desktop.set(handle);
     }
 
+    /// Where the desktop search's trigger words go when settings change.
+    pub(crate) fn set_finder(&self, finder: Arc<crate::desktop_search::Finder>) {
+        let _ = self.finder.set(finder);
+    }
+
     /// The search indexer, for [`Daemon::reset_cache`].
     pub(crate) fn set_indexer(&self, waker: IndexerWaker) {
         let _ = self.indexer.set(waker);
@@ -266,7 +323,8 @@ impl Daemon {
         self.new_mail.get().cloned()
     }
 
-    /// Starts a worker for every account, and the outbox.
+    /// Starts a worker for every account, the outbox and the scheduler of
+    /// snooze and reminders.
     pub async fn start(self: &Arc<Self>) -> Result<(), CommandError> {
         let accounts = self.store().accounts()?;
         tracing::info!(accounts = accounts.len(), "starting");
@@ -279,12 +337,50 @@ impl Daemon {
             self.rotated.1.clone(),
         ))
         .detach();
+        self.start_scheduler();
         smol::spawn(crate::crash_upload::run(
             Arc::downgrade(self),
             self.crash_uploads.1.clone(),
         ))
         .detach();
+        smol::spawn(crate::tracking::run(
+            Arc::downgrade(self),
+            self.tracking_wake.1.clone(),
+        ))
+        .detach();
         Ok(())
+    }
+
+    /// Has the tracking event stream look again.
+    pub(crate) fn wake_tracking(&self) {
+        let _ = self.tracking_wake.0.try_send(());
+    }
+
+    /// Katna Server, for tracking ([`crate::katna_account::server_url`]).
+    pub(crate) fn tracking_client(&self) -> Option<tracking::Client> {
+        let server = tracking::Server::parse(&crate::katna_account::server_url())?;
+        let tls = Tls::system()
+            .map_err(|err| tracing::warn!(%err, "TLS setup failed; tracking waits"))
+            .ok()?;
+        Some(tracking::Client::new(server, tls))
+    }
+
+    /// This computer's Katna Server token, once it has registered. The
+    /// server only takes it for tracking while signed in to a Katna
+    /// account with a confirmed address (§16.2).
+    pub(crate) async fn tracking_token(&self) -> Option<String> {
+        let session = crate::katna_account::Session::new(&self.secrets).ok()?;
+        match session.token().await {
+            Ok(token) => token,
+            Err(error) => {
+                tracing::warn!(%error, "no Katna Server token");
+                None
+            }
+        }
+    }
+
+    pub(crate) fn notices(&self) -> &Sender<Notice> {
+        &self.notices
     }
 
     pub(crate) fn paths(&self) -> &Paths {
@@ -521,11 +617,86 @@ impl Daemon {
             .map_err(|err| CommandError::Failed(err.to_string()))
     }
 
+    /// This computer's Katna account on Katna Server.
+    pub fn katna(&self) -> Result<crate::katna_account::Session<'_>, CommandError> {
+        crate::katna_account::Session::new(&self.secrets)
+    }
+
+    /// Tells the apps the Katna account changed.
+    pub fn katna_changed(&self) {
+        let _ = self.notices.try_send(Notice::KatnaAccountChanged);
+    }
+
     /// The picture of the sender `address`, or empty.
     pub async fn sender_picture(&self, address: &str) -> Result<Vec<u8>, CommandError> {
         let pictures = Pictures::system(self.paths.cache_dir())
             .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         Ok(pictures.sender(address).await)
+    }
+
+    /// Translates `text`, the plain text of `message` in language `source`
+    /// (found by the app; `auto` when unclear), into `target` (LibreTranslate
+    /// codes such as `en`): the language it was in and the translation,
+    /// from the store when this text was translated before. Mail already
+    /// in `target` is never sent.
+    pub async fn translate(
+        &self,
+        message: MessageId,
+        text: &str,
+        source: &str,
+        target: &str,
+    ) -> Result<Translation, TranslateError> {
+        let valid = |code: &str| {
+            (2..=8).contains(&code.len())
+                && code.bytes().all(|b| b.is_ascii_lowercase() || b == b'-')
+        };
+        if !valid(source) || !valid(target) {
+            return Err(TranslateError::Server(format!(
+                "bad language {source:?} or {target:?}"
+            )));
+        }
+        // Before anything reaches the network, the store included.
+        if katna_translate::same_language(source, target) {
+            return Err(TranslateError::SameLanguage);
+        }
+        {
+            let store = self.store();
+            let known = store
+                .messages_by_id(&[message])
+                .map_err(|err| TranslateError::Server(err.to_string()))?;
+            if known.is_empty() {
+                return Err(TranslateError::Server(format!("no message {}", message.0)));
+            }
+            let cached = store
+                .translation(message, target, text)
+                .map_err(|err| TranslateError::Server(err.to_string()))?;
+            if let Some(cached) = cached {
+                return Ok(cached);
+            }
+        }
+        let server = KatnaServer::connect(&self.secrets).await?;
+        let done = translate::translate(&server, &self.translation_languages, text, source, target)
+            .await?;
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_secs().try_into().unwrap_or(i64::MAX));
+        if let Err(err) = self
+            .store()
+            .save_translation(message, target, text, &done, now)
+        {
+            tracing::warn!(%err, "keeping a translation");
+        }
+        tracing::info!(from = done.source, to = target, "message translated");
+        Ok(done)
+    }
+
+    /// The languages Katna Server can translate into `target`.
+    pub async fn translation_sources(&self, target: &str) -> Result<Vec<String>, TranslateError> {
+        let server = KatnaServer::connect(&self.secrets).await?;
+        self.translation_languages
+            .sources(&server, target)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "asking the server for its languages"))
     }
 
     /// Renames an account. An empty name goes back to the name its own
@@ -618,6 +789,7 @@ impl Daemon {
             batch.clear_ops(id)?;
             batch.clear_outbox(id)?;
             batch.clear_pop3(id)?;
+            batch.set_quota(id, None, 0)?;
             batch.commit()?;
             store.remove_account(id)?
         };
@@ -748,6 +920,8 @@ impl Daemon {
         for running in self.workers().values() {
             running.handle.reconnect();
         }
+        // After a resume, snoozes may have ended while the timers slept.
+        self.wake_scheduler();
     }
 
     /// NetworkManager says the network became metered or stopped being so.
@@ -766,7 +940,7 @@ impl Daemon {
 
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications`,
-    /// the `general` language, tray and badge switches,
+    /// the `general` language, tray and badge switches, search trigger words,
     /// `feedback.send_crash_reports`). Katna Mail calls this after saving
     /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
@@ -793,6 +967,9 @@ impl Daemon {
         let language = &config.general.language;
         if std::mem::replace(&mut *self.language.lock().unwrap(), language.clone()) != *language {
             katna_i18n::apply(language);
+        }
+        if let Some(finder) = self.finder.get() {
+            finder.set_triggers(config.general.search_triggers.clone());
         }
         if let Some(desktop) = self.desktop.get() {
             desktop.settings(config.general.clone());
@@ -997,6 +1174,53 @@ impl Daemon {
         raw: &[u8],
         delay: u32,
     ) -> Result<i64, CommandError> {
+        self.check_smtp(account)?;
+        let id = outbox::queue(&mut self.store(), account, raw, delay, unix_now())?;
+        tracing::info!(id, %account, delay, "queued to send");
+        self.queued(id);
+        Ok(id)
+    }
+
+    /// Queues `raw` from `account` to go out at `at`, handed over after
+    /// `delay` seconds (see [`outbox::schedule`]).
+    pub fn schedule_send(
+        &self,
+        account: AccountId,
+        raw: &[u8],
+        delay: u32,
+        at: i64,
+    ) -> Result<i64, CommandError> {
+        self.check_smtp(account)?;
+        let id = outbox::schedule(&mut self.store(), account, raw, delay, at, unix_now())?;
+        tracing::info!(id, %account, delay, at, "scheduled to send");
+        self.queued(id);
+        Ok(id)
+    }
+
+    /// How long the SMTP server of `account` holds mail, in seconds; 0
+    /// when it cannot. Logs in to ask the first time.
+    pub async fn server_hold_limit(
+        self: &Arc<Self>,
+        account: AccountId,
+    ) -> Result<u64, CommandError> {
+        self.check_smtp(account)?;
+        if let Some(limit) = self.hold_limits.lock().unwrap().get(&account) {
+            return Ok(limit.unwrap_or(0));
+        }
+        let failed = |err: katna_sync::Error| CommandError::Failed(err.to_string());
+        let mut sender = SmtpAccounts(Arc::downgrade(self))
+            .connect(account)
+            .await
+            .map_err(failed)?;
+        let limit = sender.hold_limit().await.map_err(failed)?;
+        if let Err(error) = sender.quit().await {
+            tracing::debug!(%error, "SMTP QUIT after asking");
+        }
+        self.hold_limits.lock().unwrap().insert(account, limit);
+        Ok(limit.unwrap_or(0))
+    }
+
+    fn check_smtp(&self, account: AccountId) -> Result<(), CommandError> {
         let has_smtp = self
             .store()
             .account_settings(account)?
@@ -1007,19 +1231,86 @@ impl Daemon {
                 "account {account} has no SMTP server"
             )));
         }
-        let id = outbox::queue(&mut self.store(), account, raw, delay, unix_now())?;
-        tracing::info!(id, %account, delay, "queued to send");
+        Ok(())
+    }
+
+    /// Tells clients about queued mail and wakes the outbox.
+    fn queued(&self, id: i64) {
+        // A reminder left by an earlier entry with this ID is not this one's.
+        if let Err(error) = katna_meta::clear_follow_up(&mut self.store(), id) {
+            tracing::warn!(%error, id, "clearing an old reply reminder");
+        }
         let _ = self.notices.try_send(Notice::OutboxChanged(id));
         if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
             sending.handle.wake();
         }
+    }
+
+    /// Like [`Daemon::queue_send`], as one tracked copy per recipient.
+    pub fn queue_tracked_send(
+        &self,
+        account: AccountId,
+        raw: &[u8],
+        delay: u32,
+    ) -> Result<i64, CommandError> {
+        self.check_smtp(account)?;
+        let id = outbox::queue_with(&mut self.store(), account, raw, delay, unix_now(), true)?;
+        tracing::info!(id, %account, delay, "queued to send, tracked");
+        self.queued(id);
         Ok(id)
+    }
+
+    /// Saves a mail template (a new one for ID 0). Returns its ID.
+    pub fn save_template(&self, template: TemplateItem) -> Result<i64, CommandError> {
+        let name = template_name(&template.name)?;
+        let size: usize = template.attachments.iter().map(|f| f.data.len()).sum();
+        if size > MAX_TEMPLATE_FILES {
+            return Err(CommandError::InvalidArgs(format!(
+                "a template's attachments are at most {} MB",
+                MAX_TEMPLATE_FILES / 1_000_000
+            )));
+        }
+        let template = Template {
+            id: template.id,
+            name,
+            subject: template.subject,
+            html: template.html,
+            text: template.text,
+            attachments: template
+                .attachments
+                .into_iter()
+                .map(|f| TemplateFile {
+                    name: f.name,
+                    mime: f.mime,
+                    data: f.data,
+                })
+                .collect(),
+        };
+        let id = self.store().save_template(&template)?;
+        tracing::info!(id, "template saved");
+        Ok(id)
+    }
+
+    /// Renames a template. Returns whether it exists.
+    pub fn rename_template(&self, id: i64, name: &str) -> Result<bool, CommandError> {
+        let name = template_name(name)?;
+        Ok(self.store().rename_template(id, &name)?)
+    }
+
+    /// Deletes a template. Returns whether it existed.
+    pub fn delete_template(&self, id: i64) -> Result<bool, CommandError> {
+        let deleted = self.store().delete_template(id)?;
+        if deleted {
+            tracing::info!(id, "template deleted");
+        }
+        Ok(deleted)
     }
 
     /// Takes a queued message back, if it is not being sent yet.
     pub fn undo_send(&self, id: i64) -> Result<bool, CommandError> {
         let undone = outbox::cancel(&mut self.store(), id)?;
         if undone {
+            katna_meta::clear_follow_up(&mut self.store(), id)?;
             tracing::info!(id, "send undone");
             let _ = self.notices.try_send(Notice::OutboxChanged(id));
         }
@@ -1067,14 +1358,28 @@ impl Daemon {
         let errors = self.send_errors.lock().unwrap();
         Ok(entries
             .into_iter()
-            .map(|entry| OutboxItem {
-                id: entry.id,
-                account: entry.account.0,
-                message: entry.message.0,
-                subject: entry.subject,
-                send_at: entry.send_at,
-                state: entry.state.as_str().to_owned(),
-                detail: errors.get(&entry.id).cloned().unwrap_or_default(),
+            .map(|entry| {
+                // Scheduled mail shows when it goes out, not when it is
+                // handed over.
+                let held = entry.state == SendState::Sent && entry.hold_until.is_some();
+                OutboxItem {
+                    id: entry.id,
+                    account: entry.account.0,
+                    message: entry.message.0,
+                    subject: entry.subject,
+                    send_at: match entry.state {
+                        SendState::Queued | SendState::Sent => {
+                            entry.hold_until.unwrap_or(entry.send_at)
+                        }
+                        _ => entry.send_at,
+                    },
+                    state: if held {
+                        katna_dbus::send_state::HELD.to_owned()
+                    } else {
+                        entry.state.as_str().to_owned()
+                    },
+                    detail: errors.get(&entry.id).cloned().unwrap_or_default(),
+                }
             })
             .collect())
     }
@@ -1107,10 +1412,12 @@ impl Daemon {
                     .unwrap()
                     .insert(event.id, event.detail);
             }
-            if event.state == SendState::Sent
-                && let Some(running) = self.workers().get(&event.account)
-            {
-                running.handle.send_changes();
+            if event.state == SendState::Sent {
+                if let Some(running) = self.workers().get(&event.account) {
+                    running.handle.send_changes();
+                }
+                // A tracked message may have gone out: follow its events.
+                self.wake_tracking();
             }
             let _ = self.notices.try_send(Notice::OutboxChanged(event.id));
         }
@@ -1289,6 +1596,11 @@ impl Daemon {
                     status.state = state::AUTH_FAILED;
                     status.detail = message;
                 }
+                // The folder pane shows how full the account is.
+                Event::QuotaChanged => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
+                }
             }
             // A removed account's last events must not bring it back.
             if self.workers().contains_key(&id) {
@@ -1302,7 +1614,7 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::StatusChanged(id));
     }
 
-    fn store(&self) -> MutexGuard<'_, Store> {
+    pub(crate) fn store(&self) -> MutexGuard<'_, Store> {
         self.store.lock().unwrap()
     }
 
@@ -1318,8 +1630,8 @@ enum Link {
 }
 
 /// Drops the handle and waits for the worker to log out.
-/// Forgets the downloaded mail of every IMAP account and deletes the
-/// sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
+/// Forgets the downloaded mail of every IMAP account and the translations,
+/// and deletes the sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
 /// have their mail, and imported mail has no server.
 fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
     let mut store = Store::open(paths, Mode::ReadWrite)?;
@@ -1330,6 +1642,7 @@ fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
         .map(|account| account.id)
         .collect();
     let forgotten = store.forget_downloaded_mail(&accounts)?;
+    store.forget_translations()?;
     let pictures = Pictures::cache_dir(paths.cache_dir());
     match std::fs::remove_dir_all(&pictures) {
         Err(err) if err.kind() != std::io::ErrorKind::NotFound => {
@@ -1456,6 +1769,21 @@ impl Outgoing for SmtpAccounts {
                     .any(|domain| host.strip_suffix(domain).is_some_and(|h| h.ends_with('.')))
             })
         })
+    }
+
+    fn tracking(&self) -> Option<tracking::Client> {
+        self.0.upgrade()?.tracking_client()
+    }
+
+    async fn tracking_token(&self) -> katna_sync::Result<String> {
+        let daemon = self
+            .0
+            .upgrade()
+            .ok_or_else(|| katna_sync::Error::Closed("the daemon is stopping".into()))?;
+        daemon
+            .tracking_token()
+            .await
+            .ok_or_else(|| katna_sync::Error::Rejected("not signed in to a Katna account".into()))
     }
 }
 

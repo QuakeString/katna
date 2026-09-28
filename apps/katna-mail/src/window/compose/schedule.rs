@@ -71,7 +71,7 @@ pub(super) fn describe(at: Timestamp, tz: &TimeZone) -> String {
 }
 
 /// A time of day as the language writes it: "8:00 AM", "08:00".
-pub(super) fn clock(time: Time) -> String {
+pub(in crate::window) fn clock(time: Time) -> String {
     format::time(DateTime::from_parts(jiff::civil::date(2026, 1, 1), time))
 }
 
@@ -84,7 +84,7 @@ pub(super) fn rfc2822(at: Timestamp, tz: &TimeZone) -> String {
 
 /// Reads a time of day as people type it: as [`clock`] writes it, or
 /// "8:00 AM", "8am", "13:30", "1.30 pm", "9", in any script's digits.
-pub(super) fn parse_time(text: &str) -> Option<Time> {
+pub(in crate::window) fn parse_time(text: &str) -> Option<Time> {
     let squeeze = |t: &str| -> String {
         t.chars()
             .filter(|c| !c.is_whitespace())
@@ -141,7 +141,7 @@ fn ascii_digit(c: char) -> char {
 
 /// The 42 days of a month calendar with `month` in it, from the `first`
 /// day of the week on or before its first day.
-pub(super) fn month_grid(month: Date, first: Weekday) -> Vec<Date> {
+pub(in crate::window) fn month_grid(month: Date, first: Weekday) -> Vec<Date> {
     let start_of_month = month.first_of_month();
     let back = start_of_month.weekday().since(first);
     let start = start_of_month
@@ -153,7 +153,7 @@ pub(super) fn month_grid(month: Date, first: Weekday) -> Vec<Date> {
 }
 
 /// `date` at `time` in `tz`, if that moment exists.
-pub(super) fn moment(date: Date, time: Time, tz: &TimeZone) -> Option<Timestamp> {
+pub(in crate::window) fn moment(date: Date, time: Time, tz: &TimeZone) -> Option<Timestamp> {
     DateTime::from_parts(date, time)
         .to_zoned(tz.clone())
         .ok()

@@ -31,7 +31,7 @@ use futures_lite::FutureExt;
 
 use crate::{
     Envelope, Error, FlagChanges, Flags, Folder, FolderChange, FolderStatus, MailBackend,
-    MessageHeaders, Result, Wait,
+    MessageHeaders, Quota, Result, Wait,
 };
 
 type Reply<T> = Sender<Result<T>>;
@@ -44,6 +44,7 @@ enum Request {
     FetchBodies(Vec<u32>, Reply<Vec<(u32, Vec<u8>)>>),
     StoreFlags(Vec<u32>, Flags, bool, Reply<()>),
     MoveMessages(Vec<u32>, String, Reply<Vec<(u32, u32)>>),
+    CopyMessages(Vec<u32>, String, Reply<Vec<(u32, u32)>>),
     Expunge(Vec<u32>, Reply<()>),
     FetchFlags(u32, u32, Option<u64>, Reply<FlagChanges>),
     Uids(Reply<Vec<u32>>),
@@ -53,6 +54,7 @@ enum Request {
     PollChanges(Reply<Vec<FolderChange>>),
     GmailSearch(u32, String, Reply<Option<Vec<u32>>>),
     GmailMessageIds(Vec<u32>, Reply<Option<HashMap<u32, u64>>>),
+    Quota(Reply<Option<Quota>>),
     WaitForChanges(Duration, Reply<Vec<FolderChange>>),
     Logout(Reply<()>),
 }
@@ -109,6 +111,12 @@ impl Connection {
     pub async fn move_messages(&self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
         let (uids, folder) = (uids.to_vec(), folder.to_owned());
         self.call(|reply| Request::MoveMessages(uids, folder, reply))
+            .await
+    }
+
+    pub async fn copy_messages(&self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        let (uids, folder) = (uids.to_vec(), folder.to_owned());
+        self.call(|reply| Request::CopyMessages(uids, folder, reply))
             .await
     }
 
@@ -179,6 +187,10 @@ impl Connection {
             .await
     }
 
+    pub async fn quota(&self) -> Result<Option<Quota>> {
+        self.call(Request::Quota).await
+    }
+
     /// Waits for changes to the selected folder, for at most `max_wait`.
     ///
     /// Returns early, possibly with no changes, when another request needs
@@ -244,6 +256,10 @@ impl MailBackend for Connection {
         Connection::move_messages(self, uids, folder).await
     }
 
+    async fn copy_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        Connection::copy_messages(self, uids, folder).await
+    }
+
     async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
         Connection::expunge(self, uids).await
     }
@@ -288,6 +304,10 @@ impl MailBackend for Connection {
 
     async fn gmail_message_ids(&mut self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
         Connection::gmail_message_ids(self, uids).await
+    }
+
+    async fn quota(&mut self) -> Result<Option<Quota>> {
+        Connection::quota(self).await
     }
 
     /// If `interrupt` wins, the task still finishes its wait, and changes
@@ -353,6 +373,9 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::MoveMessages(uids, folder, reply) => {
                 answer(&reply, backend.move_messages(&uids, &folder).await)
             }
+            Request::CopyMessages(uids, folder, reply) => {
+                answer(&reply, backend.copy_messages(&uids, &folder).await)
+            }
             Request::Expunge(uids, reply) => answer(&reply, backend.expunge(&uids).await),
             Request::FetchFlags(first, last, changed_since, reply) => answer(
                 &reply,
@@ -374,6 +397,7 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::GmailMessageIds(uids, reply) => {
                 answer(&reply, backend.gmail_message_ids(&uids).await)
             }
+            Request::Quota(reply) => answer(&reply, backend.quota().await),
             Request::WaitForChanges(max_wait, reply) => {
                 // The next request, or the last handle going away, ends the
                 // wait. `recv` is cancel-safe: nothing is lost if the server

@@ -38,6 +38,9 @@ compose-scheduled = Invio programmato per { $when }
 compose-sent-archived = Inviato e archiviato
 compose-sent = Messaggio inviato
 compose-discarded = Bozza eliminata
+compose-draft-saved = Bozza salvata
+compose-draft-failed = Impossibile salvare la bozza: { $error }
+compose-draft-not-opened = Impossibile aprire la bozza.
 
 ## Attachments
 
@@ -46,6 +49,11 @@ compose-picker-attach = Allega
 compose-file-too-large = { $name } è troppo grande: un messaggio può contenere fino a { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Rimuovi allegato
+compose-attachments-total = { $count ->
+    [one] { $count } file, { $size }
+    [many] { $count } di file, { $size }
+   *[other] { $count } file, { $size }
+}
 compose-drop-files = Trascina qui i file
 compose-drop-here = Rilascia qui
 compose-paste-keep-formatting = Mantieni formattazione
@@ -61,6 +69,12 @@ compose-encrypt = Crittografa
 compose-encrypted = Crittografato: solo i destinatari possono leggerlo
 compose-sign = Firma
 compose-signed = Firmato: i destinatari possono verificare che viene da te
+compose-track = Traccia aperture e clic
+compose-tracked = Tracciato: vedi quando ogni destinatario lo apre o segue un link
+compose-track-unavailable = Le email firmate, crittografate e in testo semplice non si possono tracciare
+compose-track-sign-in = Accedi a un account Katna per tracciare aperture e clic
+compose-receipt = Richiedi una conferma di lettura
+compose-receipt-on = Conferma di lettura richiesta: l’app del destinatario potrebbe chiedergli di inviarla
 
 ## Spelling
 
@@ -85,6 +99,7 @@ send-check-add-subject = Aggiungi oggetto
 send-check-send-anyway = Invia comunque
 recipient-not-valid = Indirizzo email non valido
 recipient-show-address = Mostra indirizzo
+recipient-remove = Rimuovi
 recipient-bad-title = Controlla l’indirizzo
 recipient-bad-text = «{ $address }» non è un indirizzo email valido. Correggilo o rimuovilo prima di inviare.
 recipient-bad-fix = Correggi

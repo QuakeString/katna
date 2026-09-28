@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Account passwords. They live only in the Secret Service (KWallet, GNOME
+//! Account passwords, and the token of this computer's Katna account on
+//! Katna Server. They live only in the Secret Service (KWallet, GNOME
 //! Keyring, or the secret portal inside Flatpak), never in files
 //! (`docs/ARCHITECTURE.md` §5.1).
 
@@ -37,6 +38,16 @@ fn attributes(account: AccountId) -> [(&'static str, String); 2] {
         ("account", account.to_string()),
     ]
 }
+
+fn server_attributes() -> [(&'static str, String); 2] {
+    [
+        ("application", ids::PREFIX.to_owned()),
+        ("katna-server", "device".to_owned()),
+    ]
+}
+
+/// Where the Katna Server token sits in the in-memory store.
+const SERVER_KEY: AccountId = AccountId(i64::MIN);
 
 impl Secrets {
     /// Connects to the Secret Service.
@@ -93,6 +104,44 @@ impl Secrets {
             }
             Self::Memory(map) => {
                 map.lock().unwrap().insert(account, password.to_owned());
+            }
+        }
+        Ok(())
+    }
+
+    /// This computer's Katna Server token and account, if saved.
+    pub async fn server_token(&self) -> Result<Option<String>, Error> {
+        match self {
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                let Some(item) = keyring
+                    .search_items(&server_attributes())
+                    .await?
+                    .into_iter()
+                    .next()
+                else {
+                    return Ok(None);
+                };
+                let secret = item.secret().await?;
+                String::from_utf8(secret.to_vec())
+                    .map(Some)
+                    .map_err(|_| Error("the saved Katna Server token is not UTF-8".into()))
+            }
+            Self::Memory(map) => Ok(map.lock().unwrap().get(&SERVER_KEY).cloned()),
+        }
+    }
+
+    /// Saves this computer's Katna Server token and account.
+    pub async fn set_server_token(&self, token: &str) -> Result<(), Error> {
+        match self {
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                keyring
+                    .create_item("Katna account", &server_attributes(), token, true)
+                    .await?;
+            }
+            Self::Memory(map) => {
+                map.lock().unwrap().insert(SERVER_KEY, token.to_owned());
             }
         }
         Ok(())

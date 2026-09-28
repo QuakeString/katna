@@ -1,0 +1,4 @@
+# Keeps the build context of server/katna-server/Dockerfile small.
+target/
+fuzz/target/
+.git/

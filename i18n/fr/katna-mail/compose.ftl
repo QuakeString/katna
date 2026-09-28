@@ -38,6 +38,9 @@ compose-scheduled = Envoi programmé pour { $when }
 compose-sent-archived = Envoyé et archivé
 compose-sent = Message envoyé
 compose-discarded = Brouillon supprimé
+compose-draft-saved = Brouillon enregistré
+compose-draft-failed = Impossible d’enregistrer le brouillon : { $error }
+compose-draft-not-opened = Impossible d’ouvrir le brouillon.
 
 ## Attachments
 
@@ -46,6 +49,11 @@ compose-picker-attach = Joindre
 compose-file-too-large = { $name } est trop volumineux : un message peut contenir jusqu’à { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Retirer la pièce jointe
+compose-attachments-total = { $count ->
+    [one] { $count } fichier, { $size }
+    [many] { $count } de fichiers, { $size }
+   *[other] { $count } fichiers, { $size }
+}
 compose-drop-files = Déposez les fichiers ici
 compose-drop-here = Déposez ici
 compose-paste-keep-formatting = Conserver la mise en forme
@@ -61,6 +69,12 @@ compose-encrypt = Chiffrer
 compose-encrypted = Chiffré : seuls les destinataires peuvent le lire
 compose-sign = Signer
 compose-signed = Signé : les destinataires peuvent vérifier qu’il vient de vous
+compose-track = Suivre les ouvertures et les clics
+compose-tracked = Suivi : vous voyez quand chaque destinataire l’ouvre ou suit un lien
+compose-track-unavailable = Les messages signés, chiffrés ou en texte brut ne peuvent pas être suivis
+compose-track-sign-in = Connectez-vous à un compte Katna pour suivre les ouvertures et les clics
+compose-receipt = Demander un accusé de lecture
+compose-receipt-on = Accusé de lecture demandé : l’application du destinataire peut lui proposer d’en envoyer un
 
 ## Spelling
 
@@ -85,6 +99,7 @@ send-check-add-subject = Ajouter un objet
 send-check-send-anyway = Envoyer quand même
 recipient-not-valid = Adresse e-mail non valide
 recipient-show-address = Afficher l’adresse
+recipient-remove = Retirer
 recipient-bad-title = Vérifiez l’adresse
 recipient-bad-text = « { $address } » n’est pas une adresse e-mail valide. Corrigez-la ou supprimez-la avant l’envoi.
 recipient-bad-fix = Corriger

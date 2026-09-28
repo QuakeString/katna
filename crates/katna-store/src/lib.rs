@@ -9,19 +9,26 @@ mod attachments;
 mod backfill;
 pub mod blob;
 mod cache;
+mod contact;
 mod db;
 pub mod error;
 mod gmail_merge;
+pub mod insights;
 pub mod journal;
 pub mod mail;
 mod mail_read;
 mod mail_view;
+pub mod meta;
 pub mod ops;
 pub mod outbox;
 mod people;
 pub mod pop3;
+mod quota;
 pub mod remote;
+pub mod templates;
 mod thread;
+pub mod tracking;
+mod translation;
 
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
@@ -29,9 +36,11 @@ use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
+pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use gmail_merge::Adopted;
+pub use insights::{Insights, Partner, Replies};
 pub use journal::{Change, ChangeOp, ObjectKind};
 pub use katna_core::MailCategory;
 pub use mail::{
@@ -42,11 +51,19 @@ pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{
     FlagFilter, FolderMarks, FolderSummary, Marks, ThreadEntry, ThreadSender, ThreadSummary,
 };
+pub use meta::MetaRow;
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{OutboxEntry, SendState};
 pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
+pub use quota::StorageQuota;
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use templates::{Template, TemplateFile, TemplateSummary};
+pub use tracking::{
+    ActivityItem, MessageActivity, NewRecipient, RecipientActivity, TrackedMessage,
+    TrackedRecipient, TrackingEvent, TrackingNews,
+};
+pub use translation::Translation;
 
 /// The open Katna databases: `mail.db`, `pim.db` and the blob store.
 #[derive(Debug)]
@@ -380,6 +397,33 @@ impl Store {
     /// Every address each account has written with; see [`Correspondent`].
     pub fn correspondents(&self) -> Result<Vec<Correspondent>> {
         people::correspondents(&self.mail, &self.accounts()?)
+    }
+
+    /// How much mail the user and `email` exchanged; see
+    /// [`ContactSummary`].
+    pub fn contact_summary(&self, email: &str) -> Result<ContactSummary> {
+        contact::summary(&self.mail, &self.accounts()?, email)
+    }
+
+    /// The `limit` newest conversations with `email`, newest first.
+    pub fn contact_conversations(
+        &self,
+        email: &str,
+        limit: usize,
+    ) -> Result<Vec<ContactConversation>> {
+        contact::conversations(&self.mail, email, limit)
+    }
+
+    /// The `limit` newest named attachments on mail with `email`, each
+    /// name and size once.
+    pub fn contact_files(&self, email: &str, limit: usize) -> Result<Vec<ContactFile>> {
+        contact::files(&self.mail, email, limit)
+    }
+
+    /// The `limit` newest messages from `email` whose body is stored, one
+    /// per server copy, newest first.
+    pub fn messages_from(&self, email: &str, limit: usize) -> Result<Vec<MessageId>> {
+        contact::messages_from(&self.mail, email, limit)
     }
 
     pub fn message_count(&self) -> Result<u64> {

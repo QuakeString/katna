@@ -38,6 +38,9 @@ compose-scheduled = { $when }ত পঠিয়াবলৈ নিৰ্ধা�
 compose-sent-archived = পঠিওৱা আৰু আৰ্কাইভ কৰা হ'ল
 compose-sent = বাৰ্তা পঠিওৱা হ'ল
 compose-discarded = ড্ৰাফ্ট বাতিল কৰা হ'ল
+compose-draft-saved = ড্ৰাফ্ট ছেভ কৰা হ'ল
+compose-draft-failed = ড্ৰাফ্টটো ছেভ কৰিব পৰা নগ'ল: { $error }
+compose-draft-not-opened = ড্ৰাফ্টটো খুলিব পৰা নগ'ল।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = সংলগ্ন কৰক
 compose-file-too-large = { $name } বহুত ডাঙৰ: এটা বাৰ্তাত সৰ্বাধিক { $limit } ৰাখিব পাৰি।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংলগ্নক আঁতৰাওক
+compose-attachments-total = { $count ->
+    [one] { $count }টা ফাইল, { $size }
+   *[other] { $count }টা ফাইল, { $size }
+}
 compose-drop-files = ফাইলসমূহ ইয়াত এৰক
 compose-drop-here = ইয়াত এৰক
 compose-paste-keep-formatting = ফৰ্মেটিং ৰাখক
@@ -61,6 +68,12 @@ compose-encrypt = এনক্ৰিপ্ট কৰক
 compose-encrypted = এনক্ৰিপ্ট কৰা: কেৱল প্ৰাপকসকলেহে পঢ়িব পাৰে
 compose-sign = স্বাক্ষৰ কৰক
 compose-signed = স্বাক্ষৰিত: প্ৰাপকসকলে পৰীক্ষা কৰিব পাৰে যে এইটো আপোনাৰ পৰা আহিছে
+compose-track = খোলা আৰু ক্লিক ট্ৰেক কৰক
+compose-tracked = ট্ৰেক কৰা হৈছে: প্ৰতিজন প্ৰাপকে কেতিয়া ইয়াক খোলে বা এটা লিংক অনুসৰণ কৰে আপুনি দেখিব
+compose-track-unavailable = স্বাক্ষৰিত, এনক্ৰিপ্ট কৰা আৰু সাধাৰণ পাঠৰ মেইল ট্ৰেক কৰিব নোৱাৰি
+compose-track-sign-in = খোলা আৰু ক্লিক ট্ৰেক কৰিবলৈ এটা Katna একাউণ্টত ছাইন ইন কৰক
+compose-receipt = পঢ়াৰ ৰচিদ বিচাৰক
+compose-receipt-on = পঢ়াৰ ৰচিদ বিচৰা হৈছে: প্ৰাপকৰ এপে তেওঁক এখন পঠিয়াবলৈ ক'ব পাৰে
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = বিষয় যোগ কৰক
 send-check-send-anyway = তথাপি পঠিয়াওক
 recipient-not-valid = বৈধ ইমেইল ঠিকনা নহয়
 recipient-show-address = ঠিকনা দেখুৱাওক
+recipient-remove = আঁতৰাওক
 recipient-bad-title = ঠিকনাটো পৰীক্ষা কৰক
 recipient-bad-text = “{ $address }” কোনো বৈধ ইমেইল ঠিকনা নহয়। পঠিওৱাৰ আগতে ইয়াক শুধৰাওক বা আঁতৰাওক।
 recipient-bad-fix = শুধৰাওক

@@ -38,6 +38,9 @@ compose-scheduled = השליחה תוזמנה ל־{ $when }
 compose-sent-archived = נשלחה והועברה לארכיון
 compose-sent = ההודעה נשלחה
 compose-discarded = הטיוטה נמחקה
+compose-draft-saved = הטיוטה נשמרה
+compose-draft-failed = לא ניתן לשמור את הטיוטה: { $error }
+compose-draft-not-opened = לא ניתן לפתוח את הטיוטה.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = צירוף
 compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכיל עד { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
+compose-attachments-total = { $count ->
+    [one] קובץ אחד, { $size }
+   *[other] { $count } קבצים, { $size }
+}
 compose-drop-files = אפשר לשחרר קבצים כאן
 compose-drop-here = אפשר לשחרר כאן
 compose-paste-keep-formatting = שמירת העיצוב
@@ -61,6 +68,12 @@ compose-encrypt = הצפנה
 compose-encrypted = מוצפנת: רק הנמענים יכולים לקרוא אותה
 compose-sign = חתימה
 compose-signed = חתומה: הנמענים יכולים לוודא שהיא ממך
+compose-track = מעקב אחר פתיחות ולחיצות
+compose-tracked = במעקב: יוצג מתי כל נמען פותח את ההודעה או לוחץ על קישור
+compose-track-unavailable = אי אפשר לעקוב אחר דואר חתום, מוצפן או בטקסט פשוט
+compose-track-sign-in = כדי לעקוב אחר פתיחות ולחיצות צריך להתחבר לחשבון Katna
+compose-receipt = בקשת אישור קריאה
+compose-receipt-on = התבקש אישור קריאה: ייתכן שהיישום של הנמען יבקש ממנו לשלוח אותו
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = הוספת נושא
 send-check-send-anyway = לשלוח בכל זאת
 recipient-not-valid = זו אינה כתובת אימייל תקינה
 recipient-show-address = הצגת הכתובת
+recipient-remove = הסרה
 recipient-bad-title = בדיקת הכתובת
 recipient-bad-text = „{ $address }” אינה כתובת אימייל תקינה. יש לתקן או להסיר אותה לפני השליחה.
 recipient-bad-fix = תיקון

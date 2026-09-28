@@ -51,6 +51,10 @@ pub(in crate::window) enum Popup {
     Emoji,
     Link,
     Signature,
+    /// The templates to put in the message.
+    Templates,
+    /// Asks the name to save the message under as a template.
+    SaveTemplate,
     More,
     Label,
     /// Asks before plain text mode drops the formatting.
@@ -119,6 +123,8 @@ pub(in crate::window) struct Dialog {
     day: Date,
     /// The table size under the pointer in the grid.
     grid: (usize, usize),
+    /// The name to save the message under as a template.
+    pub(super) template_name: Entity<TextInput>,
 }
 
 impl Dialog {
@@ -141,6 +147,7 @@ impl Dialog {
             month: today,
             day: today,
             grid: (0, 0),
+            template_name: input(tr!("compose-tool-template-name"), cx),
         }
     }
 
@@ -156,6 +163,7 @@ impl Dialog {
             (&self.link_url, Submit::Link),
             (&self.time, Submit::Time),
             (&self.emoji_search, Submit::Emoji),
+            (&self.template_name, Submit::Template),
         ] {
             subscriptions.push(cx.subscribe_in(
                 field,
@@ -165,6 +173,7 @@ impl Dialog {
                         Submit::Link => this.apply_link(window, cx),
                         Submit::Time => this.schedule_picked(window, cx),
                         Submit::Emoji => this.insert_first_emoji(window, cx),
+                        Submit::Template => this.save_template(window, cx),
                     },
                     InputEvent::Cancel => this.close_popup(window, cx),
                     InputEvent::Changed => cx.notify(),
@@ -180,6 +189,7 @@ enum Submit {
     Link,
     Time,
     Emoji,
+    Template,
 }
 
 /// Webmail's color palette: grays, bright colors, then six shades.
@@ -374,7 +384,7 @@ pub(super) fn above(popup: impl IntoElement) -> AnyElement {
     .into_any_element()
 }
 
-fn menu_divider(th: &Theme) -> gpui::Div {
+pub(super) fn menu_divider(th: &Theme) -> gpui::Div {
     div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider))
 }
 
@@ -592,9 +602,9 @@ impl MailWindow {
         // A narrow row keeps the tools that fit beside Send and the bin,
         // dropping the calendar, photo, emoji and link buttons in turn;
         // links still come with Ctrl+K. Formatting, attaching, the
-        // signature and More always stay.
+        // signature, templates and More always stay.
         let pill = if archives { 24.0 } else { 0.0 };
-        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - 4;
+        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - 5;
         let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
         div()
             .flex_none()
@@ -635,6 +645,7 @@ impl MailWindow {
                 )
             })
             .child(self.render_signature_button(th, cx))
+            .child(self.render_templates_button(th, cx))
             .child(more)
             .child(div().flex_1())
             .when(
@@ -727,6 +738,7 @@ impl MailWindow {
                         if let Some(c) = &mut this.compose {
                             c.popup = Some(Popup::Schedule);
                         }
+                        this.ask_hold_limit(cx);
                         cx.notify();
                     }),
                 ),
@@ -747,7 +759,58 @@ impl MailWindow {
                     })),
                 )
             })
+            .child(menu_divider(th))
+            .child(self.render_follow_up_choice(th, cx))
             .into_any_element()
+    }
+
+    /// "Remind me if no reply" in the send menu: when to bring the
+    /// conversation back if nobody answers (`docs/ARCHITECTURE.md` §10.1).
+    fn render_follow_up_choice(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        const DAY: u32 = 24 * 60 * 60;
+        let chosen = self.compose.as_ref().map_or(0, |c| c.follow_up);
+        let choices = [
+            (0, tr!("follow-up-off")),
+            (DAY, tr!("follow-up-days", days = 1)),
+            (3 * DAY, tr!("follow-up-days", days = 3)),
+            (7 * DAY, tr!("follow-up-days", days = 7)),
+        ];
+        div()
+            .child(
+                div()
+                    .px(px(16.0))
+                    .py(px(6.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(14.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(icon("reply", th.text_dim, 20.0))
+                    .child(tr!("follow-up-title")),
+            )
+            .children(choices.into_iter().map(|(after, label)| {
+                div()
+                    .id(("compose-follow-up", after))
+                    .h(px(32.0))
+                    .pl(px(50.0))
+                    .pr(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .child(div().flex_1().child(label))
+                    .when(after == chosen, |d| {
+                        d.child(icon("check", th.text_dim, 18.0))
+                    })
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.follow_up = after;
+                            c.popup = None;
+                        }
+                        cx.notify();
+                    }))
+            }))
     }
 
     fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -791,14 +854,19 @@ impl MailWindow {
                     .pb(px(8.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_dim))
-                    .child(tr!(
-                        "schedule-zone-note",
-                        zone = self
+                    .child({
+                        let zone = self
                             .tz
                             .iana_name()
                             .map(str::to_owned)
-                            .unwrap_or_else(|| tr!("schedule-local-time"))
-                    )),
+                            .unwrap_or_else(|| tr!("schedule-local-time"));
+                        // Who sends it: the mail server, or Katna here.
+                        match self.server_holds_mail() {
+                            Some(true) => tr!("schedule-zone-note-server", zone = zone),
+                            Some(false) => tr!("schedule-zone-note-local", zone = zone),
+                            None => tr!("schedule-zone-note", zone = zone),
+                        }
+                    }),
             )
             .children(items)
             .child(menu_divider(th))
@@ -2270,6 +2338,7 @@ impl MailWindow {
             Popup::Link => self.render_link_dialog(th, cx),
             Popup::PickTime => self.render_time_picker(th, cx),
             Popup::PlainText => self.render_plain_dialog(th, cx),
+            Popup::SaveTemplate => self.render_save_template_dialog(th, cx),
             Popup::SendCheck {
                 check,
                 at,
@@ -2296,7 +2365,7 @@ impl MailWindow {
         )
     }
 
-    fn dialog_buttons(
+    pub(super) fn dialog_buttons(
         &self,
         th: &Theme,
         ok: String,

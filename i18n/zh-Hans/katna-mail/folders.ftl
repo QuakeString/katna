@@ -9,12 +9,20 @@ nav-folders = 文件夹
 nav-label-new = 新建标签
 nav-folder-new = 新建文件夹
 nav-account-unnamed = 账号 { $number }
+nav-all-accounts = 所有账号
+nav-expand = 显示文件夹
+nav-collapse = 隐藏文件夹
 nav-tab-new = { $count } 封新邮件
+storage-used = 已使用 { $total } 中的 { $percent }%
+storage-used-detail = { $address }：已使用 { $total } 中的 { $used }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = 收件箱
 folder-starred = 已加星标
+folder-snoozed = 已延后
+folder-unread = 未读
+folder-important = 重要
 folder-drafts = 草稿
 folder-sent = 已发送
 folder-archive = 归档
@@ -22,6 +30,7 @@ folder-spam = 垃圾邮件
 folder-trash = 已删除邮件
 folder-all-mail = 所有邮件
 folder-scheduled = 已安排
+folder-activity = 动态
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

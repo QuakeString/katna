@@ -38,6 +38,9 @@ compose-scheduled = ለ{ $when } እንዲላክ መርሐግብር ተይዟል
 compose-sent-archived = ተልኳል እና ወደ ማህደር ተቀምጧል
 compose-sent = መልዕክቱ ተልኳል
 compose-discarded = ረቂቁ ተጥሏል
+compose-draft-saved = ረቂቁ ተቀምጧል
+compose-draft-failed = ረቂቁን ማስቀመጥ አልተቻለም፦ { $error }
+compose-draft-not-opened = ረቂቁን መክፈት አልተቻለም።
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = አያይዝ
 compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መልዕክት እስከ { $limit } መያዝ ይችላል።
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
+compose-attachments-total = { $count ->
+    [one] { $count } ፋይል፣ { $size }
+   *[other] { $count } ፋይሎች፣ { $size }
+}
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ
@@ -61,6 +68,12 @@ compose-encrypt = አመስጥር
 compose-encrypted = ተመስጥሯል፦ ሊያነቡት የሚችሉት ተቀባዮቹ ብቻ ናቸው
 compose-sign = ፈርም
 compose-signed = ተፈርሟል፦ ተቀባዮች ከእርስዎ መሆኑን ማረጋገጥ ይችላሉ
+compose-track = መከፈትን እና ጠቅታዎችን ተከታተል
+compose-tracked = ክትትል ይደረግበታል፦ እያንዳንዱ ተቀባይ ሲከፍተው ወይም አገናኝ ሲከተል ያያሉ
+compose-track-unavailable = የተፈረመ፣ የተመሰጠረ እና ግልጽ ጽሑፍ ደብዳቤ መከታተል አይቻልም
+compose-track-sign-in = መከፈትን እና ጠቅታዎችን ለመከታተል ወደ Katna መለያ ይግቡ
+compose-receipt = የንባብ ማረጋገጫ ጠይቅ
+compose-receipt-on = የንባብ ማረጋገጫ ተጠይቋል፦ የተቀባዩ መተግበሪያ እንዲልኩ ሊጠይቃቸው ይችላል
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = ርዕሰ ጉዳይ አክል
 send-check-send-anyway = ቢሆንም ላክ
 recipient-not-valid = ትክክለኛ የኢሜይል አድራሻ አይደለም
 recipient-show-address = አድራሻ አሳይ
+recipient-remove = አስወግድ
 recipient-bad-title = አድራሻውን ያረጋግጡ
 recipient-bad-text = «{ $address }» ትክክለኛ የኢሜይል አድራሻ አይደለም። ከመላክዎ በፊት ያስተካክሉት ወይም ያስወግዱት።
 recipient-bad-fix = አስተካክል

@@ -1,0 +1,46 @@
+# Katna Mail, Yoruba (Yorùbá).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+activity-messages = Àwọn ìfiránṣẹ́ tí a ń tọpa
+activity-open-rate = Ìwọ̀n ṣíṣí
+activity-click-rate = Ìwọ̀n títẹ̀
+activity-percent = { $percent }%
+activity-by-day = Ṣíṣí àti títẹ̀
+activity-opens = Ṣíṣí: { $count }
+activity-clicks = Títẹ̀: { $count }
+activity-by-week = Ọ̀pá kan fún ọ̀sẹ̀ kọ̀ọ̀kan
+activity-by-open-rate = Àwọn àkọlé gẹ́gẹ́ bí ìwọ̀n ṣíṣí
+activity-opened = { $opened } nínú { $recipients } ló ṣí i
+activity-clicked = { $clicked } nínú { $recipients } ló tẹ̀lé ìjápọ̀
+activity-no-subject = (kò sí àkọlé)
+activity-nothing-period = A kò fi lẹ́tà tí a ń tọpa kankan ránṣẹ́ ní àkókò yìí.
+activity-close = Pa á dé
+insights-heading = Àpótí lẹ́tà rẹ
+insights-counting = À ń ka lẹ́tà rẹ…
+insights-failed = A kò lè ka lẹ́tà rẹ.
+insights-sent = Tí a fi ránṣẹ́
+insights-received = Tí a gbà
+insights-replies = Àwọn èsì
+insights-you-replied = O dá { $percent }% lẹ́tà láti ọ̀dọ̀ àwọn míì lóhùn ({ $replied } nínú { $messages })
+insights-they-replied = Àwọn míì dá { $percent }% lẹ́tà rẹ lóhùn ({ $replied } nínú { $messages })
+insights-median = Ó sábà máa ń jẹ́ láàárín { $time }
+insights-minutes = ìṣẹ́jú { $count }
+insights-hours = wákàtí { $count }
+insights-days = ọjọ́ { $count }
+insights-people = Àwọn tí o ń kọ̀wé sí jù
+insights-person-counts = { $sent } tí a fi ránṣẹ́ · { $received } tí a gbà
+insights-hours-heading = Ìgbà tí lẹ́tà máa ń dé
+activity-details = Àlàyé
+activity-feed-opened = { $who } ti ṣí “{ $subject }”
+activity-feed-clicked = { $who } ti tẹ ìjápọ̀ kan nínú “{ $subject }”
+activity-feed-maybe = Ó ṣeé ṣe kí { $who } ti ṣí “{ $subject }”
+activity-feed-empty = Kò tíì sí ṣíṣí tàbí títẹ̀ kankan. Tan ojú nígbà tí o bá ń kọ ìfiránṣẹ́ láti rí ìgbà tí a bá kà á.
+activity-message-gone = Ìfiránṣẹ́ yẹn kò sí nínú Tí a fi ránṣẹ́ mọ́.
+activity-report = Ìròyìn ìgbòkègbodò
+activity-range-week = Ọjọ́ 7 sẹ́yìn
+activity-range-month = Ọjọ́ 30 sẹ́yìn
+activity-range-all = Gbogbo ìgbà
+activity-range-custom = Àṣàyàn
+activity-range-from = Láti
+activity-range-to = Sí
+activity-range-apply = Lò ó

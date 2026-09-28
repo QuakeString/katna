@@ -7,6 +7,7 @@
 settings-tab-general = 一般
 settings-tab-inbox = 收件匣
 settings-tab-accounts = 帳戶
+settings-tab-katna-account = Katna 帳戶
 settings-tab-subscriptions = 訂閱
 settings-tab-appearance = 外觀
 settings-tab-shortcuts = 快速鍵
@@ -35,6 +36,14 @@ settings-general-full-headers = 顯示完整標頭
 settings-general-full-headers-detail = 每封郵件都會展開寄件者、收件者、副本、日期和主旨
 settings-general-full-names = 收件者全名
 settings-general-full-names-detail = 顯示「寄給我、Ada Lovelace」而非「寄給我、Ada」
+settings-translation = 翻譯
+settings-translation-detail = 其他語言的郵件可以用你的語言閱讀。
+settings-translation-offer = 提供翻譯
+settings-translation-offer-detail = 只有在你要求翻譯，或該語言設為一律翻譯時，郵件內文才會傳送到 Katna 的伺服器進行翻譯。附件一律不會傳送。
+settings-translation-reading = 翻譯成
+settings-translation-always = 一律翻譯
+settings-translation-never = 永不提供翻譯
+settings-translation-none = 還沒有。可在郵件的翻譯列中選擇。
 settings-general-mark-read = 標示為已讀取
 settings-general-mark-read-now = 開啟後立即標示
 settings-general-mark-read-1s = 開啟 1 秒後
@@ -77,6 +86,9 @@ settings-general-tray = 在系統匣中顯示 Katna
 settings-general-tray-detail = 顯示未讀取郵件數和選單
 settings-general-unread-badge = 在工作列圖示上顯示未讀取郵件數
 settings-general-unread-badge-detail = 收件匣中有多少封未讀取的郵件
+settings-general-search-triggers = 從桌面搜尋
+settings-general-search-triggers-detail = 在 KRunner 或 GNOME 搜尋中輸入其中一個字詞和一個空格，再輸入要找的內容，即可像這裡的搜尋框一樣搜尋郵件。多個字詞之間請用逗號分隔。
+settings-general-search-triggers-none = 沒有設定字詞；只有「mail:」可用
 
 ## Settings > Inbox
 
@@ -182,6 +194,19 @@ settings-compose-spell-check-detail = 拼錯的字詞會加上底線，按右鍵
 settings-compose-spell-desktop = 桌面環境的語言（{ $language }）
 settings-compose-templates = 範本
 settings-compose-templates-detail = 儲存你常寫的郵件，並以此開始撰寫新郵件或回覆。
+settings-compose-no-templates = 尚未建立任何範本。在郵件中選擇「範本」，然後選擇「儲存為範本」。
+settings-compose-template-new = 新建
+settings-compose-template-new-name = 新範本
+settings-compose-template-subject = 主旨
+settings-compose-template-text = 範本內文
+settings-compose-template-fields = {"{"}first name{"}"}、{"{"}name{"}"} 和 {"{"}my name{"}"} 會填入收件者的名字和你的名字。
+settings-compose-template-remove-file = 移除附件
+settings-compose-template-save = 儲存
+settings-compose-template-saved = 範本已儲存
+settings-compose-template-needs-name = 請為範本命名
+settings-compose-template-delete = 刪除範本
+settings-compose-template-deleted = 已刪除範本
+settings-compose-template-delete-failed = 無法刪除範本：{ $error }
 
 ## Settings > Shortcuts
 
@@ -204,6 +229,7 @@ settings-shortcuts-restored = 所有快速鍵都已還原為組合的按鍵。
 
 settings-general-language-summary = 應用程式、日期和數字的語言
 settings-general-reading-summary = 最新郵件排在最前面、完整標頭、收件者全名
+settings-translation-summary = 透過 Katna 的伺服器將其他語言的郵件翻譯成你選擇的語言
 settings-general-mark-read-summary = 開啟的會話群組何時標示為已讀取：立即、1 或 3 秒後，或手動
 settings-general-auto-advance-summary = 刪除、封存或移動開啟的會話群組後要開啟什麼：下一個、上一個或清單
 settings-general-reply-button-summary = 每封郵件旁的回覆按鈕會回覆所有人
@@ -236,7 +262,8 @@ settings-compose-for-new-mail-summary = 新郵件預設使用的簽名
 settings-compose-for-replies-summary = 回覆和轉寄預設使用的簽名
 settings-compose-format-summary = 以純文字撰寫新郵件
 settings-compose-spelling-summary = 撰寫時檢查拼字，以及字典的語言
-settings-compose-templates-summary = 即將推出：儲存你常寫的郵件，並以此開始撰寫新郵件或回覆
+settings-general-search-triggers-summary = 可在 KRunner 或 GNOME 搜尋中搜尋郵件的字詞
+settings-compose-templates-summary = 儲存你常寫的郵件，並以此開始撰寫新郵件或回覆
 settings-feedback-crash-reports-summary = Katna Mail 或其背景服務當機時，將當機報告儲存在這台電腦上
 settings-feedback-saved-summary = 查看、複製或刪除這台電腦上儲存的當機報告
 settings-feedback-help-improve-summary = 傳送當機報告以協助修正問題；除非你開啟，否則預設為關閉

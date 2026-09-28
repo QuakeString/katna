@@ -11,6 +11,8 @@ schedule-scheduled-messages = 已排定的郵件（{ $count }）
 
 schedule-title = 排定傳送時間
 schedule-zone-note = { $zone }。即使應用程式已關閉，Katna 也會在該時間傳送。
+schedule-zone-note-server = { $zone }。即使這台電腦已關機，你的郵件伺服器也會在該時間傳送。復原按鈕消失後就無法取消了。
+schedule-zone-note-local = { $zone }。只要這台電腦開著，Katna 就會在該時間傳送。
 schedule-local-time = 當地時間
 schedule-this-morning = 今天上午
 schedule-this-afternoon = 今天下午
@@ -28,6 +30,7 @@ schedule-no-such-time = 這個時間在這裡不存在。
 
 schedule-no-subject = （無主旨）
 schedule-sends-at = 將於 { $when } 傳送
+schedule-server-sends-at = 你的郵件伺服器將於 { $when } 傳送
 schedule-cancel-send = 取消傳送
 schedule-nothing = 沒有已排定的郵件。
 schedule-close = 關閉

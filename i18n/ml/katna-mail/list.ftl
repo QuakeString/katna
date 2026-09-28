@@ -28,6 +28,8 @@ list-move-to = ഇതിലേക്ക് നീക്കുക
 list-archive = ആർക്കൈവ് ചെയ്യുക
 list-spam = സ്‌പാം ആയി റിപ്പോർട്ട് ചെയ്യുക
 list-delete = ഇല്ലാതാക്കുക
+list-snooze = സ്‌നൂസ് ചെയ്യുക
+list-unsnooze = സ്‌നൂസ് ഒഴിവാക്കുക
 list-newer = പുതിയവ
 list-older = പഴയവ
 list-range = { $total }-ൽ { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder }-ലെ { $count } സന്ദേശവും തിരഞ്ഞെടുക്കുക
        *[other] { $folder }-ലെ എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] സ്ക്രീനിലെ വായിച്ച { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ വായിച്ച എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] സ്ക്രീനിലെ വായിച്ച { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ വായിച്ച എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] സ്ക്രീനിലെ വായിക്കാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ വായിക്കാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] സ്ക്രീനിലെ വായിക്കാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ വായിക്കാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] സ്ക്രീനിലെ നക്ഷത്രമിട്ട { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ നക്ഷത്രമിട്ട എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] സ്ക്രീനിലെ നക്ഷത്രമിട്ട { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ നക്ഷത്രമിട്ട എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] സ്ക്രീനിലെ നക്ഷത്രമിടാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ നക്ഷത്രമിടാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+       *[message] { $count ->
+            [one] സ്ക്രീനിലെ നക്ഷത്രമിടാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുത്തു.
+           *[other] സ്ക്രീനിലെ നക്ഷത്രമിടാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുത്തു.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] വായിച്ച { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] വായിച്ച എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] വായിച്ച { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] വായിച്ച എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] വായിക്കാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] വായിക്കാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] വായിക്കാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] വായിക്കാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] നക്ഷത്രമിട്ട { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] നക്ഷത്രമിട്ട എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] നക്ഷത്രമിട്ട { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] നക്ഷത്രമിട്ട എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] നക്ഷത്രമിടാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] നക്ഷത്രമിടാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] നക്ഷത്രമിടാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] നക്ഷത്രമിടാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ വായിച്ച { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ വായിച്ച എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ വായിച്ച { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ വായിച്ച എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ വായിക്കാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ വായിക്കാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ വായിക്കാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ വായിക്കാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിട്ട { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ നക്ഷത്രമിട്ട എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിട്ട { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ നക്ഷത്രമിട്ട എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിടാത്ത { $count } സംഭാഷണം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ നക്ഷത്രമിടാത്ത എല്ലാ { $count } സംഭാഷണങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
+       *[message] { $count ->
+            [one] { $folder }-ലെ നക്ഷത്രമിടാത്ത { $count } സന്ദേശം തിരഞ്ഞെടുക്കുക
+           *[other] { $folder }-ലെ നക്ഷത്രമിടാത്ത എല്ലാ { $count } സന്ദേശങ്ങളും തിരഞ്ഞെടുക്കുക
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = നക്ഷത്രമിട്ടിട്ടില്ല
 row-important = പ്രധാനപ്പെട്ടത്. പ്രധാനപ്പെട്ടതല്ലെന്ന് അടയാളപ്പെടുത്താൻ ക്ലിക്ക് ചെയ്യുക.
 row-mark-important = പ്രധാനപ്പെട്ടതായി അടയാളപ്പെടുത്തുക
 row-pinned = മുകളിൽ പിൻ ചെയ്‌തു
+row-tracking-none = ട്രാക്ക് ചെയ്യുന്നു. ഇതുവരെ തുറന്നിട്ടില്ല
+row-tracking-opened = { $recipients } പേരിൽ { $opened } പേർ തുറന്നു
+row-tracking-clicked = { $recipients } പേരിൽ { $opened } പേർ തുറന്നു, { $clicked } പേർ ലിങ്ക് തുറന്നു
 row-pin = മുകളിൽ പിൻ ചെയ്യുക
 row-unpin = അൺപിൻ ചെയ്യുക
+row-snoozed-until = { $when } വരെ സ്‌നൂസ് ചെയ്‌തു
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = എല്ലാവർക്കും മറുപടി നൽ�
 menu-forward = ഫോർവേഡ് ചെയ്യുക
 menu-archive = ആർക്കൈവ് ചെയ്യുക
 menu-delete = ഇല്ലാതാക്കുക
+menu-delete-forever = ശാശ്വതമായി ഇല്ലാതാക്കുക
+menu-move-to-inbox = ഇൻബോക്‌സിലേക്ക് നീക്കുക
 menu-spam = സ്‌പാം ആയി റിപ്പോർട്ട് ചെയ്യുക
+menu-not-spam = സ്‌പാം അല്ല
 menu-mark-read = വായിച്ചതായി അടയാളപ്പെടുത്തുക
 menu-mark-unread = വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക
 menu-mark-all-read = എല്ലാം വായിച്ചതായി അടയാളപ്പെടുത്തുക
@@ -240,6 +375,8 @@ menu-important = പ്രധാനപ്പെട്ടതായി അടയ�
 menu-not-important = പ്രധാനപ്പെട്ടതല്ലെന്ന് അടയാളപ്പെടുത്തുക
 menu-pin = മുകളിൽ പിൻ ചെയ്യുക
 menu-unpin = അൺപിൻ ചെയ്യുക
+menu-snooze = സ്‌നൂസ് ചെയ്യുക
+menu-unsnooze = സ്‌നൂസ് ഒഴിവാക്കുക
 menu-print-all = എല്ലാം പ്രിന്റ് ചെയ്യുക
 menu-new-window = പുതിയ വിൻഡോയിൽ തുറക്കുക
 menu-move-to = ഇതിലേക്ക് നീക്കുക
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } സന്ദേശങ്ങൾ അൺപിൻ ചെയ്‌തു.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] സംഭാഷണം { $when } വരെ സ്‌നൂസ് ചെയ്‌തു.
+       *[other] { $count } സംഭാഷണങ്ങൾ { $when } വരെ സ്‌നൂസ് ചെയ്‌തു.
+    }
+   *[message] { $count ->
+        [one] സന്ദേശം { $when } വരെ സ്‌നൂസ് ചെയ്‌തു.
+       *[other] { $count } സന്ദേശങ്ങൾ { $when } വരെ സ്‌നൂസ് ചെയ്‌തു.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] സംഭാഷണം ഇൻബോക്‌സിലേക്ക് തിരികെയെത്തി.
+       *[other] { $count } സംഭാഷണങ്ങൾ ഇൻബോക്‌സിലേക്ക് തിരികെയെത്തി.
+    }
+   *[message] { $count ->
+        [one] സന്ദേശം ഇൻബോക്‌സിലേക്ക് തിരികെയെത്തി.
+       *[other] { $count } സന്ദേശങ്ങൾ ഇൻബോക്‌സിലേക്ക് തിരികെയെത്തി.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] സംഭാഷണം സ്‌പാം ആയി റിപ്പോർട്ട് ചെയ്‌തു.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] സന്ദേശം സ്‌പാം ആയി റിപ്പോർട്ട് ചെയ്‌തു.
        *[other] { $count } സന്ദേശങ്ങൾ സ്‌പാം ആയി റിപ്പോർട്ട് ചെയ്‌തു.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] സംഭാഷണം സ്‌പാം അല്ലെന്ന് അടയാളപ്പെടുത്തി ഇൻബോക്‌സിലേക്ക് നീക്കി.
+       *[other] { $count } സംഭാഷണങ്ങൾ സ്‌പാം അല്ലെന്ന് അടയാളപ്പെടുത്തി ഇൻബോക്‌സിലേക്ക് നീക്കി.
+    }
+   *[message] { $count ->
+        [one] സന്ദേശം സ്‌പാം അല്ലെന്ന് അടയാളപ്പെടുത്തി ഇൻബോക്‌സിലേക്ക് നീക്കി.
+       *[other] { $count } സന്ദേശങ്ങൾ സ്‌പാം അല്ലെന്ന് അടയാളപ്പെടുത്തി ഇൻബോക്‌സിലേക്ക് നീക്കി.
     }
 }
 toast-deleted-forever = { $kind ->

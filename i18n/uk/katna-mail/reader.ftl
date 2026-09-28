@@ -77,6 +77,34 @@ security-missing-key = Підписано ключем, якого у вас н�
 security-missing-key-id = Підписано ключем, якого у вас немає ({ $key }), тому підпис не можна перевірити
 security-signature-unavailable = Підписано; установіть { $tool }, щоб перевірити підпис
 security-signature-error = Не вдалося перевірити підпис.
+tracking-opened = { $who }: лист відкрито { $count ->
+    [one] { $count } раз
+    [few] { $count } рази
+    [many] { $count } разів
+   *[other] { $count } раза
+}, востаннє { $when }
+tracking-opens-clicks = { $who }: лист відкрито { $opens ->
+    [one] { $opens } раз
+    [few] { $opens } рази
+    [many] { $opens } разів
+   *[other] { $opens } раза
+} і перейдено за посиланням { $clicks ->
+    [one] { $clicks } раз
+    [few] { $clicks } рази
+    [many] { $clicks } разів
+   *[other] { $clicks } раза
+}, востаннє { $when }
+tracking-clicked = { $who }: перехід за посиланням { $clicks ->
+    [one] { $clicks } раз
+    [few] { $clicks } рази
+    [many] { $clicks } разів
+   *[other] { $clicks } раза
+}, востаннє { $when }
+tracking-maybe-opened = { $who }: лист, можливо, відкрито (Apple Mail завантажує зображення задля приватності)
+tracking-not-opened = { $who }: лист ще не відкрито
+tracking-receipt = { $who }: надійшло сповіщення про прочитання
+tracking-receipt-displayed = Сповіщення про прочитання: { $who } — ваш лист відкрито
+tracking-receipt-other = Сповіщення про прочитання: { $who } — ваш лист видалено чи оброблено без відкриття
 
 ## Remote images and pictures
 

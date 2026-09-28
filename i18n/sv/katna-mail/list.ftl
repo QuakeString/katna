@@ -31,6 +31,8 @@ list-move-to = Flytta till
 list-archive = Arkivera
 list-spam = Rapportera som skräppost
 list-delete = Radera
+list-snooze = Snooza
+list-unsnooze = Avbryt snooze
 list-newer = Nyare
 list-older = Äldre
 list-range = { $first }–{ $last } av { $total }
@@ -99,6 +101,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] Markera { $count } meddelande i { $folder }
        *[other] Markera alla { $count } meddelanden i { $folder }
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } läst konversation på den här sidan har markerats.
+           *[other] Alla { $count } lästa konversationer på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } läst meddelande på den här sidan har markerats.
+           *[other] Alla { $count } lästa meddelanden på den här sidan har markerats.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } oläst konversation på den här sidan har markerats.
+           *[other] Alla { $count } olästa konversationer på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } oläst meddelande på den här sidan har markerats.
+           *[other] Alla { $count } olästa meddelanden på den här sidan har markerats.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } stjärnmärkt konversation på den här sidan har markerats.
+           *[other] Alla { $count } stjärnmärkta konversationer på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } stjärnmärkt meddelande på den här sidan har markerats.
+           *[other] Alla { $count } stjärnmärkta meddelanden på den här sidan har markerats.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } konversation utan stjärna på den här sidan har markerats.
+           *[other] Alla { $count } konversationer utan stjärna på den här sidan har markerats.
+        }
+       *[message] { $count ->
+            [one] { $count } meddelande utan stjärna på den här sidan har markerats.
+           *[other] Alla { $count } meddelanden utan stjärna på den här sidan har markerats.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } läst konversation
+           *[other] Markera alla { $count } lästa konversationer
+        }
+       *[message] { $count ->
+            [one] Markera { $count } läst meddelande
+           *[other] Markera alla { $count } lästa meddelanden
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } oläst konversation
+           *[other] Markera alla { $count } olästa konversationer
+        }
+       *[message] { $count ->
+            [one] Markera { $count } oläst meddelande
+           *[other] Markera alla { $count } olästa meddelanden
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } stjärnmärkt konversation
+           *[other] Markera alla { $count } stjärnmärkta konversationer
+        }
+       *[message] { $count ->
+            [one] Markera { $count } stjärnmärkt meddelande
+           *[other] Markera alla { $count } stjärnmärkta meddelanden
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } konversation utan stjärna
+           *[other] Markera alla { $count } konversationer utan stjärna
+        }
+       *[message] { $count ->
+            [one] Markera { $count } meddelande utan stjärna
+           *[other] Markera alla { $count } meddelanden utan stjärna
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } läst konversation i { $folder }
+           *[other] Markera alla { $count } lästa konversationer i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } läst meddelande i { $folder }
+           *[other] Markera alla { $count } lästa meddelanden i { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } oläst konversation i { $folder }
+           *[other] Markera alla { $count } olästa konversationer i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } oläst meddelande i { $folder }
+           *[other] Markera alla { $count } olästa meddelanden i { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } stjärnmärkt konversation i { $folder }
+           *[other] Markera alla { $count } stjärnmärkta konversationer i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } stjärnmärkt meddelande i { $folder }
+           *[other] Markera alla { $count } stjärnmärkta meddelanden i { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Markera { $count } konversation utan stjärna i { $folder }
+           *[other] Markera alla { $count } konversationer utan stjärna i { $folder }
+        }
+       *[message] { $count ->
+            [one] Markera { $count } meddelande utan stjärna i { $folder }
+           *[other] Markera alla { $count } meddelanden utan stjärna i { $folder }
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -223,8 +351,12 @@ row-not-starred = Inte stjärnmärkt
 row-important = Viktigt. Klicka för att markera som inte viktigt.
 row-mark-important = Markera som viktigt
 row-pinned = Fäst högst upp
+row-tracking-none = Spårat. Inte öppnat än
+row-tracking-opened = { $opened } av { $recipients } har öppnat
+row-tracking-clicked = { $opened } av { $recipients } har öppnat, { $clicked } har följt en länk
 row-pin = Fäst högst upp
 row-unpin = Lossa
+row-snoozed-until = Snoozad till { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -233,7 +365,10 @@ menu-reply-all = Svara alla
 menu-forward = Vidarebefordra
 menu-archive = Arkivera
 menu-delete = Radera
+menu-delete-forever = Radera permanent
+menu-move-to-inbox = Flytta till Inkorgen
 menu-spam = Rapportera som skräppost
+menu-not-spam = Inte skräppost
 menu-mark-read = Markera som läst
 menu-mark-unread = Markera som oläst
 menu-mark-all-read = Markera alla som lästa
@@ -243,6 +378,8 @@ menu-important = Markera som viktigt
 menu-not-important = Markera som inte viktigt
 menu-pin = Fäst högst upp
 menu-unpin = Lossa
+menu-snooze = Snooza
+menu-unsnooze = Avbryt snooze
 menu-print-all = Skriv ut alla
 menu-new-window = Öppna i nytt fönster
 menu-move-to = Flytta till
@@ -341,6 +478,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } meddelanden har lossats.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har snoozats till { $when }.
+       *[other] { $count } konversationer har snoozats till { $when }.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har snoozats till { $when }.
+       *[other] { $count } meddelanden har snoozats till { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen är tillbaka i Inkorgen.
+       *[other] { $count } konversationer är tillbaka i Inkorgen.
+    }
+   *[message] { $count ->
+        [one] Meddelandet är tillbaka i Inkorgen.
+       *[other] { $count } meddelanden är tillbaka i Inkorgen.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] Konversationen har rapporterats som skräppost.
@@ -349,6 +506,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Meddelandet har rapporterats som skräppost.
        *[other] { $count } meddelanden har rapporterats som skräppost.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Konversationen har markerats som inte skräppost och flyttats till inkorgen.
+       *[other] { $count } konversationer har markerats som inte skräppost och flyttats till inkorgen.
+    }
+   *[message] { $count ->
+        [one] Meddelandet har markerats som inte skräppost och flyttats till inkorgen.
+       *[other] { $count } meddelanden har markerats som inte skräppost och flyttats till inkorgen.
     }
 }
 toast-deleted-forever = { $kind ->

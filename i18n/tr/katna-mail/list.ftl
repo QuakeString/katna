@@ -28,6 +28,8 @@ list-move-to = Taşı
 list-archive = Arşivle
 list-spam = Spam bildir
 list-delete = Sil
+list-snooze = Ertele
+list-unsnooze = Ertelemeyi kaldır
 list-newer = Daha yeni
 list-older = Daha eski
 list-range = { $first }–{ $last } / { $total }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder } klasöründeki { $count } iletinin tümünü seç
        *[other] { $folder } klasöründeki { $count } iletinin tümünü seç
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Bu sayfadaki { $count } okunmuş ileti dizisi seçildi.
+           *[other] Bu sayfadaki { $count } okunmuş ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] Bu sayfadaki { $count } okunmuş ileti seçildi.
+           *[other] Bu sayfadaki { $count } okunmuş iletinin tümü seçildi.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Bu sayfadaki { $count } okunmamış ileti dizisi seçildi.
+           *[other] Bu sayfadaki { $count } okunmamış ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] Bu sayfadaki { $count } okunmamış ileti seçildi.
+           *[other] Bu sayfadaki { $count } okunmamış iletinin tümü seçildi.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Bu sayfadaki { $count } yıldızlı ileti dizisi seçildi.
+           *[other] Bu sayfadaki { $count } yıldızlı ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] Bu sayfadaki { $count } yıldızlı ileti seçildi.
+           *[other] Bu sayfadaki { $count } yıldızlı iletinin tümü seçildi.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Bu sayfadaki { $count } yıldızsız ileti dizisi seçildi.
+           *[other] Bu sayfadaki { $count } yıldızsız ileti dizisinin tümü seçildi.
+        }
+       *[message] { $count ->
+            [one] Bu sayfadaki { $count } yıldızsız ileti seçildi.
+           *[other] Bu sayfadaki { $count } yıldızsız iletinin tümü seçildi.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } okunmuş ileti dizisini seç
+           *[other] { $count } okunmuş ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $count } okunmuş iletiyi seç
+           *[other] { $count } okunmuş iletinin tümünü seç
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } okunmamış ileti dizisini seç
+           *[other] { $count } okunmamış ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $count } okunmamış iletiyi seç
+           *[other] { $count } okunmamış iletinin tümünü seç
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } yıldızlı ileti dizisini seç
+           *[other] { $count } yıldızlı ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $count } yıldızlı iletiyi seç
+           *[other] { $count } yıldızlı iletinin tümünü seç
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } yıldızsız ileti dizisini seç
+           *[other] { $count } yıldızsız ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $count } yıldızsız iletiyi seç
+           *[other] { $count } yıldızsız iletinin tümünü seç
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmuş ileti dizisini seç
+           *[other] { $folder } klasöründeki { $count } okunmuş ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmuş iletiyi seç
+           *[other] { $folder } klasöründeki { $count } okunmuş iletinin tümünü seç
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmamış ileti dizisini seç
+           *[other] { $folder } klasöründeki { $count } okunmamış ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } okunmamış iletiyi seç
+           *[other] { $folder } klasöründeki { $count } okunmamış iletinin tümünü seç
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızlı ileti dizisini seç
+           *[other] { $folder } klasöründeki { $count } yıldızlı ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızlı iletiyi seç
+           *[other] { $folder } klasöründeki { $count } yıldızlı iletinin tümünü seç
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızsız ileti dizisini seç
+           *[other] { $folder } klasöründeki { $count } yıldızsız ileti dizisinin tümünü seç
+        }
+       *[message] { $count ->
+            [one] { $folder } klasöründeki { $count } yıldızsız iletiyi seç
+           *[other] { $folder } klasöründeki { $count } yıldızsız iletinin tümünü seç
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = Yıldızlı değil
 row-important = Önemli. Önemli değil olarak işaretlemek için tıklayın.
 row-mark-important = Önemli olarak işaretle
 row-pinned = En üste sabitlendi
+row-tracking-none = İzleniyor. Henüz açılmadı
+row-tracking-opened = { $recipients } alıcıdan { $opened } tanesi açtı
+row-tracking-clicked = { $recipients } alıcıdan { $opened } tanesi açtı, { $clicked } tanesi bir bağlantıyı izledi
 row-pin = En üste sabitle
 row-unpin = Sabitlemeyi kaldır
+row-snoozed-until = Ertelendi, geri dönüş: { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = Tümünü yanıtla
 menu-forward = Yönlendir
 menu-archive = Arşivle
 menu-delete = Sil
+menu-delete-forever = Kalıcı olarak sil
+menu-move-to-inbox = Gelen Kutusu'na taşı
 menu-spam = Spam bildir
+menu-not-spam = Spam değil
 menu-mark-read = Okundu olarak işaretle
 menu-mark-unread = Okunmadı olarak işaretle
 menu-mark-all-read = Tümünü okundu olarak işaretle
@@ -240,6 +375,8 @@ menu-important = Önemli olarak işaretle
 menu-not-important = Önemli değil olarak işaretle
 menu-pin = En üste sabitle
 menu-unpin = Sabitlemeyi kaldır
+menu-snooze = Ertele
+menu-unsnooze = Ertelemeyi kaldır
 menu-print-all = Tümünü yazdır
 menu-new-window = Yeni pencerede aç
 menu-move-to = Taşı
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } iletinin sabitlemesi kaldırıldı.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi ertelendi, geri dönüş: { $when }.
+       *[other] { $count } ileti dizisi ertelendi, geri dönüş: { $when }.
+    }
+   *[message] { $count ->
+        [one] İleti ertelendi, geri dönüş: { $when }.
+       *[other] { $count } ileti ertelendi, geri dönüş: { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi Gelen Kutusu'na döndü.
+       *[other] { $count } ileti dizisi Gelen Kutusu'na döndü.
+    }
+   *[message] { $count ->
+        [one] İleti Gelen Kutusu'na döndü.
+       *[other] { $count } ileti Gelen Kutusu'na döndü.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] İleti dizisi spam olarak bildirildi.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] İleti spam olarak bildirildi.
        *[other] { $count } ileti spam olarak bildirildi.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] İleti dizisi spam değil olarak işaretlendi ve gelen kutusuna taşındı.
+       *[other] { $count } ileti dizisi spam değil olarak işaretlendi ve gelen kutusuna taşındı.
+    }
+   *[message] { $count ->
+        [one] İleti spam değil olarak işaretlendi ve gelen kutusuna taşındı.
+       *[other] { $count } ileti spam değil olarak işaretlendi ve gelen kutusuna taşındı.
     }
 }
 toast-deleted-forever = { $kind ->

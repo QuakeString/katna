@@ -454,3 +454,232 @@ gửi từ một tài khoản khác của bạn. Thư mới bắt đầu từ t�
 của bạn, trừ khi bạn chọn mặc định khác trong Cài đặt > Soạn thư > Gửi
 thư mới từ.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Hộp thư đến hợp nhất"
+text = """
+Bật Cài đặt > Tài khoản > Hộp thư đến hợp nhất để xem thư của tất cả tài
+khoản cùng lúc. “Tất cả tài khoản” nằm ở đầu ngăn thư mục với một Hộp
+thư đến, Chưa đọc, Có gắn dấu sao, Quan trọng, Đã gửi, Thư nháp và nhiều
+mục khác chung cho mọi tài khoản; mũi tên bên cạnh mỗi mục mở ra một
+dòng cho từng tài khoản. Giờ đây tên của mỗi tài khoản có một mũi tên để
+thu gọn các thư mục của nó.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu chuột phải phù hợp với từng thư mục"
+text = """
+Chọn một thư mục hoặc nhãn trong Di chuyển tới ở menu chuột phải giờ sẽ
+chuyển thư, có Hoàn tác, kể cả từ kết quả tìm kiếm. Trong Thư rác, Báo
+cáo thư rác đổi thành Không phải thư rác. Thùng rác có Chuyển vào Hộp
+thư đến và Xóa vĩnh viễn, Lưu trữ có Chuyển vào Hộp thư đến, còn Thư
+nháp và Đã gửi bỏ đi các mục không áp dụng ở đó.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Kéo tài khoản để sắp xếp"
+text = """
+Trong Cài đặt > Tài khoản, khi kéo một tài khoản, giờ cả hàng của nó
+được nhấc lên và các tài khoản khác dạt sang bên để nhường chỗ. Chuyển
+lên và Chuyển xuống hiện ra khi bạn trỏ vào một hàng.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Thư nháp được giữ lại"
+text = """
+Đóng thư đang soạn giờ sẽ lưu nó vào Thư nháp, cả trên máy chủ thư của
+bạn, như trong Gmail. Mở nó từ Thư nháp để viết tiếp. Chỉ nút thùng rác
+mới bỏ nó đi, và Hoàn tác sẽ lấy lại.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Chỗ cho nhiều tệp đính kèm"
+text = """
+Dù bạn đính kèm bao nhiêu tệp, danh sách giờ cuộn phía trên thanh Gửi
+thay vì tràn đè lên nó, hiện tệp mới nhất, và cho biết có bao nhiêu tệp
+cùng tổng dung lượng của chúng.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Chọn thư chưa đọc hoặc có gắn dấu sao, kiểu Gmail"
+text = """
+Đã đọc, Chưa đọc, Có gắn dấu sao và Không có dấu sao trong menu Chọn lại
+đánh dấu chọn các thư khớp trên màn hình. Một dòng phía trên danh sách
+đề nghị chọn mọi cuộc hội thoại khớp trong thư mục, và Bỏ chọn sẽ hoàn
+tác việc đó.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Thư mục đưa bạn ra khỏi Cài đặt"
+text = """
+Khi Cài đặt đang mở, nhấp vào một thư mục hoặc biểu tượng Thư giờ sẽ
+đóng Cài đặt và mở thư mục đó, như trong Gmail. Mũi tên Quay lại vẫn
+hoạt động như trước.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Thả ảnh vào giữa văn bản"
+text = """
+Khi kéo một ảnh lên thư, một dấu nháy hiện ra ở chỗ ảnh sẽ được đặt, để
+bạn có thể thả nó vào giữa câu. Các tệp khác vẫn hiện vùng thả dành cho
+tệp đính kèm, và giờ việc thả vẫn hoạt động sau khi bạn đã gõ.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Thoát là đóng ngay"
+text = """
+Thoát trong menu của biểu tượng ở khay không còn chờ những thư đang đồng
+bộ hoặc đang được lập chỉ mục: Katna và biểu tượng ở khay đóng ngay lập
+tức, phần còn lại sẽ tiếp tục vào lần tới Katna khởi động.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Thông tin liên hệ bên cạnh thư"
+text = """
+Trong cửa sổ rộng, một thẻ bên cạnh cuộc hội thoại đang mở giờ hiện
+thông tin người gửi: số điện thoại, chức danh và công ty lấy từ chữ ký
+của họ, giờ hiện tại chỗ họ, lượng thư hai bên đã trao đổi, các cuộc hội
+thoại gần đây và các tệp giữa bạn với họ. Nhấp vào một cuộc hội thoại
+hoặc tệp để mở, hoặc vào một người khác trong cuộc hội thoại để xem
+người đó. Thông tin chỉ được đọc từ thư của bạn trên máy tính này. Nút
+liên hệ trên thanh công cụ của Ngăn đọc sẽ ẩn thẻ này.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Dung lượng đã dùng"
+text = """
+Khi máy chủ thư cho biết, phần dưới cùng của Ngăn thư mục sẽ hiện dung
+lượng lưu trữ thư của tài khoản đã đầy đến đâu, chẳng hạn “Đã dùng 34%
+trong 15 GB”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Tìm thư từ KRunner và tìm kiếm của GNOME"
+text = """
+Gõ một tên vào KRunner (Alt+Space) hoặc ô tìm kiếm Activities để viết
+thư cho người đó, sao chép địa chỉ hoặc tìm thư của họ. Những thư có
+tiêu đề hoặc người gửi chứa mọi từ bạn gõ sẽ hiện ra; hãy bắt đầu bằng
+mail: để tìm trong toàn bộ thư, giống như trong ô tìm kiếm của Katna
+Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Mẫu cho những thư bạn hay viết"
+text = """
+Viết thư một lần rồi lưu lại bằng nút Mẫu thư mới trong cửa sổ soạn thư,
+sau đó chèn nó vào bất kỳ thư mới hay thư trả lời nào chỉ với một cú
+nhấp. Viết {first name}, {name} hoặc {my name} và Katna sẽ điền chúng
+cho từng người nhận. Sửa, đổi tên hoặc xóa mẫu thư trong Cài đặt > Soạn
+thư.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Thư hẹn giờ vẫn được gửi khi máy tính đã tắt"
+text = """
+Khi máy chủ thư của bạn có thể giữ thư đến một thời điểm định sẵn, như
+Stalwart, Lên lịch gửi giờ sẽ giao thư cho máy chủ ngay khi Hoàn tác biến
+mất, để thư đi đúng giờ kể cả khi máy tính này đã tắt. Menu lên lịch cho
+biết máy chủ thư của bạn hay Katna sẽ gửi thư.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Hiệu ứng trỏ chuột nhẹ nhàng hơn"
+text = """
+Dòng dưới con trỏ trong danh sách thư giờ nổi lên với một bóng mờ nhạt,
+giống như trong Gmail, thay cho một dải tối bên dưới.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Kéo địa chỉ giữa Tới, Cc và Bcc"
+text = """
+Kéo thẻ địa chỉ sang trường khác để chuyển nó; Cc và Bcc sẽ mở ra khi
+bạn kéo, kể cả khi đang ẩn. Trỏ vào thẻ sẽ hiện dấu x để xóa nó.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Tài khoản Katna"
+text = """
+Cài đặt > Tài khoản Katna cho phép bạn tạo tài khoản trên máy chủ riêng
+của Katna, với mật khẩu riêng, không bao giờ là mật khẩu thư. Các tính
+năng trực tuyến của Katna, như xác nhận đã đọc và theo dõi liên kết, sẽ
+cần đến tài khoản này. Bạn có thể xem các máy tính đang đăng nhập và
+đăng xuất bất kỳ máy nào.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Trở lại đúng chỗ cũ"
+text = """
+Đóng Katna Mail rồi mở lại sẽ đưa trở lại ứng dụng, thư mục và tab hộp
+thư đến bạn đang mở, các thư mục bạn đã mở rộng và việc ngăn thư mục có
+đang thu gọn hay không. Thoát Katna từ khay hệ thống sẽ khởi động lại từ
+đầu.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Tạm ẩn và nhắc khi chưa có trả lời"
+text = """
+Tạm ẩn một cuộc hội thoại bằng biểu tượng đồng hồ trên dòng của nó hoặc
+từ menu chuột phải: cuộc hội thoại chờ trong thư mục Đã tạm ẩn và quay
+lại Hộp thư đến, ở trạng thái chưa đọc, vào thời điểm bạn chọn. Khi gửi,
+mũi tên bên cạnh nút Gửi có thể nhắc bạn nếu không ai trả lời trong vòng
+1, 3 hoặc 7 ngày. Cả hai hoạt động khi máy tính đang bật, và làm bù phần
+còn lại sau khi máy thức dậy.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Đọc thư bằng ngôn ngữ của bạn"
+text = """
+Thư bằng ngôn ngữ khác giờ có nút Dịch ở phía trên, và Hiện bản gốc đưa
+thư trở lại như cũ. Katna nhận biết ngôn ngữ ngay trên máy tính của bạn;
+chỉ khi bạn yêu cầu, nội dung thư mới được gửi đến máy chủ riêng của Katna
+để dịch. Cài đặt > Chung > Dịch cho bạn chọn ngôn ngữ của mình và những
+ngôn ngữ luôn được dịch.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Biết khi nào thư được mở"
+text = """
+Bật biểu tượng con mắt cạnh người nhận để thấy khi mỗi người mở thư của
+bạn hoặc mở một liên kết trong thư, hoặc yêu cầu xác nhận đã đọc thay vào
+đó. Thư đã gửi cho thấy ai đã mở, và một thông báo cho bạn biết ở lần đầu
+tiên. Cả hai đều tắt với mọi thư mới, và việc theo dõi cần tài khoản Katna
+(Cài đặt > Tài khoản Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Hoạt động của thư được theo dõi"
+text = """
+Hoạt động bên cạnh ô tìm kiếm cho thấy bao nhiêu thư được theo dõi của
+bạn đã được mở và các liên kết trong đó được mở thường xuyên đến đâu,
+kèm các tiêu đề của bạn xếp theo mức độ thường được mở.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Tìm trong thư từ KRunner bằng k"
+text = """
+Gõ k hoặc m, một dấu cách, rồi điều cần tìm trong KRunner hoặc ô tìm
+kiếm của GNOME để có cùng kết quả như ô tìm kiếm của Katna Mail, ví dụ
+“k budget”. Chọn từ của riêng bạn trong Cài đặt > Chung.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Hoạt động bên cạnh ô tìm kiếm"
+text = """
+Nút Hoạt động bên cạnh ô tìm kiếm đếm các lượt mở và lượt nhấp mới
+trên thư được theo dõi của bạn, đồng thời liệt kê ai đã mở thư nào và
+đã mở những liên kết nào; nhấp vào một mục để mở thư đó. Chi tiết cho
+thấy tỷ lệ mở và tỷ lệ nhấp, lượt mở theo ngày và các tiêu đề hiệu quả
+nhất của bạn trong 7 hoặc 30 ngày qua, mọi lúc hoặc những ngày bạn
+chọn. Thư đã gửi giờ cho thấy mỗi người đã mở thư và mở liên kết bao
+nhiêu lần.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Thông tin về hộp thư"
+text = """
+Hoạt động > Chi tiết giờ còn cho thấy bạn đã gửi và nhận bao nhiêu thư
+trong khoảng thời gian đó, bạn và người khác trả lời thường xuyên và
+nhanh đến đâu, những người bạn viết thư nhiều nhất, và thư của bạn đến
+vào những ngày và giờ nào. Mọi thứ được đếm trên máy tính của bạn từ
+những thư Katna đã có.
+"""

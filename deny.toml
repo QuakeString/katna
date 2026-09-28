@@ -41,6 +41,8 @@ allow = [
     # libbz2-rs-sys (via GPUI's HTTP client): permissive, GPL-compatible.
     "bzip2-1.0.6",
     "CDLA-Permissive-2.0",
+    # quoted_printable (via lettre, Katna Server's mail): public-domain-like.
+    "0BSD",
 ]
 
 [licenses.private]
@@ -57,6 +59,12 @@ deny = [
     # is banned the same way, so the chain still ends in a UI crate.
     { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar", "gpui-pre-platform", "gpui-pre-linux", "gpui-pre-wgpu", "gpui-pre-apple", "gpui-pre-macos", "gpui-pre-windows", "gpui-pre-web"], reason = "GPUI is only allowed in UI crates" },
     { crate = "gpui-pre-platform", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar"], reason = "GPUI is only allowed in UI crates" },
+    # Katna Server's HTTP and database crates stay in the server.
+    { crate = "axum", wrappers = ["katna-server"], reason = "server only" },
+    { crate = "tokio-postgres", wrappers = ["katna-server", "deadpool-postgres"], reason = "server only" },
+    { crate = "deadpool-postgres", wrappers = ["katna-server"], reason = "server only" },
+    { crate = "lettre", wrappers = ["katna-server"], reason = "server only" },
+    { crate = "argon2", wrappers = ["katna-server"], reason = "server only" },
     # TLS is rustls only (docs/ARCHITECTURE.md §19).
     { crate = "openssl-sys", reason = "use rustls" },
     { crate = "native-tls", reason = "use rustls" },

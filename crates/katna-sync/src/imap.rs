@@ -62,8 +62,8 @@ use io_sasl::{mechanism::Sasl, rfc4616::plain::SaslPlainCreds, xoauth2::SaslXoau
 
 use crate::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, Error, FlagChanges, FlagState, Flags,
-    Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MessageHeaders, Result,
-    Security, Wait,
+    Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MessageHeaders, Quota,
+    Result, Security, Wait,
     backend::Login,
     net::{Conn, Tls},
 };
@@ -202,6 +202,14 @@ impl ImapBackend {
         self.capabilities
             .iter()
             .any(|c| c.to_string().eq_ignore_ascii_case("X-GM-EXT-1"))
+    }
+
+    /// The QUOTA extension (RFC 2087, or RFC 9208's `QUOTA=RES-STORAGE`).
+    fn has_quota(&self) -> bool {
+        self.capabilities.iter().any(|c| {
+            let c = c.to_string();
+            c.eq_ignore_ascii_case("QUOTA") || c.eq_ignore_ascii_case("QUOTA=RES-STORAGE")
+        })
     }
 
     /// Sends a command imap-codec cannot build or parse (Gmail's
@@ -843,6 +851,19 @@ impl MailBackend for ImapBackend {
             .unwrap_or_default())
     }
 
+    async fn copy_messages(&mut self, uids: &[u32], folder: &str) -> Result<Vec<(u32, u32)>> {
+        if uids.is_empty() {
+            return Ok(Vec::new());
+        }
+        let set = SequenceSet::try_from(uid_set(uids).as_str()).map_err(protocol)?;
+        let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
+        let opts = ImapMessageCopyOptions { uid: true };
+        let copied = self.run(ImapMessageCopy::new(set, mailbox, opts)).await?;
+        Ok(copied
+            .map(|(_, from, to)| from.into_iter().zip(to).collect())
+            .unwrap_or_default())
+    }
+
     async fn expunge(&mut self, uids: &[u32]) -> Result<()> {
         if uids.is_empty() {
             return Ok(());
@@ -939,6 +960,14 @@ impl MailBackend for ImapBackend {
                 .filter_map(|(uid, ids)| Some((uid, ids.message?)))
                 .collect(),
         ))
+    }
+
+    async fn quota(&mut self) -> Result<Option<Quota>> {
+        if !self.has_quota() {
+            return Ok(None);
+        }
+        let lines = self.raw_command("GETQUOTAROOT INBOX").await?;
+        Ok(lines.iter().find_map(|line| storage_quota(line)))
     }
 
     async fn wait_for_changes<I>(
@@ -1258,6 +1287,35 @@ fn istring(value: &IString<'_>) -> String {
 }
 
 /// `12 FETCH (X-GM-THRID 1278455344230334865 UID 4)` → `(4, 1278…)`.
+/// The storage limit of an untagged `QUOTA root (STORAGE used limit …)`
+/// response, whose numbers count units of 1024 bytes. `None` for other
+/// responses and for roots without a storage limit.
+fn storage_quota(line: &str) -> Option<Quota> {
+    let rest = line
+        .get(..6)?
+        .eq_ignore_ascii_case("QUOTA ")
+        .then(|| &line[6..])?;
+    // The root may be a quoted string with spaces; the resources follow
+    // it in the last parentheses.
+    let list = rest.get(rest.rfind('(')? + 1..rest.rfind(')')?)?;
+    let words: Vec<&str> = list.split_ascii_whitespace().collect();
+    words
+        .as_chunks::<3>()
+        .0
+        .iter()
+        .find_map(|[name, used, limit]| {
+            if !name.eq_ignore_ascii_case("STORAGE") {
+                return None;
+            }
+            let used: u64 = used.parse().ok()?;
+            let limit: u64 = limit.parse().ok()?;
+            (limit > 0).then(|| Quota {
+                used: used.saturating_mul(1024),
+                limit: limit.saturating_mul(1024),
+            })
+        })
+}
+
 /// Gmail's `X-GM-THRID` and `X-GM-MSGID` of one message.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 struct GmailIds {
@@ -1542,5 +1600,26 @@ mod tests {
         assert_eq!(search_results("SEARCH 3 (MODSEQ 9)"), Some(vec![3]));
         assert_eq!(search_results("SEARCH"), Some(vec![]));
         assert_eq!(search_results("3 EXISTS"), None);
+    }
+
+    #[test]
+    fn quota_responses() {
+        assert_eq!(
+            storage_quota("QUOTA \"\" (STORAGE 10 512)"),
+            Some(Quota {
+                used: 10 * 1024,
+                limit: 512 * 1024
+            })
+        );
+        assert_eq!(
+            storage_quota("QUOTA \"User quota\" (MESSAGE 3 1000 STORAGE 7 9)"),
+            Some(Quota {
+                used: 7 * 1024,
+                limit: 9 * 1024
+            })
+        );
+        assert_eq!(storage_quota("QUOTA \"\" (MESSAGE 3 1000)"), None);
+        assert_eq!(storage_quota("QUOTAROOT INBOX \"\""), None);
+        assert_eq!(storage_quota("QUOTA \"\" (STORAGE 1 0)"), None);
     }
 }

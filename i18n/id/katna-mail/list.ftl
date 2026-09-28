@@ -28,6 +28,8 @@ list-move-to = Pindahkan ke
 list-archive = Arsipkan
 list-spam = Laporkan spam
 list-delete = Hapus
+list-snooze = Tunda
+list-unsnooze = Batalkan penundaan
 list-newer = Lebih baru
 list-older = Lebih lama
 list-range = { $first }–{ $last } dari { $total }
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] Pilih semua { $count } percakapan di { $folder }
    *[message] Pilih semua { $count } pesan di { $folder }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] Semua { $count } percakapan yang sudah dibaca di layar dipilih.
+       *[message] Semua { $count } pesan yang sudah dibaca di layar dipilih.
+    }
+   *[unread] { $kind ->
+        [conversation] Semua { $count } percakapan yang belum dibaca di layar dipilih.
+       *[message] Semua { $count } pesan yang belum dibaca di layar dipilih.
+    }
+    [starred] { $kind ->
+        [conversation] Semua { $count } percakapan berbintang di layar dipilih.
+       *[message] Semua { $count } pesan berbintang di layar dipilih.
+    }
+    [unstarred] { $kind ->
+        [conversation] Semua { $count } percakapan tidak berbintang di layar dipilih.
+       *[message] Semua { $count } pesan tidak berbintang di layar dipilih.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang sudah dibaca
+       *[message] Pilih semua { $count } pesan yang sudah dibaca
+    }
+   *[unread] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang belum dibaca
+       *[message] Pilih semua { $count } pesan yang belum dibaca
+    }
+    [starred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan berbintang
+       *[message] Pilih semua { $count } pesan berbintang
+    }
+    [unstarred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan tidak berbintang
+       *[message] Pilih semua { $count } pesan tidak berbintang
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang sudah dibaca di { $folder }
+       *[message] Pilih semua { $count } pesan yang sudah dibaca di { $folder }
+    }
+   *[unread] { $kind ->
+        [conversation] Pilih semua { $count } percakapan yang belum dibaca di { $folder }
+       *[message] Pilih semua { $count } pesan yang belum dibaca di { $folder }
+    }
+    [starred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan berbintang di { $folder }
+       *[message] Pilih semua { $count } pesan berbintang di { $folder }
+    }
+    [unstarred] { $kind ->
+        [conversation] Pilih semua { $count } percakapan tidak berbintang di { $folder }
+       *[message] Pilih semua { $count } pesan tidak berbintang di { $folder }
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = Tidak berbintang
 row-important = Penting. Klik untuk menandai sebagai tidak penting.
 row-mark-important = Tandai sebagai penting
 row-pinned = Disematkan di atas
+row-tracking-none = Dilacak. Belum dibuka
+row-tracking-opened = Dibuka oleh { $opened } dari { $recipients }
+row-tracking-clicked = Dibuka oleh { $opened } dari { $recipients }, link diikuti oleh { $clicked }
 row-pin = Sematkan di atas
 row-unpin = Lepas sematan
+row-snoozed-until = Ditunda sampai { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = Balas semua
 menu-forward = Teruskan
 menu-archive = Arsipkan
 menu-delete = Hapus
+menu-delete-forever = Hapus selamanya
+menu-move-to-inbox = Pindahkan ke Kotak Masuk
 menu-spam = Laporkan spam
+menu-not-spam = Bukan spam
 menu-mark-read = Tandai sudah dibaca
 menu-mark-unread = Tandai belum dibaca
 menu-mark-all-read = Tandai semua sudah dibaca
@@ -162,6 +225,8 @@ menu-important = Tandai sebagai penting
 menu-not-important = Tandai sebagai tidak penting
 menu-pin = Sematkan di atas
 menu-unpin = Lepas sematan
+menu-snooze = Tunda
+menu-unsnooze = Batalkan penundaan
 menu-print-all = Cetak semua
 menu-new-window = Buka di jendela baru
 menu-move-to = Pindahkan ke
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] Sematan { $count } percakapan dilepas.
    *[message] Sematan { $count } pesan dilepas.
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count } percakapan ditunda sampai { $when }.
+   *[message] { $count } pesan ditunda sampai { $when }.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count } percakapan kembali ke Kotak Masuk.
+   *[message] { $count } pesan kembali ke Kotak Masuk.
+}
 toast-spam = { $kind ->
     [conversation] { $count } percakapan dilaporkan sebagai spam.
    *[message] { $count } pesan dilaporkan sebagai spam.
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count } percakapan ditandai bukan spam dan dipindahkan ke kotak masuk.
+   *[message] { $count } pesan ditandai bukan spam dan dipindahkan ke kotak masuk.
 }
 toast-deleted-forever = { $kind ->
     [conversation] { $count } percakapan dihapus selamanya.

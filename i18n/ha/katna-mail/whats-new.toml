@@ -458,3 +458,235 @@ kibiyarsa don aika daga wani asusunka. Sabuwar wasiƙa tana farawa daga
 asusunka na farko, sai dai idan ka zaɓi wani na asali a Saituna >
 Rubutu > Aika sababbin saƙonni daga.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Haɗaɗɗen akwatin saƙo"
+text = """
+Kunna Saituna > Asusu > Haɗaɗɗen akwatin saƙo don ganin wasiƙun dukkan
+asusunku tare. “Dukkan asusu” yana saman wurin folda, da Akwatin saƙo,
+Ba a karanta ba, Masu tauraro, Muhimmi, Waɗanda aka aika, Zayyanai da
+ƙari, ɗaya-ɗaya don dukkan asusu; kibiyar da ke gefen kowanne tana buɗe
+layi ɗaya ga kowane asusu. Sunan kowane asusu yanzu yana da kibiya da ke
+naɗe foldodinsa.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu na danna-dama sun dace da kowace folda"
+text = """
+Zaɓar folda ko lakabi a ƙarƙashin Matsar zuwa a menu na danna-dama yanzu
+yana matsar da wasiƙar, tare da Janye, har daga sakamakon bincike. A
+Saƙonnin banza, Rahoto saƙon banza ya zama Ba saƙon banza ba ne. Kwandon
+shara yana ba da Matsar zuwa Akwatin saƙo da Share har abada, Ma'ajiya
+tana ba da Matsar zuwa Akwatin saƙo, kuma Zayyanai da Waɗanda aka aika
+suna barin abubuwan da ba su dace a can ba.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Ja asusu don tsara su"
+text = """
+A Saituna > Asusu, jan asusu yanzu yana ɗaga dukan layinsa, kuma sauran
+asusun suna matsawa gefe don ba da wuri. Matsa sama da Matsa ƙasa suna
+bayyana idan ka nuna wani layi.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Ana adana zayyanai"
+text = """
+Rufe saƙon da kake rubutawa yanzu yana adana shi a Zayyanai, har a sabar
+wasiƙarka, kamar a Gmail. Buɗe shi daga Zayyanai don ci gaba da rubutu.
+Maɓallin kwandon shara ne kaɗai ke zubar da shi, kuma Janye yana dawo da
+shi.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Wuri don abubuwan haɗawa da yawa"
+text = """
+Ko fayiloli nawa aka haɗa, yanzu jerin yana gungurawa sama da sandar
+Aika maimakon ya rufe ta, yana nuna sabon fayil, kuma yana faɗin yawan
+fayiloli da jimillar girmansu.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Zaɓi wasiƙun da ba a karanta ba ko masu tauraro, kamar Gmail"
+text = """
+An karanta, Ba a karanta ba, Masu tauraro da Marasa tauraro a menu na
+Zaɓi suna sake yiwa wasiƙun da suka dace da ke kan allo alama. Layi sama
+da jerin yana ba da damar zaɓar dukkan tattaunawar da ta dace a cikin
+folda, kuma Share zaɓi yana soke hakan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Foldoji suna fitar da kai daga Saituna"
+text = """
+Idan Saituna a buɗe suke, danna folda ko gunkin Wasiƙu yanzu yana rufe
+Saituna ya buɗe wannan folda, kamar a Gmail. Kibiyar komawa baya ma tana
+aiki har yanzu.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Saki hotuna cikin rubutu"
+text = """
+Jan hoto a kan saƙo yana nuna alamar rubutu a inda zai sauka, don a iya
+sakin sa a tsakiyar jimla. Sauran fayiloli har yanzu suna nuna wurin
+saki na abubuwan haɗawa, kuma yanzu saki yana aiki bayan an yi rubutu.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Fita yana rufewa nan take"
+text = """
+Fita a menu na gunkin tire ba ya sake jiran wasiƙun da ake daidaitawa ko
+ake sanyawa a fihirisa: Katna da gunkin tirensa suna rufewa nan take,
+sauran aikin kuma yana ci gaba idan Katna ya sake farawa.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Bayanan lambar sadarwa kusa da wasiƙunku"
+text = """
+A cikin babbar taga, wani kati kusa da tattaunawar da ke buɗe yanzu yana
+nuna mai aikawa: wayarsa, muƙaminsa da kamfaninsa daga sa hannunsa,
+lokacin da ake a wurinsa, yawan wasiƙun da kuka yi musaya, tattaunawarku
+ta kwanan nan da fayilolin da ke tsakaninku. Danna tattaunawa ko fayil
+don buɗe shi, ko wani mutum a cikin tattaunawar don ganin sa. Ana
+karanta wannan daga wasiƙun da ke wannan kwamfuta kawai. Maɓallin lambar
+sadarwa a sandar kayan aiki ta Wurin karatu yana ɓoye shi.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Ma'ajiyar da aka yi amfani da ita"
+text = """
+Ƙasan Wurin folda yanzu yana nuna yadda ma'ajiyar wasiƙun asusun ta
+cika, kamar “An yi amfani da 34% na 15 GB”, idan sabar wasiƙunsa ta
+faɗa.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Nemo wasiƙu daga KRunner da binciken GNOME"
+text = """
+Rubuta suna a KRunner (Alt+Space) ko binciken Activities don rubuta wa
+wannan mutumin, kwafi adireshinsa ko nemo wasiƙunsa. Saƙonni suna
+bayyana idan jigonsu ko mai aikawa yana da kowace kalma da kuka rubuta;
+fara da mail: don bincika dukan wasiƙunku, kamar a akwatin bincike na
+Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Samfura don wasiƙun da kuke yawan rubutawa"
+text = """
+Rubuta saƙo sau ɗaya ku ajiye shi da sabon maɓallin Samfura a wurin
+rubutu, sannan ku saka shi a kowace sabuwar wasiƙa ko amsa da danna
+ɗaya. Rubuta {first name}, {name} ko {my name} kuma Katna zai cike su
+ga kowane mai karɓa. Gyara, sake suna ko share samfura a Saituna >
+Rubutu.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Wasiƙar da aka tsara tana tafiya ko da kwamfutarka a kashe"
+text = """
+Idan sabar wasiƙunka za ta iya riƙe wasiƙa har zuwa lokacin da aka saita,
+kamar yadda Stalwart ke yi, Tsara lokacin aikawa yanzu yana ba ta saƙon da
+zarar Janye ya tafi, don haka yana tafiya a kan lokaci ko da wannan kwamfuta
+a kashe take. Menu na tsara lokaci yana faɗin ko sabar wasiƙunka ce ko
+Katna za ta aika shi.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Nuni mai sauƙi"
+text = """
+Layin da ke ƙarƙashin mai nuni a jerin wasiƙu yanzu yana ɗagawa da ɗan
+inuwa, kamar a Gmail, maimakon wani duhun ɗamara a ƙarƙashinsa.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Ja adireshi tsakanin Zuwa, Kwafi da Kwafi a ɓoye"
+text = """
+Ja ƙaramin katin adireshi zuwa wani fili don matsar da shi; Kwafi da Kwafi
+a ɓoye suna buɗewa yayin da kake ja, ko da a ɓoye suke. Nuna kati yana
+bayyana x da ke cire shi.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Asusun Katna"
+text = """
+Saituna > Asusun Katna yana ba ku damar ƙirƙirar asusu a sabar Katna ta
+kanta, da kalmar sirrinsa ta kansa, ba kalmar sirrin wasiƙa ba. Fasalolin
+Katna na intanet, kamar rasidin karantawa da bin diddigin hanyoyin haɗi,
+za su buƙace shi. Kuna iya ganin kwamfutocin da suka shiga kuma ku fitar da
+kowace ɗaya daga cikinsu.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Koma inda kuka tsaya"
+text = """
+Rufe Katna Mail da sake buɗe shi yana dawo da manhajar, folda da shafin
+akwatin saƙo da kuka buɗe, foldojin da kuka buɗe da ko wurin folda yana
+naɗe. Fita daga Katna ta tiren tsarin yana sake fara shi sabo.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Jinkiri da tunatarwar amsa"
+text = """
+Jinkirta tattaunawa da agogon da ke kan layinta ko daga menu na
+danna-dama: tana jira a folda Waɗanda aka jinkirta, sannan ta dawo cikin
+Akwatin saƙo, ba a karanta ba, a lokacin da ka zaɓa. Lokacin aikawa,
+kibiyar da ke gefen Aika na iya tunatar da kai idan babu wanda ya amsa
+cikin kwana 1, 3 ko 7. Dukansu suna aiki yayin da kwamfutarka ke kunne,
+kuma suna cim ma abin da ya wuce bayan ta farka.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Karanta wasiƙa da harshenka"
+text = """
+Saƙo da wani harshe yanzu yana nuna maɓallin Fassara a samansa, kuma Nuna
+na asali yana mayar da shi yadda yake. Katna tana gano harshen a
+kwamfutarka; sai idan ka nema ne rubutun saƙon yake zuwa sabar Katna ta
+kanta don a fassara shi. Saituna > Gabaɗaya > Fassara tana zaɓar harshenka
+da waɗanda za a fassara koyaushe.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Ga lokacin da aka buɗe wasiƙa"
+text = """
+Kunna ido kusa da masu karɓa don ganin lokacin da kowannensu ya buɗe
+saƙonka ko ya bi mahaɗi a cikinsa, ko ka nemi rasidin karantawa a maimakon
+haka. Wasiƙun da aka aika suna nuna wanda ya buɗe su, kuma sanarwa tana
+gaya maka a karon farko. Duka biyun a kashe suke ga kowane sabon saƙo, kuma
+bibiya tana buƙatar asusun Katna (Saituna > Asusun Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Ayyukan wasiƙun da ake bibiya"
+text = """
+Ayyuka kusa da akwatin bincike yana nuna yawan saƙonninka da ake bibiya
+da aka buɗe da kuma sau nawa aka bi mahaɗansu, tare da jigoginka a jere
+bisa yadda ake yawan buɗe su.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Bincika wasiƙunka daga KRunner da k"
+text = """
+Rubuta k ko m, sarari, sannan abin da kake nema a KRunner ko binciken
+GNOME don samun sakamako iri ɗaya da na akwatin bincike na Katna Mail,
+kamar “k budget”. Zaɓi kalmominka a Saituna ƙarƙashin Gabaɗaya.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Ayyuka kusa da akwatin bincike"
+text = """
+Maɓallin Ayyuka kusa da akwatin bincike yana ƙirga sababbin buɗewa da
+dannawa na wasiƙunka da ake bibiya, kuma yana jera wanda ya buɗe me da
+mahaɗan da suka bi; danna ɗaya don buɗe wannan saƙon. Cikakkun bayanai
+yana nuna yawan buɗewa da dannawa, buɗewa a kowace rana da jigoginka
+mafi kyau na kwanaki 7 ko 30 da suka wuce, duk lokaci ko kwanakin da ka
+zaɓa. Saƙon da aka aika yanzu yana nuna sau nawa kowane mutum ya buɗe
+shi kuma ya bi mahaɗi.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Bayanai game da akwatin wasiƙa"
+text = """
+Ayyuka > Cikakkun bayanai yanzu yana kuma nuna yawan wasiƙun da ka aika
+da ka karɓa a wannan lokaci, sau nawa kai da wasu kuke amsawa da kuma
+yadda kuke yin sauri, mutanen da kake yawan rubuta wa, da ranaku da
+sa'o'in da wasiƙunka ke isowa. Ana ƙirga shi a kwamfutarka daga wasiƙun
+da Katna ke da su tuni.
+"""

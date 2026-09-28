@@ -38,6 +38,9 @@ compose-scheduled = ຕັ້ງເວລາສົ່ງໄວ້ທີ່ { $wh
 compose-sent-archived = ສົ່ງ ແລະ ຈັດເກັບແລ້ວ
 compose-sent = ສົ່ງຂໍ້ຄວາມແລ້ວ
 compose-discarded = ຖິ້ມສະບັບຮ່າງແລ້ວ
+compose-draft-saved = ບັນທຶກສະບັບຮ່າງແລ້ວ
+compose-draft-failed = ບໍ່ສາມາດບັນທຶກສະບັບຮ່າງໄດ້: { $error }
+compose-draft-not-opened = ບໍ່ສາມາດເປີດສະບັບຮ່າງໄດ້.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = ແນບ
 compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄວາມໜຶ່ງສາມາດແນບໄດ້ສູງສຸດ { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
+compose-attachments-total = { $count } ໄຟລ໌, { $size }
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
 compose-drop-here = ວາງໄວ້ບ່ອນນີ້
 compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ
@@ -61,6 +65,12 @@ compose-encrypt = ເຂົ້າລະຫັດ
 compose-encrypted = ເຂົ້າລະຫັດແລ້ວ: ມີແຕ່ຜູ້ຮັບເທົ່ານັ້ນທີ່ອ່ານໄດ້
 compose-sign = ລົງລາຍເຊັນ
 compose-signed = ລົງລາຍເຊັນແລ້ວ: ຜູ້ຮັບສາມາດກວດສອບໄດ້ວ່າມັນມາຈາກທ່ານ
+compose-track = ຕິດຕາມການເປີດ ແລະ ການຄລິກ
+compose-tracked = ກຳລັງຕິດຕາມ: ທ່ານຈະເຫັນວ່າຜູ້ຮັບແຕ່ລະຄົນເປີດມັນ ຫຼື ຄລິກລິ້ງເມື່ອໃດ
+compose-track-unavailable = ບໍ່ສາມາດຕິດຕາມອີເມວທີ່ລົງລາຍເຊັນ, ເຂົ້າລະຫັດ ຫຼື ເປັນຂໍ້ຄວາມທຳມະດາໄດ້
+compose-track-sign-in = ເຂົ້າສູ່ລະບົບບັນຊີ Katna ເພື່ອຕິດຕາມການເປີດ ແລະ ການຄລິກ
+compose-receipt = ຂໍໃບຢືນຢັນການອ່ານ
+compose-receipt-on = ຂໍໃບຢືນຢັນການອ່ານແລ້ວ: ແອັບຂອງຜູ້ຮັບອາດຈະຖາມໃຫ້ເຂົາສົ່ງມັນ
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = ເພີ່ມຫົວເລື່ອງ
 send-check-send-anyway = ສົ່ງຢູ່ດີ
 recipient-not-valid = ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ
 recipient-show-address = ສະແດງທີ່ຢູ່
+recipient-remove = ລຶບອອກ
 recipient-bad-title = ກວດເບິ່ງທີ່ຢູ່
 recipient-bad-text = “{ $address }” ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ. ແກ້ໄຂ ຫຼື ລຶບມັນອອກກ່ອນສົ່ງ.
 recipient-bad-fix = ແກ້ໄຂ

@@ -9,12 +9,20 @@ nav-folders = 폴더
 nav-label-new = 새 라벨 만들기
 nav-folder-new = 새 폴더 만들기
 nav-account-unnamed = 계정 { $number }
+nav-all-accounts = 모든 계정
+nav-expand = 폴더 보기
+nav-collapse = 폴더 숨기기
 nav-tab-new = 새 메일 { $count }개
+storage-used = { $total } 중 { $percent }% 사용
+storage-used-detail = { $address }: { $total } 중 { $used } 사용
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = 받은편지함
 folder-starred = 별표편지함
+folder-snoozed = 다시 알림 항목
+folder-unread = 읽지 않음
+folder-important = 중요
 folder-drafts = 임시보관함
 folder-sent = 보낸편지함
 folder-archive = 보관함
@@ -22,6 +30,7 @@ folder-spam = 스팸함
 folder-trash = 휴지통
 folder-all-mail = 전체보관함
 folder-scheduled = 예약됨
+folder-activity = 활동
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -9,12 +9,20 @@ nav-folders = Folda
 nav-label-new = Mepụta leebụl ọhụrụ
 nav-folder-new = Mepụta folda ọhụrụ
 nav-account-unnamed = Akaụntụ { $number }
+nav-all-accounts = Akaụntụ niile
+nav-expand = Gosi folda
+nav-collapse = Zoo folda
 nav-tab-new = { $count } ọhụrụ
+storage-used = Ejirila { $percent }% nke { $total }
+storage-used-detail = { $address }: ejirila { $used } nke { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Igbe ozi mbata
 folder-starred = Nwere kpakpando
+folder-snoozed = Ndị e yigharịrị
+folder-unread = A gụghị
+folder-important = Dị mkpa
 folder-drafts = Ndebiri
 folder-sent = Ezigara
 folder-archive = Ebe nchekwa
@@ -22,6 +30,7 @@ folder-spam = Spam
 folder-trash = Ihe mkpofu
 folder-all-mail = Ozi niile
 folder-scheduled = Ahaziri ahazi
+folder-activity = Ihe omume
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

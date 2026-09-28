@@ -77,6 +77,26 @@ security-missing-key = Sizde olmayan bir anahtarla imzalanmış, bu yüzden dene
 security-missing-key-id = Sizde olmayan bir anahtarla ({ $key }) imzalanmış, bu yüzden denetlenemiyor
 security-signature-unavailable = İmzalı; imzayı denetlemek için { $tool } yükleyin
 security-signature-error = İmza denetlenemedi.
+tracking-opened = { $who } iletiyi { $count ->
+    [one] bir kez
+   *[other] { $count } kez
+} açtı, son olarak { $when }
+tracking-opens-clicks = { $who } iletiyi { $opens ->
+    [one] bir kez
+   *[other] { $opens } kez
+} açtı ve bir bağlantıyı { $clicks ->
+    [one] bir kez
+   *[other] { $clicks } kez
+} izledi, son olarak { $when }
+tracking-clicked = { $who } bir bağlantıyı { $clicks ->
+    [one] bir kez
+   *[other] { $clicks } kez
+} izledi, son olarak { $when }
+tracking-maybe-opened = { $who } iletiyi açmış olabilir (Apple Mail gizlilik için resimleri yükler)
+tracking-not-opened = { $who } iletiyi henüz açmadı
+tracking-receipt = { $who } okundu bilgisi gönderdi
+tracking-receipt-displayed = Okundu bilgisi: { $who } iletinizi açtı
+tracking-receipt-other = Okundu bilgisi: { $who } iletinizi açmadan sildi veya işledi
 
 ## Remote images and pictures
 

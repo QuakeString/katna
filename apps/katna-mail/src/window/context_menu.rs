@@ -100,6 +100,15 @@ impl MailWindow {
         self.act(act, keys, cx);
     }
 
+    /// Opens the snooze menu where the right-click menu was.
+    fn context_snooze(&mut self, cx: &mut Context<Self>) {
+        let Some(menu) = self.context_menu.take() else {
+            return;
+        };
+        let keys = self.context_targets(menu.key);
+        self.open_snooze_menu(keys, menu.at, cx);
+    }
+
     /// Opens the conversation and starts the answer in it.
     fn context_reply(&mut self, kind: Kind, window: &mut Window, cx: &mut Context<Self>) {
         let Some(menu) = self.context_menu.take() else {
@@ -274,6 +283,11 @@ impl MailWindow {
             Role::Drafts | Role::Sent | Role::Junk | Role::Trash | Role::Archive | Role::All
         );
         let spam = !matches!(role, Role::Drafts | Role::Sent | Role::Trash);
+        let snoozed = role == Role::Snoozed;
+        let snoozes = !matches!(
+            role,
+            Role::Drafts | Role::Sent | Role::Trash | Role::Junk | Role::Snoozed
+        );
         // Trash restores to the inbox; archived mail goes back there too.
         let to_inbox = matches!(role, Role::Trash | Role::Archive | Role::All)
             .then(|| {
@@ -336,6 +350,18 @@ impl MailWindow {
             } else {
                 plain("context-read", "mail", &tr!("menu-mark-unread"))
                     .on_click(act(Act::Read(false)))
+            })
+            .when(snoozes, |d| {
+                d.child(
+                    plain("context-snooze", "schedule", &tr!("menu-snooze"))
+                        .on_click(cx.listener(|this, _, _, cx| this.context_snooze(cx))),
+                )
+            })
+            .when(snoozed, |d| {
+                d.child(
+                    plain("context-unsnooze", "inbox", &tr!("menu-unsnooze"))
+                        .on_click(act(Act::Unsnooze)),
+                )
             })
             .child(if row.flagged {
                 plain("context-star", "star", &tr!("menu-unstar")).on_click(act(Act::Star(false)))

@@ -22,6 +22,10 @@ pub enum Command {
     Archive(Vec<MessageId>),
     Delete(Vec<MessageId>),
     Move(Vec<MessageId>, FolderId),
+    /// Snoozes messages until then (Unix seconds).
+    Snooze(Vec<MessageId>, i64),
+    /// Brings snoozed messages back now.
+    Unsnooze(Vec<MessageId>),
     SyncNow,
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
@@ -60,6 +64,10 @@ impl Command {
             Self::Archive(ids) if ids.len() > size => split(ids, &Self::Archive),
             Self::Delete(ids) if ids.len() > size => split(ids, &Self::Delete),
             Self::Move(ids, to) if ids.len() > size => split(ids, &|ids| Self::Move(ids, *to)),
+            Self::Snooze(ids, until) if ids.len() > size => {
+                split(ids, &|ids| Self::Snooze(ids, *until))
+            }
+            Self::Unsnooze(ids) if ids.len() > size => split(ids, &Self::Unsnooze),
             _ => vec![self.clone()],
         }
     }
@@ -84,6 +92,9 @@ impl Command {
             Self::Important(_, false) => tr!("toast-not-important", count = count, kind = kind),
             Self::Pin(_, true) => tr!("toast-pinned", count = count, kind = kind),
             Self::Pin(_, false) => tr!("toast-unpinned", count = count, kind = kind),
+            Self::Unsnooze(_) => tr!("toast-unsnoozed", count = count, kind = kind),
+            // The window says until when.
+            Self::Snooze(..) => return None,
             Self::MarkRead(..)
             | Self::SyncNow
             | Self::UndoSend(_)
@@ -163,6 +174,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Archive(messages) => pim.archive_messages(&ids(messages)).await,
         Command::Delete(messages) => pim.delete_messages(&ids(messages)).await,
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
+        Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
+        Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
         Command::SyncNow => pim.sync_now(0).await,
         Command::ReloadConfig => pim.reload_config().await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
@@ -182,6 +195,30 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
     result.map_err(|err| describe(&err))
 }
 
+/// Saves a mail template (a new one when its ID is 0). Returns its ID.
+pub async fn save_template(
+    connection: &Connection,
+    template: &katna_dbus::TemplateItem,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.save_template(template)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes template `id`.
+pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_template(id)
+        .await
+        .map(|_| ())
+        .map_err(|err| describe(&err))
+}
+
 /// Queues an RFC 5322 message from `account` to go out in `delay` seconds.
 /// Returns its outbox ID, for [`Command::UndoSend`].
 pub async fn queue_send(
@@ -194,6 +231,62 @@ pub async fn queue_send(
         .await
         .map_err(|err| describe(&err))?;
     pim.queue_send(account, message, delay)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Reminds the user `after` seconds after outbox entry `id` goes out if
+/// nobody replied by then.
+pub async fn set_follow_up(connection: &Connection, id: i64, after: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_follow_up(id, after)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Schedules an RFC 5322 message from `account` to go out at `at` (Unix
+/// seconds); Undo works for `delay` seconds. Returns its outbox ID.
+pub async fn schedule_send(
+    connection: &Connection,
+    account: i64,
+    message: &[u8],
+    delay: u32,
+    at: i64,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.schedule_send(account, message, delay, at)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// How long the SMTP server of `account` holds scheduled mail, in seconds;
+/// 0 when it cannot.
+pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<u64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.server_hold_limit(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Like [`queue_send`], with open and click tracking: each recipient gets
+/// a tracked copy of their own (mail that cannot be tracked goes out
+/// untracked).
+pub async fn queue_tracked_send(
+    connection: &Connection,
+    account: i64,
+    message: &[u8],
+    delay: u32,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.queue_tracked_send(account, message, delay)
         .await
         .map_err(|err| describe(&err))
 }
@@ -211,6 +304,50 @@ pub async fn save_draft(
     pim.save_draft(account, message)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Translates `text`, the plain text of `message` in language `source`,
+/// into `target`: the language it was in and the translation, or a
+/// [`katna_dbus::translate_problem`].
+pub async fn translate(
+    connection: &Connection,
+    message: i64,
+    text: &str,
+    source: &str,
+    target: &str,
+) -> Result<(String, String), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let (source, translated, problem) = pim
+        .translate(message, text, source, target)
+        .await
+        .map_err(|_| katna_dbus::translate_problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok((source, translated))
+    } else {
+        Err(problem)
+    }
+}
+
+/// The languages the translation server can translate into `target`, or
+/// a [`katna_dbus::translate_problem`].
+pub async fn translation_sources(
+    connection: &Connection,
+    target: &str,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let (sources, problem) = pim
+        .translation_sources(target)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(sources)
+    } else {
+        Err(problem)
+    }
 }
 
 /// Deletes every saved copy of the draft `message_id` of `account`.
@@ -479,8 +616,8 @@ pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String>
         .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
 }
 
-/// Yields for every `MailChanged`, `AccountsChanged` and `SyncStatusChanged`
-/// signal.
+/// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`
+/// and `TrackingChanged` signal.
 pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
     let pim = PimProxy::new(connection)
         .await
@@ -497,10 +634,15 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
         .receive_sync_status_changed()
         .await
         .map_err(|err| describe(&err))?;
+    let tracking = pim
+        .receive_tracking_changed()
+        .await
+        .map_err(|err| describe(&err))?;
     Ok(changes
         .map(|_| ())
         .or(accounts.map(|_| ()))
-        .or(status.map(|_| ())))
+        .or(status.map(|_| ()))
+        .or(tracking.map(|_| ())))
 }
 
 #[cfg(test)]

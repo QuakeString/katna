@@ -11,6 +11,8 @@ schedule-scheduled-messages = Imilayezo ehleliwe ({ $count })
 
 schedule-title = Hlela ukuthumela
 schedule-zone-note = { $zone }. I-Katna iwuthumela ngaleso sikhathi, ngisho noma i-app ivaliwe.
+schedule-zone-note-server = { $zone }. Iseva yakho yemeyili izowuthumela ngaleso sikhathi, ngisho noma le khompyutha icishiwe. Uma u-Hlehlisa esenyamalele, awusakwazi ukukhanselwa.
+schedule-zone-note-local = { $zone }. I-Katna izowuthumela ngaleso sikhathi uma le khompyutha ivuliwe.
 schedule-local-time = Isikhathi sendawo
 schedule-this-morning = Namuhla ekuseni
 schedule-this-afternoon = Namuhla ntambama
@@ -28,6 +30,7 @@ schedule-no-such-time = Leso sikhathi asikho lapha.
 
 schedule-no-subject = (asikho isihloko)
 schedule-sends-at = Uzothunyelwa { $when }
+schedule-server-sends-at = Iseva yakho yemeyili izowuthumela { $when }
 schedule-cancel-send = Khansela ukuthumela
 schedule-nothing = Akukho okuhleliwe.
 schedule-close = Vala

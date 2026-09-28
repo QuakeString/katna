@@ -467,3 +467,239 @@ seta dela para enviar de outra das suas contas. Novos e-mails começam
 pela sua primeira conta, a menos que você escolha outra padrão em
 Configurações > Escrever > Enviar novas mensagens de.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Caixa de entrada unificada"
+text = """
+Ative Configurações > Contas > Caixa de entrada unificada para ver
+juntos os e-mails de todas as suas contas. “Todas as contas” fica no
+topo do painel de pastas com uma só Caixa de entrada, Não lidas, Com
+estrela, Importantes, Enviados, Rascunhos e mais para todas as contas; a
+seta ao lado de cada uma abre uma linha por conta. Agora o nome de cada
+conta tem uma seta que recolhe as pastas dela.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menus do botão direito sob medida para cada pasta"
+text = """
+Escolher uma pasta ou marcador em Mover para no menu do botão direito
+agora move o e-mail, com Desfazer, inclusive nos resultados da pesquisa.
+Em Spam, Denunciar spam vira Não é spam. Lixeira oferece Mover para a
+Caixa de entrada e Excluir permanentemente, Arquivo oferece Mover para a
+Caixa de entrada, e Rascunhos e Enviados deixam de fora itens que não se
+aplicam ali.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Arraste as contas para ordená-las"
+text = """
+Em Configurações > Contas, arrastar uma conta agora levanta a linha
+inteira, e as outras contas deslizam para o lado para abrir espaço.
+Mover para cima e Mover para baixo aparecem quando você aponta para uma
+linha.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Rascunhos são guardados"
+text = """
+Fechar uma mensagem que você está escrevendo agora a salva em Rascunhos,
+também no seu servidor de e-mail, como no Gmail. Abra-a em Rascunhos
+para continuar escrevendo. Só o botão de lixeira a descarta, e Desfazer
+a traz de volta.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Espaço para muitos anexos"
+text = """
+Não importa quantos arquivos você anexe, a lista agora rola acima da
+barra de Enviar em vez de passar por cima dela, mostra o arquivo mais
+recente e informa quantos arquivos são e o tamanho total.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Selecione e-mails não lidos ou com estrela, como no Gmail"
+text = """
+Lidas, Não lidas, Com estrela e Sem estrela no menu de seleção voltam a
+marcar os e-mails correspondentes na tela. Uma linha acima da lista
+oferece selecionar todas as conversas correspondentes da pasta, e Limpar
+seleção desfaz isso.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Pastas tiram você das Configurações"
+text = """
+Com as Configurações abertas, clicar em uma pasta ou no ícone E-mail
+agora fecha as Configurações e abre essa pasta, como no Gmail. A seta de
+voltar também continua funcionando.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Solte imagens no texto"
+text = """
+Ao arrastar uma imagem sobre uma mensagem, um cursor mostra onde ela vai
+cair, para você soltá-la no meio de uma frase. Outros arquivos continuam
+mostrando a área para anexos, e soltar agora funciona depois que você
+digitou.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Sair fecha na hora"
+text = """
+Sair, no menu do ícone da bandeja, não espera mais os e-mails que ainda
+estão sincronizando ou sendo indexados: o Katna e o ícone da bandeja
+fecham na hora, e o resto continua na próxima vez que o Katna abrir.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Detalhes do contato ao lado do e-mail"
+text = """
+Em uma janela larga, um cartão ao lado da conversa aberta agora mostra o
+remetente: telefone, cargo e empresa tirados das assinaturas, que horas
+são para a pessoa, quantos e-mails vocês trocaram, suas conversas
+recentes e os arquivos entre vocês. Clique em uma conversa ou arquivo
+para abri-lo, ou em outra pessoa da conversa para vê-la. Tudo vem só do
+seu e-mail neste computador. O botão de contato na barra de ferramentas
+do painel de leitura oculta o cartão.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Armazenamento usado"
+text = """
+O rodapé do painel de pastas mostra quanto do armazenamento de e-mail da
+conta está ocupado, como “34% de 15 GB usados”, quando o servidor de e-mail
+informa.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Encontre e-mails pelo KRunner e pela pesquisa do GNOME"
+text = """
+Digite um nome no KRunner (Alt+Space) ou na pesquisa de Atividades para
+escrever para essa pessoa, copiar o endereço dela ou encontrar os e-mails
+dela. As mensagens aparecem quando o assunto ou o remetente tem todas as
+palavras digitadas; comece com mail: para pesquisar todos os seus e-mails,
+como na caixa de pesquisa do Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Modelos para os e-mails que você escreve sempre"
+text = """
+Escreva uma mensagem uma vez e salve-a com o novo botão Modelos ao escrever,
+depois coloque-a em qualquer e-mail novo ou resposta com um clique. Escreva
+{first name}, {name} ou {my name} e o Katna preenche para cada destinatário.
+Edite, renomeie ou exclua modelos em Configurações > Escrever.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "E-mail programado sai com o computador desligado"
+text = """
+Quando o seu servidor de e-mail consegue segurar mensagens até um horário
+definido, como o Stalwart, Programar envio agora entrega a mensagem a
+ele assim que o Desfazer some, então ela sai na hora certa mesmo com
+este computador desligado. O menu de programação diz se quem vai enviar
+é o seu servidor de e-mail ou o Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Um destaque mais leve"
+text = """
+A linha sob o ponteiro na lista de e-mails agora se ergue com uma sombra
+suave, como no Gmail, em vez de uma faixa escura embaixo dela.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Arraste endereços entre Para, Cc e Cco"
+text = """
+Arraste um chip de endereço para outro campo para movê-lo; Cc e Cco abrem
+enquanto você arrasta, mesmo quando ocultos. Apontar para um chip mostra
+um x que o remove.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Conta Katna"
+text = """
+Em Configurações > Conta Katna você cria uma conta no servidor do
+próprio Katna, com senha própria, nunca uma senha de e-mail. Os recursos
+on-line do Katna, como confirmações de leitura e rastreamento de links,
+vão precisar dela. Você vê os computadores conectados e pode desconectar
+qualquer um deles.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "De volta onde você parou"
+text = """
+Ao fechar o Katna Mail e abri-lo de novo, voltam o app, a pasta e a guia
+da Caixa de entrada que estavam abertos, as pastas que você tinha
+expandido e se o painel de pastas estava recolhido. Sair do Katna pela
+bandeja do sistema o reinicia do zero.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Adiar e lembretes de resposta"
+text = """
+Adie uma conversa com o relógio na linha dela ou pelo menu do botão
+direito: ela espera na pasta Adiados e volta para a Caixa de entrada, não
+lida, no horário que você escolheu. Ao enviar, a seta ao lado de Enviar
+pode lembrar você se ninguém responder em 1, 3 ou 7 dias. Os dois
+funcionam enquanto o computador está ligado e põem tudo em dia quando ele
+volta do modo de suspensão.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Leia e-mails no seu idioma"
+text = """
+Uma mensagem em outro idioma agora mostra um botão Traduzir acima dela,
+e Mostrar original a traz de volta. O Katna detecta o idioma no seu
+computador; o texto da mensagem só vai para o servidor do próprio Katna
+para ser traduzido quando você pede. Configurações > Geral > Tradução
+escolhe o seu idioma e os que serão sempre traduzidos.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Saiba quando um e-mail é aberto"
+text = """
+Ative o olho ao lado dos destinatários para ver quando cada um abre sua
+mensagem ou acessa um link nela, ou peça uma confirmação de leitura. Os
+e-mails enviados mostram quem os abriu, e uma notificação avisa você na
+primeira vez. Os dois vêm desativados em toda mensagem nova, e o
+rastreamento precisa de uma conta Katna (Configurações > Conta Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Atividade dos e-mails rastreados"
+text = """
+Atividade, ao lado da caixa de pesquisa, mostra
+quantas das suas mensagens rastreadas foram abertas e
+com que frequência os links delas foram acessados, com
+seus assuntos em ordem de quantas vezes são abertos.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Pesquise seus e-mails pelo KRunner com k"
+text = """
+Digite k ou m, um espaço e depois o que procura no KRunner ou na
+pesquisa do GNOME para ter os mesmos resultados da caixa de pesquisa do
+Katna Mail, como “k budget”. Escolha suas próprias palavras em
+Configurações > Geral.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Atividade ao lado da caixa de pesquisa"
+text = """
+O botão Atividade, ao lado da caixa de pesquisa, conta as novas aberturas
+e cliques dos seus e-mails rastreados e lista quem abriu o quê e quais
+links acessou; clique em um item para abrir a mensagem. Detalhes mostra
+as taxas de abertura e de cliques, as aberturas por dia e seus melhores
+assuntos nos últimos 7 ou 30 dias, em todo o período ou nas datas que
+você escolher. Uma mensagem enviada agora mostra quantas vezes cada
+pessoa a abriu e acessou um link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Estatísticas da caixa de correio"
+text = """
+Atividade > Detalhes agora também mostra quantos e-mails você enviou e
+recebeu no período, com que frequência e rapidez você e os outros
+respondem, as pessoas com quem você mais troca e-mails e em quais dias e
+horários seus e-mails chegam. Tudo é contado no seu computador, a partir
+dos e-mails que o Katna já tem.
+"""

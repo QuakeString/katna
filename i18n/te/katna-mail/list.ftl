@@ -28,6 +28,8 @@ list-move-to = దీనికి తరలించండి
 list-archive = ఆర్కైవ్ చేయండి
 list-spam = స్పామ్‌గా రిపోర్ట్ చేయండి
 list-delete = తొలగించండి
+list-snooze = స్నూజ్ చేయండి
+list-unsnooze = స్నూజ్ తీసివేయండి
 list-newer = కొత్తవి
 list-older = పాతవి
 list-range = { $total }లో { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder }లోని { $count } మెసేజ్‌ను ఎంచుకోండి
        *[other] { $folder }లోని మొత్తం { $count } మెసేజ్‌లను ఎంచుకోండి
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదివిన సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదివిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదివిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదివిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదవని సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదవని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } చదవని మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } చదవని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచిన సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచిన మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచని సంభాషణ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలు ఎంచుకోబడ్డాయి.
+        }
+       *[message] { $count ->
+            [one] స్క్రీన్‌పై ఉన్న { $count } నక్షత్రం ఉంచని మెసేజ్ ఎంచుకోబడింది.
+           *[other] స్క్రీన్‌పై ఉన్న మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లు ఎంచుకోబడ్డాయి.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } చదివిన సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదివిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } చదివిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదివిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } చదవని సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదవని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } చదవని మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } చదవని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } నక్షత్రం ఉంచిన సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } నక్షత్రం ఉంచిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } నక్షత్రం ఉంచని సంభాషణను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $count } నక్షత్రం ఉంచని మెసేజ్‌ను ఎంచుకోండి
+           *[other] మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } చదివిన సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదివిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } చదివిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదివిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } చదవని సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదవని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } చదవని మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } చదవని మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచిన సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచిన సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచిన మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచిన మెసేజ్‌లను ఎంచుకోండి
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచని సంభాషణను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచని సంభాషణలను ఎంచుకోండి
+        }
+       *[message] { $count ->
+            [one] { $folder }లోని { $count } నక్షత్రం ఉంచని మెసేజ్‌ను ఎంచుకోండి
+           *[other] { $folder }లోని మొత్తం { $count } నక్షత్రం ఉంచని మెసేజ్‌లను ఎంచుకోండి
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = నక్షత్రం ఉంచలేదు
 row-important = ముఖ్యమైనది. ముఖ్యమైనది కాదని గుర్తు పెట్టడానికి క్లిక్ చేయండి.
 row-mark-important = ముఖ్యమైనదిగా గుర్తు పెట్టండి
 row-pinned = పైన పిన్ చేయబడింది
+row-tracking-none = ట్రాక్ చేయబడుతోంది. ఇంకా తెరవలేదు
+row-tracking-opened = { $recipients } మందిలో { $opened } మంది తెరిచారు
+row-tracking-clicked = { $recipients } మందిలో { $opened } మంది తెరిచారు, { $clicked } మంది లింక్‌ను తెరిచారు
 row-pin = పైన పిన్ చేయండి
 row-unpin = అన్‌పిన్ చేయండి
+row-snoozed-until = { $when } వరకు స్నూజ్ చేయబడింది
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = అందరికీ రిప్లయి ఇవ్వండ�
 menu-forward = ఫార్వర్డ్ చేయండి
 menu-archive = ఆర్కైవ్ చేయండి
 menu-delete = తొలగించండి
+menu-delete-forever = శాశ్వతంగా తొలగించండి
+menu-move-to-inbox = ఇన్‌బాక్స్‌కు తరలించండి
 menu-spam = స్పామ్‌గా రిపోర్ట్ చేయండి
+menu-not-spam = స్పామ్ కాదు
 menu-mark-read = చదివినట్లు గుర్తు పెట్టండి
 menu-mark-unread = చదవనట్లు గుర్తు పెట్టండి
 menu-mark-all-read = అన్నింటినీ చదివినట్లు గుర్తు పెట్టండి
@@ -240,6 +375,8 @@ menu-important = ముఖ్యమైనదిగా గుర్తు పె�
 menu-not-important = ముఖ్యమైనది కాదని గుర్తు పెట్టండి
 menu-pin = పైన పిన్ చేయండి
 menu-unpin = అన్‌పిన్ చేయండి
+menu-snooze = స్నూజ్ చేయండి
+menu-unsnooze = స్నూజ్ తీసివేయండి
 menu-print-all = అన్నీ ప్రింట్ చేయండి
 menu-new-window = కొత్త విండోలో తెరవండి
 menu-move-to = దీనికి తరలించండి
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } మెసేజ్‌లు అన్‌పిన్ చేయబడ్డాయి.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ { $when } వరకు స్నూజ్ చేయబడింది.
+       *[other] { $count } సంభాషణలు { $when } వరకు స్నూజ్ చేయబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ { $when } వరకు స్నూజ్ చేయబడింది.
+       *[other] { $count } మెసేజ్‌లు { $when } వరకు స్నూజ్ చేయబడ్డాయి.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ ఇన్‌బాక్స్‌కు తిరిగి వచ్చింది.
+       *[other] { $count } సంభాషణలు ఇన్‌బాక్స్‌కు తిరిగి వచ్చాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ ఇన్‌బాక్స్‌కు తిరిగి వచ్చింది.
+       *[other] { $count } మెసేజ్‌లు ఇన్‌బాక్స్‌కు తిరిగి వచ్చాయి.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] సంభాషణ స్పామ్‌గా రిపోర్ట్ చేయబడింది.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] మెసేజ్ స్పామ్‌గా రిపోర్ట్ చేయబడింది.
        *[other] { $count } మెసేజ్‌లు స్పామ్‌గా రిపోర్ట్ చేయబడ్డాయి.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] సంభాషణ స్పామ్ కాదని గుర్తించబడి ఇన్‌బాక్స్‌కు తరలించబడింది.
+       *[other] { $count } సంభాషణలు స్పామ్ కాదని గుర్తించబడి ఇన్‌బాక్స్‌కు తరలించబడ్డాయి.
+    }
+   *[message] { $count ->
+        [one] మెసేజ్ స్పామ్ కాదని గుర్తించబడి ఇన్‌బాక్స్‌కు తరలించబడింది.
+       *[other] { $count } మెసేజ్‌లు స్పామ్ కాదని గుర్తించబడి ఇన్‌బాక్స్‌కు తరలించబడ్డాయి.
     }
 }
 toast-deleted-forever = { $kind ->

@@ -5,7 +5,8 @@
 //!
 //! Talks to the desktop's `org.freedesktop.Notifications` server directly
 //! (Plasma, GNOME Shell, mako, dunst, …). So far: new-mail notifications
-//! with Open, Reply all, Mark as read and Archive.
+//! with Open, Reply all, Mark as read and Archive, and reminders (snooze,
+//! follow-up) with Open, Mark as read and Archive.
 
 use std::collections::HashMap;
 
@@ -187,6 +188,81 @@ impl Notifier {
                 replaces,
                 ids::MAIL_APP_ID,
                 &summary,
+                &body,
+                &actions,
+                hints,
+                -1,
+            )
+            .await
+    }
+
+    /// Shows a quiet notification that a tracked message was opened or a
+    /// link in it followed (`docs/ARCHITECTURE.md` §16.1), with an Open
+    /// button for Katna Mail. Returns its ID.
+    pub async fn tracking(&self, summary: &str, body: &str) -> zbus::Result<u32> {
+        let open = tr!("notify-open");
+        let actions = [action::OPEN, open.as_str()];
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("email")),
+            ("urgency", Value::U8(1)),
+            ("suppress-sound", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                body,
+                &actions,
+                hints,
+                -1,
+            )
+            .await
+    }
+
+    /// Shows a reminder the user asked for (mail back from snooze, a
+    /// message nobody replied to) about mail of the account `origin`: `summary`
+    /// over `lines`, with Open, Mark as read and Archive. Returns its ID.
+    pub async fn reminder(
+        &self,
+        origin: &str,
+        summary: &str,
+        lines: &[String],
+        sound: bool,
+    ) -> zbus::Result<u32> {
+        let body = lines
+            .iter()
+            .map(|line| escape(&shorten(line, PREVIEW_CHARS)))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let labels = [
+            (action::OPEN, tr!("notify-open")),
+            (action::MARK_READ, tr!("notify-mark-read")),
+            (action::ARCHIVE, tr!("notify-archive")),
+        ];
+        let actions: Vec<&str> = labels
+            .iter()
+            .flat_map(|(key, label)| [*key, label.as_str()])
+            .collect();
+        let mut hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("email")),
+            ("x-kde-origin-name", Value::from(origin)),
+            ("urgency", Value::U8(1)),
+        ]);
+        if sound {
+            hints.insert("sound-name", Value::from("message-new-email"));
+        } else {
+            hints.insert("suppress-sound", Value::Bool(true));
+        }
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
                 &body,
                 &actions,
                 hints,

@@ -9,12 +9,20 @@ nav-folders = Folder
 nav-label-new = Cipta label baharu
 nav-folder-new = Cipta folder baharu
 nav-account-unnamed = Akaun { $number }
+nav-all-accounts = Semua Akaun
+nav-expand = Tunjukkan folder
+nav-collapse = Sembunyikan folder
 nav-tab-new = { $count } baharu
+storage-used = { $percent }% daripada { $total } digunakan
+storage-used-detail = { $address }: { $used } daripada { $total } digunakan
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Peti Masuk
 folder-starred = Dibintangi
+folder-snoozed = Ditunda
+folder-unread = Belum dibaca
+folder-important = Penting
 folder-drafts = Draf
 folder-sent = Dihantar
 folder-archive = Arkib
@@ -22,6 +30,7 @@ folder-spam = Spam
 folder-trash = Sampah
 folder-all-mail = Semua Mel
 folder-scheduled = Dijadualkan
+folder-activity = Aktiviti
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

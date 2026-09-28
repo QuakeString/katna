@@ -2,6 +2,16 @@
   "generated_by": "ci/gen-credits.sh",
   "crates": [
     {
+      "name": "argon2",
+      "version": "0.5.3",
+      "description": "Pure Rust implementation of the Argon2 password hashing function with support for the Argon2d, Argon2i, and Argon2id algorithmic variants",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "RustCrypto Developers"
+      ],
+      "repository": "https://github.com/RustCrypto/password-hashes/tree/master/argon2"
+    },
+    {
       "name": "ashpd",
       "version": "0.13.13",
       "description": "XDG portals wrapper in Rust using zbus",
@@ -50,6 +60,16 @@
         "John Nunley"
       ],
       "repository": "https://github.com/smol-rs/async-signal"
+    },
+    {
+      "name": "axum",
+      "version": "0.8.9",
+      "description": "HTTP routing and request handling library that focuses on ergonomics and modularity",
+      "license": "MIT",
+      "authors": [
+        "tokio-rs"
+      ],
+      "repository": "https://github.com/tokio-rs/axum"
     },
     {
       "name": "backtrace",
@@ -101,6 +121,16 @@
         "Matthew D. Steele"
       ],
       "repository": "https://github.com/mdsteele/rust-cfb"
+    },
+    {
+      "name": "deadpool-postgres",
+      "version": "0.14.2",
+      "description": "Dead simple async pool for tokio-postgres",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Michael P. Jung"
+      ],
+      "repository": "https://github.com/deadpool-rs/deadpool"
     },
     {
       "name": "emojis",
@@ -155,6 +185,16 @@
         "quininer kel"
       ],
       "repository": "https://github.com/quininer/futures-rustls"
+    },
+    {
+      "name": "getrandom",
+      "version": "0.3.4",
+      "description": "A small cross-platform library for retrieving random data from system source",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The Rand Project Developers"
+      ],
+      "repository": "https://github.com/rust-random/getrandom"
     },
     {
       "name": "gpui-pre",
@@ -225,6 +265,38 @@
         "The html5ever Project Developers"
       ],
       "repository": "https://github.com/servo/html5ever"
+    },
+    {
+      "name": "http-body-util",
+      "version": "0.1.5",
+      "description": "Combinators and adapters for HTTP request or response bodies.",
+      "license": "MIT",
+      "authors": [
+        "Carl Lerche",
+        "Lucio Franco",
+        "Sean McArthur"
+      ],
+      "repository": "https://github.com/hyperium/http-body"
+    },
+    {
+      "name": "hyper",
+      "version": "1.11.1",
+      "description": "A protective and efficient HTTP library for all.",
+      "license": "MIT",
+      "authors": [
+        "Sean McArthur"
+      ],
+      "repository": "https://github.com/hyperium/hyper"
+    },
+    {
+      "name": "hyper-util",
+      "version": "0.1.21",
+      "description": "hyper utilities",
+      "license": "MIT",
+      "authors": [
+        "Sean McArthur"
+      ],
+      "repository": "https://github.com/hyperium/hyper-util"
     },
     {
       "name": "icu_calendar",
@@ -367,6 +439,17 @@
       "repository": "https://github.com/LaurenzV/krilla"
     },
     {
+      "name": "lettre",
+      "version": "0.11.23",
+      "description": "Email client",
+      "license": "MIT",
+      "authors": [
+        "Alexis Mousset",
+        "Paolo Barbolini"
+      ],
+      "repository": "https://github.com/lettre/lettre"
+    },
+    {
       "name": "levenshtein_automata",
       "version": "0.2.1",
       "description": "Creates Levenshtein Automata in an efficient manner.",
@@ -504,6 +587,16 @@
       "repository": "https://github.com/serde-rs/json"
     },
     {
+      "name": "sha2",
+      "version": "0.10.9",
+      "description": "Pure Rust implementation of the SHA-2 hash function family including SHA-224, SHA-256, SHA-384, and SHA-512.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "RustCrypto Developers"
+      ],
+      "repository": "https://github.com/RustCrypto/hashes"
+    },
+    {
       "name": "smol",
       "version": "2.0.2",
       "description": "A small and fast async runtime",
@@ -567,6 +660,26 @@
       "repository": "https://github.com/dtolnay/thiserror"
     },
     {
+      "name": "tokio",
+      "version": "1.53.1",
+      "description": "An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications.",
+      "license": "MIT",
+      "authors": [
+        "Tokio Contributors"
+      ],
+      "repository": "https://github.com/tokio-rs/tokio"
+    },
+    {
+      "name": "tokio-postgres",
+      "version": "0.7.18",
+      "description": "A native, asynchronous PostgreSQL client",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Steven Fackler"
+      ],
+      "repository": "https://github.com/rust-postgres/rust-postgres"
+    },
+    {
       "name": "toml",
       "version": "1.1.6+spec-1.1.0",
       "description": "A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures.",
@@ -619,6 +732,16 @@
         "kwantam"
       ],
       "repository": "https://github.com/unicode-rs/unicode-segmentation"
+    },
+    {
+      "name": "whatlang",
+      "version": "0.18.0",
+      "description": "Fast and lightweight language identification library for Rust.",
+      "license": "MIT",
+      "authors": [
+        "Serhii Potapov"
+      ],
+      "repository": "https://github.com/greyblake/whatlang-rs"
     },
     {
       "name": "writeable",

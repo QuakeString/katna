@@ -53,9 +53,15 @@ impl Write for Tee {
 impl Drop for Tee {
     fn drop(&mut self) {
         let text = without_colors(&String::from_utf8_lossy(&self.event));
+        // A line logged while another is being kept is left out rather than
+        // waited for. Tests wait, so parallel tests logging never drop the
+        // lines one of them checks.
+        #[cfg(not(test))]
         let Ok(mut lines) = RECENT_LINES.try_lock() else {
             return;
         };
+        #[cfg(test)]
+        let mut lines = RECENT_LINES.lock().unwrap_or_else(|err| err.into_inner());
         for line in text.lines().filter(|line| !line.trim().is_empty()) {
             if lines.len() == RECENT {
                 lines.pop_front();
@@ -99,14 +105,30 @@ pub fn init(config_filter: &str) -> Result<()> {
         .map_err(|err| Error::Logging(err.to_string()))
 }
 
-/// Chooses the filter: `env_filter` if set and not empty, else `config_filter`.
+/// Libraries whose warnings are about the user's system or a server rather
+/// than Katna, such as one line per broken font file, or one per slightly
+/// malformed IMAP response Gmail sends ("Rectified missing `text`"). The
+/// config filter hides them unless it names them; `$KATNA_LOG` shows them
+/// as asked.
+const QUIET: &[&str] = &["fontdb", "imap_codec"];
+
+/// Chooses the filter: `env_filter` if set and not empty, else `config_filter`
+/// with [`QUIET`] libraries kept to errors.
 fn build_filter(config_filter: &str, env_filter: Option<&str>) -> Result<EnvFilter> {
     let (source, directives) = match env_filter.map(str::trim) {
-        Some(env) if !env.is_empty() => (LOG_ENV, env),
-        _ => ("logging.filter", config_filter),
+        Some(env) if !env.is_empty() => (LOG_ENV, env.to_owned()),
+        _ => {
+            let mut directives = config_filter.trim().to_owned();
+            for target in QUIET {
+                if !directives.contains(target) {
+                    directives.push_str(&format!(",{target}=error"));
+                }
+            }
+            ("logging.filter", directives)
+        }
     };
     EnvFilter::builder()
-        .parse(directives)
+        .parse(&directives)
         .map_err(|err| Error::Logging(format!("{source} = {directives:?}: {err}")))
 }
 
@@ -117,7 +139,18 @@ mod tests {
     #[test]
     fn uses_config_filter_without_env() {
         let filter = build_filter("warn,katna_sync=debug", None).unwrap();
-        assert_eq!(filter.to_string(), "katna_sync=debug,warn");
+        assert_eq!(
+            filter.to_string(),
+            "katna_sync=debug,imap_codec=error,fontdb=error,warn"
+        );
+    }
+
+    #[test]
+    fn keeps_font_complaints_quiet_unless_asked() {
+        let filter = build_filter("info,fontdb=debug", None).unwrap();
+        assert_eq!(filter.to_string(), "imap_codec=error,fontdb=debug,info");
+        let filter = build_filter("info", Some("debug")).unwrap();
+        assert_eq!(filter.to_string(), "debug");
     }
 
     #[test]
@@ -125,7 +158,7 @@ mod tests {
         let filter = build_filter("warn", Some("trace")).unwrap();
         assert_eq!(filter.to_string(), "trace");
         let filter = build_filter("warn", Some("  ")).unwrap();
-        assert_eq!(filter.to_string(), "warn");
+        assert_eq!(filter.to_string(), "imap_codec=error,fontdb=error,warn");
     }
 
     #[test]
@@ -143,11 +176,20 @@ mod tests {
         );
         for i in 0..RECENT + 5 {
             let mut tee = Tee::default();
-            writeln!(tee, "\u{1b}[32mline {i}\u{1b}[0m").unwrap();
+            writeln!(tee, "\u{1b}[32mrecent line {i}\u{1b}[0m").unwrap();
         }
         let lines = recent_lines();
         assert_eq!(lines.len(), RECENT);
-        assert_eq!(lines.last().unwrap(), &format!("line {}", RECENT + 4));
+        // Tests running alongside may log between these lines.
+        let ours: Vec<&String> = lines
+            .iter()
+            .filter(|l| l.starts_with("recent line "))
+            .collect();
+        assert_eq!(
+            ours.last().unwrap().as_str(),
+            format!("recent line {}", RECENT + 4)
+        );
+        assert!(ours.iter().all(|l| !l.contains('\u{1b}')));
     }
 
     #[test]

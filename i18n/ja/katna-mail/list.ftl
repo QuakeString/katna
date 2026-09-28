@@ -28,6 +28,8 @@ list-move-to = 移動
 list-archive = アーカイブ
 list-spam = 迷惑メールを報告
 list-delete = 削除
+list-snooze = スヌーズ
+list-unsnooze = スヌーズを解除
 list-newer = 新しい
 list-older = 古い
 list-range = { $total } 件中 { $first }–{ $last } 件
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] 「{ $folder }」の { $count } 件のスレッドをすべて選択
    *[message] 「{ $folder }」の { $count } 件のメールをすべて選択
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] このページの既読のスレッド { $count } 件がすべて選択されています。
+       *[message] このページの既読のメール { $count } 件がすべて選択されています。
+    }
+   *[unread] { $kind ->
+        [conversation] このページの未読のスレッド { $count } 件がすべて選択されています。
+       *[message] このページの未読のメール { $count } 件がすべて選択されています。
+    }
+    [starred] { $kind ->
+        [conversation] このページのスター付きのスレッド { $count } 件がすべて選択されています。
+       *[message] このページのスター付きのメール { $count } 件がすべて選択されています。
+    }
+    [unstarred] { $kind ->
+        [conversation] このページのスターなしのスレッド { $count } 件がすべて選択されています。
+       *[message] このページのスターなしのメール { $count } 件がすべて選択されています。
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 既読のスレッド { $count } 件をすべて選択
+       *[message] 既読のメール { $count } 件をすべて選択
+    }
+   *[unread] { $kind ->
+        [conversation] 未読のスレッド { $count } 件をすべて選択
+       *[message] 未読のメール { $count } 件をすべて選択
+    }
+    [starred] { $kind ->
+        [conversation] スター付きのスレッド { $count } 件をすべて選択
+       *[message] スター付きのメール { $count } 件をすべて選択
+    }
+    [unstarred] { $kind ->
+        [conversation] スターなしのスレッド { $count } 件をすべて選択
+       *[message] スターなしのメール { $count } 件をすべて選択
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] 「{ $folder }」の既読のスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」の既読のメール { $count } 件をすべて選択
+    }
+   *[unread] { $kind ->
+        [conversation] 「{ $folder }」の未読のスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」の未読のメール { $count } 件をすべて選択
+    }
+    [starred] { $kind ->
+        [conversation] 「{ $folder }」のスター付きのスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」のスター付きのメール { $count } 件をすべて選択
+    }
+    [unstarred] { $kind ->
+        [conversation] 「{ $folder }」のスターなしのスレッド { $count } 件をすべて選択
+       *[message] 「{ $folder }」のスターなしのメール { $count } 件をすべて選択
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = スターなし
 row-important = 重要。クリックすると重要ではないとマークします。
 row-mark-important = 重要マークを付ける
 row-pinned = 上部に固定済み
+row-tracking-none = 追跡中。まだ開封されていません
+row-tracking-opened = { $recipients } 人中 { $opened } 人が開封
+row-tracking-clicked = { $recipients } 人中 { $opened } 人が開封、{ $clicked } 人がリンクをクリック
 row-pin = 上部に固定
 row-unpin = 固定を解除
+row-snoozed-until = { $when } までスヌーズ中
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = 全員に返信
 menu-forward = 転送
 menu-archive = アーカイブ
 menu-delete = 削除
+menu-delete-forever = 完全に削除
+menu-move-to-inbox = 受信トレイに移動
 menu-spam = 迷惑メールを報告
+menu-not-spam = 迷惑メールではない
 menu-mark-read = 既読にする
 menu-mark-unread = 未読にする
 menu-mark-all-read = すべて既読にする
@@ -162,6 +225,8 @@ menu-important = 重要マークを付ける
 menu-not-important = 重要ではないとマーク
 menu-pin = 上部に固定
 menu-unpin = 固定を解除
+menu-snooze = スヌーズ
+menu-unsnooze = スヌーズを解除
 menu-print-all = すべて印刷
 menu-new-window = 新しいウィンドウで開く
 menu-move-to = 移動
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] { $count } 件のスレッドの固定を解除しました。
    *[message] { $count } 件のメールの固定を解除しました。
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count } 件のスレッドを { $when } までスヌーズしました。
+   *[message] { $count } 件のメールを { $when } までスヌーズしました。
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count } 件のスレッドを受信トレイに戻しました。
+   *[message] { $count } 件のメールを受信トレイに戻しました。
+}
 toast-spam = { $kind ->
     [conversation] { $count } 件のスレッドを迷惑メールとして報告しました。
    *[message] { $count } 件のメールを迷惑メールとして報告しました。
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count } 件のスレッドを迷惑メールではないとして受信トレイに移動しました。
+   *[message] { $count } 件のメールを迷惑メールではないとして受信トレイに移動しました。
 }
 toast-deleted-forever = { $kind ->
     [conversation] { $count } 件のスレッドを完全に削除しました。

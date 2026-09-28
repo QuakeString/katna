@@ -16,6 +16,11 @@ schedule-scheduled-messages = Scheduled messages ({ $count })
 schedule-title = Schedule send
 # Under the title. $zone: the time zone's name, such as Asia/Kolkata.
 schedule-zone-note = { $zone }. Katna sends it at that time, even with the app closed.
+# Instead of schedule-zone-note when the account's mail server holds mail
+# until its time (SMTP FUTURERELEASE).
+schedule-zone-note-server = { $zone }. Your mail server will send it at that time, even with this computer off. Once Undo is gone it can't be cancelled.
+# Instead of schedule-zone-note when the mail server cannot hold mail.
+schedule-zone-note-local = { $zone }. Katna will send it at that time while this computer is on.
 # Instead of the zone's name when the system does not tell it.
 schedule-local-time = Local time
 # The suggested times; the date and time are shown beside each.
@@ -40,6 +45,9 @@ schedule-no-such-time = That time does not exist here.
 schedule-no-subject = (no subject)
 # $when: the date and time it goes out.
 schedule-sends-at = Sends { $when }
+# A message the mail server holds; it can't be cancelled any more.
+# $when: the date and time it goes out.
+schedule-server-sends-at = Your mail server sends it { $when }
 # Takes the message back and opens it to edit.
 schedule-cancel-send = Cancel send
 schedule-nothing = Nothing is scheduled.

@@ -11,6 +11,8 @@ schedule-scheduled-messages = শিডিউল করা মেসেজ ({ $c
 
 schedule-title = পাঠানো শিডিউল করুন
 schedule-zone-note = { $zone }। অ্যাপ বন্ধ থাকলেও Katna সেই সময়ে এটি পাঠায়।
+schedule-zone-note-server = { $zone }। এই কম্পিউটার বন্ধ থাকলেও আপনার মেল সার্ভার সেই সময়ে এটি পাঠাবে। পূর্বাবস্থায় ফেরান চলে যাওয়ার পর এটি আর বাতিল করা যাবে না।
+schedule-zone-note-local = { $zone }। এই কম্পিউটার চালু থাকলে Katna সেই সময়ে এটি পাঠাবে।
 schedule-local-time = স্থানীয় সময়
 schedule-this-morning = আজ সকালে
 schedule-this-afternoon = আজ বিকেলে
@@ -28,6 +30,7 @@ schedule-no-such-time = এখানে ওই সময়টির অস্�
 
 schedule-no-subject = (বিষয় নেই)
 schedule-sends-at = পাঠানো হবে { $when }
+schedule-server-sends-at = আপনার মেল সার্ভার পাঠাবে { $when }
 schedule-cancel-send = পাঠানো বাতিল করুন
 schedule-nothing = কিছুই শিডিউল করা নেই।
 schedule-close = বন্ধ করুন

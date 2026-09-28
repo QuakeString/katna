@@ -9,15 +9,23 @@ nav-folders = Mga Folder
 nav-label-new = Gumawa ng bagong label
 nav-folder-new = Gumawa ng bagong folder
 nav-account-unnamed = Account { $number }
+nav-all-accounts = Lahat ng Account
+nav-expand = Ipakita ang mga folder
+nav-collapse = Itago ang mga folder
 nav-tab-new = { $count ->
     [one] { $count } bago
    *[other] { $count } bago
 }
+storage-used = { $percent }% ng { $total } ang nagamit
+storage-used-detail = { $address }: { $used } ng { $total } ang nagamit
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Inbox
 folder-starred = Naka-star
+folder-snoozed = Naka-snooze
+folder-unread = Hindi pa nabasa
+folder-important = Mahalaga
 folder-drafts = Mga Draft
 folder-sent = Naipadala
 folder-archive = Archive
@@ -25,6 +33,7 @@ folder-spam = Spam
 folder-trash = Basurahan
 folder-all-mail = Lahat ng Mail
 folder-scheduled = Naka-iskedyul
+folder-activity = Aktibidad
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

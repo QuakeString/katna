@@ -77,6 +77,14 @@ security-missing-key = お持ちでない鍵で署名されているため、確
 security-missing-key-id = お持ちでない鍵（{ $key }）で署名されているため、確認できません
 security-signature-unavailable = 署名付き。署名を確認するには { $tool } をインストールしてください
 security-signature-error = 署名を確認できませんでした。
+tracking-opened = { $who } が { $count } 回開きました（最終: { $when }）
+tracking-opens-clicks = { $who } が { $opens } 回開き、リンクを { $clicks } 回クリックしました（最終: { $when }）
+tracking-clicked = { $who } がリンクを { $clicks } 回クリックしました（最終: { $when }）
+tracking-maybe-opened = { $who } が開いた可能性があります（Apple Mail はプライバシー保護のために画像を読み込みます）
+tracking-not-opened = { $who } はまだ開いていません
+tracking-receipt = { $who } から開封確認が届きました
+tracking-receipt-displayed = 開封確認: { $who } があなたのメッセージを開きました
+tracking-receipt-other = 開封確認: { $who } はあなたのメッセージを開かずに削除または処理しました
 
 ## Remote images and pictures
 

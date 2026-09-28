@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! How an app's main window was when it closed, so it opens the same way
-//! next time (`docs/ARCHITECTURE.md` §13.1). The state belongs to one run
-//! of the Katna service: after the service quits, the window opens at its
-//! default size and place again.
+//! next time (`docs/ARCHITECTURE.md` §13.1): its size and place, and what
+//! it showed. The state belongs to one run of the Katna service: after the
+//! service quits, the window opens as it does the first time.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::io::Write;
 use std::path::Path;
@@ -31,6 +32,39 @@ pub struct WindowState {
     /// [`service_run`]); `None` when the service was not running.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub service: Option<String>,
+    /// What the window showed.
+    #[serde(default)]
+    pub view: ViewState,
+}
+
+/// What a main window showed: the app of the rail, the list and how the
+/// folder pane was, in the app's own keys. Settings (the reading pane, its
+/// width, the density) are kept in the config file instead.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ViewState {
+    /// The app of the rail on show; empty for the first one.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub app: String,
+    /// The folder listed, by its id in the store.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub folder: Option<i64>,
+    /// Or the unified inbox's list, by its key, with the account it is
+    /// narrowed to.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unified: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unified_account: Option<i64>,
+    /// The inbox tab open, counted from the first.
+    pub tab: usize,
+    /// The folder pane was folded to the rail.
+    pub nav_folded: bool,
+    /// The folders opened in the folder pane, by their keys.
+    pub expanded: Vec<String>,
+    /// Accounts folded (`false`) or opened by their arrow, by id.
+    pub accounts: BTreeMap<String, bool>,
+    /// The unified inbox's lists were folded under "All Accounts".
+    pub all_accounts_folded: bool,
 }
 
 impl WindowState {
@@ -92,6 +126,15 @@ mod tests {
             maximized: true,
             session: Some("abc".into()),
             service: Some("12-345".into()),
+            view: ViewState {
+                app: "contacts".into(),
+                folder: Some(7),
+                tab: 2,
+                nav_folded: true,
+                expanded: vec!["1:Work".into()],
+                accounts: BTreeMap::from([("1".into(), false)]),
+                ..ViewState::default()
+            },
         };
         state.save(&path).unwrap();
         assert_eq!(WindowState::load(&path), Some(state));
@@ -109,6 +152,15 @@ mod tests {
     }
 
     #[test]
+    fn older_files_have_the_default_view() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("mail-window.toml");
+        fs::write(&path, "width = 800.0\nheight = 600.0\nmaximized = true").unwrap();
+        let state = WindowState::load(&path).unwrap();
+        assert_eq!(state.view, ViewState::default());
+    }
+
+    #[test]
     fn belongs_to_one_run() {
         let mut state = WindowState {
             width: 800.0,
@@ -117,6 +169,7 @@ mod tests {
             maximized: false,
             session: None,
             service: Some("12-345".into()),
+            view: ViewState::default(),
         };
         assert!(state.same_run(Some("12-345")));
         assert!(!state.same_run(Some("12-999")));

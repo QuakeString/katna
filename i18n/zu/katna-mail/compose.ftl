@@ -38,6 +38,9 @@ compose-scheduled = Ukuthumela kuhlelelwe { $when }
 compose-sent-archived = Kuthunyelwe futhi kwafakwa kungobo yomlando
 compose-sent = Umlayezo uthunyelwe
 compose-discarded = Okusalungiswa kulahliwe
+compose-draft-saved = Okusalungiswa kulondoloziwe
+compose-draft-failed = Okusalungiswa akukwazanga ukulondolozwa: { $error }
+compose-draft-not-opened = Okusalungiswa akukwazanga ukuvulwa.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Namathisela
 compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika ku-{ $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Susa okunamathiselwe
+compose-attachments-total = { $count ->
+    [one] Ifayela elingu-{ $count }, { $size }
+   *[other] Amafayela angu-{ $count }, { $size }
+}
 compose-drop-files = Yehlisela amafayela lapha
 compose-drop-here = Yehlisela lapha
 compose-paste-keep-formatting = Gcina ukufometha
@@ -61,6 +68,12 @@ compose-encrypt = Bethela
 compose-encrypted = Kubethelwe: abamukeli kuphela abangakufunda
 compose-sign = Sayina
 compose-signed = Kusayiniwe: abamukeli bangahlola ukuthi kuvela kuwe
+compose-track = Landelela ukuvulwa nokuchofozwa
+compose-tracked = Kuyalandelelwa: uzobona lapho umamukeli ngamunye ewuvula noma elandela isixhumanisi
+compose-track-unavailable = Imeyili esayiniwe, ebethelwe noma yombhalo osobala ayikwazi ukulandelelwa
+compose-track-sign-in = Ngena ku-akhawunti ye-Katna ukuze ulandelele ukuvulwa nokuchofozwa
+compose-receipt = Cela isaziso sokufunda
+compose-receipt-on = Isaziso sokufunda siceliwe: uhlelo lokusebenza lomamukeli lungamcela ukuthi asithumele
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Engeza isihloko
 send-check-send-anyway = Thumela noma kunjalo
 recipient-not-valid = Akulona ikheli le-imeyili elivumelekile
 recipient-show-address = Bonisa ikheli
+recipient-remove = Susa
 recipient-bad-title = Hlola ikheli
 recipient-bad-text = “{ $address }” akulona ikheli le-imeyili elivumelekile. Lilungise noma ulisuse ngaphambi kokuthumela.
 recipient-bad-fix = Lilungise

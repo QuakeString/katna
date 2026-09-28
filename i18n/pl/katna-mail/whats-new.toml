@@ -469,3 +469,235 @@ strzałkę, aby wysłać z innego ze swoich kont. Nowa poczta wychodzi z
 pierwszego konta, chyba że wybierzesz inne domyślne w Ustawienia >
 Tworzenie > Wysyłaj nowe wiadomości z.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Wspólna skrzynka odbiorcza"
+text = """
+Włącz Ustawienia > Konta > Wspólna skrzynka odbiorcza, aby widzieć
+pocztę ze wszystkich kont razem. „Wszystkie konta” otwierają panel
+folderów, z jednym folderem Odebrane, Nieprzeczytane, Oznaczone
+gwiazdką, Ważne, Wysłane, Wersje robocze i innymi dla wszystkich kont;
+strzałka obok każdego z nich rozwija po jednym wierszu na konto. Nazwa
+każdego konta ma teraz strzałkę, która zwija jego foldery.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Menu kontekstowe dopasowane do folderu"
+text = """
+Wybranie folderu lub etykiety w Przenieś do w menu pod prawym
+przyciskiem przenosi teraz pocztę, z opcją Cofnij, także z wyników
+wyszukiwania. W folderze Spam zamiast Zgłoś spam jest To nie spam. Kosz
+oferuje Przenieś do Odebranych i Usuń trwale, Archiwum oferuje Przenieś
+do Odebranych, a Wersje robocze i Wysłane pomijają pozycje, które tam
+nie mają sensu.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Przeciągnij konta, by ustawić kolejność"
+text = """
+W Ustawienia > Konta przeciąganie konta unosi teraz cały jego wiersz, a
+pozostałe konta odsuwają się, robiąc miejsce. Przenieś w górę i Przenieś
+w dół pojawiają się po wskazaniu wiersza.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Wersje robocze zostają"
+text = """
+Zamknięcie pisanej wiadomości zapisuje ją teraz w Wersjach roboczych,
+także na twoim serwerze poczty, jak w Gmailu. Otwórz ją z Wersji
+roboczych, by pisać dalej. Tylko przycisk kosza ją odrzuca, a Cofnij ją
+przywraca.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Miejsce na wiele załączników"
+text = """
+Niezależnie od liczby załączonych plików lista przewija się teraz nad
+paskiem z przyciskiem Wyślij, zamiast na niego nachodzić, pokazuje
+najnowszy plik i podaje liczbę plików oraz ich łączny rozmiar.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Zaznaczanie nieprzeczytanej lub oznaczonej gwiazdką poczty jak w Gmailu"
+text = """
+Przeczytane, Nieprzeczytane, Oznaczone gwiazdką i Bez gwiazdki w menu
+zaznaczania znów zaznaczają pasującą pocztę na ekranie. Wiersz nad listą
+proponuje zaznaczenie wszystkich pasujących wątków w folderze, a Wyczyść
+zaznaczenie to cofa.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Foldery wyprowadzają z Ustawień"
+text = """
+Gdy Ustawienia są otwarte, kliknięcie folderu lub ikony Poczta zamyka
+teraz Ustawienia i otwiera ten folder, jak w Gmailu. Strzałka wstecz
+nadal też działa.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Upuszczanie obrazów w tekście"
+text = """
+Gdy przeciągasz obraz nad wiadomość, kursor pokazuje, gdzie trafi, więc
+możesz go upuścić w środku zdania. Inne pliki nadal pokazują obszar
+upuszczania załączników, a upuszczanie działa teraz także po tym, jak
+coś wpiszesz.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Zakończ zamyka od razu"
+text = """
+Zakończ w menu ikony w zasobniku nie czeka już na pocztę, która wciąż
+się synchronizuje lub indeksuje: Katna i jej ikona w zasobniku zamykają
+się od razu, a reszta będzie kontynuowana przy następnym uruchomieniu
+programu Katna.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Dane kontaktu obok poczty"
+text = """
+W szerokim oknie karta obok otwartego wątku pokazuje teraz nadawcę:
+telefon, stanowisko i firmę z podpisów, godzinę u tej osoby, ile poczty
+wymieniliście, wasze ostatnie wątki i pliki między wami. Kliknij wątek
+lub plik, aby go otworzyć, albo inną osobę z wątku, aby ją zobaczyć.
+Dane pochodzą wyłącznie z poczty na tym komputerze. Przycisk kontaktu na
+pasku narzędzi okienka odczytu ukrywa kartę.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Wykorzystane miejsce"
+text = """
+Na dole panelu folderów widać, jak bardzo zapełnione jest miejsce na pocztę
+konta, np. „Wykorzystano 34% z 15 GB”, jeśli serwer poczty to podaje.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Szukaj poczty w KRunnerze i wyszukiwaniu GNOME"
+text = """
+Wpisz imię w KRunnerze (Alt+Space) lub w wyszukiwaniu Podglądu GNOME, aby
+napisać do tej osoby, skopiować jej adres lub znaleźć jej pocztę. Wiadomości
+pojawiają się, gdy temat lub nadawca zawiera każde wpisane słowo; zacznij od
+mail:, aby przeszukać całą pocztę, tak jak w polu wyszukiwania Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Szablony często pisanych wiadomości"
+text = """
+Napisz wiadomość raz i zapisz ją nowym przyciskiem Szablony podczas pisania,
+a potem jednym kliknięciem wstaw ją do dowolnej nowej wiadomości lub
+odpowiedzi. Wpisz {first name}, {name} lub {my name}, a Katna uzupełni je dla
+każdego odbiorcy. Szablony edytujesz, zmieniasz ich nazwy i usuwasz w sekcji
+Ustawienia > Tworzenie.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Zaplanowana poczta wychodzi przy wyłączonym komputerze"
+text = """
+Gdy serwer poczty potrafi przetrzymać wiadomość do ustalonej pory, jak
+Stalwart, Zaplanuj wysłanie przekazuje mu ją teraz, gdy tylko zniknie
+Cofnij, więc wychodzi na czas nawet przy wyłączonym komputerze. Menu
+planowania mówi, czy wyśle ją serwer poczty, czy Katna.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Lżejsze podświetlenie"
+text = """
+Wiersz pod wskaźnikiem na liście wiadomości unosi się teraz z delikatnym
+cieniem, jak w Gmailu, zamiast ciemnego pasa pod spodem.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Przeciągaj adresy między Do, DW i UDW"
+text = """
+Przeciągnij plakietkę adresu do innego pola, aby ją przenieść; DW i UDW
+otwierają się podczas przeciągania, nawet gdy są ukryte. Wskazanie
+plakietki pokazuje x, które ją usuwa.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Konto Katna"
+text = """
+Ustawienia > Konto Katna pozwalają utworzyć konto na własnym serwerze
+Katna, z osobnym hasłem, nigdy hasłem do poczty. Będą go potrzebować
+funkcje online Katna, takie jak potwierdzenia przeczytania i śledzenie
+linków. Widać tam komputery, na których się zalogowano, i każdy z nich
+można wylogować.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Wszystko tam, gdzie było"
+text = """
+Po zamknięciu i ponownym otwarciu Katna Mail wraca aplikacja, folder i
+karta skrzynki odbiorczej, które były otwarte, a także rozwinięte
+foldery i to, czy panel folderów był zwinięty. Zakończenie Katna z
+zasobnika systemowego uruchamia go od nowa.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Odkładanie i przypomnienia o odpowiedzi"
+text = """
+Odłóż wątek zegarem w jego wierszu albo z menu pod prawym przyciskiem:
+czeka w folderze Odłożone i wraca do Odebranych jako nieprzeczytany o
+wybranej porze. Przy wysyłaniu strzałka obok Wyślij może przypomnieć, jeśli
+nikt nie odpowie w ciągu 1, 3 lub 7 dni. Oba działają, gdy komputer jest
+włączony, i nadrabiają zaległości po jego wybudzeniu.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Czytaj pocztę w swoim języku"
+text = """
+Nad wiadomością w innym języku pojawia się teraz przycisk Przetłumacz, a
+Pokaż oryginał przywraca ją. Katna rozpoznaje język na twoim komputerze;
+tekst wiadomości trafia na własny serwer Katna do przetłumaczenia tylko
+wtedy, gdy o to poprosisz. Ustawienia > Ogólne > Tłumaczenie pozwalają
+wybrać twój język i języki, które mają być zawsze tłumaczone.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Zobacz, kiedy poczta zostaje otwarta"
+text = """
+Włącz oko obok odbiorców, aby widzieć, kiedy każdy z nich otwiera twoją
+wiadomość lub klika zawarty w niej link, albo poproś zamiast tego o
+potwierdzenie przeczytania. Wysłana poczta pokazuje, kto ją otworzył, a
+powiadomienie informuje o tym za pierwszym razem. Obie funkcje są
+wyłączone dla każdej nowej wiadomości, a śledzenie wymaga konta Katna
+(Ustawienia > Konto Katna).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktywność śledzonej poczty"
+text = """
+Aktywność obok pola wyszukiwania pokazuje, ile twoich śledzonych
+wiadomości otwarto i jak często klikano ich linki, a tematy są
+uszeregowane według tego, jak często są otwierane.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Przeszukuj pocztę z KRunnera za pomocą k"
+text = """
+Wpisz k lub m, spację, a potem to, czego szukasz, w KRunnerze lub
+wyszukiwarce GNOME, aby dostać te same wyniki co w polu wyszukiwania
+Katna Mail, na przykład „k budget”. Własne słowa wybierzesz w
+Ustawienia > Ogólne.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktywność obok pola wyszukiwania"
+text = """
+Przycisk Aktywność obok pola wyszukiwania liczy nowe otwarcia i
+kliknięcia śledzonej poczty i pokazuje, kto co otworzył i w które linki
+kliknięto; kliknij pozycję, aby otworzyć tę wiadomość. Szczegóły pokazują
+wskaźniki otwarć i kliknięć, otwarcia według dni i najlepsze tematy z
+ostatnich 7 lub 30 dni, z całego okresu lub z wybranych dat. Wysłana
+wiadomość pokazuje teraz, ile razy każda osoba ją otworzyła i kliknęła
+link.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Statystyki skrzynki"
+text = """
+Aktywność > Szczegóły pokazuje teraz także, ile poczty wysłano i
+odebrano w danym okresie, jak często i jak szybko odpowiadasz ty i inni,
+osoby, z którymi piszesz najczęściej, oraz w jakie dni i o jakich
+godzinach przychodzi poczta. Wszystko jest liczone na twoim komputerze z
+poczty, którą Katna już ma.
+"""

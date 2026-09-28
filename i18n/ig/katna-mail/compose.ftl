@@ -38,6 +38,9 @@ compose-scheduled = Ahaziri izipu maka { $when }
 compose-sent-archived = Ezigara ma chekwaa
 compose-sent = Ezigara ozi
 compose-discarded = Atụfuru ndebiri
+compose-draft-saved = Echekwala ndebiri
+compose-draft-failed = Enweghị ike ịchekwa ndebiri ahụ: { $error }
+compose-draft-not-opened = Enweghị ike imeghe ndebiri ahụ.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = Gbakwunye
 compose-file-too-large = { $name } buru oke ibu: ozi nwere ike ibu ruo { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Wepụ mgbakwunye
+compose-attachments-total = faịlụ { $count }, { $size }
 compose-drop-files = Dobe faịlụ ebe a
 compose-drop-here = Dobe ebe a
 compose-paste-keep-formatting = Debe nhazi
@@ -61,6 +65,12 @@ compose-encrypt = Zoo ya
 compose-encrypted = Ezoro ezo: naanị ndị nnata nwere ike ịgụ ya
 compose-sign = Binye aka
 compose-signed = Ebinyere aka: ndị nnata nwere ike ịlele na ọ si n'aka gị
+compose-track = Soro mmeghe na mpị
+compose-tracked = A na-esochi ya: ị ga-ahụ mgbe onye nnata ọ bụla mepere ya ma ọ bụ soro njikọ
+compose-track-unavailable = A pụghị isochi ozi e binyere aka, nke e zoro ezo na nke ederede nkịtị
+compose-track-sign-in = Banye n'akaụntụ Katna iji soro mmeghe na mpị
+compose-receipt = Rịọ akara na-egosi na a gụrụ ozi
+compose-receipt-on = A rịọrọ akara na-egosi na a gụrụ ozi: ngwa onye nnata nwere ike ịgwa ya ka o ziga ya
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = Tinye isiokwu
 send-check-send-anyway = Zipu agbanyeghị
 recipient-not-valid = Ọ bụghị adreesị ozi-e ziri ezi
 recipient-show-address = Gosi adreesị
+recipient-remove = Wepụ
 recipient-bad-title = Lelee adreesị ahụ
 recipient-bad-text = “{ $address }” abụghị adreesị ozi-e ziri ezi. Dozie ya ma ọ bụ wepụ ya tupu i zipu.
 recipient-bad-fix = Dozie ya

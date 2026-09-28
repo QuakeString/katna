@@ -8,6 +8,7 @@
 settings-tab-general = General
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
+settings-tab-katna-account = Katna account
 # The tab listing newsletters and mailing lists, to unsubscribe from.
 settings-tab-subscriptions = Subscription
 settings-tab-appearance = Appearance
@@ -44,6 +45,14 @@ settings-general-full-headers-detail = From, to, cc, date and subject open on ev
 settings-general-full-names = Full names of recipients
 # An example of the recipients line with and without full names.
 settings-general-full-names-detail = “to me, Ada Lovelace” rather than “to me, Ada”
+settings-translation = Translation
+settings-translation-detail = Mail in another language can be read in yours.
+settings-translation-offer = Offer to translate
+settings-translation-offer-detail = A message's text goes to Katna's server to be translated, only when you ask or always translate its language. Attachments never go.
+settings-translation-reading = Translate into
+settings-translation-always = Always translate
+settings-translation-never = Never offer for
+settings-translation-none = None yet. Choose from a message's Translate bar.
 settings-general-mark-read = Mark as read
 settings-general-mark-read-now = As soon as it opens
 settings-general-mark-read-1s = After it is open for 1 second
@@ -98,6 +107,12 @@ settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 settings-general-unread-badge = Unread count on the taskbar icon
 settings-general-unread-badge-detail = How many Inbox messages are unread
+# The row with the words that, typed first in KRunner or GNOME's search,
+# search the mail. The field holds words like "k, m".
+settings-general-search-triggers = Search from the desktop
+settings-general-search-triggers-detail = Type one of these words and a space in KRunner or the GNOME search, then what to find, to search your mail as the search box here does. Separate words with commas.
+# Shown in the empty field.
+settings-general-search-triggers-none = No words; only "mail:" works
 # The row saying which app opens email (mailto:) links.
 settings-general-mail-app = Default mail app
 settings-general-mail-app-detail = Email links in other apps and on websites open a new message here.
@@ -105,6 +120,7 @@ mail-app-is-default = Katna Mail is your default mail app.
 mail-app-is-other = Email links open in another app.
 mail-app-make-default = Make default
 mail-app-make-default-failed = Couldn't change the default mail app.
+
 
 ## Settings > Inbox
 
@@ -235,6 +251,21 @@ settings-compose-suggestions-on = Suggest while writing
 settings-compose-suggestions-on-detail = Show the likely rest of a phrase in grey as you type
 settings-compose-templates = Templates
 settings-compose-templates-detail = Save mail you write often, and start new mail or a reply from it.
+settings-compose-no-templates = No templates yet. In a message, choose Templates, then Save as template.
+settings-compose-template-new = Create new
+# The name a new template starts with.
+settings-compose-template-new-name = New template
+settings-compose-template-subject = Subject
+settings-compose-template-text = Template text
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} and {"{"}my name{"}"} are filled in with the recipient's and your name.
+settings-compose-template-remove-file = Remove attachment
+settings-compose-template-save = Save
+settings-compose-template-saved = Template saved
+settings-compose-template-needs-name = Give the template a name
+settings-compose-template-delete = Delete template
+settings-compose-template-deleted = Template deleted
+# $error: why it failed.
+settings-compose-template-delete-failed = Could not delete the template: { $error }
 
 ## Settings > Shortcuts
 
@@ -261,6 +292,7 @@ settings-shortcuts-restored = Every shortcut has its set's keys again.
 
 settings-general-language-summary = Language of the app, dates and numbers
 settings-general-reading-summary = Newest message first, full headers, full names of recipients
+settings-translation-summary = Translate mail in other languages with Katna's server, into the language you pick
 settings-general-mark-read-summary = When an opened conversation is marked read: at once, after 1 or 3 seconds, or by hand
 settings-general-auto-advance-summary = What opens after you delete, archive or move the open conversation: the next one, the previous one, or the list
 settings-general-reply-button-summary = The reply button beside each message replies to everyone
@@ -293,10 +325,11 @@ settings-compose-for-new-mail-summary = The signature new mail starts with
 settings-compose-for-replies-summary = The signature replies and forwards start with
 settings-compose-format-summary = Write new mail in plain text
 settings-compose-spelling-summary = Check spelling while writing, and the dictionary's language
+settings-general-search-triggers-summary = Words that search your mail from KRunner or the GNOME search
 settings-general-mail-app-summary = Open email links from other apps and websites in Katna Mail
 settings-compose-grammar-summary = Underline grammar mistakes while writing, in English
 settings-compose-suggestions-summary = Show the likely rest of a phrase in grey as you type
-settings-compose-templates-summary = Coming soon: save mail you write often, and start new mail or a reply from it
+settings-compose-templates-summary = Save mail you write often, and start new mail or a reply from it
 settings-feedback-crash-reports-summary = Save crash reports on this computer when Katna Mail or its background service crashes
 settings-feedback-saved-summary = View, copy or delete the crash reports saved on this computer
 settings-feedback-help-improve-summary = Send crash reports to help fix what went wrong; off unless you turn it on

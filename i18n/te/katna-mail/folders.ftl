@@ -9,15 +9,23 @@ nav-folders = ఫోల్డర్‌లు
 nav-label-new = కొత్త లేబుల్‌ను క్రియేట్ చేయండి
 nav-folder-new = కొత్త ఫోల్డర్‌ను క్రియేట్ చేయండి
 nav-account-unnamed = ఖాతా { $number }
+nav-all-accounts = అన్ని ఖాతాలు
+nav-expand = ఫోల్డర్‌లను చూపండి
+nav-collapse = ఫోల్డర్‌లను దాచండి
 nav-tab-new = { $count ->
     [one] { $count } కొత్తది
    *[other] { $count } కొత్తవి
 }
+storage-used = { $total }లో { $percent }% ఉపయోగించబడింది
+storage-used-detail = { $address }: { $total }లో { $used } ఉపయోగించబడింది
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ఇన్‌బాక్స్
 folder-starred = నక్షత్రం ఉంచినవి
+folder-snoozed = స్నూజ్ చేసినవి
+folder-unread = చదవనివి
+folder-important = ముఖ్యమైనవి
 folder-drafts = డ్రాఫ్ట్‌లు
 folder-sent = పంపినవి
 folder-archive = ఆర్కైవ్
@@ -25,6 +33,7 @@ folder-spam = స్పామ్
 folder-trash = ట్రాష్
 folder-all-mail = అన్ని మెయిల్స్
 folder-scheduled = షెడ్యూల్ చేసినవి
+folder-activity = యాక్టివిటీ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

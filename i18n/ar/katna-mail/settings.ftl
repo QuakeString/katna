@@ -7,6 +7,7 @@
 settings-tab-general = عام
 settings-tab-inbox = البريد الوارد
 settings-tab-accounts = الحسابات
+settings-tab-katna-account = حساب Katna
 settings-tab-subscriptions = الاشتراكات
 settings-tab-appearance = المظهر
 settings-tab-shortcuts = الاختصارات
@@ -35,6 +36,14 @@ settings-general-full-headers = عرض الرؤوس الكاملة
 settings-general-full-headers-detail = تظهر حقول «من» و«إلى» و«نسخة إلى» والتاريخ والموضوع في كل رسالة
 settings-general-full-names = الأسماء الكاملة للمستلمين
 settings-general-full-names-detail = «إليّ، Ada Lovelace» بدلًا من «إليّ، Ada»
+settings-translation = الترجمة
+settings-translation-detail = يمكن قراءة البريد المكتوب بلغة أخرى بلغتك.
+settings-translation-offer = عرض الترجمة
+settings-translation-offer-detail = يُرسَل نص الرسالة إلى خادم Katna لترجمته، فقط عندما تطلب ذلك أو تختار ترجمة لغتها دائمًا. ولا تُرسَل المرفقات أبدًا.
+settings-translation-reading = الترجمة إلى
+settings-translation-always = الترجمة دائمًا
+settings-translation-never = عدم العرض أبدًا للغة
+settings-translation-none = لا شيء بعد. اختر من شريط الترجمة في أي رسالة.
 settings-general-mark-read = وضع علامة «مقروءة»
 settings-general-mark-read-now = فور فتحها
 settings-general-mark-read-1s = بعد فتحها لمدة ثانية واحدة
@@ -91,6 +100,9 @@ settings-general-tray = عرض Katna في علبة النظام
 settings-general-tray-detail = مع عدد الرسائل غير المقروءة وقائمة
 settings-general-unread-badge = عدد غير المقروءة على أيقونة شريط المهام
 settings-general-unread-badge-detail = عدد رسائل البريد الوارد غير المقروءة
+settings-general-search-triggers = البحث من سطح المكتب
+settings-general-search-triggers-detail = اكتب إحدى هذه الكلمات ومسافة في KRunner أو بحث GNOME، ثم ما تريد العثور عليه، للبحث في بريدك كما يفعل مربع البحث هنا. افصل بين الكلمات بفواصل.
+settings-general-search-triggers-none = لا كلمات؛ تعمل «mail:» فقط
 
 ## Settings > Inbox
 
@@ -196,6 +208,19 @@ settings-compose-spell-check-detail = يوضع خط تحت الكلمات الت
 settings-compose-spell-desktop = لغة سطح المكتب ({ $language })
 settings-compose-templates = النماذج
 settings-compose-templates-detail = احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا.
+settings-compose-no-templates = لا توجد نماذج بعد. في رسالة، اختر «النماذج» ثم «حفظ كنموذج».
+settings-compose-template-new = إنشاء جديد
+settings-compose-template-new-name = نموذج جديد
+settings-compose-template-subject = الموضوع
+settings-compose-template-text = نص النموذج
+settings-compose-template-fields = تُملأ {"{"}first name{"}"} و{"{"}name{"}"} و{"{"}my name{"}"} باسم المستلم واسمك.
+settings-compose-template-remove-file = إزالة المرفق
+settings-compose-template-save = حفظ
+settings-compose-template-saved = تم حفظ النموذج
+settings-compose-template-needs-name = أعطِ النموذج اسمًا
+settings-compose-template-delete = حذف النموذج
+settings-compose-template-deleted = تم حذف النموذج
+settings-compose-template-delete-failed = تعذّر حذف النموذج: { $error }
 
 ## Settings > Shortcuts
 
@@ -218,6 +243,7 @@ settings-shortcuts-restored = عادت كل الاختصارات إلى مفات
 
 settings-general-language-summary = لغة التطبيق والتواريخ والأرقام
 settings-general-reading-summary = الرسالة الأحدث أولًا، والرؤوس الكاملة، والأسماء الكاملة للمستلمين
+settings-translation-summary = ترجمة البريد المكتوب بلغات أخرى عبر خادم Katna، إلى اللغة التي تختارها
 settings-general-mark-read-summary = متى توضع علامة «مقروءة» على المحادثة المفتوحة: فورًا، أو بعد ثانية أو 3 ثوانٍ، أو يدويًا
 settings-general-auto-advance-summary = ما يُفتح بعد حذف المحادثة المفتوحة أو أرشفتها أو نقلها: التالية أو السابقة أو القائمة
 settings-general-reply-button-summary = يرد زر الرد بجانب كل رسالة على الجميع
@@ -250,7 +276,8 @@ settings-compose-for-new-mail-summary = التوقيع الذي يبدأ به ا
 settings-compose-for-replies-summary = التوقيع الذي تبدأ به الردود وإعادات التوجيه
 settings-compose-format-summary = كتابة البريد الجديد بنص عادي
 settings-compose-spelling-summary = التدقيق الإملائي أثناء الكتابة، ولغة القاموس
-settings-compose-templates-summary = قريبًا: احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا
+settings-general-search-triggers-summary = كلمات تبحث في بريدك من KRunner أو بحث GNOME
+settings-compose-templates-summary = احفظ الرسائل التي تكتبها كثيرًا، وابدأ منها رسالة جديدة أو ردًا
 settings-feedback-crash-reports-summary = حفظ تقارير الأعطال على هذا الكمبيوتر عند تعطّل Katna Mail أو خدمته في الخلفية
 settings-feedback-saved-summary = عرض تقارير الأعطال المحفوظة على هذا الكمبيوتر أو نسخها أو حذفها
 settings-feedback-help-improve-summary = إرسال تقارير الأعطال للمساعدة في إصلاح الخلل؛ متوقف ما لم تفعّله

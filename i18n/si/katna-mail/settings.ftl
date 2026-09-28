@@ -7,6 +7,7 @@
 settings-tab-general = සාමාන්‍ය
 settings-tab-inbox = එන ලිපි
 settings-tab-accounts = ගිණුම්
+settings-tab-katna-account = Katna ගිණුම
 settings-tab-subscriptions = දායකත්ව
 settings-tab-appearance = පෙනුම
 settings-tab-shortcuts = කෙටිමං
@@ -35,6 +36,14 @@ settings-general-full-headers = සම්පූර්ණ ශීර්ෂ පෙ�
 settings-general-full-headers-detail = සෑම පණිවිඩයකම යවන්නා, ලබන්නා, cc, දිනය සහ විෂය විවෘතව පෙන්වයි
 settings-general-full-names = ලබන්නන්ගේ සම්පූර්ණ නම්
 settings-general-full-names-detail = “මා, Ada වෙත” වෙනුවට “මා, Ada Lovelace වෙත”
+settings-translation = පරිවර්තනය
+settings-translation-detail = වෙනත් භාෂාවක ඇති තැපැල් ඔබේ භාෂාවෙන් කියවිය හැක.
+settings-translation-offer = පරිවර්තනය කිරීමට යෝජනා කරන්න
+settings-translation-offer-detail = පණිවිඩයක පෙළ පරිවර්තනය සඳහා Katna හි සේවාදායකයට යන්නේ ඔබ ඉල්ලූ විට හෝ එහි භාෂාව සැමවිට පරිවර්තනය කරන විට පමණි. ඇමුණුම් කිසිදා නොයයි.
+settings-translation-reading = පරිවර්තනය කළ යුතු භාෂාව
+settings-translation-always = සැමවිට පරිවර්තනය කරන්න
+settings-translation-never = මේවාට කිසිදා යෝජනා නොකරන්න
+settings-translation-none = තවම කිසිවක් නැත. පණිවිඩයක පරිවර්තන තීරුවෙන් තෝරන්න.
 settings-general-mark-read = කියවූ ලෙස සලකුණු කරන්න
 settings-general-mark-read-now = විවෘත වූ වහාම
 settings-general-mark-read-1s = තත්පර 1ක් විවෘතව තිබූ පසු
@@ -83,6 +92,9 @@ settings-general-tray = පද්ධති තැටියේ Katna පෙන්
 settings-general-tray-detail = නොකියවූ ගණන සහ මෙනුවක් සමඟ
 settings-general-unread-badge = කාර්ය තීරු අයිකනයේ නොකියවූ ගණන
 settings-general-unread-badge-detail = එන ලිපි වල නොකියවූ පණිවිඩ කීයද යන්න
+settings-general-search-triggers = ඩෙස්ක්ටොප් එකෙන් සොයන්න
+settings-general-search-triggers-detail = KRunner හෝ GNOME සෙවීමේ මෙම වචනවලින් එකක් සහ හිස්තැනක් ටයිප් කර, පසුව සොයන දේ ටයිප් කරන්න, මෙහි සෙවීම් කොටුව මෙන් ඔබේ තැපැල් සෙවීමට. වචන කොමා මගින් වෙන් කරන්න.
+settings-general-search-triggers-none = වචන නැත; “mail:” පමණක් ක්‍රියා කරයි
 
 ## Settings > Inbox
 
@@ -188,6 +200,19 @@ settings-compose-spell-check-detail = වැරදි අක්ෂර වින�
 settings-compose-spell-desktop = ඩෙස්ක්ටොප් එකේ භාෂාව ({ $language })
 settings-compose-templates = අච්චු
 settings-compose-templates-detail = ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න.
+settings-compose-no-templates = තවම අච්චු නැත. පණිවිඩයක අච්චු තෝරා, පසුව අච්චුවක් ලෙස සුරකින්න තෝරන්න.
+settings-compose-template-new = නව එකක් සාදන්න
+settings-compose-template-new-name = නව අච්චුව
+settings-compose-template-subject = විෂය
+settings-compose-template-text = අච්චු පෙළ
+settings-compose-template-fields = {"{"}first name{"}"}, {"{"}name{"}"} සහ {"{"}my name{"}"} ලබන්නාගේ සහ ඔබගේ නමින් පුරවනු ලැබේ.
+settings-compose-template-remove-file = ඇමුණුම ඉවත් කරන්න
+settings-compose-template-save = සුරකින්න
+settings-compose-template-saved = අච්චුව සුරැකිණි
+settings-compose-template-needs-name = අච්චුවට නමක් දෙන්න
+settings-compose-template-delete = අච්චුව මකන්න
+settings-compose-template-deleted = අච්චුව මකන ලදී
+settings-compose-template-delete-failed = අච්චුව මැකිය නොහැකි විය: { $error }
 
 ## Settings > Shortcuts
 
@@ -210,6 +235,7 @@ settings-shortcuts-restored = සෑම කෙටිමඟකටම නැවත
 
 settings-general-language-summary = යෙදුමේ, දිනවල සහ අංකවල භාෂාව
 settings-general-reading-summary = නවතම පණිවිඩය මුලින්, සම්පූර්ණ ශීර්ෂ, ලබන්නන්ගේ සම්පූර්ණ නම්
+settings-translation-summary = වෙනත් භාෂාවල තැපැල් Katna හි සේවාදායකය මගින් ඔබ තෝරන භාෂාවට පරිවර්තනය කරන්න
 settings-general-mark-read-summary = විවෘත කළ සංවාදයක් කියවූ ලෙස සලකුණු වන්නේ කවදාද: වහාම, තත්පර 1කට හෝ 3කට පසු, නැතහොත් අතින්
 settings-general-auto-advance-summary = ඔබ විවෘත සංවාදය මැකූ, සංරක්ෂණය කළ හෝ ගෙන ගිය පසු විවෘත වන්නේ කුමක්ද: ඊළඟ එක, පෙර එක, හෝ ලැයිස්තුව
 settings-general-reply-button-summary = එක් එක් පණිවිඩය අසල ඇති පිළිතුරු බොත්තම සියල්ලන්ට පිළිතුරු දෙයි
@@ -242,7 +268,8 @@ settings-compose-for-new-mail-summary = නව තැපැල් ආරම්�
 settings-compose-for-replies-summary = පිළිතුරු සහ ඉදිරියට යැවීම් ආරම්භ වන අත්සන
 settings-compose-format-summary = නව තැපැල් සරල පෙළින් ලියන්න
 settings-compose-spelling-summary = ලියන අතරතුර අක්ෂර වින්‍යාසය පරීක්ෂා කිරීම, සහ ශබ්දකෝෂයේ භාෂාව
-settings-compose-templates-summary = ළඟදීම: ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න
+settings-general-search-triggers-summary = KRunner හෝ GNOME සෙවීමෙන් ඔබේ තැපැල් සොයන වචන
+settings-compose-templates-summary = ඔබ නිතර ලියන තැපැල් සුරකින්න, සහ එයින් නව තැපැලක් හෝ පිළිතුරක් ආරම්භ කරන්න
 settings-feedback-crash-reports-summary = Katna Mail හෝ එහි පසුබිම් සේවාව බිඳ වැටුණු විට බිඳවැටීම් වාර්තා මෙම පරිගණකයේ සුරකින්න
 settings-feedback-saved-summary = මෙම පරිගණකයේ සුරැකි බිඳවැටීම් වාර්තා බලන්න, පිටපත් කරන්න හෝ මකන්න
 settings-feedback-help-improve-summary = වැරදුණු දේ නිවැරදි කිරීමට උදවු වීමට බිඳවැටීම් වාර්තා යවන්න; ඔබ සක්‍රිය කරන තුරු අක්‍රියයි

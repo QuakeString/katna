@@ -38,6 +38,9 @@ compose-scheduled = Đã lên lịch gửi vào { $when }
 compose-sent-archived = Đã gửi và lưu trữ
 compose-sent = Đã gửi thư
 compose-discarded = Đã hủy thư nháp
+compose-draft-saved = Đã lưu thư nháp
+compose-draft-failed = Không lưu được thư nháp: { $error }
+compose-draft-not-opened = Không mở được thư nháp.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = Đính kèm
 compose-file-too-large = { $name } quá lớn: một thư chỉ mang được tối đa { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
+compose-attachments-total = { $count } tệp, { $size }
 compose-drop-files = Thả tệp vào đây
 compose-drop-here = Thả vào đây
 compose-paste-keep-formatting = Giữ định dạng
@@ -61,6 +65,12 @@ compose-encrypt = Mã hóa
 compose-encrypted = Đã mã hóa: chỉ người nhận đọc được
 compose-sign = Ký
 compose-signed = Đã ký: người nhận có thể kiểm tra thư là của bạn
+compose-track = Theo dõi lượt mở và lượt nhấp
+compose-tracked = Đang theo dõi: bạn thấy khi mỗi người nhận mở thư hoặc mở một liên kết
+compose-track-unavailable = Không thể theo dõi thư đã ký, đã mã hóa hoặc văn bản thuần
+compose-track-sign-in = Đăng nhập tài khoản Katna để theo dõi lượt mở và lượt nhấp
+compose-receipt = Yêu cầu xác nhận đã đọc
+compose-receipt-on = Đã yêu cầu xác nhận đã đọc: ứng dụng của người nhận có thể hỏi họ có gửi xác nhận không
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = Thêm tiêu đề
 send-check-send-anyway = Vẫn gửi
 recipient-not-valid = Không phải địa chỉ email hợp lệ
 recipient-show-address = Hiện địa chỉ
+recipient-remove = Xóa
 recipient-bad-title = Kiểm tra địa chỉ
 recipient-bad-text = “{ $address }” không phải là địa chỉ email hợp lệ. Hãy sửa hoặc xóa nó trước khi gửi.
 recipient-bad-fix = Sửa

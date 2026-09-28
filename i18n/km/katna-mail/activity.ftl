@@ -1,0 +1,46 @@
+# Katna Mail, Khmer (ខ្មែរ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+activity-messages = សារដែលបានតាមដាន
+activity-open-rate = អត្រាបើក
+activity-click-rate = អត្រាចុច
+activity-percent = { $percent }%
+activity-by-day = ការបើក និងការចុច
+activity-opens = ការបើក៖ { $count }
+activity-clicks = ការចុច៖ { $count }
+activity-by-week = មួយរបារក្នុងមួយសប្ដាហ៍
+activity-by-open-rate = ប្រធានបទតាមអត្រាបើក
+activity-opened = បានបើកដោយ { $opened } នាក់ ក្នុងចំណោម { $recipients }
+activity-clicked = បានចុចតំណដោយ { $clicked } នាក់ ក្នុងចំណោម { $recipients }
+activity-no-subject = (គ្មានប្រធានបទ)
+activity-nothing-period = គ្មានសំបុត្រដែលបានតាមដានត្រូវបានផ្ញើក្នុងរយៈពេលនេះទេ។
+activity-close = បិទ
+insights-heading = ប្រអប់សំបុត្ររបស់អ្នក
+insights-counting = កំពុងរាប់សំបុត្ររបស់អ្នក…
+insights-failed = មិនអាចរាប់សំបុត្ររបស់អ្នកបានទេ។
+insights-sent = បានផ្ញើ
+insights-received = បានទទួល
+insights-replies = ការឆ្លើយតប
+insights-you-replied = អ្នកបានឆ្លើយ { $percent }% នៃសំបុត្រពីអ្នកដទៃ ({ $replied } ក្នុងចំណោម { $messages })
+insights-they-replied = អ្នកដទៃបានឆ្លើយ { $percent }% នៃសំបុត្ររបស់អ្នក ({ $replied } ក្នុងចំណោម { $messages })
+insights-median = ជាធម្មតាក្នុងរយៈពេល { $time }
+insights-minutes = { $count } នាទី
+insights-hours = { $count } ម៉ោង
+insights-days = { $count } ថ្ងៃ
+insights-people = មនុស្សដែលអ្នកឆ្លើយឆ្លងសំបុត្រជាមួយច្រើនជាងគេ
+insights-person-counts = បានផ្ញើ { $sent } · បានទទួល { $received }
+insights-hours-heading = ពេលដែលសំបុត្រមកដល់
+activity-details = ព័ត៌មានលម្អិត
+activity-feed-opened = { $who } បានបើក “{ $subject }”
+activity-feed-clicked = { $who } បានចុចតំណក្នុង “{ $subject }”
+activity-feed-maybe = { $who } ប្រហែលជាបានបើក “{ $subject }”
+activity-feed-empty = មិនទាន់មានការបើក ឬការចុចនៅឡើយទេ។ បើកភ្នែក ពេលអ្នកសរសេរសារ ដើម្បីមើលពេលដែលវាត្រូវបានអាន។
+activity-message-gone = សារនោះលែងមាននៅក្នុង បានផ្ញើ ទៀតហើយ។
+activity-report = របាយការណ៍សកម្មភាព
+activity-range-week = 7 ថ្ងៃចុងក្រោយ
+activity-range-month = 30 ថ្ងៃចុងក្រោយ
+activity-range-all = គ្រប់ពេល
+activity-range-custom = ផ្ទាល់ខ្លួន
+activity-range-from = ពី
+activity-range-to = ដល់
+activity-range-apply = អនុវត្ត

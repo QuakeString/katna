@@ -38,6 +38,9 @@ compose-scheduled = 已安排在 { $when } 发送
 compose-sent-archived = 已发送并归档
 compose-sent = 邮件已发送
 compose-discarded = 已舍弃草稿
+compose-draft-saved = 草稿已保存
+compose-draft-failed = 无法保存草稿：{ $error }
+compose-draft-not-opened = 无法打开草稿。
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = 添加
 compose-file-too-large = { $name } 太大：一封邮件最多可携带 { $limit }。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
+compose-attachments-total = { $count } 个文件，共 { $size }
 compose-drop-files = 将文件拖放到此处
 compose-drop-here = 拖放到此处
 compose-paste-keep-formatting = 保留格式
@@ -61,6 +65,12 @@ compose-encrypt = 加密
 compose-encrypted = 已加密：只有收件人可以阅读
 compose-sign = 签署
 compose-signed = 已签署：收件人可以验证邮件确实来自你
+compose-track = 跟踪打开和点击
+compose-tracked = 已跟踪：每位收件人打开邮件或点开链接时，你都能看到
+compose-track-unavailable = 已签署、已加密和纯文本邮件无法跟踪
+compose-track-sign-in = 登录 Katna 账号即可跟踪打开和点击
+compose-receipt = 请求已读回执
+compose-receipt-on = 已请求已读回执：收件人的应用可能会询问对方是否发送回执
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = 添加主题
 send-check-send-anyway = 仍然发送
 recipient-not-valid = 不是有效的电子邮件地址
 recipient-show-address = 显示地址
+recipient-remove = 移除
 recipient-bad-title = 检查地址
 recipient-bad-text = “{ $address }”不是有效的电子邮件地址。请在发送前修正或移除它。
 recipient-bad-fix = 修正

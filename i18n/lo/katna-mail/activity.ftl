@@ -1,0 +1,46 @@
+# Katna Mail, Lao (ລາວ).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+activity-messages = ຂໍ້ຄວາມທີ່ຕິດຕາມ
+activity-open-rate = ອັດຕາການເປີດ
+activity-click-rate = ອັດຕາການຄລິກ
+activity-percent = { $percent }%
+activity-by-day = ການເປີດ ແລະ ການຄລິກ
+activity-opens = ການເປີດ: { $count }
+activity-clicks = ການຄລິກ: { $count }
+activity-by-week = ໜຶ່ງແທ່ງຕໍ່ອາທິດ
+activity-by-open-rate = ຫົວຂໍ້ຕາມອັດຕາການເປີດ
+activity-opened = ເປີດໂດຍ { $opened } ຈາກ { $recipients } ຄົນ
+activity-clicked = ຄລິກລິ້ງໂດຍ { $clicked } ຈາກ { $recipients } ຄົນ
+activity-no-subject = (ບໍ່ມີຫົວຂໍ້)
+activity-nothing-period = ບໍ່ມີອີເມວທີ່ຕິດຕາມຖືກສົ່ງໃນຊ່ວງເວລານີ້.
+activity-close = ປິດ
+insights-heading = ກ່ອງອີເມວຂອງທ່ານ
+insights-counting = ກຳລັງນັບອີເມວຂອງທ່ານ…
+insights-failed = ບໍ່ສາມາດນັບອີເມວຂອງທ່ານໄດ້.
+insights-sent = ສົ່ງແລ້ວ
+insights-received = ໄດ້ຮັບ
+insights-replies = ການຕອບກັບ
+insights-you-replied = ທ່ານຕອບ { $percent }% ຂອງອີເມວຈາກຄົນອື່ນ ({ $replied } ຈາກ { $messages })
+insights-they-replied = ຄົນອື່ນຕອບ { $percent }% ຂອງອີເມວຂອງທ່ານ ({ $replied } ຈາກ { $messages })
+insights-median = ປົກກະຕິພາຍໃນ { $time }
+insights-minutes = { $count } ນາທີ
+insights-hours = { $count } ຊົ່ວໂມງ
+insights-days = { $count } ມື້
+insights-people = ຄົນທີ່ທ່ານຕິດຕໍ່ທາງອີເມວຫຼາຍທີ່ສຸດ
+insights-person-counts = ສົ່ງ { $sent } · ໄດ້ຮັບ { $received }
+insights-hours-heading = ອີເມວມາຮອດເມື່ອໃດ
+activity-details = ລາຍລະອຽດ
+activity-feed-opened = { $who } ເປີດ “{ $subject }” ແລ້ວ
+activity-feed-clicked = { $who } ຄລິກລິ້ງໃນ “{ $subject }” ແລ້ວ
+activity-feed-maybe = { $who } ອາດຈະເປີດ “{ $subject }” ແລ້ວ
+activity-feed-empty = ຍັງບໍ່ມີການເປີດ ຫຼື ການຄລິກ. ເປີດຮູບຕາ ເມື່ອທ່ານຂຽນຂໍ້ຄວາມ ເພື່ອເບິ່ງວ່າມັນຖືກອ່ານເມື່ອໃດ.
+activity-message-gone = ຂໍ້ຄວາມນັ້ນບໍ່ຢູ່ໃນ ສົ່ງແລ້ວ ອີກຕໍ່ໄປ.
+activity-report = ລາຍງານກິດຈະກຳ
+activity-range-week = 7 ມື້ຜ່ານມາ
+activity-range-month = 30 ມື້ຜ່ານມາ
+activity-range-all = ທຸກເວລາ
+activity-range-custom = ກຳນົດເອງ
+activity-range-from = ຈາກ
+activity-range-to = ເຖິງ
+activity-range-apply = ນຳໃຊ້

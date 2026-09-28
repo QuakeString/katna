@@ -38,6 +38,9 @@ compose-scheduled = { $when }కి పంపడానికి షెడ్య�
 compose-sent-archived = పంపబడింది, ఆర్కైవ్ చేయబడింది
 compose-sent = మెసేజ్ పంపబడింది
 compose-discarded = డ్రాఫ్ట్ విస్మరించబడింది
+compose-draft-saved = డ్రాఫ్ట్ సేవ్ చేయబడింది
+compose-draft-failed = డ్రాఫ్ట్‌ను సేవ్ చేయడం సాధ్యం కాలేదు: { $error }
+compose-draft-not-opened = డ్రాఫ్ట్‌ను తెరవడం సాధ్యం కాలేదు.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = అటాచ్ చేయండి
 compose-file-too-large = { $name } చాలా పెద్దది: ఒక మెసేజ్ { $limit } వరకు మాత్రమే తీసుకెళ్లగలదు.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = అటాచ్‌మెంట్‌ను తీసివేయండి
+compose-attachments-total = { $count ->
+    [one] { $count } ఫైల్, { $size }
+   *[other] { $count } ఫైల్‌లు, { $size }
+}
 compose-drop-files = ఫైల్‌లను ఇక్కడ వదలండి
 compose-drop-here = ఇక్కడ వదలండి
 compose-paste-keep-formatting = ఫార్మాటింగ్‌ను ఉంచండి
@@ -61,6 +68,12 @@ compose-encrypt = ఎన్‌క్రిప్ట్ చేయండి
 compose-encrypted = ఎన్‌క్రిప్ట్ చేయబడింది: స్వీకర్తలు మాత్రమే చదవగలరు
 compose-sign = సంతకం చేయండి
 compose-signed = సంతకం చేయబడింది: ఇది మీ నుండే వచ్చిందని స్వీకర్తలు తనిఖీ చేయగలరు
+compose-track = ఓపెన్‌లు, క్లిక్‌లను ట్రాక్ చేయండి
+compose-tracked = ట్రాక్ చేయబడుతోంది: ప్రతి స్వీకర్త దీన్ని తెరిచినప్పుడు లేదా లింక్‌ను తెరిచినప్పుడు మీకు కనిపిస్తుంది
+compose-track-unavailable = సంతకం చేసిన, ఎన్‌క్రిప్ట్ చేసిన, సాధారణ టెక్స్ట్ మెయిల్‌ను ట్రాక్ చేయలేము
+compose-track-sign-in = ఓపెన్‌లు, క్లిక్‌లను ట్రాక్ చేయడానికి Katna ఖాతాకు సైన్ ఇన్ చేయండి
+compose-receipt = రీడ్ రసీదును అభ్యర్థించండి
+compose-receipt-on = రీడ్ రసీదు అభ్యర్థించబడింది: స్వీకర్త యాప్ దాన్ని పంపమని వారిని అడగవచ్చు
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = సబ్జెక్ట్ జోడించండి
 send-check-send-anyway = అయినా పంపండి
 recipient-not-valid = చెల్లుబాటు అయ్యే ఈమెయిల్ అడ్రస్ కాదు
 recipient-show-address = అడ్రస్ చూపండి
+recipient-remove = తీసివేయండి
 recipient-bad-title = అడ్రస్‌ను తనిఖీ చేయండి
 recipient-bad-text = “{ $address }” చెల్లుబాటు అయ్యే ఈమెయిల్ అడ్రస్ కాదు. పంపే ముందు దాన్ని సరిచేయండి లేదా తీసివేయండి.
 recipient-bad-fix = సరిచేయండి

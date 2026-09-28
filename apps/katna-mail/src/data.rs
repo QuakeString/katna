@@ -74,12 +74,35 @@ pub struct Row {
     pub important: bool,
     /// Pinned to the top of the list.
     pub pinned: bool,
+    /// Snoozed: when it comes back (Unix seconds), shown in place of the
+    /// date.
+    pub snoozed_until: Option<i64>,
     pub attachments: bool,
     /// The named attachments, in conversation order, for the chips under
     /// the line. Empty when only `attachments` is known (mail synced
     /// before attachment lists were read, POP3 and imported mail).
     pub files: Vec<RowFile>,
     pub snippet: String,
+    /// For mail sent with open and click tracking, what its recipients did.
+    pub tracking: Option<Tracked>,
+}
+
+/// What the recipients of a tracked message did, for its line.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Tracked {
+    pub recipients: usize,
+    pub opened: usize,
+    pub clicked: usize,
+}
+
+impl From<&katna_store::MessageActivity> for Tracked {
+    fn from(activity: &katna_store::MessageActivity) -> Self {
+        Self {
+            recipients: activity.recipients.len(),
+            opened: activity.opened(),
+            clicked: activity.clicked(),
+        }
+    }
 }
 
 /// An attachment shown on a line of the list.
@@ -193,8 +216,10 @@ impl Row {
             flagged: message.flags.contains(MessageFlags::FLAGGED),
             important: message.flags.contains(MessageFlags::IMPORTANT),
             pinned: false,
+            snoozed_until: None,
             attachments: message.has_attachments,
             files: Vec::new(),
+            tracking: None,
             snippet: message
                 .snippet
                 .as_deref()
@@ -287,6 +312,62 @@ pub struct Mail {
     /// The accounts' addresses, for "me".
     me: Vec<String>,
     pins: Pins,
+    reminders: Reminders,
+}
+
+/// Snoozed mail, and mail back from snooze or a follow-up reminder
+/// (`katna-meta`, written by the daemon).
+#[derive(Debug, Default)]
+struct Reminders {
+    /// Snoozed messages: when they come back.
+    snoozed: HashMap<MessageId, i64>,
+    /// Lines that came back to the Inbox, by when: they sort as if they
+    /// arrived then.
+    surfaced_messages: HashMap<MessageId, i64>,
+    surfaced_threads: HashMap<ThreadId, i64>,
+}
+
+impl Reminders {
+    fn read(store: &Store) -> Self {
+        let mut reminders = Self::default();
+        match katna_meta::snoozed(store) {
+            Ok(list) => {
+                reminders.snoozed = list.into_iter().map(|(id, s)| (id, s.until)).collect();
+            }
+            Err(err) => tracing::warn!("reading snoozed mail: {err}"),
+        }
+        let surfaced = katna_meta::surfaced(store).unwrap_or_else(|err| {
+            tracing::warn!("reading mail back from snooze: {err}");
+            Vec::new()
+        });
+        if surfaced.is_empty() {
+            return reminders;
+        }
+        let ids: Vec<MessageId> = surfaced.iter().map(|(id, _)| *id).collect();
+        let threads: HashMap<MessageId, Option<ThreadId>> = store
+            .messages_by_id(&ids)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|m| (m.id, m.thread_id))
+            .collect();
+        for (id, at) in surfaced {
+            reminders.surfaced_messages.insert(id, at);
+            if let Some(Some(thread)) = threads.get(&id) {
+                let newest = reminders.surfaced_threads.entry(*thread).or_insert(at);
+                *newest = (*newest).max(at);
+            }
+        }
+        reminders
+    }
+
+    /// When a line came back to the Inbox, if it did.
+    fn surfaced(&self, entry: &Entry) -> Option<i64> {
+        match entry.key {
+            EntryKey::Thread(thread) => self.surfaced_threads.get(&thread).copied(),
+            EntryKey::Message(id) => self.surfaced_messages.get(&id).copied(),
+        }
+        .or_else(|| self.surfaced_messages.get(&entry.latest).copied())
+    }
 }
 
 /// Pinned mail, by how recently it was pinned (0 is the newest pin).
@@ -323,6 +404,45 @@ impl Pins {
     }
 }
 
+/// Puts lines that came back to the Inbox (from snooze, or as a reminder)
+/// where mail that arrived at that time would be: `entries` are newest
+/// first, and `date` tells a line's date.
+fn surfaced_in_place(
+    entries: Vec<Entry>,
+    reminders: &Reminders,
+    date: impl Fn(&Entry) -> Option<i64>,
+) -> Vec<Entry> {
+    if reminders.surfaced_messages.is_empty() {
+        return entries;
+    }
+    let (mut back, mut rest): (Vec<(Entry, i64)>, Vec<Entry>) = (Vec::new(), Vec::new());
+    for entry in entries {
+        match reminders.surfaced(&entry) {
+            Some(at) => back.push((entry, at)),
+            None => rest.push(entry),
+        }
+    }
+    if back.is_empty() {
+        return rest;
+    }
+    // Latest first, so each goes above those that came back before it.
+    back.sort_by_key(|(_, at)| std::cmp::Reverse(*at));
+    let mut out = Vec::with_capacity(rest.len() + back.len());
+    let mut rest = rest.into_iter().peekable();
+    for (entry, at) in back {
+        while let Some(next) = rest.peek() {
+            if date(next).is_some_and(|d| d > at) {
+                out.push(rest.next().expect("peeked"));
+            } else {
+                break;
+            }
+        }
+        out.push(entry);
+    }
+    out.extend(rest);
+    out
+}
+
 /// Moves pinned lines to the top, newest pin first; the rest keep their
 /// order.
 fn pinned_first(entries: Vec<Entry>, pins: &Pins) -> Vec<Entry> {
@@ -354,6 +474,7 @@ impl Mail {
         Ok(Self {
             me,
             pins: Pins::read(&store),
+            reminders: Reminders::read(&store),
             store,
             index_dir,
             index,
@@ -368,6 +489,15 @@ impl Mail {
             tracing::warn!("reading accounts: {err}");
             Vec::new()
         })
+    }
+
+    /// How full each account's mail storage is, for the accounts whose
+    /// server reports it.
+    pub fn quotas(&self) -> HashMap<katna_core::AccountId, katna_store::StorageQuota> {
+        self.accounts()
+            .iter()
+            .filter_map(|a| Some((a.id, self.store.quota(a.id).ok()??)))
+            .collect()
     }
 
     /// The IMAP server of an account, to tell its provider.
@@ -417,6 +547,7 @@ impl Mail {
             tracing::warn!("reading folder {}: {err}", folder.0);
             Vec::new()
         });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
         pinned_first(entries, &self.pins)
     }
 
@@ -450,6 +581,7 @@ impl Mail {
             tracing::warn!("reading {} folders: {err}", folders.len());
             Vec::new()
         });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
         pinned_first(entries, &self.pins)
     }
 
@@ -602,10 +734,29 @@ impl Mail {
         self.index_error.as_deref()
     }
 
+    /// When `message` was sent, if known.
+    fn date_of(&self, message: MessageId) -> Option<i64> {
+        self.store
+            .messages_by_id(&[message])
+            .ok()?
+            .pop()
+            .and_then(|m| m.date)
+    }
+
+    /// When snoozed `messages` come back: the soonest, if any is snoozed.
+    pub fn snoozed_until(&self, messages: &[MessageId]) -> Option<i64> {
+        messages
+            .iter()
+            .filter_map(|id| self.reminders.snoozed.get(id))
+            .min()
+            .copied()
+    }
+
     /// Picks up what the daemon wrote since the last call.
     pub fn refresh(&mut self) {
         self.rows.clear();
         self.pins = Pins::read(&self.store);
+        self.reminders = Reminders::read(&self.store);
         if let Some(index) = &self.index
             && let Err(err) = index.reload()
         {
@@ -699,11 +850,16 @@ impl Mail {
                 HashMap::new()
             })
         };
+        let activity = self.store.tracking_activity(&latest).unwrap_or_else(|err| {
+            tracing::warn!("reading tracking: {err}");
+            HashMap::new()
+        });
         for entry in entries {
             let Some(message) = messages.get(&entry.latest) else {
                 continue;
             };
             let mut row = Row::new(message, show_recipients);
+            row.tracking = activity.get(&entry.latest).map(Tracked::from);
             if let Some(ids) = attached.get(&entry.key) {
                 row.files = row_files(ids, &lists);
             }
@@ -723,6 +879,7 @@ impl Mail {
             };
             let row = Row {
                 pinned: self.pins.rank(row.key).is_some(),
+                snoozed_until: self.reminders.snoozed.get(&row.id).copied(),
                 ..row
             };
             self.rows.insert(row.key, Rc::new(row));
@@ -775,10 +932,127 @@ impl Mail {
         self.rows(&entries, None, false)
     }
 
+    /// What the recipients of `message` did, if it was sent with tracking.
+    pub fn activity(&self, message: MessageId) -> Option<katna_store::MessageActivity> {
+        self.store
+            .tracking_activity(&[message])
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading tracking: {err}");
+                HashMap::new()
+            })
+            .remove(&message)
+    }
+
+    /// Whether `email` is one of the accounts' addresses.
+    pub fn is_me(&self, email: &str) -> bool {
+        self.me.iter().any(|me| me.eq_ignore_ascii_case(email))
+    }
+
+    /// Message `id` as a read receipt, if it is one.
+    pub fn receipt(&self, id: MessageId) -> Option<crate::receipts::Receipt> {
+        let message = self.store.messages_by_id(&[id]).ok()?.pop()?;
+        if message.size > crate::receipts::MAX_SIZE {
+            return None;
+        }
+        crate::receipts::parse(&self.store.blobs().get(&message.blob_hash?).ok()??)
+    }
+
+    /// The `Message-ID` of message `id`, without angle brackets.
+    pub fn message_id_header(&self, id: MessageId) -> Option<String> {
+        self.store.message_id_header(id).ok().flatten()
+    }
+
+    /// Recent mail sent with tracking, newest first, with what its
+    /// recipients did.
+    pub fn tracked(&self, limit: u32) -> Vec<katna_store::MessageActivity> {
+        let tracked = self.store.tracked_messages(limit).unwrap_or_else(|err| {
+            tracing::warn!("reading tracking: {err}");
+            Vec::new()
+        });
+        tracked
+            .into_iter()
+            .filter_map(|t| self.store.activity(t).ok())
+            .collect()
+    }
+
+    /// Opens and clicks since `since` (Unix milliseconds), newest first.
+    pub fn activity_feed(&self, since: i64, limit: u32) -> Vec<katna_store::ActivityItem> {
+        self.store
+            .activity_feed(since, limit)
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading tracking: {err}");
+                Vec::new()
+            })
+    }
+
+    /// Opens and clicks by people after event `seq`.
+    pub fn activity_after(&self, seq: i64) -> usize {
+        self.store.activity_after(seq).unwrap_or(0)
+    }
+
+    /// The number of the newest open or click kept.
+    pub fn last_activity(&self) -> i64 {
+        self.store.last_tracking_seq().unwrap_or(0)
+    }
+
+    /// The stored copy of the sent message `message_id` of `account`.
+    pub fn sent_copy(&self, account: AccountId, message_id: &str) -> Option<MessageId> {
+        self.store.filed_message(account, message_id).ok().flatten()
+    }
+
+    /// Whether any mail was sent with tracking.
+    pub fn has_tracking(&self) -> bool {
+        self.store.has_tracking().unwrap_or(false)
+    }
+
     /// Forgets cached rows, for example when the sender/recipient column
     /// changes.
     pub fn clear_rows(&mut self) {
         self.rows.clear();
+    }
+
+    /// The people on messages `ids` other than the user, each once: for
+    /// each message in turn its sender, then its recipients. Addresses
+    /// are lower case.
+    pub fn message_people(&self, ids: &[MessageId]) -> Vec<(String, Option<String>)> {
+        use katna_store::ParticipantRole as Role;
+        let messages = self.store.messages_by_id(ids).unwrap_or_else(|err| {
+            tracing::warn!("reading the people of a conversation: {err}");
+            Vec::new()
+        });
+        let mut people: Vec<(String, Option<String>)> = Vec::new();
+        for id in ids {
+            let Some(message) = messages.iter().find(|m| m.id == *id) else {
+                continue;
+            };
+            for role in [Role::From, Role::To, Role::Cc] {
+                for p in message.participants.iter().filter(|p| p.role == role) {
+                    let email = p.email_norm.trim().to_lowercase();
+                    let mine = self
+                        .me
+                        .iter()
+                        .any(|me| me.trim().eq_ignore_ascii_case(&email));
+                    if mine || !email.contains('@') {
+                        continue;
+                    }
+                    let name = p
+                        .display_name
+                        .as_deref()
+                        .map(str::trim)
+                        .filter(|n| !n.is_empty() && !n.eq_ignore_ascii_case(&email))
+                        .map(str::to_owned);
+                    match people.iter_mut().find(|(e, _)| *e == email) {
+                        Some((_, known)) => {
+                            if known.is_none() {
+                                *known = name;
+                            }
+                        }
+                        None => people.push((email, name)),
+                    }
+                }
+            }
+        }
+        people
     }
 
     /// The drafts among `ids`: messages flagged `\Draft`.
@@ -829,12 +1103,51 @@ pub fn unread_counts(paths: &Paths) -> HashMap<FolderId, u64> {
     }
 }
 
+/// Mailbox insights from `since` to before `until` (Unix seconds) for the
+/// user's addresses `me`, with hours in `tz`. Opens its own connection,
+/// for a background thread.
+pub fn insights(
+    paths: &Paths,
+    me: &[String],
+    since: i64,
+    until: i64,
+    tz: &jiff::tz::TimeZone,
+) -> Result<katna_store::Insights, String> {
+    let local = |unix: i64| {
+        jiff::Timestamp::from_second(unix).map_or((0, 0), |at| {
+            let at = at.to_zoned(tz.clone());
+            (
+                usize::try_from(at.weekday().to_monday_zero_offset()).unwrap_or(0),
+                usize::try_from(at.hour()).unwrap_or(0),
+            )
+        })
+    };
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.mailbox_insights(me, since, until, local))
+        .map_err(|err| format!("Counting mail failed: {err}"))
+}
+
 /// The people in the mail, most written with first. Opens its own
 /// connection, for a background thread.
 pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.people(PEOPLE_LIMIT))
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
+}
+
+/// The mail templates, by name. Opens its own connection, for a
+/// background thread.
+pub fn templates(paths: &Paths) -> Result<Vec<katna_store::TemplateSummary>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.templates())
+        .map_err(|err| format!("Reading templates failed: {err}"))
+}
+
+/// Template `id` with its body and attachments.
+pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.template(id))
+        .map_err(|err| format!("Reading a template failed: {err}"))
 }
 
 /// The address book for recipient suggestions, read from the store (a
@@ -984,6 +1297,33 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         );
     }
 
+    #[test]
+    fn mail_back_from_snooze_sorts_by_when_it_came_back() {
+        let line = |n| Entry::message(MessageId(n));
+        // Dates: 5 newest, then 4, 3, 2, 1; 1 and 2 came back at 450 and
+        // 350, 7's conversation at 999.
+        let dates = HashMap::from([(5, 500), (4, 400), (3, 300), (2, 200), (1, 100), (6, 50)]);
+        let thread = Entry {
+            key: EntryKey::Thread(ThreadId(7)),
+            latest: MessageId(6),
+        };
+        let reminders = Reminders {
+            snoozed: HashMap::new(),
+            surfaced_messages: HashMap::from([(MessageId(1), 450), (MessageId(2), 350)]),
+            surfaced_threads: HashMap::from([(ThreadId(7), 999)]),
+        };
+        let entries = vec![line(5), line(4), line(3), line(2), line(1), thread];
+        assert_eq!(
+            surfaced_in_place(entries, &reminders, |e| dates.get(&e.latest.0).copied()),
+            [thread, line(5), line(1), line(4), line(2), line(3)]
+        );
+        let none = Reminders::default();
+        assert_eq!(
+            surfaced_in_place(vec![line(2), line(1)], &none, |_| None),
+            [line(2), line(1)]
+        );
+    }
+
     fn store_with_mail(paths: &Paths) -> (FolderId, MessageId) {
         let mut store = Store::open(paths, Mode::ReadWrite).unwrap();
         let account = store
@@ -1113,9 +1453,11 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 flagged: true,
                 important: false,
                 pinned: false,
+                snoozed_until: None,
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),
+                tracking: None,
             }
         );
         assert_eq!(rows[1], None);

@@ -38,6 +38,9 @@ compose-scheduled = An tsara aikawa a { $when }
 compose-sent-archived = An aika kuma an adana a ma'ajiya
 compose-sent = An aika saƙo
 compose-discarded = An yi watsi da zayyana
+compose-draft-saved = An adana zayyana
+compose-draft-failed = Ba a iya adana zayyanar ba: { $error }
+compose-draft-not-opened = Ba a iya buɗe zayyanar ba.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Haɗa
 compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har zuwa { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
+compose-attachments-total = { $count ->
+    [one] fayil { $count }, { $size }
+   *[other] fayiloli { $count }, { $size }
+}
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari
@@ -61,6 +68,12 @@ compose-encrypt = Ɓoye
 compose-encrypted = An ɓoye: masu karɓa kaɗai ne za su iya karanta shi
 compose-sign = Sa hannu
 compose-signed = An sa hannu: masu karɓa za su iya tabbatar da cewa daga gare ku ne
+compose-track = Bibiyi buɗewa da dannawa
+compose-tracked = Ana bibiya: za ku ga lokacin da kowane mai karɓa ya buɗe shi ko ya bi mahaɗi
+compose-track-unavailable = Ba za a iya bibiyar wasiƙar da aka sa wa hannu, aka ɓoye ko ta rubutu mara ado ba
+compose-track-sign-in = Ku shiga asusun Katna don bibiyar buɗewa da dannawa
+compose-receipt = Nemi rasidin karantawa
+compose-receipt-on = An nemi rasidin karantawa: manhajar mai karɓa na iya tambayarsa ya aiko da shi
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Ƙara jigo
 send-check-send-anyway = Aika duk da haka
 recipient-not-valid = Ba adireshin imel mai inganci ba ne
 recipient-show-address = Nuna adireshi
+recipient-remove = Cire
 recipient-bad-title = Duba adireshin
 recipient-bad-text = “{ $address }” ba adireshin imel mai inganci ba ne. Gyara shi ko cire shi kafin aikawa.
 recipient-bad-fix = Gyara shi

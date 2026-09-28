@@ -38,6 +38,9 @@ compose-scheduled = Senden geplant für { $when }
 compose-sent-archived = Gesendet und archiviert
 compose-sent = Nachricht gesendet
 compose-discarded = Entwurf verworfen
+compose-draft-saved = Entwurf gespeichert
+compose-draft-failed = Der Entwurf konnte nicht gespeichert werden: { $error }
+compose-draft-not-opened = Der Entwurf konnte nicht geöffnet werden.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Anhängen
 compose-file-too-large = { $name } ist zu groß: Eine Nachricht kann bis zu { $limit } enthalten.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Anhang entfernen
+compose-attachments-total = { $count ->
+    [one] { $count } Datei, { $size }
+   *[other] { $count } Dateien, { $size }
+}
 compose-drop-files = Dateien hier ablegen
 compose-drop-here = Hier ablegen
 compose-paste-keep-formatting = Formatierung beibehalten
@@ -61,6 +68,12 @@ compose-encrypt = Verschlüsseln
 compose-encrypted = Verschlüsselt: Nur die Empfänger können sie lesen
 compose-sign = Signieren
 compose-signed = Signiert: Empfänger können prüfen, dass sie von Ihnen stammt
+compose-track = Öffnungen und Klicks verfolgen
+compose-tracked = Verfolgt: Sie sehen, wann jeder Empfänger sie öffnet oder einem Link folgt
+compose-track-unavailable = Signierte, verschlüsselte und Nur-Text-E-Mails können nicht verfolgt werden
+compose-track-sign-in = Melden Sie sich bei einem Katna-Konto an, um Öffnungen und Klicks zu verfolgen
+compose-receipt = Lesebestätigung anfordern
+compose-receipt-on = Lesebestätigung angefordert: Die App des Empfängers fragt ihn möglicherweise, ob er eine sendet
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Betreff hinzufügen
 send-check-send-anyway = Trotzdem senden
 recipient-not-valid = Keine gültige E-Mail-Adresse
 recipient-show-address = Adresse anzeigen
+recipient-remove = Entfernen
 recipient-bad-title = Adresse prüfen
 recipient-bad-text = „{ $address }“ ist keine gültige E-Mail-Adresse. Korrigieren oder entfernen Sie sie vor dem Senden.
 recipient-bad-fix = Korrigieren

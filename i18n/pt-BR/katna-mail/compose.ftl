@@ -38,6 +38,9 @@ compose-scheduled = Envio programado para { $when }
 compose-sent-archived = Enviada e arquivada
 compose-sent = Mensagem enviada
 compose-discarded = Rascunho descartado
+compose-draft-saved = Rascunho salvo
+compose-draft-failed = Não foi possível salvar o rascunho: { $error }
+compose-draft-not-opened = Não foi possível abrir o rascunho.
 
 ## Attachments
 
@@ -46,6 +49,11 @@ compose-picker-attach = Anexar
 compose-file-too-large = { $name } é grande demais: uma mensagem pode levar até { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remover anexo
+compose-attachments-total = { $count ->
+    [one] { $count } arquivo, { $size }
+    [many] { $count } de arquivos, { $size }
+   *[other] { $count } arquivos, { $size }
+}
 compose-drop-files = Solte os arquivos aqui
 compose-drop-here = Solte aqui
 compose-paste-keep-formatting = Manter formatação
@@ -61,6 +69,12 @@ compose-encrypt = Criptografar
 compose-encrypted = Criptografada: só os destinatários podem lê-la
 compose-sign = Assinar
 compose-signed = Assinada: os destinatários podem confirmar que é sua
+compose-track = Rastrear aberturas e cliques
+compose-tracked = Rastreada: você vê quando cada destinatário a abre ou acessa um link
+compose-track-unavailable = E-mails assinados, criptografados e em texto simples não podem ser rastreados
+compose-track-sign-in = Faça login em uma conta Katna para rastrear aberturas e cliques
+compose-receipt = Pedir confirmação de leitura
+compose-receipt-on = Confirmação de leitura pedida: o app do destinatário pode pedir que ele envie uma
 
 ## Spelling
 
@@ -85,6 +99,7 @@ send-check-add-subject = Adicionar assunto
 send-check-send-anyway = Enviar assim mesmo
 recipient-not-valid = Não é um endereço de e-mail válido
 recipient-show-address = Mostrar endereço
+recipient-remove = Remover
 recipient-bad-title = Verifique o endereço
 recipient-bad-text = “{ $address }” não é um endereço de e-mail válido. Corrija ou remova antes de enviar.
 recipient-bad-fix = Corrigir

@@ -28,6 +28,8 @@ list-move-to = Matsar zuwa
 list-archive = Adana a ma'ajiya
 list-spam = Rahoto saƙon banza
 list-delete = Share
+list-snooze = Jinkirta
+list-unsnooze = Soke jinkiri
 list-newer = Sababbi
 list-older = Tsofaffi
 list-range = { $first }–{ $last } cikin { $total }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] Zaɓi saƙo { $count } da ke cikin { $folder }
        *[other] Zaɓi dukkan saƙonni { $count } da ke cikin { $folder }
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da aka karanta da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } da aka karanta da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da aka karanta da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } da aka karanta da ke kan allo.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } da ba a karanta ba da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } da ba a karanta ba da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } da ba a karanta ba da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } da ba a karanta ba da ke kan allo.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mai tauraro da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } masu tauraro da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mai tauraro da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } masu tauraro da ke kan allo.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] An zaɓi tattaunawa { $count } mara tauraro da ke kan allo.
+           *[other] An zaɓi dukkan tattaunawa { $count } marasa tauraro da ke kan allo.
+        }
+       *[message] { $count ->
+            [one] An zaɓi saƙo { $count } mara tauraro da ke kan allo.
+           *[other] An zaɓi dukkan saƙonni { $count } marasa tauraro da ke kan allo.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da aka karanta
+           *[other] Zaɓi dukkan tattaunawa { $count } da aka karanta
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da aka karanta
+           *[other] Zaɓi dukkan saƙonni { $count } da aka karanta
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da ba a karanta ba
+           *[other] Zaɓi dukkan tattaunawa { $count } da ba a karanta ba
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da ba a karanta ba
+           *[other] Zaɓi dukkan saƙonni { $count } da ba a karanta ba
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mai tauraro
+           *[other] Zaɓi dukkan tattaunawa { $count } masu tauraro
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mai tauraro
+           *[other] Zaɓi dukkan saƙonni { $count } masu tauraro
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mara tauraro
+           *[other] Zaɓi dukkan tattaunawa { $count } marasa tauraro
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mara tauraro
+           *[other] Zaɓi dukkan saƙonni { $count } marasa tauraro
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da aka karanta da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } da aka karanta da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da aka karanta da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } da aka karanta da ke cikin { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } da ba a karanta ba da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } da ba a karanta ba da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } da ba a karanta ba da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } da ba a karanta ba da ke cikin { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mai tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } masu tauraro da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mai tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } masu tauraro da ke cikin { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Zaɓi tattaunawa { $count } mara tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan tattaunawa { $count } marasa tauraro da ke cikin { $folder }
+        }
+       *[message] { $count ->
+            [one] Zaɓi saƙo { $count } mara tauraro da ke cikin { $folder }
+           *[other] Zaɓi dukkan saƙonni { $count } marasa tauraro da ke cikin { $folder }
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = Babu tauraro
 row-important = Muhimmi. Danna don yin alama ba muhimmi ba.
 row-mark-important = Yi alama muhimmi
 row-pinned = An maƙala a sama
+row-tracking-none = Ana bibiya. Ba a buɗe ba tukuna
+row-tracking-opened = { $opened } cikin { $recipients } sun buɗe
+row-tracking-clicked = { $opened } cikin { $recipients } sun buɗe, { $clicked } sun bi mahaɗi
 row-pin = Maƙala a sama
 row-unpin = Cire maƙalawa
+row-snoozed-until = An jinkirta har zuwa { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = Amsa wa kowa
 menu-forward = Tura
 menu-archive = Adana a ma'ajiya
 menu-delete = Share
+menu-delete-forever = Share har abada
+menu-move-to-inbox = Matsar zuwa Akwatin saƙo
 menu-spam = Rahoto saƙon banza
+menu-not-spam = Ba saƙon banza ba ne
 menu-mark-read = Yi alama an karanta
 menu-mark-unread = Yi alama ba a karanta ba
 menu-mark-all-read = Yi wa duka alama an karanta
@@ -240,6 +375,8 @@ menu-important = Yi alama muhimmi
 menu-not-important = Yi alama ba muhimmi ba
 menu-pin = Maƙala a sama
 menu-unpin = Cire maƙalawa
+menu-snooze = Jinkirta
+menu-unsnooze = Soke jinkiri
 menu-print-all = Buga duka
 menu-new-window = Buɗe a sabuwar taga
 menu-move-to = Matsar zuwa
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] An cire maƙalawar saƙonni { $count }.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] An jinkirta tattaunawa har zuwa { $when }.
+       *[other] An jinkirta tattaunawa { $count } har zuwa { $when }.
+    }
+   *[message] { $count ->
+        [one] An jinkirta saƙo har zuwa { $when }.
+       *[other] An jinkirta saƙonni { $count } har zuwa { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Tattaunawa ta dawo cikin akwatin saƙo.
+       *[other] Tattaunawa { $count } sun dawo cikin akwatin saƙo.
+    }
+   *[message] { $count ->
+        [one] Saƙo ya dawo cikin akwatin saƙo.
+       *[other] Saƙonni { $count } sun dawo cikin akwatin saƙo.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] An kai rahoton tattaunawa a matsayin saƙon banza.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] An kai rahoton saƙo a matsayin saƙon banza.
        *[other] An kai rahoton saƙonni { $count } a matsayin saƙonnin banza.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] An yi wa tattaunawa alama cewa ba saƙon banza ba ce kuma an matsar da ita zuwa akwatin saƙo.
+       *[other] An yi wa tattaunawa { $count } alama cewa ba saƙonnin banza ba ne kuma an matsar da su zuwa akwatin saƙo.
+    }
+   *[message] { $count ->
+        [one] An yi wa saƙo alama cewa ba saƙon banza ba ne kuma an matsar da shi zuwa akwatin saƙo.
+       *[other] An yi wa saƙonni { $count } alama cewa ba saƙonnin banza ba ne kuma an matsar da su zuwa akwatin saƙo.
     }
 }
 toast-deleted-forever = { $kind ->

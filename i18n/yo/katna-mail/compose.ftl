@@ -38,6 +38,9 @@ compose-scheduled = A ti ṣètò fífiránṣẹ́ fún { $when }
 compose-sent-archived = A ti fi ránṣẹ́, a sì ti fi pamọ́
 compose-sent = A ti fi ìfiránṣẹ́ ránṣẹ́
 compose-discarded = A ti ju àkọ̀pamọ́ nù
+compose-draft-saved = A ti fi àkọ̀pamọ́ pamọ́
+compose-draft-failed = A kò lè fi àkọ̀pamọ́ náà pamọ́: { $error }
+compose-draft-not-opened = A kò lè ṣí àkọ̀pamọ́ náà.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = So mọ́ ọn
 compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé tó { $limit } nìkan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
+compose-attachments-total = Fáìlì { $count }, { $size }
 compose-drop-files = Ju àwọn fáìlì sí ibí
 compose-drop-here = Ju sí ibí
 compose-paste-keep-formatting = Pa ìgúnrege mọ́
@@ -61,6 +65,12 @@ compose-encrypt = Pa á lároko
 compose-encrypted = A ti pa á lároko: àwọn olùgbà nìkan ló lè kà á
 compose-sign = Buwọ́ lù ú
 compose-signed = A ti buwọ́ lù ú: àwọn olùgbà lè ṣàyẹ̀wò pé ọ̀dọ̀ rẹ ló ti wá
+compose-track = Tọpa ṣíṣí àti títẹ̀
+compose-tracked = A ń tọpa rẹ̀: wàá rí ìgbà tí olùgbà kọ̀ọ̀kan bá ṣí i tàbí tẹ̀lé ìjápọ̀ kan
+compose-track-unavailable = A kò lè tọpa lẹ́tà tí a ti buwọ́ lù, tí a ti pa lároko tàbí ti ọ̀rọ̀ lásán
+compose-track-sign-in = Wọlé sí àkáǹtì Katna láti tọpa ṣíṣí àti títẹ̀
+compose-receipt = Béèrè ìwé-ẹ̀rí kíkà
+compose-receipt-on = A ti béèrè ìwé-ẹ̀rí kíkà: áàpù olùgbà lè ní kí ó fi ọ̀kan ránṣẹ́
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = Fi àkọlé kún un
 send-check-send-anyway = Fi ránṣẹ́ bẹ́ẹ̀
 recipient-not-valid = Kì í ṣe àdírẹ́sì ímeèlì tó tọ́
 recipient-show-address = Fi àdírẹ́sì hàn
+recipient-remove = Yọ ọ́ kúrò
 recipient-bad-title = Ṣàyẹ̀wò àdírẹ́sì náà
 recipient-bad-text = “{ $address }” kì í ṣe àdírẹ́sì ímeèlì tó tọ́. Ṣàtúnṣe rẹ̀ tàbí yọ ọ́ kúrò kí o tó fi ránṣẹ́.
 recipient-bad-fix = Ṣàtúnṣe rẹ̀

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A lighter hover"
+text = """
+The line under the pointer in the mail list now lifts with a faint
+shadow, as in Gmail, instead of a dark band below it.
+"""

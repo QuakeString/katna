@@ -11,6 +11,8 @@ schedule-scheduled-messages = پیام‌های زمان‌بندی‌شده ({ 
 
 schedule-title = زمان‌بندی ارسال
 schedule-zone-note = { $zone }. Katna آن را در همان زمان ارسال می‌کند، حتی اگر برنامه بسته باشد.
+schedule-zone-note-server = { $zone }. سرور ایمیل شما آن را در همان زمان ارسال می‌کند، حتی اگر این رایانه خاموش باشد. وقتی «واگرد» ناپدید شد، دیگر نمی‌توان آن را لغو کرد.
+schedule-zone-note-local = { $zone }. Katna آن را در همان زمان ارسال می‌کند، به شرط اینکه این رایانه روشن باشد.
 schedule-local-time = وقت محلی
 schedule-this-morning = امروز صبح
 schedule-this-afternoon = امروز بعدازظهر
@@ -28,6 +30,7 @@ schedule-no-such-time = این ساعت اینجا وجود ندارد.
 
 schedule-no-subject = (بدون موضوع)
 schedule-sends-at = ارسال: { $when }
+schedule-server-sends-at = سرور ایمیل شما ارسال می‌کند: { $when }
 schedule-cancel-send = لغو ارسال
 schedule-nothing = چیزی زمان‌بندی نشده است.
 schedule-close = بستن

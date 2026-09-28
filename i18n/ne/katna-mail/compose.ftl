@@ -38,6 +38,9 @@ compose-scheduled = { $when } मा पठाउने तालिका ब�
 compose-sent-archived = पठाइयो र संग्रह गरियो
 compose-sent = सन्देश पठाइयो
 compose-discarded = ड्राफ्ट खारेज गरियो
+compose-draft-saved = ड्राफ्ट सेभ गरियो
+compose-draft-failed = ड्राफ्ट सेभ गर्न सकिएन: { $error }
+compose-draft-not-opened = ड्राफ्ट खोल्न सकिएन।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = संलग्न गर्नुहोस्
 compose-file-too-large = { $name } धेरै ठूलो छ: एउटा सन्देशमा { $limit } सम्म मात्र पठाउन सकिन्छ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = संलग्नक हटाउनुहोस्
+compose-attachments-total = { $count ->
+    [one] { $count } फाइल, { $size }
+   *[other] { $count } फाइलहरू, { $size }
+}
 compose-drop-files = फाइलहरू यहाँ छोड्नुहोस्
 compose-drop-here = यहाँ छोड्नुहोस्
 compose-paste-keep-formatting = ढाँचा राख्नुहोस्
@@ -61,6 +68,12 @@ compose-encrypt = इन्क्रिप्ट गर्नुहोस्
 compose-encrypted = इन्क्रिप्ट गरिएको: प्रापकहरूले मात्र पढ्न सक्छन्
 compose-sign = हस्ताक्षर गर्नुहोस्
 compose-signed = हस्ताक्षर गरिएको: यो तपाईंबाटै आएको हो भनी प्रापकहरूले जाँच्न सक्छन्
+compose-track = खोलेको र क्लिक ट्र्याक गर्नुहोस्
+compose-tracked = ट्र्याक गरिँदै: हरेक प्रापकले यो कहिले खोल्छन् वा लिङ्क खोल्छन् भनी तपाईं देख्नुहुन्छ
+compose-track-unavailable = हस्ताक्षर गरिएको, इन्क्रिप्ट गरिएको र सादा पाठको मेल ट्र्याक गर्न सकिँदैन
+compose-track-sign-in = खोलेको र क्लिक ट्र्याक गर्न Katna खातामा साइन इन गर्नुहोस्
+compose-receipt = पढेको रसिद माग्नुहोस्
+compose-receipt-on = पढेको रसिद मागिएको छ: प्रापकको एपले उनीहरूलाई रसिद पठाउन सोध्न सक्छ
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = विषय थप्नुहोस्
 send-check-send-anyway = जे भए पनि पठाउनुहोस्
 recipient-not-valid = मान्य इमेल ठेगाना होइन
 recipient-show-address = ठेगाना देखाउनुहोस्
+recipient-remove = हटाउनुहोस्
 recipient-bad-title = ठेगाना जाँच गर्नुहोस्
 recipient-bad-text = “{ $address }” मान्य इमेल ठेगाना होइन। पठाउनुअघि यसलाई सच्याउनुहोस् वा हटाउनुहोस्।
 recipient-bad-fix = सच्याउनुहोस्

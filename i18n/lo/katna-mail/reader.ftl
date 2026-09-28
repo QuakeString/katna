@@ -77,6 +77,14 @@ security-missing-key = ເຊັນດ້ວຍກະແຈທີ່ທ່ານ
 security-missing-key-id = ເຊັນດ້ວຍກະແຈທີ່ທ່ານບໍ່ມີ ({ $key }), ຈຶ່ງກວດສອບບໍ່ໄດ້
 security-signature-unavailable = ເຊັນແລ້ວ; ຕິດຕັ້ງ { $tool } ເພື່ອກວດສອບລາຍເຊັນ
 security-signature-error = ບໍ່ສາມາດກວດສອບລາຍເຊັນໄດ້.
+tracking-opened = { $who } ເປີດມັນ { $count } ເທື່ອ, ຫຼ້າສຸດ { $when }
+tracking-opens-clicks = { $who } ເປີດມັນ { $opens } ເທື່ອ ແລະ ຄລິກລິ້ງ { $clicks } ເທື່ອ, ຫຼ້າສຸດ { $when }
+tracking-clicked = { $who } ຄລິກລິ້ງ { $clicks } ເທື່ອ, ຫຼ້າສຸດ { $when }
+tracking-maybe-opened = { $who } ອາດຈະເປີດມັນແລ້ວ (Apple Mail ໂຫຼດຮູບພາບເພື່ອຄວາມເປັນສ່ວນຕົວ)
+tracking-not-opened = { $who } ຍັງບໍ່ໄດ້ເປີດມັນ
+tracking-receipt = { $who } ສົ່ງໃບຢືນຢັນການອ່ານແລ້ວ
+tracking-receipt-displayed = ໃບຢືນຢັນການອ່ານ: { $who } ເປີດຂໍ້ຄວາມຂອງທ່ານແລ້ວ
+tracking-receipt-other = ໃບຢືນຢັນການອ່ານ: { $who } ລຶບ ຫຼື ຈັດການຂໍ້ຄວາມຂອງທ່ານໂດຍບໍ່ໄດ້ເປີດມັນ
 
 ## Remote images and pictures
 

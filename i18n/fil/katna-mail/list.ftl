@@ -28,6 +28,8 @@ list-move-to = Ilipat sa
 list-archive = I-archive
 list-spam = Iulat bilang spam
 list-delete = I-delete
+list-snooze = I-snooze
+list-unsnooze = I-unsnooze
 list-newer = Mas bago
 list-older = Mas luma
 list-range = { $first }–{ $last } ng { $total }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] Piliin ang lahat ng { $count } mensahe sa { $folder }
        *[other] Piliin ang lahat ng { $count } mensahe sa { $folder }
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Napili ang { $count } pag-uusap na nabasa na sa screen.
+           *[other] Napili ang lahat ng { $count } pag-uusap na nabasa na sa screen.
+        }
+       *[message] { $count ->
+            [one] Napili ang { $count } mensahe na nabasa na sa screen.
+           *[other] Napili ang lahat ng { $count } mensahe na nabasa na sa screen.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Napili ang { $count } pag-uusap na hindi pa nabasa sa screen.
+           *[other] Napili ang lahat ng { $count } pag-uusap na hindi pa nabasa sa screen.
+        }
+       *[message] { $count ->
+            [one] Napili ang { $count } mensahe na hindi pa nabasa sa screen.
+           *[other] Napili ang lahat ng { $count } mensahe na hindi pa nabasa sa screen.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Napili ang { $count } pag-uusap na naka-star sa screen.
+           *[other] Napili ang lahat ng { $count } pag-uusap na naka-star sa screen.
+        }
+       *[message] { $count ->
+            [one] Napili ang { $count } mensahe na naka-star sa screen.
+           *[other] Napili ang lahat ng { $count } mensahe na naka-star sa screen.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Napili ang { $count } pag-uusap na walang star sa screen.
+           *[other] Napili ang lahat ng { $count } pag-uusap na walang star sa screen.
+        }
+       *[message] { $count ->
+            [one] Napili ang { $count } mensahe na walang star sa screen.
+           *[other] Napili ang lahat ng { $count } mensahe na walang star sa screen.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na nabasa na
+           *[other] Piliin ang lahat ng { $count } pag-uusap na nabasa na
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na nabasa na
+           *[other] Piliin ang lahat ng { $count } mensahe na nabasa na
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na hindi pa nabasa
+           *[other] Piliin ang lahat ng { $count } pag-uusap na hindi pa nabasa
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na hindi pa nabasa
+           *[other] Piliin ang lahat ng { $count } mensahe na hindi pa nabasa
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na naka-star
+           *[other] Piliin ang lahat ng { $count } pag-uusap na naka-star
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na naka-star
+           *[other] Piliin ang lahat ng { $count } mensahe na naka-star
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na walang star
+           *[other] Piliin ang lahat ng { $count } pag-uusap na walang star
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na walang star
+           *[other] Piliin ang lahat ng { $count } mensahe na walang star
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na nabasa na sa { $folder }
+           *[other] Piliin ang lahat ng { $count } pag-uusap na nabasa na sa { $folder }
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na nabasa na sa { $folder }
+           *[other] Piliin ang lahat ng { $count } mensahe na nabasa na sa { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na hindi pa nabasa sa { $folder }
+           *[other] Piliin ang lahat ng { $count } pag-uusap na hindi pa nabasa sa { $folder }
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na hindi pa nabasa sa { $folder }
+           *[other] Piliin ang lahat ng { $count } mensahe na hindi pa nabasa sa { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na naka-star sa { $folder }
+           *[other] Piliin ang lahat ng { $count } pag-uusap na naka-star sa { $folder }
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na naka-star sa { $folder }
+           *[other] Piliin ang lahat ng { $count } mensahe na naka-star sa { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Piliin ang { $count } pag-uusap na walang star sa { $folder }
+           *[other] Piliin ang lahat ng { $count } pag-uusap na walang star sa { $folder }
+        }
+       *[message] { $count ->
+            [one] Piliin ang { $count } mensahe na walang star sa { $folder }
+           *[other] Piliin ang lahat ng { $count } mensahe na walang star sa { $folder }
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = Walang star
 row-important = Mahalaga. I-click para markahan bilang hindi mahalaga.
 row-mark-important = Markahan bilang mahalaga
 row-pinned = Naka-pin sa itaas
+row-tracking-none = Naka-track. Hindi pa nabubuksan
+row-tracking-opened = Binuksan ng { $opened } sa { $recipients }
+row-tracking-clicked = Binuksan ng { $opened } sa { $recipients }, may link na sinundan ng { $clicked }
 row-pin = I-pin sa itaas
 row-unpin = I-unpin
+row-snoozed-until = Naka-snooze hanggang { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = Sumagot sa lahat
 menu-forward = Ipasa
 menu-archive = I-archive
 menu-delete = I-delete
+menu-delete-forever = I-delete nang permanente
+menu-move-to-inbox = Ilipat sa Inbox
 menu-spam = Iulat bilang spam
+menu-not-spam = Hindi spam
 menu-mark-read = Markahan bilang nabasa na
 menu-mark-unread = Markahan bilang hindi pa nabasa
 menu-mark-all-read = Markahan lahat bilang nabasa na
@@ -240,6 +375,8 @@ menu-important = Markahan bilang mahalaga
 menu-not-important = Markahan bilang hindi mahalaga
 menu-pin = I-pin sa itaas
 menu-unpin = I-unpin
+menu-snooze = I-snooze
+menu-unsnooze = I-unsnooze
 menu-print-all = I-print lahat
 menu-new-window = Buksan sa bagong window
 menu-move-to = Ilipat sa
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] Na-unpin ang { $count } mensahe.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Na-snooze ang { $count } pag-uusap hanggang { $when }.
+       *[other] Na-snooze ang { $count } pag-uusap hanggang { $when }.
+    }
+   *[message] { $count ->
+        [one] Na-snooze ang { $count } mensahe hanggang { $when }.
+       *[other] Na-snooze ang { $count } mensahe hanggang { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Bumalik sa Inbox ang { $count } pag-uusap.
+       *[other] Bumalik sa Inbox ang { $count } pag-uusap.
+    }
+   *[message] { $count ->
+        [one] Bumalik sa Inbox ang { $count } mensahe.
+       *[other] Bumalik sa Inbox ang { $count } mensahe.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] Iniulat bilang spam ang { $count } pag-uusap.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Iniulat bilang spam ang { $count } mensahe.
        *[other] Iniulat bilang spam ang { $count } mensahe.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Minarkahang hindi spam at inilipat sa inbox ang { $count } pag-uusap.
+       *[other] Minarkahang hindi spam at inilipat sa inbox ang { $count } pag-uusap.
+    }
+   *[message] { $count ->
+        [one] Minarkahang hindi spam at inilipat sa inbox ang { $count } mensahe.
+       *[other] Minarkahang hindi spam at inilipat sa inbox ang { $count } mensahe.
     }
 }
 toast-deleted-forever = { $kind ->

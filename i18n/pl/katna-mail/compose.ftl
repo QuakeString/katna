@@ -38,6 +38,9 @@ compose-scheduled = Wysyłka zaplanowana na { $when }
 compose-sent-archived = Wysłano i zarchiwizowano
 compose-sent = Wiadomość wysłana
 compose-discarded = Wersja robocza odrzucona
+compose-draft-saved = Zapisano wersję roboczą
+compose-draft-failed = Nie udało się zapisać wersji roboczej: { $error }
+compose-draft-not-opened = Nie udało się otworzyć wersji roboczej.
 
 ## Attachments
 
@@ -46,6 +49,12 @@ compose-picker-attach = Załącz
 compose-file-too-large = Plik { $name } jest za duży: wiadomość może zawierać do { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Usuń załącznik
+compose-attachments-total = { $count ->
+    [one] { $count } plik, { $size }
+    [few] { $count } pliki, { $size }
+    [many] { $count } plików, { $size }
+   *[other] { $count } pliku, { $size }
+}
 compose-drop-files = Upuść pliki tutaj
 compose-drop-here = Upuść tutaj
 compose-paste-keep-formatting = Zachowaj formatowanie
@@ -61,6 +70,12 @@ compose-encrypt = Zaszyfruj
 compose-encrypted = Zaszyfrowane: tylko odbiorcy mogą to przeczytać
 compose-sign = Podpisz
 compose-signed = Podpisane: odbiorcy mogą sprawdzić, że pochodzi od Ciebie
+compose-track = Śledź otwarcia i kliknięcia
+compose-tracked = Śledzone: zobaczysz, kiedy każdy odbiorca ją otworzy lub kliknie link
+compose-track-unavailable = Nie można śledzić wiadomości podpisanych, zaszyfrowanych ani w zwykłym tekście
+compose-track-sign-in = Zaloguj się na konto Katna, aby śledzić otwarcia i kliknięcia
+compose-receipt = Poproś o potwierdzenie przeczytania
+compose-receipt-on = Poproszono o potwierdzenie przeczytania: aplikacja odbiorcy może zapytać go o jego wysłanie
 
 ## Spelling
 
@@ -85,6 +100,7 @@ send-check-add-subject = Dodaj temat
 send-check-send-anyway = Wyślij mimo to
 recipient-not-valid = Nieprawidłowy adres e-mail
 recipient-show-address = Pokaż adres
+recipient-remove = Usuń
 recipient-bad-title = Sprawdź adres
 recipient-bad-text = „{ $address }” nie jest prawidłowym adresem e-mail. Popraw go lub usuń przed wysłaniem.
 recipient-bad-fix = Popraw

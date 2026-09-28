@@ -475,3 +475,239 @@ ihren Pfeil, um von einem anderen Ihrer Konten zu senden. Neue E-Mails
 beginnen mit Ihrem ersten Konto, außer Sie wählen unter Einstellungen >
 Verfassen > Neue Nachrichten senden von ein anderes Standardkonto.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Gemeinsamer Posteingang"
+text = """
+Schalten Sie Einstellungen > Konten > Gemeinsamer Posteingang ein, um
+die E-Mails all Ihrer Konten zusammen zu sehen. „Alle Konten“ steht oben
+im Ordnerbereich, mit je einem Posteingang, Ungelesen, Markiert,
+Wichtig, Gesendet, Entwürfe und mehr für alle Konten; der Pfeil daneben
+öffnet eine Zeile pro Konto. Der Name jedes Kontos hat jetzt einen
+Pfeil, der seine Ordner einklappt.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Kontextmenüs passen zu jedem Ordner"
+text = """
+Wählen Sie im Kontextmenü unter Verschieben nach einen Ordner oder ein
+Label, wird die E-Mail jetzt verschoben, mit Rückgängig, auch aus
+Suchergebnissen. In Spam wird aus Spam melden Kein Spam. Papierkorb
+bietet In den Posteingang verschieben und Endgültig löschen, Archiv
+bietet In den Posteingang verschieben, und Entwürfe und Gesendet lassen
+Einträge weg, die dort nicht passen.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Konten per Ziehen ordnen"
+text = """
+Wenn Sie in Einstellungen > Konten ein Konto ziehen, hebt sich jetzt
+seine ganze Zeile, und die anderen Konten rücken beiseite, um Platz zu
+machen. Nach oben und Nach unten erscheinen, wenn Sie auf eine Zeile
+zeigen.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Entwürfe bleiben erhalten"
+text = """
+Schließen Sie eine Nachricht, die Sie gerade schreiben, wird sie jetzt
+in Entwürfe gespeichert, auch auf Ihrem Mailserver, wie in Gmail. Öffnen
+Sie sie aus Entwürfe, um weiterzuschreiben. Nur der Papierkorb-Knopf
+verwirft sie, und Rückgängig holt sie zurück.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Platz für viele Anhänge"
+text = """
+Egal wie viele Dateien Sie anhängen: Die Liste scrollt jetzt über der Senden-Leiste, statt sie zu überdecken, zeigt die neueste Datei und nennt die Anzahl der Dateien und ihre Gesamtgröße.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Ungelesene oder markierte Mails auswählen, wie in Gmail"
+text = """
+Gelesen, Ungelesen, Markiert und Nicht markiert im Menü Auswählen haken
+wieder die passenden E-Mails auf dem Bildschirm an. Eine Zeile über der
+Liste bietet an, jede passende Unterhaltung im Ordner auszuwählen, und
+Auswahl aufheben macht das rückgängig.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Ordner führen aus den Einstellungen"
+text = """
+Sind die Einstellungen geöffnet, schließt ein Klick auf einen Ordner oder
+das E-Mail-Symbol jetzt die Einstellungen und öffnet diesen Ordner, wie in
+Gmail. Der Zurück-Pfeil funktioniert weiterhin.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Bilder in den Text ziehen"
+text = """
+Ziehen Sie ein Bild über eine Nachricht, zeigt eine Einfügemarke, wo es landet, sodass Sie es mitten in einem Satz ablegen können. Andere Dateien zeigen weiterhin den Ablagebereich für Anhänge, und Ablegen funktioniert jetzt auch, nachdem Sie getippt haben.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Beenden schließt sofort"
+text = """
+Beenden im Menü des Symbols im Systemabschnitt wartet nicht mehr auf
+E-Mails, die noch synchronisiert oder indiziert werden: Katna und sein
+Symbol schließen sofort, und der Rest wird beim nächsten Start von Katna
+fortgesetzt.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Kontaktdetails neben Ihren E-Mails"
+text = """
+In einem breiten Fenster zeigt jetzt eine Karte neben der geöffneten
+Unterhaltung den Absender: Telefon, Titel und Firma aus den Signaturen,
+die Ortszeit, wie viele E-Mails Sie ausgetauscht haben, Ihre letzten
+Unterhaltungen und die Dateien zwischen Ihnen. Klicken Sie auf eine
+Unterhaltung oder Datei, um sie zu öffnen, oder auf eine andere Person der
+Unterhaltung, um sie anzuzeigen. Die Angaben stammen nur aus Ihren E-Mails
+auf diesem Computer. Der Kontaktknopf in der Leiste des Lesebereichs
+blendet die Karte aus.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Belegter Speicher"
+text = """
+Unten im Ordnerbereich steht, wie voll der E-Mail-Speicher des Kontos ist,
+etwa „34 % von 15 GB belegt“, wenn sein Mailserver das mitteilt.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "E-Mails aus KRunner und der GNOME-Suche finden"
+text = """
+Tippen Sie in KRunner (Alt+Leertaste) oder in der Aktivitäten-Suche einen
+Namen ein, um dieser Person zu schreiben, ihre Adresse zu kopieren oder
+ihre E-Mails zu finden. Nachrichten erscheinen, wenn ihr Betreff oder
+Absender jedes eingetippte Wort enthält; beginnen Sie mit mail:, um alle
+Ihre E-Mails zu durchsuchen, wie im Suchfeld von Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Vorlagen für E-Mails, die Sie oft schreiben"
+text = """
+Schreiben Sie eine Nachricht einmal und speichern Sie sie mit dem neuen
+Knopf Vorlagen im Fenster zum Verfassen; danach fügen Sie sie mit einem
+Klick in jede neue E-Mail oder Antwort ein. Schreiben Sie {first name},
+{name} oder {my name}, und Katna füllt sie für jeden Empfänger aus.
+Vorlagen bearbeiten, umbenennen oder löschen Sie unter Einstellungen >
+Verfassen.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Geplante E-Mails gehen auch bei ausgeschaltetem Computer raus"
+text = """
+Wenn Ihr Mailserver E-Mails bis zu einem festgelegten Zeitpunkt
+zurückhalten kann, wie Stalwart, übergibt Senden planen die Nachricht
+jetzt an ihn, sobald Rückgängig verschwunden ist. So geht sie pünktlich
+hinaus, auch wenn dieser Computer aus ist. Das Menü zum Planen zeigt, ob
+Ihr Mailserver oder Katna sie sendet.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Eine leichtere Hervorhebung"
+text = """
+Die Zeile unter dem Mauszeiger in der E-Mail-Liste hebt sich jetzt mit
+einem zarten Schatten ab, wie in Gmail, statt mit einem dunklen Band
+darunter.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adressen zwischen An, Cc und Bcc ziehen"
+text = """
+Ziehen Sie einen Adress-Chip in ein anderes Feld, um ihn zu verschieben;
+Cc und Bcc öffnen sich beim Ziehen, auch wenn sie ausgeblendet sind.
+Zeigen Sie auf einen Chip, erscheint ein x, das ihn entfernt.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-Konto"
+text = """
+Unter Einstellungen > Katna-Konto erstellen Sie ein Konto auf dem eigenen
+Server von Katna, mit eigenem Passwort, nie einem E-Mail-Passwort. Die
+Online-Funktionen von Katna, etwa Lesebestätigungen und Link-Tracking,
+werden es brauchen. Sie sehen die angemeldeten Computer und können jeden
+davon abmelden.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Wieder da, wo Sie waren"
+text = """
+Wenn Sie Katna Mail schließen und wieder öffnen, kommen die App, der
+Ordner und der Posteingangs-Tab zurück, die Sie offen hatten, dazu die
+aufgeklappten Ordner und ob der Ordnerbereich eingeklappt war. Wird Katna
+über das Symbol im Systemabschnitt beendet, startet es frisch.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Zurückstellen und Erinnerungen an Antworten"
+text = """
+Stellen Sie eine Konversation mit der Uhr in ihrer Zeile oder über das
+Kontextmenü zurück: Sie wartet im Ordner Zurückgestellt und kommt zur
+gewählten Zeit ungelesen in den Posteingang zurück. Beim Senden kann Sie
+der Pfeil neben Senden erinnern, wenn innerhalb von 1, 3 oder 7 Tagen
+niemand antwortet. Beides funktioniert, solange Ihr Computer an ist, und
+holt Verpasstes nach, wenn er aufwacht.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "E-Mails in Ihrer Sprache lesen"
+text = """
+Über einer Nachricht in einer anderen Sprache steht jetzt ein Knopf zum
+Übersetzen, und Original anzeigen holt sie zurück. Katna erkennt die
+Sprache auf Ihrem Computer; nur wenn Sie darum bitten, geht der Text der
+Nachricht zur Übersetzung an Katnas eigenen Server. Unter Einstellungen >
+Allgemein > Übersetzung wählen Sie Ihre Sprache und die Sprachen, die
+immer übersetzt werden.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Sehen, wann E-Mails geöffnet werden"
+text = """
+Schalten Sie das Auge neben den Empfängern ein, um zu sehen, wann jeder
+Ihre Nachricht öffnet oder einem Link darin folgt, oder fordern Sie
+stattdessen eine Lesebestätigung an. Gesendete E-Mails zeigen, wer sie
+geöffnet hat, und beim ersten Mal meldet es eine Benachrichtigung. Beides
+ist bei jeder neuen Nachricht aus, und die Verfolgung braucht ein
+Katna-Konto (Einstellungen > Katna-Konto).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktivität für verfolgte E-Mails"
+text = """
+Aktivität neben dem Suchfeld zeigt, wie viele Ihrer verfolgten
+Nachrichten geöffnet wurden und wie oft ihre Links aufgerufen wurden,
+mit Ihren Betreffzeilen danach sortiert, wie oft sie geöffnet werden.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "E-Mails aus KRunner mit k durchsuchen"
+text = """
+Geben Sie in KRunner oder der GNOME-Suche k oder m, ein Leerzeichen und
+dann das Gesuchte ein, etwa „k budget“, um dieselben Ergebnisse wie im
+Suchfeld von Katna Mail zu erhalten. Eigene Wörter wählen Sie in den
+Einstellungen unter Allgemein.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktivität neben dem Suchfeld"
+text = """
+Der Knopf Aktivität neben dem Suchfeld zählt neue Öffnungen und Klicks
+Ihrer verfolgten E-Mails und listet auf, wer was geöffnet hat und welche
+Links aufgerufen wurden; ein Klick auf einen Eintrag öffnet die Nachricht.
+Details zeigt die Öffnungs- und Klickraten, Öffnungen pro Tag und Ihre
+besten Betreffzeilen für die letzten 7 oder 30 Tage, den gesamten
+Zeitraum oder selbst gewählte Daten. Eine gesendete Nachricht zeigt jetzt,
+wie oft jede Person sie geöffnet und einen Link aufgerufen hat.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Einblicke ins Postfach"
+text = """
+Aktivität > Details zeigt jetzt auch, wie viele E-Mails Sie im Zeitraum
+gesendet und empfangen haben, wie oft und wie schnell Sie und andere
+antworten, mit wem Sie am meisten schreiben und an welchen Tagen und zu
+welchen Uhrzeiten Ihre E-Mails eintreffen. Gezählt wird auf Ihrem
+Computer aus den E-Mails, die Katna bereits hat.
+"""

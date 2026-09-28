@@ -28,6 +28,8 @@ list-move-to = ਇੱਥੇ ਭੇਜੋ
 list-archive = ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 list-spam = ਸਪੈਮ ਦੀ ਰਿਪੋਰਟ ਕਰੋ
 list-delete = ਮਿਟਾਓ
+list-snooze = ਸਨੂਜ਼ ਕਰੋ
+list-unsnooze = ਸਨੂਜ਼ ਹਟਾਓ
 list-newer = ਨਵੀਆਂ
 list-older = ਪੁਰਾਣੀਆਂ
 list-range = { $total } ਵਿੱਚੋਂ { $first }–{ $last }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] { $folder } ਵਿਚਲਾ { $count } ਸੁਨੇਹਾ ਚੁਣੋ
        *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਸੁਨੇਹੇ ਚੁਣੋ
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੀ ਗਈ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।
+        }
+       *[message] { $count ->
+            [one] ਸਕ੍ਰੀਨ ਉੱਤੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣਿਆ ਗਿਆ ਹੈ।
+           *[other] ਸਕ੍ਰੀਨ ਉੱਤੇ ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੇ ਗਏ ਹਨ।
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਅਣਪੜ੍ਹੀ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਅਣਪੜ੍ਹੀਆਂ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਅਣਪੜ੍ਹਿਆ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਅਣਪੜ੍ਹੇ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਤਾਰਾਬੱਧ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਤਾਰਾਬੱਧ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $folder } ਵਿਚਲੀ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੀਆਂ ਸਾਰੀਆਂ { $count } ਤਾਰਾ-ਰਹਿਤ ਗੱਲਬਾਤਾਂ ਚੁਣੋ
+        }
+       *[message] { $count ->
+            [one] { $folder } ਵਿਚਲਾ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹਾ ਚੁਣੋ
+           *[other] { $folder } ਵਿਚਲੇ ਸਾਰੇ { $count } ਤਾਰਾ-ਰਹਿਤ ਸੁਨੇਹੇ ਚੁਣੋ
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = ਤਾਰਾਬੱਧ ਨਹੀਂ
 row-important = ਮਹੱਤਵਪੂਰਨ। ਗੈਰ-ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।
 row-mark-important = ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 row-pinned = ਸਿਖਰ ’ਤੇ ਪਿੰਨ ਕੀਤਾ ਗਿਆ
+row-tracking-none = ਟ੍ਰੈਕ ਕੀਤਾ ਗਿਆ। ਅਜੇ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਗਿਆ
+row-tracking-opened = { $recipients } ਵਿੱਚੋਂ { $opened } ਨੇ ਖੋਲ੍ਹਿਆ
+row-tracking-clicked = { $recipients } ਵਿੱਚੋਂ { $opened } ਨੇ ਖੋਲ੍ਹਿਆ, { $clicked } ਨੇ ਲਿੰਕ ਖੋਲ੍ਹਿਆ
 row-pin = ਸਿਖਰ ’ਤੇ ਪਿੰਨ ਕਰੋ
 row-unpin = ਅਣਪਿੰਨ ਕਰੋ
+row-snoozed-until = { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੀ ਗਈ
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = ਸਭ ਨੂੰ ਜਵਾਬ ਦਿਓ
 menu-forward = ਅੱਗੇ ਭੇਜੋ
 menu-archive = ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 menu-delete = ਮਿਟਾਓ
+menu-delete-forever = ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਓ
+menu-move-to-inbox = ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜੋ
 menu-spam = ਸਪੈਮ ਦੀ ਰਿਪੋਰਟ ਕਰੋ
+menu-not-spam = ਸਪੈਮ ਨਹੀਂ
 menu-mark-read = ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-mark-unread = ਅਣਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-mark-all-read = ਸਭ ਨੂੰ ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
@@ -240,6 +375,8 @@ menu-important = ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦ�
 menu-not-important = ਗੈਰ-ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 menu-pin = ਸਿਖਰ ’ਤੇ ਪਿੰਨ ਕਰੋ
 menu-unpin = ਅਣਪਿੰਨ ਕਰੋ
+menu-snooze = ਸਨੂਜ਼ ਕਰੋ
+menu-unsnooze = ਸਨੂਜ਼ ਹਟਾਓ
 menu-print-all = ਸਭ ਪ੍ਰਿੰਟ ਕਰੋ
 menu-new-window = ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ
 menu-move-to = ਇੱਥੇ ਭੇਜੋ
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } ਸੁਨੇਹੇ ਅਣਪਿੰਨ ਕੀਤੇ ਗਏ।
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੀ ਗਈ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੀਆਂ ਗਈਆਂ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹਾ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤਾ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹੇ { $when } ਤੱਕ ਸਨੂਜ਼ ਕੀਤੇ ਗਏ।
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਈ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਈਆਂ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹਾ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹੇ ਇਨਬਾਕਸ ਵਿੱਚ ਵਾਪਸ ਆ ਗਏ।
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] ਗੱਲਬਾਤ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] ਸੁਨੇਹੇ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
        *[other] { $count } ਸੁਨੇਹਿਆਂ ਦੀ ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ।
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] ਗੱਲਬਾਤ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+       *[other] { $count } ਗੱਲਬਾਤਾਂ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+    }
+   *[message] { $count ->
+        [one] ਸੁਨੇਹੇ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
+       *[other] { $count } ਸੁਨੇਹਿਆਂ ਨੂੰ ਸਪੈਮ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰਕੇ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ।
     }
 }
 toast-deleted-forever = { $kind ->

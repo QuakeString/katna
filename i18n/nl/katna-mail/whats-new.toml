@@ -469,3 +469,238 @@ vanaf een ander account van je te verzenden. Nieuwe e-mail begint vanaf
 je eerste account, tenzij je een andere standaard kiest in
 Instellingen > Opstellen > Nieuwe berichten verzenden vanaf.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Gecombineerde inbox"
+text = """
+Zet Instellingen > Accounts > Gecombineerde inbox aan om de mail van al
+je accounts samen te zien. ‘Alle accounts’ staat boven in het
+mappenvenster met één Inbox, Ongelezen, Met ster, Belangrijk, Verzonden,
+Concepten en meer voor alle accounts; het pijltje ernaast opent één
+regel per account. De naam van elk account heeft nu een pijltje dat de
+mappen inklapt.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Rechtsklikmenu’s passen bij elke map"
+text = """
+Een map of label kiezen onder Verplaatsen naar in het rechtsklikmenu
+verplaatst de mail nu echt, met Ongedaan maken, ook vanuit
+zoekresultaten. In Spam wordt Spam melden Geen spam. Prullenbak biedt
+Verplaatsen naar Inbox en Definitief verwijderen, Archief biedt
+Verplaatsen naar Inbox, en Concepten en Verzonden laten items weg die
+daar niet van toepassing zijn.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Accounts op volgorde slepen"
+text = """
+In Instellingen > Accounts tilt het slepen van een account nu de hele
+rij op, en schuiven de andere accounts opzij om plaats te maken. Omhoog
+en Omlaag verschijnen als je naar een rij wijst.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Concepten blijven bewaard"
+text = """
+Als je een bericht sluit waaraan je schrijft, wordt het nu in Concepten
+bewaard, ook op je mailserver, zoals in Gmail. Open het vanuit Concepten
+om verder te schrijven. Alleen de prullenbakknop gooit het weg, en
+Ongedaan maken haalt het terug.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Ruimte voor veel bijlagen"
+text = """
+Hoeveel bestanden je ook bijvoegt, de lijst scrolt nu boven de balk met
+Verzenden in plaats van eroverheen te lopen, toont het nieuwste bestand
+en vermeldt hoeveel bestanden het zijn en hun totale grootte.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Ongelezen e-mail of e-mail met ster selecteren, als in Gmail"
+text = """
+Gelezen, Ongelezen, Met ster en Zonder ster in het selectiemenu vinken
+weer de passende e-mail op het scherm aan. Een regel boven de lijst
+biedt aan om elk passend gesprek in de map te selecteren, en Selectie
+wissen maakt dat ongedaan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Mappen brengen je uit Instellingen"
+text = """
+Met Instellingen open sluit een klik op een map of op het pictogram
+E-mail nu Instellingen en opent die map, zoals in Gmail. De terugpijl
+werkt ook nog steeds.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Afbeeldingen in de tekst neerzetten"
+text = """
+Als je een afbeelding over een bericht sleept, toont een cursor waar die
+terechtkomt, zodat je hem midden in een zin kunt neerzetten. Andere
+bestanden tonen nog steeds het neerzetvlak voor bijlagen, en neerzetten
+werkt nu ook nadat je hebt getypt.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Afsluiten sluit meteen"
+text = """
+Afsluiten in het menu van het pictogram in het systeemvak wacht niet
+langer op e-mail die nog wordt gesynchroniseerd of geïndexeerd: Katna en
+het pictogram in het systeemvak sluiten meteen, en de rest gaat verder
+wanneer Katna de volgende keer start.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Contactgegevens naast je e-mail"
+text = """
+In een breed venster toont een kaart naast het geopende gesprek nu de
+afzender: telefoon, functie en bedrijf uit hun handtekeningen, hoe laat
+het bij hen is, hoeveel e-mail jullie hebben uitgewisseld, jullie
+recente gesprekken en de bestanden tussen jullie. Klik op een gesprek of
+bestand om het te openen, of op een andere persoon uit het gesprek om
+die te bekijken. Alles komt alleen uit je e-mail op deze computer. De
+contactknop op de werkbalk van het leesvenster verbergt de kaart.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Gebruikte opslag"
+text = """
+Onderaan het mappenvenster zie je hoe vol de e-mailopslag van het account
+is, zoals ‘34% van 15 GB gebruikt’, als de mailserver dat doorgeeft.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "E-mail vinden vanuit KRunner en GNOME-zoeken"
+text = """
+Typ een naam in KRunner (Alt+Space) of het zoekveld van Activiteiten om die
+persoon te mailen, het adres te kopiëren of de e-mail te vinden. Berichten
+verschijnen als het onderwerp of de afzender elk woord bevat dat je typt; begin
+met mail: om in al je e-mail te zoeken, zoals in het zoekvak van Katna Mail.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sjablonen voor e-mail die je vaak schrijft"
+text = """
+Schrijf een bericht één keer en sla het op met de nieuwe knop Sjablonen bij
+het opstellen, en zet het daarna met één klik in elke nieuwe e-mail of elk
+antwoord. Schrijf {first name}, {name} of {my name} en Katna vult ze voor elke
+ontvanger in. Bewerk, hernoem of verwijder sjablonen in
+Instellingen > Opstellen.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Geplande e-mail gaat ook weg als je computer uit staat"
+text = """
+Als je mailserver e-mail kan vasthouden tot een ingesteld tijdstip, zoals
+Stalwart dat kan, geeft Verzending plannen het bericht nu aan de server
+zodra Ongedaan maken weg is, zodat het op tijd weggaat, ook als deze
+computer uit staat. Het planningsmenu zegt of je mailserver of Katna het
+verzendt.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Een lichtere hover"
+text = """
+De regel onder de aanwijzer in de e-maillijst komt nu omhoog met een
+vage schaduw, net als in Gmail, in plaats van een donkere band eronder.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adressen slepen tussen Aan, Cc en Bcc"
+text = """
+Sleep een adreschip naar een ander veld om het te verplaatsen; Cc en Bcc
+gaan open terwijl je sleept, ook als ze verborgen zijn. Als je naar een
+chip wijst, verschijnt een x die het verwijdert.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-account"
+text = """
+Met Instellingen > Katna-account maak je een account op de eigen server
+van Katna, met een eigen wachtwoord, nooit een e-mailwachtwoord. De
+onlinefuncties van Katna, zoals leesbevestigingen en linktracking,
+hebben het nodig. Je ziet welke computers zijn aangemeld en kunt elk
+ervan afmelden.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Terug waar je was"
+text = """
+Als je Katna Mail sluit en weer opent, komen de app, de map en het
+inbox-tabblad die je open had terug, net als de mappen die je had
+uitgeklapt en of het mappenvenster was ingeklapt. Afsluiten van Katna
+vanuit het systeemvak start het opnieuw.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Snoozen en herinneringen bij geen antwoord"
+text = """
+Snooze een gesprek met de klok op de regel of vanuit het rechtsklikmenu:
+het wacht in de map Gesnoozed en komt op het gekozen tijdstip ongelezen
+terug in de Inbox. Bij het verzenden kan de pijl naast Verzenden je
+herinneren als niemand binnen 1, 3 of 7 dagen antwoordt. Beide werken
+terwijl je computer aan staat, en halen de achterstand in zodra hij weer
+wakker wordt.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "E-mail lezen in je eigen taal"
+text = """
+Een bericht in een andere taal toont nu een knop Vertalen erboven, en
+Origineel tonen brengt het terug. Katna herkent de taal op je computer;
+alleen als je erom vraagt gaat de tekst van het bericht naar de eigen
+server van Katna om vertaald te worden. Instellingen > Algemeen >
+Vertaling kiest je taal en de talen die altijd vertaald worden.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Zien wanneer e-mail geopend wordt"
+text = """
+Zet het oog bij de ontvangers aan om te zien wanneer elk van hen je
+bericht opent of een link erin volgt, of vraag in plaats daarvan een
+leesbevestiging. Verzonden e-mail laat zien wie hem geopend heeft, en een
+melding laat het je de eerste keer weten. Beide staan uit voor elk nieuw
+bericht, en volgen vereist een Katna-account (Instellingen >
+Katna-account).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Activiteit voor gevolgde e-mail"
+text = """
+Activiteit naast het zoekvak toont hoeveel van je gevolgde berichten
+zijn geopend en hoe vaak hun links zijn gevolgd, met je onderwerpregels
+gerangschikt op hoe vaak ze worden geopend.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Zoek in je e-mail vanuit KRunner met k"
+text = """
+Typ k of m, een spatie en dan wat je zoekt in KRunner of de
+GNOME-zoekfunctie, en je krijgt dezelfde resultaten als in het zoekvak
+van Katna Mail, zoals ‘k budget’. Kies je eigen woorden in
+Instellingen > Algemeen.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Activiteit naast het zoekvak"
+text = """
+De knop Activiteit naast het zoekvak telt nieuwe keren dat je gevolgde
+e-mail is geopend of aangeklikt en laat zien wie wat heeft geopend en
+welke links zijn gevolgd; klik erop om dat bericht te openen. Details
+toont het openings- en klikpercentage, openingen per dag en je beste
+onderwerpregels voor de afgelopen 7 of 30 dagen, altijd of de datums die
+je kiest. Een verzonden bericht laat nu zien hoe vaak iedereen het heeft
+geopend en een link heeft gevolgd.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Inzicht in je mailbox"
+text = """
+Activiteit > Details laat nu ook zien hoeveel e-mail je in die periode
+hebt verzonden en ontvangen, hoe vaak en hoe snel jij en anderen
+antwoorden, met wie je het vaakst mailt en op welke dagen en uren je
+e-mail binnenkomt. Het wordt op je computer geteld uit de e-mail die
+Katna al heeft.
+"""

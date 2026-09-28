@@ -8,6 +8,11 @@ notify-new-emails = { $count } bagong email
 notify-and-more = at { $count } pa
 notify-no-subject = (walang subject)
 notify-unknown-sender = Hindi kilalang nagpadala
+notify-snooze-back = Bumalik mula sa snooze
+notify-no-reply = Wala pang sagot
+notify-no-reply-to = Wala pang sumasagot sa “{ $subject }”.
+notify-tracking-opened = Binuksan ni { $who } ang { $subject }
+notify-tracking-clicked = Nag-click si { $who } ng link sa { $subject }
 
 ## Its buttons
 

@@ -9,6 +9,9 @@ nav-folders = المجلدات
 nav-label-new = إنشاء تصنيف جديد
 nav-folder-new = إنشاء مجلد جديد
 nav-account-unnamed = الحساب { $number }
+nav-all-accounts = كل الحسابات
+nav-expand = إظهار المجلدات
+nav-collapse = إخفاء المجلدات
 nav-tab-new = { $count ->
     [zero] { $count } جديدة
     [one] { $count } جديدة
@@ -17,11 +20,16 @@ nav-tab-new = { $count ->
     [many] { $count } جديدة
    *[other] { $count } جديدة
 }
+storage-used = مُستخدَم { $percent }٪ من { $total }
+storage-used-detail = { $address }: مُستخدَم { $used } من { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = البريد الوارد
 folder-starred = المميّزة بنجمة
+folder-snoozed = المؤجَّلة
+folder-unread = غير المقروءة
+folder-important = المهمة
 folder-drafts = المسودات
 folder-sent = المُرسَلة
 folder-archive = الأرشيف
@@ -29,6 +37,7 @@ folder-spam = الرسائل غير المرغوب فيها
 folder-trash = المهملات
 folder-all-mail = كل البريد
 folder-scheduled = المُجدوَلة
+folder-activity = النشاط
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

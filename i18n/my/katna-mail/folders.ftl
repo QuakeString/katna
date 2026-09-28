@@ -9,12 +9,20 @@ nav-folders = ဖိုင်တွဲများ
 nav-label-new = အညွှန်းအသစ် ပြုလုပ်ရန်
 nav-folder-new = ဖိုင်တွဲအသစ် ပြုလုပ်ရန်
 nav-account-unnamed = အကောင့် { $number }
+nav-all-accounts = အကောင့်အားလုံး
+nav-expand = ဖိုင်တွဲများ ပြရန်
+nav-collapse = ဖိုင်တွဲများ ဝှက်ရန်
 nav-tab-new = အသစ် { $count }
+storage-used = { $total } အနက် { $percent }% သုံးထားသည်
+storage-used-detail = { $address }- { $total } အနက် { $used } သုံးထားသည်
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = ဝင်စာ
 folder-starred = ကြယ်ပွင့်တပ်ထားသည်
+folder-snoozed = ခဏဆိုင်းထားသည်
+folder-unread = မဖတ်ရသေး
+folder-important = အရေးကြီး
 folder-drafts = မူကြမ်းများ
 folder-sent = ပို့ပြီး
 folder-archive = မှတ်တမ်း
@@ -22,6 +30,7 @@ folder-spam = စပမ်း
 folder-trash = အမှိုက်ပုံး
 folder-all-mail = မေးလ်အားလုံး
 folder-scheduled = အချိန်သတ်မှတ်ထားသည်
+folder-activity = လှုပ်ရှားမှု
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

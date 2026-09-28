@@ -38,6 +38,9 @@ compose-scheduled = Schemalagt att skickas { $when }
 compose-sent-archived = Skickat och arkiverat
 compose-sent = Meddelandet har skickats
 compose-discarded = Utkastet har slängts
+compose-draft-saved = Utkastet har sparats
+compose-draft-failed = Utkastet kunde inte sparas: { $error }
+compose-draft-not-opened = Utkastet kunde inte öppnas.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Bifoga
 compose-file-too-large = { $name } är för stor: ett meddelande kan innehålla upp till { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ta bort bilaga
+compose-attachments-total = { $count ->
+    [one] { $count } fil, { $size }
+   *[other] { $count } filer, { $size }
+}
 compose-drop-files = Släpp filer här
 compose-drop-here = Släpp här
 compose-paste-keep-formatting = Behåll formatering
@@ -61,6 +68,12 @@ compose-encrypt = Kryptera
 compose-encrypted = Krypterat: bara mottagarna kan läsa det
 compose-sign = Signera
 compose-signed = Signerat: mottagarna kan kontrollera att det kommer från dig
+compose-track = Spåra öppningar och klick
+compose-tracked = Spårat: du ser när varje mottagare öppnar det eller följer en länk
+compose-track-unavailable = E-post som är signerad, krypterad eller i ren text kan inte spåras
+compose-track-sign-in = Logga in på ett Katna-konto för att spåra öppningar och klick
+compose-receipt = Begär läskvitto
+compose-receipt-on = Läskvitto begärt: mottagarens app kan be hen att skicka ett
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Lägg till ämne
 send-check-send-anyway = Skicka ändå
 recipient-not-valid = Ingen giltig e-postadress
 recipient-show-address = Visa adress
+recipient-remove = Ta bort
 recipient-bad-title = Kontrollera adressen
 recipient-bad-text = ”{ $address }” är ingen giltig e-postadress. Rätta eller ta bort den innan du skickar.
 recipient-bad-fix = Rätta

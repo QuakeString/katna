@@ -28,6 +28,8 @@ list-move-to = Skuif na
 list-archive = Argiveer
 list-spam = Rapporteer strooipos
 list-delete = Vee uit
+list-snooze = Sluimer
+list-unsnooze = Ontsluimer
 list-newer = Nuwer
 list-older = Ouer
 list-range = { $first }–{ $last } van { $total }
@@ -96,6 +98,132 @@ list-select-all-in = { $kind ->
    *[message] { $count ->
         [one] Kies { $count } boodskap in { $folder }
        *[other] Kies al { $count } boodskappe in { $folder }
+    }
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gelese gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } gelese gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gelese boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } gelese boodskappe op hierdie bladsy is gekies.
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongelese gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } ongelese gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongelese boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } ongelese boodskappe op hierdie bladsy is gekies.
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } gesterde gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } gesterde gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } gesterde boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } gesterde boodskappe op hierdie bladsy is gekies.
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ongesterde gesprek op hierdie bladsy is gekies.
+           *[other] Al { $count } ongesterde gesprekke op hierdie bladsy is gekies.
+        }
+       *[message] { $count ->
+            [one] { $count } ongesterde boodskap op hierdie bladsy is gekies.
+           *[other] Al { $count } ongesterde boodskappe op hierdie bladsy is gekies.
+        }
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gelese gesprek
+           *[other] Kies al { $count } gelese gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gelese boodskap
+           *[other] Kies al { $count } gelese boodskappe
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongelese gesprek
+           *[other] Kies al { $count } ongelese gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongelese boodskap
+           *[other] Kies al { $count } ongelese boodskappe
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gesterde gesprek
+           *[other] Kies al { $count } gesterde gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gesterde boodskap
+           *[other] Kies al { $count } gesterde boodskappe
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongesterde gesprek
+           *[other] Kies al { $count } ongesterde gesprekke
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongesterde boodskap
+           *[other] Kies al { $count } ongesterde boodskappe
+        }
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gelese gesprek in { $folder }
+           *[other] Kies al { $count } gelese gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gelese boodskap in { $folder }
+           *[other] Kies al { $count } gelese boodskappe in { $folder }
+        }
+    }
+   *[unread] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongelese gesprek in { $folder }
+           *[other] Kies al { $count } ongelese gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongelese boodskap in { $folder }
+           *[other] Kies al { $count } ongelese boodskappe in { $folder }
+        }
+    }
+    [starred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } gesterde gesprek in { $folder }
+           *[other] Kies al { $count } gesterde gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } gesterde boodskap in { $folder }
+           *[other] Kies al { $count } gesterde boodskappe in { $folder }
+        }
+    }
+    [unstarred] { $kind ->
+        [conversation] { $count ->
+            [one] Kies { $count } ongesterde gesprek in { $folder }
+           *[other] Kies al { $count } ongesterde gesprekke in { $folder }
+        }
+       *[message] { $count ->
+            [one] Kies { $count } ongesterde boodskap in { $folder }
+           *[other] Kies al { $count } ongesterde boodskappe in { $folder }
+        }
     }
 }
 list-selected-picked = { $pick ->
@@ -220,8 +348,12 @@ row-not-starred = Nie gester nie
 row-important = Belangrik. Klik om as nie belangrik nie te merk.
 row-mark-important = Merk as belangrik
 row-pinned = Bo vasgespeld
+row-tracking-none = Nagespoor. Nog nie oopgemaak nie
+row-tracking-opened = Oopgemaak deur { $opened } van { $recipients }
+row-tracking-clicked = Oopgemaak deur { $opened } van { $recipients }, 'n skakel gevolg deur { $clicked }
 row-pin = Speld bo vas
 row-unpin = Ontspeld
+row-snoozed-until = Gesluimer tot { $when }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,7 +362,10 @@ menu-reply-all = Antwoord almal
 menu-forward = Stuur aan
 menu-archive = Argiveer
 menu-delete = Vee uit
+menu-delete-forever = Vee permanent uit
+menu-move-to-inbox = Skuif na Inkassie
 menu-spam = Rapporteer strooipos
+menu-not-spam = Nie strooipos nie
 menu-mark-read = Merk as gelees
 menu-mark-unread = Merk as ongelees
 menu-mark-all-read = Merk almal as gelees
@@ -240,6 +375,8 @@ menu-important = Merk as belangrik
 menu-not-important = Merk as nie belangrik nie
 menu-pin = Speld bo vas
 menu-unpin = Ontspeld
+menu-snooze = Sluimer
+menu-unsnooze = Ontsluimer
 menu-print-all = Druk alles
 menu-new-window = Maak oop in nuwe venster
 menu-move-to = Skuif na
@@ -338,6 +475,26 @@ toast-unpinned = { $kind ->
        *[other] { $count } boodskappe ontspeld.
     }
 }
+toast-snoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek gesluimer tot { $when }.
+       *[other] { $count } gesprekke gesluimer tot { $when }.
+    }
+   *[message] { $count ->
+        [one] Boodskap gesluimer tot { $when }.
+       *[other] { $count } boodskappe gesluimer tot { $when }.
+    }
+}
+toast-unsnoozed = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek terug in die Inkassie.
+       *[other] { $count } gesprekke terug in die Inkassie.
+    }
+   *[message] { $count ->
+        [one] Boodskap terug in die Inkassie.
+       *[other] { $count } boodskappe terug in die Inkassie.
+    }
+}
 toast-spam = { $kind ->
     [conversation] { $count ->
         [one] Gesprek as strooipos gerapporteer.
@@ -346,6 +503,16 @@ toast-spam = { $kind ->
    *[message] { $count ->
         [one] Boodskap as strooipos gerapporteer.
        *[other] { $count } boodskappe as strooipos gerapporteer.
+    }
+}
+toast-not-spam = { $kind ->
+    [conversation] { $count ->
+        [one] Gesprek as nie-strooipos gemerk en na die inkassie geskuif.
+       *[other] { $count } gesprekke as nie-strooipos gemerk en na die inkassie geskuif.
+    }
+   *[message] { $count ->
+        [one] Boodskap as nie-strooipos gemerk en na die inkassie geskuif.
+       *[other] { $count } boodskappe as nie-strooipos gemerk en na die inkassie geskuif.
     }
 }
 toast-deleted-forever = { $kind ->

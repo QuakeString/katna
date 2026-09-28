@@ -7,6 +7,7 @@
 settings-tab-general = Izugbe
 settings-tab-inbox = Igbe ozi mbata
 settings-tab-accounts = Akaụntụ
+settings-tab-katna-account = Akaụntụ Katna
 settings-tab-subscriptions = Ndenye aha
 settings-tab-appearance = Ọdịdị
 settings-tab-shortcuts = Ụzọ mkpirisi
@@ -35,6 +36,14 @@ settings-general-full-headers = Gosi isi ozi zuru ezu
 settings-general-full-headers-detail = Si, gaa, cc, ụbọchị na isiokwu na-emepe n'ozi ọ bụla
 settings-general-full-names = Aha zuru ezu nke ndị nnata
 settings-general-full-names-detail = “gaa mụ, Ada Lovelace” kama “gaa mụ, Ada”
+settings-translation = Ntụgharị asụsụ
+settings-translation-detail = Ị nwere ike ịgụ ozi dị n'asụsụ ọzọ n'asụsụ gị.
+settings-translation-offer = Kwe ka a tụgharịa
+settings-translation-offer-detail = Ederede ozi na-aga na sava Katna ka a tụgharịa ya naanị mgbe ị rịọrọ ma ọ bụ mgbe ị na-atụgharị asụsụ ya mgbe niile. Mgbakwunye anaghị aga ma ọlị.
+settings-translation-reading = Tụgharịa gaa na
+settings-translation-always = Tụgharịa mgbe niile
+settings-translation-never = Akwụsịla ịkwe maka
+settings-translation-none = Ọ dịbeghị. Họrọ site na mmanya Tụgharịa nke ozi.
 settings-general-mark-read = Kaa akara dị ka agụrụ
 settings-general-mark-read-now = Ozugbo ọ meghere
 settings-general-mark-read-1s = Mgbe ọ meghere ruo sekọnd 1
@@ -77,6 +86,9 @@ settings-general-tray = Gosi Katna na tree sistemụ
 settings-general-tray-detail = Ya na ọnụọgụ ndị a gụghị na menu
 settings-general-unread-badge = Ọnụọgụ ndị a gụghị na akara ngosi ogwe ọrụ
 settings-general-unread-badge-detail = Ole ozi dị na Igbe ozi mbata a gụghị
+settings-general-search-triggers = Chọọ site na desktọpụ
+settings-general-search-triggers-detail = Pịnye otu n'ime okwu ndị a na oghere na KRunner ma ọ bụ ọchụchọ GNOME, wee pịnye ihe ị na-achọ, iji chọọ ozi gị dịka igbe ọchụchọ dị ebe a si eme. Jiri rịkọm kewaa okwu.
+settings-general-search-triggers-none = Enweghị okwu; ọ bụ naanị “mail:” na-arụ ọrụ
 
 ## Settings > Inbox
 
@@ -182,6 +194,19 @@ settings-compose-spell-check-detail = A na-akpa ahịrị n'okpuru okwu a sụpe
 settings-compose-spell-desktop = Asụsụ desktọpụ ({ $language })
 settings-compose-templates = Ndebiri ụkpụrụ
 settings-compose-templates-detail = Chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya.
+settings-compose-no-templates = Enweghị ndebiri ụkpụrụ ọ bụla ka. N'ime ozi, họrọ Ndebiri ụkpụrụ, wee họrọ Chekwaa dị ka ndebiri ụkpụrụ.
+settings-compose-template-new = Mepụta nke ọhụrụ
+settings-compose-template-new-name = Ndebiri ụkpụrụ ọhụrụ
+settings-compose-template-subject = Isiokwu
+settings-compose-template-text = Ederede ndebiri ụkpụrụ
+settings-compose-template-fields = A na-eji aha onye nnata na aha gị edejupụta {"{"}first name{"}"}, {"{"}name{"}"} na {"{"}my name{"}"}.
+settings-compose-template-remove-file = Wepụ mgbakwunye
+settings-compose-template-save = Chekwaa
+settings-compose-template-saved = Echekwala ndebiri ụkpụrụ
+settings-compose-template-needs-name = Nye ndebiri ụkpụrụ ahụ aha
+settings-compose-template-delete = Hichapụ ndebiri ụkpụrụ
+settings-compose-template-deleted = Ehichapụla ndebiri ụkpụrụ
+settings-compose-template-delete-failed = Enweghị ike ihichapụ ndebiri ụkpụrụ ahụ: { $error }
 
 ## Settings > Shortcuts
 
@@ -204,6 +229,7 @@ settings-shortcuts-restored = Ụzọ mkpirisi ọ bụla enwetala igodo nke otu
 
 settings-general-language-summary = Asụsụ ngwa, ụbọchị na ọnụọgụgụ
 settings-general-reading-summary = Ozi kacha ọhụrụ na mbụ, isi ozi zuru ezu, aha zuru ezu nke ndị nnata
+settings-translation-summary = Jiri sava Katna tụgharịa ozi dị n'asụsụ ndị ọzọ gaa n'asụsụ ị họọrọ
 settings-general-mark-read-summary = Mgbe a na-aka akara na mkparịta ụka e mepere dị ka agụrụ: ozugbo, mgbe sekọnd 1 ma ọ bụ 3, ma ọ bụ n'aka
 settings-general-auto-advance-summary = Ihe na-emepe mgbe i hichapụrụ, chekwaa ma ọ bụ bugharịa mkparịta ụka mepere emepe: nke na-esote, nke gara aga, ma ọ bụ ndepụta
 settings-general-reply-button-summary = Bọtịnụ nzaghachi dị n'akụkụ ozi ọ bụla na-aza mmadụ niile
@@ -236,7 +262,8 @@ settings-compose-for-new-mail-summary = Mbinye aka ozi ọhụrụ ji amalite
 settings-compose-for-replies-summary = Mbinye aka nzaghachi na nzigaa ji amalite
 settings-compose-format-summary = Dee ozi ọhụrụ na ederede nkịtị
 settings-compose-spelling-summary = Nyochaa nsụpe mgbe ị na-ede, na asụsụ ọkọwa okwu
-settings-compose-templates-summary = Ọ na-abịa n'oge na-adịghị anya: chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya
+settings-general-search-triggers-summary = Okwu ndị na-achọ ozi gị site na KRunner ma ọ bụ ọchụchọ GNOME
+settings-compose-templates-summary = Chekwaa ozi ị na-edekarị, ma malite ozi ọhụrụ ma ọ bụ nzaghachi site na ya
 settings-feedback-crash-reports-summary = Chekwaa akụkọ nkwụsị na kọmputa a mgbe Katna Mail ma ọ bụ ọrụ azụ ya kwụsịrị na mberede
 settings-feedback-saved-summary = Lelee, detuo ma ọ bụ hichapụ akụkọ nkwụsị echekwara na kọmputa a
 settings-feedback-help-improve-summary = Zipu akụkọ nkwụsị iji nyere aka dozie ihe mebiri emebi; ọ gbanyụrụ belụsọ ma i gbanye ya

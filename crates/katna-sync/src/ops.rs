@@ -4,8 +4,8 @@
 //! to the store at once and replayed on the server by the account's worker
 //! (`docs/ARCHITECTURE.md` §6.1).
 //!
-//! - [`set_flags`], [`move_messages`], [`delete_messages`] and
-//!   [`archive_messages`] edit the store and queue one operation per
+//! - [`set_flags`], [`move_messages`], [`copy_messages`],
+//!   [`delete_messages`] and [`archive_messages`] edit the store and queue one operation per
 //!   message. They never touch the network. Imported (`local`) accounts
 //!   only change in the store.
 //! - [`save_draft`] keeps a draft in the Drafts folder and queues its
@@ -62,6 +62,16 @@ enum Op {
         to: i64,
         to_path: String,
     },
+    /// Copy `message` from `from` (where its UID is `uid`, or looked up
+    /// at replay time) to `to` as well; on Gmail this adds a label.
+    Copy {
+        message: i64,
+        from: i64,
+        from_path: String,
+        uid: Option<u32>,
+        to: i64,
+        to_path: String,
+    },
     /// Delete `message` in `folder` for good.
     Expunge {
         message: i64,
@@ -74,6 +84,17 @@ enum Op {
         message: i64,
         folder: i64,
         path: String,
+    },
+    /// Delete for good the tracked copies Gmail filed of a message sent
+    /// with tracking (`message_id`, without angle brackets): the copies in
+    /// `all_path` carrying `marker` (the tracking server's address) go to
+    /// `trash_path` and are expunged there. The clean copy has no marker.
+    PurgeTracked {
+        message_id: String,
+        marker: String,
+        all_path: String,
+        trash_path: String,
+        expected: u32,
     },
     /// Upload the draft `message` to `folder` (Drafts) with `\Draft` and
     /// `\Seen`, after deleting the server's older copies of it (the same
@@ -233,6 +254,18 @@ pub fn move_messages(
     messages: &[MessageId],
     to: FolderId,
 ) -> Result<Vec<AccountId>, ChangeError> {
+    move_messages_from(store, messages, None, to)
+}
+
+/// Moves messages out of folder `from` (any of theirs when `None`) to
+/// `to`. Messages not in `from` stay. Returns the accounts whose workers
+/// must replay.
+pub fn move_messages_from(
+    store: &mut Store,
+    messages: &[MessageId],
+    from: Option<FolderId>,
+    to: FolderId,
+) -> Result<Vec<AccountId>, ChangeError> {
     let mut plans = Vec::new();
     for &id in messages {
         let account = account_of(store, id)?;
@@ -247,6 +280,7 @@ pub fn move_messages(
             .locations(id)?
             .into_iter()
             .filter(|location| location.folder != to)
+            .filter(|location| from.is_none_or(|from| location.folder == from))
             .min_by_key(|location| {
                 folders
                     .get(&location.folder)
@@ -283,6 +317,59 @@ pub fn move_messages(
             unreachable!("only moves are planned here");
         };
         batch.move_location(MessageId(*message), FolderId(*from), FolderId(*to), None)?;
+        if synced {
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// Copies messages into `to` as well (on Gmail: adds its label), keeping
+/// them where they are. Returns the accounts whose workers must replay.
+pub fn copy_messages(
+    store: &mut Store,
+    messages: &[MessageId],
+    to: FolderId,
+) -> Result<Vec<AccountId>, ChangeError> {
+    let mut plans = Vec::new();
+    for &id in messages {
+        let account = account_of(store, id)?;
+        let folders = folders_of(store, account)?;
+        let target = folders
+            .get(&to)
+            .ok_or(ChangeError::UnknownFolder(to.0))?
+            .clone();
+        let locations = store.locations(id)?;
+        if locations.iter().any(|location| location.folder == to) {
+            continue; // already there
+        }
+        // One whose UID is known, so the copy need not wait.
+        let Some(source) = locations.into_iter().min_by_key(|l| l.uid.is_none()) else {
+            continue;
+        };
+        let from = &folders[&source.folder];
+        plans.push((
+            account,
+            is_synced(store, account)?,
+            Op::Copy {
+                message: id.0,
+                from: from.id.0,
+                from_path: from.path.clone(),
+                uid: source.uid,
+                to: target.id.0,
+                to_path: target.path.clone(),
+            },
+        ));
+    }
+    let mut batch = store.mail_batch()?;
+    let mut accounts = Vec::new();
+    for (account, synced, op) in plans {
+        let Op::Copy { message, to, .. } = &op else {
+            unreachable!("only copies are planned here");
+        };
+        batch.add_location(MessageId(*message), FolderId(*to), None)?;
         if synced {
             batch.enqueue_op(account, &encode(&op))?;
         }
@@ -410,6 +497,44 @@ pub fn file_sent(store: &mut Store, message: MessageId) -> Result<bool, ChangeEr
     };
     batch.commit()?;
     Ok(queued)
+}
+
+/// After sending `message` as tracked copies through Gmail, which files
+/// every copy it sends in Sent: queues deleting those `expected` copies
+/// (found by `Message-ID` and `marker`) and filing the clean one. Other
+/// servers file nothing, so [`file_sent`] is enough there.
+pub fn file_sent_tracked(
+    store: &mut Store,
+    message: MessageId,
+    message_id: &str,
+    marker: &str,
+    expected: u32,
+) -> Result<bool, ChangeError> {
+    let account = account_of(store, message)?;
+    let folders = folders_of(store, account)?;
+    let path_of = |role| {
+        folders
+            .values()
+            .find(|f| f.role == Some(role))
+            .map(|f| f.path.clone())
+    };
+    if let (Some(all_path), Some(trash_path)) =
+        (path_of(FolderRole::All), path_of(FolderRole::Trash))
+    {
+        let op = Op::PurgeTracked {
+            message_id: message_id.to_owned(),
+            marker: marker.to_owned(),
+            all_path,
+            trash_path,
+            expected,
+        };
+        let mut batch = store.mail_batch()?;
+        batch.enqueue_op(account, &encode(&op))?;
+        batch.commit()?;
+    } else {
+        tracing::warn!(%account, "no All Mail or Trash folder; tracked copies stay in Sent");
+    }
+    file_sent(store, message)
 }
 
 /// Saves a draft of `account`: stores `raw` in its Drafts folder in place
@@ -735,6 +860,45 @@ async fn run<B: MailBackend>(
             }
             batch.commit()?;
         }
+        Op::Copy {
+            message,
+            from,
+            from_path,
+            uid,
+            to,
+            to_path,
+        } => {
+            let uid = match uid {
+                Some(uid) => *uid,
+                None => store
+                    .locations(MessageId(*message))?
+                    .into_iter()
+                    .find(|l| l.folder == FolderId(*from))
+                    .and_then(|l| l.uid)
+                    .ok_or_else(|| {
+                        Error::Rejected("the message's earlier move is not confirmed yet".into())
+                    })?,
+            };
+            select(backend, selected, from_path).await?;
+            let copied = backend.copy_messages(&[uid], to_path).await?;
+            let mut batch = store.mail_batch()?;
+            let (message, to) = (MessageId(*message), FolderId(*to));
+            match copied.iter().find(|(old, _)| *old == uid) {
+                Some(&(_, new)) => {
+                    batch.move_location(message, to, to, Some(new))?;
+                }
+                // Without UIDPLUS the next sync of `to` adds it again.
+                None => {
+                    if batch.unconfirmed_in(message, to)? {
+                        batch.remove_from_folder(message, to)?;
+                    }
+                    if !report.resync.iter().any(|(id, _)| *id == to) {
+                        report.resync.push((to, to_path.clone()));
+                    }
+                }
+            }
+            batch.commit()?;
+        }
         Op::Expunge { path, uid, .. } => {
             select(backend, selected, path).await?;
             backend.expunge(&[*uid]).await?;
@@ -766,6 +930,40 @@ async fn run<B: MailBackend>(
             let folder = FolderId(*folder);
             if !report.resync.iter().any(|(id, _)| *id == folder) {
                 report.resync.push((folder, path.clone()));
+            }
+        }
+        Op::PurgeTracked {
+            message_id,
+            marker,
+            all_path,
+            trash_path,
+            expected,
+        } => {
+            let query = format!("rfc822msgid:{message_id}");
+            let mut moved = 0;
+            select(backend, selected, all_path).await?;
+            if let Some(uids) = backend.gmail_search(1, &query).await? {
+                let tracked = with_marker(backend, &uids, marker).await?;
+                if !tracked.is_empty() {
+                    backend.move_messages(&tracked, trash_path).await?;
+                    moved = tracked.len();
+                }
+            } else {
+                // Not Gmail after all: nothing was filed.
+                return Ok(());
+            }
+            select(backend, selected, trash_path).await?;
+            if let Some(uids) = backend.gmail_search(1, &query).await? {
+                let tracked = with_marker(backend, &uids, marker).await?;
+                if !tracked.is_empty() {
+                    backend.expunge(&tracked).await?;
+                }
+            }
+            if moved < *expected as usize {
+                // Gmail files sent mail a little later; look again.
+                return Err(Error::Rejected(format!(
+                    "found {moved} of {expected} tracked copies"
+                )));
             }
         }
         Op::SaveDraft {
@@ -825,6 +1023,28 @@ async fn run<B: MailBackend>(
     Ok(())
 }
 
+/// The UIDs among `uids` of the selected folder whose message contains
+/// `marker`, also where quoted-printable broke it across lines (tracked
+/// copies are written quoted-printable).
+async fn with_marker<B: MailBackend>(
+    backend: &mut B,
+    uids: &[u32],
+    marker: &str,
+) -> Result<Vec<u32>> {
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let bodies = backend.fetch_bodies(uids).await?;
+    Ok(bodies
+        .into_iter()
+        .filter(|(_, raw)| {
+            let joined = String::from_utf8_lossy(raw).replace("=\r\n", "");
+            joined.contains(marker)
+        })
+        .map(|(uid, _)| uid)
+        .collect())
+}
+
 /// Undoes the local side of an operation the server refused for good.
 /// Gives the queued move of `message` out of `folder` that waits for its
 /// UID there the `uid` the server reported. Returns whether there was one.
@@ -870,10 +1090,19 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
             batch.move_location(MessageId(*message), FolderId(*to), FolderId(*from), *uid)?;
             Ok(())
         }
+        Op::Copy { message, to, .. } => {
+            let (message, to) = (MessageId(*message), FolderId(*to));
+            if batch.unconfirmed_in(message, to)? {
+                batch.remove_from_folder(message, to)?;
+            }
+            Ok(())
+        }
         // Gone locally; it stays on the server and in other clients.
         Op::Expunge { .. } => Ok(()),
         // It was sent; only the copy in Sent is missing.
         Op::Append { message, .. } => batch.forget_outgoing(MessageId(*message)),
+        // Tracked copies may stay in Gmail's Sent; nothing local to undo.
+        Op::PurgeTracked { .. } => Ok(()),
         // The draft stays here; the next save tries again.
         Op::SaveDraft { .. } => Ok(()),
         // The next sync of Drafts shows what is still there.

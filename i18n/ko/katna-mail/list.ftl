@@ -28,6 +28,8 @@ list-move-to = 이동
 list-archive = 보관처리
 list-spam = 스팸신고
 list-delete = 삭제
+list-snooze = 다시 알림
+list-unsnooze = 다시 알림 취소
 list-newer = 최신
 list-older = 이전
 list-range = { $first }–{ $last } / { $total }
@@ -67,6 +69,60 @@ list-select-all = { $kind ->
 list-select-all-in = { $kind ->
     [conversation] { $folder }의 대화 { $count }개 모두 선택
    *[message] { $folder }의 메일 { $count }개 모두 선택
+}
+list-selected-picked-screen = { $pick ->
+    [read] { $kind ->
+        [conversation] 이 페이지의 읽은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 읽은 메일 { $count }개가 모두 선택되었습니다.
+    }
+   *[unread] { $kind ->
+        [conversation] 이 페이지의 읽지 않은 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 읽지 않은 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [starred] { $kind ->
+        [conversation] 이 페이지의 별표가 있는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 별표가 있는 메일 { $count }개가 모두 선택되었습니다.
+    }
+    [unstarred] { $kind ->
+        [conversation] 이 페이지의 별표가 없는 대화 { $count }개가 모두 선택되었습니다.
+       *[message] 이 페이지의 별표가 없는 메일 { $count }개가 모두 선택되었습니다.
+    }
+}
+list-select-picked = { $pick ->
+    [read] { $kind ->
+        [conversation] 읽은 대화 { $count }개 모두 선택
+       *[message] 읽은 메일 { $count }개 모두 선택
+    }
+   *[unread] { $kind ->
+        [conversation] 읽지 않은 대화 { $count }개 모두 선택
+       *[message] 읽지 않은 메일 { $count }개 모두 선택
+    }
+    [starred] { $kind ->
+        [conversation] 별표가 있는 대화 { $count }개 모두 선택
+       *[message] 별표가 있는 메일 { $count }개 모두 선택
+    }
+    [unstarred] { $kind ->
+        [conversation] 별표가 없는 대화 { $count }개 모두 선택
+       *[message] 별표가 없는 메일 { $count }개 모두 선택
+    }
+}
+list-select-picked-in = { $pick ->
+    [read] { $kind ->
+        [conversation] { $folder }의 읽은 대화 { $count }개 모두 선택
+       *[message] { $folder }의 읽은 메일 { $count }개 모두 선택
+    }
+   *[unread] { $kind ->
+        [conversation] { $folder }의 읽지 않은 대화 { $count }개 모두 선택
+       *[message] { $folder }의 읽지 않은 메일 { $count }개 모두 선택
+    }
+    [starred] { $kind ->
+        [conversation] { $folder }의 별표가 있는 대화 { $count }개 모두 선택
+       *[message] { $folder }의 별표가 있는 메일 { $count }개 모두 선택
+    }
+    [unstarred] { $kind ->
+        [conversation] { $folder }의 별표가 없는 대화 { $count }개 모두 선택
+       *[message] { $folder }의 별표가 없는 메일 { $count }개 모두 선택
+    }
 }
 list-selected-picked = { $pick ->
     [read] { $kind ->
@@ -142,8 +198,12 @@ row-not-starred = 별표 없음
 row-important = 중요. 클릭하면 중요하지 않음으로 표시합니다.
 row-mark-important = 중요 표시
 row-pinned = 상단에 고정됨
+row-tracking-none = 추적 중. 아직 열람하지 않음
+row-tracking-opened = { $recipients }명 중 { $opened }명이 열람
+row-tracking-clicked = { $recipients }명 중 { $opened }명이 열람, { $clicked }명이 링크 클릭
 row-pin = 상단에 고정
 row-unpin = 고정 해제
+row-snoozed-until = { $when }에 다시 알림
 
 ## Mail list: More menu and right-click menu
 
@@ -152,7 +212,10 @@ menu-reply-all = 전체답장
 menu-forward = 전달
 menu-archive = 보관처리
 menu-delete = 삭제
+menu-delete-forever = 영구삭제
+menu-move-to-inbox = 받은편지함으로 이동
 menu-spam = 스팸신고
+menu-not-spam = 스팸 아님
 menu-mark-read = 읽음으로 표시
 menu-mark-unread = 읽지 않음으로 표시
 menu-mark-all-read = 모두 읽음으로 표시
@@ -162,6 +225,8 @@ menu-important = 중요 표시
 menu-not-important = 중요하지 않음으로 표시
 menu-pin = 상단에 고정
 menu-unpin = 고정 해제
+menu-snooze = 다시 알림
+menu-unsnooze = 다시 알림 취소
 menu-print-all = 모두 인쇄
 menu-new-window = 새 창에서 열기
 menu-move-to = 이동
@@ -206,9 +271,21 @@ toast-unpinned = { $kind ->
     [conversation] 대화 { $count }개의 고정을 해제했습니다.
    *[message] 메일 { $count }개의 고정을 해제했습니다.
 }
+toast-snoozed = { $kind ->
+    [conversation] 대화 { $count }개를 { $when }에 다시 알림으로 설정했습니다.
+   *[message] 메일 { $count }개를 { $when }에 다시 알림으로 설정했습니다.
+}
+toast-unsnoozed = { $kind ->
+    [conversation] 대화 { $count }개가 받은편지함으로 돌아왔습니다.
+   *[message] 메일 { $count }개가 받은편지함으로 돌아왔습니다.
+}
 toast-spam = { $kind ->
     [conversation] 대화 { $count }개를 스팸으로 신고했습니다.
    *[message] 메일 { $count }개를 스팸으로 신고했습니다.
+}
+toast-not-spam = { $kind ->
+    [conversation] 대화 { $count }개를 스팸 아님으로 표시하고 받은편지함으로 이동했습니다.
+   *[message] 메일 { $count }개를 스팸 아님으로 표시하고 받은편지함으로 이동했습니다.
 }
 toast-deleted-forever = { $kind ->
     [conversation] 대화 { $count }개를 영구삭제했습니다.

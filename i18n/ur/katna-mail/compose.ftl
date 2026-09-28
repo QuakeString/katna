@@ -38,6 +38,9 @@ compose-scheduled = { $when } کو بھیجنے کے لیے شیڈول کیا گ
 compose-sent-archived = بھیج کر آرکائیو کر دیا گیا
 compose-sent = پیغام بھیج دیا گیا
 compose-discarded = ڈرافٹ رد کر دیا گیا
+compose-draft-saved = ڈرافٹ محفوظ ہو گیا
+compose-draft-failed = ڈرافٹ محفوظ نہیں ہو سکا: { $error }
+compose-draft-not-opened = ڈرافٹ کھولا نہیں جا سکا۔
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = منسلک کریں
 compose-file-too-large = { $name } بہت بڑی ہے: ایک پیغام زیادہ سے زیادہ { $limit } لے جا سکتا ہے۔
 compose-attachment-size = ({ $size })
 compose-remove-attachment = اٹیچمنٹ ہٹائیں
+compose-attachments-total = { $count ->
+    [one] { $count } فائل، { $size }
+   *[other] { $count } فائلیں، { $size }
+}
 compose-drop-files = فائلیں یہاں چھوڑیں
 compose-drop-here = یہاں چھوڑیں
 compose-paste-keep-formatting = فارمیٹنگ برقرار رکھیں
@@ -61,6 +68,12 @@ compose-encrypt = مرموز کریں
 compose-encrypted = مرموز: صرف وصول کنندگان اسے پڑھ سکتے ہیں
 compose-sign = دستخط کریں
 compose-signed = دستخط شدہ: وصول کنندگان جانچ سکتے ہیں کہ یہ آپ کی طرف سے ہے
+compose-track = کھولنے اور کلکس کو ٹریک کریں
+compose-tracked = ٹریک ہو رہا ہے: آپ دیکھیں گے کہ ہر وصول کنندہ اسے کب کھولتا ہے یا لنک کھولتا ہے
+compose-track-unavailable = دستخط شدہ، مرموز اور سادہ متن میل ٹریک نہیں کی جا سکتی
+compose-track-sign-in = کھولنے اور کلکس کو ٹریک کرنے کے لیے Katna اکاؤنٹ میں سائن ان کریں
+compose-receipt = پڑھنے کی رسید کی درخواست کریں
+compose-receipt-on = پڑھنے کی رسید کی درخواست کی گئی: وصول کنندہ کی ایپ اس سے رسید بھیجنے کو کہہ سکتی ہے
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = موضوع شامل کریں
 send-check-send-anyway = پھر بھی بھیجیں
 recipient-not-valid = درست ای میل پتہ نہیں
 recipient-show-address = پتہ دکھائیں
+recipient-remove = ہٹائیں
 recipient-bad-title = پتہ چیک کریں
 recipient-bad-text = ”{ $address }“ درست ای میل پتہ نہیں ہے۔ بھیجنے سے پہلے اسے درست کریں یا ہٹا دیں۔
 recipient-bad-fix = درست کریں

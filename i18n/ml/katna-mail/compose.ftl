@@ -38,6 +38,9 @@ compose-scheduled = { $when } ന് അയയ്ക്കാൻ ഷെഡ്യ
 compose-sent-archived = അയച്ചു, ആർക്കൈവ് ചെയ്തു
 compose-sent = സന്ദേശം അയച്ചു
 compose-discarded = ഡ്രാഫ്റ്റ് നിരസിച്ചു
+compose-draft-saved = ഡ്രാഫ്റ്റ് സംരക്ഷിച്ചു
+compose-draft-failed = ഡ്രാഫ്റ്റ് സംരക്ഷിക്കാനായില്ല: { $error }
+compose-draft-not-opened = ഡ്രാഫ്റ്റ് തുറക്കാനായില്ല.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = അറ്റാച്ച് ചെയ്യുക
 compose-file-too-large = { $name } വളരെ വലുതാണ്: ഒരു സന്ദേശത്തിൽ { $limit } വരെ മാത്രമേ ഉൾക്കൊള്ളാനാകൂ.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = അറ്റാച്ച്‌മെന്റ് നീക്കം ചെയ്യുക
+compose-attachments-total = { $count ->
+    [one] { $count } ഫയൽ, { $size }
+   *[other] { $count } ഫയലുകൾ, { $size }
+}
 compose-drop-files = ഫയലുകൾ ഇവിടെ ഇടുക
 compose-drop-here = ഇവിടെ ഇടുക
 compose-paste-keep-formatting = ഫോർമാറ്റിംഗ് നിലനിർത്തുക
@@ -61,6 +68,12 @@ compose-encrypt = എൻക്രിപ്റ്റ് ചെയ്യുക
 compose-encrypted = എൻക്രിപ്റ്റ് ചെയ്‌തു: സ്വീകർത്താക്കൾക്ക് മാത്രമേ ഇത് വായിക്കാനാകൂ
 compose-sign = ഒപ്പിടുക
 compose-signed = ഒപ്പിട്ടു: ഇത് നിങ്ങളിൽ നിന്നാണെന്ന് സ്വീകർത്താക്കൾക്ക് പരിശോധിക്കാം
+compose-track = തുറക്കലും ക്ലിക്കുകളും ട്രാക്ക് ചെയ്യുക
+compose-tracked = ട്രാക്ക് ചെയ്യുന്നു: ഓരോ സ്വീകർത്താവും ഇത് എപ്പോൾ തുറക്കുന്നു അല്ലെങ്കിൽ ലിങ്ക് തുറക്കുന്നു എന്ന് നിങ്ങൾക്ക് കാണാം
+compose-track-unavailable = ഒപ്പിട്ടതും എൻക്രിപ്റ്റ് ചെയ്തതും പ്ലെയിൻ ടെക്സ്റ്റ് ആയതുമായ മെയിൽ ട്രാക്ക് ചെയ്യാൻ കഴിയില്ല
+compose-track-sign-in = തുറക്കലും ക്ലിക്കുകളും ട്രാക്ക് ചെയ്യാൻ ഒരു Katna അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്യുക
+compose-receipt = വായിച്ചതിന്റെ രസീത് അഭ്യർത്ഥിക്കുക
+compose-receipt-on = വായിച്ചതിന്റെ രസീത് അഭ്യർത്ഥിച്ചു: അത് അയയ്ക്കാൻ സ്വീകർത്താവിന്റെ ആപ്പ് അവരോട് ചോദിച്ചേക്കാം
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = വിഷയം ചേർക്കുക
 send-check-send-anyway = എന്തായാലും അയയ്ക്കുക
 recipient-not-valid = സാധുവായ ഇമെയിൽ വിലാസമല്ല
 recipient-show-address = വിലാസം കാണിക്കുക
+recipient-remove = നീക്കം ചെയ്യുക
 recipient-bad-title = വിലാസം പരിശോധിക്കുക
 recipient-bad-text = “{ $address }” സാധുവായ ഇമെയിൽ വിലാസമല്ല. അയയ്ക്കുന്നതിന് മുമ്പ് അത് ശരിയാക്കുകയോ നീക്കം ചെയ്യുകയോ ചെയ്യുക.
 recipient-bad-fix = ശരിയാക്കുക

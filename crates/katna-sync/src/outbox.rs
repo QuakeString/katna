@@ -31,7 +31,11 @@ use katna_store::{
     MessageFlags, MessageId, NewMessage, NewParticipant, OutboxEntry, SendState, Store,
 };
 
+use crate::tracking::{self, rewrite};
 use crate::{Error, MailSender, Result, ops};
+
+/// Most recipients a tracked message may have; more go out untracked.
+pub const MAX_TRACKED_RECIPIENTS: usize = 50;
 
 /// Opens SMTP connections for the outbox.
 pub trait Outgoing: Send + Sync + 'static {
@@ -43,6 +47,18 @@ pub trait Outgoing: Send + Sync + 'static {
     /// Whether the server files sent mail in the Sent folder by itself, as
     /// Gmail does.
     fn files_sent_mail(&self, account: AccountId) -> bool;
+
+    /// The tracking server, when tracking is on (`docs/ARCHITECTURE.md`
+    /// §16.1).
+    fn tracking(&self) -> Option<tracking::Client> {
+        None
+    }
+
+    /// This computer's Katna Server token; the server takes it only while
+    /// signed in to a Katna account (§16.2).
+    fn tracking_token(&self) -> impl Future<Output = Result<String>> + Send {
+        async { Err(Error::Rejected("tracking is off".into())) }
+    }
 }
 
 /// Retry timing of the outbox.
@@ -95,6 +111,72 @@ pub fn queue(
     delay: u32,
     now: i64,
 ) -> std::result::Result<i64, QueueError> {
+    queue_held(
+        store,
+        account,
+        raw,
+        now + i64::from(delay),
+        None,
+        now,
+        false,
+    )
+}
+
+/// Like [`queue`]; with `tracked`, the message goes out as one tracked
+/// copy per recipient when it can be (§11, §16.1).
+pub fn queue_with(
+    store: &mut Store,
+    account: AccountId,
+    raw: &[u8],
+    delay: u32,
+    now: i64,
+    tracked: bool,
+) -> std::result::Result<i64, QueueError> {
+    queue_held(
+        store,
+        account,
+        raw,
+        now + i64::from(delay),
+        None,
+        now,
+        tracked,
+    )
+}
+
+/// Queues `raw` from `account` to go out at `at` (Unix seconds), as
+/// scheduled mail. After the undo delay (`delay` seconds) the outbox hands
+/// it to an SMTP server that holds mail until then (RFC 4865
+/// `FUTURERELEASE`), so it goes out with this computer off; other servers
+/// get it at `at`. Returns the outbox entry's ID.
+pub fn schedule(
+    store: &mut Store,
+    account: AccountId,
+    raw: &[u8],
+    delay: u32,
+    at: i64,
+    now: i64,
+) -> std::result::Result<i64, QueueError> {
+    let hand_over = now + i64::from(delay);
+    queue_held(
+        store,
+        account,
+        raw,
+        hand_over,
+        Some(at).filter(|&at| at > hand_over),
+        now,
+        false,
+    )
+}
+
+fn queue_held(
+    store: &mut Store,
+    account: AccountId,
+    raw: &[u8],
+    send_at: i64,
+    hold_until: Option<i64>,
+    now: i64,
+    tracked: bool,
+) -> std::result::Result<i64, QueueError> {
     let envelope = envelope(raw).map_err(QueueError::Invalid)?;
     let domain = envelope
         .from
@@ -104,11 +186,19 @@ pub fn queue(
     with_message(&raw, now, MessageFlags::SEEN, |message| {
         let mut batch = store.mail_batch()?;
         let id = batch.add_outgoing(account, message)?;
-        let entry = batch.queue_send(id, now + i64::from(delay))?;
+        let entry = if tracked {
+            batch.queue_send_as(id, send_at, true)?
+        } else {
+            batch.queue_held(id, send_at, hold_until)?
+        };
         batch.commit()?;
         Ok(entry)
     })
 }
+
+/// Scheduled mail closer to its time than this (seconds) is sent as is,
+/// not held by the server.
+const HOLD_MARGIN: i64 = 60;
 
 /// Reads `raw` (with `Date` and `Message-ID`) into the message the store
 /// keeps, with `flags`, and hands it to `f`.
@@ -276,16 +366,7 @@ fn unique_id(now: i64) -> String {
 fn rfc5322_date(now: i64) -> String {
     let days = now.div_euclid(86_400);
     let secs = now.rem_euclid(86_400);
-    // Howard Hinnant's civil-from-days.
-    let z = days + 719_468;
-    let era = z.div_euclid(146_097);
-    let doe = z - era * 146_097;
-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let day = doy - (153 * mp + 2) / 5 + 1;
-    let month = if mp < 10 { mp + 3 } else { mp - 9 };
-    let year = yoe + era * 400 + i64::from(month <= 2);
+    let (year, month, day) = civil_date(days);
     const WEEKDAYS: [&str; 7] = ["Thu", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed"];
     const MONTHS: [&str; 12] = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -298,6 +379,21 @@ fn rfc5322_date(now: i64) -> String {
         secs / 60 % 60,
         secs % 60
     )
+}
+
+/// The year, month and day of `days` since 1970-01-01 (Howard Hinnant's
+/// civil-from-days).
+pub(crate) fn civil_date(days: i64) -> (i64, i64, i64) {
+    let z = days + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = yoe + era * 400 + i64::from(month <= 2);
+    (year, month, day)
 }
 
 /// The daemon's side of the outbox: wakes it after queueing, and stops it
@@ -357,6 +453,7 @@ pub async fn run<O: Outgoing>(
         if control.stop.is_closed() {
             return;
         }
+        release(&outgoing, &mut store, &events);
         let due = match store.due_sends(unix_now(), 20) {
             Ok(due) => due,
             Err(err) => {
@@ -369,7 +466,7 @@ pub async fn run<O: Outgoing>(
                 return;
             }
             match send(&outgoing, &mut store, &config, entry, &events).await {
-                Ok(Delivery::Sent) => offline_wait = config.retry_min,
+                Ok(Delivery::Sent | Delivery::Waiting) => offline_wait = config.retry_min,
                 Ok(Delivery::Offline) => {
                     offline_wait = (offline_wait * 2).min(config.retry_max);
                 }
@@ -409,8 +506,50 @@ pub async fn run<O: Outgoing>(
 
 enum Delivery {
     Sent,
+    /// Scheduled mail waits for its time, here or for the server.
+    Waiting,
     Offline,
     Refused,
+}
+
+/// Files the mail a server held that went out by now.
+fn release<O: Outgoing>(outgoing: &O, store: &mut Store, events: &Sender<OutboxEvent>) {
+    let released = match store.released_sends(unix_now()) {
+        Ok(released) => released,
+        Err(err) => {
+            tracing::warn!(%err, "cannot read held mail");
+            return;
+        }
+    };
+    for entry in released {
+        let cleared = store.mail_batch().and_then(|mut batch| {
+            batch.clear_hold(entry.id)?;
+            batch.commit()
+        });
+        if let Err(err) = cleared {
+            tracing::warn!(id = entry.id, %err, "cannot file held mail");
+            continue;
+        }
+        tracing::info!(id = entry.id, account = %entry.account, "held mail went out");
+        file(outgoing, store, entry.account, entry.message);
+        let _ = events.try_send(OutboxEvent {
+            id: entry.id,
+            account: entry.account,
+            state: SendState::Sent,
+            detail: String::new(),
+        });
+    }
+}
+
+/// What handing a message to the server came to.
+enum Handover {
+    /// Sent now.
+    Sent,
+    /// The server holds it until its time.
+    Held,
+    /// The server cannot hold it that long, or at all: hand it over again
+    /// at this time.
+    Later(i64),
 }
 
 /// Sends one entry and records the outcome.
@@ -429,6 +568,18 @@ async fn send<O: Outgoing>(
             detail,
         });
     };
+    // Scheduled mail due soon waits here for its time; the server gets the
+    // rest to hold.
+    let now = unix_now();
+    if let Some(at) = entry
+        .hold_until
+        .filter(|&at| at > now && at <= now + HOLD_MARGIN)
+    {
+        let mut batch = store.mail_batch()?;
+        batch.set_send_state(entry.id, SendState::Queued, Some(at), None)?;
+        batch.commit()?;
+        return Ok(Delivery::Waiting);
+    }
     {
         // In a block: a batch must not live across an await.
         let mut batch = store.mail_batch()?;
@@ -445,21 +596,59 @@ async fn send<O: Outgoing>(
         .map(|hash| store.blobs().get(&hash))
         .transpose()?
         .flatten();
-    let result = match raw {
-        Some(raw) => deliver(outgoing, entry.account, &raw).await,
-        None => Err(Error::Rejected("the message is gone from the store".into())),
+    let hold = entry.hold_until.filter(|&at| at > now);
+    let mut tracked = None;
+    let result = match (raw, hold) {
+        (Some(raw), Some(at)) => hand_over(outgoing, entry.account, &raw, at).await,
+        (Some(raw), None) if entry.per_recipient => {
+            tracked = prepare_tracking(outgoing, store, entry, &raw).await?;
+            match &tracked {
+                Some(plan) => deliver_tracked(outgoing, store, entry.account, &raw, plan).await,
+                None => deliver(outgoing, entry.account, &raw).await,
+            }
+            .map(|()| Handover::Sent)
+        }
+        (Some(raw), None) => deliver(outgoing, entry.account, &raw)
+            .await
+            .map(|()| Handover::Sent),
+        (None, _) => Err(Error::Rejected("the message is gone from the store".into())),
     };
 
     let now = unix_now();
     let mut batch = store.mail_batch()?;
     let delivery = match result {
-        Ok(()) => {
+        Ok(Handover::Held) => {
+            // Filed in Sent when it goes out; see `release`.
             batch.set_send_state(entry.id, SendState::Sent, None, None)?;
             batch.commit()?;
-            tracing::info!(id = entry.id, account = %entry.account, "sent");
-            file(outgoing, store, entry.account, entry.message);
+            tracing::info!(id = entry.id, account = %entry.account, "held by the server");
             changed(SendState::Sent, String::new());
             return Ok(Delivery::Sent);
+        }
+        Ok(Handover::Sent) => {
+            batch.set_send_state(entry.id, SendState::Sent, None, None)?;
+            batch.clear_hold(entry.id)?;
+            batch.commit()?;
+            tracing::info!(id = entry.id, account = %entry.account, "sent");
+            match &tracked {
+                Some(plan) => {
+                    store.tracking_sent(plan.message.id, now)?;
+                    file_tracked(outgoing, store, entry, plan);
+                }
+                None => file(outgoing, store, entry.account, entry.message),
+            }
+            changed(SendState::Sent, String::new());
+            return Ok(Delivery::Sent);
+        }
+        Ok(Handover::Later(at)) => {
+            tracing::info!(
+                id = entry.id,
+                at,
+                "the server cannot hold it; sending it then"
+            );
+            batch.set_send_state(entry.id, SendState::Queued, Some(at), None)?;
+            changed(SendState::Queued, String::new());
+            Delivery::Waiting
         }
         Err(error @ (Error::Rejected(_) | Error::Auth(_))) => {
             let attempts = entry.attempts + 1;
@@ -504,6 +693,227 @@ async fn deliver<O: Outgoing>(outgoing: &O, account: AccountId, raw: &[u8]) -> R
         tracing::debug!(%error, "SMTP QUIT after sending");
     }
     Ok(())
+}
+
+/// Hands scheduled mail to the server to hold until `at`, when it can.
+async fn hand_over<O: Outgoing>(
+    outgoing: &O,
+    account: AccountId,
+    raw: &[u8],
+    at: i64,
+) -> Result<Handover> {
+    let envelope = envelope(raw).map_err(Error::Rejected)?;
+    let to: Vec<&str> = envelope.to.iter().map(String::as_str).collect();
+    let mut sender = outgoing.connect(account).await?;
+    let wait = at - unix_now();
+    // A hold shorter than the margins is no use.
+    let limit = sender
+        .hold_limit()
+        .await?
+        .filter(|&limit| limit > 2 * HOLD_MARGIN as u64);
+    let handover = match limit {
+        Some(limit) if wait <= i64::try_from(limit).unwrap_or(i64::MAX) => {
+            sender
+                .send_held(&envelope.from, &to, without_bcc(raw), at)
+                .await?;
+            Handover::Held
+        }
+        // Too far off: again once it is within the server's limit.
+        Some(limit) => Handover::Later(at - i64::try_from(limit).unwrap_or(0) + HOLD_MARGIN),
+        None => Handover::Later(at),
+    };
+    if let Err(error) = sender.quit().await {
+        tracing::debug!(%error, "SMTP QUIT after handing over");
+    }
+    Ok(handover)
+}
+
+/// How a tracked message goes out: the tracking server's address and
+/// each recipient's tracking ID.
+struct TrackingPlan {
+    base: String,
+    message: katna_store::TrackedMessage,
+}
+
+/// Gets tracking IDs for `entry`'s recipients (once; a retry reuses them).
+/// `Ok(None)` sends the message untracked: tracking is off or the server
+/// cannot be reached, the message has no HTML version or is signed or
+/// encrypted, or it has too many recipients. Mail is never held back for
+/// tracking.
+async fn prepare_tracking<O: Outgoing>(
+    outgoing: &O,
+    store: &mut Store,
+    entry: &OutboxEntry,
+    raw: &[u8],
+) -> katna_store::Result<Option<TrackingPlan>> {
+    let Some(client) = outgoing.tracking() else {
+        tracing::info!(id = entry.id, "tracking is off; sending untracked");
+        return Ok(None);
+    };
+    let base = client.server().base().to_owned();
+    if let Some(message) = store.tracking_for_outbox(entry.id)? {
+        return Ok(Some(TrackingPlan { base, message }));
+    }
+    let untracked = |why: &str| {
+        tracing::info!(id = entry.id, why, "sending untracked");
+        Ok(None)
+    };
+    let Some(links) = rewrite::links(raw) else {
+        return untracked("no HTML version, or signed or encrypted");
+    };
+    let Ok(envelope) = envelope(raw) else {
+        return untracked("no envelope");
+    };
+    if envelope.to.len() > MAX_TRACKED_RECIPIENTS {
+        return untracked("too many recipients");
+    }
+    let parsed = katna_import::parse_message(raw).unwrap_or_default();
+    let Some(message_id) = parsed.message_id.clone() else {
+        return untracked("no Message-ID");
+    };
+    let token = match outgoing.tracking_token().await {
+        Ok(token) => token,
+        Err(error) => {
+            tracing::warn!(%error, "no tracking server token");
+            return untracked("no tracking server token");
+        }
+    };
+    let ids = match client.create(&token, envelope.to.len(), &links).await {
+        Ok(ids) => ids,
+        Err(error) => {
+            tracing::warn!(%error, "the tracking server did not give IDs");
+            return untracked("tracking server unavailable");
+        }
+    };
+    let recipients: Vec<katna_store::NewRecipient<'_>> = envelope
+        .to
+        .iter()
+        .zip(&ids)
+        .map(|(email, id)| katna_store::NewRecipient {
+            tracking_id: id,
+            email,
+            name: parsed
+                .participants
+                .iter()
+                .find(|p| p.email_norm == *email)
+                .and_then(|p| p.display_name.as_deref()),
+        })
+        .collect();
+    store.start_tracking(
+        entry.id,
+        entry.account,
+        &message_id,
+        parsed.subject.as_deref().unwrap_or(""),
+        &links,
+        &recipients,
+        unix_now(),
+    )?;
+    let message = store
+        .tracking_for_outbox(entry.id)?
+        .ok_or_else(|| katna_store::Error::InvalidData("tracking was not stored".into()))?;
+    Ok(Some(TrackingPlan { base, message }))
+}
+
+/// Sends each recipient who has not got it yet their own tracked copy,
+/// each in its own SMTP transaction over one connection. The headers are
+/// the same in every copy.
+async fn deliver_tracked<O: Outgoing>(
+    outgoing: &O,
+    store: &mut Store,
+    account: AccountId,
+    raw: &[u8],
+    plan: &TrackingPlan,
+) -> Result<()> {
+    let envelope = envelope(raw).map_err(Error::Rejected)?;
+    let clean = without_bcc(raw);
+    let mut sender = None;
+    let mut refused = Vec::new();
+    for recipient in plan
+        .message
+        .recipients
+        .iter()
+        .filter(|r| r.sent_at.is_none())
+    {
+        let copy = rewrite::tracked_copy(
+            &clean,
+            &plan.base,
+            &recipient.tracking_id,
+            &plan.message.links,
+        )
+        .unwrap_or_else(|| clean.clone());
+        if sender.is_none() {
+            sender = Some(outgoing.connect(account).await?);
+        }
+        let Some(open) = sender.as_mut() else {
+            continue;
+        };
+        match open
+            .send(&envelope.from, &[recipient.email.as_str()], copy)
+            .await
+        {
+            Ok(()) => store.tracked_copy_sent(&recipient.tracking_id, unix_now())?,
+            // One recipient refused: the others still get theirs, on a new
+            // connection (SMTP is left mid-transaction after an error).
+            Err(Error::Rejected(reason)) => {
+                refused.push(format!("{}: {reason}", recipient.email));
+                sender = None;
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    if let Some(open) = sender
+        && let Err(error) = open.quit().await
+    {
+        tracing::debug!(%error, "SMTP QUIT after sending");
+    }
+    if refused.is_empty() {
+        return Ok(());
+    }
+    let delivered: Vec<String> = store
+        .tracking_for_outbox(plan.message.outbox_id)?
+        .map(|m| {
+            m.recipients
+                .into_iter()
+                .filter(|r| r.sent_at.is_some())
+                .map(|r| r.email)
+                .collect()
+        })
+        .unwrap_or_default();
+    Err(Error::Rejected(format!(
+        "not delivered to {}; delivered to {}",
+        refused.join(", "),
+        if delivered.is_empty() {
+            "nobody".to_owned()
+        } else {
+            delivered.join(", ")
+        }
+    )))
+}
+
+/// Files the clean copy of a tracked message in Sent; where the server
+/// filed every tracked copy itself (Gmail), those are deleted first.
+fn file_tracked<O: Outgoing>(
+    outgoing: &O,
+    store: &mut Store,
+    entry: &OutboxEntry,
+    plan: &TrackingPlan,
+) {
+    let result = if outgoing.files_sent_mail(entry.account) {
+        let marker = format!("{}/o/", plan.base);
+        ops::file_sent_tracked(
+            store,
+            entry.message,
+            &plan.message.message_id,
+            &marker,
+            plan.message.recipients.len() as u32,
+        )
+        .map(drop)
+    } else {
+        ops::file_sent(store, entry.message).map(drop)
+    };
+    if let Err(err) = result {
+        tracing::warn!(%err, "could not file a tracked message");
+    }
 }
 
 /// Files a sent message in Sent, or forgets it where the server does that.

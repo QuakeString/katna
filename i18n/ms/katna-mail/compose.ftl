@@ -38,6 +38,9 @@ compose-scheduled = Penghantaran dijadualkan pada { $when }
 compose-sent-archived = Dihantar dan diarkibkan
 compose-sent = Mesej dihantar
 compose-discarded = Draf dibuang
+compose-draft-saved = Draf disimpan
+compose-draft-failed = Draf tidak dapat disimpan: { $error }
+compose-draft-not-opened = Draf tidak dapat dibuka.
 
 ## Attachments
 
@@ -46,6 +49,7 @@ compose-picker-attach = Lampirkan
 compose-file-too-large = { $name } terlalu besar: mesej boleh membawa sehingga { $limit }.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alih keluar lampiran
+compose-attachments-total = { $count } fail, { $size }
 compose-drop-files = Lepaskan fail di sini
 compose-drop-here = Lepaskan di sini
 compose-paste-keep-formatting = Kekalkan pemformatan
@@ -61,6 +65,12 @@ compose-encrypt = Sulitkan
 compose-encrypted = Disulitkan: hanya penerima boleh membacanya
 compose-sign = Tandatangani
 compose-signed = Ditandatangani: penerima boleh menyemak bahawa ia daripada anda
+compose-track = Jejaki pembukaan dan klik
+compose-tracked = Dijejaki: anda nampak bila setiap penerima membukanya atau mengikuti pautan
+compose-track-unavailable = Mel yang ditandatangani, disulitkan dan teks biasa tidak boleh dijejaki
+compose-track-sign-in = Log masuk ke akaun Katna untuk menjejaki pembukaan dan klik
+compose-receipt = Minta resit baca
+compose-receipt-on = Resit baca diminta: apl penerima mungkin meminta mereka menghantarnya
 
 ## Spelling
 
@@ -85,6 +95,7 @@ send-check-add-subject = Tambah subjek
 send-check-send-anyway = Hantar juga
 recipient-not-valid = Bukan alamat e-mel yang sah
 recipient-show-address = Tunjukkan alamat
+recipient-remove = Alih keluar
 recipient-bad-title = Semak alamat
 recipient-bad-text = “{ $address }” bukan alamat e-mel yang sah. Betulkan atau alih keluarnya sebelum menghantar.
 recipient-bad-fix = Betulkan

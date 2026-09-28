@@ -1,0 +1,46 @@
+# Katna Mail, Indonesian (Bahasa Indonesia).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+activity-messages = Pesan yang dilacak
+activity-open-rate = Tingkat dibuka
+activity-click-rate = Tingkat klik
+activity-percent = { $percent }%
+activity-by-day = Dibuka dan diklik
+activity-opens = Dibuka: { $count }
+activity-clicks = Diklik: { $count }
+activity-by-week = Satu batang per minggu
+activity-by-open-rate = Subjek menurut tingkat dibuka
+activity-opened = Dibuka oleh { $opened } dari { $recipients }
+activity-clicked = Link diikuti oleh { $clicked } dari { $recipients }
+activity-no-subject = (tanpa subjek)
+activity-nothing-period = Tidak ada email terlacak yang dikirim dalam periode ini.
+activity-close = Tutup
+insights-heading = Kotak surat Anda
+insights-counting = Menghitung email Anda…
+insights-failed = Email Anda tidak dapat dihitung.
+insights-sent = Terkirim
+insights-received = Diterima
+insights-replies = Balasan
+insights-you-replied = Anda membalas { $percent }% email dari orang lain ({ $replied } dari { $messages })
+insights-they-replied = Orang lain membalas { $percent }% email Anda ({ $replied } dari { $messages })
+insights-median = Biasanya dalam { $time }
+insights-minutes = { $count } menit
+insights-hours = { $count } jam
+insights-days = { $count } hari
+insights-people = Orang yang paling sering berkirim email dengan Anda
+insights-person-counts = { $sent } dikirim · { $received } diterima
+insights-hours-heading = Kapan email masuk
+activity-details = Detail
+activity-feed-opened = { $who } membuka “{ $subject }”
+activity-feed-clicked = { $who } mengklik link di “{ $subject }”
+activity-feed-maybe = { $who } mungkin sudah membuka “{ $subject }”
+activity-feed-empty = Belum ada yang dibuka atau diklik. Aktifkan ikon mata saat menulis pesan untuk melihat kapan pesan dibaca.
+activity-message-gone = Pesan itu sudah tidak ada di Terkirim.
+activity-report = Laporan aktivitas
+activity-range-week = 7 hari terakhir
+activity-range-month = 30 hari terakhir
+activity-range-all = Sepanjang waktu
+activity-range-custom = Kustom
+activity-range-from = Dari
+activity-range-to = Sampai
+activity-range-apply = Terapkan

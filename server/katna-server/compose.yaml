@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Katna Server with PostgreSQL behind Caddy, which gets the TLS certificate
+# for the tracking domain by itself. See README.md next to this file.
+#
+#   cp env.example .env   # then set KATNA_TRACKING_DOMAIN and the password
+#   docker compose up -d
+
+name: katna-server
+
+services:
+  server:
+    image: ${KATNA_SERVER_IMAGE:-ghcr.io/quakestring/katna-server:latest}
+    build:
+      context: ../..
+      dockerfile: server/katna-server/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://katna:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db/katna
+      # Caddy adds the visitor's address as the last X-Forwarded-For entry.
+      KATNA_SERVER_TRUST_FORWARDED: "1"
+      KATNA_SERVER_RETENTION_DAYS: ${KATNA_SERVER_RETENTION_DAYS:-180}
+      KATNA_SERVER_DAILY_LIMIT: ${KATNA_SERVER_DAILY_LIMIT:-5000}
+      # LibreTranslate below, reached only on this compose network.
+      KATNA_SERVER_TRANSLATE_URL: http://translate:5000
+      KATNA_SERVER_TRANSLATIONS_PER_DAY: ${KATNA_SERVER_TRANSLATIONS_PER_DAY:-2000}
+      KATNA_SERVER_SMTP_HOST: ${KATNA_SERVER_SMTP_HOST:-}
+      KATNA_SERVER_SMTP_PORT: ${KATNA_SERVER_SMTP_PORT:-465}
+      KATNA_SERVER_SMTP_USERNAME: ${KATNA_SERVER_SMTP_USERNAME:-}
+      KATNA_SERVER_SMTP_PASSWORD: ${KATNA_SERVER_SMTP_PASSWORD:-}
+      KATNA_SERVER_SMTP_URL: ${KATNA_SERVER_SMTP_URL:-}
+      KATNA_SERVER_MAIL_FROM: ${KATNA_SERVER_MAIL_FROM:-}
+      RUST_LOG: ${RUST_LOG:-info}
+    depends_on:
+      - db
+      - translate
+
+  # Automatic translation: LibreTranslate (AGPL-3.0), the upstream image,
+  # unmodified. No ports: only Katna Server talks to it, and Caddy proxies
+  # only to Katna Server. The first start downloads the language models
+  # into the volume, which takes a while.
+  translate:
+    image: docker.io/libretranslate/libretranslate:${KATNA_TRANSLATE_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      # The languages loaded (each pair costs memory); empty loads them all.
+      LT_LOAD_ONLY: ${KATNA_TRANSLATE_LANGUAGES:-en,hi,bn,ur,ar,fa,he,zh,zt,ja,ko,id,ms,th,vi,tl,tr,ru,uk,de,fr,es,pt,it,nl,pl,sv,sw}
+      LT_UPDATE_MODELS: "true"
+      LT_DISABLE_WEB_UI: "true"
+      LT_THREADS: ${KATNA_TRANSLATE_THREADS:-4}
+    volumes:
+      - translate-models:/home/libretranslate/.local
+
+  db:
+    image: docker.io/library/postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: katna
+      POSTGRES_DB: katna
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      KATNA_TRACKING_DOMAIN: ${KATNA_TRACKING_DOMAIN:?set KATNA_TRACKING_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - server
+
+volumes:
+  db-data:
+  translate-models:
+  caddy-data:
+  caddy-config:

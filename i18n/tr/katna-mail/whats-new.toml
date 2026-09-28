@@ -463,3 +463,238 @@ hesabınızdan göndermek için okuna tıklayın. Ayarlar > Oluşturma > Yeni
 iletileri şu hesaptan gönder bölümünde başka bir varsayılan seçmediğiniz
 sürece yeni posta ilk hesabınızdan başlar.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Birleşik gelen kutusu"
+text = """
+Tüm hesaplarınızın postalarını birlikte görmek için
+Ayarlar > Hesaplar > Birleşik gelen kutusu seçeneğini açın. “Tüm
+Hesaplar” klasör bölmesinin en üstünde yer alır ve tüm hesaplar için tek
+bir Gelen Kutusu, Okunmamış, Yıldızlı, Önemli, Gönderilmiş Postalar,
+Taslaklar ve daha fazlasını içerir; her birinin yanındaki ok, her hesap
+için bir satır açar. Artık her hesabın adında, klasörlerini daraltan bir
+ok var.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Her klasöre uygun sağ tık menüleri"
+text = """
+Sağ tık menüsünde Taşı altında bir klasör veya etiket seçmek artık
+postayı Geri al seçeneğiyle taşıyor, arama sonuçlarından da. Spam
+klasöründe Spam bildir yerine Spam değil çıkar. Çöp Kutusu'nda Gelen
+Kutusu'na taşı ve Kalıcı olarak sil, Arşiv'de Gelen Kutusu'na taşı
+bulunur; Taslaklar ve Gönderilmiş Postalar'da ise orada geçerli olmayan
+öğeler gösterilmez.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Hesapları sürükleyerek sıralayın"
+text = """
+Ayarlar > Hesaplar bölümünde bir hesabı sürüklemek artık satırın
+tamamını kaldırıyor ve diğer hesaplar yer açmak için kenara kayıyor.
+Yukarı taşı ve Aşağı taşı, bir satırın üzerine geldiğinizde görünür.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Taslaklar saklanır"
+text = """
+Yazmakta olduğunuz bir iletiyi kapattığınızda artık Gmail'deki gibi
+Taslaklar'a, posta sunucunuza da kaydedilir. Yazmaya devam etmek için
+Taslaklar'dan açın. Onu yalnızca çöp kutusu düğmesi atar ve Geri al geri
+getirir.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Çok sayıda ek için yer"
+text = """
+Kaç dosya eklerseniz ekleyin, liste artık Gönder çubuğunun üzerine
+taşmak yerine onun üstünde kayar, en yeni dosyayı gösterir ve kaç dosya
+olduğunu ve toplam boyutlarını söyler.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Okunmamış ya da yıldızlı postaları Gmail gibi seçin"
+text = """
+Seç menüsündeki Okunmuş, Okunmamış, Yıldızlı ve Yıldızsız yeniden
+ekrandaki eşleşen postaları işaretler. Listenin üstündeki bir satır
+klasördeki eşleşen her ileti dizisini seçmeyi önerir ve Seçimi temizle
+bunu geri alır.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Klasörler sizi Ayarlar'dan çıkarır"
+text = """
+Ayarlar açıkken bir klasöre ya da Posta simgesine tıklamak artık
+Gmail'deki gibi Ayarlar'ı kapatıp o klasörü açar. Geri oku da çalışmaya
+devam eder.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Resimleri metnin içine bırakın"
+text = """
+Bir resmi iletinin üzerine sürüklediğinizde nereye yerleşeceğini
+gösteren bir imleç çıkar; böylece onu bir cümlenin ortasına
+bırakabilirsiniz. Diğer dosyalar yine ekler için bırakma alanını
+gösterir ve bırakma artık siz yazdıktan sonra da çalışır.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Çık hemen kapatır"
+text = """
+Tepsi simgesinin menüsündeki Çık artık hâlâ eşitlenen ya da dizinlenen
+postaları beklemiyor: Katna ve tepsi simgesi hemen kapanır, geri kalanı
+Katna bir sonraki başladığında sürer.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Postanızın yanında kişi ayrıntıları"
+text = """
+Geniş bir pencerede, açık ileti dizisinin yanındaki bir kart artık
+göndereni gösterir: imzalarından telefonunu, unvanını ve şirketini, onun
+saatini, ne kadar yazıştığınızı, son ileti dizilerinizi ve aranızdaki
+dosyaları. Açmak için bir ileti dizisine ya da dosyaya, görmek için
+ileti dizisindeki başka bir kişiye tıklayın. Bilgiler yalnızca bu
+bilgisayardaki postalarınızdan okunur. Okuma bölmesinin araç çubuğundaki
+kişi düğmesi kartı gizler.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Kullanılan depolama alanı"
+text = """
+Posta sunucusu bildirdiğinde, klasör bölmesinin altında hesabın posta
+depolama alanının ne kadar dolu olduğu görünür; örneğin “15 GB alanın
+%34 kadarı kullanılıyor”.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "KRunner ve GNOME aramasından posta bulun"
+text = """
+KRunner'a (Alt+Space) ya da Etkinlikler aramasına bir ad yazarak o
+kişiye posta yazın, adresini kopyalayın ya da postalarını bulun.
+Konusunda veya göndereninde yazdığınız her kelime geçen iletiler çıkar;
+Katna Mail'in arama kutusunda olduğu gibi tüm postalarınızda aramak için
+mail: ile başlayın.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sık yazdığınız postalar için şablonlar"
+text = """
+Bir iletiyi bir kez yazın, oluşturma penceresindeki yeni Şablonlar
+düğmesiyle kaydedin, sonra tek tıkla herhangi bir yeni postaya ya da
+yanıta ekleyin. {first name}, {name} veya {my name} yazın, Katna bunları
+her alıcı için doldursun. Şablonları Ayarlar > Oluşturma bölümünde
+düzenleyin, yeniden adlandırın ya da silin.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Planlanan postalar bilgisayarınız kapalıyken de gider"
+text = """
+Posta sunucunuz, Stalwart'ın yapabildiği gibi postayı belirli bir saate
+kadar bekletebiliyorsa, Gönderimi planla artık Geri al kaybolunca iletiyi
+ona teslim eder; böylece ileti, bu bilgisayar kapalı olsa bile zamanında
+gider. Planlama menüsü, iletiyi posta sunucunuzun mu yoksa Katna'nın mı
+göndereceğini söyler.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "Daha hafif bir vurgulama"
+text = """
+Posta listesinde işaretçinin altındaki satır artık altında koyu bir
+şerit yerine, Gmail'deki gibi hafif bir gölgeyle yükselir.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Adresleri Kime, Bilgi ve Gizli arasında sürükleyin"
+text = """
+Bir adres çipini taşımak için başka bir alana sürükleyin; siz
+sürüklerken Bilgi ve Gizli, gizli olsalar bile açılır. Bir çipin üzerine
+gelince onu kaldıran bir x görünür.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna hesabı"
+text = """
+Ayarlar > Katna hesabı, Katna'nın kendi sunucusunda, asla bir posta
+parolası olmayan kendi parolasıyla bir hesap oluşturmanızı sağlar.
+Okundu bilgisi ve bağlantı izleme gibi çevrimiçi Katna özellikleri buna
+ihtiyaç duyacak. Oturum açmış bilgisayarları görebilir, istediğinizin
+oturumunu kapatabilirsiniz.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Kaldığınız yerde"
+text = """
+Katna Mail'i kapatıp yeniden açmak, açık olan uygulamayı, klasörü ve
+Gelen Kutusu sekmesini, genişlettiğiniz klasörleri ve klasör bölmesinin
+daraltılmış olup olmadığını geri getirir. Katna'dan sistem tepsisinden
+çıkmak onu sıfırdan başlatır.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Erteleme ve yanıt hatırlatıcıları"
+text = """
+Bir ileti dizisini satırındaki saat simgesiyle veya sağ tık menüsünden
+erteleyin: Ertelenenler klasöründe bekler ve seçtiğiniz saatte okunmamış
+olarak Gelen Kutusu'na döner. Gönderirken, Gönder'in yanındaki ok, 1, 3
+veya 7 gün içinde kimse yanıt vermezse size hatırlatabilir. İkisi de
+bilgisayarınız açıkken çalışır ve uyku modundan çıktığında kaçırdıklarını
+tamamlar.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Postaları kendi dilinizde okuyun"
+text = """
+Başka bir dildeki bir iletinin üstünde artık bir Çevir düğmesi var ve
+Orijinali göster onu geri getirir. Katna dili bilgisayarınızda bulur;
+iletinin metni yalnızca siz istediğinizde çevrilmek üzere Katna'nın kendi
+sunucusuna gider. Ayarlar > Genel > Çeviri, dilinizi ve her zaman
+çevrilecek dilleri seçer.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Postanın ne zaman açıldığını görün"
+text = """
+Her alıcının iletinizi ne zaman açtığını veya içindeki bir bağlantıyı
+izlediğini görmek için alıcıların yanındaki gözü açın ya da bunun yerine
+okundu bilgisi isteyin. Gönderilen postada kimin açtığı görünür ve ilk
+seferinde bir bildirim size haber verir. İkisi de her yeni iletide
+kapalıdır ve izleme bir Katna hesabı gerektirir (Ayarlar > Katna hesabı).
+"""
+
+["2026-09-27-2042-activity"]
+title = "İzlenen postalar için Etkinlik"
+text = """
+Arama kutusunun yanındaki Etkinlik, izlenen iletilerinizden kaçının
+açıldığını ve bağlantılarının ne sıklıkla izlendiğini gösterir; konu
+satırlarınız da ne sıklıkla açıldıklarına göre sıralanır.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "KRunner'dan k ile postalarınızda arayın"
+text = """
+Katna Mail'in arama kutusuyla aynı sonuçları almak için KRunner'a veya
+GNOME aramasına k ya da m, bir boşluk ve ardından aradığınız şeyi yazın,
+örneğin “k budget”. Kendi sözcüklerinizi Ayarlar > Genel'de seçin.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Arama kutusunun yanında Etkinlik"
+text = """
+Arama kutusunun yanındaki Etkinlik düğmesi, izlenen postalarınızın yeni
+açılma ve tıklamalarını sayar; kimin neyi açtığını ve hangi bağlantıları
+izlediğini listeler. O iletiyi açmak için birine tıklayın. Ayrıntılar;
+son 7 veya 30 gün, tüm zamanlar ya da seçtiğiniz tarihler için açılma ve
+tıklanma oranlarını, günlük açılmaları ve en iyi konu satırlarınızı
+gösterir. Gönderilen bir ileti artık her kişinin onu kaç kez açtığını ve
+bir bağlantıyı kaç kez izlediğini gösterir.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Posta kutusu içgörüleri"
+text = """
+Etkinlik > Ayrıntılar artık dönem içinde ne kadar posta gönderip
+aldığınızı, sizin ve başkalarının ne sıklıkla ve ne kadar hızlı yanıt
+verdiğini, en çok yazıştığınız kişileri ve postalarınızın hangi gün ve
+saatlerde geldiğini de gösterir. Bunlar, Katna'da zaten bulunan
+postalardan bilgisayarınızda sayılır.
+"""

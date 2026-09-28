@@ -7,6 +7,7 @@
 settings-tab-general = Общие
 settings-tab-inbox = Входящие
 settings-tab-accounts = Аккаунты
+settings-tab-katna-account = Аккаунт Katna
 settings-tab-subscriptions = Подписки
 settings-tab-appearance = Внешний вид
 settings-tab-shortcuts = Быстрые клавиши
@@ -35,6 +36,14 @@ settings-general-full-headers = Показывать заголовки полн
 settings-general-full-headers-detail = От кого, кому, копия, дата и тема открыты в каждом письме
 settings-general-full-names = Полные имена получателей
 settings-general-full-names-detail = «мне, Ada Lovelace», а не «мне, Ada»
+settings-translation = Перевод
+settings-translation-detail = Письма на другом языке можно читать на вашем.
+settings-translation-offer = Предлагать перевод
+settings-translation-offer-detail = Текст письма отправляется на сервер Katna для перевода, только когда вы об этом просите или всегда переводите его язык. Вложения не отправляются никогда.
+settings-translation-reading = Переводить на
+settings-translation-always = Всегда переводить
+settings-translation-never = Никогда не предлагать для
+settings-translation-none = Пока нет. Выберите на панели перевода над письмом.
 settings-general-mark-read = Отмечать как прочитанное
 settings-general-mark-read-now = Сразу при открытии
 settings-general-mark-read-1s = Через 1 секунду после открытия
@@ -87,6 +96,9 @@ settings-general-tray = Показывать Katna в системном лот�
 settings-general-tray-detail = Со счётчиком непрочитанных и меню
 settings-general-unread-badge = Счётчик непрочитанных на значке в панели задач
 settings-general-unread-badge-detail = Сколько писем во «Входящих» не прочитано
+settings-general-search-triggers = Поиск с рабочего стола
+settings-general-search-triggers-detail = Введите в KRunner или в поиске GNOME одно из этих слов и пробел, а затем то, что нужно найти, чтобы искать в почте так же, как в здешней строке поиска. Разделяйте слова запятыми.
+settings-general-search-triggers-none = Слов нет; работает только «mail:»
 
 ## Settings > Inbox
 
@@ -192,6 +204,19 @@ settings-compose-spell-check-detail = Слова с ошибками подчё�
 settings-compose-spell-desktop = Язык рабочего стола ({ $language })
 settings-compose-templates = Шаблоны
 settings-compose-templates-detail = Сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ.
+settings-compose-no-templates = Шаблонов пока нет. В письме выберите «Шаблоны», затем «Сохранить как шаблон».
+settings-compose-template-new = Создать
+settings-compose-template-new-name = Новый шаблон
+settings-compose-template-subject = Тема
+settings-compose-template-text = Текст шаблона
+settings-compose-template-fields = Вместо {"{"}first name{"}"}, {"{"}name{"}"} и {"{"}my name{"}"} подставляются имя получателя и ваше имя.
+settings-compose-template-remove-file = Удалить вложение
+settings-compose-template-save = Сохранить
+settings-compose-template-saved = Шаблон сохранён
+settings-compose-template-needs-name = Дайте шаблону название
+settings-compose-template-delete = Удалить шаблон
+settings-compose-template-deleted = Шаблон удалён
+settings-compose-template-delete-failed = Не удалось удалить шаблон: { $error }
 
 ## Settings > Shortcuts
 
@@ -214,6 +239,7 @@ settings-shortcuts-restored = Всем сочетаниям снова назн�
 
 settings-general-language-summary = Язык приложения, дат и чисел
 settings-general-reading-summary = Сначала новые письма, полные заголовки, полные имена получателей
+settings-translation-summary = Перевод писем на других языках через сервер Katna на выбранный вами язык
 settings-general-mark-read-summary = Когда открытая цепочка отмечается как прочитанная: сразу, через 1 или 3 секунды или вручную
 settings-general-auto-advance-summary = Что открывается после удаления, архивирования или перемещения открытой цепочки: следующая, предыдущая или список
 settings-general-reply-button-summary = Кнопка ответа рядом с каждым письмом отвечает всем
@@ -246,7 +272,8 @@ settings-compose-for-new-mail-summary = Подпись, с которой нач
 settings-compose-for-replies-summary = Подпись, с которой начинаются ответы и пересылки
 settings-compose-format-summary = Писать новые письма обычным текстом
 settings-compose-spelling-summary = Проверка орфографии при вводе и язык словаря
-settings-compose-templates-summary = Скоро: сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ
+settings-general-search-triggers-summary = Слова для поиска в почте из KRunner или поиска GNOME
+settings-compose-templates-summary = Сохраняйте письма, которые часто пишете, и начинайте с них новое письмо или ответ
 settings-feedback-crash-reports-summary = Сохранять отчёты о сбоях на этом компьютере, когда Katna Mail или её фоновая служба аварийно завершается
 settings-feedback-saved-summary = Просмотр, копирование и удаление отчётов о сбоях, сохранённых на этом компьютере
 settings-feedback-help-improve-summary = Отправлять отчёты о сбоях, чтобы помочь исправить ошибки; выключено, пока вы не включите

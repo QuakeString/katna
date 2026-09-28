@@ -460,3 +460,225 @@ Nuwe boodskappe wys nou 'n Van-ry onder Aan. Klik op sy pyltjie om van
 rekening, tensy jy 'n ander verstek kies in Instellings > Skryf > Stuur
 nuwe boodskappe van.
 """
+
+["2026-09-27-1621-unified-inbox"]
+title = "Verenigde inkassie"
+text = """
+Skakel Instellings > Rekeninge > Verenigde inkassie aan om die pos van
+al jou rekeninge saam te sien. “Alle rekeninge” staan bo-aan die
+vouerpaneel met een Inkassie, Ongelees, Gester, Belangrik, Gestuur,
+Konsepte en meer vir al die rekeninge saam; die pyltjie langs elkeen
+maak een reël per rekening oop. Elke rekening se naam het nou 'n pyltjie
+wat sy vouers wegvou.
+"""
+
+["2026-09-27-1627-right-click-move-and-not-spam"]
+title = "Regsklikmenu’s pas by elke vouer"
+text = """
+As jy onder Skuif na in die regsklikmenu 'n vouer of etiket kies, skuif
+dit nou die pos, met Ontdoen, ook uit soekresultate. In Strooipos word
+Rapporteer strooipos nou Nie strooipos nie. Asblik bied Skuif na
+Inkassie en Vee permanent uit, Argief bied Skuif na Inkassie, en
+Konsepte en Gestuur laat items weg wat nie daar van toepassing is nie.
+"""
+
+["2026-09-27-1633-drag-accounts"]
+title = "Sleep rekeninge in volgorde"
+text = """
+As jy in Instellings > Rekeninge 'n rekening sleep, lig sy hele ry nou
+op, en die ander rekeninge skuif opsy om plek te maak. Skuif op en Skuif
+af verskyn wanneer jy na 'n ry wys.
+"""
+
+["2026-09-27-1637-drafts"]
+title = "Konsepte word gehou"
+text = """
+As jy 'n boodskap wat jy skryf toemaak, word dit nou in Konsepte
+gestoor, ook op jou posbediener, soos in Gmail. Maak dit uit Konsepte
+oop om verder te skryf. Net die asblikknoppie gooi dit weg, en Ontdoen
+bring dit terug.
+"""
+
+["2026-09-27-1609-many-attachments"]
+title = "Plek vir baie aanhegsels"
+text = """
+Hoeveel lêers jy ook al aanheg, die lys rol nou bo die Stuur-balk in plaas daarvan om daaroor te loop, wys die nuutste lêer en sê hoeveel lêers daar is en wat hul totale grootte is.
+"""
+
+["2026-09-27-1628-select-on-screen-first"]
+title = "Kies ongelese of gesterde e-pos, soos in Gmail"
+text = """
+Gelees, Ongelees, Gester en Ongester in die Kies-kieslys merk weer die
+e-pos op die skerm wat pas. 'n Reël bo die lys bied aan om elke gesprek in
+die vouer wat pas te kies, en Vee keuse uit maak dit ongedaan.
+"""
+
+["2026-09-27-1632-leave-settings-by-folder"]
+title = "Vouers neem jou uit Instellings"
+text = """
+As Instellings oop is, maak 'n klik op 'n vouer of die E-pos-ikoon nou
+Instellings toe en daardie vouer oop, soos in Gmail. Die terugpyltjie werk
+steeds ook.
+"""
+
+["2026-09-27-1641-drop-pictures-in-text"]
+title = "Los prente in die teks"
+text = """
+As jy 'n prent oor 'n boodskap sleep, wys 'n invoegpunt waar dit sal land, sodat jy dit in die middel van 'n sin kan los. Ander lêers wys steeds die losarea vir aanhegsels, en los werk nou ook nadat jy getik het.
+"""
+
+["2026-09-27-1707-quick-quit"]
+title = "Verlaat maak dadelik toe"
+text = """
+Verlaat in die stelselbalkikoon se kieslys wag nie meer vir e-pos wat nog
+sinkroniseer of geïndekseer word nie: Katna en sy stelselbalkikoon maak
+dadelik toe, en die res gaan voort wanneer Katna weer begin.
+"""
+
+["2026-09-27-1715-contact-panel"]
+title = "Kontakbesonderhede langs jou e-pos"
+text = """
+In 'n breë venster wys 'n kaart langs die oop gesprek nou die afsender:
+hul foon, titel en maatskappy uit hul handtekeninge, hul tyd van die dag,
+hoeveel e-pos julle uitgeruil het, julle onlangse gesprekke en die lêers
+tussen julle. Klik op 'n gesprek of 'n lêer om dit oop te maak, of op 'n
+ander persoon in die gesprek om hulle te sien. Dit word net uit jou e-pos
+op hierdie rekenaar gelees. Die kontakknoppie op die leesvenster se
+nutsbalk versteek dit.
+"""
+
+["2026-09-27-1640-storage-used"]
+title = "Berging gebruik"
+text = """
+Die voet van die vouerpaneel wys hoe vol die rekening se e-posberging is,
+soos “34% van 15 GB gebruik”, wanneer sy e-posbediener dit meedeel.
+"""
+
+["2026-09-27-1651-desktop-search"]
+title = "Vind e-pos vanuit KRunner en GNOME-soektog"
+text = """
+Tik 'n naam in KRunner (Alt+Space) of die Aktiwiteite-soektog om aan
+daardie persoon te skryf, hul adres te kopieer of hul e-pos te vind.
+Boodskappe verskyn wanneer hul onderwerp of sender elke woord bevat wat jy
+tik; begin met mail: om al jou e-pos te deursoek, soos in Katna Mail se
+soekveld.
+"""
+
+["2026-09-27-1727-mail-templates"]
+title = "Sjablone vir e-pos wat jy gereeld skryf"
+text = """
+Skryf 'n boodskap een keer en stoor dit met die nuwe Sjablone-knoppie in
+die skryfvenster, en plaas dit dan met een klik in enige nuwe e-pos of
+antwoord. Skryf {first name}, {name} of {my name} en Katna vul dit vir
+elke ontvanger in. Wysig, hernoem of vee sjablone uit in Instellings >
+Skryf.
+"""
+
+["2026-09-27-1724-server-send-later"]
+title = "Geskeduleerde e-pos gaan uit met jou rekenaar af"
+text = """
+Wanneer jou e-posbediener e-pos tot 'n vasgestelde tyd kan hou, soos
+Stalwart kan, gee Skeduleer stuur die boodskap nou aan hom sodra Ontdoen
+weg is, sodat dit betyds uitgaan selfs as hierdie rekenaar af is. Die
+skeduleerkieslys sê of jou e-posbediener of Katna dit sal stuur.
+"""
+
+["2026-09-27-1730-softer-row-hover"]
+title = "'n Ligter sweefeffek"
+text = """
+Die reël onder die wyser in die e-poslys lig nou op met 'n dowwe skaduwee,
+soos in Gmail, in plaas van 'n donker band daaronder.
+"""
+
+["2026-09-27-1745-drag-recipients"]
+title = "Sleep adresse tussen Aan, Cc en Bcc"
+text = """
+Sleep 'n adresskyfie na 'n ander veld om dit te skuif; Cc en Bcc gaan oop
+terwyl jy sleep, selfs as hulle versteek is. As jy na 'n skyfie wys,
+verskyn 'n x wat dit verwyder.
+"""
+
+["2026-09-27-1722-katna-account"]
+title = "Katna-rekening"
+text = """
+Instellings > Katna-rekening laat jou 'n rekening op Katna se eie bediener
+skep, met sy eie wagwoord, nooit 'n e-poswagwoord nie. Katna se aanlyn
+funksies, soos leesbewyse en skakelnasporing, sal dit nodig hê. Jy kan die
+aangemelde rekenaars sien en enigeen van hulle afmeld.
+"""
+
+["2026-09-27-1805-reopens-as-you-left-it"]
+title = "Terug waar jy was"
+text = """
+As jy Katna Mail toemaak en weer oopmaak, kom die toep, die vouer en die
+inkassie-oortjie wat jy oop gehad het terug, asook die vouers wat jy
+oopgemaak het en of die vouerpaneel ingevou was. As jy Katna uit die
+stelselbalk afsluit, begin dit weer van voor af.
+"""
+
+["2026-09-27-1724-snooze-and-reminders"]
+title = "Sluimer en antwoordherinneringe"
+text = """
+Sluimer 'n gesprek met die horlosie op sy reël of uit die regsklikmenu:
+dit wag in die Gesluimer-vouer en kom ongelees terug na die Inkassie op
+die tyd wat jy gekies het. Wanneer jy stuur, kan die pyltjie langs Stuur
+jou herinner as niemand binne 1, 3 of 7 dae antwoord nie. Albei werk
+terwyl jou rekenaar aan is, en haal in nadat dit wakker word.
+"""
+
+["2026-09-27-1717-translate-mail"]
+title = "Lees e-pos in jou taal"
+text = """
+'n Boodskap in 'n ander taal wys nou 'n Vertaal-knoppie daarbo, en Wys
+oorspronklike bring dit terug. Katna herken die taal op jou rekenaar; net
+wanneer jy vra, gaan die boodskap se teks na Katna se eie bediener om
+vertaal te word. Instellings > Algemeen > Vertaling kies jou taal en dié
+wat altyd vertaal word.
+"""
+
+["2026-09-27-1744-open-and-click-tracking"]
+title = "Sien wanneer e-pos oopgemaak word"
+text = """
+Skakel die oog by die ontvangers aan om te sien wanneer elkeen jou
+boodskap oopmaak of 'n skakel daarin volg, of vra eerder 'n leesbewys.
+Gestuurde e-pos wys wie dit oopgemaak het, en 'n kennisgewing laat jou
+die eerste keer weet. Albei is af vir elke nuwe boodskap, en nasporing
+het 'n Katna-rekening nodig (Instellings > Katna-rekening).
+"""
+
+["2026-09-27-2042-activity"]
+title = "Aktiwiteit vir nagespoorde e-pos"
+text = """
+Aktiwiteit langs die soekkassie wys hoeveel van jou nagespoorde
+boodskappe oopgemaak is en hoe dikwels hul skakels gevolg is, met jou
+onderwerpreëls gerangskik volgens hoe dikwels hulle oopgemaak word.
+"""
+
+["2026-09-27-2204-search-trigger-words"]
+title = "Deursoek jou e-pos vanuit KRunner met k"
+text = """
+Tik k of m, 'n spasie en dan wat jy wil vind in KRunner of die
+GNOME-soektog om dieselfde resultate as Katna Mail se soekkassie te kry,
+soos “k budget”. Kies jou eie woorde in Instellings onder Algemeen.
+"""
+
+["2026-09-27-2224-activity-button"]
+title = "Aktiwiteit langs die soekkassie"
+text = """
+Die Aktiwiteit-knoppie langs die soekkassie tel nuwe oopmaak en klikke van
+jou nagespoorde e-pos en wys wie wat oopgemaak het en watter skakels hulle
+gevolg het; klik op een om daardie boodskap oop te maak. Besonderhede wys
+die oopmaak- en klikkoerse, oopmaak per dag en jou beste onderwerpreëls vir
+die laaste 7 of 30 dae, alle tye of datums wat jy kies. 'n Gestuurde
+boodskap wys nou hoeveel keer elke persoon dit oopgemaak en 'n skakel
+gevolg het.
+"""
+
+["2026-09-27-2239-mailbox-insights"]
+title = "Insigte in jou posbus"
+text = """
+Aktiwiteit > Besonderhede wys nou ook hoeveel e-pos jy in die tydperk
+gestuur en ontvang het, hoe dikwels en hoe vinnig jy en ander antwoord, die
+mense met wie jy die meeste skryf, en op watter dae en ure jou e-pos
+aankom. Dit word op jou rekenaar getel uit die e-pos wat Katna reeds het.
+"""

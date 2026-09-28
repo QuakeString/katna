@@ -38,6 +38,9 @@ compose-scheduled = { $when } ਨੂੰ ਭੇਜਣਾ ਤੈਅ ਕੀਤਾ �
 compose-sent-archived = ਭੇਜਿਆ ਅਤੇ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤਾ
 compose-sent = ਸੁਨੇਹਾ ਭੇਜਿਆ ਗਿਆ
 compose-discarded = ਡਰਾਫਟ ਰੱਦ ਕੀਤਾ ਗਿਆ
+compose-draft-saved = ਡਰਾਫਟ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ
+compose-draft-failed = ਡਰਾਫਟ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: { $error }
+compose-draft-not-opened = ਡਰਾਫਟ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = ਨੱਥੀ ਕਰੋ
 compose-file-too-large = { $name } ਬਹੁਤ ਵੱਡੀ ਹੈ: ਇੱਕ ਸੁਨੇਹੇ ਵਿੱਚ { $limit } ਤੱਕ ਹੀ ਜਾ ਸਕਦਾ ਹੈ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ਅਟੈਚਮੈਂਟ ਹਟਾਓ
+compose-attachments-total = { $count ->
+    [one] { $count } ਫ਼ਾਈਲ, { $size }
+   *[other] { $count } ਫ਼ਾਈਲਾਂ, { $size }
+}
 compose-drop-files = ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਛੱਡੋ
 compose-drop-here = ਇੱਥੇ ਛੱਡੋ
 compose-paste-keep-formatting = ਫ਼ਾਰਮੈਟਿੰਗ ਰੱਖੋ
@@ -61,6 +68,12 @@ compose-encrypt = ਇਨਕ੍ਰਿਪਟ ਕਰੋ
 compose-encrypted = ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ: ਸਿਰਫ਼ ਪ੍ਰਾਪਤਕਰਤਾ ਹੀ ਇਸਨੂੰ ਪੜ੍ਹ ਸਕਦੇ ਹਨ
 compose-sign = ਦਸਤਖ਼ਤ ਕਰੋ
 compose-signed = ਦਸਤਖ਼ਤ ਕੀਤਾ: ਪ੍ਰਾਪਤਕਰਤਾ ਜਾਂਚ ਸਕਦੇ ਹਨ ਕਿ ਇਹ ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੈ
+compose-track = ਖੋਲ੍ਹਣਾ ਅਤੇ ਕਲਿੱਕ ਟ੍ਰੈਕ ਕਰੋ
+compose-tracked = ਟ੍ਰੈਕ ਹੋ ਰਿਹਾ ਹੈ: ਤੁਸੀਂ ਦੇਖੋਗੇ ਕਿ ਹਰ ਪ੍ਰਾਪਤਕਰਤਾ ਇਸਨੂੰ ਕਦੋਂ ਖੋਲ੍ਹਦਾ ਹੈ ਜਾਂ ਲਿੰਕ ਖੋਲ੍ਹਦਾ ਹੈ
+compose-track-unavailable = ਦਸਤਖ਼ਤ ਕੀਤੀ, ਇਨਕ੍ਰਿਪਟ ਕੀਤੀ ਅਤੇ ਸਾਦੀ ਲਿਖਤ ਵਾਲੀ ਮੇਲ ਟ੍ਰੈਕ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ
+compose-track-sign-in = ਖੋਲ੍ਹਣਾ ਅਤੇ ਕਲਿੱਕ ਟ੍ਰੈਕ ਕਰਨ ਲਈ Katna ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ ਇਨ ਕਰੋ
+compose-receipt = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਮੰਗੋ
+compose-receipt-on = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਮੰਗੀ ਗਈ: ਪ੍ਰਾਪਤਕਰਤਾ ਦੀ ਐਪ ਉਹਨਾਂ ਨੂੰ ਇਹ ਭੇਜਣ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = ਵਿਸ਼ਾ ਸ਼ਾਮਲ ਕਰੋ
 send-check-send-anyway = ਫਿਰ ਵੀ ਭੇਜੋ
 recipient-not-valid = ਵੈਧ ਈਮੇਲ ਪਤਾ ਨਹੀਂ ਹੈ
 recipient-show-address = ਪਤਾ ਦਿਖਾਓ
+recipient-remove = ਹਟਾਓ
 recipient-bad-title = ਪਤਾ ਜਾਂਚੋ
 recipient-bad-text = “{ $address }” ਵੈਧ ਈਮੇਲ ਪਤਾ ਨਹੀਂ ਹੈ। ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਇਸਨੂੰ ਠੀਕ ਕਰੋ ਜਾਂ ਹਟਾਓ।
 recipient-bad-fix = ਠੀਕ ਕਰੋ

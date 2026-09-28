@@ -5,25 +5,29 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 827 more of their own. Each keeps its own license.
+bring in 851 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
+| [argon2](https://github.com/RustCrypto/password-hashes/tree/master/argon2) 0.5.3 | RustCrypto Developers | MIT OR Apache-2.0 | Pure Rust implementation of the Argon2 password hashing function with support for the Argon2d, Argon2i, and Argon2id algorithmic variants |
 | [ashpd](https://github.com/bilelmoussaoui/ashpd) 0.13.13 | Bilal Elmoussaoui | MIT | XDG portals wrapper in Rust using zbus |
 | [async-channel](https://github.com/smol-rs/async-channel) 2.5.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async multi-producer multi-consumer channel |
 | [async-io](https://github.com/smol-rs/async-io) 2.6.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async I/O and timers |
 | [async-net](https://github.com/smol-rs/async-net) 2.0.0 | Stjepan Glavina | Apache-2.0 OR MIT | Async networking primitives for TCP/UDP/Unix communication |
 | [async-signal](https://github.com/smol-rs/async-signal) 0.2.14 | John Nunley | Apache-2.0 OR MIT | Async signal handling |
+| [axum](https://github.com/tokio-rs/axum) 0.8.9 | tokio-rs | MIT | HTTP routing and request handling library that focuses on ergonomics and modularity |
 | [backtrace](https://github.com/rust-lang/backtrace-rs) 0.3.76 | The Rust Project Developers | MIT OR Apache-2.0 | A library to acquire a stack trace (backtrace) at runtime in a Rust program. |
 | [base64](https://github.com/marshallpierce/rust-base64) 0.22.1 | Marshall Pierce | MIT OR Apache-2.0 | encodes and decodes base64 as bytes or utf8 |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
+| [deadpool-postgres](https://github.com/deadpool-rs/deadpool) 0.14.2 | Michael P. Jung | MIT OR Apache-2.0 | Dead simple async pool for tokio-postgres |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
 | [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
 | [fontdb](https://github.com/RazrFalcon/fontdb) 0.23.0 | Yevhenii Reizner | MIT | A simple, in-memory font database with CSS-like queries. |
 | [futures-lite](https://github.com/smol-rs/futures-lite) 2.6.1 | Contributors to futures-rs, Stjepan Glavina | Apache-2.0 OR MIT | Futures, streams, and async I/O combinators |
 | [futures-rustls](https://github.com/quininer/futures-rustls) 0.26.0 | quininer kel | MIT/Apache-2.0 | Asynchronous TLS/SSL streams for futures using Rustls. |
+| [getrandom](https://github.com/rust-random/getrandom) 0.3.4 | The Rand Project Developers | MIT OR Apache-2.0 | A small cross-platform library for retrieving random data from system source |
 | [gpui-pre](https://github.com/zed-industries/zed) 0.3.6 | Nathan Sobo | Apache-2.0 | Zed's GPU-accelerated UI framework (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-linux](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_linux` crate (gpui-pre snapshot of zed@bcf6582) |
 | [gpui-pre-platform](https://github.com/zed-industries/zed) 0.3.6 | zed-industries | Apache-2.0 | Zed's `gpui_platform` crate (gpui-pre snapshot of zed@bcf6582) |
@@ -31,6 +35,9 @@ bring in 827 more of their own. Each keeps its own license.
 | [harper-core](https://github.com/automattic/harper) 2.11.0 | automattic | Apache-2.0 | The language checker for developers. |
 | [hayro](https://github.com/LaurenzV/hayro) 0.7.1 | Laurenz Stampfl | Apache-2.0 OR MIT | A rasterizer for PDF files. |
 | [html5ever](https://github.com/servo/html5ever) 0.40.1 | The html5ever Project Developers | MIT OR Apache-2.0 | High-performance browser-grade HTML5 parser |
+| [http-body-util](https://github.com/hyperium/http-body) 0.1.5 | Carl Lerche, Lucio Franco, Sean McArthur | MIT | Combinators and adapters for HTTP request or response bodies. |
+| [hyper](https://github.com/hyperium/hyper) 1.11.1 | Sean McArthur | MIT | A protective and efficient HTTP library for all. |
+| [hyper-util](https://github.com/hyperium/hyper-util) 0.1.21 | Sean McArthur | MIT | hyper utilities |
 | [icu_calendar](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Date APIs for Gregorian and non-Gregorian calendars |
 | [icu_datetime](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Human-readable formatting of dates, times, and time zones in hundreds of locales |
 | [icu_decimal](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for formatting basic decimal numbers in a locale-sensitive way |
@@ -45,6 +52,7 @@ bring in 827 more of their own. Each keeps its own license.
 | [io-smtp](https://github.com/pimalaya/io-smtp) 0.3.0 | soywod | MIT OR Apache-2.0 | SMTP client library for Rust |
 | [jiff](https://github.com/BurntSushi/jiff) 0.2.37 | Andrew Gallant | Unlicense OR MIT | A date-time library that encourages you to jump into the pit of success. This library is heavily inspired by the Temporal project. |
 | [krilla](https://github.com/LaurenzV/krilla) 0.8.2 | Laurenz Stampfl | MIT OR Apache-2.0 | A high-level crate for creating PDF files. |
+| [lettre](https://github.com/lettre/lettre) 0.11.23 | Alexis Mousset, Paolo Barbolini | MIT | Email client |
 | [levenshtein_automata](https://github.com/tantivy-search/levenshtein-automata) 0.2.1 | Paul Masurel | MIT | Creates Levenshtein Automata in an efficient manner. |
 | [mail-parser](https://github.com/stalwartlabs/mail-parser) 0.11.9 | Stalwart Labs | Apache-2.0 OR MIT | Fast and robust e-mail parsing library for Rust |
 | [oo7](https://github.com/linux-credentials/oo7) 0.6.0 | Bilal Elmoussaoui, Maximiliano Sandoval, Sophie Herold | MIT | James Bond went on a new mission and this time as a Secret Service provider |
@@ -58,17 +66,21 @@ bring in 827 more of their own. Each keeps its own license.
 | [rustybuzz](https://github.com/harfbuzz/rustybuzz) 0.20.1 | Caleb Maclennan, Laurenz Stampfl, Yevhenii Reizner, خالد حسني (Khaled Hosny) | MIT | A complete harfbuzz shaping algorithm port to Rust. |
 | [serde](https://github.com/serde-rs/serde) 1.0.229 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A generic serialization/deserialization framework |
 | [serde_json](https://github.com/serde-rs/json) 1.0.151 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A JSON serialization file format |
+| [sha2](https://github.com/RustCrypto/hashes) 0.10.9 | RustCrypto Developers | MIT OR Apache-2.0 | Pure Rust implementation of the SHA-2 hash function family including SHA-224, SHA-256, SHA-384, and SHA-512. |
 | [smol](https://github.com/smol-rs/smol) 2.0.2 | Stjepan Glavina | Apache-2.0 OR MIT | A small and fast async runtime |
 | [spellbook](https://github.com/helix-editor/spellbook) 0.4.2 | Michael Davis | MPL-2.0 | A spellchecking library compatible with Hunspell dictionaries |
 | [tantivy](https://github.com/quickwit-oss/tantivy) 0.26.2 | Paul Masurel | MIT | Search engine library |
 | [tantivy-fst](https://github.com/quickwit-inc/fst) 0.5.0 | Andrew Gallant | Unlicense/MIT | This is a tantivy-specific fork from the fst crate from Burntsushi. (Please use the fst crate instead.) |
 | [tempfile](https://github.com/Stebalien/tempfile) 3.27.0 | Ashley Mannix, Jason White, Steven Allen, The Rust Project Developers | MIT OR Apache-2.0 | A library for managing temporary files and directories. |
 | [thiserror](https://github.com/dtolnay/thiserror) 2.0.21 | David Tolnay | MIT OR Apache-2.0 | derive(Error) |
+| [tokio](https://github.com/tokio-rs/tokio) 1.53.1 | Tokio Contributors | MIT | An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications. |
+| [tokio-postgres](https://github.com/rust-postgres/rust-postgres) 0.7.18 | Steven Fackler | MIT OR Apache-2.0 | A native, asynchronous PostgreSQL client |
 | [toml](https://github.com/toml-rs/toml) 1.1.6+spec-1.1.0 | toml-rs | MIT OR Apache-2.0 | A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures. |
 | [tracing](https://github.com/tokio-rs/tracing) 0.1.44 | Eliza Weisman, Tokio Contributors | MIT | Application-level tracing for Rust. |
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |
 | [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
+| [whatlang](https://github.com/greyblake/whatlang-rs) 0.18.0 | Serhii Potapov | MIT | Fast and lightweight language identification library for Rust. |
 | [writeable](https://github.com/unicode-org/icu4x) 0.6.4 | The ICU4X Project Developers | Unicode-3.0 | A more efficient alternative to fmt::Display |
 | [zbus](https://github.com/z-galaxy/zbus) 5.19.0 | Zeeshan Ali Khan | MIT | API for D-Bus communication |
 | [zip](https://github.com/zip-rs/zip2) 8.6.0 | Chris Hennick, Marli Frost, Mathijs van de Nes, Ryan Levick | MIT | Library to support the reading and writing of zip files. |

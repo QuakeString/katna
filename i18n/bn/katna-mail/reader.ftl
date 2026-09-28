@@ -77,6 +77,26 @@ security-missing-key = এমন একটি কী দিয়ে স্ব�
 security-missing-key-id = এমন একটি কী ({ $key }) দিয়ে স্বাক্ষর করা যা আপনার কাছে নেই, তাই যাচাই করা যাচ্ছে না
 security-signature-unavailable = স্বাক্ষরিত; স্বাক্ষর যাচাই করতে { $tool } ইনস্টল করুন
 security-signature-error = স্বাক্ষর যাচাই করা যায়নি।
+tracking-opened = { $who } এটি { $count ->
+    [one] একবার
+   *[other] { $count } বার
+} খুলেছেন, শেষবার { $when }
+tracking-opens-clicks = { $who } এটি { $opens ->
+    [one] একবার
+   *[other] { $opens } বার
+} খুলেছেন এবং { $clicks ->
+    [one] একবার
+   *[other] { $clicks } বার
+} লিঙ্ক খুলেছেন, শেষবার { $when }
+tracking-clicked = { $who } { $clicks ->
+    [one] একবার
+   *[other] { $clicks } বার
+} লিঙ্ক খুলেছেন, শেষবার { $when }
+tracking-maybe-opened = { $who } হয়তো এটি খুলেছেন (গোপনীয়তার জন্য Apple Mail ছবি লোড করে)
+tracking-not-opened = { $who } এখনও এটি খোলেননি
+tracking-receipt = { $who } একটি পঠিত রসিদ পাঠিয়েছেন
+tracking-receipt-displayed = পঠিত রসিদ: { $who } আপনার মেসেজ খুলেছেন
+tracking-receipt-other = পঠিত রসিদ: { $who } আপনার মেসেজ না খুলেই মুছেছেন বা অন্যভাবে সামলেছেন
 
 ## Remote images and pictures
 

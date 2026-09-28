@@ -11,6 +11,8 @@ schedule-scheduled-messages = ସମୟ ସ୍ଥିର ହୋଇଥିବା �
 
 schedule-title = ପଠାଇବା ସମୟ ସ୍ଥିର କରନ୍ତୁ
 schedule-zone-note = { $zone }। ଆପ ବନ୍ଦ ଥିଲେ ମଧ୍ୟ Katna ସେହି ସମୟରେ ଏହାକୁ ପଠାଏ।
+schedule-zone-note-server = { $zone }। ଏହି କମ୍ପ୍ୟୁଟର ବନ୍ଦ ଥିଲେ ମଧ୍ୟ ଆପଣଙ୍କ ମେଲ ସର୍ଭର ସେହି ସମୟରେ ଏହାକୁ ପଠାଇବ। ପୂର୍ବବତ୍ କରନ୍ତୁ ଚାଲିଗଲା ପରେ ଏହାକୁ ବାତିଲ କରିହେବ ନାହିଁ।
+schedule-zone-note-local = { $zone }। ଏହି କମ୍ପ୍ୟୁଟର ଚାଲୁ ଥିବା ବେଳେ Katna ସେହି ସମୟରେ ଏହାକୁ ପଠାଇବ।
 schedule-local-time = ସ୍ଥାନୀୟ ସମୟ
 schedule-this-morning = ଆଜି ସକାଳ
 schedule-this-afternoon = ଆଜି ଅପରାହ୍ନ
@@ -28,6 +30,7 @@ schedule-no-such-time = ସେହି ସମୟ ଏଠାରେ ନାହିଁ�
 
 schedule-no-subject = (କୌଣସି ବିଷୟ ନାହିଁ)
 schedule-sends-at = { $when } ରେ ପଠାଯିବ
+schedule-server-sends-at = ଆପଣଙ୍କ ମେଲ ସର୍ଭର { $when } ରେ ପଠାଇବ
 schedule-cancel-send = ପଠାଇବା ବାତିଲ କରନ୍ତୁ
 schedule-nothing = କିଛି ସମୟ ସ୍ଥିର ହୋଇନାହିଁ।
 schedule-close = ବନ୍ଦ କରନ୍ତୁ

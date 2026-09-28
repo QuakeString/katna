@@ -38,6 +38,9 @@ compose-scheduled = Verzending gepland voor { $when }
 compose-sent-archived = Verzonden en gearchiveerd
 compose-sent = Bericht verzonden
 compose-discarded = Concept verwijderd
+compose-draft-saved = Concept opgeslagen
+compose-draft-failed = Het concept kon niet worden opgeslagen: { $error }
+compose-draft-not-opened = Het concept kon niet worden geopend.
 
 ## Attachments
 
@@ -46,6 +49,10 @@ compose-picker-attach = Bijvoegen
 compose-file-too-large = { $name } is te groot: een bericht kan maximaal { $limit } bevatten.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Bijlage verwijderen
+compose-attachments-total = { $count ->
+    [one] { $count } bestand, { $size }
+   *[other] { $count } bestanden, { $size }
+}
 compose-drop-files = Zet bestanden hier neer
 compose-drop-here = Hier neerzetten
 compose-paste-keep-formatting = Opmaak behouden
@@ -61,6 +68,12 @@ compose-encrypt = Versleutelen
 compose-encrypted = Versleuteld: alleen de ontvangers kunnen het lezen
 compose-sign = Ondertekenen
 compose-signed = Ondertekend: ontvangers kunnen controleren dat het van jou komt
+compose-track = Openen en klikken volgen
+compose-tracked = Gevolgd: je ziet wanneer elke ontvanger het opent of een link volgt
+compose-track-unavailable = Ondertekende, versleutelde en platte-tekstmail kan niet worden gevolgd
+compose-track-sign-in = Meld je aan bij een Katna-account om openen en klikken te volgen
+compose-receipt = Leesbevestiging vragen
+compose-receipt-on = Leesbevestiging gevraagd: de app van de ontvanger kan vragen er een te sturen
 
 ## Spelling
 
@@ -85,6 +98,7 @@ send-check-add-subject = Onderwerp toevoegen
 send-check-send-anyway = Toch verzenden
 recipient-not-valid = Geen geldig e-mailadres
 recipient-show-address = Adres tonen
+recipient-remove = Verwijderen
 recipient-bad-title = Controleer het adres
 recipient-bad-text = ‘{ $address }’ is geen geldig e-mailadres. Verbeter of verwijder het voordat je verzendt.
 recipient-bad-fix = Verbeteren

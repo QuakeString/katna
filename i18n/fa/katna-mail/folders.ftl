@@ -9,15 +9,23 @@ nav-folders = پوشه‌ها
 nav-label-new = ایجاد برچسب جدید
 nav-folder-new = ایجاد پوشهٔ جدید
 nav-account-unnamed = حساب { $number }
+nav-all-accounts = همهٔ حساب‌ها
+nav-expand = نمایش پوشه‌ها
+nav-collapse = پنهان کردن پوشه‌ها
 nav-tab-new = { $count ->
     [one] { $count } جدید
    *[other] { $count } جدید
 }
+storage-used = { $percent }٪ از { $total } استفاده شده
+storage-used-detail = { $address }: { $used } از { $total } استفاده شده
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = صندوق ورودی
 folder-starred = ستاره‌دار
+folder-snoozed = به تعویق افتاده
+folder-unread = خوانده‌نشده
+folder-important = مهم
 folder-drafts = پیش‌نویس‌ها
 folder-sent = ارسال‌شده
 folder-archive = بایگانی
@@ -25,6 +33,7 @@ folder-spam = هرزنامه
 folder-trash = سطل زباله
 folder-all-mail = همهٔ ایمیل‌ها
 folder-scheduled = زمان‌بندی‌شده
+folder-activity = فعالیت
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

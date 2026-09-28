@@ -9,15 +9,23 @@ nav-folders = Folda
 nav-label-new = Ƙirƙiri sabon lakabi
 nav-folder-new = Ƙirƙiri sabuwar folda
 nav-account-unnamed = Asusu { $number }
+nav-all-accounts = Dukkan asusu
+nav-expand = Nuna folda
+nav-collapse = Ɓoye folda
 nav-tab-new = { $count ->
     [one] { $count } sabo
    *[other] { $count } sababbi
 }
+storage-used = An yi amfani da { $percent }% na { $total }
+storage-used-detail = { $address }: an yi amfani da { $used } na { $total }
 
 ## Special folders (the user's own folders keep their names)
 
 folder-inbox = Akwatin saƙo
 folder-starred = Masu tauraro
+folder-snoozed = Waɗanda aka jinkirta
+folder-unread = Ba a karanta ba
+folder-important = Muhimmi
 folder-drafts = Zayyanai
 folder-sent = Waɗanda aka aika
 folder-archive = Ma'ajiya
@@ -25,6 +33,7 @@ folder-spam = Saƙonnin banza
 folder-trash = Kwandon shara
 folder-all-mail = Duk wasiƙu
 folder-scheduled = Waɗanda aka tsara
+folder-activity = Ayyuka
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

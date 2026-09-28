@@ -77,6 +77,26 @@ security-missing-key = Ondertekend met een sleutel die je niet hebt, dus kan nie
 security-missing-key-id = Ondertekend met een sleutel die je niet hebt ({ $key }), dus kan niet worden gecontroleerd
 security-signature-unavailable = Ondertekend; installeer { $tool } om de handtekening te controleren
 security-signature-error = De handtekening kan niet worden gecontroleerd.
+tracking-opened = { $who } heeft het { $count ->
+    [one] één keer
+   *[other] { $count } keer
+} geopend, laatst { $when }
+tracking-opens-clicks = { $who } heeft het { $opens ->
+    [one] één keer
+   *[other] { $opens } keer
+} geopend en { $clicks ->
+    [one] één keer
+   *[other] { $clicks } keer
+} een link gevolgd, laatst { $when }
+tracking-clicked = { $who } heeft { $clicks ->
+    [one] één keer
+   *[other] { $clicks } keer
+} een link gevolgd, laatst { $when }
+tracking-maybe-opened = { $who } heeft het misschien geopend (Apple Mail laadt afbeeldingen voor privacy)
+tracking-not-opened = { $who } heeft het nog niet geopend
+tracking-receipt = { $who } heeft een leesbevestiging gestuurd
+tracking-receipt-displayed = Leesbevestiging: { $who } heeft je bericht geopend
+tracking-receipt-other = Leesbevestiging: { $who } heeft je bericht verwijderd of afgehandeld zonder het te openen
 
 ## Remote images and pictures
 
