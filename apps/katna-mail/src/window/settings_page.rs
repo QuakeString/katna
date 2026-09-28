@@ -629,6 +629,27 @@ impl MailWindow {
                 self.notification_switches(th, cx),
                 th,
             ))
+            .when(
+                katna_core::update::Package::current()
+                    .manifest_url()
+                    .is_some(),
+                |d| {
+                    d.child(self.row(
+                        tr!("settings-general-updates"),
+                        Some(&tr!("settings-general-updates-detail")),
+                        self.switch_row(
+                            "page-auto-download-updates",
+                            tr!("settings-general-auto-download"),
+                            tr!("settings-general-auto-download-detail"),
+                            self.config.updates.auto_download,
+                            Change::AutoDownloadUpdates(!self.config.updates.auto_download),
+                            th,
+                            cx,
+                        ),
+                        th,
+                    ))
+                },
+            )
             .child(self.row(
                 tr!("settings-general-reset-cache"),
                 Some(&tr!("settings-general-reset-cache-detail")),

@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = បង្ហាញព័ត៌មានលម្អិតទំនាក់ទំនង
 contact-panel-hide = លាក់ព័ត៌មានលម្អិតទំនាក់ទំនង
+contact-email = ផ្ញើអ៊ីមែល
+contact-search = ស្វែងរកអ៊ីមែលជាមួយពួកគេ
 contact-messages = សារ { $count }
 contact-from-to = { $from } ពីពួកគេ, { $to } ពីអ្នក
 contact-first = ដំបូង
@@ -12,6 +14,8 @@ contact-copy-number = ចម្លងលេខ
 contact-number-copied = បានចម្លងលេខ
 contact-local-time = { $time } ម៉ោងរបស់ពួកគេ ({ $offset })
 contact-conversations = ការសន្ទនាថ្មីៗ
+contact-more = ច្រើនទៀត
+contact-less = បង្រួម
 contact-files = ឯកសារ
 contact-people = ក្នុងការសន្ទនានេះ
 contact-local-only = ពីសំបុត្ររបស់អ្នកនៅលើកុំព្យូទ័រនេះតែប៉ុណ្ណោះ

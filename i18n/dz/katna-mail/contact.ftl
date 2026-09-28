@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = འབྲེལ་བའི་རྒྱས་བཤད་སྟོན།
 contact-panel-hide = འབྲེལ་བའི་རྒྱས་བཤད་སྦ།
+contact-email = གློག་འཕྲིན་གཏང་།
+contact-search = ཁོང་དང་གློག་འཕྲིན་འཚོལ།
 contact-messages = { $count ->
    *[other] འཕྲིན་དོན་ { $count }
 }
@@ -14,6 +16,8 @@ contact-copy-number = ཁ་པར་ཨང་འདྲ་བཤུས་རྐ�
 contact-number-copied = ཁ་པར་ཨང་ འདྲ་བཤུས་རྐྱབ་ཡི།
 contact-local-time = ཁོང་གི་ཆུ་ཚོད་ { $time } ({ $offset })
 contact-conversations = ཉེ་གྲངས་ཀྱི་གླེང་མོལ་ཚུ
+contact-more = གཞན་ཡང་།
+contact-less = ཉུང་ཤོས།
 contact-files = ཡིག་སྣོད་ཚུ
 contact-people = གླེང་མོལ་འདི་ནང་
 contact-local-only = གློག་རིག་འདི་གུ་ཡོད་པའི་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ནང་ལས་རྐྱངམ་ཅིག

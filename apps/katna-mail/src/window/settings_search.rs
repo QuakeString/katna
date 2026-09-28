@@ -132,6 +132,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-updates",
+        "settings-general-updates-summary",
+        "update upgrade new version download install automatic",
+    ),
+    entry(
+        Section::General,
         "settings-general-reset-cache",
         "settings-general-reset-cache-summary",
         "cache clear local data storage disk space rebuild index redownload fix",

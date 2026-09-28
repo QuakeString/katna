@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = የእውቂያ ዝርዝሮችን አሳይ
 contact-panel-hide = የእውቂያ ዝርዝሮችን ደብቅ
+contact-email = ኢሜይል ላክ
+contact-search = ከእነሱ ጋር ደብዳቤ ፈልግ
 contact-messages = { $count ->
     [one] { $count } መልዕክት
    *[other] { $count } መልዕክቶች
@@ -15,6 +17,8 @@ contact-copy-number = ቁጥሩን ቅዳ
 contact-number-copied = ቁጥሩ ተቀድቷል
 contact-local-time = { $time } በእነሱ ሰዓት ({ $offset })
 contact-conversations = የቅርብ ጊዜ ውይይቶች
+contact-more = ተጨማሪ
+contact-less = ያነሰ
 contact-files = ፋይሎች
 contact-people = በዚህ ውይይት ውስጥ
 contact-local-only = በዚህ ኮምፒውተር ላይ ካለው ደብዳቤዎ ብቻ

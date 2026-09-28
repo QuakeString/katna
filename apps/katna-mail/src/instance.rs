@@ -40,6 +40,7 @@ impl Request {
             app_action::OPEN_INBOX,
             app_action::COMPOSE,
             app_action::PREFERENCES,
+            app_action::INSTALL_UPDATE,
         ]
         .into_iter()
         .find(|action| app_action::flag(action) == Some(flag))

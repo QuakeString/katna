@@ -917,3 +917,22 @@ onu listeden kaldırın ya da baştan başlamak için Tümünü temizle'ye bası
 Yeni açılmalar ve tıklamalar yine görünür, Ayrıntılar raporu da yine her
 şeyi sayar.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Katna'nın yeni yuvarlak logosu"
+text = """
+Katna'nın artık yeni bir logosu var: turkuaz bir dairenin üzerinde el
+yazısı bir "k" — uygulama menüsünde, üst çubukta ve panelde. Tepsi
+simgesi, panelinize uyan tek bir renkle gösterilir; Katna hakkında ve
+hoş geldin ekranı ise "katna mail" adını tam olarak gösterir.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Daha düzenli bir kişi paneli"
+text = """
+Kişi paneli artık her bölümü kendi yumuşak kartında gösteriyor; adın
+altındaki yuvarlak düğmelerle o kişiye e-posta gönderebilir, onunla
+yazışmaları arayabilir ya da onu arayabilirsiniz. Son ileti dizileri
+en yeni birkaçını listeler; hepsini görmek için Daha fazla'ya,
+gizlemek için Daha az'a basın.
+"""

@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Bonisa imininingwane yoxhumana naye
 contact-panel-hide = Fihla imininingwane yoxhumana naye
+contact-email = Thumela imeyili
+contact-search = Sesha imeyili yabo
 contact-messages = { $count ->
     [one] Umlayezo ongu-{ $count }
    *[other] Imilayezo engu-{ $count }
@@ -15,6 +17,8 @@ contact-copy-number = Kopisha inombolo
 contact-number-copied = Inombolo ikopishiwe
 contact-local-time = { $time } isikhathi sakubo ({ $offset })
 contact-conversations = Izingxoxo zakamuva
+contact-more = Okuningi
+contact-less = Okuncane
 contact-files = Amafayela
 contact-people = Kule ngxoxo
 contact-local-only = Kusuka kumeyili yakho kule khompyutha kuphela

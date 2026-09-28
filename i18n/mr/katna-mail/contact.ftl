@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = संपर्क तपशील दाखवा
 contact-panel-hide = संपर्क तपशील लपवा
+contact-email = मेल पाठवा
+contact-search = त्यांचे मेल शोधा
 contact-messages = { $count ->
     [one] { $count } मेसेज
    *[other] { $count } मेसेज
@@ -15,6 +17,8 @@ contact-copy-number = नंबर कॉपी करा
 contact-number-copied = नंबर कॉपी केला
 contact-local-time = त्यांच्या वेळेनुसार { $time } ({ $offset })
 contact-conversations = अलीकडील संभाषणे
+contact-more = आणखी
+contact-less = कमी
 contact-files = फाइल्स
 contact-people = या संभाषणात
 contact-local-only = फक्त या संगणकावरील तुमच्या मेलमधून

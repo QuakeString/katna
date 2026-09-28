@@ -8,7 +8,7 @@ use async_channel::Receiver;
 use katna_core::{AccountId, ids};
 use katna_dbus::{
     AccountStatus, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account, OutboxItem,
-    TemplateItem, flag,
+    TemplateItem, UpdateStatus, flag,
 };
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -321,6 +321,18 @@ macro_rules! pim_interface {
                 }
             }
 
+            async fn update_status(&self) -> UpdateStatus {
+                self.daemon.updates().status()
+            }
+
+            async fn check_for_update(&self) {
+                self.daemon.updates().check_now();
+            }
+
+            async fn download_update(&self) {
+                self.daemon.updates().download_now();
+            }
+
             async fn katna_account(&self) -> fdo::Result<KatnaAccount> {
                 Ok(self.daemon.katna()?.account().await?)
             }
@@ -399,6 +411,9 @@ macro_rules! pim_interface {
             }
 
             #[zbus(signal)]
+            async fn update_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn katna_account_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
             #[zbus(signal)]
@@ -475,6 +490,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::MeteredChanged(on) => PimService::metered_changed(&emitter, on).await,
             Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
+            Notice::UpdateChanged => PimService::update_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

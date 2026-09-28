@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = إظهار تفاصيل جهة الاتصال
 contact-panel-hide = إخفاء تفاصيل جهة الاتصال
+contact-email = إرسال بريد
+contact-search = بحث في البريد معهم
 contact-messages = { $count ->
     [zero] { $count } رسالة
     [one] رسالة واحدة
@@ -19,6 +21,8 @@ contact-copy-number = نسخ الرقم
 contact-number-copied = تم نسخ الرقم
 contact-local-time = { $time } بتوقيته ({ $offset })
 contact-conversations = المحادثات الأخيرة
+contact-more = المزيد
+contact-less = أقل
 contact-files = الملفات
 contact-people = في هذه المحادثة
 contact-local-only = من بريدك على هذا الكمبيوتر فقط

@@ -17,6 +17,7 @@ license=('GPL-3.0-or-later')
 # freetype2 when found at build time. Loaded at runtime: libwayland-client,
 # libvulkan (vulkan-icd-loader) and libEGL (libglvnd, the OpenGL fallback).
 # dbus: the session bus that katna-daemon and the apps talk over.
+# polkit: pkexec and the password prompt for updates from Katna Mail.
 depends=(
   'dbus'
   'fontconfig'
@@ -27,6 +28,7 @@ depends=(
   'libxcb'
   'libxkbcommon'
   'libxkbcommon-x11'
+  'polkit'
   'vulkan-icd-loader'
   'wayland'
 )
@@ -78,6 +80,9 @@ build() {
   export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-target}"
   # Katna Mail names this version in What's new after an update.
   export KATNA_VERSION="$pkgver"
+  # Katna updates itself from the arch-latest release, with pacman
+  # (katna_core::update::Package).
+  export KATNA_PACKAGE=arch
   # Two builds: in one, Cargo would give katna-daemon and katnactl the
   # features GPUI turns on in shared crates, making them bigger for nothing.
   cargo build --frozen --release --package katna-mail
@@ -102,5 +107,9 @@ package() {
   for dir in packaging/icons/hicolor/*/apps; do
     install -Dm644 -t "$pkgdir/usr/share/icons/${dir#packaging/icons/}" "$dir"/*
   done
+  # Updates from Katna Mail: the helper pkexec runs, and the polkit
+  # action that allows it (katna_core::update::ARCH_HELPER).
+  install -Dm755 packaging/arch/katna-update-helper "$pkgdir/usr/lib/katna/katna-update-helper"
+  install -Dm644 -t "$pkgdir/usr/share/polkit-1/actions" packaging/polkit/*.policy
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

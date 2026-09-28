@@ -209,6 +209,28 @@ impl Conn {
         }
     }
 
+    /// Reads whatever arrives next, without waiting for a whole line: for
+    /// binary data such as a download. Returns an empty slice at EOF.
+    pub async fn read_raw(&mut self) -> Result<&[u8]> {
+        if self.handed_out {
+            self.filled = 0;
+            self.handed_out = false;
+        }
+        let stream = self.stream.as_mut().ok_or_else(not_connected)?;
+        if self.filled == self.buf.len() {
+            self.buf.resize(self.buf.len() * 2, 0);
+        }
+        let read = async { Some(stream.read(&mut self.buf[self.filled..]).await) };
+        let timer = async {
+            Timer::after(READ_TIMEOUT).await;
+            None
+        };
+        let n = read.or(timer).await.ok_or(Error::Timeout(READ_TIMEOUT))??;
+        self.filled += n;
+        self.handed_out = true;
+        Ok(&self.buf[..self.filled])
+    }
+
     pub async fn close(&mut self) -> Result<()> {
         if let Some(mut stream) = self.stream.take() {
             stream.close().await?;

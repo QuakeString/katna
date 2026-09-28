@@ -941,3 +941,22 @@ Zeigen Sie in Aktivität auf eine Öffnung oder einen Klick und drücken Sie
 um neu anzufangen. Neue Öffnungen und Klicks erscheinen weiterhin, und der
 Bericht Details zählt weiterhin alles.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Katnas neues rundes Logo"
+text = """
+Katna hat ein neues Logo: ein k in Schreibschrift auf einem türkisfarbenen
+Kreis, im Anwendungsmenü, in der oberen Leiste und in der Kontrollleiste.
+Der Systemabschnitt zeigt es in einer Farbe, die zu Ihrem Panel passt, und
+Über Katna und die Willkommensseite zeigen „katna mail“ ausgeschrieben.
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Übersichtlichere Kontaktdetails"
+text = """
+Die Kontaktdetails zeigen jetzt jeden Teil in einer eigenen weichen Karte,
+mit runden Knöpfen unter dem Namen, um der Person zu schreiben, Ihre Mail
+mit ihr zu finden oder sie anzurufen. Letzte Konversationen zeigt die
+neuesten paar; drücken Sie Mehr, um den Rest zu sehen, und Weniger, um sie
+wieder einzuklappen.
+"""

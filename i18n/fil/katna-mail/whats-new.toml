@@ -952,3 +952,24 @@ alisin ito sa listahan, o pindutin ang I-clear lahat para magsimula muli.
 Lalabas pa rin ang mga bagong pagbukas at pag-click, at binibilang pa rin ng
 ulat na Mga detalye ang lahat.
 """
+
+["2026-09-28-1541-round-logo"]
+title = "Bagong bilog na logo ng Katna"
+text = """
+May bagong logo na ang Katna: sulat-kamay na "k" sa ibabaw ng isang
+teal na bilog — sa menu ng app, sa itaas na bar at sa panel.
+Ipinapakita ito ng system tray sa iisang kulay na bagay sa panel mo,
+habang buong ipinapakita ng Tungkol sa Katna at ng welcome page ang
+pangalang "katna mail".
+"""
+
+["2026-09-28-1546-contact-cards"]
+title = "Mas malinis na card ng contact"
+text = """
+Ipinapakita na ngayon ng card ng contact ang bawat bahagi sa sarili
+nitong malambot na card, may mga bilog na button sa ilalim ng
+pangalan para magpadala ng email sa tao, hanapin ang mail kasama
+nila o tawagan sila. Ipinapakita ng Mga kamakailang pag-uusap ang
+pinakabago; pindutin ang Higit pa para makita ang iba, at ang
+Mas kaunti para itago ulit ang mga ito.
+"""

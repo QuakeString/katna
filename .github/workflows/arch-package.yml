@@ -20,9 +20,13 @@ on:
       - ".github/workflows/arch-package.yml"
   workflow_dispatch:
 
+# On main a running build always finishes and publishes; GitHub keeps
+# only the newest push waiting behind it, so busy stretches of merges no
+# longer cancel every build and leave arch-latest stale. A newer push to
+# a pull request still cancels its older run.
 concurrency:
   group: arch-package-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -42,7 +46,7 @@ jobs:
         run: |
           pacman -Syu --noconfirm --needed base-devel git rustup \
             dbus fontconfig freetype2 gcc-libs glibc libglvnd libxcb \
-            libxkbcommon libxkbcommon-x11 vulkan-icd-loader wayland
+            libxkbcommon libxkbcommon-x11 polkit vulkan-icd-loader wayland
       - uses: actions/checkout@v4
         with:
           # pkgver counts the commits.
@@ -107,6 +111,17 @@ jobs:
           # one-off download.
           cp "packaging/arch/$pkg" out/katna-git-x86_64.pkg.tar.zst
           cd out
+          # What Katna Mail's updates read (katna_core::update::Manifest):
+          # the version, the file under its fixed name, its SHA-256 and
+          # size.
+          version=$(pacman -Qp "$pkg" | cut -d' ' -f2)
+          version=${version%-*}
+          file=katna-git-x86_64.pkg.tar.zst
+          sha=$(sha256sum "$file" | cut -d' ' -f1)
+          size=$(stat -c %s "$file")
+          printf '{"version":"%s","file":"%s","sha256":"%s","size":%s}\n' \
+            "$version" "$file" "$sha" "$size" > katna-update.json
+          cat katna-update.json
           repo-add katna.db.tar.gz "$pkg"
           # Release assets cannot be symlinks.
           rm katna.db katna.files
@@ -120,6 +135,10 @@ jobs:
             if ldd "/usr/bin/$bin" | grep 'not found'; then exit 1; fi
           done
           katnactl --help > /dev/null
+          test -x /usr/lib/katna/katna-update-helper
+          # The manifest names the version the package reports.
+          test "$(katna-mail --version)" = \
+            "katna-mail $(sed 's/.*"version":"\([^"]*\)".*/\1/' out/katna-update.json)"
           pacman -Ql katna-git
       - uses: actions/upload-artifact@v4
         with:
@@ -190,7 +209,8 @@ jobs:
           for extra in $(tail -n +2 <<<"$ids"); do
             gh api -X DELETE "$api/releases/$extra"
           done
-          fields=(-f tag_name="$tag" -f name="Katna for Arch Linux (latest main)"
+          fields=(-f tag_name="$tag" -f target_commitish="$GITHUB_SHA"
+                  -f name="Katna for Arch Linux (latest main)"
                   -F body=@notes.md -F draft=false -F prerelease=true)
           if [[ -n "$id" ]]; then
             gh api -X PATCH "$api/releases/$id" "${fields[@]}" > /dev/null

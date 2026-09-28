@@ -644,6 +644,42 @@ pub async fn outbox_changes(connection: &Connection) -> Result<impl Stream<Item 
     Ok(changes.map(|_| ()))
 }
 
+/// Where an update of Katna stands.
+pub async fn update_status(connection: &Connection) -> Result<katna_dbus::UpdateStatus, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.update_status().await.map_err(|err| describe(&err))
+}
+
+/// Has the daemon look for a newer version now.
+pub async fn check_for_update(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.check_for_update().await.map_err(|err| describe(&err))
+}
+
+/// Has the daemon download the newer version it found.
+pub async fn download_update(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.download_update().await.map_err(|err| describe(&err))
+}
+
+/// Yields whenever where an update stands changes.
+pub async fn update_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let changes = pim
+        .receive_update_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes.map(|_| ()))
+}
+
 /// Asks the daemon about the accounts, which also starts it if D-Bus can.
 /// Returns whether an account still waits for its first sync.
 pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String> {

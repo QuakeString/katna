@@ -3,6 +3,8 @@
 # Corrections welcome: see i18n/README.md.
 contact-panel-show = Tunjukkan butiran kenalan
 contact-panel-hide = Sembunyikan butiran kenalan
+contact-email = Hantar e-mel
+contact-search = Cari e-mel dengan mereka
 contact-messages = { $count } mesej
 contact-from-to = { $from } daripada mereka, { $to } daripada anda
 contact-first = Pertama
@@ -12,6 +14,8 @@ contact-copy-number = Salin nombor
 contact-number-copied = Nombor disalin
 contact-local-time = { $time } waktu mereka ({ $offset })
 contact-conversations = Perbualan terkini
+contact-more = Lagi
+contact-less = Kurang
 contact-files = Fail
 contact-people = Dalam perbualan ini
 contact-local-only = Daripada mel anda pada komputer ini sahaja

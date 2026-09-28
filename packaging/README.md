@@ -72,6 +72,14 @@ SigLevel = Optional TrustAll
 Server = https://github.com/QuakeString/katna/releases/download/arch-latest
 ```
 
+Once installed, Katna Mail updates itself: About shows a newer build,
+the daemon downloads it (by itself unless Settings > General > Updates
+says otherwise), and Update installs it with `pacman -U` after the
+system's password prompt, then restarts Katna Mail. The package installs
+`/usr/lib/katna/katna-update-helper` and the polkit action
+`/usr/share/polkit-1/actions/in.invenia.katna.update.policy` for that
+(`docs/ARCHITECTURE.md` §21.2). `pacman -Syu` keeps working as before.
+
 ### Building it yourself
 
 ```sh
