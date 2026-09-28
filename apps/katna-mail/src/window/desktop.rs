@@ -15,7 +15,6 @@ use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
 use super::MailWindow;
-use super::compose::Kind;
 use crate::data::EntryKey;
 use crate::instance::Request;
 
@@ -290,10 +289,10 @@ impl MailWindow {
                     }
                 }
                 app_action::REPLY_ALL => {
-                    if let Some(id) = message
-                        && self.show_message(MessageId(id), window, cx)
-                    {
-                        self.open_compose(Kind::ReplyAll, Some(MessageId(id)), window, cx);
+                    if let Some(id) = message {
+                        // In a window of its own; this one stays behind.
+                        self.reply_all_in_window(MessageId(id), cx);
+                        return;
                     }
                 }
                 app_action::QUIT => {
@@ -310,7 +309,12 @@ impl MailWindow {
     /// if this build has no such action. Focus left on something no longer
     /// drawn (the list, once Settings or a conversation fills the page)
     /// would send it nowhere, so the window takes the focus first.
-    fn run_action(&mut self, name: &str, window: &mut Window, cx: &mut Context<Self>) -> bool {
+    pub(super) fn run_action(
+        &mut self,
+        name: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> bool {
         match cx.build_action(name, None) {
             Ok(action) => {
                 if !window.is_action_available(&*action, cx)

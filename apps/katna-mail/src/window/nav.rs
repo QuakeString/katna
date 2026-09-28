@@ -409,6 +409,7 @@ impl MailWindow {
                     .tooltip(tip(format!("{name}\n{}", account.address), th))
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.account_menu = !this.account_menu;
+                        this.app_menu = None;
                         cx.notify();
                     }))
                     .child(self.person_avatar(&name, &account.address, 32.0))

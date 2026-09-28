@@ -17,13 +17,15 @@ use katna_chrome::{Bar, Environment, window_options};
 use katna_core::Paths;
 use katna_core::ids::MAIL_APP_ID;
 use katna_i18n::tr;
-use katna_store::FolderId;
+use katna_store::{FolderId, MessageId};
 use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::unpx;
 
+use super::compose::Kind;
 use super::{Listing, MailWindow, READER_CONTEXT, WINDOW_CONTEXT};
-use crate::data::Entry;
+use crate::data::{Entry, EntryKey};
+use crate::sidebar::Role;
 
 /// The size a conversation window opens at.
 const WIDTH: f32 = 960.0;
@@ -35,6 +37,9 @@ const HEIGHT: f32 = 780.0;
 struct Origin {
     folder: Option<FolderId>,
     show_recipients: bool,
+    /// A reply to all to this message starts at once (a notification's
+    /// Reply all).
+    reply_all: Option<MessageId>,
 }
 
 impl MailWindow {
@@ -53,14 +58,44 @@ impl MailWindow {
     }
 
     pub(super) fn open_entry_in_window(&mut self, entry: Entry, cx: &mut Context<Self>) {
+        let origin = Origin {
+            folder: self.listed_folder(),
+            show_recipients: self.show_recipients,
+            reply_all: None,
+        };
+        self.open_window(entry, origin, cx);
+    }
+
+    /// Opens the conversation of `message` in a window of its own with a
+    /// reply to all started, for a notification's Reply all: the mail
+    /// window stays where it is.
+    pub(super) fn reply_all_in_window(&mut self, message: MessageId, cx: &mut Context<Self>) {
+        let mail = self.mail.as_ref().ok();
+        let entry = match mail.and_then(|m| m.message_thread(message)) {
+            Some(thread) => Entry {
+                key: EntryKey::Thread(thread),
+                latest: message,
+            },
+            None => Entry::message(message),
+        };
+        // Archive and delete work as from the account's Inbox.
+        let inbox = mail
+            .and_then(|m| m.message_account(message))
+            .and_then(|account| self.tree.role_folder(account, Role::Inbox));
+        let origin = Origin {
+            folder: inbox.or_else(|| self.listed_folder()),
+            show_recipients: false,
+            reply_all: Some(message),
+        };
+        self.open_window(entry, origin, cx);
+    }
+
+    /// Opens `entry` in a new window.
+    fn open_window(&mut self, entry: Entry, origin: Origin, cx: &mut Context<Self>) {
         let title = self.line_subject(entry);
         let env = self.chrome.environment();
         let paths = self.paths.clone();
         let font = self.font.clone();
-        let origin = Origin {
-            folder: self.listed_folder(),
-            show_recipients: self.show_recipients,
-        };
         let options = window_options(
             &env,
             MAIL_APP_ID,
@@ -123,6 +158,9 @@ impl MailWindow {
         this.listen(cx);
         this.watch_colors(cx);
         window.focus(&this.list_focus, cx);
+        if let Some(message) = origin.reply_all {
+            this.open_compose(Kind::ReplyAll, Some(message), window, cx);
+        }
         this
     }
 
