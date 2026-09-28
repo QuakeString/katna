@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A softer window shadow"
+text = """
+With the Katna window frame, the shadow around the window is tighter and
+fades out fully, without the hard edge it left beside the window.
+"""

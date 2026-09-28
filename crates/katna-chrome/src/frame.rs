@@ -704,7 +704,9 @@ fn box_shadow(s: &Shadow) -> BoxShadow {
     BoxShadow {
         color: Hsla::from(rgba(s.color)),
         offset: point(px(s.x), px(s.y)),
-        blur_radius: px(s.blur),
+        // GPUI's blur radius is the Gaussian's standard deviation, half
+        // the CSS blur of the tokens.
+        blur_radius: px(s.blur / 2.0),
         spread_radius: px(s.spread),
         inset: false,
     }
