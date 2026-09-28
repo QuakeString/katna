@@ -46,4 +46,5 @@ quick-conversation-view-detail = Groepeer antwoorde op dieselfde e-pos
 quick-help = Hulp
 quick-tour = Neem die toer
 quick-whats-new = Wat's nuut
+quick-check-updates = Gaan opdaterings na
 quick-about = Meer oor Katna

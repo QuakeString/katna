@@ -101,6 +101,12 @@ pub struct Manifest {
     /// version's commit.
     #[serde(default)]
     pub changes: Vec<Change>,
+    /// The file's minisign signature (the text of a `.minisig` file), by
+    /// the update signing key (`packaging/keys/`). Saved beside the
+    /// download, where the root update helper checks it once the package
+    /// carries the key. `None` from builds before signing.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minisig: Option<String>,
 }
 
 /// A What's new highlight of a build, as `katna-mail --highlights`
@@ -150,7 +156,14 @@ impl Manifest {
                 .chars()
                 .all(|c| c.is_ascii_digit() || ('a'..='f').contains(&c));
         let size = (1..=MAX_SIZE).contains(&manifest.size);
-        (plain_name && sha && size && parse_version(&manifest.version).is_some())
+        // A few short lines of printable text.
+        let minisig = manifest.minisig.as_ref().is_none_or(|sig| {
+            sig.len() <= 1024
+                && sig
+                    .chars()
+                    .all(|c| c == '\n' || c.is_ascii_graphic() || c == ' ')
+        });
+        (plain_name && sha && size && minisig && parse_version(&manifest.version).is_some())
             .then_some(manifest)
     }
 
@@ -237,6 +250,13 @@ mod tests {
         assert!(bad("9f86d0", "zz86d0").is_none());
         assert!(bad("31457280", "0").is_none());
         assert!(bad("0.0.0.r236.g1a2b3c4", "soon").is_none());
+        // Signed builds carry their signature; old ones have none.
+        assert_eq!(manifest.minisig, None);
+        let sig =
+            "untrusted comment: signature\nRUQf6LRCGA9i5+Q=\ntrusted comment: katna-git\nabc=\n";
+        let signed = bad("\"size\"", &format!("\"minisig\":{sig:?},\"size\""));
+        assert_eq!(signed.unwrap().minisig.as_deref(), Some(sig));
+        assert!(bad("\"size\"", "\"minisig\":\"a\\u0000b\",\"size\"").is_none());
     }
 
     #[test]

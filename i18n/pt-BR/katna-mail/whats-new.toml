@@ -1079,3 +1079,21 @@ carregamento fina enquanto verifica sua conta Katna, em vez de pedir
 rapidamente que você faça login. O Katna também verifica a conta assim
 que inicia, então a espera é menor.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "As atualizações ganham a própria janela"
+text = """
+Ajuda > Verificar atualizações abre uma janela própria. Ela mostra sua
+versão ao lado da nova, com a data de compilação de cada uma e o tamanho
+do download, as novidades da atualização e todas as alterações desde a
+sua versão.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Início mais rápido, sincronização mais fluida"
+text = """
+O Katna Mail abre uma caixa de entrada grande cerca de um quarto mais
+rápido e, enquanto os e-mails são baixados, atualiza a lista uma vez por
+lote em vez de a cada poucas mensagens, então a rolagem e a digitação
+continuam fluidas durante a sincronização.
+"""

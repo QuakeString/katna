@@ -1081,3 +1081,21 @@ saat memeriksa akun Katna Anda, bukan sesaat meminta Anda masuk. Katna
 juga memeriksa akun begitu dimulai, sehingga waktu tunggunya lebih
 singkat.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Pembaruan punya jendela sendiri"
+text = """
+Bantuan > Periksa Pembaruan membuka jendela tersendiri. Jendela ini
+menampilkan versi Anda berdampingan dengan versi baru, kapan masing-
+masing dibuat dan seberapa besar unduhannya, apa yang baru dalam
+pembaruan, serta setiap perubahan sejak versi Anda.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Mulai lebih cepat, sinkronisasi lebih mulus"
+text = """
+Katna Mail membuka kotak masuk besar sekitar seperempat lebih cepat, dan
+saat surat diunduh, daftar diperbarui sekali per kelompok, bukan setelah
+setiap beberapa pesan, sehingga pengguliran dan pengetikan tetap mulus
+selama sinkronisasi.
+"""

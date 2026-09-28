@@ -647,8 +647,26 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::KatnaAccountChanged);
     }
 
-    /// The picture of the sender `address`, or empty.
+    /// The picture of the sender `address`, or empty. Only looked up when
+    /// the user's provider authenticated mail from the address's domain
+    /// (DMARC or aligned DKIM in its `Authentication-Results`), so a forged
+    /// `From` makes the daemon fetch nothing.
     pub async fn sender_picture(&self, address: &str) -> Result<Vec<u8>, CommandError> {
+        let domain = address
+            .rsplit_once('@')
+            .map(|(_, domain)| domain.trim().trim_end_matches('.').to_ascii_lowercase())
+            .unwrap_or_default();
+        let authenticated = !domain.is_empty()
+            && self
+                .store()
+                .sender_domain_authenticated(&domain)
+                .unwrap_or_else(|err| {
+                    tracing::warn!(%err, "reading sender authentication");
+                    false
+                });
+        if !authenticated {
+            return Ok(Vec::new());
+        }
         let pictures = Pictures::system(self.paths.cache_dir())
             .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         Ok(pictures.sender(address).await)

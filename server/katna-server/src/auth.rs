@@ -15,6 +15,9 @@ use axum::extract::FromRequestParts;
 use axum::http::header;
 use axum::http::request::Parts;
 use std::sync::LazyLock;
+use std::time::Duration;
+
+use tokio::sync::Semaphore;
 
 use crate::db::{InstallAuth, now_ms};
 use crate::ids;
@@ -145,9 +148,30 @@ pub fn clean_device_name(name: &str) -> String {
         .collect()
 }
 
+/// Password hashes worked on at once: one per CPU, at least two. Each
+/// takes 19 MiB, so a burst of sign-ins cannot exhaust the memory.
+pub fn hashing_permits() -> usize {
+    std::thread::available_parallelism().map_or(2, |n| n.get().max(2))
+}
+
+static HASHING: LazyLock<Semaphore> = LazyLock::new(|| Semaphore::new(hashing_permits()));
+
+/// How long a request waits for a turn to hash before it is answered 503.
+const HASHING_WAIT: Duration = Duration::from_secs(10);
+
+/// Waits for a turn to hash a password.
+async fn hashing_turn() -> Result<tokio::sync::SemaphorePermit<'static>, ApiError> {
+    match tokio::time::timeout(HASHING_WAIT, HASHING.acquire()).await {
+        Ok(Ok(permit)) => Ok(permit),
+        Ok(Err(_)) => Err(ApiError::Hash),
+        Err(_) => Err(ApiError::Busy("the server is busy; try again shortly")),
+    }
+}
+
 /// Hashes a password with Argon2id (on a blocking thread: it is slow on
-/// purpose).
+/// purpose), a few at a time.
 pub async fn hash_password(password: String) -> Result<String, ApiError> {
+    let _turn = hashing_turn().await?;
     tokio::task::spawn_blocking(move || {
         let mut salt = [0u8; 16];
         getrandom::fill(&mut salt).expect("the operating system's random source failed");
@@ -161,9 +185,11 @@ pub async fn hash_password(password: String) -> Result<String, ApiError> {
     .map_err(|_| ApiError::Hash)?
 }
 
-/// Checks a password against a stored hash (on a blocking thread).
-pub async fn verify_password(password: String, hash: String) -> bool {
-    tokio::task::spawn_blocking(move || {
+/// Checks a password against a stored hash (on a blocking thread, a few
+/// at a time). An error means the server was too busy to check.
+pub async fn verify_password(password: String, hash: String) -> Result<bool, ApiError> {
+    let _turn = hashing_turn().await?;
+    Ok(tokio::task::spawn_blocking(move || {
         PasswordHash::new(&hash)
             .map(|parsed| {
                 Argon2::default()
@@ -173,7 +199,7 @@ pub async fn verify_password(password: String, hash: String) -> bool {
             .unwrap_or(false)
     })
     .await
-    .unwrap_or(false)
+    .unwrap_or(false))
 }
 
 /// A hash to check passwords against when there is no account, so a
@@ -255,8 +281,29 @@ mod tests {
     async fn hashes_and_verifies() {
         let hash = hash_password("correct horse".into()).await.unwrap();
         assert!(hash.starts_with("$argon2id$"));
-        assert!(verify_password("correct horse".into(), hash.clone()).await);
-        assert!(!verify_password("wrong horse".into(), hash).await);
-        assert!(!verify_password("x".into(), DUMMY_HASH.clone()).await);
+        assert!(
+            verify_password("correct horse".into(), hash.clone())
+                .await
+                .unwrap()
+        );
+        assert!(!verify_password("wrong horse".into(), hash).await.unwrap());
+        assert!(
+            !verify_password("x".into(), DUMMY_HASH.clone())
+                .await
+                .unwrap()
+        );
+    }
+
+    #[tokio::test]
+    async fn hashing_takes_turns() {
+        assert!(hashing_permits() >= 2);
+        // Many more than the turns at once all finish.
+        let checks: Vec<_> = (0..hashing_permits() * 3)
+            .map(|_| tokio::spawn(verify_password("x".into(), DUMMY_HASH.clone())))
+            .collect();
+        for check in checks {
+            assert!(!check.await.unwrap().unwrap());
+        }
+        assert!(HASHING.available_permits() <= hashing_permits());
     }
 }

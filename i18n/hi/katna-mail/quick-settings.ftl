@@ -46,4 +46,5 @@ quick-conversation-view-detail = एक ही मेल के जवाबो�
 quick-help = सहायता
 quick-tour = ऐप का टूर करें
 quick-whats-new = नया क्या है
+quick-check-updates = अपडेट जाँचें
 quick-about = Katna के बारे में

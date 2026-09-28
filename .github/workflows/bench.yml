@@ -17,15 +17,19 @@ defaults:
     # Explicit bash turns on pipefail, so `| tee` keeps the exit status.
     shell: bash
 
+# Read-only by default; the jobs that publish ask for more themselves.
+permissions:
+  contents: read
+
 jobs:
   enron:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: rustup toolchain install
       - name: Cache the Enron archive
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/katna/corpora/enron/enron_mail_20150507.tar.gz
           key: enron-mail-20150507
@@ -37,7 +41,7 @@ jobs:
       - name: Index
         run: target/release/katna-search-cli index --data-dir "$DATA"
       - name: Restore the last good results
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: bench-baseline.json
           key: enron-bench-baseline-${{ github.run_id }}
@@ -50,11 +54,11 @@ jobs:
             --json bench.json "${baseline[@]}" | tee bench.txt
       - name: Keep these results as the next baseline
         run: cp bench.json bench-baseline.json
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: bench-baseline.json
           key: enron-bench-baseline-${{ github.run_id }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: enron-bench

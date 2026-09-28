@@ -1071,3 +1071,20 @@ podczas sprawdzania konta Katna, zamiast na chwilę prosić o zalogowanie
 się. Katna sprawdza też konto od razu po uruchomieniu, więc czekanie
 jest krótsze.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Aktualizacje we własnym oknie"
+text = """
+Pomoc > Sprawdź aktualizacje otwiera osobne okno. Pokazuje Twoją wersję
+obok nowej, z datą zbudowania każdej i rozmiarem pobierania, co nowego
+w aktualizacji oraz każdą zmianę od Twojej wersji.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Szybszy start, płynniejsza synchronizacja"
+text = """
+Katna Mail otwiera dużą skrzynkę odbiorczą o około jedną czwartą
+szybciej, a podczas pobierania poczty odświeża listę raz na partię,
+zamiast co kilka wiadomości, dzięki czemu przewijanie i pisanie pozostają
+płynne podczas synchronizacji.
+"""

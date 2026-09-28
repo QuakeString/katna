@@ -40,4 +40,5 @@ quick-conversation-view-detail = Chịkọta nzaghachi na otu ozi ọnụ
 quick-help = Enyemaka
 quick-tour = Mee njem nlegharị anya
 quick-whats-new = Ihe ọhụrụ
+quick-check-updates = Lelee imelite
 quick-about = Banyere Katna

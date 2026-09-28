@@ -414,6 +414,8 @@ fn parse_config(
         .ok_or("no emailProvider")?;
     let mut any_imap = false;
     let mut best: [Option<Server>; 2] = [None, None];
+    // Whether a cleartext server was offered, for each slot.
+    let mut plain = [false, false];
     for node in provider.children().filter(|n| n.is_element()) {
         let slot = match (node.tag_name().name(), node.attribute("type")) {
             ("incomingServer", Some("imap")) => 0,
@@ -447,6 +449,7 @@ fn parse_config(
         let (Some(port), true) = (port, passwords && valid_host(&host)) else {
             continue;
         };
+        plain[slot] |= security == Security::Plain;
         let username = field("username").unwrap_or_else(|| user.address.to_owned());
         let candidate = server(&host, port, security, &username);
         // TLS beats STARTTLS beats plain; the file's order breaks ties.
@@ -455,6 +458,19 @@ fn parse_config(
             .is_none_or(|current| rank(candidate.security) < rank(current.security));
         if better {
             best[slot] = Some(candidate);
+        }
+    }
+    // A cleartext server is only ever taken when the file offers nothing
+    // else (TLS and STARTTLS always win above); the password then crosses
+    // the network readable by anyone on the way.
+    for (server, offered) in best.iter().zip(plain) {
+        if let Some(server) = server.as_ref().filter(|s| s.security == Security::Plain) {
+            tracing::warn!(
+                host = server.host,
+                "the provider only offers a cleartext connection; the password will not be encrypted"
+            );
+        } else if offered {
+            tracing::debug!("cleartext server skipped for an encrypted one");
         }
     }
     let [imap, smtp] = best;
@@ -494,12 +510,51 @@ async fn from_srv(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
     let pick = |records: &[dns::Srv], security| {
         records
             .iter()
-            .find(|r| r.port != 0 && valid_host(&r.target))
+            .filter(|r| r.port != 0 && valid_host(&r.target))
+            .find(|r| {
+                let trusted = srv_target_trusted(&r.target, user);
+                if !trusted {
+                    tracing::warn!(
+                        domain,
+                        target = r.target,
+                        "SRV record names a server outside the domain; ignored"
+                    );
+                }
+                trusted
+            })
             .map(|r| server(&r.target, r.port, security, user.address))
     };
     let imap = pick(&found[0], Security::Tls).or_else(|| pick(&found[1], Security::StartTls))?;
     let smtp = pick(&found[2], Security::Tls).or_else(|| pick(&found[3], Security::StartTls));
     Some(Discovered::new(imap, smtp, Source::DnsSrv))
+}
+
+/// Whether an SRV record of `user`'s domain may name `target`. DNS
+/// answers are not authenticated, so a record pointing outside the domain
+/// could come from a network in the middle, and the login would then be
+/// checked against the attacker's own certificate (RFC 6186 §6): only the
+/// domain itself, hosts under it, and the big providers Katna knows are
+/// taken.
+fn srv_target_trusted(target: &str, user: &User<'_>) -> bool {
+    let target = target.trim_end_matches('.').to_ascii_lowercase();
+    let domain = user.domain;
+    if target == domain
+        || target
+            .strip_suffix(domain)
+            .is_some_and(|rest| rest.ends_with('.'))
+    {
+        return true;
+    }
+    let built_in = BUILT_IN
+        .iter()
+        .any(|(_, imap, smtp, ..)| target == *imap || target == *smtp);
+    let oauth = [OAuthProvider::Google, OAuthProvider::Microsoft]
+        .into_iter()
+        .any(|provider| {
+            let (imap, smtp) = Provider::servers(provider, user.address);
+            target == imap.host || target == smtp.host
+        });
+    built_in || oauth
 }
 
 /// Probes the usual host names and ports at once; the first candidate in
@@ -550,17 +605,10 @@ async fn guess(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
     ))
 }
 
-/// The registrable part of a host name, roughly: the last two labels, or
-/// three under a short second-level label such as `co.uk`.
+/// The registrable part of a host name, roughly
+/// ([`crate::pictures::organizational_domain`]).
 fn base_domain(host: &str) -> String {
-    let labels: Vec<&str> = host.trim_end_matches('.').split('.').collect();
-    let keep = match labels.as_slice() {
-        [.., second, top] if top.len() == 2 && second.len() <= 3 && labels.len() >= 3 => 3,
-        _ => 2,
-    };
-    labels[labels.len().saturating_sub(keep)..]
-        .join(".")
-        .to_ascii_lowercase()
+    crate::pictures::organizational_domain(host)
 }
 
 fn query_escape(text: &str) -> String {

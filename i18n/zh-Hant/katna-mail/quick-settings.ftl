@@ -40,4 +40,5 @@ quick-conversation-view-detail = 將同一封郵件的回覆歸為一組
 quick-help = 說明
 quick-tour = 開始導覽
 quick-whats-new = 最新消息
+quick-check-updates = 檢查更新
 quick-about = 關於 Katna

@@ -40,4 +40,5 @@ quick-conversation-view-detail = Kó àwọn èsì sí lẹ́tà kan náà pọ�
 quick-help = Ìrànlọ́wọ́
 quick-tour = Rin ìrìnàjò àfihàn
 quick-whats-new = Kí ló jẹ́ tuntun
+quick-check-updates = Ṣàyẹ̀wò àwọn ìmúdójúìwọ̀n
 quick-about = Nípa Katna

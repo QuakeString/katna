@@ -10,7 +10,10 @@
 //!
 //! Reports never leave the machine here. Before one is written, the home
 //! directory, user name, host name, machine ID and email addresses are
-//! replaced by placeholders ([`Scrubber`]).
+//! replaced by placeholders, URLs are cut to their scheme and host, and a
+//! panic message's quoted text is left out ([`Scrubber`],
+//! [`panic_message`]). The crash directory is private to the user (`0700`,
+//! reports `0600`).
 
 use std::backtrace::Backtrace;
 use std::fmt::Write as _;
@@ -22,7 +25,7 @@ use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use crate::paths::Paths;
+use crate::paths::{Paths, create_private_dir};
 
 /// The version this build reports: `$KATNA_VERSION` at build time (the
 /// package's version, such as `0.0.0.r512.g4040a0e`), else the crate's.
@@ -130,7 +133,7 @@ fn panic_report(app: &str, info: &std::panic::PanicHookInfo<'_>, backtrace: &Bac
     let mut text = header(app, "panic", SystemTime::now());
     let _ = writeln!(text, "Thread: {}", thread.name().unwrap_or("unnamed"));
     let _ = writeln!(text, "Location: {location}");
-    let _ = writeln!(text, "Message: {message}");
+    let _ = writeln!(text, "Message: {}", panic_message(message));
     let _ = writeln!(text, "\nBacktrace:\n{backtrace}");
     // Release binaries are stripped, so the backtrace above names few
     // functions; these offsets do, with the build's debug file.
@@ -321,12 +324,13 @@ fn write_report(
     pid: u32,
     text: &str,
 ) -> io::Result<PathBuf> {
-    fs::create_dir_all(dir)?;
+    create_private_dir(dir)?;
     let path = dir.join(format!("{}-{app}-{pid}.txt", file_time(when)));
-    let mut file = fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&path)?;
+    let mut options = fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    std::os::unix::fs::OpenOptionsExt::mode(&mut options, 0o600);
+    let mut file = options.open(&path)?;
     file.write_all(text.as_bytes())?;
     prune(dir);
     Ok(path)
@@ -412,7 +416,7 @@ pub fn unseen(dir: &Path) -> Vec<Report> {
 
 /// Remembers that the user has seen `report` and every older one.
 pub fn mark_seen(dir: &Path, report: &Report) -> io::Result<()> {
-    fs::create_dir_all(dir)?;
+    create_private_dir(dir)?;
     fs::write(dir.join(SEEN_FILE), &report.name)
 }
 
@@ -461,7 +465,7 @@ pub fn mark_sent(dir: &Path, report: &Report) -> io::Result<()> {
         .filter(|name| present.contains(name) && *name != report.name)
         .collect();
     sent.push(report.name.clone());
-    fs::create_dir_all(dir)?;
+    create_private_dir(dir)?;
     fs::write(dir.join(SENT_FILE), sent.join("\n") + "\n")
 }
 
@@ -519,7 +523,7 @@ pub fn collect_core_dumps(paths: &Paths, apps: &[&str]) -> Vec<PathBuf> {
         }
     }
     if newest > since {
-        let _ = fs::create_dir_all(&dir);
+        let _ = create_private_dir(&dir);
         let _ = fs::write(&last_file, newest.to_string());
     }
     written
@@ -731,10 +735,12 @@ impl Scrubber {
     }
 
     /// `text` with the home directory as `~`, the machine ID, host name and
-    /// user name as `<machine>`, `<host>` and `<user>`, and email
-    /// addresses as `<email>`.
+    /// user name as `<machine>`, `<host>` and `<user>`, URLs cut to their
+    /// scheme and host (their paths and queries can carry tracking IDs and
+    /// addresses), and email addresses as `<email>`. Percent-escapes are
+    /// decoded first, so `ada%40example.org` is caught too.
     pub fn scrub(&self, text: &str) -> String {
-        let mut text = emails(text);
+        let mut text = emails(&urls(&percent_decode(text)));
         if let Some(home) = &self.home {
             text = text.replace(home.as_str(), "~");
         }
@@ -771,39 +777,46 @@ fn whole_words(text: &str, word: &str, with: &str) -> String {
     out
 }
 
-/// Replaces everything shaped like `local@domain.tld` with `<email>`.
+/// Replaces everything shaped like `local@domain.tld` with `<email>`, in
+/// any script: the local part is any run of characters that are not
+/// spaces, `@` or punctuation that surrounds addresses (`<>()[]{}"',;:`),
+/// the domain letters, digits, dots and dashes ending in a top-level
+/// domain of two or more letters. Code such as `memcpy@@GLIBC_2.14` or
+/// `v1.2@3.4` is left alone.
 fn emails(text: &str) -> String {
-    let bytes = text.as_bytes();
-    let local = |b: u8| b.is_ascii_alphanumeric() || b"._%+-".contains(&b);
-    let domain = |b: u8| b.is_ascii_alphanumeric() || b".-".contains(&b);
+    let chars: Vec<(usize, char)> = text.char_indices().collect();
+    let local = |c: char| !c.is_whitespace() && !c.is_control() && !"@<>()[]{}\"',;:`".contains(c);
+    let domain = |c: char| c.is_alphanumeric() || c == '.' || c == '-';
+    let offset = |i: usize| chars.get(i).map_or(text.len(), |(at, _)| *at);
     let mut out = String::with_capacity(text.len());
+    // In characters: how far `out` has copied, and where we look.
     let mut copied = 0;
     let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] != b'@' {
+    while i < chars.len() {
+        if chars[i].1 != '@' {
             i += 1;
             continue;
         }
         let mut start = i;
-        while start > copied && local(bytes[start - 1]) {
+        while start > copied && local(chars[start - 1].1) {
             start -= 1;
         }
         let mut end = i + 1;
-        while end < bytes.len() && domain(bytes[end]) {
+        while end < chars.len() && domain(chars[end].1) {
             end += 1;
         }
         // A sentence's full stop is not part of the domain.
-        while end > i + 1 && bytes[end - 1] == b'.' {
+        while end > i + 1 && chars[end - 1].1 == '.' {
             end -= 1;
         }
-        let host = &text[i + 1..end];
+        let host = &text[offset(i + 1)..offset(end)];
         let tld = host.rsplit('.').next().unwrap_or("");
         if start < i
             && host.contains('.')
-            && tld.len() >= 2
-            && tld.bytes().all(|b| b.is_ascii_alphabetic())
+            && tld.chars().count() >= 2
+            && tld.chars().all(char::is_alphabetic)
         {
-            out.push_str(&text[copied..start]);
+            out.push_str(&text[offset(copied)..offset(start)]);
             out.push_str("<email>");
             copied = end;
             i = end;
@@ -811,7 +824,101 @@ fn emails(text: &str) -> String {
             i += 1;
         }
     }
-    out.push_str(&text[copied..]);
+    out.push_str(&text[offset(copied)..]);
+    out
+}
+
+/// `text` with `%XX` escapes decoded (invalid UTF-8 that results is
+/// replaced); anything else is kept.
+fn percent_decode(text: &str) -> String {
+    if !text.contains('%') {
+        return text.to_string();
+    }
+    let bytes = text.as_bytes();
+    let hex = |b: u8| char::from(b).to_digit(16);
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%'
+            && let (Some(high), Some(low)) = (
+                bytes.get(i + 1).copied().and_then(hex),
+                bytes.get(i + 2).copied().and_then(hex),
+            )
+        {
+            out.push((high * 16 + low) as u8);
+            i += 3;
+        } else {
+            out.push(bytes[i]);
+            i += 1;
+        }
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
+/// `text` with every `scheme://…` URL cut to `scheme://host`: no user
+/// name, port, path, query or fragment.
+fn urls(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut rest = text;
+    while let Some(at) = rest.find("://") {
+        let before = &rest[..at];
+        let scheme_len = before
+            .chars()
+            .rev()
+            .take_while(|c| c.is_ascii_alphanumeric() || "+.-".contains(*c))
+            .count();
+        let scheme = &before[before.len() - scheme_len..];
+        // Not a URL: copy through the `://` and go on.
+        if !scheme.starts_with(|c: char| c.is_ascii_alphabetic()) {
+            out.push_str(&rest[..at + 3]);
+            rest = &rest[at + 3..];
+            continue;
+        }
+        let after = &rest[at + 3..];
+        let end = after
+            .find(|c: char| c.is_whitespace() || "\"'<>`".contains(c))
+            .unwrap_or(after.len());
+        let authority = after[..end].split(['/', '?', '#']).next().unwrap_or("");
+        let host = authority.rsplit('@').next().unwrap_or("");
+        let host = match host.rfind(':') {
+            // A port, but not inside an IPv6 literal.
+            Some(colon) if !host[colon..].contains(']') => &host[..colon],
+            _ => host,
+        };
+        out.push_str(before);
+        out.push_str("://");
+        out.push_str(host);
+        rest = &after[end..];
+    }
+    out.push_str(rest);
+    out
+}
+
+/// Longest panic message kept, in characters.
+const MAX_MESSAGE: usize = 200;
+
+/// A panic message without the text it quotes: Rust's messages quote the
+/// string or value involved in `` `…` `` or `"…"` (a slice of a subject
+/// or a body, say), so those spans become `…`. Cut to [`MAX_MESSAGE`]
+/// characters.
+fn panic_message(message: &str) -> String {
+    let mut out = String::with_capacity(message.len());
+    let mut rest = message;
+    while let Some(open) = rest.find(['`', '"']) {
+        let quote = &rest[open..open + 1];
+        let Some(close) = rest[open + 1..].find(quote) else {
+            break;
+        };
+        out.push_str(&rest[..open]);
+        out.push_str(quote);
+        out.push('…');
+        out.push_str(quote);
+        rest = &rest[open + 1 + close + 1..];
+    }
+    out.push_str(rest);
+    if out.chars().count() > MAX_MESSAGE {
+        out = out.chars().take(MAX_MESSAGE).collect::<String>() + "…";
+    }
     out
 }
 
@@ -859,6 +966,67 @@ mod tests {
         assert_eq!(Scrubber::default().scrub(text), text);
         assert_eq!(emails("write to a@b.co."), "write to <email>.");
         assert_eq!(emails("x@y"), "x@y");
+    }
+
+    #[test]
+    fn scrubs_urls_encoded_and_non_ascii_addresses() {
+        let scrubber = Scrubber::default();
+        assert_eq!(
+            scrubber.scrub(
+                "GET https://autoconfig.example.org/mail/config-v1.1.xml?emailaddress=ada%40example.org done"
+            ),
+            "GET https://autoconfig.example.org done"
+        );
+        assert_eq!(
+            scrubber.scrub("image url=https://user:pw@t.example:8443/o/8f3a91.png?u=ada\n"),
+            "image url=https://t.example\n"
+        );
+        assert_eq!(
+            scrubber.scrub("from \"jö.ü@exämple.de\" and ада@пример.рф, and ada%40example.org"),
+            "from \"<email>\" and <email>, and <email>"
+        );
+        assert_eq!(
+            scrubber.scrub("imaps://[2001:db8::1]:993/INBOX and file:///tmp/x"),
+            "imaps://[2001:db8::1] and file://"
+        );
+        // Not URLs, and escapes that decode to nothing valid.
+        assert_eq!(
+            scrubber.scrub("a :// b, 100%, 50%zz"),
+            "a :// b, 100%, 50%zz"
+        );
+    }
+
+    #[test]
+    fn panic_messages_lose_what_they_quote() {
+        assert_eq!(
+            panic_message(
+                "byte index 5 is not a char boundary; it is inside 'é' (bytes 4..6) of `Dear Ada, the invoice`"
+            ),
+            "byte index 5 is not a char boundary; it is inside 'é' (bytes 4..6) of `…`"
+        );
+        assert_eq!(
+            panic_message(
+                "called `Result::unwrap()` on an `Err` value: Parse(\"Subject: secret\")"
+            ),
+            "called `…` on an `…` value: Parse(\"…\")"
+        );
+        assert_eq!(panic_message("boom in a test"), "boom in a test");
+        assert_eq!(panic_message("odd ` quote"), "odd ` quote");
+        let long = "x".repeat(500);
+        assert_eq!(panic_message(&long).chars().count(), MAX_MESSAGE + 1);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn reports_are_private() {
+        use std::os::unix::fs::PermissionsExt;
+        let tmp = tempfile::tempdir().unwrap();
+        let dir = tmp.path().join("state").join("crashes");
+        let path = write_report(&dir, "katna-mail", at(1_790_000_000), 7, "text").unwrap();
+        let mode = |p: &Path| fs::metadata(p).unwrap().permissions().mode() & 0o777;
+        assert_eq!(mode(&dir), 0o700);
+        assert_eq!(mode(dir.parent().unwrap()), 0o700);
+        assert_eq!(mode(&path), 0o600);
     }
 
     #[test]

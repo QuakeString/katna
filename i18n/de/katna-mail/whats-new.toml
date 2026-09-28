@@ -1103,3 +1103,21 @@ Ihr Katna-Konto geprüft wird, statt kurz zur Anmeldung aufzufordern.
 Katna prüft das Konto außerdem schon beim Start, sodass die Wartezeit
 kürzer ist.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Updates bekommen ein eigenes Fenster"
+text = """
+Hilfe > Nach Updates suchen öffnet ein eigenes Fenster. Es zeigt Ihre
+Version neben der neuen, mit dem Erstellungsdatum beider und der
+Downloadgröße, dazu die Neuigkeiten des Updates und jede Änderung seit
+Ihrer Version.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Schnellerer Start, flüssigeres Synchronisieren"
+text = """
+Katna Mail öffnet einen großen Posteingang etwa ein Viertel schneller,
+und während Mails heruntergeladen werden, wird die Liste nur einmal pro
+Stapel aktualisiert statt nach jeweils wenigen Nachrichten. So bleiben
+Scrollen und Tippen bei einer Synchronisierung flüssig.
+"""

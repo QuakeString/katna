@@ -23,7 +23,7 @@ pub struct Error(pub String);
 
 /// Decodes `bytes` at most `max_side` pixels on a side, upright.
 pub fn decode(bytes: &[u8], format: Picture, max_side: u32) -> Result<RgbaImage, Error> {
-    let image = read(bytes, format)?;
+    let image = read(bytes, format, max_side)?;
     let image = if image.width() > max_side || image.height() > max_side {
         image.resize(max_side, max_side, FilterType::Triangle)
     } else {
@@ -40,14 +40,16 @@ pub fn thumbnail(
     width: u32,
     height: u32,
 ) -> Result<RgbaImage, Error> {
-    let image = read(bytes, format)?;
+    let image = read(bytes, format, width.max(height).saturating_mul(4))?;
     // Fill the card like CSS `object-fit: cover`: scale to cover, then crop.
     Ok(image
         .resize_to_fill(width, height, FilterType::Triangle)
         .into_rgba8())
 }
 
-fn read(bytes: &[u8], format: Picture) -> Result<DynamicImage, Error> {
+/// `bytes` decoded; an SVG is drawn at twice its size, at most
+/// `max_side` pixels on a side (see [`crate::svg`]).
+fn read(bytes: &[u8], format: Picture, max_side: u32) -> Result<DynamicImage, Error> {
     let format = match format {
         Picture::Png => ImageFormat::Png,
         Picture::Jpeg => ImageFormat::Jpeg,
@@ -55,7 +57,10 @@ fn read(bytes: &[u8], format: Picture) -> Result<DynamicImage, Error> {
         Picture::Webp => ImageFormat::WebP,
         Picture::Bmp => ImageFormat::Bmp,
         Picture::Tiff => ImageFormat::Tiff,
-        Picture::Svg => return Err(Error("SVG is drawn by the viewer".into())),
+        Picture::Svg => {
+            return crate::svg::draw(bytes, 2.0, max_side)
+                .map(|drawing| DynamicImage::ImageRgba8(drawing.image));
+        }
     };
     let mut reader = ImageReader::with_format(Cursor::new(bytes), format);
     // Senders mislabel pictures; trust the bytes over the MIME type.

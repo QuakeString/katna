@@ -6016,6 +6016,7 @@ dependencies = [
  "tempfile",
  "toml 1.1.6+spec-1.1.0",
  "tracing",
+ "url",
  "winreg 0.56.0",
  "winresource",
  "zbus",
@@ -6152,6 +6153,7 @@ dependencies = [
 name = "katna-setup"
 version = "0.0.0"
 dependencies = [
+ "base64 0.22.1",
  "gpui-pre",
  "gpui-pre-platform",
  "katna-core",

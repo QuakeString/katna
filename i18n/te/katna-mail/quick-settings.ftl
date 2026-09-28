@@ -46,4 +46,5 @@ quick-conversation-view-detail = ఒకే మెయిల్‌కు వచ్
 quick-help = సహాయం
 quick-tour = టూర్ చేయండి
 quick-whats-new = కొత్తగా ఏమి ఉన్నాయి
+quick-check-updates = అప్‌డేట్‌ల కోసం చెక్ చేయండి
 quick-about = Katna గురించి

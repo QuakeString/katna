@@ -40,4 +40,5 @@ quick-conversation-view-detail = ដាក់ការឆ្លើយតបច�
 quick-help = ជំនួយ
 quick-tour = ទស្សនាការណែនាំ
 quick-whats-new = អ្វីដែលថ្មី
+quick-check-updates = ពិនិត្យរកបច្ចុប្បន្នភាព
 quick-about = អំពី Katna

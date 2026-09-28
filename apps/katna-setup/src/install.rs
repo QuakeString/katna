@@ -13,7 +13,7 @@
 //! registry; an install for everyone writes the machine's.
 
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 use crate::payload::Payload;
 
@@ -147,6 +147,59 @@ impl Layout {
         self.programs.join(MAIL_EXE).is_file()
     }
 
+    /// Whether the programs folder can take Katna: a new folder, or one
+    /// that holds Katna already or is empty, and not a link to somewhere
+    /// else. Setup never mixes Katna into another program's files, which
+    /// removing Katna would delete.
+    pub fn check_folder(&self) -> io::Result<()> {
+        let dir = &self.programs;
+        let usable = match std::fs::symlink_metadata(dir) {
+            Ok(meta) if meta.file_type().is_symlink() || !meta.is_dir() => false,
+            Ok(_) => self.installed() || std::fs::read_dir(dir)?.next().is_none(),
+            Err(err) if err.kind() == io::ErrorKind::NotFound => true,
+            Err(err) => return Err(err),
+        };
+        let path = dir.display().to_string();
+        if !usable {
+            return Err(io::Error::other(katna_i18n::tr!(
+                "setup-folder-not-empty",
+                path = path.as_str()
+            )));
+        }
+        // For everyone, outside Program Files: the folders above Katna's
+        // must be safe from other users too, or one could rename them and
+        // put their own Katna where every user's sign-in starts it. An
+        // update of an existing install is let through.
+        if self.scope == Scope::Machine && !self.in_program_files() && !self.installed() {
+            let plain = dir
+                .components()
+                .all(|c| !matches!(c, Component::ParentDir | Component::CurDir));
+            let parent = dir.parent().filter(|p| p.is_dir());
+            if !plain || !parent.is_some_and(only_admins_change) {
+                return Err(io::Error::other(katna_i18n::tr!(
+                    "setup-folder-unsafe",
+                    path = path.as_str()
+                )));
+            }
+        }
+        Ok(())
+    }
+
+    /// Whether the programs are inside `%ProgramFiles%`, whose rules
+    /// already keep users from changing them.
+    #[cfg_attr(not(windows), allow(dead_code))]
+    fn in_program_files(&self) -> bool {
+        let lower = |p: &Path| p.display().to_string().to_lowercase();
+        std::env::var_os("ProgramFiles")
+            .map(PathBuf::from)
+            .filter(|p| p.is_absolute())
+            .is_some_and(|root| {
+                let (root, dir) = (lower(&root), lower(&self.programs));
+                dir.strip_prefix(root.trim_end_matches('\\'))
+                    .is_some_and(|rest| rest.starts_with('\\'))
+            })
+    }
+
     /// The shortcuts and start at sign-in as they are now, for an update
     /// to keep.
     pub fn current_choices(&self) -> Choices {
@@ -243,7 +296,6 @@ pub fn run_elevated(args: &[String]) -> io::Result<i32> {
     use std::os::windows::process::CommandExt;
     const CREATE_NO_WINDOW: u32 = 0x0800_0000;
     let me = std::env::current_exe()?;
-    let quote = |s: &str| s.replace('\'', "''");
     let list = args
         .iter()
         .map(|a| format!("\"{a}\""))
@@ -252,10 +304,10 @@ pub fn run_elevated(args: &[String]) -> io::Result<i32> {
     let script = format!(
         "$p = Start-Process -FilePath '{}' -ArgumentList '{}' -Verb RunAs -Wait -PassThru; \
          exit $p.ExitCode",
-        quote(&me.display().to_string()),
-        quote(&list)
+        ps_quote(&me.display().to_string()),
+        ps_quote(&list)
     );
-    let status = std::process::Command::new("powershell.exe")
+    let status = std::process::Command::new(system_program(POWERSHELL))
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .creation_flags(CREATE_NO_WINDOW)
         .status()?;
@@ -280,8 +332,13 @@ pub fn install(
     progress: &dyn Fn(Step),
 ) -> io::Result<()> {
     let choices = choices.unwrap_or_else(|| layout.current_choices());
+    layout.check_folder()?;
     progress(Step::Stopping);
     stop(&layout.programs);
+    std::fs::create_dir_all(&layout.programs)?;
+    if layout.scope == Scope::Machine && !layout.in_program_files() {
+        lock(&layout.programs)?;
+    }
     unpack(&layout.programs, payload, &|share| {
         progress(Step::Copying(share))
     })?;
@@ -377,13 +434,13 @@ fn stop(programs: &Path) {
     }
     // Only the processes started from this folder: another program may
     // run its own dbus-daemon.exe.
-    let folder = programs.display().to_string().replace('\'', "''");
+    let folder = ps_quote(&programs.display().to_string());
     let script = format!(
         "Get-Process | Where-Object {{ $_.Path -and $_.Path.StartsWith('{folder}\\', \
          [StringComparison]::OrdinalIgnoreCase) -and $_.Id -ne {me} }} | Stop-Process -Force",
         me = std::process::id()
     );
-    let stopped = std::process::Command::new("powershell.exe")
+    let stopped = std::process::Command::new(system_program(POWERSHELL))
         .args(["-NoProfile", "-NonInteractive", "-Command", &script])
         .creation_flags(CREATE_NO_WINDOW)
         .status();
@@ -394,6 +451,157 @@ fn stop(programs: &Path) {
 
 #[cfg(not(windows))]
 fn stop(_programs: &Path) {}
+
+/// Gives a folder for everyone outside Program Files the same rules as
+/// Program Files: administrators and Windows own it and can change it,
+/// users can only read and run it. Otherwise any user could replace the
+/// programs that start when every other user signs in.
+#[cfg(windows)]
+fn lock(dir: &Path) -> io::Result<()> {
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    // Administrators, SYSTEM and Users by their well-known SIDs, which
+    // every language of Windows has.
+    let steps: [&[&str]; 2] = [
+        &["/setowner", "*S-1-5-32-544", "/T", "/C", "/Q"],
+        &[
+            "/inheritance:r",
+            "/grant:r",
+            "*S-1-5-32-544:(OI)(CI)F",
+            "*S-1-5-18:(OI)(CI)F",
+            "*S-1-5-32-545:(OI)(CI)RX",
+            "/T",
+            "/C",
+            "/Q",
+        ],
+    ];
+    for args in steps {
+        let status = std::process::Command::new(system_program("icacls.exe"))
+            .arg(dir)
+            .args(args)
+            .creation_flags(CREATE_NO_WINDOW)
+            .status()?;
+        if !status.success() {
+            return Err(io::Error::other(format!(
+                "{}: icacls {status}",
+                dir.display()
+            )));
+        }
+    }
+    Ok(())
+}
+
+#[cfg(not(windows))]
+fn lock(_dir: &Path) -> io::Result<()> {
+    Ok(())
+}
+
+/// Whether only administrators and Windows can rename, delete or take
+/// over `dir` and every folder above it: each is owned by Administrators,
+/// SYSTEM or TrustedInstaller, and gives nobody else Delete, Delete
+/// subfolders and files, Change permissions or Take ownership (Delete on
+/// a drive's root does not matter: it cannot be renamed). Anything it
+/// cannot read counts as unsafe.
+#[cfg(windows)]
+fn only_admins_change(dir: &Path) -> bool {
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    let script = format!(
+        "$ErrorActionPreference = 'Stop'
+$sid = [System.Security.Principal.SecurityIdentifier]
+$safe = @('S-1-5-32-544', 'S-1-5-18', 'S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464')
+$d = Get-Item -LiteralPath '{}' -Force
+while ($d) {{
+  $acl = Get-Acl -LiteralPath $d.FullName
+  if ($safe -notcontains $acl.GetOwner($sid).Value) {{ exit 3 }}
+  $bad = [int64]0x500C0040
+  if ($d.Parent) {{ $bad = $bad -bor 0x10000 }}
+  foreach ($r in $acl.GetAccessRules($true, $true, $sid)) {{
+    if ($r.AccessControlType -ne 'Allow') {{ continue }}
+    if (([int]$r.PropagationFlags -band 2) -ne 0) {{ continue }}
+    if ($safe -contains $r.IdentityReference.Value) {{ continue }}
+    if (([int64]$r.FileSystemRights -band $bad) -ne 0) {{ exit 3 }}
+  }}
+  $d = $d.Parent
+}}
+exit 0",
+        ps_quote(&dir.display().to_string())
+    );
+    // A script of several lines goes as UTF-16 Base64, as PowerShell reads it.
+    let utf16: Vec<u8> = script.encode_utf16().flat_map(u16::to_le_bytes).collect();
+    let encoded = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, utf16);
+    std::process::Command::new(system_program(POWERSHELL))
+        .args(["-NoProfile", "-NonInteractive", "-EncodedCommand", &encoded])
+        .creation_flags(CREATE_NO_WINDOW)
+        .status()
+        .is_ok_and(|status| status.success())
+}
+
+#[cfg(not(windows))]
+fn only_admins_change(_dir: &Path) -> bool {
+    true
+}
+
+/// Where a Setup running as administrator puts how far it got, for the
+/// Setup that started it to read: a key only administrators can change,
+/// rather than a file the caller names, which Setup as administrator
+/// would overwrite wherever it is.
+#[cfg_attr(not(windows), allow(dead_code))]
+const PROGRESS_KEY: &str = r"SOFTWARE\Katna\Setup";
+
+#[cfg_attr(not(windows), allow(dead_code))]
+fn progress_value(id: u32) -> String {
+    format!("Progress-{id}")
+}
+
+/// Records `line` for the Setup with process ID `id`.
+#[cfg(windows)]
+pub fn write_progress(id: u32, line: &str) {
+    use winreg::enums::HKEY_LOCAL_MACHINE;
+    if let Ok((key, _)) = winreg::RegKey::predef(HKEY_LOCAL_MACHINE).create_subkey(PROGRESS_KEY) {
+        let _ = key.set_value(progress_value(id), &line.to_owned());
+    }
+}
+
+#[cfg(not(windows))]
+pub fn write_progress(_id: u32, _line: &str) {}
+
+/// What the Setup running as administrator recorded for this one, `id`.
+#[cfg(windows)]
+pub fn read_progress(id: u32) -> Option<String> {
+    use winreg::enums::HKEY_LOCAL_MACHINE;
+    winreg::RegKey::predef(HKEY_LOCAL_MACHINE)
+        .open_subkey(PROGRESS_KEY)
+        .and_then(|key| key.get_value::<String, _>(progress_value(id)))
+        .ok()
+}
+
+#[cfg(not(windows))]
+pub fn read_progress(_id: u32) -> Option<String> {
+    None
+}
+
+/// Removes what [`write_progress`] recorded, and the keys once empty.
+#[cfg(windows)]
+pub fn clear_progress(id: u32) {
+    use winreg::enums::{HKEY_LOCAL_MACHINE, KEY_SET_VALUE};
+    let machine = winreg::RegKey::predef(HKEY_LOCAL_MACHINE);
+    if let Ok(key) = machine.open_subkey_with_flags(PROGRESS_KEY, KEY_SET_VALUE) {
+        let _ = key.delete_value(progress_value(id));
+    }
+    // Windows deletes a key with values in it, so only empty ones.
+    for path in [PROGRESS_KEY, r"SOFTWARE\Katna"] {
+        let empty = machine.open_subkey(path).is_ok_and(|key| {
+            key.enum_values().next().is_none() && key.enum_keys().next().is_none()
+        });
+        if empty {
+            let _ = machine.delete_subkey(path);
+        }
+    }
+}
+
+#[cfg(not(windows))]
+pub fn clear_progress(_id: u32) {}
 
 /// The uninstall entry in Settings > Apps.
 #[cfg_attr(not(windows), allow(dead_code))]
@@ -546,7 +754,7 @@ fn delete_passwords() {}
 
 /// Deletes the programs folder. When Windows' Apps settings uninstall
 /// Katna, Setup's own copy in that folder is running, so a short-lived
-/// `cmd` removes the folder once Setup has exited.
+/// PowerShell removes the folder once Setup has exited.
 fn remove_programs(programs: &Path) -> io::Result<()> {
     // Only Katna's own folder: never one without Katna Mail in it.
     if !programs.join(MAIL_EXE).is_file() {
@@ -565,16 +773,49 @@ fn remove_programs(programs: &Path) -> io::Result<()> {
     {
         use std::os::windows::process::CommandExt;
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-        std::process::Command::new("cmd.exe")
-            .raw_arg(format!(
-                "/d /c ping -n 3 127.0.0.1 >nul & rmdir /s /q \"{}\"",
-                programs.display()
-            ))
+        let script = format!(
+            "Start-Sleep -Seconds 2; Remove-Item -LiteralPath '{}' -Recurse -Force",
+            ps_quote(&programs.display().to_string())
+        );
+        std::process::Command::new(system_program(POWERSHELL))
+            .args(["-NoProfile", "-NonInteractive", "-Command", &script])
             .current_dir(std::env::temp_dir())
             .creation_flags(CREATE_NO_WINDOW)
             .spawn()?;
     }
     Ok(())
+}
+
+/// `s` inside a single-quoted PowerShell string. PowerShell also ends such
+/// a string at the typographic single quotes, so those are doubled too.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn ps_quote(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        if matches!(c, '\'' | '\u{2018}' | '\u{2019}' | '\u{201A}' | '\u{201B}') {
+            out.push(c);
+        }
+        out.push(c);
+    }
+    out
+}
+
+/// PowerShell, under `%SystemRoot%\System32`.
+#[cfg_attr(not(windows), allow(dead_code))]
+const POWERSHELL: &str = r"WindowsPowerShell\v1.0\powershell.exe";
+
+/// A program of Windows by its full path under `%SystemRoot%\System32`.
+/// By name alone, Windows would look in Setup's own folder first, often
+/// Downloads, where any page can leave a `powershell.exe` that would then
+/// run as administrator.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn system_program(name: &str) -> PathBuf {
+    std::env::var_os("SystemRoot")
+        .map(PathBuf::from)
+        .filter(|p| p.is_absolute())
+        .unwrap_or_else(|| PathBuf::from(r"C:\Windows"))
+        .join("System32")
+        .join(name)
 }
 
 #[cfg(test)]
@@ -710,5 +951,31 @@ mod tests {
         assert!(layout.installed());
         uninstall(&layout, false).unwrap();
         assert!(!layout.programs.exists());
+    }
+    #[test]
+    fn powershell_strings_keep_every_quote() {
+        assert_eq!(ps_quote("C:\\Bob's"), "C:\\Bob''s");
+        assert_eq!(
+            ps_quote("a\u{2019}b\u{2018}"),
+            "a\u{2019}\u{2019}b\u{2018}\u{2018}"
+        );
+    }
+
+    #[test]
+    fn installs_only_into_an_empty_or_katna_folder() {
+        let dir = tempfile::tempdir().unwrap();
+        let layout = Layout::from_lookup(Scope::User, windows)
+            .unwrap()
+            .in_folder(dir.path());
+        // A new folder, then an empty one.
+        layout.check_folder().unwrap();
+        std::fs::create_dir(&layout.programs).unwrap();
+        layout.check_folder().unwrap();
+        // Someone else's files.
+        std::fs::write(layout.programs.join("other.exe"), b"").unwrap();
+        assert!(layout.check_folder().is_err());
+        // Katna's own folder, for an update.
+        std::fs::write(layout.programs.join(MAIL_EXE), b"").unwrap();
+        layout.check_folder().unwrap();
     }
 }

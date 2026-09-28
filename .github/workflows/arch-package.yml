@@ -28,6 +28,10 @@ concurrency:
   group: arch-package-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# Read-only by default; the jobs that publish ask for more themselves.
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,8 +50,8 @@ jobs:
         run: |
           pacman -Syu --noconfirm --needed base-devel git jq rustup \
             dbus fontconfig freetype2 gcc-libs glibc libglvnd libxcb \
-            libxkbcommon libxkbcommon-x11 polkit vulkan-icd-loader wayland
-      - uses: actions/checkout@v4
+            libxkbcommon libxkbcommon-x11 minisign polkit vulkan-icd-loader wayland
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # pkgver counts the commits.
           fetch-depth: 0
@@ -73,7 +77,7 @@ jobs:
             rustup toolchain install
           '
       # Dependencies built on main; Katna's own crates are always rebuilt.
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:
           key: arch-package
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -161,7 +165,7 @@ jobs:
           jq '{version, file, size, built, commit,
                highlights: (.highlights | length), changes: (.changes | length)}' \
             out/katna-update.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: arch-package
           path: out/
@@ -173,14 +177,75 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
     concurrency:
       group: arch-package-release
       cancel-in-progress: false
     steps:
-      - uses: actions/download-artifact@v4
+      # Only a commit whose CI passed is published. A run cancelled by a
+      # newer push to main (its pull request passed CI before merging)
+      # still publishes; a failed one never does.
+      - name: Wait for CI on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for attempt in $(seq 120); do
+            result=$(gh api "repos/$GH_REPO/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push" \
+              --jq '[.workflow_runs[] | "\(.status) \(.conclusion)"] | first // "none"')
+            echo "CI on $GITHUB_SHA: $result"
+            case "$result" in
+              "completed success") exit 0 ;;
+              "completed cancelled" | "completed skipped") exit 0 ;;
+              completed*) echo "CI did not pass; not publishing"; exit 1 ;;
+            esac
+            sleep 60
+          done
+          echo "CI did not finish in two hours; not publishing"
+          exit 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: arch-package
           path: out
+      # The public half of the update signing key, when there is one.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: src
+          sparse-checkout: packaging/keys
+          persist-credentials: false
+      # Signed here, where no dependency's build script has run. Once
+      # packaging/keys/katna-update.pub exists, the root update helper of
+      # every package built from then on refuses an update without a good
+      # signature from its private half (the KATNA_UPDATE_SIGNING_KEY
+      # secret, a minisign key made with -W), so a build without it must
+      # not be published. The signature also goes into katna-update.json,
+      # which the daemon saves beside the download.
+      - name: Sign the update
+        env:
+          KATNA_UPDATE_SIGNING_KEY: ${{ secrets.KATNA_UPDATE_SIGNING_KEY }}
+        run: |
+          public=src/packaging/keys/katna-update.pub
+          if [[ ! -f $public ]]; then
+            echo "No update signing key yet; the update is not signed"
+            exit 0
+          fi
+          if [[ -z $KATNA_UPDATE_SIGNING_KEY ]]; then
+            echo "::error::packaging/keys/katna-update.pub exists but the KATNA_UPDATE_SIGNING_KEY secret is not set"
+            exit 1
+          fi
+          sudo apt-get install -y -qq minisign > /dev/null
+          cd out
+          pkg=$(ls katna-git-*.pkg.tar.zst | grep -vxF katna-git-x86_64.pkg.tar.zst)
+          version=$(jq -r .version katna-update.json)
+          key=$(mktemp)
+          chmod 600 "$key"
+          printf '%s\n' "$KATNA_UPDATE_SIGNING_KEY" > "$key"
+          minisign -S -s "$key" -m "$pkg" -t "katna-git $version" < /dev/null
+          rm -f "$key"
+          minisign -V -m "$pkg" -p "../$public"
+          jq -c --rawfile minisig "$pkg.minisig" '. + {minisig: $minisig}' katna-update.json > manifest.json
+          mv manifest.json katna-update.json
+          cat katna-update.json
       - name: Update the arch-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}

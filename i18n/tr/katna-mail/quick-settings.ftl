@@ -46,4 +46,5 @@ quick-conversation-view-detail = Aynı postaya verilen yanıtları grupla
 quick-help = Yardım
 quick-tour = Turu başlat
 quick-whats-new = Yenilikler
+quick-check-updates = Güncellemeleri denetle
 quick-about = Katna hakkında

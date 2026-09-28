@@ -74,8 +74,19 @@ impl Gnupg {
         encrypted: bool,
         sender: Option<&str>,
     ) -> Outcome {
-        match self.run(standard, &[OsStr::new("--decrypt")], input) {
+        let mut args: Vec<&OsStr> = no_key_fetching(standard)
+            .iter()
+            .map(|a| OsStr::new(*a))
+            .collect();
+        args.push(OsStr::new("--decrypt"));
+        match self.run(standard, &args, input) {
             Ok(run) => {
+                // The status lines decide, not the exit status: gpg exits
+                // with an error when a signature inside does not check out
+                // (2 for a missing key), and when one of several keys the
+                // message is encrypted to fails though another opened it.
+                // A stream that is damaged or cut short never counts as
+                // decrypted ([`Status::decryption`]).
                 let decryption = match run.status.decryption() {
                     None if encrypted => Some(Decryption::Failed(run.status.failure())),
                     decryption => decryption,
@@ -114,15 +125,16 @@ impl Gnupg {
             let mut file = temp_file()?;
             file.write_all(signature)?;
             file.flush()?;
-            self.run(
-                standard,
-                &[
-                    OsStr::new("--verify"),
-                    file.path().as_os_str(),
-                    OsStr::new("-"),
-                ],
-                content,
-            )
+            let mut args: Vec<&OsStr> = no_key_fetching(standard)
+                .iter()
+                .map(|a| OsStr::new(*a))
+                .collect();
+            args.extend([
+                OsStr::new("--verify"),
+                file.path().as_os_str(),
+                OsStr::new("-"),
+            ]);
+            self.run(standard, &args, content)
         })();
         match result {
             Ok(run) => {
@@ -166,6 +178,13 @@ impl Gnupg {
 
     /// Runs the tool for `standard` with status lines on stderr, feeding
     /// it `input`.
+    ///
+    /// The status lines share stderr with GnuPG's log. `--no-verbose`
+    /// keeps the log from printing what a message names (such as a file
+    /// name), whatever `gpg.conf` says, so a message cannot print lines
+    /// that look like status lines (CVE-2018-12020). A status pipe of its
+    /// own would need a third file descriptor, which `std::process` cannot
+    /// pass without `unsafe`.
     pub(crate) fn run(&self, standard: Standard, args: &[&OsStr], input: &[u8]) -> io::Result<Run> {
         let mut command = Command::new(match standard {
             Standard::OpenPgp => &self.gpg,
@@ -174,7 +193,7 @@ impl Gnupg {
         // `--batch` stops GnuPG asking on a terminal; gpg-agent still
         // shows pinentry for a passphrase.
         command
-            .args(["--batch", "--no-tty", "--status-fd", "2"])
+            .args(["--batch", "--no-tty", "--no-verbose", "--status-fd", "2"])
             .args(args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -278,6 +297,17 @@ impl Gnupg {
             .map(unescape_colons)
             .filter(|uid| !uid.is_empty())
             .collect()
+    }
+}
+
+/// Options that stop `gpg` fetching a signer's key from the network while
+/// it checks a message, even when the user's `gpg.conf` asks it to: the
+/// fetch would tell the sender that the message was opened. `gpgsm`
+/// fetches nothing unless told to.
+fn no_key_fetching(standard: Standard) -> &'static [&'static str] {
+    match standard {
+        Standard::OpenPgp => &["--no-auto-key-retrieve", "--auto-key-locate", "local"],
+        Standard::Smime => &[],
     }
 }
 

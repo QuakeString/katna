@@ -103,6 +103,9 @@ toml = "1.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 unicode-segmentation = "1.13"
+# Links in mail: the real host of an address, IDN as punycode (katna-mail);
+# already in the tree via GPUI.
+url = "2.5"
 # Which language a message is in, for automatic translation (katna-translate).
 whatlang = "0.18"
 # async-io, so zbus runs on the same executor family as katna-sync.

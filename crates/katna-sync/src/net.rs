@@ -6,6 +6,7 @@
 
 use std::{
     io,
+    net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
     pin::Pin,
     sync::Arc,
     task::{Context, Poll},
@@ -45,6 +46,8 @@ pub const MAX_READ: usize = 256 * 1024 * 1024;
 #[derive(Clone)]
 pub struct Tls {
     connector: TlsConnector,
+    /// Certificates are not checked ([`Tls::insecure_for_local_tests`]).
+    insecure: bool,
 }
 
 impl Tls {
@@ -57,11 +60,16 @@ impl Tls {
             .with_platform_verifier()
             .map_err(|e| Error::Tls(e.to_string()))?
             .with_no_client_auth();
-        Ok(Self::from_config(config))
+        Ok(Self::from_config(config, false))
     }
 
-    /// Accepts any certificate. Only for the self-signed local test servers
-    /// in `dev/`; never reachable from a user setting.
+    /// Accepts any certificate: for self-signed test servers, such as the
+    /// ones in `dev/`. An account's "accept invalid certificates" setting
+    /// (D-Bus `ServerSpec.accept_invalid_certs`, `katnactl --insecure`)
+    /// selects it too, so it only works for servers on this computer or
+    /// the local network: [`Conn`] refuses the handshake when the address
+    /// it connected to is public ([`is_internal`]), so the password never
+    /// goes unprotected across the internet.
     ///
     /// # Panics
     ///
@@ -74,14 +82,130 @@ impl Tls {
             .dangerous()
             .with_custom_certificate_verifier(Arc::new(AcceptAny(provider)))
             .with_no_client_auth();
-        Self::from_config(config)
+        Self::from_config(config, true)
     }
 
-    fn from_config(config: ClientConfig) -> Self {
+    fn from_config(config: ClientConfig, insecure: bool) -> Self {
         Self {
             connector: TlsConnector::from(Arc::new(config)),
+            insecure,
         }
     }
+}
+
+/// Which addresses a [`Conn`] may connect to.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Reach {
+    /// Any address: mail servers, autoconfig, OAuth2 and Katna Server,
+    /// which the user or Katna chose (and tests run on this computer).
+    #[default]
+    Any,
+    /// Public addresses only ([`is_internal`] ones are refused): for URLs
+    /// that mail, DNS or web pages name, such as remote images and sender
+    /// pictures, so a message cannot make the daemon reach this computer
+    /// or its network. The name is resolved once and the connection goes
+    /// to the address that was checked, so DNS rebinding cannot swap it.
+    Public,
+}
+
+/// Whether `ip` is on this computer or a local, private or special
+/// network rather than the public internet: unspecified, loopback,
+/// private (RFC 1918), shared (CGNAT, RFC 6598), link-local, unique local
+/// (ULA), site-local, multicast, broadcast, documentation, benchmarking
+/// and reserved ranges, including IPv4 addresses inside IPv6 (mapped,
+/// compatible, NAT64 and 6to4).
+pub fn is_internal(ip: IpAddr) -> bool {
+    match ip {
+        IpAddr::V4(v4) => internal_v4(v4),
+        IpAddr::V6(v6) => internal_v6(v6),
+    }
+}
+
+fn internal_v4(ip: Ipv4Addr) -> bool {
+    let [a, b, c, _] = ip.octets();
+    ip.is_unspecified()
+        || ip.is_loopback()
+        || ip.is_private()
+        || ip.is_link_local()
+        || ip.is_multicast()
+        || ip.is_broadcast()
+        || ip.is_documentation()
+        || a == 0
+        // Shared address space (CGNAT), 100.64.0.0/10.
+        || (a == 100 && (64..128).contains(&b))
+        // IETF protocol assignments, 192.0.0.0/24.
+        || (a == 192 && b == 0 && c == 0)
+        // Benchmarking, 198.18.0.0/15.
+        || (a == 198 && (18..20).contains(&b))
+        // Reserved, 240.0.0.0/4.
+        || a >= 240
+}
+
+fn internal_v6(ip: Ipv6Addr) -> bool {
+    let segments = ip.segments();
+    let embedded = |high: u16, low: u16| {
+        let [h1, h2] = high.to_be_bytes();
+        let [l1, l2] = low.to_be_bytes();
+        internal_v4(Ipv4Addr::new(h1, h2, l1, l2))
+    };
+    if let Some(v4) = ip.to_ipv4_mapped() {
+        return internal_v4(v4);
+    }
+    ip.is_unspecified()
+        || ip.is_loopback()
+        || ip.is_multicast()
+        // Unique local, fc00::/7.
+        || (segments[0] & 0xfe00) == 0xfc00
+        // Link-local, fe80::/10, and the old site-local, fec0::/10.
+        || (segments[0] & 0xffc0) == 0xfe80
+        || (segments[0] & 0xffc0) == 0xfec0
+        // Documentation, 2001:db8::/32.
+        || (segments[0] == 0x2001 && segments[1] == 0x0db8)
+        // IPv4-compatible, ::a.b.c.d (deprecated).
+        || (segments[..6].iter().all(|s| *s == 0) && embedded(segments[6], segments[7]))
+        // NAT64, 64:ff9b::/96.
+        || (segments[..6] == [0x64, 0xff9b, 0, 0, 0, 0] && embedded(segments[6], segments[7]))
+        // 6to4, 2002::/16, with the IPv4 address in the next 32 bits.
+        || (segments[0] == 0x2002 && embedded(segments[1], segments[2]))
+}
+
+/// The addresses of `host` that `reach` allows, in the resolver's order.
+async fn addresses(host: &str, port: u16, reach: Reach) -> Result<Vec<SocketAddr>> {
+    // An IPv6 literal may come in brackets, as in a URL.
+    let bare = host.trim_start_matches('[').trim_end_matches(']');
+    let all = match bare.parse::<IpAddr>() {
+        Ok(ip) => vec![SocketAddr::new(ip, port)],
+        Err(_) => async_net::resolve((bare, port)).await?,
+    };
+    if reach == Reach::Any {
+        return Ok(all);
+    }
+    let public: Vec<SocketAddr> = all
+        .iter()
+        .copied()
+        .filter(|addr| !is_internal(addr.ip()))
+        .collect();
+    if public.is_empty() && !all.is_empty() {
+        return Err(Error::Protocol(format!(
+            "{host} is on this computer or a local network; it is not fetched"
+        )));
+    }
+    Ok(public)
+}
+
+/// Connects to the first address of `host` that `reach` allows and that
+/// answers.
+async fn connect_to(host: &str, port: u16, reach: Reach) -> Result<TcpStream> {
+    let mut last = None;
+    for addr in addresses(host, port, reach).await? {
+        match TcpStream::connect(addr).await {
+            Ok(tcp) => return Ok(tcp),
+            Err(err) => last = Some(err),
+        }
+    }
+    Err(Error::Io(last.unwrap_or_else(|| {
+        io::Error::new(io::ErrorKind::NotFound, format!("{host}: no address found"))
+    })))
 }
 
 enum Stream {
@@ -94,6 +218,7 @@ pub struct Conn {
     stream: Option<Stream>,
     host: String,
     tls: Tls,
+    reach: Reach,
     buf: Vec<u8>,
     /// Bytes in `buf` not yet handed out. They survive a cancelled read.
     filled: usize,
@@ -107,17 +232,24 @@ impl Conn {
             stream: None,
             host: String::new(),
             tls,
+            reach: Reach::Any,
             buf: vec![0; 64 * 1024],
             filled: 0,
             handed_out: false,
         }
     }
 
+    /// A connection that may only go where `reach` allows.
+    pub fn with_reach(tls: Tls, reach: Reach) -> Self {
+        Self {
+            reach,
+            ..Self::new(tls)
+        }
+    }
+
     pub async fn connect_tcp(&mut self, host: &str, port: u16) -> Result<()> {
-        let tcp = with_timeout(CONNECT_TIMEOUT, async {
-            Ok(TcpStream::connect((host, port)).await?)
-        })
-        .await?;
+        let reach = self.reach;
+        let tcp = with_timeout(CONNECT_TIMEOUT, connect_to(host, port, reach)).await?;
         tcp.set_nodelay(true)?;
         tracing::debug!(host, port, "connected");
         self.host = host.to_owned();
@@ -137,6 +269,11 @@ impl Conn {
         let Some(Stream::Plain(tcp)) = self.stream.take() else {
             return Err(Error::Tls("no plain connection to upgrade".into()));
         };
+        if self.tls.insecure {
+            // The address actually connected to, so a name cannot resolve
+            // to a local address for a check and a public one after it.
+            check_unverified_peer(&self.host, tcp.peer_addr()?.ip())?;
+        }
         let name =
             ServerName::try_from(self.host.clone()).map_err(|e| Error::Tls(e.to_string()))?;
         let connector = self.tls.connector.clone();
@@ -250,6 +387,18 @@ impl Conn {
     }
 }
 
+/// Refuses to skip certificate checks for a server at a public address.
+fn check_unverified_peer(host: &str, ip: IpAddr) -> Result<()> {
+    if is_internal(ip) {
+        return Ok(());
+    }
+    Err(Error::Tls(format!(
+        "{host} ({ip}) is not on this computer or the local network, so its \
+         certificate must be valid: turn off \"accept invalid certificates\" \
+         for this account"
+    )))
+}
+
 async fn with_timeout<T>(
     timeout: Duration,
     fut: impl std::future::Future<Output = Result<T>>,
@@ -359,5 +508,90 @@ impl ServerCertVerifier for AcceptAny {
 
     fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
         self.0.signature_verification_algorithms.supported_schemes()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn internal_addresses() {
+        for ip in [
+            "0.0.0.0",
+            "127.0.0.1",
+            "127.8.9.10",
+            "10.0.0.1",
+            "172.16.5.4",
+            "172.31.255.255",
+            "192.168.1.1",
+            "169.254.169.254",
+            "100.64.0.1",
+            "100.127.255.254",
+            "192.0.0.8",
+            "198.18.0.1",
+            "224.0.0.251",
+            "255.255.255.255",
+            "240.0.0.1",
+            "::",
+            "::1",
+            "fc00::1",
+            "fd12:3456::1",
+            "fe80::1",
+            "fec0::1",
+            "ff02::1",
+            "2001:db8::1",
+            "::ffff:127.0.0.1",
+            "::ffff:10.0.0.1",
+            "::127.0.0.1",
+            "64:ff9b::a9fe:a9fe",
+            "2002:c0a8:0101::1",
+        ] {
+            assert!(is_internal(ip.parse().unwrap()), "{ip}");
+        }
+        for ip in [
+            "1.1.1.1",
+            "8.8.8.8",
+            "100.63.255.255",
+            "100.128.0.1",
+            "172.32.0.1",
+            "193.0.0.1",
+            "2606:4700:4700::1111",
+            "::ffff:8.8.8.8",
+            "64:ff9b::808:808",
+            "2002:0808:0808::1",
+        ] {
+            assert!(!is_internal(ip.parse().unwrap()), "{ip}");
+        }
+    }
+
+    #[test]
+    fn public_reach_refuses_local_servers() {
+        smol::block_on(async {
+            let listener = async_net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let port = listener.local_addr().unwrap().port();
+            let tls = Tls::system().unwrap();
+            let mut conn = Conn::with_reach(tls.clone(), Reach::Public);
+            let err = conn.connect_tcp("127.0.0.1", port).await.unwrap_err();
+            assert!(err.to_string().contains("local network"), "{err}");
+            let err = conn.connect_tcp("localhost", port).await.unwrap_err();
+            assert!(err.to_string().contains("local network"), "{err}");
+            // The default reaches it, as tests and local servers need.
+            Conn::new(tls).connect_tcp("127.0.0.1", port).await.unwrap();
+        });
+    }
+
+    #[test]
+    fn unchecked_certificates_only_for_local_servers() {
+        assert!(check_unverified_peer("localhost", "127.0.0.1".parse().unwrap()).is_ok());
+        assert!(check_unverified_peer("nas", "192.168.1.20".parse().unwrap()).is_ok());
+        assert!(check_unverified_peer("nas", "fd00::20".parse().unwrap()).is_ok());
+        let err = check_unverified_peer("imap.example.org", "93.184.215.14".parse().unwrap())
+            .unwrap_err();
+        assert!(matches!(err, Error::Tls(_)), "{err}");
+        assert!(
+            err.to_string().contains("accept invalid certificates"),
+            "{err}"
+        );
     }
 }
