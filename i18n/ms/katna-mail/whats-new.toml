@@ -1023,3 +1023,12 @@ panjang menatal dalam beberapa baris, supaya mesej itu sendiri sentiasa
 boleh dicapai. Tinggalkan medan dan ia dilipat kepada satu baris, seperti
 "Kay, Sam, 19 lagi"; klik padanya untuk melihat semuanya semula.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Laporan aktiviti untuk satu akaun"
+text = """
+Laporan aktiviti kini mempunyai pemilih akaun di sebelah tarikh. Pilih
+Semua akaun atau salah satu daripadanya, dan mesej dijejaki, kadar,
+carta, baris subjek serta Peti mel anda akan mengikutinya. Laporan
+menyatakan akaun yang dipaparkan dan mengingati pilihan anda.
+"""

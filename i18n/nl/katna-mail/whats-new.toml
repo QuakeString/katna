@@ -1014,3 +1014,12 @@ lijst scrolt binnen enkele regels, zodat het bericht zelf altijd binnen
 bereik blijft. Verlaat u het veld, dan klapt het in tot één regel, zoals
 "Kay, Sam, 19 meer"; klik erop om ze weer allemaal te zien.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Activiteitenrapport voor één account"
+text = """
+Het activiteitenrapport heeft nu een accountkiezer naast de datums. Kies
+Alle accounts of één ervan, en de gevolgde berichten, percentages, de
+grafiek, de onderwerpregels en Je mailbox volgen je keuze. Het rapport
+zegt welk account het toont en onthoudt je keuze.
+"""

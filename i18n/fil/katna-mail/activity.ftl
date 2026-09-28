@@ -55,3 +55,6 @@ activity-range-custom = Custom
 activity-range-from = Mula
 activity-range-to = Hanggang
 activity-range-apply = Ilapat
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Lahat ng account
+activity-accounts-tip = Magpakita ng isang account o lahat

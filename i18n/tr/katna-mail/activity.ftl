@@ -55,3 +55,6 @@ activity-range-custom = Özel
 activity-range-from = Başlangıç
 activity-range-to = Bitiş
 activity-range-apply = Uygula
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Tüm hesaplar
+activity-accounts-tip = Bir hesabı veya tümünü göster

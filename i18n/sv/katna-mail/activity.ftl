@@ -55,3 +55,6 @@ activity-range-custom = Anpassat
 activity-range-from = Från
 activity-range-to = Till
 activity-range-apply = Använd
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Alla konton
+activity-accounts-tip = Visa ett konto eller alla

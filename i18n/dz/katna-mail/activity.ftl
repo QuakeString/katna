@@ -46,3 +46,6 @@ activity-range-custom = རང་སྒྲིག
 activity-range-from = འགོ
 activity-range-to = མཇུག
 activity-range-apply = ལག་ལེན་འཐབ།
+activity-range-of = { $days } · { $account }
+activity-accounts-all = རྩིས་ཐོ་ཆ་མཉམ།
+activity-accounts-tip = རྩིས་ཐོ་གཅིག་ཡང་ན་ ཆ་མཉམ་སྟོན།

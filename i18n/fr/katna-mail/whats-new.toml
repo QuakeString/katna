@@ -1047,3 +1047,12 @@ largeur, et une longue liste défile sur quelques lignes, de sorte que le
 message reste toujours accessible. Quittez le champ et il se replie sur une
 ligne, par exemple "Kay, Sam, 19 de plus" ; cliquez dessus pour tout revoir.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Rapport d’activité pour un compte"
+text = """
+Le rapport d’activité a maintenant un sélecteur de compte à côté des
+dates. Choisissez Tous les comptes ou l’un d’eux, et les messages suivis,
+les taux, le graphique, les objets et Votre boîte aux lettres s’adaptent.
+Le rapport indique quel compte il affiche et retient votre choix.
+"""

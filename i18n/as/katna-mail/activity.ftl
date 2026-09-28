@@ -55,3 +55,6 @@ activity-range-custom = নিজে বাছক
 activity-range-from = আৰম্ভণি
 activity-range-to = শেষ
 activity-range-apply = প্ৰয়োগ কৰক
+activity-range-of = { $days } · { $account }
+activity-accounts-all = সকলো একাউণ্ট
+activity-accounts-tip = এটা একাউণ্ট বা সকলো দেখুৱাওক

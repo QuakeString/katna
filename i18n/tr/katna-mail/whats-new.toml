@@ -1007,3 +1007,12 @@ de birkaç satır içinde kayar; böylece iletinin kendisi her zaman
 erişilebilir kalır. Alandan çıkın, tek satıra katlanır, örneğin "Kay, Sam,
 19 kişi daha"; hepsini yeniden görmek için üzerine tıklayın.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Tek bir hesap için Etkinlik raporu"
+text = """
+Etkinlik raporunda artık tarihlerin yanında bir hesap seçici var. Tüm
+hesaplar’ı ya da bunlardan birini seçin; izlenen iletiler, oranlar,
+grafik, konu satırları ve Posta kutunuz seçiminize göre değişir. Rapor
+hangi hesabı gösterdiğini belirtir ve seçiminizi hatırlar.
+"""

@@ -983,3 +983,12 @@ dài cuộn trong vài dòng, nên bản thân thư luôn nằm trong tầm vớ
 trường và nó gập lại thành một dòng, chẳng hạn "Kay, Sam, 19 người nữa";
 nhấp vào đó để xem lại tất cả.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Báo cáo hoạt động cho một tài khoản"
+text = """
+Báo cáo hoạt động giờ có bộ chọn tài khoản bên cạnh ngày. Chọn Tất cả
+tài khoản hoặc một tài khoản, và thư được theo dõi, tỷ lệ, biểu đồ, tiêu
+đề cùng Hộp thư của bạn sẽ theo lựa chọn đó. Báo cáo cho biết tài khoản
+đang hiển thị và ghi nhớ lựa chọn của bạn.
+"""

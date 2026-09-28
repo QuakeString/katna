@@ -46,3 +46,6 @@ activity-range-custom = 직접 지정
 activity-range-from = 시작일
 activity-range-to = 종료일
 activity-range-apply = 적용
+activity-range-of = { $days } · { $account }
+activity-accounts-all = 모든 계정
+activity-accounts-tip = 계정 하나 또는 전체 보기

@@ -55,3 +55,6 @@ activity-range-custom = سفارشی
 activity-range-from = آغاز
 activity-range-to = پایان
 activity-range-apply = اعمال
+activity-range-of = { $days } · { $account }
+activity-accounts-all = همه حساب‌ها
+activity-accounts-tip = نمایش یک حساب یا همه

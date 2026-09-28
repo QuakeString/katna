@@ -46,3 +46,6 @@ activity-range-custom = စိတ်ကြိုက်
 activity-range-from = မှ
 activity-range-to = အထိ
 activity-range-apply = အသုံးပြုရန်
+activity-range-of = { $days } · { $account }
+activity-accounts-all = အကောင့်အားလုံး
+activity-accounts-tip = အကောင့်တစ်ခု သို့မဟုတ် အားလုံးကို ပြရန်

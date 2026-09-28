@@ -1051,3 +1051,12 @@ abot-kamay ang mismong mensahe. Lumabas sa field at ito ay magiging isang
 linya na lang, tulad ng "Kay, Sam, 19 pa"; i-click ito para makita ulit
 silang lahat.
 """
+
+["2026-09-28-1952-activity-by-account"]
+title = "Ulat ng aktibidad para sa isang account"
+text = """
+May account picker na ngayon ang ulat ng aktibidad sa tabi ng mga petsa.
+Piliin ang Lahat ng account o isa sa mga ito, at susunod ang mga naka-track
+na mensahe, rate, chart, subject line at Ang mailbox mo. Sinasabi ng ulat
+kung aling account ang ipinapakita nito at naaalala nito ang pinili mo.
+"""
