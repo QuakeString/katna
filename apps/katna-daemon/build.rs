@@ -13,6 +13,7 @@ use std::path::Path;
 const BINARIES: &[&str] = &["katna-daemon"];
 
 fn main() {
+    windows_icon();
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../i18n");
     println!("cargo:rerun-if-changed={}", root.display());
     let mut folders: Vec<_> = std::fs::read_dir(&root)
@@ -58,4 +59,18 @@ fn main() {
     out.push(']');
     let dest = Path::new(&std::env::var("OUT_DIR").unwrap()).join("translations.rs");
     std::fs::write(dest, out).unwrap();
+}
+
+/// The icon Explorer and the taskbar show for the program on Windows.
+fn windows_icon() {
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
+        return;
+    }
+    let icon = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packaging/windows/katna.ico");
+    println!("cargo:rerun-if-changed={}", icon.display());
+    let mut res = winresource::WindowsResource::new();
+    res.set_icon(&icon.to_string_lossy())
+        .set("FileDescription", "Katna background service")
+        .set("ProductName", "Katna Mail");
+    res.compile().expect("compiling the Windows resources");
 }

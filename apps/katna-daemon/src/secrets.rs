@@ -233,15 +233,13 @@ fn split(secret: &str) -> Vec<&str> {
     parts
 }
 
-/// Katna's entries in the Windows Credential Manager. Each is a generic
-/// credential named `<user>.in.invenia.katna`, kept on this computer only.
+/// The daemon's view of the Windows Credential Manager
+/// ([`katna_platform::credentials`]): each entry a generic credential
+/// named `<user>.in.invenia.katna`, kept on this computer only.
 #[cfg(windows)]
 mod windows {
-    use std::{collections::HashMap, sync::Arc};
-
-    use katna_core::{AccountId, ids};
-    use keyring_core::{Entry, api::CredentialStoreApi};
-    use windows_native_keyring_store::Store as WinStore;
+    use katna_core::AccountId;
+    use katna_platform::credentials::Credentials;
 
     use super::{Error, split};
 
@@ -253,68 +251,50 @@ mod windows {
         format!("account-{account}")
     }
 
-    fn error(err: keyring_core::Error) -> Error {
-        Error(format!("Credential Manager: {err}"))
+    /// The user name of part `index` of a long secret; part 0 is `user`.
+    fn part(user: &str, index: usize) -> String {
+        match index {
+            0 => user.to_owned(),
+            _ => format!("{user}~{index}"),
+        }
     }
 
-    pub struct Store(Arc<WinStore>);
+    pub struct Store(Credentials);
 
     impl Store {
         pub fn new() -> Result<Self, Error> {
-            WinStore::new().map(Self).map_err(error)
-        }
-
-        fn entry(&self, user: &str) -> Result<Entry, Error> {
-            let local = HashMap::from([("persistence", "Local")]);
-            self.0.build(ids::PREFIX, user, Some(&local)).map_err(error)
-        }
-
-        /// The entry holding part `index` of a long secret; part 0 is
-        /// the entry `user` itself.
-        fn part(&self, user: &str, index: usize) -> Result<Entry, Error> {
-            match index {
-                0 => self.entry(user),
-                _ => self.entry(&format!("{user}~{index}")),
-            }
-        }
-
-        fn read(&self, user: &str, index: usize) -> Result<Option<String>, Error> {
-            match self.part(user, index)?.get_password() {
-                Ok(password) => Ok(Some(password)),
-                Err(keyring_core::Error::NoEntry) => Ok(None),
-                Err(err) => Err(error(err)),
-            }
+            Credentials::open().map(Self).map_err(Error)
         }
 
         /// Deletes the parts from `from` on.
         fn delete_parts(&self, user: &str, from: usize) -> Result<(), Error> {
             for index in from.. {
-                match self.part(user, index)?.delete_credential() {
-                    Ok(()) => {}
-                    Err(keyring_core::Error::NoEntry) => break,
-                    Err(err) => return Err(error(err)),
+                let name = part(user, index);
+                if self.0.get(&name).map_err(Error)?.is_none() {
+                    break;
                 }
+                self.0.delete(&name).map_err(Error)?;
             }
             Ok(())
         }
 
         pub async fn get(&self, user: &str) -> Result<Option<String>, Error> {
-            let Some(mut password) = self.read(user, 0)? else {
+            let Some(mut secret) = self.0.get(user).map_err(Error)? else {
                 return Ok(None);
             };
             for index in 1.. {
-                match self.read(user, index)? {
-                    Some(part) => password.push_str(&part),
+                match self.0.get(&part(user, index)).map_err(Error)? {
+                    Some(more) => secret.push_str(&more),
                     None => break,
                 }
             }
-            Ok(Some(password))
+            Ok(Some(secret))
         }
 
-        pub async fn set(&self, user: &str, password: &str) -> Result<(), Error> {
-            let parts = split(password);
-            for (index, part) in parts.iter().enumerate() {
-                self.part(user, index)?.set_password(part).map_err(error)?;
+        pub async fn set(&self, user: &str, secret: &str) -> Result<(), Error> {
+            let parts = split(secret);
+            for (index, text) in parts.iter().enumerate() {
+                self.0.set(&part(user, index), text).map_err(Error)?;
             }
             self.delete_parts(user, parts.len())
         }
@@ -324,15 +304,7 @@ mod windows {
         }
 
         pub async fn delete_all(&self) -> Result<(), Error> {
-            let pattern = format!(r"^.+\.{}$", ids::PREFIX.replace('.', r"\."));
-            let spec = HashMap::from([("pattern", pattern.as_str())]);
-            for entry in self.0.search(&spec).map_err(error)? {
-                match entry.delete_credential() {
-                    Ok(()) | Err(keyring_core::Error::NoEntry) => {}
-                    Err(err) => return Err(error(err)),
-                }
-            }
-            Ok(())
+            self.0.delete_all().map_err(Error)
         }
     }
 }

@@ -1,0 +1,87 @@
+name: Windows package
+
+# Builds Katna Setup (ci/windows-package.ps1). On main it replaces the
+# `windows-latest` pre-release with the new KatnaSetup.exe, so Windows users
+# install and update Katna without building it (packaging/windows/README.md).
+
+on:
+  push:
+    branches: [main]
+    # As for the Arch package: docs-only pushes keep the current Setup.
+    paths:
+      - "**"
+      - "!docs/**"
+      - "docs/credits.json"
+  pull_request:
+    paths:
+      - "apps/katna-setup/**"
+      - "packaging/windows/**"
+      - "ci/windows-*.ps1"
+      - ".github/workflows/windows-package.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: windows-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The version counts commits, as the Arch package's does.
+          fetch-depth: 0
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - uses: actions/cache@v4
+        with:
+          path: target/dbus
+          key: windows-dbus-${{ hashFiles('ci/windows-dbus.ps1') }}
+      - name: Build Katna Setup
+        run: ci/windows-package.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-package
+          path: target/windows/KatnaSetup.exe
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: windows-package-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-package
+          path: out
+      - name: Replace the windows-latest pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cat > notes.md <<EOF
+          Katna Mail built from \`main\` at $GITHUB_SHA for Windows 10 and
+          11 (64-bit). Replaced on every push to \`main\`.
+
+          Download **KatnaSetup.exe** and open it. Setup installs Katna for
+          you alone, without administrator rights, and running a newer
+          Setup updates it in place. Remove Katna from Settings > Apps.
+
+          Setup is not signed yet, so Windows SmartScreen may warn: choose
+          **More info**, then **Run anyway**.
+          EOF
+          gh release delete windows-latest --cleanup-tag --yes || true
+          gh release create windows-latest out/* --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Katna for Windows (latest main)" \
+            --notes-file notes.md

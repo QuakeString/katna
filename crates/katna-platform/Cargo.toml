@@ -15,5 +15,16 @@ serde.workspace = true
 tracing.workspace = true
 zbus.workspace = true
 
+# Windows: the notification-area icon, toasts, the Credential Manager and
+# the registry.
+[target.'cfg(windows)'.dependencies]
+async-channel.workspace = true
+tray-icon.workspace = true
+keyring-core.workspace = true
+windows-native-keyring-store.workspace = true
+tauri-winrt-notification.workspace = true
+winreg.workspace = true
+winit.workspace = true
+
 [lints]
 workspace = true

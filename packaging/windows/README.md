@@ -1,0 +1,23 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+
+# Katna on Windows
+
+Katna Setup (`apps/katna-setup`) is one `KatnaSetup.exe` that carries
+Katna's programs and installs them for the current user, without
+administrator rights, on Windows 10 (version 1903 or later) and 11.
+
+- `ci/windows-package.ps1` builds it: Katna Mail, katna-daemon, katnactl,
+  the bundled `dbus-daemon.exe` (`ci/windows-dbus.ps1`) and `katna.ico`
+  go into Setup's payload.
+- `.github/workflows/windows-package.yml` runs that script and, on
+  `main`, replaces the `windows-latest` pre-release with the new Setup.
+- `katna.ico` is made from the hicolor PNGs by `make-ico.py`; run it again
+  when the icon changes.
+
+Setup installs for the current user into `%LOCALAPPDATA%\Programs\Katna`
+(no administrator) or for everyone into `%ProgramFiles%\Katna`, into a
+folder the user may change, and adds the shortcuts and start at sign-in
+the user chose, the Settings > Apps entry and the `mailto:` handler.
+Running a newer Setup updates Katna in place; the Settings > Apps entry
+removes it and asks whether to keep mail and passwords.
+`docs/ARCHITECTURE.md` §27 says how each Linux piece maps to Windows.

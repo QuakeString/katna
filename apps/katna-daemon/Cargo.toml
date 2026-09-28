@@ -40,9 +40,8 @@ zbus.workspace = true
 [target.'cfg(unix)'.dependencies]
 oo7.workspace = true
 
-[target.'cfg(windows)'.dependencies]
-keyring-core.workspace = true
-windows-native-keyring-store.workspace = true
+[build-dependencies]
+winresource.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

@@ -251,6 +251,11 @@ impl Instance {
         ))
         .detach();
         smol::spawn(service::emit_signals(connection.clone(), forwarded)).detach();
+        // Windows has no notification server: the daemon is its own.
+        #[cfg(windows)]
+        if let Err(err) = katna_platform::toasts::serve(&connection).await {
+            tracing::warn!(%err, "no toasts");
+        }
         daemon.notify_new_mail(&connection).await;
         daemon.start().await?;
         let backfill = Backfill::start(&index_paths, daemon.notifier());
