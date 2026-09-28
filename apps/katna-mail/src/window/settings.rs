@@ -34,6 +34,7 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
+    SentSound(bool),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
@@ -430,6 +431,7 @@ impl MailWindow {
                 }
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
+            Change::SentSound(on) => sending.sent_sound = on,
             Change::Density(density) => view.density = density,
             Change::Scale(percent) => {
                 if view.scale == percent {

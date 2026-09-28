@@ -595,12 +595,28 @@ impl MailWindow {
                 ),
                 th,
             ))
-            .child(self.row(
-                tr!("settings-general-sending"),
-                Some(&tr!("settings-general-sending-detail")),
-                self.undo_send_choice(th, cx),
-                th,
-            ))
+            .child(
+                self.row(
+                    tr!("settings-general-sending"),
+                    Some(&tr!("settings-general-sending-detail")),
+                    div()
+                        .flex()
+                        .flex_col()
+                        .gap(px(8.0))
+                        .child(self.undo_send_choice(th, cx))
+                        .child(self.switch_row(
+                            "page-sent-sound",
+                            tr!("settings-general-sent-sound"),
+                            tr!("settings-general-sent-sound-detail"),
+                            self.config.sending.sent_sound,
+                            Change::SentSound(!self.config.sending.sent_sound),
+                            th,
+                            cx,
+                        ))
+                        .into_any_element(),
+                    th,
+                ),
+            )
             .child(self.row(
                 tr!("settings-general-offline"),
                 Some(&tr!("settings-general-offline-detail")),

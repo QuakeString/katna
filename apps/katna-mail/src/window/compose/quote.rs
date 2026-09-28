@@ -47,6 +47,17 @@ impl Quote {
         }
     }
 
+    /// Takes the quote out of `blocks` when it shows at their end, and
+    /// forgets it wherever it is.
+    pub(super) fn take_from(&mut self, blocks: &mut Vec<Block>) {
+        if let Self::Shown { first, len } = &*self
+            && let Some(at) = quote_start(blocks, first, *len)
+        {
+            blocks.truncate(at);
+        }
+        *self = Self::None;
+    }
+
     fn has_button(&self) -> bool {
         matches!(self, Self::Hidden(_) | Self::Shown { .. })
     }

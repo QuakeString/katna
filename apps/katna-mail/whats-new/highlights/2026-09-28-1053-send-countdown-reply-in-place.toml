@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Send counts down, and your reply stays in the conversation"
+text = """
+After Send, a shrinking ring counts down the undo time beside Undo, then
+the toast says Message sent (with a short sound) once the mail is out. The
+sound can be turned off in Settings > General > Sending. A reply written
+in a conversation turns into a message right where you wrote it. Its head
+shows only whom it goes to; click it for From, To, Cc and Bcc. The arrow
+beside the reply icon switches between Reply, Reply all and Forward,
+keeping what you wrote.
+"""

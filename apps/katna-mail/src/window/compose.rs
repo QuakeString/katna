@@ -29,9 +29,11 @@ mod paste;
 mod popout;
 mod quote;
 mod recipients;
+mod reply_kind;
 pub(super) mod schedule;
 mod scheduled;
 mod security;
+mod sent;
 mod signature_editor;
 mod templates;
 mod tools;
@@ -43,8 +45,9 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, DragMoveEvent, Entity, ExternalPaths, FocusHandle, Focusable, FontWeight,
-    Hsla, ScrollHandle, SharedString, Subscription, Task, Window, canvas, div, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Context, DragMoveEvent, Entity, ExternalPaths,
+    FocusHandle, Focusable, FontWeight, Hsla, ScrollHandle, SharedString, Subscription, Task,
+    Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_core::config::SEND_FROM_CURRENT;
@@ -79,6 +82,7 @@ pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
 use security::Sealing;
+pub(super) use sent::{Sending, SentCard};
 pub(super) use signature_editor::signature_content;
 use tools::Popup;
 
@@ -93,6 +97,11 @@ const REVEAL: Duration = Duration::from_millis(280);
 /// How far below the top of the conversation an opened reply's cursor may
 /// end up when the card is taller than the view.
 const REVEAL_ABOVE: f32 = 120.0;
+/// Below this width an inline reply's lock, signature and tracking
+/// buttons leave the From row for one of their own.
+const NARROW_REPLY: f32 = 560.0;
+/// How long an inline reply's recipient rows take to show.
+const HEADER_OPEN: Duration = Duration::from_millis(160);
 
 /// What the window starts from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -180,6 +189,12 @@ pub(super) struct Compose {
     from_template: bool,
     /// The attachment list, which scrolls when it holds many files.
     attach_scroll: ScrollHandle,
+    /// The message a reply or forward answers, to write it again as
+    /// another kind.
+    source: Option<MessageId>,
+    /// An inline reply shows its From, To, Cc and Bcc rows rather than
+    /// one line naming the recipients.
+    header_open: bool,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -657,9 +672,11 @@ impl MailWindow {
             .filter(|_| kind != Kind::New)
             .map(|r| r.key);
         let from = self.compose_account(kind).map(|a| a.id);
+        let source = self.reader.as_ref().and_then(|r| r.view_id(source));
         self.show_compose(draft, start, thread, signature, reply, window, cx);
         if let Some(compose) = &mut self.compose {
             compose.kind = kind;
+            compose.source = source;
             compose.mode = mode;
             compose.conversation = conversation;
             compose.answering = answering;
@@ -1060,6 +1077,8 @@ impl MailWindow {
             picture_choice: None,
             from_template: false,
             attach_scroll: ScrollHandle::new(),
+            source: None,
+            header_open: false,
             _subscriptions: subscriptions,
         });
         self.ask_delivery_receipts(cx);
@@ -1375,6 +1394,19 @@ impl MailWindow {
             .to_owned();
         let body_text = html::to_plain(&draft.body);
         let (html_body, inline) = body_parts(&draft.body, plain, &domain);
+        // Known here, to find the stored copy of a reply shown at once.
+        let message_id = sent::new_message_id(&domain);
+        let snippet: String = body_text
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .chars()
+            .take(200)
+            .collect();
+        let me = (
+            account.display_name.trim().to_owned(),
+            account.address.clone(),
+        );
         let delay = match at {
             Some(at) => {
                 let seconds = at.as_second() - jiff::Timestamp::now().as_second();
@@ -1391,6 +1423,7 @@ impl MailWindow {
         let visible = [emails(&to), emails(&cc)].concat();
         let hidden = emails(&bcc);
         let recipients: Vec<Mailbox> = to.iter().chain(&cc).chain(&bcc).cloned().collect();
+        let draft_subject = draft.subject.clone();
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -1404,7 +1437,7 @@ impl MailWindow {
             inline,
             attachments: attachments.iter().map(Attachment::part).collect(),
             date: at.map(|at| schedule::rfc2822(at, &self.tz)),
-            message_id: None,
+            message_id: Some(message_id.clone()),
         });
         let from = Some(account.id);
         let account = account.id.0;
@@ -1423,6 +1456,21 @@ impl MailWindow {
             saved: None,
         });
         self.close_compose(cx);
+        // A reply takes the place of its card in the conversation at once,
+        // as in Gmail.
+        let card = match answered {
+            Some(key) if at.is_none() => {
+                let subject = draft_subject.clone();
+                let card = self
+                    .sending
+                    .add_card(key, message_id, Arc::new(raw.clone()), |id| {
+                        sent::row(key, id, me, subject, snippet)
+                    });
+                self.show_sent_cards(cx);
+                Some(card)
+            }
+            _ => None,
+        };
         self.show_snackbar(
             if at.is_some() {
                 tr!("compose-scheduling")
@@ -1484,30 +1532,35 @@ impl MailWindow {
                 .await;
             this.update_in(cx, |this, window, cx| match result {
                 Ok(id) => {
-                    let text = match &when {
-                        Some(when) => tr!("compose-scheduled", when = when.clone()),
-                        None if answering.is_some() => tr!("compose-sent-archived"),
-                        None => tr!("compose-sent"),
-                    };
+                    if let Some(card) = card {
+                        this.sending.card_queued(card, id);
+                    }
                     if let Some(key) = answering {
                         let unarchive = this.act_with(super::Act::Archive, vec![key], false, cx);
                         if let Some(unsent) = &mut this.unsent {
                             unsent.unarchive = unarchive;
                         }
                     }
-                    let undo = (delay > 0).then_some(Command::UndoSend(id));
-                    let time = if when.is_some() {
-                        SNACKBAR_TIME * 2
-                    } else {
-                        Duration::from_secs(u64::from(delay)).max(SNACKBAR_TIME)
-                    };
-                    this.show_snackbar_for(text, undo, time, cx);
-                    if when.is_some() {
-                        this.scheduled_changed(cx);
+                    match &when {
+                        Some(when) => {
+                            let undo = (delay > 0).then_some(Command::UndoSend(id));
+                            this.show_snackbar_for(
+                                tr!("compose-scheduled", when = when.clone()),
+                                undo,
+                                SNACKBAR_TIME * 2,
+                                cx,
+                            );
+                            this.scheduled_changed(cx);
+                        }
+                        None => this.queued(id, delay, answering.is_some(), cx),
                     }
                 }
                 Err(err) => {
                     // Nothing went out: the message comes back as it was.
+                    if let Some(card) = card {
+                        this.sending.remove_card(card);
+                        this.show_sent_cards(cx);
+                    }
                     this.reopen_unsent(window, cx);
                     this.show_snackbar(err, None, cx);
                 }
@@ -1826,11 +1879,6 @@ impl MailWindow {
             .compose
             .as_ref()
             .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))?;
-        let (kind_icon, kind_label) = match compose.kind {
-            Kind::ReplyAll => ("reply-all", tr!("reply-reply-all")),
-            Kind::Forward => ("forward", tr!("reply-forward")),
-            Kind::Reply | Kind::New => ("reply", tr!("reply-reply")),
-        };
         let me = compose
             .from
             .and_then(|id| self.accounts.iter().find(|a| a.id == id))
@@ -1843,65 +1891,75 @@ impl MailWindow {
                 };
                 self.person_avatar(&name, &a.address, 40.0)
             });
-        let to_field = self.render_recipient_field(Field::To, th, cx);
-        let header = div()
-            .flex_none()
-            .min_h(px(44.0))
-            .pl(px(12.0))
-            .pr(px(6.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(8.0))
-            .text_size(px(14.0))
-            .child(
-                div()
-                    .id("inline-kind")
-                    .flex_none()
-                    .tooltip(tip(kind_label, th))
-                    .child(icon(kind_icon, th.text_dim, 20.0)),
-            )
-            .child(to_field)
-            .when(!compose.show_cc, |d| {
-                d.child(
-                    div()
-                        .id("inline-cc")
-                        .px(px(4.0))
-                        .rounded(px(4.0))
-                        .text_color(rgba(th.text_dim))
-                        .cursor_pointer()
-                        .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
-                        .on_click(cx.listener(|this, _, window, cx| {
-                            if let Some(c) = &mut this.compose {
-                                c.show_cc = true;
-                                window.focus(&c.cc.focus_handle(cx), cx);
-                            }
-                            cx.notify();
-                        }))
-                        .child(tr!("compose-cc")),
-                )
-            })
-            .children(self.render_sealing(th, cx))
-            .children(self.render_tracking(th, cx))
-            .child(
-                small_button("inline-pop-out", "open-full", th)
-                    .tooltip(tip(tr!("compose-pop-out-reply"), th))
-                    // Straight into a window of its own; docking it brings
-                    // it back here.
-                    .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx))),
-            );
-        let header = self.recipient_row(header, Field::To, th, cx);
-        let cc_field = self.render_recipient_field(Field::Cc, th, cx);
-        // A chip being dragged can land in Cc even while it is hidden.
-        let show_cc = compose.show_cc || self.chip_dragging(cx).is_some();
-        let cc = show_cc.then(|| {
+        let pop_out = small_button("inline-pop-out", "open-full", th)
+            .tooltip(tip(tr!("compose-pop-out-reply"), th))
+            // Straight into a window of its own; docking it brings it back
+            // here.
+            .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx)));
+        let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
+        // As in Gmail, one line names the recipients until it is clicked.
+        let open = self.reply_header_open();
+        // The lock, signature and tracking buttons go beside From when
+        // there is room, else on a row of their own under the recipients.
+        let roomy = card_width >= NARROW_REPLY;
+        let head_row = || {
             div()
                 .flex_none()
-                .mx(px(12.0))
-                .min_h(px(36.0))
+                .min_h(px(44.0))
+                .pl(px(8.0))
+                .pr(px(6.0))
                 .flex()
                 .flex_row()
                 .items_center()
+                .gap(px(8.0))
+                .text_size(px(14.0))
+        };
+        let header = if open {
+            head_row()
+                .child(self.render_kind_button(th, cx))
+                .child(
+                    div()
+                        .flex_none()
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("compose-from")),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .children(self.render_from_row(th, cx)),
+                )
+                .when(roomy, |d| {
+                    d.children(self.render_sealing(th, cx))
+                        .children(self.render_tracking(th, cx))
+                })
+                .child(pop_out)
+        } else {
+            head_row()
+                .child(self.render_kind_button(th, cx))
+                .child(self.render_reply_summary(th, cx))
+                .child(pop_out)
+        };
+        let link = |id: &'static str, label: String| {
+            div()
+                .id(id)
+                .px(px(4.0))
+                .rounded(px(4.0))
+                .text_color(rgba(th.text_dim))
+                .cursor_pointer()
+                .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
+                .child(label)
+        };
+        let field_row = |label: String| {
+            div()
+                .flex_none()
+                .mx(px(12.0))
+                .min_h(px(40.0))
+                .flex()
+                .flex_row()
+                // With chips on several lines, the label stays by the first.
+                .items_start()
                 .gap(px(8.0))
                 .border_t_1()
                 .border_color(rgba(th.divider))
@@ -1909,12 +1967,104 @@ impl MailWindow {
                 .child(
                     div()
                         .flex_none()
+                        .min_w(px(28.0))
+                        .h(px(40.0))
+                        .flex()
+                        .items_center()
                         .text_color(rgba(th.text_dim))
-                        .child(tr!("compose-cc")),
+                        .child(label),
                 )
-                .child(cc_field)
-        });
-        let cc = cc.map(|cc| self.recipient_row(cc, Field::Cc, th, cx));
+        };
+        // A chip being dragged can land in Cc or Bcc even while hidden.
+        let dragging = self.chip_dragging(cx).is_some();
+        let rows =
+            open.then(|| {
+                let field = |field: AnyElement| {
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .min_h(px(40.0))
+                        .flex()
+                        .items_center()
+                        .child(field)
+                };
+                let links = div()
+                    .flex_none()
+                    .h(px(40.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(4.0))
+                    .when(!compose.show_cc, |d| {
+                        d.child(link("inline-cc", tr!("compose-cc")).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.show_cc = true;
+                                    window.focus(&c.cc.focus_handle(cx), cx);
+                                }
+                                cx.notify();
+                            },
+                        )))
+                    })
+                    .when(!compose.show_bcc, |d| {
+                        d.child(link("inline-bcc", tr!("compose-bcc")).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.show_bcc = true;
+                                    window.focus(&c.bcc.focus_handle(cx), cx);
+                                }
+                                cx.notify();
+                            },
+                        )))
+                    });
+                let to = field_row(tr!("compose-to"))
+                    .child(field(self.render_recipient_field(Field::To, th, cx)))
+                    .child(links);
+                let to = self.recipient_row(to, Field::To, th, cx);
+                let cc = (compose.show_cc || dragging).then(|| {
+                    let row = field_row(tr!("compose-cc"))
+                        .child(field(self.render_recipient_field(Field::Cc, th, cx)));
+                    self.recipient_row(row, Field::Cc, th, cx)
+                });
+                let bcc = (compose.show_bcc || dragging).then(|| {
+                    let row = field_row(tr!("compose-bcc"))
+                        .child(field(self.render_recipient_field(Field::Bcc, th, cx)));
+                    self.recipient_row(row, Field::Bcc, th, cx)
+                });
+                let tools = (!roomy).then(|| {
+                    div()
+                        .flex_none()
+                        .mx(px(12.0))
+                        .h(px(40.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .justify_end()
+                        .gap(px(8.0))
+                        .border_t_1()
+                        .border_color(rgba(th.divider))
+                        .children(self.render_sealing(th, cx))
+                        .children(self.render_tracking(th, cx))
+                });
+                let rows = div()
+                    .flex_none()
+                    .flex()
+                    .flex_col()
+                    .child(to)
+                    .children(cc)
+                    .children(bcc)
+                    .children(tools);
+                if cx.reduce_motion() {
+                    rows.into_any_element()
+                } else {
+                    rows.with_animation(
+                        "inline-rows",
+                        Animation::new(HEADER_OPEN).with_easing(ease_out_quint()),
+                        |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
+                    )
+                    .into_any_element()
+                }
+            });
         let focus = compose.body.focus_handle(cx);
         let body = div()
             .id("inline-body")
@@ -1924,7 +2074,10 @@ impl MailWindow {
             .text_size(px(14.0))
             .line_height(px(20.0))
             .cursor_text()
-            .on_click(move |_, window, cx| window.focus(&focus, cx))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                window.focus(&focus, cx);
+                this.close_reply_header(cx);
+            }))
             .on_drag_move(
                 cx.listener(|this, event: &DragMoveEvent<ExternalPaths>, _, cx| {
                     this.drag_over_body(event, cx);
@@ -1935,7 +2088,6 @@ impl MailWindow {
             }))
             .child(div().flex_none().child(compose.body.clone()))
             .children(self.render_trimmed(th, cx));
-        let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
         // Like Gmail, the Send row stays at the bottom of the conversation
         // while the text runs on below it, and moves up with the card.
         let stuck = {
@@ -1969,7 +2121,7 @@ impl MailWindow {
                 },
             ))
             .child(header)
-            .children(cc)
+            .children(rows)
             .child(body)
             .child(self.render_attachments(th, cx))
             .child(
