@@ -214,8 +214,12 @@ impl<'a> Painter<'a> {
                 // A preferred width that gives way in a narrow pane.
                 Some(Length::Px(w)) => d = d.w_full().max_w(px(w)),
                 Some(Length::Percent(p)) => d = d.w(relative(p.min(1.0))),
+                // As wide as what holds it, as a block is in a browser.
+                None if !s.center && !s.inline => d = d.w_full(),
                 None => {}
             }
+        } else {
+            d = d.w_full();
         }
         if let Some(max) = s.max_width {
             d = d.max_w(px(max));
