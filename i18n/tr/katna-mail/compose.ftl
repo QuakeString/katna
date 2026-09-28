@@ -76,7 +76,6 @@ compose-sign = İmzala
 compose-signed = İmzalı: alıcılar sizden geldiğini doğrulayabilir
 compose-track = Açılmaları ve tıklamaları izle
 compose-tracked = İzleniyor: her alıcının iletiyi ne zaman açtığını veya bir bağlantıyı izlediğini görürsünüz
-compose-track-unavailable = İmzalı, şifreli ve düz metin postalar izlenemez
 compose-track-sign-in = Açılmaları ve tıklamaları izlemek için bir Katna hesabında oturum açın
 compose-receipt = Okundu bilgisi iste
 compose-receipt-on = Okundu bilgisi istendi: alıcının uygulaması ondan bilgi göndermesini isteyebilir

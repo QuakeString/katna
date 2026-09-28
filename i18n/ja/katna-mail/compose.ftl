@@ -73,7 +73,6 @@ compose-sign = 署名
 compose-signed = 署名済み: あなたからのメールであることを受信者が確認できます
 compose-track = 開封とクリックを追跡
 compose-tracked = 追跡中: 各宛先がいつメールを開いたか、リンクをクリックしたかがわかります
-compose-track-unavailable = 署名付き、暗号化、プレーンテキストのメールは追跡できません
 compose-track-sign-in = 開封とクリックを追跡するには Katna アカウントにサインインしてください
 compose-receipt = 開封確認を要求
 compose-receipt-on = 開封確認を要求しました: 受信者のアプリで、開封確認を送るかどうか尋ねられる場合があります

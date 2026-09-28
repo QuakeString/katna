@@ -77,7 +77,6 @@ compose-sign = Firma
 compose-signed = Firmato: i destinatari possono verificare che viene da te
 compose-track = Traccia aperture e clic
 compose-tracked = Tracciato: vedi quando ogni destinatario lo apre o segue un link
-compose-track-unavailable = Le email firmate, crittografate e in testo semplice non si possono tracciare
 compose-track-sign-in = Accedi a un account Katna per tracciare aperture e clic
 compose-receipt = Richiedi una conferma di lettura
 compose-receipt-on = Conferma di lettura richiesta: l’app del destinatario potrebbe chiedergli di inviarla

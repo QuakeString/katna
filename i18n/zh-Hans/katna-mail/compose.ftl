@@ -73,7 +73,6 @@ compose-sign = 签署
 compose-signed = 已签署：收件人可以验证邮件确实来自你
 compose-track = 跟踪打开和点击
 compose-tracked = 已跟踪：每位收件人打开邮件或点开链接时，你都能看到
-compose-track-unavailable = 已签署、已加密和纯文本邮件无法跟踪
 compose-track-sign-in = 登录 Katna 账号即可跟踪打开和点击
 compose-receipt = 请求已读回执
 compose-receipt-on = 已请求已读回执：收件人的应用可能会询问对方是否发送回执

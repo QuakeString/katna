@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Track signed, encrypted and plain-text mail"
+text = """
+The eye now works on signed and encrypted mail too: each recipient's copy
+is signed or encrypted on its own, so signatures stay valid. Plain-text
+mail can't show opens, but its links are tracked, so you see when someone
+follows one.
+"""

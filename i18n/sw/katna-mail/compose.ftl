@@ -76,7 +76,6 @@ compose-sign = Weka sahihi
 compose-signed = Una sahihi: wapokeaji wanaweza kuthibitisha kuwa umetoka kwako
 compose-track = Fuatilia kufunguliwa na kubofya
 compose-tracked = Unafuatiliwa: utaona kila mpokeaji anapoufungua au kufuata kiungo
-compose-track-unavailable = Barua yenye sahihi, iliyosimbwa au ya maandishi matupu haiwezi kufuatiliwa
 compose-track-sign-in = Ingia kwenye akaunti ya Katna ili kufuatilia kufunguliwa na kubofya
 compose-receipt = Omba stakabadhi ya kusoma
 compose-receipt-on = Stakabadhi ya kusoma imeombwa: programu ya mpokeaji inaweza kumwomba aitume

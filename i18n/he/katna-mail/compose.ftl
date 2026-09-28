@@ -76,7 +76,6 @@ compose-sign = חתימה
 compose-signed = חתומה: הנמענים יכולים לוודא שהיא ממך
 compose-track = מעקב אחר פתיחות ולחיצות
 compose-tracked = במעקב: יוצג מתי כל נמען פותח את ההודעה או לוחץ על קישור
-compose-track-unavailable = אי אפשר לעקוב אחר דואר חתום, מוצפן או בטקסט פשוט
 compose-track-sign-in = כדי לעקוב אחר פתיחות ולחיצות צריך להתחבר לחשבון Katna
 compose-receipt = בקשת אישור קריאה
 compose-receipt-on = התבקש אישור קריאה: ייתכן שהיישום של הנמען יבקש ממנו לשלוח אותו

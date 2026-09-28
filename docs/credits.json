@@ -103,6 +103,16 @@
       "repository": "https://github.com/BLAKE3-team/BLAKE3"
     },
     {
+      "name": "blocking",
+      "version": "1.7.0",
+      "description": "A thread pool for isolating blocking I/O in async programs",
+      "license": "Apache-2.0 OR MIT",
+      "authors": [
+        "smol-rs"
+      ],
+      "repository": "https://github.com/smol-rs/blocking"
+    },
+    {
       "name": "calamine",
       "version": "0.36.1",
       "description": "An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust",

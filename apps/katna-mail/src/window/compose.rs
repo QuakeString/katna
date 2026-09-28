@@ -1336,7 +1336,7 @@ impl MailWindow {
         let plain = compose.plain(cx);
         let follow_up = i64::from(compose.follow_up);
         // Tracking needs a Katna account with a confirmed address.
-        let track = sealing.track && !sealing.any() && !plain && self.katna_signed_in();
+        let track = sealing.track && self.katna_signed_in();
         // Delivery receipts where the mail server sends them (the daemon
         // leaves them out where it does not).
         let delivery = sealing.delivery && self.delivery_receipts_offered() != Some(false);
