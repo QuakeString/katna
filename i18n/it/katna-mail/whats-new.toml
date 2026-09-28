@@ -1091,3 +1091,21 @@ caricamento mentre controlla il tuo account Katna, invece di chiederti
 per un attimo di accedere. Katna controlla l’account anche appena si
 avvia, quindi l’attesa è più breve.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Gli aggiornamenti hanno una finestra tutta loro"
+text = """
+Aiuto > Controlla aggiornamenti apre una finestra dedicata. Mostra la
+tua versione accanto alla nuova, con la data di compilazione di ciascuna
+e la dimensione dello scaricamento, le novità dell’aggiornamento e ogni
+modifica dalla tua versione.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Avvio più rapido, sincronizzazione più fluida"
+text = """
+Katna Mail apre una casella di posta molto grande circa un quarto più
+velocemente e, mentre la posta viene scaricata, aggiorna l’elenco una
+volta per gruppo invece che ogni pochi messaggi, così scorrimento e
+scrittura restano fluidi durante una sincronizzazione.
+"""

@@ -40,4 +40,5 @@ quick-conversation-view-detail = 同じメールへの返信をまとめる
 quick-help = ヘルプ
 quick-tour = ツアーを見る
 quick-whats-new = 新機能
+quick-check-updates = 更新を確認
 quick-about = Katna について

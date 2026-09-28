@@ -1118,3 +1118,21 @@ bar habang sinusuri ang iyong Katna account, sa halip na saglit kang
 hilingang mag-sign in. Sinusuri rin ng Katna ang account sa mismong
 pagsisimula nito, kaya mas maikli ang paghihintay.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "May sariling window na ang mga update"
+text = """
+Ang Tulong > Suriin ang mga Update ay nagbubukas ng sarili nitong
+window. Ipinapakita nito ang bersyon mo katabi ng bago, kung kailan
+ginawa ang bawat isa at gaano kalaki ang download, ano’ng bago sa
+update, at bawat pagbabago mula sa bersyon mo.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Mas mabilis na simula, mas maayos na pag-sync"
+text = """
+Mga isang-kapat na mas mabilis na nabubuksan ng Katna Mail ang malaking
+inbox, at habang dina-download ang mail, isang beses kada batch nito
+ina-update ang listahan sa halip na pagkatapos ng bawat ilang mensahe,
+kaya nananatiling maayos ang pag-scroll at pag-type habang nagsi-sync.
+"""

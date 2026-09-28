@@ -40,4 +40,5 @@ quick-conversation-view-detail = Kumpulkan balasan kepada mel yang sama
 quick-help = Bantuan
 quick-tour = Ikuti lawatan
 quick-whats-new = Apa yang baharu
+quick-check-updates = Semak kemas kini
 quick-about = Perihal Katna

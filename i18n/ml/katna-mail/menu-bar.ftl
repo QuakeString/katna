@@ -43,4 +43,5 @@ desktop-menu-configure = _Katna Mail കോൺഫിഗർ ചെയ്യുക
 desktop-menu-help = _സഹായം
 desktop-menu-shortcuts = _കീബോർഡ് കുറുക്കുവഴികൾ
 desktop-menu-whats-new = _പുതിയതെന്താണ്
+desktop-menu-check-updates = _അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കുക…
 desktop-menu-about = _Katna-യെക്കുറിച്ച്

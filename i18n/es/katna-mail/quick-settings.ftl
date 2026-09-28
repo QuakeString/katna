@@ -48,4 +48,5 @@ quick-conversation-view-detail = Agrupar las respuestas al mismo correo
 quick-help = Ayuda
 quick-tour = Hacer el recorrido
 quick-whats-new = Novedades
+quick-check-updates = Buscar actualizaciones
 quick-about = Acerca de Katna

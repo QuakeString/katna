@@ -1058,3 +1058,20 @@ Da zarar Katna ta fara, Ayyuka na nuna siririyar sandar lodawa yayin da take dub
 Katna naku, maimakon ta roƙe ku ku shiga na ɗan lokaci. Katna kuma tana duba asusun da
 zarar ta fara, don haka jira ya yi gajarta.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Sabuntawa suna da taga tasu"
+text = """
+Taimako > Duba sabuntawa yana buɗe taga ta kansa. Yana nuna sigar ku kusa da sabuwar,
+tare da lokacin da aka gina kowacce da girman saukarwa, abin da ke sabo a sabuntawar da
+kuma kowane canji tun daga sigar ku.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Farawa da sauri, daidaitawa mai santsi"
+text = """
+Katna Mail tana buɗe babban akwatin saƙo da sauri da kusan kashi ɗaya cikin huɗu, kuma
+yayin da ake sauke saƙonni tana sabunta jerin sau ɗaya ga kowane gungu maimakon bayan
+kowane 'yan saƙonni, don haka gungurawa da rubutu suna ci gaba da santsi yayin
+daidaitawa.
+"""

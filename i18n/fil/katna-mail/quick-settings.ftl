@@ -46,4 +46,5 @@ quick-conversation-view-detail = Pagsamahin ang mga sagot sa iisang mail
 quick-help = Tulong
 quick-tour = Mag-tour
 quick-whats-new = Ano’ng bago
+quick-check-updates = Suriin ang mga update
 quick-about = Tungkol sa Katna

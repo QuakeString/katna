@@ -1041,3 +1041,22 @@ na-enyocha akaụntụ Katna gị, kama ịjụ gị ka i banye nwa oge. Katna n
 enyochakwa akaụntụ ozugbo ọ malitere, ya mere ogologo oge ichere dị
 mkpụmkpụ.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Mmelite nwere windo nke ya"
+text = """
+Enyemaka > Lelee imelite na-emepe windo nke ya. Ọ na-egosi ụdị
+gị n'akụkụ ụdị ọhụrụ ahụ, yana mgbe e mere nke ọ bụla, otú
+nbudata ahụ si ukwuu, ihe ọhụrụ dị n'imelite ahụ na mgbanwe ọ
+bụla kemgbe ụdị gị.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Mmalite ngwa ngwa, njikọ dị nro"
+text = """
+Katna Mail na-emepe igbe ozi mbata buru ibu ihe dị ka otu ụzọ
+n'ụzọ anọ ngwa ngwa, ma mgbe a na-ebudata ozi ọ na-emelite
+ndepụta ahụ otu ugboro maka otu ìgwè kama mgbe ozi ole na ole
+ọ bụla, ya mere ịrị elu na ide ihe na-adịgide dị nro n'oge
+njikọ.
+"""

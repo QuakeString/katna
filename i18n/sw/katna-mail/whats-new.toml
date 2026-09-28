@@ -1076,3 +1076,19 @@ Mara tu Katna inapoanza, Shughuli huonyesha upau mwembamba wa kupakia wakati ina
 akaunti yako ya Katna, badala ya kukuomba uingie kwa muda mfupi. Katna pia hukagua akaunti
 mara inapoanza, kwa hivyo kusubiri ni kwa muda mfupi zaidi.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Masasisho yana dirisha lake"
+text = """
+Usaidizi > Kagua masasisho hufungua dirisha lake lenyewe. Linaonyesha toleo lako kando
+ya jipya, pamoja na lini kila moja lilijengwa na ukubwa wa upakuaji, kipya katika
+sasisho na kila badiliko tangu toleo lako.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Kuanza haraka, usawazishaji laini"
+text = """
+Katna Mail hufungua kikasha kikubwa kwa haraka kwa takriban robo, na barua
+zinapopakuliwa husasisha orodha mara moja kwa kila kundi badala ya baada ya kila jumbe
+chache, kwa hivyo kusogeza na kuandika hubaki laini wakati wa usawazishaji.
+"""

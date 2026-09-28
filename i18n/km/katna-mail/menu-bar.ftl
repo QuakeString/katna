@@ -43,4 +43,5 @@ desktop-menu-configure = _កំណត់រចនាសម្ព័ន្ធ Ka
 desktop-menu-help = _ជំនួយ
 desktop-menu-shortcuts = _ផ្លូវកាត់ក្ដារចុច
 desktop-menu-whats-new = _អ្វីដែលថ្មី
+desktop-menu-check-updates = _ពិនិត្យរកបច្ចុប្បន្នភាព…
 desktop-menu-about = _អំពី Katna

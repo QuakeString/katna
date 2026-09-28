@@ -1090,3 +1090,21 @@ semasa menyemak akaun Katna anda, bukannya meminta anda log masuk
 seketika. Katna juga menyemak akaun sebaik sahaja bermula, jadi masa
 menunggu lebih singkat.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Kemas kini kini ada tetingkap sendiri"
+text = """
+Bantuan > Semak Kemas Kini membuka tetingkap tersendiri. Ia memaparkan
+versi anda bersebelahan dengan versi baharu, bila setiap satu dibina dan
+saiz muat turun, apa yang baharu dalam kemas kini serta setiap perubahan
+sejak versi anda.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Permulaan lebih pantas, penyegerakan lebih lancar"
+text = """
+Katna Mail membuka peti masuk yang besar kira-kira suku lebih pantas,
+dan semasa mel dimuat turun, ia mengemas kini senarai sekali bagi setiap
+kelompok dan bukannya selepas setiap beberapa mesej, jadi tatal dan
+menaip kekal lancar semasa penyegerakan.
+"""

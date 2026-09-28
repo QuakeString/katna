@@ -1046,3 +1046,19 @@ Kété tí Katna bá bẹ̀rẹ̀, Ìgbòkègbodò máa ń fi ọ̀pá ìgbàjá
 ṣàyẹ̀wò àkáǹtì Katna rẹ, dípò kí ó bẹ̀ ọ́ kí o wọlé fún ìgbà díẹ̀. Katna tún máa ń ṣàyẹ̀wò
 àkáǹtì náà bí ó ṣe bẹ̀rẹ̀, nítorí náà ìdúró kúrú jù.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Àwọn ìmúdójúìwọ̀n ní fèrèsé tiwọn"
+text = """
+Ìrànlọ́wọ́ > Ṣàyẹ̀wò àwọn ìmúdójúìwọ̀n máa ń ṣí fèrèsé tirẹ̀. Ó fi ẹ̀yà rẹ hàn lẹ́gbẹ̀ẹ́
+èyí tuntun, pẹ̀lú ìgbà tí a kọ́ èyí kọ̀ọ̀kan àti bí ìgbàsílẹ̀ náà ṣe tóbi tó, ohun
+tuntun nínú ìmúdójúìwọ̀n àti gbogbo àyípadà láti ẹ̀yà rẹ.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Ìbẹ̀rẹ̀ yíyára, ìsopọ̀ tí ó rọ̀"
+text = """
+Katna Mail ń ṣí àpótí ìmeèlì ńlá ní nǹkan bí ìdámẹ́rin yíyára jù, àti nígbà tí a bá ń
+gba ìmeèlì sílẹ̀, ó ń ṣe àtúnṣe àtòjọ lẹ́ẹ̀kan fún ìdìpọ̀ kọ̀ọ̀kan dípò lẹ́yìn ọ̀pọ̀
+ìfiránṣẹ́ díẹ̀, nítorí náà yíyí àti títẹ̀ ń rọ̀ nígbà ìsopọ̀.
+"""
