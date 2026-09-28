@@ -2864,10 +2864,26 @@ impl Render for MailWindow {
         let regular = open_width + open_left - search_left;
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
-        let search_panel_width = lerp(regular, width - 16.0, shape.phone);
-        let search_panel_left = lerp(search_left, 8.0, shape.phone);
+        // Search options: under the box and at least as wide, widened
+        // in a narrow window and kept inside it.
+        let panel_width = regular.max(search_panel::MIN_WIDTH).min(width - 16.0);
+        let panel_left = search_left.min(width - 8.0 - panel_width).max(8.0);
+        let search_panel_width = lerp(panel_width, width - 16.0, shape.phone);
+        let search_panel_left = lerp(panel_left, 8.0, shape.phone);
+        // The window's inner height: its frame takes as much at the top
+        // and bottom as at the sides.
+        let viewport = window.viewport_size();
+        let inner_height = unpx(viewport.height) - (unpx(viewport.width) - width);
+        let search_panel_height = (inner_height - TOP_BAR_HEIGHT - 12.0).max(200.0);
         let search_panel = self
-            .render_search_panel(&th, search_panel_left, search_panel_width, window, cx)
+            .render_search_panel(
+                &th,
+                search_panel_left,
+                search_panel_width,
+                search_panel_height,
+                window,
+                cx,
+            )
             .map(|panel| self.search_panel_layer(panel, cx));
         let fab = if onboarding {
             None

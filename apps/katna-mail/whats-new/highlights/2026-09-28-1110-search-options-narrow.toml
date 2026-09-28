@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search options fit narrow windows"
+text = """
+In a narrow or short window, Search options now widen to the room there is,
+put labels above their fields on a phone and scroll when they don't fit, so
+the Search button is always within reach.
+"""
