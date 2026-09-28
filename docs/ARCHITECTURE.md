@@ -628,6 +628,11 @@ in:inbox  label:x  is:unread  is:starred  is:important  before:2025-01-01  after
 larger:5M  smaller:  list:  "exact phrase"  -exclude  OR  ( )
 ```
 
+Search options build these queries. Its file types after "Has attachment"
+(PDF, XLSX, ODF for `.odf`/`.odt`, XLS, ODS, PPT, PPTX, and typed
+extensions under Custom) become `filename:pdf` or
+`filename:(pdf OR xlsx)`: mail with an attachment of any chosen type.
+
 Free text that matches an organization name or alias is expanded to
 "any participant matches that organization" **plus** normal text matching (§8.3).
 

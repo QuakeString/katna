@@ -17,6 +17,13 @@ search-without = Doesn't have
 # Followed by choices of how recent the mail is.
 search-date-within = Date within
 search-has-attachment = Has attachment
+# After "Has attachment": the last of the file-type choices (PDF, XLSX, …),
+# which opens a field for other file extensions.
+search-attachment-custom = Custom
+# In the empty field of other file extensions.
+search-attachment-custom-hint = Type an extension, like png, then Space
+# The tooltip of the x on a typed extension, which takes it out.
+search-attachment-remove = Remove
 # Empties every field of the panel.
 search-clear-filter = Clear filter
 
