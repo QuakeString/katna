@@ -6,6 +6,8 @@
 //! Ubuntu). The `#[ignore]`d tests also need the dev servers:
 //! `docker compose -f dev/compose.yaml up -d`, then
 //! `cargo test -p katna-daemon --test dbus -- --ignored --test-threads 1`.
+//! Windows runs the bus end to end in `katna-dbus`'s `windows_bus` test.
+#![cfg(unix)]
 
 use std::{
     io::{BufRead, BufReader},

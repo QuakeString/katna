@@ -165,7 +165,9 @@ pub fn new_attachments(list: &[crate::mime::Attachment]) -> Vec<NewAttachment<'_
         .collect()
 }
 
-#[cfg(test)]
+// Maildir flags follow a `:` in the file name, which Windows file names
+// can't hold (NTFS reads it as a stream name).
+#[cfg(all(test, unix))]
 mod tests {
     use super::*;
     use crate::{Options, StoreSink, import_maildir};

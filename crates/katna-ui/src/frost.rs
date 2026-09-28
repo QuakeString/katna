@@ -12,7 +12,11 @@ use gpui::{BorderStyle, Hsla, IntoElement, Pixels, Styled, canvas, quad};
 /// Whether the renderer can blur behind a panel. False before the first
 /// frame is drawn and where the window's surface cannot be copied from.
 pub fn supported() -> bool {
-    gpui_wgpu::backdrop_blur_supported()
+    #[cfg(not(windows))]
+    return gpui_wgpu::backdrop_blur_supported();
+    // GPUI draws with Direct3D on Windows, without Katna's blur.
+    #[cfg(windows)]
+    return false;
 }
 
 /// The glass of a frosted panel, as the panel's first child: `fill` with
@@ -29,7 +33,7 @@ pub fn glass(fill: Hsla, radius: Pixels, blur: f32) -> impl IntoElement {
                 radius,
                 fill,
                 px(0.0),
-                gpui_wgpu::backdrop_blur_marker(blur),
+                marker(blur),
                 BorderStyle::Solid,
             ));
         },
@@ -38,4 +42,15 @@ pub fn glass(fill: Hsla, radius: Pixels, blur: f32) -> impl IntoElement {
     .top_0()
     .left_0()
     .size_full()
+}
+
+#[cfg(not(windows))]
+fn marker(blur: f32) -> Hsla {
+    gpui_wgpu::backdrop_blur_marker(blur)
+}
+
+/// Without the blur, the panel is just its fill.
+#[cfg(windows)]
+fn marker(_blur: f32) -> Hsla {
+    gpui::transparent_black()
 }

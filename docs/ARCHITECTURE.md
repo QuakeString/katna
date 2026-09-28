@@ -3715,3 +3715,49 @@ new window.
 4. Who runs the push gateway and where (`katna.invenia.in` recommended).
 5. Whether a Katna-hosted login-holding watcher is ever offered
    (recommended: no).
+
+## 27. Katna on Windows (in progress)
+
+Katna Mail and `katna-daemon` also run on Windows 10 and later, installed by
+a Katna Setup.exe. Linux stays the main platform: nothing here changes how
+Katna behaves there.
+
+### 27.1 What stays and what changes
+
+The engine crates (`katna-core`, `katna-store`, `katna-search`, `katna-sync`
+and the rest below the apps) build on Windows unchanged. GPUI uses its own
+Windows backend (Direct3D) there; Katna's patched Linux backend and renderer
+(`vendor/`) are Linux only, and `katna_ui::native` gives the apps one API
+for both, with Windows fallbacks: plain-text clipboard, drops as files only,
+no compositor blur or frosted panels, no primary selection and no global
+menu.
+
+| Linux | Windows |
+|---|---|
+| XDG base directories | settings in `%APPDATA%\Katna`, everything else in `%LOCALAPPDATA%\Katna\{Data,Cache,State}` (`Paths::from_windows_lookup`) |
+| Secret Service (`oo7`) | Credential Manager, generic credentials `<user>.in.invenia.katna`, kept on this computer |
+| D-Bus session bus | Katna's own: the reference `dbus-daemon.exe` (built with vcpkg, `ci/windows-dbus.ps1`) beside Katna's programs, started by the first Katna program that needs it (`katna_dbus::session`), on nonce-TCP at 127.0.0.1; its address in `%LOCALAPPDATA%\Katna\State\bus\address`. Every name, call and signal stays as on Linux |
+| systemd user unit, D-Bus activation | the `Katna` value of `HKCU\…\Run` runs `katna-mail.exe --background` at login; the bus starts `katna-daemon.exe` on demand from the activation file Katna writes beside its configuration |
+| SNI tray, badge on the launcher | notification-area icon with the same menu; unread count as the taskbar button's overlay |
+| freedesktop notifications | toasts, under the AppUserModelID Setup gives the Start menu shortcut |
+| XDG mimeapps (mailto, .eml) | registered for mailto and .eml under `HKCU\Software\Classes`, listed in Default apps |
+| print portal | the PDF opens in the default PDF app to print from there |
+| "Open with" portal | Windows' Open with dialog |
+| KRunner, GNOME search | no third-party results in Start search; a PowerToys Run plugin later |
+| KDE global menu, compositor blur | none |
+
+### 27.2 Setup
+
+Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
+Katna's look: one window with the logo, Install, a progress bar and Open
+Katna, light or dark as Windows is set. It installs for the current user
+without an administrator prompt, into `%LOCALAPPDATA%\Programs\Katna`, and
+adds the Start menu shortcut, the uninstall entry in Settings > Apps, the
+Run key and the mail handler registrations. MSI and NSIS installers are not
+used: their wizard dialogs look like Windows XP. An MSI for managed
+deployment can be added later if an organization needs one.
+
+CI builds Setup.exe on every main push into a `windows-latest`
+pre-release, as it does the Arch package. Without a code-signing
+certificate Windows SmartScreen warns on first run; the certificate is the
+owner's and goes into GitHub secrets.

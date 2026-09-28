@@ -183,6 +183,11 @@ mod tests {
         let stat = "4242 (katna daemon) S 1 4242 4242 0 -1 4194560 1 0 0 0 3 1 0 0 \
                     20 0 5 0 987654 1234 56";
         assert_eq!(start_time(stat), Some("987654"));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn names_this_run() {
         let own = service_run(std::process::id()).unwrap();
         assert!(own.starts_with(&format!("{}-", std::process::id())));
         assert_eq!(service_run(std::process::id()), Some(own));

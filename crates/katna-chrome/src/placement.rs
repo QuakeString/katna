@@ -3,7 +3,7 @@
 //! Opening a window where it was: its size, maximized state and place
 //! (`docs/ARCHITECTURE.md` §13.1). Size and maximized state come back
 //! through GPUI's window bounds; the place through the compositor's session
-//! on Wayland and an exact position on X11 (`gpui_linux::restore_placement`).
+//! on Wayland and an exact position on X11 (`katna_ui::native::restore_placement`).
 
 use gpui::{App, Bounds, Pixels, Window, WindowBounds, WindowOptions, point, size};
 use katna_core::window::WindowState;
@@ -25,7 +25,7 @@ pub fn restore_window(
     cx: &App,
 ) {
     let restored = state.filter(|state| state.same_run(run));
-    gpui_linux::restore_placement(gpui_linux::Placement {
+    katna_ui::native::restore_placement(katna_ui::native::Placement {
         session: state.and_then(|state| state.session.clone()),
         name: name.to_owned(),
         restore: restored.is_some(),
@@ -109,7 +109,7 @@ impl Placement {
             height: f32::from(windowed.size.height),
             position,
             maximized: self.maximized,
-            session: gpui_linux::placement_session(),
+            session: katna_ui::native::placement_session(),
             service: run,
             view: Default::default(),
         })

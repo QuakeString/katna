@@ -13,5 +13,12 @@ katna-core.workspace = true
 serde.workspace = true
 zbus.workspace = true
 
+# Starting Katna's own session bus on Windows (session.rs).
+[target.'cfg(windows)'.dependencies]
+smol.workspace = true
+
+[dev-dependencies]
+futures-lite.workspace = true
+
 [lints]
 workspace = true
