@@ -89,7 +89,6 @@ tracking-opened = { $who }님이 { $count }번 열었습니다. 마지막: { $wh
 tracking-opens-clicks = { $who }님이 { $opens }번 열고 링크를 { $clicks }번 클릭했습니다. 마지막: { $when }
 tracking-clicked = { $who }님이 링크를 { $clicks }번 클릭했습니다. 마지막: { $when }
 tracking-maybe-opened = { $who }님이 열었을 수 있습니다(Apple Mail은 개인정보 보호를 위해 이미지를 불러옵니다)
-tracking-not-opened = { $who }님이 아직 열지 않았습니다
 tracking-receipt = { $who }님이 읽음 확인을 보냈습니다
 tracking-receipt-displayed = 읽음 확인: { $who }님이 메일을 열었습니다
 tracking-receipt-other = 읽음 확인: { $who }님이 메일을 열지 않고 삭제하거나 처리했습니다

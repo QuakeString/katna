@@ -101,7 +101,6 @@ tracking-clicked = { $who } አገናኝ { $clicks ->
    *[other] { $clicks } ጊዜ
 } ተከትሏል፣ መጨረሻ { $when }
 tracking-maybe-opened = { $who } ከፍቶት ሊሆን ይችላል (Apple Mail ለግላዊነት ሲባል ምስሎችን ይጭናል)
-tracking-not-opened = { $who } እስካሁን አልከፈተውም
 tracking-receipt = { $who } የንባብ ማረጋገጫ ልኳል
 tracking-receipt-displayed = የንባብ ማረጋገጫ፦ { $who } መልዕክትዎን ከፍቷል
 tracking-receipt-other = የንባብ ማረጋገጫ፦ { $who } መልዕክትዎን ሳይከፍት ሰርዞታል ወይም አስተናግዶታል

@@ -101,7 +101,6 @@ tracking-clicked = { $who } ने { $clicks ->
    *[other] { $clicks } बार
 } लिंक खोला, आखिरी बार { $when }
 tracking-maybe-opened = { $who } ने शायद इसे खोला है (Apple Mail निजता के लिए इमेज लोड करता है)
-tracking-not-opened = { $who } ने अभी तक इसे नहीं खोला है
 tracking-receipt = { $who } ने पढ़ने की रसीद भेजी
 tracking-receipt-displayed = पढ़ने की रसीद: { $who } ने आपका मैसेज खोला
 tracking-receipt-other = पढ़ने की रसीद: { $who } ने आपका मैसेज खोले बिना मिटा दिया या निपटा दिया

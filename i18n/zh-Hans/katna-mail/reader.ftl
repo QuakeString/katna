@@ -89,7 +89,6 @@ tracking-opened = { $who } 打开了 { $count } 次，最近一次在 { $when }
 tracking-opens-clicks = { $who } 打开了 { $opens } 次，点开链接 { $clicks } 次，最近一次在 { $when }
 tracking-clicked = { $who } 点开链接 { $clicks } 次，最近一次在 { $when }
 tracking-maybe-opened = { $who } 可能已打开（Apple Mail 为保护隐私会加载图片）
-tracking-not-opened = { $who } 尚未打开
 tracking-receipt = { $who } 发回了已读回执
 tracking-receipt-displayed = 已读回执：{ $who } 打开了你的邮件
 tracking-receipt-other = 已读回执：{ $who } 未打开就删除或处理了你的邮件

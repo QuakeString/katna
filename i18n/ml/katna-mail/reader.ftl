@@ -101,7 +101,6 @@ tracking-clicked = { $who } { $clicks ->
    *[other] { $clicks } തവണ
 } ലിങ്ക് തുറന്നു, അവസാനം { $when }
 tracking-maybe-opened = { $who } ഇത് തുറന്നിട്ടുണ്ടാകാം (സ്വകാര്യതയ്ക്കായി Apple Mail ചിത്രങ്ങൾ ലോഡ് ചെയ്യുന്നു)
-tracking-not-opened = { $who } ഇതുവരെ ഇത് തുറന്നിട്ടില്ല
 tracking-receipt = { $who } വായിച്ചതിന്റെ രസീത് അയച്ചു
 tracking-receipt-displayed = വായിച്ചതിന്റെ രസീത്: { $who } നിങ്ങളുടെ സന്ദേശം തുറന്നു
 tracking-receipt-other = വായിച്ചതിന്റെ രസീത്: { $who } നിങ്ങളുടെ സന്ദേശം തുറക്കാതെ ഇല്ലാതാക്കുകയോ കൈകാര്യം ചെയ്യുകയോ ചെയ്തു

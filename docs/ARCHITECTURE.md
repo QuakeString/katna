@@ -2698,7 +2698,11 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   bounced. The reading view shows a grey tick beside a recipient of the
   user's mail once delivered, two accent ticks once read (by a read
   receipt or an open seen by tracking; the tooltip says which) and a
-  warning once it bounced. Where no delivery receipt comes (Gmail sends
+  warning once it bounced. An eye left of the message's star (accent once
+  anyone has opened it) opens, on hover or click, a popover with a notch
+  pointing at it that lists only who opened the message or followed a
+  link, and read receipts; with none, it says so. Where no delivery
+  receipt comes (Gmail sends
   none), the grey tick appears half an hour after sending if no bounce
   came back, and its tooltip says that is what it means: only the sending
   server knows whether mail arrived, and relaying through Katna Server

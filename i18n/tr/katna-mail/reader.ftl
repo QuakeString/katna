@@ -101,7 +101,6 @@ tracking-clicked = { $who } bir bağlantıyı { $clicks ->
    *[other] { $clicks } kez
 } izledi, son olarak { $when }
 tracking-maybe-opened = { $who } iletiyi açmış olabilir (Apple Mail gizlilik için resimleri yükler)
-tracking-not-opened = { $who } iletiyi henüz açmadı
 tracking-receipt = { $who } okundu bilgisi gönderdi
 tracking-receipt-displayed = Okundu bilgisi: { $who } iletinizi açtı
 tracking-receipt-other = Okundu bilgisi: { $who } iletinizi açmadan sildi veya işledi

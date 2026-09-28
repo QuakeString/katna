@@ -109,7 +109,6 @@ tracking-clicked = { $who }: по ссылке перешли { $clicks ->
    *[other] { $clicks } раза
 }, последний раз { $when }
 tracking-maybe-opened = { $who }: возможно, открыто (Apple Mail загружает изображения ради конфиденциальности)
-tracking-not-opened = { $who }: ещё не открыто
 tracking-receipt = Уведомление о прочтении от { $who }
 tracking-receipt-displayed = Уведомление о прочтении: ваше письмо открыто получателем { $who }
 tracking-receipt-other = Уведомление о прочтении: ваше письмо удалено или обработано получателем { $who } без открытия

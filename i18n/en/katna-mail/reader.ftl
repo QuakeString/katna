@@ -109,7 +109,8 @@ security-missing-key-id = Signed with a key you don't have ({ $key }), so it can
 security-signature-unavailable = Signed; install { $tool } to check the signature
 security-signature-error = The signature could not be checked.
 
-## Open and click tracking and read receipts (lines above a sent message)
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
 
 # $who: a recipient's name or address. $count: how many times.
 # $when: the latest time, as the list shows dates ("3:04 PM", "Tue").
@@ -132,7 +133,8 @@ tracking-clicked = { $who } followed a link { $clicks ->
 }, last { $when }
 # Apple Mail fetches pictures for privacy whether or not the mail is read.
 tracking-maybe-opened = { $who } may have opened it (Apple Mail loads pictures for privacy)
-tracking-not-opened = { $who } hasn't opened it yet
+# In the eye's popover when no one has opened it or followed a link.
+tracking-seen-none = No one has opened it or followed a link yet
 # A read receipt came back from $who.
 tracking-receipt = { $who } sent a read receipt
 # On a read receipt itself.
