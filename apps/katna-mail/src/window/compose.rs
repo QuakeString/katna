@@ -292,6 +292,9 @@ pub(super) struct Writing {
     /// How long each account's mail server holds scheduled mail, in
     /// seconds (0: it cannot), once asked.
     hold_limits: std::collections::HashMap<AccountId, u64>,
+    /// Whether each account's mail server sends delivery receipts, once
+    /// asked.
+    delivery_receipts: std::collections::HashMap<AccountId, bool>,
 }
 
 impl Writing {
@@ -1029,6 +1032,7 @@ impl MailWindow {
             attach_scroll: ScrollHandle::new(),
             _subscriptions: subscriptions,
         });
+        self.ask_delivery_receipts(cx);
         cx.notify();
     }
 
@@ -1268,6 +1272,9 @@ impl MailWindow {
         let follow_up = i64::from(compose.follow_up);
         // Tracking needs a Katna account with a confirmed address.
         let track = sealing.track && !sealing.any() && !plain && self.katna_signed_in();
+        // Delivery receipts where the mail server sends them (the daemon
+        // leaves them out where it does not).
+        let delivery = sealing.delivery && self.delivery_receipts_offered() != Some(false);
         if let Some((field, address)) = self.bad_recipient(cx) {
             if let Some(c) = &mut self.compose {
                 c.popup = Some(Popup::BadAddress { field, address });
@@ -1407,6 +1414,11 @@ impl MailWindow {
                     let raw = security::seal(raw, sealing, sender.clone(), visible, hidden)?;
                     let raw = if sealing.receipt {
                         tracking::with_receipt(raw, &sender)
+                    } else {
+                        raw
+                    };
+                    let raw = if delivery {
+                        tracking::with_delivery_receipt(raw)
                     } else {
                         raw
                     };
@@ -2162,6 +2174,7 @@ impl MailWindow {
                         c.popup = None;
                         window.focus(&c.body.focus_handle(cx), cx);
                     }
+                    this.ask_delivery_receipts(cx);
                     cx.notify();
                 }))
         });

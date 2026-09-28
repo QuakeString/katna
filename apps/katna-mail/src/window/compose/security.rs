@@ -27,16 +27,20 @@ pub(in crate::window) struct Sealing {
     pub track: bool,
     /// A `Disposition-Notification-To` header (RFC 8098).
     pub receipt: bool,
+    /// Delivery receipts from the mail server (SMTP DSN, RFC 3461).
+    pub delivery: bool,
 }
 
 impl Sealing {
-    /// The default for a new message: tracked, with a read receipt asked
-    /// for. Tracking only happens when signed in to a Katna account and the
-    /// message can be tracked (`compose/tracking.rs`).
+    /// The default for a new message: tracked, with read and delivery
+    /// receipts asked for. Tracking only happens when signed in to a Katna
+    /// account and the message can be tracked; delivery receipts only where
+    /// the mail server sends them (`compose/tracking.rs`).
     pub fn new_message() -> Self {
         Self {
             track: true,
             receipt: true,
+            delivery: true,
             ..Self::default()
         }
     }

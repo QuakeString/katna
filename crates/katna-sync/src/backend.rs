@@ -441,6 +441,19 @@ pub trait MailSender: Send + 'static {
         async { Ok(None) }
     }
 
+    /// Whether the server mails the sender delivery status notifications
+    /// (SMTP `DSN`, RFC 3461). May ask the server.
+    fn offers_receipts(&mut self) -> impl Future<Output = Result<bool>> + Send {
+        async { Ok(false) }
+    }
+
+    /// Asks for a delivery status notification for each recipient of the
+    /// messages sent from now on, where the server
+    /// [offers them](Self::offers_receipts); elsewhere they go out without.
+    fn ask_for_receipts(&mut self, on: bool) {
+        let _ = on;
+    }
+
     /// Like [`send`](Self::send), but the server holds the message until
     /// `until` (Unix seconds). Only when [`hold_limit`](Self::hold_limit)
     /// allows it; SMTP cannot take the message back afterwards.

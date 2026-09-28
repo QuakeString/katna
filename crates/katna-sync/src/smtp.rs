@@ -9,6 +9,10 @@ use io_sasl::rfc4616::plain::SaslPlainCreds;
 use io_smtp::{
     coroutine::{SmtpCoroutine, SmtpCoroutineState as S, SmtpYield},
     message::SmtpMessageSend,
+    rfc3461::{
+        capability::DSN,
+        parameter::{SmtpDsnNotify, SmtpDsnRet},
+    },
     rfc5321::{
         SmtpAtom, SmtpDomain, SmtpEhloDomain, SmtpForwardPath, SmtpLocalPart, SmtpMailbox,
         SmtpParameter, SmtpReversePath, data::SmtpData, ehlo::SmtpEhlo, mail::SmtpMail,
@@ -30,6 +34,9 @@ pub struct SmtpSender {
     capabilities: Vec<String>,
     /// The capabilities are the ones listed after login.
     asked_again: bool,
+    /// Ask for delivery status notifications (RFC 3461) where the server
+    /// offers them.
+    receipts: bool,
 }
 
 impl SmtpSender {
@@ -95,12 +102,59 @@ impl SmtpSender {
             conn,
             capabilities: session.capabilities.iter().map(|c| c.to_string()).collect(),
             asked_again: false,
+            receipts: false,
         })
     }
 
     /// The server's EHLO keywords after login.
     pub fn capabilities(&self) -> &[String] {
         &self.capabilities
+    }
+
+    /// Says EHLO again, once, for the capabilities listed after login.
+    async fn ask_again(&mut self) -> Result<()> {
+        if !self.asked_again {
+            // Stalwart lists FUTURERELEASE only to a logged-in client, and
+            // io-smtp keeps the list from before login. EHLO again: like
+            // RSET, it keeps the login.
+            let domain = SmtpEhloDomain::from(SmtpDomain(Cow::Borrowed("localhost")));
+            let capabilities = self.run(SmtpEhlo::new(domain)).await?;
+            self.capabilities = capabilities.iter().map(|c| c.to_string()).collect();
+            self.asked_again = true;
+        }
+        Ok(())
+    }
+
+    /// Sends `message` in one transaction with these `MAIL FROM`
+    /// parameters, and delivery status notifications asked for when
+    /// [`Self::receipts`] is on and the server offers them.
+    async fn transaction(
+        &mut self,
+        from: &str,
+        to: &[&str],
+        message: Vec<u8>,
+        mut parameters: Vec<SmtpParameter<'static>>,
+    ) -> Result<()> {
+        let receipts = self.receipts && delivery_receipts(&self.capabilities);
+        if receipts {
+            // The report carries the headers, not the whole message.
+            parameters.push(SmtpDsnRet::Hdrs.into_parameter());
+        }
+        let reverse = SmtpReversePath::from(mailbox(from)?);
+        self.run(SmtpMail::new(reverse, parameters)).await?;
+        for addr in to {
+            let forward = SmtpForwardPath::from(mailbox(addr)?);
+            let notify = if receipts {
+                vec![
+                    (SmtpDsnNotify::SUCCESS | SmtpDsnNotify::FAILURE | SmtpDsnNotify::DELAY)
+                        .into_parameter(),
+                ]
+            } else {
+                Vec::new()
+            };
+            self.run(SmtpRcpt::new(forward, notify)).await?;
+        }
+        self.run(SmtpData::new(message)).await
     }
 
     async fn run<C, T, E>(&mut self, mut co: C) -> Result<T>
@@ -128,6 +182,10 @@ impl SmtpSender {
 
 impl MailSender for SmtpSender {
     async fn send(&mut self, from: &str, to: &[&str], message: Vec<u8>) -> Result<()> {
+        if self.receipts {
+            self.ask_again().await?;
+            return self.transaction(from, to, message, Vec::new()).await;
+        }
         let reverse = SmtpReversePath::from(mailbox(from)?);
         let forward = to
             .iter()
@@ -141,16 +199,19 @@ impl MailSender for SmtpSender {
         if let Some(limit) = future_release(&self.capabilities) {
             return Ok(Some(limit));
         }
-        if !self.asked_again {
-            // Stalwart lists FUTURERELEASE only to a logged-in client, and
-            // io-smtp keeps the list from before login. EHLO again: like
-            // RSET, it keeps the login.
-            let domain = SmtpEhloDomain::from(SmtpDomain(Cow::Borrowed("localhost")));
-            let capabilities = self.run(SmtpEhlo::new(domain)).await?;
-            self.capabilities = capabilities.iter().map(|c| c.to_string()).collect();
-            self.asked_again = true;
-        }
+        self.ask_again().await?;
         Ok(future_release(&self.capabilities))
+    }
+
+    async fn offers_receipts(&mut self) -> Result<bool> {
+        if !delivery_receipts(&self.capabilities) {
+            self.ask_again().await?;
+        }
+        Ok(delivery_receipts(&self.capabilities))
+    }
+
+    fn ask_for_receipts(&mut self, on: bool) {
+        self.receipts = on;
     }
 
     async fn send_held(
@@ -167,13 +228,7 @@ impl MailSender for SmtpSender {
             keyword,
             value: Some(Cow::Owned(rfc3339_utc(until))),
         };
-        let reverse = SmtpReversePath::from(mailbox(from)?);
-        self.run(SmtpMail::new(reverse, vec![hold])).await?;
-        for addr in to {
-            let forward = SmtpForwardPath::from(mailbox(addr)?);
-            self.run(SmtpRcpt::new(forward, Vec::new())).await?;
-        }
-        self.run(SmtpData::new(message)).await
+        self.transaction(from, to, message, vec![hold]).await
     }
 
     async fn quit(mut self) -> Result<()> {
@@ -193,6 +248,15 @@ pub fn future_release(capabilities: &[String]) -> Option<u64> {
             .then(|| words.next()?.parse().ok())
             .flatten()
             .filter(|&max| max > 0)
+    })
+}
+
+/// Whether the server sends delivery status notifications (RFC 3461).
+pub fn delivery_receipts(capabilities: &[String]) -> bool {
+    capabilities.iter().any(|line| {
+        line.split_whitespace()
+            .next()
+            .is_some_and(|word| word.eq_ignore_ascii_case(DSN))
     })
 }
 
@@ -251,6 +315,8 @@ mod tests {
         );
         assert_eq!(future_release(&caps(&["PIPELINING", "DSN"])), None);
         assert_eq!(future_release(&caps(&["FUTURERELEASE"])), None);
+        assert!(delivery_receipts(&caps(&["PIPELINING", "DSN"])));
+        assert!(!delivery_receipts(&caps(&["SIZE 35882577", "8BITMIME"])));
         assert_eq!(rfc3339_utc(1_790_416_800), "2026-09-26T10:00:00Z");
         assert_eq!(rfc3339_utc(951_782_400), "2000-02-29T00:00:00Z");
     }

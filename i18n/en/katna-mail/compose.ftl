@@ -122,6 +122,9 @@ compose-track-unavailable = Signed, encrypted and plain-text mail can't be track
 compose-track-sign-in = Sign in to a Katna account to track opens and clicks
 compose-receipt = Request a read receipt
 compose-receipt-on = Read receipt requested: the recipient's app may ask them to send one
+compose-delivery = Request a delivery receipt
+compose-delivery-on = Delivery receipt requested: your mail server will email you when each recipient's server accepts it
+compose-delivery-unavailable = Your mail server doesn't send delivery receipts
 
 ## Spelling
 

@@ -273,6 +273,19 @@ pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<
         .map_err(|err| describe(&err))
 }
 
+/// Whether the SMTP server of `account` sends delivery receipts.
+pub async fn server_delivery_receipts(
+    connection: &Connection,
+    account: i64,
+) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.server_delivery_receipts(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Like [`queue_send`], with open and click tracking: each recipient gets
 /// a tracked copy of their own (mail that cannot be tracked goes out
 /// untracked).

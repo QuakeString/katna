@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "Tracking and read receipts on from the start"
+title = "Tracking and receipts on from the start"
 text = """
-New messages and replies now start with open and click tracking and a
-read receipt switched on. Click the eye or the receipt button beside the
-recipients to turn either off for that message. Tracking needs you signed
-in to your Katna account; without it, mail goes out untracked.
+New messages and replies now start with open and click tracking, a read
+receipt and a delivery receipt switched on; click a button beside the
+recipients to turn one off for that message. Tracking needs you signed in
+to your Katna account. A delivery receipt is an email your mail server
+sends you when each recipient's server takes the message; the button is
+greyed out where your mail server doesn't offer them.
 """
