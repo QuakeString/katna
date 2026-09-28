@@ -2,8 +2,10 @@
 
 //! The mail Katna Server sends itself: the codes that confirm a Katna
 //! account's address and reset its password. It goes out through the SMTP
-//! relay set in `KATNA_SERVER_SMTP_HOST` and the lines after it; without
-//! one the codes are written to the log, which is enough for local testing.
+//! relay set in `KATNA_SERVER_SMTP_HOST` and the lines after it. Without
+//! one the server refuses to start, unless `KATNA_SERVER_DEV_MAILER=log`
+//! asks for the codes to be written to the log (local testing only: anyone
+//! who can read that log could reset any account).
 
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -47,7 +49,7 @@ pub enum Mailer {
         /// The sender.
         from: Mailbox,
     },
-    /// Only into the log (no relay set).
+    /// Only into the log (no relay set, and `KATNA_SERVER_DEV_MAILER=log`).
     Log,
     /// Into memory, for tests to read.
     Memory(Arc<Mutex<Vec<SentCode>>>),
@@ -65,10 +67,19 @@ pub struct SentCode {
 }
 
 impl Mailer {
-    /// The mailer the settings ask for.
+    /// The mailer the settings ask for. Without an SMTP relay that is an
+    /// error, unless the settings ask for the log explicitly.
     pub fn from_config(config: &Config) -> Result<Self, MailError> {
         let Some(url) = &config.smtp_url else {
-            return Ok(Mailer::Log);
+            if config.dev_mailer_log {
+                return Ok(Mailer::Log);
+            }
+            return Err(MailError(
+                "no SMTP relay set: set KATNA_SERVER_SMTP_HOST (or KATNA_SERVER_SMTP_URL), \
+                 or KATNA_SERVER_DEV_MAILER=log to write account codes to the log \
+                 (local testing only)"
+                    .into(),
+            ));
         };
         let transport = AsyncSmtpTransport::<Tokio1Executor>::from_url(&url.0)
             .map_err(|error| MailError(format!("SMTP settings: {error}")))?
@@ -105,7 +116,7 @@ impl Mailer {
                     to,
                     purpose = purpose.as_str(),
                     code,
-                    "no SMTP relay set; code not mailed"
+                    "KATNA_SERVER_DEV_MAILER=log: code not mailed"
                 );
                 return Ok(());
             }
@@ -176,10 +187,15 @@ mod tests {
             ..Config::default()
         };
         assert!(Mailer::from_config(&config).unwrap().sends_mail());
-        assert!(
-            !Mailer::from_config(&Config::default())
-                .unwrap()
-                .sends_mail()
-        );
+    }
+
+    #[test]
+    fn no_relay_is_an_error_unless_the_log_is_asked_for() {
+        assert!(Mailer::from_config(&Config::default()).is_err());
+        let config = Config {
+            dev_mailer_log: true,
+            ..Config::default()
+        };
+        assert!(!Mailer::from_config(&config).unwrap().sends_mail());
     }
 }

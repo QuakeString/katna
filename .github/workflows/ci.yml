@@ -162,6 +162,8 @@ jobs:
           KATNA_SERVER_LISTEN: 127.0.0.1:8080
           KATNA_TEST_TRACKING_URL: http://127.0.0.1:8080
           KATNA_TEST_SERVER_LOG: /tmp/katna-server.log
+          # No SMTP relay here: the test reads the codes from the log.
+          KATNA_SERVER_DEV_MAILER: log
           NO_COLOR: "1"
         run: |
           cargo build --locked -p katna-server

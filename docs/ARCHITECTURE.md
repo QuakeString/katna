@@ -2707,8 +2707,13 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   stores the mapping. No decodable data (Mailspring's base64-JSON token leaks
   the recipient and can be forged).
 - **Links:** `https://<tracking-domain>/l/<id>/<n>`. The destination is stored
-  on the server (or the URL is HMAC-signed), so the server can never be
-  used as an open redirect.
+  on the server and the link answers with a plain `302`, so recipients
+  never see a page in between. Anyone with a confirmed Katna account can
+  store a destination, so the server can still be misused as a redirect
+  (security audit, 28 September 2026); that is contained by the daily
+  limits per account and by `KATNA_SERVER_BLOCKED_HOSTS`, hosts the server
+  refuses to store or redirect to (decided 28 September 2026, over an
+  interstitial page or signed URLs).
 - **Event quality:** label Apple Mail Privacy Protection fetches as "maybe
   opened"; label clicks from security scanners (data-center IPs within
   seconds of delivery) as "scanner"; Gmail/Outlook proxies hide location.
@@ -2770,8 +2775,17 @@ per Katna account and day, 5000 tracked copies and 16 MiB of link targets
 per copy). Each event is labelled `person`, `apple_proxy` (Apple's network or a
 bare `Mozilla/5.0` agent) or `scanner` (`HEAD`, bot-like agents, opens
 within 5 s or clicks within 30 s of sending); the address and user agent
-are read for the label and never stored. Events stream to the daemon as
-server-sent events numbered in order, resumed with `Last-Event-ID`.
+are read for the label and never stored. Opens and clicks always get the
+picture or the redirect, but only 300 per hour per client network (IPv4
+address or IPv6 /64) and 20 per hour per tracking ID are recorded. Events
+stream to the daemon as server-sent events numbered in order, resumed with
+`Last-Event-ID`; an install may have 4 streams open, and a stream ends as
+soon as its install is signed out, deleted or its password changed
+elsewhere (and is checked every minute). In-memory limits hold at most
+100,000 keys each and refuse new keys when full; a request waits at most
+5 s for a database connection. Caddy adds HSTS, `nosniff`,
+`Referrer-Policy: no-referrer`, `X-Frame-Options: DENY` and a strict CSP,
+and caps request bodies at 1 MB.
 Everything is deleted after 180 days, and an install can delete its data.
 One server process (events are ordered within it). The API is in
 `server/katna-server/README.md`.
@@ -2814,9 +2828,17 @@ Every server feature needs a **Katna account**, like a Mailspring ID
 own on Katna Server; mail logins never go to the server.
 
 - **Server:** accounts with Argon2id password hashes; a six-digit code
-  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`)
-  confirms the address and resets a forgotten password (30 minutes, 5
-  wrong tries, stored hashed). An install signed in to an account is one
+  mailed through an SMTP relay the owner sets (`KATNA_SERVER_SMTP_URL`;
+  without one the server does not start unless `KATNA_SERVER_DEV_MAILER=log`
+  asks for codes in the log, for local testing) confirms the address and
+  resets a forgotten password (30 minutes, 5 wrong tries, stored hashed;
+  and at most 10 wrong tries per account in 24 hours over all its codes,
+  counted in PostgreSQL so new codes and restarts do not reset it).
+  `reset` answers `202` at once whether or not the address has an account
+  and mails afterwards; `reset/confirm` answers an unknown address like a
+  wrong code. Sign-up still answers `409` for a taken address (a notice to
+  the owner instead is not built yet). Argon2 hashing runs one per CPU at
+  a time (at least two). An install signed in to an account is one
   of its **devices**; any device can sign the others out, and changing or
   resetting the password signs them out. Feature routes take the
   `SignedIn` extractor, which needs a confirmed address. Unconfirmed
@@ -2851,8 +2873,11 @@ owner's server, over on-device models or DeepL).
   (`LT_LOAD_ONLY`). `katna-server` passes `GET /api/v1/languages` and
   `POST /api/v1/translate` / `/api/v1/detect` through for computers signed
   in to a Katna account with a confirmed address (§16.2), with a daily
-  limit per account, and logs and keeps neither the text nor the
-  translation.
+  limit per account and at most `KATNA_SERVER_TRANSLATE_CONCURRENCY` (8)
+  requests passed on at once (more are answered 503), and logs and keeps
+  neither the text nor the translation. LibreTranslate shares a network
+  only with `katna-server`, never with PostgreSQL, and its image is
+  pinned to a release.
 - **Daemon:** `Translate(message, text, source, target)` on D-Bus. Katna
   Mail finds the message's language on this computer (`katna-translate`,
   whatlang; in the app, as its models would crowd the daemon's size

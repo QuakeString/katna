@@ -6,6 +6,10 @@
 //! - `GET /o/<id>.png`: the open pixel.
 //! - `GET /l/<id>/<n>`: link `n`, redirected to the target stored for it.
 //!
+//! Both always answer (the picture, the redirect), but record an event
+//! only within limits per client network and per tracking ID, so a flood
+//! of fetches neither fills the database nor floods the sender.
+//!
 //! For the daemon, with `Authorization: Bearer <install token>`:
 //! - `POST /api/v1/installs` (no token): register, get an install token.
 //! - `DELETE /api/v1/installs/me`: forget the install and all its data.
@@ -20,9 +24,10 @@
 //! - `GET /api/v1/languages`, `POST /api/v1/translate`, `POST
 //!   /api/v1/detect`: LibreTranslate, passed through ([`crate::translate`]).
 
+use std::collections::HashMap;
 use std::convert::Infallible;
 use std::net::{IpAddr, SocketAddr};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use axum::extract::{ConnectInfo, FromRequestParts, Path, Query, State};
@@ -34,7 +39,7 @@ use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{delete, get, post};
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
-use tokio::sync::broadcast;
+use tokio::sync::{Semaphore, broadcast};
 
 use crate::accounts::{self, AccountLimits};
 use crate::auth::SignedIn;
@@ -43,7 +48,7 @@ use crate::config::Config;
 use crate::db::{Db, DbError, Event, OverLimit, TrackLimits, now_ms};
 use crate::ids;
 use crate::limits::WindowLimit;
-use crate::mailer::Mailer;
+use crate::mailer::{MailError, Mailer};
 use crate::translate;
 
 /// Most IDs one request may create (one per recipient).
@@ -61,6 +66,20 @@ pub const MAX_LINK_BYTES: usize = 256 * 1024;
 /// Most bytes of link targets one account may store per 24 hours.
 pub const DAILY_LINK_BYTES: u64 = 16 * 1024 * 1024;
 
+/// Opens and clicks recorded per client network (an IPv4 address or an
+/// IPv6 /64) per [`EVENT_WINDOW`]; more still get the picture or the
+/// redirect but are not recorded.
+pub const EVENTS_PER_IP: u32 = 300;
+
+/// Opens and clicks recorded per tracking ID per [`EVENT_WINDOW`].
+pub const EVENTS_PER_ID: u32 = 20;
+
+/// The window of [`EVENTS_PER_IP`] and [`EVENTS_PER_ID`].
+pub const EVENT_WINDOW: Duration = Duration::from_secs(3600);
+
+/// Event streams one install may have open at once.
+pub const STREAMS_PER_INSTALL: usize = 4;
+
 /// Shared state of the routes.
 #[derive(Clone)]
 pub struct AppState {
@@ -74,28 +93,38 @@ pub struct AppState {
     registrations: Arc<WindowLimit<Option<IpAddr>>>,
     /// Translation requests per install and day.
     translations: Arc<WindowLimit<String>>,
+    /// Translation requests passed on at once.
+    translating: Arc<Semaphore>,
+    /// Events recorded per client network.
+    event_ips: Arc<WindowLimit<Option<IpAddr>>>,
+    /// Events recorded per tracking ID.
+    event_ids: Arc<WindowLimit<String>>,
+    /// Open event streams per install.
+    streams: Arc<Mutex<HashMap<String, usize>>>,
+    /// Installs and accounts whose devices were signed out, deleted or had
+    /// the password changed: their open event streams check at once
+    /// whether they may go on.
+    signed_out: broadcast::Sender<Arc<str>>,
     mailer: Mailer,
     account_limits: Arc<AccountLimits>,
 }
 
 impl AppState {
-    /// State for `config` over `db`, with the mailer the settings ask for.
-    pub fn new(db: Db, config: Config) -> Self {
-        // `main` checks the mail settings before this, so the fallback is
-        // for tests.
-        let mailer = Mailer::from_config(&config).unwrap_or_else(|error| {
-            tracing::error!(%error, "mail settings unusable; codes go to the log");
-            Mailer::Log
-        });
-        Self::with_mailer(db, config, mailer)
+    /// State for `config` over `db`, with the mailer the settings ask for;
+    /// an error when they ask for none.
+    pub fn new(db: Db, config: Config) -> Result<Self, MailError> {
+        let mailer = Mailer::from_config(&config)?;
+        Ok(Self::with_mailer(db, config, mailer))
     }
 
     /// State for `config` over `db`, sending account mail with `mailer`.
     pub fn with_mailer(db: Db, config: Config, mailer: Mailer) -> Self {
         let (events, _) = broadcast::channel(1024);
+        let (signed_out, _) = broadcast::channel(256);
         let registrations = WindowLimit::new(config.installs_per_hour, Duration::from_secs(3600));
         let translations =
             WindowLimit::new(config.translations_per_day, Duration::from_secs(86_400));
+        let translating = Semaphore::new(config.translate_concurrency.max(1));
         Self {
             db,
             config: Arc::new(config),
@@ -103,9 +132,25 @@ impl AppState {
             record: Arc::default(),
             registrations: Arc::new(registrations),
             translations: Arc::new(translations),
+            translating: Arc::new(translating),
+            event_ips: Arc::new(WindowLimit::new(EVENTS_PER_IP, EVENT_WINDOW)),
+            event_ids: Arc::new(WindowLimit::new(EVENTS_PER_ID, EVENT_WINDOW)),
+            streams: Arc::default(),
+            signed_out,
             mailer,
             account_limits: Arc::default(),
         }
+    }
+
+    /// Tells open event streams of `install_or_account` to check whether
+    /// they may go on.
+    pub(crate) fn signed_out(&self, install_or_account: &str) {
+        let _ = self.signed_out.send(Arc::from(install_or_account));
+    }
+
+    /// Translation requests passed on at once.
+    pub(crate) fn translating(&self) -> &Arc<Semaphore> {
+        &self.translating
     }
 
     /// Sends account mail.
@@ -177,6 +222,8 @@ pub enum ApiError {
     NotFound,
     /// Over a limit.
     TooMany(&'static str),
+    /// Too busy just now; try again shortly.
+    Busy(&'static str),
     /// The database failed.
     Internal(DbError),
 }
@@ -216,6 +263,7 @@ impl IntoResponse for ApiError {
             ApiError::Invalid(code, message) => (StatusCode::BAD_REQUEST, code, message),
             ApiError::NotFound => (StatusCode::NOT_FOUND, "not_found", "not found"),
             ApiError::TooMany(message) => (StatusCode::TOO_MANY_REQUESTS, "too_many", message),
+            ApiError::Busy(message) => (StatusCode::SERVICE_UNAVAILABLE, "busy", message),
             ApiError::MailFailed => (
                 StatusCode::BAD_GATEWAY,
                 "mail_failed",
@@ -407,6 +455,17 @@ impl Seen<'_> {
     }
 }
 
+/// Whether an event from this client may be recorded (counts it).
+fn client_may_record(
+    state: &AppState,
+    headers: &HeaderMap,
+    connection: Option<SocketAddr>,
+) -> bool {
+    state
+        .event_ips
+        .allow(limit_key(client_ip(state, headers, connection)))
+}
+
 async fn open_pixel(
     State(state): State<AppState>,
     Path(file): Path<String>,
@@ -417,10 +476,14 @@ async fn open_pixel(
     let Some(id) = file.strip_suffix(".png").filter(|id| ids::is_valid_id(id)) else {
         return ApiError::NotFound.into_response();
     };
+    // Past its limit a client gets the picture without it being looked up.
+    if !client_may_record(&state, &headers, connection) {
+        return pixel_response();
+    }
     // Unknown and expired IDs still get the picture, so nothing breaks in
     // the recipient's mail program.
     match state.db.track(id, None).await {
-        Ok(Some(track)) => {
+        Ok(Some(track)) if state.event_ids.allow(id.to_owned()) => {
             let seen = Seen {
                 method: &method,
                 headers: &headers,
@@ -429,7 +492,7 @@ async fn open_pixel(
             let source = seen.source(&state, Kind::Open, track.created_at);
             record(&state, id, &track.install, Kind::Open, None, source).await;
         }
-        Ok(None) => {}
+        Ok(_) => {}
         Err(error) => tracing::warn!(%error, "could not look up a tracking ID"),
     }
     pixel_response()
@@ -450,28 +513,31 @@ async fn follow_link(
         .track(&id, Some(n))
         .await?
         .ok_or(ApiError::NotFound)?;
-    // Only a target stored for this ID, so the server is never an open
-    // redirect.
+    // Only a target stored for this ID by a signed-in account, and not to
+    // a host blocked since.
     let target = track
         .link
         .as_deref()
+        .filter(|target| !is_blocked(&state.config, target))
         .and_then(|target| HeaderValue::from_str(target).ok())
         .ok_or(ApiError::NotFound)?;
-    let seen = Seen {
-        method: &method,
-        headers: &headers,
-        connection,
-    };
-    let source = seen.source(&state, Kind::Click, track.created_at);
-    record(
-        &state,
-        &id,
-        &track.install,
-        Kind::Click,
-        Some(n as i32),
-        source,
-    )
-    .await;
+    if client_may_record(&state, &headers, connection) && state.event_ids.allow(id.clone()) {
+        let seen = Seen {
+            method: &method,
+            headers: &headers,
+            connection,
+        };
+        let source = seen.source(&state, Kind::Click, track.created_at);
+        record(
+            &state,
+            &id,
+            &track.install,
+            Kind::Click,
+            Some(n as i32),
+            source,
+        )
+        .await;
+    }
     let mut response = (StatusCode::FOUND, [(header::LOCATION, target)]).into_response();
     no_cache(response.headers_mut());
     Ok(response)
@@ -506,6 +572,7 @@ async fn unregister(
     Install(install): Install,
 ) -> Result<StatusCode, ApiError> {
     state.db.delete_install(&install).await?;
+    state.signed_out(&install);
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -534,6 +601,63 @@ pub fn is_allowed_target(target: &str) -> bool {
         && !target.chars().any(|c| c.is_whitespace() || c.is_control())
 }
 
+/// The host of an `http` or `https` address as a browser reads it:
+/// lowercased, without user, port or trailing dot, `%xx` decoded.
+pub fn host_of(target: &str) -> Option<String> {
+    let rest = target.split_once("://")?.1;
+    // Browsers end the authority at a backslash as well as at `/`, `?` and
+    // `#`.
+    let authority = rest.split(['/', '\\', '?', '#']).next()?;
+    let host_port = authority.rsplit('@').next()?;
+    let host = if let Some(bracketed) = host_port.strip_prefix('[') {
+        bracketed.split(']').next()?
+    } else {
+        host_port.split(':').next()?
+    };
+    let host = percent_decode(host)?.to_lowercase();
+    let host = host.trim_end_matches('.');
+    (!host.is_empty()).then(|| host.to_owned())
+}
+
+/// `%xx` decoded; `None` when that does not give UTF-8.
+fn percent_decode(text: &str) -> Option<String> {
+    let bytes = text.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%'
+            && let Some(hex) = text.get(i + 1..i + 3)
+            && hex.bytes().all(|b| b.is_ascii_hexdigit())
+            && let Ok(byte) = u8::from_str_radix(hex, 16)
+        {
+            out.push(byte);
+            i += 3;
+        } else {
+            out.push(bytes[i]);
+            i += 1;
+        }
+    }
+    String::from_utf8(out).ok()
+}
+
+/// Whether `target`'s host is one of `KATNA_SERVER_BLOCKED_HOSTS` or under
+/// one. An address whose host cannot be read counts as blocked when any
+/// host is.
+pub fn is_blocked(config: &Config, target: &str) -> bool {
+    if config.blocked_hosts.is_empty() {
+        return false;
+    }
+    let Some(host) = host_of(target) else {
+        return true;
+    };
+    config.blocked_hosts.iter().any(|blocked| {
+        host == *blocked
+            || host
+                .strip_suffix(blocked.as_str())
+                .is_some_and(|sub| sub.ends_with('.'))
+    })
+}
+
 async fn create_tracks(
     State(state): State<AppState>,
     SignedIn { install, account }: SignedIn,
@@ -550,6 +674,15 @@ async fn create_tracks(
     if !request.links.iter().all(|target| is_allowed_target(target)) {
         return Err(ApiError::BadRequest(
             "links must be http or https addresses",
+        ));
+    }
+    if request
+        .links
+        .iter()
+        .any(|target| is_blocked(&state.config, target))
+    {
+        return Err(ApiError::BadRequest(
+            "a link goes to a host this server does not redirect to",
         ));
     }
     let ids: Vec<String> = (0..request.count).map(|_| ids::new_id()).collect();
@@ -592,12 +725,53 @@ pub struct After {
     pub after: Option<i64>,
 }
 
+/// One of an install's open event streams; gives its place back when the
+/// stream ends.
+pub(crate) struct StreamSlot {
+    streams: Arc<Mutex<HashMap<String, usize>>>,
+    install: String,
+}
+
+impl StreamSlot {
+    /// A place for one more of `install`'s streams, if it has fewer than
+    /// [`STREAMS_PER_INSTALL`] open.
+    fn take(state: &AppState, install: &str) -> Option<Self> {
+        let mut streams = state.streams.lock().unwrap_or_else(|e| e.into_inner());
+        let open = streams.entry(install.to_owned()).or_insert(0);
+        if *open >= STREAMS_PER_INSTALL {
+            return None;
+        }
+        *open += 1;
+        Some(Self {
+            streams: Arc::clone(&state.streams),
+            install: install.to_owned(),
+        })
+    }
+}
+
+impl Drop for StreamSlot {
+    fn drop(&mut self) {
+        let mut streams = self.streams.lock().unwrap_or_else(|e| e.into_inner());
+        if let Some(open) = streams.get_mut(&self.install) {
+            *open = open.saturating_sub(1);
+            if *open == 0 {
+                streams.remove(&self.install);
+            }
+        }
+    }
+}
+
 async fn events(
     State(state): State<AppState>,
-    SignedIn { install, .. }: SignedIn,
+    SignedIn { install, account }: SignedIn,
     Query(query): Query<After>,
     headers: HeaderMap,
-) -> Sse<impl futures_lite::Stream<Item = Result<axum::response::sse::Event, Infallible>>> {
+) -> Result<
+    Sse<impl futures_lite::Stream<Item = Result<axum::response::sse::Event, Infallible>>>,
+    ApiError,
+> {
+    let slot = StreamSlot::take(&state, &install)
+        .ok_or(ApiError::TooMany("too many event streams open"))?;
     let after = headers
         .get("last-event-id")
         .and_then(|value| value.to_str().ok())
@@ -606,17 +780,55 @@ async fn events(
         .unwrap_or(0);
     // Subscribe before reading what is stored, so nothing falls between.
     let live = state.events.subscribe();
-    Sse::new(crate::stream::events(
-        state.db.clone(),
-        install,
+    let signed_out = state.signed_out.subscribe();
+    Ok(Sse::new(crate::stream::events(
+        crate::stream::Stream {
+            db: state.db.clone(),
+            install,
+            account,
+            _slot: slot,
+        },
         after,
         live,
+        signed_out,
     ))
-    .keep_alive(KeepAlive::new().interval(Duration::from_secs(30)))
+    .keep_alive(KeepAlive::new().interval(Duration::from_secs(30))))
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
+    #[test]
+    fn reads_hosts_as_browsers_do() {
+        for (target, host) in [
+            ("https://Example.COM/x", "example.com"),
+            ("http://example.com:8080?q", "example.com"),
+            ("https://good.example@evil.example/", "evil.example"),
+            ("https://evil.example\\@good.example/", "evil.example"),
+            ("https://ev%69l.example./", "evil.example"),
+            ("https://[2001:db8::1]:443/", "2001:db8::1"),
+            ("https://evil.example#@good.example", "evil.example"),
+        ] {
+            assert_eq!(host_of(target).as_deref(), Some(host), "{target}");
+        }
+        assert_eq!(host_of("https:///path"), None);
+    }
+
+    #[test]
+    fn blocks_hosts_and_their_subdomains() {
+        let config = Config {
+            blocked_hosts: vec!["evil.example".into()],
+            ..Config::default()
+        };
+        assert!(is_blocked(&config, "https://evil.example/login"));
+        assert!(is_blocked(&config, "https://www.EVIL.example/login"));
+        assert!(is_blocked(&config, "https://x@evil.example:443/"));
+        assert!(!is_blocked(&config, "https://notevil.example/"));
+        assert!(!is_blocked(&config, "https://evil.example.org/"));
+        assert!(!is_blocked(&Config::default(), "https://evil.example/"));
+    }
+
     #[test]
     fn ipv6_is_limited_by_network() {
         let key = |ip: &str| super::limit_key(Some(ip.parse().unwrap()));

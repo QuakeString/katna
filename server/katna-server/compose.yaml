@@ -5,11 +5,18 @@
 #
 #   cp env.example .env   # then set KATNA_TRACKING_DOMAIN and the password
 #   docker compose up -d
+#
+# Three networks keep the containers apart: only Katna Server reaches
+# PostgreSQL (`db`, internal) and LibreTranslate (`translate`), and only
+# Caddy and Katna Server share `edge`, the one with the published ports.
+# LibreTranslate cannot reach PostgreSQL.
 
 name: katna-server
 
 services:
   server:
+    # CI tags each build with its commit too; set KATNA_SERVER_IMAGE to
+    # ghcr.io/quakestring/katna-server:<commit> to stay on one.
     image: ${KATNA_SERVER_IMAGE:-ghcr.io/quakestring/katna-server:latest}
     build:
       context: ../..
@@ -21,16 +28,25 @@ services:
       KATNA_SERVER_TRUST_FORWARDED: "1"
       KATNA_SERVER_RETENTION_DAYS: ${KATNA_SERVER_RETENTION_DAYS:-180}
       KATNA_SERVER_DAILY_LIMIT: ${KATNA_SERVER_DAILY_LIMIT:-5000}
-      # LibreTranslate below, reached only on this compose network.
+      # LibreTranslate below, reached only on the translate network.
       KATNA_SERVER_TRANSLATE_URL: http://translate:5000
       KATNA_SERVER_TRANSLATIONS_PER_DAY: ${KATNA_SERVER_TRANSLATIONS_PER_DAY:-2000}
+      KATNA_SERVER_TRANSLATE_CONCURRENCY: ${KATNA_SERVER_TRANSLATE_CONCURRENCY:-8}
       KATNA_SERVER_SMTP_HOST: ${KATNA_SERVER_SMTP_HOST:-}
       KATNA_SERVER_SMTP_PORT: ${KATNA_SERVER_SMTP_PORT:-465}
       KATNA_SERVER_SMTP_USERNAME: ${KATNA_SERVER_SMTP_USERNAME:-}
       KATNA_SERVER_SMTP_PASSWORD: ${KATNA_SERVER_SMTP_PASSWORD:-}
       KATNA_SERVER_SMTP_URL: ${KATNA_SERVER_SMTP_URL:-}
       KATNA_SERVER_MAIL_FROM: ${KATNA_SERVER_MAIL_FROM:-}
+      # Without an SMTP host the server does not start, unless this is
+      # "log" (codes go to `docker compose logs server`; trying it alone).
+      KATNA_SERVER_DEV_MAILER: ${KATNA_SERVER_DEV_MAILER:-}
+      KATNA_SERVER_BLOCKED_HOSTS: ${KATNA_SERVER_BLOCKED_HOSTS:-}
       RUST_LOG: ${RUST_LOG:-info}
+    networks:
+      - edge
+      - db
+      - translate
     depends_on:
       - db
       - translate
@@ -38,9 +54,10 @@ services:
   # Automatic translation: LibreTranslate (AGPL-3.0), the upstream image,
   # unmodified. No ports: only Katna Server talks to it, and Caddy proxies
   # only to Katna Server. The first start downloads the language models
-  # into the volume, which takes a while.
+  # into the volume, which takes a while. Its network is not internal, so
+  # it can download them, but only Katna Server is on it.
   translate:
-    image: docker.io/libretranslate/libretranslate:${KATNA_TRANSLATE_VERSION:-latest}
+    image: docker.io/libretranslate/libretranslate:${KATNA_TRANSLATE_VERSION:-v1.9.6}
     restart: unless-stopped
     environment:
       # The languages loaded (each pair costs memory); empty loads them all.
@@ -50,6 +67,8 @@ services:
       LT_THREADS: ${KATNA_TRANSLATE_THREADS:-4}
     volumes:
       - translate-models:/home/libretranslate/.local
+    networks:
+      - translate
 
   db:
     image: docker.io/library/postgres:17-alpine
@@ -60,6 +79,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - db
 
   caddy:
     image: docker.io/library/caddy:2-alpine
@@ -74,8 +95,19 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
+    networks:
+      - edge
     depends_on:
       - server
+
+networks:
+  # Caddy and Katna Server; the internet (the server's SMTP relay).
+  edge:
+  # Katna Server and PostgreSQL only; no way out.
+  db:
+    internal: true
+  # Katna Server and LibreTranslate only.
+  translate:
 
 volumes:
   db-data:

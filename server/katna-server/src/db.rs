@@ -3,7 +3,9 @@
 //! PostgreSQL storage: installs, tracking IDs with their link targets, and
 //! events. Times are milliseconds since the Unix epoch.
 
-use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
+use std::time::Duration;
+
+use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod, Runtime};
 use serde::Serialize;
 use tokio_postgres::NoTls;
 
@@ -91,10 +93,24 @@ const MIGRATIONS: &[&str] = &[
          link_bytes BIGINT NOT NULL
      );
      CREATE INDEX track_usage_account_created ON track_usage (account_id, created_at);",
+    // 4: wrong guesses of emailed codes per account, kept across new codes
+    // and restarts.
+    "CREATE TABLE code_failures (
+         account_id TEXT NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+         at BIGINT NOT NULL
+     );
+     CREATE INDEX code_failures_account_at ON code_failures (account_id, at);",
 ];
 
 /// Wrong guesses allowed for one emailed code.
 pub const CODE_ATTEMPTS: i32 = 5;
+
+/// Wrong guesses allowed per account in 24 hours, over all its codes (a
+/// new code does not start this over).
+pub const CODE_FAILURES_PER_DAY: i64 = 10;
+
+/// How long a request waits for a database connection.
+const POOL_WAIT: Duration = Duration::from_secs(5);
 
 /// An install as a request's token finds it.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -142,8 +158,11 @@ pub enum CodeCheck {
     Right,
     /// Wrong; it may be tried again.
     Wrong,
-    /// No code, expired, or too many wrong guesses.
+    /// No code, expired, or too many wrong guesses at it.
     Gone,
+    /// Too many wrong guesses at the account's codes in the last 24 hours;
+    /// the code was not checked.
+    Locked,
 }
 
 /// A recorded open or click, as the event stream sends it.
@@ -204,7 +223,8 @@ pub struct Db {
 
 impl Db {
     /// Opens a pool of connections to `url`. Connections are made when
-    /// first needed.
+    /// first needed; a request that waits more than a few seconds for one
+    /// fails rather than queueing without end.
     pub fn connect(url: &str) -> Result<Self, tokio_postgres::Error> {
         let config: tokio_postgres::Config = url.parse()?;
         let manager = Manager::from_config(
@@ -216,8 +236,12 @@ impl Db {
         );
         let pool = Pool::builder(manager)
             .max_size(16)
+            .runtime(Runtime::Tokio1)
+            .wait_timeout(Some(POOL_WAIT))
+            .create_timeout(Some(POOL_WAIT))
+            .recycle_timeout(Some(POOL_WAIT))
             .build()
-            .expect("a pool without timeouts builds without a runtime");
+            .expect("a pool with a runtime builds");
         Ok(Self { pool })
     }
 
@@ -446,6 +470,22 @@ impl Db {
         Ok(signed_out > 0)
     }
 
+    /// Whether `install` is still signed in to `account` and its address is
+    /// confirmed (an open event stream checks this now and then).
+    pub async fn still_signed_in(&self, install: &str, account: &str) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query_opt(
+                "SELECT 1 FROM installs i JOIN accounts a ON a.id = i.account_id
+                 WHERE i.id = $1 AND i.account_id = $2 AND a.verified_at IS NOT NULL",
+                &[&install, &account],
+            )
+            .await?
+            .is_some())
+    }
+
     /// Signs every device of `account` but `keep` out.
     pub async fn sign_out_others(&self, account: &str, keep: &str) -> Result<u64, DbError> {
         Ok(self
@@ -507,7 +547,9 @@ impl Db {
     }
 
     /// Checks a code typed for `account`. A right code is used up; a wrong
-    /// one counts against [`CODE_ATTEMPTS`].
+    /// one counts against [`CODE_ATTEMPTS`] for the code and
+    /// [`CODE_FAILURES_PER_DAY`] for the account. Checks for one account
+    /// take turns, so parallel guesses cannot pass either limit.
     pub async fn check_code(
         &self,
         account: &str,
@@ -517,6 +559,21 @@ impl Db {
     ) -> Result<CodeCheck, DbError> {
         let mut client = self.pool.get().await?;
         let tx = client.transaction().await?;
+        tx.execute(
+            "SELECT pg_advisory_xact_lock(hashtextextended($1, 7243903))",
+            &[&account],
+        )
+        .await?;
+        let failures: i64 = tx
+            .query_one(
+                "SELECT count(*) FROM code_failures WHERE account_id = $1 AND at > $2",
+                &[&account, &(now - 86_400_000)],
+            )
+            .await?
+            .get(0);
+        if failures >= CODE_FAILURES_PER_DAY {
+            return Ok(CodeCheck::Locked);
+        }
         let row = tx
             .query_opt(
                 "SELECT code_hash, expires_at, attempts FROM account_codes
@@ -544,6 +601,11 @@ impl Db {
                 &[&account, &purpose],
             )
             .await?;
+            tx.execute(
+                "INSERT INTO code_failures (account_id, at) VALUES ($1, $2)",
+                &[&account, &now],
+            )
+            .await?;
         } else {
             tx.execute(
                 "DELETE FROM account_codes WHERE account_id = $1 AND purpose = $2",
@@ -556,11 +618,18 @@ impl Db {
     }
 
     /// Deletes accounts whose address was never confirmed, created before
-    /// `before`, and expired codes. Returns how many accounts went.
+    /// `before`, expired codes and wrong guesses older than a day. Returns
+    /// how many accounts went.
     pub async fn purge_accounts(&self, before: i64, now: i64) -> Result<u64, DbError> {
         let client = self.pool.get().await?;
         client
             .execute("DELETE FROM account_codes WHERE expires_at < $1", &[&now])
+            .await?;
+        client
+            .execute(
+                "DELETE FROM code_failures WHERE at < $1",
+                &[&(now - 86_400_000)],
+            )
             .await?;
         Ok(client
             .execute(
