@@ -25,6 +25,7 @@ reader-collapse-all = ਸਭ ਸਮੇਟੋ
 reader-expand-all = ਸਭ ਫੈਲਾਓ
 reader-unknown-sender = (ਅਗਿਆਤ ਭੇਜਣ ਵਾਲਾ)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…
 reader-me = ਮੈਂ
 reader-to = ਨੂੰ: { $names }
 reader-to-label = ਨੂੰ:

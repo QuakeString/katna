@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Definitief verwijderde e-mail kan niet worden
 toast-send-undone = Verzenden ongedaan gemaakt.
 toast-too-late-to-undo-send = Te laat om ongedaan te maken: het bericht is al verzonden.
 toast-undo = Ongedaan maken
+toast-close = Sluiten
 toast-no-spam-folder = Dit account heeft geen spammap.

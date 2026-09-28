@@ -25,6 +25,7 @@ reader-collapse-all = ሁሉንም ሰብስብ
 reader-expand-all = ሁሉንም ዘርጋ
 reader-unknown-sender = (ያልታወቀ ላኪ)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = በመላክ ላይ…
 reader-me = እኔ
 reader-to = ለ{ $names }
 reader-to-label = ወደ

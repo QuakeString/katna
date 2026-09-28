@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = ایمیلی که برای همیشه حذف 
 toast-send-undone = ارسال واگرد شد.
 toast-too-late-to-undo-send = برای واگرد دیر شده است: پیام پیش‌تر ارسال شده است.
 toast-undo = واگرد
+toast-close = بستن
 toast-no-spam-folder = این حساب پوشهٔ هرزنامه ندارد.

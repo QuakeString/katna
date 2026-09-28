@@ -25,6 +25,7 @@ reader-collapse-all = جمع کردن همه
 reader-expand-all = باز کردن همه
 reader-unknown-sender = (فرستندهٔ ناشناس)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = در حال ارسال…
 reader-me = من
 reader-to = به { $names }
 reader-to-label = به

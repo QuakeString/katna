@@ -393,4 +393,5 @@ toast-cannot-undo-delete-forever = ཨ་རྟག་གི་དོན་ལུ
 toast-send-undone = གཏང་ནི་ འབད་བཤོལ་འབད་ཡི།
 toast-too-late-to-undo-send = འབད་བཤོལ་ནི་ལུ་ ཕྱི་རུ་སོང་ཡི: འཕྲིན་དོན་འདི་ ཧེ་མ་ལས་རང་ གཏང་ཚར་ཡི།
 toast-undo = འབད་བཤོལ།
+toast-close = ཁ་བསྡམས།
 toast-no-spam-folder = རྩིས་ཐོ་འདི་ལུ་ སྤེམ་སྣོད་འཛིན་མིན་འདུག

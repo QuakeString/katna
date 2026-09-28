@@ -25,6 +25,7 @@ reader-collapse-all = ຫຍໍ້ທັງໝົດ
 reader-expand-all = ຂະຫຍາຍທັງໝົດ
 reader-unknown-sender = (ບໍ່ຮູ້ຈັກຜູ້ສົ່ງ)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = ກຳລັງສົ່ງ…
 reader-me = ຂ້ອຍ
 reader-to = ເຖິງ { $names }
 reader-to-label = ເຖິງ

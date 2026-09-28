@@ -25,6 +25,7 @@ reader-collapse-all = Thu gọn tất cả
 reader-expand-all = Mở rộng tất cả
 reader-unknown-sender = (người gửi không xác định)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Đang gửi…
 reader-me = tôi
 reader-to = tới { $names }
 reader-to-label = tới

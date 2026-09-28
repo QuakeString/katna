@@ -869,3 +869,43 @@ global del escritorio, para los escritorios que no lo muestran. Responder a
 todos en una notificación de correo nuevo ahora abre la conversación en su
 propia ventana, lista para escribir, y deja la ventana principal donde está.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Los clics en la bandeja y en las notificaciones traen Katna Mail al frente"
+text = """
+Al hacer clic en el icono de la bandeja del sistema, o en Abrir Recibidos,
+Nuevo mensaje o Preferencias en su menú, la ventana de Katna Mail pasa ahora
+al frente en Wayland, aunque estuviera minimizada o detrás de otras
+ventanas. Al hacer clic en una notificación de correo nuevo se abre ese
+correo, aunque la lista de Recibidos no lo muestre.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Enviar hace una cuenta atrás, y tu respuesta se queda en la conversación"
+text = """
+Después de Enviar, un anillo que se encoge cuenta atrás el tiempo para
+deshacer junto a Deshacer, y luego el aviso dice Mensaje enviado (con un
+sonido breve) cuando el correo ya ha salido. Puedes desactivar el sonido en
+Ajustes > General > Envío. Una respuesta escrita en una conversación se
+convierte en un mensaje justo donde la escribiste. Su cabecera solo muestra
+a quién va; haz clic en ella para ver De, Para, Cc y Cco. La flecha junto al
+icono de respuesta cambia entre Responder, Responder a todos y Reenviar, y
+conserva lo que has escrito.
+"""
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Las Opciones de búsqueda caben en ventanas estrechas"
+text = """
+En una ventana estrecha o baja, las Opciones de búsqueda ahora ocupan el
+ancho disponible, colocan las etiquetas encima de sus campos en un teléfono
+y se desplazan cuando no caben, para que el botón Buscar siempre esté a
+mano.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Las respuestas salen de la cuenta correcta"
+text = """
+Al usar Responder o Reenviar en un correo abierto desde la Bandeja de
+entrada unificada o desde la búsqueda, el mensaje sale ahora de la cuenta a
+la que llegó el correo, no de la cuenta elegida bajo tu foto de perfil.
+"""

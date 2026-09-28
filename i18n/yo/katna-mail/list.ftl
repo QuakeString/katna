@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = Lẹ́tà tí a ti pa rẹ́ títí láé kò
 toast-send-undone = A ti dá fífiránṣẹ́ padà.
 toast-too-late-to-undo-send = Ó ti pẹ́ jù láti dá a padà: a ti fi ìfiránṣẹ́ náà ránṣẹ́ tán.
 toast-undo = Dá padà
+toast-close = Pa á dé
 toast-no-spam-folder = Àkáǹtì yìí kò ní fódà àwúrúju.

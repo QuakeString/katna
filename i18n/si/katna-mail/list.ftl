@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = සදහටම මැකූ තැපැල�
 toast-send-undone = යැවීම අහෝසි කරන ලදී.
 toast-too-late-to-undo-send = අහෝසි කිරීමට ප්‍රමාද වැඩියි: පණිවිඩය දැනටමත් යවා ඇත.
 toast-undo = අහෝසි කරන්න
+toast-close = වසන්න
 toast-no-spam-folder = මෙම ගිණුමට අයාචිත තැපැල් ෆෝල්ඩරයක් නැත.

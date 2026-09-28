@@ -864,3 +864,43 @@ semua pada notifikasi email baru kini membuka percakapan di jendelanya
 sendiri, siap untuk diketik, dan membiarkan jendela utama tetap di
 tempatnya.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Klik baki sistem dan notifikasi membawa Katna Mail ke depan"
+text = """
+Mengklik ikon baki sistem, atau Buka Kotak Masuk, Pesan Baru, atau Setelan
+di menunya, kini membawa jendela Katna Mail ke depan di Wayland, bahkan saat
+jendela itu diminimalkan atau berada di belakang jendela lain. Mengklik
+notifikasi email baru membuka email itu, bahkan saat daftar Kotak Masuk
+tidak menampilkannya.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Kirim menghitung mundur, dan balasan Anda tetap di percakapan"
+text = """
+Setelah Kirim, cincin yang menyusut menghitung mundur waktu untuk
+mengurungkan di samping Urungkan, lalu notifikasi singkat menampilkan Pesan
+terkirim (dengan suara singkat) setelah email terkirim. Suara ini bisa
+dimatikan di Setelan > Umum > Pengiriman. Balasan yang ditulis di percakapan
+berubah menjadi pesan tepat di tempat Anda menulisnya. Bagian atasnya hanya
+menampilkan kepada siapa balasan itu dikirim; klik untuk melihat Dari,
+Kepada, Cc, dan Bcc. Panah di samping ikon balas beralih antara Balas, Balas
+semua, dan Teruskan, tanpa menghapus yang sudah Anda tulis.
+"""
+
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Opsi penelusuran muat di jendela sempit"
+text = """
+Di jendela yang sempit atau pendek, Opsi penelusuran kini melebar sesuai
+ruang yang ada, menaruh label di atas kolomnya di ponsel, dan dapat digulir
+saat tidak muat, sehingga tombol Telusuri selalu terjangkau.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Balasan terkirim dari akun yang tepat"
+text = """
+Balas atau Teruskan pada email yang dibuka dari Kotak masuk gabungan atau
+dari pencarian kini terkirim dari akun yang menerima email itu, bukan akun
+yang dipilih di bawah gambar profil Anda.
+"""

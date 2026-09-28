@@ -720,4 +720,5 @@ toast-cannot-undo-delete-forever = Trwale usuniętej poczty nie da się przywró
 toast-send-undone = Cofnięto wysłanie.
 toast-too-late-to-undo-send = Za późno na cofnięcie: wiadomość została już wysłana.
 toast-undo = Cofnij
+toast-close = Zamknij
 toast-no-spam-folder = To konto nie ma folderu spamu.

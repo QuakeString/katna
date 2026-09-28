@@ -25,6 +25,7 @@ reader-collapse-all = 全部收合
 reader-expand-all = 全部展開
 reader-unknown-sender = （不明寄件者）
 reader-date-ago = { $date }（{ $ago }）
+reader-sending = 正在傳送…
 reader-me = 我
 reader-to = 寄給 { $names }
 reader-to-label = 寄給

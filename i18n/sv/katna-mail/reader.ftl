@@ -25,6 +25,7 @@ reader-collapse-all = Komprimera alla
 reader-expand-all = Expandera alla
 reader-unknown-sender = (okänd avsändare)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Skickar…
 reader-me = mig
 reader-to = till { $names }
 reader-to-label = till

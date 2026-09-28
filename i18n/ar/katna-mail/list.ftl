@@ -879,4 +879,5 @@ toast-cannot-undo-delete-forever = لا يمكن استعادة البريد ا�
 toast-send-undone = تم التراجع عن الإرسال.
 toast-too-late-to-undo-send = فات أوان التراجع: تم إرسال الرسالة بالفعل.
 toast-undo = تراجع
+toast-close = إغلاق
 toast-no-spam-folder = لا يحتوي هذا الحساب على مجلد للرسائل غير المرغوب فيها.

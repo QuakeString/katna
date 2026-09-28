@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = ശാശ്വതമായി ഇല്ല�
 toast-send-undone = അയയ്ക്കൽ പഴയപടിയാക്കി.
 toast-too-late-to-undo-send = പഴയപടിയാക്കാൻ വൈകിപ്പോയി: സന്ദേശം ഇതിനകം അയച്ചുകഴിഞ്ഞു.
 toast-undo = പഴയപടിയാക്കുക
+toast-close = അടയ്ക്കുക
 toast-no-spam-folder = ഈ അക്കൗണ്ടിന് സ്‌പാം ഫോൾഡർ ഇല്ല.

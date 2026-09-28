@@ -720,4 +720,5 @@ toast-cannot-undo-delete-forever = Листи, видалені назавжди
 toast-send-undone = Надсилання скасовано.
 toast-too-late-to-undo-send = Надто пізно скасовувати: лист уже надіслано.
 toast-undo = Скасувати
+toast-close = Закрити
 toast-no-spam-folder = У цьому обліковому записі немає папки «Спам».

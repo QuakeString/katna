@@ -25,6 +25,7 @@ reader-collapse-all = Naɗe duka
 reader-expand-all = Buɗe duka
 reader-unknown-sender = (mai aikawa da ba a sani ba)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Ana aikawa…
 reader-me = ni
 reader-to = zuwa ga { $names }
 reader-to-label = zuwa ga

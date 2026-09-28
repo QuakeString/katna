@@ -25,6 +25,7 @@ reader-collapse-all = Tout réduire
 reader-expand-all = Tout développer
 reader-unknown-sender = (expéditeur inconnu)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Envoi…
 reader-me = moi
 reader-to = à { $names }
 reader-to-label = à

@@ -25,6 +25,7 @@ reader-collapse-all = כיווץ הכול
 reader-expand-all = הרחבת הכול
 reader-unknown-sender = (שולח לא ידוע)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = מתבצעת שליחה…
 reader-me = אני
 reader-to = אל { $names }
 reader-to-label = אל

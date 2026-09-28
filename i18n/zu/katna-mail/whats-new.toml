@@ -893,3 +893,43 @@ kumadeskithophu angayiboniyo. U-Phendula bonke esazisweni semeyili entsha
 manje uvula ingxoxo efasiteleni layo, ilungele ukuthayipha, futhi ushiya
 ifasitela elikhulu lilapho likhona.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Ukuchofoza ithileyi nezaziso kuletha i-Katna Mail phambili"
+text = """
+Ukuchofoza isithonjana sethileyi, noma okuthi Vula Ibhokisi Lokungenayo,
+Umlayezo Omusha noma Izilungiselelo kumenyu yaso, manje kuletha iwindi
+le-Katna Mail phambili ku-Wayland, ngisho noma belincishisiwe noma
+lingemuva kwamanye amawindi. Ukuchofoza isaziso semeyili entsha kuvula
+leyo meyili, ngisho noma uhlu lwe-Ibhokisi lokungenayo lungayibonisi.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Ukuthumela kuyabala, futhi impendulo yakho ihlala engxoxweni"
+text = """
+Ngemuva kokuthi Thumela, indandatho encipha eduze kokuthi Hlehlisa ibala
+isikhathi sokuhlehlisa, bese inothi elingezansi lithi “Umlayezo
+uthunyelwe” (nomsindo omfushane) uma imeyili isiphumile. Umsindo ungavalwa
+ku-Izilungiselelo > Okuvamile > Ukuthumela. Impendulo ebhalwe engxoxweni
+iba umlayezo khona lapho uyibhale khona. Isihloko sayo sibonisa kuphela
+ukuthi iya kubani; yichofoze ukuze uthole okuthi Kusuka ku, Ku, Cc no-Bcc.
+Umcibisholo oseduze kwesithonjana sokuphendula ushintsha phakathi kokuthi
+Phendula, Phendula bonke no-Dlulisela, ugcine lokho okubhalile.
+"""
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Okukhethwa kukho kosesho kulingana namawindi amancane"
+text = """
+Ewindini elincane noma elifushane, okuthi Okukhethwa kukho kosesho manje
+kuyanweba kuze kugcwalise isikhala esikhona, kubeka amalebula ngaphezu
+kwezinkambu zawo kufoni futhi kuyaskrola uma kungalingani, ukuze inkinobho
+ethi Sesha ihlale iseduze.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Izimpendulo ziphuma ku-akhawunti efanele"
+text = """
+Ukuthi Phendula noma Dlulisela kumeyili evulwe ku-Ibhokisi lokungenayo
+elihlanganisiwe noma ekusesheni manje kuphuma ku-akhawunti imeyili efike
+kuyo, hhayi i-akhawunti ekhethwe ngaphansi kwesithombe sakho sephrofayela.
+"""

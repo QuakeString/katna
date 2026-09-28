@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Barua iliyofutwa kabisa haiwezi kurejeshwa.
 toast-send-undone = Kutuma kumetenduliwa.
 toast-too-late-to-undo-send = Imechelewa mno kutendua: ujumbe tayari umetumwa.
 toast-undo = Tendua
+toast-close = Funga
 toast-no-spam-folder = Akaunti hii haina folda ya taka.

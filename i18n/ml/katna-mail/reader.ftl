@@ -25,6 +25,7 @@ reader-collapse-all = എല്ലാം ചുരുക്കുക
 reader-expand-all = എല്ലാം വികസിപ്പിക്കുക
 reader-unknown-sender = (അജ്ഞാത അയച്ചയാൾ)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = അയയ്ക്കുന്നു…
 reader-me = ഞാൻ
 reader-to = സ്വീകർത്താവ്: { $names }
 reader-to-label = സ്വീകർത്താവ്:

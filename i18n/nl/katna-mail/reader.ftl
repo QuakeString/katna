@@ -25,6 +25,7 @@ reader-collapse-all = Alles samenvouwen
 reader-expand-all = Alles uitvouwen
 reader-unknown-sender = (onbekende afzender)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Verzenden…
 reader-me = mij
 reader-to = aan { $names }
 reader-to-label = aan

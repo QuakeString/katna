@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = 完全に削除したメールは元に戻せ
 toast-send-undone = 送信を取り消しました。
 toast-too-late-to-undo-send = 取り消すには遅すぎます: メールはすでに送信されました。
 toast-undo = 元に戻す
+toast-close = 閉じる
 toast-no-spam-folder = このアカウントには迷惑メールフォルダがありません。

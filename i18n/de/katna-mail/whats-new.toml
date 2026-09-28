@@ -880,3 +880,45 @@ keins anzeigen. Allen antworten in einer Benachrichtigung über neue E-Mails
 öffnet die Unterhaltung jetzt in einem eigenen Fenster, bereit zum Tippen,
 und lässt das Hauptfenster, wo es ist.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Klicks auf Systemabschnitt und Benachrichtigungen holen Katna Mail nach vorn"
+text = """
+Ein Klick auf das Symbol im Systemabschnitt oder auf Posteingang öffnen,
+Neue Nachricht oder Einstellungen in seinem Menü holt das Fenster von Katna
+Mail unter Wayland jetzt nach vorn, auch wenn es minimiert oder hinter
+anderen Fenstern war. Ein Klick auf eine Benachrichtigung über neue E-Mails
+öffnet diese E-Mail, auch wenn die Liste im Posteingang sie nicht zeigt.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Senden zählt herunter, und Ihre Antwort bleibt in der Unterhaltung"
+text = """
+Nach Senden zählt ein schrumpfender Ring neben Rückgängig die Frist zum
+Rückgängigmachen herunter, dann meldet der Hinweis Nachricht gesendet (mit
+einem kurzen Ton), sobald die E-Mail unterwegs ist. Den Ton können Sie unter
+Einstellungen > Allgemein > Senden ausschalten. Eine Antwort, die Sie in
+einer Unterhaltung schreiben, wird genau dort zur Nachricht, wo Sie sie
+geschrieben haben. Ihr Kopf zeigt nur, an wen sie geht; ein Klick darauf
+zeigt Von, An, Cc und Bcc. Der Pfeil neben dem Antwortsymbol wechselt
+zwischen Antworten, Allen antworten und Weiterleiten und behält, was Sie
+geschrieben haben.
+"""
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Suchoptionen passen in schmale Fenster"
+text = """
+In einem schmalen oder niedrigen Fenster werden die Suchoptionen jetzt so
+breit, wie Platz ist, setzen auf einem Smartphone die Beschriftungen über
+ihre Felder und scrollen, wenn sie nicht passen, sodass die Schaltfläche
+Suchen immer erreichbar bleibt.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Antworten gehen vom richtigen Konto aus"
+text = """
+Antworten und Weiterleiten senden bei E-Mails, die Sie im Gemeinsamen
+Posteingang oder aus der Suche geöffnet haben, jetzt von dem Konto, an das
+die E-Mail ging, nicht von dem Konto, das unter Ihrem Profilbild ausgewählt
+ist.
+"""

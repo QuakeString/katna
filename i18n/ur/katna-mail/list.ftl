@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = ہمیشہ کے لیے حذف کی گئی م�
 toast-send-undone = بھیجنا کالعدم کر دیا گیا۔
 toast-too-late-to-undo-send = کالعدم کرنے میں بہت دیر ہو گئی: پیغام پہلے ہی بھیجا جا چکا ہے۔
 toast-undo = کالعدم کریں
+toast-close = بند کریں
 toast-no-spam-folder = اس اکاؤنٹ میں کوئی سپام فولڈر نہیں ہے۔

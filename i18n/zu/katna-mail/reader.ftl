@@ -25,6 +25,7 @@ reader-collapse-all = Goqa konke
 reader-expand-all = Nweba konke
 reader-unknown-sender = (umthumeli ongaziwa)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Iyathumela…
 reader-me = mina
 reader-to = ku-{ $names }
 reader-to-label = abamukeli:

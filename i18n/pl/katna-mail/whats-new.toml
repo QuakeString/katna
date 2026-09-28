@@ -861,3 +861,42 @@ pulpitu, dla środowisk, które go nie pokazują. Odpowiedz wszystkim w
 powiadomieniu o nowej poczcie otwiera teraz wątek we własnym oknie, gotowy
 do pisania, i zostawia główne okno tam, gdzie jest.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Kliknięcia w zasobniku i powiadomieniach przywołują Katna Mail na wierzch"
+text = """
+Kliknięcie ikony w zasobniku albo pozycji Otwórz Odebrane, Nowa wiadomość
+lub Ustawienia w jej menu przywołuje teraz okno Katna Mail na wierzch w
+Waylandzie, nawet gdy było zminimalizowane lub schowane za innymi oknami.
+Kliknięcie powiadomienia o nowej poczcie otwiera tę wiadomość, nawet gdy
+lista Odebrane jej nie pokazuje.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Wysyłanie odlicza czas, a odpowiedź zostaje w wątku"
+text = """
+Po kliknięciu Wyślij kurczący się pierścień obok Cofnij odlicza czas na
+cofnięcie, a gdy wiadomość wyjdzie, komunikat pokazuje Wiadomość wysłana (z
+krótkim dźwiękiem). Dźwięk można wyłączyć w Ustawienia > Ogólne > Wysyłanie.
+Odpowiedź napisana w wątku zamienia się w wiadomość dokładnie tam, gdzie
+powstała. Jej nagłówek pokazuje tylko, do kogo idzie; kliknij go, aby
+zobaczyć Od, Do, DW i UDW. Strzałka obok ikony odpowiedzi przełącza między
+Odpowiedz, Odpowiedz wszystkim i Przekaż dalej, zachowując to, co już
+napisano.
+"""
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Opcje wyszukiwania mieszczą się w wąskich oknach"
+text = """
+W wąskim lub niskim oknie Opcje wyszukiwania zajmują teraz dostępną
+szerokość, na telefonie umieszczają etykiety nad polami i przewijają się,
+gdy się nie mieszczą, więc przycisk Szukaj jest zawsze pod ręką.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Odpowiedzi wychodzą z właściwego konta"
+text = """
+Po wybraniu Odpowiedz lub Przekaż dalej przy wiadomości otwartej ze Wspólnej
+skrzynki odbiorczej lub z wyszukiwania odpowiedź wychodzi teraz z konta, na
+które przyszła wiadomość, a nie z konta wybranego pod zdjęciem profilowym.
+"""

@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = 영구삭제한 메일은 되돌릴 수 없�
 toast-send-undone = 보내기를 취소했습니다.
 toast-too-late-to-undo-send = 실행취소하기에는 너무 늦었습니다: 메일이 이미 전송되었습니다.
 toast-undo = 실행취소
+toast-close = 닫기
 toast-no-spam-folder = 이 계정에는 스팸함이 없습니다.

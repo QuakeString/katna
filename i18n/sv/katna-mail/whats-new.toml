@@ -841,3 +841,42 @@ skrivbordets globala meny, för skrivbord som inte visar någon. Svara alla i
 en avisering om nytt mejl öppnar nu konversationen i ett eget fönster, redo
 att skriva i, och låter huvudfönstret stanna där det är.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Klick i systemfältet och på aviseringar tar fram Katna Mail"
+text = """
+Ett klick på ikonen i systemfältet, eller på Öppna Inkorgen, Nytt meddelande
+eller Inställningar i dess meny, lägger nu Katna Mail-fönstret överst på
+Wayland, även när det var minimerat eller bakom andra fönster. Ett klick på
+en avisering om nytt mejl öppnar det mejlet, även när listan i Inkorgen inte
+visar det.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Skicka räknar ner, och ditt svar stannar i konversationen"
+text = """
+Efter Skicka räknar en krympande ring ner tiden för att ångra bredvid Ångra,
+och sedan visar notisen längst ner Meddelandet har skickats (med ett kort
+ljud) när mejlet har gått iväg. Ljudet kan stängas av i Inställningar >
+Allmänt > Skicka. Ett svar som du skriver i en konversation blir ett
+meddelande precis där du skrev det. Dess huvud visar bara vem det går till;
+klicka på det för Från, Till, Kopia och Dold kopia. Pilen bredvid
+svarsikonen växlar mellan Svara, Svara alla och Vidarebefordra och behåller
+det du har skrivit.
+"""
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Sökalternativ får plats i smala fönster"
+text = """
+I ett smalt eller lågt fönster blir Sökalternativ nu så breda som utrymmet
+tillåter, lägger etiketterna ovanför fälten på en telefon och rullar när de
+inte får plats, så att knappen Sök alltid finns inom räckhåll.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Svar skickas från rätt konto"
+text = """
+Med Svara eller Vidarebefordra på e-post som du har öppnat från Gemensam
+inkorg eller från sökningen skickas meddelandet nu från kontot som e-posten
+kom till, inte från kontot som är valt under din profilbild.
+"""

@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = Enweghị ike iweghachi ozi ehichapụrụ ru
 toast-send-undone = Emegharịala izipu.
 toast-too-late-to-undo-send = Oge agafeela imegharị ya: ezigalarịrị ozi ahụ.
 toast-undo = Megharịa
+toast-close = Mechie
 toast-no-spam-folder = Akaụntụ a enweghị folda spam.

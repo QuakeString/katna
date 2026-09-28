@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = 永久刪除的郵件無法救回。
 toast-send-undone = 已復原傳送。
 toast-too-late-to-undo-send = 來不及復原：郵件已經寄出。
 toast-undo = 復原
+toast-close = 關閉
 toast-no-spam-folder = 這個帳戶沒有垃圾郵件資料夾。

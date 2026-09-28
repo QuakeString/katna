@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = Thư đã xóa vĩnh viễn thì không thể
 toast-send-undone = Đã hoàn tác việc gửi.
 toast-too-late-to-undo-send = Quá muộn để hoàn tác: thư đã được gửi đi.
 toast-undo = Hoàn tác
+toast-close = Đóng
 toast-no-spam-folder = Tài khoản này không có thư mục thư rác.

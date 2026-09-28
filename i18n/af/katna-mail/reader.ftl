@@ -25,6 +25,7 @@ reader-collapse-all = Vou almal in
 reader-expand-all = Vou almal uit
 reader-unknown-sender = (onbekende sender)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Stuur tans…
 reader-me = my
 reader-to = aan { $names }
 reader-to-label = aan

@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = အပြီးဖျက်ထားသော
 toast-send-undone = ပို့ခြင်းကို နောက်ပြန်ဆုတ်လိုက်ပြီ။
 toast-too-late-to-undo-send = နောက်ပြန်ရန် နောက်ကျသွားပြီ- မက်ဆေ့ဂျ်ကို ပို့ပြီးသွားပြီ။
 toast-undo = နောက်ပြန်ရန်
+toast-close = ပိတ်ရန်
 toast-no-spam-folder = ဤအကောင့်တွင် စပမ်းဖိုင်တွဲ မရှိပါ။

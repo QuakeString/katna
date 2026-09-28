@@ -25,6 +25,7 @@ reader-collapse-all = Згорнути все
 reader-expand-all = Розгорнути все
 reader-unknown-sender = (невідомий відправник)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Надсилання…
 reader-me = мені
 reader-to = кому: { $names }
 reader-to-label = кому:

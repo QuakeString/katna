@@ -25,6 +25,7 @@ reader-collapse-all = सबै खुम्च्याउनुहोस्
 reader-expand-all = सबै विस्तार गर्नुहोस्
 reader-unknown-sender = (अज्ञात प्रेषक)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = पठाउँदै…
 reader-me = म
 reader-to = { $names } लाई
 reader-to-label = प्रापक:

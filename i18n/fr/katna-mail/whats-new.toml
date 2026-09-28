@@ -892,3 +892,44 @@ Répondre à tous sur une notification de nouveau message ouvre maintenant la
 conversation dans sa propre fenêtre, prête pour la saisie, et laisse la
 fenêtre principale où elle est.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Un clic sur l’icône ou une notification met Katna Mail au premier plan"
+text = """
+Cliquer sur l’icône de la zone de notification, ou sur Ouvrir la boîte de
+réception, Nouveau message ou Préférences dans son menu, met désormais la
+fenêtre de Katna Mail au premier plan sous Wayland, même si elle était
+réduite ou derrière d’autres fenêtres. Cliquer sur une notification de
+nouveau message ouvre ce message, même quand la liste de la Boîte de
+réception ne l’affiche pas.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Envoyer affiche un compte à rebours, et votre réponse reste dans la conversation"
+text = """
+Après Envoyer, un anneau qui rétrécit décompte le délai d’annulation à côté
+d’Annuler, puis la note indique Message envoyé (avec un son bref) une fois
+le message parti. Le son peut être désactivé dans Paramètres > Général >
+Envoi. Une réponse écrite dans une conversation devient un message à
+l’endroit même où vous l’avez écrite. Son en-tête n’indique que ses
+destinataires ; cliquez dessus pour voir De, À, Cc et Cci. La flèche à côté
+de l’icône de réponse passe de Répondre à Répondre à tous et à Transférer,
+en gardant ce que vous avez écrit.
+"""
+
+["2026-09-28-1110-search-options-narrow"]
+title = "Les Options de recherche s’adaptent aux fenêtres étroites"
+text = """
+Dans une fenêtre étroite ou basse, les Options de recherche prennent
+désormais la largeur disponible, placent les libellés au-dessus de leurs
+champs sur un téléphone et défilent quand elles ne tiennent pas, pour que le
+bouton Rechercher reste toujours à portée de main.
+"""
+
+["2026-09-28-1119-replies-from-right-account"]
+title = "Les réponses partent du bon compte"
+text = """
+Avec Répondre ou Transférer sur un message ouvert depuis la Boîte de
+réception unifiée ou depuis la recherche, l’envoi part désormais du compte
+qui a reçu le message, et non du compte choisi sous votre photo de profil.
+"""

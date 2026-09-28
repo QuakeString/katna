@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Endgültig gelöschte E-Mails lassen sich nic
 toast-send-undone = Senden rückgängig gemacht.
 toast-too-late-to-undo-send = Zu spät zum Rückgängigmachen: Die Nachricht wurde bereits gesendet.
 toast-undo = Rückgängig
+toast-close = Schließen
 toast-no-spam-folder = Dieses Konto hat keinen Spam-Ordner.

@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = อีเมลที่ลบอย่าง
 toast-send-undone = เลิกทำการส่งแล้ว
 toast-too-late-to-undo-send = สายเกินไปที่จะเลิกทำ: ข้อความถูกส่งไปแล้ว
 toast-undo = เลิกทำ
+toast-close = ปิด
 toast-no-spam-folder = บัญชีนี้ไม่มีโฟลเดอร์สแปม

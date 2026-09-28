@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = E-pos wat permanent uitgevee is, kan nie teru
 toast-send-undone = Stuur ontdoen.
 toast-too-late-to-undo-send = Te laat om te ontdoen: die boodskap is reeds gestuur.
 toast-undo = Ontdoen
+toast-close = Maak toe
 toast-no-spam-folder = Hierdie rekening het geen strooiposvouer nie.

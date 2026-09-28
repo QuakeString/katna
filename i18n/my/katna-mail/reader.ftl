@@ -25,6 +25,7 @@ reader-collapse-all = အားလုံး ခေါက်ရန်
 reader-expand-all = အားလုံး ဖြန့်ရန်
 reader-unknown-sender = (မသိသော ပို့သူ)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = ပို့နေသည်…
 reader-me = ကျွန်ုပ်
 reader-to = { $names } ထံသို့
 reader-to-label = လက်ခံသူများ-

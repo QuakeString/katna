@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Ba za a iya dawo da wasiƙun da aka share har
 toast-send-undone = An janye aikawa.
 toast-too-late-to-undo-send = Lokacin janyewa ya wuce: an riga an aika saƙon.
 toast-undo = Janye
+toast-close = Rufe
 toast-no-spam-folder = Wannan asusun ba shi da foldar saƙonnin banza.

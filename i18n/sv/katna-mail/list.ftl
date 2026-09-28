@@ -554,4 +554,5 @@ toast-cannot-undo-delete-forever = E-post som har raderats permanent kan inte å
 toast-send-undone = Skickandet har ångrats.
 toast-too-late-to-undo-send = För sent att ångra: meddelandet har redan skickats.
 toast-undo = Ångra
+toast-close = Stäng
 toast-no-spam-folder = Det här kontot har ingen skräppostmapp.

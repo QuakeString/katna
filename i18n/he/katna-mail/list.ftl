@@ -633,4 +633,5 @@ toast-cannot-undo-delete-forever = אי אפשר לשחזר דואר שנמחק 
 toast-send-undone = השליחה בוטלה.
 toast-too-late-to-undo-send = מאוחר מדי לבטל: ההודעה כבר נשלחה.
 toast-undo = ביטול
+toast-close = סגירה
 toast-no-spam-folder = אין לחשבון הזה תיקיית ספאם.
