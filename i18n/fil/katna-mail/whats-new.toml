@@ -1005,3 +1005,13 @@ ito, hihingin ang password mo, iini-install ang update, at magbubukas
 ulit sa kinahinto mo. Ino-off ng Mga setting > Pangkalahatan > Mga
 Update ang awtomatikong pag-download.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Pag-track sa nilagdaan, na-encrypt, at plain text na mail"
+text = """
+Gumagana na rin ngayon ang mata sa nilagdaan at na-encrypt na mail:
+nila-lagdaan o ine-encrypt ang kopya ng bawat tatanggap nang hiwalay, kaya
+nananatiling valid ang mga lagda. Hindi maipapakita ng plain text na mail
+ang mga pagbukas, pero naka-track ang mga link nito, kaya makikita mo kapag
+sinundan ng isang tao ang isa dito.
+"""

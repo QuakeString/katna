@@ -970,3 +970,13 @@ que vai reiniciar, pede sua senha, instala a atualização e abre de novo de
 onde você parou. Configurações > Geral > Atualizações desativa o download
 automático.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Rastreamento de e-mails assinados, criptografados e em texto simples"
+text = """
+O olho agora também funciona em e-mails assinados e criptografados: a cópia
+de cada destinatário é assinada ou criptografada separadamente, para que as
+assinaturas continuem válidas. E-mails em texto simples não podem mostrar
+aberturas, mas seus links são rastreados, para que você veja quando alguém
+acessa um.
+"""

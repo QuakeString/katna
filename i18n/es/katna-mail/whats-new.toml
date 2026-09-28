@@ -975,3 +975,12 @@ Katna Mail avisa de que se va a reiniciar, pide tu contraseña, instala la
 actualización y se abre de nuevo donde lo dejaste. Ajustes > General >
 Actualizaciones desactiva la descarga automática.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Seguimiento de correo firmado, cifrado y en texto sin formato"
+text = """
+El ojo ahora también funciona en el correo firmado y cifrado: la copia de
+cada destinatario se firma o cifra por separado, así que las firmas siguen
+siendo válidas. El correo en texto sin formato no puede mostrar aperturas,
+pero sus enlaces sí se siguen, así que verás cuándo alguien sigue uno.
+"""

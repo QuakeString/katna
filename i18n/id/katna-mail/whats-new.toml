@@ -970,3 +970,13 @@ Katna Mail akan memberi tahu bahwa ia akan memulai ulang, meminta
 sandi Anda, memasang pembaruan, lalu terbuka lagi seperti sebelumnya.
 Setelan > Umum > Pembaruan mematikan unduhan otomatis.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Melacak email yang ditandatangani, dienkripsi, dan teks biasa"
+text = """
+Ikon mata sekarang juga berfungsi pada email yang ditandatangani dan
+dienkripsi: salinan setiap penerima ditandatangani atau dienkripsi secara
+terpisah, sehingga tanda tangan tetap valid. Email teks biasa tidak dapat
+menampilkan pembukaan, tetapi link-nya dilacak, sehingga Anda melihat saat
+seseorang mengikuti salah satunya.
+"""

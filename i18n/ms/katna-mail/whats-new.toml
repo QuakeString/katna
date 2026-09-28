@@ -978,3 +978,13 @@ mulakan semula, meminta kata laluan anda, memasang kemas kini dan
 buka semula di tempat anda berhenti. Tetapan > Umum > Kemas kini
 mematikan muat turun automatik.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Menjejaki mel yang ditandatangani, disulitkan dan teks biasa"
+text = """
+Mata kini turut berfungsi pada mel yang ditandatangani dan disulitkan:
+salinan setiap penerima ditandatangani atau disulitkan secara berasingan,
+supaya tandatangan kekal sah. Mel teks biasa tidak dapat menunjukkan
+pembukaan, tetapi pautannya dijejaki, supaya anda nampak bila seseorang
+mengikuti salah satu daripadanya.
+"""

@@ -1002,3 +1002,13 @@ redémarrer, demande votre mot de passe, installe la mise à jour et se
 rouvre là où vous en étiez. Paramètres > Général > Mises à jour désactive
 le téléchargement automatique.
 """
+
+["2026-09-28-1520-track-sealed-and-plain"]
+title = "Suivi des messages signés, chiffrés et en texte brut"
+text = """
+L’œil fonctionne désormais aussi sur les messages signés et chiffrés : la
+copie de chaque destinataire est signée ou chiffrée séparément, afin que les
+signatures restent valides. Les messages en texte brut ne peuvent pas
+indiquer les ouvertures, mais leurs liens sont suivis, afin que vous voyiez
+quand quelqu’un en suit un.
+"""
