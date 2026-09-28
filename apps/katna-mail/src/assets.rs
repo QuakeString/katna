@@ -42,6 +42,7 @@ icons!(
     "close",
     "coffee",
     "compose",
+    "contrast",
     "contacts",
     "document",
     "download",

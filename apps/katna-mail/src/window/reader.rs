@@ -63,6 +63,9 @@ pub(super) struct Conversation {
     parts: Vec<Part>,
     /// The folded middle of a long conversation is shown.
     show_all: bool,
+    /// In a dark theme, its HTML mail keeps the sender's own colors
+    /// rather than dark ones.
+    pub original_colors: bool,
 }
 
 /// One message of the conversation.
@@ -165,6 +168,16 @@ impl Body {
 }
 
 impl Conversation {
+    /// A loaded message of it is HTML that sets its own colors.
+    fn has_own_colors(&self) -> bool {
+        self.parts.iter().any(|p| {
+            p.body
+                .as_ref()
+                .and_then(|b| b.doc.as_ref())
+                .is_some_and(|d| d.styled || d.background.is_some())
+        })
+    }
+
     /// The loaded message `id`, or by default the newest loaded one: what a
     /// reply or forward starts from.
     pub(super) fn view(&self, id: Option<MessageId>) -> Option<&MessageView> {
@@ -268,6 +281,7 @@ impl Conversation {
             subject,
             parts,
             show_all: false,
+            original_colors: false,
         };
         conversation.read_tracking(mail);
         conversation
@@ -456,6 +470,44 @@ enum Shown {
 }
 
 impl MailWindow {
+    /// In a dark theme, the button that shows the open conversation's HTML
+    /// mail in its sender's own colors, or back in dark ones. Only where
+    /// a message sets its own colors, so there is something to switch.
+    fn original_colors_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let reader = self.reader.as_ref()?;
+        if !th.dark || !self.config.mail.dark_mail || !reader.has_own_colors() {
+            return None;
+        }
+        let on = reader.original_colors;
+        Some(
+            icon_button_colored(
+                "reader-original-colors",
+                "contrast",
+                20.0,
+                if on { th.accent } else { th.text_dim },
+                th,
+            )
+            .when(on, |d| d.bg(rgba(th.hover)))
+            .tooltip(tip(
+                if on {
+                    tr!("reader-dark-colors")
+                } else {
+                    tr!("reader-original-colors")
+                },
+                th,
+            ))
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(reader) = &mut this.reader {
+                    reader.original_colors = !reader.original_colors;
+                }
+                cx.notify();
+            }))
+            .into_any_element(),
+        )
+    }
+}
+
+impl MailWindow {
     /// The reading pane beside the list: its own card.
     pub(super) fn render_reader_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let (radius, outline) = (
@@ -553,6 +605,7 @@ impl MailWindow {
             })
             .child(div().flex_1())
             .children(self.contact_toggle(th, cx))
+            .children(self.original_colors_toggle(th, cx))
             // Where the toolbar is short, both are in the More menu.
             .when(roomy, |d| {
                 d.child(
@@ -1156,7 +1209,8 @@ impl MailWindow {
                                     &self.remote.images,
                                     allowed,
                                     self.remote.mono(),
-                                    self.config.mail.dark_mail,
+                                    self.config.mail.dark_mail
+                                        && !self.reader.as_ref().is_some_and(|r| r.original_colors),
                                     pieces,
                                 )
                                 .document(doc),

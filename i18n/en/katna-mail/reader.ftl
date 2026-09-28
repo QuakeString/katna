@@ -11,6 +11,10 @@ reader-mark-unread = Mark as unread
 reader-move-to = Move to
 # The ⋮ button that opens more actions.
 reader-more = More
+# In a dark theme: shows the open mail in its sender's own colors…
+reader-original-colors = Show original colors
+# …and back in dark colors.
+reader-dark-colors = Show in dark colors
 # Prints every message of the open conversation.
 reader-print-all = Print all
 # Opens the conversation in a window of its own.
