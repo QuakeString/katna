@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A frosted search bar"
+text = """
+With the blurred background on, the search bar lets the blur through like
+the bar around it, instead of sitting on it as a solid grey pill.
+"""

@@ -349,8 +349,17 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            // Active, it keeps its color and gains a faint edge.
-            .bg(rgba(th.search))
+            // Active, it keeps its color and gains a faint edge. In a
+            // blurred window it lets the blur through like the bar
+            // around it, so it reads as the same frosted glass.
+            .bg(rgba(if th.backdrop == 0 {
+                fade(
+                    th.search,
+                    f32::from(katna_chrome::tokens::blur_alpha(th.dark)) / 255.0,
+                )
+            } else {
+                th.search
+            }))
             .border_1()
             .border_color(rgba(fade(th.text_faint, 0.5 * t.clamp(0.0, 1.0))))
             .text_size(px(16.0))
