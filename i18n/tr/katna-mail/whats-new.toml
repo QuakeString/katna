@@ -1071,3 +1071,21 @@ kısa süreliğine oturum açmanızı istemek yerine ince bir yükleme çubuğu
 gösterir. Katna ayrıca hesabı başlar başlamaz denetler, böylece bekleme
 süresi kısalır.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Güncellemelerin kendi penceresi var"
+text = """
+Yardım > Güncellemeleri Denetle ayrı bir pencere açar. Sürümünüzü yeni
+sürümle yan yana, her birinin ne zaman derlendiğini ve indirme boyutunu,
+güncellemedeki yenilikleri ve sürümünüzden bu yana yapılan tüm
+değişiklikleri gösterir.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Daha hızlı başlangıç, daha akıcı eşitleme"
+text = """
+Katna Mail büyük bir gelen kutusunu yaklaşık dörtte bir oranında daha
+hızlı açar ve posta inerken listeyi birkaç iletide bir değil, her toplu
+indirmede bir kez günceller; böylece eşitleme sırasında kaydırma ve
+yazma akıcı kalır.
+"""

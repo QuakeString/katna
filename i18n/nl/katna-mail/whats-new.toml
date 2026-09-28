@@ -1080,3 +1080,21 @@ terwijl je Katna-account wordt gecontroleerd, in plaats van je even te
 vragen om je aan te melden. Katna controleert het account ook meteen bij
 het starten, zodat je minder lang wacht.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Updates krijgen een eigen venster"
+text = """
+Help > Controleren op updates opent een eigen venster. Het toont jouw
+versie naast de nieuwe, met wanneer elk is gebouwd en hoe groot de
+download is, wat er nieuw is in de update en elke wijziging sinds jouw
+versie.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Snellere start, soepeler synchroniseren"
+text = """
+Katna Mail opent een grote inbox ongeveer een kwart sneller, en terwijl
+mail wordt gedownload, wordt de lijst één keer per batch bijgewerkt in
+plaats van na elke paar berichten, zodat scrollen en typen soepel blijven
+tijdens het synchroniseren.
+"""

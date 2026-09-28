@@ -1047,3 +1047,20 @@ trong khi kiểm tra tài khoản Katna của bạn, thay vì nhắc bạn đăn
 trong chốc lát. Katna cũng kiểm tra tài khoản ngay khi khởi động, nên
 thời gian chờ ngắn hơn.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Cập nhật có cửa sổ riêng"
+text = """
+Trợ giúp > Kiểm tra cập nhật mở một cửa sổ riêng. Cửa sổ hiển thị phiên
+bản của bạn cạnh phiên bản mới, thời điểm tạo và dung lượng tải xuống
+của mỗi bản, những điểm mới trong bản cập nhật và mọi thay đổi kể từ
+phiên bản của bạn.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Khởi động nhanh hơn, đồng bộ mượt hơn"
+text = """
+Katna Mail mở hộp thư đến lớn nhanh hơn khoảng một phần tư, và khi thư
+đang tải về, danh sách chỉ được cập nhật một lần cho mỗi lô thay vì sau
+mỗi vài thư, nên việc cuộn và gõ vẫn mượt trong lúc đồng bộ.
+"""

@@ -46,4 +46,5 @@ quick-conversation-view-detail = گروه‌بندی پاسخ‌های یک ای
 quick-help = راهنما
 quick-tour = گشتی در برنامه
 quick-whats-new = تازه‌ها
+quick-check-updates = بررسی به‌روزرسانی‌ها
 quick-about = دربارهٔ Katna

@@ -40,4 +40,5 @@ quick-conversation-view-detail = Kelompokkan balasan untuk email yang sama
 quick-help = Bantuan
 quick-tour = Ikuti tur
 quick-whats-new = Yang baru
+quick-check-updates = Periksa pembaruan
 quick-about = Tentang Katna

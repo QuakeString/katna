@@ -50,4 +50,5 @@ quick-conversation-view-detail = Группировать ответы на од
 quick-help = Справка
 quick-tour = Пройти обзор
 quick-whats-new = Что нового
+quick-check-updates = Проверить обновления
 quick-about = О Katna

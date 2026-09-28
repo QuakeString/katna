@@ -46,4 +46,5 @@ quick-conversation-view-detail = Panga pamoja majibu ya barua ileile
 quick-help = Usaidizi
 quick-tour = Anza ziara
 quick-whats-new = Kilicho kipya
+quick-check-updates = Kagua masasisho
 quick-about = Kuhusu Katna

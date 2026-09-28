@@ -43,4 +43,5 @@ desktop-menu-configure = _Katna Mailను కాన్ఫిగర్ చేయ
 desktop-menu-help = _సహాయం
 desktop-menu-shortcuts = _కీబోర్డ్ షార్ట్‌కట్‌లు
 desktop-menu-whats-new = _కొత్తగా ఏమి ఉన్నాయి
+desktop-menu-check-updates = _అప్‌డేట్‌ల కోసం చెక్ చేయండి…
 desktop-menu-about = _Katna గురించి

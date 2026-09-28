@@ -1113,3 +1113,22 @@ yokulayisha encane ngenkathi ihlola i-akhawunti yakho ye-Katna,
 esikhundleni sokukucela ukungena isikhashana. I-Katna iphinde ihlole
 i-akhawunti ngokushesha lapho iqala, ngakho ukulinda kuncane.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Izibuyekezo zithola iwindi lazo"
+text = """
+Usizo > Qinisekisa izibuyekezo kuvula iwindi elihlukile.
+Liveza inguqulo yakho eceleni kwenguqulo entsha, nokuthi
+ngayinye yakhiwe nini, usayizi wokulanda, okusha ku-buyekezo
+kanye nazo zonke izinguquko kusukela ekuguqulweni kwakho.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Ukuqala okusheshayo, ukuvumelanisa okushelelayo"
+text = """
+I-Katna Mail ivula ibhokisi lokungenayo elikhulu isheshe cishe
+ngekota, futhi ngenkathi iposi lilandwa ibuyekeza uhlu kanye
+ngeqoqo ngalinye esikhundleni sangemva kwemiyalezo embalwa
+ngayinye, ngakho ukuskrola nokuthayipha kuhlala kushelele
+ngesikhathi sokuvumelanisa.
+"""

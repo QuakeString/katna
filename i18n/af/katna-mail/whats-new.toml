@@ -1045,3 +1045,21 @@ Katna-rekening nagaan, in plaas daarvan om jou kortliks te vra om aan te
 meld. Katna gaan die rekening ook nog by die begin na, sodat die wagtyd
 korter is.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Opdaterings kry hul eie venster"
+text = """
+Hulp > Gaan opdaterings na maak ’n eie venster oop. Dit wys jou weergawe
+langs die nuwe een, met wanneer elkeen gebou is en hoe groot die aflaai
+is, wat nuut in die opdatering is en elke verandering sedert jou
+weergawe.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Vinniger begin, gladder sinkronisering"
+text = """
+Katna Mail maak ’n groot inkassie ongeveer ’n kwart vinniger oop, en
+terwyl pos afgelaai word, werk dit die lys een keer per bondel op in
+plaas van ná elke paar boodskappe, sodat rol en tik gladder bly tydens
+sinkronisering.
+"""

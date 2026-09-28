@@ -43,4 +43,5 @@ desktop-menu-configure = _Katna Mail कन्फिगर गर्नुहो
 desktop-menu-help = _मद्दत
 desktop-menu-shortcuts = _किबोर्ड सर्टकटहरू
 desktop-menu-whats-new = _नयाँ के छ
+desktop-menu-check-updates = _अपडेट जाँच गर्नुहोस्…
 desktop-menu-about = _Katna को बारेमा

@@ -43,4 +43,5 @@ desktop-menu-configure = _Katna Mail ကို ပြင်ဆင်သတ်မ
 desktop-menu-help = _အကူအညီ
 desktop-menu-shortcuts = _ကီးဘုတ် ဖြတ်လမ်းများ
 desktop-menu-whats-new = _အသစ်များ
+desktop-menu-check-updates = _အပ်ဒိတ် စစ်ဆေးရန်…
 desktop-menu-about = _Katna အကြောင်း

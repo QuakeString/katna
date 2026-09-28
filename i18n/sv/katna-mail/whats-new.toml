@@ -1052,3 +1052,21 @@ ditt Katna-konto kontrolleras, i stället för att kort be dig logga in.
 Katna kontrollerar också kontot så snart det startar, så väntan blir
 kortare.
 """
+
+["2026-09-28-2130-update-dialog"]
+title = "Uppdateringar får ett eget fönster"
+text = """
+Hjälp > Sök efter uppdateringar öppnar ett eget fönster. Det visar din
+version bredvid den nya, med när var och en byggdes och hur stor
+hämtningen är, vad som är nytt i uppdateringen och varje ändring sedan
+din version.
+"""
+
+["2026-09-28-2204-faster-start"]
+title = "Snabbare start, smidigare synkronisering"
+text = """
+Katna Mail öppnar en stor inkorg ungefär en fjärdedel snabbare, och medan
+post hämtas uppdateras listan en gång per omgång i stället för efter
+varje par meddelanden, så att rullning och skrivning förblir smidiga
+under en synkronisering.
+"""

@@ -54,4 +54,5 @@ quick-conversation-view-detail = تجميع الردود على الرسالة �
 quick-help = المساعدة
 quick-tour = بدء الجولة التعريفية
 quick-whats-new = ما الجديد
+quick-check-updates = التحقق من وجود تحديثات
 quick-about = حول Katna

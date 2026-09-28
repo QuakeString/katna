@@ -40,4 +40,5 @@ quick-conversation-view-detail = གློག་འཕྲིན་གཅིག�
 quick-help = གྲོགས་རམ
 quick-tour = འགྲུལ་བསྐྱོད་འབད།
 quick-whats-new = གསརཔ་ག་ཅི་ཡོདཔ
+quick-check-updates = དུས་མཐུན་བཟོ་ནི་ཚུ་ཞིབ་དཔྱད་འབད།
 quick-about = Katna གི་སྐོར་ལས

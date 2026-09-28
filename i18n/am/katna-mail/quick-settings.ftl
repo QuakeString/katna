@@ -46,4 +46,5 @@ quick-conversation-view-detail = ለአንድ ደብዳቤ የተሰጡ ምላ�
 quick-help = እገዛ
 quick-tour = ጉብኝቱን ጀምር
 quick-whats-new = ምን አዲስ ነገር አለ
+quick-check-updates = ዝማኔዎችን ይፈትሹ
 quick-about = ስለ Katna

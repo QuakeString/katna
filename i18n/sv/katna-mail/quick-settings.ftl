@@ -46,4 +46,5 @@ quick-conversation-view-detail = Gruppera svar på samma e-post
 quick-help = Hjälp
 quick-tour = Gå igenom rundturen
 quick-whats-new = Nyheter
+quick-check-updates = Sök efter uppdateringar
 quick-about = Om Katna

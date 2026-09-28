@@ -46,4 +46,5 @@ quick-conversation-view-detail = Qoqa ndawonye izimpendulo zemeyili efanayo
 quick-help = Usizo
 quick-tour = Thatha uhambo
 quick-whats-new = Okusha
+quick-check-updates = Qinisekisa izibuyekezo
 quick-about = Mayelana ne-Katna

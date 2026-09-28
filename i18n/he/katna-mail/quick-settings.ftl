@@ -48,4 +48,5 @@ quick-conversation-view-detail = קיבוץ תשובות לאותה הודעה
 quick-help = עזרה
 quick-tour = סיור מודרך
 quick-whats-new = מה חדש
+quick-check-updates = בדיקת עדכונים
 quick-about = מידע על Katna

@@ -40,4 +40,5 @@ quick-conversation-view-detail = တူညီသော မေးလ်သို�
 quick-help = အကူအညီ
 quick-tour = လမ်းညွှန်ကြည့်ရှုရန်
 quick-whats-new = အသစ်များ
+quick-check-updates = အပ်ဒိတ် စစ်ဆေးရန်
 quick-about = Katna အကြောင်း

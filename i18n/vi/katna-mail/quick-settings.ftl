@@ -40,4 +40,5 @@ quick-conversation-view-detail = Nhóm các thư trả lời cho cùng một th�
 quick-help = Trợ giúp
 quick-tour = Tham quan ứng dụng
 quick-whats-new = Có gì mới
+quick-check-updates = Kiểm tra cập nhật
 quick-about = Giới thiệu về Katna
