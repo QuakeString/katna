@@ -14,6 +14,10 @@ notify-no-reply-to = Kò sí ẹni tó fèsì sí “{ $subject }”.
 notify-tracking-opened = { $who } ti ṣí { $subject }
 notify-tracking-clicked = { $who } ti tẹ ìjápọ̀ kan nínú { $subject }
 
+notify-update-ready = A lè ṣe ìmúdójúìwọ̀n Katna Mail
+notify-update-ready-body = A ti gba ẹ̀yà { $version } sílẹ̀. Ìmúdójúìwọ̀n ń fi í sórí ẹrọ tí ó sì tún Katna Mail bẹ̀rẹ̀.
+notify-update = Ìmúdójúìwọ̀n
+
 ## Its buttons
 
 notify-open = Ṣí

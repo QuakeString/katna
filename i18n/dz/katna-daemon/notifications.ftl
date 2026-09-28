@@ -14,6 +14,12 @@ notify-no-reply-to = “{ $subject }” ལུ་ མི་སུ་གིས་
 notify-tracking-opened = { $who } གིས་ { $subject } ཁ་ཕྱེ་ཡི
 notify-tracking-clicked = { $who } གིས་ { $subject } ནང་གི་འབྲེལ་མཐུད་གཅིག་ཨེབ་གཏང་འབད་ཡི
 
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = Katna Mail དུས་མཐུན་བཟོ་བཏུབ།
+notify-update-ready-body = ཐོན་རིམ་ { $version } ཕབ་ལེན་འབད་ཡོད། དུས་མཐུན་བཟོ་ནི་གིས་དེ་གཞི་བཙུགས་འབད་དེ་ Katna Mail་ལོག་འགོ་བཙུགས་འབདཝ་ཨིན།
+notify-update = དུས་མཐུན་བཟོ།
+
 ## Its buttons
 
 notify-open = ཁ་ཕྱེ།

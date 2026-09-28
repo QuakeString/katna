@@ -973,3 +973,35 @@ nila o tawagan sila. Ipinapakita ng Mga kamakailang pag-uusap ang
 pinakabago; pindutin ang Higit pa para makita ang iba, at ang
 Mas kaunti para itago ulit ang mga ito.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Mas maayos na reply box"
+text = """
+Ipinapakita na ngayon ang mga recipient kasama ang kanilang litrato,
+at pinagsama sa isang maliit na button ang Cc at Bcc. Ang pagbukas sa
+mga recipient ng reply ay dahan-dahang nagpapalaki sa box paakyat, at
+ang sinipi na mensahe ay dahan-dahang bumubukas at nagsasara sa
+ilalim ng isang kulot na linya na puwede mong i-click para itago itong
+muli.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Mas malambot na anino ng window at mga button na kasing-laki ng KDE"
+text = """
+Gamit ang window frame ng Katna, mas manipis na ngayon ang anino sa
+paligid ng window at unti-unting nawawala nang tuluyan, wala nang
+matigas na gilid na naiiwan dati sa tabi ng window. Ang mga button ng
+window ay kasing-laki na ngayon ng sa KDE, at kasing-layo sa gilid ng
+window gaya ng layo nito sa itaas.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "I-update ang Katna mula sa app"
+text = """
+Awtomatiko na ngayong dina-download ng Katna ang mga bagong bersyon
+at sinasabihan ka kapag handa na ang isa. Pindutin ang I-update sa
+notification o sa Tungkol: sasabihin ng Katna Mail na mag-re-restart
+ito, hihingin ang password mo, iini-install ang update, at magbubukas
+ulit sa kinahinto mo. Ino-off ng Mga setting > Pangkalahatan > Mga
+Update ang awtomatikong pag-download.
+"""

@@ -17,6 +17,10 @@ notify-no-reply-to = ለ«{ $subject }» ማንም አልመለሰም።
 notify-tracking-opened = { $who } { $subject }ን ከፈተ
 notify-tracking-clicked = { $who } በ{ $subject } ውስጥ ያለ አገናኝ ጠቅ አደረገ
 
+notify-update-ready = Katna Mail ሊዘምን ይችላል
+notify-update-ready-body = ስሪት { $version } ወርዷል። ዘምን የሚለው ይጭነዋል እና Katna Mailን እንደገና ያስጀምረዋል።
+notify-update = አዘምን
+
 ## Its buttons
 
 notify-open = ክፈት

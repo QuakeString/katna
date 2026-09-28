@@ -14,7 +14,13 @@ notify-no-reply-to = 「{ $subject }」に誰も返信していません。
 notify-tracking-opened = { $who } が「{ $subject }」を開きました
 notify-tracking-clicked = { $who } が「{ $subject }」のリンクをクリックしました
 
-## Its buttons
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = Katna Mail を更新できます
+notify-update-ready-body = バージョン { $version } のダウンロードが完了しました。更新するとインストールされ、Katna Mail が再起動します。
+notify-update = 更新
+
+## The buttons of new-mail notifications and reminders
 
 notify-open = 開く
 notify-reply-all = 全員に返信

@@ -971,3 +971,34 @@ retrouver vos messages avec elle ou l’appeler. Conversations récentes
 affiche les dernières ; appuyez sur Plus pour voir le reste et sur Moins
 pour les replier.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Une boîte de réponse plus soignée"
+text = """
+Les destinataires s’affichent désormais avec leur photo, et Cc et Cci
+tiennent ensemble dans un petit bouton. Ouvrir les destinataires d’une
+réponse agrandit la boîte vers le haut en douceur, et le message cité
+s’ouvre et se referme en douceur sous une ligne ondulée sur laquelle vous
+pouvez cliquer pour le replier de nouveau.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Une ombre de fenêtre plus douce et des boutons à la taille de KDE"
+text = """
+Avec le cadre de fenêtre de Katna, l’ombre autour de la fenêtre est plus
+resserrée et s’estompe complètement, sans le bord dur qu’elle laissait
+auparavant à côté de la fenêtre. Les boutons de la fenêtre ont désormais la
+taille de ceux de KDE, et se tiennent aussi loin du bord de la fenêtre que
+de son haut.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Mettre à jour Katna depuis l’application"
+text = """
+Katna télécharge maintenant les nouvelles versions par lui-même et vous
+prévient quand l’une d’elles est prête. Appuyez sur Mettre à jour dans la
+notification ou dans À propos de Katna : Katna Mail annonce qu’il va
+redémarrer, demande votre mot de passe, installe la mise à jour et se
+rouvre là où vous en étiez. Paramètres > Général > Mises à jour désactive
+le téléchargement automatique.
+"""

@@ -7,6 +7,31 @@
 about-tooltip = Katna 정보
 about-tagline = Linux 데스크톱을 위한 메일과 캘린더
 about-whats-new = 새로운 기능
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
+about-update-not-checked = 아직 업데이트를 확인하지 않았습니다
+about-update-checking = 업데이트를 확인하는 중…
+about-update-up-to-date = Katna Mail이 최신 버전입니다
+about-update-check-failed = 업데이트를 확인할 수 없습니다
+about-update-available = 버전 { $version }을(를) 사용할 수 있습니다
+about-update-downloading = 버전 { $version } 다운로드 중… { $percent }%
+about-update-ready = 버전 { $version } 설치 준비가 되었습니다
+about-update-ready-detail = 업데이트를 마치려면 Katna Mail이 다시 시작됩니다.
+about-update-confirm = 버전 { $version }을(를) 설치할까요?
+about-update-confirm-detail = Katna Mail이 종료되고 업데이트를 설치한 다음, 하던 곳에서 다시 열립니다. 컴퓨터가 비밀번호를 요청합니다.
+about-update-installing = 버전 { $version } 설치하는 중…
+about-update-installing-detail = 열린 창에 비밀번호를 입력하세요.
+about-update-cancelled = 비밀번호를 입력하지 않아 업데이트가 설치되지 않았습니다.
+about-update-failed = 업데이트를 설치할 수 없습니다: { $error }
+about-update-unsupported = 이 Katna Mail은 사용 중인 패키지 관리자가 업데이트합니다.
+about-update-restart-failed = 업데이트는 설치되었지만 Katna Mail을 다시 열 수 없었습니다({ $error }). 직접 열어 주세요.
+about-update-check = 업데이트 확인
+about-update-download = 다운로드
+about-update-button = 업데이트
+about-update-restart = 업데이트하고 다시 시작
+about-update-cancel = 나중에
 about-changelog = 변경 기록
 about-source = 소스 코드
 about-coffee = 커피 한 잔 사 주기

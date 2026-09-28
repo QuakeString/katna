@@ -941,3 +941,32 @@ ke orang itu, mencari email dengan mereka, atau meneleponnya.
 Percakapan terbaru menampilkan beberapa yang terbaru; tekan Lainnya
 untuk melihat sisanya dan Lebih sedikit untuk menyembunyikannya lagi.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Kotak balasan yang lebih rapi"
+text = """
+Penerima kini ditampilkan dengan foto mereka, dan Cc serta Bcc
+digabung dalam satu tombol kecil. Membuka penerima balasan membuat
+kotak tumbuh ke atas dengan mulus, dan pesan yang dikutip terbuka dan
+tertutup dengan mulus di bawah garis bergelombang yang bisa Anda klik
+untuk melipatnya kembali.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Bayangan jendela yang lebih lembut dan tombol seukuran KDE"
+text = """
+Dengan bingkai jendela Katna, bayangan di sekitar jendela kini lebih
+tipis dan memudar sepenuhnya, tanpa tepi tajam yang sebelumnya ada di
+samping jendela. Tombol jendela kini seukuran tombol KDE sendiri, dan
+berjarak sama dari sisi jendela seperti dari bagian atasnya.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Perbarui Katna dari dalam aplikasi"
+text = """
+Katna kini mengunduh versi baru dengan sendirinya dan memberi tahu
+Anda saat sudah siap. Tekan Perbarui di notifikasi atau di Tentang:
+Katna Mail akan memberi tahu bahwa ia akan memulai ulang, meminta
+sandi Anda, memasang pembaruan, lalu terbuka lagi seperti sebelumnya.
+Setelan > Umum > Pembaruan mematikan unduhan otomatis.
+"""

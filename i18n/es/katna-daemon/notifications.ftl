@@ -18,6 +18,10 @@ notify-no-reply-to = Nadie ha respondido a «{ $subject }».
 notify-tracking-opened = { $who } abrió { $subject }
 notify-tracking-clicked = { $who } hizo clic en un enlace de { $subject }
 
+notify-update-ready = Katna Mail se puede actualizar
+notify-update-ready-body = La versión { $version } se ha descargado. Actualizar la instala y reinicia Katna Mail.
+notify-update = Actualizar
+
 ## Its buttons
 
 notify-open = Abrir

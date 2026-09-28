@@ -945,3 +945,33 @@ suave, con botones redondos bajo el nombre para escribirle a la persona,
 buscar tu correo con ella o llamarla. Conversaciones recientes muestra las
 últimas; pulsa Más para ver el resto y Menos para plegarlas.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Un cuadro de respuesta más ordenado"
+text = """
+Los destinatarios ahora se muestran con su foto, y Cc y Cco se juntan en un
+solo botón pequeño. Abrir los destinatarios de una respuesta hace que el
+cuadro crezca hacia arriba con suavidad, y el mensaje citado se abre y se
+cierra con suavidad bajo una línea ondulada en la que puedes hacer clic
+para volver a plegarlo.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Una sombra de ventana más suave y botones del tamaño de KDE"
+text = """
+Con el marco de ventana de Katna, la sombra alrededor de la ventana es más
+ajustada y se desvanece por completo, sin el borde duro que dejaba antes
+junto a la ventana. Los botones de la ventana ahora tienen el tamaño de los
+propios de KDE, y quedan tan separados del lado de la ventana como de su
+parte superior.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Actualiza Katna desde la propia aplicación"
+text = """
+Katna ahora descarga las nuevas versiones por sí mismo y te avisa cuando
+una está lista. Pulsa Actualizar en la notificación o en Acerca de Katna:
+Katna Mail avisa de que se va a reiniciar, pide tu contraseña, instala la
+actualización y se abre de nuevo donde lo dejaste. Ajustes > General >
+Actualizaciones desactiva la descarga automática.
+"""

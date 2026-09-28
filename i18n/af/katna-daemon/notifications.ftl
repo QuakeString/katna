@@ -19,6 +19,9 @@ notify-tracking-clicked = { $who } het op 'n skakel in { $subject } geklik
 
 ## Its buttons
 
+notify-update-ready = Katna Mail kan opgedateer word
+notify-update-ready-body = Weergawe { $version } is afgelaai. Opdateer installeer dit en herbegin Katna Mail.
+notify-update = Opdateer
 notify-open = Maak oop
 notify-reply-all = Antwoord almal
 notify-mark-read = Merk as gelees

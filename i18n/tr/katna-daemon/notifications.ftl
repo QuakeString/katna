@@ -16,6 +16,9 @@ notify-tracking-clicked = { $who }, { $subject } iletisindeki bir bağlantıya t
 
 ## Its buttons
 
+notify-update-ready = Katna Mail güncellenebilir
+notify-update-ready-body = { $version } sürümü indirildi. Güncelleme onu kurar ve Katna Mail'i yeniden başlatır.
+notify-update = Güncelle
 notify-open = Aç
 notify-reply-all = Tümünü yanıtla
 notify-mark-read = Okundu olarak işaretle

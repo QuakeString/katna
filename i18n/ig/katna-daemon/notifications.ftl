@@ -14,6 +14,12 @@ notify-no-reply-to = Ọ dịghị onye zaghachiri “{ $subject }”.
 notify-tracking-opened = { $who } mepere { $subject }
 notify-tracking-clicked = { $who } pịrị njikọ dị na { $subject }
 
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = Enwere ike imelite Katna Mail
+notify-update-ready-body = Ụdị { $version } abudatala. Imelite na-awụnye ya wee malitegharịa Katna Mail.
+notify-update = Melite
+
 ## Its buttons
 
 notify-open = Mepee

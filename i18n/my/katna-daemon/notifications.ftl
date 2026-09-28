@@ -14,7 +14,13 @@ notify-no-reply-to = “{ $subject }” ကို မည်သူမျှ ပ�
 notify-tracking-opened = { $who } က { $subject } ကို ဖွင့်လိုက်သည်
 notify-tracking-clicked = { $who } က { $subject } ထဲရှိ လင့်ခ်တစ်ခုကို နှိပ်လိုက်သည်
 
-## Its buttons
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = Katna Mail ကို အပ်ဒိတ်လုပ်နိုင်သည်
+notify-update-ready-body = ဗားရှင်း { $version } ကို ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ။ အပ်ဒိတ်ကို နှိပ်လျှင် ၎င်းကို ထည့်သွင်းပြီး Katna Mail ကို ပြန်လည်စတင်ပေးသည်။
+notify-update = အပ်ဒိတ်
+
+## The buttons of new-mail notifications and reminders
 
 notify-open = ဖွင့်ရန်
 notify-reply-all = အားလုံးကို ပြန်စာရေးရန်

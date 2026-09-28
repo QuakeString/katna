@@ -14,7 +14,13 @@ notify-no-reply-to = គ្មាននរណាបានឆ្លើយតប �
 notify-tracking-opened = { $who } បានបើក { $subject }
 notify-tracking-clicked = { $who } បានចុចតំណក្នុង { $subject }
 
-## Its buttons
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = អាចធ្វើបច្ចុប្បន្នភាព Katna Mail បាន
+notify-update-ready-body = កំណែ { $version } ត្រូវបានទាញយករួចហើយ។ ចុចធ្វើបច្ចុប្បន្នភាពដើម្បីដំឡើង ហើយចាប់ផ្ដើម Katna Mail ឡើងវិញ។
+notify-update = ធ្វើបច្ចុប្បន្នភាព
+
+## The buttons of new-mail notifications and reminders
 
 notify-open = បើក
 notify-reply-all = ឆ្លើយតបទាំងអស់

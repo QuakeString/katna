@@ -14,7 +14,13 @@ notify-no-reply-to = 没有人回复“{ $subject }”。
 notify-tracking-opened = { $who } 打开了“{ $subject }”
 notify-tracking-clicked = { $who } 点击了“{ $subject }”中的链接
 
-## Its buttons
+## An update of Katna is downloaded and ready to install
+
+notify-update-ready = Katna Mail 有可用更新
+notify-update-ready-body = 版本 { $version } 已下载完成。点击更新即可安装并重启 Katna Mail。
+notify-update = 更新
+
+## The buttons of new-mail notifications and reminders
 
 notify-open = 打开
 notify-reply-all = 全部回复

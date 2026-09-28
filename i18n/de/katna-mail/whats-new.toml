@@ -960,3 +960,34 @@ mit ihr zu finden oder sie anzurufen. Letzte Konversationen zeigt die
 neuesten paar; drücken Sie Mehr, um den Rest zu sehen, und Weniger, um sie
 wieder einzuklappen.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "Ein aufgeräumteres Antwortfeld"
+text = """
+Empfänger werden jetzt mit ihren Bildern angezeigt, und Cc und Bcc liegen
+zusammen in einer kleinen Schaltfläche. Das Öffnen der Empfänger einer
+Antwort lässt das Feld sanft nach oben wachsen, und die zitierte Nachricht
+öffnet und schließt sich sanft unter einer wellenförmigen Linie, auf die
+Sie klicken können, um sie wieder einzuklappen.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "Ein weicherer Fensterschatten und KDE-große Knöpfe"
+text = """
+Mit dem Katna-Fensterrahmen ist der Schatten um das Fenster enger und
+verblasst vollständig, ohne die harte Kante, die er zuvor neben dem Fenster
+hinterließ. Die Fensterknöpfe haben jetzt die Größe der eigenen Knöpfe von
+KDE und halten denselben Abstand zur Seite des Fensters wie zu dessen
+oberem Rand.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Katna aus der App heraus aktualisieren"
+text = """
+Katna lädt jetzt selbstständig neue Versionen herunter und sagt Ihnen
+Bescheid, wenn eine bereit ist. Drücken Sie Aktualisieren in der
+Benachrichtigung oder unter Über Katna: Katna Mail kündigt an, dass es neu
+startet, fragt nach Ihrem Passwort, installiert das Update und öffnet sich
+wieder dort, wo Sie aufgehört haben. Einstellungen > Allgemein > Updates
+schaltet den automatischen Download aus.
+"""

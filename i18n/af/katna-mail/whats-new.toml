@@ -912,3 +912,32 @@ knoppies onder die naam om vir die persoon te skryf, e-pos met hulle
 te soek of hulle te bel. Onlangse gesprekke wys die jongste paar;
 druk Meer om die res te sien en Minder om dit weer weg te vou.
 """
+
+["2026-09-28-1507-reply-box-recipients"]
+title = "'n Netter antwoordboks"
+text = """
+Ontvangers wys nou met hul prentjies, en Cc en Bcc sit saam in een klein
+knoppie. Wanneer jy die ontvangers van 'n antwoord oopmaak, groei die
+boks glad na bo, en die aangehaalde boodskap maak glad oop en toe onder
+'n golwende lyn waarop jy kan klik om dit weer weg te vou.
+"""
+
+["2026-09-28-1620-softer-window-shadow"]
+title = "'n Sagter vensterskaduwee en KDE-grootte knoppies"
+text = """
+Met die Katna-vensterraam is die skaduwee om die venster nou smaller
+en verdwyn heeltemal, sonder die harde rand wat dit voorheen langs die
+venster gelaat het. Die vensterknoppies is nou dieselfde grootte as
+KDE s'n, en staan net so ver van die kant van die venster as van sy
+bokant.
+"""
+
+["2026-09-28-1622-update-from-the-app"]
+title = "Dateer Katna op vanuit die program"
+text = """
+Katna laai nou uit eie beweging nuwe weergawes af en laat jou weet
+wanneer een gereed is. Druk Opdateer in die kennisgewing of by "Meer
+oor": Katna Mail sê dit gaan herbegin, vra jou wagwoord, installeer
+die opdatering en maak weer oop waar jy opgehou het. Instellings >
+Algemeen > Opdaterings skakel die outomatiese aflaai af.
+"""

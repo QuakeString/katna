@@ -7,6 +7,31 @@
 about-tooltip = Katna ගැන
 about-tagline = Linux ඩෙස්ක්ටොප් සඳහා තැපැල් සහ දින දර්ශනය
 about-whats-new = අලුත් මොනවාද
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves).
+
+about-update-not-checked = යාවත්කාලීන කිරීම් තවම පරීක්ෂා කර නැත
+about-update-checking = යාවත්කාලීන කිරීම් සඳහා පරීක්ෂා කරමින්…
+about-update-up-to-date = Katna Mail යාවත්කාලීනයි
+about-update-check-failed = යාවත්කාලීන කිරීම් සඳහා පරීක්ෂා කළ නොහැකි විය
+about-update-available = අනුවාදය { $version } ලබා ගත හැක
+about-update-downloading = අනුවාදය { $version } බාගත වෙමින්… { $percent }%
+about-update-ready = අනුවාදය { $version } ස්ථාපනය කිරීමට සූදානම්
+about-update-ready-detail = යාවත්කාලීන කිරීම නිම කිරීමට Katna Mail යළි ඇරඹේ.
+about-update-confirm = අනුවාදය { $version } ස්ථාපනය කරන්නද?
+about-update-confirm-detail = Katna Mail වැසී, යාවත්කාලීන කිරීම ස්ථාපනය කර, ඔබ නැවතුණු තැනින්ම නැවත විවෘත වේ. ඔබේ පරිගණකය ඔබේ මුරපදය විමසනු ඇත.
+about-update-installing = අනුවාදය { $version } ස්ථාපනය වෙමින්…
+about-update-installing-detail = විවෘත වූ කවුළුවේ ඔබේ මුරපදය ඇතුළත් කරන්න.
+about-update-cancelled = මුරපදය ලබා නොදුන් නිසා යාවත්කාලීන කිරීම ස්ථාපනය නොවීය.
+about-update-failed = යාවත්කාලීන කිරීම ස්ථාපනය කළ නොහැකි විය: { $error }
+about-update-unsupported = Katna Mail හි මෙම පිටපත ඔබේ පැකේජ කළමනාකරු විසින් යාවත්කාලීන කරනු ලැබේ.
+about-update-restart-failed = යාවත්කාලීන කිරීම ස්ථාපනය කර ඇත, නමුත් Katna Mail යළි විවෘත කළ නොහැකි විය ({ $error }). එය ඔබම විවෘත කරන්න.
+about-update-check = යාවත්කාලීන කිරීම් සඳහා පරීක්ෂා කරන්න
+about-update-download = බාගත කරන්න
+about-update-button = යාවත්කාලීන කරන්න
+about-update-restart = යාවත්කාලීන කර යළි අරඹන්න
+about-update-cancel = දැන් නොවේ
 about-changelog = වෙනස්කම් ලැයිස්තුව
 about-source = මූලාශ්‍ර කේතය
 about-coffee = මට කෝපියක් ගෙන දෙන්න

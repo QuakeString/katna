@@ -7,6 +7,31 @@
 about-tooltip = 關於 Katna
 about-tagline = 適用於 Linux 桌面的郵件與日曆
 about-whats-new = 最新消息
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
+about-update-not-checked = 尚未檢查更新
+about-update-checking = 正在檢查更新…
+about-update-up-to-date = Katna Mail 已是最新版本
+about-update-check-failed = 無法檢查更新
+about-update-available = 有可用版本 { $version }
+about-update-downloading = 正在下載版本 { $version }… { $percent }%
+about-update-ready = 版本 { $version } 已可安裝
+about-update-ready-detail = Katna Mail 將重新啟動以完成更新。
+about-update-confirm = 要安裝版本 { $version } 嗎？
+about-update-confirm-detail = Katna Mail 將會關閉、安裝更新，然後回到你離開時的位置重新開啟。你的電腦會要求輸入密碼。
+about-update-installing = 正在安裝版本 { $version }…
+about-update-installing-detail = 請在開啟的視窗中輸入你的密碼。
+about-update-cancelled = 由於未輸入密碼，更新未安裝。
+about-update-failed = 更新無法安裝：{ $error }
+about-update-unsupported = 這份 Katna Mail 由你的套件管理員負責更新。
+about-update-restart-failed = 更新已安裝，但 Katna Mail 無法重新開啟（{ $error }）。請自行開啟它。
+about-update-check = 檢查更新
+about-update-download = 下載
+about-update-button = 更新
+about-update-restart = 更新並重新啟動
+about-update-cancel = 稍後再說
 about-changelog = 變更記錄
 about-source = 原始碼
 about-coffee = 請我喝杯咖啡

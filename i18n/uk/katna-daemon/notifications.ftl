@@ -21,6 +21,9 @@ notify-tracking-clicked = { $who } переходить за посилання�
 
 ## Its buttons
 
+notify-update-ready = Katna Mail можна оновити
+notify-update-ready-body = Версію { $version } завантажено. Оновлення встановить її й перезапустить Katna Mail.
+notify-update = Оновити
 notify-open = Відкрити
 notify-reply-all = Відповісти всім
 notify-mark-read = Позначити як прочитане
