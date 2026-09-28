@@ -1243,9 +1243,10 @@ impl MailWindow {
     }
 
     /// The account a message goes out from: for new mail the one chosen in
-    /// Settings, or the first account when none is chosen; else (a reply,
-    /// or new mail set to follow the open account) that of the open folder
-    /// (the one a reply answers in), or the first.
+    /// Settings, or the first account when none is chosen; for a reply or
+    /// forward the account the open conversation is in, whatever list it
+    /// was opened from (the unified inbox or search mix accounts); else
+    /// that of the open folder, or the first.
     fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
         let chosen = &self.config.sending.send_from;
         let fixed = (kind == Kind::New && chosen != SEND_FROM_CURRENT)
@@ -1256,7 +1257,13 @@ impl MailWindow {
                     .or_else(|| self.accounts.first())
             })
             .flatten();
-        let open = self.folder.and_then(|folder| self.tree.account_of(folder));
+        let answered = self
+            .reader
+            .as_ref()
+            .filter(|_| kind != Kind::New)
+            .and_then(|reader| reader.entry())
+            .and_then(|entry| self.mail.as_ref().ok()?.message_account(entry.latest));
+        let open = answered.or_else(|| self.folder.and_then(|folder| self.tree.account_of(folder)));
         fixed.or_else(|| {
             open.or_else(|| self.shown_account())
                 .and_then(|id| self.accounts.iter().find(|a| a.id == id))
