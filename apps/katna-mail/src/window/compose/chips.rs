@@ -6,7 +6,8 @@
 //! is picked or several addresses are pasted. A chip with a name has a
 //! small arrow that shows its address. Double-clicking a chip puts it back
 //! as text to fix, in its place. Backspace in an empty field selects the
-//! last chip, and a second Backspace removes it.
+//! last chip, and a second Backspace removes it. Left and Right step
+//! through the chips and back to typing.
 //!
 //! Text that is not an address stays as a chip with a red outline, and
 //! Send refuses to go while one is there.
@@ -21,10 +22,12 @@ use katna_ui::{TextInput, px};
 use super::MailWindow;
 use super::recipients::{Field, last_entry, mailbox};
 use crate::outgoing;
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, filled_button, icon, raised, tip};
 
-const HEIGHT: f32 = 26.0;
+const HEIGHT: f32 = 30.0;
+/// The picture at a chip's left end.
+const AVATAR: f32 = 24.0;
 /// The widest a chip gets before its label is cut short.
 const MAX_WIDTH: f32 = 280.0;
 /// The least room left for typing after the chips.
@@ -490,6 +493,32 @@ impl MailWindow {
         true
     }
 
+    /// Left and Right step through the chips, as in Gmail: Left at the
+    /// start of the field selects the chip before it, and Right from the
+    /// last chip goes back to typing. Whether it was taken.
+    pub(super) fn chip_arrow(&mut self, field: Field, left: bool, cx: &mut Context<Self>) -> bool {
+        let Some(input) = self.recipient_input(field) else {
+            return false;
+        };
+        let at_start = input.read(cx).caret_at_start();
+        let Some(compose) = &mut self.compose else {
+            return false;
+        };
+        let chips = &mut compose.chips;
+        if chips.editing.is_some_and(|(f, _)| f == field) {
+            return false;
+        }
+        let count = chips.get(field).len();
+        chips.selected = match (chips.selected.filter(|(f, _)| *f == field), left) {
+            (Some((_, ix)), true) => Some((field, ix.saturating_sub(1))),
+            (Some((_, ix)), false) => (ix + 1 < count).then_some((field, ix + 1)),
+            (None, true) if at_start && count > 0 => Some((field, count - 1)),
+            (None, _) => return false,
+        };
+        cx.notify();
+        true
+    }
+
     /// Any other key lets go of a selected chip.
     pub(super) fn chip_other_key(&mut self, cx: &mut Context<Self>) {
         if let Some(compose) = &mut self.compose
@@ -566,6 +595,66 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// Cc and Bcc in one faint pill, a line between them, beside To; each
+    /// leaves the pill once its row shows.
+    pub(super) fn render_cc_bcc(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        let fields: Vec<Field> = [(Field::Cc, compose.show_cc), (Field::Bcc, compose.show_bcc)]
+            .into_iter()
+            .filter(|(_, shown)| !shown)
+            .map(|(field, _)| field)
+            .collect();
+        let last = fields.len().checked_sub(1)?;
+        let line = fade(th.divider, super::FAINT_LINE);
+        let mut pill = div()
+            .flex_none()
+            .h(px(26.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .rounded_full()
+            .border_1()
+            .border_color(rgba(line))
+            .text_size(px(13.0))
+            .text_color(rgba(th.text_dim));
+        for (ix, field) in fields.into_iter().enumerate() {
+            let label = match field {
+                Field::Cc => tr!("compose-cc"),
+                _ => tr!("compose-bcc"),
+            };
+            if ix > 0 {
+                pill = pill.child(div().flex_none().w(px(1.0)).h(px(14.0)).bg(rgba(line)));
+            }
+            pill = pill.child(
+                div()
+                    .id(("show-copy-field", field.ix()))
+                    .h_full()
+                    .px(px(10.0))
+                    .flex()
+                    .items_center()
+                    .when(ix == 0, |d| d.rounded_l_full())
+                    .when(ix == last, |d| d.rounded_r_full())
+                    .cursor_pointer()
+                    .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        if let Some(c) = &mut this.compose {
+                            let input = if field == Field::Cc {
+                                c.show_cc = true;
+                                &c.cc
+                            } else {
+                                c.show_bcc = true;
+                                &c.bcc
+                            };
+                            window.focus(&input.focus_handle(cx), cx);
+                        }
+                        cx.notify();
+                    }))
+                    .child(div().relative().top(px(-self.pill_lift(13.0))).child(label)),
+            );
+        }
+        Some(pill.into_any_element())
+    }
+
     fn render_chip(
         &self,
         field: Field,
@@ -591,11 +680,13 @@ impl MailWindow {
         div()
             .id(("recipient-chip", id))
             .relative()
-            .flex_none()
+            // In a narrow field it gets shorter rather than running out.
+            .flex_shrink(1.0)
+            .min_w_0()
             .max_w(px(MAX_WIDTH))
             .h(px(HEIGHT))
-            .pl(px(10.0))
-            .pr(px(2.0))
+            .pl(px((HEIGHT - AVATAR) / 2.0 - 1.0))
+            .pr(px(4.0))
             .when(dragged, |d| d.opacity(0.4))
             .on_drag(drag, |drag, _, _, cx| cx.new(|_| drag.clone()))
             .flex()
@@ -620,9 +711,16 @@ impl MailWindow {
                     this.select_chip(field, ix, window, cx);
                 }
             }))
+            .child(div().flex_none().mr(px(4.0)).child(self.person_avatar(
+                chip.name.as_deref().unwrap_or(&chip.email),
+                &chip.email,
+                AVATAR,
+            )))
             .child(
                 div()
                     .min_w_0()
+                    .relative()
+                    .top(px(-self.pill_lift(14.0)))
                     .truncate()
                     .child(SharedString::from(chip.label().to_owned())),
             )

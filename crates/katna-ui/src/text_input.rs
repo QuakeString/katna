@@ -333,6 +333,11 @@ impl TextInput {
         self.hover_task = None;
     }
 
+    /// Whether the caret is at the start of the text, nothing selected.
+    pub fn caret_at_start(&self) -> bool {
+        self.selected_range == (0..0)
+    }
+
     pub fn text(&self) -> &str {
         &self.content
     }
