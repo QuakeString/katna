@@ -110,6 +110,7 @@ tracking-receipt-other = Leesbevestiging: { $who } heeft je bericht verwijderd o
 ## Remote images and pictures
 
 remote-hidden = Afbeeldingen in dit bericht zijn verborgen.
+remote-hidden-unconfirmed = Afbeeldingen verborgen: de afzender kon niet worden bevestigd.
 remote-show = Afbeeldingen tonen
 remote-always-show = Altijd tonen van deze afzender
 remote-picture-use = Gebruiken

@@ -114,6 +114,7 @@ tracking-receipt-other = אישור קריאה: ההודעה שלך נמחקה �
 ## Remote images and pictures
 
 remote-hidden = התמונות בהודעה הזו מוסתרות.
+remote-hidden-unconfirmed = התמונות מוסתרות: לא ניתן היה לאמת את השולח.
 remote-show = הצגת התמונות
 remote-always-show = תמיד להציג מהשולח הזה
 remote-picture-use = שימוש

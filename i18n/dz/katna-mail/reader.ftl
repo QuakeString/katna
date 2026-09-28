@@ -106,6 +106,7 @@ tracking-receipt-other = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ�
 ## Remote images and pictures
 
 remote-hidden = འཕྲིན་དོན་འདི་ནང་གི་པར་ཚུ་སྦ་ཡོད།
+remote-hidden-unconfirmed = པར་ཚུ་སྦ་ཡོད། གཏང་མི་ངོས་འཛིན་མ་ཚུགས།
 remote-show = པར་ཚུ་སྟོན།
 remote-always-show = གཏང་མི་འདི་ལས་ཨ་རྟག་ར་སྟོན།
 remote-picture-use = ལག་ལེན་འཐབ།

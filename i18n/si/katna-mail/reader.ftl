@@ -110,6 +110,7 @@ tracking-receipt-other = කියවූ බවට රිසිට්පත: { $
 ## Remote images and pictures
 
 remote-hidden = මෙම පණිවිඩයේ රූප සඟවා ඇත.
+remote-hidden-unconfirmed = රූප සඟවා ඇත: යවන්නා තහවුරු කළ නොහැකි විය.
 remote-show = රූප පෙන්වන්න
 remote-always-show = මෙම යවන්නාගෙන් සැමවිටම පෙන්වන්න
 remote-picture-use = භාවිත කරන්න

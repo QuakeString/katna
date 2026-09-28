@@ -110,6 +110,7 @@ tracking-receipt-other = የንባብ ማረጋገጫ፦ { $who } መልዕክ�
 ## Remote images and pictures
 
 remote-hidden = በዚህ መልዕክት ውስጥ ያሉ ምስሎች ተደብቀዋል።
+remote-hidden-unconfirmed = ምስሎች ተደብቀዋል፤ ላኪው ሊረጋገጥ አልቻለም።
 remote-show = ምስሎችን አሳይ
 remote-always-show = ከዚህ ላኪ ሁልጊዜ አሳይ
 remote-picture-use = ተጠቀም

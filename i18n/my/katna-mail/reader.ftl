@@ -98,6 +98,7 @@ tracking-receipt-other = ဖတ်ပြီးကြောင်း အသိအ
 ## Remote images and pictures
 
 remote-hidden = ဤမက်ဆေ့ဂျ်ရှိ ပုံများကို ဖျောက်ထားသည်။
+remote-hidden-unconfirmed = ပုံများကို ဖျောက်ထားသည်။ ပို့သူကို အတည်မပြုနိုင်ခဲ့ပါ။
 remote-show = ပုံများ ပြရန်
 remote-always-show = ဤပို့သူထံမှ အမြဲပြရန်
 remote-picture-use = အသုံးပြုရန်

@@ -110,6 +110,7 @@ tracking-receipt-other = Read receipt: dinelete o inasikaso ni { $who } ang mens
 ## Remote images and pictures
 
 remote-hidden = Nakatago ang mga larawan sa mensaheng ito.
+remote-hidden-unconfirmed = Nakatago ang mga larawan: hindi makumpirma ang nagpadala.
 remote-show = Ipakita ang mga larawan
 remote-always-show = Palaging ipakita mula sa nagpadalang ito
 remote-picture-use = Gamitin

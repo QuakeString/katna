@@ -98,6 +98,7 @@ tracking-receipt-other = Ìwé-ẹ̀rí kíkà: { $who } ti pa ìfiránṣẹ́ 
 ## Remote images and pictures
 
 remote-hidden = A ti fi àwọn àwòrán inú ìfiránṣẹ́ yìí pamọ́.
+remote-hidden-unconfirmed = A ti fi àwọn àwòrán pamọ́: a kò lè jẹ́rìí sí olùfiránṣẹ́.
 remote-show = Fi àwọn àwòrán hàn
 remote-always-show = Máa fi hàn nígbà gbogbo láti ọ̀dọ̀ olùfiránṣẹ́ yìí
 remote-picture-use = Lò ó

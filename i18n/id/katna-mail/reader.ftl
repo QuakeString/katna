@@ -98,6 +98,7 @@ tracking-receipt-other = Tanda terima baca: { $who } menghapus atau menangani pe
 ## Remote images and pictures
 
 remote-hidden = Gambar dalam pesan ini disembunyikan.
+remote-hidden-unconfirmed = Gambar disembunyikan: pengirim tidak dapat dikonfirmasi.
 remote-show = Tampilkan gambar
 remote-always-show = Selalu tampilkan dari pengirim ini
 remote-picture-use = Gunakan

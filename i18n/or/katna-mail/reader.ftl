@@ -110,6 +110,7 @@ tracking-receipt-other = ପଢ଼ିବା ରସିଦ: { $who } ଆପଣଙ�
 ## Remote images and pictures
 
 remote-hidden = ଏହି ମେସେଜର ଛବିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି।
+remote-hidden-unconfirmed = ଛବିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି: ପ୍ରେରକଙ୍କୁ ନିଶ୍ଚିତ କରାଯାଇପାରିଲା ନାହିଁ।
 remote-show = ଛବି ଦେଖାନ୍ତୁ
 remote-always-show = ଏହି ପ୍ରେରକଙ୍କଠାରୁ ସର୍ବଦା ଦେଖାନ୍ତୁ
 remote-picture-use = ବ୍ୟବହାର କରନ୍ତୁ

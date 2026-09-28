@@ -110,6 +110,7 @@ tracking-receipt-other = Lesebestätigung: { $who } hat Ihre Nachricht gelöscht
 ## Remote images and pictures
 
 remote-hidden = Bilder in dieser Nachricht sind ausgeblendet.
+remote-hidden-unconfirmed = Bilder ausgeblendet: Der Absender konnte nicht bestätigt werden.
 remote-show = Bilder anzeigen
 remote-always-show = Von diesem Absender immer anzeigen
 remote-picture-use = Verwenden

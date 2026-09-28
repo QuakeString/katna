@@ -110,6 +110,7 @@ tracking-receipt-other = पढ़ने की रसीद: { $who } ने �
 ## Remote images and pictures
 
 remote-hidden = इस मैसेज की इमेज छिपाई गई हैं।
+remote-hidden-unconfirmed = इमेज छिपाई गई हैं: भेजने वाले की पुष्टि नहीं हो सकी।
 remote-show = इमेज दिखाएं
 remote-always-show = इस भेजने वाले की इमेज हमेशा दिखाएं
 remote-picture-use = इस्तेमाल करें

@@ -1133,3 +1133,14 @@ vite, et pendant le téléchargement du courrier, il met la liste à jour
 une fois par lot au lieu de tous les quelques messages, si bien que le
 défilement et la saisie restent fluides pendant une synchronisation.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Voir où mène un lien"
+text = """
+Placez le pointeur sur un lien dans un message : l’adresse qu’il ouvre
+réellement s’affiche en bas du volet de lecture, avec le nom du site mis
+en évidence, quel que soit le texte du lien. Les images d’un expéditeur
+dont vous affichez toujours les images ne se chargent désormais que
+lorsque votre fournisseur de messagerie confirme que le message provient
+bien de lui.
+"""

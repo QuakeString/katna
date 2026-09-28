@@ -98,6 +98,7 @@ tracking-receipt-other = Xác nhận đã đọc: { $who } đã xóa hoặc xử
 ## Remote images and pictures
 
 remote-hidden = Hình ảnh trong thư này đang bị ẩn.
+remote-hidden-unconfirmed = Hình ảnh đang bị ẩn: không thể xác nhận người gửi.
 remote-show = Hiển thị hình ảnh
 remote-always-show = Luôn hiển thị hình ảnh từ người gửi này
 remote-picture-use = Dùng

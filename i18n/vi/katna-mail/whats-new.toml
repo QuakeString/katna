@@ -1064,3 +1064,13 @@ Katna Mail mở hộp thư đến lớn nhanh hơn khoảng một phần tư, v�
 đang tải về, danh sách chỉ được cập nhật một lần cho mỗi lô thay vì sau
 mỗi vài thư, nên việc cuộn và gõ vẫn mượt trong lúc đồng bộ.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Xem liên kết dẫn đến đâu"
+text = """
+Đặt con trỏ lên một liên kết trong thư, địa chỉ mà liên kết thực sự mở
+ra sẽ hiện ở cuối ngăn đọc, với tên trang web được làm nổi bật, bất kể
+văn bản của liên kết ghi gì. Hình ảnh từ người gửi mà bạn luôn hiển thị
+hình ảnh nay chỉ được tải khi nhà cung cấp thư của bạn xác nhận thư thực
+sự đến từ họ.
+"""

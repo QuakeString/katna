@@ -110,6 +110,7 @@ tracking-receipt-other = படித்த ரசீது: { $who } உங்�
 ## Remote images and pictures
 
 remote-hidden = இந்த மெசேஜில் உள்ள படங்கள் மறைக்கப்பட்டுள்ளன.
+remote-hidden-unconfirmed = படங்கள் மறைக்கப்பட்டுள்ளன: அனுப்புநரை உறுதிசெய்ய முடியவில்லை.
 remote-show = படங்களைக் காட்டு
 remote-always-show = இந்த அனுப்புநரிடமிருந்து எப்போதும் காட்டு
 remote-picture-use = பயன்படுத்து

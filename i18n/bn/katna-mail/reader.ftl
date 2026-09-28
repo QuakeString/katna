@@ -110,6 +110,7 @@ tracking-receipt-other = পঠিত রসিদ: { $who } আপনার ম
 ## Remote images and pictures
 
 remote-hidden = এই মেসেজের ছবিগুলি লুকানো আছে।
+remote-hidden-unconfirmed = ছবি লুকানো আছে: প্রেরককে নিশ্চিত করা যায়নি।
 remote-show = ছবি দেখান
 remote-always-show = এই প্রেরকের ছবি সবসময় দেখান
 remote-picture-use = ব্যবহার করুন

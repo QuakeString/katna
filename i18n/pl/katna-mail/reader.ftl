@@ -118,6 +118,7 @@ tracking-receipt-other = Potwierdzenie przeczytania: Twoja wiadomość została 
 ## Remote images and pictures
 
 remote-hidden = Obrazy w tej wiadomości są ukryte.
+remote-hidden-unconfirmed = Obrazy są ukryte: nie udało się potwierdzić nadawcy.
 remote-show = Pokaż obrazy
 remote-always-show = Zawsze pokazuj od tego nadawcy
 remote-picture-use = Użyj

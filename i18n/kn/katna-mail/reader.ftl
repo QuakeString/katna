@@ -110,6 +110,7 @@ tracking-receipt-other = ಓದಿದ ರಸೀದಿ: { $who } ಅವರು ನ
 ## Remote images and pictures
 
 remote-hidden = ಈ ಸಂದೇಶದಲ್ಲಿನ ಚಿತ್ರಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.
+remote-hidden-unconfirmed = ಚಿತ್ರಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ: ಕಳುಹಿಸುವವರನ್ನು ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 remote-show = ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಿ
 remote-always-show = ಈ ಕಳುಹಿಸುವವರಿಂದ ಯಾವಾಗಲೂ ತೋರಿಸಿ
 remote-picture-use = ಬಳಸಿ

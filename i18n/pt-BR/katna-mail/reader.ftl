@@ -114,6 +114,7 @@ tracking-receipt-other = Confirmação de leitura: { $who } excluiu ou tratou su
 ## Remote images and pictures
 
 remote-hidden = As imagens desta mensagem estão ocultas.
+remote-hidden-unconfirmed = Imagens ocultas: não foi possível confirmar o remetente.
 remote-show = Exibir imagens
 remote-always-show = Sempre exibir deste remetente
 remote-picture-use = Usar

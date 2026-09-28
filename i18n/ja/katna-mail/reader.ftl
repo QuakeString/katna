@@ -98,6 +98,7 @@ tracking-receipt-other = 開封確認: { $who } はあなたのメッセージ�
 ## Remote images and pictures
 
 remote-hidden = このメールの画像は表示されていません。
+remote-hidden-unconfirmed = 画像を表示していません。送信者を確認できませんでした。
 remote-show = 画像を表示
 remote-always-show = この送信者からの画像を常に表示
 remote-picture-use = 使用

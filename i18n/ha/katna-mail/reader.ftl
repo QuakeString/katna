@@ -110,6 +110,7 @@ tracking-receipt-other = Rasidin karantawa: { $who } ya share ko ya sarrafa saƙ
 ## Remote images and pictures
 
 remote-hidden = An ɓoye hotunan da ke cikin wannan saƙo.
+remote-hidden-unconfirmed = An ɓoye hotuna: ba a iya tabbatar da mai aikawa ba.
 remote-show = Nuna hotuna
 remote-always-show = Koyaushe nuna daga wannan mai aikawa
 remote-picture-use = Yi amfani

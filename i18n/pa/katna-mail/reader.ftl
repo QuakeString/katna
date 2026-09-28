@@ -110,6 +110,7 @@ tracking-receipt-other = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ �
 ## Remote images and pictures
 
 remote-hidden = ਇਸ ਸੁਨੇਹੇ ਵਿਚਲੇ ਚਿੱਤਰ ਲੁਕੇ ਹੋਏ ਹਨ।
+remote-hidden-unconfirmed = ਚਿੱਤਰ ਲੁਕੇ ਹੋਏ ਹਨ: ਭੇਜਣ ਵਾਲੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋ ਸਕੀ।
 remote-show = ਚਿੱਤਰ ਦਿਖਾਓ
 remote-always-show = ਇਸ ਭੇਜਣ ਵਾਲੇ ਤੋਂ ਹਮੇਸ਼ਾ ਦਿਖਾਓ
 remote-picture-use = ਵਰਤੋ

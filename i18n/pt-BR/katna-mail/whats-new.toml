@@ -1097,3 +1097,14 @@ rápido e, enquanto os e-mails são baixados, atualiza a lista uma vez por
 lote em vez de a cada poucas mensagens, então a rolagem e a digitação
 continuam fluidas durante a sincronização.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Veja para onde um link leva"
+text = """
+Deixe o ponteiro sobre um link em uma mensagem e o endereço que ele
+realmente abre aparece na parte inferior do painel de leitura, com o
+nome do site em destaque, seja qual for o texto do link. As imagens de
+um remetente de quem você sempre exibe imagens agora só são carregadas
+quando seu provedor de e-mail confirma que a mensagem realmente veio
+dele.
+"""

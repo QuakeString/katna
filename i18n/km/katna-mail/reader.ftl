@@ -98,6 +98,7 @@ tracking-receipt-other = បង្កាន់ដៃអាន៖ { $who } បា
 ## Remote images and pictures
 
 remote-hidden = រូបភាពក្នុងសារនេះត្រូវបានលាក់។
+remote-hidden-unconfirmed = រូបភាពត្រូវបានលាក់៖ មិនអាចបញ្ជាក់អ្នកផ្ញើបានទេ។
 remote-show = បង្ហាញរូបភាព
 remote-always-show = បង្ហាញជានិច្ចពីអ្នកផ្ញើនេះ
 remote-picture-use = ប្រើ

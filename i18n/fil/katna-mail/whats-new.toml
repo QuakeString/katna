@@ -1136,3 +1136,14 @@ inbox, at habang dina-download ang mail, isang beses kada batch nito
 ina-update ang listahan sa halip na pagkatapos ng bawat ilang mensahe,
 kaya nananatiling maayos ang pag-scroll at pag-type habang nagsi-sync.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Alamin kung saan patungo ang isang link"
+text = """
+Ilagay ang pointer sa isang link sa mensahe at lalabas sa ibaba ng pane
+ng pagbabasa ang address na talagang binubuksan nito, na may
+naka-highlight na pangalan ng site, anuman ang sinasabi ng teksto ng
+link. Ang mga larawan mula sa nagpadalang palagi mong ipinapakita ang
+mga larawan ay ilo-load na ngayon lamang kapag kinumpirma ng iyong mail
+provider na talagang galing sa kanya ang mensahe.
+"""

@@ -110,6 +110,7 @@ tracking-receipt-other = Stakabadhi ya kusoma: { $who } amefuta au ameshughuliki
 ## Remote images and pictures
 
 remote-hidden = Picha katika ujumbe huu zimefichwa.
+remote-hidden-unconfirmed = Picha zimefichwa: mtumaji hakuweza kuthibitishwa.
 remote-show = Onyesha picha
 remote-always-show = Onyesha kila wakati kutoka kwa mtumaji huyu
 remote-picture-use = Tumia

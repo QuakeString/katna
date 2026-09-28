@@ -118,6 +118,7 @@ tracking-receipt-other = Сповіщення про прочитання: { $wh
 ## Remote images and pictures
 
 remote-hidden = Зображення в цьому листі приховано.
+remote-hidden-unconfirmed = Зображення приховано: не вдалося підтвердити відправника.
 remote-show = Показати зображення
 remote-always-show = Завжди показувати від цього відправника
 remote-picture-use = Вибрати
