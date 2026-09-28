@@ -220,8 +220,8 @@ impl Store {
 
     /// Mail worth a new-mail notification: unread messages of `account`
     /// in its inbox, in the Primary tab or not classified, stored after
-    /// message `after` and dated `since` (Unix seconds) or later. Oldest
-    /// first, at most `limit`.
+    /// message `after` and dated `since` (Unix seconds) or later. The
+    /// newest `limit`, oldest first.
     pub fn new_inbox_mail(
         &self,
         account: AccountId,
@@ -230,13 +230,15 @@ impl Store {
         limit: u32,
     ) -> Result<Vec<MessageId>> {
         let mut stmt = self.mail.prepare_cached(
-            "SELECT m.id FROM message m
-             WHERE m.account_id = ?1 AND m.id > ?2 AND (m.flags & ?3) = 0
-               AND m.date >= ?4 AND (m.category IS NULL OR m.category = ?5)
-               AND EXISTS (SELECT 1 FROM message_location l
-                           JOIN folder f ON f.id = l.folder_id
-                           WHERE l.message_id = m.id AND f.role = ?6)
-             ORDER BY m.id LIMIT ?7",
+            "SELECT id FROM (
+               SELECT m.id FROM message m
+               WHERE m.account_id = ?1 AND m.id > ?2 AND (m.flags & ?3) = 0
+                 AND m.date >= ?4 AND (m.category IS NULL OR m.category = ?5)
+                 AND EXISTS (SELECT 1 FROM message_location l
+                             JOIN folder f ON f.id = l.folder_id
+                             WHERE l.message_id = m.id AND f.role = ?6)
+               ORDER BY m.id DESC LIMIT ?7)
+             ORDER BY id",
         )?;
         let unwanted = (MessageFlags::SEEN | MessageFlags::DELETED).bits();
         let rows = stmt.query_map(
@@ -1045,7 +1047,7 @@ mod tests {
         );
         assert_eq!(
             store.new_inbox_mail(account, before, 1_000, 1).unwrap(),
-            [primary]
+            [unclassified]
         );
     }
 
