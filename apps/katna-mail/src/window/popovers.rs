@@ -83,7 +83,7 @@ impl MailWindow {
         let closed = if self.context_menu.is_some() {
             self.close_context_menu(cx);
             true
-        } else if self.close_snooze_menu(cx) {
+        } else if self.close_delete_ask(cx) || self.close_snooze_menu(cx) {
             true
         } else if self.print_preview_open() {
             self.close_print_preview(window, cx);
@@ -128,6 +128,7 @@ impl MailWindow {
         self.compose.is_some()
             || self.add_account.is_some()
             || self.danger.is_some()
+            || self.delete_ask.is_some()
             || self.new_label.is_some()
             || self.whats_new.is_some()
             || self.share_ask.is_some()

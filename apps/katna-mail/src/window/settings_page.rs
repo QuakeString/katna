@@ -546,6 +546,20 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                tr!("settings-general-confirm-delete"),
+                None,
+                self.switch_row(
+                    "page-confirm-delete",
+                    tr!("settings-general-confirm-delete-ask"),
+                    tr!("settings-general-confirm-delete-ask-detail"),
+                    view.confirm_delete,
+                    Change::ConfirmDelete(!view.confirm_delete),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
                 tr!("settings-general-reply-button"),
                 None,
                 self.switch_row(

@@ -73,6 +73,8 @@ pub(super) enum Change {
     MarkRead(MarkRead),
     /// What opens after the open conversation is moved away.
     AutoAdvance(AutoAdvance),
+    /// Ask before deleting two or more conversations.
+    ConfirmDelete(bool),
     RemoteImages(bool),
     ReplyAll(bool),
     ImportantMarkers(bool),
@@ -474,6 +476,7 @@ impl MailWindow {
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::MarkRead(when) => view.mark_read = when,
             Change::AutoAdvance(then) => view.auto_advance = then,
+            Change::ConfirmDelete(on) => view.confirm_delete = on,
             Change::RemoteImages(on) => {
                 view.remote_images = on;
                 self.remote.always = on;
