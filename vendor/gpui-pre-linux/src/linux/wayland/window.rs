@@ -1848,6 +1848,16 @@ impl PlatformWindow for WaylandWindow {
     }
 
     fn activate(&self) {
+        let state = self.borrow();
+        // A token another app passed along for the user's click lets the
+        // window take focus (Katna).
+        if let (Some(token), Some(activation)) =
+            (crate::linux::take_activation_token(), &state.globals.activation)
+        {
+            activation.activate(token, &state.surface);
+            return;
+        }
+        drop(state);
         // Try to request an activation token. Even though the activation is likely going to be rejected,
         // KWin and Mutter can use the app_id to visually indicate we're requesting attention.
         let state = self.borrow();

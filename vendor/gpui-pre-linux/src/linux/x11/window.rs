@@ -1659,6 +1659,8 @@ impl PlatformWindow for X11Window {
     }
 
     fn activate(&self) {
+        // Only Wayland uses a passed token (Katna).
+        let _ = crate::linux::take_activation_token();
         let data = [1, xproto::Time::CURRENT_TIME.into(), 0, 0, 0];
         let message = xproto::ClientMessageEvent::new(
             32,
