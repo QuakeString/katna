@@ -20,6 +20,13 @@ compose-back-to-mail = Back to the mail window
 # Tooltip in a reply written at the foot of a conversation: opens it in
 # the compose window.
 compose-pop-out-reply = Pop out reply
+# A reply at the foot of a conversation shows its recipients on one line
+# until it is clicked. Tooltip of that line: shows the From, To, Cc and
+# Bcc rows.
+compose-edit-recipients = Edit recipients
+# On that line, before the names in Cc and in Bcc.
+compose-summary-cc = Cc: { $names }
+compose-summary-bcc = Bcc: { $names }
 # Tooltip of the "…" button under a reply: shows the quoted message.
 compose-show-trimmed = Show trimmed content
 # The same button once the quoted message shows: hides it again.

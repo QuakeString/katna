@@ -34,6 +34,8 @@ pub(in crate::window) enum Popup {
     Send,
     /// The accounts to send from, under the From row.
     From,
+    /// Reply, reply to all or forward, under an inline reply's icon.
+    Kind,
     /// Schedule send's suggested times.
     Schedule,
     /// Schedule send's date and time picker.

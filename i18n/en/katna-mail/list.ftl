@@ -607,4 +607,6 @@ toast-send-undone = Sending undone.
 toast-too-late-to-undo-send = Too late to undo: the message has already been sent.
 # The snackbar's button that takes the action back.
 toast-undo = Undo
+# The snackbar's x, which closes it.
+toast-close = Close
 toast-no-spam-folder = This account has no spam folder.

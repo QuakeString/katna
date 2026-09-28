@@ -88,6 +88,20 @@ impl Chip {
         })
     }
 
+    /// The name, if the address has one.
+    pub(super) fn name(&self) -> Option<&str> {
+        if self.valid {
+            self.name.as_deref()
+        } else {
+            None
+        }
+    }
+
+    /// The address, or the text as typed when it is not one.
+    pub(super) fn email(&self) -> &str {
+        if self.valid { &self.email } else { &self.typed }
+    }
+
     /// What the chip shows: the name, else the address.
     fn label(&self) -> &str {
         if !self.valid {
@@ -727,6 +741,7 @@ impl MailWindow {
                     cx.listener(move |this, _, window, cx| {
                         if let Some(c) = &mut this.compose {
                             c.popup = None;
+                            c.header_open = true;
                             match field {
                                 Field::Cc => c.show_cc = true,
                                 Field::Bcc => c.show_bcc = true,
