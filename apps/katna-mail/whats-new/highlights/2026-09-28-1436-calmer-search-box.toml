@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "Awesome bar"
+title = "Search shows its shortcut"
 text = """
-The search box now reads "Awesome bar, search anything" and shows its
-keyboard shortcut beside it, as set in Settings > Shortcuts. Clicked into,
-it keeps its color and shows a faint edge instead of turning darker with a
-shadow. The folders that float over the list now stand clear of the bottom
-edge too.
+The search box shows its keyboard shortcut beside "Search mail", as set in
+Settings > Shortcuts. Clicked into, it keeps its color and shows a faint
+edge instead of turning darker with a shadow. The folders that float over
+the list now stand clear of the bottom edge too.
 """

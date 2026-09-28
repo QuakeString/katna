@@ -286,7 +286,7 @@ impl MailWindow {
     fn render_search_hint(&self, th: &Theme, window: &gpui::Window) -> Option<AnyElement> {
         let keys = super::keymap::hint("search", &self.config.shortcuts)?;
         let placeholder = super::text_width(
-            &tr!("search-awesome"),
+            &tr!("search-mail"),
             16.0,
             FontWeight::NORMAL,
             self.font.as_ref(),

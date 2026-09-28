@@ -676,7 +676,7 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
-        let search = cx.new(|cx| TextInput::new(katna_i18n::tr!("search-awesome"), cx));
+        let search = cx.new(|cx| TextInput::new(katna_i18n::tr!("search-mail"), cx));
         let subscriptions = vec![cx.subscribe_in(&search, window, Self::on_search_event)];
         let config_path = paths.config_file();
         let config = Config::load(&config_path).unwrap_or_else(|err| {

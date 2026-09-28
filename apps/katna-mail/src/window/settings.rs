@@ -568,7 +568,7 @@ impl MailWindow {
                 let placeholder = if self.settings_page.is_some() {
                     katna_i18n::tr!("search-settings")
                 } else {
-                    katna_i18n::tr!("search-awesome")
+                    katna_i18n::tr!("search-mail")
                 };
                 self.search
                     .update(cx, |search, _| search.set_placeholder(placeholder));

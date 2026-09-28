@@ -576,7 +576,7 @@ impl MailWindow {
             let query = self.mail_query.take().unwrap_or_default();
             let searching = matches!(self.listing, Some(super::Listing::Search { .. }));
             self.search.update(cx, |search, cx| {
-                search.set_placeholder(katna_i18n::tr!("search-awesome"));
+                search.set_placeholder(katna_i18n::tr!("search-mail"));
                 search.set_text(if searching { query } else { String::new() }, cx);
             });
         }
