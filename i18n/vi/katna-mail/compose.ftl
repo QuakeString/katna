@@ -15,6 +15,7 @@ compose-pop-out-reply = Mở thư trả lời riêng
 compose-edit-recipients = Sửa người nhận
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } người nữa
 compose-show-trimmed = Hiện nội dung bị rút gọn
 compose-hide-trimmed = Ẩn nội dung bị rút gọn
 compose-remove-trimmed = Xóa phần trích dẫn
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } quá lớn: một thư chỉ mang được t�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
 compose-attachments-total = { $count } tệp, { $size }
+compose-drive-note = { $name } vượt quá { $limit }, nên tệp sẽ được đưa lên Google Drive của bạn và thư sẽ kèm một liên kết.
+compose-drive-tip = Trong Google Drive của bạn; thư kèm một liên kết
+compose-drive-uploading = Đang tải lên { $percent }%
+compose-drive-allow = Cho phép Drive
+compose-drive-allow-tip = Đăng nhập lại bằng Google để Katna đưa các tệp lớn vào Drive của bạn
+compose-drive-retry = Thử lại
+compose-drive-sends-when-uploaded = Sẽ gửi sau khi { $name } tải lên xong
+compose-drive-not-uploaded = { $name } chưa có trong Google Drive
+compose-drive-share-failed = Không thể chia sẻ các tệp trong Google Drive: { $error }
+compose-drive-share-title = Chia sẻ các tệp với mọi người?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive không thể chia sẻ các tệp với { $addresses }, người không có tài khoản Google. Thay vào đó, bất kỳ ai có liên kết đều có thể mở chúng.
+}
+compose-drive-share-link = Chia sẻ bằng liên kết
+compose-drive-send-without = Gửi mà không chia sẻ
+compose-drive-share-cancel = Hủy
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } vượt quá { $limit }, nên tệp sẽ được đưa lên OneDrive của bạn và thư sẽ kèm một liên kết.
+compose-onedrive-tip = Trong OneDrive của bạn; thư kèm một liên kết
+compose-onedrive-allow = Cho phép OneDrive
+compose-onedrive-allow-tip = Đăng nhập lại bằng Microsoft để Katna đưa các tệp lớn vào OneDrive của bạn
+compose-onedrive-not-uploaded = { $name } chưa có trong OneDrive
+compose-onedrive-share-failed = Không thể chia sẻ các tệp trong OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive không thể chia sẻ các tệp với { $addresses }. Thay vào đó, bất kỳ ai có liên kết đều có thể mở chúng.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Thả tệp vào đây
 compose-drop-here = Thả vào đây
 compose-paste-keep-formatting = Giữ định dạng

@@ -38,3 +38,4 @@ search-clear = Hapus penelusuran
 search-options-show = Tampilkan opsi penelusuran
 settings = Setelan
 account-add = Tambahkan akun
+account-wheel-hint = Gulir untuk beralih akun

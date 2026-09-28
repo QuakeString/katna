@@ -55,3 +55,6 @@ activity-range-custom = Aangepast
 activity-range-from = Van
 activity-range-to = Tot
 activity-range-apply = Toepassen
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Alle accounts
+activity-accounts-tip = Eén account of alle tonen

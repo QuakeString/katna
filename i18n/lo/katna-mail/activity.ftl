@@ -46,3 +46,6 @@ activity-range-custom = ກຳນົດເອງ
 activity-range-from = ຈາກ
 activity-range-to = ເຖິງ
 activity-range-apply = ນຳໃຊ້
+activity-range-of = { $days } · { $account }
+activity-accounts-all = ທຸກບັນຊີ
+activity-accounts-tip = ສະແດງໜຶ່ງບັນຊີ ຫຼື ທຸກບັນຊີ

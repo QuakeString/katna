@@ -15,6 +15,7 @@ compose-pop-out-reply = Vula impendulo ngokwehlukile
 compose-edit-recipients = Hlela abamukeli
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } ngaphezulu
 compose-show-trimmed = Bonisa okuqukethwe okufinyeziwe
 compose-hide-trimmed = Fihla okuqukethwe okufinyeziwe
 compose-remove-trimmed = Susa umbhalo ocashuniwe
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] Ifayela elingu-{ $count }, { $size }
    *[other] Amafayela angu-{ $count }, { $size }
 }
+compose-drive-note = { $name } idlula { $limit }, ngakho iya ku-Google Drive yakho futhi umlayezo uphethe isixhumanisi.
+compose-drive-tip = Ku-Google Drive yakho; umlayezo uphethe isixhumanisi
+compose-drive-uploading = Iyalayisha { $percent }%
+compose-drive-allow = Vumela i-Drive
+compose-drive-allow-tip = Ngena ngeGoogle futhi ukuze i-Katna ikwazi ukufaka amafayela amakhulu ku-Drive yakho
+compose-drive-retry = Zama futhi
+compose-drive-sends-when-uploaded = Kuzothunyelwa uma { $name } isilayishiwe
+compose-drive-not-uploaded = { $name } ayikho ku-Google Drive okwamanje
+compose-drive-share-failed = Ayikwazanga ukwabelana ngamafayela ku-Google Drive: { $error }
+compose-drive-share-title = Wabelane amafayela nabo bonke?
+compose-drive-share-text = { $count ->
+    [one] I-Google Drive ayikwazi ukwabelana amafayela no-{ $addresses }, ongenayo i-akhawunti ye-Google. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
+   *[other] I-Google Drive ayikwazi ukwabelana amafayela nabo-{ $addresses }, abangenayo i-akhawunti ye-Google. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
+}
+compose-drive-share-link = Wabelane ngesixhumanisi
+compose-drive-send-without = Thumela ngaphandle kokwabelana
+compose-drive-share-cancel = Khansela
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } idlula { $limit }, ngakho iya ku-OneDrive yakho futhi umlayezo uphethe isixhumanisi.
+compose-onedrive-tip = Ku-OneDrive yakho; umlayezo uphethe isixhumanisi
+compose-onedrive-allow = Vumela i-OneDrive
+compose-onedrive-allow-tip = Ngena ngeMicrosoft futhi ukuze i-Katna ikwazi ukufaka amafayela amakhulu ku-OneDrive yakho
+compose-onedrive-not-uploaded = { $name } ayikho ku-OneDrive okwamanje
+compose-onedrive-share-failed = Ayikwazanga ukwabelana ngamafayela ku-OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] I-OneDrive ayikwazi ukwabelana amafayela no-{ $addresses }. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
+   *[other] I-OneDrive ayikwazi ukwabelana amafayela nabo-{ $addresses }. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Yehlisela amafayela lapha
 compose-drop-here = Yehlisela lapha
 compose-paste-keep-formatting = Gcina ukufometha

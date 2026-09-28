@@ -38,3 +38,4 @@ search-clear = 検索をクリア
 search-options-show = 検索オプションを表示
 settings = 設定
 account-add = アカウントを追加
+account-wheel-hint = マウス ホイールでアカウントを切り替え

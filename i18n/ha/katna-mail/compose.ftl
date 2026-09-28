@@ -15,6 +15,7 @@ compose-pop-out-reply = Buɗe amsar a taga ta daban
 compose-edit-recipients = Gyara masu karɓa
 compose-summary-cc = Kwafi: { $names }
 compose-summary-bcc = Kwafi a ɓoye: { $names }
+compose-more-recipients = { $count } ƙari
 compose-show-trimmed = Nuna abin da aka taƙaita
 compose-hide-trimmed = Ɓoye abin da aka taƙaita
 compose-remove-trimmed = Cire rubutun da aka ambato
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] fayil { $count }, { $size }
    *[other] fayiloli { $count }, { $size }
 }
+compose-drive-note = { $name } ya wuce { $limit }, don haka ana ajiye shi a Google Drive ɗinka kuma saƙon yana ɗauke da mahaɗi.
+compose-drive-tip = A Google Drive ɗinka; saƙon yana ɗauke da mahaɗi
+compose-drive-uploading = Ana ɗorawa { $percent }%
+compose-drive-allow = Ba da izinin Drive
+compose-drive-allow-tip = Sake shiga da Google don Katna ta iya sanya manyan fayiloli a Drive ɗinka
+compose-drive-retry = Sake gwadawa
+compose-drive-sends-when-uploaded = Za a aika bayan an ɗora { $name }
+compose-drive-not-uploaded = { $name } bai riga ya shiga Google Drive ba
+compose-drive-share-failed = Ba a iya raba fayilolin a Google Drive ba: { $error }
+compose-drive-share-title = A raba fayilolin da kowa?
+compose-drive-share-text = { $count ->
+    [one] Google Drive ba zai iya raba fayilolin da { $addresses }, wanda ba shi da asusun Google ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+   *[other] Google Drive ba zai iya raba fayilolin da { $addresses }, waɗanda ba su da asusun Google ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+}
+compose-drive-share-link = Raba ta hanyar mahaɗi
+compose-drive-send-without = Aika ba tare da rabawa ba
+compose-drive-share-cancel = Soke
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ya wuce { $limit }, don haka ana ajiye shi a OneDrive ɗinka kuma saƙon yana ɗauke da mahaɗi.
+compose-onedrive-tip = A OneDrive ɗinka; saƙon yana ɗauke da mahaɗi
+compose-onedrive-allow = Ba da izinin OneDrive
+compose-onedrive-allow-tip = Sake shiga da Microsoft don Katna ta iya sanya manyan fayiloli a OneDrive ɗinka
+compose-onedrive-not-uploaded = { $name } bai riga ya shiga OneDrive ba
+compose-onedrive-share-failed = Ba a iya raba fayilolin a OneDrive ba: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive ba zai iya raba fayilolin da { $addresses } ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+   *[other] OneDrive ba zai iya raba fayilolin da { $addresses } ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari

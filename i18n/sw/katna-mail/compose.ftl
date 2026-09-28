@@ -15,6 +15,7 @@ compose-pop-out-reply = Fungua jibu nje
 compose-edit-recipients = Hariri wapokeaji
 compose-summary-cc = Nakala: { $names }
 compose-summary-bcc = Nakala fiche: { $names }
+compose-more-recipients = wengine { $count }
 compose-show-trimmed = Onyesha maudhui yaliyofupishwa
 compose-hide-trimmed = Ficha maudhui yaliyofupishwa
 compose-remove-trimmed = Ondoa maandishi yaliyonukuliwa
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] Faili { $count }, { $size }
    *[other] Faili { $count }, { $size }
 }
+compose-drive-note = { $name } ni kubwa kuliko { $limit }, kwa hiyo huenda kwenye Google Drive yako na ujumbe hubeba kiungo.
+compose-drive-tip = Kwenye Google Drive yako; ujumbe hubeba kiungo
+compose-drive-uploading = Inapakia { $percent }%
+compose-drive-allow = Ruhusu Drive
+compose-drive-allow-tip = Ingia tena kwa Google ili Katna iweke faili kubwa kwenye Drive yako
+compose-drive-retry = Jaribu tena
+compose-drive-sends-when-uploaded = Ujumbe utatumwa { $name } ikishapakiwa
+compose-drive-not-uploaded = { $name } bado haiko kwenye Google Drive
+compose-drive-share-failed = Imeshindwa kushiriki faili kwenye Google Drive: { $error }
+compose-drive-share-title = Shiriki faili na kila mtu?
+compose-drive-share-text = { $count ->
+    [one] Google Drive haiwezi kushiriki faili na { $addresses }, ambaye hana akaunti ya Google. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+   *[other] Google Drive haiwezi kushiriki faili na { $addresses }, ambao hawana akaunti ya Google. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+}
+compose-drive-share-link = Shiriki kwa kiungo
+compose-drive-send-without = Tuma bila kushiriki
+compose-drive-share-cancel = Ghairi
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ni kubwa kuliko { $limit }, kwa hiyo huenda kwenye OneDrive yako na ujumbe hubeba kiungo.
+compose-onedrive-tip = Kwenye OneDrive yako; ujumbe hubeba kiungo
+compose-onedrive-allow = Ruhusu OneDrive
+compose-onedrive-allow-tip = Ingia tena kwa Microsoft ili Katna iweke faili kubwa kwenye OneDrive yako
+compose-onedrive-not-uploaded = { $name } bado haiko kwenye OneDrive
+compose-onedrive-share-failed = Imeshindwa kushiriki faili kwenye OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive haiwezi kushiriki faili na { $addresses }. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+   *[other] OneDrive haiwezi kushiriki faili na { $addresses }. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Dondosha faili hapa
 compose-drop-here = Dondosha hapa
 compose-paste-keep-formatting = Dumisha uumbizaji

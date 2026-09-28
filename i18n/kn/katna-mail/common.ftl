@@ -50,3 +50,4 @@ search-clear = ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿ�
 search-options-show = ಹುಡುಕಾಟದ ಆಯ್ಕೆಗಳನ್ನು ತೋರಿಸಿ
 settings = ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 account-add = ಖಾತೆಯನ್ನು ಸೇರಿಸಿ
+account-wheel-hint = ಖಾತೆ ಬದಲಿಸಲು ಸ್ಕ್ರಾಲ್ ಮಾಡಿ

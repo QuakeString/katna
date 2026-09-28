@@ -15,6 +15,7 @@ compose-pop-out-reply = ເປີດການຕອບກັບໃນໜ້າ�
 compose-edit-recipients = ແກ້ໄຂຜູ້ຮັບ
 compose-summary-cc = ສຳເນົາ: { $names }
 compose-summary-bcc = ສຳເນົາລັບ: { $names }
+compose-more-recipients = ອີກ { $count } ຄົນ
 compose-show-trimmed = ສະແດງເນື້ອຫາທີ່ຖືກຕັດອອກ
 compose-hide-trimmed = ເຊື່ອງເນື້ອຫາທີ່ຖືກຕັດອອກ
 compose-remove-trimmed = ລຶບຂໍ້ຄວາມທີ່ອ້າງອີງອອກ
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄ�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
 compose-attachments-total = { $count } ໄຟລ໌, { $size }
+compose-drive-note = { $name } ໃຫຍ່ກວ່າ { $limit } ຈຶ່ງຈະຖືກອັບໂຫຼດໄປທີ່ Google Drive ຂອງທ່ານ ແລະ ຂໍ້ຄວາມຈະມີລິ້ງ
+compose-drive-tip = ຢູ່ໃນ Google Drive ຂອງທ່ານ; ຂໍ້ຄວາມຈະມີລິ້ງ
+compose-drive-uploading = ກຳລັງອັບໂຫຼດ { $percent }%
+compose-drive-allow = ອະນຸຍາດ Drive
+compose-drive-allow-tip = ເຂົ້າສູ່ລະບົບດ້ວຍ Google ອີກຄັ້ງ ເພື່ອໃຫ້ Katna ວາງໄຟລ໌ໃຫຍ່ໃນ Drive ຂອງທ່ານໄດ້
+compose-drive-retry = ລອງໃໝ່
+compose-drive-sends-when-uploaded = ຈະສົ່ງເມື່ອອັບໂຫຼດ { $name } ແລ້ວ
+compose-drive-not-uploaded = { $name } ຍັງບໍ່ຢູ່ໃນ Google Drive
+compose-drive-share-failed = ບໍ່ສາມາດແບ່ງປັນໄຟລ໌ໃນ Google Drive ໄດ້: { $error }
+compose-drive-share-title = ແບ່ງປັນໄຟລ໌ໃຫ້ທຸກຄົນບໍ?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive ແບ່ງປັນໄຟລ໌ກັບ { $addresses } ຜູ້ທີ່ບໍ່ມີບັນຊີ Google ບໍ່ໄດ້. ແຕ່ທຸກຄົນທີ່ມີລິ້ງຈະເປີດໄຟລ໌ໄດ້ແທນ.
+}
+compose-drive-share-link = ແບ່ງປັນດ້ວຍລິ້ງ
+compose-drive-send-without = ສົ່ງໂດຍບໍ່ແບ່ງປັນ
+compose-drive-share-cancel = ຍົກເລີກ
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ໃຫຍ່ກວ່າ { $limit } ຈຶ່ງຈະຖືກອັບໂຫຼດໄປທີ່ OneDrive ຂອງທ່ານ ແລະ ຂໍ້ຄວາມຈະມີລິ້ງ
+compose-onedrive-tip = ຢູ່ໃນ OneDrive ຂອງທ່ານ; ຂໍ້ຄວາມຈະມີລິ້ງ
+compose-onedrive-allow = ອະນຸຍາດ OneDrive
+compose-onedrive-allow-tip = ເຂົ້າສູ່ລະບົບດ້ວຍ Microsoft ອີກຄັ້ງ ເພື່ອໃຫ້ Katna ວາງໄຟລ໌ໃຫຍ່ໃນ OneDrive ຂອງທ່ານໄດ້
+compose-onedrive-not-uploaded = { $name } ຍັງບໍ່ຢູ່ໃນ OneDrive
+compose-onedrive-share-failed = ບໍ່ສາມາດແບ່ງປັນໄຟລ໌ໃນ OneDrive ໄດ້: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive ແບ່ງປັນໄຟລ໌ກັບ { $addresses } ບໍ່ໄດ້. ແຕ່ທຸກຄົນທີ່ມີລິ້ງຈະເປີດໄຟລ໌ໄດ້ແທນ.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
 compose-drop-here = ວາງໄວ້ບ່ອນນີ້
 compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ

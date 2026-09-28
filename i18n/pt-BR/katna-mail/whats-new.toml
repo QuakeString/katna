@@ -980,3 +980,93 @@ assinaturas continuem válidas. E-mails em texto simples não podem mostrar
 aberturas, mas seus links são rastreados, para que você veja quando alguém
 acessa um.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Responder recomeça do zero depois de fechar a janela de uma mensagem"
+text = """
+Fechar uma mensagem escrita em sua própria janela agora a mantém em
+Rascunhos, e Responder, Responder a todos e Encaminhar voltam a abrir uma
+mensagem nova em vez de trazer a antiga de volta.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Uma barra de pesquisa fosca"
+text = """
+Com o fundo desfocado ativado, a barra de pesquisa deixa o desfoque passar
+como a barra ao redor dela, em vez de ficar por cima como uma pílula cinza
+sólida.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Role sobre a sua imagem para trocar de conta"
+text = """
+Com o ponteiro sobre a imagem da conta, no canto superior direito, gire a
+roda do mouse para ir à conta seguinte ou anterior, uma conta por clique. A
+imagem rola até a nova conta, como o nome do app rola quando você troca de
+app, e escolher uma conta no cartão a faz rolar do mesmo jeito.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Espaço para muitos destinatários"
+text = """
+Os destinatários depois da primeira linha agora usam toda a largura, e uma
+lista longa rola dentro de poucas linhas, de modo que a própria mensagem
+sempre fica ao alcance. Saia do campo e ele se recolhe em uma linha, como
+"Kay, Sam, mais 19"; clique nele para ver todos de novo.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Relatório de atividade de uma conta"
+text = """
+O relatório de atividade agora tem um seletor de conta ao lado das
+datas. Escolha Todas as contas ou uma delas, e as mensagens rastreadas,
+as taxas, o gráfico, os assuntos e Sua caixa de correio acompanham a
+escolha. O relatório informa qual conta mostra e lembra da sua escolha.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Mais recente e Mais antiga sempre na barra"
+text = """
+Por mais estreito que seja o painel de leitura, o contador e as setas Mais
+recente e Mais antiga ficam à direita da barra de ferramentas. Os botões
+que você menos usa vão, em vez disso, um a um para o menu Mais, incluindo
+os interruptores de detalhes do contato e cores originais.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Envie arquivos de qualquer tamanho"
+text = """
+Com uma conta conectada pelo Google, um arquivo acima do limite de 25 MB
+do e-mail vai para o seu Google Drive assim que você o anexa, e a mensagem
+leva o link dele, como no Gmail. Ele é compartilhado com os destinatários
+quando você pressiona Enviar; o Katna só pergunta se não for possível dar
+acesso a alguém.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Listas longas de destinatários mais suaves"
+text = """
+Uma lista longa de destinatários agora tem a própria barra de rolagem e
+avança uma linha por vez; a conversa só rola quando a lista chega ao
+fim. Adicionar destinatários não faz mais os botões abaixo pularem.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Verificar novos e-mails"
+text = """
+Clique com o botão direito em uma pasta ou conta no painel de pastas
+para escolher “Verificar novos e-mails”, “Marcar todas como lidas”, uma
+nova pasta dentro dela ou “Esvaziar a lixeira”. “Atualizar”, acima da
+lista, agora também busca no servidor. Enquanto o Katna verifica, as
+setas giram em “Atualizar” e ao lado da Caixa de entrada, e “Verificando
+novos e-mails…” aparece no topo se demorar mais que um instante.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Arquivos grandes pelo OneDrive"
+text = """
+Outlook.com, Hotmail e outras contas Microsoft agora enviam arquivos
+acima do limite do e-mail como as contas Google: o arquivo vai para o
+seu OneDrive assim que você o anexa, e a mensagem leva o link dele, como
+no Outlook.
+"""

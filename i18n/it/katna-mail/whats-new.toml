@@ -988,3 +988,97 @@ ogni destinatario viene firmata o crittografata singolarmente, così le firme
 restano valide. Le email in testo semplice non possono mostrare le aperture,
 ma i loro link vengono tracciati, così vedi quando qualcuno ne segue uno.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Rispondi riparte da zero dopo la chiusura della finestra di un messaggio"
+text = """
+Chiudere un messaggio scritto nella sua finestra ora lo conserva in Bozze, e
+Rispondi, Rispondi a tutti e Inoltra aprono di nuovo un messaggio nuovo
+invece di riportare quello vecchio.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Una barra di ricerca satinata"
+text = """
+Con lo sfondo sfocato attivo, la barra di ricerca lascia passare la
+sfocatura come la barra che la circonda, invece di poggiarci sopra come una
+pillola grigia opaca.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Scorri sulla tua immagine per cambiare account"
+text = """
+Con il puntatore sull'immagine dell'account in alto a destra, gira la
+rotellina del mouse per passare all'account successivo o precedente, un
+account per scatto. L'immagine scorre fino al nuovo account, come il nome
+dell'app scorre quando cambi app, e scegliere un account dalla scheda lo fa
+scorrere allo stesso modo.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Spazio per tanti destinatari"
+text = """
+I destinatari dopo la prima riga ora usano tutta la larghezza, e un lungo
+elenco scorre entro poche righe, così il messaggio resta sempre a portata di
+mano. Esci dal campo e si riduce a una riga, come "Kay, Sam, altri 19"; fai
+clic per rivederli tutti.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Report attività per un account"
+text = """
+Il report attività ora ha un selettore di account accanto alle date.
+Scegli Tutti gli account o uno di essi, e i messaggi tracciati, i tassi,
+il grafico, gli oggetti e La tua casella di posta si adeguano. Il report
+indica quale account mostra e ricorda la tua scelta.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Più recente e Meno recente sempre nella barra"
+text = """
+Per quanto sia stretto il riquadro di lettura, il contatore e le frecce
+Più recente e Meno recente restano a destra della sua barra degli
+strumenti. I pulsanti che usi meno passano invece uno a uno nel menu
+Altro, compresi gli interruttori dei dettagli del contatto e dei colori
+originali.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Invia file di qualsiasi dimensione"
+text = """
+Con un account che ha effettuato l’accesso con Google, un file oltre il
+limite di 25 MB della posta va nel tuo Google Drive appena lo alleghi, e
+il messaggio contiene il suo link, come in Gmail. Viene condiviso con i
+destinatari quando premi Invia; Katna chiede solo se a qualcuno non si può
+dare l’accesso.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Elenchi di destinatari lunghi più scorrevoli"
+text = """
+Un lungo elenco di destinatari ha ora una barra di scorrimento propria e
+avanza una riga alla volta; la conversazione scorre solo quando l’elenco
+è arrivato in fondo. Aggiungere destinatari non fa più saltare i
+pulsanti sotto.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Controlla nuova posta"
+text = """
+Fai clic con il pulsante destro su una cartella o un account nel
+pannello delle cartelle per scegliere «Controlla nuova posta», «Segna
+tutti come già letti», una nuova cartella al suo interno o «Svuota il
+Cestino». «Aggiorna», sopra l’elenco, ora interroga anche il server.
+Mentre Katna controlla, le frecce girano su «Aggiorna» e accanto a Posta
+in arrivo, e «Controllo della nuova posta…» compare in alto se ci vuole
+più di un momento.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "File grandi con OneDrive"
+text = """
+Outlook.com, Hotmail e gli altri account Microsoft ora inviano i file
+oltre il limite della posta come gli account Google: il file va nel tuo
+OneDrive appena lo alleghi, e il messaggio contiene il suo link, come in
+Outlook.
+"""

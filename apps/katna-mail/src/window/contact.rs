@@ -156,7 +156,7 @@ impl MailWindow {
     }
 
     /// The width the panel takes now.
-    fn contact_room(&self) -> f32 {
+    pub(super) fn contact_room(&self) -> f32 {
         (CONTACT_WIDTH + GAP) * self.contact.spring.value().clamp(0.0, 1.0)
     }
 
@@ -287,10 +287,16 @@ impl MailWindow {
         }
         let body = match person {
             Some((email, name)) => {
-                let profile = self.contact_profile(&email, cx);
+                // Mail only between the user's own addresses shows that
+                // address, without the numbers of mail "with them".
+                let profile = if self.is_own(&email) {
+                    None
+                } else {
+                    self.contact_profile(&email, cx)
+                };
                 self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
             }
-            None => div().into_any_element(),
+            None => contact_empty(th),
         };
         div()
             .id("contact-card")
@@ -321,6 +327,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let own = self.is_own(email);
         let name = profile
             .as_ref()
             .and_then(|p| p.summary.name.clone())
@@ -365,6 +372,15 @@ impl MailWindow {
 
         // Each section is a faintly tinted card, as in Google Contacts.
         let mut sections: Vec<AnyElement> = Vec::new();
+        if own {
+            sections.push(
+                words(&mut pieces, tr!("contact-own-account"))
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text))
+                    .into_any_element(),
+            );
+        }
         if let Some(profile) = &profile {
             if let Some(details) = self.contact_details(profile, &mut pieces, th, cx) {
                 sections.push(details);
@@ -420,6 +436,11 @@ impl MailWindow {
                 |el, t| el.opacity(t),
             )
             .into_any_element()
+    }
+
+    /// Whether `email` is one of the user's own addresses.
+    fn is_own(&self, email: &str) -> bool {
+        self.mail.as_ref().is_ok_and(|mail| mail.is_me(email))
     }
 
     /// Round tinted buttons under the name, as in Google Contacts: write
@@ -879,6 +900,28 @@ impl MailWindow {
         self.reading = true;
         cx.notify();
     }
+}
+
+/// The panel when the conversation names no one, not even the user.
+fn contact_empty(th: &Theme) -> AnyElement {
+    div()
+        .size_full()
+        .flex()
+        .flex_col()
+        .items_center()
+        .justify_center()
+        .gap(px(12.0))
+        .p(px(24.0))
+        .child(icon("contacts", th.text_faint, 40.0))
+        .child(
+            div()
+                .text_size(px(14.0))
+                .line_height(px(20.0))
+                .text_color(rgba(th.text_dim))
+                .text_center()
+                .child(tr!("contact-nobody")),
+        )
+        .into_any_element()
 }
 
 /// A titled list in the panel.

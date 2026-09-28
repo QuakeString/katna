@@ -247,9 +247,20 @@ pub(crate) fn open_layer(raw: &[u8], found: Found, gnupg: &Gnupg, sender: Option
                 && !outcome.content.is_empty();
             let raw = opened.then(|| {
                 let decode = |bytes: &[u8]| decode_text(bytes, charset.as_deref());
+                // Text around the block could be anyone's (EFAIL): a blank
+                // line on each side keeps it from joining the opened text
+                // into one link or line.
                 let mut body = decode(before);
-                body.push_str(&decode(&outcome.content));
-                body.push_str(&decode(after));
+                let content = decode(&outcome.content);
+                let after = decode(after);
+                if !whole && !body.trim().is_empty() {
+                    body.push_str("\n\n");
+                }
+                body.push_str(&content);
+                if !whole && !after.trim().is_empty() {
+                    body.push_str("\n\n");
+                }
+                body.push_str(&after);
                 let mut entity =
                     b"Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n"
                         .to_vec();

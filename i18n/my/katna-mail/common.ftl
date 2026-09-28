@@ -38,3 +38,4 @@ search-clear = ရှာဖွေမှု ရှင်းရန်
 search-options-show = ရှာဖွေမှု ရွေးစရာများ ပြရန်
 settings = ဆက်တင်များ
 account-add = အကောင့်ထည့်ရန်
+account-wheel-hint = အကောင့်ပြောင်းရန် လှိမ့်ပါ

@@ -15,6 +15,7 @@ compose-pop-out-reply = ပြန်စာကို သီးခြားဝင�
 compose-edit-recipients = လက်ခံသူများကို တည်းဖြတ်ရန်
 compose-summary-cc = မိတ္တူ- { $names }
 compose-summary-bcc = လျှို့ဝှက်မိတ္တူ- { $names }
+compose-more-recipients = နောက်ထပ် { $count } ဦး
 compose-show-trimmed = ဖြတ်ထားသော အကြောင်းအရာကို ပြရန်
 compose-hide-trimmed = ဖြတ်ထားသော အကြောင်းအရာကို ဝှက်ရန်
 compose-remove-trimmed = ကိုးကားထားသော စာသားကို ဖယ်ရှားရန်
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } သည် ကြီးလွန်းသည�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
 compose-attachments-total = ဖိုင် { $count } ခု၊ { $size }
+compose-drive-note = { $name } သည် { $limit } ထက်ကျော်နေသဖြင့် သင့် Google Drive သို့ ပို့ပြီး မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်။
+compose-drive-tip = သင့် Google Drive ထဲတွင်ရှိသည်။ မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်
+compose-drive-uploading = အပ်လုဒ်လုပ်နေသည် { $percent }%
+compose-drive-allow = Drive ကို ခွင့်ပြုရန်
+compose-drive-allow-tip = Katna က ဖိုင်ကြီးများကို သင့် Drive ထဲ ထည့်နိုင်ရန် Google ဖြင့် ထပ်မံ ဝင်ရောက်ပါ
+compose-drive-retry = ထပ်စမ်းကြည့်ရန်
+compose-drive-sends-when-uploaded = { $name } အပ်လုဒ်လုပ်ပြီးသည်နှင့် ပို့မည်
+compose-drive-not-uploaded = { $name } သည် Google Drive ထဲတွင် မရှိသေးပါ
+compose-drive-share-failed = Google Drive ထဲရှိ ဖိုင်များကို မျှဝေ၍ မရပါ- { $error }
+compose-drive-share-title = ဖိုင်များကို လူတိုင်းနှင့် မျှဝေမလား။
+compose-drive-share-text = { $count ->
+   *[other] Google Drive က Google အကောင့်မရှိသော { $addresses } နှင့် ဖိုင်များကို မျှဝေ၍ မရပါ။ ထို့အစား လင့်ခ်ရှိသူတိုင်း ဖွင့်ကြည့်နိုင်ပါမည်။
+}
+compose-drive-share-link = လင့်ခ်ဖြင့် မျှဝေရန်
+compose-drive-send-without = မမျှဝေဘဲ ပို့ရန်
+compose-drive-share-cancel = မလုပ်တော့ပါ
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } သည် { $limit } ထက်ကျော်နေသဖြင့် သင့် OneDrive သို့ ပို့ပြီး မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်။
+compose-onedrive-tip = သင့် OneDrive ထဲတွင်ရှိသည်။ မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်
+compose-onedrive-allow = OneDrive ကို ခွင့်ပြုရန်
+compose-onedrive-allow-tip = Katna က ဖိုင်ကြီးများကို သင့် OneDrive ထဲ ထည့်နိုင်ရန် Microsoft ဖြင့် ထပ်မံ ဝင်ရောက်ပါ
+compose-onedrive-not-uploaded = { $name } သည် OneDrive ထဲတွင် မရှိသေးပါ
+compose-onedrive-share-failed = OneDrive ထဲရှိ ဖိုင်များကို မျှဝေ၍ မရပါ- { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive က { $addresses } နှင့် ဖိုင်များကို မျှဝေ၍ မရပါ။ ထို့အစား လင့်ခ်ရှိသူတိုင်း ဖွင့်ကြည့်နိုင်ပါမည်။
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
 compose-drop-here = ဤနေရာတွင် ချပါ
 compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်

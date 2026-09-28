@@ -1000,3 +1000,97 @@ Die Kopie jedes Empfängers wird einzeln signiert oder verschlüsselt, sodass
 Signaturen gültig bleiben. Nur-Text-E-Mails können keine Öffnungen anzeigen,
 aber ihre Links werden verfolgt, sodass Sie sehen, wenn jemand einem folgt.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Antworten beginnt neu, nachdem ein Nachrichtenfenster geschlossen wurde"
+text = """
+Wenn Sie eine Nachricht schließen, die in einem eigenen Fenster geschrieben
+wurde, bleibt sie jetzt in den Entwürfen. Antworten, Allen antworten und
+Weiterleiten öffnen wieder eine neue Nachricht, statt die alte
+zurückzubringen.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Eine milchglasartige Suchleiste"
+text = """
+Bei eingeschaltetem verschwommenem Hintergrund lässt die Suchleiste den
+Weichzeichner durch, so wie die Leiste um sie herum, statt als einfarbige
+graue Kapsel darauf zu liegen.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Über Ihrem Bild scrollen, um das Konto zu wechseln"
+text = """
+Halten Sie den Zeiger über das Kontobild oben rechts und drehen Sie das
+Mausrad, um zum nächsten oder vorherigen Konto zu wechseln, pro Rastschritt
+ein Konto. Das Bild rollt zum neuen Konto, so wie der Name der App beim
+Wechseln zwischen Apps rollt, und wenn Sie ein Konto auf der Karte
+auswählen, rollt es genauso.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Platz für viele Empfänger"
+text = """
+Empfänger nach der ersten Zeile nutzen jetzt die ganze Breite, und eine
+lange Liste scrollt innerhalb weniger Zeilen, sodass die Nachricht selbst
+immer erreichbar bleibt. Verlassen Sie das Feld, klappt es auf eine Zeile
+zusammen, etwa "Kay, Sam, 19 weitere"; ein Klick darauf zeigt wieder alle.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Aktivitätsbericht für ein Konto"
+text = """
+Der Aktivitätsbericht hat jetzt neben den Daten eine Kontoauswahl. Wählen
+Sie Alle Konten oder eines davon, und die verfolgten Nachrichten, Raten,
+das Diagramm, die Betreffzeilen und Ihr Postfach richten sich danach. Der
+Bericht nennt das angezeigte Konto und merkt sich Ihre Wahl.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Neuer und Älter immer in der Symbolleiste"
+text = """
+Egal wie schmal die Leseansicht ist: Der Zähler und die Pfeile Neuer und
+Älter bleiben rechts in ihrer Symbolleiste. Die Schaltflächen, die Sie am
+seltensten nutzen, wandern stattdessen nach und nach in das Menü Mehr,
+darunter auch die Schalter für Kontaktdetails und Originalfarben.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Dateien in jeder Größe senden"
+text = """
+Bei einem mit Google angemeldeten Konto landet eine Datei über dem
+Mail-Limit von 25 MB sofort nach dem Anhängen in Ihrem Google Drive, und
+die Nachricht enthält ihren Link, wie in Gmail. Beim Senden wird sie für
+Ihre Empfänger freigegeben; Katna fragt nur nach, wenn jemandem kein
+Zugriff gegeben werden kann.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Flüssigeres Scrollen in langen Empfängerlisten"
+text = """
+Eine lange Empfängerliste hat jetzt eine eigene Bildlaufleiste und
+bewegt sich Zeile für Zeile; die Konversation scrollt erst weiter, wenn
+die Liste ihr Ende erreicht hat. Beim Hinzufügen von Empfängern springen
+die Schaltflächen darunter nicht mehr.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Auf neue E-Mails prüfen"
+text = """
+Klicken Sie im Ordnerbereich mit der rechten Maustaste auf einen Ordner
+oder ein Konto, um „Auf neue E-Mails prüfen“, „Alle als gelesen
+markieren“, einen neuen Ordner darin oder „Papierkorb leeren“ zu wählen.
+„Aktualisieren“ über der Liste ruft jetzt auch Neues vom Server ab.
+Während Katna prüft, drehen sich die Pfeile bei „Aktualisieren“ und
+neben dem Posteingang, und „Auf neue E-Mails wird geprüft…“ erscheint
+oben, wenn es länger dauert.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Große Dateien über OneDrive"
+text = """
+Outlook.com, Hotmail und andere Microsoft-Konten senden Dateien über dem
+Mail-Limit jetzt wie Google-Konten: Die Datei landet sofort nach dem
+Anhängen in Ihrem OneDrive, und die Nachricht enthält ihren Link, wie in
+Outlook.
+"""

@@ -942,3 +942,93 @@ aka ma ọ bụ zoo ozi onye nnata ọ bụla n'onwe ya, ya mere mbinye aka nd�
 na-adịgide adị. Ozi ederede nkịtị enweghị ike igosi mmeghe, ma a na-esochi
 njikọ ya, ya mere ị ga-ahụ mgbe mmadụ soro otu njikọ.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Nzaghachi na-amalite ọhụrụ mgbe emechiri windo ozi"
+text = """
+Ịmechi ozi e dere n'windo nke ya na-ejigide ya ugbu a na Ndebiri, ma
+Zaa, Zaa mmadụ niile na Zigaa na-emepe ozi ọhụrụ ọzọ kama ịchọta nke
+ochie.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Mmanya ọchụchọ nwere ntụ"
+text = """
+Mgbe ndabere ntụ dị n'ọrụ, mmanya ọchụchọ na-ekwe ka ntụ gafee dị ka
+mmanya dị gburugburu ya, kama ịnọdụ n'elu ya dị ka mkpụrụ ọgwụ isi awọ
+siri ike.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Mpịnye n'elu foto gị ka i gbanwee akaụntụ"
+text = """
+Mgbe pọintọ nọ n'elu foto akaụntụ dị n'elu aka nri, tụgharịa wiil òké ka
+ị gaa n'akaụntụ na-esote ma ọ bụ nke gara aga, otu akaụntụ maka ọ bụla.
+Foto ahụ na-agbagharị gaa n'akaụntụ ọhụrụ, dị ka aha ngwa si agbagharị
+mgbe ị na-agbanwe ngwa, ma ịhọrọ akaụntụ site na kaadị na-agbagharị ya
+otu ahụ.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ohere maka ndị nnata ọtụtụ"
+text = """
+Ndị nnata mgbe ahịrị mbụ na-eji obosara niile ugbu a, ma ndepụta ogologo
+na-agbagharị n'ime ahịrị ole na ole, ka ozi ahụ nọrọ n'aka mgbe niile.
+Hapụ ebe ahụ ọ na-eketụ n'otu ahịrị, dị ka “Kay, Sam, 19 ọzọ”; pịa ya ka
+ị hụ ha niile ọzọ.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Akụkọ ihe omume maka otu akaụntụ"
+text = """
+Akụkọ ihe omume nwere ugbu a ihe nhọrọ akaụntụ n'akụkụ ụbọchị. Họrọ
+akaụntụ niile ma ọ bụ otu n'ime ha, ozi a na-esochi, ọnụ ọgụgụ, eserese,
+isiokwu na igbe ozi gị niile ga-eso ya gbanwee. Akụkọ ahụ na-agwa gị akaụntụ
+ọ na-egosi ma na-echeta nhọrọ gị.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nke ọhụrụ na Nke ochie na-anọ mgbe niile n'ogwe ngwa ọrụ"
+text = """
+Ma ebe a na-agụ ihe dị warara ka o dị, ọnụọgụ na ube Nke ọhụrụ na Nke ochie
+na-anọgide n'aka nri ogwe ngwa ọrụ ya. Bọtịnụ ndị ị na-ejikarị obere na-agbanwe
+n'ime menu Ọzọ otu n'otu kama, gụnyere ihe mgbanwe nkọwa kọntaktị na agba mbụ.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Zipu faịlụ nke nha ọ bụla"
+text = """
+Na akaụntụ ebanyere na Google, faịlụ karịrị ókè ozi nke 25 MB na-aga na Google
+Drive gị ozugbo ị gbakwunyere ya, ozi ahụ na-ebukwa njikọ ya, dị ka ọ dị na
+Gmail. A na-ekekọrịta ya na ndị na-anabata ya mgbe ị pịrị Zipu; Katna na-ajụ
+naanị ma a pụghị inye onye mmadụ ohere.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Ndepụta ndị nataara ozi toro ogologo dị nfe karị"
+text = """
+Ndepụta ogologo nke ndị nataara ozi nwere ogwe mmịgharị nke ya ugbu a, ọ
+na-aga otu ahịrị n'otu oge, mkparịta ụka na-agafe naanị mgbe ndepụta ahụ ruru
+njedebe ya. Ịgbakwunye ndị nataara ozi anaghịzi eme ka bọtịn ndị dị n'okpuru
+wụpụ.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Lelee ozi ọhụrụ"
+text = """
+Pịa aka nri na folda ma ọ bụ akaụntụ dị na mpaghara folda maka "Lelee ozi
+ọhụrụ", "Kaa akara na niile dị ka agụrụ", folda ọhụrụ n'ime ya, ma ọ bụ
+"Kpochapụ Ihe mkpofu". "Mee ọhụrụ" dị n'elu ndepụta na-ewetakwa ozi site na
+sava ugbu a. Mgbe Katna na-elele, akụ na-agba gburugburu na "Mee ọhụrụ" na
+n'akụkụ Igbe ozi mbata, ma "Na-elele ozi ọhụrụ…" na-egosi n'elu ma ọ bụrụ na ọ
+were ihe karịrị obere oge.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Nnukwu faịlụ site na OneDrive"
+text = """
+Akaụntụ Outlook.com, Hotmail na akaụntụ Microsoft ndị ọzọ na-ezipụkwa ugbu a
+faịlụ karịrị ókè ozi dị ka akaụntụ Google si eme: faịlụ ahụ na-aga na
+OneDrive gị ozugbo ị gbakwunyere ya, ozi ahụ na-ebukwa njikọ ya, dị ka ọ dị
+na Outlook.
+"""

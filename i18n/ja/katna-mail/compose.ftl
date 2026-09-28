@@ -15,6 +15,7 @@ compose-pop-out-reply = 返信を別ウィンドウで開く
 compose-edit-recipients = 宛先を編集
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = 他 { $count } 人
 compose-show-trimmed = 省略されたコンテンツを表示
 compose-hide-trimmed = 省略されたコンテンツを非表示
 compose-remove-trimmed = 引用テキストを削除
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } は大きすぎます。1 通のメッセー�
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
 compose-attachments-total = ファイル { $count } 個、{ $size }
+compose-drive-note = { $name } は { $limit } を超えているため、Google Drive に保存され、メッセージにはそのリンクが付きます。
+compose-drive-tip = Google Drive 内にあります。メッセージにはリンクが付きます
+compose-drive-uploading = アップロード中 { $percent }%
+compose-drive-allow = Drive を許可
+compose-drive-allow-tip = Google でもう一度サインインすると、Katna が大きなファイルを Drive に置けるようになります
+compose-drive-retry = 再試行
+compose-drive-sends-when-uploaded = { $name } のアップロードが終わり次第、送信します
+compose-drive-not-uploaded = { $name } はまだ Google Drive にありません
+compose-drive-share-failed = Google Drive でファイルを共有できませんでした: { $error }
+compose-drive-share-title = ファイルを全員に共有しますか？
+compose-drive-share-text = { $count ->
+   *[other] Google Drive では、Google アカウントを持たない { $addresses } とファイルを共有できません。代わりに、リンクを知っている人なら誰でも開けるようになります。
+}
+compose-drive-share-link = リンクで共有
+compose-drive-send-without = 共有せずに送信
+compose-drive-share-cancel = キャンセル
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } は { $limit } を超えているため、OneDrive に保存され、メッセージにはそのリンクが付きます。
+compose-onedrive-tip = OneDrive 内にあります。メッセージにはリンクが付きます
+compose-onedrive-allow = OneDrive を許可
+compose-onedrive-allow-tip = Microsoft でもう一度サインインすると、Katna が大きなファイルを OneDrive に置けるようになります
+compose-onedrive-not-uploaded = { $name } はまだ OneDrive にありません
+compose-onedrive-share-failed = OneDrive でファイルを共有できませんでした: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive では { $addresses } とファイルを共有できません。代わりに、リンクを知っている人なら誰でも開けるようになります。
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ここにファイルをドロップ
 compose-drop-here = ここにドロップ
 compose-paste-keep-formatting = 書式を保持

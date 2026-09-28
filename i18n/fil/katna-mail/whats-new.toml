@@ -1015,3 +1015,97 @@ nananatiling valid ang mga lagda. Hindi maipapakita ng plain text na mail
 ang mga pagbukas, pero naka-track ang mga link nito, kaya makikita mo kapag
 sinundan ng isang tao ang isa dito.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Nagsisimula muli ang Sumagot pagkatapos isara ang window ng mensahe"
+text = """
+Ang pagsara ng mensaheng isinulat sa sarili nitong window ay pananatilihin
+na ito sa Mga Draft, at ang Sumagot, Sumagot sa lahat at Ipasa ay muling
+magbubukas ng bagong mensahe sa halip na ibalik ang luma.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Isang frosted na search bar"
+text = """
+Kapag naka-on ang malabong background, pinapadaan ng search bar ang blur
+tulad ng bar sa paligid nito, sa halip na nakapatong dito bilang solidong
+kulay-abong pill.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "I-scroll ang iyong larawan para magpalit ng account"
+text = """
+Habang nasa ibabaw ng larawan ng account sa kanang itaas ang pointer,
+paikutin ang gulong ng mouse para lumipat sa susunod o nakaraang account,
+isang account bawat click. Gumugulong ang larawan papunta sa bagong account,
+tulad ng paggulong ng pangalan ng app kapag lumilipat ka ng app, at ganoon
+din kapag pumili ka ng account mula sa card.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "May puwang para sa maraming tatanggap"
+text = """
+Ang mga tatanggap pagkatapos ng unang linya ay gumagamit na ng buong lapad,
+at ang mahabang listahan ay nag-i-scroll sa loob ng ilang linya, kaya laging
+abot-kamay ang mismong mensahe. Lumabas sa field at ito ay magiging isang
+linya na lang, tulad ng "Kay, Sam, 19 pa"; i-click ito para makita ulit
+silang lahat.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Ulat ng aktibidad para sa isang account"
+text = """
+May account picker na ngayon ang ulat ng aktibidad sa tabi ng mga petsa.
+Piliin ang Lahat ng account o isa sa mga ito, at susunod ang mga naka-track
+na mensahe, rate, chart, subject line at Ang mailbox mo. Sinasabi ng ulat
+kung aling account ang ipinapakita nito at naaalala nito ang pinili mo.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Laging nasa toolbar ang Mas bago at Mas luma"
+text = """
+Gaano man kakitid ang reading pane, mananatili sa kanan ng toolbar nito
+ang counter at ang mga arrow na Mas bago at Mas luma. Isa-isang lilipat sa
+menu na Higit pa ang mga button na pinakabihira mong gamitin, kasama ang
+mga switch para sa detalye ng contact at orihinal na kulay.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Magpadala ng file na kahit gaano kalaki"
+text = """
+Sa account na naka-sign in gamit ang Google, ang file na lampas sa 25 MB
+na limitasyon ng mail ay mapupunta sa iyong Google Drive sa sandaling
+i-attach mo ito, at dala ng mensahe ang link nito, tulad sa Gmail.
+Ibinabahagi ito sa iyong mga tatanggap kapag pinindot mo ang Ipadala;
+magtatanong lang ang Katna kung may hindi mabigyan ng access.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Mas maayos na mahahabang listahan ng tatanggap"
+text = """
+May sarili nang scroll bar ang mahabang listahan ng mga tatanggap at
+isang linya lang ang usad nito; magpapatuloy lang ang pag-scroll ng
+pag-uusap kapag naabot na ng listahan ang dulo nito. Hindi na tumatalon
+ang mga button sa ibaba kapag nagdagdag ng tatanggap.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Tingnan kung may bagong mail"
+text = """
+I-right-click ang isang folder o account sa pane ng mga folder para sa
+“Tingnan kung may bagong mail”, “Markahan lahat bilang nabasa na”,
+bagong folder sa loob nito, o “Alisin ang laman ng Basurahan”. Kumukuha
+na rin sa server ang “I-refresh” sa itaas ng listahan. Habang nagsusuri
+ang Katna, umiikot ang mga arrow sa “I-refresh” at sa tabi ng Inbox, at
+lalabas sa itaas ang “Tinitingnan kung may bagong mail…” kapag tumagal
+nang higit sa sandali.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Malalaking file sa pamamagitan ng OneDrive"
+text = """
+Ang mga account na Outlook.com, Hotmail, at iba pang Microsoft ay
+nagpapadala na ngayon ng file na lampas sa limitasyon ng mail tulad ng
+mga Google account: mapupunta ang file sa iyong OneDrive sa sandaling
+i-attach mo ito, at dala ng mensahe ang link nito, tulad sa Outlook.
+"""

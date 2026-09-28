@@ -26,7 +26,6 @@ pub enum Command {
     Snooze(Vec<MessageId>, i64),
     /// Brings snoozed messages back now.
     Unsnooze(Vec<MessageId>),
-    SyncNow,
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
     /// Opens the message just discarded, or not saved, again. The app does
@@ -99,7 +98,6 @@ impl Command {
             // The window says until when.
             Self::Snooze(..) => return None,
             Self::MarkRead(..)
-            | Self::SyncNow
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
@@ -180,7 +178,6 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
-        Command::SyncNow => pim.sync_now(0).await,
         Command::ReloadConfig => pim.reload_config().await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
@@ -644,6 +641,85 @@ pub async fn outbox_changes(connection: &Connection) -> Result<impl Stream<Item 
     Ok(changes.map(|_| ()))
 }
 
+/// Starts putting the file at `path` in the Google Drive or OneDrive of
+/// `account`.
+/// Returns the upload's ID.
+pub async fn drive_upload(
+    connection: &Connection,
+    account: i64,
+    path: &str,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_upload(account, path)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Where Drive upload `id` stands.
+pub async fn drive_upload_status(
+    connection: &Connection,
+    id: i64,
+) -> Result<katna_dbus::DriveUpload, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_upload_status(id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Stops Drive upload `id` and moves its file to the bin.
+pub async fn drive_cancel(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_cancel(id).await.map_err(|err| describe(&err))
+}
+
+/// Shares the files of `uploads` with `addresses`; returns those Drive
+/// would not share with.
+pub async fn drive_share(
+    connection: &Connection,
+    uploads: &[i64],
+    addresses: &[String],
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let addresses: Vec<&str> = addresses.iter().map(String::as_str).collect();
+    pim.drive_share(uploads, &addresses)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Lets anyone with the link view the files of `uploads`; returns their
+/// links, in order.
+pub async fn drive_share_with_link(
+    connection: &Connection,
+    uploads: &[i64],
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.drive_share_with_link(uploads)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Yields the ID of each Drive upload that moves on.
+pub async fn drive_changes(connection: &Connection) -> Result<impl Stream<Item = i64>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let changes = pim
+        .receive_drive_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes.filter_map(|signal| signal.args().ok().map(|args| args.id)))
+}
+
 /// Where an update of Katna stands.
 pub async fn update_status(connection: &Connection) -> Result<katna_dbus::UpdateStatus, String> {
     let pim = PimProxy::new(connection)
@@ -690,6 +766,57 @@ pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String>
     Ok(accounts
         .iter()
         .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
+}
+
+/// Has the daemon check `account` for new mail now, every folder of it, or
+/// every account for `None`. Returns once each has finished that sync or
+/// failed to connect; an account the daemon does not sync is not waited for.
+pub async fn check_mail(
+    connection: &Connection,
+    account: Option<katna_core::AccountId>,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    // Listening before asking, so the end of a quick sync is not missed.
+    let mut changes = pim
+        .receive_sync_status_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    let mut waiting: Vec<i64> = pim
+        .accounts()
+        .await
+        .map_err(|err| describe(&err))?
+        .into_iter()
+        .filter(|a| account.is_none_or(|id| id.0 == a.id) && a.state != state::NOT_SYNCED)
+        .map(|a| a.id)
+        .collect();
+    pim.sync_now(account.map_or(0, |id| id.0))
+        .await
+        .map_err(|err| describe(&err))?;
+    // A woken account says so when its sync ends: in sync, offline or
+    // with its password refused. "Connecting" comes first when it had no
+    // connection.
+    while !waiting.is_empty() {
+        let Some(change) = changes.next().await else {
+            break;
+        };
+        let Ok(args) = change.args() else {
+            continue;
+        };
+        let id = args.account;
+        if !waiting.contains(&id) {
+            continue;
+        }
+        let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+        let connecting = accounts
+            .iter()
+            .any(|a| a.id == id && a.state == state::CONNECTING);
+        if !connecting {
+            waiting.retain(|w| *w != id);
+        }
+    }
+    Ok(())
 }
 
 /// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`
@@ -747,7 +874,6 @@ mod tests {
         assert_eq!(again, ids);
         let small = Command::MarkRead(ids[..3].to_vec(), true);
         assert_eq!(small.batches(500), std::slice::from_ref(&small));
-        assert_eq!(Command::SyncNow.batches(500), [Command::SyncNow]);
     }
 
     #[test]

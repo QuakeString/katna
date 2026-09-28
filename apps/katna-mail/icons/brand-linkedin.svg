@@ -1,0 +1,3 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- "in" on a rounded square, drawn for Katna (Simple Icons has no LinkedIn logo). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000" fill-rule="evenodd"><path d="M5 2h14a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3ZM7.2 5.6a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2ZM5.8 9.9V18h2.8V9.9Zm4.6 0V18h2.8v-4.2c0-1.1.4-1.9 1.5-1.9s1.4.8 1.4 1.9V18h2.8v-4.7c0-2.4-.9-3.6-3-3.6-1.3 0-2.2.6-2.7 1.4V9.9Z"/></svg>

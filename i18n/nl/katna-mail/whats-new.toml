@@ -980,3 +980,94 @@ handtekeningen geldig blijven. E-mail in platte tekst kan geen openingen
 tonen, maar de links erin worden wel gevolgd, zodat je ziet wanneer iemand
 er een volgt.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Beantwoorden begint opnieuw na het sluiten van een berichtvenster"
+text = """
+Als u een bericht sluit dat in een eigen venster is geschreven, blijft het
+nu in Concepten staan, en Beantwoorden, Allen beantwoorden en Doorsturen
+openen weer een nieuw bericht in plaats van het oude terug te halen.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Een bevroren zoekbalk"
+text = """
+Met de wazige achtergrond aan laat de zoekbalk de vervaging door, net als de
+balk eromheen, in plaats van als een effen grijze pil erop te liggen.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Scroll over uw afbeelding om van account te wisselen"
+text = """
+Houd de aanwijzer boven de accountafbeelding rechtsboven en draai aan het
+muiswiel om naar het volgende of vorige account te gaan, één account per
+klik. De afbeelding rolt naar het nieuwe account, zoals de naam van de app
+rolt als u van app wisselt, en een account kiezen op de kaart laat hem op
+dezelfde manier rollen.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruimte voor veel ontvangers"
+text = """
+Ontvangers na de eerste regel gebruiken nu de volle breedte, en een lange
+lijst scrolt binnen enkele regels, zodat het bericht zelf altijd binnen
+bereik blijft. Verlaat u het veld, dan klapt het in tot één regel, zoals
+"Kay, Sam, 19 meer"; klik erop om ze weer allemaal te zien.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Activiteitenrapport voor één account"
+text = """
+Het activiteitenrapport heeft nu een accountkiezer naast de datums. Kies
+Alle accounts of één ervan, en de gevolgde berichten, percentages, de
+grafiek, de onderwerpregels en Je mailbox volgen je keuze. Het rapport
+zegt welk account het toont en onthoudt je keuze.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nieuwer en Ouder altijd in de werkbalk"
+text = """
+Hoe smal het leesvenster ook is, de teller en de pijlen Nieuwer en Ouder
+blijven rechts in de werkbalk staan. De knoppen die je het minst gebruikt
+verhuizen in plaats daarvan één voor één naar het menu Meer, inclusief de
+schakelaars voor contactgegevens en originele kleuren.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Verstuur bestanden van elke grootte"
+text = """
+Met een account dat met Google is aangemeld gaat een bestand boven de
+mailgrens van 25 MB direct na het bijvoegen naar je Google Drive, en het
+bericht bevat de link, net als in Gmail. Het wordt met je ontvangers
+gedeeld als je op Verzenden drukt; Katna vraagt alleen iets als iemand
+geen toegang kan krijgen.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Soepelere lange ontvangerslijsten"
+text = """
+Een lange lijst met ontvangers heeft nu een eigen schuifbalk en schuift
+regel voor regel; het gesprek scrolt pas verder als de lijst het einde
+bereikt. Als je ontvangers toevoegt, springen de knoppen eronder niet
+meer.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Controleren op nieuwe e-mail"
+text = """
+Klik met de rechtermuisknop op een map of account in het mappenpaneel
+voor ‘Controleren op nieuwe e-mail’, ‘Alles markeren als gelezen’, een
+nieuwe map erin of ‘Prullenbak legen’. ‘Vernieuwen’ boven de lijst haalt
+nu ook gegevens van de server op. Terwijl Katna controleert, draaien de
+pijlen op ‘Vernieuwen’ en naast Inbox, en bovenaan staat ‘Controleren op
+nieuwe e-mail…’ als het langer dan even duurt.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Grote bestanden via OneDrive"
+text = """
+Outlook.com, Hotmail en andere Microsoft-accounts versturen bestanden
+boven de mailgrens nu net als Google-accounts: het bestand gaat direct
+na het bijvoegen naar je OneDrive, en het bericht bevat de link, net als
+in Outlook.
+"""

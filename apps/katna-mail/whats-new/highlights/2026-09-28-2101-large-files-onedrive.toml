@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Large files through OneDrive"
+text = """
+Outlook.com, Hotmail and other Microsoft accounts now send files over the mail limit the way Google accounts do: the file goes to your OneDrive as soon as you attach it, and the message carries its link, as in Outlook.
+"""

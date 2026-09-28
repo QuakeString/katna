@@ -55,3 +55,6 @@ activity-range-custom = Benutzerdefiniert
 activity-range-from = Von
 activity-range-to = Bis
 activity-range-apply = Übernehmen
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Alle Konten
+activity-accounts-tip = Ein Konto oder alle anzeigen

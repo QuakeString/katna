@@ -345,24 +345,14 @@ impl MailWindow {
         let select = self.with_menu(select, Menu::Select, th, cx);
         let mut bar = toolbar(th).child(select);
         if checked == 0 {
-            bar = bar
-                .child(
-                    icon_button("refresh", "refresh", 20.0, th)
-                        .tooltip(tip(tr!("list-refresh"), th))
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)),
-                        ),
-                )
-                .child({
-                    let more = icon_button("list-more", "more", 20.0, th)
-                        .when(self.menu != Some(Menu::ListMore), |d| {
-                            d.tooltip(tip(tr!("list-more"), th))
-                        })
-                        .on_click(
-                            cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
-                        );
-                    self.with_menu(more, Menu::ListMore, th, cx)
-                });
+            bar = bar.child(self.refresh_button("refresh", th, cx)).child({
+                let more = icon_button("list-more", "more", 20.0, th)
+                    .when(self.menu != Some(Menu::ListMore), |d| {
+                        d.tooltip(tip(tr!("list-more"), th))
+                    })
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
+                self.with_menu(more, Menu::ListMore, th, cx)
+            });
         } else {
             let any_unread = self.checked_rows().iter().any(|r| r.unread);
             let read_button = if any_unread {
@@ -547,17 +537,43 @@ impl MailWindow {
                     .text_color(rgba(th.text_dim))
                     .child(label),
             )
-            .child(
-                icon_button("refresh", "refresh", 20.0, th)
-                    .tooltip(tip(tr!("list-refresh"), th))
-                    .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx))),
-            )
+            .child(self.refresh_button("refresh", th, cx))
             .child(self.with_menu(more, Menu::ListMore, th, cx))
             .into_any_element()
     }
 
     /// Archive, spam and delete, for the ticked lines or the open
     /// conversation.
+    /// Refresh, whose arrow turns while mail is being checked for.
+    fn refresh_button(
+        &self,
+        id: &'static str,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Stateful<Div> {
+        if !self.checking_mail() {
+            return icon_button(id, "refresh", 20.0, th)
+                .tooltip(tip(tr!("list-refresh"), th))
+                .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)));
+        }
+        // Like `icon_button`, with the arrow turning.
+        div()
+            .id(id)
+            .size(px(40.0))
+            .flex_none()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .tooltip(tip(tr!("list-checking"), th))
+            .child(super::nav_menu::turning_arrow(
+                "refresh-turning",
+                th.text_dim,
+                20.0,
+            ))
+    }
+
     /// Archive, Report spam and Delete, less those `squeeze` leaves to
     /// the More menu.
     pub(super) fn action_buttons(
@@ -725,6 +741,7 @@ impl MailWindow {
                 }),
             ),
             Menu::ListMore | Menu::ReaderMore => {
+                let squeeze = (which == Menu::ReaderMore).then(|| self.reader_squeeze(th));
                 let targets = if which == Menu::ListMore && self.checked.is_empty() {
                     None
                 } else {
@@ -745,28 +762,31 @@ impl MailWindow {
                     ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
-                        .when(
-                            which == Menu::ReaderMore && self.reader_squeeze().spam,
-                            |d| {
-                                d.child(
-                                    menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
-                                        .on_click(cx.listener(|this, _, _, cx| {
-                                            this.act_on_targets(Act::Spam, cx)
-                                        })),
-                                )
-                            },
-                        )
-                        .when(
-                            which == Menu::ReaderMore && self.reader_squeeze().delete,
-                            |d| {
-                                d.child(
-                                    menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
-                                        .on_click(cx.listener(|this, _, _, cx| {
-                                            this.act_on_targets(Act::Delete, cx)
-                                        })),
-                                )
-                            },
-                        )
+                        .when(squeeze.is_some_and(|s| s.spam), |d| {
+                            d.child(
+                                menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Spam, cx)
+                                    })),
+                            )
+                        })
+                        .when(squeeze.is_some_and(|s| s.delete), |d| {
+                            d.child(
+                                menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Delete, cx)
+                                    })),
+                            )
+                        })
+                        .when(squeeze.is_some_and(|s| s.move_to), |d| {
+                            d.child(
+                                menu_item_icon("more-move-to", "move-to", &tr!("menu-move-to"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.menu = Some(Menu::MoveTo);
+                                        cx.notify();
+                                    })),
+                            )
+                        })
                         .child(
                             menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
@@ -859,6 +879,62 @@ impl MailWindow {
                                         ),
                                     )
                                 })
+                                .when(
+                                    squeeze.is_some_and(|s| s.contact)
+                                        && self
+                                            .contact_fits(self.cards_width + self.contact_room()),
+                                    |d| {
+                                        let on = self.config.mail.contact_panel;
+                                        d.child(
+                                            menu_item_icon(
+                                                "more-contact",
+                                                "contacts",
+                                                &if on {
+                                                    tr!("contact-panel-hide")
+                                                } else {
+                                                    tr!("contact-panel-show")
+                                                },
+                                                th,
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| {
+                                                    this.menu = None;
+                                                    this.toggle_contact_panel(cx);
+                                                }),
+                                            ),
+                                        )
+                                    },
+                                )
+                                .when(
+                                    squeeze.is_some_and(|s| s.colors)
+                                        && self.original_colors_offered(th),
+                                    |d| {
+                                        let on =
+                                            self.reader.as_ref().is_some_and(|r| r.original_colors);
+                                        d.child(
+                                            menu_item_icon(
+                                                "more-colors",
+                                                "contrast",
+                                                &if on {
+                                                    tr!("reader-dark-colors")
+                                                } else {
+                                                    tr!("reader-original-colors")
+                                                },
+                                                th,
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| {
+                                                    this.menu = None;
+                                                    if let Some(reader) = &mut this.reader {
+                                                        reader.original_colors =
+                                                            !reader.original_colors;
+                                                    }
+                                                    cx.notify();
+                                                }),
+                                            ),
+                                        )
+                                    },
+                                )
                         }),
                 }
             }

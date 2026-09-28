@@ -524,6 +524,14 @@ impl Mail {
         settings.imap.map(|server| server.host)
     }
 
+    /// The provider an account signs in with, if not a password.
+    pub fn sign_in_provider(
+        &self,
+        account: katna_core::AccountId,
+    ) -> Option<katna_core::OAuthProvider> {
+        self.store.account_settings(account).ok()??.oauth
+    }
+
     pub fn folders(&self) -> Vec<FolderSummary> {
         self.store.folder_summaries().unwrap_or_else(|err| {
             tracing::warn!("reading folders: {err}");
@@ -1078,6 +1086,8 @@ impl Mail {
             Vec::new()
         });
         let mut people: Vec<(String, Option<String>)> = Vec::new();
+        // The user's own addresses, for mail only between them.
+        let mut own: Vec<(String, Option<String>)> = Vec::new();
         for id in ids {
             let Some(message) = messages.iter().find(|m| m.id == *id) else {
                 continue;
@@ -1089,7 +1099,7 @@ impl Mail {
                         .me
                         .iter()
                         .any(|me| me.trim().eq_ignore_ascii_case(&email));
-                    if mine || !email.contains('@') {
+                    if !email.contains('@') {
                         continue;
                     }
                     let name = p
@@ -1098,6 +1108,7 @@ impl Mail {
                         .map(str::trim)
                         .filter(|n| !n.is_empty() && !n.eq_ignore_ascii_case(&email))
                         .map(str::to_owned);
+                    let people = if mine { &mut own } else { &mut people };
                     match people.iter_mut().find(|(e, _)| *e == email) {
                         Some((_, known)) => {
                             if known.is_none() {
@@ -1109,7 +1120,7 @@ impl Mail {
                 }
             }
         }
-        people
+        if people.is_empty() { own } else { people }
     }
 
     /// The drafts among `ids`: messages flagged `\Draft`.
@@ -1162,11 +1173,12 @@ pub fn folders_and_unread(paths: &Paths) -> (Option<Vec<FolderSummary>>, HashMap
     }
 }
 
-/// Mailbox insights from `since` to before `until` (Unix seconds) for the
-/// user's addresses `me`, with hours in `tz`. Opens its own connection,
-/// for a background thread.
+/// Mailbox insights from `since` to before `until` (Unix seconds) in
+/// `account` (or every account) for the user's addresses `me`, with hours
+/// in `tz`. Opens its own connection, for a background thread.
 pub fn insights(
     paths: &Paths,
+    account: Option<AccountId>,
     me: &[String],
     since: i64,
     until: i64,
@@ -1182,7 +1194,7 @@ pub fn insights(
         })
     };
     Store::open(paths, Mode::ReadOnly)
-        .and_then(|store| store.mailbox_insights(me, since, until, local))
+        .and_then(|store| store.mailbox_insights(account, me, since, until, local))
         .map_err(|err| format!("Counting mail failed: {err}"))
 }
 

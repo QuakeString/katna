@@ -25,14 +25,22 @@ use crate::widgets::{elevation, filled_button, icon, outlined_button, tip};
 
 const WIDTH: f32 = 520.0;
 
+/// The tallest About and What's new get outside the phone layout: at most
+/// 600 px and 70% of the window, their middle scrolling within.
+pub(super) fn dialog_max_height(window: &Window) -> f32 {
+    (unpx(window.viewport_size().height) * 0.7).min(600.0)
+}
+
 /// Where "Buy me a coffee" leads. `None` until the page exists; the
 /// button then shows, disabled, with "Coming soon".
 const SUPPORT_URL: Option<&str> = Some("https://buymeacoffee.com/quakestring");
 
-/// Buy Me a Coffee's own button colours: black on yellow with a black
-/// outline.
-const COFFEE_YELLOW: u32 = 0xffdd00ff;
-const COFFEE_INK: u32 = 0x000000ff;
+/// Buy Me a Coffee's yellow, softened: the button is filled with it at
+/// these opacities (light, dark theme) and outlined with it.
+const COFFEE_YELLOW: u32 = 0xffdd0000;
+const COFFEE_FILL: (u32, u32) = (0x66, 0x33);
+const COFFEE_HOVER: (u32, u32) = (0x8c, 0x4d);
+const COFFEE_BORDER: u32 = 0xb3;
 
 /// The source of Katna.
 const SOURCE_URL: &str = env!("CARGO_PKG_REPOSITORY");
@@ -44,13 +52,18 @@ const GPUI_URL: &str = "https://github.com/zed-industries/zed/tree/main/crates/g
 /// KDE's donation page.
 const KDE_DONATE_URL: &str = "https://kde.org/donate/";
 
-/// Where to follow Katna's author: the site and the profile, or `None`
-/// until there is one (the link is left out).
-const FOLLOW: &[(&str, Option<&str>)] = &[
-    ("GitHub", Some("https://github.com/QuakeString")),
-    ("X", Some("https://x.com/QuakeString")),
+/// Where to follow Katna's author: the site, its icon and the profile, or
+/// `None` until there is one (the link is left out).
+const FOLLOW: &[(&str, &str, Option<&str>)] = &[
+    (
+        "GitHub",
+        "brand-github",
+        Some("https://github.com/QuakeString"),
+    ),
+    ("x.com", "brand-x", Some("https://x.com/QuakeString")),
     (
         "LinkedIn",
+        "brand-linkedin",
         Some("https://www.linkedin.com/in/md-mozammel-hossain-97a20446/"),
     ),
 ];
@@ -364,7 +377,9 @@ impl MailWindow {
                 th,
             ));
 
-        // Drawn like Buy Me a Coffee's own button, in both themes.
+        // Buy Me a Coffee's yellow, softer, with the theme's text on it.
+        let alpha = |(light, dark): (u32, u32)| COFFEE_YELLOW | if th.dark { dark } else { light };
+        let (fill, hover) = (alpha(COFFEE_FILL), alpha(COFFEE_HOVER));
         let button = div()
             .id("about-coffee")
             .flex_1()
@@ -377,18 +392,18 @@ impl MailWindow {
             .gap(px(8.0))
             .rounded(px(10.0))
             .border_1()
-            .border_color(rgba(COFFEE_INK))
-            .bg(rgba(COFFEE_YELLOW))
-            .text_color(rgba(COFFEE_INK))
+            .border_color(rgba(COFFEE_YELLOW | COFFEE_BORDER))
+            .bg(rgba(fill))
+            .text_color(rgba(th.text))
             .text_size(px(16.0))
             .font_weight(FontWeight::SEMIBOLD)
-            .child(icon("coffee", COFFEE_INK, 22.0))
+            .child(icon("coffee", th.text, 22.0))
             .child(tr!("about-coffee"));
         let button = match SUPPORT_URL {
             Some(url) => button
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(0xffe433ff)))
-                .active(|s| s.bg(rgba(0xf2d200ff)))
+                .hover(move |s| s.bg(rgba(hover)))
+                .active(move |s| s.bg(rgba(hover)))
                 .on_click(move |_, _, cx| cx.open_url(url)),
             None => button
                 .opacity(0.55)
@@ -398,15 +413,15 @@ impl MailWindow {
         let coffee = div()
             .flex_none()
             .mx(px(24.0))
-            .mt(px(12.0))
+            .mt(px(16.0))
             .flex()
             .child(button);
 
         let follow = FOLLOW
             .iter()
-            .filter_map(|(site, url)| Some((*site, (*url)?)))
+            .filter_map(|(site, logo, url)| Some((*site, *logo, (*url)?)))
             .enumerate()
-            .map(|(ix, (site, url))| {
+            .map(|(ix, (site, logo, url))| {
                 div()
                     .id(("about-follow", ix))
                     .h(px(32.0))
@@ -422,6 +437,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .on_click(move |_, _, cx| cx.open_url(url))
+                    .child(icon(logo, th.text, 14.0))
                     .child(site)
                     .child(icon("open-external", th.text_dim, 14.0))
             })
@@ -441,7 +457,7 @@ impl MailWindow {
                     div()
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
-                        .child(tr!("about-follow")),
+                        .child(tr!("about-follow-me")),
                 )
                 .children(follow)
         });
@@ -720,8 +736,8 @@ impl MailWindow {
             .child(header)
             .children(updates)
             .child(links)
-            .child(coffee)
             .children(follow)
+            .child(coffee)
             .child(love)
             .child(personal)
             .child(gpui)
@@ -760,7 +776,7 @@ impl MailWindow {
             .occlude()
             .w(px(width))
             .when(phone, |d| d.h_full())
-            .when(!phone, |d| d.max_h_full().min_h_0())
+            .when(!phone, |d| d.max_h(px(dialog_max_height(window))).min_h_0())
             .flex()
             .flex_col()
             .overflow_hidden()
@@ -838,7 +854,8 @@ mod tests {
         assert!(SOURCE_URL.starts_with("https://github.com/"));
         assert!(KDE_DONATE_URL.starts_with("https://kde.org/"));
         assert!(ZED_URL.starts_with("https://") && GPUI_URL.starts_with("https://github.com/"));
-        for (site, url) in FOLLOW {
+        for (site, logo, url) in FOLLOW {
+            assert!(logo.starts_with("brand-"), "{site}");
             assert!(url.is_none_or(|url| url.starts_with("https://")), "{site}");
         }
     }

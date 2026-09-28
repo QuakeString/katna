@@ -21,6 +21,7 @@ tab-provider-other = يفرزها Katna
 
 list-select = تحديد
 list-refresh = إعادة التحميل
+list-checking = جارٍ التحقق من وجود بريد جديد…
 list-more = المزيد
 list-mark-read = وضع علامة «مقروءة»
 list-mark-unread = وضع علامة «غير مقروءة»

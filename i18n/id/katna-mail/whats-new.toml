@@ -980,3 +980,95 @@ terpisah, sehingga tanda tangan tetap valid. Email teks biasa tidak dapat
 menampilkan pembukaan, tetapi link-nya dilacak, sehingga Anda melihat saat
 seseorang mengikuti salah satunya.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Balas dimulai baru setelah jendela pesan ditutup"
+text = """
+Menutup pesan yang ditulis di jendelanya sendiri kini menyimpannya di Draf,
+dan Balas, Balas semua, serta Teruskan membuka pesan baru lagi, bukan
+mengembalikan pesan yang lama.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Bilah penelusuran berkaca buram"
+text = """
+Saat latar belakang buram aktif, bilah penelusuran meneruskan efek buram
+seperti bilah di sekelilingnya, bukan duduk di atasnya sebagai pil abu-abu
+pekat.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Gulir di atas gambar Anda untuk beralih akun"
+text = """
+Dengan penunjuk di atas gambar akun di kanan atas, putar roda mouse untuk
+pindah ke akun berikutnya atau sebelumnya, satu akun per klik. Gambar
+bergulir ke akun baru, seperti nama aplikasi bergulir saat Anda beralih
+aplikasi, dan memilih akun dari kartu membuatnya bergulir dengan cara yang
+sama.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruang untuk banyak penerima"
+text = """
+Penerima setelah baris pertama kini memakai seluruh lebar, dan daftar
+panjang bergulir dalam beberapa baris, sehingga pesannya sendiri selalu
+terjangkau. Tinggalkan kolom dan ia melipat menjadi satu baris, seperti
+"Kay, Sam, 19 lagi"; klik untuk melihat semuanya lagi.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Laporan aktivitas untuk satu akun"
+text = """
+Laporan aktivitas kini punya pemilih akun di samping tanggal. Pilih
+Semua akun atau salah satunya, dan pesan yang dilacak, tingkat, grafik,
+subjek, serta Kotak surat Anda akan mengikuti. Laporan menyebutkan akun
+yang ditampilkan dan mengingat pilihan Anda.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Panah Lebih baru dan Lebih lama selalu tampil di bilah alat"
+text = """
+Selebar apa pun panel baca, penghitung dan panah Lebih baru serta Lebih
+lama tetap berada di sisi kanan bilah alatnya. Tombol yang paling jarang
+Anda pakai justru berpindah satu per satu ke menu Lainnya, termasuk
+sakelar detail kontak dan warna asli.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Kirim file dengan ukuran berapa pun"
+text = """
+Dengan akun yang masuk melalui Google, file yang melebihi batas email 25
+MB langsung dikirim ke Google Drive Anda begitu dilampirkan, dan pesan
+membawa link-nya, seperti di Gmail. File dibagikan kepada penerima saat
+Anda menekan Kirim; Katna hanya bertanya jika ada yang tidak dapat diberi
+akses.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Daftar penerima panjang yang lebih mulus"
+text = """
+Daftar penerima yang panjang kini punya bilah gulir sendiri dan bergerak
+satu baris demi satu baris; percakapan baru bergulir setelah daftar
+mencapai ujungnya. Menambah penerima tidak lagi membuat tombol di
+bawahnya melompat.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Periksa email baru"
+text = """
+Klik kanan folder atau akun di panel folder untuk memilih “Periksa email
+baru”, “Tandai semua sudah dibaca”, folder baru di dalamnya, atau
+“Kosongkan Sampah”. “Muat ulang” di atas daftar kini juga mengambil dari
+server. Saat Katna memeriksa, panah berputar di “Muat ulang” dan di
+samping Kotak Masuk, dan “Memeriksa email baru…” muncul di atas jika
+butuh lebih dari sesaat.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "File besar melalui OneDrive"
+text = """
+Akun Outlook.com, Hotmail, dan akun Microsoft lainnya kini mengirim file
+yang melebihi batas email seperti akun Google: file langsung dikirim ke
+OneDrive Anda begitu dilampirkan, dan pesan membawa link-nya, seperti di
+Outlook.
+"""

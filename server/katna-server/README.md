@@ -99,7 +99,7 @@ trying it out alone.
 | `POST /api/v1/account/reset` `{"email"}` | Mails a reset code (same answer for unknown addresses). |
 | `POST /api/v1/account/reset/confirm` `{"email", "code", "password", "device"}` | New password; signs this install in and the others out. |
 | `POST /api/v1/account/delete` `{"password"}` | Deletes the account, its devices and their data. |
-| `POST /api/v1/tracks` `{"count": n, "links": [...]}` | `n` (1–100) new IDs sharing the links; returns `{"ids": [...]}`. 5000 per install per day. |
+| `POST /api/v1/tracks` `{"count": n, "links": [...]}` | `n` (1–100) new IDs sharing the links; returns `{"ids": [...]}`. 5000 per account per day, and at most 256 KiB of links per request and 16 MiB per account per day. |
 | `DELETE /api/v1/tracks/<id>` | Deletes one ID and its events. |
 | `GET /api/v1/events` | Server-sent events (`event: track`) after `Last-Event-ID` or `?after=`: `{"seq", "id", "kind": "open"\|"click", "link", "source", "at"}` (`at` in ms). |
 | `GET /api/v1/languages` | LibreTranslate's languages: `[{"code", "name", "targets"}]`. |

@@ -14,6 +14,7 @@ use gpui::{
     MouseDownEvent, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
+use katna_core::{Account, AccountId};
 use katna_i18n::tr;
 use katna_store::{ActivityItem, Insights, MessageActivity};
 use katna_ui::{TextInput, px, unpx};
@@ -261,6 +262,8 @@ pub(super) struct Report {
     insights: Option<Result<Insights, String>>,
     /// The counting.
     counting: Option<Task<()>>,
+    /// The account menu is open.
+    accounts_open: bool,
 }
 
 impl MailWindow {
@@ -399,17 +402,33 @@ impl MailWindow {
             error: false,
             insights: None,
             counting: None,
+            accounts_open: false,
         });
         self.fill_report(Period::Month);
         self.count_insights(cx);
         cx.notify();
     }
 
+    /// The account the report counts, or `None` for all of them. A
+    /// remembered account that is gone counts all.
+    fn report_account(&self) -> Option<&Account> {
+        let chosen = &self.config.mail.activity_account;
+        if chosen.is_empty() {
+            return None;
+        }
+        self.accounts
+            .iter()
+            .find(|a| a.address.trim().eq_ignore_ascii_case(chosen))
+    }
+
     /// Counts the report's figures for `period`.
     fn fill_report(&mut self, period: Period) {
         let Ok(mail) = &self.mail else { return };
         let tz = &self.tz;
-        let all = mail.tracked(LIMIT);
+        let account = self.report_account().map(|a| a.id);
+        let ours = |id: AccountId| account.is_none_or(|a| a == id);
+        let mut all = mail.tracked(LIMIT);
+        all.retain(|m| ours(m.account));
         let day_of = |unix: i64| {
             jiff::Timestamp::from_second(unix)
                 .ok()
@@ -433,7 +452,7 @@ impl MailWindow {
         let events: Vec<(Date, bool)> = mail
             .activity_feed(since, 0, EVENTS)
             .into_iter()
-            .filter(|item| !item.maybe)
+            .filter(|item| !item.maybe && ours(item.account))
             .filter_map(|item| Some((day_of(item.at.div_euclid(1000))?, item.click)))
             .collect();
         let (bars, step) = bars(&events, first, last);
@@ -460,6 +479,7 @@ impl MailWindow {
     /// Counts the mailbox insights for the report's period on a
     /// background thread.
     fn count_insights(&mut self, cx: &mut Context<Self>) {
+        let account = self.report_account().map(|a| a.id);
         let Some(report) = &mut self.activity_report else {
             return;
         };
@@ -484,7 +504,9 @@ impl MailWindow {
         report.counting = Some(cx.spawn(async move |this, cx| {
             let insights = cx
                 .background_executor()
-                .spawn(async move { crate::data::insights(&paths, &me, since, until, &tz) })
+                .spawn(
+                    async move { crate::data::insights(&paths, account, &me, since, until, &tz) },
+                )
                 .await;
             this.update(cx, |this, cx| {
                 if let Some(report) = &mut this.activity_report {
@@ -527,6 +549,30 @@ impl MailWindow {
         cx.notify();
     }
 
+    fn toggle_report_accounts(&mut self, cx: &mut Context<Self>) {
+        if let Some(report) = &mut self.activity_report {
+            report.accounts_open = !report.accounts_open;
+        }
+        cx.notify();
+    }
+
+    /// Counts the report for the account with `address` (lower case), or
+    /// for all accounts when it is empty, and remembers the choice.
+    fn pick_report_account(&mut self, address: String, cx: &mut Context<Self>) {
+        let Some(report) = &mut self.activity_report else {
+            return;
+        };
+        report.accounts_open = false;
+        let period = report.period;
+        if self.config.mail.activity_account != address {
+            self.config.mail.activity_account = address;
+            self.save_config();
+            self.fill_report(period);
+            self.count_insights(cx);
+        }
+        cx.notify();
+    }
+
     fn close_report(&mut self, cx: &mut Context<Self>) {
         self.activity_report = None;
         cx.notify();
@@ -534,6 +580,13 @@ impl MailWindow {
 
     /// Closes the list or the report; `true` if one was open.
     pub(super) fn dismiss_activity(&mut self, cx: &mut Context<Self>) -> bool {
+        if let Some(report) = &mut self.activity_report
+            && report.accounts_open
+        {
+            report.accounts_open = false;
+            cx.notify();
+            return true;
+        }
         let closed = self.activity.take().is_some() || self.activity_report.take().is_some();
         if closed {
             cx.notify();
@@ -741,7 +794,16 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, item)| self.render_item(ix, item, item.seq > menu.seen, th, cx))
             .collect();
+        let checking = self.katna_checking();
         let empty = items.is_empty().then(|| {
+            if checking {
+                return div()
+                    .px(px(24.0))
+                    .py(px(48.0))
+                    .flex()
+                    .justify_center()
+                    .child(self.katna_checking_bar("activity-checking", th));
+            }
             div()
                 .px(px(24.0))
                 .py(px(32.0))
@@ -825,7 +887,7 @@ impl MailWindow {
                     ),
             )
             // New opens and clicks arrive only while signed in.
-            .when(!self.katna_signed_in(), |d| {
+            .when(!checking && !self.katna_signed_in(), |d| {
                 d.child(
                     div()
                         .flex_none()
@@ -997,11 +1059,26 @@ impl MailWindow {
                     )
                 })
         });
-        let span_label = if report.first == report.last {
+        let periods = div()
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(12.0))
+            .child(div().flex_1().min_w_0().child(periods))
+            .child(self.render_report_accounts(report, th, cx));
+        let days = if report.first == report.last {
             day_label(report.first)
         } else {
             format!("{} – {}", day_label(report.first), day_label(report.last))
         };
+        let span_label = tr!(
+            "activity-range-of",
+            days = days,
+            account = self.report_account().map_or_else(
+                || tr!("activity-accounts-all"),
+                |a| a.address.trim().to_owned()
+            )
+        );
         let summary = div()
             .flex()
             .flex_row()
@@ -1217,8 +1294,17 @@ impl MailWindow {
                                                 .text_color(rgba(th.text_dim))
                                                 .child(span_label),
                                         )
-                                        .when(!self.katna_signed_in(), |d| {
-                                            d.child(self.katna_sign_in_needed(th, cx))
+                                        .map(|d| {
+                                            if self.katna_checking() {
+                                                d.child(self.katna_checking_bar(
+                                                    "activity-report-checking",
+                                                    th,
+                                                ))
+                                            } else if !self.katna_signed_in() {
+                                                d.child(self.katna_sign_in_needed(th, cx))
+                                            } else {
+                                                d
+                                            }
                                         })
                                         .child(summary)
                                         .child(heading(tr!("activity-by-day")))
@@ -1234,6 +1320,154 @@ impl MailWindow {
                 )
                 .into_any_element(),
         )
+    }
+
+    /// The account picker beside the periods: All accounts, or one.
+    fn render_report_accounts(
+        &self,
+        report: &Report,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let mail: Vec<&Account> = self.accounts.iter().filter(|a| a.kind.is_mail()).collect();
+        let chosen = self.report_account();
+        let name = |a: &Account| {
+            if a.display_name.trim().is_empty() {
+                a.address.trim().to_owned()
+            } else {
+                a.display_name.trim().to_owned()
+            }
+        };
+        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), &name);
+        let button = div()
+            .id("activity-accounts")
+            .h(px(28.0))
+            .max_w(px(240.0))
+            .pl(px(if chosen.is_some() { 4.0 } else { 10.0 }))
+            .pr(px(6.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(6.0))
+            .rounded(px(8.0))
+            .border_1()
+            .border_color(rgba(th.divider))
+            .bg(rgba(th.surface))
+            .text_color(rgba(th.text))
+            .text_size(px(13.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .when(!report.accounts_open, |d| {
+                d.tooltip(tip(tr!("activity-accounts-tip"), th))
+            })
+            .when_some(chosen, |d, a| {
+                d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))
+            })
+            .child(div().min_w_0().truncate().child(label))
+            .child(icon(
+                if report.accounts_open {
+                    "chevron-up"
+                } else {
+                    "chevron-down"
+                },
+                th.text_dim,
+                16.0,
+            ))
+            .on_click(cx.listener(|this, _, _, cx| this.toggle_report_accounts(cx)));
+        let check = |on: bool| {
+            div()
+                .flex_none()
+                .size(px(18.0))
+                .when(on, |d| d.child(icon("check", th.accent, 18.0)))
+        };
+        let item = |id: usize| {
+            div()
+                .id(("activity-account", id))
+                .min_h(px(40.0))
+                .py(px(4.0))
+                .pl(px(12.0))
+                .pr(px(16.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+        };
+        let all = item(0)
+            .child(check(chosen.is_none()))
+            .child(
+                div()
+                    .size(px(28.0))
+                    .flex_none()
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .child(icon("people", th.text_dim, 20.0)),
+            )
+            .child(div().flex_1().child(tr!("activity-accounts-all")))
+            .on_click(cx.listener(|this, _, _, cx| {
+                this.pick_report_account(String::new(), cx);
+            }));
+        let accounts = mail.iter().enumerate().map(|(ix, a)| {
+            let address = a.address.trim().to_lowercase();
+            let on = chosen.is_some_and(|c| c.id == a.id);
+            let shown = name(a);
+            let second = (shown != a.address.trim()).then(|| {
+                div()
+                    .truncate()
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(a.address.trim().to_owned())
+            });
+            item(ix + 1)
+                .child(check(on))
+                .child(self.person_avatar(&shown, a.address.trim(), 28.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(div().truncate().child(shown))
+                        .children(second),
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.pick_report_account(address.clone(), cx);
+                }))
+        });
+        let menu = report.accounts_open.then(|| {
+            let list = crate::widgets::menu(th)
+                .id("activity-accounts-menu")
+                .w(px(300.0))
+                .max_h(px(360.0))
+                .overflow_y_scroll()
+                .on_mouse_down_out(cx.listener(|this, _, _, cx| {
+                    if let Some(report) = &mut this.activity_report {
+                        report.accounts_open = false;
+                    }
+                    cx.notify();
+                }))
+                .child(all)
+                .child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                .children(accounts);
+            deferred(
+                div().absolute().bottom_0().right_0().child(
+                    anchored()
+                        .anchor(gpui::Anchor::TopRight)
+                        .offset(point(px(0.0), px(6.0)))
+                        .snap_to_window_with_margin(px(8.0))
+                        .child(div().occlude().child(list)),
+                ),
+            )
+            .with_priority(3)
+        });
+        div()
+            .relative()
+            .flex_none()
+            .child(button)
+            .children(menu)
+            .into_any_element()
     }
 
     /// What the mailbox did in the period: mail sent and received, replies,
@@ -1546,6 +1780,7 @@ mod tests {
 
     fn message(subject: &str, opened: usize, clicked: usize, of: usize) -> MessageActivity {
         MessageActivity {
+            account: katna_core::AccountId(1),
             subject: subject.into(),
             sent_at: Some(0),
             links: 1,

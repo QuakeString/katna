@@ -50,3 +50,4 @@ search-clear = Suche löschen
 search-options-show = Suchoptionen anzeigen
 settings = Einstellungen
 account-add = Konto hinzufügen
+account-wheel-hint = Zum Wechseln des Kontos scrollen

@@ -15,6 +15,7 @@ compose-pop-out-reply = Öppna svaret i eget fönster
 compose-edit-recipients = Redigera mottagare
 compose-summary-cc = Kopia: { $names }
 compose-summary-bcc = Dold kopia: { $names }
+compose-more-recipients = { $count } till
 compose-show-trimmed = Visa förkortat innehåll
 compose-hide-trimmed = Dölj förkortat innehåll
 compose-remove-trimmed = Ta bort citerad text
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] { $count } fil, { $size }
    *[other] { $count } filer, { $size }
 }
+compose-drive-note = { $name } är större än { $limit }, så den läggs i din Google Drive och meddelandet innehåller en länk.
+compose-drive-tip = I din Google Drive; meddelandet innehåller en länk
+compose-drive-uploading = Laddar upp { $percent } %
+compose-drive-allow = Tillåt Drive
+compose-drive-allow-tip = Logga in med Google igen så att Katna kan lägga stora filer i din Drive
+compose-drive-retry = Försök igen
+compose-drive-sends-when-uploaded = Skickas när { $name } har laddats upp
+compose-drive-not-uploaded = { $name } finns inte i Google Drive än
+compose-drive-share-failed = Det gick inte att dela filerna i Google Drive: { $error }
+compose-drive-share-title = Dela filerna med alla?
+compose-drive-share-text = { $count ->
+    [one] Google Drive kan inte dela filerna med { $addresses }, som inte har något Google-konto. Alla som har länken kan i stället öppna dem.
+   *[other] Google Drive kan inte dela filerna med { $addresses }, som inte har något Google-konto. Alla som har länken kan i stället öppna dem.
+}
+compose-drive-share-link = Dela med länk
+compose-drive-send-without = Skicka utan att dela
+compose-drive-share-cancel = Avbryt
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } är större än { $limit }, så den läggs i din OneDrive och meddelandet innehåller en länk.
+compose-onedrive-tip = I din OneDrive; meddelandet innehåller en länk
+compose-onedrive-allow = Tillåt OneDrive
+compose-onedrive-allow-tip = Logga in med Microsoft igen så att Katna kan lägga stora filer i din OneDrive
+compose-onedrive-not-uploaded = { $name } finns inte i OneDrive än
+compose-onedrive-share-failed = Det gick inte att dela filerna i OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive kan inte dela filerna med { $addresses }. Alla som har länken kan i stället öppna dem.
+   *[other] OneDrive kan inte dela filerna med { $addresses }. Alla som har länken kan i stället öppna dem.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Släpp filer här
 compose-drop-here = Släpp här
 compose-paste-keep-formatting = Behåll formatering

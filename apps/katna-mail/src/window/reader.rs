@@ -541,34 +541,122 @@ pub(super) struct Printable {
 }
 
 /// What the list of messages shows: a message, or a fold of several.
-/// What a narrow reading pane leaves off its toolbar, narrowest last. The
-/// More menu offers the actions instead; Newer and Older stay on the keys
-/// and the list.
+/// What the reading pane's toolbar leaves to the More menu where it is
+/// too narrow for every button. Back, Archive, More and the Newer and
+/// Older arrows always stay; the rest go one by one, least used first
+/// (`Squeeze::DROP_ORDER`), so the arrows are never pushed off.
 #[derive(Debug, Clone, Copy)]
 pub(super) struct Squeeze {
-    /// Newer, Older and the separators.
-    pub steps: bool,
+    pub new_window: bool,
+    pub print: bool,
+    pub colors: bool,
+    pub contact: bool,
+    pub move_to: bool,
     pub unread: bool,
     pub spam: bool,
+    /// The lines between the groups of buttons.
+    pub separators: bool,
     pub delete: bool,
+    /// "3 of 120" beside the arrows.
+    pub position: bool,
 }
+
+/// A toolbar button's width and the toolbar's gap between buttons.
+const BUTTON: f32 = 40.0;
+const TOOL_GAP: f32 = 2.0;
+/// A separator with its margins.
+const SEPARATOR: f32 = 13.0;
+/// The toolbar's padding, the card's edge and a little room to spare.
+const TOOLBAR_FIXED: f32 = 16.0 + 6.0;
 
 impl Squeeze {
     pub const NONE: Self = Self {
-        steps: false,
+        new_window: false,
+        print: false,
+        colors: false,
+        contact: false,
+        move_to: false,
         unread: false,
         spam: false,
+        separators: false,
         delete: false,
+        position: false,
     };
 
-    /// For a reading pane `width` wide.
-    fn for_width(width: f32) -> Self {
-        Self {
-            steps: width < 400.0,
-            unread: width < 300.0,
-            spam: width < 300.0,
-            delete: width < 220.0,
+    /// Fits the items `shown` into a toolbar `width` wide, leaving off
+    /// those `start` already does and then the least used.
+    fn fit(width: f32, shown: &Toolbar, start: Self) -> Self {
+        let mut squeeze = start;
+        let mut need = shown.width(&squeeze);
+        for drop in Self::DROP_ORDER {
+            if need <= width {
+                break;
+            }
+            drop(&mut squeeze);
+            need = shown.width(&squeeze);
         }
+        squeeze
+    }
+
+    const DROP_ORDER: [fn(&mut Self); 10] = [
+        |s| s.new_window = true,
+        |s| s.print = true,
+        |s| s.colors = true,
+        |s| s.contact = true,
+        |s| s.move_to = true,
+        |s| s.unread = true,
+        |s| s.spam = true,
+        |s| s.separators = true,
+        |s| s.delete = true,
+        |s| s.position = true,
+    ];
+}
+
+/// Which of the reading pane's toolbar items this window and message have
+/// at all, before any squeezing.
+struct Toolbar {
+    back: bool,
+    separators: bool,
+    contact: bool,
+    colors: bool,
+    new_window: bool,
+    /// The width of "3 of 120", or `None` without it.
+    position: Option<f32>,
+    arrows: bool,
+}
+
+impl Toolbar {
+    fn width(&self, squeeze: &Squeeze) -> f32 {
+        let mut buttons = 2.0; // Archive and More
+        let mut rest = 0.0;
+        let mut items = 1.0; // the spacer
+        let mut add = |on: bool, n: f32| {
+            if on {
+                buttons += n;
+            }
+        };
+        add(self.back, 1.0);
+        add(!squeeze.spam, 1.0);
+        add(!squeeze.delete, 1.0);
+        add(!squeeze.unread, 1.0);
+        add(!squeeze.move_to, 1.0);
+        add(self.contact && !squeeze.contact, 1.0);
+        add(self.colors && !squeeze.colors, 1.0);
+        add(!squeeze.print, 1.0);
+        add(self.new_window && !squeeze.new_window, 1.0);
+        add(self.arrows, 2.0);
+        if self.separators && !squeeze.separators {
+            let n = if self.back { 2.0 } else { 1.0 };
+            rest += n * SEPARATOR;
+            items += n;
+        }
+        if let Some(position) = self.position.filter(|_| !squeeze.position) {
+            rest += position;
+            items += 1.0;
+        }
+        // Archive, Report spam and Delete sit together without gaps.
+        items += buttons - f32::from(!squeeze.spam) - f32::from(!squeeze.delete);
+        TOOLBAR_FIXED + buttons * BUTTON + rest + items * TOOL_GAP
     }
 }
 
@@ -578,15 +666,22 @@ enum Shown {
 }
 
 impl MailWindow {
+    /// Whether the open conversation can switch between its own colors
+    /// and dark ones.
+    pub(super) fn original_colors_offered(&self, th: &Theme) -> bool {
+        th.dark
+            && self.config.mail.dark_mail
+            && self.reader.as_ref().is_some_and(|r| r.has_own_colors())
+    }
+
     /// In a dark theme, the button that shows the open conversation's HTML
     /// mail in its sender's own colors, or back in dark ones. Only where
     /// a message sets its own colors, so there is something to switch.
     fn original_colors_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        let reader = self.reader.as_ref()?;
-        if !th.dark || !self.config.mail.dark_mail || !reader.has_own_colors() {
+        if !self.original_colors_offered(th) {
             return None;
         }
-        let on = reader.original_colors;
+        let on = self.reader.as_ref()?.original_colors;
         Some(
             icon_button_colored(
                 "reader-original-colors",
@@ -639,13 +734,50 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// What the reading pane's toolbar leaves to the More menu.
-    pub(super) fn reader_squeeze(&self) -> Squeeze {
-        if self.layout.shape.is_phone() {
-            Squeeze::NONE
-        } else {
-            Squeeze::for_width(self.reader_width())
+    /// "3 of 120" for the open conversation, or `None` where the toolbar
+    /// has no Newer and Older (a phone, a conversation window).
+    fn reader_position(&self) -> Option<(usize, String)> {
+        let count = self.entries.len();
+        if self.layout.shape.is_phone() || self.detached || count == 0 {
+            return None;
         }
+        let ix = self
+            .reader
+            .as_ref()
+            .and_then(|r| self.entries.iter().position(|e| e.key == r.key))
+            .or(self.selected)
+            .unwrap_or(0);
+        let text = tr!(
+            "reader-position",
+            position = ix as u64 + 1,
+            total = count as u64
+        );
+        Some((ix, text))
+    }
+
+    /// What the reading pane's toolbar leaves to the More menu.
+    pub(super) fn reader_squeeze(&self, th: &Theme) -> Squeeze {
+        let phone = self.layout.shape.is_phone();
+        let shown = Toolbar {
+            back: !self.detached,
+            separators: !phone,
+            contact: self.contact_fits(self.cards_width + self.contact_room()),
+            colors: self.original_colors_offered(th),
+            new_window: !self.detached,
+            // About 6.5 px a character at 12 px, and its 8 px padding.
+            position: self
+                .reader_position()
+                .map(|(_, text)| text.chars().count() as f32 * 6.5 + 16.0),
+            arrows: !phone && !self.detached,
+        };
+        // A phone keeps these in the More menu.
+        let start = Squeeze {
+            print: phone,
+            new_window: phone,
+            move_to: phone,
+            ..Squeeze::NONE
+        };
+        Squeeze::fit(self.reader_width(), &shown, start)
     }
 
     pub(super) fn render_reader_toolbar(
@@ -654,12 +786,6 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let count = self.entries.len();
-        let position = self
-            .reader
-            .as_ref()
-            .and_then(|r| self.entries.iter().position(|e| e.key == r.key));
-        let ix = position.or(self.selected).unwrap_or(0);
-        let (position, total) = (ix as u64 + 1, count as u64);
         let back = if self.split() {
             icon_button("reader-close", "close", 20.0, th).tooltip(tip(tr!("reader-close"), th))
         } else {
@@ -669,21 +795,42 @@ impl MailWindow {
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
         );
         let phone = self.layout.shape.is_phone();
-        let squeeze = self.reader_squeeze();
-        // A conversation window has no list beside it to share with.
-        let pane = (!self.detached && self.split())
-            .then_some(self.cards_width * self.config.mail.reading_pane_share);
-        let narrow = phone || pane.is_some_and(|w| w < 520.0);
-        // Print and In new window need 80 px more.
-        let roomy = !phone && pane.is_none_or(|w| w >= 600.0);
-        toolbar(th)
+        let squeeze = self.reader_squeeze(th);
+        let separators = !phone && !squeeze.separators;
+        // A phone moves between conversations from the list; a
+        // conversation window shows only its own.
+        let position = self.reader_position();
+        let ix = position.as_ref().map_or(0, |(ix, _)| *ix);
+        let more = {
+            let more = icon_button("reader-more", "more", 20.0, th)
+                .when(
+                    !matches!(self.menu, Some(Menu::ReaderMore | Menu::MoveTo)),
+                    |d| d.tooltip(tip(tr!("reader-more"), th)),
+                )
+                .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
+            let more = self.with_menu(more, Menu::ReaderMore, th, cx);
+            // Move to, from the More menu, opens under it.
+            if squeeze.move_to {
+                self.with_menu(more, Menu::MoveTo, th, cx)
+            } else {
+                more
+            }
+        };
+        // What gives way when the pane is narrow; the arrows never do.
+        let actions = div()
+            .flex_1()
+            .min_w_0()
+            .overflow_hidden()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
             // A conversation window closes from its own frame.
             .when(!self.detached, |d| {
-                d.child(back)
-                    .when(!phone && !squeeze.steps, |d| d.child(separator(th)))
+                d.child(back).when(separators, |d| d.child(separator(th)))
             })
             .child(self.action_buttons("reader", squeeze, th, cx))
-            .when(!phone && !squeeze.steps, |d| d.child(separator(th)))
+            .when(separators, |d| d.child(separator(th)))
             .when(!squeeze.unread, |d| {
                 d.child(
                     icon_button("reader-unread", "mail", 20.0, th)
@@ -693,7 +840,7 @@ impl MailWindow {
                         })),
                 )
             })
-            .when(!narrow, |d| {
+            .when(!squeeze.move_to, |d| {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
                         .when(self.menu != Some(Menu::MoveTo), |d| {
@@ -703,19 +850,15 @@ impl MailWindow {
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
             })
-            .child({
-                let more = icon_button("reader-more", "more", 20.0, th)
-                    .when(self.menu != Some(Menu::ReaderMore), |d| {
-                        d.tooltip(tip(tr!("reader-more"), th))
-                    })
-                    .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
-                self.with_menu(more, Menu::ReaderMore, th, cx)
-            })
+            .child(more)
             .child(div().flex_1())
-            .children(self.contact_toggle(th, cx))
-            .children(self.original_colors_toggle(th, cx))
-            // Where the toolbar is short, both are in the More menu.
-            .when(roomy, |d| {
+            .when(!squeeze.contact, |d| {
+                d.children(self.contact_toggle(th, cx))
+            })
+            .when(!squeeze.colors, |d| {
+                d.children(self.original_colors_toggle(th, cx))
+            })
+            .when(!squeeze.print, |d| {
                 d.child(
                     icon_button("reader-print", "print", 20.0, th)
                         .tooltip(tip(tr!("reader-print-all"), th))
@@ -723,28 +866,32 @@ impl MailWindow {
                             cx.listener(|this, _, window, cx| this.print_conversation(window, cx)),
                         ),
                 )
-                .when(!self.detached, |d| {
+            })
+            .when(!self.detached && !squeeze.new_window, |d| {
+                d.child(
+                    icon_button("reader-new-window", "open-external", 20.0, th)
+                        .tooltip(tip(tr!("reader-new-window"), th))
+                        .on_click(cx.listener(|this, _, _, cx| this.open_reader_in_window(cx))),
+                )
+            });
+        let steps = position.map(|(_, text)| {
+            div()
+                .flex_none()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(2.0))
+                .when(!squeeze.position, |d| {
                     d.child(
-                        icon_button("reader-new-window", "open-external", 20.0, th)
-                            .tooltip(tip(tr!("reader-new-window"), th))
-                            .on_click(cx.listener(|this, _, _, cx| this.open_reader_in_window(cx))),
+                        div()
+                            .px(px(8.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .whitespace_nowrap()
+                            .child(text),
                     )
                 })
-            })
-            // A conversation in its own window has no list to step through.
-            .when(!narrow && count > 0 && !self.detached, |d| {
-                d.child(
-                    div()
-                        .px(px(8.0))
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(tr!("reader-position", position = position, total = total)),
-                )
-            })
-            // A phone moves between conversations from the list; a
-            // conversation window shows only its own.
-            .when(!phone && !self.detached && !squeeze.steps, |d| {
-                d.child(
+                .child(
                     icon_button("newer", "chevron-left", 20.0, th)
                         .tooltip(tip(tr!("reader-newer"), th))
                         .when(ix == 0, |d| d.opacity(0.4))
@@ -760,7 +907,10 @@ impl MailWindow {
                             this.select_next(&SelectNext, window, cx)
                         })),
                 )
-            })
+        });
+        toolbar(th)
+            .child(actions)
+            .children(steps)
             .into_any_element()
     }
 
@@ -1678,7 +1828,14 @@ fn shown_body(raw: &[u8]) -> Body {
 /// The body of `raw` as the reading view shows it.
 fn shown(raw: &[u8], security: Option<Secured>) -> Body {
     let view = katna_render::message_view(raw);
-    let doc = katna_render::message_document(raw);
+    // Mail only partly encrypted shows as plain text: text around the
+    // opened part could be anyone's, and as HTML it could wrap the opened
+    // text into a link to their site (EFAIL).
+    let partly_encrypted = matches!(
+        &security,
+        Some(Secured::Opened(security)) if security.encrypted() && !security.whole
+    );
+    let doc = katna_render::message_document(raw).filter(|_| !partly_encrypted);
     let (blocks, cut) = match doc {
         Some(_) => (Vec::new(), false),
         None => body_blocks(&view.body, MAX_BODY_LINES),
@@ -1779,5 +1936,46 @@ mod tests {
         let (blocks, cut) = body_blocks(body, 2);
         assert_eq!(blocks.len(), 1);
         assert!(cut);
+    }
+
+    #[test]
+    fn toolbar_gives_way_least_used_first_and_keeps_the_arrows() {
+        let shown = Toolbar {
+            back: true,
+            separators: true,
+            contact: true,
+            colors: true,
+            new_window: true,
+            position: Some(80.0),
+            arrows: true,
+        };
+        let wide = Squeeze::fit(2000.0, &shown, Squeeze::NONE);
+        assert!(!wide.new_window && !wide.position && !wide.delete);
+        let mut last = 0;
+        for width in (150..900).rev().step_by(10) {
+            let squeeze = Squeeze::fit(width as f32, &shown, Squeeze::NONE);
+            let dropped = [
+                squeeze.new_window,
+                squeeze.print,
+                squeeze.colors,
+                squeeze.contact,
+                squeeze.move_to,
+                squeeze.unread,
+                squeeze.spam,
+                squeeze.separators,
+                squeeze.delete,
+                squeeze.position,
+            ];
+            let n = dropped.iter().filter(|d| **d).count();
+            // One by one, in order, and never back as it narrows.
+            assert!(dropped.iter().take(n).all(|d| *d));
+            assert!(n >= last);
+            last = n;
+            // What stays fits, down to Back, Archive, More and the arrows.
+            if n < dropped.len() {
+                assert!(shown.width(&squeeze) <= width as f32);
+            }
+        }
+        assert_eq!(last, 10);
     }
 }

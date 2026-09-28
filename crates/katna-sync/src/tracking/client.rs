@@ -128,6 +128,11 @@ impl Client {
                 "tracking server: wrong number of IDs".into(),
             ));
         }
+        // IDs go into the HTML of mail sent in the user's name: only the
+        // server's own form (32 lowercase hex digits) is used.
+        if !created.ids.iter().all(|id| is_track_id(id)) {
+            return Err(Error::Protocol("tracking server: malformed ID".into()));
+        }
         Ok(created.ids)
     }
 
@@ -428,8 +433,24 @@ impl EventStream {
     }
 }
 
+/// Whether `id` looks like a tracking ID the server makes: 32 lowercase
+/// hex digits.
+fn is_track_id(id: &str) -> bool {
+    id.len() == 32 && id.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
+}
+
 #[cfg(test)]
 mod tests {
+    use super::is_track_id;
+
+    #[test]
+    fn only_well_formed_track_ids() {
+        assert!(is_track_id(&"0a".repeat(16)));
+        assert!(!is_track_id(&"0A".repeat(16)));
+        assert!(!is_track_id("\"><img src=x>"));
+        assert!(!is_track_id(&"a".repeat(33)));
+    }
+
     use super::*;
 
     #[test]

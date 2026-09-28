@@ -1009,3 +1009,98 @@ ngamunye isayinwa noma ibethelwe yodwa, ngakho izisayino zihlala zisebenza.
 Imeyili yombhalo osobala ayikwazi ukubonisa ukuvulwa, kepha izixhumanisi
 zayo ziyalandelelwa, ngakho uyabona uma othile elandela isixhumanisi.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Impendulo iqala ngokusha ngemva kokuvala iwindi lomlayezo"
+text = """
+Ukuvala umlayezo obhalwe kwiwindi lawo manje kuwugcina kokusalungiswa,
+futhi Phendula, Phendula bonke kanye Nokudlulisela kuvula umlayezo
+omusha futhi esikhundleni sokubuyisa omdala.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Ibha yosesho ehwamukile"
+text = """
+Uma ingemuva elimpunga livuliwe, ibha yosesho ivumela ukuhwamuka kudlule
+njengebha ezungeze yona, esikhundleni sokuhlala phezu kwayo njengepilisi
+elimpunga eliqinile.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Skrola phezu kwesithombe sakho ukushintsha ama-akhawunti"
+text = """
+Uma inkomba iphezu kwesithombe se-akhawunti phezulu kwesokudla, jikisa
+ivili lempuku ukuze uye ku-akhawunti elandelayo noma yangaphambilini,
+i-akhawunti eyodwa ngokuchofoza ngakunye. Isithombe siyagiqika siye
+ku-akhawunti entsha, njengoba igama lohlelo lokusebenza ligiqika uma
+ushintsha izinhlelo, futhi ukukhetha i-akhawunti kukhadi kuyigiqika
+ngendlela efanayo.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Isikhala sabamukeli abaningi"
+text = """
+Abamukeli ngemva komugqa wokuqala manje basebenzisa ububanzi bonke,
+futhi uhlu olude luskrola phakathi kwemigqa embalwa, ukuze umlayezo
+uhlale usondele. Shiya inkambu futhi igoqeke ibe umugqa owodwa,
+njengokuthi “Kay, Sam, 19 ngaphezulu”; yichofoze ukuze ubabone bonke
+futhi.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Umbiko womsebenzi we-akhawunti eyodwa"
+text = """
+Umbiko womsebenzi manje unesikhethi se-akhawunti eduze kwezinsuku. Khetha
+wonke ama-akhawunti noma elilodwa, futhi imilayezo elandelelwayo, amazinga,
+ishadi, izihloko kanye nebhokisi lakho lemeyili konke kulandela lokho. Umbiko
+uthi ubonisa iyiphi i-akhawunti futhi ukhumbula ukukhetha kwakho.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Okusha nokudala kuhlala kubha yamathuluzi"
+text = """
+Kungakhathaliseki ukuthi ipani yokufunda ibancane kangakanani, isibali
+nemicibisholo Yokusha Nokudala ihlala ngakwesokudla sebha yayo yamathuluzi.
+Kunalokho, izinkinobho ozisebenzisa kancane zinyukela kumenyu Okuningi eyodwa
+ngayodwa, kuhlanganise nezishintshi zemininingwane yoxhumana naye namakhalari
+asekuqaleni.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Thumela amafayela osayizi bonke"
+text = """
+Ku-akhawunti engene ngeGoogle, ifayela elidlula umkhawulo wemeyili we-25 MB liya
+ku-Google Drive yakho ngokushesha nje lapho ulinamathisela, futhi umlayezo
+uphethe isixhumanisi salo, njengasku-Gmail. Lyabelwana nabamukeli bakho lapho
+ucindezela Thumela; i-Katna ibuza kuphela uma othile engenakunikezwa
+ukufinyelela.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Uhlu lwabamukeli abade luba lula"
+text = """
+Uhlu olude lwabamukeli manje lunebha yalo yokuskrola futhi luhamba umugqa
+owodwa ngesikhathi, futhi ingxoxo iskrolela phambili kuphela uma uhlu
+lufinyelela ekugcineni. Ukwengeza abamukeli akusabangeli ukuthi izinkinobho
+ezingezansi ziqhume.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Hlola imeyili entsha"
+text = """
+Chofoza kwesokudla efolda noma ku-akhawunti kuphaneli yamafolda ukuthola
+"Hlola imeyili entsha", "Maka konke njengokufundiwe", ifolda entsha
+ngaphakathi kwayo, noma "Sula Udoti". "Vuselela" ngenhla kohlu manje ilanda
+nasenkonzweni. Ngenkathi i-Katna ihlola, imicibisholo iyajika ku-"Vuselela"
+nasecaleni kwebhokisi lokungenayo, futhi "Iyahlola imeyili entsha…" ivela
+phezulu uma kuthatha isikhathi esingaphezu kwesikhashana.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Amafayela amakhulu nge-OneDrive"
+text = """
+Ama-akhawunti e-Outlook.com, e-Hotmail namanye e-Microsoft manje athumela
+amafayela adlula umkhawulo wemeyili njengoba kwenza ama-akhawunti e-Google:
+ifayela liya ku-OneDrive yakho ngokushesha nje lapho ulinamathisela, futhi
+umlayezo uphethe isixhumanisi salo, njengasku-Outlook.
+"""

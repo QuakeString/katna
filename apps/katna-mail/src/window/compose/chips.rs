@@ -143,6 +143,8 @@ pub(in crate::window) struct ChipLayout {
     chips: RefCell<Vec<f32>>,
     field: RefCell<Vec<f32>>,
     trailing: RefCell<Vec<f32>>,
+    /// A touchpad's scrolling not yet a whole line of chips.
+    wheel: std::cell::Cell<f32>,
 }
 
 impl Default for ChipLayout {
@@ -151,6 +153,7 @@ impl Default for ChipLayout {
             chips: RefCell::new(vec![0.0; 3 * MAX_CHIPS]),
             field: RefCell::new(vec![0.0; 3]),
             trailing: RefCell::new(vec![0.0; 3]),
+            wheel: std::cell::Cell::new(0.0),
         }
     }
 }
@@ -178,10 +181,12 @@ impl ChipLayout {
         let widths = self.chips.borrow();
         let widths =
             widths.get(field.ix() * MAX_CHIPS..field.ix() * MAX_CHIPS + count.min(MAX_CHIPS))?;
+        // A chip just added is measured once drawn: until then it goes on
+        // the lines under the first, so nothing else moves for a frame.
         let measured = count <= MAX_CHIPS
             && self.field.borrow()[field.ix()] > 0.0
             && (!trailing || self.trailing.borrow()[field.ix()] > 0.0)
-            && widths.iter().all(|w| *w > 0.0);
+            && widths.first().is_none_or(|w| *w > 0.0);
         if !measured {
             return None;
         }
@@ -191,6 +196,9 @@ impl ChipLayout {
             widths
                 .iter()
                 .take_while(|w| {
+                    if **w <= 0.0 {
+                        return false;
+                    }
                     let next = used + if used > 0.0 { 4.0 } else { 0.0 } + **w;
                     let fits = next <= room;
                     if fits {
@@ -213,6 +221,9 @@ impl ChipLayout {
         widths[base..base + count.min(MAX_CHIPS)]
             .iter()
             .take_while(|w| {
+                if **w <= 0.0 {
+                    return false;
+                }
                 let name = (**w - CHIP_CHROME).max(0.0);
                 let next = used + if used > 0.0 { FOLD_COMMA } else { 0.0 } + name;
                 let fits = next <= room;
@@ -244,6 +255,33 @@ fn notify_later(this: &gpui::WeakEntity<MailWindow>, cx: &mut gpui::App) {
     cx.defer(move |cx| {
         this.update(cx, |_, cx| cx.notify()).ok();
     });
+}
+
+/// The lines of chips shown under the first before the rest scroll.
+const LINES: f32 = 4.0;
+/// A line of chips and the gap under it.
+const LINE: f32 = HEIGHT + 4.0;
+
+/// The thumb beside a field's lines that scroll, showing where the lines
+/// in view are; from where the list was last drawn.
+fn scrollbar(scroll: &gpui::ScrollHandle, th: &Theme) -> Option<gpui::Div> {
+    let max = unpx(scroll.max_offset().y);
+    let view = unpx(scroll.bounds().size.height);
+    if max < 1.0 || view < 1.0 {
+        return None;
+    }
+    let thumb = (view * view / (view + max)).max(20.0);
+    let at = (-unpx(scroll.offset().y) / max).clamp(0.0, 1.0);
+    Some(
+        div()
+            .absolute()
+            .right(px(2.0))
+            .top(px(at * (view - thumb)))
+            .w(px(4.0))
+            .h(px(thumb))
+            .rounded_full()
+            .bg(rgba(th.text_dim & 0xffff_ff00 | 0x80)),
+    )
 }
 
 /// Draws the mail window again once the current update and frame are
@@ -830,7 +868,12 @@ impl MailWindow {
             Some((f, at)) if f == field && at < chips.len() => at,
             _ => chips.len(),
         };
-        let typing = div().child(input.clone());
+        // As tall as a chip, so the lines of a long list keep one pitch.
+        let typing = div()
+            .h(px(HEIGHT))
+            .flex()
+            .items_center()
+            .child(input.clone());
         let typing = if at < chips.len() {
             let chars = input.read(cx).text().chars().count() as f32;
             typing
@@ -894,14 +937,72 @@ impl MailWindow {
                     .children(trailing.map(|t| t.ml(px(4.0)))),
             )
             .when(!rest.is_empty(), |d| {
+                // Wheel over the list, caught before the list and the
+                // conversation see it: the list moves by whole lines, never
+                // cutting one, and at its end the conversation scrolls.
+                let wheel = {
+                    let (scroll, layout) = (scroll.clone(), layout.clone());
+                    canvas(
+                        |_, _, _| {},
+                        move |bounds, _, window, _| {
+                            let (scroll, layout) = (scroll.clone(), layout.clone());
+                            window.on_mouse_event(
+                                move |event: &gpui::ScrollWheelEvent, phase, window, cx| {
+                                    if phase != gpui::DispatchPhase::Capture
+                                        || !bounds.contains(&event.position)
+                                    {
+                                        return;
+                                    }
+                                    let dy = unpx(event.delta.pixel_delta(window.line_height()).y);
+                                    let max = unpx(scroll.max_offset().y);
+                                    let now = scroll.offset();
+                                    let before = unpx(now.y).clamp(-max, 0.0);
+                                    let at_end = if dy > 0.0 {
+                                        before >= -0.5
+                                    } else {
+                                        before <= -max + 0.5
+                                    };
+                                    if dy == 0.0 || at_end {
+                                        layout.wheel.set(0.0);
+                                        return;
+                                    }
+                                    let steps = match event.delta {
+                                        gpui::ScrollDelta::Lines(_) => dy.signum(),
+                                        gpui::ScrollDelta::Pixels(_) => {
+                                            let sum = layout.wheel.get() + dy;
+                                            let steps = (sum / LINE).trunc();
+                                            layout.wheel.set(sum - steps * LINE);
+                                            steps
+                                        }
+                                    };
+                                    let to = ((before / LINE).round() + steps) * LINE;
+                                    scroll.set_offset(point(now.x, px(to.clamp(-max, 0.0))));
+                                    cx.stop_propagation();
+                                    window.refresh();
+                                },
+                            );
+                        },
+                    )
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .size_full()
+                };
                 d.child(
-                    wrap(div())
-                        .id(("recipient-lines", field.ix()))
-                        .max_h(px(4.0 * (HEIGHT + 4.0) + 6.0))
-                        .overflow_y_scroll()
-                        .track_scroll(&scroll)
+                    div()
+                        .relative()
                         .pb(px(6.0))
-                        .children(rest),
+                        .child(
+                            wrap(div())
+                                .id(("recipient-lines", field.ix()))
+                                .max_h(px(LINES * LINE - 4.0))
+                                .overflow_y_scroll()
+                                .track_scroll(&scroll)
+                                .pr(px(10.0))
+                                .children(rest),
+                        )
+                        .children(scrollbar(&scroll, th))
+                        .child(wheel),
                 )
             })
             .child(measure_field)
@@ -1205,8 +1306,14 @@ mod tests {
         // 150-wide chips fit, the third goes to the lines under it.
         let layout = measured(500.0, 184.0, &[150.0, 150.0, 150.0]);
         assert_eq!(layout.first_line(Field::To, 3, true), Some(2));
-        // Not measured yet: laid out as before.
-        assert_eq!(layout.first_line(Field::To, 4, true), None);
+        // A chip just added, not measured yet, goes under the first line.
+        let layout = measured(500.0, 184.0, &[150.0]);
+        assert_eq!(layout.first_line(Field::To, 2, true), Some(1));
+        // Nothing measured yet: laid out as before.
+        assert_eq!(
+            measured(500.0, 184.0, &[]).first_line(Field::To, 1, true),
+            None
+        );
         assert_eq!(ChipLayout::default().first_line(Field::To, 0, false), None);
     }
 

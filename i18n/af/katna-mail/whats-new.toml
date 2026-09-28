@@ -950,3 +950,89 @@ se kopie word apart onderteken of geënkripteer, sodat handtekeninge geldig
 bly. Gewone-teks-e-pos kan nie oopmaak wys nie, maar sy skakels word
 nagespoor, sodat jy sien wanneer iemand een volg.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Antwoord begin weer van voor af nadat 'n boodskapvenster gesluit is"
+text = """
+As jy 'n boodskap sluit wat in sy eie venster geskryf is, bly dit nou in
+Konsepte, en Antwoord, Antwoord almal en Stuur aan maak weer 'n nuwe
+boodskap oop in plaas daarvan om die ou een terug te bring.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "'n Ryperige soekbalk"
+text = """
+Met die vaag agtergrond aan, laat die soekbalk die vaagheid deur soos die
+balk daaromheen, in plaas daarvan om as 'n soliede grys pil daarop te sit.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Rol oor jou prent om van rekening te wissel"
+text = """
+Met die wyser oor die rekeningprent regs bo, draai die muiswiel om na die
+volgende of vorige rekening te gaan, een rekening per kliek. Die prent rol
+na die nuwe rekening, soos die program se naam rol wanneer jy van program
+wissel, en as jy 'n rekening op die kaart kies, rol dit op dieselfde manier.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruimte vir baie ontvangers"
+text = """
+Ontvangers ná die eerste reël gebruik nou die hele breedte, en 'n lang lys
+rol binne 'n paar reëls, sodat die boodskap self altyd bereikbaar bly.
+Verlaat die veld en dit vou op tot een reël, soos "Kay, Sam, 19 meer"; klik
+daarop om almal weer te sien.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Aktiwiteitsverslag vir een rekening"
+text = """
+Die aktiwiteitsverslag het nou ’n rekeningkieser langs die datums. Kies
+Alle rekeninge of een daarvan, en die nagespoorde boodskappe, koerse,
+grafiek, onderwerpreëls en Jou posbus volg jou keuse. Die verslag sê
+watter rekening dit wys en onthou jou keuse.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nuwer en Ouer altyd op die nutsbalk"
+text = """
+Hoe smal die leesruit ook al is, die teller en die Nuwer- en Ouer-pyle bly
+regs op sy nutsbalk. Die knoppies wat jy die minste gebruik, skuif eerder
+een vir een na die Meer-kieslys, insluitend die kontakbesonderhede- en
+oorspronklike kleure-skakelaars.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Stuur lêers van enige grootte"
+text = """
+Met 'n rekening wat met Google aangemeld is, gaan 'n lêer bo die 25
+MB-poslimiet na jou Google Drive sodra jy dit heg, en die boodskap bevat
+die skakel, soos in Gmail. Dit word met jou ontvangers gedeel wanneer jy
+Stuur druk; Katna vra net as iemand nie toegang gegee kan word nie.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Gladder lang ontvangerlyste"
+text = """
+'n Lang lys ontvangers het nou sy eie rolstaaf en beweeg een reël op 'n
+slag; die gesprek rol eers verder wanneer die lys sy einde bereik. As jy
+ontvangers byvoeg, spring die knoppies daaronder nie meer nie.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Kyk vir nuwe e-pos"
+text = """
+Regsklik op 'n vouer of rekening in die vouerpaneel vir “Kyk vir nuwe
+e-pos”, “Merk almal as gelees”, 'n nuwe vouer binne-in dit of “Maak
+Asblik leeg”. “Herlaai” bo die lys haal nou ook van die bediener af.
+Terwyl Katna kyk, draai die pyle op “Herlaai” en langs Inkassie, en “Kyk
+tans vir nuwe e-pos…” verskyn bo as dit langer as 'n oomblik neem.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Groot lêers deur OneDrive"
+text = """
+Outlook.com, Hotmail en ander Microsoft-rekeninge stuur nou lêers bo die
+poslimiet soos Google-rekeninge: die lêer gaan na jou OneDrive sodra jy
+dit heg, en die boodskap bevat die skakel, soos in Outlook.
+"""

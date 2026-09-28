@@ -15,6 +15,7 @@ compose-pop-out-reply = 以獨立視窗回覆
 compose-edit-recipients = 編輯收件者
 compose-summary-cc = 副本：{ $names }
 compose-summary-bcc = 密件副本：{ $names }
+compose-more-recipients = 另外 { $count } 人
 compose-show-trimmed = 顯示已省略的內容
 compose-hide-trimmed = 隱藏已省略的內容
 compose-remove-trimmed = 移除引用的文字
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } 太大：一封郵件最多只能夾帶 { $li
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
 compose-attachments-total = { $count } 個檔案，共 { $size }
+compose-drive-note = { $name } 超過 { $limit }，因此會存入你的 Google Drive，郵件中會附上連結。
+compose-drive-tip = 在你的 Google Drive 中；郵件中會附上連結
+compose-drive-uploading = 正在上傳 { $percent }%
+compose-drive-allow = 允許 Drive
+compose-drive-allow-tip = 重新使用 Google 登入，讓 Katna 可以把大型檔案放入你的 Drive
+compose-drive-retry = 再試一次
+compose-drive-sends-when-uploaded = { $name } 上傳完成後即傳送
+compose-drive-not-uploaded = { $name } 尚未上傳到 Google Drive
+compose-drive-share-failed = 無法在 Google Drive 中共用這些檔案：{ $error }
+compose-drive-share-title = 與所有人共用這些檔案？
+compose-drive-share-text = { $count ->
+   *[other] Google Drive 無法與沒有 Google 帳戶的 { $addresses } 共用這些檔案。改為讓任何擁有連結的人都可以開啟。
+}
+compose-drive-share-link = 透過連結共用
+compose-drive-send-without = 不共用直接傳送
+compose-drive-share-cancel = 取消
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } 超過 { $limit }，因此會存入你的 OneDrive，郵件中會附上連結。
+compose-onedrive-tip = 在你的 OneDrive 中；郵件中會附上連結
+compose-onedrive-allow = 允許 OneDrive
+compose-onedrive-allow-tip = 重新使用 Microsoft 登入，讓 Katna 可以把大型檔案放入你的 OneDrive
+compose-onedrive-not-uploaded = { $name } 尚未上傳到 OneDrive
+compose-onedrive-share-failed = 無法在 OneDrive 中共用這些檔案：{ $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive 無法與 { $addresses } 共用這些檔案。改為讓任何擁有連結的人都可以開啟。
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = 將檔案拖放到這裡
 compose-drop-here = 拖放到這裡
 compose-paste-keep-formatting = 保留格式

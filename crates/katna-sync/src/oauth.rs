@@ -9,6 +9,7 @@
 //! turns it into short-lived access tokens for SASL XOAUTH2.
 
 use std::{
+    collections::HashMap,
     fmt,
     sync::Mutex,
     time::{Duration, Instant},
@@ -32,6 +33,15 @@ const TOKEN_TIMEOUT: Duration = Duration::from_secs(30);
 /// An access token is renewed this long before it runs out.
 const EXPIRY_MARGIN: Duration = Duration::from_secs(120);
 
+/// Google Drive, limited to the files Katna itself put there: for
+/// attachments too large to send by mail.
+pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file";
+
+/// OneDrive, through Microsoft Graph: for attachments too large to send
+/// by mail. Graph is another resource than Outlook's IMAP and SMTP, so
+/// its tokens come separately ([`TokenSource::access_token_for`]).
+pub const MICROSOFT_FILES: &str = "https://graph.microsoft.com/Files.ReadWrite";
+
 /// Largest request the loopback listener reads.
 const MAX_REQUEST: usize = 16 * 1024;
 
@@ -46,6 +56,9 @@ pub struct Provider {
     pub client_secret: String,
     /// Space-separated scopes.
     pub scope: String,
+    /// More scopes the user allows at sign-in, of another resource whose
+    /// tokens come separately (Microsoft Graph); empty for Google.
+    pub consent: String,
     /// Host name of the loopback redirect, as registered with the
     /// provider.
     pub redirect_host: &'static str,
@@ -65,31 +78,53 @@ impl Provider {
     /// The provider with the client ID from `katna_core::ids`; `None` when
     /// this build has none.
     pub fn new(kind: OAuthProvider, tls: Tls) -> Option<Self> {
-        if !kind.available() {
+        // A token server under test stands in for the provider's, also in
+        // builds without a client ID.
+        let test_tokens = match kind {
+            OAuthProvider::Google => http::test_url("KATNA_GOOGLE_TOKEN_URL"),
+            OAuthProvider::Microsoft => http::test_url("KATNA_MICROSOFT_TOKEN_URL"),
+        };
+        if !kind.available() && test_tokens.is_none() {
             return None;
         }
         Some(match kind {
             OAuthProvider::Google => Self {
                 kind,
                 auth_url: "https://accounts.google.com/o/oauth2/v2/auth".into(),
-                token_url: "https://oauth2.googleapis.com/token".into(),
-                client_id: kind.client_id().into(),
+                token_url: test_tokens
+                    .unwrap_or_else(|| "https://oauth2.googleapis.com/token".into()),
+                client_id: if kind.available() {
+                    kind.client_id().into()
+                } else {
+                    "katna-test".into()
+                },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
-                // Full IMAP and SMTP, and who signed in (address, name,
+                // Full IMAP and SMTP, the files Katna puts in Drive for
+                // large attachments, and who signed in (address, name,
                 // picture) in the ID token.
-                scope: "https://mail.google.com/ openid email profile".into(),
+                scope: format!("https://mail.google.com/ {GOOGLE_DRIVE_FILE} openid email profile"),
+                consent: String::new(),
                 redirect_host: "127.0.0.1",
                 tls,
             },
             OAuthProvider::Microsoft => Self {
                 kind,
                 auth_url: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize".into(),
-                token_url: "https://login.microsoftonline.com/common/oauth2/v2.0/token".into(),
-                client_id: kind.client_id().into(),
+                token_url: test_tokens.unwrap_or_else(|| {
+                    "https://login.microsoftonline.com/common/oauth2/v2.0/token".into()
+                }),
+                client_id: if kind.available() {
+                    kind.client_id().into()
+                } else {
+                    "katna-test".into()
+                },
                 client_secret: String::new(),
                 scope: "https://outlook.office.com/IMAP.AccessAsUser.All \
                         https://outlook.office.com/SMTP.Send offline_access openid email profile"
                     .into(),
+                // OneDrive, for large attachments, allowed at the same
+                // sign-in.
+                consent: MICROSOFT_FILES.into(),
                 // Entra registers loopback redirects as `http://localhost`.
                 redirect_host: "localhost",
                 tls,
@@ -152,6 +187,8 @@ pub struct Grant {
     pub expires_in: Duration,
     /// Absent when refreshing.
     pub identity: Option<Identity>,
+    /// The scopes granted, when the provider says (Google does).
+    pub scope: Option<String>,
 }
 
 impl fmt::Debug for Grant {
@@ -172,6 +209,8 @@ struct TokenAnswer {
     expires_in: Option<u64>,
     #[serde(default)]
     id_token: Option<String>,
+    #[serde(default)]
+    scope: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -240,6 +279,7 @@ async fn token_request<'a>(
             // Both providers give an hour; assume less if they say nothing.
             expires_in: Duration::from_secs(answer.expires_in.unwrap_or(600)),
             identity: answer.id_token.as_deref().and_then(identity),
+            scope: answer.scope,
         });
     }
     let name = provider.kind.name();
@@ -275,12 +315,29 @@ async fn token_request<'a>(
 
 /// Trades a refresh token for a new access token.
 pub async fn refresh(provider: &Provider, refresh_token: &str) -> Result<Grant> {
+    let mut form = vec![
+        ("grant_type", "refresh_token"),
+        ("refresh_token", refresh_token),
+    ];
+    // Google refuses scopes the grant lacks, as accounts signed in before
+    // Drive was asked for do; without any it grants what the sign-in did.
+    if provider.kind != OAuthProvider::Google {
+        form.push(("scope", &provider.scope));
+    }
+    token_request(provider, &mut form).await
+}
+
+/// Trades a refresh token for an access token of another resource, one
+/// of [`Provider::consent`]'s. A grant that never allowed it is
+/// [`Error::Auth`].
+async fn refresh_for(provider: &Provider, refresh_token: &str, scope: &str) -> Result<Grant> {
+    let scope = format!("{scope} offline_access");
     token_request(
         provider,
         &mut vec![
             ("grant_type", "refresh_token"),
             ("refresh_token", refresh_token),
-            ("scope", &provider.scope),
+            ("scope", &scope),
         ],
     )
     .await
@@ -337,11 +394,16 @@ impl SignIn {
         let redirect_uri = format!("http://{}:{port}/", provider.redirect_host);
         let state = random(16)?;
         let verifier = random(48)?;
+        let scope = if provider.consent.is_empty() {
+            provider.scope.clone()
+        } else {
+            format!("{} {}", provider.scope, provider.consent)
+        };
         let mut query = vec![
             ("response_type", "code"),
             ("client_id", provider.client_id.as_str()),
             ("redirect_uri", redirect_uri.as_str()),
-            ("scope", provider.scope.as_str()),
+            ("scope", scope.as_str()),
             ("state", state.as_str()),
             ("code_challenge_method", "S256"),
         ];
@@ -416,16 +478,18 @@ impl SignIn {
                 ))
             });
         };
-        let grant = token_request(
-            provider,
-            &mut vec![
-                ("grant_type", "authorization_code"),
-                ("code", &code),
-                ("redirect_uri", &self.redirect_uri),
-                ("code_verifier", &self.verifier),
-            ],
-        )
-        .await?;
+        let mut form = vec![
+            ("grant_type", "authorization_code"),
+            ("code", code.as_str()),
+            ("redirect_uri", self.redirect_uri.as_str()),
+            ("code_verifier", self.verifier.as_str()),
+        ];
+        // Microsoft hands out tokens for one resource at a time: these are
+        // for IMAP and SMTP, whatever else the user allowed.
+        if !provider.consent.is_empty() {
+            form.push(("scope", provider.scope.as_str()));
+        }
+        let grant = token_request(provider, &mut form).await?;
         if grant.refresh_token.is_none() {
             return Err(Error::Protocol(format!(
                 "{} gave no refresh token",
@@ -539,6 +603,10 @@ pub struct TokenSource {
     provider: Provider,
     refresh_token: Mutex<String>,
     access: Mutex<Option<(String, Instant)>>,
+    /// Access tokens of other resources, by scope.
+    others: Mutex<HashMap<String, (String, Instant)>>,
+    /// The scopes granted, once the provider said.
+    granted: Mutex<Option<String>>,
     /// Lets one refresh run at a time: holding its only message.
     gate: (async_channel::Sender<()>, async_channel::Receiver<()>),
     on_rotate: Option<OnRotate>,
@@ -552,6 +620,8 @@ impl TokenSource {
             provider,
             refresh_token: Mutex::new(refresh_token),
             access: Mutex::new(None),
+            others: Mutex::new(HashMap::new()),
+            granted: Mutex::new(None),
             gate,
             on_rotate,
         }
@@ -561,6 +631,32 @@ impl TokenSource {
     pub fn with_access_token(self, token: String, expires_in: Duration) -> Self {
         *self.access.lock().unwrap() = Some((token, Instant::now() + expires_in));
         self
+    }
+
+    /// Also knows the scopes that sign-in granted.
+    pub fn with_scope(self, scope: Option<String>) -> Self {
+        *self.granted.lock().unwrap() = scope;
+        self
+    }
+
+    /// Whether the grant covers `scope`: `None` until the provider said.
+    pub fn granted(&self, scope: &str) -> Option<bool> {
+        self.granted
+            .lock()
+            .unwrap()
+            .as_deref()
+            .map(|granted| granted.split_whitespace().any(|s| s == scope))
+    }
+
+    /// Like [`Self::granted`], asking the provider when it has not said
+    /// yet; `true` when it never does.
+    pub async fn has_scope(&self, scope: &str) -> Result<bool> {
+        if let Some(known) = self.granted(scope) {
+            return Ok(known);
+        }
+        self.forget_access_token();
+        self.access_token().await?;
+        Ok(self.granted(scope).unwrap_or(true))
     }
 
     pub fn provider(&self) -> OAuthProvider {
@@ -590,13 +686,9 @@ impl TokenSource {
             }
             let refresh_token = self.refresh_token.lock().unwrap().clone();
             let grant = refresh(&self.provider, &refresh_token).await?;
-            if let Some(new) = grant.refresh_token
-                && new != refresh_token
-            {
-                *self.refresh_token.lock().unwrap() = new.clone();
-                if let Some(on_rotate) = &self.on_rotate {
-                    on_rotate(new);
-                }
+            self.keep_refresh_token(&refresh_token, &grant);
+            if grant.scope.is_some() {
+                *self.granted.lock().unwrap() = grant.scope.clone();
             }
             *self.access.lock().unwrap() = Some((
                 grant.access_token.clone(),
@@ -614,6 +706,60 @@ impl TokenSource {
     /// retry with a fresh one may help.
     pub fn forget_access_token(&self) -> bool {
         self.access.lock().unwrap().take().is_some()
+    }
+
+    /// Saves the refresh token `grant` replaced `old` with, if any.
+    fn keep_refresh_token(&self, old: &str, grant: &Grant) {
+        if let Some(new) = &grant.refresh_token
+            && new != old
+        {
+            *self.refresh_token.lock().unwrap() = new.clone();
+            if let Some(on_rotate) = &self.on_rotate {
+                on_rotate(new.clone());
+            }
+        }
+    }
+
+    /// A valid access token for `scope`, one of another resource the
+    /// sign-in allowed ([`Provider::consent`]). [`Error::Auth`] when it
+    /// did not allow it; the account's mail goes on working.
+    pub async fn access_token_for(&self, scope: &str) -> Result<String> {
+        let cached = |this: &Self| {
+            this.others
+                .lock()
+                .unwrap()
+                .get(scope)
+                .filter(|(_, until)| Instant::now() + EXPIRY_MARGIN < *until)
+                .map(|(token, _)| token.clone())
+        };
+        if let Some(token) = cached(self) {
+            return Ok(token);
+        }
+        let _ = self.gate.1.recv().await;
+        let result = async {
+            if let Some(token) = cached(self) {
+                return Ok(token);
+            }
+            let refresh_token = self.refresh_token.lock().unwrap().clone();
+            let grant = refresh_for(&self.provider, &refresh_token, scope).await?;
+            self.keep_refresh_token(&refresh_token, &grant);
+            self.others.lock().unwrap().insert(
+                scope.to_owned(),
+                (
+                    grant.access_token.clone(),
+                    Instant::now() + grant.expires_in,
+                ),
+            );
+            Ok(grant.access_token)
+        }
+        .await;
+        let _ = self.gate.0.try_send(());
+        result
+    }
+
+    /// Like [`Self::forget_access_token`], for [`Self::access_token_for`].
+    pub fn forget_access_token_for(&self, scope: &str) -> bool {
+        self.others.lock().unwrap().remove(scope).is_some()
     }
 }
 

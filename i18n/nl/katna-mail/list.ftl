@@ -21,6 +21,7 @@ tab-provider-other = gesorteerd door Katna
 
 list-select = Selecteren
 list-refresh = Vernieuwen
+list-checking = Controleren op nieuwe e-mail…
 list-more = Meer
 list-mark-read = Markeren als gelezen
 list-mark-unread = Markeren als ongelezen

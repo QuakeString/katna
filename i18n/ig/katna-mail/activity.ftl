@@ -46,3 +46,6 @@ activity-range-custom = Nke gị
 activity-range-from = Site na
 activity-range-to = Ruo
 activity-range-apply = Tinye n'ọrụ
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Akaụntụ niile
+activity-accounts-tip = Gosi otu akaụntụ ma ọ bụ niile

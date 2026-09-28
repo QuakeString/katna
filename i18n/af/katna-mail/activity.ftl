@@ -55,3 +55,6 @@ activity-range-custom = Pasgemaak
 activity-range-from = Van
 activity-range-to = Tot
 activity-range-apply = Pas toe
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Alle rekeninge
+activity-accounts-tip = Wys een rekening of almal

@@ -55,3 +55,6 @@ activity-range-custom = ഇഷ്‌ടാനുസൃതം
 activity-range-from = മുതൽ
 activity-range-to = വരെ
 activity-range-apply = പ്രയോഗിക്കുക
+activity-range-of = { $days } · { $account }
+activity-accounts-all = എല്ലാ അക്കൗണ്ടുകളും
+activity-accounts-tip = ഒരു അക്കൗണ്ട് അല്ലെങ്കിൽ എല്ലാം കാണിക്കുക

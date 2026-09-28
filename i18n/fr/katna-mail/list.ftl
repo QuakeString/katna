@@ -25,6 +25,7 @@ tab-provider-other = tri par Katna
 
 list-select = Sélectionner
 list-refresh = Actualiser
+list-checking = Recherche de nouveaux messages…
 list-more = Plus
 list-mark-read = Marquer comme lu
 list-mark-unread = Marquer comme non lu

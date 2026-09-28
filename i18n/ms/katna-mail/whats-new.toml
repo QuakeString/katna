@@ -988,3 +988,96 @@ supaya tandatangan kekal sah. Mel teks biasa tidak dapat menunjukkan
 pembukaan, tetapi pautannya dijejaki, supaya anda nampak bila seseorang
 mengikuti salah satu daripadanya.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Balas bermula baharu selepas tetingkap mesej ditutup"
+text = """
+Menutup mesej yang ditulis dalam tetingkapnya sendiri kini mengekalkannya
+dalam Draf, dan Balas, Balas semua serta Majukan membuka mesej baharu semula
+dan bukannya membawa kembali yang lama.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Bar carian berkaca"
+text = """
+Apabila latar belakang kabur dihidupkan, bar carian membiarkan kekaburan
+menembusinya seperti bar di sekelilingnya, bukannya terletak di atasnya
+sebagai pil kelabu pepejal.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Tatal di atas gambar anda untuk bertukar akaun"
+text = """
+Dengan penuding di atas gambar akaun di bahagian kanan atas, putar roda
+tetikus untuk beralih ke akaun seterusnya atau sebelumnya, satu akaun bagi
+setiap klik. Gambar bergulir ke akaun baharu, seperti nama apl bergulir
+apabila anda bertukar apl, dan memilih akaun daripada kad menggulirkannya
+dengan cara yang sama.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruang untuk ramai penerima"
+text = """
+Penerima selepas baris pertama kini menggunakan seluruh lebar, dan senarai
+panjang menatal dalam beberapa baris, supaya mesej itu sendiri sentiasa
+boleh dicapai. Tinggalkan medan dan ia dilipat kepada satu baris, seperti
+"Kay, Sam, 19 lagi"; klik padanya untuk melihat semuanya semula.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Laporan aktiviti untuk satu akaun"
+text = """
+Laporan aktiviti kini mempunyai pemilih akaun di sebelah tarikh. Pilih
+Semua akaun atau salah satu daripadanya, dan mesej dijejaki, kadar,
+carta, baris subjek serta Peti mel anda akan mengikutinya. Laporan
+menyatakan akaun yang dipaparkan dan mengingati pilihan anda.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Anak panah Lebih baharu dan Lebih lama sentiasa pada bar alat"
+text = """
+Walau sesempit mana pun anak tetingkap bacaan, pembilang serta anak panah
+Lebih baharu dan Lebih lama kekal di sebelah kanan bar alatnya. Butang
+yang paling jarang anda guna akan berpindah satu demi satu ke menu Lagi,
+termasuk suis butiran kenalan dan warna asal.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Hantar fail dalam apa jua saiz"
+text = """
+Dengan akaun yang log masuk melalui Google, fail yang melebihi had mel 25
+MB dihantar ke Google Drive anda sebaik sahaja anda melampirkannya, dan
+mesej membawa pautannya, seperti dalam Gmail. Ia dikongsi dengan penerima
+anda apabila anda menekan Hantar; Katna hanya bertanya jika seseorang
+tidak boleh diberi akses.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Senarai penerima panjang yang lebih lancar"
+text = """
+Senarai penerima yang panjang kini mempunyai bar tatal sendiri dan
+bergerak satu baris pada satu masa; perbualan hanya menatal selepas
+senarai sampai ke penghujungnya. Menambah penerima tidak lagi
+menyebabkan butang di bawahnya melompat.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Semak mel baharu"
+text = """
+Klik kanan folder atau akaun dalam anak tetingkap folder untuk memilih
+“Semak mel baharu”, “Tandai semua sebagai dibaca”, folder baharu di
+dalamnya atau “Kosongkan Sampah”. “Muat semula” di atas senarai kini
+turut mengambil daripada pelayan. Semasa Katna menyemak, anak panah
+berputar pada “Muat semula” dan di sebelah Peti Masuk, dan “Menyemak mel
+baharu…” dipaparkan di atas jika ia mengambil masa lebih daripada
+seketika.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Fail besar melalui OneDrive"
+text = """
+Akaun Outlook.com, Hotmail dan akaun Microsoft lain kini menghantar fail
+yang melebihi had mel seperti akaun Google: fail dihantar ke OneDrive
+anda sebaik sahaja anda melampirkannya, dan mesej membawa pautannya,
+seperti dalam Outlook.
+"""

@@ -50,3 +50,4 @@ search-clear = ਖੋਜ ਸਾਫ਼ ਕਰੋ
 search-options-show = ਖੋਜ ਵਿਕਲਪ ਦਿਖਾਓ
 settings = ਸੈਟਿੰਗਾਂ
 account-add = ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ
+account-wheel-hint = ਖਾਤਾ ਬਦਲਣ ਲਈ ਸਕ੍ਰੌਲ ਕਰੋ

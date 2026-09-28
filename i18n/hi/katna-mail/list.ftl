@@ -21,6 +21,7 @@ tab-provider-other = Katna ने छांटा
 
 list-select = चुनें
 list-refresh = रीफ़्रेश करें
+list-checking = नए मेल की जाँच हो रही है…
 list-more = ज़्यादा
 list-mark-read = पढ़ा गया के रूप में मार्क करें
 list-mark-unread = नहीं पढ़ा गया के रूप में मार्क करें

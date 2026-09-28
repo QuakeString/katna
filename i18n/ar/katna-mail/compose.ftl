@@ -15,6 +15,14 @@ compose-pop-out-reply = فتح الرد في نافذة منفصلة
 compose-edit-recipients = تعديل المستلمين
 compose-summary-cc = نسخة: { $names }
 compose-summary-bcc = نسخة مخفية: { $names }
+compose-more-recipients = { $count ->
+    [zero] { $count } آخرين
+    [one] واحد آخر
+    [two] اثنان آخران
+    [few] { $count } آخرين
+    [many] { $count } آخر
+   *[other] { $count } آخر
+}
 compose-show-trimmed = عرض المحتوى المقتطع
 compose-hide-trimmed = إخفاء المحتوى المقتطع
 compose-remove-trimmed = إزالة النص المقتبس
@@ -63,6 +71,43 @@ compose-attachments-total = { $count ->
     [many] { $count } ملفًا، { $size }
    *[other] { $count } ملف، { $size }
 }
+compose-drive-note = { $name } يتجاوز { $limit }، لذا يُرفع إلى Google Drive الخاص بك وتحمل الرسالة رابطًا.
+compose-drive-tip = في Google Drive الخاص بك؛ تحمل الرسالة رابطًا
+compose-drive-uploading = جارٍ الرفع { $percent }%
+compose-drive-allow = السماح بـ Drive
+compose-drive-allow-tip = سجّل الدخول باستخدام Google مرة أخرى للسماح لـ Katna بوضع الملفات الكبيرة في Drive الخاص بك
+compose-drive-retry = إعادة المحاولة
+compose-drive-sends-when-uploaded = سيتم الإرسال بعد رفع { $name }
+compose-drive-not-uploaded = { $name } ليس في Google Drive بعد
+compose-drive-share-failed = تعذّرت مشاركة الملفات في Google Drive: { $error }
+compose-drive-share-title = مشاركة الملفات مع الجميع؟
+compose-drive-share-text = { $count ->
+    [zero] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [one] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذي ليس لديه حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [two] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، اللذين ليس لديهما حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [few] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [many] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+   *[other] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+}
+compose-drive-share-link = مشاركة عبر الرابط
+compose-drive-send-without = إرسال بدون مشاركة
+compose-drive-share-cancel = إلغاء
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } يتجاوز { $limit }، لذا يُرفع إلى OneDrive الخاص بك وتحمل الرسالة رابطًا.
+compose-onedrive-tip = في OneDrive الخاص بك؛ تحمل الرسالة رابطًا
+compose-onedrive-allow = السماح بـ OneDrive
+compose-onedrive-allow-tip = سجّل الدخول باستخدام Microsoft مرة أخرى للسماح لـ Katna بوضع الملفات الكبيرة في OneDrive الخاص بك
+compose-onedrive-not-uploaded = { $name } ليس في OneDrive بعد
+compose-onedrive-share-failed = تعذّرت مشاركة الملفات في OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [zero] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [one] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [two] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [few] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [many] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+   *[other] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = أفلت الملفات هنا
 compose-drop-here = أفلت هنا
 compose-paste-keep-formatting = الإبقاء على التنسيق

@@ -15,6 +15,7 @@ compose-pop-out-reply = පිළිතුර වෙනම කවුළුවක
 compose-edit-recipients = ලබන්නන් සංස්කරණය කරන්න
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = තවත් { $count }
 compose-show-trimmed = කපා හැරි අන්තර්ගතය පෙන්වන්න
 compose-hide-trimmed = කපා හැරි අන්තර්ගතය සඟවන්න
 compose-remove-trimmed = උපුටා දැක්වූ පෙළ ඉවත් කරන්න
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] ගොනු { $count }, { $size }
    *[other] ගොනු { $count }, { $size }
 }
+compose-drive-note = { $name } { $limit } ඉක්මවන නිසා එය ඔබේ Google Drive වෙත යන අතර පණිවිඩයේ සබැඳියක් තිබේ.
+compose-drive-tip = ඔබේ Google Drive හි; පණිවිඩයේ සබැඳියක් තිබේ
+compose-drive-uploading = උඩුගත කරමින් { $percent }%
+compose-drive-allow = Drive ඉඩ දෙන්න
+compose-drive-allow-tip = විශාල ගොනු ඔබේ Drive හි තැබීමට Katna හට ඉඩ දීමට Google සමඟ නැවත පුරනය වන්න
+compose-drive-retry = නැවත උත්සාහ කරන්න
+compose-drive-sends-when-uploaded = { $name } උඩුගත වූ පසු යවනු ලැබේ
+compose-drive-not-uploaded = { $name } තවමත් Google Drive හි නැත
+compose-drive-share-failed = Google Drive හි ගොනු බෙදා ගැනීමට නොහැකි විය: { $error }
+compose-drive-share-title = ගොනු සියලු දෙනා සමඟ බෙදා ගන්නද?
+compose-drive-share-text = { $count ->
+    [one] Google ගිණුමක් නැති { $addresses } සමඟ Google Drive හට ගොනු බෙදා ගත නොහැක. ඒ වෙනුවට, සබැඳිය ඇති ඕනෑම කෙනෙකුට ඒවා විවෘත කළ හැක.
+   *[other] Google ගිණුමක් නැති { $addresses } සමඟ Google Drive හට ගොනු බෙදා ගත නොහැක. ඒ වෙනුවට, සබැඳිය ඇති ඕනෑම කෙනෙකුට ඒවා විවෘත කළ හැක.
+}
+compose-drive-share-link = සබැඳියෙන් බෙදා ගන්න
+compose-drive-send-without = බෙදා නොගෙන යවන්න
+compose-drive-share-cancel = අවලංගු කරන්න
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } { $limit } ඉක්මවන නිසා එය ඔබේ OneDrive වෙත යන අතර පණිවිඩයේ සබැඳියක් තිබේ.
+compose-onedrive-tip = ඔබේ OneDrive හි; පණිවිඩයේ සබැඳියක් තිබේ
+compose-onedrive-allow = OneDrive ඉඩ දෙන්න
+compose-onedrive-allow-tip = විශාල ගොනු ඔබේ OneDrive හි තැබීමට Katna හට ඉඩ දීමට Microsoft සමඟ නැවත පුරනය වන්න
+compose-onedrive-not-uploaded = { $name } තවමත් OneDrive හි නැත
+compose-onedrive-share-failed = OneDrive හි ගොනු බෙදා ගැනීමට නොහැකි විය: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive හට { $addresses } සමඟ ගොනු බෙදා ගත නොහැක. ඒ වෙනුවට, සබැඳිය ඇති ඕනෑම කෙනෙකුට ඒවා විවෘත කළ හැක.
+   *[other] OneDrive හට { $addresses } සමඟ ගොනු බෙදා ගත නොහැක. ඒ වෙනුවට, සබැඳිය ඇති ඕනෑම කෙනෙකුට ඒවා විවෘත කළ හැක.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ගොනු මෙහි දමන්න
 compose-drop-here = මෙහි දමන්න
 compose-paste-keep-formatting = හැඩතල ගැන්වීම තබා ගන්න

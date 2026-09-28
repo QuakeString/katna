@@ -15,6 +15,7 @@ compose-pop-out-reply = ਜਵਾਬ ਵੱਖਰੀ ਵਿੰਡੋ ਵਿੱ�
 compose-edit-recipients = ਪ੍ਰਾਪਤਕਰਤਾ ਸੋਧੋ
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = ਹੋਰ { $count }
 compose-show-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਦਿਖਾਓ
 compose-hide-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਲੁਕਾਓ
 compose-remove-trimmed = ਹਵਾਲੇ ਵਾਲਾ ਟੈਕਸਟ ਹਟਾਓ
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] { $count } ਫ਼ਾਈਲ, { $size }
    *[other] { $count } ਫ਼ਾਈਲਾਂ, { $size }
 }
+compose-drive-note = { $name } { $limit } ਤੋਂ ਵੱਡੀ ਹੈ, ਇਸ ਲਈ ਉਹ ਤੁਹਾਡੇ Google Drive ਵਿੱਚ ਜਾਂਦੀ ਹੈ ਅਤੇ ਸੁਨੇਹੇ ਵਿੱਚ ਉਸਦਾ ਲਿੰਕ ਹੁੰਦਾ ਹੈ।
+compose-drive-tip = ਤੁਹਾਡੇ Google Drive ਵਿੱਚ; ਸੁਨੇਹੇ ਵਿੱਚ ਲਿੰਕ ਹੁੰਦਾ ਹੈ
+compose-drive-uploading = ਅੱਪਲੋਡ ਹੋ ਰਿਹਾ ਹੈ { $percent }%
+compose-drive-allow = Drive ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ
+compose-drive-allow-tip = Katna ਨੂੰ ਵੱਡੀਆਂ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ Drive ਵਿੱਚ ਰੱਖਣ ਦੇਣ ਲਈ Google ਨਾਲ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ
+compose-drive-retry = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
+compose-drive-sends-when-uploaded = { $name } ਅੱਪਲੋਡ ਹੁੰਦੇ ਹੀ ਭੇਜਿਆ ਜਾਵੇਗਾ
+compose-drive-not-uploaded = { $name } ਹਾਲੇ Google Drive ਵਿੱਚ ਨਹੀਂ ਹੈ
+compose-drive-share-failed = Google Drive ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ: { $error }
+compose-drive-share-title = ਫ਼ਾਈਲਾਂ ਸਾਰਿਆਂ ਨਾਲ ਸਾਂਝੀਆਂ ਕਰੀਏ?
+compose-drive-share-text = { $count ->
+    [one] Google Drive ਫ਼ਾਈਲਾਂ { $addresses } ਨਾਲ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕਰ ਸਕਦਾ, ਜਿਸ ਕੋਲ Google ਖਾਤਾ ਨਹੀਂ ਹੈ। ਇਸਦੀ ਬਜਾਏ ਲਿੰਕ ਵਾਲਾ ਕੋਈ ਵੀ ਉਨ੍ਹਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।
+   *[other] Google Drive ਫ਼ਾਈਲਾਂ { $addresses } ਨਾਲ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕਰ ਸਕਦਾ, ਜਿਨ੍ਹਾਂ ਕੋਲ Google ਖਾਤਾ ਨਹੀਂ ਹੈ। ਇਸਦੀ ਬਜਾਏ ਲਿੰਕ ਵਾਲਾ ਕੋਈ ਵੀ ਉਨ੍ਹਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।
+}
+compose-drive-share-link = ਲਿੰਕ ਨਾਲ ਸਾਂਝਾ ਕਰੋ
+compose-drive-send-without = ਸਾਂਝਾ ਕੀਤੇ ਬਿਨਾਂ ਭੇਜੋ
+compose-drive-share-cancel = ਰੱਦ ਕਰੋ
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } { $limit } ਤੋਂ ਵੱਡੀ ਹੈ, ਇਸ ਲਈ ਉਹ ਤੁਹਾਡੇ OneDrive ਵਿੱਚ ਜਾਂਦੀ ਹੈ ਅਤੇ ਸੁਨੇਹੇ ਵਿੱਚ ਉਸਦਾ ਲਿੰਕ ਹੁੰਦਾ ਹੈ।
+compose-onedrive-tip = ਤੁਹਾਡੇ OneDrive ਵਿੱਚ; ਸੁਨੇਹੇ ਵਿੱਚ ਲਿੰਕ ਹੁੰਦਾ ਹੈ
+compose-onedrive-allow = OneDrive ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ
+compose-onedrive-allow-tip = Katna ਨੂੰ ਵੱਡੀਆਂ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ OneDrive ਵਿੱਚ ਰੱਖਣ ਦੇਣ ਲਈ Microsoft ਨਾਲ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ
+compose-onedrive-not-uploaded = { $name } ਹਾਲੇ OneDrive ਵਿੱਚ ਨਹੀਂ ਹੈ
+compose-onedrive-share-failed = OneDrive ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive ਫ਼ਾਈਲਾਂ { $addresses } ਨਾਲ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਇਸਦੀ ਬਜਾਏ ਲਿੰਕ ਵਾਲਾ ਕੋਈ ਵੀ ਉਨ੍ਹਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।
+   *[other] OneDrive ਫ਼ਾਈਲਾਂ { $addresses } ਨਾਲ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਇਸਦੀ ਬਜਾਏ ਲਿੰਕ ਵਾਲਾ ਕੋਈ ਵੀ ਉਨ੍ਹਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਛੱਡੋ
 compose-drop-here = ਇੱਥੇ ਛੱਡੋ
 compose-paste-keep-formatting = ਫ਼ਾਰਮੈਟਿੰਗ ਰੱਖੋ

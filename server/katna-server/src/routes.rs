@@ -40,7 +40,7 @@ use crate::accounts::{self, AccountLimits};
 use crate::auth::SignedIn;
 use crate::classify::{self, Kind, Source};
 use crate::config::Config;
-use crate::db::{Db, DbError, Event, now_ms};
+use crate::db::{Db, DbError, Event, OverLimit, TrackLimits, now_ms};
 use crate::ids;
 use crate::limits::WindowLimit;
 use crate::mailer::Mailer;
@@ -54,6 +54,12 @@ pub const MAX_LINKS: usize = 500;
 
 /// Longest link target accepted.
 pub const MAX_LINK_LEN: usize = 4096;
+
+/// Most bytes of link targets one request may carry.
+pub const MAX_LINK_BYTES: usize = 256 * 1024;
+
+/// Most bytes of link targets one account may store per 24 hours.
+pub const DAILY_LINK_BYTES: u64 = 16 * 1024 * 1024;
 
 /// Locks that keep each install's events in order (see
 /// [`AppState::record`]).
@@ -292,6 +298,22 @@ pub(crate) fn client_ip(
     connection.map(|address| address.ip())
 }
 
+/// The key an address is rate limited under: IPv6 addresses by their /64
+/// network, which one home or server gets whole, so a new address from it
+/// is not a fresh allowance.
+pub(crate) fn limit_key(ip: Option<IpAddr>) -> Option<IpAddr> {
+    ip.map(|ip| match ip {
+        IpAddr::V6(v6) => match v6.to_ipv4_mapped() {
+            Some(v4) => IpAddr::V4(v4),
+            None => {
+                let network = u128::from(v6) & !((1u128 << 64) - 1);
+                IpAddr::V6(network.into())
+            }
+        },
+        v4 => v4,
+    })
+}
+
 const ABOUT: &str = r#"<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
 <title>Katna tracking server</title>
@@ -410,7 +432,7 @@ async fn open_pixel(
     };
     // Unknown and expired IDs still get the picture, so nothing breaks in
     // the recipient's mail program.
-    match state.db.track(id).await {
+    match state.db.track(id, None).await {
         Ok(Some(track)) => {
             let seen = Seen {
                 method: &method,
@@ -436,15 +458,17 @@ async fn follow_link(
     if !ids::is_valid_id(&id) {
         return Err(ApiError::NotFound);
     }
-    let (track, target) = state
+    let track = state
         .db
-        .track_link(&id, n)
+        .track(&id, Some(n))
         .await?
         .ok_or(ApiError::NotFound)?;
     // Only a target stored for this ID, so the server is never an open
     // redirect.
-    let target = target
-        .and_then(|target| HeaderValue::from_str(&target).ok())
+    let target = track
+        .link
+        .as_deref()
+        .and_then(|target| HeaderValue::from_str(target).ok())
         .ok_or(ApiError::NotFound)?;
     let seen = Seen {
         method: &method,
@@ -477,7 +501,7 @@ async fn register(
     headers: HeaderMap,
     ClientAddr(connection): ClientAddr,
 ) -> Result<(StatusCode, Json<Registered>), ApiError> {
-    let ip = client_ip(&state, &headers, connection);
+    let ip = limit_key(client_ip(&state, &headers, connection));
     if !state.registrations.allow(ip) {
         return Err(ApiError::TooMany("too many new installs from this address"));
     }
@@ -525,13 +549,15 @@ pub fn is_allowed_target(target: &str) -> bool {
 
 async fn create_tracks(
     State(state): State<AppState>,
-    SignedIn { install, .. }: SignedIn,
+    SignedIn { install, account }: SignedIn,
     Json(request): Json<NewTracks>,
 ) -> Result<(StatusCode, Json<Created>), ApiError> {
     if request.count == 0 || request.count > MAX_IDS_PER_REQUEST {
         return Err(ApiError::BadRequest("count must be 1 to 100"));
     }
-    if request.links.len() > MAX_LINKS {
+    if request.links.len() > MAX_LINKS
+        || request.links.iter().map(String::len).sum::<usize>() > MAX_LINK_BYTES
+    {
         return Err(ApiError::BadRequest("too many links"));
     }
     if !request.links.iter().all(|target| is_allowed_target(target)) {
@@ -539,16 +565,24 @@ async fn create_tracks(
             "links must be http or https addresses",
         ));
     }
-    let now = now_ms();
-    let today = state.db.tracks_since(&install, now - 86_400_000).await?;
-    if today + i64::from(request.count) > i64::from(state.config.daily_limit) {
-        return Err(ApiError::TooMany("daily limit of tracked copies reached"));
-    }
     let ids: Vec<String> = (0..request.count).map(|_| ids::new_id()).collect();
-    state
+    let limits = TrackLimits {
+        ids: state.config.daily_limit,
+        link_bytes: DAILY_LINK_BYTES,
+    };
+    let created = state
         .db
-        .create_tracks(&install, &ids, &request.links, now)
+        .create_tracks(&account, &install, &ids, &request.links, now_ms(), limits)
         .await?;
+    match created {
+        Ok(()) => {}
+        Err(OverLimit::Ids) => {
+            return Err(ApiError::TooMany("daily limit of tracked copies reached"));
+        }
+        Err(OverLimit::LinkBytes) => {
+            return Err(ApiError::TooMany("daily limit of tracked links reached"));
+        }
+    }
     Ok((StatusCode::CREATED, Json(Created { ids })))
 }
 
@@ -592,4 +626,16 @@ async fn events(
         live,
     ))
     .keep_alive(KeepAlive::new().interval(Duration::from_secs(30)))
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn ipv6_is_limited_by_network() {
+        let key = |ip: &str| super::limit_key(Some(ip.parse().unwrap()));
+        assert_eq!(key("2001:db8:1:2:aaaa::1"), key("2001:db8:1:2:bbbb::9"));
+        assert_ne!(key("2001:db8:1:2::1"), key("2001:db8:1:3::1"));
+        assert_eq!(key("::ffff:192.0.2.7"), key("192.0.2.7"));
+        assert_ne!(key("192.0.2.7"), key("192.0.2.8"));
+    }
 }

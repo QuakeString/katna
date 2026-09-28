@@ -963,3 +963,90 @@ saboda haka sa hannun yana ci gaba da inganci. Wasiƙar rubutu mara ado
 ba za ta iya nuna buɗewa ba, amma ana bibiyar mahaɗanta cikinta, don haka
 kuna ganin lokacin da wani ya bi mahaɗi.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Amsa yana farawa sabuwa bayan rufe taga ta saƙo"
+text = """
+Rufe wasiƙar da aka rubuta a tagarta yanzu yana ajiye ta a cikin
+Zayyanai, kuma Amsa, Amsa wa kowa da Tura suna sake buɗe sabuwar wasiƙa
+maimakon dawo da tsohuwar.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Sandar bincike mai gilashin hazo"
+text = """
+Idan an kunna bango mai dushewa, sandar bincike tana barin dushewar ta
+ratsa kamar sandar da ke kewaye da ita, maimakon ta zauna a kanta kamar
+ƙwallon toka mai ƙarfi.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Gungura kan hotonka don sauya asusu"
+text = """
+Idan alamar linzamin tana kan hoton asusu a sama dama, juya ƙafar
+linzamin don tafiya zuwa asusu na gaba ko na baya, asusu ɗaya a kowane
+danna. Hoton yana birgima zuwa sabon asusu, kamar yadda sunan manhaja ke
+birgima idan aka sauya manhaja, kuma zaɓar asusu daga kati yana birgima
+haka ma.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Wuri ga masu karɓa da yawa"
+text = """
+Masu karɓa bayan layin farko yanzu suna amfani da faɗin gaba ɗaya, kuma
+dogon jeri yana gungurawa cikin ƴan layuka, don haka wasiƙar kanta tana
+kasancewa a hannu koyaushe. Idan kun bar filin yana naɗewa zuwa layi
+ɗaya, kamar “Kay, Sam, 19 ƙari”; danna shi don sake ganin duka.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Rahoton ayyuka na asusu ɗaya"
+text = """
+Rahoton ayyuka yanzu yana da mai zaɓen asusu kusa da kwanakin. Zaɓi Duk asusu
+ko ɗaya daga ciki, sai saƙonnin da ake bibiya, yawan, zane, jigogi da Akwatin wasiƙarka
+duka su bi. Rahoton yana faɗin asusun da yake nunawa kuma yana tuna zaɓinka.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "“Sabuwa” da “Tsohuwa” koyaushe a kan sandar kayan aiki"
+text = """
+Ko da faɗin wurin karatu ya yi kaɗan, ma'aunin ƙidaya da kibiyoyin Sabuwa da Tsohuwa
+suna nan a dama na sandar kayan aikinsa. Maimakon haka, maɓallan da kuke amfani da su
+kaɗan suna komawa cikin menu na Ƙari ɗaya bayan ɗaya, har da masu sauya bayanan
+tuntuɓa da launukan asali.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Aika fayiloli masu kowane girma"
+text = """
+Da asusun da aka shiga da Google, fayil da ya wuce iyakar wasiƙa ta 25 MB yana zuwa
+Google Drive ɗinka da zarar ka haɗa shi, kuma saƙon yana ɗauke da mahaɗinsa, kamar a
+Gmail. Ana raba shi da masu karɓa idan ka danna Aika; Katna tana tambaya ne kawai idan
+ba za a iya ba wani damar shiga ba.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Dogayen jerin masu karɓa sun fi laushi"
+text = """
+Dogon jerin masu karɓa yanzu yana da nasa sandar gungurawa kuma yana motsawa layi ɗaya a
+lokaci guda, tattaunawar kuma tana gungurawa ne kawai idan jerin ya kai ƙarshe. Ƙara
+masu karɓa ba ya sa maɓallan da ke ƙasa tsalle kuma.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Duba sabbin wasiƙu"
+text = """
+Danna dama kan folda ko asusu a cikin allon folda don samun “Duba sabbin wasiƙu”, “Yi wa
+duka alama an karanta”, sabuwar folda a cikinta, ko “Kwashe kwandon shara”. “Sabunta” a
+saman jerin yanzu yana ɗauko daga uwar garke ma. Yayin da Katna ke dubawa, kibiyoyin da
+ke kan “Sabunta” da kusa da Akwatin saƙo suna juyawa, kuma “Ana duba sabbin wasiƙu…”
+yana bayyana a sama idan ya ɗauki fiye da ɗan lokaci.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Manyan fayiloli ta OneDrive"
+text = """
+Asusun Outlook.com, Hotmail da sauran asusun Microsoft yanzu suna aika fayilolin da
+suka wuce iyakar wasiƙa kamar asusun Google: fayil yana zuwa OneDrive ɗinka da zarar
+ka haɗa shi, kuma saƙon yana ɗauke da mahaɗinsa, kamar a Outlook.
+"""

@@ -46,3 +46,6 @@ activity-range-custom = 自訂
 activity-range-from = 從
 activity-range-to = 至
 activity-range-apply = 套用
+activity-range-of = { $days } · { $account }
+activity-accounts-all = 所有帳戶
+activity-accounts-tip = 顯示單一帳戶或全部

@@ -15,6 +15,7 @@ compose-pop-out-reply = উত্তর আলাদা উইন্ডোতে
 compose-edit-recipients = প্রাপক সম্পাদনা করুন
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = আরও { $count }
 compose-show-trimmed = ছাঁটা অংশ দেখান
 compose-hide-trimmed = ছাঁটা অংশ লুকান
 compose-remove-trimmed = উদ্ধৃত লেখা সরান
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] { $count }টি ফাইল, { $size }
    *[other] { $count }টি ফাইল, { $size }
 }
+compose-drive-note = { $name } { $limit }-এর চেয়ে বড়, তাই এটি আপনার Google Drive-এ যায় এবং মেসেজে এর লিঙ্ক থাকে।
+compose-drive-tip = আপনার Google Drive-এ; মেসেজে লিঙ্ক থাকে
+compose-drive-uploading = আপলোড হচ্ছে { $percent }%
+compose-drive-allow = Drive-এর অনুমতি দিন
+compose-drive-allow-tip = বড় ফাইল আপনার Drive-এ রাখার অনুমতি Katna-কে দিতে আবার Google দিয়ে সাইন ইন করুন
+compose-drive-retry = আবার চেষ্টা করুন
+compose-drive-sends-when-uploaded = { $name } আপলোড হলেই পাঠানো হবে
+compose-drive-not-uploaded = { $name } এখনও Google Drive-এ নেই
+compose-drive-share-failed = Google Drive-এ ফাইলগুলি শেয়ার করা যায়নি: { $error }
+compose-drive-share-title = ফাইলগুলি সবার সঙ্গে শেয়ার করবেন?
+compose-drive-share-text = { $count ->
+    [one] Google Drive { $addresses }-এর সঙ্গে ফাইলগুলি শেয়ার করতে পারে না, যাঁর Google অ্যাকাউন্ট নেই। এর বদলে লিঙ্ক থাকলে যে কেউ সেগুলি খুলতে পারবে।
+   *[other] Google Drive { $addresses }-এর সঙ্গে ফাইলগুলি শেয়ার করতে পারে না, যাঁদের Google অ্যাকাউন্ট নেই। এর বদলে লিঙ্ক থাকলে যে কেউ সেগুলি খুলতে পারবে।
+}
+compose-drive-share-link = লিঙ্ক দিয়ে শেয়ার করুন
+compose-drive-send-without = শেয়ার না করে পাঠান
+compose-drive-share-cancel = বাতিল করুন
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } { $limit }-এর চেয়ে বড়, তাই এটি আপনার OneDrive-এ যায় এবং মেসেজে এর লিঙ্ক থাকে।
+compose-onedrive-tip = আপনার OneDrive-এ; মেসেজে লিঙ্ক থাকে
+compose-onedrive-allow = OneDrive-এর অনুমতি দিন
+compose-onedrive-allow-tip = বড় ফাইল আপনার OneDrive-এ রাখার অনুমতি Katna-কে দিতে আবার Microsoft দিয়ে সাইন ইন করুন
+compose-onedrive-not-uploaded = { $name } এখনও OneDrive-এ নেই
+compose-onedrive-share-failed = OneDrive-এ ফাইলগুলি শেয়ার করা যায়নি: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive { $addresses }-এর সঙ্গে ফাইলগুলি শেয়ার করতে পারে না। এর বদলে লিঙ্ক থাকলে যে কেউ সেগুলি খুলতে পারবে।
+   *[other] OneDrive { $addresses }-এর সঙ্গে ফাইলগুলি শেয়ার করতে পারে না। এর বদলে লিঙ্ক থাকলে যে কেউ সেগুলি খুলতে পারবে।
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ফাইলগুলি এখানে ছাড়ুন
 compose-drop-here = এখানে ছাড়ুন
 compose-paste-keep-formatting = ফরম্যাটিং রাখুন

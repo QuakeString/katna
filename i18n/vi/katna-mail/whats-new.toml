@@ -950,3 +950,91 @@ của mỗi người nhận được ký hoặc mã hóa riêng, nên chữ ký 
 bản thuần không thể hiển thị lượt mở, nhưng các liên kết trong đó được theo
 dõi, nên bạn thấy khi ai đó mở một liên kết.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Trả lời bắt đầu lại từ đầu sau khi đóng cửa sổ thư"
+text = """
+Đóng một thư được soạn trong cửa sổ riêng giờ sẽ giữ nó trong Thư nháp, còn
+Trả lời, Trả lời tất cả và Chuyển tiếp lại mở một thư mới thay vì đưa thư cũ
+trở lại.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Thanh tìm kiếm mờ như kính"
+text = """
+Khi bật nền mờ, thanh tìm kiếm để lớp mờ xuyên qua giống như thanh xung
+quanh nó, thay vì nằm trên đó như một viên thuốc màu xám đặc.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Cuộn trên ảnh của bạn để chuyển tài khoản"
+text = """
+Khi con trỏ nằm trên ảnh tài khoản ở góc trên bên phải, hãy xoay con lăn
+chuột để chuyển sang tài khoản kế tiếp hoặc trước đó, mỗi nấc một tài khoản.
+Ảnh cuộn sang tài khoản mới, giống như tên ứng dụng cuộn khi bạn chuyển ứng
+dụng, và chọn một tài khoản từ thẻ cũng làm nó cuộn theo cách đó.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Đủ chỗ cho nhiều người nhận"
+text = """
+Người nhận sau dòng đầu tiên giờ dùng toàn bộ chiều rộng, và một danh sách
+dài cuộn trong vài dòng, nên bản thân thư luôn nằm trong tầm với. Rời khỏi
+trường và nó gập lại thành một dòng, chẳng hạn "Kay, Sam, 19 người nữa";
+nhấp vào đó để xem lại tất cả.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Báo cáo hoạt động cho một tài khoản"
+text = """
+Báo cáo hoạt động giờ có bộ chọn tài khoản bên cạnh ngày. Chọn Tất cả
+tài khoản hoặc một tài khoản, và thư được theo dõi, tỷ lệ, biểu đồ, tiêu
+đề cùng Hộp thư của bạn sẽ theo lựa chọn đó. Báo cáo cho biết tài khoản
+đang hiển thị và ghi nhớ lựa chọn của bạn.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Mũi tên Mới hơn và Cũ hơn luôn hiện trên thanh công cụ"
+text = """
+Dù ngăn đọc hẹp đến đâu, bộ đếm cùng các mũi tên Mới hơn và Cũ hơn vẫn nằm
+ở bên phải thanh công cụ của nó. Thay vào đó, các nút bạn ít dùng nhất sẽ
+lần lượt chuyển vào menu Thêm, gồm cả các công tắc chi tiết liên hệ và màu
+gốc.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Gửi tệp với mọi dung lượng"
+text = """
+Với tài khoản đăng nhập bằng Google, tệp vượt quá giới hạn thư 25 MB sẽ
+được đưa lên Google Drive của bạn ngay khi bạn đính kèm, và thư sẽ kèm
+liên kết của tệp, như trong Gmail. Tệp được chia sẻ với người nhận khi bạn
+nhấn Gửi; Katna chỉ hỏi nếu không thể cấp quyền truy cập cho ai đó.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Danh sách người nhận dài mượt hơn"
+text = """
+Danh sách người nhận dài giờ có thanh cuộn riêng và cuộn từng dòng một;
+cuộc hội thoại chỉ cuộn tiếp khi danh sách đã tới cuối. Thêm người nhận
+không còn làm các nút bên dưới nhảy nữa.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Kiểm tra thư mới"
+text = """
+Nhấp chuột phải vào một thư mục hoặc tài khoản trong ngăn thư mục để
+chọn “Kiểm tra thư mới”, “Đánh dấu tất cả là đã đọc”, thư mục mới bên
+trong hoặc “Dọn sạch Thùng rác”. “Làm mới” phía trên danh sách giờ cũng
+tải từ máy chủ. Khi Katna đang kiểm tra, các mũi tên xoay trên “Làm mới”
+và bên cạnh Hộp thư đến, còn “Đang kiểm tra thư mới…” hiện ở trên cùng
+nếu mất hơn một lúc.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Tệp lớn qua OneDrive"
+text = """
+Các tài khoản Outlook.com, Hotmail và tài khoản Microsoft khác nay gửi
+tệp vượt quá giới hạn thư giống như tài khoản Google: tệp được đưa lên
+OneDrive của bạn ngay khi bạn đính kèm, và thư kèm liên kết của tệp, như
+trong Outlook.
+"""

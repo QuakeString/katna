@@ -15,6 +15,7 @@ compose-pop-out-reply = ምላሹን በተለየ መስኮት ክፈት
 compose-edit-recipients = ተቀባዮችን አርትዕ
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } ተጨማሪ
 compose-show-trimmed = የተከረከመውን ይዘት አሳይ
 compose-hide-trimmed = የተከረከመውን ይዘት ደብቅ
 compose-remove-trimmed = የተጠቀሰውን ጽሑፍ አስወግድ
@@ -59,6 +60,35 @@ compose-attachments-total = { $count ->
     [one] { $count } ፋይል፣ { $size }
    *[other] { $count } ፋይሎች፣ { $size }
 }
+compose-drive-note = { $name } ከ{ $limit } ስለሚበልጥ ወደ Google Drive ይሄዳል፣ መልዕክቱም አገናኝ ይይዛል።
+compose-drive-tip = በእርስዎ Google Drive ውስጥ፤ መልዕክቱ አገናኝ ይይዛል
+compose-drive-uploading = በመስቀል ላይ { $percent }%
+compose-drive-allow = Driveን ፍቀድ
+compose-drive-allow-tip = Katna ትላልቅ ፋይሎችን በDrive እንዲያስቀምጥ በGoogle እንደገና ይግቡ
+compose-drive-retry = እንደገና ሞክር
+compose-drive-sends-when-uploaded = { $name } ከተሰቀለ በኋላ ይላካል
+compose-drive-not-uploaded = { $name } ገና በGoogle Drive ውስጥ የለም
+compose-drive-share-failed = ፋይሎቹን በGoogle Drive ማጋራት አልተቻለም፦ { $error }
+compose-drive-share-title = ፋይሎቹን ለሁሉም ይጋሩ?
+compose-drive-share-text = { $count ->
+    [one] Google Drive ፋይሎቹን የGoogle መለያ ከሌለው ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+   *[other] Google Drive ፋይሎቹን የGoogle መለያ ከሌላቸው ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+}
+compose-drive-share-link = በአገናኝ አጋራ
+compose-drive-send-without = ሳያጋሩ ላክ
+compose-drive-share-cancel = ይቅር
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ከ{ $limit } ስለሚበልጥ ወደ OneDrive ይሄዳል፣ መልዕክቱም አገናኝ ይይዛል።
+compose-onedrive-tip = በእርስዎ OneDrive ውስጥ፤ መልዕክቱ አገናኝ ይይዛል
+compose-onedrive-allow = OneDriveን ፍቀድ
+compose-onedrive-allow-tip = Katna ትላልቅ ፋይሎችን በOneDrive እንዲያስቀምጥ በMicrosoft እንደገና ይግቡ
+compose-onedrive-not-uploaded = { $name } ገና በOneDrive ውስጥ የለም
+compose-onedrive-share-failed = ፋይሎቹን በOneDrive ማጋራት አልተቻለም፦ { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive ፋይሎቹን ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+   *[other] OneDrive ፋይሎቹን ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ

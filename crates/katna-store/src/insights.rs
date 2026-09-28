@@ -9,6 +9,8 @@ use std::collections::HashMap;
 
 use rusqlite::params;
 
+use katna_core::AccountId;
+
 use crate::Store;
 use crate::error::Result;
 
@@ -63,12 +65,13 @@ struct Seen {
 }
 
 impl Store {
-    /// Counts the mail dated from `since` to before `until` (Unix seconds).
-    /// `me` are the user's own addresses (lower case); `local` gives a
+    /// Counts the mail dated from `since` to before `until` (Unix seconds),
+    /// in `account` only or in every account (`None`). `me` are the user's own addresses (lower case); `local` gives a
     /// time's weekday (0 = Monday) and hour in the user's time zone. Mail
     /// only in Drafts, Junk or Trash, and mail not yet filed, is left out.
     pub fn mailbox_insights(
         &self,
+        account: Option<AccountId>,
         me: &[String],
         since: i64,
         until: i64,
@@ -82,21 +85,29 @@ impl Store {
                      WHERE p.message_id = m.id AND p.role = 'from' LIMIT 1)
              FROM message m
              WHERE m.date >= ?1 AND m.date < ?2
+               AND (?3 IS NULL OR m.account_id = ?3)
                AND EXISTS (SELECT 1 FROM message_location l
                            JOIN folder f ON f.id = l.folder_id
                            WHERE l.message_id = m.id
                              AND coalesce(f.role, '') NOT IN ('drafts', 'junk', 'trash'))
              ORDER BY m.date",
         )?;
-        let rows = stmt.query_map(params![since, until.saturating_add(REPLY_WINDOW)], |row| {
-            Ok((
-                row.get::<_, i64>(0)?,
-                row.get::<_, Option<i64>>(1)?,
-                row.get::<_, i64>(2)?,
-                row.get::<_, bool>(3)?,
-                row.get::<_, Option<String>>(4)?,
-            ))
-        })?;
+        let rows = stmt.query_map(
+            params![
+                since,
+                until.saturating_add(REPLY_WINDOW),
+                account.map(|a| a.0)
+            ],
+            |row| {
+                Ok((
+                    row.get::<_, i64>(0)?,
+                    row.get::<_, Option<i64>>(1)?,
+                    row.get::<_, i64>(2)?,
+                    row.get::<_, bool>(3)?,
+                    row.get::<_, Option<String>>(4)?,
+                ))
+            },
+        )?;
         let mut messages = Vec::new();
         let mut ids = Vec::new();
         for row in rows {

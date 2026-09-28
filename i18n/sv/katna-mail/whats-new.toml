@@ -955,3 +955,91 @@ kopia signeras eller krypteras för sig, så att signaturer förblir giltiga.
 Oformaterad e-post kan inte visa öppningar, men dess länkar spåras, så du
 ser när någon följer en.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Svara börjar om efter att ett meddelandefönster stängts"
+text = """
+Om du stänger ett meddelande som skrivits i ett eget fönster ligger det nu
+kvar i Utkast, och Svara, Svara alla och Vidarebefordra öppnar åter ett nytt
+meddelande i stället för att hämta tillbaka det gamla.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Ett frostat sökfält"
+text = """
+När den suddiga bakgrunden är på släpper sökfältet igenom suddigheten,
+precis som fältet runt omkring, i stället för att ligga ovanpå som en
+enfärgad grå pill.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Rulla över din bild för att byta konto"
+text = """
+Håll pekaren över kontobilden uppe till höger och vrid på mushjulet för att
+gå till nästa eller föregående konto, ett konto per hack. Bilden rullar till
+det nya kontot, som appens namn rullar när du byter app, och när du väljer
+ett konto från kortet rullar den på samma sätt.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Plats för många mottagare"
+text = """
+Mottagare efter den första raden använder nu hela bredden, och en lång lista
+rullar inom några få rader, så att själva meddelandet alltid finns inom
+räckhåll. Lämna fältet så viks det ihop till en rad, till exempel "Kay, Sam,
+19 till"; klicka på det för att se alla igen.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Aktivitetsrapport för ett konto"
+text = """
+Aktivitetsrapporten har nu en kontoväljare bredvid datumen. Välj Alla
+konton eller ett av dem, så följer de spårade meddelandena,
+frekvenserna, diagrammet, ämnesraderna och Din brevlåda ditt val.
+Rapporten anger vilket konto den visar och minns ditt val.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nyare och Äldre alltid i verktygsfältet"
+text = """
+Hur smalt läsfönstret än är ligger räknaren och pilarna Nyare och Äldre
+kvar till höger i dess verktygsfält. De knappar du använder minst flyttas
+i stället in i menyn Mer, en i taget, även omkopplarna för
+kontaktuppgifter och originalfärger.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Skicka filer av vilken storlek som helst"
+text = """
+Med ett konto som är inloggat med Google hamnar en fil över e-postgränsen
+på 25 MB i din Google Drive så fort du bifogar den, och meddelandet
+innehåller dess länk, som i Gmail. Den delas med mottagarna när du trycker
+på Skicka; Katna frågar bara om någon inte kan få åtkomst.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Smidigare långa mottagarlistor"
+text = """
+En lång lista med mottagare har nu ett eget rullningsfält och rör sig en
+rad i taget; konversationen rullar vidare först när listan nått sitt
+slut. När du lägger till mottagare hoppar knapparna under inte längre.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Sök efter ny e-post"
+text = """
+Högerklicka på en mapp eller ett konto i mappfönstret för att välja ”Sök
+efter ny e-post”, ”Markera alla som lästa”, en ny mapp inuti eller ”Töm
+papperskorgen”. ”Uppdatera” ovanför listan hämtar nu även från servern.
+Medan Katna söker snurrar pilarna på ”Uppdatera” och bredvid Inkorgen,
+och ”Söker efter ny e-post…” visas överst om det tar mer än en stund.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Stora filer via OneDrive"
+text = """
+Outlook.com, Hotmail och andra Microsoft-konton skickar nu filer över
+e-postgränsen på samma sätt som Google-konton: filen hamnar i din
+OneDrive så fort du bifogar den, och meddelandet innehåller dess länk,
+som i Outlook.
+"""

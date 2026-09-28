@@ -142,6 +142,7 @@ mod tests {
             ..Default::default()
         }];
         let activity = katna_store::MessageActivity {
+            account: katna_core::AccountId(1),
             recipients: vec![
                 katna_store::RecipientActivity {
                     email: "Bea@x.org".into(),

@@ -15,6 +15,7 @@ compose-pop-out-reply = Abrir resposta em outra janela
 compose-edit-recipients = Editar destinatários
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Cco: { $names }
+compose-more-recipients = mais { $count }
 compose-show-trimmed = Mostrar conteúdo cortado
 compose-hide-trimmed = Ocultar conteúdo cortado
 compose-remove-trimmed = Remover texto citado
@@ -60,6 +61,37 @@ compose-attachments-total = { $count ->
     [many] { $count } de arquivos, { $size }
    *[other] { $count } arquivos, { $size }
 }
+compose-drive-note = { $name } passa de { $limit }, então vai para o seu Google Drive e a mensagem leva um link.
+compose-drive-tip = No seu Google Drive; a mensagem leva um link
+compose-drive-uploading = Enviando { $percent }%
+compose-drive-allow = Permitir o Drive
+compose-drive-allow-tip = Entre de novo com o Google para o Katna poder colocar arquivos grandes no seu Drive
+compose-drive-retry = Tentar de novo
+compose-drive-sends-when-uploaded = Será enviada quando { $name } terminar de subir
+compose-drive-not-uploaded = { $name } ainda não está no Google Drive
+compose-drive-share-failed = Não foi possível compartilhar os arquivos no Google Drive: { $error }
+compose-drive-share-title = Compartilhar os arquivos com todos?
+compose-drive-share-text = { $count ->
+    [one] O Google Drive não pode compartilhar os arquivos com { $addresses }, que não tem conta Google. Em vez disso, qualquer pessoa com o link poderá abri-los.
+    [many] O Google Drive não pode compartilhar os arquivos com { $addresses }, que não têm conta Google. Em vez disso, qualquer pessoa com o link poderá abri-los.
+   *[other] O Google Drive não pode compartilhar os arquivos com { $addresses }, que não têm conta Google. Em vez disso, qualquer pessoa com o link poderá abri-los.
+}
+compose-drive-share-link = Compartilhar com link
+compose-drive-send-without = Enviar sem compartilhar
+compose-drive-share-cancel = Cancelar
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } passa de { $limit }, então vai para o seu OneDrive e a mensagem leva um link.
+compose-onedrive-tip = No seu OneDrive; a mensagem leva um link
+compose-onedrive-allow = Permitir o OneDrive
+compose-onedrive-allow-tip = Entre de novo com a Microsoft para o Katna poder colocar arquivos grandes no seu OneDrive
+compose-onedrive-not-uploaded = { $name } ainda não está no OneDrive
+compose-onedrive-share-failed = Não foi possível compartilhar os arquivos no OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] O OneDrive não pode compartilhar os arquivos com { $addresses }. Em vez disso, qualquer pessoa com o link poderá abri-los.
+    [many] O OneDrive não pode compartilhar os arquivos com { $addresses }. Em vez disso, qualquer pessoa com o link poderá abri-los.
+   *[other] O OneDrive não pode compartilhar os arquivos com { $addresses }. Em vez disso, qualquer pessoa com o link poderá abri-los.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Solte os arquivos aqui
 compose-drop-here = Solte aqui
 compose-paste-keep-formatting = Manter formatação

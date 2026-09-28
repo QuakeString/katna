@@ -38,3 +38,4 @@ search-clear = Pa àwárí rẹ́
 search-options-show = Fi àwọn àṣàyàn àwárí hàn
 settings = Ètò
 account-add = Ṣàfikún àkáǹtì
+account-wheel-hint = Yí kiri láti yí àkáǹtì padà

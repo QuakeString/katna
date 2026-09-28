@@ -21,6 +21,7 @@ tab-provider-other = Katnaই সজোৱা
 
 list-select = বাছনি কৰক
 list-refresh = ৰিফ্ৰেছ কৰক
+list-checking = নতুন মেইল পৰীক্ষা কৰি আছে…
 list-more = অধিক
 list-mark-read = পঢ়া বুলি চিহ্নিত কৰক
 list-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক

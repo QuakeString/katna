@@ -38,3 +38,4 @@ search-clear = សម្អាតការស្វែងរក
 search-options-show = បង្ហាញជម្រើសស្វែងរក
 settings = ការកំណត់
 account-add = បញ្ចូលគណនី
+account-wheel-hint = រមូលដើម្បីប្ដូរគណនី

@@ -15,6 +15,7 @@ compose-pop-out-reply = 답장을 새 창에서 열기
 compose-edit-recipients = 받는사람 편집
 compose-summary-cc = 참조: { $names }
 compose-summary-bcc = 숨은참조: { $names }
+compose-more-recipients = 외 { $count }명
 compose-show-trimmed = 생략된 내용 표시
 compose-hide-trimmed = 생략된 내용 숨기기
 compose-remove-trimmed = 인용된 텍스트 삭제
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
 compose-attachments-total = 파일 { $count }개, { $size }
+compose-drive-note = { $name } 파일이 { $limit } 제한을 넘어 Google Drive에 저장되며, 메일에는 링크가 포함됩니다.
+compose-drive-tip = Google Drive에 있습니다. 메일에는 링크가 포함됩니다
+compose-drive-uploading = 업로드 중 { $percent }%
+compose-drive-allow = Drive 허용
+compose-drive-allow-tip = Google로 다시 로그인하면 Katna가 큰 파일을 Drive에 넣을 수 있습니다
+compose-drive-retry = 다시 시도
+compose-drive-sends-when-uploaded = { $name } 업로드가 끝나면 보냅니다
+compose-drive-not-uploaded = { $name } 파일이 아직 Google Drive에 없습니다
+compose-drive-share-failed = Google Drive에서 파일을 공유하지 못했습니다: { $error }
+compose-drive-share-title = 모든 사람과 파일을 공유할까요?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive에서는 Google 계정이 없는 받는사람({ $addresses })과 파일을 공유할 수 없습니다. 대신 링크가 있는 모든 사용자가 파일을 열 수 있습니다.
+}
+compose-drive-share-link = 링크로 공유
+compose-drive-send-without = 공유하지 않고 보내기
+compose-drive-share-cancel = 취소
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } 파일이 { $limit } 제한을 넘어 OneDrive에 저장되며, 메일에는 링크가 포함됩니다.
+compose-onedrive-tip = OneDrive에 있습니다. 메일에는 링크가 포함됩니다
+compose-onedrive-allow = OneDrive 허용
+compose-onedrive-allow-tip = Microsoft로 다시 로그인하면 Katna가 큰 파일을 OneDrive에 넣을 수 있습니다
+compose-onedrive-not-uploaded = { $name } 파일이 아직 OneDrive에 없습니다
+compose-onedrive-share-failed = OneDrive에서 파일을 공유하지 못했습니다: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive에서는 받는사람({ $addresses })과 파일을 공유할 수 없습니다. 대신 링크가 있는 모든 사용자가 파일을 열 수 있습니다.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = 여기에 파일을 놓으세요
 compose-drop-here = 여기에 놓으세요
 compose-paste-keep-formatting = 서식 유지

@@ -50,3 +50,4 @@ search-clear = Share bincike
 search-options-show = Nuna zaɓuɓɓukan bincike
 settings = Saituna
 account-add = Ƙara asusu
+account-wheel-hint = Gungura don sauya asusu

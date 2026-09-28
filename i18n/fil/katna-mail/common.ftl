@@ -50,3 +50,4 @@ search-clear = I-clear ang paghahanap
 search-options-show = Ipakita ang mga opsyon sa paghahanap
 settings = Mga setting
 account-add = Magdagdag ng account
+account-wheel-hint = I-scroll para magpalit ng account

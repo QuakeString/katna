@@ -66,3 +66,4 @@ search-clear = محو البحث
 search-options-show = عرض خيارات البحث
 settings = الإعدادات
 account-add = إضافة حساب
+account-wheel-hint = مرّر للتبديل بين الحسابات

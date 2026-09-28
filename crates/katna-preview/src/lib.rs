@@ -144,7 +144,7 @@ pub fn risky(mime: &str, name: &str) -> bool {
         "application/java-archive",
         "application/vnd.flatpak.ref",
     ];
-    const EXTENSIONS: [&str; 20] = [
+    const EXTENSIONS: &[&str] = &[
         "desktop",
         "sh",
         "bash",
@@ -165,13 +165,53 @@ pub fn risky(mime: &str, name: &str) -> bool {
         "flatpakref",
         "flatpakrepo",
         "ps1",
+        // Windows runs these too (Windows Script Host, shortcuts, HTML
+        // applications, control panel items).
+        "psm1",
+        "js",
+        "jse",
+        "vbs",
+        "vbe",
+        "wsf",
+        "wsh",
+        "hta",
+        "lnk",
+        "pif",
+        "cpl",
+        "msc",
+        "msp",
+        "reg",
+        "scf",
+        "application",
     ];
     let mime = mime.trim().to_ascii_lowercase();
     if TYPES.iter().any(|t| mime.starts_with(t)) {
         return true;
     }
-    name.rsplit_once('.')
-        .is_some_and(|(_, ext)| EXTENSIONS.iter().any(|e| ext.eq_ignore_ascii_case(e)))
+    // Judge the name as it is saved and as Windows reads it: without
+    // invisible or direction-changing characters (a right-to-left mark
+    // can show "exe.pdf" for "fdp.exe"), and without trailing spaces or
+    // dots.
+    let name: String = name.chars().filter(|&c| !invisible(c)).collect();
+    name.trim_end_matches(|c: char| c.is_whitespace() || c == '.')
+        .rsplit_once('.')
+        .is_some_and(|(_, ext)| {
+            let ext = ext.trim();
+            EXTENSIONS.iter().any(|e| ext.eq_ignore_ascii_case(e))
+        })
+}
+
+/// Characters that take no room but can change how a name reads: zero-width
+/// characters and bidirectional controls.
+pub fn invisible(c: char) -> bool {
+    matches!(
+        c,
+        '\u{061C}'
+            | '\u{200B}'..='\u{200F}'
+            | '\u{202A}'..='\u{202E}'
+            | '\u{2060}'..='\u{2069}'
+            | '\u{FEFF}'
+    )
 }
 
 fn by_name(name: &str) -> Kind {
@@ -592,5 +632,13 @@ pub(crate) mod tests {
         assert!(risky("application/x-desktop", "x"));
         assert!(!risky("application/pdf", "invoice.pdf"));
         assert!(!risky("image/png", "desktop"));
+        // Saved without the trailing space or dot; read without the mark.
+        assert!(risky("text/plain", "invoice.desktop "));
+        assert!(risky("text/plain", "invoice.desktop\u{a0}"));
+        assert!(risky("text/plain", "invoice.exe."));
+        assert!(risky("text/plain", "report\u{202e}fdp.exe"));
+        assert!(risky("text/plain", "invoice.ex\u{200b}e"));
+        assert!(risky("application/octet-stream", "notes.JS"));
+        assert!(!risky("text/plain", "notes.txt "));
     }
 }

@@ -35,7 +35,6 @@ about-changelog = Lista zmian
 about-source = Kod źródłowy
 about-coffee = Postaw mi kawę
 about-coming-soon = Wkrótce
-about-follow = Obserwuj autora
 about-love-title = Stworzone z miłością do Rusta, KDE i Linuksa
 about-love-text = Dzięki Rustowi pisanie szybkiej i bezpiecznej aplikacji pocztowej to przyjemność: Katna nie ma kodu unsafe. Pulpit Plasma od KDE i jego pakiet PIM zainspirowały Katna, a Linux i społeczność wolnego oprogramowania tworzą grunt, na którym stoi. Dziękuję – i dziękuję bibliotekom wymienionym poniżej.
 about-kde-text = KDE tworzy pulpit, na którym Katna czuje się najlepiej, a robią to wolontariusze finansowani przez ludzi takich jak Ty. Jeśli lubisz Plasmę lub aplikacje KDE, rozważ wsparcie KDE darowizną.

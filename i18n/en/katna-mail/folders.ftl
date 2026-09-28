@@ -13,6 +13,15 @@ nav-folders = Folders
 nav-label-new = Create new label
 # Tooltip of the "+" beside "Folders".
 nav-folder-new = Create new folder
+# The folder pane's right-click menu. Checks the account the folder is in,
+# or every account from All Accounts.
+nav-menu-check-mail = Check for new mail
+# Makes a folder inside the one right-clicked.
+nav-menu-new-subfolder = New folder inside
+# Gmail: makes a label nested under the one right-clicked.
+nav-menu-new-sublabel = New label inside
+# Deletes everything in Trash for good, after asking.
+nav-menu-empty-trash = Empty Trash
 # An account whose name is unknown. $number: its number.
 nav-account-unnamed = Account { $number }
 # The heading of the unified inbox, over the accounts in the folder pane:

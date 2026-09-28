@@ -984,3 +984,95 @@ cada destinatario se firma o cifra por separado, así que las firmas siguen
 siendo válidas. El correo en texto sin formato no puede mostrar aperturas,
 pero sus enlaces sí se siguen, así que verás cuándo alguien sigue uno.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Responder empieza de cero tras cerrar la ventana de un mensaje"
+text = """
+Al cerrar un mensaje escrito en su propia ventana, ahora se conserva en
+Borradores, y Responder, Responder a todos y Reenviar vuelven a abrir un
+mensaje nuevo en lugar de recuperar el anterior.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Una barra de búsqueda esmerilada"
+text = """
+Con el fondo desenfocado activado, la barra de búsqueda deja pasar el
+desenfoque como la barra que la rodea, en lugar de quedar encima como una
+píldora gris sólida.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Desplázate sobre tu imagen para cambiar de cuenta"
+text = """
+Con el puntero sobre la imagen de la cuenta, arriba a la derecha, gira la
+rueda del ratón para pasar a la cuenta siguiente o anterior, una cuenta por
+cada paso. La imagen se desplaza hasta la nueva cuenta, igual que el nombre
+de la app se desplaza al cambiar de app, y elegir una cuenta en la tarjeta
+lo hace de la misma manera.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Espacio para muchos destinatarios"
+text = """
+Los destinatarios a partir de la primera línea ahora usan todo el ancho, y
+una lista larga se desplaza dentro de unas pocas líneas, así que el propio
+mensaje siempre queda al alcance. Sal del campo y se pliega a una línea,
+como "Kay, Sam, 19 más"; haz clic para volver a verlos todos.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Informe de actividad de una cuenta"
+text = """
+El informe de actividad ahora tiene un selector de cuenta junto a las
+fechas. Elige Todas las cuentas o una de ellas, y los mensajes con
+seguimiento, las tasas, el gráfico, los asuntos y Tu buzón se ajustan a
+tu elección. El informe indica qué cuenta muestra y recuerda tu elección.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Más reciente y Más antigua siempre en la barra"
+text = """
+Por estrecho que sea el panel de lectura, el contador y las flechas Más
+reciente y Más antigua siguen a la derecha de su barra de herramientas. En
+cambio, los botones que menos usas pasan uno a uno al menú Más, incluidos
+los interruptores de los datos del contacto y los colores originales.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Envía archivos de cualquier tamaño"
+text = """
+Con una cuenta que inició sesión con Google, un archivo que supera el
+límite de 25 MB del correo va a tu Google Drive en cuanto lo adjuntas, y
+el mensaje lleva su enlace, como en Gmail. Se comparte con tus
+destinatarios al pulsar Enviar; Katna solo pregunta si no se puede dar
+acceso a alguien.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Listas de destinatarios largas, más fluidas"
+text = """
+Una lista larga de destinatarios ahora tiene su propia barra de
+desplazamiento y avanza de línea en línea; la conversación solo se
+desplaza cuando la lista llega a su final. Al añadir destinatarios, los
+botones de debajo ya no saltan.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Buscar correo nuevo"
+text = """
+Haz clic derecho en una carpeta o una cuenta del panel de carpetas para
+elegir «Buscar correo nuevo», «Marcar todo como leído», una carpeta
+nueva dentro o «Vaciar la papelera». «Actualizar», sobre la lista, ahora
+también consulta el servidor. Mientras Katna busca, las flechas giran en
+«Actualizar» y junto a Recibidos, y «Buscando correo nuevo…» aparece
+arriba si tarda más de un momento.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Archivos grandes con OneDrive"
+text = """
+Outlook.com, Hotmail y otras cuentas de Microsoft ahora envían archivos
+que superan el límite del correo igual que las cuentas de Google: el
+archivo va a tu OneDrive en cuanto lo adjuntas, y el mensaje lleva su
+enlace, como en Outlook.
+"""

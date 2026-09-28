@@ -15,6 +15,7 @@ compose-pop-out-reply = Ṣí èsì sí ọ̀tọ̀
 compose-edit-recipients = Ṣàtúnṣe àwọn olùgbà
 compose-summary-cc = Ẹ̀dà: { $names }
 compose-summary-bcc = Ẹ̀dà àṣírí: { $names }
+compose-more-recipients = { $count } míì
 compose-show-trimmed = Fi àkóónú tí a gé kúrú hàn
 compose-hide-trimmed = Fi àkóónú tí a gé kúrú pamọ́
 compose-remove-trimmed = Yọ ọ̀rọ̀ tí a fà yọ kúrò
@@ -56,6 +57,33 @@ compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé t
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
 compose-attachments-total = Fáìlì { $count }, { $size }
+compose-drive-note = { $name } tóbi ju { $limit } lọ, nítorí náà ó ń lọ sí Google Drive rẹ, ìfiránṣẹ́ náà sì ní ìjápọ̀.
+compose-drive-tip = Nínú Google Drive rẹ; ìfiránṣẹ́ náà ní ìjápọ̀
+compose-drive-uploading = Ń gbé sókè { $percent }%
+compose-drive-allow = Yọ̀ǹda Drive
+compose-drive-allow-tip = Wọlé pẹ̀lú Google lẹ́ẹ̀kan sí i kí Katna lè fi àwọn fáìlì ńlá sínú Drive rẹ
+compose-drive-retry = Gbìyànjú lẹ́ẹ̀kan sí i
+compose-drive-sends-when-uploaded = Ìfiránṣẹ́ á jáde nígbà tí a bá gbé { $name } sókè
+compose-drive-not-uploaded = { $name } kò tíì wà nínú Google Drive
+compose-drive-share-failed = Kò ṣeé ṣe láti pín àwọn fáìlì náà nínú Google Drive: { $error }
+compose-drive-share-title = Pín àwọn fáìlì náà pẹ̀lú gbogbo èèyàn?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive kò lè pín àwọn fáìlì náà pẹ̀lú { $addresses }, tí kò ní àkáǹtì Google. Dípò bẹ́ẹ̀, ẹnikẹ́ni tó bá ní ìjápọ̀ náà lè ṣí wọn.
+}
+compose-drive-share-link = Pín pẹ̀lú ìjápọ̀
+compose-drive-send-without = Fi ránṣẹ́ láìpín
+compose-drive-share-cancel = Fagilé
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } tóbi ju { $limit } lọ, nítorí náà ó ń lọ sí OneDrive rẹ, ìfiránṣẹ́ náà sì ní ìjápọ̀.
+compose-onedrive-tip = Nínú OneDrive rẹ; ìfiránṣẹ́ náà ní ìjápọ̀
+compose-onedrive-allow = Yọ̀ǹda OneDrive
+compose-onedrive-allow-tip = Wọlé pẹ̀lú Microsoft lẹ́ẹ̀kan sí i kí Katna lè fi àwọn fáìlì ńlá sínú OneDrive rẹ
+compose-onedrive-not-uploaded = { $name } kò tíì wà nínú OneDrive
+compose-onedrive-share-failed = Kò ṣeé ṣe láti pín àwọn fáìlì náà nínú OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive kò lè pín àwọn fáìlì náà pẹ̀lú { $addresses }. Dípò bẹ́ẹ̀, ẹnikẹ́ni tó bá ní ìjápọ̀ náà lè ṣí wọn.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Ju àwọn fáìlì sí ibí
 compose-drop-here = Ju sí ibí
 compose-paste-keep-formatting = Pa ìgúnrege mọ́

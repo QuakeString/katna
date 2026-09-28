@@ -15,6 +15,7 @@ compose-pop-out-reply = Otwórz odpowiedź w osobnym oknie
 compose-edit-recipients = Edytuj odbiorców
 compose-summary-cc = DW: { $names }
 compose-summary-bcc = UDW: { $names }
+compose-more-recipients = jeszcze { $count }
 compose-show-trimmed = Pokaż przyciętą treść
 compose-hide-trimmed = Ukryj przyciętą treść
 compose-remove-trimmed = Usuń cytowany tekst
@@ -61,6 +62,39 @@ compose-attachments-total = { $count ->
     [many] { $count } plików, { $size }
    *[other] { $count } pliku, { $size }
 }
+compose-drive-note = Plik { $name } przekracza { $limit }, więc trafia na Twój Dysk Google Drive, a wiadomość zawiera link.
+compose-drive-tip = Na Twoim Google Drive; wiadomość zawiera link
+compose-drive-uploading = Przesyłanie: { $percent }%
+compose-drive-allow = Zezwól na Drive
+compose-drive-allow-tip = Zaloguj się ponownie przez Google, aby Katna mogła umieszczać duże pliki na Twoim Drive
+compose-drive-retry = Spróbuj ponownie
+compose-drive-sends-when-uploaded = Wyślemy, gdy plik { $name } zostanie przesłany
+compose-drive-not-uploaded = Pliku { $name } nie ma jeszcze w Google Drive
+compose-drive-share-failed = Nie udało się udostępnić plików w Google Drive: { $error }
+compose-drive-share-title = Udostępnić pliki wszystkim?
+compose-drive-share-text = { $count ->
+    [one] Google Drive nie może udostępnić plików adresatowi { $addresses }, który nie ma konta Google. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+    [few] Google Drive nie może udostępnić plików adresatom { $addresses }, którzy nie mają konta Google. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+    [many] Google Drive nie może udostępnić plików adresatom { $addresses }, którzy nie mają konta Google. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+   *[other] Google Drive nie może udostępnić plików adresatom { $addresses }, którzy nie mają konta Google. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+}
+compose-drive-share-link = Udostępnij przez link
+compose-drive-send-without = Wyślij bez udostępniania
+compose-drive-share-cancel = Anuluj
+compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = Plik { $name } przekracza { $limit }, więc trafia na Twój OneDrive, a wiadomość zawiera link.
+compose-onedrive-tip = Na Twoim OneDrive; wiadomość zawiera link
+compose-onedrive-allow = Zezwól na OneDrive
+compose-onedrive-allow-tip = Zaloguj się ponownie przez Microsoft, aby Katna mogła umieszczać duże pliki na Twoim OneDrive
+compose-onedrive-not-uploaded = Pliku { $name } nie ma jeszcze w OneDrive
+compose-onedrive-share-failed = Nie udało się udostępnić plików w OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive nie może udostępnić plików adresatom { $addresses }. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+    [few] OneDrive nie może udostępnić plików adresatom { $addresses }. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+    [many] OneDrive nie może udostępnić plików adresatom { $addresses }. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+   *[other] OneDrive nie może udostępnić plików adresatom { $addresses }. Zamiast tego każdy, kto ma link, będzie mógł je otworzyć.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Upuść pliki tutaj
 compose-drop-here = Upuść tutaj
 compose-paste-keep-formatting = Zachowaj formatowanie

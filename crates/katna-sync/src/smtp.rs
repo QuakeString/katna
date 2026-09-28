@@ -167,7 +167,7 @@ impl SmtpSender {
                 vec![
                     (SmtpDsnNotify::SUCCESS | SmtpDsnNotify::FAILURE | SmtpDsnNotify::DELAY)
                         .into_parameter(),
-                    SmtpParameter::orcpt_rfc822(*addr),
+                    SmtpParameter::orcpt_rfc822(xtext(addr)),
                 ]
             } else {
                 Vec::new()
@@ -307,10 +307,36 @@ fn command_error(err: impl Display) -> Error {
     }
 }
 
+/// `text` as an RFC 3461 xtext: `+`, `=` and anything but printable ASCII
+/// as `+XX`, so `user+tag@example.com` is a valid ORCPT.
+fn xtext(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    for byte in text.bytes() {
+        if matches!(byte, b'!'..=b'~') && byte != b'+' && byte != b'=' {
+            out.push(byte as char);
+        } else {
+            out.push_str(&format!("+{byte:02X}"));
+        }
+    }
+    out
+}
+
 fn mailbox(addr: &str) -> Result<SmtpMailbox<'static>> {
     let (local, domain) = addr
         .rsplit_once('@')
         .ok_or_else(|| Error::Protocol(format!("not an address: {addr}")))?;
+    // The local part goes into the command as it is: nothing that would
+    // end the address or the command, or add a parameter.
+    if local.is_empty()
+        || local
+            .bytes()
+            .any(|b| b <= b' ' || b == 0x7f || matches!(b, b'<' | b'>' | b'\\'))
+    {
+        return Err(Error::Rejected(format!(
+            "not an address: {}",
+            addr.escape_debug()
+        )));
+    }
     let domain = SmtpDomain::parse(domain.as_bytes())
         .map_err(|_| Error::Protocol(format!("bad domain in {addr}")))?;
     Ok(SmtpMailbox {
@@ -322,6 +348,18 @@ fn mailbox(addr: &str) -> Result<SmtpMailbox<'static>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn envelope_addresses_stay_addresses() {
+        assert_eq!(xtext("kay+news@example.com"), "kay+2Bnews@example.com");
+        assert_eq!(xtext("a=b@example.com"), "a+3Db@example.com");
+        assert_eq!(xtext("jö@example.com"), "j+C3+B6@example.com");
+        assert!(mailbox("kay+news@example.com").is_ok());
+        assert!(mailbox("x NOTIFY=NEVER@example.com").is_err());
+        assert!(mailbox("x\rRSET@example.com").is_err());
+        assert!(mailbox("x>@example.com").is_err());
+        assert!(mailbox("@example.com").is_err());
+    }
 
     #[test]
     fn future_release_reads_the_longest_hold() {

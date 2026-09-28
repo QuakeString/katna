@@ -974,3 +974,91 @@ ayrı ayrı imzalanır veya şifrelenir, böylece imzalar geçerli kalır. Düz
 metin postalar açılmaları gösteremez, ancak bağlantıları izlenir, böylece
 birinin bir bağlantıyı izlediğini görürsünüz.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Bir ileti penceresi kapatıldıktan sonra Yanıtla yeniden başlar"
+text = """
+Kendi penceresinde yazılan bir iletiyi kapatmak artık onu Taslaklar'da
+tutar; Yanıtla, Tümünü yanıtla ve Yönlendir eskisini geri getirmek yerine
+yine yeni bir ileti açar.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Buzlu bir arama çubuğu"
+text = """
+Bulanık arka plan açıkken arama çubuğu, çevresindeki çubuk gibi bulanıklığı
+geçirir; üzerinde düz gri bir hap gibi durmaz.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Hesabı değiştirmek için resminizin üzerinde kaydırın"
+text = """
+İşaretçi sağ üstteki hesap resminin üzerindeyken fare tekerleğini çevirerek
+sonraki veya önceki hesaba geçin; her tık bir hesaptır. Resim yeni hesaba
+doğru kayar, tıpkı uygulama değiştirdiğinizde uygulamanın adının kayması
+gibi; karttan bir hesap seçmek de onu aynı şekilde kaydırır.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Çok sayıda alıcıya yer"
+text = """
+İlk satırdan sonraki alıcılar artık tüm genişliği kullanır, uzun bir liste
+de birkaç satır içinde kayar; böylece iletinin kendisi her zaman
+erişilebilir kalır. Alandan çıkın, tek satıra katlanır, örneğin "Kay, Sam,
+19 kişi daha"; hepsini yeniden görmek için üzerine tıklayın.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Tek bir hesap için Etkinlik raporu"
+text = """
+Etkinlik raporunda artık tarihlerin yanında bir hesap seçici var. Tüm
+hesaplar’ı ya da bunlardan birini seçin; izlenen iletiler, oranlar,
+grafik, konu satırları ve Posta kutunuz seçiminize göre değişir. Rapor
+hangi hesabı gösterdiğini belirtir ve seçiminizi hatırlar.
+"""
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Daha yeni ve Daha eski her zaman araç çubuğunda"
+text = """
+Okuma bölmesi ne kadar dar olursa olsun, sayaç ile Daha yeni ve Daha eski
+okları araç çubuğunun sağında kalır. En az kullandığınız düğmeler ise tek
+tek Diğer menüsüne taşınır; kişi ayrıntıları ve özgün renkler anahtarları
+da bunlara dahildir.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Her boyutta dosya gönderin"
+text = """
+Google ile oturum açmış bir hesapta, 25 MB posta sınırını aşan dosya
+eklediğiniz anda Google Drive'ınıza gider ve ileti, Gmail'deki gibi
+dosyanın bağlantısını taşır. Gönder'e bastığınızda alıcılarınızla
+paylaşılır; Katna yalnızca birine erişim verilemiyorsa sorar.
+"""
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Uzun alıcı listeleri daha akıcı"
+text = """
+Uzun bir alıcı listesinin artık kendi kaydırma çubuğu var ve satır satır
+ilerliyor; ileti dizisi ancak liste sonuna ulaşınca kaydırılıyor. Alıcı
+eklemek artık aşağıdaki düğmelerin zıplamasına yol açmıyor.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Yeni postaları denetleyin"
+text = """
+Klasör bölmesinde bir klasöre veya hesaba sağ tıklayarak “Yeni postaları
+denetle”, “Tümünü okundu olarak işaretle”, içine yeni bir klasör veya
+“Çöp Kutusu'nu boşalt” seçeneğini kullanın. Listenin üstündeki “Yenile”
+artık sunucudan da getiriyor. Katna denetlerken oklar “Yenile”de ve
+Gelen Kutusu'nun yanında döner, işlem bir andan uzun sürerse üstte “Yeni
+postalar denetleniyor…” görünür.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Büyük dosyalar OneDrive ile"
+text = """
+Outlook.com, Hotmail ve diğer Microsoft hesapları artık posta sınırını
+aşan dosyaları Google hesapları gibi gönderiyor: dosya eklediğiniz anda
+OneDrive'ınıza gider ve ileti, Outlook'taki gibi dosyanın bağlantısını
+taşır.
+"""

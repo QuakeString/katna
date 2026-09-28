@@ -50,3 +50,4 @@ search-clear = खोज मिटाएं
 search-options-show = खोज के विकल्प दिखाएं
 settings = सेटिंग
 account-add = खाता जोड़ें
+account-wheel-hint = माउस घुमाकर खाता बदलें
