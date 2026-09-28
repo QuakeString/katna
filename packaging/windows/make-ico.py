@@ -10,8 +10,9 @@ from PIL import Image
 here = Path(__file__).resolve().parent
 hicolor = here.parent / "icons" / "hicolor"
 sizes = [16, 24, 32, 48, 64, 128, 256]
+# The PNGs are named after the app ID; each size folder holds only Katna's.
 images = [
-    Image.open(hicolor / f"{s}x{s}" / "apps" / "in.invenia.katna.Mail.png").convert("RGBA")
+    Image.open(next((hicolor / f"{s}x{s}" / "apps").glob("*.png"))).convert("RGBA")
     for s in sizes
 ]
 images[-1].save(
