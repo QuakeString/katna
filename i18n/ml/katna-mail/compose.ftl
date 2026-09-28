@@ -13,6 +13,9 @@ compose-save-close = സംരക്ഷിച്ച് അടയ്ക്കു�
 compose-back-to-mail = മെയിൽ വിൻഡോയിലേക്ക് മടങ്ങുക
 compose-pop-out-reply = മറുപടി പ്രത്യേക വിൻഡോയിൽ തുറക്കുക
 compose-show-trimmed = ചുരുക്കിയ ഉള്ളടക്കം കാണിക്കുക
+compose-hide-trimmed = ചുരുക്കിയ ഉള്ളടക്കം മറയ്ക്കുക
+compose-remove-trimmed = ഉദ്ധരിച്ച വാചകം നീക്കം ചെയ്യുക
+compose-trimmed-removed = ഉദ്ധരിച്ച വാചകം നീക്കം ചെയ്തു
 
 ## Recipients and subject
 

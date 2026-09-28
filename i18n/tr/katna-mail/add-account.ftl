@@ -84,3 +84,4 @@ add-account-signed-in = { $provider } ile oturum açıldı. Postalarınız alın
 
 add-account-menu-another = Başka bir hesap ekle
 add-account-menu-manage = Hesapları yönet
+app-menu = Ana menü

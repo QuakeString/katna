@@ -13,6 +13,9 @@ compose-save-close = ບັນທຶກ ແລະ ປິດ
 compose-back-to-mail = ກັບໄປໜ້າຕ່າງອີເມວ
 compose-pop-out-reply = ເປີດການຕອບກັບໃນໜ້າຕ່າງແຍກ
 compose-show-trimmed = ສະແດງເນື້ອຫາທີ່ຖືກຕັດອອກ
+compose-hide-trimmed = ເຊື່ອງເນື້ອຫາທີ່ຖືກຕັດອອກ
+compose-remove-trimmed = ລຶບຂໍ້ຄວາມທີ່ອ້າງອີງອອກ
+compose-trimmed-removed = ລຶບຂໍ້ຄວາມທີ່ອ້າງອີງອອກແລ້ວ
 
 ## Recipients and subject
 

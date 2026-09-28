@@ -84,3 +84,4 @@ add-account-signed-in = በ{ $provider } ገብተዋል። ደብዳቤዎን �
 
 add-account-menu-another = ሌላ መለያ አክል
 add-account-menu-manage = መለያዎችን አስተዳድር
+app-menu = ዋና ምናሌ

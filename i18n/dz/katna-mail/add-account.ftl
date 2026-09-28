@@ -84,3 +84,4 @@ add-account-signed-in = { $provider } གིས་ ནང་བསྐྱོད�
 
 add-account-menu-another = རྩིས་ཐོ་གཞན་ཅིག་ཁ་སྐོང་འབད།
 add-account-menu-manage = རྩིས་ཐོ་ཚུ་འཛིན་སྐྱོང་འབད།
+app-menu = དཀར་ཆག་གཙོ་བོ

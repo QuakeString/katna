@@ -13,6 +13,9 @@ compose-save-close = Hifadhi na ufunge
 compose-back-to-mail = Rudi kwenye dirisha la barua
 compose-pop-out-reply = Fungua jibu nje
 compose-show-trimmed = Onyesha maudhui yaliyofupishwa
+compose-hide-trimmed = Ficha maudhui yaliyofupishwa
+compose-remove-trimmed = Ondoa maandishi yaliyonukuliwa
+compose-trimmed-removed = Maandishi yaliyonukuliwa yameondolewa
 
 ## Recipients and subject
 

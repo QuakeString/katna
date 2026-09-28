@@ -781,3 +781,87 @@ of ze naar de Prullenbak mogen. Vink ‘Niet meer vragen’ aan om de vraag
 over te slaan, of zet hem weer aan bij Instellingen > Algemeen.
 Definitief verwijderen, in de Prullenbak, vraagt altijd.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna voor Windows"
+text = """
+Katna Mail draait nu ook op Windows 10 en 11, geïnstalleerd met een eigen
+Katna Setup, met het pictogram in het systeemvak, meldingen, starten bij
+aanmelden en maillinks die in Katna openen.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Verwijderknop op elk adres"
+text = """
+Elk adres in Aan, Cc en Bcc toont nu altijd zijn x, zodat je het kunt
+verwijderen zonder er eerst naar te wijzen.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Een rondere opmaakbalk"
+text = """
+De opmaakbalk bij het opstellen (Aa) heeft nu de vorm van een pil met een
+vage rand, zodat hij in lichte en donkere thema's loskomt van je tekst.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Lange e-mailreeksen openen snel"
+text = """
+Opgemaakte e-mail die veel eerdere antwoorden citeert, zoals een lange reeks
+citaten, opent nu meteen en scrolt soepel in plaats van het hele venster te
+vertragen.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Wie het heeft gezien, achter een oog"
+text = """
+Verzonden e-mail met volgen heeft er geen blok met regels meer boven. Een
+oog naast de ster krijgt je accentkleur zodra iemand het bericht opent; wijs
+het aan om te zien wie het heeft geopend of een link heeft gevolgd, en
+wanneer.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Bellen en kopiëren vanuit de contactgegevens"
+text = """
+Klik in de contactgegevens naast een gesprek op een telefoonnummer om het te
+bellen met je telefoon-app of KDE Connect, of gebruik de kopieerknop
+ernaast. Alle tekst in het paneel kan nu ook geselecteerd en gekopieerd
+worden.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Geciteerde e-mail in een antwoord verbergen of verwijderen"
+text = """
+De knop "..." onder een antwoord verbergt de geciteerde e-mail nu weer nadat
+je hem hebt geopend. Wijs hem aan en klik op de x op de hoek om de
+geciteerde e-mail uit je antwoord te halen; Ongedaan maken of Ctrl+Z zet hem
+terug. De werkbalk van het antwoord blijft ook op zijn plaats terwijl je
+scrolt.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Zwevende mappen en een bredere zoekbalk"
+text = """
+Zijn de mappen verborgen, dan opent rusten op Opstellen of E-mail ze als een
+paneel dat los van de randen staat, met een kleine punt die naar de knop
+wijst. Het zoekvak groeit in de ruimte die de mappen vrijlaten, en klikken
+op de map waarin je al zit laat de lijst niet meer knipperen.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Adressuggesties in Zoekopties"
+text = """
+Van en Aan in Zoekopties stellen nu adressen voor terwijl je typt, net zoals
+Aan, Cc en Bcc bij het opstellen. Kies er een met Enter, Tab of een klik.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Hoofdmenu in de accountkaart, Allen beantwoorden in een eigen venster"
+text = """
+De accountkaart heeft een ☰-knop naast Accounts beheren. Die opent dezelfde
+menu's Bestand, Bewerken, Beeld, Ga, Bericht, Instellingen en Help als het
+globale menu van de desktop, voor desktops die er geen tonen. Allen
+beantwoorden in een melding van nieuwe e-mail opent het gesprek nu in een
+eigen venster, klaar om te typen, en laat het hoofdvenster waar het is.
+"""

@@ -84,3 +84,4 @@ add-account-signed-in = Mit { $provider } angemeldet. E-Mails werden abgerufen�
 
 add-account-menu-another = Weiteres Konto hinzufügen
 add-account-menu-manage = Konten verwalten
+app-menu = Hauptmenü

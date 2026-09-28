@@ -84,3 +84,4 @@ add-account-signed-in = Connecté avec { $provider }. Récupération de votre co
 
 add-account-menu-another = Ajouter un autre compte
 add-account-menu-manage = Gérer les comptes
+app-menu = Menu principal

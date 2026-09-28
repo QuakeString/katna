@@ -792,3 +792,91 @@ gefragt, ob sie in den Papierkorb sollen. Setzen Sie ein Häkchen bei
 unter Einstellungen > Allgemein wieder ein. Beim endgültigen Löschen im
 Papierkorb wird immer gefragt.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna für Windows"
+text = """
+Katna Mail läuft jetzt auch unter Windows 10 und 11, installiert mit dem
+eigenen Katna Setup, mit Symbol im Infobereich, Benachrichtigungen, Start
+bei der Anmeldung und E-Mail-Links, die sich in Katna öffnen.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Entfernen-Knopf an jeder Adresse"
+text = """
+Jede Adresse in An, Cc und Bcc zeigt jetzt immer ihr x, sodass Sie sie
+entfernen können, ohne zuerst darauf zu zeigen.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Eine rundere Formatierungsleiste"
+text = """
+Die Formatierungsleiste beim Schreiben (Aa) hat jetzt Pillenform mit einem
+feinen Rand und hebt sich so im hellen wie im dunklen Design von Ihrem Text
+ab.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Lange E-Mail-Verläufe öffnen sich schnell"
+text = """
+Formatierte E-Mails, die viele frühere Antworten zitieren, etwa ein langer
+Zitatverlauf, öffnen sich jetzt sofort und scrollen flüssig, statt das ganze
+Fenster auszubremsen.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Wer sie gesehen hat, hinter einem Auge"
+text = """
+Gesendete E-Mails mit Verfolgung haben keinen Kasten mit Zeilen mehr
+darüber. Ein Auge neben dem Stern nimmt Ihre Akzentfarbe an, sobald jemand
+die E-Mail öffnet; zeigen Sie darauf, um zu sehen, wer sie geöffnet oder
+einen Link aufgerufen hat, und wann.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Anrufen und kopieren aus den Kontaktdetails"
+text = """
+Klicken Sie in den Kontaktdetails neben einer Unterhaltung auf eine
+Telefonnummer, um sie mit Ihrer Telefon-App oder KDE Connect anzurufen, oder
+nutzen Sie den Kopierknopf daneben. Der gesamte Text der Karte lässt sich
+jetzt auch markieren und kopieren.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Zitierte E-Mail in einer Antwort ausblenden oder entfernen"
+text = """
+Der Knopf "..." unter einer Antwort blendet die zitierte E-Mail jetzt wieder
+aus, nachdem Sie sie geöffnet haben. Zeigen Sie darauf und klicken Sie auf
+das x an seiner Ecke, um die zitierte E-Mail aus Ihrer Antwort zu nehmen;
+Rückgängig oder Ctrl+Z holt sie zurück. Außerdem bleibt die Werkzeugleiste
+der Antwort beim Scrollen an ihrem Platz.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Schwebende Ordner und eine breitere Suche"
+text = """
+Sind die Ordner ausgeblendet, öffnet das Verweilen auf Schreiben oder E-Mail
+sie als Bereich mit Abstand zu den Rändern und einer kleinen Spitze, die auf
+den Knopf zeigt. Das Suchfeld wächst in den Platz, den die Ordner freigeben,
+und ein Klick auf den Ordner, in dem Sie schon sind, lässt die Liste nicht
+mehr aufblitzen.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Adressvorschläge in den Suchoptionen"
+text = """
+Von und An in den Suchoptionen schlagen jetzt beim Tippen Adressen vor,
+genau wie An, Cc und Bcc beim Schreiben. Wählen Sie eine mit Enter, Tab oder
+einem Klick.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Hauptmenü in der Kontokarte, Allen antworten im eigenen Fenster"
+text = """
+Die Kontokarte hat einen ☰-Knopf neben Konten verwalten. Er öffnet dieselben
+Menüs Datei, Bearbeiten, Ansicht, Gehe zu, Nachricht, Einstellungen und
+Hilfe wie das globale Menü der Arbeitsumgebung, für Arbeitsumgebungen, die
+keins anzeigen. Allen antworten in einer Benachrichtigung über neue E-Mails
+öffnet die Unterhaltung jetzt in einem eigenen Fenster, bereit zum Tippen,
+und lässt das Hauptfenster, wo es ist.
+"""

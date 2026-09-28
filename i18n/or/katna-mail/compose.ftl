@@ -13,6 +13,9 @@ compose-save-close = ସେଭ କରି ବନ୍ଦ କରନ୍ତୁ
 compose-back-to-mail = ମେଲ ୱିଣ୍ଡୋକୁ ଫେରନ୍ତୁ
 compose-pop-out-reply = ଉତ୍ତରକୁ ଅଲଗା ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ
 compose-show-trimmed = କଟାଯାଇଥିବା ବିଷୟବସ୍ତୁ ଦେଖାନ୍ତୁ
+compose-hide-trimmed = କଟାଯାଇଥିବା ବିଷୟବସ୍ତୁ ଲୁଚାନ୍ତୁ
+compose-remove-trimmed = ଉଦ୍ଧୃତ ଟେକ୍ସଟ କାଢ଼ନ୍ତୁ
+compose-trimmed-removed = ଉଦ୍ଧୃତ ଟେକ୍ସଟ କଢ଼ାଗଲା
 
 ## Recipients and subject
 

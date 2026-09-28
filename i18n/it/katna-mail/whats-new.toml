@@ -784,3 +784,90 @@ spostarle nel Cestino. Spunta «Non chiedere più» per saltare la domanda,
 oppure riattivala in Impostazioni > Generali. L’eliminazione definitiva,
 nel Cestino, chiede sempre.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna per Windows"
+text = """
+Katna Mail ora funziona anche su Windows 10 e 11, installato dal suo Katna
+Setup, con l'icona nell'area di notifica, le notifiche, l'avvio all'accesso
+e i link email che si aprono in Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Pulsante di rimozione su ogni indirizzo"
+text = """
+Ogni indirizzo in A, Cc e Ccn ora mostra sempre la sua x, così puoi
+rimuoverlo senza doverci prima puntare sopra.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Una barra di formattazione più arrotondata"
+text = """
+La barra di formattazione della scrittura (Aa) ora ha la forma di una
+pillola con un bordo tenue, così si stacca dal tuo testo sia nel tema chiaro
+sia in quello scuro.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Le lunghe catene di email si aprono in fretta"
+text = """
+La posta formattata che cita molte risposte precedenti, come una lunga
+catena di citazioni, ora si apre subito e scorre in modo fluido invece di
+rallentare tutta la finestra.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Chi l'ha vista, dietro un occhio"
+text = """
+La posta inviata con il tracciamento non ha più un riquadro di righe sopra.
+Un occhio accanto alla stella prende il tuo colore di risalto appena
+qualcuno la apre; punta l'occhio per vedere chi l'ha aperta o ha seguito un
+link, e quando.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Chiama e copia dai dettagli del contatto"
+text = """
+Nei dettagli del contatto accanto a una conversazione, fai clic su un numero
+di telefono per chiamarlo con l'app del telefono o KDE Connect, oppure usa
+il pulsante di copia accanto. Ora puoi anche selezionare e copiare tutto il
+testo del pannello.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Nascondi o rimuovi l'email citata in una risposta"
+text = """
+Il pulsante "..." sotto una risposta ora nasconde di nuovo l'email citata
+dopo che l'hai aperta. Punta il pulsante e fai clic sulla x nel suo angolo
+per togliere l'email citata dalla risposta; Annulla o Ctrl+Z la rimette.
+Inoltre la barra degli strumenti della risposta resta al suo posto mentre
+scorri.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Cartelle fluttuanti e una ricerca più ampia"
+text = """
+Con le cartelle nascoste, soffermarti su Scrivi o Posta le apre come un
+pannello staccato dai bordi, con una piccola punta rivolta verso il
+pulsante. La casella di ricerca si allarga fino a riempire lo spazio
+lasciato dalle cartelle, e fare clic sulla cartella in cui sei già non fa
+più lampeggiare l'elenco.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Suggerimenti di indirizzi in Opzioni di ricerca"
+text = """
+Da e A in Opzioni di ricerca ora suggeriscono indirizzi mentre digiti, come
+fanno A, Cc e Ccn nella scrittura. Scegline uno con Invio, Tab o un clic.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu principale nella scheda dell'account, Rispondi a tutti in una finestra sua"
+text = """
+La scheda dell'account ha un pulsante ☰ accanto a Gestisci gli account. Apre
+gli stessi menu File, Modifica, Visualizza, Vai, Messaggio, Impostazioni e
+Aiuto del menu globale del desktop, per i desktop che non ne mostrano uno.
+Rispondi a tutti in una notifica di nuova email ora apre la conversazione in
+una finestra tutta sua, pronta per scrivere, e lascia la finestra principale
+dov'è.
+"""

@@ -778,3 +778,86 @@ Usunięcie kilku wątków naraz pyta teraz najpierw, czy przenieść je do
 kosza. Zaznacz „Nie pytaj ponownie”, aby pominąć to pytanie, albo włącz
 je znowu w Ustawienia > Ogólne. Trwałe usuwanie, w koszu, pyta zawsze.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna dla Windows"
+text = """
+Katna Mail działa teraz także w systemach Windows 10 i 11, instalowana przez
+własny Katna Setup, z ikoną w zasobniku systemowym, powiadomieniami,
+uruchamianiem przy logowaniu i linkami e-mail otwieranymi w Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Przycisk usuwania przy każdym adresie"
+text = """
+Każdy adres w polach Do, DW i UDW zawsze pokazuje teraz swój x, więc możesz
+go usunąć bez wcześniejszego wskazywania.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Bardziej zaokrąglony pasek formatowania"
+text = """
+Pasek formatowania podczas tworzenia wiadomości (Aa) ma teraz kształt
+pigułki z delikatną krawędzią, dzięki czemu odcina się od tekstu w jasnym i
+ciemnym motywie.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Długie wątki otwierają się szybko"
+text = """
+Sformatowana poczta cytująca wiele wcześniejszych odpowiedzi, na przykład
+długi łańcuch cytatów, otwiera się teraz od razu i przewija płynnie, zamiast
+spowalniać całe okno.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Kto ją widział, ukryte za okiem"
+text = """
+Wysłana poczta ze śledzeniem nie ma już nad sobą ramki z wierszami. Oko obok
+gwiazdki przybiera Twój kolor akcentu, gdy tylko ktoś otworzy wiadomość;
+wskaż je, aby zobaczyć, kto ją otworzył lub kliknął link, i kiedy.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Dzwonienie i kopiowanie z danych kontaktu"
+text = """
+W danych kontaktu obok wątku kliknij numer telefonu, aby zadzwonić przez
+aplikację telefonu lub KDE Connect, albo użyj przycisku kopiowania obok.
+Cały tekst panelu można też teraz zaznaczyć i skopiować.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Ukrywanie lub usuwanie cytowanej wiadomości w odpowiedzi"
+text = """
+Przycisk "..." pod odpowiedzią teraz znowu ukrywa cytowaną wiadomość po jej
+otwarciu. Wskaż go i kliknij x w jego rogu, aby usunąć cytowaną wiadomość z
+odpowiedzi; Cofnij lub Ctrl+Z ją przywraca. Pasek narzędzi odpowiedzi
+zostaje też na miejscu podczas przewijania.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Pływające foldery i szersze wyszukiwanie"
+text = """
+Gdy foldery są ukryte, zatrzymanie wskaźnika na Utwórz lub Poczta otwiera je
+jako panel odsunięty od krawędzi, z małym dzióbkiem wskazującym przycisk.
+Pole wyszukiwania rośnie, wypełniając miejsce zwolnione przez foldery, a
+kliknięcie folderu, w którym już jesteś, nie powoduje już mignięcia listy.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Opcje wyszukiwania podpowiadają adresy"
+text = """
+Pola Od i Do w oknie Opcje wyszukiwania podpowiadają teraz adresy podczas
+pisania, tak jak Do, DW i UDW podczas tworzenia wiadomości. Wybierz adres
+klawiszem Enter, Tab lub kliknięciem.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu główne w karcie konta, Odpowiedz wszystkim we własnym oknie"
+text = """
+Karta konta ma przycisk ☰ obok Zarządzaj kontami. Otwiera te same menu Plik,
+Edycja, Widok, Przejdź, Wiadomość, Ustawienia i Pomoc co globalne menu
+pulpitu, dla środowisk, które go nie pokazują. Odpowiedz wszystkim w
+powiadomieniu o nowej poczcie otwiera teraz wątek we własnym oknie, gotowy
+do pisania, i zostawia główne okno tam, gdzie jest.
+"""

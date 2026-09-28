@@ -13,6 +13,9 @@ compose-save-close = រក្សាទុក និងបិទ
 compose-back-to-mail = ត្រឡប់ទៅបង្អួចសំបុត្រវិញ
 compose-pop-out-reply = បើកការឆ្លើយតបក្នុងបង្អួចដាច់ដោយឡែក
 compose-show-trimmed = បង្ហាញខ្លឹមសារដែលបានកាត់
+compose-hide-trimmed = លាក់ខ្លឹមសារដែលបានកាត់
+compose-remove-trimmed = ដកអត្ថបទដែលដកស្រង់ចេញ
+compose-trimmed-removed = បានដកអត្ថបទដែលដកស្រង់ចេញ
 
 ## Recipients and subject
 

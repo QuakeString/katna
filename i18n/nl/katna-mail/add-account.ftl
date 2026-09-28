@@ -84,3 +84,4 @@ add-account-signed-in = Aangemeld met { $provider }. Je e-mail wordt opgehaaldâ€
 
 add-account-menu-another = Nog een account toevoegen
 add-account-menu-manage = Accounts beheren
+app-menu = Hoofdmenu

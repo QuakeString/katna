@@ -105,6 +105,7 @@ tracking-clicked = קישור בה נפתח אצל { $who } { $clicks ->
    *[other] { $clicks } פעמים
 }, לאחרונה { $when }
 tracking-maybe-opened = ייתכן שנפתחה אצל { $who } (Apple Mail טוען תמונות לשמירה על הפרטיות)
+tracking-seen-none = עדיין אף אחד לא פתח אותה או לחץ על קישור בה
 tracking-receipt = התקבל אישור קריאה מ־{ $who }
 tracking-receipt-displayed = אישור קריאה: ההודעה שלך נפתחה אצל { $who }
 tracking-receipt-other = אישור קריאה: ההודעה שלך נמחקה או טופלה אצל { $who } בלי שנפתחה

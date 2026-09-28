@@ -13,6 +13,9 @@ compose-save-close = Spara och stäng
 compose-back-to-mail = Tillbaka till e-postfönstret
 compose-pop-out-reply = Öppna svaret i eget fönster
 compose-show-trimmed = Visa förkortat innehåll
+compose-hide-trimmed = Dölj förkortat innehåll
+compose-remove-trimmed = Ta bort citerad text
+compose-trimmed-removed = Den citerade texten har tagits bort
 
 ## Recipients and subject
 

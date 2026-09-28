@@ -806,3 +806,90 @@ zihanjiswe kudoti yini. Maka u-“Ungabuzi futhi” ukweqa lo mbuzo, noma
 ukuvule futhi ku-Izilungiselelo > Okuvamile. Ukususa unomphela, kudoti,
 kubuza njalo.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "I-Katna ye-Windows"
+text = """
+I-Katna Mail manje isebenza naku-Windows 10 no-11, ifakwa yi-Katna Setup
+yayo, inesithonjana sethreyi, izaziso, ukuqala lapho ungena ngemvume,
+nezixhumanisi zemeyili ezivuleka ku-Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Inkinobho yokususa kulo lonke ikheli"
+text = """
+Ishiphu yekheli ngayinye ku-Ku, Cc naku-Bcc manje ihlala ibonisa u-x wayo,
+ukuze uyisuse ngaphandle kokuyikhomba kuqala.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Ibha yokufometha eyindilinga kakhulu"
+text = """
+Ibha yokufometha efasiteleni lokubhala (Aa) manje imise okwephilisi
+enomphetho ofiphele, ukuze ihlukane nombhalo wakho kumatimu akhanyayo
+namnyama.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Izintambo ezinde zemeyili zivuleka ngokushesha"
+text = """
+Imeyili efomethiwe ecaphuna izimpendulo eziningi zangaphambili, njengentambo
+ende yezingcaphuno, manje ivuleka ngokushesha futhi iskrole kahle
+esikhundleni sokwehlisa ijubane lefasitela lonke.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Obonile, ngemuva kweso"
+text = """
+Imeyili oyithumele nokulandelela ayisenalo ibhokisi lemigqa ngaphezulu
+kwayo. Iso eliseduze kwenkanyezi liphenduka umbala wakho wokugcizelela uma
+othile eyivula; likhombe ukuze ubone ukuthi ubani oyivulile noma olandele
+isixhumanisi, nokuthi nini.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Shaya futhi ukopishe emininingwaneni yoxhumana naye"
+text = """
+Emininingwaneni yoxhumana naye eceleni kwengxoxo, chofoza inombolo yefoni
+ukuze uyishaye ngohlelo lwakho lwefoni noma nge-KDE Connect, noma usebenzise
+inkinobho yokukopisha eseduze kwayo. Wonke umbhalo wephaneli manje
+ungakhethwa futhi ukopishwe.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Fihla noma susa imeyili ecashuniwe empendulweni"
+text = """
+Inkinobho ethi “...” ngaphansi kwempendulo manje iyaphinda ifihle imeyili
+ecashuniwe ngemuva kokuba uyivulile. Yikhombe bese uchofoza u-x ekhoneni
+layo ukuze ukhiphe imeyili ecashuniwe empendulweni yakho; u-Hlehlisa noma
+Ctrl+Z kuyayibuyisela. Ibha yamathuluzi yempendulo nayo ihlala endaweni yayo
+ngenkathi uskrola.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Amafolda antantayo, nosesho olubanzi"
+text = """
+Uma amafolda efihliwe, ukuma ku-Bhala noma ku-Imeyili kuwavula njengephaneli
+eqhelile emaphethelweni, enesicongo esincane esikhomba inkinobho. Ibhokisi
+losesho liyakhula ligcwalise isikhala esishiywe amafolda, futhi ukuchofoza
+ifolda osuvele ukulo akusenzi uhlu lucwayize.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Iziphakamiso zamakheli ku-Okukhethwa kukho kosesho"
+text = """
+U-Umthumeli no-Umamukeli ku-Okukhethwa kukho kosesho manje baphakamisa
+amakheli njengoba uthayipha, ngendlela efanayo no-Ku, Cc no-Bcc lapho
+ubhala. Khetha elilodwa nge-Enter, i-Tab noma ngokuchofoza.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Imenyu enkulu ekhadini le-akhawunti, Phendula bonke efasiteleni elihlukile"
+text = """
+Ikhadi le-akhawunti linenkinobho ethi ☰ eduze kuka-Phatha ama-akhawunti.
+Ivula amamenyu afanayo athi Ifayela, Hlela, Buka, Hamba, Umlayezo,
+Izilungiselelo no-Usizo njengemenyu yomhlaba wonke yedeskithophu,
+kumadeskithophu angayiboniyo. U-Phendula bonke esazisweni semeyili entsha
+manje uvula ingxoxo efasiteleni layo, ilungele ukuthayipha, futhi ushiya
+ifasitela elikhulu lilapho likhona.
+"""

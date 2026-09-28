@@ -84,3 +84,4 @@ add-account-signed-in = Telah log masuk dengan { $provider }. Mendapatkan mel an
 
 add-account-menu-another = Tambah akaun lain
 add-account-menu-manage = Urus akaun
+app-menu = Menu utama

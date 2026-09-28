@@ -89,6 +89,7 @@ tracking-opened = { $who } membukanya { $count } kali, terakhir { $when }
 tracking-opens-clicks = { $who } membukanya { $opens } kali dan mengikuti pautan { $clicks } kali, terakhir { $when }
 tracking-clicked = { $who } mengikuti pautan { $clicks } kali, terakhir { $when }
 tracking-maybe-opened = { $who } mungkin telah membukanya (Apple Mail memuatkan gambar demi privasi)
+tracking-seen-none = Belum ada sesiapa yang membukanya atau mengikuti pautan
 tracking-receipt = { $who } menghantar resit baca
 tracking-receipt-displayed = Resit baca: { $who } membuka mesej anda
 tracking-receipt-other = Resit baca: { $who } memadamkan atau menguruskan mesej anda tanpa membukanya

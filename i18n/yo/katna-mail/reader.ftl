@@ -89,6 +89,7 @@ tracking-opened = { $who } ti ṣí i nígbà { $count }, ìgbà tó kẹ́yìn 
 tracking-opens-clicks = { $who } ti ṣí i nígbà { $opens }, ó sì ti tẹ̀lé ìjápọ̀ nígbà { $clicks }, ìgbà tó kẹ́yìn ni { $when }
 tracking-clicked = { $who } ti tẹ̀lé ìjápọ̀ nígbà { $clicks }, ìgbà tó kẹ́yìn ni { $when }
 tracking-maybe-opened = Ó ṣeé ṣe kí { $who } ti ṣí i (Apple Mail máa ń gbé àwọn àwòrán wọlé fún àṣírí)
+tracking-seen-none = Kò sí ẹni tó ti ṣí i tàbí tẹ̀lé ìjápọ̀ kan síbẹ̀
 tracking-receipt = { $who } ti fi ìwé-ẹ̀rí kíkà ránṣẹ́
 tracking-receipt-displayed = Ìwé-ẹ̀rí kíkà: { $who } ti ṣí ìfiránṣẹ́ rẹ
 tracking-receipt-other = Ìwé-ẹ̀rí kíkà: { $who } ti pa ìfiránṣẹ́ rẹ rẹ́ tàbí bójú tó o láìṣí i

@@ -84,3 +84,4 @@ add-account-signed-in = Đã đăng nhập bằng { $provider }. Đang nhận th
 
 add-account-menu-another = Thêm tài khoản khác
 add-account-menu-manage = Quản lý tài khoản
+app-menu = Menu chính

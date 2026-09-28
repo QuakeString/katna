@@ -13,6 +13,9 @@ compose-save-close = Salva e chiudi
 compose-back-to-mail = Torna alla finestra della posta
 compose-pop-out-reply = Apri la risposta in una finestra
 compose-show-trimmed = Mostra contenuti tagliati
+compose-hide-trimmed = Nascondi contenuti tagliati
+compose-remove-trimmed = Rimuovi testo citato
+compose-trimmed-removed = Testo citato rimosso
 
 ## Recipients and subject
 

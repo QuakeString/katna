@@ -13,6 +13,9 @@ compose-save-close = 保存して閉じる
 compose-back-to-mail = メールのウィンドウに戻る
 compose-pop-out-reply = 返信を別ウィンドウで開く
 compose-show-trimmed = 省略されたコンテンツを表示
+compose-hide-trimmed = 省略されたコンテンツを非表示
+compose-remove-trimmed = 引用テキストを削除
+compose-trimmed-removed = 引用テキストを削除しました
 
 ## Recipients and subject
 

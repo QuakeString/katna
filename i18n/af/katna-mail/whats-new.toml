@@ -757,3 +757,84 @@ asblik geskuif moet word. Merk “Vra nie weer nie” om die vraag oor te
 slaan, of skakel dit weer aan in Instellings > Algemeen. Om permanent uit
 te vee, in die asblik, vra altyd.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna vir Windows"
+text = """
+Katna Mail werk nou ook op Windows 10 en 11, geïnstalleer deur sy eie Katna
+Setup, met die stelselbalkikoon, kennisgewings, begin by aanmelding en
+e-posskakels wat in Katna oopmaak.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Verwyderknoppie op elke adres"
+text = """
+Elke adresskyfie in Aan, Cc en Bcc wys nou altyd sy x, sodat jy dit kan
+verwyder sonder om eers daarna te wys.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "'n Ronder formateringsbalk"
+text = """
+Die formateringsbalk wanneer jy skryf (Aa) is nou pilvormig met 'n dowwe
+rand, sodat dit in ligte en donker temas apart van jou teks staan.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Lang gesprekke maak vinnig oop"
+text = """
+Geformateerde e-pos wat baie vroeëre antwoorde aanhaal, soos 'n lang reeks
+aanhalings, maak nou dadelik oop en rol glad, in plaas daarvan om die hele
+venster te vertraag.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Wie dit gesien het, agter 'n oog"
+text = """
+E-pos wat jy met nasporing gestuur het, het nie meer 'n blok reëls daarbo
+nie. 'n Oog langs die ster kry jou aksentkleur sodra iemand dit oopmaak; wys
+daarna om te sien wie dit oopgemaak of 'n skakel gevolg het, en wanneer.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Bel en kopieer uit kontakbesonderhede"
+text = """
+Klik in die kontakbesonderhede langs 'n gesprek op 'n telefoonnommer om dit
+met jou foonprogram of KDE Connect te bel, of gebruik die kopieerknoppie
+langsaan. Al die paneel se teks kan nou ook gekies en gekopieer word.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Versteek of verwyder die aangehaalde e-pos in 'n antwoord"
+text = """
+Die “...”-knoppie onder 'n antwoord versteek nou weer die aangehaalde e-pos
+nadat jy dit oopgemaak het. Wys daarna en klik op die x op sy hoek om die
+aangehaalde e-pos uit jou antwoord te haal; Ontdoen of Ctrl+Z sit dit terug.
+Die antwoord se nutsbalk bly ook staan terwyl jy rol.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Vouers wat sweef, en 'n wyer soektog"
+text = """
+Met die vouers versteek, maak rus op Skryf of E-pos hulle oop as 'n paneel
+wat weg van die rande staan, met 'n klein keep wat na die knoppie wys. Die
+soekkassie groei om die ruimte te vul wat die vouers laat, en om op die
+vouer te klik waarin jy reeds is, laat die lys nie meer flikker nie.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Adresvoorstelle in Soekopsies"
+text = """
+Van en Aan in Soekopsies stel nou adresse voor terwyl jy tik, net soos Aan,
+Cc en Bcc wanneer jy skryf. Kies een met Enter, Tab of 'n klik.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Hoofkieslys in die rekeningkaart, Antwoord almal in sy eie venster"
+text = """
+Die rekeningkaart het 'n ☰-knoppie langs Bestuur rekeninge. Dit maak
+dieselfde kieslyste Lêer, Wysig, Aansig, Gaan, Boodskap, Instellings en Hulp
+oop as die werkskerm se globale kieslys, vir werkskerms wat nie een wys nie.
+Antwoord almal op 'n kennisgewing van nuwe e-pos maak nou die gesprek in sy
+eie venster oop, gereed om te tik, en los die hoofvenster waar dit is.
+"""

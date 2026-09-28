@@ -101,6 +101,7 @@ tracking-clicked = { $who } heeft { $clicks ->
    *[other] { $clicks } keer
 } een link gevolgd, laatst { $when }
 tracking-maybe-opened = { $who } heeft het misschien geopend (Apple Mail laadt afbeeldingen voor privacy)
+tracking-seen-none = Nog niemand heeft het geopend of een link gevolgd
 tracking-receipt = { $who } heeft een leesbevestiging gestuurd
 tracking-receipt-displayed = Leesbevestiging: { $who } heeft je bericht geopend
 tracking-receipt-other = Leesbevestiging: { $who } heeft je bericht verwijderd of afgehandeld zonder het te openen

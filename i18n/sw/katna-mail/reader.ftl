@@ -101,6 +101,7 @@ tracking-clicked = { $who } amefuata kiungo { $clicks ->
    *[other] mara { $clicks }
 }, mara ya mwisho { $when }
 tracking-maybe-opened = Huenda { $who } ameufungua (Apple Mail hupakia picha kwa ajili ya faragha)
+tracking-seen-none = Bado hakuna aliyeufungua au kufuata kiungo
 tracking-receipt = { $who } ametuma stakabadhi ya kusoma
 tracking-receipt-displayed = Stakabadhi ya kusoma: { $who } amefungua ujumbe wako
 tracking-receipt-other = Stakabadhi ya kusoma: { $who } amefuta au ameshughulikia ujumbe wako bila kuufungua
