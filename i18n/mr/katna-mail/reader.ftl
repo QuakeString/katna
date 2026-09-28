@@ -101,7 +101,6 @@ tracking-clicked = { $who } यांनी लिंक { $clicks ->
    *[other] { $clicks } वेळा
 } उघडली, शेवटी { $when }
 tracking-maybe-opened = { $who } यांनी तो कदाचित उघडला असेल (Apple Mail गोपनीयतेसाठी चित्रे लोड करते)
-tracking-not-opened = { $who } यांनी तो अजून उघडलेला नाही
 tracking-receipt = { $who } यांनी वाचल्याची पावती पाठवली
 tracking-receipt-displayed = वाचल्याची पावती: { $who } यांनी तुमचा मेसेज उघडला
 tracking-receipt-other = वाचल्याची पावती: { $who } यांनी तुमचा मेसेज न उघडता हटवला किंवा हाताळला

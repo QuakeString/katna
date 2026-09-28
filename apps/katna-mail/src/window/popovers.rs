@@ -98,6 +98,7 @@ impl MailWindow {
             self.close_about(window, cx);
             true
         } else if self.dismiss_activity(cx)
+            || self.close_seen(cx)
             || self.menu.take().is_some()
             || self.files_menu.take().is_some()
             || std::mem::take(&mut self.account_menu)

@@ -105,7 +105,6 @@ tracking-clicked = { $who } siguió un enlace { $clicks ->
    *[other] { $clicks } veces
 }, la última { $when }
 tracking-maybe-opened = Puede que { $who } lo haya abierto (Apple Mail carga las imágenes por privacidad)
-tracking-not-opened = { $who } aún no lo ha abierto
 tracking-receipt = { $who } envió una confirmación de lectura
 tracking-receipt-displayed = Confirmación de lectura: { $who } abrió tu mensaje
 tracking-receipt-other = Confirmación de lectura: { $who } eliminó o gestionó tu mensaje sin abrirlo
