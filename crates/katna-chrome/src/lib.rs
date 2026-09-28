@@ -6,6 +6,7 @@
 //! [`desktop`], [`geometry`] and [`tokens`] have no GPUI types; [`frame`]
 //! draws the chrome with GPUI.
 
+pub mod breeze;
 pub mod desktop;
 pub mod frame;
 pub mod geometry;

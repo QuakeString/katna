@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "A softer window shadow"
+title = "A softer window shadow and KDE-size buttons"
 text = """
 With the Katna window frame, the shadow around the window is tighter and
-fades out fully, without the hard edge it left beside the window.
+fades out fully, without the hard edge it left beside the window. The window
+buttons are now the size of KDE's own, and sit as far from the side of the
+window as from its top.
 """

@@ -1190,7 +1190,10 @@ GPUI global):
   everywhere: on KDE Wayland through xdg-decoration, on X11 with no WM frame
   (`_MOTIF_WM_HINTS`) and `_GTK_FRAME_EXTENTS` for the shadow margin. The
   frame keeps the desktop's preset (Breeze-like buttons and 5 px corners on
-  KDE). Switching keeps the window's size on screen. Where the desktop never
+  KDE). On KDE the buttons take Breeze's size: 24 px with a 10 pt font,
+  following the `kdeglobals` font and Breeze's "Button size" (`breezerc`
+  `[Windeco] ButtonSize`; `katna_chrome::breeze`). They sit centred in the
+  header bar, as far from the window's side as from its top. Switching keeps the window's size on screen. Where the desktop never
   draws frames (GNOME on Wayland) the choice is replaced by a note.
   `KATNA_DECORATIONS=auto|server|client` still overrides it, for testing.
 - *Blurred background*: the window's page color becomes translucent

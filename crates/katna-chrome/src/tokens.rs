@@ -218,16 +218,16 @@ impl ChromeTokens {
             sidebar_bg: window_bg,
             fg,
             fg_dim: with_alpha(fg, 0x99),
-            header_height: 30.0,
+            header_height: 36.0,
             header_bg,
             header_bg_unfocused,
             header_shade: with_alpha(fg, 0x26),
             title_weight: 400,
             title_size: 13.3,
             button_style: ButtonStyle::Flat,
-            button_size: 18.0,
-            button_icon_size: 16.0,
-            button_gap: 6.0,
+            button_size: 24.0,
+            button_icon_size: 22.0,
+            button_gap: 8.0,
             button_bg: 0x00000000,
             button_bg_hover: with_alpha(fg, 0x33),
             button_bg_active: with_alpha(fg, 0x55),
@@ -235,6 +235,19 @@ impl ChromeTokens {
             close_fg_hover: 0xffffffff,
             accent: 0x3daee9ff,
         }
+    }
+}
+
+impl ChromeTokens {
+    /// Breeze's buttons at `size` logical pixels across, with its icon,
+    /// spacing and header height following (`crate::breeze`).
+    pub fn with_button_size(mut self, size: f32) -> Self {
+        let size = size.round().max(12.0);
+        self.button_size = size;
+        self.button_icon_size = (size * 11.0 / 12.0).round();
+        self.button_gap = (size / 3.0).round();
+        self.header_height = self.header_height.max(size + 12.0);
+        self
     }
 }
 
