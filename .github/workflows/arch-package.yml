@@ -20,9 +20,13 @@ on:
       - ".github/workflows/arch-package.yml"
   workflow_dispatch:
 
+# On main a running build always finishes and publishes; GitHub keeps
+# only the newest push waiting behind it, so busy stretches of merges no
+# longer cancel every build and leave arch-latest stale. A newer push to
+# a pull request still cancels its older run.
 concurrency:
   group: arch-package-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
