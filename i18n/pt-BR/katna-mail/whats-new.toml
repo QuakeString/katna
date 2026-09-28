@@ -1023,3 +1023,22 @@ datas. Escolha Todas as contas ou uma delas, e as mensagens rastreadas,
 as taxas, o gráfico, os assuntos e Sua caixa de correio acompanham a
 escolha. O relatório informa qual conta mostra e lembra da sua escolha.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Mais recente e Mais antiga sempre na barra"
+text = """
+Por mais estreito que seja o painel de leitura, o contador e as setas Mais
+recente e Mais antiga ficam à direita da barra de ferramentas. Os botões
+que você menos usa vão, em vez disso, um a um para o menu Mais, incluindo
+os interruptores de detalhes do contato e cores originais.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Envie arquivos de qualquer tamanho"
+text = """
+Com uma conta conectada pelo Google, um arquivo acima do limite de 25 MB
+do e-mail vai para o seu Google Drive assim que você o anexa, e a mensagem
+leva o link dele, como no Gmail. Ele é compartilhado com os destinatários
+quando você pressiona Enviar; o Katna só pergunta se não for possível dar
+acesso a alguém.
+"""

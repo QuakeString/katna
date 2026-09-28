@@ -61,6 +61,25 @@ compose-attachments-total = { $count ->
     [many] { $count } de archivos, { $size }
    *[other] { $count } archivos, { $size }
 }
+compose-drive-note = { $name } supera { $limit }, así que va a tu Google Drive y el mensaje lleva un enlace.
+compose-drive-tip = En tu Google Drive; el mensaje lleva un enlace
+compose-drive-uploading = Subiendo { $percent } %
+compose-drive-allow = Permitir Drive
+compose-drive-allow-tip = Inicia sesión de nuevo con Google para que Katna pueda guardar archivos grandes en tu Drive
+compose-drive-retry = Reintentar
+compose-drive-sends-when-uploaded = Se enviará cuando { $name } termine de subirse
+compose-drive-not-uploaded = { $name } aún no está en Google Drive
+compose-drive-share-failed = No se pudieron compartir los archivos en Google Drive: { $error }
+compose-drive-share-title = ¿Compartir los archivos con todos?
+compose-drive-share-text = { $count ->
+    [one] Google Drive no puede compartir los archivos con { $addresses }, que no tiene cuenta de Google. En su lugar, cualquiera que tenga el enlace podrá abrirlos.
+    [many] Google Drive no puede compartir los archivos con { $addresses }, que no tienen cuenta de Google. En su lugar, cualquiera que tenga el enlace podrá abrirlos.
+   *[other] Google Drive no puede compartir los archivos con { $addresses }, que no tienen cuenta de Google. En su lugar, cualquiera que tenga el enlace podrá abrirlos.
+}
+compose-drive-share-link = Compartir con enlace
+compose-drive-send-without = Enviar sin compartir
+compose-drive-share-cancel = Cancelar
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Suelta los archivos aquí
 compose-drop-here = Suelta aquí
 compose-paste-keep-formatting = Mantener formato

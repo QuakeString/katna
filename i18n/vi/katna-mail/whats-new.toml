@@ -992,3 +992,21 @@ tài khoản hoặc một tài khoản, và thư được theo dõi, tỷ lệ, 
 đề cùng Hộp thư của bạn sẽ theo lựa chọn đó. Báo cáo cho biết tài khoản
 đang hiển thị và ghi nhớ lựa chọn của bạn.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Mũi tên Mới hơn và Cũ hơn luôn hiện trên thanh công cụ"
+text = """
+Dù ngăn đọc hẹp đến đâu, bộ đếm cùng các mũi tên Mới hơn và Cũ hơn vẫn nằm
+ở bên phải thanh công cụ của nó. Thay vào đó, các nút bạn ít dùng nhất sẽ
+lần lượt chuyển vào menu Thêm, gồm cả các công tắc chi tiết liên hệ và màu
+gốc.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Gửi tệp với mọi dung lượng"
+text = """
+Với tài khoản đăng nhập bằng Google, tệp vượt quá giới hạn thư 25 MB sẽ
+được đưa lên Google Drive của bạn ngay khi bạn đính kèm, và thư sẽ kèm
+liên kết của tệp, như trong Gmail. Tệp được chia sẻ với người nhận khi bạn
+nhấn Gửi; Katna chỉ hỏi nếu không thể cấp quyền truy cập cho ai đó.
+"""

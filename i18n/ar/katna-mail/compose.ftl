@@ -71,6 +71,28 @@ compose-attachments-total = { $count ->
     [many] { $count } ملفًا، { $size }
    *[other] { $count } ملف، { $size }
 }
+compose-drive-note = { $name } يتجاوز { $limit }، لذا يُرفع إلى Google Drive الخاص بك وتحمل الرسالة رابطًا.
+compose-drive-tip = في Google Drive الخاص بك؛ تحمل الرسالة رابطًا
+compose-drive-uploading = جارٍ الرفع { $percent }%
+compose-drive-allow = السماح بـ Drive
+compose-drive-allow-tip = سجّل الدخول باستخدام Google مرة أخرى للسماح لـ Katna بوضع الملفات الكبيرة في Drive الخاص بك
+compose-drive-retry = إعادة المحاولة
+compose-drive-sends-when-uploaded = سيتم الإرسال بعد رفع { $name }
+compose-drive-not-uploaded = { $name } ليس في Google Drive بعد
+compose-drive-share-failed = تعذّرت مشاركة الملفات في Google Drive: { $error }
+compose-drive-share-title = مشاركة الملفات مع الجميع؟
+compose-drive-share-text = { $count ->
+    [zero] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [one] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذي ليس لديه حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [two] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، اللذين ليس لديهما حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [few] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+    [many] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+   *[other] لا يستطيع Google Drive مشاركة الملفات مع { $addresses }، الذين ليس لديهم حساب Google. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
+}
+compose-drive-share-link = مشاركة عبر الرابط
+compose-drive-send-without = إرسال بدون مشاركة
+compose-drive-share-cancel = إلغاء
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = أفلت الملفات هنا
 compose-drop-here = أفلت هنا
 compose-paste-keep-formatting = الإبقاء على التنسيق

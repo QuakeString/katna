@@ -57,6 +57,23 @@ compose-file-too-large = { $name } 太大：一封郵件最多只能夾帶 { $li
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
 compose-attachments-total = { $count } 個檔案，共 { $size }
+compose-drive-note = { $name } 超過 { $limit }，因此會存入你的 Google Drive，郵件中會附上連結。
+compose-drive-tip = 在你的 Google Drive 中；郵件中會附上連結
+compose-drive-uploading = 正在上傳 { $percent }%
+compose-drive-allow = 允許 Drive
+compose-drive-allow-tip = 重新使用 Google 登入，讓 Katna 可以把大型檔案放入你的 Drive
+compose-drive-retry = 再試一次
+compose-drive-sends-when-uploaded = { $name } 上傳完成後即傳送
+compose-drive-not-uploaded = { $name } 尚未上傳到 Google Drive
+compose-drive-share-failed = 無法在 Google Drive 中共用這些檔案：{ $error }
+compose-drive-share-title = 與所有人共用這些檔案？
+compose-drive-share-text = { $count ->
+   *[other] Google Drive 無法與沒有 Google 帳戶的 { $addresses } 共用這些檔案。改為讓任何擁有連結的人都可以開啟。
+}
+compose-drive-share-link = 透過連結共用
+compose-drive-send-without = 不共用直接傳送
+compose-drive-share-cancel = 取消
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = 將檔案拖放到這裡
 compose-drop-here = 拖放到這裡
 compose-paste-keep-formatting = 保留格式

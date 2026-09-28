@@ -57,6 +57,23 @@ compose-file-too-large = { $name } terlalu besar: satu pesan hanya dapat memuat 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Hapus lampiran
 compose-attachments-total = { $count } file, { $size }
+compose-drive-note = { $name } melebihi { $limit }, jadi file dikirim ke Google Drive Anda dan pesan membawa link.
+compose-drive-tip = Di Google Drive Anda; pesan membawa link
+compose-drive-uploading = Mengunggah { $percent }%
+compose-drive-allow = Izinkan Drive
+compose-drive-allow-tip = Masuk dengan Google lagi agar Katna dapat menaruh file besar di Drive Anda
+compose-drive-retry = Coba lagi
+compose-drive-sends-when-uploaded = Dikirim setelah { $name } terunggah
+compose-drive-not-uploaded = { $name } belum ada di Google Drive
+compose-drive-share-failed = Tidak dapat membagikan file di Google Drive: { $error }
+compose-drive-share-title = Bagikan file kepada semua orang?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive tidak dapat membagikan file kepada { $addresses }, yang tidak memiliki akun Google. Sebagai gantinya, siapa saja yang memiliki link dapat membukanya.
+}
+compose-drive-share-link = Bagikan dengan link
+compose-drive-send-without = Kirim tanpa membagikan
+compose-drive-share-cancel = Batal
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Letakkan file di sini
 compose-drop-here = Letakkan di sini
 compose-paste-keep-formatting = Pertahankan format

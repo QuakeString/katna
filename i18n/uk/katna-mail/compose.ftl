@@ -62,6 +62,26 @@ compose-attachments-total = { $count ->
     [many] { $count } файлів, { $size }
    *[other] { $count } файлу, { $size }
 }
+compose-drive-note = { $name } перевищує { $limit }, тому файл потрапить на ваш Google Drive, а в листі буде посилання.
+compose-drive-tip = На вашому Google Drive; у листі буде посилання
+compose-drive-uploading = Завантаження { $percent }%
+compose-drive-allow = Дозволити Drive
+compose-drive-allow-tip = Увійдіть через Google ще раз, щоб Katna могла розміщувати великі файли на вашому Drive
+compose-drive-retry = Повторити спробу
+compose-drive-sends-when-uploaded = Лист буде надіслано після завантаження { $name }
+compose-drive-not-uploaded = { $name } ще не на Google Drive
+compose-drive-share-failed = Не вдалося надати доступ до файлів на Google Drive: { $error }
+compose-drive-share-title = Надати доступ до файлів усім?
+compose-drive-share-text = { $count ->
+    [one] Google Drive не може надати доступ до файлів адресату { $addresses }, у якого немає облікового запису Google. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+    [few] Google Drive не може надати доступ до файлів адресатам { $addresses }, у яких немає облікового запису Google. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+    [many] Google Drive не може надати доступ до файлів адресатам { $addresses }, у яких немає облікового запису Google. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+   *[other] Google Drive не може надати доступ до файлів адресатам { $addresses }, у яких немає облікового запису Google. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+}
+compose-drive-share-link = Поділитися за посиланням
+compose-drive-send-without = Надіслати без доступу
+compose-drive-share-cancel = Скасувати
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Перетягніть файли сюди
 compose-drop-here = Перетягніть сюди
 compose-paste-keep-formatting = Зберегти форматування

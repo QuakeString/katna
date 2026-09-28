@@ -1023,3 +1023,22 @@ Alle accounts of één ervan, en de gevolgde berichten, percentages, de
 grafiek, de onderwerpregels en Je mailbox volgen je keuze. Het rapport
 zegt welk account het toont en onthoudt je keuze.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nieuwer en Ouder altijd in de werkbalk"
+text = """
+Hoe smal het leesvenster ook is, de teller en de pijlen Nieuwer en Ouder
+blijven rechts in de werkbalk staan. De knoppen die je het minst gebruikt
+verhuizen in plaats daarvan één voor één naar het menu Meer, inclusief de
+schakelaars voor contactgegevens en originele kleuren.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Verstuur bestanden van elke grootte"
+text = """
+Met een account dat met Google is aangemeld gaat een bestand boven de
+mailgrens van 25 MB direct na het bijvoegen naar je Google Drive, en het
+bericht bevat de link, net als in Gmail. Het wordt met je ontvangers
+gedeeld als je op Verzenden drukt; Katna vraagt alleen iets als iemand
+geen toegang kan krijgen.
+"""

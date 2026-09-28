@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count } ፋይል፣ { $size }
    *[other] { $count } ፋይሎች፣ { $size }
 }
+compose-drive-note = { $name } ከ{ $limit } ስለሚበልጥ ወደ Google Drive ይሄዳል፣ መልዕክቱም አገናኝ ይይዛል።
+compose-drive-tip = በእርስዎ Google Drive ውስጥ፤ መልዕክቱ አገናኝ ይይዛል
+compose-drive-uploading = በመስቀል ላይ { $percent }%
+compose-drive-allow = Driveን ፍቀድ
+compose-drive-allow-tip = Katna ትላልቅ ፋይሎችን በDrive እንዲያስቀምጥ በGoogle እንደገና ይግቡ
+compose-drive-retry = እንደገና ሞክር
+compose-drive-sends-when-uploaded = { $name } ከተሰቀለ በኋላ ይላካል
+compose-drive-not-uploaded = { $name } ገና በGoogle Drive ውስጥ የለም
+compose-drive-share-failed = ፋይሎቹን በGoogle Drive ማጋራት አልተቻለም፦ { $error }
+compose-drive-share-title = ፋይሎቹን ለሁሉም ይጋሩ?
+compose-drive-share-text = { $count ->
+    [one] Google Drive ፋይሎቹን የGoogle መለያ ከሌለው ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+   *[other] Google Drive ፋይሎቹን የGoogle መለያ ከሌላቸው ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
+}
+compose-drive-share-link = በአገናኝ አጋራ
+compose-drive-send-without = ሳያጋሩ ላክ
+compose-drive-share-cancel = ይቅር
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ

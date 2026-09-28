@@ -1028,3 +1028,22 @@ fechas. Elige Todas las cuentas o una de ellas, y los mensajes con
 seguimiento, las tasas, el gráfico, los asuntos y Tu buzón se ajustan a
 tu elección. El informe indica qué cuenta muestra y recuerda tu elección.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Más reciente y Más antigua siempre en la barra"
+text = """
+Por estrecho que sea el panel de lectura, el contador y las flechas Más
+reciente y Más antigua siguen a la derecha de su barra de herramientas. En
+cambio, los botones que menos usas pasan uno a uno al menú Más, incluidos
+los interruptores de los datos del contacto y los colores originales.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Envía archivos de cualquier tamaño"
+text = """
+Con una cuenta que inició sesión con Google, un archivo que supera el
+límite de 25 MB del correo va a tu Google Drive en cuanto lo adjuntas, y
+el mensaje lleva su enlace, como en Gmail. Se comparte con tus
+destinatarios al pulsar Enviar; Katna solo pregunta si no se puede dar
+acceso a alguien.
+"""

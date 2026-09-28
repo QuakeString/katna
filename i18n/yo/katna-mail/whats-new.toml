@@ -995,3 +995,20 @@ text = """
 nínú wọn, àwọn ìfiránṣẹ́ tí a ń tọpa, àwọn ìwọ̀n, àwòrán, àwọn àkọlé àti Àpótí lẹ́tà rẹ
 yóò tẹ̀lé e. Ìròyìn náà máa ń sọ àkáǹtì tó ń fi hàn, ó sì ń ranti yíyàn rẹ.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "“Tuntun” àti “Àtijọ́” nígbà gbogbo lórí pẹpẹ irinṣẹ́"
+text = """
+Bó ti wù kí pánẹ́ẹ̀lì kíkà há tó, kọ́ǹtà àti àwọn ọfà Tuntun àti Àtijọ́ máa ń wà ní apá
+ọ̀tún pẹpẹ irinṣẹ́ rẹ̀. Àwọn bọ́tìnì tí o kì í lò púpọ̀ máa ń lọ sínú àtòjọ Síi ní
+ọ̀kọ̀ọ̀kan dípò bẹ́ẹ̀, pẹ̀lú àwọn ìyípadà àlàyé olubasọrọ àti àwọn àwọ̀ àtilẹ̀wá.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Fi fáìlì ránṣẹ́ ní ìwọ̀n kankan"
+text = """
+Pẹ̀lú àkáǹtì tí a fi Google wọlé, fáìlì tó ju ààlà lẹ́tà 25 MB lọ máa ń lọ sí Google Drive
+rẹ ní kété tí o bá so ó mọ́ ọn, ìfiránṣẹ́ náà sì ní ìjápọ̀ rẹ̀, bíi ti Gmail. A ó pín in
+pẹ̀lú àwọn olùgbà nígbà tí o bá tẹ Fi ránṣẹ́; Katna á béèrè nìkan tí a kò bá lè fún ẹnikan
+ní àǹfààní.
+"""
