@@ -116,6 +116,13 @@ fn icon_is_named_after_app_id() {
             .unwrap()
             .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
             .collect();
+        if size == "symbolic" {
+            // The tray's one-colour icon, which the desktop recolours.
+            assert_eq!(names, [format!("{MAIL_APP_ID}-symbolic.svg")]);
+            let text = fs::read_to_string(hicolor.join("symbolic/apps").join(&names[0])).unwrap();
+            assert!(text.contains("ColorScheme-Text") && text.contains("currentColor"));
+            continue;
+        }
         assert_eq!(names, [format!("{MAIL_APP_ID}.png")], "{size}");
         sizes += 1;
     }

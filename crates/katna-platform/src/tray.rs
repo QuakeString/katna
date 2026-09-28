@@ -239,7 +239,8 @@ pub struct Tray {
 }
 
 impl Tray {
-    /// Shows an icon named `icon_name` (drawn in code when it has a badge)
+    /// Shows an icon named `icon_name` (the app icon drawn in code, in
+    /// colour so it reads on any panel, when it has a badge)
     /// with `menu` on right click. `id` names the app to the panel, such as
     /// its app ID. Clicks call `handler`.
     pub async fn show(

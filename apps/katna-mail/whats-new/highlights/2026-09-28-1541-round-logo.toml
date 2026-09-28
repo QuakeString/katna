@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna's new round logo"
+text = """
+Katna has a new logo: a script k on a teal circle, in the app menu, the
+top bar and the taskbar. The tray shows it in one colour that suits your
+panel, and About and the welcome show "katna mail" in full.
+"""
