@@ -2666,7 +2666,27 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   `ServerDeliveryReceipts(account)` tells compose, which greys the switch
   where they are not offered. The app asks with an
   `X-Katna-Delivery-Receipt` header that the daemon takes out when it
-  queues the message and keeps as `outbox.delivery_receipt` (mail.db v9). Legal
+  queues the message and keeps as `outbox.delivery_receipt` (mail.db v9).
+  With it, each `RCPT TO` carries `ORCPT=rfc822;<address>`, so a report
+  names the address as written even after forwarding.
+- **Ticks:** receipts that come back are read by the sync as their bodies
+  download (`katna_import::report`): a DSN's recipients whose `Action` is
+  `delivered`, `relayed` or `expanded`, and an MDN whose disposition is
+  `displayed`, matched to the sent message by `Original-Message-ID` or the
+  returned headers' `Message-ID`, and to the recipient by
+  `Original-Recipient`, else `Final-Recipient`. They are kept per
+  `(Message-ID, recipient)` in `mail.db`'s `receipt` table (v10), with
+  the time the outbox sent it to each recipient and when a DSN said it
+  bounced. The reading view shows a grey tick beside a recipient of the
+  user's mail once delivered, two accent ticks once read (by a read
+  receipt or an open seen by tracking; the tooltip says which) and a
+  warning once it bounced. Where no delivery receipt comes (Gmail sends
+  none), the grey tick appears half an hour after sending if no bounce
+  came back, and its tooltip says that is what it means: only the sending
+  server knows whether mail arrived, and relaying through Katna Server
+  would fail SPF and DKIM and need the mail login. Receipt mail
+  (`multipart/report`) stays in the mailbox, under Updates, so it raises
+  no notification. Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and

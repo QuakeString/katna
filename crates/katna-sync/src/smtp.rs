@@ -161,10 +161,13 @@ impl SmtpSender {
         self.run(SmtpMail::new(reverse, parameters)).await?;
         for addr in to {
             let forward = SmtpForwardPath::from(mailbox(addr)?);
+            // ORCPT names the address as written, so the report can be
+            // matched to it whatever it was forwarded to.
             let notify = if receipts {
                 vec![
                     (SmtpDsnNotify::SUCCESS | SmtpDsnNotify::FAILURE | SmtpDsnNotify::DELAY)
                         .into_parameter(),
+                    SmtpParameter::orcpt_rfc822(*addr),
                 ]
             } else {
                 Vec::new()

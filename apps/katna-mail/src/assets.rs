@@ -45,6 +45,7 @@ icons!(
     "contacts",
     "delivery-receipt",
     "document",
+    "done-all",
     "download",
     "drafts",
     "drag-handle",
