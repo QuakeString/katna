@@ -19,7 +19,7 @@ pub struct Config {
     /// Days after which tracking IDs, their events and unused installs are
     /// deleted (`KATNA_SERVER_RETENTION_DAYS`, default 180).
     pub retention_days: u32,
-    /// Tracking IDs one install may create per 24 hours
+    /// Tracking IDs one Katna account may create per 24 hours
     /// (`KATNA_SERVER_DAILY_LIMIT`, default 5000).
     pub daily_limit: u32,
     /// New installs one address may register per hour

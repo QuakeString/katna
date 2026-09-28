@@ -72,6 +72,12 @@ async fn send(
 /// A new install token, signed in to a new account with a confirmed
 /// address.
 async fn register(app: &Router) -> String {
+    register_as(app).await.0
+}
+
+/// A new install token, signed in to a new account with a confirmed
+/// address, and that address.
+async fn register_as(app: &Router) -> (String, String) {
     let token = new_install(app).await;
     let email = format!("{}@example.com", katna_server::ids::new_id());
     let (status, _, body) = send(
@@ -102,7 +108,7 @@ async fn register(app: &Router) -> String {
     )
     .await;
     assert_eq!(status, StatusCode::NO_CONTENT);
-    token
+    (token, email)
 }
 
 /// A new install token, not signed in.
@@ -518,4 +524,83 @@ async fn translation_passes_through_for_signed_in_accounts_only() {
     )
     .await;
     assert_eq!(status, StatusCode::TOO_MANY_REQUESTS);
+}
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn limits_count_per_account_and_links_are_stored_once() {
+    let app = app().await;
+    let (laptop, email) = register_as(&app).await;
+    let desktop = new_install(&app).await;
+    let (status, _, _) = send(
+        &app,
+        authed(
+            "POST",
+            "/api/v1/account/sign-in",
+            &desktop,
+            Some(json!({ "email": email, "password": "correct horse", "device": "desktop" })),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+
+    // The test daily limit is 50, for the account's devices together.
+    let links = ["https://example.com/a", "https://example.com/b"];
+    let ids = create(&app, &laptop, 40, &links).await;
+    let tracks = |token: &str, count: u32, links: Value| {
+        authed(
+            "POST",
+            "/api/v1/tracks",
+            token,
+            Some(json!({ "count": count, "links": links })),
+        )
+    };
+    let (status, _, _) = send(&app, tracks(&desktop, 11, json!([]))).await;
+    assert_eq!(status, StatusCode::TOO_MANY_REQUESTS);
+    // Parallel requests cannot pass the limit together.
+    let answers = tokio::join!(
+        send(&app, tracks(&desktop, 5, json!([]))),
+        send(&app, tracks(&desktop, 5, json!([]))),
+        send(&app, tracks(&laptop, 5, json!([]))),
+        send(&app, tracks(&laptop, 5, json!([]))),
+    );
+    let created = [answers.0, answers.1, answers.2, answers.3]
+        .iter()
+        .filter(|(status, _, _)| *status == StatusCode::CREATED)
+        .count();
+    assert_eq!(created, 2, "10 left for today");
+
+    // Too many bytes of links in one request.
+    let long = format!("https://example.com/{}", "x".repeat(4000));
+    let (status, _, _) = send(&app, tracks(&laptop, 1, json!(vec![long; 70]))).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+
+    // Every copy follows the shared links, each to its own.
+    for id in [&ids[0], &ids[39]] {
+        for (n, target) in links.iter().enumerate() {
+            let (status, headers, _) = send(&app, get(&format!("/l/{id}/{n}"), FIREFOX)).await;
+            assert_eq!(status, StatusCode::FOUND);
+            assert_eq!(headers[header::LOCATION], *target);
+        }
+        let (status, _, _) = send(&app, get(&format!("/l/{id}/2"), FIREFOX)).await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+    }
+
+    // IDs stored before links were shared still redirect.
+    let url = std::env::var("KATNA_SERVER_TEST_DATABASE_URL").expect(NEEDS_DB);
+    let (client, connection) = tokio_postgres::connect(&url, tokio_postgres::NoTls)
+        .await
+        .unwrap();
+    tokio::spawn(connection);
+    client
+        .execute(
+            "UPDATE tracks t SET links = s.links, link_set = NULL
+             FROM link_sets s WHERE s.id = t.link_set AND t.id = $1",
+            &[&ids[1]],
+        )
+        .await
+        .unwrap();
+    let (status, headers, _) = send(&app, get(&format!("/l/{}/1", ids[1]), FIREFOX)).await;
+    assert_eq!(status, StatusCode::FOUND);
+    assert_eq!(headers[header::LOCATION], links[1]);
 }

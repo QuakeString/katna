@@ -2,3 +2,4 @@
 target/
 fuzz/target/
 .git/
+**/.env

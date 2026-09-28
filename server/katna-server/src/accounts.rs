@@ -37,7 +37,7 @@ use crate::db::{CodeCheck, Device, now_ms};
 use crate::ids;
 use crate::limits::WindowLimit;
 use crate::mailer::Purpose;
-use crate::routes::{ApiError, AppState, ClientAddr, client_ip};
+use crate::routes::{ApiError, AppState, ClientAddr, client_ip, limit_key};
 
 /// Limits on guessing passwords and on mailing codes.
 pub struct AccountLimits {
@@ -100,7 +100,7 @@ pub struct AccountInfo {
 }
 
 fn limited(state: &AppState, headers: &HeaderMap, addr: ClientAddr) -> Result<(), ApiError> {
-    let ip = client_ip(state, headers, addr.0);
+    let ip = limit_key(client_ip(state, headers, addr.0));
     if state.account_limits().per_ip.allow(ip) {
         Ok(())
     } else {
