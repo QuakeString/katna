@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search shows its shortcut"
+text = """
+The search box shows its keyboard shortcut beside "Search mail", as set in
+Settings > Shortcuts. Clicked into, it keeps its color and shows a faint
+edge instead of turning darker with a shadow. The folders that float over
+the list now stand clear of the bottom edge too.
+"""

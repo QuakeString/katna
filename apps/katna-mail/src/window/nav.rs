@@ -28,7 +28,7 @@ use katna_i18n::tr;
 
 use crate::format;
 use crate::sidebar::{self, Role, Unified};
-use crate::theme::{Theme, fade, mix};
+use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
 
 /// How far the floating folder pane stands off the rail and the top bar.
@@ -281,11 +281,51 @@ impl MailWindow {
         }
     }
 
+    /// The focus-search shortcut as a keycap after the empty box's
+    /// placeholder, from the keys the shortcut settings give it now.
+    fn render_search_hint(&self, th: &Theme, window: &gpui::Window) -> Option<AnyElement> {
+        let keys = super::keymap::hint("search", &self.config.shortcuts)?;
+        let placeholder = super::text_width(
+            &tr!("search-mail"),
+            16.0,
+            FontWeight::NORMAL,
+            self.font.as_ref(),
+            window,
+        );
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .bottom_0()
+                .left(px(placeholder + 12.0))
+                .flex()
+                .items_center()
+                .child(
+                    div()
+                        .h(px(22.0))
+                        .px(px(6.0))
+                        .flex()
+                        .items_center()
+                        .rounded(px(6.0))
+                        .border_1()
+                        .border_color(rgba(th.divider))
+                        .text_size(px(12.0))
+                        .line_height(px(16.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_faint))
+                        .whitespace_nowrap()
+                        .child(keys),
+                )
+                .into_any_element(),
+        )
+    }
+
     pub(super) fn render_search(
         &self,
         th: &Theme,
         width: f32,
         t: f32,
+        window: &gpui::Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let available = self.mail.as_ref().is_ok_and(crate::data::Mail::has_index);
@@ -309,8 +349,10 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            .bg(rgba(mix(th.search, th.search_focused, t)))
-            .shadow(elevation(th, 2.0 * t))
+            // Active, it keeps its color and gains a faint edge.
+            .bg(rgba(th.search))
+            .border_1()
+            .border_color(rgba(fade(th.text_faint, 0.5 * t.clamp(0.0, 1.0))))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
@@ -339,7 +381,20 @@ impl MailWindow {
                         ),
                 )
             })
-            .child(div().flex_1().min_w_0().child(self.search.clone()))
+            .child(
+                div()
+                    .relative()
+                    .flex_1()
+                    .min_w_0()
+                    // A narrow box cuts the keycap off rather than overlap.
+                    .overflow_hidden()
+                    .child(self.search.clone())
+                    .children(
+                        (!has_text && !settings)
+                            .then(|| self.render_search_hint(th, window))
+                            .flatten(),
+                    ),
+            )
             .when(has_text, |d| {
                 d.child(
                     icon_button("search-clear", "close", 22.0, th)
@@ -509,7 +564,7 @@ impl MailWindow {
             .absolute()
             .top(px(gap))
             .left(px(gap))
-            .bottom(px(if drawer { 0.0 } else { 16.0 * float }))
+            .bottom(px(if drawer { 0.0 } else { 16.0 * float + gap }))
             .map(|d| {
                 if slides {
                     d.left(px(-width * (1.0 - t))).w(px(width))

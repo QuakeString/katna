@@ -3044,7 +3044,7 @@ impl Render for MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(8.0))
-                    .child(self.render_search(&th, search_width, search_t, cx))
+                    .child(self.render_search(&th, search_width, search_t, window, cx))
                     .when(shape.phone < 0.5 && activity_fits, |d| {
                         d.children(self.render_activity_button(&th, cx))
                     })
