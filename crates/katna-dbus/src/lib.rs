@@ -113,7 +113,8 @@ pub struct TemplateFileItem {
     pub data: Vec<u8>,
 }
 
-/// A file going up to Google Drive for a message, from `DriveUpload`.
+/// A file going up to Google Drive or OneDrive for a message, from
+/// `DriveUpload`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct DriveUpload {
     pub id: i64,
@@ -527,9 +528,9 @@ macro_rules! pim_proxy {
             /// Messages waiting to be sent, failed or cancelled.
             fn outbox(&self) -> zbus::Result<Vec<OutboxItem>>;
 
-            /// Starts putting the file at `path` in the Google Drive of
-            /// `account` (signed in with Google), for a message too large
-            /// to carry it. Returns the upload's ID; `DriveChanged` tells
+            /// Starts putting the file at `path` in the Google Drive or
+            /// OneDrive of `account` (signed in with Google or Microsoft),
+            /// for a message too large to carry it. Returns the upload's ID; `DriveChanged` tells
             /// how it goes.
             fn drive_upload(&self, account: i64, path: &str) -> zbus::Result<i64>;
 
@@ -547,7 +548,9 @@ macro_rules! pim_proxy {
             -> zbus::Result<Vec<String>>;
 
             /// Lets anyone with the link view the files of `uploads`.
-            fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<()>;
+            /// Returns the links to put in the message, in order (OneDrive
+            /// gives such a link its own address).
+            fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
 
             /// Saves a mail template on this computer, in place of the one
             /// with its ID (0: a new one). Its name must not be empty, and

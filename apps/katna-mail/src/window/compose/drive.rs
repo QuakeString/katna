@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Files too large for mail go through the sender's Google Drive, as in
-//! Gmail: a file over the 25 MB limit starts uploading as soon as it is
-//! attached, its chip shows how far it got, and Send shares it with the
-//! recipients and puts its link in the message. Nothing is asked unless
-//! it has to be: an account signed in before Katna asked for Drive gets
-//! one Allow button, and Send asks only when a recipient cannot be given
-//! access (`docs/ARCHITECTURE.md` §6.6).
+//! Gmail, or OneDrive, as in Outlook: a file over the 25 MB limit starts
+//! uploading as soon as it is attached, its chip shows how far it got,
+//! and Send shares it with the recipients and puts its link in the
+//! message. Nothing is asked unless it has to be: an account signed in
+//! before Katna asked for Drive or OneDrive gets one Allow button, and
+//! Send asks only when a recipient cannot be given access
+//! (`docs/ARCHITECTURE.md` §6.6).
 
 use std::path::PathBuf;
 
@@ -25,7 +26,7 @@ use crate::format;
 use crate::theme::Theme;
 use crate::widgets::{filled_button, icon, tip};
 
-/// A file on its way to, or in, Google Drive.
+/// A file on its way to, or in, Google Drive or OneDrive.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::window) struct DriveFile {
     pub path: PathBuf,
@@ -33,6 +34,8 @@ pub(in crate::window) struct DriveFile {
     pub size: u64,
     /// The account whose Drive it goes to.
     pub account: AccountId,
+    /// OneDrive (a Microsoft account) rather than Google Drive.
+    pub onedrive: bool,
     /// The daemon's upload, once it started one.
     pub upload: Option<i64>,
     pub sent: u64,
@@ -59,15 +62,22 @@ impl DriveFile {
     }
 }
 
-/// Whether `account` can put files in Google Drive: it signs in with
-/// Google.
-pub(super) fn can_use_drive(window: &MailWindow, account: AccountId) -> bool {
+/// Who keeps the large files of `account`: Google Drive or OneDrive when
+/// it signs in with Google or Microsoft.
+pub(super) fn drive_provider(window: &MailWindow, account: AccountId) -> Option<OAuthProvider> {
     window
         .mail
         .as_ref()
         .ok()
         .and_then(|mail| mail.sign_in_provider(account))
-        == Some(OAuthProvider::Google)
+}
+
+/// The note shown when files go to the storage of `provider`.
+pub(super) fn drive_note(provider: OAuthProvider, name: String, limit: String) -> String {
+    match provider {
+        OAuthProvider::Google => tr!("compose-drive-note", name = name, limit = limit),
+        OAuthProvider::Microsoft => tr!("compose-onedrive-note", name = name, limit = limit),
+    }
 }
 
 /// The links of the uploaded files, for the end of the message's text.
@@ -89,7 +99,12 @@ pub(super) fn links_html(files: &[DriveFile]) -> String {
         let Some(link) = file.link() else {
             continue;
         };
-        let under = tr!("compose-drive-card-detail", size = format::size(file.size));
+        let size = format::size(file.size);
+        let under = if file.onedrive {
+            tr!("compose-onedrive-card-detail", size = size)
+        } else {
+            tr!("compose-drive-card-detail", size = size)
+        };
         html.push_str(&format!(
             "<div style=\"margin:12px 0 0\"><div style=\"display:inline-block;\
              border:1px solid #dadce0;border-radius:8px;padding:10px 14px;\
@@ -116,6 +131,7 @@ impl MailWindow {
         account: AccountId,
         cx: &mut Context<Self>,
     ) {
+        let onedrive = drive_provider(self, account) == Some(OAuthProvider::Microsoft);
         let Some(compose) = &mut self.compose else {
             return;
         };
@@ -124,6 +140,7 @@ impl MailWindow {
             name,
             size,
             account,
+            onedrive,
             upload: None,
             sent: 0,
             state: DriveState::Uploading,
@@ -261,17 +278,18 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// Signs the account of chip `ix` in with Google again, now allowing
-    /// Drive, then uploads its files that waited for it.
+    /// Signs the account of chip `ix` in with Google or Microsoft again,
+    /// now allowing Drive or OneDrive, then uploads its files that waited
+    /// for it.
     fn allow_drive(&mut self, ix: usize, cx: &mut Context<Self>) {
         let Some(connection) = self.daemon.clone() else {
             return;
         };
-        let Some(account) = self
+        let Some((account, onedrive)) = self
             .compose
             .as_ref()
             .and_then(|c| c.drive.get(ix))
-            .map(|f| f.account)
+            .map(|f| (f.account, f.onedrive))
         else {
             return;
         };
@@ -282,13 +300,12 @@ impl MailWindow {
             .map(|a| a.address.clone())
             .unwrap_or_default();
         cx.spawn(async move |this, cx| {
-            let signed_in = daemon::sign_in(
-                &connection,
-                OAuthProvider::Google,
-                Some(account.0),
-                &address,
-            )
-            .await;
+            let provider = if onedrive {
+                OAuthProvider::Microsoft
+            } else {
+                OAuthProvider::Google
+            };
+            let signed_in = daemon::sign_in(&connection, provider, Some(account.0), &address).await;
             this.update(cx, |this, cx| {
                 if signed_in.is_err() {
                     return;
@@ -332,7 +349,12 @@ impl MailWindow {
             .iter()
             .find(|f| matches!(f.state, DriveState::NeedsPermission | DriveState::Failed(_)))
         {
-            let text = tr!("compose-drive-not-uploaded", name = file.name.clone());
+            let name = file.name.clone();
+            let text = if file.onedrive {
+                tr!("compose-onedrive-not-uploaded", name = name)
+            } else {
+                tr!("compose-drive-not-uploaded", name = name)
+            };
             self.show_snackbar(text, None, cx);
             return true;
         }
@@ -381,6 +403,7 @@ impl MailWindow {
             return false;
         };
         let uploads: Vec<i64> = compose.drive.iter().filter_map(|f| f.upload).collect();
+        let onedrive = compose.drive.iter().any(|f| f.onedrive);
         cx.spawn_in(window, async move |this, cx| {
             let refused = daemon::drive_share(&connection, &uploads, &recipients).await;
             this.update_in(cx, |this, window, cx| match refused {
@@ -398,9 +421,7 @@ impl MailWindow {
                     }
                     cx.notify();
                 }
-                Err(err) => {
-                    this.show_snackbar(tr!("compose-drive-share-failed", error = err), None, cx);
-                }
+                Err(err) => this.show_snackbar(share_failed(onedrive, err), None, cx),
             })
             .ok();
         })
@@ -418,11 +439,24 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let text = tr!(
-            "compose-drive-share-text",
-            count = refused.len() as u64,
-            addresses = refused.join(", ")
-        );
+        let onedrive = self
+            .compose
+            .as_ref()
+            .is_some_and(|c| c.drive.iter().any(|f| f.onedrive));
+        let (count, addresses) = (refused.len() as u64, refused.join(", "));
+        let text = if onedrive {
+            tr!(
+                "compose-onedrive-share-text",
+                count = count,
+                addresses = addresses
+            )
+        } else {
+            tr!(
+                "compose-drive-share-text",
+                count = count,
+                addresses = addresses
+            )
+        };
         let plain = |id: &'static str, label: String| {
             div()
                 .id(id)
@@ -494,13 +528,25 @@ impl MailWindow {
         };
         compose.popup = None;
         let uploads: Vec<i64> = compose.drive.iter().filter_map(|f| f.upload).collect();
+        let onedrive = compose.drive.iter().any(|f| f.onedrive);
         cx.spawn_in(window, async move |this, cx| {
             let shared = daemon::drive_share_with_link(&connection, &uploads).await;
             this.update_in(cx, |this, window, cx| match shared {
-                Ok(()) => this.send_compose(at, archive, passed.with_shared(), window, cx),
-                Err(err) => {
-                    this.show_snackbar(tr!("compose-drive-share-failed", error = err), None, cx);
+                Ok(links) => {
+                    // OneDrive's shared link is another address than the
+                    // file's own.
+                    if let Some(c) = &mut this.compose {
+                        for (id, link) in uploads.iter().zip(links) {
+                            if let Some(file) = c.drive.iter_mut().find(|f| f.upload == Some(*id))
+                                && let DriveState::Done { link: old } = &mut file.state
+                            {
+                                *old = link;
+                            }
+                        }
+                    }
+                    this.send_compose(at, archive, passed.with_shared(), window, cx)
                 }
+                Err(err) => this.show_snackbar(share_failed(onedrive, err), None, cx),
             })
             .ok();
         })
@@ -550,10 +596,20 @@ impl MailWindow {
                         size = format::size(file.size)
                     ))
                     .into_any_element(),
-                DriveState::NeedsPermission => action("drive-allow", tr!("compose-drive-allow"))
-                    .tooltip(tip(tr!("compose-drive-allow-tip"), th))
-                    .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
-                    .into_any_element(),
+                DriveState::NeedsPermission => {
+                    let (label, why) = if file.onedrive {
+                        (
+                            tr!("compose-onedrive-allow"),
+                            tr!("compose-onedrive-allow-tip"),
+                        )
+                    } else {
+                        (tr!("compose-drive-allow"), tr!("compose-drive-allow-tip"))
+                    };
+                    action("drive-allow", label)
+                        .tooltip(tip(why, th))
+                        .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
+                        .into_any_element()
+                }
                 DriveState::Failed(error) => {
                     let path = file.path.clone();
                     action("drive-retry", tr!("compose-drive-retry"))
@@ -586,7 +642,12 @@ impl MailWindow {
             .bg(rgba(th.chip))
             .text_size(px(13.0))
             .when(file.link().is_some(), |d| {
-                d.tooltip(tip(tr!("compose-drive-tip"), th))
+                let text = if file.onedrive {
+                    tr!("compose-onedrive-tip")
+                } else {
+                    tr!("compose-drive-tip")
+                };
+                d.tooltip(tip(text, th))
             })
             .child(icon("cloud", th.accent, 18.0))
             .child(
@@ -623,5 +684,14 @@ impl MailWindow {
                     .bg(rgba(th.accent))
             }))
             .into_any_element()
+    }
+}
+
+/// Why sharing failed, in the words of the file's storage.
+fn share_failed(onedrive: bool, error: String) -> String {
+    if onedrive {
+        tr!("compose-onedrive-share-failed", error = error)
+    } else {
+        tr!("compose-drive-share-failed", error = error)
     }
 }

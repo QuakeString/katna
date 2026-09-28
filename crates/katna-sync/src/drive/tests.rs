@@ -193,6 +193,7 @@ fn provider() -> Provider {
         client_id: "katna-test".into(),
         client_secret: "not-secret".into(),
         scope: format!("https://mail.test/ {GOOGLE_DRIVE_FILE}"),
+        consent: String::new(),
         redirect_host: "127.0.0.1",
         tls: Tls::insecure_for_local_tests(),
     }
