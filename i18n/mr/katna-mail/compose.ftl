@@ -15,6 +15,7 @@ compose-pop-out-reply = उत्तर वेगळ्या विंडोम
 compose-edit-recipients = प्राप्तकर्ते संपादित करा
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = आणखी { $count }
 compose-show-trimmed = कापलेला मजकूर दाखवा
 compose-hide-trimmed = कापलेला मजकूर लपवा
 compose-remove-trimmed = अवतरित मजकूर काढा

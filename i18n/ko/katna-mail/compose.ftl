@@ -15,6 +15,7 @@ compose-pop-out-reply = 답장을 새 창에서 열기
 compose-edit-recipients = 받는사람 편집
 compose-summary-cc = 참조: { $names }
 compose-summary-bcc = 숨은참조: { $names }
+compose-more-recipients = 외 { $count }명
 compose-show-trimmed = 생략된 내용 표시
 compose-hide-trimmed = 생략된 내용 숨기기
 compose-remove-trimmed = 인용된 텍스트 삭제

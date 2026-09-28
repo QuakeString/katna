@@ -15,6 +15,7 @@ compose-pop-out-reply = Öppna svaret i eget fönster
 compose-edit-recipients = Redigera mottagare
 compose-summary-cc = Kopia: { $names }
 compose-summary-bcc = Dold kopia: { $names }
+compose-more-recipients = { $count } till
 compose-show-trimmed = Visa förkortat innehåll
 compose-hide-trimmed = Dölj förkortat innehåll
 compose-remove-trimmed = Ta bort citerad text

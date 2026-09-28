@@ -15,6 +15,7 @@ compose-pop-out-reply = باز کردن پاسخ در پنجرهٔ جدا
 compose-edit-recipients = ویرایش گیرندگان
 compose-summary-cc = رونوشت: { $names }
 compose-summary-bcc = رونوشت پنهان: { $names }
+compose-more-recipients = { $count } نفر دیگر
 compose-show-trimmed = نمایش محتوای کوتاه‌شده
 compose-hide-trimmed = پنهان کردن محتوای کوتاه‌شده
 compose-remove-trimmed = حذف متن نقل‌شده

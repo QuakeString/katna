@@ -15,6 +15,7 @@ compose-pop-out-reply = Відкрити відповідь окремо
 compose-edit-recipients = Змінити одержувачів
 compose-summary-cc = Копія: { $names }
 compose-summary-bcc = Прихована копія: { $names }
+compose-more-recipients = ще { $count }
 compose-show-trimmed = Показати приховану частину
 compose-hide-trimmed = Згорнути приховану частину
 compose-remove-trimmed = Вилучити цитований текст

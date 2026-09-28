@@ -15,6 +15,7 @@ compose-pop-out-reply = Buka balasan dalam tetingkap sendiri
 compose-edit-recipients = Sunting penerima
 compose-summary-cc = Sk: { $names }
 compose-summary-bcc = Skt: { $names }
+compose-more-recipients = { $count } lagi
 compose-show-trimmed = Tunjukkan kandungan yang dipangkas
 compose-hide-trimmed = Sembunyikan kandungan yang dipangkas
 compose-remove-trimmed = Alih keluar teks petikan

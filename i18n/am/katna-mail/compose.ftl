@@ -15,6 +15,7 @@ compose-pop-out-reply = ምላሹን በተለየ መስኮት ክፈት
 compose-edit-recipients = ተቀባዮችን አርትዕ
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } ተጨማሪ
 compose-show-trimmed = የተከረከመውን ይዘት አሳይ
 compose-hide-trimmed = የተከረከመውን ይዘት ደብቅ
 compose-remove-trimmed = የተጠቀሰውን ጽሑፍ አስወግድ

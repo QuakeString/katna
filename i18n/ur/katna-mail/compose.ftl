@@ -15,6 +15,7 @@ compose-pop-out-reply = جواب الگ کھولیں
 compose-edit-recipients = وصول کنندگان میں ترمیم کریں
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } مزید
 compose-show-trimmed = کاٹا گیا مواد دکھائیں
 compose-hide-trimmed = کاٹا گیا مواد چھپائیں
 compose-remove-trimmed = حوالہ دیا گیا متن ہٹائیں

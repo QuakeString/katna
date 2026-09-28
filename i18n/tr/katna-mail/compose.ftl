@@ -15,6 +15,7 @@ compose-pop-out-reply = Yanıtı ayrı aç
 compose-edit-recipients = Alıcıları düzenle
 compose-summary-cc = Bilgi: { $names }
 compose-summary-bcc = Gizli: { $names }
+compose-more-recipients = { $count } kişi daha
 compose-show-trimmed = Kırpılan içeriği göster
 compose-hide-trimmed = Kırpılan içeriği gizle
 compose-remove-trimmed = Alıntılanan metni kaldır

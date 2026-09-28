@@ -15,6 +15,7 @@ compose-pop-out-reply = উত্তৰ পৃথক উইণ্ড'ত খো�
 compose-edit-recipients = প্ৰাপকসকল সম্পাদনা কৰক
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = আৰু { $count }
 compose-show-trimmed = চুটি কৰা অংশ দেখুৱাওক
 compose-hide-trimmed = চুটি কৰা অংশ লুকুৱাওক
 compose-remove-trimmed = উদ্ধৃত পাঠ আঁতৰাওক

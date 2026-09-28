@@ -15,6 +15,7 @@ compose-pop-out-reply = जवाब को अलग विंडो में 
 compose-edit-recipients = पाने वालों में बदलाव करें
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } और
 compose-show-trimmed = छिपा हुआ कॉन्टेंट दिखाएं
 compose-hide-trimmed = छिपा हुआ कॉन्टेंट फिर से छिपाएं
 compose-remove-trimmed = कोट किया गया टेक्स्ट हटाएं

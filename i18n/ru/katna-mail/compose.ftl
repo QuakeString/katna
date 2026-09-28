@@ -15,6 +15,7 @@ compose-pop-out-reply = Открыть ответ в отдельном окне
 compose-edit-recipients = Изменить получателей
 compose-summary-cc = Копия: { $names }
 compose-summary-bcc = Скрытая копия: { $names }
+compose-more-recipients = ещё { $count }
 compose-show-trimmed = Показать скрытую часть
 compose-hide-trimmed = Свернуть скрытую часть
 compose-remove-trimmed = Удалить цитируемый текст

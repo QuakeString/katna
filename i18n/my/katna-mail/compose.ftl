@@ -15,6 +15,7 @@ compose-pop-out-reply = ပြန်စာကို သီးခြားဝင�
 compose-edit-recipients = လက်ခံသူများကို တည်းဖြတ်ရန်
 compose-summary-cc = မိတ္တူ- { $names }
 compose-summary-bcc = လျှို့ဝှက်မိတ္တူ- { $names }
+compose-more-recipients = နောက်ထပ် { $count } ဦး
 compose-show-trimmed = ဖြတ်ထားသော အကြောင်းအရာကို ပြရန်
 compose-hide-trimmed = ဖြတ်ထားသော အကြောင်းအရာကို ဝှက်ရန်
 compose-remove-trimmed = ကိုးကားထားသော စာသားကို ဖယ်ရှားရန်

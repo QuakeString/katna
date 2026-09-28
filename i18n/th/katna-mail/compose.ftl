@@ -15,6 +15,7 @@ compose-pop-out-reply = แยกการตอบกลับออกมา
 compose-edit-recipients = แก้ไขผู้รับ
 compose-summary-cc = สำเนา: { $names }
 compose-summary-bcc = สำเนาลับ: { $names }
+compose-more-recipients = อีก { $count } คน
 compose-show-trimmed = แสดงเนื้อหาที่ตัดออก
 compose-hide-trimmed = ซ่อนเนื้อหาที่ตัดออก
 compose-remove-trimmed = นำข้อความที่อ้างอิงออก

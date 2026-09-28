@@ -15,6 +15,7 @@ compose-pop-out-reply = ལན་འདི་ སྒོ་སྒྲིག་ས�
 compose-edit-recipients = ལེན་མི་ཚུ་ཞུན་དག་འབད།
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = གཞན་ { $count }
 compose-show-trimmed = བཅད་ཡོད་པའི་ནང་དོན་སྟོན།
 compose-hide-trimmed = བཅད་ཡོད་པའི་ནང་དོན་སྦ།
 compose-remove-trimmed = ལུང་འདྲེན་འབད་མི་ཚིག་ཡིག་བཏོན་གཏང་།
