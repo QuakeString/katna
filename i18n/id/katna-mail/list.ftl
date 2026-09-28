@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = Email yang dihapus selamanya tidak bisa dikem
 toast-send-undone = Pengiriman diurungkan.
 toast-too-late-to-undo-send = Terlambat untuk mengurungkan: pesan sudah terkirim.
 toast-undo = Urungkan
+toast-close = Tutup
 toast-no-spam-folder = Akun ini tidak memiliki folder spam.

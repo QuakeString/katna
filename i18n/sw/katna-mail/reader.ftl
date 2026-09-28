@@ -25,6 +25,7 @@ reader-collapse-all = Kunja zote
 reader-expand-all = Panua zote
 reader-unknown-sender = (mtumaji asiyejulikana)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Inatuma…
 reader-me = mimi
 reader-to = kwa { $names }
 reader-to-label = kwa

@@ -832,3 +832,25 @@ nke desktọpụ, maka desktọpụ ndị na-anaghị egosi otu. Zaa mmadụ nii
 ozi ọhụrụ na-emeghe mkparịta ụka ahụ ugbu a na windo nke ya, dị njikere ka i
 dee, ma hapụ windo isi ebe ọ dị.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Ịpị tree na ọkwa na-ebute Katna Mail n'ihu"
+text = """
+Ịpị akara ngosi tree, ma ọ bụ Mepee Igbe ozi mbata, Ozi ọhụrụ ma ọ bụ
+Ntọala na menu ya, na-ebute windo Katna Mail n'ihu ugbu a na Wayland,
+ọbụlagodi mgbe e mere ka ọ dị nta ma ọ bụ ọ nọ n'azụ windo ndị ọzọ. Ịpị
+ọkwa ozi ọhụrụ na-emepe ozi ahụ, ọbụlagodi mgbe ndepụta Igbe ozi mbata
+egosighị ya.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Zipu na-agụ oge, nzaghachi gị na-anọ na mkparịta ụka"
+text = """
+Mgbe Zipu gasịrị, okirikiri na-ebelata n'akụkụ Megharịa na-agụ oge fọdụrụ
+iji megharịa, mgbe ahụ ndetu dị n'okpuru na-ekwu “Ezigara ozi” (ya na
+obere ụda) ozugbo ozi ahụ apụla. Ị nwere ike ịgbanyụ ụda ahụ na Ntọala >
+Izugbe > Izipu. Nzaghachi e dere na mkparịta ụka na-aghọ ozi n'ebe ahụ i
+dere ya. Isi ya na-egosi naanị onye ọ na-aga; pịa ya maka Si, Gaa, Cc na
+Bcc. Akụ dị n'akụkụ akara ngosi nzaghachi na-agbanwe n'etiti Zaa, Zaa
+mmadụ niile na Zigaa, na-edebe ihe i dere.
+"""

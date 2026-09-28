@@ -25,6 +25,7 @@ reader-collapse-all = सभी को छोटा करें
 reader-expand-all = सभी को बड़ा करें
 reader-unknown-sender = (अज्ञात भेजने वाला)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = भेजा जा रहा है…
 reader-me = मैं
 reader-to = पाने वाले: { $names }
 reader-to-label = पाने वाले:

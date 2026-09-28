@@ -871,3 +871,26 @@ Rispondi a tutti in una notifica di nuova email ora apre la conversazione in
 una finestra tutta sua, pronta per scrivere, e lascia la finestra principale
 dov'è.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "I clic sull'area di notifica e sulle notifiche portano Katna Mail in primo piano"
+text = """
+Fare clic sull'icona nell'area di notifica, o su Apri Posta in arrivo, Nuovo
+messaggio o Impostazioni nel suo menu, ora porta in primo piano la finestra
+di Katna Mail su Wayland, anche se era ridotta a icona o dietro altre
+finestre. Fare clic su una notifica di nuova posta apre quel messaggio,
+anche quando l'elenco di Posta in arrivo non lo mostra.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Invia fa il conto alla rovescia, e la tua risposta resta nella conversazione"
+text = """
+Dopo Invia, un anello che si restringe fa il conto alla rovescia del tempo
+per annullare accanto ad Annulla, poi l'avviso dice Messaggio inviato (con
+un breve suono) quando la posta è partita. Il suono si può disattivare in
+Impostazioni > Generali > Invio. Una risposta scritta in una conversazione
+diventa un messaggio proprio dove l'hai scritta. La sua intestazione mostra
+solo a chi va; fai clic per vedere Da, A, Cc e Ccn. La freccia accanto
+all'icona di risposta passa tra Rispondi, Rispondi a tutti e Inoltra,
+mantenendo quello che hai scritto.
+"""

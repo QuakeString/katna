@@ -637,4 +637,5 @@ toast-cannot-undo-delete-forever = El correo eliminado definitivamente no se pue
 toast-send-undone = Se ha deshecho el envío.
 toast-too-late-to-undo-send = Demasiado tarde para deshacer: el mensaje ya se ha enviado.
 toast-undo = Deshacer
+toast-close = Cerrar
 toast-no-spam-folder = Esta cuenta no tiene carpeta de spam.

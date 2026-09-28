@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Hindi na maibabalik ang mail na permanenteng 
 toast-send-undone = Na-undo ang pagpapadala.
 toast-too-late-to-undo-send = Huli na para i-undo: naipadala na ang mensahe.
 toast-undo = I-undo
+toast-close = Isara
 toast-no-spam-folder = Walang spam folder ang account na ito.

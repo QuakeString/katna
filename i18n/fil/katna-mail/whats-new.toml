@@ -891,3 +891,28 @@ desktop na hindi nagpapakita nito. Binubuksan na ngayon ng Sumagot sa lahat
 sa notification ng bagong mail ang usapan sa sarili nitong window, handa
 nang pag-type-an, at iniiwan ang pangunahing window kung nasaan ito.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Dinadala sa harap ang Katna Mail ng click sa tray at notification"
+text = """
+Kapag na-click ang icon sa system tray, o ang Buksan ang Inbox, Bagong
+Mensahe o Mga Setting sa menu nito, dinadala na ngayon sa harap ang window
+ng Katna Mail sa Wayland, kahit naka-minimize ito o nasa likod ng ibang mga
+window. Kapag na-click ang notification ng bagong mail, binubuksan nito ang
+mail na iyon, kahit hindi ito ipinapakita ng listahan ng Inbox.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Nagbibilang pababa ang Ipadala, at nananatili sa usapan ang sagot mo"
+text = """
+Pagkatapos ng Ipadala, binibilang pababa ng lumiliit na bilog ang oras para
+mag-undo sa tabi ng I-undo, saka sasabihin ng maikling abiso na Naipadala
+ang mensahe (may maikling tunog) kapag nakaalis na ang mail. Mapapatay ang
+tunog sa Mga setting > Pangkalahatan > Pagpapadala. Nagiging mensahe ang
+sagot na isinulat sa isang usapan mismo kung saan mo ito isinulat.
+Ipinapakita lang ng itaas nito kung para kanino ito; i-click ito para sa
+Mula kay, Para kay, Cc at Bcc. Nagpapalit ang arrow sa tabi ng icon ng sagot
+sa pagitan ng Sumagot, Sumagot sa lahat at Ipasa, nang hindi nawawala ang
+naisulat mo.
+"""
+

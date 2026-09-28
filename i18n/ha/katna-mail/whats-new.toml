@@ -849,3 +849,25 @@ na tebur, don teburan da ba sa nuna shi. Amsa wa kowa a kan sanarwar sabuwar
 wasiƙa yanzu yana buɗe tattaunawar a tagarta, a shirye don rubutu, kuma yana
 barin babbar taga a inda take.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Danna tire da sanarwa yana kawo Katna Mail gaba"
+text = """
+Danna gunkin tire, ko Buɗe Akwatin saƙo, Sabon saƙo ko Saituna a menu
+ɗinsa, yanzu yana kawo tagar Katna Mail gaba a Wayland, ko da an rage ta ko
+tana bayan wasu tagogi. Danna sanarwar sabuwar wasiƙa yana buɗe wannan
+wasiƙar, ko da jerin Akwatin saƙo ba ya nuna ta.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Aika yana ƙirgawa baya, kuma amsarku tana zama a cikin tattaunawa"
+text = """
+Bayan Aika, zobe mai raguwa yana ƙirga lokacin janyewa baya kusa da Janye,
+sannan sanarwar da ke ƙasa ta ce An aika saƙo (tare da ɗan gajeren sauti)
+da zarar wasiƙar ta tafi. Ana iya kashe sautin a Saituna > Gabaɗaya >
+Aikawa. Amsar da aka rubuta a cikin tattaunawa tana zama saƙo a daidai inda
+kuka rubuta ta. Kanta yana nuna waɗanda za ta je wurinsu kawai; ku danna shi
+don ganin Daga, Zuwa, Kwafi da Kwafi a ɓoye. Kibiyar da ke kusa da gunkin
+amsa tana sauyawa tsakanin Amsa, Amsa wa kowa da Tura, tana riƙe abin da
+kuka rubuta.
+"""

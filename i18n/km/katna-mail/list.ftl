@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = សំបុត្រដែលបានលុ
 toast-send-undone = បានមិនធ្វើការផ្ញើវិញ។
 toast-too-late-to-undo-send = យឺតពេលហើយក្នុងការមិនធ្វើវិញ៖ សារត្រូវបានផ្ញើរួចហើយ។
 toast-undo = មិនធ្វើវិញ
+toast-close = បិទ
 toast-no-spam-folder = គណនីនេះគ្មានថតសារឥតបានការទេ។

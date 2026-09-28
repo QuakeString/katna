@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = நிரந்தரமாக நீக்�
 toast-send-undone = அனுப்புதல் செயல்தவிர்க்கப்பட்டது.
 toast-too-late-to-undo-send = செயல்தவிர்க்கத் தாமதமாகிவிட்டது: மெசேஜ் ஏற்கனவே அனுப்பப்பட்டுவிட்டது.
 toast-undo = செயல்தவிர்
+toast-close = மூடு
 toast-no-spam-folder = இந்தக் கணக்கில் ஸ்பேம் ஃபோல்டர் இல்லை.

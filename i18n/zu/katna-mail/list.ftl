@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Imeyili esuswe unomphela ayikwazi ukubuyiswa.
 toast-send-undone = Ukuthumela kuhlehlisiwe.
 toast-too-late-to-undo-send = Sekwephuze kakhulu ukuhlehlisa: umlayezo usuthunyelwe.
 toast-undo = Hlehlisa
+toast-close = Vala
 toast-no-spam-folder = Le akhawunti ayinayo ifolda kagaxekile.

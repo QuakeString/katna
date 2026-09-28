@@ -842,3 +842,25 @@ Fèsì sí gbogbo lórí ìfitónilétí lẹ́tà tuntun ti ń ṣí ìjíròr�
 tirẹ̀ báyìí, ní ìmúrasílẹ̀ fún títẹ̀wé, ó sì ń fi fèrèsé àkọ́kọ́ sílẹ̀ níbi
 tí ó wà.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Títẹ àtẹ àti ìfitónilétí ń mú Katna Mail wá síwájú"
+text = """
+Títẹ àmì-àwòrán àtẹ, tàbí Ṣí Àpótí-ìwọlé, Ìfiránṣẹ́ tuntun tàbí Ètò nínú
+mẹ́nù rẹ̀, ti ń mú fèrèsé Katna Mail wá síwájú lórí Wayland báyìí, bí a tilẹ̀
+ti sọ ọ́ di kékeré tàbí tí ó wà lẹ́yìn àwọn fèrèsé mìíràn. Títẹ ìfitónilétí
+lẹ́tà tuntun ń ṣí lẹ́tà náà, bí àkójọ Àpótí-ìwọlé kò tilẹ̀ fi í hàn.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Fi ránṣẹ́ ń ka sẹ́yìn, èsì rẹ sì ń dúró nínú ìjíròrò"
+text = """
+Lẹ́yìn Fi ránṣẹ́, òrùka tí ń dínkù ń ka àkókò ìdápadà sẹ́yìn lẹ́gbẹ̀ẹ́ Dá
+padà, lẹ́yìn náà àkíyèsí tó wà nísàlẹ̀ á sọ pé A ti fi ìfiránṣẹ́ ránṣẹ́
+(pẹ̀lú ohùn kúkúrú) ní kété tí lẹ́tà bá ti jáde. O lè pa ohùn náà nínú Ètò
+> Gbogbogbò > Fífiránṣẹ́. Èsì tí o kọ nínú ìjíròrò ń di ìfiránṣẹ́ ní ibi tí
+o ti kọ ọ́ gan-an. Orí rẹ̀ ń fi àwọn tí ó ń lọ sọ́dọ̀ wọn nìkan hàn; tẹ̀ ẹ́
+láti rí Láti, Sí, Ẹ̀dà àti Ẹ̀dà àṣírí. Ọfà lẹ́gbẹ̀ẹ́ àmì-àwòrán èsì ń yí
+padà láàrín Fèsì, Fèsì sí gbogbo àti Fi ránṣẹ́ síwájú, ó sì ń pa ohun tí o
+kọ mọ́.
+"""

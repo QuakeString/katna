@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = Kalıcı olarak silinen postalar geri getiril
 toast-send-undone = Gönderme geri alındı.
 toast-too-late-to-undo-send = Geri almak için çok geç: ileti zaten gönderildi.
 toast-undo = Geri al
+toast-close = Kapat
 toast-no-spam-folder = Bu hesabın spam klasörü yok.

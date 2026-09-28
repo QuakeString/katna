@@ -867,3 +867,27 @@ global desktop, untuk desktop yang tidak memaparkannya. Balas semua pada
 pemberitahuan mel baharu kini membuka perbualan dalam tetingkapnya sendiri,
 sedia untuk menaip, dan membiarkan tetingkap utama di tempatnya.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Klik dulang sistem dan pemberitahuan membawa Katna Mail ke hadapan"
+text = """
+Mengklik ikon dulang sistem, atau Buka Peti Masuk, Mesej Baharu atau Tetapan
+dalam menunya, kini membawa tetingkap Katna Mail ke hadapan pada Wayland,
+walaupun ia diminimumkan atau berada di belakang tetingkap lain. Mengklik
+pemberitahuan mel baharu membuka mel itu, walaupun senarai Peti Masuk tidak
+memaparkannya.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Hantar mengira detik, dan balasan anda kekal dalam perbualan"
+text = """
+Selepas Hantar, gelang yang mengecil mengira detik masa untuk membuat asal
+di sebelah Buat asal, kemudian pemberitahuan ringkas memaparkan Mesej
+dihantar (dengan bunyi pendek) sebaik sahaja mel keluar. Bunyi ini boleh
+dimatikan dalam Tetapan > Umum > Penghantaran. Balasan yang ditulis dalam
+perbualan bertukar menjadi mesej tepat di tempat anda menulisnya. Bahagian
+atasnya hanya menunjukkan kepada siapa ia dihantar; klik untuk Daripada,
+Kepada, Sk dan Skt. Anak panah di sebelah ikon balas bertukar antara Balas,
+Balas semua dan Majukan, sambil mengekalkan apa yang anda tulis.
+"""
+

@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = እስከመጨረሻው የተሰረዘ ደ�
 toast-send-undone = መላኩ ተቀልብሷል።
 toast-too-late-to-undo-send = ለመቀልበስ ዘግይቷል፦ መልዕክቱ አስቀድሞ ተልኳል።
 toast-undo = ቀልብስ
+toast-close = ዝጋ
 toast-no-spam-folder = ይህ መለያ የአይፈለጌ መልዕክት አቃፊ የለውም።

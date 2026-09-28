@@ -25,6 +25,7 @@ reader-collapse-all = Comprimi tutto
 reader-expand-all = Espandi tutto
 reader-unknown-sender = (mittente sconosciuto)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Invio in corso…
 reader-me = me
 reader-to = a { $names }
 reader-to-label = a

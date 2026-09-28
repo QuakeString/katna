@@ -25,6 +25,7 @@ reader-collapse-all = Runtuhkan semua
 reader-expand-all = Kembangkan semua
 reader-unknown-sender = (pengirim tidak diketahui)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Menghantar…
 reader-me = saya
 reader-to = kepada { $names }
 reader-to-label = kepada

@@ -25,6 +25,7 @@ reader-collapse-all = Ká gbogbo rẹ̀
 reader-expand-all = Ṣí gbogbo rẹ̀
 reader-unknown-sender = (olùfiránṣẹ́ àìmọ̀)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Ó ń fi ránṣẹ́…
 reader-me = èmi
 reader-to = sí { $names }
 reader-to-label = sí

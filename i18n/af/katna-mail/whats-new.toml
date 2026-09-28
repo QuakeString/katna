@@ -838,3 +838,26 @@ oop as die werkskerm se globale kieslys, vir werkskerms wat nie een wys nie.
 Antwoord almal op 'n kennisgewing van nuwe e-pos maak nou die gesprek in sy
 eie venster oop, gereed om te tik, en los die hoofvenster waar dit is.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Klik op die stelselbalk of 'n kennisgewing bring Katna Mail na vore"
+text = """
+As jy op die stelselbalkikoon klik, of op Maak Inkassie oop, Nuwe boodskap
+of Instellings in sy kieslys, bring dit nou die Katna Mail-venster na vore
+op Wayland, selfs as dit geminimeer of agter ander vensters was. As jy op 'n
+kennisgewing van nuwe e-pos klik, maak dit daardie e-pos oop, selfs as die
+Inkassie-lys dit nie wys nie.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Stuur tel af, en jou antwoord bly in die gesprek"
+text = """
+Ná Stuur tel 'n krimpende ring die ontdoentyd langs Ontdoen af, en sodra die
+e-pos weg is, sê die boodskapstrook Boodskap gestuur (met 'n kort klank).
+Die klank kan afgeskakel word in Instellings > Algemeen > Stuur. 'n Antwoord
+wat jy in 'n gesprek skryf, word 'n boodskap net daar waar jy dit geskryf
+het. Sy kop wys net aan wie dit gaan; klik daarop vir Van, Aan, Cc en Bcc.
+Die pyltjie langs die antwoordikoon wissel tussen Antwoord, Antwoord almal
+en Stuur aan, en hou wat jy geskryf het.
+"""
+

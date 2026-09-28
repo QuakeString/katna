@@ -866,3 +866,26 @@ Responder a todos numa notificação de novo e-mail agora abre a conversa em
 uma janela própria, pronta para digitar, e deixa a janela principal onde
 está.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Cliques na bandeja e nas notificações trazem o Katna Mail para a frente"
+text = """
+Clicar no ícone da bandeja, ou em Abrir a Caixa de entrada, Nova mensagem ou
+Preferências no menu dele, agora traz a janela do Katna Mail para a frente
+no Wayland, mesmo quando ela estava minimizada ou atrás de outras janelas.
+Clicar numa notificação de novo e-mail abre esse e-mail, mesmo que a lista
+da Caixa de entrada não o mostre.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Enviar faz uma contagem regressiva, e sua resposta fica na conversa"
+text = """
+Depois de Enviar, um anel que encolhe faz a contagem regressiva do tempo
+para desfazer ao lado de Desfazer, e então o aviso diz Mensagem enviada (com
+um som curto) assim que o e-mail sai. O som pode ser desativado em
+Configurações > Geral > Envio. Uma resposta escrita numa conversa vira uma
+mensagem bem onde você a escreveu. O cabeçalho dela mostra só para quem ela
+vai; clique nele para ver De, Para, Cc e Cco. A seta ao lado do ícone de
+resposta alterna entre Responder, Responder a todos e Encaminhar, mantendo o
+que você escreveu.
+"""

@@ -25,6 +25,7 @@ reader-collapse-all = Alle einklappen
 reader-expand-all = Alle ausklappen
 reader-unknown-sender = (unbekannter Absender)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Wird gesendet…
 reader-me = mich
 reader-to = an { $names }
 reader-to-label = an

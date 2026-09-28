@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = ອີເມວທີ່ລຶບຖາວອ
 toast-send-undone = ຍົກເລີກການສົ່ງແລ້ວ.
 toast-too-late-to-undo-send = ສາຍເກີນໄປທີ່ຈະຍ້ອນກັບ: ຂໍ້ຄວາມຖືກສົ່ງໄປແລ້ວ.
 toast-undo = ຍ້ອນກັບ
+toast-close = ປິດ
 toast-no-spam-folder = ບັນຊີນີ້ບໍ່ມີໂຟນເດີສະແປມ.

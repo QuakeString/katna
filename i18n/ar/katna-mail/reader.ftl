@@ -25,6 +25,7 @@ reader-collapse-all = تصغير الكل
 reader-expand-all = توسيع الكل
 reader-unknown-sender = (مُرسِل غير معروف)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = جارٍ الإرسال…
 reader-me = أنا
 reader-to = إلى { $names }
 reader-to-label = إلى

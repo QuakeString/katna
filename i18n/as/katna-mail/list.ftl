@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = চিৰদিনৰ বাবে মচা 
 toast-send-undone = পঠিওৱাটো আনডু কৰা হ'ল।
 toast-too-late-to-undo-send = আনডু কৰিবলৈ বহুত পলম হ'ল: বাৰ্তাটো ইতিমধ্যে পঠিওৱা হৈছে।
 toast-undo = আনডু কৰক
+toast-close = বন্ধ কৰক
 toast-no-spam-folder = এই একাউণ্টত কোনো স্পাম ফ'ল্ডাৰ নাই।

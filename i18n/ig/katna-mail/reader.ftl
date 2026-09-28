@@ -25,6 +25,7 @@ reader-collapse-all = Mechie niile
 reader-expand-all = Gbasaa niile
 reader-unknown-sender = (onye zitere amaghị)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Na-ezipu…
 reader-me = mụ
 reader-to = gaa { $names }
 reader-to-label = gaa

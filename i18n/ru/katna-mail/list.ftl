@@ -720,4 +720,5 @@ toast-cannot-undo-delete-forever = Письма, удалённые навсег
 toast-send-undone = Отправка отменена.
 toast-too-late-to-undo-send = Слишком поздно отменять: письмо уже отправлено.
 toast-undo = Отменить
+toast-close = Закрыть
 toast-no-spam-folder = В этом аккаунте нет папки «Спам».

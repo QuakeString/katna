@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = 永久删除的邮件无法恢复。
 toast-send-undone = 已撤消发送。
 toast-too-late-to-undo-send = 来不及撤消：邮件已经发出。
 toast-undo = 撤消
+toast-close = 关闭
 toast-no-spam-folder = 此账号没有垃圾邮件文件夹。

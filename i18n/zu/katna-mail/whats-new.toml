@@ -893,3 +893,26 @@ kumadeskithophu angayiboniyo. U-Phendula bonke esazisweni semeyili entsha
 manje uvula ingxoxo efasiteleni layo, ilungele ukuthayipha, futhi ushiya
 ifasitela elikhulu lilapho likhona.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Ukuchofoza ithileyi nezaziso kuletha i-Katna Mail phambili"
+text = """
+Ukuchofoza isithonjana sethileyi, noma okuthi Vula Ibhokisi Lokungenayo,
+Umlayezo Omusha noma Izilungiselelo kumenyu yaso, manje kuletha iwindi
+le-Katna Mail phambili ku-Wayland, ngisho noma belincishisiwe noma
+lingemuva kwamanye amawindi. Ukuchofoza isaziso semeyili entsha kuvula
+leyo meyili, ngisho noma uhlu lwe-Ibhokisi lokungenayo lungayibonisi.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Ukuthumela kuyabala, futhi impendulo yakho ihlala engxoxweni"
+text = """
+Ngemuva kokuthi Thumela, indandatho encipha eduze kokuthi Hlehlisa ibala
+isikhathi sokuhlehlisa, bese inothi elingezansi lithi “Umlayezo
+uthunyelwe” (nomsindo omfushane) uma imeyili isiphumile. Umsindo ungavalwa
+ku-Izilungiselelo > Okuvamile > Ukuthumela. Impendulo ebhalwe engxoxweni
+iba umlayezo khona lapho uyibhale khona. Isihloko sayo sibonisa kuphela
+ukuthi iya kubani; yichofoze ukuze uthole okuthi Kusuka ku, Ku, Cc no-Bcc.
+Umcibisholo oseduze kwesithonjana sokuphendula ushintsha phakathi kokuthi
+Phendula, Phendula bonke no-Dlulisela, ugcine lokho okubhalile.
+"""

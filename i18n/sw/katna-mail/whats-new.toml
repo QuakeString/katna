@@ -867,3 +867,24 @@ zisizoonyesha menyu hiyo. Jibu wote kwenye arifa ya barua mpya sasa hufungua
 mazungumzo katika dirisha lake, tayari kwa kuandika, na huacha dirisha kuu
 mahali lilipo.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Kubofya trei na arifa huleta Katna Mail mbele"
+text = """
+Kubofya aikoni ya trei, au Fungua Kikasha, Ujumbe Mpya au Mipangilio katika
+menyu yake, sasa huleta dirisha la Katna Mail mbele kwenye Wayland, hata
+likiwa limepunguzwa au liko nyuma ya madirisha mengine. Kubofya arifa ya
+barua mpya hufungua barua hiyo, hata kama orodha ya Kikasha haionyeshi.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Tuma huhesabu kurudi nyuma, na jibu lako hubaki kwenye mazungumzo"
+text = """
+Baada ya Tuma, pete inayosinyaa huhesabu kurudi nyuma muda wa kutendua kando
+ya Tendua, kisha ujumbe ulio chini husema Ujumbe umetumwa (pamoja na sauti
+fupi) mara barua inapotoka. Sauti inaweza kuzimwa katika Mipangilio > Jumla
+> Kutuma. Jibu lililoandikwa kwenye mazungumzo hugeuka kuwa ujumbe pale pale
+ulipoliandika. Kichwa chake huonyesha tu linakwenda kwa nani; kibofye ili
+kuona Kutoka, Kwa, Nakala na Nakala fiche. Mshale kando ya aikoni ya jibu
+hubadilisha kati ya Jibu, Jibu wote na Sambaza, na huhifadhi ulichoandika.
+"""

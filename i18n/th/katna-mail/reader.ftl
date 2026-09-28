@@ -25,6 +25,7 @@ reader-collapse-all = ยุบทั้งหมด
 reader-expand-all = ขยายทั้งหมด
 reader-unknown-sender = (ไม่ทราบผู้ส่ง)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = กำลังส่ง…
 reader-me = ฉัน
 reader-to = ถึง { $names }
 reader-to-label = ถึง

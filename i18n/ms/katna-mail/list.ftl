@@ -305,4 +305,5 @@ toast-cannot-undo-delete-forever = Mel yang dipadamkan selama-lamanya tidak bole
 toast-send-undone = Penghantaran dibuat asal.
 toast-too-late-to-undo-send = Sudah terlambat untuk membuat asal: mesej telah pun dihantar.
 toast-undo = Buat asal
+toast-close = Tutup
 toast-no-spam-folder = Akaun ini tiada folder spam.

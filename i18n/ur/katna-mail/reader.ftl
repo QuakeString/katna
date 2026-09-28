@@ -25,6 +25,7 @@ reader-collapse-all = سب سکیڑیں
 reader-expand-all = سب پھیلائیں
 reader-unknown-sender = (نامعلوم مرسل)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = بھیجا جا رہا ہے…
 reader-me = میں
 reader-to = بنام { $names }
 reader-to-label = بنام

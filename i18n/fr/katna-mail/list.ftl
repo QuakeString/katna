@@ -637,4 +637,5 @@ toast-cannot-undo-delete-forever = Les messages supprimés définitivement ne pe
 toast-send-undone = Envoi annulé.
 toast-too-late-to-undo-send = Trop tard pour annuler : le message a déjà été envoyé.
 toast-undo = Annuler
+toast-close = Fermer
 toast-no-spam-folder = Ce compte n’a pas de dossier de spam.

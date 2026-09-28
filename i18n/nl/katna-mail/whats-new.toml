@@ -865,3 +865,26 @@ globale menu van de desktop, voor desktops die er geen tonen. Allen
 beantwoorden in een melding van nieuwe e-mail opent het gesprek nu in een
 eigen venster, klaar om te typen, en laat het hoofdvenster waar het is.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Klikken op het systeemvak en op meldingen halen Katna Mail naar voren"
+text = """
+Klikken op het pictogram in het systeemvak, of op Inbox openen, Nieuw
+bericht of Instellingen in het menu ervan, haalt het venster van Katna Mail
+nu naar voren op Wayland, ook als het geminimaliseerd was of achter andere
+vensters lag. Klikken op een melding van nieuwe e-mail opent die e-mail, ook
+als de lijst van de Inbox hem niet toont.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Verzenden telt af, en je antwoord blijft in het gesprek"
+text = """
+Na Verzenden telt een krimpende ring naast Ongedaan maken de tijd om
+ongedaan te maken af, en daarna toont de melding Bericht verzonden (met een
+kort geluid) zodra de e-mail weg is. Het geluid kun je uitzetten in
+Instellingen > Algemeen > Verzenden. Een antwoord dat je in een gesprek
+schrijft, wordt een bericht precies waar je het schreef. De kop toont alleen
+aan wie het gaat; klik erop voor Van, Aan, Cc en Bcc. De pijl naast het
+antwoordpictogram wisselt tussen Beantwoorden, Allen beantwoorden en
+Doorsturen, en houdt vast wat je schreef.
+"""

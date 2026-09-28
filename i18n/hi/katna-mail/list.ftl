@@ -551,4 +551,5 @@ toast-cannot-undo-delete-forever = हमेशा के लिए मिटा
 toast-send-undone = भेजना पहले जैसा कर दिया गया।
 toast-too-late-to-undo-send = पहले जैसा करने में बहुत देर हो गई: मैसेज पहले ही भेजा जा चुका है।
 toast-undo = पहले जैसा करें
+toast-close = बंद करें
 toast-no-spam-folder = इस खाते में कोई स्पैम फ़ोल्डर नहीं है।

@@ -25,6 +25,7 @@ reader-collapse-all = Tümünü daralt
 reader-expand-all = Tümünü genişlet
 reader-unknown-sender = (bilinmeyen gönderen)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Gönderiliyor…
 reader-me = ben
 reader-to = alıcı: { $names }
 reader-to-label = alıcı:

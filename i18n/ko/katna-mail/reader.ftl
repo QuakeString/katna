@@ -25,6 +25,7 @@ reader-collapse-all = 모두 접기
 reader-expand-all = 모두 펼치기
 reader-unknown-sender = (알 수 없는 보낸사람)
 reader-date-ago = { $date }({ $ago })
+reader-sending = 보내는 중…
 reader-me = 나
 reader-to = 받는사람: { $names }
 reader-to-label = 받는사람:

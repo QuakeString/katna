@@ -860,3 +860,26 @@ Görünüm, Git, İleti, Ayarlar ve Yardım menülerinin aynısını açar. Yeni
 bildirimindeki Tümünü yanıtla artık ileti dizisini yazmaya hazır biçimde
 kendi penceresinde açar ve ana pencereyi olduğu yerde bırakır.
 """
+
+["2026-09-28-1011-tray-brings-window-forward"]
+title = "Tepsi ve bildirim tıklamaları Katna Mail'i öne getirir"
+text = """
+Tepsi simgesine ya da menüsündeki Gelen Kutusunu Aç, Yeni İleti veya
+Ayarlar'a tıklamak artık Wayland'de Katna Mail penceresini, simge durumuna
+küçültülmüş ya da başka pencerelerin arkasında olsa bile öne getirir. Yeni
+posta bildirimine tıklamak, Gelen Kutusu listesi o postayı göstermese bile
+onu açar.
+"""
+
+["2026-09-28-1053-send-countdown-reply-in-place"]
+title = "Gönder geri sayar, yanıtınız ileti dizisinde kalır"
+text = """
+Gönder'den sonra küçülen bir halka Geri al'ın yanında geri alma süresini
+sayar, posta gidince de kısa bildirim İleti gönderildi der (kısa bir sesle).
+Ses, Ayarlar > Genel > Gönderme'den kapatılabilir. Bir ileti dizisinde
+yazılan yanıt, tam yazdığınız yerde bir iletiye dönüşür. Başlığı yalnızca
+kime gittiğini gösterir; Kimden, Kime, Bilgi ve Gizli için ona tıklayın.
+Yanıt simgesinin yanındaki ok, yazdıklarınızı koruyarak Yanıtla, Tümünü
+yanıtla ve Yönlendir arasında geçiş yapar.
+"""
+

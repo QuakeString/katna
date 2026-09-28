@@ -25,6 +25,7 @@ reader-collapse-all = Contraer todo
 reader-expand-all = Expandir todo
 reader-unknown-sender = (remitente desconocido)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Enviando…
 reader-me = mí
 reader-to = para { $names }
 reader-to-label = para

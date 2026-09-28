@@ -25,6 +25,7 @@ reader-collapse-all = ཆ་མཉམ་བསྡམ།
 reader-expand-all = ཆ་མཉམ་རྒྱ་བསྐྱེད།
 reader-unknown-sender = (གཏང་མི་མ་ཤེསཔ)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = གཏང་དོ…
 reader-me = ང
 reader-to = { $names } ལུ
 reader-to-label = ལུ

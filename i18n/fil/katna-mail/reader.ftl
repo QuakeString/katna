@@ -25,6 +25,7 @@ reader-collapse-all = I-collapse lahat
 reader-expand-all = I-expand lahat
 reader-unknown-sender = (hindi kilalang nagpadala)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = Ipinapadala…
 reader-me = ako
 reader-to = para kay { $names }
 reader-to-label = para kay

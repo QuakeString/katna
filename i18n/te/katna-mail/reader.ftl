@@ -25,6 +25,7 @@ reader-collapse-all = అన్నింటినీ కుదించండి
 reader-expand-all = అన్నింటినీ విస్తరించండి
 reader-unknown-sender = (తెలియని పంపినవారు)
 reader-date-ago = { $date } ({ $ago })
+reader-sending = పంపుతోంది…
 reader-me = నాకు
 reader-to = స్వీకర్తలు: { $names }
 reader-to-label = స్వీకర్తలు:
