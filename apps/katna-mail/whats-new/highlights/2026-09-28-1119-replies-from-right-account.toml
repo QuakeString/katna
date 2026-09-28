@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Replies go out from the right account"
+text = """
+A reply or forward to mail opened from the unified inbox or from search now
+goes out from the account the mail came to, not the account picked under
+your profile picture.
+"""

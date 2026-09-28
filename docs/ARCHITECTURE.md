@@ -634,6 +634,8 @@ extensions under Custom) become `filename:pdf` or
 `filename:(pdf OR xlsx)`: mail with an attachment of any chosen type.
 From and To suggest addresses from the same address book as compose's
 recipient fields (§7.8); a picked one fills the field.
+The panel is at least 640 px wide while the window allows, puts labels
+above fields below 600 px and scrolls when taller than the window.
 
 Free text that matches an organization name or alias is expanded to
 "any participant matches that organization" **plus** normal text matching (§8.3).
