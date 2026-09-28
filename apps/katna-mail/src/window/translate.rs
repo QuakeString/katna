@@ -223,7 +223,7 @@ impl MailWindow {
                 let mut links = vec![if signed_out {
                     link(tr!("katna-sign-in"), "translate-sign-in")
                         .on_click(cx.listener(|this, _, window, cx| {
-                            this.open_settings_page(Section::KatnaAccount, window, cx);
+                            this.open_settings_page(Section::Subscriptions, window, cx);
                         }))
                         .into_any_element()
                 } else {

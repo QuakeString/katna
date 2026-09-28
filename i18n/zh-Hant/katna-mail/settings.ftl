@@ -20,7 +20,6 @@ settings-tab-experimental = 實驗性功能
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = 查看你收到的電子報和郵寄清單，按一下即可取消訂閱。
 settings-tab-folders-rules-coming = 建立、重新命名、移動及隱藏資料夾和標籤，並選擇要同步哪些項目。規則會依寄件者、主旨或字詞，自動為新郵件分類、加上標籤、轉寄或刪除。
 settings-tab-mcp-server-coming = 讓這台電腦上的 AI 助理在你同意下搜尋、閱讀你的郵件並撰寫草稿。
 

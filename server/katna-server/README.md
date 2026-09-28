@@ -40,7 +40,7 @@ status is).
 ## Katna accounts
 
 Every server feature needs a Katna account, much like a Mailspring ID.
-Someone creates one in Katna Mail (Settings > Katna account) with an
+Someone creates one in Katna Mail (Settings > Subscription) with an
 email address and a password of its own; it is never a mail password, and
 mail logins never reach this server. The server mails a six-digit code to
 confirm the address, and features work once it is confirmed. Each install

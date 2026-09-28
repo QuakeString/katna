@@ -20,7 +20,6 @@ settings-tab-experimental = Expérimental
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = Consultez les newsletters et les listes de diffusion que vous recevez, et désabonnez-vous en un clic.
 settings-tab-folders-rules-coming = Créez, renommez, déplacez et masquez des dossiers et des libellés, et choisissez ceux qui sont synchronisés. Les règles trient, libellent, transfèrent ou suppriment automatiquement les nouveaux messages, selon l’expéditeur, l’objet ou des mots.
 settings-tab-mcp-server-coming = Permettez aux assistants IA de cet ordinateur de rechercher, lire et rédiger vos messages, avec votre accord.
 

@@ -387,7 +387,6 @@ const ENTRIES: &[Entry] = &[
 /// What a tab that is still to come will do.
 fn coming(section: Section) -> Option<String> {
     Some(match section {
-        Section::Subscriptions => tr!("settings-tab-subscriptions-coming"),
         Section::MailRules => tr!("settings-tab-folders-rules-coming"),
         Section::McpServer => tr!("settings-tab-mcp-server-coming"),
         _ => return None,
@@ -398,6 +397,7 @@ fn coming(section: Section) -> Option<String> {
 /// for now).
 fn tab_words(section: Section) -> &'static str {
     match section {
+        Section::Subscriptions => "katna account sign in sign up password devices server",
         Section::MailRules => "mail rules filters folders labels",
         Section::Signatures => "signature templates write",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
