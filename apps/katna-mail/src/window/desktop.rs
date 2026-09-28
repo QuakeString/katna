@@ -102,6 +102,7 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
         &[
             Item("desktop-menu-shortcuts", "katna_mail::ShowShortcuts"),
             Item("desktop-menu-whats-new", "katna_mail::ShowWhatsNew"),
+            Item("desktop-menu-check-updates", "katna_mail::CheckForUpdates"),
             Separator,
             Item("desktop-menu-about", "katna_mail::ShowAbout"),
         ],

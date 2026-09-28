@@ -307,7 +307,6 @@ impl MailWindow {
             return None;
         }
         let t = t.clamp(0.0, 1.0);
-        let updates = self.update_card(th, cx);
         let about = self.about.as_ref()?;
         let phone = self.layout.shape.is_phone();
         let vw = unpx(window.viewport_size().width);
@@ -734,7 +733,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(header)
-            .children(updates)
             .child(links)
             .children(follow)
             .child(coffee)

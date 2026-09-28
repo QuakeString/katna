@@ -1,46 +1,63 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Updates in About (`docs/ARCHITECTURE.md` §21.2): whether Katna is up
-//! to date, a newer version to download, its download's progress, and
-//! Update, which says Katna Mail will restart, installs the download
-//! behind the system's password prompt and opens Katna Mail again where
-//! it was. The daemon checks and downloads; the notification that an
-//! update is ready opens About here, on the confirmation.
+//! The Update dialog (`docs/ARCHITECTURE.md` §21.2), from Help > Check for
+//! Updates and the notification that an update is ready: the installed
+//! version beside the new one, with when each was built, its commit and
+//! the download's size, the new version's What's new and every change
+//! since the installed one, the download's progress, and Update and
+//! restart, which installs the download behind the system's password
+//! prompt and opens Katna Mail again where it was. The daemon checks and
+//! downloads.
 
 use futures_lite::StreamExt;
-use gpui::{AnyElement, Context, FontWeight, Task, Window, div, prelude::*, rgba};
+use gpui::{
+    AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Task,
+    Window, div, prelude::*, rgba,
+};
+use jiff::tz::TimeZone;
+use katna_core::update::Manifest;
 use katna_dbus::zbus::Connection;
 use katna_dbus::{UpdateStatus, update_state as state};
 use katna_i18n::tr;
-use katna_ui::px;
+use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::{px, unpx};
 
-use super::MailWindow;
-use crate::daemon;
+use super::{CheckForUpdates, MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
 use crate::updater::{self, InstallError};
-use crate::widgets::{filled_button, icon, outlined_button};
+use crate::widgets::{elevation, filled_button, icon, outlined_button};
+use crate::{daemon, format, whats_new};
+
+const WIDTH: f32 = 560.0;
 
 /// Updates as the window shows them.
 #[derive(Default)]
 pub(super) struct Updates {
     /// From the daemon; `None` until it answered.
     status: Option<UpdateStatus>,
-    /// Update was pressed: the card says Katna Mail will restart and
-    /// waits for the go-ahead.
-    confirm: bool,
-    /// The notification's Update was pressed before the daemon said where
-    /// the update stands: ask once it says the update is ready.
-    confirm_when_ready: bool,
+    /// What the version on offer brings, from the daemon.
+    details: Option<Manifest>,
     /// The password prompt is open, or the package being installed.
     installing: bool,
     /// Why the last install did not happen.
     problem: Option<String>,
+    /// The Update dialog, while it shows.
+    dialog: Option<Dialog>,
     watch: Option<Task<()>>,
     install: Option<Task<()>>,
 }
 
+struct Dialog {
+    focus: FocusHandle,
+    closing: bool,
+    shown: Spring,
+    /// Every change is listed, not only the count.
+    all_changes: bool,
+}
+
 impl MailWindow {
-    /// Follows where an update stands.
+    /// Follows where an update stands, and what the version on offer
+    /// brings.
     pub(super) fn watch_updates(&mut self, connection: Connection, cx: &mut Context<Self>) {
         self.updates.watch = Some(cx.spawn(async move |this, cx| {
             let Ok(mut changes) = daemon::update_changes(&connection).await else {
@@ -48,11 +65,27 @@ impl MailWindow {
             };
             loop {
                 let status = daemon::update_status(&connection).await.ok();
+                let offered = status
+                    .as_ref()
+                    .filter(|s| !s.version.is_empty())
+                    .map(|s| s.version.clone());
+                let known = this
+                    .read_with(cx, |this, _| {
+                        this.updates.details.as_ref().map(|d| d.version.clone())
+                    })
+                    .ok()
+                    .flatten();
+                // An older daemon has no details: the dialog shows less.
+                let details = match &offered {
+                    Some(version) if known.as_ref() != Some(version) => {
+                        daemon::update_details(&connection).await.ok().flatten()
+                    }
+                    _ => None,
+                };
                 let alive = this
                     .update(cx, |this, cx| {
-                        let ready = status.as_ref().is_some_and(|s| s.state == state::READY);
-                        if ready && std::mem::take(&mut this.updates.confirm_when_ready) {
-                            this.updates.confirm = true;
+                        if let Some(details) = details {
+                            this.updates.details = Some(details);
                         }
                         this.updates.status = status;
                         cx.notify();
@@ -65,43 +98,123 @@ impl MailWindow {
         }));
     }
 
-    /// Opens About on the update, asking to install it when it is ready
-    /// (the notification's Update button).
+    /// Help > Check for Updates: opens the dialog and checks, unless a
+    /// check or download is under way or an update waits.
+    pub(super) fn check_for_updates_action(
+        &mut self,
+        _: &CheckForUpdates,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_update_dialog(window, cx);
+        let busy = self.updates.status.as_ref().is_some_and(|s| {
+            [
+                state::CHECKING,
+                state::AVAILABLE,
+                state::DOWNLOADING,
+                state::READY,
+                state::UNSUPPORTED,
+            ]
+            .contains(&s.state.as_str())
+        });
+        if !busy {
+            self.check_for_update(cx);
+        }
+    }
+
+    /// Opens the dialog on the update (the notification's Update button).
     pub(super) fn show_update(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if !self.about_open() {
-            self.open_about(window, cx);
-        }
-        match &self.updates.status {
-            Some(status) => self.updates.confirm = status.state == state::READY,
-            None => self.updates.confirm_when_ready = true,
-        }
+        self.open_update_dialog(window, cx);
+    }
+
+    fn open_update_dialog(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.settings_open = false;
         self.updates.problem = None;
+        if self.update_dialog_open() {
+            return;
+        }
+        let focus = cx.focus_handle();
+        window.focus(&focus, cx);
+        let mut shown = Spring::new(motion::SMOOTH, 0.0);
+        shown.set(1.0);
+        self.updates.dialog = Some(Dialog {
+            focus,
+            closing: false,
+            shown,
+            all_changes: false,
+        });
         cx.notify();
     }
 
-    fn check_for_update(&mut self, cx: &mut Context<Self>) {
-        self.updates.problem = None;
-        if let Some(connection) = self.daemon.clone() {
-            cx.background_executor()
-                .spawn(async move {
-                    if let Err(err) = daemon::check_for_update(&connection).await {
-                        tracing::warn!(%err, "cannot check for updates");
-                    }
-                })
-                .detach();
+    /// The Update dialog is open and not on its way out.
+    pub(super) fn update_dialog_open(&self) -> bool {
+        self.updates.dialog.as_ref().is_some_and(|d| !d.closing)
+    }
+
+    /// Closes the dialog; a download goes on.
+    pub(super) fn close_update_dialog(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.updates.installing {
+            return;
+        }
+        if let Some(dialog) = &mut self.updates.dialog
+            && !dialog.closing
+        {
+            dialog.closing = true;
+            dialog.shown.set(0.0);
+            window.focus(&self.list_focus, cx);
+        }
+        cx.notify();
+    }
+
+    fn update_dialog_key(
+        &mut self,
+        event: &KeyDownEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        // Escape reaches `popovers` first.
+        if event.keystroke.key == "escape" {
+            self.close_update_dialog(window, cx);
+            cx.stop_propagation();
         }
     }
 
+    fn check_for_update(&mut self, cx: &mut Context<Self>) {
+        self.ask_daemon(cx, async |connection| {
+            daemon::check_for_update(&connection).await
+        });
+    }
+
     fn download_update(&mut self, cx: &mut Context<Self>) {
-        if let Some(connection) = self.daemon.clone() {
-            cx.background_executor()
-                .spawn(async move {
-                    if let Err(err) = daemon::download_update(&connection).await {
-                        tracing::warn!(%err, "cannot download the update");
-                    }
+        self.ask_daemon(cx, async |connection| {
+            daemon::download_update(&connection).await
+        });
+    }
+
+    /// Asks the daemon to check or download; the dialog says why it could
+    /// not.
+    fn ask_daemon(
+        &mut self,
+        cx: &mut Context<Self>,
+        ask: impl AsyncFnOnce(Connection) -> Result<(), String> + 'static,
+    ) {
+        self.updates.problem = None;
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let asked = match connection {
+                Some(connection) => ask(connection).await,
+                None => Err(tr!("update-dialog-no-service")),
+            };
+            if let Err(err) = asked {
+                tracing::warn!(%err, "cannot reach the daemon about updates");
+                this.update(cx, |this, cx| {
+                    this.updates.problem = Some(err);
+                    cx.notify();
                 })
-                .detach();
-        }
+                .ok();
+            }
+        })
+        .detach();
     }
 
     /// Installs the downloaded update, then starts the new Katna Mail and
@@ -115,7 +228,6 @@ impl MailWindow {
         else {
             return;
         };
-        self.updates.confirm = false;
         self.updates.installing = true;
         self.updates.problem = None;
         cx.notify();
@@ -154,105 +266,151 @@ impl MailWindow {
         }));
     }
 
-    /// The Updates box in About; nothing for a build that does not update
-    /// itself.
-    pub(super) fn update_card(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        let status = self.updates.status.as_ref()?;
-        if status.state == state::UNSUPPORTED {
+    pub(super) fn render_update_dialog(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        reduce: bool,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let dialog = self.updates.dialog.as_mut()?;
+        let t = dialog.shown.tick(window, reduce);
+        if dialog.closing && dialog.shown.settled() {
+            self.updates.dialog = None;
             return None;
         }
-        let version = status.version.as_str();
+        let t = t.clamp(0.0, 1.0);
+        let dialog = self.updates.dialog.as_ref()?;
+        let phone = self.layout.shape.is_phone();
+        let vw = unpx(window.viewport_size().width);
+        let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
+
+        let status = self.updates.status.clone().unwrap_or_else(|| UpdateStatus {
+            state: state::IDLE.to_owned(),
+            ..UpdateStatus::default()
+        });
         let busy = self.updates.installing;
-        let (title, detail): (String, Option<String>) = if busy {
+        let offered = !status.version.is_empty()
+            && [
+                state::AVAILABLE,
+                state::DOWNLOADING,
+                state::READY,
+                state::DOWNLOAD_FAILED,
+            ]
+            .contains(&status.state.as_str());
+        let details = self
+            .updates
+            .details
+            .as_ref()
+            .filter(|d| offered && d.version == status.version);
+
+        // What happens now, and what comes next.
+        let version = status.version.as_str();
+        let (glyph, tone, title, detail): (&str, u32, String, Option<String>) = if busy {
             (
+                "download",
+                th.accent,
                 tr!("about-update-installing", version = version),
                 Some(tr!("about-update-installing-detail")),
             )
-        } else if self.updates.confirm {
-            (
-                tr!("about-update-confirm", version = version),
-                Some(tr!("about-update-confirm-detail")),
-            )
         } else {
             match status.state.as_str() {
-                state::CHECKING => (tr!("about-update-checking"), None),
-                state::UP_TO_DATE => (tr!("about-update-up-to-date"), None),
-                state::AVAILABLE => (tr!("about-update-available", version = version), None),
+                state::UNSUPPORTED => (
+                    "info",
+                    th.accent,
+                    tr!("update-dialog-title"),
+                    Some(tr!("about-update-unsupported")),
+                ),
+                state::CHECKING => ("refresh", th.accent, tr!("about-update-checking"), None),
+                state::UP_TO_DATE => (
+                    "check-circle",
+                    th.accent,
+                    tr!("about-update-up-to-date"),
+                    None,
+                ),
+                state::AVAILABLE => (
+                    "download",
+                    th.accent,
+                    tr!("about-update-available", version = version),
+                    None,
+                ),
                 state::DOWNLOADING => (
+                    "download",
+                    th.accent,
                     tr!(
                         "about-update-downloading",
                         version = version,
-                        percent = percent(status)
+                        percent = percent(&status)
                     ),
-                    None,
+                    Some(tr!("update-dialog-downloading-detail")),
                 ),
                 state::READY => (
+                    "download",
+                    th.accent,
                     tr!("about-update-ready", version = version),
-                    Some(tr!("about-update-ready-detail")),
+                    Some(tr!("about-update-confirm-detail")),
                 ),
                 state::FAILED => (
+                    "warning",
+                    th.error,
                     tr!("about-update-check-failed"),
                     (!status.detail.is_empty()).then(|| status.detail.clone()),
                 ),
                 state::DOWNLOAD_FAILED => (
+                    "warning",
+                    th.error,
                     tr!("about-update-download-failed", version = version),
                     (!status.detail.is_empty()).then(|| status.detail.clone()),
                 ),
-                _ => (tr!("about-update-not-checked"), None),
+                _ => ("refresh", th.accent, tr!("about-update-not-checked"), None),
             }
         };
         let problem = self.updates.problem.clone().filter(|_| !busy);
 
-        let buttons = div().flex().flex_row().flex_wrap().gap(px(8.0));
-        let buttons = if busy {
-            None
-        } else if self.updates.confirm {
-            Some(
-                buttons
-                    .child(
-                        outlined_button("about-update-cancel", tr!("about-update-cancel"), th)
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                this.updates.confirm = false;
-                                cx.notify();
-                            })),
-                    )
-                    .child(
-                        filled_button("about-update-install", tr!("about-update-restart"), th)
-                            .on_click(cx.listener(|this, _, _, cx| this.install_update(cx))),
-                    ),
+        let header = div()
+            .flex_none()
+            .px(px(24.0))
+            .pt(px(24.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(16.0))
+            .child(
+                div()
+                    .flex_none()
+                    .size(px(48.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .bg(rgba(fade(tone, if th.dark { 0.2 } else { 0.1 })))
+                    .child(icon(glyph, tone, 26.0)),
             )
-        } else {
-            match status.state.as_str() {
-                state::READY => Some(buttons.child(
-                    filled_button("about-update-now", tr!("about-update-button"), th).on_click(
-                        cx.listener(|this, _, _, cx| {
-                            this.updates.confirm = true;
-                            this.updates.problem = None;
-                            cx.notify();
-                        }),
-                    ),
-                )),
-                state::AVAILABLE => Some(
-                    buttons.child(
-                        filled_button("about-update-download", tr!("about-update-download"), th)
-                            .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
-                    ),
-                ),
-                state::DOWNLOAD_FAILED => Some(
-                    buttons.child(
-                        filled_button("about-update-retry", tr!("about-update-retry"), th)
-                            .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
-                    ),
-                ),
-                state::CHECKING | state::DOWNLOADING => None,
-                _ => Some(
-                    buttons.child(
-                        outlined_button("about-update-check", tr!("about-update-check"), th)
-                            .on_click(cx.listener(|this, _, _, cx| this.check_for_update(cx))),
-                    ),
-                ),
-            }
-        };
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .pt(px(2.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(4.0))
+                    .child(div().text_size(px(20.0)).line_height(px(28.0)).child(title))
+                    .children(detail.map(|detail| {
+                        div()
+                            .text_size(px(14.0))
+                            .line_height(px(21.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(detail)
+                    }))
+                    .children(problem.map(|problem| {
+                        div()
+                            .text_size(px(14.0))
+                            .line_height(px(21.0))
+                            .text_color(rgba(th.error))
+                            .child(problem)
+                    })),
+            );
+
         let progress = (status.state == state::DOWNLOADING && !busy).then(|| {
             let share = if status.total > 0 {
                 (status.done as f32 / status.total as f32).clamp(0.0, 1.0)
@@ -260,71 +418,422 @@ impl MailWindow {
                 0.0
             };
             div()
-                .h(px(4.0))
-                .w_full()
-                .rounded_full()
-                .bg(rgba(fade(th.accent, 0.2)))
-                .child(
-                    div()
-                        .h_full()
-                        .w(gpui::relative(share))
-                        .rounded_full()
-                        .bg(rgba(th.accent)),
-                )
-        });
-        let ready = status.state == state::READY || self.updates.confirm;
-        Some(
-            div()
-                .id("about-updates")
                 .flex_none()
-                .mx(px(24.0))
-                .mt(px(20.0))
-                .p(px(16.0))
+                .px(px(24.0))
+                .pt(px(16.0))
                 .flex()
-                .flex_row()
-                .items_start()
-                .gap(px(12.0))
-                .rounded(px(12.0))
-                .bg(rgba(fade(th.accent, if th.dark { 0.16 } else { 0.07 })))
-                .child(div().mt(px(1.0)).child(icon(
-                    if ready { "download" } else { "refresh" },
-                    th.accent,
-                    22.0,
-                )))
+                .flex_col()
+                .gap(px(6.0))
                 .child(
                     div()
-                        .flex_1()
-                        .min_w_0()
-                        .flex()
-                        .flex_col()
-                        .gap(px(6.0))
+                        .h(px(6.0))
+                        .w_full()
+                        .rounded_full()
+                        .bg(rgba(fade(th.accent, 0.2)))
                         .child(
                             div()
-                                .text_size(px(15.0))
-                                .line_height(px(21.0))
-                                .font_weight(FontWeight::MEDIUM)
-                                .child(title),
+                                .h_full()
+                                .w(gpui::relative(share))
+                                .rounded_full()
+                                .bg(rgba(th.accent)),
+                        ),
+                )
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!(
+                            "update-dialog-progress",
+                            done = format::size(status.done),
+                            total = format::size(status.total)
+                        )),
+                )
+        });
+
+        // The installed version beside the new one.
+        let installed = version_tile(
+            "update-installed",
+            tr!("update-dialog-installed"),
+            whats_new::VERSION,
+            whats_new::built(),
+            katna_core::update::commit_of(whats_new::VERSION).map(str::to_owned),
+            None,
+            th,
+        );
+        let new = offered.then(|| {
+            version_tile(
+                "update-new",
+                tr!("update-dialog-new"),
+                version,
+                details.map(|d| d.built).filter(|built| *built > 0),
+                details
+                    .map(|d| d.commit.clone())
+                    .filter(|c| !c.is_empty())
+                    .or_else(|| katna_core::update::commit_of(version).map(str::to_owned)),
+                Some(details.map_or(status.total, |d| d.size)).filter(|size| *size > 0),
+                th,
+            )
+        });
+        let versions = div()
+            .flex_none()
+            .px(px(24.0))
+            .pt(px(20.0))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .gap(px(12.0))
+            .child(installed)
+            .children(new);
+
+        // The highlights this build does not have, newest first.
+        let highlights: Vec<_> = details
+            .map(|d| {
+                d.highlights
+                    .iter()
+                    .filter(|h| !whats_new::has_highlight(&h.name))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let whats_new_section = (!highlights.is_empty()).then(|| {
+            div()
+                .flex_none()
+                .px(px(24.0))
+                .pt(px(24.0))
+                .flex()
+                .flex_col()
+                .gap(px(8.0))
+                .child(section_title(tr!("update-dialog-whats-new"), th))
+                .children(highlights.into_iter().enumerate().map(|(ix, h)| {
+                    div()
+                        .id(("update-highlight", ix))
+                        .p(px(14.0))
+                        .flex()
+                        .flex_row()
+                        .items_start()
+                        .gap(px(12.0))
+                        .rounded(px(12.0))
+                        .bg(rgba(fade(th.accent, if th.dark { 0.12 } else { 0.06 })))
+                        .child(div().mt(px(1.0)).child(icon("sparkle", th.accent, 18.0)))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .gap(px(2.0))
+                                .child(
+                                    div()
+                                        .text_size(px(14.0))
+                                        .line_height(px(20.0))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .child(h.title.clone()),
+                                )
+                                .child(
+                                    div()
+                                        .text_size(px(13.0))
+                                        .line_height(px(19.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(h.text.clone()),
+                                ),
                         )
-                        .children(detail.map(|detail| {
+                }))
+        });
+
+        // Every commit since the installed one.
+        let changes = details.map(|d| d.changes_since(whats_new::VERSION));
+        let compare = whats_new::changelog_url_for(Some(whats_new::VERSION), version);
+        let all_changes = dialog.all_changes;
+        let changes_section = offered.then(|| {
+            let (list, complete) = changes.unwrap_or((&[], false));
+            let count = list.len();
+            let toggle = (count > 0).then(|| {
+                div()
+                    .id("update-all-changes")
+                    .mx(px(-12.0))
+                    .px(px(12.0))
+                    .py(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(12.0))
+                    .rounded(px(8.0))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(dialog) = &mut this.updates.dialog {
+                            dialog.all_changes = !dialog.all_changes;
+                        }
+                        cx.notify();
+                    }))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.accent))
+                            .child(if complete {
+                                tr!("update-dialog-changes", count = count)
+                            } else {
+                                tr!("update-dialog-latest-changes", count = count)
+                            }),
+                    )
+                    .child(icon(
+                        if all_changes {
+                            "chevron-down"
+                        } else {
+                            "chevron-right"
+                        },
+                        th.accent,
+                        20.0,
+                    ))
+            });
+            let rows = list
+                .iter()
+                .enumerate()
+                .filter(|_| all_changes)
+                .map(|(ix, change)| {
+                    div()
+                        .id(("update-change", ix))
+                        .py(px(5.0))
+                        .flex()
+                        .flex_row()
+                        .items_start()
+                        .gap(px(12.0))
+                        .child(
                             div()
-                                .text_size(px(14.0))
-                                .line_height(px(21.0))
+                                .flex_none()
+                                .w(px(64.0))
+                                .text_size(px(12.0))
+                                .line_height(px(19.0))
                                 .text_color(rgba(th.text_dim))
-                                .child(detail)
-                        }))
-                        .children(problem.map(|problem| {
+                                .font_family("monospace")
+                                .child(change.commit.chars().take(7).collect::<String>()),
+                        )
+                        .child(
                             div()
-                                .text_size(px(14.0))
-                                .line_height(px(21.0))
-                                .text_color(rgba(th.error))
-                                .child(problem)
-                        }))
-                        .children(progress)
-                        .children(buttons.map(|b| div().mt(px(4.0)).child(b))),
+                                .flex_1()
+                                .min_w_0()
+                                .text_size(px(13.0))
+                                .line_height(px(19.0))
+                                .child(change.title.clone()),
+                        )
+                });
+            div()
+                .flex_none()
+                .px(px(24.0))
+                .pt(px(20.0))
+                .flex()
+                .flex_col()
+                .gap(px(4.0))
+                .child(section_title(tr!("update-dialog-changes-title"), th))
+                .children(toggle)
+                .children(rows)
+                .child(
+                    div().mt(px(8.0)).flex().flex_row().child(
+                        outlined_button("update-compare", tr!("update-dialog-compare"), th)
+                            .gap(px(8.0))
+                            .child(icon("open-external", th.accent, 16.0))
+                            .on_click(move |_, _, cx| cx.open_url(&compare)),
+                    ),
+                )
+        });
+
+        let body = div()
+            .id("update-body")
+            .flex_1()
+            .min_h_0()
+            .overflow_y_scroll()
+            .pb(px(20.0))
+            .flex()
+            .flex_col()
+            .child(header)
+            .children(progress)
+            .child(versions)
+            .children(whats_new_section)
+            .children(changes_section);
+
+        // Close for now, and the one step that moves the update on.
+        let close_label = if offered || status.state == state::CHECKING {
+            tr!("update-dialog-later")
+        } else {
+            tr!("update-dialog-close")
+        };
+        let close = (!busy).then(|| {
+            outlined_button("update-close", close_label, th)
+                .on_click(cx.listener(|this, _, window, cx| this.close_update_dialog(window, cx)))
+        });
+        let next = if busy {
+            None
+        } else {
+            match status.state.as_str() {
+                state::READY => Some(
+                    filled_button("update-install", tr!("about-update-restart"), th)
+                        .on_click(cx.listener(|this, _, _, cx| this.install_update(cx))),
+                ),
+                state::AVAILABLE => Some(
+                    filled_button("update-download", tr!("about-update-download"), th)
+                        .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
+                ),
+                state::DOWNLOAD_FAILED => Some(
+                    filled_button("update-retry", tr!("about-update-retry"), th)
+                        .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
+                ),
+                state::CHECKING | state::DOWNLOADING | state::UNSUPPORTED => None,
+                _ => Some(
+                    filled_button("update-check", tr!("about-update-check"), th)
+                        .on_click(cx.listener(|this, _, _, cx| this.check_for_update(cx))),
+                ),
+            }
+        };
+        let footer = div()
+            .flex_none()
+            .px(px(24.0))
+            .pt(px(12.0))
+            .pb(px(16.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .justify_end()
+            .gap(px(8.0))
+            .border_t_1()
+            .border_color(rgba(th.divider))
+            .children(close)
+            .children(next);
+
+        let card = div()
+            .id("update-dialog")
+            .track_focus(&dialog.focus)
+            .on_key_down(cx.listener(Self::update_dialog_key))
+            .occlude()
+            .w(px(width))
+            .when(phone, |d| d.h_full())
+            .when(!phone, |d| d.max_h_full().min_h_0())
+            .flex()
+            .flex_col()
+            .overflow_hidden()
+            .when(!phone, |d| {
+                d.rounded(px(PANEL_RADIUS)).shadow(elevation(th, 3.0))
+            })
+            .bg(rgba(th.surface))
+            .text_color(rgba(th.text))
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .child(body)
+            .child(footer);
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .flex()
+                .items_center()
+                .justify_center()
+                .when(!phone, |d| d.p(px(24.0)))
+                .bg(rgba(fade(0x0000_0066, t)))
+                .child(
+                    div()
+                        .id("update-scrim")
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.close_update_dialog(window, cx)),
+                        ),
+                )
+                .child(
+                    div()
+                        .max_h_full()
+                        .when(phone, |d| d.h_full())
+                        .flex()
+                        .flex_col()
+                        .opacity(t)
+                        .mt(px(lerp(24.0, 0.0, t)))
+                        .child(card),
                 )
                 .into_any_element(),
         )
     }
+}
+
+/// A small heading over a part of the dialog.
+fn section_title(text: String, th: &Theme) -> impl IntoElement {
+    div()
+        .text_size(px(12.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.text_dim))
+        .child(text)
+}
+
+/// A version's box: what it is, when it was built, its commit (a link to
+/// it) and, for the new one, the download's size.
+fn version_tile(
+    id: &'static str,
+    label: String,
+    version: &str,
+    built: Option<i64>,
+    commit: Option<String>,
+    size: Option<u64>,
+    th: &Theme,
+) -> impl IntoElement {
+    let fact = |text: String| {
+        div()
+            .text_size(px(13.0))
+            .line_height(px(19.0))
+            .text_color(rgba(th.text_dim))
+            .child(text)
+    };
+    let built = built
+        .and_then(|unix| format::local(unix, &TimeZone::system()))
+        .map(|date| tr!("update-dialog-built", date = format::long_date(date)));
+    let commit = commit.map(|commit| {
+        let short: String = commit.chars().take(7).collect();
+        let url = format!("{}/commit/{commit}", env!("CARGO_PKG_REPOSITORY"));
+        div()
+            .id(SharedString::from(format!("{id}-commit")))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(4.0))
+            .text_size(px(13.0))
+            .line_height(px(19.0))
+            .text_color(rgba(th.accent))
+            .cursor_pointer()
+            .hover(|s| s.underline())
+            .on_click(move |_, _, cx| cx.open_url(&url))
+            .child(tr!("update-dialog-commit", commit = short))
+            .child(icon("open-external", th.accent, 14.0))
+    });
+    div()
+        .id(id)
+        .flex_1()
+        .min_w(px(200.0))
+        .p(px(16.0))
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .rounded(px(12.0))
+        .bg(rgba(th.chip))
+        .child(
+            div()
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.text_dim))
+                .child(label),
+        )
+        .child(
+            div()
+                .mt(px(2.0))
+                .mb(px(4.0))
+                .text_size(px(16.0))
+                .line_height(px(22.0))
+                .font_weight(FontWeight::MEDIUM)
+                .child(version.to_owned()),
+        )
+        .children(built.map(fact))
+        .children(commit)
+        .children(size.map(|size| fact(tr!("update-dialog-size", size = format::size(size)))))
 }
 
 /// How much of the download is done, in whole percent.

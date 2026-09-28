@@ -3359,7 +3359,10 @@ Arch is the first, Windows and the others follow the same flow.
   Builds from source and packages without a plug (`Package::Other`) show
   no updates and are never checked.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
-  build of `main`: version, file name, SHA-256 and size. One channel for
+  build of `main`: version, file name, SHA-256 and size, and for the
+  Update dialog the commit, when it was made, the What's new highlights
+  (`katna-mail --highlights`) and the last 200 commits' first lines. One
+  channel for
   now, the latest build (today's `arch-latest`). It is not signed yet; the
   download comes over TLS from GitHub and is checked against the
   manifest's SHA-256 and size (signing: §25 item 3). The manifest names
@@ -3367,7 +3370,7 @@ Arch is the first, Windows and the others follow the same flow.
   never replaces, and the daemon tries a failed download three times,
   reading the manifest again before each new try, because a new build
   can publish while a download runs. A download that still fails shows
-  as such in About, with Try again.
+  as such in the Update dialog, with Try again.
 - **The daemon checks and downloads** (the only network user): two
   minutes after it starts, then every six hours, never on a metered
   connection unless the user presses Check for updates. With
@@ -3375,11 +3378,19 @@ Arch is the first, Windows and the others follow the same flow.
   it downloads a newer build at once into
   `$XDG_CACHE_HOME/katna/updates/`, checks it, and shows a notification
   with an Update button. `UpdateStatus`, `CheckForUpdate`,
-  `DownloadUpdate` and `UpdateChanged` on `Pim1` let Katna Mail follow.
+  `DownloadUpdate` and `UpdateChanged` on `Pim1` let Katna Mail follow;
+  `UpdateDetails` hands over the offered manifest as JSON, so it can
+  grow without changing the interface.
+- **The Update dialog** (Help > Check for Updates, Quick settings > Help,
+  and the notification's Update button) shows the installed version
+  beside the new one, each with when it was built and its commit, the
+  download's size, the new version's highlights this build does not
+  have, the commits since the installed one and a link comparing the two
+  on GitHub. About shows only the version.
 - **Katna Mail installs**, because the password prompt (the polkit agent)
-  belongs to the desktop session and a user service has none. About shows
-  the update; Update first says Katna Mail will close, install and open
-  again, then runs `pkexec /usr/lib/katna/katna-update-helper <file>
+  belongs to the desktop session and a user service has none. The
+  dialog says Katna Mail will close, install and open again, and Update
+  and restart runs `pkexec /usr/lib/katna/katna-update-helper <file>
   <sha256>`. The polkit action `in.invenia.katna.update` (`auth_admin`,
   never remembered) allows only that helper. As root, the helper copies
   the file where only root can write, checks the copy's SHA-256 again and

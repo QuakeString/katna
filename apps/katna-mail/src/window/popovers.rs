@@ -97,6 +97,9 @@ impl MailWindow {
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
             true
+        } else if self.update_dialog_open() {
+            self.close_update_dialog(window, cx);
+            true
         } else if self.about_open() {
             self.close_about(window, cx);
             true
