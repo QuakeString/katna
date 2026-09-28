@@ -195,6 +195,9 @@ pub struct Daemon {
     /// How long each account's SMTP server holds mail (FUTURERELEASE),
     /// once asked; `None` when it cannot.
     hold_limits: Mutex<HashMap<AccountId, Option<u64>>>,
+    /// Whether each account's SMTP server sends delivery receipts, once
+    /// asked.
+    delivery_receipts: Mutex<HashMap<AccountId, bool>>,
     notices: Sender<Notice>,
     /// Connections for messages the user opens.
     on_demand: OnDemand,
@@ -264,6 +267,7 @@ impl Daemon {
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
             hold_limits: Mutex::default(),
+            delivery_receipts: Mutex::default(),
             notices,
             on_demand: OnDemand::default(),
             new_mail: OnceLock::new(),
@@ -1218,6 +1222,32 @@ impl Daemon {
         }
         self.hold_limits.lock().unwrap().insert(account, limit);
         Ok(limit.unwrap_or(0))
+    }
+
+    /// Whether the SMTP server of `account` sends delivery receipts
+    /// (RFC 3461 `DSN`). Logs in to ask the first time.
+    pub async fn server_delivery_receipts(
+        self: &Arc<Self>,
+        account: AccountId,
+    ) -> Result<bool, CommandError> {
+        self.check_smtp(account)?;
+        if let Some(&offered) = self.delivery_receipts.lock().unwrap().get(&account) {
+            return Ok(offered);
+        }
+        let failed = |err: katna_sync::Error| CommandError::Failed(err.to_string());
+        let mut sender = SmtpAccounts(Arc::downgrade(self))
+            .connect(account)
+            .await
+            .map_err(failed)?;
+        let offered = sender.offers_receipts().await.map_err(failed)?;
+        if let Err(error) = sender.quit().await {
+            tracing::debug!(%error, "SMTP QUIT after asking");
+        }
+        self.delivery_receipts
+            .lock()
+            .unwrap()
+            .insert(account, offered);
+        Ok(offered)
     }
 
     fn check_smtp(&self, account: AccountId) -> Result<(), CommandError> {

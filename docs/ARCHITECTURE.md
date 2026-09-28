@@ -1536,9 +1536,9 @@ Gemini or confidential mode):
   still open then; with "Always show images" off, each message's images
   still wait to be asked for; and the new-mail sound is the notification's
   `sound-name` hint, or `suppress-sound` when off. Open and click
-  tracking is not a setting: it is off for every new message and turned
-  on per message in compose (§16.1), so Mailspring's tracking defaults
-  have no counterpart.
+  tracking is not a setting: it, a read receipt and a delivery receipt
+  are on for every new message and reply and turned off per message in compose (§16.1), so
+  Mailspring's tracking defaults have no counterpart.
 - **Searching settings.** While the Settings page is open the top bar's
   search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
@@ -2654,7 +2654,19 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   no recipients, no content. The app keeps the ID → message mapping.
 - **Deliverability:** dedicated tracking domain; custom domains for
   business users (`t.customer.com`).
-- **Consent:** tracking is opt-in per message and off by default. Legal
+- **Consent:** tracking, a read receipt and a delivery receipt are on by
+  default for each new message and reply (the owner's choice, 2026-09-28)
+  and turned off per message; without a Katna account mail goes out
+  untracked.
+- **Delivery receipts** need no Katna account: the daemon asks the
+  account's SMTP server for a delivery status notification per recipient
+  (RFC 3461: `RET=HDRS` on `MAIL FROM`, `NOTIFY=SUCCESS,FAILURE,DELAY` on
+  each `RCPT TO`), and the server mails them back to the sender. Only
+  servers that list `DSN` after EHLO offer them; Gmail does not.
+  `ServerDeliveryReceipts(account)` tells compose, which greys the switch
+  where they are not offered. The app asks with an
+  `X-Katna-Delivery-Receipt` header that the daemon takes out when it
+  queues the message and keeps as `outbox.delivery_receipt` (mail.db v9). Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and
