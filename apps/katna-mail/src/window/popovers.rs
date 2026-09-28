@@ -83,6 +83,9 @@ impl MailWindow {
         let closed = if self.context_menu.is_some() {
             self.close_context_menu(cx);
             true
+        } else if self.nav_menu.is_some() {
+            self.close_nav_menu(cx);
+            true
         } else if self.close_delete_ask(cx) || self.close_snooze_menu(cx) {
             true
         } else if self.print_preview_open() {
