@@ -341,8 +341,8 @@ impl MailWindow {
     }
 
     /// Opens the conversation of `message` from the Inbox list, looking in
-    /// every inbox tab; shows the Inbox and returns `false` when it is not
-    /// listed there.
+    /// every inbox tab; when it is not listed there, shows the Inbox with
+    /// the conversation open by itself and returns `false`.
     fn show_message(
         &mut self,
         message: MessageId,
@@ -393,6 +393,20 @@ impl MailWindow {
                 if tabs > 0 {
                     self.open_tab(first, cx);
                 }
+                // Not in the list (another view, or a line the list folds
+                // differently): open it in the reader by itself anyway.
+                let entry = match thread {
+                    Some(thread) => crate::data::Entry {
+                        key: EntryKey::Thread(thread),
+                        latest: message,
+                    },
+                    None => crate::data::Entry::message(message),
+                };
+                tracing::debug!(
+                    message = message.0,
+                    "opening a message the Inbox does not list"
+                );
+                self.open_contact_entry(entry, window, cx);
                 false
             }
         }

@@ -85,12 +85,14 @@ struct Application {
 
 #[zbus::interface(name = "org.freedesktop.Application")]
 impl Application {
-    fn activate(&self, _platform_data: HashMap<String, OwnedValue>) {
+    fn activate(&self, platform_data: HashMap<String, OwnedValue>) {
+        keep_activation_token(&platform_data);
         let _ = self.requests.try_send(Request::Activate);
     }
 
     /// Opens `mailto:` links; Katna Mail opens no files.
-    fn open(&self, uris: Vec<String>, _platform_data: HashMap<String, OwnedValue>) {
+    fn open(&self, uris: Vec<String>, platform_data: HashMap<String, OwnedValue>) {
+        keep_activation_token(&platform_data);
         let mut sent = false;
         for uri in uris
             .into_iter()
@@ -107,8 +109,9 @@ impl Application {
         &self,
         action_name: String,
         parameter: Vec<OwnedValue>,
-        _platform_data: HashMap<String, OwnedValue>,
+        platform_data: HashMap<String, OwnedValue>,
     ) {
+        keep_activation_token(&platform_data);
         if action_name == app_action::SEARCH {
             if let Some(text) = parameter
                 .into_iter()
@@ -127,6 +130,19 @@ impl Application {
             name: action_name,
             message,
         });
+    }
+}
+
+/// Keeps the activation token the caller (the tray, a notification, the
+/// launcher) passed, so the window can come forward on Wayland rather than
+/// only ask for attention.
+fn keep_activation_token(platform_data: &HashMap<String, OwnedValue>) {
+    let token = ["activation-token", "desktop-startup-id"]
+        .into_iter()
+        .filter_map(|key| platform_data.get(key))
+        .find_map(|value| <&str>::try_from(value).ok());
+    if let Some(token) = token {
+        katna_ui::native::set_activation_token(token);
     }
 }
 
