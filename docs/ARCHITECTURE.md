@@ -1079,6 +1079,18 @@ is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
 unknown elements never reach the tree, hidden preheaders are dropped, link
 targets are limited to `http`, `https` and `mailto`, and the tree is capped
 in depth and size. `cid:` and `data:` images come from the message.
+SVG pictures from mail (carried in it, on the web, or attached) are never
+handed to GPUI as they are: GPUI's SVG support reads any local file an
+`<image href>` names (`/dev/zero` never ends). `katna_preview::svg` draws
+them to bitmaps on a background thread instead, with nothing they link to
+loaded, `svgz` refused, pictures inside them size-checked, and the bitmap
+at twice the SVG's size but at most 2048 px on a side in the reading pane
+(4096 px and 16 MP in the viewer). A message's links open the address in
+their `href`, whatever their text says, so while the pointer is on a link
+its real address shows at the foot of the reading pane, as in a browser:
+the host stands out (an internationalized one as the punycode the network
+sees, a name and password before it left out), the rest is quieter
+(`rich::link_status`).
 In a light theme a message that sets its own colors is drawn on its own
 page; one that does not follows the app's colors. In a dark theme the
 message's colors are remapped (`window/dark.rs`): white becomes the reading
@@ -1094,9 +1106,18 @@ that is really an HTML document is rendered as HTML.
 Remote content is blocked by default. Tracking pixels (tiny images and
 known open-tracking paths) are dropped. A banner offers "Show images" (this
 message) and "Always show from this sender" (kept in
-`$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
-(`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
-image by its bytes); the app never uses the network.
+`$XDG_CONFIG_HOME/katna/trusted-senders`). Anyone can write any `From`, so
+a trusted sender's images load only when the user's provider vouched for
+the address: its `Authentication-Results` (the topmost field, and others
+from the same server) show DMARC passing for the `From` domain, or DKIM
+passing for a domain aligned with it (`katna_render::sender_authenticated`).
+Otherwise the banner says the message may not be from that sender and
+offers "Show images" for it. A provider that adds no such field leaves the
+topmost one to the sender, which is no worse than trusting `From` alone.
+Images are fetched by the daemon (`FetchImage`, `https` only, `http`
+upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
+different ones per message and 6 at a time; the app never uses the
+network.
 
 Message text can be selected and copied as in a browser (`window/select.rs`):
 each run of text a body draws records its layout, so a pointer position maps
@@ -1950,7 +1971,9 @@ desktop's own app stays one click away.
     viewer says so and offers the other app).
   - **Pictures:** PNG, JPEG, GIF, WebP, BMP, TIFF through the `image`
     crate GPUI already uses, turned upright by their EXIF orientation and
-    scaled to at most 4096 px; animated GIFs and SVG are drawn by GPUI.
+    scaled to at most 4096 px; animated GIFs are drawn by GPUI. SVG is
+    drawn by `katna_preview::svg` (resvg with nothing linked loaded; see
+    §12), never by GPUI.
   - **Text** (`text/*`, JSON, logs, code by extension): monospace, the
     first 512 KB and 10,000 lines.
   - **Spreadsheets:** Excel (xlsx, xlsm, xlsb, xls) and OpenDocument (ods)
@@ -1960,6 +1983,11 @@ desktop's own app stays one click away.
     right, and a tab per sheet at the foot. Values only: formulas show
     their saved result, dates show as dates; no cell colors, merged cells
     or charts. Up to 20,000 rows, 256 columns and 2 million cells.
+    calamine lays a sheet out from its first cell to its last, so xlsx
+    and xlsb sheets are read cell by cell and cut to those limits (one
+    cell in A1 and one in XFD1048576 would otherwise ask for 17 billion
+    cells), and an xls file, which calamine lays out whole while opening
+    it, is refused when a sheet spans more than 4 million cells.
   - **Documents:** Word (docx) and OpenDocument text (odt), read by
     `katna-preview` itself (the zip through `zip`, the XML through
     `quick-xml`, both MIT): one long white page with the title, headings,
@@ -2962,6 +2990,17 @@ real Subject; other inner headers are ignored.
   (a mailing list footer), the banner says the rest could come from anyone.
   Remote content stays blocked in encrypted mail whatever the setting
   (for the HTML view).
+- **GnuPG's word.** Decrypted means `DECRYPTION_OKAY`, then
+  `END_DECRYPTION` (gpg; gpgsm sends neither), with no `BADMDC`, `NODATA`
+  or `DECRYPTION_FAILED` on the way; a stream that is damaged or cut short
+  never shows. The exit status does not decide, as gpg exits with an error
+  for a signature whose key is missing, or when one of several keys a
+  message is encrypted to fails though another opened it. GnuPG runs with
+  `--no-verbose`, so a message cannot make it print lines that look like
+  status lines (which share stderr with its log; a separate status pipe
+  would need `unsafe` fd passing), and gpg with `--no-auto-key-retrieve
+  --auto-key-locate local`, so checking a signature never fetches a key
+  from the network (the fetch would tell the sender it was read).
 - **Snippets and search.** Inline armor is left out of list snippets and
   the index (`katna_crypto::without_armor`): encrypted blocks are dropped,
   clear-signed text is kept without its armor.
