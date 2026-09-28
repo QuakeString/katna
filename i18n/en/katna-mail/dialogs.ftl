@@ -23,6 +23,8 @@ about-update-check-failed = Could not check for updates
 about-update-available = Version { $version } is available
 # $percent: how much is downloaded, a whole number from 0 to 100.
 about-update-downloading = Downloading version { $version }… { $percent }%
+# The download failed even after trying again; the reason shows under it.
+about-update-download-failed = The download of version { $version } did not finish
 about-update-ready = Version { $version } is ready to install
 about-update-ready-detail = Katna Mail restarts to finish the update.
 # After pressing Update: what happens next, before it happens.
@@ -40,6 +42,7 @@ about-update-restart-failed = The update is installed, but Katna Mail could not 
 # Buttons.
 about-update-check = Check for updates
 about-update-download = Download
+about-update-retry = Try again
 about-update-button = Update
 about-update-restart = Update and restart
 about-update-cancel = Not now
