@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Who has seen it, behind an eye"
+text = """
+Mail you sent with tracking no longer has a box of lines above it. An eye
+beside the star turns your accent colour once someone opens it; point at
+it to see who opened it or followed a link, and when.
+"""
