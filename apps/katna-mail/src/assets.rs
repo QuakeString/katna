@@ -167,9 +167,14 @@ fn flag(data: &[u8]) -> Vec<u8> {
         .into_bytes()
 }
 
-/// Katna's logo in full, and its small form for under 48 px.
+/// Katna's logo, the k on its teal disc: with its shadow, and without it
+/// for under 48 px, where the shadow blurs to mush. And Katna Mail's
+/// wordmark, for the large places (About, the welcome).
 const LOGO: &[u8] = include_bytes!("../../../packaging/icons/src/katna.svg");
 const LOGO_SMALL: &[u8] = include_bytes!("../../../packaging/icons/src/katna-small.svg");
+const WORDMARK: &[u8] = include_bytes!("../../../packaging/icons/src/katna-wordmark.svg");
+/// The wordmark's own width and height, as its `<svg>` gives them.
+pub const WORDMARK_SIZE: (u32, u32) = (527, 506);
 
 /// Where [`Assets`] serves the logo for a `size` px square (GPUI pixels).
 pub fn logo_path(size: f32) -> String {
@@ -178,23 +183,34 @@ pub fn logo_path(size: f32) -> String {
     format!("logo/{form}-{size}.svg")
 }
 
-/// The logo for `logo/{full,small}-<size>.svg`. GPUI draws an SVG picture
-/// at twice its own size, so giving it the size it is shown at renders it
-/// sharp on double-density screens without sampling it down much.
+/// Where [`Assets`] serves the wordmark `height` px tall (GPUI pixels).
+pub fn wordmark_path(height: f32) -> String {
+    let height = height.round().clamp(1.0, 1024.0) as u32;
+    format!("logo/wordmark-{height}.svg")
+}
+
+/// The logo for `logo/{full,small}-<size>.svg` and the wordmark for
+/// `logo/wordmark-<height>.svg`. GPUI draws an SVG picture at twice its
+/// own size, so giving it the size it is shown at renders it sharp on
+/// double-density screens without sampling it down much.
 fn logo(path: &str) -> Option<Vec<u8>> {
     let rest = path.strip_prefix("logo/")?.strip_suffix(".svg")?;
     let (form, size) = rest.split_once('-')?;
     let size: u32 = size.parse().ok().filter(|s| (1..=1024).contains(s))?;
-    let data = match form {
-        "full" => LOGO,
-        "small" => LOGO_SMALL,
+    let (data, from, to) = match form {
+        "full" => (LOGO, (128, 128), (size, size)),
+        "small" => (LOGO_SMALL, (128, 128), (size, size)),
+        "wordmark" => {
+            let (w, h) = WORDMARK_SIZE;
+            (WORDMARK, (w, h), ((size * w).div_ceil(h), size))
+        }
         _ => return None,
     };
     let text = String::from_utf8_lossy(data);
     Some(
         text.replacen(
-            r#"width="128" height="128""#,
-            &format!(r#"width="{size}" height="{size}""#),
+            &format!(r#"width="{}" height="{}""#, from.0, from.1),
+            &format!(r#"width="{}" height="{}""#, to.0, to.1),
             1,
         )
         .into_bytes(),
@@ -267,9 +283,12 @@ mod tests {
         let small = Assets.load(&logo_path(40.0)).unwrap().unwrap();
         let small = String::from_utf8_lossy(&small);
         assert!(small.contains(r#"width="40" height="40""#));
-        assert!(small.contains("small form"));
+        assert!(!small.contains("<filter"));
         let full = Assets.load("logo/full-96.svg").unwrap().unwrap();
-        assert!(String::from_utf8_lossy(&full).contains(r#"width="96" height="96""#));
+        let full = String::from_utf8_lossy(&full);
+        assert!(full.contains(r#"width="96" height="96""#) && full.contains("<filter"));
+        let wordmark = Assets.load(&wordmark_path(120.0)).unwrap().unwrap();
+        assert!(String::from_utf8_lossy(&wordmark).contains(r#"width="125" height="120""#));
         for bad in ["logo/full-0.svg", "logo/big-64.svg", "logo/full.svg"] {
             assert!(Assets.load(bad).unwrap().is_none(), "{bad}");
         }

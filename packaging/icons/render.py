@@ -6,9 +6,15 @@ Needs rsvg-convert (librsvg) and Pillow. Run it after changing the logo:
 
     python3 packaging/icons/render.py
 
-- 16 to 32 px use src/katna-small.svg (the lettering can't be read there).
-- 48 px and up use src/katna.svg, the full logo.
+- 16 to 32 px use src/katna-small.svg, the k on its disc without the
+  shadow, which blurs to mush that small.
+- 48 px and up use src/katna.svg, with the shadow.
+- src/katna-symbolic.svg, the one-colour k the tray shows, is copied to
+  hicolor/symbolic/apps/ as <app ID>-symbolic.svg.
+
+Then run packaging/windows/make-ico.py for Windows' katna.ico.
 """
+import shutil
 import pathlib
 import subprocess
 import tempfile
@@ -40,6 +46,9 @@ def main():
         out = HERE / "hicolor" / f"{size}x{size}" / "apps" / f"{APP_ID}.png"
         out.parent.mkdir(parents=True, exist_ok=True)
         render(size, out)
+    symbolic = HERE / "hicolor" / "symbolic" / "apps" / f"{APP_ID}-symbolic.svg"
+    symbolic.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(HERE / "src" / "katna-symbolic.svg", symbolic)
     tray = ROOT / "crates" / "katna-platform" / "icons"
     tray.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
