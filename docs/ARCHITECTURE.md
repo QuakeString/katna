@@ -1390,6 +1390,11 @@ box. What it does and what we decided:
 - **Message list.** A virtualized list of the folder's message IDs, newest
   first; rows are read in visible ranges and cached. Sent and draft folders
   show recipients. Threads (conversation view) wait for task 1.7.
+  GPUI's `List` holds a page of 1,200 lines around the ones on show, not
+  all of them (`window/lines.rs`): it keeps state per line and builds it
+  again whole on each reset and change of width. The page moves before a
+  frame when the top line on show comes within 300 lines of its edge,
+  keeping the scroll position to the pixel.
 - **Counts.** Folder totals come from the location index at startup
   (5 ms for 100,000 messages). Unread counts need each message's flags
   (about 100 ms per 100,000 unread messages), so they are counted on a
