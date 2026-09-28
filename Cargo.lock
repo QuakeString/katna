@@ -5922,6 +5922,7 @@ dependencies = [
  "katna-sync",
  "katna-translate",
  "oo7",
+ "ring",
  "serde",
  "serde_json",
  "smol",

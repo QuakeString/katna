@@ -10,7 +10,9 @@ use std::{
 
 use katna_core::ids::{
     DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX, RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH,
+    UPDATE_ACTION,
 };
+use katna_core::update::ARCH_HELPER;
 
 /// Name of the systemd user unit (also `katna_daemon::install::UNIT`).
 const UNIT: &str = "katna-daemon.service";
@@ -191,6 +193,7 @@ fn prefix_only_in_checked_files() {
         format!("systemd/{UNIT}"),
         format!("krunner/{MAIL_APP_ID}.desktop"),
         format!("gnome-shell/{MAIL_APP_ID}.search-provider.ini"),
+        format!("polkit/{UPDATE_ACTION}.policy"),
     ];
     for dir in fs::read_dir(packaging()).unwrap() {
         let dir = dir.unwrap().path();
@@ -217,4 +220,34 @@ fn prefix_only_in_checked_files() {
             );
         }
     }
+}
+
+/// The polkit action lets `pkexec` run the Arch package's update helper,
+/// where the PKGBUILD installs it, and nothing else.
+#[test]
+fn update_action_runs_the_update_helper() {
+    let text = read("polkit", &format!("{UPDATE_ACTION}.policy"));
+    assert!(
+        text.contains(&format!("<action id=\"{UPDATE_ACTION}\">")),
+        "{text}"
+    );
+    assert!(
+        text.contains(&format!("<icon_name>{MAIL_APP_ID}</icon_name>")),
+        "{text}"
+    );
+    assert!(
+        text.contains(&format!(
+            "<annotate key=\"org.freedesktop.policykit.exec.path\">{ARCH_HELPER}</annotate>"
+        )),
+        "{text}"
+    );
+    let helper = packaging().join("arch").join("katna-update-helper");
+    assert!(helper.is_file(), "{}", helper.display());
+    let pkgbuild = fs::read_to_string(packaging().join("arch/PKGBUILD")).unwrap();
+    assert!(
+        pkgbuild.contains(&format!(
+            "packaging/arch/katna-update-helper \"$pkgdir{ARCH_HELPER}\""
+        )),
+        "the PKGBUILD installs the helper at {ARCH_HELPER}"
+    );
 }

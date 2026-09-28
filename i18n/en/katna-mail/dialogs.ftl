@@ -11,6 +11,38 @@ about-tooltip = About Katna
 about-tagline = Mail and calendar for the Linux desktop
 # Opens the What’s new dialog.
 about-whats-new = What’s new
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
+about-update-not-checked = Updates have not been checked yet
+about-update-checking = Checking for updates…
+about-update-up-to-date = Katna Mail is up to date
+# A check failed; the reason, if known, shows under it.
+about-update-check-failed = Could not check for updates
+about-update-available = Version { $version } is available
+# $percent: how much is downloaded, a whole number from 0 to 100.
+about-update-downloading = Downloading version { $version }… { $percent }%
+about-update-ready = Version { $version } is ready to install
+about-update-ready-detail = Katna Mail restarts to finish the update.
+# After pressing Update: what happens next, before it happens.
+about-update-confirm = Install version { $version }?
+about-update-confirm-detail = Katna Mail will close, install the update and open again where you left off. Your computer will ask for your password.
+about-update-installing = Installing version { $version }…
+about-update-installing-detail = Enter your password in the window that opened.
+# The password window was closed or the password was refused.
+about-update-cancelled = The update was not installed, because the password was not given.
+# $error: what the installer said.
+about-update-failed = The update could not be installed: { $error }
+about-update-unsupported = This copy of Katna Mail is updated by your package manager.
+# $error: the system's reason.
+about-update-restart-failed = The update is installed, but Katna Mail could not open again ({ $error }). Open it yourself.
+# Buttons.
+about-update-check = Check for updates
+about-update-download = Download
+about-update-button = Update
+about-update-restart = Update and restart
+about-update-cancel = Not now
 # Opens the list of changes in each version, in the browser.
 about-changelog = Changelog
 # Opens Katna's source code on the web.

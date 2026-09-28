@@ -295,6 +295,7 @@ impl MailWindow {
                         return;
                     }
                 }
+                app_action::INSTALL_UPDATE => self.show_update(window, cx),
                 app_action::QUIT => {
                     cx.quit();
                     return;

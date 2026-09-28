@@ -167,6 +167,16 @@ impl NewMailNotices {
         }
     }
 
+    /// Says that the update to `version` is downloaded, with an Update
+    /// button. Returns the notification's ID.
+    pub(crate) async fn update_ready(&self, version: &str) -> Option<u32> {
+        self.notifier
+            .update_ready(version)
+            .await
+            .map_err(|err| tracing::warn!(%err, "could not show that an update is ready"))
+            .ok()
+    }
+
     pub(crate) fn forget(&self, account: AccountId) {
         self.seen.lock().unwrap().remove(&account);
     }
@@ -363,13 +373,29 @@ impl NewMailNotices {
             };
             match got {
                 Got::Token(id, token) => {
-                    if notices.shown.lock().unwrap().contains_key(&id) {
+                    if notices.shown.lock().unwrap().contains_key(&id)
+                        || daemon.updates().is_notice(id)
+                    {
                         notices.tokens.lock().unwrap().insert(id, token);
                     }
                 }
                 Got::Closed(id) => {
+                    daemon.updates().take_notice(id);
                     notices.shown.lock().unwrap().remove(&id);
                     notices.tokens.lock().unwrap().remove(&id);
+                }
+                Got::Action(id, _) if daemon.updates().take_notice(id) => {
+                    // The notification itself, or its Update button: Katna
+                    // Mail shows the update, ready to install.
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    crate::mail_app::run(
+                        &notices.connection,
+                        Some(katna_dbus::app_action::INSTALL_UPDATE),
+                        Vec::new(),
+                        token,
+                    )
+                    .await;
+                    notices.close(vec![id]).await;
                 }
                 Got::Action(id, key) => {
                     let Some(shown) = notices.shown.lock().unwrap().remove(&id) else {

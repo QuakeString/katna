@@ -53,6 +53,10 @@ pub const RUNNER_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/Runner";
 /// `gnome-shell/search-providers` file.
 pub const SEARCH_PROVIDER_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/SearchProvider";
 
+/// The polkit action that lets Katna Mail install an update of Katna
+/// after the system's password prompt (`packaging/polkit/`).
+pub const UPDATE_ACTION: &str = concat!(prefix!(), ".update");
+
 /// Katna's crash tracker: the Sentry project crash reports are sent to,
 /// only after the user agrees (`docs/ARCHITECTURE.md` §19.2). A DSN is
 /// the project's public address, not a secret. Empty turns sending off;
