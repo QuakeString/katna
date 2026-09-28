@@ -583,16 +583,22 @@ mod tests {
 
     use super::*;
 
+    /// An absolute path on this system: Windows needs a drive.
+    fn at(path: &str) -> PathBuf {
+        Path::new(if cfg!(windows) { "C:\\" } else { "/" }).join(path)
+    }
+
     fn windows(name: &str) -> Option<OsString> {
-        Some(OsString::from(match name {
-            "LOCALAPPDATA" => "/Users/ada/AppData/Local",
-            "APPDATA" => "/Users/ada/AppData/Roaming",
-            "USERPROFILE" => "/Users/ada",
-            "ProgramFiles" => "/Program Files",
-            "ProgramData" => "/ProgramData",
-            "PUBLIC" => "/Users/Public",
+        let path = match name {
+            "LOCALAPPDATA" => "Users/ada/AppData/Local",
+            "APPDATA" => "Users/ada/AppData/Roaming",
+            "USERPROFILE" => "Users/ada",
+            "ProgramFiles" => "Program Files",
+            "ProgramData" => "ProgramData",
+            "PUBLIC" => "Users/Public",
             _ => return None,
-        }))
+        };
+        Some(at(path).into_os_string())
     }
 
     #[test]
@@ -600,16 +606,15 @@ mod tests {
         let layout = Layout::from_lookup(Scope::User, windows).unwrap();
         assert_eq!(
             layout.programs,
-            Path::new("/Users/ada/AppData/Local/Programs/Katna")
+            at("Users/ada/AppData/Local/Programs/Katna")
         );
-        assert!(
-            layout
-                .shortcut()
-                .ends_with("Roaming/Microsoft/Windows/Start Menu/Programs/Katna Mail.lnk")
+        assert_eq!(
+            layout.shortcut(),
+            at("Users/ada/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Katna Mail.lnk")
         );
         assert_eq!(
             layout.desktop_shortcut(),
-            Path::new("/Users/ada/Desktop/Katna Mail.lnk")
+            at("Users/ada/Desktop/Katna Mail.lnk")
         );
         assert!(Layout::from_lookup(Scope::User, |_| None).is_err());
     }
@@ -617,15 +622,15 @@ mod tests {
     #[test]
     fn installs_for_everyone_in_the_machines_folders() {
         let layout = Layout::from_lookup(Scope::Machine, windows).unwrap();
-        assert_eq!(layout.programs, Path::new("/Program Files/Katna"));
+        assert_eq!(layout.programs, at("Program Files/Katna"));
         assert!(
             layout
                 .shortcut()
-                .starts_with("/ProgramData/Microsoft/Windows/Start Menu")
+                .starts_with(at("ProgramData/Microsoft/Windows/Start Menu"))
         );
         assert_eq!(
             layout.desktop_shortcut(),
-            Path::new("/Users/Public/Desktop/Katna Mail.lnk")
+            at("Users/Public/Desktop/Katna Mail.lnk")
         );
     }
 
@@ -633,12 +638,12 @@ mod tests {
     fn a_picked_folder_gets_its_own_katna_folder() {
         let layout = Layout::from_lookup(Scope::User, windows).unwrap();
         assert_eq!(
-            layout.clone().in_folder(Path::new("/D/Apps")).programs,
-            Path::new("/D/Apps/Katna")
+            layout.clone().in_folder(&at("D/Apps")).programs,
+            at("D/Apps/Katna")
         );
         assert_eq!(
-            layout.in_folder(Path::new("/D/Apps/katna")).programs,
-            Path::new("/D/Apps/katna")
+            layout.in_folder(&at("D/Apps/katna")).programs,
+            at("D/Apps/katna")
         );
     }
 
