@@ -804,7 +804,7 @@ To, Cc and Bcc suggest addresses as the user types, like Gmail.
   chips live in `Compose.chips` (`compose/chips.rs`); drafts and sending
   still read the fields as one "a, b, c" text.
   A chip can be dragged to another of To, Cc and Bcc (hidden Cc and Bcc
-  rows open while a chip is dragged), and pointing at one shows an x that
+  rows open while a chip is dragged), and every chip ends in an x that
   removes it.
 
 ## 8. Organizations (`katna-org`)

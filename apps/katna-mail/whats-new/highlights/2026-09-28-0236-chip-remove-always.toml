@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Remove button on every address"
+text = """
+Each address chip in To, Cc and Bcc now always shows its x, so you can
+remove it without pointing at it first.
+"""
