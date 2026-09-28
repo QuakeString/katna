@@ -34,11 +34,22 @@ impl Home {
             eprintln!("{tool} is not installed; skipping");
             return None;
         }
+        // Git for Windows' MSYS gpg reads Windows paths as relative ones;
+        // Katna uses a native build (Gpg4win), whose home is a drive path.
+        // gpgsm prints no home, so ask gpg, which comes with it.
+        let gpg = Command::new("gpg").arg("--version").output();
+        let msys = gpg.is_ok_and(|out| String::from_utf8_lossy(&out.stdout).contains("Home: /"));
+        if cfg!(windows) && msys {
+            eprintln!("{tool} is an MSYS build; skipping");
+            return None;
+        }
         // A short path: gpg-agent's socket path has a length limit.
-        let dir = tempfile::Builder::new()
-            .prefix("kc")
-            .tempdir_in("/tmp")
-            .expect("tempdir");
+        let mut builder = tempfile::Builder::new();
+        builder.prefix("kc");
+        #[cfg(unix)]
+        let dir = builder.tempdir_in("/tmp").expect("tempdir");
+        #[cfg(not(unix))]
+        let dir = builder.tempdir().expect("tempdir");
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;

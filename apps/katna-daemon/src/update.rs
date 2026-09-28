@@ -41,11 +41,25 @@ fn new_binary(link: &Path) -> Option<PathBuf> {
 
 /// Starts `binary` in place of this process, with the same arguments.
 /// Returns only if that fails.
+#[cfg(unix)]
 pub fn restart(binary: &Path) -> std::io::Error {
     use std::os::unix::process::CommandExt;
     std::process::Command::new(binary)
         .args(std::env::args_os().skip(1))
         .exec()
+}
+
+/// Starts `binary` with the same arguments; the caller then exits, as
+/// Windows cannot replace a running process. Returns only if that fails.
+#[cfg(windows)]
+pub fn restart(binary: &Path) -> std::io::Error {
+    match std::process::Command::new(binary)
+        .args(std::env::args_os().skip(1))
+        .spawn()
+    {
+        Ok(_) => std::process::exit(0),
+        Err(err) => err,
+    }
 }
 
 #[cfg(test)]
@@ -61,6 +75,7 @@ mod tests {
         assert_eq!(new_binary(Path::new("/usr/bin/katna-daemon")), None);
     }
 
+    #[cfg(target_os = "linux")]
     #[test]
     fn this_binary_is_not_replaced() {
         let link = std::fs::read_link(SELF_EXE).unwrap();

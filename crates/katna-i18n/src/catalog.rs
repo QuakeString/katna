@@ -299,6 +299,10 @@ mod tests {
             .join("../..")
             .canonicalize()
             .unwrap();
+        // Canonical like `root`, which on Windows starts with `\\?\`.
+        let this_crate = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .canonicalize()
+            .unwrap();
         let mut missing = Vec::new();
         let mut stack = vec![root.join("apps"), root.join("crates"), root.join("tools")];
         while let Some(dir) = stack.pop() {
@@ -310,7 +314,7 @@ mod tests {
                 if path.is_dir() {
                     stack.push(path);
                 } else if path.extension().is_some_and(|e| e == "rs")
-                    && !path.starts_with(env!("CARGO_MANIFEST_DIR"))
+                    && !path.starts_with(&this_crate)
                 {
                     let text = std::fs::read_to_string(&path).unwrap_or_default();
                     for (at, _) in text.match_indices("tr!(") {

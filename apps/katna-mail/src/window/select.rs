@@ -584,7 +584,7 @@ fn release<T: SelectHost>(this: &mut T, cx: &mut Context<T>) {
     // middle button.
     let selected = text.text();
     if !selected.is_empty() {
-        cx.write_to_primary(ClipboardItem::new_string(selected));
+        katna_ui::native::write_to_primary(cx, ClipboardItem::new_string(selected));
     }
 }
 

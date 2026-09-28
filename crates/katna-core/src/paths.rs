@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! XDG base directories and the files Katna keeps in them
-//! (`docs/ARCHITECTURE.md` §5.1).
+//! XDG base directories (on Windows, the AppData folders) and the files
+//! Katna keeps in them (`docs/ARCHITECTURE.md` §5.1).
 
 use std::ffi::OsString;
 use std::fs::DirBuilder;
+#[cfg(unix)]
 use std::os::unix::fs::DirBuilderExt;
 use std::path::{Path, PathBuf};
 
@@ -12,6 +13,9 @@ use crate::error::{Error, Result};
 
 /// Name of the Katna subdirectory in each XDG base directory.
 const APP_DIR: &str = "katna";
+
+/// Name of the Katna folder in `%APPDATA%` and `%LOCALAPPDATA%` on Windows.
+const WINDOWS_APP_DIR: &str = "Katna";
 
 /// Where Katna keeps its configuration and data.
 ///
@@ -27,9 +31,38 @@ pub struct Paths {
 
 impl Paths {
     /// Resolves the directories from `$XDG_CONFIG_HOME`, `$XDG_DATA_HOME`,
-    /// `$XDG_CACHE_HOME`, `$XDG_STATE_HOME` and `$HOME`.
+    /// `$XDG_CACHE_HOME`, `$XDG_STATE_HOME` and `$HOME`; on Windows from
+    /// `%APPDATA%` and `%LOCALAPPDATA%` ([`Paths::from_windows_lookup`]).
     pub fn from_env() -> Result<Self> {
-        Self::from_lookup(|name| std::env::var_os(name))
+        if cfg!(windows) {
+            Self::from_windows_lookup(|name| std::env::var_os(name))
+        } else {
+            Self::from_lookup(|name| std::env::var_os(name))
+        }
+    }
+
+    /// The Windows layout: settings in `%APPDATA%\Katna` (they roam with
+    /// the user's profile), mail and everything else in
+    /// `%LOCALAPPDATA%\Katna\{Data,Cache,State}`, which stays on this
+    /// computer because it can be large.
+    pub fn from_windows_lookup(lookup: impl Fn(&str) -> Option<OsString>) -> Result<Self> {
+        let absolute = |name: &str| {
+            lookup(name)
+                .map(PathBuf::from)
+                .filter(|path| path.is_absolute())
+        };
+        let local = absolute("LOCALAPPDATA")
+            .ok_or(Error::NoHomeDir)?
+            .join(WINDOWS_APP_DIR);
+        let config_dir = absolute("APPDATA")
+            .map(|dir| dir.join(WINDOWS_APP_DIR))
+            .unwrap_or_else(|| local.join("Config"));
+        Ok(Self {
+            config_dir,
+            data_dir: local.join("Data"),
+            cache_dir: local.join("Cache"),
+            state_dir: local.join("State"),
+        })
     }
 
     /// Resolves the directories with `lookup` in place of the process
@@ -78,6 +111,7 @@ impl Paths {
     ///
     /// New directories get mode `0700`: they hold mail and settings that
     /// other users must not read. Existing directories are left as they are.
+    /// On Windows the user's profile folders are already private.
     pub fn create_dirs(&self) -> Result<()> {
         for dir in [
             &self.config_dir,
@@ -85,9 +119,11 @@ impl Paths {
             &self.cache_dir,
             &self.attachments_dir(),
         ] {
-            DirBuilder::new()
-                .recursive(true)
-                .mode(0o700)
+            let mut builder = DirBuilder::new();
+            builder.recursive(true);
+            #[cfg(unix)]
+            builder.mode(0o700);
+            builder
                 .create(dir)
                 .map_err(|source| Error::io(dir, source))?;
         }
@@ -199,6 +235,7 @@ impl Paths {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
+    #[cfg(unix)]
     use std::os::unix::fs::PermissionsExt;
 
     use super::*;
@@ -211,6 +248,8 @@ mod tests {
         move |name| vars.get(name).cloned()
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn defaults_to_home() {
         let paths = Paths::from_lookup(lookup(&[("HOME", "/home/ada")])).unwrap();
@@ -231,6 +270,8 @@ mod tests {
         );
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn xdg_variables_win_over_home() {
         let paths = Paths::from_lookup(lookup(&[
@@ -248,6 +289,8 @@ mod tests {
         assert_eq!(paths.cache_dir(), Path::new("/cache/katna"));
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn relative_and_empty_xdg_values_are_ignored() {
         let paths = Paths::from_lookup(lookup(&[
@@ -260,6 +303,8 @@ mod tests {
         assert_eq!(paths.data_dir(), Path::new("/home/ada/.local/share/katna"));
     }
 
+    // XDG paths start with `/`, which is not a whole path on Windows.
+    #[cfg(unix)]
     #[test]
     fn needs_a_home_directory() {
         assert!(matches!(
@@ -281,6 +326,36 @@ mod tests {
         );
     }
 
+    #[test]
+    fn windows_uses_appdata() {
+        let root = if cfg!(windows) {
+            r"C:\Users\ada"
+        } else {
+            "/Users/ada"
+        };
+        let roaming = Path::new(root).join("AppData").join("Roaming");
+        let local = Path::new(root).join("AppData").join("Local");
+        let paths = Paths::from_windows_lookup(lookup(&[
+            ("APPDATA", roaming.to_str().unwrap()),
+            ("LOCALAPPDATA", local.to_str().unwrap()),
+            ("HOME", "/ignored"),
+        ]))
+        .unwrap();
+        let katna = local.join("Katna");
+        assert_eq!(
+            paths.config_file(),
+            roaming.join("Katna").join("config.toml")
+        );
+        assert_eq!(paths.mail_db(), katna.join("Data").join("mail.db"));
+        assert_eq!(paths.cache_dir(), katna.join("Cache"));
+        assert_eq!(paths.crash_dir(), katna.join("State").join("crashes"));
+        assert!(matches!(
+            Paths::from_windows_lookup(lookup(&[("APPDATA", root)])),
+            Err(Error::NoHomeDir)
+        ));
+    }
+
+    #[cfg(unix)]
     #[test]
     fn creates_private_directories() {
         let tmp = tempfile::tempdir().unwrap();

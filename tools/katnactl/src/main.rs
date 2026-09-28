@@ -471,7 +471,7 @@ where
     Fut: Future<Output = Result<()>>,
 {
     futures_lite::future::block_on(async {
-        let connection = zbus::Connection::session()
+        let connection = katna_dbus::session()
             .await
             .map_err(|err| error(format!("session bus: {err}")))?;
         let pim = PimProxy::new(&connection).await?;

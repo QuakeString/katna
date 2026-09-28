@@ -63,7 +63,7 @@ pub(crate) async fn run(
     if action == Some(app_action::QUIT) {
         return false;
     }
-    let mut command = Command::new("katna-mail");
+    let mut command = Command::new(mail_program());
     if let Some(action) = action
         && let Some(flag) = app_action::flag(action)
     {
@@ -109,7 +109,7 @@ pub(crate) async fn open_mailto(
         Ok(_) => return true,
         Err(err) => tracing::debug!(%err, "Katna Mail is not running"),
     }
-    let mut command = Command::new("katna-mail");
+    let mut command = Command::new(mail_program());
     command.arg(uri);
     if let Some(token) = &token {
         command
@@ -118,6 +118,19 @@ pub(crate) async fn open_mailto(
     }
     spawn(command);
     false
+}
+
+/// Katna Mail: from `PATH` on Linux; on Windows the `katna-mail.exe`
+/// beside this program, as Setup installs them together.
+fn mail_program() -> std::path::PathBuf {
+    let name = std::path::PathBuf::from("katna-mail");
+    if !cfg!(windows) {
+        return name;
+    }
+    std::env::current_exe()
+        .ok()
+        .and_then(|exe| Some(exe.parent()?.join("katna-mail.exe")))
+        .unwrap_or(name)
 }
 
 fn spawn(mut command: Command) {

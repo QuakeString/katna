@@ -125,7 +125,7 @@ pub fn describe(err: &katna_dbus::zbus::Error) -> String {
 
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
-    Connection::session()
+    katna_dbus::session()
         .await
         .map_err(|err| format!("No D-Bus session: {err}"))
 }

@@ -696,7 +696,7 @@ impl Viewer {
         // Pasted with the middle button, as on any Linux desktop.
         let copied = view.copied();
         if !copied.is_empty() {
-            cx.write_to_primary(ClipboardItem::new_string(copied));
+            katna_ui::native::write_to_primary(cx, ClipboardItem::new_string(copied));
         }
     }
 
