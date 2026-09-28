@@ -160,6 +160,8 @@ fn main() -> ExitCode {
     if let Err(err) = katna_core::logging::init("warn") {
         eprintln!("katna-mail: {err}");
     }
+    // The first list, read while the window and the GPU start.
+    let preloading = data::Preloading::start(&paths);
     // The language, before any text is drawn (§13.10).
     katna_i18n::init(TRANSLATIONS, Some(paths.data_dir().join("i18n")));
     let general = Config::load(&paths.config_file())
@@ -224,7 +226,8 @@ fn main() -> ExitCode {
             let opened = cx.open_window(options, |window, cx| {
                 cx.new(|cx| {
                     placement.follow(window, cx);
-                    let mut view = window::MailWindow::new(env, paths, font, shown, window, cx);
+                    let mut view =
+                        window::MailWindow::new(env, paths, font, shown, preloading, window, cx);
                     if open_first {
                         view.open_first(window, cx);
                     }

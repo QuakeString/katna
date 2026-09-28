@@ -3,6 +3,7 @@
 //! The app's read-only view of the store and the search index. No GPUI
 //! here. Only `katna-daemon` writes; the app opens both read-only.
 
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -13,9 +14,13 @@ use katna_core::{Account, AccountId, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
-    FlagFilter, FolderId, FolderMarks, FolderSummary, MessageFlags, MessageId, Mode,
+    FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId, Mode,
     ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender, ThreadSummary,
 };
+
+mod preload;
+
+pub use preload::{ListRead, Preload, Preloading, remember as remember_first_list};
 
 /// At most this many search results are listed.
 pub const SEARCH_LIMIT: usize = 1000;
@@ -316,6 +321,14 @@ pub struct Mail {
     /// Whether any mail was sent with tracking, read on each refresh: the
     /// window asks on every frame.
     tracked: bool,
+    /// Read while the window started, until it is taken or the store is
+    /// read again.
+    preloaded: RefCell<Option<Preload>>,
+    /// The last list of conversations read, which the next start reads
+    /// early.
+    last_list: RefCell<Option<ListRead>>,
+    /// Whether a list was read in another way, which is not read early.
+    other_list: Cell<bool>,
 }
 
 /// Snoozed mail, and mail back from snooze or a follow-up reminder
@@ -499,7 +512,43 @@ impl Mail {
             index_error,
             index_tried: Instant::now(),
             rows: HashMap::new(),
+            preloaded: RefCell::default(),
+            last_list: RefCell::default(),
+            other_list: Cell::new(false),
         })
+    }
+
+    /// Takes what [`Preloading`] read while the window started, unless the
+    /// mail changed since.
+    pub fn use_preload(&mut self, preload: Option<Preload>) {
+        let now = self.store.latest_change(katna_store::DbKind::Mail).ok();
+        *self.preloaded.get_mut() = preload.filter(|p| Some(p.change) == now);
+    }
+
+    /// Once the window shows its first list: drops what was read early and
+    /// not asked for, and gives the list to read early next time, if the
+    /// last one read can be.
+    pub fn started(&mut self) -> Option<ListRead> {
+        *self.preloaded.get_mut() = None;
+        let last = self.last_list.get_mut().clone();
+        last.filter(|_| !self.other_list.get())
+    }
+
+    /// The conversations `read` asks for: as read while the window started,
+    /// or now.
+    fn list_read(&self, read: ListRead) -> katna_store::Result<InboxThreads> {
+        self.other_list.set(false);
+        let early = self.preloaded.borrow_mut().as_mut().and_then(|p| {
+            p.list
+                .take_if(|(early, _)| *early == read)
+                .map(|(_, threads)| threads)
+        });
+        let threads = match early {
+            Some(threads) => Ok(threads),
+            None => read.read(&self.store),
+        };
+        *self.last_list.borrow_mut() = Some(read);
+        threads
     }
 
     pub fn accounts(&self) -> Vec<Account> {
@@ -533,6 +582,14 @@ impl Mail {
     }
 
     pub fn folders(&self) -> Vec<FolderSummary> {
+        let early = self
+            .preloaded
+            .borrow_mut()
+            .as_mut()
+            .and_then(|p| p.folders.take());
+        if let Some(folders) = early {
+            return folders;
+        }
         self.store.folder_summaries().unwrap_or_else(|err| {
             tracing::warn!("reading folders: {err}");
             Vec::new()
@@ -548,10 +605,13 @@ impl Mail {
         conversations: bool,
     ) -> Vec<Entry> {
         let entries = if conversations {
-            self.store
-                .folder_threads(folder, categories)
-                .map(thread_entries)
+            self.list_read(ListRead::Folder {
+                folder,
+                categories: categories.map(<[_]>::to_vec),
+            })
+            .map(|(threads, _)| thread_entries(threads))
         } else {
+            self.other_list.set(true);
             match categories {
                 Some(categories) => self.store.folder_messages_in(folder, categories),
                 None => self.store.folder_message_ids(folder),
@@ -576,7 +636,11 @@ impl Mail {
                 self.category_unread(folder),
             );
         }
-        match self.store.inbox_threads(folder, categories) {
+        let read = ListRead::Inbox {
+            folder,
+            categories: categories.map(<[_]>::to_vec),
+        };
+        match self.list_read(read) {
             Ok((threads, unread)) => (
                 self.folder_lines(folder, Ok(thread_entries(threads))),
                 unread.into_iter().collect(),
@@ -609,19 +673,13 @@ impl Mail {
         conversations: bool,
     ) -> Vec<Entry> {
         let entries = if conversations {
-            self.store.spread_threads(folders, filter).map(|threads| {
-                threads
-                    .into_iter()
-                    .map(|entry| match entry.thread {
-                        Some(thread) => Entry {
-                            key: EntryKey::Thread(thread),
-                            latest: entry.latest,
-                        },
-                        None => Entry::message(entry.latest),
-                    })
-                    .collect()
+            self.list_read(ListRead::Spread {
+                folders: folders.to_vec(),
+                filter,
             })
+            .map(|(threads, _)| thread_entries(threads))
         } else {
+            self.other_list.set(true);
             self.store
                 .spread_message_ids(folders, filter)
                 .map(|ids| ids.into_iter().map(Entry::message).collect())
@@ -804,6 +862,7 @@ impl Mail {
     /// Picks up what the daemon wrote since the last call.
     pub fn refresh(&mut self) {
         self.rows.clear();
+        *self.preloaded.get_mut() = None;
         self.pins = Pins::read(&self.store);
         self.reminders = Reminders::read(&self.store);
         self.tracked = self.store.has_tracking().unwrap_or(false);
@@ -1541,6 +1600,58 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         assert_eq!(folders_and_unread(&paths).1, HashMap::from([(inbox, 1)]));
         assert_eq!(mail.raw(id).as_deref(), Some(RAW));
         assert_eq!(mail.raw(MessageId(999)), None);
+    }
+
+    #[test]
+    fn the_first_list_is_read_early_and_only_while_current() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        // No store yet: nothing is read, and the window does not wait.
+        assert!(Preloading::start(&paths).wait().is_none());
+
+        let (inbox, id) = store_with_mail(&paths);
+        let read = ListRead::Folder {
+            folder: inbox,
+            categories: None,
+        };
+        // No list remembered yet: the folders only.
+        let preload = Preloading::start(&paths).wait().unwrap();
+        assert!(preload.list.is_none());
+        assert_eq!(preload.folders.as_ref().unwrap()[0].total, 1);
+        let mut mail = Mail::open(&paths).unwrap();
+        mail.use_preload(Some(preload));
+        assert_eq!(mail.folders()[0].total, 1);
+        let lines = mail.entries(inbox, None, true);
+        assert_eq!(lines.len(), 1);
+        assert_eq!(lines[0].latest, id);
+        let first = mail.started().unwrap();
+        assert_eq!(first, read);
+        remember_first_list(&paths, &first);
+        let preload = Preloading::start(&paths).wait().unwrap();
+        assert_eq!(preload.list.as_ref().unwrap().0, read);
+
+        // What was read early stands in for the store's read: here nothing.
+        let early = |change| Preload {
+            change,
+            list: Some((read.clone(), (Vec::new(), Vec::new()))),
+            folders: None,
+        };
+        let mut mail = Mail::open(&paths).unwrap();
+        mail.use_preload(Some(early(preload.change)));
+        assert_eq!(mail.entries(inbox, None, true), []);
+        // Once: the next read is the store's.
+        assert_eq!(mail.entries(inbox, None, true), lines);
+        // Mail changed since it was read: it is not used.
+        let mut mail = Mail::open(&paths).unwrap();
+        mail.use_preload(Some(early(preload.change + 1)));
+        assert_eq!(mail.entries(inbox, None, true), lines);
+        // Nor for another list, and listing messages is not read early.
+        let mut mail = Mail::open(&paths).unwrap();
+        mail.use_preload(Some(early(preload.change)));
+        let tab = [MailCategory::Primary];
+        assert_eq!(mail.entries(inbox, Some(&tab), true), lines);
+        assert_eq!(mail.entries(inbox, None, false), [Entry::message(id)]);
+        assert_eq!(mail.started(), None);
     }
 
     #[test]

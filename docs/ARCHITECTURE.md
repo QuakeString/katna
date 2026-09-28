@@ -1344,6 +1344,13 @@ box. What it does and what we decided:
   (about 100 ms per 100,000 unread messages), so they are counted on a
   background thread and appear when ready. The daemon should keep counts
   per folder later.
+- **Start.** Opening the window and the GPU takes longer than reading the
+  first list, so `main` reads the list shown on the last start (kept in
+  the cache directory) and the folder totals on a thread of its own while
+  GPUI starts (`apps/katna-mail/src/data/preload.rs`). The window takes
+  them unless the mail journal moved on meanwhile, it asks for another
+  list, or the thread failed or took over a second; then it reads as
+  before.
 - **Reading pane.** `katna-render` gives a plain-text view: headers,
   text parts (HTML converted to text, with a note), quoted lines dimmed,
   and the attachment list. At most 256 KB and 4,000 lines are shown.
