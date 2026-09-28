@@ -122,6 +122,19 @@ compose-drive-send-without = Send without sharing
 compose-drive-share-cancel = Cancel
 # Under a Drive file's link in the sent message. $size: such as "84 MB".
 compose-drive-card-detail = { $size } · Google Drive
+# The same for OneDrive, for accounts that sign in with Microsoft
+# (Outlook.com, Hotmail, Microsoft 365).
+compose-onedrive-note = { $name } is over { $limit }, so it goes to your OneDrive and the message carries a link.
+compose-onedrive-tip = In your OneDrive; the message carries a link
+compose-onedrive-allow = Allow OneDrive
+compose-onedrive-allow-tip = Sign in with Microsoft again to let Katna put large files in your OneDrive
+compose-onedrive-not-uploaded = { $name } is not in OneDrive yet
+compose-onedrive-share-failed = Could not share the files in OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive can't share the files with { $addresses }. Anyone with the link can open them instead.
+   *[other] OneDrive can't share the files with { $addresses }. Anyone with the link can open them instead.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
 # Shown over the message while text, cells or a picture from another app

@@ -644,7 +644,8 @@ pub async fn outbox_changes(connection: &Connection) -> Result<impl Stream<Item 
     Ok(changes.map(|_| ()))
 }
 
-/// Starts putting the file at `path` in the Google Drive of `account`.
+/// Starts putting the file at `path` in the Google Drive or OneDrive of
+/// `account`.
 /// Returns the upload's ID.
 pub async fn drive_upload(
     connection: &Connection,
@@ -696,8 +697,12 @@ pub async fn drive_share(
         .map_err(|err| describe(&err))
 }
 
-/// Lets anyone with the link view the files of `uploads`.
-pub async fn drive_share_with_link(connection: &Connection, uploads: &[i64]) -> Result<(), String> {
+/// Lets anyone with the link view the files of `uploads`; returns their
+/// links, in order.
+pub async fn drive_share_with_link(
+    connection: &Connection,
+    uploads: &[i64],
+) -> Result<Vec<String>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
