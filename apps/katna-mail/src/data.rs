@@ -1044,6 +1044,8 @@ impl Mail {
             Vec::new()
         });
         let mut people: Vec<(String, Option<String>)> = Vec::new();
+        // The user's own addresses, for mail only between them.
+        let mut own: Vec<(String, Option<String>)> = Vec::new();
         for id in ids {
             let Some(message) = messages.iter().find(|m| m.id == *id) else {
                 continue;
@@ -1055,7 +1057,7 @@ impl Mail {
                         .me
                         .iter()
                         .any(|me| me.trim().eq_ignore_ascii_case(&email));
-                    if mine || !email.contains('@') {
+                    if !email.contains('@') {
                         continue;
                     }
                     let name = p
@@ -1064,6 +1066,7 @@ impl Mail {
                         .map(str::trim)
                         .filter(|n| !n.is_empty() && !n.eq_ignore_ascii_case(&email))
                         .map(str::to_owned);
+                    let people = if mine { &mut own } else { &mut people };
                     match people.iter_mut().find(|(e, _)| *e == email) {
                         Some((_, known)) => {
                             if known.is_none() {
@@ -1075,7 +1078,7 @@ impl Mail {
                 }
             }
         }
-        people
+        if people.is_empty() { own } else { people }
     }
 
     /// The drafts among `ids`: messages flagged `\Draft`.
