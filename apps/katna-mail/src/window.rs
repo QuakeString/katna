@@ -664,6 +664,7 @@ impl MailWindow {
         paths: Paths,
         font: Option<SharedString>,
         shown: Option<katna_core::window::ViewState>,
+        preloading: data::Preloading,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
@@ -671,6 +672,9 @@ impl MailWindow {
         let config_existed = paths.config_file().exists();
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
+        if let Ok(mail) = &mut this.mail {
+            mail.use_preload(preloading.wait());
+        }
         this.load_tree();
         if let Some(shown) = &shown {
             this.restore_view(shown, cx);
@@ -693,6 +697,14 @@ impl MailWindow {
         }
         this.welcome_or_whats_new(config_existed, window, cx);
         this.check_crashes(cx);
+        if let Ok(mail) = &mut this.mail
+            && let Some(list) = mail.started()
+        {
+            let paths = this.paths.clone();
+            cx.background_executor()
+                .spawn(async move { data::remember_first_list(&paths, &list) })
+                .detach();
+        }
         tracing::info!(elapsed = ?started.elapsed(), lines = this.entries.len(), "mail loaded");
         this
     }
