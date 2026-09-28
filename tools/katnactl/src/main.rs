@@ -26,6 +26,7 @@ usage: katnactl status
                 [--smtp-security tls|starttls|plain] [--insecure]
                 [--remove | --keep-days N] [--keep-deleted]
        katnactl discover ADDRESS
+       katnactl sign-in google|microsoft [ADDRESS | ACCOUNT]
        katnactl password ACCOUNT
        katnactl remove ACCOUNT
        katnactl sync [ACCOUNT]
@@ -62,6 +63,9 @@ add-pop3   Adds a POP3 account: its mail is downloaded into local folders.
 discover   Shows the servers the daemon finds for an address, and where
            it found them (provider settings, Thunderbird's database, DNS,
            or by trying the usual names).
+sign-in    Signs in to a Google or Microsoft account in your browser and
+           adds it, or signs an account in again (by its number, or its
+           address). The keyring keeps the sign-in, not a password.
 password   Changes an account's saved password.
 remove     Deletes an account, its synced mail and its password.
 sync       Syncs every folder now, of one account or of all.
@@ -165,13 +169,19 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             [address] => {
                 let address = address.clone();
                 with_daemon(|pim| async move {
-                    let (account, source) = pim.discover_account(&address).await?;
+                    let (account, source, sign_in, password) =
+                        pim.discover_account(&address).await?;
                     print_discovered(&account, &source);
+                    if !sign_in.is_empty() {
+                        let or = if password { "or " } else { "only " };
+                        println!("  sign in {or}with `katnactl sign-in {sign_in} {address}`");
+                    }
                     Ok(())
                 })
             }
             _ => Err(usage("discover needs one address")),
         },
+        "sign-in" => sign_in(args),
         "password" => {
             let id = one_account(args)?;
             let password = read_password()?;
@@ -502,6 +512,35 @@ fn print_status(account: &AccountStatus) {
     if !account.detail.is_empty() {
         println!("     {}", account.detail);
     }
+    if account.state == katna_dbus::state::AUTH_FAILED && !account.sign_in.is_empty() {
+        println!(
+            "     sign in again with `katnactl sign-in {} {}`",
+            account.sign_in, account.id
+        );
+    }
+}
+
+/// `sign-in PROVIDER [ADDRESS | ACCOUNT]`.
+fn sign_in(args: &[String]) -> Result<()> {
+    let (provider, target) = match args {
+        [provider] => (provider.clone(), String::new()),
+        [provider, target] => (provider.clone(), target.clone()),
+        _ => {
+            return Err(usage(
+                "sign-in needs google or microsoft, and maybe an address",
+            ));
+        }
+    };
+    let (account, address) = match target.parse::<i64>() {
+        Ok(id) => (id, String::new()),
+        Err(_) => (0, target),
+    };
+    println!("finish signing in in your browser…");
+    with_daemon(|pim| async move {
+        let id = pim.sign_in(&provider, account, &address).await?;
+        println!("signed in; account {id} is syncing in the background");
+        Ok(())
+    })
 }
 
 enum Signal {
@@ -601,8 +640,13 @@ fn add_imap(args: &[String]) -> Result<()> {
             let mut found = None;
             let slot = &mut found;
             with_daemon(|pim| async move {
-                let (account, source) = pim.discover_account(&lookup).await?;
+                let (account, source, sign_in, password) = pim.discover_account(&lookup).await?;
                 print_discovered(&account, &source);
+                if !password {
+                    return Err(error(format!(
+                        "{lookup} takes no password; use `katnactl sign-in {sign_in} {lookup}`"
+                    )));
+                }
                 *slot = Some(account);
                 Ok(())
             })?;
@@ -685,7 +729,7 @@ fn add_pop3(args: &[String]) -> Result<()> {
             let mut found = ServerSpec::default();
             let slot = &mut found;
             with_daemon(|pim| async move {
-                if let Ok((account, _)) = pim.discover_account(&lookup).await {
+                if let Ok((account, ..)) = pim.discover_account(&lookup).await {
                     *slot = account.smtp;
                 }
                 Ok(())

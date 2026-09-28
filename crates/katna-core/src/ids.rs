@@ -64,6 +64,32 @@ pub const SENTRY_DSN: &str = "https://1ebb96bdfbca71ddd5a26968b39d5e47@o45121561
 /// turns tracking off.
 pub const TRACKING_SERVER_URL: &str = "https://server.katna.invenia.in";
 
+/// OAuth2 client ID of Katna's "Desktop app" in Google Cloud, for "Sign in
+/// with Google" (`docs/ARCHITECTURE.md` §6.4). Set at build time from
+/// `KATNA_GOOGLE_OAUTH_CLIENT_ID` (a GitHub secret for the packages);
+/// empty hides the button.
+pub const GOOGLE_OAUTH_CLIENT_ID: &str = match option_env!("KATNA_GOOGLE_OAUTH_CLIENT_ID") {
+    Some(id) => id,
+    None => "",
+};
+
+/// The client secret Google gives a desktop app, from
+/// `KATNA_GOOGLE_OAUTH_CLIENT_SECRET` at build time. Google says it is not
+/// secret for installed apps (PKCE protects the sign-in), but its token
+/// endpoint still asks for it; it is kept out of the repository anyway.
+pub const GOOGLE_OAUTH_CLIENT_SECRET: &str = match option_env!("KATNA_GOOGLE_OAUTH_CLIENT_SECRET") {
+    Some(secret) => secret,
+    None => "",
+};
+
+/// Application (client) ID of Katna's public client in Microsoft Entra,
+/// for "Sign in with Microsoft", from `KATNA_MICROSOFT_OAUTH_CLIENT_ID` at
+/// build time. Empty hides the button.
+pub const MICROSOFT_OAUTH_CLIENT_ID: &str = match option_env!("KATNA_MICROSOFT_OAUTH_CLIENT_ID") {
+    Some(id) => id,
+    None => "",
+};
+
 /// Returns whether `id` is usable as an application ID, D-Bus well-known name
 /// and D-Bus interface name at the same time.
 ///

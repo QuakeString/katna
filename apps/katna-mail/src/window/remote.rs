@@ -14,9 +14,9 @@
 //! sender unless the "Sender pictures" setting is off (then only for
 //! trusted senders). The user's own accounts show the picture picked for
 //! the account in Settings (which can be the desktop user's picture),
-//! else a coloured letter, so each account looks different. A provider's
-//! profile photo (Google's needs a Google sign-in, which Katna does not
-//! do yet) would go in [`MailWindow::own_picture`] after the picked one.
+//! else its picture from Google, for an account that signed in with Google
+//! (the daemon saves it under `account-pictures/provider/`), else a
+//! coloured letter, so each account looks different.
 //! The daemon does all fetching; the app never uses the network.
 
 use std::cell::RefCell;
@@ -69,6 +69,10 @@ pub(crate) struct Remote {
     /// Pictures picked for accounts, by account ID.
     own: HashMap<i64, Arc<gpui::Image>>,
     own_dir: PathBuf,
+    /// Pictures from the accounts' providers, by account ID, and when
+    /// their folder last changed.
+    provider: HashMap<i64, Arc<gpui::Image>>,
+    provider_seen: Option<std::time::SystemTime>,
     /// An installed monospace font, found on first use.
     mono: Option<Option<SharedString>>,
 }
@@ -94,7 +98,7 @@ impl Remote {
                 Some((id, read_picture(&entry.path())?))
             })
             .collect();
-        Self {
+        let mut remote = Self {
             path,
             trusted,
             shown: HashSet::new(),
@@ -104,9 +108,33 @@ impl Remote {
             wanted: RefCell::default(),
             desktop: desktop_picture().map(|(_, picture)| picture),
             own,
+            provider: HashMap::new(),
+            provider_seen: None,
             own_dir,
             mono: None,
+        };
+        remote.load_provider_pictures();
+        remote
+    }
+
+    /// Reads the providers' account pictures again if the daemon saved a
+    /// new one.
+    pub(super) fn load_provider_pictures(&mut self) {
+        let dir = self.own_dir.join("provider");
+        let modified = std::fs::metadata(&dir).and_then(|m| m.modified()).ok();
+        if modified == self.provider_seen {
+            return;
         }
+        self.provider_seen = modified;
+        self.provider = std::fs::read_dir(&dir)
+            .into_iter()
+            .flatten()
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                let id = entry.file_name().to_str()?.parse::<i64>().ok()?;
+                Some((id, read_picture(&entry.path())?))
+            })
+            .collect();
     }
 
     pub(super) fn trusts(&self, sender: &str) -> bool {
@@ -365,7 +393,12 @@ impl MailWindow {
             .accounts
             .iter()
             .find(|a| !email.is_empty() && a.address.eq_ignore_ascii_case(email))?;
-        self.remote.own.get(&account.id.0).cloned()
+        let id = account.id.0;
+        self.remote
+            .own
+            .get(&id)
+            .or_else(|| self.remote.provider.get(&id))
+            .cloned()
     }
 
     /// Asks for a picture file and uses it for `account`.
