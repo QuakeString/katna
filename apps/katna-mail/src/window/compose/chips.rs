@@ -567,7 +567,6 @@ impl MailWindow {
         let id = field.ix() * 10_000 + ix;
         let arrow = chip.valid && chip.name.is_some();
         let color = if chip.valid { th.text } else { th.error };
-        let group = SharedString::from(format!("recipient-chip-{id}"));
         let drag = ChipDrag {
             field,
             ix,
@@ -577,7 +576,6 @@ impl MailWindow {
         };
         div()
             .id(("recipient-chip", id))
-            .group(group.clone())
             .relative()
             .flex_none()
             .max_w(px(MAX_WIDTH))
@@ -633,7 +631,7 @@ impl MailWindow {
                         .child(icon("chevron-down", th.text_dim, 18.0)),
                 )
             })
-            // Shows on hover; the room stays so the chip keeps its width.
+            // Always shown, so the chip keeps its width.
             .child(
                 div()
                     .id(("recipient-chip-remove", id))
@@ -643,8 +641,6 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .opacity(if selected { 1.0 } else { 0.0 })
-                    .group_hover(group, |s| s.opacity(1.0))
                     .hover(|s| s.bg(rgba(th.hover)))
                     .tooltip(tip(tr!("recipient-remove"), th))
                     .on_click(cx.listener(move |this, _, _, cx| {
