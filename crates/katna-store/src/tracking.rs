@@ -120,6 +120,8 @@ pub struct ActivityItem {
 /// What the recipients of a tracked message did.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MessageActivity {
+    /// The account it was sent from.
+    pub account: AccountId,
     pub subject: String,
     /// When every copy went out (Unix seconds).
     pub sent_at: Option<i64>,
@@ -414,6 +416,7 @@ impl Store {
             recipients.push(activity);
         }
         Ok(MessageActivity {
+            account: tracked.account,
             subject: tracked.subject,
             sent_at: tracked.sent_at,
             links: tracked.links.len(),

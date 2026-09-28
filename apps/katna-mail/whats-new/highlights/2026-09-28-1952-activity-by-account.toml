@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Activity report for one account"
+text = """
+The Activity report now has an account picker beside the dates. Choose
+All accounts or one of them, and the tracked messages, rates, chart,
+subject lines and Your mailbox all follow. The report says which account
+it shows and remembers your choice.
+"""

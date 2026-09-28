@@ -512,6 +512,10 @@ pub struct MailView {
     /// ... and these ones, removed one by one after it.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub activity_removed: Vec<i64>,
+    /// The account the Activity report counts, by lower-case address;
+    /// empty for all accounts.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub activity_account: String,
 }
 
 fn is_zero(n: &i64) -> bool {
@@ -586,6 +590,7 @@ impl Default for MailView {
             activity_seen: 0,
             activity_cleared: 0,
             activity_removed: Vec::new(),
+            activity_account: String::new(),
         }
     }
 }
