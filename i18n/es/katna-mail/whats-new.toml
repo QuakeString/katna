@@ -464,7 +464,7 @@ todo color.
 title = "Invítame a un café"
 text = """
 Si Katna te resulta útil, Acerca de Katna ahora tiene un botón Invítame
-a un café y un código QR para abrir la misma página en tu móvil.
+a un café.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -619,7 +619,7 @@ aparece una x que la quita.
 ["2026-09-27-1722-katna-account"]
 title = "Cuenta de Katna"
 text = """
-Ajustes > Cuenta de Katna te permite crear una cuenta en el propio
+Ajustes > Suscripción te permite crear una cuenta en el propio
 servidor de Katna, con su propia contraseña, nunca la de tu correo. Las
 funciones en línea de Katna, como las confirmaciones de lectura y el
 seguimiento de enlaces, la necesitarán. Puedes ver los ordenadores con
@@ -663,7 +663,7 @@ mensaje o sigue un enlace que contiene, o pide en su lugar una
 confirmación de lectura. El correo enviado muestra quién lo abrió, y una
 notificación te avisa la primera vez. Ambos están desactivados en cada
 mensaje nuevo, y el seguimiento necesita una cuenta de Katna (Ajustes >
-Cuenta de Katna).
+Suscripción).
 """
 
 ["2026-09-27-2042-activity"]

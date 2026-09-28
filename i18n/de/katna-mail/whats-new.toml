@@ -463,8 +463,7 @@ immer in voller Farbe.
 title = "Spendieren Sie mir einen Kaffee"
 text = """
 Wenn Katna Ihnen nützlich ist: Unter Über Katna gibt es jetzt den Knopf
-Spendieren Sie mir einen Kaffee und einen QR-Code, der dieselbe Seite
-auf Ihrem Handy öffnet.
+Spendieren Sie mir einen Kaffee.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -624,7 +623,7 @@ Zeigen Sie auf einen Chip, erscheint ein x, das ihn entfernt.
 ["2026-09-27-1722-katna-account"]
 title = "Katna-Konto"
 text = """
-Unter Einstellungen > Katna-Konto erstellen Sie ein Konto auf dem eigenen
+Unter Einstellungen > Abonnement erstellen Sie ein Konto auf dem eigenen
 Server von Katna, mit eigenem Passwort, nie einem E-Mail-Passwort. Die
 Online-Funktionen von Katna, etwa Lesebestätigungen und Link-Tracking,
 werden es brauchen. Sie sehen die angemeldeten Computer und können jeden
@@ -670,7 +669,7 @@ Ihre Nachricht öffnet oder einem Link darin folgt, oder fordern Sie
 stattdessen eine Lesebestätigung an. Gesendete E-Mails zeigen, wer sie
 geöffnet hat, und beim ersten Mal meldet es eine Benachrichtigung. Beides
 ist bei jeder neuen Nachricht aus, und die Verfolgung braucht ein
-Katna-Konto (Einstellungen > Katna-Konto).
+Katna-Konto (Einstellungen > Abonnement).
 """
 
 ["2026-09-27-2042-activity"]
