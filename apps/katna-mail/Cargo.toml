@@ -47,6 +47,7 @@ winreg.workspace = true
 
 [build-dependencies]
 toml.workspace = true
+winresource.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

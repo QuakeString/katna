@@ -57,8 +57,8 @@ deny = [
     # katna-daemon must never depend on GPUI.
     # GPUI's own platform crates depend on gpui-pre too; the platform crate
     # is banned the same way, so the chain still ends in a UI crate.
-    { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar", "gpui-pre-platform", "gpui-pre-linux", "gpui-pre-wgpu", "gpui-pre-apple", "gpui-pre-macos", "gpui-pre-windows", "gpui-pre-web"], reason = "GPUI is only allowed in UI crates" },
-    { crate = "gpui-pre-platform", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar"], reason = "GPUI is only allowed in UI crates" },
+    { crate = "gpui-pre", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar", "katna-setup", "gpui-pre-platform", "gpui-pre-linux", "gpui-pre-wgpu", "gpui-pre-apple", "gpui-pre-macos", "gpui-pre-windows", "gpui-pre-web"], reason = "GPUI is only allowed in UI crates" },
+    { crate = "gpui-pre-platform", wrappers = ["katna-ui", "katna-chrome", "katna-mail", "katna-calendar", "katna-setup"], reason = "GPUI is only allowed in UI crates" },
     # Katna Server's HTTP and database crates stay in the server.
     { crate = "axum", wrappers = ["katna-server"], reason = "server only" },
     { crate = "tokio-postgres", wrappers = ["katna-server", "deadpool-postgres"], reason = "server only" },

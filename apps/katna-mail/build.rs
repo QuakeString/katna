@@ -23,6 +23,7 @@ const BINARIES: &[&str] = &["katna-ui", "katna-mail"];
 fn main() {
     translations();
     highlights();
+    windows_icon();
 }
 
 fn translations() {
@@ -270,4 +271,18 @@ fn paragraph(text: &str) -> String {
         out.push_str(word);
     }
     out
+}
+
+/// The icon Explorer and the taskbar show for the program on Windows.
+fn windows_icon() {
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
+        return;
+    }
+    let icon = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packaging/windows/katna.ico");
+    println!("cargo:rerun-if-changed={}", icon.display());
+    let mut res = winresource::WindowsResource::new();
+    res.set_icon(&icon.to_string_lossy())
+        .set("FileDescription", "Katna Mail")
+        .set("ProductName", "Katna Mail");
+    res.compile().expect("compiling the Windows resources");
 }

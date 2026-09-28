@@ -152,6 +152,15 @@ fn main() -> ExitCode {
     if single && !general.start_at_login_set {
         start_at_login_by_default(&paths);
     }
+    // Keeps Katna listed as a mail app in Windows' Default apps, also after
+    // it moved.
+    #[cfg(windows)]
+    if single
+        && let Ok(exe) = std::env::current_exe()
+        && let Err(err) = katna_platform::mail_handler::register(&exe)
+    {
+        tracing::warn!(%err, "cannot register Katna Mail as a mail app");
+    }
     format::set_clock(general.clock);
     katna_i18n::apply(&general.language);
     let (connection, sender, requests) = match instance::start(request, single) {

@@ -3770,7 +3770,8 @@ new window.
 
 ## 27. Katna on Windows (in progress)
 
-Katna Mail and `katna-daemon` also run on Windows 10 and later, installed by
+Katna Mail and `katna-daemon` also run on Windows 10 (version 1903 or
+later, whose `icuuc.dll` GPUI's text needs) and 11, installed by
 a Katna Setup.exe. Linux stays the main platform: nothing here changes how
 Katna behaves there.
 
@@ -3790,9 +3791,9 @@ menu.
 | Secret Service (`oo7`) | Credential Manager, generic credentials `<user>.in.invenia.katna`, kept on this computer |
 | D-Bus session bus | Katna's own: the reference `dbus-daemon.exe` (built with vcpkg, `ci/windows-dbus.ps1`) beside Katna's programs, started by the first Katna program that needs it (`katna_dbus::session`), on nonce-TCP at 127.0.0.1; its address in `%LOCALAPPDATA%\Katna\State\bus\address`. Every name, call and signal stays as on Linux |
 | systemd user unit, D-Bus activation | the `Katna` value of `HKCU\…\Run` runs `katna-mail.exe --background` at login; the bus starts `katna-daemon.exe` on demand from the activation file Katna writes beside its configuration |
-| SNI tray, badge on the launcher | notification-area icon with the same menu; unread count as the taskbar button's overlay |
-| freedesktop notifications | toasts, under the AppUserModelID Setup gives the Start menu shortcut |
-| XDG mimeapps (mailto, .eml) | registered for mailto and .eml under `HKCU\Software\Classes`, listed in Default apps |
+| SNI tray, badge on the launcher | notification-area icon with the same menu and the unread count drawn on it (`tray-icon` on a `winit` loop). A taskbar overlay badge needs COM calls the workspace's `unsafe_code = "forbid"` rules out, so it waits for a safe wrapper |
+| freedesktop notifications | toasts, under the AppUserModelID Setup registers: the daemon serves `org.freedesktop.Notifications` on Katna's bus itself (`katna_platform::toasts`), so `katna-notify` is unchanged |
+| XDG mimeapps (mailto) | `Katna.Mailto` under `HKCU\Software\Classes`, with Capabilities so Katna is listed in Settings > Default apps. Windows only lets people pick the default there, so Katna's "Make default" opens that page |
 | print portal | the PDF opens in the default PDF app to print from there |
 | "Open with" portal | Windows' Open with dialog |
 | KRunner, GNOME search | no third-party results in Start search; a PowerToys Run plugin later |
@@ -3801,13 +3802,29 @@ menu.
 ### 27.2 Setup
 
 Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
-Katna's look: one window with the logo, Install, a progress bar and Open
-Katna, light or dark as Windows is set. It installs for the current user
-without an administrator prompt, into `%LOCALAPPDATA%\Programs\Katna`, and
-adds the Start menu shortcut, the uninstall entry in Settings > Apps, the
-Run key and the mail handler registrations. MSI and NSIS installers are not
-used: their wizard dialogs look like Windows XP. An MSI for managed
-deployment can be added later if an organization needs one.
+Katna's look: one rounded window with its own shadow and close button (the
+same on Windows 10, which draws windows square, and 11), the logo, the
+choices, Install, a progress bar and Open Katna, light or dark as Windows
+is set. The choices: install for just me (the default, into
+`%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
+(into `%ProgramFiles%\Katna`, with the machine's Start menu, public desktop
+and `HKLM` entries; Setup starts a second copy of itself as administrator,
+so Windows asks once, and follows its progress through a file); the folder
+(a picked folder gets its own `Katna` folder, so removing Katna never
+deletes the user's folder); a desktop shortcut (off), the Start menu (on)
+and start at sign-in (on). An update keeps the folder and what was chosen.
+Windows does not let installers pin to the taskbar (Windows 11 only for
+apps Microsoft approves), so the last screen says how to pin from Start.
+MSI and NSIS installers are not used: their wizard dialogs look like
+Windows XP. An MSI for managed deployment can be added later if an
+organization needs one.
+
+`packaging/windows/README.md` lists the files. Setup carries Katna's
+programs packed with zstd; a newer Setup closes Katna, replaces them and
+keeps settings, mail and passwords. Removing Katna asks whether to delete
+mail and passwords too. `--quiet` installs without a window (`--all-users`, `--dir`,
+`--desktop`, `--no-start-menu`, `--no-autostart`) and `--uninstall`
+removes.
 
 CI builds Setup.exe on every main push into a `windows-latest`
 pre-release, as it does the Arch package. Without a code-signing
