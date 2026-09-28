@@ -24,6 +24,7 @@ pub mod outbox;
 mod people;
 pub mod pop3;
 mod quota;
+mod receipts;
 pub mod remote;
 pub mod templates;
 mod thread;
@@ -57,6 +58,7 @@ pub use outbox::{DELIVERY_RECEIPT_HEADER, OutboxEntry, SendState, take_delivery_
 pub use people::{Correspondent, Person};
 pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
+pub use receipts::{Receipt, ReceiptKind};
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{

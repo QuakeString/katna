@@ -263,3 +263,36 @@ fn a_downloaded_body_lists_the_files_its_structure_did_not() {
     );
     assert!(store.messages_in_folder(inbox).unwrap()[0].has_attachments);
 }
+
+#[test]
+fn a_downloaded_receipt_ticks_its_recipient() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    let header = "From: Bea <bea@example.org>\r\nTo: alice@example.org\r\n\
+                  Subject: Read: Rates\r\nDate: Sat, 26 Sep 2026 11:00:00 +0000\r\n\
+                  MIME-Version: 1.0\r\n\
+                  Content-Type: multipart/report; report-type=disposition-notification;\r\n \
+                  boundary=\"r\"\r\n\r\n";
+    let body = "--r\r\nContent-Type: text/plain\r\n\r\nRead.\r\n\
+                --r\r\nContent-Type: message/disposition-notification\r\n\r\n\
+                Final-Recipient: rfc822;bea@example.org\r\n\
+                Original-Message-ID: <rates@example.org>\r\n\
+                Disposition: manual-action/MDN-sent-manually; displayed\r\n\
+                --r--\r\n";
+    server.deliver_header("INBOX", header, body);
+    let inbox = sync(&server, &mut store, account);
+    assert!(store.receipts("rates@example.org").unwrap().is_empty());
+    download(&server, &mut store, inbox, &thirty_days(), DELIVERED + DAY);
+    assert_eq!(
+        store.receipts("rates@example.org").unwrap(),
+        [katna_store::Receipt {
+            recipient: "bea@example.org".into(),
+            read_at: Some(DELIVERED + 3600),
+            ..Default::default()
+        }]
+    );
+    // It stays in the inbox, under Updates.
+    let kept = &store.messages_in_folder(inbox).unwrap()[0];
+    assert_eq!(kept.category, Some(katna_core::MailCategory::Updates));
+}

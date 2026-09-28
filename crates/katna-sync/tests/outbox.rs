@@ -213,6 +213,7 @@ fn sends_without_bcc_and_files_in_sent() {
     let id = outbox::queue(&mut store, account, MESSAGE, 0, now()).unwrap();
     let entry = store.outbox_entry(id).unwrap().unwrap();
     assert_eq!(entry.subject, "Lunch");
+    let message_id = store.message_id_header(entry.message).unwrap().unwrap();
     let smtp = FakeSmtp::default();
     let events = run_until(&smtp, &tmp, config(3), SendState::Sent);
     assert_eq!(
@@ -231,6 +232,22 @@ fn sends_without_bcc_and_files_in_sent() {
     assert!(!wire.contains("Bcc") && !wire.contains("dave"), "{wire}");
     assert!(wire.starts_with("Date: ") && wire.contains("\r\nMessage-ID: <"));
     assert!(wire.ends_with("Subject: Lunch\r\n\r\nNoon?\r\n"), "{wire}");
+    drop(received);
+    // Each recipient's send time, for the ticks.
+    let sent: Vec<_> = store
+        .receipts(&message_id)
+        .unwrap()
+        .into_iter()
+        .map(|r| (r.recipient, r.sent_at.is_some()))
+        .collect();
+    assert_eq!(
+        sent,
+        [
+            ("bob@example.org".into(), true),
+            ("carol@example.org".into(), true),
+            ("dave@example.org".into(), true)
+        ]
+    );
 
     // The worker's replay files the stored copy, Bcc and all, as seen.
     assert_eq!(store.next_op_due(account).unwrap(), Some(0));
