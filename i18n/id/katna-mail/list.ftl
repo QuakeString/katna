@@ -21,6 +21,7 @@ tab-provider-other = diurutkan oleh Katna
 
 list-select = Pilih
 list-refresh = Muat ulang
+list-checking = Memeriksa email baru…
 list-more = Lainnya
 list-mark-read = Tandai sudah dibaca
 list-mark-unread = Tandai belum dibaca

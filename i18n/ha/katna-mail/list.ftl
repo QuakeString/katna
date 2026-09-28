@@ -21,6 +21,7 @@ tab-provider-other = Katna ne ya tsara
 
 list-select = Zaɓi
 list-refresh = Sabunta
+list-checking = Ana duba sabbin wasiƙu…
 list-more = Ƙari
 list-mark-read = Yi alama an karanta
 list-mark-unread = Yi alama ba a karanta ba

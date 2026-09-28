@@ -1034,3 +1034,22 @@ eklediğiniz anda Google Drive'ınıza gider ve ileti, Gmail'deki gibi
 dosyanın bağlantısını taşır. Gönder'e bastığınızda alıcılarınızla
 paylaşılır; Katna yalnızca birine erişim verilemiyorsa sorar.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Uzun alıcı listeleri daha akıcı"
+text = """
+Uzun bir alıcı listesinin artık kendi kaydırma çubuğu var ve satır satır
+ilerliyor; ileti dizisi ancak liste sonuna ulaşınca kaydırılıyor. Alıcı
+eklemek artık aşağıdaki düğmelerin zıplamasına yol açmıyor.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Yeni postaları denetleyin"
+text = """
+Klasör bölmesinde bir klasöre veya hesaba sağ tıklayarak “Yeni postaları
+denetle”, “Tümünü okundu olarak işaretle”, içine yeni bir klasör veya
+“Çöp Kutusu'nu boşalt” seçeneğini kullanın. Listenin üstündeki “Yenile”
+artık sunucudan da getiriyor. Katna denetlerken oklar “Yenile”de ve
+Gelen Kutusu'nun yanında döner, işlem bir andan uzun sürerse üstte “Yeni
+postalar denetleniyor…” görünür.
+"""

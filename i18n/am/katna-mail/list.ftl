@@ -21,6 +21,7 @@ tab-provider-other = በKatna የተደረደሩ
 
 list-select = ምረጥ
 list-refresh = አድስ
+list-checking = አዲስ ደብዳቤ በመፈተሽ ላይ…
 list-more = ተጨማሪ
 list-mark-read = እንደተነበበ ምልክት አድርግ
 list-mark-unread = እንዳልተነበበ ምልክት አድርግ

@@ -1010,3 +1010,22 @@ Với tài khoản đăng nhập bằng Google, tệp vượt quá giới hạn 
 liên kết của tệp, như trong Gmail. Tệp được chia sẻ với người nhận khi bạn
 nhấn Gửi; Katna chỉ hỏi nếu không thể cấp quyền truy cập cho ai đó.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Danh sách người nhận dài mượt hơn"
+text = """
+Danh sách người nhận dài giờ có thanh cuộn riêng và cuộn từng dòng một;
+cuộc hội thoại chỉ cuộn tiếp khi danh sách đã tới cuối. Thêm người nhận
+không còn làm các nút bên dưới nhảy nữa.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Kiểm tra thư mới"
+text = """
+Nhấp chuột phải vào một thư mục hoặc tài khoản trong ngăn thư mục để
+chọn “Kiểm tra thư mới”, “Đánh dấu tất cả là đã đọc”, thư mục mới bên
+trong hoặc “Dọn sạch Thùng rác”. “Làm mới” phía trên danh sách giờ cũng
+tải từ máy chủ. Khi Katna đang kiểm tra, các mũi tên xoay trên “Làm mới”
+và bên cạnh Hộp thư đến, còn “Đang kiểm tra thư mới…” hiện ở trên cùng
+nếu mất hơn một lúc.
+"""

@@ -21,6 +21,7 @@ tab-provider-other = Katna က စီထားသည်
 
 list-select = ရွေးရန်
 list-refresh = ပြန်လည်ဆန်းသစ်ရန်
+list-checking = မေးလ်အသစ်ကို စစ်ဆေးနေသည်…
 list-more = နောက်ထပ်
 list-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
 list-mark-unread = မဖတ်ရသေးအဖြစ် မှတ်ရန်

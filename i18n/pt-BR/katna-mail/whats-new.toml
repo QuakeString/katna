@@ -1042,3 +1042,22 @@ leva o link dele, como no Gmail. Ele é compartilhado com os destinatários
 quando você pressiona Enviar; o Katna só pergunta se não for possível dar
 acesso a alguém.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Listas longas de destinatários mais suaves"
+text = """
+Uma lista longa de destinatários agora tem a própria barra de rolagem e
+avança uma linha por vez; a conversa só rola quando a lista chega ao
+fim. Adicionar destinatários não faz mais os botões abaixo pularem.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Verificar novos e-mails"
+text = """
+Clique com o botão direito em uma pasta ou conta no painel de pastas
+para escolher “Verificar novos e-mails”, “Marcar todas como lidas”, uma
+nova pasta dentro dela ou “Esvaziar a lixeira”. “Atualizar”, acima da
+lista, agora também busca no servidor. Enquanto o Katna verifica, as
+setas giram em “Atualizar” e ao lado da Caixa de entrada, e “Verificando
+novos e-mails…” aparece no topo se demorar mais que um instante.
+"""

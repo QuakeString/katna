@@ -21,6 +21,7 @@ tab-provider-other = Katna གིས་དབྱེ་སེལ་འབད་�
 
 list-select = གདམ།
 list-refresh = གསར་བཟོ།
+list-checking = གློག་འཕྲིན་གསརཔ་ཞིབ་དཔྱད་འབད་དོ…
 list-more = གཞན་ཡང་།
 list-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
 list-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ།

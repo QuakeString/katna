@@ -21,6 +21,7 @@ tab-provider-other = Katna විසින් වර්ග කළ
 
 list-select = තෝරන්න
 list-refresh = නැවුම් කරන්න
+list-checking = නව තැපැල් පරීක්ෂා කරමින්…
 list-more = තවත්
 list-mark-read = කියවූ ලෙස සලකුණු කරන්න
 list-mark-unread = නොකියවූ ලෙස සලකුණු කරන්න

@@ -1010,3 +1010,21 @@ MB-poslimiet na jou Google Drive sodra jy dit heg, en die boodskap bevat
 die skakel, soos in Gmail. Dit word met jou ontvangers gedeel wanneer jy
 Stuur druk; Katna vra net as iemand nie toegang gegee kan word nie.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Gladder lang ontvangerlyste"
+text = """
+'n Lang lys ontvangers het nou sy eie rolstaaf en beweeg een reël op 'n
+slag; die gesprek rol eers verder wanneer die lys sy einde bereik. As jy
+ontvangers byvoeg, spring die knoppies daaronder nie meer nie.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Kyk vir nuwe e-pos"
+text = """
+Regsklik op 'n vouer of rekening in die vouerpaneel vir “Kyk vir nuwe
+e-pos”, “Merk almal as gelees”, 'n nuwe vouer binne-in dit of “Maak
+Asblik leeg”. “Herlaai” bo die lys haal nou ook van die bediener af.
+Terwyl Katna kyk, draai die pyle op “Herlaai” en langs Inkassie, en “Kyk
+tans vir nuwe e-pos…” verskyn bo as dit langer as 'n oomblik neem.
+"""

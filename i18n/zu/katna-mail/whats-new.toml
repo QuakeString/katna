@@ -1075,3 +1075,23 @@ uphethe isixhumanisi salo, njengasku-Gmail. Lyabelwana nabamukeli bakho lapho
 ucindezela Thumela; i-Katna ibuza kuphela uma othile engenakunikezwa
 ukufinyelela.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Uhlu lwabamukeli abade luba lula"
+text = """
+Uhlu olude lwabamukeli manje lunebha yalo yokuskrola futhi luhamba umugqa
+owodwa ngesikhathi, futhi ingxoxo iskrolela phambili kuphela uma uhlu
+lufinyelela ekugcineni. Ukwengeza abamukeli akusabangeli ukuthi izinkinobho
+ezingezansi ziqhume.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Hlola imeyili entsha"
+text = """
+Chofoza kwesokudla efolda noma ku-akhawunti kuphaneli yamafolda ukuthola
+"Hlola imeyili entsha", "Maka konke njengokufundiwe", ifolda entsha
+ngaphakathi kwayo, noma "Sula Udoti". "Vuselela" ngenhla kohlu manje ilanda
+nasenkonzweni. Ngenkathi i-Katna ihlola, imicibisholo iyajika ku-"Vuselela"
+nasecaleni kwebhokisi lokungenayo, futhi "Iyahlola imeyili entsha…" ivela
+phezulu uma kuthatha isikhathi esingaphezu kwesikhashana.
+"""

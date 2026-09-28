@@ -1047,3 +1047,23 @@ el mensaje lleva su enlace, como en Gmail. Se comparte con tus
 destinatarios al pulsar Enviar; Katna solo pregunta si no se puede dar
 acceso a alguien.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Listas de destinatarios largas, más fluidas"
+text = """
+Una lista larga de destinatarios ahora tiene su propia barra de
+desplazamiento y avanza de línea en línea; la conversación solo se
+desplaza cuando la lista llega a su final. Al añadir destinatarios, los
+botones de debajo ya no saltan.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Buscar correo nuevo"
+text = """
+Haz clic derecho en una carpeta o una cuenta del panel de carpetas para
+elegir «Buscar correo nuevo», «Marcar todo como leído», una carpeta
+nueva dentro o «Vaciar la papelera». «Actualizar», sobre la lista, ahora
+también consulta el servidor. Mientras Katna busca, las flechas giran en
+«Actualizar» y junto a Recibidos, y «Buscando correo nuevo…» aparece
+arriba si tarda más de un momento.
+"""
