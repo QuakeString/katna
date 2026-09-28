@@ -765,3 +765,87 @@ matsar da su zuwa Kwandon shara. Yi alama a “Kar a sake tambaya” don
 tsallake tambayar, ko kuma kunna ta a Saituna > Gabaɗaya. Sharewa har
 abada, a cikin Kwandon shara, tana tambaya kowane lokaci.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna don Windows"
+text = """
+Katna Mail yanzu yana aiki a kan Windows 10 da 11 ma, ana girka shi da Katna
+Setup nasa, tare da gunkin tire, sanarwa, farawa lokacin shiga da mahaɗan
+wasiƙa da ke buɗewa a cikin Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Maɓallin cirewa a kan kowane adireshi"
+text = """
+Kowane ƙaramin katin adireshi a Zuwa, Kwafi da Kwafi a ɓoye yanzu yana nuna
+x ɗinsa koyaushe, don ku iya cire shi ba tare da kun nuna shi tukuna ba.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Sandar tsari mai zagaye"
+text = """
+Sandar tsari a Rubuta (Aa) yanzu tana da siffar ƙwaya mai siririn gefe, don
+ta ware daga rubutunku a jigo mai haske da mai duhu.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Dogayen jerin imel suna buɗewa da sauri"
+text = """
+Wasiƙa mai tsari da ke ambato amsoshi da yawa na baya, kamar dogon jerin
+ambato, yanzu tana buɗewa nan take kuma tana gungurawa a sauƙaƙe maimakon
+rage saurin dukan taga.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Wanda ya gan ta, a bayan ido"
+text = """
+Wasiƙar da kuka aika da bibiya ba ta da akwatin layuka a samanta kuma. Ido
+kusa da tauraro yana komawa launin ƙawa naku da zarar wani ya buɗe ta; ku
+nuna shi don ganin wanda ya buɗe ta ko ya bi mahaɗi, da kuma yaushe.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Kira da kwafa daga bayanan lambar sadarwa"
+text = """
+A cikin bayanan lambar sadarwa kusa da tattaunawa, ku danna lambar waya don
+kiran ta da manhajar wayarku ko KDE Connect, ko ku yi amfani da maɓallin
+kwafa da ke kusa da ita. Yanzu ana iya zaɓa da kwafa dukan rubutun wannan
+wuri ma.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Ɓoye ko cire wasiƙar da aka ambato a cikin amsa"
+text = """
+Maɓallin "..." da ke ƙarƙashin amsa yanzu yana sake ɓoye wasiƙar da aka
+ambato bayan kun buɗe ta. Ku nuna shi kuma ku danna x a kusurwarsa don fitar
+da wasiƙar da aka ambato daga amsarku; Janye ko Ctrl+Z yana mayar da ita.
+Sandar kayan aikin amsar ma tana zama a wurinta yayin da kuke gungurawa.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Folda masu shawagi, da bincike mai faɗi"
+text = """
+Idan folda suna ɓoye, ajiye alamar linzamin kwamfuta a kan Rubuta ko Wasiƙu
+yana buɗe su a matsayin wuri da ke nesa da gefuna, da ƙaramin tsini da ke
+nuna maɓallin. Akwatin bincike yana faɗaɗa don cike wurin da folda suka
+bari, kuma danna foldar da kuke ciki tuni ba ya sa jerin ya yi ƙyaftawa
+kuma.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Shawarwarin adireshi a Zaɓuɓɓukan bincike"
+text = """
+Daga da Zuwa a Zaɓuɓɓukan bincike yanzu suna ba da shawarar adireshi yayin
+da kuke rubutu, kamar yadda Zuwa, Kwafi da Kwafi a ɓoye suke yi a Rubuta. Ku
+zaɓi ɗaya da Enter, Tab ko dannawa.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Babban menu a katin asusu, Amsa wa kowa a tagarsa"
+text = """
+Katin asusu yana da maɓallin ☰ kusa da Sarrafa asusu. Yana buɗe menu iri
+ɗaya na Fayil, Gyara, Duba, Je, Saƙo, Saituna da Taimako kamar babban menu
+na tebur, don teburan da ba sa nuna shi. Amsa wa kowa a kan sanarwar sabuwar
+wasiƙa yanzu yana buɗe tattaunawar a tagarta, a shirye don rubutu, kuma yana
+barin babbar taga a inda take.
+"""

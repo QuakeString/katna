@@ -750,3 +750,85 @@ Ihe mkpofu. Pịa “Ajụla ọzọ” iji wụfee ajụjụ ahụ, ma ọ bụ
 Ntọala > Izugbe. Ihichapụ ruo mgbe ebighị ebi, na Ihe mkpofu, na-ajụ mgbe
 niile.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna maka Windows"
+text = """
+Katna Mail na-arụ ọrụ ugbu a na Windows 10 na 11 kwa, nke Katna Setup nke ya
+na-etinye, ya na akara ngosi tray, ọkwa, ịmalite mgbe ị banyere, na njikọ
+ozi na-emeghe na Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Bọtịnụ iwepụ n'adreesị ọ bụla"
+text = """
+Mpempe adreesị ọ bụla dị na Gaa, Cc na Bcc na-egosi x ya mgbe niile ugbu a,
+ka i wee wepụ ya n'ebughị pointa gaa na ya na mbụ.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Ogwe nhazi gbara okirikiri karịa"
+text = """
+Ogwe nhazi dị na windo ide ozi (Aa) nwere ọdịdị ọgwụ ugbu a, ya na oke dị
+nro, ka o wee kewapụ onwe ya na ederede gị n'ụdị agba ìhè na nke ọchịchịrị.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Ogologo usoro email na-emeghe ngwa ngwa"
+text = """
+Ozi a haziri ahazi nke na-ehota ọtụtụ nzaghachi gara aga, dị ka ogologo
+usoro nhota, na-emeghe ozugbo ugbu a ma na-atụgharị nke ọma kama ime ka
+windo niile dị nwayọ.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Onye hụrụ ya, n'azụ anya"
+text = """
+Ozi i zitere na nsochi enweghịzi igbe ahịrị n'elu ya. Anya dị n'akụkụ
+kpakpando na-agbanwe gaa n'agba mmesi ike gị ozugbo mmadụ mepere ya; bugara
+ya pointa ka ị hụ onye mepere ya ma ọ bụ soro njikọ, na mgbe ọ bụ.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Kpọọ ma detuo site na nkọwa kọntaktị"
+text = """
+Na nkọwa kọntaktị dị n'akụkụ mkparịta ụka, pịa nọmba ekwentị ka ị kpọọ ya
+site na ngwa ekwentị gị ma ọ bụ KDE Connect, ma ọ bụ jiri bọtịnụ Detuo dị
+n'akụkụ ya. Ị nwekwara ike ịhọrọ ma detuo ederede niile dị na paịn ahụ ugbu
+a.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Zoo ma ọ bụ wepụ ozi e hotara na nzaghachi"
+text = """
+Bọtịnụ “...” dị n'okpuru nzaghachi na-ezozi ozi e hotara ugbu a mgbe i
+meghechara ya. Bugara ya pointa ma pịa x dị na nkuku ya iji wepụ ozi e
+hotara na nzaghachi gị; Megharịa ma ọ bụ Ctrl+Z na-eweghachi ya. Toolbar
+nzaghachi ahụ na-anọkwa otu ebe mgbe ị na-atụgharị.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Folda na-ese n'elu, na ọchụchọ sara mbara"
+text = """
+Mgbe folda zoro ezo, idebe pointa na Dee ma ọ bụ Ozi na-emeghe ha dị ka paịn
+nọ anya site na nsọtụ, ya na obere ntụ na-atụ aka na bọtịnụ ahụ. Igbe
+ọchụchọ na-eto iji jupụta ohere folda hapụrụ, na ịpị folda ị nọ na ya
+anaghịzi eme ka ndepụta ahụ na-egbu maramara.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Ntụnye adreesị na Nhọrọ ọchụchọ"
+text = """
+Si na Gaa na Nhọrọ ọchụchọ na-atụ aro adreesị ugbu a ka ị na-ede, otu ụzọ
+Gaa, Cc na Bcc si eme ya na ide ozi. Were Enter, Tab ma ọ bụ ịpị họrọ otu.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu isi na kaadị akaụntụ, Zaa mmadụ niile na windo nke ya"
+text = """
+Kaadị akaụntụ nwere bọtịnụ ☰ n'akụkụ Jikwaa akaụntụ. Ọ na-emeghe otu menu
+Faịlụ, Dezie, Lelee, Gaa, Ozi, Ntọala na Enyemaka dị ka menu zuru ụwa ọnụ
+nke desktọpụ, maka desktọpụ ndị na-anaghị egosi otu. Zaa mmadụ niile n'ọkwa
+ozi ọhụrụ na-emeghe mkparịta ụka ahụ ugbu a na windo nke ya, dị njikere ka i
+dee, ma hapụ windo isi ebe ọ dị.
+"""

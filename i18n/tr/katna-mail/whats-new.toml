@@ -774,3 +774,89 @@ taşınıp taşınmayacağını sorar. Soruyu atlamak için “Bir daha sorma”
 işaretleyin ya da Ayarlar > Genel bölümünden yeniden açın. Çöp
 Kutusu'ndaki kalıcı silme her zaman sorar.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Windows için Katna"
+text = """
+Katna Mail artık Windows 10 ve 11'de de çalışıyor. Kendi Katna Setup
+programıyla kurulur; tepsi simgesi, bildirimler, oturum açılınca başlama ve
+posta bağlantılarının Katna'da açılması da onunla birlikte gelir.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Her adreste bir kaldır düğmesi"
+text = """
+Kime, Bilgi ve Gizli alanlarındaki her adres çipi artık x'ini her zaman
+gösterir; böylece önce üzerine gelmeden onu kaldırabilirsiniz.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Daha yuvarlak bir biçimlendirme çubuğu"
+text = """
+İleti yazarken kullanılan biçimlendirme çubuğu (Aa) artık belli belirsiz bir
+kenarı olan hap biçiminde; böylece açık ve koyu temalarda metninizden ayrı
+durur.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Uzun ileti dizileri hızla açılır"
+text = """
+Uzun bir alıntı zinciri gibi önceki birçok yanıtı alıntılayan
+biçimlendirilmiş postalar artık tüm pencereyi yavaşlatmak yerine hemen
+açılır ve akıcı biçimde kayar.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Kimin gördüğü, bir gözün arkasında"
+text = """
+İzlemeyle gönderdiğiniz postaların üstünde artık satırlarla dolu bir kutu
+yok. Yıldızın yanındaki göz, biri postayı açar açmaz vurgu renginize döner;
+kimin açtığını veya bir bağlantıyı izlediğini ve ne zaman yaptığını görmek
+için üzerine gelin.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Kişi ayrıntılarından arayın ve kopyalayın"
+text = """
+Bir ileti dizisinin yanındaki kişi ayrıntılarında, bir telefon numarasını
+telefon uygulamanızla veya KDE Connect ile aramak için ona tıklayın ya da
+yanındaki kopyala düğmesini kullanın. Panelin tüm metni artık seçilip
+kopyalanabilir.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Yanıttaki alıntılanan postayı gizleyin veya kaldırın"
+text = """
+Bir yanıtın altındaki “...” düğmesi, siz açtıktan sonra alıntılanan postayı
+artık yeniden gizler. Alıntılanan postayı yanıtınızdan çıkarmak için üzerine
+gelin ve köşesindeki x'e tıklayın; Geri al veya Ctrl+Z onu geri getirir.
+Yanıtın araç çubuğu da kaydırırken yerinde kalır.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Yüzen klasörler ve daha geniş arama"
+text = """
+Klasörler gizliyken işaretçiyi Oluştur'un veya Posta'nın üzerinde tutmak,
+onları kenarlardan uzakta duran ve düğmeyi gösteren küçük bir çentiği olan
+bir panel olarak açar. Arama kutusu klasörlerin bıraktığı yeri dolduracak
+kadar genişler ve zaten içinde bulunduğunuz klasöre tıklamak artık listeyi
+yanıp söndürmez.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Arama seçeneklerinde adres önerileri"
+text = """
+Arama seçeneklerindeki Kimden ve Kime artık siz yazarken, ileti yazarken
+Kime, Bilgi ve Gizli'nin yaptığı gibi adres önerir. Birini Enter, Tab veya
+bir tıklamayla seçin.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Hesap kartında Ana menü, Tümünü yanıtla kendi penceresinde"
+text = """
+Hesap kartında Hesapları yönet'in yanında bir ☰ düğmesi var. Genel menü
+göstermeyen masaüstleri için, masaüstünün genel menüsündeki Dosya, Düzen,
+Görünüm, Git, İleti, Ayarlar ve Yardım menülerinin aynısını açar. Yeni posta
+bildirimindeki Tümünü yanıtla artık ileti dizisini yazmaya hazır biçimde
+kendi penceresinde açar ve ana pencereyi olduğu yerde bırakır.
+"""

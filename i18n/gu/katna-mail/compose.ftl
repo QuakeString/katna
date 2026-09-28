@@ -13,6 +13,9 @@ compose-save-close = સેવ કરીને બંધ કરો
 compose-back-to-mail = મેઇલ વિન્ડો પર પાછા જાઓ
 compose-pop-out-reply = જવાબ અલગ વિન્ડોમાં ખોલો
 compose-show-trimmed = ટૂંકાવેલી સામગ્રી બતાવો
+compose-hide-trimmed = ટૂંકાવેલી સામગ્રી છુપાવો
+compose-remove-trimmed = અવતરિત લખાણ દૂર કરો
+compose-trimmed-removed = અવતરિત લખાણ દૂર કર્યું
 
 ## Recipients and subject
 

@@ -13,6 +13,9 @@ compose-save-close = සුරකා වසන්න
 compose-back-to-mail = තැපැල් කවුළුවට ආපසු
 compose-pop-out-reply = පිළිතුර වෙනම කවුළුවක විවෘත කරන්න
 compose-show-trimmed = කපා හැරි අන්තර්ගතය පෙන්වන්න
+compose-hide-trimmed = කපා හැරි අන්තර්ගතය සඟවන්න
+compose-remove-trimmed = උපුටා දැක්වූ පෙළ ඉවත් කරන්න
+compose-trimmed-removed = උපුටා දැක්වූ පෙළ ඉවත් කරන ලදී
 
 ## Recipients and subject
 

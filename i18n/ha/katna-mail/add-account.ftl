@@ -84,3 +84,4 @@ add-account-signed-in = An shiga da { $provider }. Ana samo wasiƙunku…
 
 add-account-menu-another = Ƙara wani asusu
 add-account-menu-manage = Sarrafa asusu
+app-menu = Babban menu

@@ -13,6 +13,9 @@ compose-save-close = ذخیره و بستن
 compose-back-to-mail = بازگشت به پنجرهٔ ایمیل
 compose-pop-out-reply = باز کردن پاسخ در پنجرهٔ جدا
 compose-show-trimmed = نمایش محتوای کوتاه‌شده
+compose-hide-trimmed = پنهان کردن محتوای کوتاه‌شده
+compose-remove-trimmed = حذف متن نقل‌شده
+compose-trimmed-removed = متن نقل‌شده حذف شد
 
 ## Recipients and subject
 

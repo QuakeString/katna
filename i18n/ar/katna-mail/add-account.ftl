@@ -84,3 +84,4 @@ add-account-signed-in = تم تسجيل الدخول باستخدام { $provide
 
 add-account-menu-another = إضافة حساب آخر
 add-account-menu-manage = إدارة الحسابات
+app-menu = القائمة الرئيسية

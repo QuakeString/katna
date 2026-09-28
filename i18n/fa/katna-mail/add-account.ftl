@@ -84,3 +84,4 @@ add-account-signed-in = با { $provider } وارد شدید. در حال دری
 
 add-account-menu-another = افزودن حساب دیگر
 add-account-menu-manage = مدیریت حساب‌ها
+app-menu = منوی اصلی

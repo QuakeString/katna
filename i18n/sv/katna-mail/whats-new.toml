@@ -758,3 +758,86 @@ de ska flyttas till papperskorgen. Kryssa i ”Fråga inte igen” för att
 hoppa över frågan, eller slå på den igen under Inställningar > Allmänt.
 Permanent radering, i papperskorgen, frågar alltid.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna för Windows"
+text = """
+Katna Mail körs nu även på Windows 10 och 11, installerat med sitt eget
+Katna Setup, med ikonen i meddelandefältet, aviseringar, start vid
+inloggning och e-postlänkar som öppnas i Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Ta bort-knapp på varje adress"
+text = """
+Varje adress i Till, Kopia och Dold kopia visar nu alltid sitt x, så att du
+kan ta bort den utan att först peka på den.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Ett rundare formateringsfält"
+text = """
+Formateringsfältet när du skriver (Aa) är nu format som ett piller med en
+svag kant, så att det skiljer sig från din text i både ljust och mörkt tema.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Långa mejltrådar öppnas snabbt"
+text = """
+Formaterade mejl som citerar många tidigare svar, som en lång citattråd,
+öppnas nu direkt och rullar mjukt i stället för att göra hela fönstret
+långsamt.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Vem som har sett det, bakom ett öga"
+text = """
+Mejl du har skickat med spårning har inte längre en ruta med rader ovanför.
+Ett öga bredvid stjärnan får din accentfärg så fort någon öppnar mejlet;
+peka på ögat för att se vem som öppnade det eller följde en länk, och när.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Ring och kopiera från kontaktuppgifterna"
+text = """
+I kontaktuppgifterna bredvid en konversation klickar du på ett telefonnummer
+för att ringa det med din telefonapp eller KDE Connect, eller använder
+kopieringsknappen bredvid. All text i panelen kan nu också markeras och
+kopieras.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Dölj eller ta bort det citerade mejlet i ett svar"
+text = """
+Knappen "..." under ett svar döljer nu det citerade mejlet igen när du har
+öppnat det. Peka på knappen och klicka på x:et i hörnet för att ta bort det
+citerade mejlet ur ditt svar; Ångra eller Ctrl+Z lägger tillbaka det.
+Svarets verktygsfält stannar också kvar medan du rullar.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Svävande mappar och en bredare sökning"
+text = """
+När mapparna är dolda öppnas de som en panel fri från kanterna när du vilar
+pekaren på Skriv eller E-post, med en liten spets som pekar mot knappen.
+Sökrutan växer och fyller utrymmet som mapparna lämnar, och ett klick på
+mappen du redan är i får inte längre listan att blinka.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Adressförslag i Sökalternativ"
+text = """
+Från och Till i Sökalternativ föreslår nu adresser medan du skriver, på
+samma sätt som Till, Kopia och Dold kopia när du skriver ett mejl. Välj en
+med Enter, Tab eller ett klick.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Huvudmeny i kontokortet, Svara alla i ett eget fönster"
+text = """
+Kontokortet har en ☰-knapp bredvid Hantera konton. Den öppnar samma menyer
+Arkiv, Redigera, Visa, Gå, Meddelande, Inställningar och Hjälp som
+skrivbordets globala meny, för skrivbord som inte visar någon. Svara alla i
+en avisering om nytt mejl öppnar nu konversationen i ett eget fönster, redo
+att skriva i, och låter huvudfönstret stanna där det är.
+"""

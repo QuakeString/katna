@@ -84,3 +84,4 @@ add-account-signed-in = Ungene nge-{ $provider }. Kulandwa imeyili yakho…
 
 add-account-menu-another = Engeza enye i-akhawunti
 add-account-menu-manage = Phatha ama-akhawunti
+app-menu = Imenyu enkulu

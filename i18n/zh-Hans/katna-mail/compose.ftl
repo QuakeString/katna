@@ -13,6 +13,9 @@ compose-save-close = 保存并关闭
 compose-back-to-mail = 返回邮件窗口
 compose-pop-out-reply = 弹出回复
 compose-show-trimmed = 显示被截去的内容
+compose-hide-trimmed = 隐藏被截去的内容
+compose-remove-trimmed = 移除引用的文字
+compose-trimmed-removed = 已移除引用的文字
 
 ## Recipients and subject
 

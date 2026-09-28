@@ -13,6 +13,9 @@ compose-save-close = Stoor en maak toe
 compose-back-to-mail = Terug na die posvenster
 compose-pop-out-reply = Maak antwoord apart oop
 compose-show-trimmed = Wys verkorte inhoud
+compose-hide-trimmed = Versteek verkorte inhoud
+compose-remove-trimmed = Verwyder aangehaalde teks
+compose-trimmed-removed = Aangehaalde teks verwyder
 
 ## Recipients and subject
 

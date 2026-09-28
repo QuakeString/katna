@@ -84,3 +84,4 @@ add-account-signed-in = ลงชื่อเข้าใช้ด้วย { $p
 
 add-account-menu-another = เพิ่มบัญชีอื่น
 add-account-menu-manage = จัดการบัญชี
+app-menu = เมนูหลัก

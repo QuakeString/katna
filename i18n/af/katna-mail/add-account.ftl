@@ -84,3 +84,4 @@ add-account-signed-in = Aangemeld met { $provider }. Haal tans jou e-pos…
 
 add-account-menu-another = Voeg nog 'n rekening by
 add-account-menu-manage = Bestuur rekeninge
+app-menu = Hoofkieslys

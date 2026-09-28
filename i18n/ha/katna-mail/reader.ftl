@@ -101,6 +101,7 @@ tracking-clicked = { $who } ya bi mahaɗi { $clicks ->
    *[other] sau { $clicks }
 }, na ƙarshe { $when }
 tracking-maybe-opened = Wataƙila { $who } ya buɗe shi (Apple Mail yana loda hotuna don sirri)
+tracking-seen-none = Har yanzu babu wanda ya buɗe shi ko ya bi mahaɗi
 tracking-receipt = { $who } ya aiko da rasidin karantawa
 tracking-receipt-displayed = Rasidin karantawa: { $who } ya buɗe saƙonku
 tracking-receipt-other = Rasidin karantawa: { $who } ya share ko ya sarrafa saƙonku ba tare da ya buɗe shi ba

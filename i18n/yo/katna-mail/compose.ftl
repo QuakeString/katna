@@ -13,6 +13,9 @@ compose-save-close = Fi pamọ́ kí o sì pa á dé
 compose-back-to-mail = Padà sí fèrèsé lẹ́tà
 compose-pop-out-reply = Ṣí èsì sí ọ̀tọ̀
 compose-show-trimmed = Fi àkóónú tí a gé kúrú hàn
+compose-hide-trimmed = Fi àkóónú tí a gé kúrú pamọ́
+compose-remove-trimmed = Yọ ọ̀rọ̀ tí a fà yọ kúrò
+compose-trimmed-removed = A ti yọ ọ̀rọ̀ tí a fà yọ kúrò
 
 ## Recipients and subject
 

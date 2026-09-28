@@ -13,6 +13,9 @@ compose-save-close = సేవ్ చేసి మూసివేయండి
 compose-back-to-mail = మెయిల్ విండోకు తిరిగి వెళ్లండి
 compose-pop-out-reply = రిప్లయిని విడిగా తెరవండి
 compose-show-trimmed = కత్తిరించిన కంటెంట్‌ను చూపండి
+compose-hide-trimmed = కత్తిరించిన కంటెంట్‌ను దాచండి
+compose-remove-trimmed = కోట్ చేసిన టెక్స్ట్‌ను తీసివేయండి
+compose-trimmed-removed = కోట్ చేసిన టెక్స్ట్ తీసివేయబడింది
 
 ## Recipients and subject
 

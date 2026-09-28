@@ -13,6 +13,9 @@ compose-save-close = 儲存並關閉
 compose-back-to-mail = 返回郵件視窗
 compose-pop-out-reply = 以獨立視窗回覆
 compose-show-trimmed = 顯示已省略的內容
+compose-hide-trimmed = 隱藏已省略的內容
+compose-remove-trimmed = 移除引用的文字
+compose-trimmed-removed = 已移除引用的文字
 
 ## Recipients and subject
 

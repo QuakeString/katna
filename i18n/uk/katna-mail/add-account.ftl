@@ -84,3 +84,4 @@ add-account-signed-in = Ви ввійшли через { $provider }. Отрим
 
 add-account-menu-another = Додати ще обліковий запис
 add-account-menu-manage = Керувати обліковими записами
+app-menu = Головне меню

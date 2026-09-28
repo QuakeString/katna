@@ -13,6 +13,9 @@ compose-save-close = सेभ गरेर बन्द गर्नुहो�
 compose-back-to-mail = मेल विन्डोमा फर्कनुहोस्
 compose-pop-out-reply = जवाफ छुट्टै विन्डोमा खोल्नुहोस्
 compose-show-trimmed = काटिएको सामग्री देखाउनुहोस्
+compose-hide-trimmed = काटिएको सामग्री लुकाउनुहोस्
+compose-remove-trimmed = उद्धृत पाठ हटाउनुहोस्
+compose-trimmed-removed = उद्धृत पाठ हटाइयो
 
 ## Recipients and subject
 

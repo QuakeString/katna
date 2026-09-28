@@ -759,3 +759,86 @@ Pípa ìjíròrò púpọ̀ rẹ́ lẹ́ẹ̀kan náà yóò kọ́kọ́ bèè
 Ìdọ̀tí. Sàmì sí “Má bèèrè mọ́” láti fo ìbéèrè náà, tàbí tàn án padà nínú
 Ètò > Gbogbogbò. Pípa rẹ́ títí láé, nínú Ìdọ̀tí, máa bèèrè nígbà gbogbo.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna fún Windows"
+text = """
+Katna Mail ti ń ṣiṣẹ́ lórí Windows 10 àti 11 pẹ̀lú báyìí, tí a ń fi Katna
+Setup tirẹ̀ ṣètò rẹ̀, pẹ̀lú àmì-àwòrán àtẹ, ìfitónilétí, bíbẹ̀rẹ̀ nígbà
+ìwọlé àti ìjápọ̀ lẹ́tà tí ń ṣí nínú Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Bọ́tìnnì yíyọ kúrò lórí gbogbo àdírẹ́sì"
+text = """
+Ṣíìpù àdírẹ́sì kọ̀ọ̀kan nínú Sí, Ẹ̀dà àti Ẹ̀dà àṣírí ti ń fi x rẹ̀ hàn nígbà
+gbogbo báyìí, kí o lè yọ ọ́ kúrò láìkọ́kọ́ tọ́ka sí i.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Ọ̀pá ìgúnrege tó rí roboto jù"
+text = """
+Ọ̀pá ìgúnrege nínú Kọ̀wé (Aa) ti rí bí òògùn kóró báyìí pẹ̀lú etí tó ṣe
+bàìbàì, kí ó lè dá yàtọ̀ sí ọ̀rọ̀ rẹ nínú àkòrí ìmọ́lẹ̀ àti òkùnkùn.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Ẹ̀wọ̀n ímeèlì gígùn ń ṣí kíákíá"
+text = """
+Lẹ́tà onígúnrege tó fa ọ̀pọ̀ èsì àtẹ̀yìnwá yọ, bí ẹ̀wọ̀n ìfàyọ gígùn, ti ń
+ṣí lẹ́sẹ̀kẹsẹ̀ báyìí, ó sì ń yí lọ geerege dípò kí ó dín gbogbo fèrèsé kù ní
+ìyára.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Ẹni tó ti rí i, lẹ́yìn ojú kan"
+text = """
+Lẹ́tà tí o fi ránṣẹ́ pẹ̀lú títọpa kò ní àpótí ìlà lókè rẹ̀ mọ́. Ojú kan
+lẹ́gbẹ̀ẹ́ ìràwọ̀ máa ń di àwọ̀ àfihàn rẹ ní kété tí ẹnìkan bá ṣí i; tọ́ka sí
+i láti rí ẹni tó ṣí i tàbí tẹ̀lé ìjápọ̀ kan, àti ìgbà wo.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Pè kí o sì ṣe ẹ̀dà láti inú àlàyé olùbásọ̀rọ̀"
+text = """
+Nínú àlàyé olùbásọ̀rọ̀ lẹ́gbẹ̀ẹ́ ìjíròrò kan, tẹ nọ́mbà fóònù kan láti pè é
+pẹ̀lú áàpù fóònù rẹ tàbí KDE Connect, tàbí lo bọ́tìnnì ẹ̀dà lẹ́gbẹ̀ẹ́ rẹ̀.
+Gbogbo ọ̀rọ̀ inú pánẹ́ẹ̀lì náà ni o tún lè yàn kí o sì ṣe ẹ̀dà rẹ̀ báyìí.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Fi lẹ́tà tí a fà yọ pamọ́ tàbí yọ ọ́ kúrò nínú èsì"
+text = """
+Bọ́tìnnì "..." lábẹ́ èsì kan ti ń fi lẹ́tà tí a fà yọ pamọ́ padà báyìí
+lẹ́yìn tí o bá ṣí i. Tọ́ka sí i kí o sì tẹ x ní igun rẹ̀ láti yọ lẹ́tà tí a
+fà yọ kúrò nínú èsì rẹ; Dá padà tàbí Ctrl+Z ń dá a padà. Ọ̀pá irinṣẹ́ èsì
+náà tún ń dúró sí ààyè rẹ̀ bí o ṣe ń yí lọ.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Fódà tí ń léfòó, àti àwárí tó fẹ̀ jù"
+text = """
+Nígbà tí àwọn fódà bá pamọ́, gbígbé atọ́ka lé Kọ̀wé tàbí Lẹ́tà ń ṣí wọn bí
+pánẹ́ẹ̀lì tó jìnnà sí àwọn etí, pẹ̀lú ṣóńṣó kékeré tó tọ́ka sí bọ́tìnnì náà.
+Àpótí àwárí ń fẹ̀ láti kún ààyè tí àwọn fódà fi sílẹ̀, títẹ fódà tí o ti wà
+nínú rẹ̀ kò sì ń mú kí àkójọ náà ṣẹ́jú mọ́.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Àbá àdírẹ́sì nínú Àwọn àṣàyàn àwárí"
+text = """
+Láti ọ̀dọ̀ àti Sí nínú Àwọn àṣàyàn àwárí ti ń dábàá àdírẹ́sì báyìí bí o ṣe ń
+tẹ̀wé, bí Sí, Ẹ̀dà àti Ẹ̀dà àṣírí ṣe ń ṣe nínú Kọ̀wé. Yan ọ̀kan pẹ̀lú Enter,
+Tab tàbí títẹ̀.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Mẹ́nù pàtàkì nínú káàdì àkáǹtì, Fèsì sí gbogbo ní fèrèsé tirẹ̀"
+text = """
+Káàdì àkáǹtì ní bọ́tìnnì ☰ lẹ́gbẹ̀ẹ́ Ṣàkóso àwọn àkáǹtì. Ó ń ṣí àwọn mẹ́nù
+Fáìlì, Ṣàtúnṣe, Wò, Lọ, Ìfiránṣẹ́, Ètò àti Ìrànlọ́wọ́ kan náà tí mẹ́nù
+àgbáyé déskítọ́ọ̀pù ní, fún àwọn déskítọ́ọ̀pù tí kò fi irú mẹ́nù bẹ́ẹ̀ hàn.
+Fèsì sí gbogbo lórí ìfitónilétí lẹ́tà tuntun ti ń ṣí ìjíròrò náà ní fèrèsé
+tirẹ̀ báyìí, ní ìmúrasílẹ̀ fún títẹ̀wé, ó sì ń fi fèrèsé àkọ́kọ́ sílẹ̀ níbi
+tí ó wà.
+"""

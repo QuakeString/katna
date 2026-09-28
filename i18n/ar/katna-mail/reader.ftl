@@ -117,6 +117,7 @@ tracking-clicked = تابع { $who } رابطًا { $clicks ->
    *[other] { $clicks } مرة
 }، آخرها { $when }
 tracking-maybe-opened = ربما فتحها { $who } (يحمّل Apple Mail الصور حفاظًا على الخصوصية)
+tracking-seen-none = لم يفتحها أحد أو يتابع رابطًا فيها بعد
 tracking-receipt = أرسل { $who } إشعارًا بالقراءة
 tracking-receipt-displayed = إشعار بالقراءة: فتح { $who } رسالتك
 tracking-receipt-other = إشعار بالقراءة: حذف { $who } رسالتك أو تعامل معها دون فتحها

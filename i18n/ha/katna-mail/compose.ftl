@@ -13,6 +13,9 @@ compose-save-close = Ajiye kuma rufe
 compose-back-to-mail = Koma taga wasiƙu
 compose-pop-out-reply = Buɗe amsar a taga ta daban
 compose-show-trimmed = Nuna abin da aka taƙaita
+compose-hide-trimmed = Ɓoye abin da aka taƙaita
+compose-remove-trimmed = Cire rubutun da aka ambato
+compose-trimmed-removed = An cire rubutun da aka ambato
 
 ## Recipients and subject
 

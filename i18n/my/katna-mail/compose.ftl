@@ -13,6 +13,9 @@ compose-save-close = သိမ်းပြီး ပိတ်ရန်
 compose-back-to-mail = မေးလ်ဝင်းဒိုးသို့ ပြန်သွားရန်
 compose-pop-out-reply = ပြန်စာကို သီးခြားဝင်းဒိုးတွင် ဖွင့်ရန်
 compose-show-trimmed = ဖြတ်ထားသော အကြောင်းအရာကို ပြရန်
+compose-hide-trimmed = ဖြတ်ထားသော အကြောင်းအရာကို ဝှက်ရန်
+compose-remove-trimmed = ကိုးကားထားသော စာသားကို ဖယ်ရှားရန်
+compose-trimmed-removed = ကိုးကားထားသော စာသားကို ဖယ်ရှားပြီးပါပြီ
 
 ## Recipients and subject
 
