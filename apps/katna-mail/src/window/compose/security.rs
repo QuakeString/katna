@@ -30,6 +30,17 @@ pub(in crate::window) struct Sealing {
 }
 
 impl Sealing {
+    /// The default for a new message: tracked, with a read receipt asked
+    /// for. Tracking only happens when signed in to a Katna account and the
+    /// message can be tracked (`compose/tracking.rs`).
+    pub fn new_message() -> Self {
+        Self {
+            track: true,
+            receipt: true,
+            ..Self::default()
+        }
+    }
+
     /// The default for an answer to (or forward of) a message: encrypted
     /// mail is answered encrypted and signed, in the same standard.
     pub fn answering(security: Option<&Security>) -> Self {
@@ -38,9 +49,9 @@ impl Sealing {
                 sign: true,
                 encrypt: true,
                 smime: security.standard == Standard::Smime,
-                ..Self::default()
+                ..Self::new_message()
             },
-            _ => Self::default(),
+            _ => Self::new_message(),
         }
     }
 
@@ -176,15 +187,18 @@ mod tests {
                 sign: true,
                 encrypt: true,
                 smime: true,
-                ..Sealing::default()
+                ..Sealing::new_message()
             }
         );
         let signed_only = Security {
             decryption: None,
             ..security
         };
-        assert_eq!(Sealing::answering(Some(&signed_only)), Sealing::default());
-        assert_eq!(Sealing::answering(None), Sealing::default());
+        assert_eq!(
+            Sealing::answering(Some(&signed_only)),
+            Sealing::new_message()
+        );
+        assert_eq!(Sealing::answering(None), Sealing::new_message());
     }
 
     #[test]

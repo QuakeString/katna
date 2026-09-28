@@ -596,7 +596,7 @@ impl MailWindow {
         };
         let view = self.reader.as_ref().and_then(|reader| reader.view(source));
         let sealing = match kind {
-            Kind::New => Sealing::default(),
+            Kind::New => Sealing::new_message(),
             _ => Sealing::answering(self.reader.as_ref().and_then(|r| r.security(source))),
         };
         let original = view.map(|view| Original {
@@ -1011,7 +1011,7 @@ impl MailWindow {
             message_id: drafts::new_message_id(),
             saved: None,
             mode: Mode::Open,
-            sealing: Sealing::default(),
+            sealing: Sealing::new_message(),
             signature,
             format_bar: false,
             popup: None,

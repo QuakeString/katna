@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Open and click tracking and read receipts in the compose window: two
-//! toggles by the recipients, both off for every new message
-//! (`docs/ARCHITECTURE.md` §16.1). Tracked mail goes to the daemon's
+//! toggles by the recipients, both on for every new message and reply
+//! (`docs/ARCHITECTURE.md` §16.1); tracking needs a Katna account, and
+//! mail goes out untracked without one. Tracked mail goes to the daemon's
 //! `QueueTrackedSend`, which sends each recipient a copy of their own; a
 //! read receipt is a `Disposition-Notification-To` header (RFC 8098),
 //! which needs no server and which the recipient's app may ask them about.
