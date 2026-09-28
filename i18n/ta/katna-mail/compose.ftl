@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count } கோப்பு, { $size }
    *[other] { $count } கோப்புகள், { $size }
 }
+compose-drive-note = { $name } { $limit } அளவைத் தாண்டுவதால், அது உங்கள் Google Drive-க்குச் செல்கிறது; மெசேஜில் அதன் லிங்க் இருக்கும்.
+compose-drive-tip = உங்கள் Google Drive-இல்; மெசேஜில் லிங்க் இருக்கும்
+compose-drive-uploading = பதிவேற்றுகிறது { $percent }%
+compose-drive-allow = Drive-ஐ அனுமதி
+compose-drive-allow-tip = பெரிய கோப்புகளை உங்கள் Drive-இல் Katna சேமிக்க Google மூலம் மீண்டும் உள்நுழையுங்கள்
+compose-drive-retry = மீண்டும் முயல்க
+compose-drive-sends-when-uploaded = { $name } பதிவேற்றப்பட்டதும் அனுப்பப்படும்
+compose-drive-not-uploaded = { $name } இன்னும் Google Drive-இல் இல்லை
+compose-drive-share-failed = Google Drive-இல் கோப்புகளைப் பகிர முடியவில்லை: { $error }
+compose-drive-share-title = கோப்புகளை அனைவருடனும் பகிரவா?
+compose-drive-share-text = { $count ->
+    [one] Google கணக்கு இல்லாத { $addresses } உடன் Google Drive கோப்புகளைப் பகிர முடியாது. அதற்குப் பதிலாக, லிங்க் உள்ள எவரும் அவற்றைத் திறக்கலாம்.
+   *[other] Google கணக்கு இல்லாத { $addresses } உடன் Google Drive கோப்புகளைப் பகிர முடியாது. அதற்குப் பதிலாக, லிங்க் உள்ள எவரும் அவற்றைத் திறக்கலாம்.
+}
+compose-drive-share-link = லிங்குடன் பகிர்
+compose-drive-send-without = பகிராமல் அனுப்பு
+compose-drive-share-cancel = ரத்துசெய்
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = கோப்புகளை இங்கே விடவும்
 compose-drop-here = இங்கே விடவும்
 compose-paste-keep-formatting = வடிவமைப்பை வைத்திரு

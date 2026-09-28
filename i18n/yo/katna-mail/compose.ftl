@@ -57,6 +57,23 @@ compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé t
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
 compose-attachments-total = Fáìlì { $count }, { $size }
+compose-drive-note = { $name } tóbi ju { $limit } lọ, nítorí náà ó ń lọ sí Google Drive rẹ, ìfiránṣẹ́ náà sì ní ìjápọ̀.
+compose-drive-tip = Nínú Google Drive rẹ; ìfiránṣẹ́ náà ní ìjápọ̀
+compose-drive-uploading = Ń gbé sókè { $percent }%
+compose-drive-allow = Yọ̀ǹda Drive
+compose-drive-allow-tip = Wọlé pẹ̀lú Google lẹ́ẹ̀kan sí i kí Katna lè fi àwọn fáìlì ńlá sínú Drive rẹ
+compose-drive-retry = Gbìyànjú lẹ́ẹ̀kan sí i
+compose-drive-sends-when-uploaded = Ìfiránṣẹ́ á jáde nígbà tí a bá gbé { $name } sókè
+compose-drive-not-uploaded = { $name } kò tíì wà nínú Google Drive
+compose-drive-share-failed = Kò ṣeé ṣe láti pín àwọn fáìlì náà nínú Google Drive: { $error }
+compose-drive-share-title = Pín àwọn fáìlì náà pẹ̀lú gbogbo èèyàn?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive kò lè pín àwọn fáìlì náà pẹ̀lú { $addresses }, tí kò ní àkáǹtì Google. Dípò bẹ́ẹ̀, ẹnikẹ́ni tó bá ní ìjápọ̀ náà lè ṣí wọn.
+}
+compose-drive-share-link = Pín pẹ̀lú ìjápọ̀
+compose-drive-send-without = Fi ránṣẹ́ láìpín
+compose-drive-share-cancel = Fagilé
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Ju àwọn fáìlì sí ibí
 compose-drop-here = Ju sí ibí
 compose-paste-keep-formatting = Pa ìgúnrege mọ́

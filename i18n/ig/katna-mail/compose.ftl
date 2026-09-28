@@ -57,6 +57,23 @@ compose-file-too-large = { $name } buru oke ibu: ozi nwere ike ibu ruo { $limit 
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Wepụ mgbakwunye
 compose-attachments-total = faịlụ { $count }, { $size }
+compose-drive-note = { $name } karịrị { $limit }, ya mere ọ na-aga na Google Drive gị, ozi ahụ ga-ebukwa njikọ.
+compose-drive-tip = Na Google Drive gị; ozi ahụ na-ebu njikọ
+compose-drive-uploading = Na-ebugote { $percent }%
+compose-drive-allow = Kwe Drive
+compose-drive-allow-tip = Banye na Google ọzọ ka Katna tinye nnukwu faịlụ na Drive gị
+compose-drive-retry = Nwaa ọzọ
+compose-drive-sends-when-uploaded = A ga-eziga ya ozugbo { $name } bugoro
+compose-drive-not-uploaded = { $name } anọbeghị na Google Drive
+compose-drive-share-failed = Enweghị ike ikekọrịta faịlụ na Google Drive: { $error }
+compose-drive-share-title = Kekọrịta faịlụ ndị ahụ na onye ọ bụla?
+compose-drive-share-text = { $count ->
+   *[other] Google Drive enweghị ike ikekọrịta faịlụ ndị ahụ na { $addresses }, onye ma ọ bụ ndị na-enweghị akaụntụ Google. Onye ọ bụla nwere njikọ nwere ike imepe ha kama.
+}
+compose-drive-share-link = Kekọrịta site na njikọ
+compose-drive-send-without = Zipu ma ekekọrịtaghị
+compose-drive-share-cancel = Kagbuo
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Dobe faịlụ ebe a
 compose-drop-here = Dobe ebe a
 compose-paste-keep-formatting = Debe nhazi

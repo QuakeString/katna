@@ -57,6 +57,23 @@ compose-file-too-large = { $name } ใหญ่เกินไป: ข้อค�
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
 compose-attachments-total = { $count } ไฟล์ รวม { $size }
+compose-drive-note = { $name } มีขนาดเกิน { $limit } จึงจะถูกอัปโหลดไปที่ Google Drive ของคุณ และข้อความจะมีลิงก์ของไฟล์
+compose-drive-tip = อยู่ใน Google Drive ของคุณ ข้อความจะมีลิงก์
+compose-drive-uploading = กำลังอัปโหลด { $percent }%
+compose-drive-allow = อนุญาต Drive
+compose-drive-allow-tip = ลงชื่อเข้าใช้ด้วย Google อีกครั้งเพื่อให้ Katna วางไฟล์ขนาดใหญ่ใน Drive ของคุณได้
+compose-drive-retry = ลองอีกครั้ง
+compose-drive-sends-when-uploaded = จะส่งเมื่ออัปโหลด { $name } เสร็จ
+compose-drive-not-uploaded = { $name } ยังไม่อยู่ใน Google Drive
+compose-drive-share-failed = ไม่สามารถแชร์ไฟล์ใน Google Drive ได้: { $error }
+compose-drive-share-title = แชร์ไฟล์กับทุกคนหรือไม่
+compose-drive-share-text = { $count ->
+   *[other] Google Drive แชร์ไฟล์กับ { $addresses } ซึ่งไม่มีบัญชี Google ไม่ได้ แต่ทุกคนที่มีลิงก์จะเปิดไฟล์ได้แทน
+}
+compose-drive-share-link = แชร์ด้วยลิงก์
+compose-drive-send-without = ส่งโดยไม่แชร์
+compose-drive-share-cancel = ยกเลิก
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = วางไฟล์ที่นี่
 compose-drop-here = วางที่นี่
 compose-paste-keep-formatting = คงการจัดรูปแบบไว้

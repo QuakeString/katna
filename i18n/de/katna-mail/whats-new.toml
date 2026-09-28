@@ -1045,3 +1045,22 @@ Sie Alle Konten oder eines davon, und die verfolgten Nachrichten, Raten,
 das Diagramm, die Betreffzeilen und Ihr Postfach richten sich danach. Der
 Bericht nennt das angezeigte Konto und merkt sich Ihre Wahl.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Neuer und Älter immer in der Symbolleiste"
+text = """
+Egal wie schmal die Leseansicht ist: Der Zähler und die Pfeile Neuer und
+Älter bleiben rechts in ihrer Symbolleiste. Die Schaltflächen, die Sie am
+seltensten nutzen, wandern stattdessen nach und nach in das Menü Mehr,
+darunter auch die Schalter für Kontaktdetails und Originalfarben.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Dateien in jeder Größe senden"
+text = """
+Bei einem mit Google angemeldeten Konto landet eine Datei über dem
+Mail-Limit von 25 MB sofort nach dem Anhängen in Ihrem Google Drive, und
+die Nachricht enthält ihren Link, wie in Gmail. Beim Senden wird sie für
+Ihre Empfänger freigegeben; Katna fragt nur nach, wenn jemandem kein
+Zugriff gegeben werden kann.
+"""

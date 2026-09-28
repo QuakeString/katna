@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count } file, { $size }
    *[other] { $count } file, { $size }
 }
+compose-drive-note = Lampas sa { $limit } ang { $name }, kaya mapupunta ito sa iyong Google Drive at may link ang mensahe.
+compose-drive-tip = Nasa iyong Google Drive; may link ang mensahe
+compose-drive-uploading = Ina-upload { $percent }%
+compose-drive-allow = Payagan ang Drive
+compose-drive-allow-tip = Mag-sign in ulit gamit ang Google para mailagay ng Katna ang malalaking file sa iyong Drive
+compose-drive-retry = Subukang muli
+compose-drive-sends-when-uploaded = Ipapadala kapag na-upload na ang { $name }
+compose-drive-not-uploaded = Wala pa sa Google Drive ang { $name }
+compose-drive-share-failed = Hindi maibahagi ang mga file sa Google Drive: { $error }
+compose-drive-share-title = Ibahagi ang mga file sa lahat?
+compose-drive-share-text = { $count ->
+    [one] Hindi maibabahagi ng Google Drive ang mga file kay { $addresses }, na walang Google account. Sa halip, mabubuksan ito ng sinumang may link.
+   *[other] Hindi maibabahagi ng Google Drive ang mga file kina { $addresses }, na walang Google account. Sa halip, mabubuksan ito ng sinumang may link.
+}
+compose-drive-share-link = Ibahagi gamit ang link
+compose-drive-send-without = Ipadala nang hindi nagbabahagi
+compose-drive-share-cancel = Kanselahin
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = I-drop dito ang mga file
 compose-drop-here = I-drop dito
 compose-paste-keep-formatting = Panatilihin ang format

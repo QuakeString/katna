@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] Faili { $count }, { $size }
    *[other] Faili { $count }, { $size }
 }
+compose-drive-note = { $name } ni kubwa kuliko { $limit }, kwa hiyo huenda kwenye Google Drive yako na ujumbe hubeba kiungo.
+compose-drive-tip = Kwenye Google Drive yako; ujumbe hubeba kiungo
+compose-drive-uploading = Inapakia { $percent }%
+compose-drive-allow = Ruhusu Drive
+compose-drive-allow-tip = Ingia tena kwa Google ili Katna iweke faili kubwa kwenye Drive yako
+compose-drive-retry = Jaribu tena
+compose-drive-sends-when-uploaded = Ujumbe utatumwa { $name } ikishapakiwa
+compose-drive-not-uploaded = { $name } bado haiko kwenye Google Drive
+compose-drive-share-failed = Imeshindwa kushiriki faili kwenye Google Drive: { $error }
+compose-drive-share-title = Shiriki faili na kila mtu?
+compose-drive-share-text = { $count ->
+    [one] Google Drive haiwezi kushiriki faili na { $addresses }, ambaye hana akaunti ya Google. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+   *[other] Google Drive haiwezi kushiriki faili na { $addresses }, ambao hawana akaunti ya Google. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+}
+compose-drive-share-link = Shiriki kwa kiungo
+compose-drive-send-without = Tuma bila kushiriki
+compose-drive-share-cancel = Ghairi
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Dondosha faili hapa
 compose-drop-here = Dondosha hapa
 compose-paste-keep-formatting = Dumisha uumbizaji

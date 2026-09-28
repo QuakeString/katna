@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count } dosya, { $size }
    *[other] { $count } dosya, { $size }
 }
+compose-drive-note = { $name } { $limit } sınırını aşıyor; bu yüzden Google Drive'ınıza gider ve ileti bir bağlantı taşır.
+compose-drive-tip = Google Drive'ınızda; ileti bir bağlantı taşır
+compose-drive-uploading = Yükleniyor { $percent }%
+compose-drive-allow = Drive'a izin ver
+compose-drive-allow-tip = Katna'nın büyük dosyaları Drive'ınıza koyabilmesi için Google ile yeniden oturum açın
+compose-drive-retry = Tekrar dene
+compose-drive-sends-when-uploaded = { $name } yüklendikten sonra gönderilecek
+compose-drive-not-uploaded = { $name } henüz Google Drive'da değil
+compose-drive-share-failed = Dosyalar Google Drive'da paylaşılamadı: { $error }
+compose-drive-share-title = Dosyalar herkesle paylaşılsın mı?
+compose-drive-share-text = { $count ->
+    [one] Google Drive, Google hesabı olmayan { $addresses } ile dosyaları paylaşamıyor. Bunun yerine bağlantıya sahip herkes dosyaları açabilir.
+   *[other] Google Drive, Google hesabı olmayan { $addresses } ile dosyaları paylaşamıyor. Bunun yerine bağlantıya sahip herkes dosyaları açabilir.
+}
+compose-drive-share-link = Bağlantıyla paylaş
+compose-drive-send-without = Paylaşmadan gönder
+compose-drive-share-cancel = İptal
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Dosyaları buraya bırakın
 compose-drop-here = Buraya bırakın
 compose-paste-keep-formatting = Biçimlendirmeyi koru

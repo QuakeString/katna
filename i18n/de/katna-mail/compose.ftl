@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count } Datei, { $size }
    *[other] { $count } Dateien, { $size }
 }
+compose-drive-note = { $name } ist größer als { $limit } und wird deshalb in Ihrem Google Drive abgelegt; die Nachricht enthält einen Link.
+compose-drive-tip = In Ihrem Google Drive; die Nachricht enthält einen Link
+compose-drive-uploading = Wird hochgeladen: { $percent } %
+compose-drive-allow = Drive erlauben
+compose-drive-allow-tip = Melden Sie sich erneut bei Google an, damit Katna große Dateien in Ihrem Drive ablegen darf
+compose-drive-retry = Erneut versuchen
+compose-drive-sends-when-uploaded = Wird gesendet, sobald { $name } hochgeladen ist
+compose-drive-not-uploaded = { $name } ist noch nicht in Google Drive
+compose-drive-share-failed = Die Dateien in Google Drive konnten nicht freigegeben werden: { $error }
+compose-drive-share-title = Dateien für alle freigeben?
+compose-drive-share-text = { $count ->
+    [one] Google Drive kann die Dateien nicht für { $addresses } freigeben, da diese Adresse kein Google-Konto hat. Stattdessen kann jeder mit dem Link sie öffnen.
+   *[other] Google Drive kann die Dateien nicht für { $addresses } freigeben, da diese Adressen kein Google-Konto haben. Stattdessen kann jeder mit dem Link sie öffnen.
+}
+compose-drive-share-link = Per Link freigeben
+compose-drive-send-without = Ohne Freigabe senden
+compose-drive-share-cancel = Abbrechen
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Dateien hier ablegen
 compose-drop-here = Hier ablegen
 compose-paste-keep-formatting = Formatierung beibehalten

@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] fayil { $count }, { $size }
    *[other] fayiloli { $count }, { $size }
 }
+compose-drive-note = { $name } ya wuce { $limit }, don haka ana ajiye shi a Google Drive ɗinka kuma saƙon yana ɗauke da mahaɗi.
+compose-drive-tip = A Google Drive ɗinka; saƙon yana ɗauke da mahaɗi
+compose-drive-uploading = Ana ɗorawa { $percent }%
+compose-drive-allow = Ba da izinin Drive
+compose-drive-allow-tip = Sake shiga da Google don Katna ta iya sanya manyan fayiloli a Drive ɗinka
+compose-drive-retry = Sake gwadawa
+compose-drive-sends-when-uploaded = Za a aika bayan an ɗora { $name }
+compose-drive-not-uploaded = { $name } bai riga ya shiga Google Drive ba
+compose-drive-share-failed = Ba a iya raba fayilolin a Google Drive ba: { $error }
+compose-drive-share-title = A raba fayilolin da kowa?
+compose-drive-share-text = { $count ->
+    [one] Google Drive ba zai iya raba fayilolin da { $addresses }, wanda ba shi da asusun Google ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+   *[other] Google Drive ba zai iya raba fayilolin da { $addresses }, waɗanda ba su da asusun Google ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
+}
+compose-drive-share-link = Raba ta hanyar mahaɗi
+compose-drive-send-without = Aika ba tare da rabawa ba
+compose-drive-share-cancel = Soke
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari

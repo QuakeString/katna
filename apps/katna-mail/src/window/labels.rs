@@ -94,6 +94,16 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Makes the open dialog put the new folder or label inside `parent`.
+    pub(super) fn nest_new_label(&mut self, parent: FolderId) {
+        if let Some(dialog) = &mut self.new_label
+            && dialog.parents.iter().any(|(id, _)| *id == parent)
+        {
+            dialog.nest = true;
+            dialog.parent = Some(parent);
+        }
+    }
+
     fn close_new_label(&mut self, cx: &mut Context<Self>) {
         if let Some(dialog) = &mut self.new_label
             && !dialog.busy
