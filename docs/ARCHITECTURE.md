@@ -4036,7 +4036,11 @@ deletes the user's folder; Setup refuses one that already holds other
 files or is a link, and for everyone a folder outside `%ProgramFiles%` gets
 Program Files' rules: owned by Administrators, changed only by
 Administrators and SYSTEM, read and run by Users, so no user can replace
-programs every other user starts); a desktop shortcut (off), the Start menu (on)
+programs every other user starts; a new install there also needs every
+folder above it to be owned by Administrators, SYSTEM or TrustedInstaller
+and to give nobody else Delete, Delete subfolders, Change permissions or
+Take ownership, since renaming a folder above would swap Katna out too);
+a desktop shortcut (off), the Start menu (on)
 and start at sign-in (on). An update keeps the folder and what was chosen.
 Windows does not let installers pin to the taskbar (Windows 11 only for
 apps Microsoft approves), so the last screen says how to pin from Start.

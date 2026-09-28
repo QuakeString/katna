@@ -18,6 +18,7 @@ tracing.workspace = true
 zstd.workspace = true
 
 [target.'cfg(windows)'.dependencies]
+base64.workspace = true
 katna-platform.workspace = true
 winreg.workspace = true
 mslnk.workspace = true

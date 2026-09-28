@@ -13,7 +13,7 @@
 //! registry; an install for everyone writes the machine's.
 
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 use crate::payload::Payload;
 
@@ -159,15 +159,30 @@ impl Layout {
             Err(err) if err.kind() == io::ErrorKind::NotFound => true,
             Err(err) => return Err(err),
         };
-        if usable {
-            Ok(())
-        } else {
-            let path = dir.display().to_string();
-            Err(io::Error::other(katna_i18n::tr!(
+        let path = dir.display().to_string();
+        if !usable {
+            return Err(io::Error::other(katna_i18n::tr!(
                 "setup-folder-not-empty",
                 path = path.as_str()
-            )))
+            )));
         }
+        // For everyone, outside Program Files: the folders above Katna's
+        // must be safe from other users too, or one could rename them and
+        // put their own Katna where every user's sign-in starts it. An
+        // update of an existing install is let through.
+        if self.scope == Scope::Machine && !self.in_program_files() && !self.installed() {
+            let plain = dir
+                .components()
+                .all(|c| !matches!(c, Component::ParentDir | Component::CurDir));
+            let parent = dir.parent().filter(|p| p.is_dir());
+            if !plain || !parent.is_some_and(only_admins_change) {
+                return Err(io::Error::other(katna_i18n::tr!(
+                    "setup-folder-unsafe",
+                    path = path.as_str()
+                )));
+            }
+        }
+        Ok(())
     }
 
     /// Whether the programs are inside `%ProgramFiles%`, whose rules
@@ -479,6 +494,52 @@ fn lock(dir: &Path) -> io::Result<()> {
 #[cfg(not(windows))]
 fn lock(_dir: &Path) -> io::Result<()> {
     Ok(())
+}
+
+/// Whether only administrators and Windows can rename, delete or take
+/// over `dir` and every folder above it: each is owned by Administrators,
+/// SYSTEM or TrustedInstaller, and gives nobody else Delete, Delete
+/// subfolders and files, Change permissions or Take ownership (Delete on
+/// a drive's root does not matter: it cannot be renamed). Anything it
+/// cannot read counts as unsafe.
+#[cfg(windows)]
+fn only_admins_change(dir: &Path) -> bool {
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    let script = format!(
+        "$ErrorActionPreference = 'Stop'
+$sid = [System.Security.Principal.SecurityIdentifier]
+$safe = @('S-1-5-32-544', 'S-1-5-18', 'S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464')
+$d = Get-Item -LiteralPath '{}' -Force
+while ($d) {{
+  $acl = Get-Acl -LiteralPath $d.FullName
+  if ($safe -notcontains $acl.GetOwner($sid).Value) {{ exit 3 }}
+  $bad = [int64]0x500C0040
+  if ($d.Parent) {{ $bad = $bad -bor 0x10000 }}
+  foreach ($r in $acl.GetAccessRules($true, $true, $sid)) {{
+    if ($r.AccessControlType -ne 'Allow') {{ continue }}
+    if (([int]$r.PropagationFlags -band 2) -ne 0) {{ continue }}
+    if ($safe -contains $r.IdentityReference.Value) {{ continue }}
+    if (([int64]$r.FileSystemRights -band $bad) -ne 0) {{ exit 3 }}
+  }}
+  $d = $d.Parent
+}}
+exit 0",
+        ps_quote(&dir.display().to_string())
+    );
+    // A script of several lines goes as UTF-16 Base64, as PowerShell reads it.
+    let utf16: Vec<u8> = script.encode_utf16().flat_map(u16::to_le_bytes).collect();
+    let encoded = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, utf16);
+    std::process::Command::new(system_program(POWERSHELL))
+        .args(["-NoProfile", "-NonInteractive", "-EncodedCommand", &encoded])
+        .creation_flags(CREATE_NO_WINDOW)
+        .status()
+        .is_ok_and(|status| status.success())
+}
+
+#[cfg(not(windows))]
+fn only_admins_change(_dir: &Path) -> bool {
+    true
 }
 
 /// Where a Setup running as administrator puts how far it got, for the
