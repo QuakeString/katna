@@ -9,10 +9,16 @@
 //! or for all mail with Settings > General > Images from the web.
 //!
 //! A sender's picture is their organization's BIMI logo or website icon.
-//! It is looked up by domain, not by message, and kept for a week, so it
-//! cannot tell anyone that a message was read; it is shown for every
-//! sender unless the "Sender pictures" setting is off (then only for
-//! trusted senders). The user's own accounts show the picture picked for
+//! Looking it up does reach the network: a DNS query for the
+//! organization's BIMI record and HTTPS requests to its website, from this
+//! computer. The organization can see those, and when one arrives soon
+//! after it sent mail it can guess that the mail was shown. To keep that
+//! small, the daemon looks up only the organizational domain (never the
+//! sender's own subdomain, which could be unique to one recipient), keeps
+//! the answer for a week, follows no URL outside that domain, and only
+//! looks up senders whose mail the user's provider authenticated (DMARC
+//! or aligned DKIM). It is shown for every such sender unless the "Sender
+//! pictures" setting is off (then only for trusted senders). The user's own accounts show the picture picked for
 //! the account in Settings (which can be the desktop user's picture),
 //! else its picture from Google, for an account that signed in with Google
 //! (the daemon saves it under `account-pictures/provider/`), else a

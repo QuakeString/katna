@@ -107,16 +107,18 @@ impl Paths {
         }
     }
 
-    /// Creates the configuration, data and cache directories.
+    /// Creates the configuration, data, cache and state directories.
     ///
-    /// New directories get mode `0700`: they hold mail and settings that
-    /// other users must not read. Existing directories are left as they are.
-    /// On Windows the user's profile folders are already private.
+    /// New directories get mode `0700`: they hold mail, settings and crash
+    /// reports that other users must not read. Existing directories are
+    /// left as they are. On Windows the user's profile folders are already
+    /// private.
     pub fn create_dirs(&self) -> Result<()> {
         for dir in [
             &self.config_dir,
             &self.data_dir,
             &self.cache_dir,
+            &self.state_dir,
             &self.attachments_dir(),
         ] {
             let mut builder = DirBuilder::new();
@@ -230,6 +232,27 @@ impl Paths {
         let _ = std::fs::remove_dir(&self.config_dir);
         Ok(())
     }
+}
+
+/// Creates `dir` and any missing parents with mode `0700`, and makes `dir`
+/// itself `0700` if it already existed: for directories of files other
+/// users must not read, such as crash reports. On Windows the user's
+/// profile folders are already private.
+pub fn create_private_dir(dir: &Path) -> std::io::Result<()> {
+    let mut builder = DirBuilder::new();
+    builder.recursive(true);
+    #[cfg(unix)]
+    builder.mode(0o700);
+    builder.create(dir)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let permissions = std::fs::metadata(dir)?.permissions();
+        if permissions.mode() & 0o077 != 0 {
+            std::fs::set_permissions(dir, std::fs::Permissions::from_mode(0o700))?;
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -362,11 +385,33 @@ mod tests {
         let paths = Paths::with_root(tmp.path());
         paths.create_dirs().unwrap();
         paths.create_dirs().unwrap(); // idempotent
-        for dir in [paths.config_dir(), paths.data_dir(), paths.cache_dir()] {
+        for dir in [
+            paths.config_dir(),
+            paths.data_dir(),
+            paths.cache_dir(),
+            paths.state_dir(),
+        ] {
             let mode = std::fs::metadata(dir).unwrap().permissions().mode();
             assert_eq!(mode & 0o777, 0o700, "{}", dir.display());
         }
         assert!(paths.attachments_dir().is_dir());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn private_directories_are_tightened() {
+        let tmp = tempfile::tempdir().unwrap();
+        let crashes = tmp.path().join("state").join("crashes");
+        create_private_dir(&crashes).unwrap();
+        for dir in [crashes.parent().unwrap(), &crashes] {
+            let mode = std::fs::metadata(dir).unwrap().permissions().mode();
+            assert_eq!(mode & 0o777, 0o700, "{}", dir.display());
+        }
+        // One made by an older version with the default umask.
+        std::fs::set_permissions(&crashes, std::fs::Permissions::from_mode(0o755)).unwrap();
+        create_private_dir(&crashes).unwrap();
+        let mode = std::fs::metadata(&crashes).unwrap().permissions().mode();
+        assert_eq!(mode & 0o777, 0o700);
     }
 
     #[test]

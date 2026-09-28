@@ -26,6 +26,7 @@ pub mod pop3;
 mod quota;
 mod receipts;
 pub mod remote;
+mod sender_auth;
 pub mod templates;
 mod thread;
 pub mod tracking;

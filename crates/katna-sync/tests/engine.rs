@@ -247,6 +247,37 @@ fn new_messages_are_threaded_and_classified() {
 }
 
 #[test]
+fn the_providers_authentication_verdict_is_kept() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    // A forged sender with the provider's failing verdict on top and the
+    // sender's own passing one below it.
+    server.deliver_header(
+        "INBOX",
+        &format!(
+            "Authentication-Results: mx.provider.test; dmarc=fail header.from=bank.example\r\n\
+             Authentication-Results: mx.provider.test; dmarc=pass header.from=bank.example\r\n\
+             {}",
+            header("a", "").replace("bob@example.org", "ceo@bank.example")
+        ),
+        "",
+    );
+    server.deliver_header(
+        "INBOX",
+        &format!(
+            "Authentication-Results: mx.provider.test;\r\n dkim=pass header.d=example.org;\r\n \
+             dmarc=pass (p=none) header.from=example.org\r\n{}",
+            header("b", "")
+        ),
+        "",
+    );
+    sync(&server, &mut store, account);
+    assert!(store.sender_domain_authenticated("example.org").unwrap());
+    assert!(!store.sender_domain_authenticated("bank.example").unwrap());
+}
+
+#[test]
 fn gmail_thread_ids_and_categories_win() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();

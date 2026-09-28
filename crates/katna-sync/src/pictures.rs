@@ -12,8 +12,18 @@
 //!   says nothing about the person. Answers, including "none", are kept in
 //!   the cache directory for a week.
 //!
-//! Only `https` is used, bodies are capped, and anything that is not an
-//! image by its first bytes is refused.
+//! A sender picture is looked up by the sender's organizational domain
+//! ([`organizational_domain`]) only, and kept under it, so mail from
+//! `x@<unique-id>.tracker.example` causes no lookup of its own: the
+//! sender learns nothing per message or per recipient from it beyond
+//! one lookup of the organization a week. Only URLs on that domain or its
+//! subdomains are followed (a BIMI `l=` or an icon a home page names).
+//! The daemon asks only for senders whose mail the user's provider
+//! authenticated (`katna_sync::auth_results`).
+//!
+//! Only `https` on port 443 is used, to public addresses only
+//! ([`crate::net::Reach::Public`]), bodies are capped, and anything that is
+//! not an image by its first bytes is refused.
 
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
@@ -94,7 +104,7 @@ impl Pictures {
     /// Fetches the image at `url` (`http` is upgraded to `https`).
     pub async fn image(&self, url: &str) -> Result<Vec<u8>> {
         let url = https(url).ok_or_else(|| Error::Protocol(format!("{url}: not a web URL")))?;
-        let body = http::get_limited(&url, &self.tls, self.timeout * 2, MAX_IMAGE)
+        let body = http::get_public(&url, &self.tls, self.timeout * 2, MAX_IMAGE)
             .await?
             .ok_or_else(|| Error::Protocol(format!("{url}: not found")))?;
         if ImageKind::sniff(&body).is_none() {
@@ -104,6 +114,7 @@ impl Pictures {
     }
 
     /// The picture for mail from `address`, or empty when there is none.
+    /// The caller checks that the sender is authenticated.
     pub async fn sender(&self, address: &str) -> Vec<u8> {
         let Some(domain) = address
             .rsplit_once('@')
@@ -113,20 +124,18 @@ impl Pictures {
             return Vec::new();
         };
         let org = organizational_domain(&domain);
-        if FREE_MAIL.contains(&org.as_str()) {
+        if FREE_MAIL.contains(&org.as_str()) || !valid_domain(&org) {
             return Vec::new();
         }
-        // `.pic`: answers found before home-page icons were looked for (`.img`)
-        // are asked again.
-        let cached = self.cache.join(format!("{domain}.pic"));
+        // Kept under the organizational domain. `.picture`: answers kept
+        // under the full domain, and found by following URLs to any host
+        // (`.pic`), are asked again.
+        let cached = self.cache.join(format!("{org}.picture"));
         if let Some(bytes) = read_fresh(&cached) {
             return bytes;
         }
         let mut reached = false;
-        let picture = self
-            .find(&domain, &org, &mut reached)
-            .await
-            .unwrap_or_default();
+        let picture = self.find(&org, &mut reached).await.unwrap_or_default();
         // Offline is not "no picture": ask again next time.
         if !reached {
             return picture;
@@ -139,28 +148,24 @@ impl Pictures {
         picture
     }
 
-    /// Sets `reached` when a web server answered.
-    async fn find(&self, domain: &str, org: &str, reached: &mut bool) -> Option<Vec<u8>> {
-        let mut names = vec![domain.to_owned()];
-        if org != domain {
-            names.push(org.to_owned());
-        }
-        for name in &names {
-            let records = dns::txt(
-                &self.resolvers,
-                &format!("default._bimi.{name}"),
-                self.timeout,
-            )
-            .await;
-            if let Some(url) = records.iter().find_map(|r| bimi_logo(r)) {
-                match self.fetch(&url, MAX_PICTURE, reached).await {
-                    Some(svg) if ImageKind::sniff(&svg) == Some(ImageKind::Svg) => {
-                        tracing::debug!(domain, url, "BIMI logo");
-                        return Some(svg);
-                    }
-                    _ => break,
-                }
-            }
+    /// The picture of the organizational domain `org`. Sets `reached`
+    /// when a web server answered.
+    async fn find(&self, org: &str, reached: &mut bool) -> Option<Vec<u8>> {
+        let records = dns::txt(
+            &self.resolvers,
+            &format!("default._bimi.{org}"),
+            self.timeout,
+        )
+        .await;
+        if let Some(url) = records
+            .iter()
+            .find_map(|r| bimi_logo(r))
+            .filter(|url| within(url, org))
+            && let Some(svg) = self.fetch(&url, MAX_PICTURE, reached).await
+            && ImageKind::sniff(&svg) == Some(ImageKind::Svg)
+        {
+            tracing::debug!(org, url, "BIMI logo");
+            return Some(svg);
         }
         let mut urls = Vec::new();
         for host in [org.to_owned(), format!("www.{org}")] {
@@ -168,6 +173,7 @@ impl Pictures {
                 continue;
             };
             urls = page_icons(&String::from_utf8_lossy(&page), &host);
+            urls.retain(|url| within(url, org));
             tracing::debug!(host, icons = ?urls, "home page");
             break;
         }
@@ -182,7 +188,7 @@ impl Pictures {
             if let Some(icon) = self.fetch(&url, MAX_PICTURE, reached).await
                 && ImageKind::sniff(&icon).is_some()
             {
-                tracing::debug!(domain, url, "site icon");
+                tracing::debug!(org, url, "site icon");
                 return Some(icon);
             }
         }
@@ -191,7 +197,7 @@ impl Pictures {
 
     /// The start of the page at `url`, up to the end of its `<head>`.
     async fn fetch_head(&self, url: &str, reached: &mut bool) -> Option<Vec<u8>> {
-        match http::get_head(url, &self.tls, self.timeout, MAX_PAGE).await {
+        match http::get_head_public(url, &self.tls, self.timeout, MAX_PAGE).await {
             Ok(page) => {
                 *reached = true;
                 page
@@ -204,7 +210,7 @@ impl Pictures {
     }
 
     async fn fetch(&self, url: &str, max: usize, reached: &mut bool) -> Option<Vec<u8>> {
-        match http::get_limited(url, &self.tls, self.timeout, max).await {
+        match http::get_public(url, &self.tls, self.timeout, max).await {
             Ok(body) => {
                 *reached = true;
                 body
@@ -347,16 +353,42 @@ fn valid_domain(domain: &str) -> bool {
         && !domain.contains("..")
 }
 
-/// The registered domain: `marketing.example.co.uk` → `example.co.uk`.
-/// A heuristic, not the Public Suffix List: a two-letter top-level domain
-/// with a short second level (`co.uk`, `com.au`) keeps three labels.
-fn organizational_domain(domain: &str) -> String {
+/// Second-level labels under which a two-letter country domain registers
+/// names, as in `example.co.uk` or `shop.com.au`.
+const SECOND_LEVELS: &[&str] = &[
+    "ac", "co", "com", "edu", "gob", "gov", "govt", "ltd", "mil", "ne", "net", "nhs", "or", "org",
+    "plc", "sch",
+];
+
+/// The organizational (registrable) domain: `marketing.example.co.uk` →
+/// `example.co.uk`. A heuristic, not the Public Suffix List (which is not
+/// in the tree): the last two labels, or the last three when the top-level
+/// domain has two letters and the second-level label is one of
+/// [`SECOND_LEVELS`]. It errs towards a shorter domain for other public
+/// suffixes (`github.io` gives `github.io`), which only makes more senders
+/// share one lookup.
+pub fn organizational_domain(domain: &str) -> String {
+    let domain = domain.trim_end_matches('.').to_ascii_lowercase();
     let labels: Vec<&str> = domain.split('.').collect();
-    let keep = match labels.as_slice() {
-        [.., second, top] if top.len() == 2 && second.len() <= 3 && labels.len() >= 3 => 3,
-        _ => 2,
+    let n = labels.len();
+    let keep = if n >= 3 && labels[n - 1].len() == 2 && SECOND_LEVELS.contains(&labels[n - 2]) {
+        3
+    } else {
+        2
     };
-    labels[labels.len().saturating_sub(keep)..].join(".")
+    labels[n.saturating_sub(keep)..].join(".")
+}
+
+/// Whether the `https` URL `url` names `domain` or a host under it.
+fn within(url: &str, domain: &str) -> bool {
+    let Ok(parts) = http::parse_url(url) else {
+        return false;
+    };
+    let host = parts.host.trim_end_matches('.').to_ascii_lowercase();
+    host == domain
+        || host
+            .strip_suffix(domain)
+            .is_some_and(|rest| rest.ends_with('.'))
 }
 
 /// The logo URL of a BIMI record (`v=BIMI1; l=https://…; a=…`).
@@ -395,6 +427,54 @@ mod tests {
         assert_eq!(organizational_domain("mail.bbc.co.uk"), "bbc.co.uk");
         assert_eq!(organizational_domain("e.shop.com.au"), "shop.com.au");
         assert_eq!(organizational_domain("news.example.de"), "example.de");
+        // Unique subdomains share their organization's lookup.
+        assert_eq!(
+            organizational_domain("u-8f3a91.tracker.example"),
+            "tracker.example"
+        );
+        assert_eq!(organizational_domain("news.abc.de"), "abc.de");
+        assert_eq!(organizational_domain("a.b.example.io"), "example.io");
+        assert_eq!(organizational_domain("x.y.gov.in."), "y.gov.in");
+        assert_eq!(organizational_domain("co.uk"), "co.uk");
+    }
+
+    #[test]
+    fn only_urls_on_the_domain_are_followed() {
+        assert!(within("https://e.test/logo.svg", "e.test"));
+        assert!(within("https://CDN.e.test./a.png", "e.test"));
+        assert!(within("https://cdn.e.test:443/a.png", "e.test"));
+        assert!(!within("https://tracker.example/e.test/logo.svg", "e.test"));
+        assert!(!within("https://evile.test/logo.svg", "e.test"));
+        assert!(!within("https://e.test.evil.example/", "e.test"));
+        assert!(!within("http://e.test/", "e.test"));
+    }
+
+    #[test]
+    fn images_only_come_from_public_addresses_on_port_443() {
+        let dir = tempfile::tempdir().unwrap();
+        let pictures = Pictures {
+            tls: Tls::system().unwrap(),
+            resolvers: Vec::new(),
+            timeout: Duration::from_secs(2),
+            cache: dir.path().join("pictures"),
+        };
+        for url in [
+            "https://127.0.0.1/a.png",
+            "http://localhost/a.png",
+            "https://10.1.2.3/a.png",
+            "https://169.254.169.254/latest/meta-data/",
+            "https://100.64.0.1/a.png",
+        ] {
+            let err = futures_lite::future::block_on(pictures.image(url)).unwrap_err();
+            assert!(err.to_string().contains("local network"), "{url}: {err}");
+        }
+        // IPv6 literals are not fetched at all.
+        for url in ["https://[::1]/a.png", "https://[fd00::1]:443/a.png"] {
+            assert!(futures_lite::future::block_on(pictures.image(url)).is_err());
+        }
+        let err = futures_lite::future::block_on(pictures.image("https://e.test:8443/a.png"))
+            .unwrap_err();
+        assert!(err.to_string().contains("port 443"), "{err}");
     }
 
     #[test]
@@ -464,14 +544,17 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let cache = dir.path().join("pictures");
         std::fs::create_dir_all(&cache).unwrap();
-        std::fs::write(cache.join("news.example.org.pic"), b"\x89PNG\r\n\x1a\n").unwrap();
+        std::fs::write(cache.join("example.org.picture"), b"\x89PNG\r\n\x1a\n").unwrap();
         let pictures = Pictures {
             tls: Tls::system().unwrap(),
             resolvers: Vec::new(),
             timeout: Duration::from_millis(1),
             cache,
         };
-        let picture = futures_lite::future::block_on(pictures.sender("Info@News.Example.org"));
-        assert_eq!(picture, b"\x89PNG\r\n\x1a\n");
+        // Kept under the organizational domain, whatever the subdomain.
+        for address in ["Info@News.Example.org", "x@u-123.example.org"] {
+            let picture = futures_lite::future::block_on(pictures.sender(address));
+            assert_eq!(picture, b"\x89PNG\r\n\x1a\n");
+        }
     }
 }

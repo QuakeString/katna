@@ -174,7 +174,7 @@ not runtime performance.
 | `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (§5.2). |
 | `$XDG_DATA_HOME/katna/attachments/` | Large attachments only (> 256 KB). |
 | `$XDG_DATA_HOME/katna/index/` | tantivy index (rebuildable, but expensive, so not in cache). |
-| `$XDG_STATE_HOME/katna/crashes/` | Crash reports, plain text, readable by the user (§19.2). |
+| `$XDG_STATE_HOME/katna/crashes/` | Crash reports, plain text, readable by the user only (`0700`, files `0600`; §19.2). |
 | Secret Service (`oo7`) | Passwords and OAuth tokens. Never in files. |
 
 Only `katna-daemon` writes these databases. Apps open them read-only
@@ -207,7 +207,8 @@ folder           (id, account_id, path, role, uidvalidity, highestmodseq, sync_s
 message          (id, account_id, message_id_hdr, thread_id, subject, date,
                   size, flags, keywords, has_attachments, list_id,
                   body_state,          -- 0 headers | 1 text_indexed | 2 full
-                  blob_hash, snippet, auth_results_json,
+                  blob_hash, snippet,
+                  auth_results_json,   -- provider's verdict on From: {"dmarc", "aligned"}
                   category)            -- inbox tab, katna_core::MailCategory (v2)
 message_location (message_id, folder_id, uid)        -- one message, many folders/labels
 participant      (message_id, role, email_norm, domain, display_name)
@@ -548,7 +549,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   8314), then the ISPDB entry of the MX host's domain (hosted mail such as
   Google Workspace), then probing `imap.`, `mail.` and `smtp.DOMAIN` on
   993/143 and 465/587 for a mail greeting. Files come only over HTTPS; TLS
-  beats STARTTLS beats plain. Servers of Google and Microsoft are marked
+  beats STARTTLS beats plain, and a cleartext server is only taken when
+  the file offers nothing else (logged as a warning; the dialog shows the
+  security). DNS answers are not authenticated, so an SRV record is only
+  used when its target is the domain itself, a host under it, or a server
+  of a provider Katna knows (the built-in list, Google, Microsoft), as
+  RFC 6186 §6 asks; the resolver uses a random transaction ID and checks
+  that the answer echoes the question's name, type and class. Servers of Google and Microsoft are marked
   for OAuth2 sign-in (`Discovered::oauth`); Outlook.com, Hotmail, Live and
   MSN addresses and files whose IMAP server takes only OAuth2 at a known
   provider get that provider's servers and no password step; other
@@ -1131,7 +1138,14 @@ known open-tracking paths) are dropped. A banner offers "Show images" (this
 message) and "Always show from this sender" (kept in
 `$XDG_CONFIG_HOME/katna/trusted-senders`). Images are fetched by the daemon
 (`FetchImage`, `https` only, `http` upgraded, at most 8 MB, checked to be an
-image by its bytes); the app never uses the network.
+image by its bytes); the app never uses the network. Remote images and
+sender pictures go only to port 443 of public addresses
+(`katna_sync::net::Reach::Public`): the name is resolved once, loopback,
+private, link-local, shared (CGNAT), unique-local, multicast and other
+special addresses are refused, and the connection goes to the address that
+was checked, on every redirect too, so mail cannot make the daemon reach
+this computer or its network. Configuration, OAuth2, Katna Server and
+update requests are not limited this way (tests run them on localhost).
 
 Message text can be selected and copied as in a browser (`window/select.rs`):
 each run of text a body draws records its layout, so a pointer position maps
@@ -1140,11 +1154,27 @@ Drag, double- and triple-click, Shift+click, Ctrl+A and Ctrl+C (once the
 text was clicked) and a right-click Copy work in plain and HTML mail; the
 selection also goes to the primary selection for middle-click paste.
 
-Sender pictures load without asking, since they are looked up by domain,
-never by message, and kept for a week, so they cannot tell anyone that a
-message was read. The daemon's `SenderPicture` looks up the organization's
-BIMI logo (`default._bimi` TXT record, SVG) and falls back to the largest
-icon its home page names (`<link rel="icon">`, `apple-touch-icon`), then
+Sender pictures load without asking. Looking one up does reach the
+network (a DNS query and HTTPS requests from this computer to the
+organization), so it is kept narrow (security audit of 28 September 2026):
+the daemon looks up only the sender's organizational domain
+(`katna_sync::pictures::organizational_domain`: the last two labels, or
+three under a two-letter country domain with a second level such as `co`,
+`com`, `org`, `net`, `ac`, `gov` or `edu`; a heuristic, as the Public
+Suffix List is not in the tree), never the sender's own subdomain, which
+could be unique to one recipient, and keys the week-long cache on it. It
+follows a BIMI `l=` URL or an icon a home page names only when its host is
+that domain or under it. And `SenderPicture` returns nothing unless the
+user's provider authenticated mail from the address's domain: when a
+message arrives, the daemon reads its topmost `Authentication-Results`
+field (`katna_sync::auth_results`) and keeps `{"dmarc", "aligned"}` in
+`message.auth_results_json`, `aligned` meaning DMARC passed for the `From`
+domain or DKIM passed for a domain of the same organization; a picture is
+looked up only when some message `From` that domain is `aligned`. Mail
+stored before this has no verdict, so its senders get a picture once new
+mail from them arrives. The lookup itself is the organization's BIMI logo
+(`default._bimi` TXT record, SVG), falling back to the largest icon its
+home page names (`<link rel="icon">`, `apple-touch-icon`), then
 `apple-touch-icon.png` and `favicon.ico`. Free-mail domains get none, and
 answers are cached in `$XDG_CACHE_HOME/katna/pictures` for a week. The
 General setting "Sender pictures" (`mail.sender_pictures`) turns them off;
@@ -2968,6 +2998,10 @@ ashpd), IMAP parsing and regex.
 ## 19. Security and privacy
 
 - TLS only via `rustls`; no plain-text auth without an explicit warning.
+- "Accept invalid certificates" on an account (`ServerSpec`,
+  `katnactl --insecure`) is for test servers only: the connection refuses
+  the TLS handshake when the address it reached is not on this computer or
+  the local network (`katna_sync::net::is_internal`).
 - Secrets only in the Secret Service (via portal inside Flatpak).
 - Remote content blocked by default; HTML always sanitized.
 - Incoming tracker removal.
@@ -3093,10 +3127,14 @@ consent.
   location, message, backtrace, raw frames and the last 50 log lines of
   that process (kept in memory by `katna_core::logging`). Never: mail
   content, subjects, account names, file names of attachments, passwords.
-- **Scrubbing.** Before a report is written, the home directory becomes
-  `~`, the user name, host name and machine ID become `<user>`,
-  `<host>`, `<machine>`, and anything shaped like an email address becomes
-  `<email>`. The same scrubber runs again before anything is sent (Part 2),
+- **Scrubbing.** Before a report is written, percent-escapes are decoded,
+  every `scheme://…` URL is cut to its scheme and host, the home directory
+  becomes `~`, the user name, host name and machine ID become `<user>`,
+  `<host>`, `<machine>`, and anything shaped like an email address, in any
+  script, becomes `<email>`. A panic message loses the text it quotes
+  (`` `…` `` and `"…"`, where Rust puts the string or value involved) and
+  is cut to 200 characters. The crash directory and the state directory
+  are created `0700` and reports `0600`. The same scrubber runs again before anything is sent (Part 2),
   so a report edited by hand is checked twice.
 - **Readable tracebacks.** Release binaries are stripped, which leaves
   Rust's backtrace as `<unknown>` frames. So a panic report also lists

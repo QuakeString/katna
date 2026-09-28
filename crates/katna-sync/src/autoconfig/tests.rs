@@ -279,6 +279,76 @@ fn config_files_are_checked() {
 }
 
 #[test]
+fn cleartext_only_when_nothing_else_is_offered() {
+    let user = User {
+        address: "a@b.org",
+        local: "a",
+        domain: "b.org",
+    };
+    // The file lists cleartext first; the encrypted servers still win.
+    let with_plain = CONFIG.replace(
+        "<incomingServer type=\"imap\">",
+        "<incomingServer type=\"imap\">\n      <hostname>plain.example.org</hostname>\
+         <port>143</port><socketType>PLAIN</socketType>\
+         <authentication>password-cleartext</authentication>\n    </incomingServer>\n    \
+         <incomingServer type=\"imap\">",
+    );
+    let (imap, smtp) = parse_config(with_plain.as_bytes(), &user).unwrap().unwrap();
+    assert_eq!(imap.security, Security::Tls);
+    assert_eq!(smtp.unwrap().security, Security::StartTls);
+
+    // Only cleartext: taken, as the provider says (the dialog shows it).
+    let only_plain = r#"<clientConfig><emailProvider id="b.org">
+        <incomingServer type="imap">
+          <hostname>mail.b.org</hostname><port>143</port><socketType>PLAIN</socketType>
+          <authentication>password-cleartext</authentication>
+        </incomingServer></emailProvider></clientConfig>"#;
+    let (imap, _) = parse_config(only_plain.as_bytes(), &user).unwrap().unwrap();
+    assert_eq!(imap.security, Security::Plain);
+}
+
+#[test]
+fn srv_targets_stay_in_the_domain() {
+    let record = |target: &str| {
+        vec![dns::Srv {
+            priority: 0,
+            weight: 0,
+            port: 993,
+            target: target.into(),
+        }]
+    };
+    // A spoofed answer pointing elsewhere is ignored; guessing follows.
+    let mut net = FakeNet::default();
+    net.srv.insert(
+        "_imaps._tcp.example.org".into(),
+        record("imap.attacker.net"),
+    );
+    net.srv.insert(
+        "_submissions._tcp.example.org".into(),
+        record("example.org.attacker.net"),
+    );
+    assert!(discover(&net, "ada@example.org").is_err());
+
+    // Later records under the domain are still used.
+    let mut records = record("mail.attacker.net");
+    records.extend(record("imap.example.org"));
+    let mut net = FakeNet::default();
+    net.srv.insert("_imaps._tcp.example.org".into(), records);
+    let found = discover(&net, "ada@example.org").unwrap();
+    assert_eq!(found.source, Source::DnsSrv);
+    assert_eq!(found.imap.host, "imap.example.org");
+
+    // The domain itself, and providers Katna knows, are fine.
+    for target in ["example.org", "imap.gmail.com", "outlook.office365.com"] {
+        let mut net = FakeNet::default();
+        net.srv
+            .insert("_imaps._tcp.example.org".into(), record(target));
+        let found = discover(&net, "ada@example.org").unwrap();
+        assert_eq!(found.imap.host, target);
+    }
+}
+
+#[test]
 fn base_domains() {
     assert_eq!(base_domain("aspmx.l.google.com."), "google.com");
     assert_eq!(base_domain("mx1.mail.example.co.uk"), "example.co.uk");

@@ -116,10 +116,7 @@ async fn ask(
     kind: Kind,
     timeout: Duration,
 ) -> Option<Vec<u8>> {
-    let id = (std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.subsec_nanos())
-        & 0xffff) as u16;
+    let id = random_id()?;
     let query = question(id, name, kind)?;
     for resolver in resolvers {
         let attempt = async {
@@ -136,7 +133,7 @@ async fn ask(
                 let n = socket.recv(&mut buf).await.ok()?;
                 let reply = &buf[..n];
                 // Another packet on the port, or not our answer: keep waiting.
-                if n >= 12 && reply[..2] == id.to_be_bytes() && reply[2] & 0x80 != 0 {
+                if answers_query(reply, &query) {
                     return Some(reply.to_vec());
                 }
             }
@@ -155,6 +152,30 @@ async fn ask(
         }
     }
     None
+}
+
+/// A transaction ID nobody off the path can guess, so a forged answer
+/// has to be sent to every one of 65 536 IDs (and the random source port)
+/// before the real one arrives.
+fn random_id() -> Option<u16> {
+    use ring::rand::SecureRandom;
+    let mut id = [0u8; 2];
+    ring::rand::SystemRandom::new().fill(&mut id).ok()?;
+    Some(u16::from_be_bytes(id))
+}
+
+/// Whether `reply` answers `query`: the same ID, the answer bit set, one
+/// question, and that question the same name (in any case), type and
+/// class as asked.
+fn answers_query(reply: &[u8], query: &[u8]) -> bool {
+    let asked = &query[12..];
+    reply.len() >= 12
+        && reply[..2] == query[..2]
+        && reply[2] & 0x80 != 0
+        && reply[4..6] == [0, 1]
+        && reply
+            .get(12..12 + asked.len())
+            .is_some_and(|echoed| echoed.eq_ignore_ascii_case(asked))
 }
 
 /// A query packet for one question, recursion desired.
@@ -308,6 +329,46 @@ pub(crate) mod tests {
         let packet = reply(&query, &[(Kind::Mx, std::mem::take(&mut data))]);
         let (offset, _) = answers(&packet, Kind::Mx)[0];
         assert_eq!(read_name(&packet, offset + 2).unwrap().0, "mx.example.org");
+    }
+
+    #[test]
+    fn replies_must_echo_the_question() {
+        let query = question(0x1234, "_imaps._tcp.example.org", Kind::Srv).unwrap();
+        let good = reply(
+            &query,
+            &[(Kind::Srv, srv_data(0, 0, 993, "imap.example.org"))],
+        );
+        assert!(answers_query(&good, &query));
+        // Resolvers may echo the name in another case.
+        let mut upper = good.clone();
+        upper[13..19].make_ascii_uppercase();
+        assert!(answers_query(&upper, &query));
+
+        let mut wrong_id = good.clone();
+        wrong_id[1] ^= 1;
+        assert!(!answers_query(&wrong_id, &query));
+        let mut not_answer = good.clone();
+        not_answer[2] &= 0x7f;
+        assert!(!answers_query(&not_answer, &query));
+        let other_name = question(0x1234, "_imaps._tcp.evil.example", Kind::Srv).unwrap();
+        let spoofed = reply(
+            &other_name,
+            &[(Kind::Srv, srv_data(0, 0, 993, "imap.evil.example"))],
+        );
+        assert!(!answers_query(&spoofed, &query));
+        let other_type = question(0x1234, "_imaps._tcp.example.org", Kind::Txt).unwrap();
+        assert!(!answers_query(&reply(&other_type, &[]), &query));
+        let mut other_class = good.clone();
+        let class_at = query.len() - 1;
+        other_class[class_at] = 3;
+        assert!(!answers_query(&other_class, &query));
+        assert!(!answers_query(&good[..12], &query));
+    }
+
+    #[test]
+    fn transaction_ids_are_random() {
+        let ids: std::collections::HashSet<u16> = (0..64).filter_map(|_| random_id()).collect();
+        assert!(ids.len() > 32, "{ids:?}");
     }
 
     #[test]
