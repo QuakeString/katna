@@ -34,6 +34,7 @@
 //! Everything is executor-independent: sockets and timers use the `async-io`
 //! reactor, and [`connection::spawn`] returns a future for the caller to run.
 
+pub mod auth_results;
 pub mod autoconfig;
 mod backend;
 pub mod bodies;

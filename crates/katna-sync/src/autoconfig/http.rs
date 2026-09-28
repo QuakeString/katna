@@ -10,7 +10,10 @@ use std::time::Duration;
 
 use futures_lite::FutureExt;
 
-use crate::{Error, Result, net::Conn, net::Tls};
+use crate::{
+    Error, Result,
+    net::{Conn, Reach, Tls},
+};
 
 /// Largest body [`get`] accepts; configuration files are a few kilobytes.
 const MAX_BODY: usize = 1024 * 1024;
@@ -29,7 +32,19 @@ pub async fn get_limited(
     timeout: Duration,
     max_body: usize,
 ) -> Result<Option<Vec<u8>>> {
-    fetch(url, tls, timeout, max_body, false).await
+    fetch(url, tls, timeout, max_body, false, Reach::Any).await
+}
+
+/// Like [`get_limited`], for a URL that mail, DNS or a web page named
+/// (a remote image, a sender picture): only port 443 of a public address,
+/// on every redirect too ([`Reach::Public`]).
+pub async fn get_public(
+    url: &str,
+    tls: &Tls,
+    timeout: Duration,
+    max_body: usize,
+) -> Result<Option<Vec<u8>>> {
+    fetch(url, tls, timeout, max_body, false, Reach::Public).await
 }
 
 /// Like [`get_limited`], but a longer body is cut instead of refused, and
@@ -41,7 +56,17 @@ pub async fn get_head(
     timeout: Duration,
     max_body: usize,
 ) -> Result<Option<Vec<u8>>> {
-    fetch(url, tls, timeout, max_body, true).await
+    fetch(url, tls, timeout, max_body, true, Reach::Any).await
+}
+
+/// [`get_head`] with the limits of [`get_public`].
+pub async fn get_head_public(
+    url: &str,
+    tls: &Tls,
+    timeout: Duration,
+    max_body: usize,
+) -> Result<Option<Vec<u8>>> {
+    fetch(url, tls, timeout, max_body, true, Reach::Public).await
 }
 
 async fn fetch(
@@ -50,11 +75,12 @@ async fn fetch(
     timeout: Duration,
     max_body: usize,
     head: bool,
+    reach: Reach,
 ) -> Result<Option<Vec<u8>>> {
     let fetch = async {
         let mut url = url.to_owned();
         for _ in 0..=MAX_REDIRECTS {
-            match get_once(&url, tls, max_body, head).await? {
+            match get_once(&url, tls, max_body, head, reach).await? {
                 Answer::Body(body) => return Ok(Some(body)),
                 Answer::Redirect(to) => url = resolve(&url, &to)?,
                 Answer::Status(status) => {
@@ -284,10 +310,19 @@ fn resolve(base: &str, location: &str) -> Result<String> {
 }
 
 /// With `head`, reading stops after `</head>` or `max_body` bytes, and the
-/// body is cut there.
-async fn get_once(url: &str, tls: &Tls, max_body: usize, head: bool) -> Result<Answer> {
+/// body is cut there. With [`Reach::Public`], only port 443 is used.
+async fn get_once(
+    url: &str,
+    tls: &Tls,
+    max_body: usize,
+    head: bool,
+    reach: Reach,
+) -> Result<Answer> {
     let parts = parse_url(url)?;
-    let mut conn = Conn::new(tls.clone());
+    if reach == Reach::Public && parts.port != 443 {
+        return Err(Error::Protocol(format!("{url}: only port 443 is used")));
+    }
+    let mut conn = Conn::with_reach(tls.clone(), reach);
     conn.connect_tls(parts.host, parts.port).await?;
     let request = format!(
         "GET {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nAccept: */*\r\n\

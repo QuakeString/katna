@@ -583,7 +583,10 @@ fn save_messages(
         // A Gmail message already stored under another label is new here
         // too, but stays one message.
         match batch.add_remote_message(account, folder, &remote)? {
-            katna_store::Added::Message(_) => added += 1,
+            katna_store::Added::Message(id) => {
+                added += 1;
+                record_auth_results(&mut batch, id, &message.header, &parsed.participants)?;
+            }
             katna_store::Added::Location(id) => {
                 added += 1;
                 // Stored under the other label before its structure was
@@ -597,6 +600,25 @@ fn save_messages(
     }
     batch.commit()?;
     Ok(added)
+}
+
+/// Keeps what the provider's `Authentication-Results` said about the
+/// sender of the new message `id` (`header` holds its header fields), so
+/// sender pictures are only looked up for authenticated domains.
+pub(crate) fn record_auth_results(
+    batch: &mut katna_store::MailBatch<'_>,
+    id: katna_store::MessageId,
+    header: &[u8],
+    participants: &[katna_import::Participant],
+) -> Result<()> {
+    let from = participants
+        .iter()
+        .find(|p| p.role == katna_store::ParticipantRole::From)
+        .map_or("", |p| p.domain.as_str());
+    if let Some(verdict) = crate::auth_results::verdict(header, from) {
+        batch.set_auth_results(id, &verdict.to_json())?;
+    }
+    Ok(())
 }
 
 /// Splits protocol flags into the store's bit set and the other keywords.

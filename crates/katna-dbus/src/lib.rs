@@ -26,7 +26,9 @@ pub struct ServerSpec {
     /// `tls`, `starttls` or `plain`.
     pub security: String,
     pub username: String,
-    /// Accept self-signed certificates (local test servers only).
+    /// Accept self-signed certificates: for test servers on this computer
+    /// or the local network only; connecting to a public address with it
+    /// fails.
     pub accept_invalid_certs: bool,
 }
 
@@ -524,15 +526,18 @@ macro_rules! pim_proxy {
             fn discard_draft(&self, account: i64, message_id: &str) -> zbus::Result<()>;
 
             /// Downloads a remote image of a message the user chose to show
-            /// (`https`; `http` is upgraded), at most 8 MB. Fails for
-            /// anything that is not an image. Apps never use the network
-            /// themselves.
+            /// (`https`; `http` is upgraded), at most 8 MB, from port 443 of
+            /// a public address only (never this computer or its local
+            /// network). Fails for anything that is not an image. Apps
+            /// never use the network themselves.
             fn fetch_image(&self, url: &str) -> zbus::Result<Vec<u8>>;
 
             /// The picture of the organization that sends from `address`
-            /// (its BIMI logo, or its website's icon), cached for a week.
-            /// Empty when there is none, and always for free-mail
-            /// addresses.
+            /// (its BIMI logo, or its website's icon), looked up by its
+            /// organizational domain and cached for a week. Empty when
+            /// there is none, always for free-mail addresses, and when no
+            /// mail from the address's domain was authenticated by the
+            /// user's provider (DMARC or aligned DKIM).
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
             /// Translates `text`, the plain text of `message` (HTML made
