@@ -27,6 +27,7 @@ mod chips;
 mod drafts;
 mod paste;
 mod popout;
+mod quote;
 mod recipients;
 pub(super) mod schedule;
 mod scheduled;
@@ -162,7 +163,7 @@ pub(super) struct Compose {
     body_scroll: ScrollHandle,
     /// The quoted message a reply answers, kept out of the text behind a
     /// "..." button until it is opened, as in Gmail. It is still sent.
-    trimmed: Option<Vec<Block>>,
+    quote: quote::Quote,
     /// The text of the conversation a reply answers, for writing
     /// suggestions.
     answered: String,
@@ -193,7 +194,7 @@ impl Compose {
             subject: text(&self.subject),
             body: {
                 let mut body = self.body.read(cx).doc().clone();
-                body.blocks.extend(self.trimmed.iter().flatten().cloned());
+                body.blocks.extend(self.quote.hidden().iter().cloned());
                 body
             },
         }
@@ -661,8 +662,8 @@ impl MailWindow {
             compose.sealing = sealing;
             if matches!(kind, Kind::Reply | Kind::ReplyAll) {
                 let mut doc = compose.body.read(cx).doc().clone();
-                compose.trimmed = trim_quote(&mut doc);
-                if compose.trimmed.is_some() {
+                compose.quote = quote::Quote::hidden_from(trim_quote(&mut doc));
+                if compose.quote.is_hidden() {
                     compose.body.update(cx, |editor, cx| {
                         editor.set_doc(doc.clone(), doc.start(), cx)
                     });
@@ -723,6 +724,16 @@ impl MailWindow {
     /// just far enough that its first line, with the cursor, sits near the
     /// top.
     pub(super) fn reveal_inline_reply(&mut self, cx: &mut Context<Self>) {
+        self.scroll_to_inline_reply(false, cx);
+    }
+
+    /// Scrolls back up to the reply after it got shorter, when the cursor
+    /// in it went out of sight above; never down.
+    pub(super) fn scroll_back_to_inline_reply(&mut self, cx: &mut Context<Self>) {
+        self.scroll_to_inline_reply(true, cx);
+    }
+
+    fn scroll_to_inline_reply(&mut self, back: bool, cx: &mut Context<Self>) {
         let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
             return;
         };
@@ -749,7 +760,11 @@ impl MailWindow {
                 let eased = 1.0 - (1.0 - t).powi(3);
                 // The end can move while the card settles. Never upwards.
                 let end = -scroll.max_offset().y;
-                let to = limit.map_or(end, |limit| end.max(limit.min(from)));
+                let to = if back {
+                    limit.map_or(from, |limit| limit.max(from).min(px(0.0)))
+                } else {
+                    limit.map_or(end, |limit| end.max(limit.min(from)))
+                };
                 scroll.set_offset(gpui::point(scroll.offset().x, from + (to - from) * eased));
                 if this.update(cx, |_, cx| cx.notify()).is_err() || t >= 1.0 {
                     return;
@@ -943,6 +958,7 @@ impl MailWindow {
             |this, _, event: &RichEvent, window, cx| match event {
                 RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
+                    this.quote_changed(cx);
                     this.close_hint(cx);
                     this.keep_cursor_in_view(cx);
                     cx.notify();
@@ -1023,7 +1039,7 @@ impl MailWindow {
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             body_scroll: ScrollHandle::new(),
-            trimmed: None,
+            quote: quote::Quote::None,
             answered,
             stick: Rc::default(),
             grammar_color: grammar_color(&th),
@@ -1959,7 +1975,23 @@ impl MailWindow {
                         div()
                             .relative()
                             .top(px(-stuck))
-                            .rounded_b(px(12.0))
+                            // Held up at the bottom of the pane, the row has
+                            // square corners and a strip of the card under
+                            // it, so no quoted line shows below it when the
+                            // pane edge and the row round to different
+                            // pixels as the conversation scrolls.
+                            .when(stuck <= 0.0, |d| d.rounded_b(px(12.0)))
+                            .when(stuck > 0.0, |d| {
+                                d.child(
+                                    div()
+                                        .absolute()
+                                        .top_full()
+                                        .left_0()
+                                        .right_0()
+                                        .h(px(STICK_SKIRT))
+                                        .bg(rgba(th.surface)),
+                                )
+                            })
                             .bg(rgba(th.surface))
                             .border_t_1()
                             .border_color(if stuck > 0.0 {
@@ -1991,50 +2023,6 @@ impl MailWindow {
                 .child(card)
                 .into_any_element(),
         )
-    }
-
-    /// The "..." button under a reply's text that shows the quoted message.
-    fn render_trimmed(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        self.compose.as_ref()?.trimmed.as_ref()?;
-        let dot = || div().size(px(4.0)).rounded_full().bg(rgba(th.text_dim));
-        Some(
-            div()
-                .id("show-trimmed")
-                .mt(px(12.0))
-                .w(px(30.0))
-                .h(px(16.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .justify_center()
-                .gap(px(3.0))
-                .rounded(px(8.0))
-                .bg(rgba(th.chip))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip(tr!("compose-show-trimmed"), th))
-                .on_click(cx.listener(|this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.show_trimmed(cx);
-                }))
-                .child(dot())
-                .child(dot())
-                .child(dot())
-                .into_any_element(),
-        )
-    }
-
-    /// Puts the quoted message back into the text of the reply.
-    fn show_trimmed(&mut self, cx: &mut Context<Self>) {
-        let Some(compose) = &mut self.compose else {
-            return;
-        };
-        if let Some(blocks) = compose.trimmed.take() {
-            compose
-                .body
-                .update(cx, |editor, cx| editor.append_blocks(blocks, cx));
-        }
-        cx.notify();
     }
 
     fn render_compose_fields(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -2269,6 +2257,8 @@ impl MailWindow {
 /// How far below the top of an inline reply its stuck Send row stops: the
 /// recipients and a line or two of text stay above it.
 const STICK_BELOW: f32 = 96.0;
+/// The card's color drawn under a Send row held at the bottom of the pane.
+const STICK_SKIRT: f32 = 4.0;
 
 /// Records where its parent is drawn in the conversation `scroll`, in
 /// pixels from the top of the content, and draws again when that moved or
