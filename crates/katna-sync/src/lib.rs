@@ -45,6 +45,7 @@ mod error;
 pub mod imap;
 pub mod net;
 pub mod oauth;
+pub mod onedrive;
 pub mod ops;
 pub mod outbox;
 pub mod pictures;

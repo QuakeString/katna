@@ -514,7 +514,8 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   sign-in brings a refresh token; `drive.file` is for large attachments,
   §6.6, and Google refreshes are sent without scopes so grants from before
   it keep working); Microsoft `IMAP.AccessAsUser.All SMTP.Send
-  offline_access openid email profile` on `outlook.office.com`. The ID token
+  offline_access openid email profile` on `outlook.office.com`, and Graph
+  `Files.ReadWrite` allowed on the same screen for OneDrive (§6.6). The ID token
   names the address (Microsoft's personal accounts only in
   `preferred_username`), the name and, for Google, a picture. The refresh
   token goes to the Secret Service in the account's password slot, and
@@ -609,7 +610,7 @@ it resumes after a restart from the messages still unthreaded (a partial
 index keeps finding them cheap). On a synthetic 100k-message store it takes
 about 14 s. Messages without a blob are covered by the header refresh (§6.4).
 
-### 6.6 Large attachments through Google Drive
+### 6.6 Large attachments through Google Drive and OneDrive
 
 Gmail takes messages of up to 25 MB and sends larger files as Drive links;
 Katna does the same for accounts signed in with Google, with no extra
@@ -639,8 +640,29 @@ steps in the common case.
   daemon at a fake Google on this computer; only `http://127.0.0.1:…` and
   `http://localhost:…` are taken, so they can never send tokens elsewhere.
 
-OneDrive for Microsoft accounts can follow on the same design (an upload
-session and a sharing link through Microsoft Graph, `Files.ReadWrite`).
+**OneDrive.** Accounts signed in with Microsoft (Outlook.com, Hotmail,
+Microsoft 365) do the same through OneDrive, as Outlook does, in
+`katna_sync::onedrive` over Microsoft Graph:
+
+- Microsoft sign-in also asks for `Files.ReadWrite` (Graph), on the same
+  consent screen. Microsoft tokens are for one resource at a time, so the
+  code still buys IMAP and SMTP tokens, and `TokenSource::access_token_for`
+  trades the same refresh token for Graph's when a file goes up (saving a
+  rotated refresh token as usual). An account whose sign-in never allowed
+  it gets `invalid_grant` there, and its chip shows **Allow OneDrive**.
+  `Files.ReadWrite.AppFolder` would be narrower, but Graph does not
+  promise sharing (`invite`, `createLink`) under it.
+- Files go to Katna's app folder (`Apps/Katna`) in an upload session, in
+  10 MiB pieces (a multiple of 320 KiB). The session address carries its
+  own authorisation, so pieces go without a token; after a dropped
+  connection the session's `nextExpectedRanges` says where to go on.
+- Send invites each recipient as a reader with `sendInvitation: false`
+  (no Microsoft mail). A refused address asks the same question; sharing
+  with the link creates an anonymous view link, which replaces the file's
+  own address in the message (`DriveShareWithLink` returns the links).
+  Removing a chip deletes the file (to the recycle bin).
+- `KATNA_MICROSOFT_TOKEN_URL` and `KATNA_GRAPH_API_URL` point the daemon
+  at a fake Microsoft, loopback only, like Google's.
 
 ## 7. Search (`katna-search`)
 

@@ -86,6 +86,7 @@ fn provider(kind: OAuthProvider, token_url: &str) -> Provider {
             String::new()
         },
         scope: "https://mail.test/ openid email".into(),
+        consent: String::new(),
         redirect_host: "127.0.0.1",
         tls: Tls::insecure_for_local_tests(),
     }
@@ -225,6 +226,33 @@ fn sign_in_with_pkce_and_loopback_redirect() {
         );
         let verifier = param(&form, "code_verifier").unwrap();
         assert_eq!(super::challenge(&verifier), challenge);
+    });
+}
+
+#[test]
+fn microsoft_asks_for_onedrive_at_sign_in_but_redeems_mail_tokens() {
+    let server = fake_server(vec![(200, token_json(Some("rt-1"), true))]);
+    let mut provider = provider(OAuthProvider::Microsoft, &server.url);
+    provider.consent = MICROSOFT_FILES.into();
+    smol::block_on(async {
+        let sign_in = SignIn::start(&provider, "").await.unwrap();
+        let url = sign_in.url().to_owned();
+        let scope = param(&url, "scope").unwrap();
+        assert_eq!(
+            scope,
+            format!("https://mail.test/ openid email {MICROSOFT_FILES}")
+        );
+        let redirect = param(&url, "redirect_uri").unwrap();
+        let state = param(&url, "state").unwrap();
+        let browser = thread::spawn(move || browse(&redirect, &format!("?state={state}&code=c1")));
+        sign_in.finish(&provider, &pages()).await.unwrap();
+        browser.join().unwrap();
+        // One resource per token: the code buys IMAP and SMTP's.
+        let form = server.forms.lock().unwrap()[0].clone();
+        assert_eq!(
+            param(&form, "scope").unwrap(),
+            "https://mail.test/ openid email"
+        );
     });
 }
 

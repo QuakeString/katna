@@ -310,7 +310,7 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share(&uploads, &addresses).await?)
             }
 
-            async fn drive_share_with_link(&self, uploads: Vec<i64>) -> fdo::Result<()> {
+            async fn drive_share_with_link(&self, uploads: Vec<i64>) -> fdo::Result<Vec<String>> {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
