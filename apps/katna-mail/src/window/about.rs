@@ -25,6 +25,12 @@ use crate::widgets::{elevation, filled_button, icon, outlined_button, tip};
 
 const WIDTH: f32 = 520.0;
 
+/// The tallest About and What's new get outside the phone layout: at most
+/// 600 px and 70% of the window, their middle scrolling within.
+pub(super) fn dialog_max_height(window: &Window) -> f32 {
+    (unpx(window.viewport_size().height) * 0.7).min(600.0)
+}
+
 /// Where "Buy me a coffee" leads. `None` until the page exists; the
 /// button then shows, disabled, with "Coming soon".
 const SUPPORT_URL: Option<&str> = Some("https://buymeacoffee.com/quakestring");
@@ -760,7 +766,7 @@ impl MailWindow {
             .occlude()
             .w(px(width))
             .when(phone, |d| d.h_full())
-            .when(!phone, |d| d.max_h_full().min_h_0())
+            .when(!phone, |d| d.max_h(px(dialog_max_height(window))).min_h_0())
             .flex()
             .flex_col()
             .overflow_hidden()
