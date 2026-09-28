@@ -82,6 +82,16 @@
       "repository": "https://github.com/rust-lang/backtrace-rs"
     },
     {
+      "name": "base64",
+      "version": "0.22.1",
+      "description": "encodes and decodes base64 as bytes or utf8",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Marshall Pierce"
+      ],
+      "repository": "https://github.com/marshallpierce/rust-base64"
+    },
+    {
       "name": "blake3",
       "version": "1.8.7",
       "description": "the BLAKE3 hash function",
@@ -490,6 +500,16 @@
         "linebender"
       ],
       "repository": "https://github.com/linebender/resvg"
+    },
+    {
+      "name": "ring",
+      "version": "0.17.14",
+      "description": "An experiment.",
+      "license": "Apache-2.0 AND ISC",
+      "authors": [
+        "briansmith"
+      ],
+      "repository": "https://github.com/briansmith/ring"
     },
     {
       "name": "roxmltree",

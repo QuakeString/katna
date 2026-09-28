@@ -14,6 +14,11 @@ add-account-servers-title = Server settings
 add-account-servers-intro = Where Katna reads and sends mail for { $address }.
 add-account-password-title = Enter your password
 add-account-signing-in = Signing in…
+# The step while the provider's sign-in page is open in the web browser.
+add-account-browser-title = Continue in your browser
+# $provider: Google or Microsoft.
+add-account-browser-intro = Katna opened the { $provider } sign-in page in your browser. Sign in there and allow Katna to read and send your mail, then come back here.
+add-account-browser-hint = No page opened? Check your browser's windows, or go back and try again.
 
 ## Add a mail account: fields
 
@@ -55,6 +60,15 @@ add-account-servers-entered = Servers: { $servers }, as entered.
 
 ## Add a mail account: buttons
 
+# Between the address field and the buttons that sign in in the browser.
+add-account-or = or
+# Signs in on the provider's own page in the browser. $provider: Google or
+# Microsoft.
+add-account-sign-in-with = Sign in with { $provider }
+# On the password step of a Google address, instead of an app password.
+# $provider: Google.
+add-account-sign-in-instead = Sign in with { $provider } instead
+
 # Opens the server settings step.
 add-account-servers-button = Server settings
 add-account-back = Back
@@ -95,6 +109,20 @@ add-account-added = Added { $address }. Getting your mail…
 # separate password a provider makes for mail apps.
 add-account-app-password-refused = { $provider } refused the password. It needs an app password, not the one you use on the web.
 add-account-password-refused = The server refused the password. Check it and try again.
+# $provider: Google or Microsoft. The user closed the page or did not allow
+# access.
+add-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your mail.
+# The address belongs to a provider that only allows signing in on its own
+# page, which this copy of Katna cannot do yet. $provider: Microsoft or
+# Google, or empty when unknown.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] This copy of Katna cannot sign in to Microsoft accounts yet.
+    [Google] This copy of Katna cannot sign in to Google accounts yet.
+   *[other] This provider only allows signing in on its own page, which Katna cannot do for it yet.
+}
+# Shown briefly after signing in in the browser added the account.
+# $provider: Google or Microsoft.
+add-account-signed-in = Signed in with { $provider }. Getting your mail…
 
 ## The account menu (from the account button on the top bar)
 

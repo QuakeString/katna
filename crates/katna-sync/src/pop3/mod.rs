@@ -12,7 +12,7 @@ pub mod sync;
 use std::{future::Future, ops::Range};
 
 use crate::{
-    Credentials, Endpoint, Error, Result, Security,
+    Credentials, Endpoint, Error, Result, Secret, Security,
     net::{Conn, Tls},
 };
 
@@ -104,8 +104,11 @@ impl Pop3Client {
     }
 
     async fn login(&mut self, creds: &Credentials) -> Result<()> {
+        let Secret::Password(password) = &creds.secret else {
+            return Err(Error::Auth("POP3 accounts sign in with a password".into()));
+        };
         // CR and LF in a login would start a new command.
-        if [&creds.user, &creds.password]
+        if [&creds.user, password]
             .iter()
             .any(|s| s.contains(['\r', '\n']))
         {
@@ -114,7 +117,7 @@ impl Pop3Client {
         self.command(&format!("USER {}", creds.user))
             .await
             .map_err(auth_error)?;
-        self.command(&format!("PASS {}", creds.password))
+        self.command(&format!("PASS {password}"))
             .await
             .map_err(auth_error)?;
         Ok(())

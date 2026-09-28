@@ -86,9 +86,33 @@ macro_rules! pim_interface {
             async fn discover_account(
                 &self,
                 address: String,
-            ) -> fdo::Result<(NewImapAccount, String)> {
-                let (account, source) = self.daemon.discover_account(&address).await?;
-                Ok((account, source.to_owned()))
+            ) -> fdo::Result<(NewImapAccount, String, String, bool)> {
+                let (account, found) = self.daemon.discover_account(&address).await?;
+                let sign_in = found
+                    .oauth
+                    .map(|p| p.as_str().to_owned())
+                    .unwrap_or_default();
+                Ok((
+                    account,
+                    found.source.as_str().to_owned(),
+                    sign_in,
+                    found.password,
+                ))
+            }
+
+            async fn sign_in(
+                &self,
+                provider: String,
+                account: i64,
+                address: String,
+            ) -> fdo::Result<i64> {
+                let provider = provider.parse().map_err(fdo::Error::InvalidArgs)?;
+                let account = (account != 0).then_some(AccountId(account));
+                Ok(self.daemon.sign_in(provider, account, &address).await?.0)
+            }
+
+            async fn cancel_sign_in(&self) -> fdo::Result<bool> {
+                Ok(self.daemon.cancel_sign_in())
             }
 
             async fn set_password(&self, account: i64, password: String) -> fdo::Result<()> {

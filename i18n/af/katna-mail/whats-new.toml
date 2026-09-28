@@ -449,7 +449,7 @@ Gemerkte, gesterde of belangrike e-pos wys altyd in volle kleur.
 title = "Koop vir my 'n koffie"
 text = """
 As Katna vir jou nuttig is, het Meer oor Katna nou 'n knoppie Koop vir
-my 'n koffie en 'n QR-kode wat dieselfde bladsy op jou foon oopmaak.
+my 'n koffie.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -601,7 +601,7 @@ verskyn 'n x wat dit verwyder.
 ["2026-09-27-1722-katna-account"]
 title = "Katna-rekening"
 text = """
-Instellings > Katna-rekening laat jou 'n rekening op Katna se eie bediener
+Instellings > Intekening laat jou 'n rekening op Katna se eie bediener
 skep, met sy eie wagwoord, nooit 'n e-poswagwoord nie. Katna se aanlyn
 funksies, soos leesbewyse en skakelnasporing, sal dit nodig hê. Jy kan die
 aangemelde rekenaars sien en enigeen van hulle afmeld.
@@ -643,7 +643,7 @@ Skakel die oog by die ontvangers aan om te sien wanneer elkeen jou
 boodskap oopmaak of 'n skakel daarin volg, of vra eerder 'n leesbewys.
 Gestuurde e-pos wys wie dit oopgemaak het, en 'n kennisgewing laat jou
 die eerste keer weet. Albei is af vir elke nuwe boodskap, en nasporing
-het 'n Katna-rekening nodig (Instellings > Katna-rekening).
+het 'n Katna-rekening nodig (Instellings > Intekening).
 """
 
 ["2026-09-27-2042-activity"]

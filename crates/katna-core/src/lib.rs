@@ -16,7 +16,9 @@ pub mod sentry;
 pub mod subject;
 pub mod window;
 
-pub use account::{Account, AccountId, AccountKind, AccountSettings, Pop3Keep, Security, Server};
+pub use account::{
+    Account, AccountId, AccountKind, AccountSettings, OAuthProvider, Pop3Keep, Security, Server,
+};
 pub use category::{MailCategory, MailFacts, classify};
 pub use config::Config;
 pub use error::{Error, Result};

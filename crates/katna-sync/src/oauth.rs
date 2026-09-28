@@ -1,0 +1,621 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! OAuth2 sign-in for Google and Microsoft accounts
+//! (`docs/ARCHITECTURE.md` §6.4): the installed-app flow with PKCE
+//! (RFC 7636) and a loopback redirect (RFC 8252). The browser shows the
+//! provider's own sign-in page; its answer comes back to a one-shot HTTP
+//! listener on `127.0.0.1`, and the code is exchanged over our own HTTPS
+//! client. The refresh token goes to the Secret Service; [`TokenSource`]
+//! turns it into short-lived access tokens for SASL XOAUTH2.
+
+use std::{
+    fmt,
+    sync::Mutex,
+    time::{Duration, Instant},
+};
+
+use async_net::{TcpListener, TcpStream};
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+use futures_lite::{AsyncReadExt, AsyncWriteExt, FutureExt};
+use katna_core::{OAuthProvider, Security, Server};
+use serde::Deserialize;
+
+use crate::{
+    Error, Result,
+    autoconfig::http::{self, form_encode},
+    net::Tls,
+};
+
+/// How long the token endpoint may take to answer.
+const TOKEN_TIMEOUT: Duration = Duration::from_secs(30);
+
+/// An access token is renewed this long before it runs out.
+const EXPIRY_MARGIN: Duration = Duration::from_secs(120);
+
+/// Largest request the loopback listener reads.
+const MAX_REQUEST: usize = 16 * 1024;
+
+/// Where and how to sign in to one provider.
+#[derive(Clone)]
+pub struct Provider {
+    pub kind: OAuthProvider,
+    pub auth_url: String,
+    pub token_url: String,
+    pub client_id: String,
+    /// Only Google's desktop apps have one, and it is not secret.
+    pub client_secret: String,
+    /// Space-separated scopes.
+    pub scope: String,
+    /// Host name of the loopback redirect, as registered with the
+    /// provider.
+    pub redirect_host: &'static str,
+    pub tls: Tls,
+}
+
+impl fmt::Debug for Provider {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Provider")
+            .field("kind", &self.kind)
+            .field("token_url", &self.token_url)
+            .finish_non_exhaustive()
+    }
+}
+
+impl Provider {
+    /// The provider with the client ID from `katna_core::ids`; `None` when
+    /// this build has none.
+    pub fn new(kind: OAuthProvider, tls: Tls) -> Option<Self> {
+        if !kind.available() {
+            return None;
+        }
+        Some(match kind {
+            OAuthProvider::Google => Self {
+                kind,
+                auth_url: "https://accounts.google.com/o/oauth2/v2/auth".into(),
+                token_url: "https://oauth2.googleapis.com/token".into(),
+                client_id: kind.client_id().into(),
+                client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
+                // Full IMAP and SMTP, and who signed in (address, name,
+                // picture) in the ID token.
+                scope: "https://mail.google.com/ openid email profile".into(),
+                redirect_host: "127.0.0.1",
+                tls,
+            },
+            OAuthProvider::Microsoft => Self {
+                kind,
+                auth_url: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize".into(),
+                token_url: "https://login.microsoftonline.com/common/oauth2/v2.0/token".into(),
+                client_id: kind.client_id().into(),
+                client_secret: String::new(),
+                scope: "https://outlook.office.com/IMAP.AccessAsUser.All \
+                        https://outlook.office.com/SMTP.Send offline_access openid email profile"
+                    .into(),
+                // Entra registers loopback redirects as `http://localhost`.
+                redirect_host: "localhost",
+                tls,
+            },
+        })
+    }
+
+    /// The IMAP and SMTP servers of the provider's accounts.
+    pub fn servers(kind: OAuthProvider, username: &str) -> (Server, Server) {
+        let server = |host: &str, port, security| Server {
+            host: host.to_owned(),
+            port,
+            security,
+            username: username.to_owned(),
+            accept_invalid_certs: false,
+        };
+        match kind {
+            OAuthProvider::Google => (
+                server("imap.gmail.com", 993, Security::Tls),
+                server("smtp.gmail.com", 465, Security::Tls),
+            ),
+            OAuthProvider::Microsoft => (
+                server("outlook.office365.com", 993, Security::Tls),
+                server("smtp.office365.com", 587, Security::StartTls),
+            ),
+        }
+    }
+
+    /// The provider whose OAuth2 servers `imap_host` belongs to.
+    pub fn for_imap_host(imap_host: &str) -> Option<OAuthProvider> {
+        let host = imap_host.trim_end_matches('.').to_ascii_lowercase();
+        let under = |domain: &str| {
+            host == domain || host.strip_suffix(domain).is_some_and(|h| h.ends_with('.'))
+        };
+        if under("gmail.com") || under("googlemail.com") {
+            Some(OAuthProvider::Google)
+        } else if under("office365.com") || under("outlook.com") || under("hotmail.com") {
+            Some(OAuthProvider::Microsoft)
+        } else {
+            None
+        }
+    }
+}
+
+/// Who signed in, from the ID token.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Identity {
+    pub email: String,
+    pub name: String,
+    /// A URL of the account's picture (Google only), or empty.
+    pub picture: String,
+}
+
+/// What the token endpoint handed out.
+#[derive(Clone)]
+pub struct Grant {
+    pub access_token: String,
+    /// Absent when refreshing and the provider keeps the old one.
+    pub refresh_token: Option<String>,
+    pub expires_in: Duration,
+    /// Absent when refreshing.
+    pub identity: Option<Identity>,
+}
+
+impl fmt::Debug for Grant {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Grant")
+            .field("expires_in", &self.expires_in)
+            .field("identity", &self.identity)
+            .finish_non_exhaustive()
+    }
+}
+
+#[derive(Deserialize)]
+struct TokenAnswer {
+    access_token: String,
+    #[serde(default)]
+    refresh_token: Option<String>,
+    #[serde(default)]
+    expires_in: Option<u64>,
+    #[serde(default)]
+    id_token: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct ErrorAnswer {
+    error: String,
+    #[serde(default)]
+    error_description: String,
+}
+
+#[derive(Deserialize, Default)]
+struct Claims {
+    #[serde(default)]
+    email: String,
+    #[serde(default)]
+    preferred_username: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    picture: String,
+}
+
+/// Reads who signed in from an ID token. It came straight from the token
+/// endpoint over TLS, so its signature needs no checking (OpenID Connect
+/// Core §3.1.3.7).
+fn identity(id_token: &str) -> Option<Identity> {
+    let payload = id_token.split('.').nth(1)?;
+    let json = URL_SAFE_NO_PAD.decode(payload.trim_end_matches('=')).ok()?;
+    let claims: Claims = serde_json::from_slice(&json).ok()?;
+    // Microsoft's personal accounts may only name the address as the
+    // user name.
+    let email = if claims.email.contains('@') {
+        claims.email
+    } else if claims.preferred_username.contains('@') {
+        claims.preferred_username
+    } else {
+        return None;
+    };
+    Some(Identity {
+        email,
+        name: claims.name,
+        picture: if claims.picture.starts_with("https://") {
+            claims.picture
+        } else {
+            String::new()
+        },
+    })
+}
+
+/// Posts `form` to the token endpoint.
+async fn token_request<'a>(
+    provider: &'a Provider,
+    form: &mut Vec<(&'a str, &'a str)>,
+) -> Result<Grant> {
+    form.push(("client_id", &provider.client_id));
+    if !provider.client_secret.is_empty() {
+        form.push(("client_secret", &provider.client_secret));
+    }
+    let (status, body) =
+        http::post_form(&provider.token_url, form, &provider.tls, TOKEN_TIMEOUT).await?;
+    if status == 200 {
+        let answer: TokenAnswer = serde_json::from_slice(&body)
+            .map_err(|err| Error::Protocol(format!("token answer: {err}")))?;
+        return Ok(Grant {
+            access_token: answer.access_token,
+            refresh_token: answer.refresh_token.filter(|t| !t.is_empty()),
+            // Both providers give an hour; assume less if they say nothing.
+            expires_in: Duration::from_secs(answer.expires_in.unwrap_or(600)),
+            identity: answer.id_token.as_deref().and_then(identity),
+        });
+    }
+    let name = provider.kind.name();
+    match serde_json::from_slice::<ErrorAnswer>(&body) {
+        // The grant was revoked, expired or never valid: only signing in
+        // again helps (RFC 6749 §5.2).
+        Ok(answer)
+            if matches!(
+                answer.error.as_str(),
+                "invalid_grant" | "invalid_client" | "unauthorized_client" | "invalid_scope"
+            ) =>
+        {
+            Err(Error::Auth(format!(
+                "{name} asks to sign in again ({}{}{})",
+                answer.error,
+                if answer.error_description.is_empty() {
+                    ""
+                } else {
+                    ": "
+                },
+                answer.error_description.lines().next().unwrap_or_default()
+            )))
+        }
+        Ok(answer) => Err(Error::Protocol(format!(
+            "{name} token endpoint: {status} {}",
+            answer.error
+        ))),
+        Err(_) => Err(Error::Protocol(format!(
+            "{name} token endpoint answered {status}"
+        ))),
+    }
+}
+
+/// Trades a refresh token for a new access token.
+pub async fn refresh(provider: &Provider, refresh_token: &str) -> Result<Grant> {
+    token_request(
+        provider,
+        &mut vec![
+            ("grant_type", "refresh_token"),
+            ("refresh_token", refresh_token),
+            ("scope", &provider.scope),
+        ],
+    )
+    .await
+}
+
+/// `n` random bytes, base64url.
+fn random(n: usize) -> Result<String> {
+    use ring::rand::SecureRandom;
+    let mut bytes = vec![0; n];
+    ring::rand::SystemRandom::new()
+        .fill(&mut bytes)
+        .map_err(|_| Error::Protocol("no random numbers from the system".into()))?;
+    Ok(URL_SAFE_NO_PAD.encode(bytes))
+}
+
+/// The S256 challenge of a PKCE verifier.
+fn challenge(verifier: &str) -> String {
+    URL_SAFE_NO_PAD.encode(ring::digest::digest(
+        &ring::digest::SHA256,
+        verifier.as_bytes(),
+    ))
+}
+
+/// The two short pages the browser shows once the provider sends it back.
+pub struct Pages {
+    pub signed_in: String,
+    pub failed: String,
+}
+
+/// A sign-in waiting for the browser: open [`SignIn::url`], then
+/// [`SignIn::finish`].
+pub struct SignIn {
+    listeners: Vec<TcpListener>,
+    redirect_uri: String,
+    state: String,
+    verifier: String,
+    url: String,
+}
+
+impl SignIn {
+    /// Starts listening on a free loopback port and builds the URL of the
+    /// provider's sign-in page. `login_hint` (an address, or empty) fills
+    /// in the account there.
+    pub async fn start(provider: &Provider, login_hint: &str) -> Result<Self> {
+        let v4 = TcpListener::bind(("127.0.0.1", 0)).await?;
+        let port = v4.local_addr()?.port();
+        let mut listeners = vec![v4];
+        // Browsers may try `localhost` on IPv6 first.
+        if provider.redirect_host == "localhost"
+            && let Ok(v6) = TcpListener::bind(("::1", port)).await
+        {
+            listeners.push(v6);
+        }
+        let redirect_uri = format!("http://{}:{port}/", provider.redirect_host);
+        let state = random(16)?;
+        let verifier = random(48)?;
+        let mut query = vec![
+            ("response_type", "code"),
+            ("client_id", provider.client_id.as_str()),
+            ("redirect_uri", redirect_uri.as_str()),
+            ("scope", provider.scope.as_str()),
+            ("state", state.as_str()),
+            ("code_challenge_method", "S256"),
+        ];
+        let challenge = challenge(&verifier);
+        query.push(("code_challenge", &challenge));
+        match provider.kind {
+            // A refresh token every time, also when the user signed in
+            // before.
+            OAuthProvider::Google => {
+                query.push(("access_type", "offline"));
+                query.push(("prompt", "consent"));
+            }
+            OAuthProvider::Microsoft => query.push(("prompt", "select_account")),
+        }
+        if !login_hint.trim().is_empty() {
+            query.push(("login_hint", login_hint.trim()));
+        }
+        let url = format!("{}?{}", provider.auth_url, form_encode(&query));
+        Ok(Self {
+            listeners,
+            redirect_uri,
+            state,
+            verifier,
+            url,
+        })
+    }
+
+    /// The provider's sign-in page, for the browser.
+    pub fn url(&self) -> &str {
+        &self.url
+    }
+
+    /// Waits for the browser to come back, shows it one of `pages` and
+    /// trades the code for tokens. Waits as long as it takes; drop the
+    /// future to give up.
+    pub async fn finish(self, provider: &Provider, pages: &Pages) -> Result<Grant> {
+        let code = loop {
+            let mut stream = accept(&self.listeners).await?;
+            let Some(query) = read_request(&mut stream).await else {
+                respond(&mut stream, "404 Not Found", "").await;
+                continue;
+            };
+            let param = |name: &str| {
+                query
+                    .split('&')
+                    .filter_map(|pair| pair.split_once('='))
+                    .find(|(key, _)| *key == name)
+                    .map(|(_, value)| unescape(value))
+            };
+            // Anything else knocking on the port is not the provider's
+            // answer to this sign-in.
+            if param("state").as_deref() != Some(self.state.as_str()) {
+                respond(&mut stream, "400 Bad Request", "").await;
+                continue;
+            }
+            if let Some(code) = param("code").filter(|c| !c.is_empty()) {
+                respond(&mut stream, "200 OK", &pages.signed_in).await;
+                break code;
+            }
+            respond(&mut stream, "200 OK", &pages.failed).await;
+            let error = param("error").unwrap_or_else(|| "no code".into());
+            return Err(if error == "access_denied" {
+                Error::Auth(format!(
+                    "{} sign-in was cancelled or access was not allowed",
+                    provider.kind.name()
+                ))
+            } else {
+                Error::Protocol(format!(
+                    "{} sign-in failed: {error} {}",
+                    provider.kind.name(),
+                    param("error_description").unwrap_or_default()
+                ))
+            });
+        };
+        let grant = token_request(
+            provider,
+            &mut vec![
+                ("grant_type", "authorization_code"),
+                ("code", &code),
+                ("redirect_uri", &self.redirect_uri),
+                ("code_verifier", &self.verifier),
+            ],
+        )
+        .await?;
+        if grant.refresh_token.is_none() {
+            return Err(Error::Protocol(format!(
+                "{} gave no refresh token",
+                provider.kind.name()
+            )));
+        }
+        if grant.identity.is_none() {
+            return Err(Error::Protocol(format!(
+                "{} did not say which account signed in",
+                provider.kind.name()
+            )));
+        }
+        Ok(grant)
+    }
+}
+
+async fn accept(listeners: &[TcpListener]) -> Result<TcpStream> {
+    let first = listeners[0].accept();
+    let (stream, _) = match listeners.get(1) {
+        Some(second) => first.or(second.accept()).await?,
+        None => first.await?,
+    };
+    Ok(stream)
+}
+
+/// Reads a `GET /?query` request and returns the query; `None` for any
+/// other request.
+async fn read_request(stream: &mut TcpStream) -> Option<String> {
+    let mut request = Vec::new();
+    let mut buf = [0; 2048];
+    let read = async {
+        while !request.windows(4).any(|w| w == b"\r\n\r\n") && request.len() < MAX_REQUEST {
+            let n = stream.read(&mut buf).await.ok()?;
+            if n == 0 {
+                break;
+            }
+            request.extend_from_slice(&buf[..n]);
+        }
+        Some(())
+    }
+    .or(async {
+        async_io::Timer::after(Duration::from_secs(10)).await;
+        None
+    });
+    read.await?;
+    let line = request.split(|b| *b == b'\r').next()?;
+    let line = std::str::from_utf8(line).ok()?;
+    let target = line.strip_prefix("GET ")?.split(' ').next()?;
+    target.strip_prefix("/?").map(str::to_owned)
+}
+
+async fn respond(stream: &mut TcpStream, status: &str, text: &str) {
+    let body = if text.is_empty() {
+        String::new()
+    } else {
+        format!(
+            "<!doctype html><meta charset=\"utf-8\"><title>Katna</title>\
+             <body style=\"font:16px sans-serif;margin:4em auto;max-width:32em\">\
+             <p>{}</p></body>",
+            html_escape(text)
+        )
+    };
+    let answer = format!(
+        "HTTP/1.1 {status}\r\nContent-Type: text/html; charset=utf-8\r\n\
+         Content-Length: {}\r\nConnection: close\r\n\r\n{body}",
+        body.len()
+    );
+    let _ = stream.write_all(answer.as_bytes()).await;
+    let _ = stream.flush().await;
+}
+
+fn html_escape(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+}
+
+/// Decodes `%XX` and `+` in a query value.
+fn unescape(value: &str) -> String {
+    let bytes = value.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'+' => out.push(b' '),
+            b'%' => match bytes
+                .get(i + 1..i + 3)
+                .and_then(|hex| std::str::from_utf8(hex).ok())
+                .and_then(|hex| u8::from_str_radix(hex, 16).ok())
+            {
+                Some(byte) => {
+                    out.push(byte);
+                    i += 2;
+                }
+                None => out.push(b'%'),
+            },
+            byte => out.push(byte),
+        }
+        i += 1;
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
+/// Called with a new refresh token when the provider replaces the old one
+/// (Microsoft does on every refresh), to save it.
+pub type OnRotate = Box<dyn Fn(String) + Send + Sync>;
+
+/// Hands out access tokens for one account, refreshing them as needed.
+/// Shared by the account's connections.
+pub struct TokenSource {
+    provider: Provider,
+    refresh_token: Mutex<String>,
+    access: Mutex<Option<(String, Instant)>>,
+    /// Lets one refresh run at a time: holding its only message.
+    gate: (async_channel::Sender<()>, async_channel::Receiver<()>),
+    on_rotate: Option<OnRotate>,
+}
+
+impl TokenSource {
+    pub fn new(provider: Provider, refresh_token: String, on_rotate: Option<OnRotate>) -> Self {
+        let gate = async_channel::bounded(1);
+        let _ = gate.0.try_send(());
+        Self {
+            provider,
+            refresh_token: Mutex::new(refresh_token),
+            access: Mutex::new(None),
+            gate,
+            on_rotate,
+        }
+    }
+
+    /// Starts with an access token from a sign-in that just happened.
+    pub fn with_access_token(self, token: String, expires_in: Duration) -> Self {
+        *self.access.lock().unwrap() = Some((token, Instant::now() + expires_in));
+        self
+    }
+
+    pub fn provider(&self) -> OAuthProvider {
+        self.provider.kind
+    }
+
+    fn cached(&self) -> Option<String> {
+        self.access
+            .lock()
+            .unwrap()
+            .as_ref()
+            .filter(|(_, until)| Instant::now() + EXPIRY_MARGIN < *until)
+            .map(|(token, _)| token.clone())
+    }
+
+    /// A valid access token. A refused refresh token is [`Error::Auth`]:
+    /// the user has to sign in again. Network trouble is not.
+    pub async fn access_token(&self) -> Result<String> {
+        if let Some(token) = self.cached() {
+            return Ok(token);
+        }
+        let _ = self.gate.1.recv().await;
+        let result = async {
+            // Another connection may have refreshed meanwhile.
+            if let Some(token) = self.cached() {
+                return Ok(token);
+            }
+            let refresh_token = self.refresh_token.lock().unwrap().clone();
+            let grant = refresh(&self.provider, &refresh_token).await?;
+            if let Some(new) = grant.refresh_token
+                && new != refresh_token
+            {
+                *self.refresh_token.lock().unwrap() = new.clone();
+                if let Some(on_rotate) = &self.on_rotate {
+                    on_rotate(new);
+                }
+            }
+            *self.access.lock().unwrap() = Some((
+                grant.access_token.clone(),
+                Instant::now() + grant.expires_in,
+            ));
+            tracing::debug!(provider = %self.provider.kind, "access token refreshed");
+            Ok(grant.access_token)
+        }
+        .await;
+        let _ = self.gate.0.try_send(());
+        result
+    }
+
+    /// Drops the access token after a server refused it. Returns whether a
+    /// retry with a fresh one may help.
+    pub fn forget_access_token(&self) -> bool {
+        self.access.lock().unwrap().take().is_some()
+    }
+}
+
+#[cfg(test)]
+mod tests;

@@ -443,7 +443,7 @@ chọn, gắn dấu sao hoặc quan trọng luôn hiện đủ màu.
 title = "Mời tôi một ly cà phê"
 text = """
 Nếu Katna có ích với bạn, Giới thiệu về Katna giờ có nút Mời tôi một ly
-cà phê và mã QR để mở cùng trang đó trên điện thoại của bạn.
+cà phê.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -599,7 +599,7 @@ bạn kéo, kể cả khi đang ẩn. Trỏ vào thẻ sẽ hiện dấu x để
 ["2026-09-27-1722-katna-account"]
 title = "Tài khoản Katna"
 text = """
-Cài đặt > Tài khoản Katna cho phép bạn tạo tài khoản trên máy chủ riêng
+Cài đặt > Gói đăng ký cho phép bạn tạo tài khoản trên máy chủ riêng
 của Katna, với mật khẩu riêng, không bao giờ là mật khẩu thư. Các tính
 năng trực tuyến của Katna, như xác nhận đã đọc và theo dõi liên kết, sẽ
 cần đến tài khoản này. Bạn có thể xem các máy tính đang đăng nhập và
@@ -643,7 +643,7 @@ Bật biểu tượng con mắt cạnh người nhận để thấy khi mỗi ng
 bạn hoặc mở một liên kết trong thư, hoặc yêu cầu xác nhận đã đọc thay vào
 đó. Thư đã gửi cho thấy ai đã mở, và một thông báo cho bạn biết ở lần đầu
 tiên. Cả hai đều tắt với mọi thư mới, và việc theo dõi cần tài khoản Katna
-(Cài đặt > Tài khoản Katna).
+(Cài đặt > Gói đăng ký).
 """
 
 ["2026-09-27-2042-activity"]

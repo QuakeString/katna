@@ -472,8 +472,7 @@ s’affiche toujours en pleine couleur.
 title = "Offrez-moi un café"
 text = """
 Si Katna vous est utile, À propos de Katna propose désormais un bouton
-Offrez-moi un café et un code QR pour ouvrir la même page sur votre
-téléphone.
+Offrez-moi un café.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -635,7 +634,7 @@ Pointer une pastille affiche un x qui la retire.
 ["2026-09-27-1722-katna-account"]
 title = "Compte Katna"
 text = """
-Paramètres > Compte Katna vous permet de créer un compte sur le serveur de
+Paramètres > Abonnement vous permet de créer un compte sur le serveur de
 Katna lui-même, avec son propre mot de passe, jamais celui d’une
 messagerie. Les fonctions en ligne de Katna, comme les accusés de lecture
 et le suivi des liens, en auront besoin. Vous voyez les ordinateurs
@@ -675,12 +674,12 @@ Traduction choisit votre langue et celles à toujours traduire.
 ["2026-09-27-1744-open-and-click-tracking"]
 title = "Sachez quand vos messages sont ouverts"
 text = """
-Activez l’œil à côté des destinataires pour voir quand chacun ouvre votre
-message ou suit un de ses liens, ou demandez plutôt un accusé de lecture.
-Les messages envoyés indiquent qui les a ouverts, et une notification
-vous prévient la première fois. Les deux sont désactivés pour chaque
-nouveau message, et le suivi nécessite un compte Katna (Paramètres >
-Compte Katna).
+Activez l’œil à côté des destinataires pour voir quand chacun ouvre
+votre message ou suit un de ses liens, ou demandez plutôt un accusé de
+lecture. Les messages envoyés indiquent qui les a ouverts, et une
+notification vous prévient la première fois. Les deux sont désactivés
+pour chaque nouveau message, et le suivi nécessite un compte Katna
+(Paramètres > Abonnement).
 """
 
 ["2026-09-27-2042-activity"]

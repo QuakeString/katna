@@ -471,8 +471,7 @@ ibonakala ngombala ogcwele.
 title = "Ngithengele ikhofi"
 text = """
 Uma i-Katna iwusizo kuwe, ku-Mayelana ne-Katna manje kunenkinobho ethi
-Ngithengele ikhofi kanye nekhodi ye-QR evula ikhasi elifanayo efonini
-yakho.
+Ngithengele ikhofi.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -640,7 +639,7 @@ i-chip kubonisa u-x oyisusayo.
 ["2026-09-27-1722-katna-account"]
 title = "I-akhawunti ye-Katna"
 text = """
-Izilungiselelo > I-akhawunti ye-Katna ikuvumela ukuthi udale i-akhawunti
+Izilungiselelo > Ukubhalisa kukuvumela ukuthi udale i-akhawunti
 kuseva ye-Katna uqobo, enephasiwedi yayo, hhayi neze iphasiwedi yemeyili.
 Izici ze-inthanethi ze-Katna, njengezaziso zokufunda nokulandelela
 izixhumanisi, zizoyidinga. Ungabona amakhompyutha angenile futhi ukhiphe
@@ -684,9 +683,9 @@ text = """
 Vula iso eliseduze nabamukeli ukuze ubone lapho ngamunye evula umlayezo
 wakho noma elandela isixhumanisi esikuwo, noma esikhundleni salokho cela
 isaziso sokufunda. Imeyili ethunyelwe ibonisa ukuthi ubani oyivulile,
-futhi isaziso sikwazisa okokuqala. Kokubili kuvaliwe kuyo yonke imilayezo
-emisha, futhi ukulandelela kudinga i-akhawunti ye-Katna (Izilungiselelo >
-I-akhawunti ye-Katna).
+futhi isaziso sikwazisa okokuqala. Kokubili kuvaliwe kuyo yonke
+imilayezo emisha, futhi ukulandelela kudinga i-akhawunti ye-Katna
+(Izilungiselelo > Ukubhalisa).
 """
 
 ["2026-09-27-2042-activity"]
