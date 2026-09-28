@@ -37,6 +37,10 @@ pub(crate) struct Status {
     /// The input was encrypted (GnuPG started decrypting).
     encrypted: bool,
     okay: bool,
+    /// `BEGIN_DECRYPTION` and `END_DECRYPTION` (gpg sends both, gpgsm
+    /// neither): GnuPG got to the end of the encrypted data.
+    began: bool,
+    ended: bool,
     failed: bool,
     recipients: usize,
     missing_secret_keys: usize,
@@ -78,8 +82,12 @@ impl Status {
                 self.encrypted = true;
                 self.recipients += 1;
             }
-            "BEGIN_DECRYPTION" => self.encrypted = true,
+            "BEGIN_DECRYPTION" => {
+                self.encrypted = true;
+                self.began = true;
+            }
             "DECRYPTION_OKAY" => self.okay = true,
+            "END_DECRYPTION" => self.ended = true,
             "DECRYPTION_FAILED" => {
                 self.encrypted = true;
                 self.failed = true;
@@ -173,9 +181,13 @@ impl Status {
         self.signatures.last_mut().expect("just pushed")
     }
 
-    /// `None` when the input was not encrypted (only signed).
+    /// `None` when the input was not encrypted (only signed). Decrypted
+    /// only when GnuPG said so, got to the end (when it reports that), and
+    /// saw nothing wrong on the way: a stream that is damaged or failed
+    /// its integrity check (`BADMDC`) has failed, whatever else GnuPG
+    /// printed.
     pub(crate) fn decryption(&self) -> Option<Decryption> {
-        if self.okay && !self.failed {
+        if self.okay && (self.ended || !self.began) && !self.failed && !self.damaged {
             return Some(Decryption::Decrypted);
         }
         if !self.encrypted && !self.cancelled && !self.no_secret_key_error {
@@ -187,7 +199,8 @@ impl Status {
             || (self.missing_secret_keys > 0 && self.missing_secret_keys >= self.recipients)
         {
             Failure::NoSecretKey
-        } else if self.damaged {
+        } else if self.damaged || self.okay {
+            // An integrity failure, or a stream cut short.
             Failure::Damaged
         } else {
             Failure::Other(
@@ -289,6 +302,43 @@ gpg: encrypted with cv25519 key, ID B69348D074BCE18B\n\
                 validity: Validity::Full,
             }]
         );
+    }
+
+    /// Status lines that say both "okay" and "damaged" are a failure: the
+    /// plaintext cannot be trusted.
+    #[test]
+    fn damaged_after_okay_is_a_failure() {
+        let damaged = |line: &str| {
+            parse(&format!(
+                "[GNUPG:] ENC_TO B69348D074BCE18B 18 0\n\
+[GNUPG:] BEGIN_DECRYPTION\n\
+[GNUPG:] DECRYPTION_OKAY\n\
+{line}\
+[GNUPG:] END_DECRYPTION\n"
+            ))
+        };
+        for line in [
+            "[GNUPG:] BADMDC\n",
+            "[GNUPG:] NODATA 3\n",
+            "[GNUPG:] DECRYPTION_FAILED\n",
+        ] {
+            assert!(
+                matches!(damaged(line).decryption(), Some(Decryption::Failed(_))),
+                "{line}"
+            );
+        }
+        assert_eq!(
+            damaged("[GNUPG:] BADMDC\n").decryption(),
+            Some(Decryption::Failed(Failure::Damaged))
+        );
+        assert_eq!(damaged("").decryption(), Some(Decryption::Decrypted));
+        // Cut short: no END_DECRYPTION.
+        let cut = parse(
+            "[GNUPG:] ENC_TO B69348D074BCE18B 18 0\n\
+[GNUPG:] BEGIN_DECRYPTION\n\
+[GNUPG:] DECRYPTION_OKAY\n",
+        );
+        assert_eq!(cut.decryption(), Some(Decryption::Failed(Failure::Damaged)));
     }
 
     #[test]

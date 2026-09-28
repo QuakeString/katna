@@ -159,6 +159,12 @@ struct Body {
     doc: Option<Document>,
     /// The remote images of `doc`.
     remote: Vec<String>,
+    /// The SVG pictures `doc` carries, drawn to bitmaps before they show.
+    svgs: Vec<Arc<[u8]>>,
+    /// The mail provider vouched for the `From` address (DMARC or aligned
+    /// DKIM passed), so "Always show images from" this sender holds. Only
+    /// looked at when `doc` has remote images.
+    authenticated: bool,
     /// Encrypted or signed: what opening it found.
     security: Option<Secured>,
     /// The raw message, until it is handed to GnuPG.
@@ -265,6 +271,7 @@ impl Conversation {
                     view: body.view.clone(),
                     doc: body.doc.clone().filter(|_| !sealed),
                     encrypted: body.encrypted(),
+                    authenticated: body.authenticated,
                     sealed,
                 }
             })
@@ -488,8 +495,9 @@ impl Conversation {
         self.parts.iter().all(|p| p.expanded)
     }
 
-    /// Each open message's ID, sender address and remote images.
-    pub(super) fn remote_content(&self) -> Vec<(MessageId, String, Vec<String>)> {
+    /// Each open message's remote images, with what decides whether they
+    /// may load.
+    pub(super) fn remote_content(&self) -> Vec<RemoteContent> {
         self.parts
             .iter()
             .filter(|p| p.expanded)
@@ -499,8 +507,23 @@ impl Conversation {
                 // was opened, and could leak its text (EFAIL).
                 let body = p.body.as_ref().filter(|b| !b.encrypted())?;
                 let sender = body.view.as_ref()?.from.first()?.email.clone();
-                Some((p.id, sender, body.remote.clone()))
+                Some(RemoteContent {
+                    id: p.id,
+                    sender,
+                    authenticated: body.authenticated,
+                    urls: body.remote.clone(),
+                })
             })
+            .collect()
+    }
+
+    /// The SVG pictures the open messages carry.
+    pub(super) fn carried_svgs(&self) -> Vec<Arc<[u8]>> {
+        self.parts
+            .iter()
+            .filter(|p| p.expanded)
+            .filter_map(|p| p.body.as_ref())
+            .flat_map(|b| b.svgs.iter().cloned())
             .collect()
     }
 
@@ -513,6 +536,16 @@ impl Conversation {
     }
 }
 
+/// The remote images of an open message.
+pub(super) struct RemoteContent {
+    pub id: MessageId,
+    /// Its `From` address.
+    pub sender: String,
+    /// The provider vouched for `sender` ([`Body::authenticated`]).
+    pub authenticated: bool,
+    pub urls: Vec<String>,
+}
+
 /// A message of the conversation, for printing.
 pub(super) struct Printable {
     pub id: MessageId,
@@ -523,6 +556,8 @@ pub(super) struct Printable {
     pub doc: Option<Document>,
     /// Encrypted: its remote pictures are never loaded.
     pub encrypted: bool,
+    /// The provider vouched for its sender ([`Body::authenticated`]).
+    pub authenticated: bool,
     /// Encrypted or signed, and its text not opened.
     pub sealed: bool,
 }
@@ -909,6 +944,15 @@ impl MailWindow {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
             self.text.begin(key);
         }
+        // The link under the pointer was in another conversation.
+        let conversation = self.reader.as_ref().map(|r| key_number(r.key));
+        if self
+            .hovered_link
+            .as_ref()
+            .is_some_and(|h| Some(h.conversation()) != conversation)
+        {
+            self.hovered_link = None;
+        }
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -1037,34 +1081,45 @@ impl MailWindow {
         } else {
             (None, reply)
         };
+        // Where the link under the pointer really goes.
+        let link_status = self
+            .hovered_link
+            .as_ref()
+            .map(|link| rich::link_status(&link.url, th));
         div()
             .size_full()
             .flex()
             .flex_col()
             .child(
                 div()
-                    .id("reader")
                     .flex_1()
                     .min_h_0()
-                    .overflow_y_scroll()
-                    .track_scroll(&self.reader_scroll)
+                    .relative()
                     .child(
                         div()
-                            .flex()
-                            .flex_col()
-                            .pb(px(24.0))
-                            .child(title)
-                            .children(reply_above)
-                            .children(parts)
-                            .children(reply_below)
-                            .map(|d| self.text_area(d, cx))
-                            .with_animation(
-                                ("open-conversation", key_number(key)),
-                                Animation::new(Duration::from_millis(280))
-                                    .with_easing(ease_out_quint()),
-                                |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
+                            .id("reader")
+                            .size_full()
+                            .overflow_y_scroll()
+                            .track_scroll(&self.reader_scroll)
+                            .child(
+                                div()
+                                    .flex()
+                                    .flex_col()
+                                    .pb(px(24.0))
+                                    .child(title)
+                                    .children(reply_above)
+                                    .children(parts)
+                                    .children(reply_below)
+                                    .map(|d| self.text_area(d, cx))
+                                    .with_animation(
+                                        ("open-conversation", key_number(key)),
+                                        Animation::new(Duration::from_millis(280))
+                                            .with_easing(ease_out_quint()),
+                                        |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
+                                    ),
                             ),
-                    ),
+                    )
+                    .children(link_status),
             )
             .children(footer.map(|footer| {
                 div()
@@ -1437,6 +1492,7 @@ impl MailWindow {
                 blocks,
                 cut,
                 doc,
+                authenticated,
                 ..
             }) => {
                 let too_long = match doc {
@@ -1449,7 +1505,7 @@ impl MailWindow {
                     too_long.then(|| tr!("reader-too-long")),
                     blocked.then(|| tr!("reader-encrypted-images")),
                 ];
-                let allowed = !encrypted && self.remote.allowed(id, &email);
+                let allowed = !encrypted && self.remote.allowed(id, &email, *authenticated);
                 let banner = doc
                     .as_ref()
                     .filter(|doc| doc.remote_images > 0 && !allowed && !encrypted)
@@ -1503,11 +1559,18 @@ impl MailWindow {
                         };
                         let mut pieces = self.text.pieces(slot, th);
                         let blocks = translated.as_ref().unwrap_or(blocks);
+                        let links = self.reader.as_ref().map(|r| rich::Links {
+                            window: cx.weak_entity(),
+                            conversation: key_number(r.key),
+                            part: slot,
+                        });
                         let text = match doc.as_ref().filter(|_| translated.is_none()) {
                             Some(doc) => div().child(
                                 Painter::new(
                                     th,
                                     &self.remote.images,
+                                    &self.remote.drawn,
+                                    links,
                                     allowed,
                                     self.remote.mono(),
                                     self.config.mail.dark_mail
@@ -1798,6 +1861,8 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             cut: false,
             doc: None,
             remote: Vec::new(),
+            svgs: Vec::new(),
+            authenticated: false,
             security: None,
             sealed: None,
             opened: None,
@@ -1830,12 +1895,16 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         None => body_blocks(&view.body, MAX_BODY_LINES),
     };
     let remote = doc.as_ref().map(rich::remote_urls).unwrap_or_default();
+    let svgs = doc.as_ref().map(rich::carried_svgs).unwrap_or_default();
+    let authenticated = !remote.is_empty() && katna_render::sender_authenticated(raw);
     Body {
         view: Some(view),
         blocks,
         cut,
         doc,
         remote,
+        svgs,
+        authenticated,
         security,
         sealed: None,
         opened: None,

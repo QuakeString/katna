@@ -38,7 +38,8 @@ const MIN_COL: f32 = 40.0;
 const MAX_COL: f32 = 600.0;
 const BORDER: &str = "#c8c8c8";
 
-fn fonts() -> Arc<usvg::fontdb::Database> {
+/// The system's fonts, loaded once.
+pub(crate) fn fonts() -> Arc<usvg::fontdb::Database> {
     static FONTS: OnceLock<Arc<usvg::fontdb::Database>> = OnceLock::new();
     FONTS
         .get_or_init(|| {

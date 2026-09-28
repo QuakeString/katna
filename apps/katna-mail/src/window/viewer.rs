@@ -508,13 +508,8 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
             Err(pdf::Error::Locked) => Loaded::Nothing("viewer-pdf-locked"),
             Err(pdf::Error::Invalid) => Loaded::Nothing("viewer-pdf-unreadable"),
         },
-        Kind::Picture(Picture::Svg) => Loaded::Drawn(
-            Arc::new(gpui::Image::from_bytes(
-                gpui::ImageFormat::Svg,
-                file.bytes.clone(),
-            )),
-            None,
-        ),
+        // SVG too: drawn to a bitmap by katna_preview, never by GPUI, which
+        // would load the files it links to.
         Kind::Picture(format) => {
             match picture::decode(&file.bytes, format, picture::VIEW_SIDE) {
                 // GPUI plays animated GIFs itself.

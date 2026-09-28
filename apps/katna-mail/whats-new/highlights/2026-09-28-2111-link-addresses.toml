@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See where a link goes"
+text = """
+Rest the pointer on a link in a message and the address it really opens
+shows at the foot of the reading pane, with the site's name standing out,
+whatever the link's text says. Images from a sender you always show images
+from now load only when your mail provider confirms the message is really
+from them.
+"""
