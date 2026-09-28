@@ -266,7 +266,7 @@ pub(super) struct Report {
 impl MailWindow {
     /// Whether the Activity button shows: once mail was tracked, or while
     /// signed in to a Katna account.
-    fn activity_shown(&self) -> bool {
+    pub(super) fn activity_shown(&self) -> bool {
         self.has_activity() || self.katna_signed_in()
     }
 
