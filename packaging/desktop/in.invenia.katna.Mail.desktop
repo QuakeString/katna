@@ -2,8 +2,8 @@
 [Desktop Entry]
 Type=Application
 Name=Katna Mail
-GenericName=Mail Client
-Comment=Read, search and write email
+GenericName=Email for all your accounts
+Comment=Read, search and write email from all your accounts in one place
 Exec=katna-mail %u
 Icon=in.invenia.katna.Mail
 Terminal=false
