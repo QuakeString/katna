@@ -82,6 +82,19 @@ compose-drive-share-link = Поділитися за посиланням
 compose-drive-send-without = Надіслати без доступу
 compose-drive-share-cancel = Скасувати
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } перевищує { $limit }, тому файл потрапить до вашого OneDrive, а в листі буде посилання.
+compose-onedrive-tip = У вашому OneDrive; у листі буде посилання
+compose-onedrive-allow = Дозволити OneDrive
+compose-onedrive-allow-tip = Увійдіть через Microsoft ще раз, щоб Katna могла розміщувати великі файли у вашому OneDrive
+compose-onedrive-not-uploaded = { $name } ще не в OneDrive
+compose-onedrive-share-failed = Не вдалося надати доступ до файлів у OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive не може надати доступ до файлів адресатам { $addresses }. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+    [few] OneDrive не може надати доступ до файлів адресатам { $addresses }. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+    [many] OneDrive не може надати доступ до файлів адресатам { $addresses }. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+   *[other] OneDrive не може надати доступ до файлів адресатам { $addresses }. Натомість файли зможе відкрити будь-хто, у кого є посилання.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Перетягніть файли сюди
 compose-drop-here = Перетягніть сюди
 compose-paste-keep-formatting = Зберегти форматування

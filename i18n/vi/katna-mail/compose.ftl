@@ -74,6 +74,16 @@ compose-drive-share-link = Chia sẻ bằng liên kết
 compose-drive-send-without = Gửi mà không chia sẻ
 compose-drive-share-cancel = Hủy
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } vượt quá { $limit }, nên tệp sẽ được đưa lên OneDrive của bạn và thư sẽ kèm một liên kết.
+compose-onedrive-tip = Trong OneDrive của bạn; thư kèm một liên kết
+compose-onedrive-allow = Cho phép OneDrive
+compose-onedrive-allow-tip = Đăng nhập lại bằng Microsoft để Katna đưa các tệp lớn vào OneDrive của bạn
+compose-onedrive-not-uploaded = { $name } chưa có trong OneDrive
+compose-onedrive-share-failed = Không thể chia sẻ các tệp trong OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive không thể chia sẻ các tệp với { $addresses }. Thay vào đó, bất kỳ ai có liên kết đều có thể mở chúng.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Thả tệp vào đây
 compose-drop-here = Thả vào đây
 compose-paste-keep-formatting = Giữ định dạng

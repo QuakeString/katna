@@ -21,6 +21,7 @@ tab-provider-other = Katna ವಿಂಗಡಿಸಿದ್ದು
 
 list-select = ಆಯ್ಕೆಮಾಡಿ
 list-refresh = ರಿಫ್ರೆಶ್ ಮಾಡಿ
+list-checking = ಹೊಸ ಮೇಲ್ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…
 list-more = ಇನ್ನಷ್ಟು
 list-mark-read = ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ
 list-mark-unread = ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಿ

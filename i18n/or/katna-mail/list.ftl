@@ -21,6 +21,7 @@ tab-provider-other = Katna ଦ୍ୱାରା ସଜାଯାଇଛି
 
 list-select = ଚୟନ କରନ୍ତୁ
 list-refresh = ରିଫ୍ରେସ କରନ୍ତୁ
+list-checking = ନୂଆ ମେଲ ଯାଞ୍ଚ କରାଯାଉଛି…
 list-more = ଅଧିକ
 list-mark-read = ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 list-mark-unread = ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ

@@ -1076,3 +1076,33 @@ le message contient son lien, comme dans Gmail. Il est partagé avec vos
 destinataires quand vous appuyez sur Envoyer ; Katna ne demande que si
 l’accès ne peut pas être accordé à quelqu’un.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Listes de destinataires longues plus fluides"
+text = """
+Une longue liste de destinataires a désormais sa propre barre de
+défilement et avance d’une ligne à la fois ; la conversation ne défile
+qu’une fois la fin de la liste atteinte. L’ajout de destinataires ne
+fait plus sauter les boutons en dessous.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Rechercher de nouveaux messages"
+text = """
+Faites un clic droit sur un dossier ou un compte dans le volet des
+dossiers pour choisir « Rechercher de nouveaux messages », « Tout
+marquer comme lu », un nouveau dossier à l’intérieur ou « Vider la
+corbeille ». « Actualiser » au-dessus de la liste interroge désormais
+aussi le serveur. Pendant la recherche, les flèches tournent sur
+« Actualiser » et à côté de la boîte de réception, et « Recherche de
+nouveaux messages… » s’affiche en haut si cela prend plus qu’un instant.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Gros fichiers via OneDrive"
+text = """
+Les comptes Outlook.com, Hotmail et les autres comptes Microsoft
+envoient désormais les fichiers dépassant la limite du courrier comme
+les comptes Google : le fichier est placé dans votre OneDrive dès que
+vous le joignez, et le message contient son lien, comme dans Outlook.
+"""

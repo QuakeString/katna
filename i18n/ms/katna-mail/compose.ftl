@@ -74,6 +74,16 @@ compose-drive-share-link = Kongsi dengan pautan
 compose-drive-send-without = Hantar tanpa berkongsi
 compose-drive-share-cancel = Batal
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } melebihi { $limit }, jadi fail itu dihantar ke OneDrive anda dan mesej membawa pautan.
+compose-onedrive-tip = Dalam OneDrive anda; mesej membawa pautan
+compose-onedrive-allow = Benarkan OneDrive
+compose-onedrive-allow-tip = Log masuk dengan Microsoft sekali lagi supaya Katna boleh meletakkan fail besar dalam OneDrive anda
+compose-onedrive-not-uploaded = { $name } belum lagi dalam OneDrive
+compose-onedrive-share-failed = Tidak dapat berkongsi fail dalam OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive tidak dapat berkongsi fail dengan { $addresses }. Sebaliknya, sesiapa yang mempunyai pautan boleh membukanya.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Lepaskan fail di sini
 compose-drop-here = Lepaskan di sini
 compose-paste-keep-formatting = Kekalkan pemformatan

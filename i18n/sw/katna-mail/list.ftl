@@ -21,6 +21,7 @@ tab-provider-other = zimepangwa na Katna
 
 list-select = Chagua
 list-refresh = Onyesha upya
+list-checking = Inakagua barua mpya…
 list-more = Zaidi
 list-mark-read = Tia alama kuwa imesomwa
 list-mark-unread = Tia alama kuwa haijasomwa

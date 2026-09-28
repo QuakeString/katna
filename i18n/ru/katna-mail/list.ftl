@@ -26,6 +26,7 @@ tab-provider-other = сортирует Katna
 
 list-select = Выбрать
 list-refresh = Обновить
+list-checking = Проверяем новую почту…
 list-more = Ещё
 list-mark-read = Отметить как прочитанное
 list-mark-unread = Отметить как непрочитанное

@@ -21,6 +21,7 @@ tab-provider-other = kuhlelwe yi-Katna
 
 list-select = Khetha
 list-refresh = Vuselela
+list-checking = Iyahlola imeyili entsha…
 list-more = Okuningi
 list-mark-read = Maka njengokufundiwe
 list-mark-unread = Maka njengokungafundiwe

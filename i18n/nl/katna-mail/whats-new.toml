@@ -1042,3 +1042,32 @@ bericht bevat de link, net als in Gmail. Het wordt met je ontvangers
 gedeeld als je op Verzenden drukt; Katna vraagt alleen iets als iemand
 geen toegang kan krijgen.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Soepelere lange ontvangerslijsten"
+text = """
+Een lange lijst met ontvangers heeft nu een eigen schuifbalk en schuift
+regel voor regel; het gesprek scrolt pas verder als de lijst het einde
+bereikt. Als je ontvangers toevoegt, springen de knoppen eronder niet
+meer.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Controleren op nieuwe e-mail"
+text = """
+Klik met de rechtermuisknop op een map of account in het mappenpaneel
+voor ‘Controleren op nieuwe e-mail’, ‘Alles markeren als gelezen’, een
+nieuwe map erin of ‘Prullenbak legen’. ‘Vernieuwen’ boven de lijst haalt
+nu ook gegevens van de server op. Terwijl Katna controleert, draaien de
+pijlen op ‘Vernieuwen’ en naast Inbox, en bovenaan staat ‘Controleren op
+nieuwe e-mail…’ als het langer dan even duurt.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Grote bestanden via OneDrive"
+text = """
+Outlook.com, Hotmail en andere Microsoft-accounts versturen bestanden
+boven de mailgrens nu net als Google-accounts: het bestand gaat direct
+na het bijvoegen naar je OneDrive, en het bericht bevat de link, net als
+in Outlook.
+"""

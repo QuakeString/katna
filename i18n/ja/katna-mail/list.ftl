@@ -21,6 +21,7 @@ tab-provider-other = Katna が分類
 
 list-select = 選択
 list-refresh = 更新
+list-checking = 新着メールを確認中…
 list-more = その他
 list-mark-read = 既読にする
 list-mark-unread = 未読にする

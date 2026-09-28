@@ -21,6 +21,7 @@ tab-provider-other = Katna வரிசைப்படுத்தியது
 
 list-select = தேர்ந்தெடு
 list-refresh = புதுப்பி
+list-checking = புதிய அஞ்சலைச் சரிபார்க்கிறது…
 list-more = மேலும்
 list-mark-read = படித்ததாகக் குறி
 list-mark-unread = படிக்காததாகக் குறி

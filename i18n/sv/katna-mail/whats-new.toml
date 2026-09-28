@@ -1016,3 +1016,30 @@ på 25 MB i din Google Drive så fort du bifogar den, och meddelandet
 innehåller dess länk, som i Gmail. Den delas med mottagarna när du trycker
 på Skicka; Katna frågar bara om någon inte kan få åtkomst.
 """
+
+["2026-09-28-2059-recipient-list-scrolling"]
+title = "Smidigare långa mottagarlistor"
+text = """
+En lång lista med mottagare har nu ett eget rullningsfält och rör sig en
+rad i taget; konversationen rullar vidare först när listan nått sitt
+slut. När du lägger till mottagare hoppar knapparna under inte längre.
+"""
+
+["2026-09-28-2106-check-for-new-mail"]
+title = "Sök efter ny e-post"
+text = """
+Högerklicka på en mapp eller ett konto i mappfönstret för att välja ”Sök
+efter ny e-post”, ”Markera alla som lästa”, en ny mapp inuti eller ”Töm
+papperskorgen”. ”Uppdatera” ovanför listan hämtar nu även från servern.
+Medan Katna söker snurrar pilarna på ”Uppdatera” och bredvid Inkorgen,
+och ”Söker efter ny e-post…” visas överst om det tar mer än en stund.
+"""
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Stora filer via OneDrive"
+text = """
+Outlook.com, Hotmail och andra Microsoft-konton skickar nu filer över
+e-postgränsen på samma sätt som Google-konton: filen hamnar i din
+OneDrive så fort du bifogar den, och meddelandet innehåller dess länk,
+som i Outlook.
+"""

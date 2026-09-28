@@ -78,6 +78,17 @@ compose-drive-share-link = Ibahagi gamit ang link
 compose-drive-send-without = Ipadala nang hindi nagbabahagi
 compose-drive-share-cancel = Kanselahin
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = Lampas sa { $limit } ang { $name }, kaya mapupunta ito sa iyong OneDrive at may link ang mensahe.
+compose-onedrive-tip = Nasa iyong OneDrive; may link ang mensahe
+compose-onedrive-allow = Payagan ang OneDrive
+compose-onedrive-allow-tip = Mag-sign in ulit gamit ang Microsoft para mailagay ng Katna ang malalaking file sa iyong OneDrive
+compose-onedrive-not-uploaded = Wala pa sa OneDrive ang { $name }
+compose-onedrive-share-failed = Hindi maibahagi ang mga file sa OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] Hindi maibabahagi ng OneDrive ang mga file kay { $addresses }. Sa halip, mabubuksan ito ng sinumang may link.
+   *[other] Hindi maibabahagi ng OneDrive ang mga file kay { $addresses }. Sa halip, mabubuksan ito ng sinumang may link.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = I-drop dito ang mga file
 compose-drop-here = I-drop dito
 compose-paste-keep-formatting = Panatilihin ang format

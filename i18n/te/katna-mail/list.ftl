@@ -21,6 +21,7 @@ tab-provider-other = Katna క్రమబద్ధీకరించింద�
 
 list-select = ఎంచుకోండి
 list-refresh = రిఫ్రెష్ చేయండి
+list-checking = కొత్త మెయిల్ కోసం చెక్ చేస్తోంది…
 list-more = మరిన్ని
 list-mark-read = చదివినట్లు గుర్తు పెట్టండి
 list-mark-unread = చదవనట్లు గుర్తు పెట్టండి

@@ -78,6 +78,17 @@ compose-drive-share-link = Shiriki kwa kiungo
 compose-drive-send-without = Tuma bila kushiriki
 compose-drive-share-cancel = Ghairi
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ni kubwa kuliko { $limit }, kwa hiyo huenda kwenye OneDrive yako na ujumbe hubeba kiungo.
+compose-onedrive-tip = Kwenye OneDrive yako; ujumbe hubeba kiungo
+compose-onedrive-allow = Ruhusu OneDrive
+compose-onedrive-allow-tip = Ingia tena kwa Microsoft ili Katna iweke faili kubwa kwenye OneDrive yako
+compose-onedrive-not-uploaded = { $name } bado haiko kwenye OneDrive
+compose-onedrive-share-failed = Imeshindwa kushiriki faili kwenye OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive haiwezi kushiriki faili na { $addresses }. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+   *[other] OneDrive haiwezi kushiriki faili na { $addresses }. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Dondosha faili hapa
 compose-drop-here = Dondosha hapa
 compose-paste-keep-formatting = Dumisha uumbizaji

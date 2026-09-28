@@ -78,6 +78,17 @@ compose-drive-share-link = Wabelane ngesixhumanisi
 compose-drive-send-without = Thumela ngaphandle kokwabelana
 compose-drive-share-cancel = Khansela
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } idlula { $limit }, ngakho iya ku-OneDrive yakho futhi umlayezo uphethe isixhumanisi.
+compose-onedrive-tip = Ku-OneDrive yakho; umlayezo uphethe isixhumanisi
+compose-onedrive-allow = Vumela i-OneDrive
+compose-onedrive-allow-tip = Ngena ngeMicrosoft futhi ukuze i-Katna ikwazi ukufaka amafayela amakhulu ku-OneDrive yakho
+compose-onedrive-not-uploaded = { $name } ayikho ku-OneDrive okwamanje
+compose-onedrive-share-failed = Ayikwazanga ukwabelana ngamafayela ku-OneDrive: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] I-OneDrive ayikwazi ukwabelana amafayela no-{ $addresses }. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
+   *[other] I-OneDrive ayikwazi ukwabelana amafayela nabo-{ $addresses }. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Yehlisela amafayela lapha
 compose-drop-here = Yehlisela lapha
 compose-paste-keep-formatting = Gcina ukufometha
