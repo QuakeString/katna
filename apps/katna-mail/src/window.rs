@@ -374,12 +374,11 @@ const UNDO_STEPS: usize = 50;
 struct Snackbar {
     text: SharedString,
     undo: Option<Command>,
-    /// Counting down to this moment, with the seconds in the text; Undo
-    /// goes when it is reached.
-    countdown: Option<Instant>,
+    /// Counting down to this moment from this long before, in a ring
+    /// with the seconds inside; Undo goes when it is reached.
+    countdown: Option<(Instant, Duration)>,
     shown: Spring,
     _hide: Task<()>,
-    _tick: Option<Task<()>>,
 }
 
 /// Changes sent to the daemon but not read back from the store yet, so
@@ -1577,7 +1576,6 @@ impl MailWindow {
             countdown: None,
             shown,
             _hide: hide,
-            _tick: None,
         });
         cx.notify();
     }
@@ -1593,25 +1591,9 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         self.show_snackbar_for(text, Some(undo), time, cx);
-        let tick = cx.spawn(async move |this, cx| {
-            loop {
-                cx.background_executor()
-                    .timer(Duration::from_millis(250))
-                    .await;
-                let going = this
-                    .update(cx, |_, cx| {
-                        cx.notify();
-                        Instant::now() < until + Duration::from_millis(250)
-                    })
-                    .unwrap_or(false);
-                if !going {
-                    break;
-                }
-            }
-        });
         if let Some(snackbar) = &mut self.snackbar {
-            snackbar.countdown = Some(until);
-            snackbar._tick = Some(tick);
+            let total = until.saturating_duration_since(Instant::now());
+            snackbar.countdown = Some((until, total));
         }
     }
 
@@ -2524,18 +2506,19 @@ impl MailWindow {
         // Counted down: too late to take back.
         let left = snackbar
             .countdown
-            .map(|until| until.saturating_duration_since(Instant::now()));
-        if left.is_some_and(|left| left.is_zero()) {
+            .map(|(until, total)| (until.saturating_duration_since(Instant::now()), total))
+            .filter(|(left, _)| !left.is_zero());
+        if left.is_none() && snackbar.countdown.is_some() {
             snackbar.undo = None;
+            snackbar.countdown = None;
         }
-        let text = match left {
-            Some(left) if !left.is_zero() => katna_i18n::tr!(
-                "compose-sending-in",
-                seconds = left.as_secs_f32().ceil() as u64
-            )
-            .into(),
-            _ => snackbar.text.clone(),
-        };
+        // The ring shrinks smoothly, a frame at a time.
+        let ring = left.map(|(left, total)| {
+            window.request_animation_frame();
+            let share = left.as_secs_f32() / total.as_secs_f32().max(0.001);
+            countdown_ring(share, left.as_secs_f32().ceil() as u64, th)
+        });
+        let text = snackbar.text.clone();
         let has_undo = snackbar.undo.is_some();
         // On a phone the note spans the window above the bottom bar.
         let shape = self.layout.shape;
@@ -2562,6 +2545,8 @@ impl MailWindow {
                 .text_color(rgba(th.snackbar_text))
                 .text_size(px(14.0))
                 .shadow(elevation(th, 3.0))
+                .when(ring.is_some(), |d| d.pl(px(10.0)))
+                .children(ring)
                 .child(div().flex_1().min_w_0().mr(px(16.0)).child(text))
                 .when(has_undo, |d| {
                     d.child(
@@ -3165,4 +3150,65 @@ fn page_card(th: &Theme) -> gpui::Div {
         .gap(px(12.0))
         .rounded(px(PANEL_RADIUS))
         .bg(rgba(th.surface))
+}
+
+/// The undo-send countdown: a ring whose line runs back as time passes,
+/// `share` of it left, with the `seconds` left inside.
+fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
+    const SIZE: f32 = 30.0;
+    const LINE: f32 = 2.5;
+    let track = crate::theme::fade(th.snackbar_text, 0.25);
+    let color = th.snackbar_text;
+    div()
+        .relative()
+        .flex_none()
+        .size(px(SIZE))
+        .flex()
+        .items_center()
+        .justify_center()
+        .child(
+            gpui::canvas(
+                |_, _, _| {},
+                move |bounds, _, window, _| {
+                    let radius = (SIZE - LINE) / 2.0;
+                    let center = bounds.center();
+                    let at = |turn: f32| {
+                        // From the top, clockwise.
+                        let angle = std::f32::consts::TAU * turn - std::f32::consts::FRAC_PI_2;
+                        gpui::point(
+                            center.x + px(radius * angle.cos()),
+                            center.y + px(radius * angle.sin()),
+                        )
+                    };
+                    let arc = |from: f32, to: f32| {
+                        let mut path = gpui::PathBuilder::stroke(px(LINE));
+                        let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
+                        path.move_to(at(from));
+                        for step in 1..=steps {
+                            path.line_to(at(from + (to - from) * step as f32 / steps as f32));
+                        }
+                        path.build().ok()
+                    };
+                    if let Some(path) = arc(0.0, 1.0) {
+                        window.paint_path(path, rgba(track));
+                    }
+                    // The line left runs from the top clockwise and shrinks
+                    // back towards it.
+                    if share > 0.0
+                        && let Some(path) = arc(1.0 - share.min(1.0), 1.0)
+                    {
+                        window.paint_path(path, rgba(color));
+                    }
+                },
+            )
+            .absolute()
+            .size_full(),
+        )
+        .child(
+            div()
+                .text_size(px(13.0))
+                .font_weight(gpui::FontWeight::MEDIUM)
+                .child(katna_i18n::format::number(seconds)),
+        )
+        .into_any_element()
 }
