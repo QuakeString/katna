@@ -899,3 +899,21 @@ Birleşik gelen kutusundan ya da aramadan açılan bir postayı Yanıtla veya
 Yönlendir artık profil resminizin altında seçili hesaptan değil, postanın
 geldiği hesaptan gönderir.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Arama kısayolunu gösteriyor"
+text = """
+Arama kutusu, "Postalarda ara" yazısının yanında Ayarlar > Kısayollar'da
+belirlenen klavye kısayolunu gösteriyor. İçine tıklandığında gölgeyle
+koyulaşmak yerine rengini koruyor ve hafif bir kenarlık gösteriyor. Listenin
+üzerinde yüzen klasörler de artık alt kenardan uzakta duruyor.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Etkinlik'i toplayın"
+text = """
+Etkinlik'te bir açılmanın veya tıklamanın üzerine gelip × düğmesine basarak
+onu listeden kaldırın ya da baştan başlamak için Tümünü temizle'ye basın.
+Yeni açılmalar ve tıklamalar yine görünür, Ayrıntılar raporu da yine her
+şeyi sayar.
+"""

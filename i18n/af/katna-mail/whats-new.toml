@@ -877,3 +877,20 @@ Antwoord of Stuur aan op e-pos wat uit die Verenigde inkassie of uit soek
 oopgemaak is, stuur nou van die rekening waarheen die e-pos gekom het, nie
 die rekening wat onder jou profielprent gekies is nie.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Soek wys sy kortpad"
+text = """
+Die soekkassie wys sy kortpad langs "Soek e-pos", soos gestel in Instellings
+> Kortpaaie. Wanneer jy daarin klik, behou dit sy kleur en wys 'n dowwe rand
+in plaas daarvan om donkerder te word met 'n skaduwee. Die vouers wat oor
+die lys sweef, staan nou ook weg van die onderste rand.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Ruim Aktiwiteit op"
+text = """
+Wys na 'n oopmaak of klik in Aktiwiteit en druk × om dit van die lys af te
+haal, of druk Vee alles uit om skoon te begin. Nuwe oopmaak en klikke
+verskyn steeds, en die Besonderhede-verslag tel steeds alles.
+"""

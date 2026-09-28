@@ -904,3 +904,22 @@ Jibu au Sambaza kwa barua iliyofunguliwa kutoka Kikasha kilichounganishwa
 au kutoka kwenye utafutaji sasa hutoka kwenye akaunti ambayo barua ilifika,
 si akaunti iliyochaguliwa chini ya picha yako ya wasifu.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Utafutaji unaonyesha njia yake ya mkato"
+text = """
+Kisanduku cha utafutaji kinaonyesha njia yake ya mkato ya kibodi kando ya
+"Tafuta barua", kama ilivyowekwa katika Mipangilio > Njia za mkato. Ukibofya
+ndani yake, kinabaki na rangi yake na kuonyesha ukingo hafifu badala ya kuwa
+cheusi zaidi na kivuli. Folda zinazoelea juu ya orodha sasa pia zinakaa
+mbali na ukingo wa chini.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Panga Shughuli"
+text = """
+Elekeza kwenye kufunguliwa au kubofya katika Shughuli na ubonyeze × ili
+kukiondoa kwenye orodha, au ubonyeze Futa zote ili uanze upya. Kufunguliwa
+na kubofya kupya bado kutaonekana, na ripoti ya Maelezo bado inahesabu kila
+kitu.
+"""

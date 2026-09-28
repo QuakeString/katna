@@ -933,3 +933,22 @@ Avec Répondre ou Transférer sur un message ouvert depuis la Boîte de
 réception unifiée ou depuis la recherche, l’envoi part désormais du compte
 qui a reçu le message, et non du compte choisi sous votre photo de profil.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "La recherche affiche son raccourci"
+text = """
+Le champ de recherche affiche son raccourci clavier à côté de « Rechercher
+dans les messages », tel que défini dans Paramètres > Raccourcis. Quand
+vous cliquez dedans, il garde sa couleur et affiche un léger contour au
+lieu de s’assombrir avec une ombre. Les dossiers qui flottent au-dessus de
+la liste se tiennent maintenant aussi à l’écart du bord inférieur.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Faites le tri dans Activité"
+text = """
+Pointez une ouverture ou un clic dans Activité et appuyez sur × pour le
+retirer de la liste, ou appuyez sur Tout effacer pour repartir de zéro. Les
+nouvelles ouvertures et les nouveaux clics s’affichent toujours, et le
+rapport Détails compte toujours tout.
+"""

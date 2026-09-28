@@ -880,3 +880,22 @@ Med Svara eller Vidarebefordra på e-post som du har öppnat från Gemensam
 inkorg eller från sökningen skickas meddelandet nu från kontot som e-posten
 kom till, inte från kontot som är valt under din profilbild.
 """
+
+["2026-09-28-1436-calmer-search-box"]
+title = "Sökningen visar sitt kortkommando"
+text = """
+Sökrutan visar sitt kortkommando bredvid ”Sök i e-post”, enligt
+inställningen i Inställningar > Kortkommandon. När du klickar i den
+behåller den sin färg och visar en svag kant i stället för att bli mörkare
+med en skugga. Mapparna som svävar över listan håller sig nu också fria
+från nederkanten.
+"""
+
+["2026-09-28-1450-clear-activity"]
+title = "Städa i Aktivitet"
+text = """
+Peka på en öppning eller ett klick i Aktivitet och tryck på × för att ta
+bort det från listan, eller tryck på Rensa allt för att börja om. Nya
+öppningar och klick visas fortfarande, och rapporten Detaljer räknar
+fortfarande med allt.
+"""
