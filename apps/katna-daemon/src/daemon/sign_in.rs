@@ -7,7 +7,6 @@
 //! XOAUTH2 and fresh access tokens from a [`TokenSource`].
 
 use std::{
-    collections::HashMap,
     path::PathBuf,
     sync::{Arc, Weak, atomic::Ordering},
     time::Duration,
@@ -319,6 +318,7 @@ async fn save_picture(daemon: Weak<Daemon>, account: AccountId, url: String, tls
 
 /// Opens `url` in the default browser: through the desktop portal, else
 /// `xdg-open`.
+#[cfg(unix)]
 async fn open_in_browser(url: &str) {
     let portal = async {
         let connection = zbus::Connection::session().await?;
@@ -328,7 +328,11 @@ async fn open_in_browser(url: &str) {
                 "/org/freedesktop/portal/desktop",
                 Some("org.freedesktop.portal.OpenURI"),
                 "OpenURI",
-                &("", url, HashMap::<&str, zbus::zvariant::Value<'_>>::new()),
+                &(
+                    "",
+                    url,
+                    std::collections::HashMap::<&str, zbus::zvariant::Value<'_>>::new(),
+                ),
             )
             .await?;
         Ok::<_, zbus::Error>(())
@@ -337,7 +341,22 @@ async fn open_in_browser(url: &str) {
         return;
     };
     tracing::info!(%err, "no OpenURI portal; trying xdg-open");
-    match std::process::Command::new("xdg-open").arg(url).spawn() {
+    spawn_opener(std::process::Command::new("xdg-open").arg(url));
+}
+
+/// Opens `url` in the default browser. `rundll32` takes the URL as one
+/// argument, where `cmd /c start` would split it at every `&`.
+#[cfg(windows)]
+async fn open_in_browser(url: &str) {
+    spawn_opener(
+        std::process::Command::new("rundll32")
+            .arg("url.dll,FileProtocolHandler")
+            .arg(url),
+    );
+}
+
+fn spawn_opener(command: &mut std::process::Command) {
+    match command.spawn() {
         Ok(mut child) => {
             smol::unblock(move || child.wait()).detach();
         }

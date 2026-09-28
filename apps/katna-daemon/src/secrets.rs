@@ -212,6 +212,27 @@ impl Secrets {
     }
 }
 
+/// Credential Manager keeps at most 2560 bytes of UTF-16 per entry:
+/// longer secrets, such as Microsoft's refresh tokens, are split over
+/// several entries (`<user>`, `<user>~1`, …).
+#[cfg_attr(not(windows), allow(dead_code))]
+const PART_UNITS: usize = 1280;
+
+#[cfg_attr(not(windows), allow(dead_code))]
+fn split(secret: &str) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let (mut start, mut units) = (0, 0);
+    for (at, c) in secret.char_indices() {
+        if units + c.len_utf16() > PART_UNITS {
+            parts.push(&secret[start..at]);
+            (start, units) = (at, 0);
+        }
+        units += c.len_utf16();
+    }
+    parts.push(&secret[start..]);
+    parts
+}
+
 /// Katna's entries in the Windows Credential Manager. Each is a generic
 /// credential named `<user>.in.invenia.katna`, kept on this computer only.
 #[cfg(windows)]
@@ -222,7 +243,7 @@ mod windows {
     use keyring_core::{Entry, api::CredentialStoreApi};
     use windows_native_keyring_store::Store as WinStore;
 
-    use super::Error;
+    use super::{Error, split};
 
     /// The user name of the Katna Server token.
     pub const SERVER: &str = "katna-server";
@@ -248,23 +269,58 @@ mod windows {
             self.0.build(ids::PREFIX, user, Some(&local)).map_err(error)
         }
 
-        pub async fn get(&self, user: &str) -> Result<Option<String>, Error> {
-            match self.entry(user)?.get_password() {
+        /// The entry holding part `index` of a long secret; part 0 is
+        /// the entry `user` itself.
+        fn part(&self, user: &str, index: usize) -> Result<Entry, Error> {
+            match index {
+                0 => self.entry(user),
+                _ => self.entry(&format!("{user}~{index}")),
+            }
+        }
+
+        fn read(&self, user: &str, index: usize) -> Result<Option<String>, Error> {
+            match self.part(user, index)?.get_password() {
                 Ok(password) => Ok(Some(password)),
                 Err(keyring_core::Error::NoEntry) => Ok(None),
                 Err(err) => Err(error(err)),
             }
         }
 
+        /// Deletes the parts from `from` on.
+        fn delete_parts(&self, user: &str, from: usize) -> Result<(), Error> {
+            for index in from.. {
+                match self.part(user, index)?.delete_credential() {
+                    Ok(()) => {}
+                    Err(keyring_core::Error::NoEntry) => break,
+                    Err(err) => return Err(error(err)),
+                }
+            }
+            Ok(())
+        }
+
+        pub async fn get(&self, user: &str) -> Result<Option<String>, Error> {
+            let Some(mut password) = self.read(user, 0)? else {
+                return Ok(None);
+            };
+            for index in 1.. {
+                match self.read(user, index)? {
+                    Some(part) => password.push_str(&part),
+                    None => break,
+                }
+            }
+            Ok(Some(password))
+        }
+
         pub async fn set(&self, user: &str, password: &str) -> Result<(), Error> {
-            self.entry(user)?.set_password(password).map_err(error)
+            let parts = split(password);
+            for (index, part) in parts.iter().enumerate() {
+                self.part(user, index)?.set_password(part).map_err(error)?;
+            }
+            self.delete_parts(user, parts.len())
         }
 
         pub async fn delete(&self, user: &str) -> Result<(), Error> {
-            match self.entry(user)?.delete_credential() {
-                Ok(()) | Err(keyring_core::Error::NoEntry) => Ok(()),
-                Err(err) => Err(error(err)),
-            }
+            self.delete_parts(user, 0)
         }
 
         pub async fn delete_all(&self) -> Result<(), Error> {
@@ -278,5 +334,27 @@ mod windows {
             }
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{PART_UNITS, split};
+
+    #[test]
+    fn long_secrets_are_split() {
+        assert_eq!(split(""), [""]);
+        assert_eq!(split("short"), ["short"]);
+        let long = "a".repeat(PART_UNITS * 2 + 5);
+        let parts = split(&long);
+        assert_eq!(
+            parts.iter().map(|p| p.len()).collect::<Vec<_>>(),
+            [PART_UNITS, PART_UNITS, 5]
+        );
+        // A character never straddles two parts.
+        let wide = "😀".repeat(PART_UNITS);
+        let parts = split(&wide);
+        assert!(parts.iter().all(|p| p.encode_utf16().count() <= PART_UNITS));
+        assert_eq!(parts.concat(), wide);
     }
 }

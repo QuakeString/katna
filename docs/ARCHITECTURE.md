@@ -528,7 +528,9 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   desktop `GOOGLE_OAUTH_CLIENT_SECRET`, and `MICROSOFT_OAUTH_CLIENT_ID`),
   filled at build time from `KATNA_`-prefixed environment variables of the
   same names, which the package build takes from GitHub secrets, so none is
-  in the repository; an empty one hides that provider's button and makes `SignIn` fail.
+  in the repository. Refresh tokens are kept like passwords (Secret Service,
+  or Credential Manager on Windows, where a token too long for one entry is
+  split over `<user>~1`, `<user>~2`, …); an empty one hides that provider's button and makes `SignIn` fail.
   Google's restricted scope for full mail access requires app verification
   and a yearly security assessment; until then Google lets only test users
   in. Tests use a local fake OAuth server and a fake IMAP server, never a
