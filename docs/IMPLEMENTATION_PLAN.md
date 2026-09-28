@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 27 September 2026, through PR #202). Companion to
+> Status: **v0.2** (updated 27 September 2026, through PR #208). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -22,23 +22,16 @@ Mail that the phases did not name.
   and automatic translation (Phase 7);
   local crash reports and opt-in sending; the language framework and most
   of the UI translated; reading and sending encrypted mail.
-- **Merged since the last refresh:** Windows 10 and later (#190, the
-  Windows track below); sign-in to Google and Microsoft accounts with
-  OAuth2 (#163); tracking, read receipts and delivery receipts on by
-  default (#193); delivered and read ticks beside each recipient of sent
-  mail (#198); the Katna account inside the Subscription tab (#192); one
-  Buy me a coffee button in About without the QR code (#191); printing
-  that keeps the mail's formatting, original colors in dark themes (#196);
-  Gmail new-mail notifications (#197); a confirmation before deleting
-  several conversations or deleting for good (#200); folder arrows inside
-  their pill (#201); attachment types in Search options (#202);
-  translations (#189, #195, #199).
-- **In review:** Windows tray, notifications, `mailto:`, start at login
-  and Katna Setup (#194).
-- **Next:** finish the Windows track. Alongside: usage statistics,
-  feedback form and debug-file upload (C.3, C.6, C.7); right-to-left
-  layout (L.2, L.3); the release track before any public release.
-  Organizations (Phase 2) comes later.
+- **Merged since the last refresh:** Katna Setup, tray, notifications,
+  `mailto:` and start at login on Windows, with `KatnaSetup.exe` published
+  from `main` as the `windows-latest` release (#194); the remove button
+  always shown on recipient chips (#205); a pill-shaped formatting bar
+  (#206); fast layout of deeply nested quoted mail (#207); translations
+  (#204, #208).
+- **In progress:** testing Katna on a Windows 11 virtual machine.
+- **Next:** usage statistics, feedback form and debug-file upload (C.3,
+  C.6, C.7); right-to-left layout (L.2, L.3); the release track before any
+  public release. Organizations (Phase 2) comes later.
 - **Size:** the owner raised the daemon's budget from 20 MiB to 50 MB
   (27 September 2026).
 - **Needs from the owner:** the Google and Microsoft OAuth2 client IDs as
@@ -314,6 +307,8 @@ belong to Phase 3 tasks above; this track records them so none is lost.
 | D.35 Delete confirmation ✅ | Deleting several conversations or deleting for good asks first (#200) |
 | D.36 Folder arrows ✅ | Each folder's arrow stays inside its pill (#201) |
 | D.37 Attachment types in search ✅ | Search options filter by attachment type: PDF, XLSX, ODF and others, or a custom one (#202) |
+| D.38 Chips and format bar ✅ | The remove button always shows on recipient chips (#205); the formatting bar is a pill with a faint border (#206) |
+| D.39 Fast nested quotes ✅ | Long threads of nested quoted HTML lay out in linear time instead of slowing the reader (#207) |
 
 Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 (#56), scheduled send (#53), the badge count with one account (#61), the
@@ -363,9 +358,13 @@ global menu, KRunner and GNOME search and the window blur stay Linux-only.
 | W.1 Windows build ✅ #190 | A Windows CI job; data and settings under `AppData`; Unix-only file calls kept to Linux |
 | W.2 App–daemon link ✅ #190 | Katna's own session bus (a bundled `dbus-daemon`), so `katna-dbus` works unchanged; the daemon starts from the `Run` key |
 | W.3 Passwords ✅ #190 | Windows Credential Manager instead of the Secret Service keyring |
-| W.4 Windows integration ◐ in review #194 | Tray with the unread count, notifications, start at login, Katna as the default mail app, printing |
-| W.5 Installer ◐ in review #194 | Katna's own GPUI "Katna Setup.exe": per user, no administrator prompt, a Start menu entry, an uninstall entry in Settings > Apps, the `mailto:` handler; an MSI for offices maybe later |
-| W.6 Pre-release | A `windows-latest` pre-release built on every push to `main`, like `arch-latest` |
+| W.4 Windows integration ✅ #194 | Tray with the unread count, notifications, start at login, Katna as the default mail app, printing |
+| W.5 Installer ✅ #194 | Katna's own GPUI "Katna Setup.exe": per user, no administrator prompt, a Start menu entry, an uninstall entry in Settings > Apps, the `mailto:` handler; an MSI for offices maybe later |
+| W.6 Pre-release ✅ #194 | A `windows-latest` pre-release built on every push to `main`, like `arch-latest` |
+
+Status (28 September 2026): W.1–W.6 are merged and a Windows 11 virtual
+machine test is in progress. The files are unsigned until the certificate
+below is in place.
 
 Needs from the owner: a code-signing certificate (SignPath Foundation or
 Certum's open-source certificate), kept in GitHub secrets, and testing on
@@ -417,7 +416,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
