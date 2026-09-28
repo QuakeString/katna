@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Long email threads open fast"
+text = """
+Formatted mail that quotes many earlier replies, such as a long quotation
+thread, now opens at once and scrolls smoothly instead of slowing the whole
+window down.
+"""
