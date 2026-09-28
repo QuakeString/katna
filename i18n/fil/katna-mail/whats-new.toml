@@ -472,8 +472,7 @@ Laging buo ang kulay ng mail na may tsek, may star o mahalaga.
 title = "Ilibre ako ng kape"
 text = """
 Kung nakatutulong sa iyo ang Katna, may button na Ilibre ako ng kape na
-ngayon sa Tungkol sa Katna, at QR code para buksan ang parehong page sa
-phone mo.
+ngayon sa Tungkol sa Katna.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -635,7 +634,7 @@ mo ang isang chip, may lalabas na x na nag-aalis dito.
 ["2026-09-27-1722-katna-account"]
 title = "Katna account"
 text = """
-Sa Mga setting > Katna account, makakagawa ka ng account sa sariling
+Sa Mga setting > Subscription, makakagawa ka ng account sa sariling
 server ng Katna, na may sariling password, hindi kailanman password ng
 mail. Kakailanganin ito ng mga online na feature ng Katna, gaya ng mga
 read receipt at pag-track ng link. Makikita mo ang mga computer na
@@ -681,8 +680,7 @@ ng bawat isa ang mensahe mo o sinusundan ang isang link dito, o humingi
 na lang ng read receipt. Ipinapakita ng naipadalang mail kung sino ang
 nagbukas nito, at sinasabihan ka ng isang notification sa unang
 pagkakataon. Parehong naka-off ang mga ito sa bawat bagong mensahe, at
-kailangan ng Katna account para sa tracking (Mga setting > Katna
-account).
+kailangan ng Katna account para sa tracking (Mga setting > Subscription).
 """
 
 ["2026-09-27-2042-activity"]

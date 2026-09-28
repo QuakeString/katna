@@ -456,7 +456,7 @@ importante sempre aparece em cor total.
 title = "Me pague um café"
 text = """
 Se o Katna é útil para você, Sobre o Katna agora tem um botão Me pague
-um café e um código QR para abrir a mesma página no seu celular.
+um café.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -617,7 +617,7 @@ um x que o remove.
 ["2026-09-27-1722-katna-account"]
 title = "Conta Katna"
 text = """
-Em Configurações > Conta Katna você cria uma conta no servidor do
+Em Configurações > Assinatura você cria uma conta no servidor do
 próprio Katna, com senha própria, nunca uma senha de e-mail. Os recursos
 on-line do Katna, como confirmações de leitura e rastreamento de links,
 vão precisar dela. Você vê os computadores conectados e pode desconectar
@@ -661,7 +661,7 @@ Ative o olho ao lado dos destinatários para ver quando cada um abre sua
 mensagem ou acessa um link nela, ou peça uma confirmação de leitura. Os
 e-mails enviados mostram quem os abriu, e uma notificação avisa você na
 primeira vez. Os dois vêm desativados em toda mensagem nova, e o
-rastreamento precisa de uma conta Katna (Configurações > Conta Katna).
+rastreamento precisa de uma conta Katna (Configurações > Assinatura).
 """
 
 ["2026-09-27-2042-activity"]

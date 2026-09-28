@@ -451,7 +451,7 @@ tampil dengan warna penuh.
 title = "Traktir saya kopi"
 text = """
 Jika Katna berguna bagi Anda, Tentang Katna kini punya tombol Traktir
-saya kopi dan kode QR untuk membuka halaman yang sama di ponsel Anda.
+saya kopi.
 """
 
 ["2026-09-27-1615-from-row"]
@@ -613,7 +613,7 @@ menampilkan x untuk menghapusnya.
 ["2026-09-27-1722-katna-account"]
 title = "Akun Katna"
 text = """
-Setelan > Akun Katna memungkinkan Anda membuat akun di server Katna sendiri,
+Setelan > Langganan memungkinkan Anda membuat akun di server Katna sendiri,
 dengan sandinya sendiri, tidak pernah sandi email. Fitur online Katna,
 seperti tanda terima baca dan pelacakan tautan, akan memerlukannya. Anda
 bisa melihat komputer yang masuk dan mengeluarkan salah satunya.
@@ -657,7 +657,7 @@ membuka pesan Anda atau mengikuti link di dalamnya, atau minta tanda
 terima baca sebagai gantinya. Email terkirim menunjukkan siapa yang
 membukanya, dan notifikasi memberi tahu Anda pertama kalinya. Keduanya
 nonaktif untuk setiap pesan baru, dan pelacakan memerlukan akun Katna
-(Setelan > Akun Katna).
+(Setelan > Langganan).
 """
 
 ["2026-09-27-2042-activity"]
