@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "A calmer search box"
+title = "Awesome bar"
 text = """
-The search box keeps its color while you type in it and shows a faint edge
-instead of turning darker with a shadow. The folders that float over the
-list now stand clear of the bottom edge too.
+The search box now reads "Awesome bar, search anything" and shows its
+keyboard shortcut beside it, as set in Settings > Shortcuts. Clicked into,
+it keeps its color and shows a faint edge instead of turning darker with a
+shadow. The folders that float over the list now stand clear of the bottom
+edge too.
 """

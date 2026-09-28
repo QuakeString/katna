@@ -48,6 +48,8 @@ folders-show = Show folders
 compose = Compose
 search = Search
 search-mail = Search mail
+# The main search box's placeholder: it finds mail, people and more.
+search-awesome = Awesome bar, search anything
 search-settings = Search settings
 search-clear = Clear search
 search-options-show = Show search options

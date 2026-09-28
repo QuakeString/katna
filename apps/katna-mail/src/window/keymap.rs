@@ -301,6 +301,18 @@ pub(super) fn keys<'a>(shortcut: &Shortcut, config: &'a Shortcuts) -> Vec<&'a st
     }
 }
 
+/// How the shortcut `name` reads on screen, for a hint beside what it
+/// does: its keys with Ctrl or Alt first, then a single key while those
+/// are on; `None` when it has no keys that work.
+pub(super) fn hint(name: &str, config: &Shortcuts) -> Option<String> {
+    let keys = keys(find(name)?, config);
+    let pick = keys
+        .iter()
+        .find(|k| !is_single_key(k))
+        .or_else(|| keys.iter().find(|_| config.single_keys))?;
+    Some(label(pick))
+}
+
 /// Keys without Ctrl, Alt or Super: letters, `#`, `?`, sequences like
 /// `g i`. Keys that do not type a character (Enter, arrows, F5, …) are not.
 pub(super) fn is_single_key(keys: &str) -> bool {
