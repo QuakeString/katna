@@ -22,6 +22,8 @@ pub mod action {
     pub const REPLY_ALL: &str = "reply-all";
     pub const MARK_READ: &str = "mark-read";
     pub const ARCHIVE: &str = "archive";
+    /// On the notification that an update is ready: install it.
+    pub const UPDATE: &str = "update";
 }
 
 /// At most this many messages are listed in a grouped notification.
@@ -267,6 +269,36 @@ impl Notifier {
                 &actions,
                 hints,
                 -1,
+            )
+            .await
+    }
+
+    /// Says that Katna `version` is downloaded, with an Update button that
+    /// installs it. Returns its ID.
+    pub async fn update_ready(&self, version: &str) -> zbus::Result<u32> {
+        let update = tr!("notify-update");
+        let actions = [
+            action::OPEN,
+            update.as_str(),
+            action::UPDATE,
+            update.as_str(),
+        ];
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("x-katna.update")),
+            ("urgency", Value::U8(1)),
+            ("suppress-sound", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                &tr!("notify-update-ready"),
+                &escape(&tr!("notify-update-ready-body", version = version)),
+                &actions,
+                hints,
+                0,
             )
             .await
     }

@@ -3228,10 +3228,10 @@ does something. CI builds it on every push to `main` and publishes it, with
 a pacman repository database, as the `arch-latest` pre-release, so Arch
 users can install and update without building. See `packaging/README.md`.
 
-### 21.2 Update channels and safe updates (planned, not built)
+### 21.2 Update channels and safe updates (partly built)
 
-Planned 26 September 2026; nothing here is built yet, because the basic
-apps come first. Today the only update path is the `arch-latest`
+Planned 26 September 2026. Built so far (28 September 2026): **in-app
+updates** for the Arch package, below; the rest is still planned. Today the only update path is the `arch-latest`
 pre-release (§21.1): every push to `main` replaces it, with no gate beyond
 the pull request's CI. That is fine for testers, not for people who rely
 on Katna for their mail. The work is in `IMPLEMENTATION_PLAN.md`,
@@ -3274,9 +3274,50 @@ it gets the most care.
   installed version stays until the new channel catches up, because an older
   version may not read the newer database (§5.3, `SchemaTooNew`).
 
+#### In-app updates (built for the Arch package)
+
+The owner asked for Katna to update itself from the app on every package
+it ships: check, download, ask for the password, install and restart.
+This replaces "Katna only notifies" below for packages that plug into it;
+Arch is the first, Windows and the others follow the same flow.
+
+- **One flow, one plug per package.** `katna_core::update::Package` names
+  the package a build came in (`$KATNA_PACKAGE` at build time; the
+  PKGBUILD sets `arch`), the release its newest build is published in,
+  and in Katna Mail (`updater.rs`) how a downloaded file is installed.
+  Builds from source and packages without a plug (`Package::Other`) show
+  no updates and are never checked.
+- **Manifest.** CI writes `katna-update.json` beside the package on every
+  build of `main`: version, file name, SHA-256 and size. One channel for
+  now, the latest build (today's `arch-latest`). It is not signed yet; the
+  download comes over TLS from GitHub and is checked against the
+  manifest's SHA-256 and size (signing: §25 item 3).
+- **The daemon checks and downloads** (the only network user): two
+  minutes after it starts, then every six hours, never on a metered
+  connection unless the user presses Check for updates. With
+  `updates.auto_download` (Settings > General > Updates, on by default)
+  it downloads a newer build at once into
+  `$XDG_CACHE_HOME/katna/updates/`, checks it, and shows a notification
+  with an Update button. `UpdateStatus`, `CheckForUpdate`,
+  `DownloadUpdate` and `UpdateChanged` on `Pim1` let Katna Mail follow.
+- **Katna Mail installs**, because the password prompt (the polkit agent)
+  belongs to the desktop session and a user service has none. About shows
+  the update; Update first says Katna Mail will close, install and open
+  again, then runs `pkexec /usr/lib/katna/katna-update-helper <file>
+  <sha256>`. The polkit action `in.invenia.katna.update` (`auth_admin`,
+  never remembered) allows only that helper. As root, the helper copies
+  the file where only root can write, checks the copy's SHA-256 again and
+  that it is the `katna-git` package, and runs `pacman -U`.
+- **Restart.** Katna Mail starts the new binary with
+  `--after-update <pid>`, which waits for the old one to quit (the window
+  state is saved on quit), and quits; the new one opens as the old one
+  closed. The daemon restarts itself once its binary was replaced (§9.2).
+
 #### Who updates what
 
-Katna never replaces files that a package manager owns.
+Katna never replaces files that a package manager owns, except through
+in-app updates above, where the package manager itself installs the
+update after the user's password.
 
 | Install | Who installs the update | What Katna does |
 |---|---|---|

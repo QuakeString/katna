@@ -36,6 +36,25 @@ pub struct Config {
     pub onboarding: Onboarding,
     pub experimental: Experimental,
     pub feedback: Feedback,
+    pub updates: Updates,
+}
+
+/// Settings > General > Updates, and About's Update button
+/// (`docs/ARCHITECTURE.md` §21.2).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Updates {
+    /// Download a new version as soon as the daemon finds it (never on a
+    /// metered connection), so Update only has to install it.
+    pub auto_download: bool,
+}
+
+impl Default for Updates {
+    fn default() -> Self {
+        Self {
+            auto_download: true,
+        }
+    }
 }
 
 /// Settings > User feedback: crash reports (`docs/ARCHITECTURE.md` §19.2).

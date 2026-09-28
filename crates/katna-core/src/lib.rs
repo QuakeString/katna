@@ -14,6 +14,7 @@ pub mod logging;
 pub mod paths;
 pub mod sentry;
 pub mod subject;
+pub mod update;
 pub mod window;
 
 pub use account::{

@@ -87,6 +87,8 @@ pub(super) enum Change {
     NewMailNotices(bool),
     /// Their sound.
     NotificationSound(bool),
+    /// New versions of Katna downloaded as soon as the daemon finds them.
+    AutoDownloadUpdates(bool),
     PlainText(bool),
     SpellCheck(bool),
     /// The interface's language, a tag; empty follows the desktop.
@@ -535,6 +537,13 @@ impl MailWindow {
                     return;
                 }
                 self.config.sync.offline_days = days;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::AutoDownloadUpdates(on) => {
+                self.config.updates.auto_download = on;
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();

@@ -195,6 +195,47 @@ pub mod katna_error {
     pub const SERVER: &str = "server";
 }
 
+/// Where an update of Katna stands, from `UpdateStatus`
+/// (`docs/ARCHITECTURE.md` §21.2). The daemon checks and downloads; Katna
+/// Mail installs the downloaded file and restarts.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct UpdateStatus {
+    /// See [`update_state`].
+    pub state: String,
+    /// The version on offer, once a check found one.
+    pub version: String,
+    /// Bytes downloaded so far, and of how many.
+    pub done: u64,
+    pub total: u64,
+    /// With [`update_state::READY`]: the downloaded package, checked
+    /// against the SHA-256 below.
+    pub file: String,
+    pub sha256: String,
+    /// When the last check finished (Unix seconds), or 0.
+    pub checked: i64,
+    /// Why the last check or download failed, or empty.
+    pub detail: String,
+}
+
+/// Values of [`UpdateStatus::state`].
+pub mod update_state {
+    /// This build does not update itself: built from source, or a package
+    /// whose package manager updates it.
+    pub const UNSUPPORTED: &str = "unsupported";
+    /// Not checked yet.
+    pub const IDLE: &str = "idle";
+    pub const CHECKING: &str = "checking";
+    /// The newest build is installed.
+    pub const UP_TO_DATE: &str = "up-to-date";
+    /// A newer version waits to be downloaded (`DownloadUpdate`).
+    pub const AVAILABLE: &str = "available";
+    pub const DOWNLOADING: &str = "downloading";
+    /// Downloaded and checked: Katna Mail can install it.
+    pub const READY: &str = "ready";
+    /// The last check or download failed; `detail` says why.
+    pub const FAILED: &str = "failed";
+}
+
 /// Actions Katna Mail serves through `org.freedesktop.Application`
 /// (`ActivateAction`) under its app ID, and the command-line flags that do
 /// the same when it has to be started.
@@ -215,6 +256,9 @@ pub mod app_action {
     pub const SEARCH: &str = "search";
     /// Close the app.
     pub const QUIT: &str = "quit";
+    /// Show the downloaded update, ready to install (the Update button of
+    /// the notification that an update is ready).
+    pub const INSTALL_UPDATE: &str = "install-update";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -225,6 +269,7 @@ pub mod app_action {
             COMPOSE => Some("--compose"),
             PREFERENCES => Some("--settings"),
             OPEN_MESSAGE => Some("--message"),
+            INSTALL_UPDATE => Some("--update"),
             REPLY_ALL => Some("--reply-all"),
             SEARCH => Some("--search"),
             _ => None,
@@ -562,6 +607,20 @@ macro_rules! pim_proxy {
             /// Deletes the Katna account and everything the server keeps for
             /// it. Mail on this computer is not touched.
             fn katna_delete_account(&self, password: &str) -> zbus::Result<()>;
+
+            /// Where an update of Katna stands.
+            fn update_status(&self) -> zbus::Result<UpdateStatus>;
+
+            /// Looks for a newer version now, also on a metered connection,
+            /// and downloads it when `updates.auto_download` is on.
+            fn check_for_update(&self) -> zbus::Result<()>;
+
+            /// Downloads the version a check found.
+            fn download_update(&self) -> zbus::Result<()>;
+
+            /// `UpdateStatus` changed.
+            #[zbus(signal)]
+            fn update_changed(&self) -> zbus::Result<()>;
 
             /// `KatnaAccount` changed.
             #[zbus(signal)]

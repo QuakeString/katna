@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!--
+  Installing an update from Katna Mail (docs/ARCHITECTURE.md §21.2):
+  pkexec runs the package's update helper as root after the system's
+  password prompt. The helper installs only the update Katna Mail
+  downloaded and checked. The action's ID is katna_core::ids::UPDATE_ACTION.
+-->
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Katna</vendor>
+  <vendor_url>https://katna.invenia.in</vendor_url>
+  <icon_name>in.invenia.katna.Mail</icon_name>
+  <action id="in.invenia.katna.update">
+    <description>Install an update of Katna</description>
+    <message>Katna Mail needs your password to install its update.</message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/katna/katna-update-helper</annotate>
+  </action>
+</policyconfig>

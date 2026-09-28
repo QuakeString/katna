@@ -92,6 +92,8 @@ pub enum Notice {
     KatnaAccountChanged,
     /// A tracked message was opened or a link in it followed.
     TrackingChanged,
+    /// Where an update of Katna stands changed.
+    UpdateChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -232,6 +234,8 @@ pub struct Daemon {
     translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
     scheduler: OnceLock<katna_meta::Waker>,
+    /// Checks for, and downloads, new versions of Katna.
+    updates: crate::updates::Updates,
 }
 
 /// A refresh token that replaced the account's old one.
@@ -284,6 +288,7 @@ impl Daemon {
             tracking_wake: async_channel::bounded(1),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
+            updates: crate::updates::Updates::default(),
         });
         Ok((daemon, receiver))
     }
@@ -352,6 +357,7 @@ impl Daemon {
             self.tracking_wake.1.clone(),
         ))
         .detach();
+        smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
         Ok(())
     }
 
@@ -381,6 +387,10 @@ impl Daemon {
                 None
             }
         }
+    }
+
+    pub(crate) fn updates(&self) -> &crate::updates::Updates {
+        &self.updates
     }
 
     pub(crate) fn notices(&self) -> &Sender<Notice> {
@@ -981,6 +991,8 @@ impl Daemon {
         self.apply_metered();
         // Sending crash reports may have been turned on.
         let _ = self.crash_uploads.0.try_send(());
+        // Downloading updates may have been turned on.
+        self.updates.settings_changed();
         Ok(())
     }
 
