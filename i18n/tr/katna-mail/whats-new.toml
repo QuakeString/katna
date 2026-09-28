@@ -697,3 +697,13 @@ verdiğini, en çok yazıştığınız kişileri ve postalarınızın hangi gün
 saatlerde geldiğini de gösterir. Bunlar, Katna'da zaten bulunan
 postalardan bilgisayarınızda sayılır.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Google veya Microsoft ile oturum açın"
+text = """
+Gmail veya Outlook hesabını, tarayıcınızda Google'ın ya da Microsoft'un
+kendi sayfasında oturum açarak, uygulama parolası olmadan ekleyin.
+Outlook.com ve Hotmail adresleri de artık çalışıyor. Oturum açma
+çalışmayı bırakırsa pencerenin altındaki bir not yeniden oturum açmayı
+önerir.
+"""

@@ -723,3 +723,12 @@ kabilis sumasagot ka at ang iba, ang mga taong pinakamadalas mong
 sinusulatan, at kung anong mga araw at oras dumarating ang mail mo.
 Binibilang ito sa computer mo mula sa mail na nasa Katna na.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Mag-sign in gamit ang Google o Microsoft"
+text = """
+Magdagdag ng Gmail o Outlook account sa pag-sign in sa sariling page ng
+Google o Microsoft sa iyong browser, nang walang app password. Gumagana na
+rin ang mga address ng Outlook.com at Hotmail. Kapag huminto sa paggana ang
+isang sign-in, may note sa ibaba ng window na nag-aalok na mag-sign in ulit.
+"""

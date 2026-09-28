@@ -11,6 +11,9 @@ add-account-servers-title = ಸರ್ವರ್ ಸೆಟ್ಟಿಂಗ್‌ಗ
 add-account-servers-intro = { $address } ಗಾಗಿ Katna ಮೇಲ್ ಅನ್ನು ಎಲ್ಲಿಂದ ಓದುತ್ತದೆ ಮತ್ತು ಕಳುಹಿಸುತ್ತದೆ.
 add-account-password-title = ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ
 add-account-signing-in = ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ…
+add-account-browser-title = ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಮುಂದುವರಿಯಿರಿ
+add-account-browser-intro = Katna ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ { $provider } ಸೈನ್ ಇನ್ ಪುಟವನ್ನು ತೆರೆದಿದೆ. ಅಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಮೇಲ್ ಓದಲು ಹಾಗೂ ಕಳುಹಿಸಲು Katna ಗೆ ಅನುಮತಿಸಿ, ನಂತರ ಇಲ್ಲಿಗೆ ಹಿಂತಿರುಗಿ.
+add-account-browser-hint = ಯಾವುದೇ ಪುಟ ತೆರೆಯಲಿಲ್ಲವೇ? ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ವಿಂಡೋಗಳನ್ನು ಪರಿಶೀಲಿಸಿ, ಅಥವಾ ಹಿಂದೆ ಹೋಗಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] ಸರ್ವರ್‌ಗಳು: { $servers }, ಊಹೆಯಿಂದ; ಸೈನ್ ಇನ್ ವಿಫಲವಾದರೆ ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.
 }
 add-account-servers-entered = ಸರ್ವರ್‌ಗಳು: { $servers }, ನಮೂದಿಸಿದಂತೆ.
+add-account-or = ಅಥವಾ
+add-account-sign-in-with = { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ
+add-account-sign-in-instead = ಬದಲಿಗೆ { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = ಹೆಸರು ಪಾಸ್‌ವರ್ಡ್‌
 add-account-added = { $address } ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಮೇಲ್ ತರಲಾಗುತ್ತಿದೆ…
 add-account-app-password-refused = { $provider } ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿರಾಕರಿಸಿದೆ. ಅದಕ್ಕೆ ಆ್ಯಪ್ ಪಾಸ್‌ವರ್ಡ್ ಬೇಕು, ನೀವು ವೆಬ್‌ನಲ್ಲಿ ಬಳಸುವುದಲ್ಲ.
 add-account-password-refused = ಸರ್ವರ್ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿರಾಕರಿಸಿದೆ. ಅದನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.
+add-account-sign-in-refused = { $provider } Katna ಅನ್ನು ಒಳಗೆ ಬಿಡಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ, ಮತ್ತು ನಿಮ್ಮ ಮೇಲ್‌ಗೆ ಪ್ರವೇಶ ಅನುಮತಿಸಿ.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna ನ ಈ ಪ್ರತಿಗೆ ಇನ್ನೂ Microsoft ಖಾತೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.
+    [Google] Katna ನ ಈ ಪ್ರತಿಗೆ ಇನ್ನೂ Google ಖಾತೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.
+   *[other] ಈ ಪೂರೈಕೆದಾರರು ತಮ್ಮದೇ ಪುಟದಲ್ಲಿ ಮಾತ್ರ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅನುಮತಿಸುತ್ತಾರೆ, ಅದನ್ನು Katna ಇನ್ನೂ ಅವರಿಗಾಗಿ ಮಾಡಲಾರದು.
+}
+add-account-signed-in = { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಆಗಿದೆ. ನಿಮ್ಮ ಮೇಲ್ ಪಡೆಯಲಾಗುತ್ತಿದೆ…
 
 ## The account menu (from the account button on the top bar)
 

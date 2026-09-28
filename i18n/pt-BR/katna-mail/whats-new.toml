@@ -703,3 +703,13 @@ respondem, as pessoas com quem você mais troca e-mails e em quais dias e
 horários seus e-mails chegam. Tudo é contado no seu computador, a partir
 dos e-mails que o Katna já tem.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Login com Google ou Microsoft"
+text = """
+Adicione uma conta do Gmail ou do Outlook fazendo login na própria
+página do Google ou da Microsoft no navegador, sem senha de app.
+Endereços do Outlook.com e do Hotmail também funcionam agora. Se um
+login parar de funcionar, um aviso na parte de baixo da janela oferece
+fazer login de novo.
+"""

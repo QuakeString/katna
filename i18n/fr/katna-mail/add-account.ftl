@@ -11,6 +11,9 @@ add-account-servers-title = Paramètres du serveur
 add-account-servers-intro = Où Katna lit et envoie le courrier de { $address }.
 add-account-password-title = Saisissez votre mot de passe
 add-account-signing-in = Connexion…
+add-account-browser-title = Continuez dans votre navigateur
+add-account-browser-intro = Katna a ouvert la page de connexion de { $provider } dans votre navigateur. Connectez-vous-y et autorisez Katna à lire et envoyer votre courrier, puis revenez ici.
+add-account-browser-hint = Aucune page ne s’est ouverte ? Vérifiez les fenêtres de votre navigateur, ou revenez en arrière et réessayez.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Serveurs : { $servers }, devinés ; vérifiez-les si la connexion échoue.
 }
 add-account-servers-entered = Serveurs : { $servers }, tels que saisis.
+add-account-or = ou
+add-account-sign-in-with = Se connecter avec { $provider }
+add-account-sign-in-instead = Se connecter plutôt avec { $provider }
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Le nom est identique au mot de passe. Saisissez p
 add-account-added = { $address } ajouté. Récupération de votre courrier…
 add-account-app-password-refused = { $provider } a refusé le mot de passe. Il faut un mot de passe d’application, pas celui que vous utilisez sur le Web.
 add-account-password-refused = Le serveur a refusé le mot de passe. Vérifiez-le et réessayez.
+add-account-sign-in-refused = { $provider } n’a pas laissé entrer Katna. Réessayez, et autorisez l’accès à votre courrier.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Cette copie de Katna ne peut pas encore se connecter aux comptes Microsoft.
+    [Google] Cette copie de Katna ne peut pas encore se connecter aux comptes Google.
+   *[other] Ce fournisseur n’autorise la connexion que sur sa propre page, ce que Katna ne sait pas encore faire pour lui.
+}
+add-account-signed-in = Connecté avec { $provider }. Récupération de votre courrier…
 
 ## The account menu (from the account button on the top bar)
 

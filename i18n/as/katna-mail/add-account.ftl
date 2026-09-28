@@ -11,6 +11,9 @@ add-account-servers-title = ছাৰ্ভাৰৰ ছেটিংছ
 add-account-servers-intro = Katnaই ক'ৰ পৰা { $address }ৰ মেইল পঢ়ে আৰু পঠিয়ায়।
 add-account-password-title = আপোনাৰ পাছৱৰ্ড লিখক
 add-account-signing-in = ছাইন ইন কৰি থকা হৈছে…
+add-account-browser-title = আপোনাৰ ব্ৰাউজাৰত আগবাঢ়ক
+add-account-browser-intro = Katnaই আপোনাৰ ব্ৰাউজাৰত { $provider }ৰ ছাইন-ইন পৃষ্ঠাখন খুলিছে। তাত ছাইন ইন কৰক আৰু Katnaক আপোনাৰ মেইল পঢ়িবলৈ আৰু পঠিয়াবলৈ অনুমতি দিয়ক, তাৰ পিছত ইয়ালৈ উভতি আহক।
+add-account-browser-hint = কোনো পৃষ্ঠা খোলা নাই নেকি? আপোনাৰ ব্ৰাউজাৰৰ উইণ্ড'বোৰ চাওক, নতুবা উভতি গৈ পুনৰ চেষ্টা কৰক।
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] ছাৰ্ভাৰ: { $servers }, অনুমান কৰা; ছাইন ইন বিফল হ'লে পৰীক্ষা কৰক।
 }
 add-account-servers-entered = ছাৰ্ভাৰ: { $servers }, যেনেকৈ লিখা হৈছে।
+add-account-or = বা
+add-account-sign-in-with = { $provider }ৰে ছাইন ইন কৰক
+add-account-sign-in-instead = তাৰ সলনি { $provider }ৰে ছাইন ইন কৰক
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = নামটো পাছৱৰ্ডৰ সৈ�
 add-account-added = { $address } যোগ কৰা হ'ল। আপোনাৰ মেইল অনা হৈছে…
 add-account-app-password-refused = { $provider }এ পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। ইয়াক এটা এপ পাছৱৰ্ড লাগে, ৱেবত ব্যৱহাৰ কৰা পাছৱৰ্ডটো নহয়।
 add-account-password-refused = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।
+add-account-sign-in-refused = { $provider }এ Katnaক সোমাবলৈ নিদিলে। পুনৰ চেষ্টা কৰক, আৰু আপোনাৰ মেইললৈ প্ৰৱেশৰ অনুমতি দিয়ক।
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katnaৰ এই কপিটোৱে এতিয়াও Microsoft একাউণ্টত ছাইন ইন কৰিব নোৱাৰে।
+    [Google] Katnaৰ এই কপিটোৱে এতিয়াও Google একাউণ্টত ছাইন ইন কৰিব নোৱাৰে।
+   *[other] এই প্ৰদানকাৰীয়ে কেৱল নিজৰ পৃষ্ঠাতহে ছাইন ইন কৰিবলৈ দিয়ে, যিটো Katnaই ইয়াৰ বাবে এতিয়াও কৰিব নোৱাৰে।
+}
+add-account-signed-in = { $provider }ৰে ছাইন ইন কৰা হ'ল। আপোনাৰ মেইল অনা হৈছে…
 
 ## The account menu (from the account button on the top bar)
 

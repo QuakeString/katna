@@ -703,3 +703,13 @@ antwoorden, met wie je het vaakst mailt en op welke dagen en uren je
 e-mail binnenkomt. Het wordt op je computer geteld uit de e-mail die
 Katna al heeft.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Aanmelden met Google of Microsoft"
+text = """
+Voeg een Gmail- of Outlook-account toe door je aan te melden op de eigen
+pagina van Google of Microsoft in je browser, zonder app-wachtwoord.
+Adressen van Outlook.com en Hotmail werken nu ook. Werkt een aanmelding
+niet meer, dan biedt een melding onder in het venster aan om je opnieuw
+aan te melden.
+"""

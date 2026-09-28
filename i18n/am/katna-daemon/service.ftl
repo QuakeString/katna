@@ -5,3 +5,5 @@
 ## Errors Katna Mail shows
 
 daemon-deleting-data = Katna ሁሉንም ውሂቡን እየሰረዘ ነው
+daemon-signed-in = ወደ { $provider } ገብተዋል። ይህን ትር ዘግተው ወደ Katna መመለስ ይችላሉ።
+daemon-sign-in-failed = Katna ወደ { $provider } አልገባም። ይህን ትር ዘግተው በKatna ውስጥ እንደገና መሞከር ይችላሉ።

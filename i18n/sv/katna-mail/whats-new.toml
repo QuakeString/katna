@@ -683,3 +683,12 @@ tog emot under perioden, hur ofta och hur snabbt du och andra svarar,
 vilka du skriver mest med och vilka dagar och timmar din e-post kommer
 in. Det räknas på din dator från den e-post som Katna redan har.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Logga in med Google eller Microsoft"
+text = """
+Lägg till ett Gmail- eller Outlook-konto genom att logga in på Googles
+eller Microsofts egen sida i webbläsaren, utan applösenord. Adresser på
+Outlook.com och Hotmail fungerar nu också. Om en inloggning slutar
+fungera erbjuder en notis längst ned i fönstret att logga in igen.
+"""

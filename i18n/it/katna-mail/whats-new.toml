@@ -706,3 +706,12 @@ gli altri, le persone con cui scrivi di più e in quali giorni e a quali
 ore arriva la tua posta. Il conteggio avviene sul tuo computer, a
 partire dalla posta che Katna ha già.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Accedi con Google o Microsoft"
+text = """
+Aggiungi un account Gmail o Outlook accedendo dalla pagina di Google o di
+Microsoft nel browser, senza password per le app. Ora funzionano anche gli
+indirizzi Outlook.com e Hotmail. Se un accesso smette di funzionare, un
+avviso in fondo alla finestra propone di accedere di nuovo.
+"""

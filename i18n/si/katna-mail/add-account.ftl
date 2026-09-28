@@ -11,6 +11,9 @@ add-account-servers-title = සේවාදායක සැකසීම්
 add-account-servers-intro = { $address } සඳහා Katna තැපැල් කියවන සහ යවන තැන.
 add-account-password-title = ඔබේ මුරපදය ඇතුළත් කරන්න
 add-account-signing-in = පුරනය වෙමින්…
+add-account-browser-title = ඔබේ බ්‍රවුසරයේ ඉදිරියට යන්න
+add-account-browser-intro = Katna ඔබේ බ්‍රවුසරයේ { $provider } පුරනය වීමේ පිටුව විවෘත කළා. එහි පුරනය වී ඔබේ තැපැල් කියවීමට සහ යැවීමට Katna ට ඉඩ දෙන්න, පසුව මෙතැනට ආපසු එන්න.
+add-account-browser-hint = පිටුවක් විවෘත වූයේ නැද්ද? ඔබේ බ්‍රවුසරයේ කවුළු පරීක්ෂා කරන්න, නැතහොත් ආපසු ගොස් නැවත උත්සාහ කරන්න.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] සේවාදායක: { $servers }, අනුමානයෙන්; පුරනය අසාර්ථක වුවහොත් ඒවා පරීක්ෂා කරන්න.
 }
 add-account-servers-entered = සේවාදායක: { $servers }, ඇතුළත් කළ පරිදි.
+add-account-or = හෝ
+add-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
+add-account-sign-in-instead = ඒ වෙනුවට { $provider } සමඟ පුරනය වන්න
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = නම මුරපදයට සමානයි. 
 add-account-added = { $address } එක් කළා. ඔබේ තැපැල් ලබා ගනිමින්…
 add-account-app-password-refused = { $provider } මුරපදය ප්‍රතික්ෂේප කළා. ඔබ වෙබයේ භාවිත කරන මුරපදය නොව, යෙදුම් මුරපදයක් අවශ්‍යයි.
 add-account-password-refused = සේවාදායකය මුරපදය ප්‍රතික්ෂේප කළා. එය පරීක්ෂා කර නැවත උත්සාහ කරන්න.
+add-account-sign-in-refused = { $provider } Katna ට ඇතුළු වීමට ඉඩ දුන්නේ නැහැ. නැවත උත්සාහ කර, ඔබේ තැපැල් වෙත ප්‍රවේශයට ඉඩ දෙන්න.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Katna හි මෙම පිටපතට තවම Microsoft ගිණුම් වෙත පුරනය විය නොහැක.
+    [Google] Katna හි මෙම පිටපතට තවම Google ගිණුම් වෙත පුරනය විය නොහැක.
+   *[other] මෙම සපයන්නා පුරනය වීමට ඉඩ දෙන්නේ එහිම පිටුවේ පමණි, එය Katna ට තවම ඒ සඳහා කළ නොහැක.
+}
+add-account-signed-in = { $provider } සමඟ පුරනය විය. ඔබේ තැපැල් ලබා ගනිමින්…
 
 ## The account menu (from the account button on the top bar)
 

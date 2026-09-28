@@ -710,3 +710,13 @@ antworten, mit wem Sie am meisten schreiben und an welchen Tagen und zu
 welchen Uhrzeiten Ihre E-Mails eintreffen. Gezählt wird auf Ihrem
 Computer aus den E-Mails, die Katna bereits hat.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Anmelden mit Google oder Microsoft"
+text = """
+Fügen Sie ein Gmail- oder Outlook-Konto hinzu, indem Sie sich auf der
+eigenen Seite von Google oder Microsoft in Ihrem Browser anmelden, ganz
+ohne App-Passwort. Auch Adressen von Outlook.com und Hotmail funktionieren
+jetzt. Wenn eine Anmeldung nicht mehr funktioniert, bietet ein Hinweis
+unten im Fenster an, sich erneut anzumelden.
+"""

@@ -613,3 +613,11 @@ text = """
 你最常聯絡的人，以及你的郵件在哪些日子和時段送達。這些都在你的電腦上根據 Katna \
 已有的郵件統計。
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "使用 Google 或 Microsoft 登入"
+text = """
+在瀏覽器中登入 Google 或 Microsoft 自己的頁面，即可新增 Gmail 或 Outlook 帳戶，\
+不需要應用程式密碼。Outlook.com 和 Hotmail 地址現在也能使用了。\
+如果登入失效，視窗底部會出現提示，讓你重新登入。
+"""

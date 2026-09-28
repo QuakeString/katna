@@ -11,6 +11,9 @@ add-account-servers-title = Ètò sáfà
 add-account-servers-intro = Ibi tí Katna ti ń ka lẹ́tà, tí ó sì ti ń fi ránṣẹ́ fún { $address }.
 add-account-password-title = Tẹ ọ̀rọ̀ aṣínà rẹ
 add-account-signing-in = À ń wọlé…
+add-account-browser-title = Tẹ̀síwájú nínú aṣàwákiri rẹ
+add-account-browser-intro = Katna ti ṣí ojú-ìwé ìwọlé { $provider } nínú aṣàwákiri rẹ. Wọlé níbẹ̀ kí o sì gba Katna láàyè láti ka lẹ́tà rẹ àti láti fi ránṣẹ́, lẹ́yìn náà padà wá síbí.
+add-account-browser-hint = Kò sí ojú-ìwé tó ṣí? Ṣàyẹ̀wò àwọn fèrèsé aṣàwákiri rẹ, tàbí padà sẹ́yìn kí o sì gbìyànjú lẹ́ẹ̀kan sí i.
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] Àwọn sáfà: { $servers }, láti inú àfojúsùn; ṣàyẹ̀wò wọn tí wíwọlé bá kùnà.
 }
 add-account-servers-entered = Àwọn sáfà: { $servers }, bí a ṣe tẹ̀ wọ́n.
+add-account-or = tàbí
+add-account-sign-in-with = Wọlé pẹ̀lú { $provider }
+add-account-sign-in-instead = Wọlé pẹ̀lú { $provider } dípò èyí
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = Orúkọ náà bá ọ̀rọ̀ aṣínà mu. Díp
 add-account-added = A ti ṣàfikún { $address }. À ń gba lẹ́tà rẹ…
 add-account-app-password-refused = { $provider } kọ ọ̀rọ̀ aṣínà náà. Ó nílò ọ̀rọ̀ aṣínà áàpù, kì í ṣe èyí tí o ń lò lórí wẹ́ẹ̀bù.
 add-account-password-refused = Sáfà kọ ọ̀rọ̀ aṣínà náà. Ṣàyẹ̀wò rẹ̀ kí o sì gbìyànjú lẹ́ẹ̀kan sí i.
+add-account-sign-in-refused = { $provider } kò jẹ́ kí Katna wọlé. Gbìyànjú lẹ́ẹ̀kan sí i, kí o sì fàyè gba wíwọlé sí lẹ́tà rẹ.
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] Ẹ̀dà Katna yìí kò tíì lè wọlé sí àwọn àkáǹtì Microsoft.
+    [Google] Ẹ̀dà Katna yìí kò tíì lè wọlé sí àwọn àkáǹtì Google.
+   *[other] Olùpèsè yìí gba wíwọlé láàyè lórí ojú-ìwé tirẹ̀ nìkan, èyí tí Katna kò tíì lè ṣe fún un.
+}
+add-account-signed-in = O ti wọlé pẹ̀lú { $provider }. À ń gba lẹ́tà rẹ…
 
 ## The account menu (from the account button on the top bar)
 

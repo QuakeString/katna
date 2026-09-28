@@ -683,3 +683,12 @@ nhanh đến đâu, những người bạn viết thư nhiều nhất, và thư 
 vào những ngày và giờ nào. Mọi thứ được đếm trên máy tính của bạn từ
 những thư Katna đã có.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Đăng nhập bằng Google hoặc Microsoft"
+text = """
+Thêm tài khoản Gmail hoặc Outlook bằng cách đăng nhập trên trang riêng
+của Google hoặc Microsoft trong trình duyệt, không cần mật khẩu ứng dụng.
+Địa chỉ Outlook.com và Hotmail giờ cũng dùng được. Nếu việc đăng nhập
+ngừng hoạt động, một ghi chú ở cuối cửa sổ sẽ đề nghị bạn đăng nhập lại.
+"""

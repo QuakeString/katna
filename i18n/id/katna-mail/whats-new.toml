@@ -698,3 +698,12 @@ Anda dan orang lain membalas, orang yang paling sering berkirim email
 dengan Anda, serta hari dan jam email Anda masuk. Semuanya dihitung di
 komputer Anda dari email yang sudah ada di Katna.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Masuk dengan Google atau Microsoft"
+text = """
+Tambahkan akun Gmail atau Outlook dengan masuk di halaman Google atau
+Microsoft sendiri di browser Anda, tanpa sandi aplikasi. Alamat Outlook.com
+dan Hotmail kini juga bisa digunakan. Jika proses masuk berhenti berfungsi,
+catatan di bagian bawah jendela menawarkan untuk masuk lagi.
+"""

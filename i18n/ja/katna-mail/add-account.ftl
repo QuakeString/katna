@@ -11,6 +11,9 @@ add-account-servers-title = サーバー設定
 add-account-servers-intro = Katna が { $address } のメールを読み書きするサーバーです。
 add-account-password-title = パスワードを入力
 add-account-signing-in = サインインしています…
+add-account-browser-title = ブラウザーで続行
+add-account-browser-intro = Katna がブラウザーで { $provider } のサインイン ページを開きました。そこでサインインし、Katna にメールの読み取りと送信を許可してから、ここに戻ってください。
+add-account-browser-hint = ページが開きませんか？ブラウザーのウィンドウを確認するか、戻ってもう一度お試しください。
 
 ## Add a mail account: fields
 
@@ -35,6 +38,9 @@ add-account-servers-found = { $source ->
    *[other] サーバー: { $servers }（推測です。サインインできない場合は確認してください）
 }
 add-account-servers-entered = サーバー: { $servers }（入力どおり）
+add-account-or = または
+add-account-sign-in-with = { $provider } でサインイン
+add-account-sign-in-instead = 代わりに { $provider } でサインイン
 
 ## Add a mail account: buttons
 
@@ -66,6 +72,13 @@ add-account-name-is-password = 名前がパスワードと同じです。ここ�
 add-account-added = { $address } を追加しました。メールを取得しています…
 add-account-app-password-refused = { $provider } がパスワードを拒否しました。ウェブで使うパスワードではなく、アプリ パスワードが必要です。
 add-account-password-refused = サーバーがパスワードを拒否しました。確認して、もう一度お試しください。
+add-account-sign-in-refused = { $provider } が Katna のアクセスを許可しませんでした。もう一度試して、メールへのアクセスを許可してください。
+add-account-sign-in-unavailable = { $provider ->
+    [Microsoft] この Katna では、まだ Microsoft アカウントにサインインできません。
+    [Google] この Katna では、まだ Google アカウントにサインインできません。
+   *[other] このプロバイダーは自社のページでのサインインしか認めていませんが、Katna はまだこれに対応していません。
+}
+add-account-signed-in = { $provider } でサインインしました。メールを取得しています…
 
 ## The account menu (from the account button on the top bar)
 

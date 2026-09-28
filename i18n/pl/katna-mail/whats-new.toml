@@ -701,3 +701,12 @@ osoby, z którymi piszesz najczęściej, oraz w jakie dni i o jakich
 godzinach przychodzi poczta. Wszystko jest liczone na twoim komputerze z
 poczty, którą Katna już ma.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Logowanie przez Google lub Microsoft"
+text = """
+Dodaj konto Gmail lub Outlook, logując się na stronie Google lub
+Microsoftu w przeglądarce, bez hasła do aplikacji. Adresy Outlook.com i
+Hotmail też już działają. Jeśli logowanie przestanie działać, komunikat
+na dole okna zaproponuje ponowne zalogowanie się.
+"""

@@ -721,3 +721,13 @@ vous et les autres répondez, les personnes avec qui vous échangez le plus
 et quels jours et à quelles heures arrivent vos messages. Le calcul se
 fait sur votre ordinateur, à partir des messages que Katna a déjà.
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "Connexion avec Google ou Microsoft"
+text = """
+Ajoutez un compte Gmail ou Outlook en vous connectant sur la page même
+de Google ou de Microsoft dans votre navigateur, sans mot de passe
+d’application. Les adresses Outlook.com et Hotmail fonctionnent aussi
+désormais. Si une connexion cesse de fonctionner, une note en bas de la
+fenêtre propose de vous reconnecter.
+"""

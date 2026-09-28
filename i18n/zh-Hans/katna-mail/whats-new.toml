@@ -612,3 +612,11 @@ text = """
 你最常联系的人，以及你的邮件在哪些日子和时段到达。这些都在你的电脑上根据 Katna \
 已有的邮件统计。
 """
+
+["2026-09-28-0059-sign-in-with-google"]
+title = "使用 Google 或 Microsoft 登录"
+text = """
+在浏览器中登录 Google 或 Microsoft 自己的页面，即可添加 Gmail 或 Outlook 账号，\
+无需应用专用密码。Outlook.com 和 Hotmail 地址现在也能用了。\
+如果登录失效，窗口底部会出现提示，让你重新登录。
+"""
