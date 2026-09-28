@@ -15,6 +15,7 @@ compose-pop-out-reply = উত্তর আলাদা উইন্ডোতে
 compose-edit-recipients = প্রাপক সম্পাদনা করুন
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = আরও { $count }
 compose-show-trimmed = ছাঁটা অংশ দেখান
 compose-hide-trimmed = ছাঁটা অংশ লুকান
 compose-remove-trimmed = উদ্ধৃত লেখা সরান

@@ -15,6 +15,7 @@ compose-pop-out-reply = Abrir la respuesta en otra ventana
 compose-edit-recipients = Editar destinatarios
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Cco: { $names }
+compose-more-recipients = { $count } más
 compose-show-trimmed = Mostrar contenido recortado
 compose-hide-trimmed = Ocultar contenido recortado
 compose-remove-trimmed = Quitar texto citado

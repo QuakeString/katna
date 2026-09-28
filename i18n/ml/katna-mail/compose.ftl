@@ -15,6 +15,7 @@ compose-pop-out-reply = മറുപടി പ്രത്യേക വിൻഡ
 compose-edit-recipients = സ്വീകർത്താക്കളെ എഡിറ്റ് ചെയ്യുക
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } കൂടി
 compose-show-trimmed = ചുരുക്കിയ ഉള്ളടക്കം കാണിക്കുക
 compose-hide-trimmed = ചുരുക്കിയ ഉള്ളടക്കം മറയ്ക്കുക
 compose-remove-trimmed = ഉദ്ധരിച്ച വാചകം നീക്കം ചെയ്യുക

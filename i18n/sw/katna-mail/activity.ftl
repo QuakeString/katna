@@ -55,3 +55,6 @@ activity-range-custom = Maalum
 activity-range-from = Kuanzia
 activity-range-to = Hadi
 activity-range-apply = Tumia
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Akaunti zote
+activity-accounts-tip = Onyesha akaunti moja au zote

@@ -974,3 +974,45 @@ ayrı ayrı imzalanır veya şifrelenir, böylece imzalar geçerli kalır. Düz
 metin postalar açılmaları gösteremez, ancak bağlantıları izlenir, böylece
 birinin bir bağlantıyı izlediğini görürsünüz.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Bir ileti penceresi kapatıldıktan sonra Yanıtla yeniden başlar"
+text = """
+Kendi penceresinde yazılan bir iletiyi kapatmak artık onu Taslaklar'da
+tutar; Yanıtla, Tümünü yanıtla ve Yönlendir eskisini geri getirmek yerine
+yine yeni bir ileti açar.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Buzlu bir arama çubuğu"
+text = """
+Bulanık arka plan açıkken arama çubuğu, çevresindeki çubuk gibi bulanıklığı
+geçirir; üzerinde düz gri bir hap gibi durmaz.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Hesabı değiştirmek için resminizin üzerinde kaydırın"
+text = """
+İşaretçi sağ üstteki hesap resminin üzerindeyken fare tekerleğini çevirerek
+sonraki veya önceki hesaba geçin; her tık bir hesaptır. Resim yeni hesaba
+doğru kayar, tıpkı uygulama değiştirdiğinizde uygulamanın adının kayması
+gibi; karttan bir hesap seçmek de onu aynı şekilde kaydırır.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Çok sayıda alıcıya yer"
+text = """
+İlk satırdan sonraki alıcılar artık tüm genişliği kullanır, uzun bir liste
+de birkaç satır içinde kayar; böylece iletinin kendisi her zaman
+erişilebilir kalır. Alandan çıkın, tek satıra katlanır, örneğin "Kay, Sam,
+19 kişi daha"; hepsini yeniden görmek için üzerine tıklayın.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Tek bir hesap için Etkinlik raporu"
+text = """
+Etkinlik raporunda artık tarihlerin yanında bir hesap seçici var. Tüm
+hesaplar’ı ya da bunlardan birini seçin; izlenen iletiler, oranlar,
+grafik, konu satırları ve Posta kutunuz seçiminize göre değişir. Rapor
+hangi hesabı gösterdiğini belirtir ve seçiminizi hatırlar.
+"""

@@ -33,6 +33,12 @@ activity-range-custom = Custom
 activity-range-from = From
 activity-range-to = To
 activity-range-apply = Apply
+# Under the periods: the days counted and whose mail. $days: "28 Sept – 29
+# Sept"; $account: an address, or activity-accounts-all.
+activity-range-of = { $days } · { $account }
+# The account picker beside the periods.
+activity-accounts-all = All accounts
+activity-accounts-tip = Show one account or all
 
 ## Totals at the top
 

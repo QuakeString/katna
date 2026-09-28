@@ -15,6 +15,7 @@ compose-pop-out-reply = જવાબ અલગ વિન્ડોમાં ખ�
 compose-edit-recipients = પ્રાપ્તકર્તાઓમાં ફેરફાર કરો
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = વધુ { $count }
 compose-show-trimmed = ટૂંકાવેલી સામગ્રી બતાવો
 compose-hide-trimmed = ટૂંકાવેલી સામગ્રી છુપાવો
 compose-remove-trimmed = અવતરિત લખાણ દૂર કરો

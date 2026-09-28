@@ -15,6 +15,7 @@ compose-pop-out-reply = 以獨立視窗回覆
 compose-edit-recipients = 編輯收件者
 compose-summary-cc = 副本：{ $names }
 compose-summary-bcc = 密件副本：{ $names }
+compose-more-recipients = 另外 { $count } 人
 compose-show-trimmed = 顯示已省略的內容
 compose-hide-trimmed = 隱藏已省略的內容
 compose-remove-trimmed = 移除引用的文字

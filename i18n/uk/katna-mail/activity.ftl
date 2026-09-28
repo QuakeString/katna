@@ -61,3 +61,6 @@ activity-range-custom = Власний період
 activity-range-from = Від
 activity-range-to = До
 activity-range-apply = Застосувати
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Усі облікові записи
+activity-accounts-tip = Показати один обліковий запис або всі

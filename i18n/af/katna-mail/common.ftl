@@ -50,3 +50,4 @@ search-clear = Vee soektog uit
 search-options-show = Wys soekopsies
 settings = Instellings
 account-add = Voeg 'n rekening by
+account-wheel-hint = Rol om van rekening te wissel

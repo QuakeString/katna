@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Newer and Older always on the toolbar"
+text = """
+However narrow the reading pane, the counter and the Newer and Older arrows
+stay at the right of its toolbar. The buttons you use least move into the
+More menu one by one instead, including the contact details and original
+colors switches.
+"""

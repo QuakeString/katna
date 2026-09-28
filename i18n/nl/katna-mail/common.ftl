@@ -50,3 +50,4 @@ search-clear = Zoekopdracht wissen
 search-options-show = Zoekopties tonen
 settings = Instellingen
 account-add = Account toevoegen
+account-wheel-hint = Scroll om van account te wisselen

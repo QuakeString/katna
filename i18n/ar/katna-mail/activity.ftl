@@ -67,3 +67,6 @@ activity-range-custom = مخصص
 activity-range-from = من
 activity-range-to = إلى
 activity-range-apply = تطبيق
+activity-range-of = { $days } · { $account }
+activity-accounts-all = كل الحسابات
+activity-accounts-tip = عرض حساب واحد أو الكل

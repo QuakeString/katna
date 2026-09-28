@@ -58,3 +58,6 @@ activity-range-custom = Personnalisé
 activity-range-from = Du
 activity-range-to = Au
 activity-range-apply = Appliquer
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Tous les comptes
+activity-accounts-tip = Afficher un compte ou tous

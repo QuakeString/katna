@@ -15,6 +15,7 @@ compose-pop-out-reply = ಪ್ರತ್ಯುತ್ತರವನ್ನು ಪ್�
 compose-edit-recipients = ಸ್ವೀಕರಿಸುವವರನ್ನು ಎಡಿಟ್ ಮಾಡಿ
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = ಇನ್ನೂ { $count }
 compose-show-trimmed = ಟ್ರಿಮ್ ಮಾಡಿದ ವಿಷಯವನ್ನು ತೋರಿಸಿ
 compose-hide-trimmed = ಟ್ರಿಮ್ ಮಾಡಿದ ವಿಷಯವನ್ನು ಮರೆಮಾಡಿ
 compose-remove-trimmed = ಉಲ್ಲೇಖಿಸಿದ ಪಠ್ಯವನ್ನು ತೆಗೆದುಹಾಕಿ

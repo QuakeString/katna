@@ -46,3 +46,6 @@ activity-range-custom = 自定义
 activity-range-from = 从
 activity-range-to = 至
 activity-range-apply = 应用
+activity-range-of = { $days } · { $account }
+activity-accounts-all = 所有账号
+activity-accounts-tip = 显示一个账号或全部

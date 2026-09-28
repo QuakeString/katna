@@ -55,3 +55,6 @@ activity-range-custom = தனிப்பயன்
 activity-range-from = தொடக்கம்
 activity-range-to = முடிவு
 activity-range-apply = பயன்படுத்து
+activity-range-of = { $days } · { $account }
+activity-accounts-all = அனைத்துக் கணக்குகள்
+activity-accounts-tip = ஒரு கணக்கை அல்லது அனைத்தையும் காட்டு

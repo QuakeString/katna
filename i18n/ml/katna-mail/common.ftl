@@ -50,3 +50,4 @@ search-clear = തിരയൽ മായ്‌ക്കുക
 search-options-show = തിരയൽ ഓപ്ഷനുകൾ കാണിക്കുക
 settings = ക്രമീകരണം
 account-add = അക്കൗണ്ട് ചേർക്കുക
+account-wheel-hint = അക്കൗണ്ട് മാറ്റാൻ സ്ക്രോൾ ചെയ്യുക

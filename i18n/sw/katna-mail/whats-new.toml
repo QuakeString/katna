@@ -981,3 +981,46 @@ nakala ya kila mpokeaji husainiwa au kusimbwa kando, kwa hivyo sahihi
 zinabaki halali. Barua ya maandishi matupu haiwezi kuonyesha kufunguliwa,
 lakini viungo vyake vinafuatiliwa, kwa hivyo unaona mtu anapofuata kiungo.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Jibu huanza upya baada ya kufunga dirisha la ujumbe"
+text = """
+Kufunga barua iliyoandikwa kwenye dirisha lake sasa kunaiweka kwenye
+Rasimu, na Jibu, Jibu wote na Sambaza hufungua barua mpya tena badala ya
+kurudisha ile ya zamani.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Upau wa utafutaji wenye ukungu wa kioo"
+text = """
+Mandharinyuma yenye ukungu yakiwashwa, upau wa utafutaji huruhusu ukungu
+upite kama upau unaouzunguka, badala ya kukaa juu yake kama kidonge cha
+kijivu thabiti.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Sogeza juu ya picha yako kubadilisha akaunti"
+text = """
+Kielekezi kikiwa juu ya picha ya akaunti juu kulia, zungusha gurudumu la
+kipanya kwenda akaunti inayofuata au iliyotangulia, akaunti moja kwa
+kila mbofyo. Picha huviringika hadi akaunti mpya, kama jina la programu
+linavyoviringika unapobadilisha programu, na kuchagua akaunti kutoka
+kwenye kadi kunaviringika vivyo hivyo.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Nafasi kwa wapokeaji wengi"
+text = """
+Wapokeaji baada ya mstari wa kwanza sasa hutumia upana wote, na orodha
+ndefu husogezwa ndani ya mistari michache, hivyo barua yenyewe hubaki
+karibu kila wakati. Ukiondoka kwenye sehemu hiyo hukunjwa hadi mstari
+mmoja, kama “Kay, Sam, wengine 19”; ibofye kuona wote tena.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Ripoti ya shughuli kwa akaunti moja"
+text = """
+Ripoti ya shughuli sasa ina kichagua akaunti kando ya tarehe. Chagua Akaunti zote
+au moja kati yake, na ujumbe unaofuatiliwa, viwango, chati, mada na Kisanduku chako
+cha barua vyote hufuata. Ripoti hueleza ni akaunti gani inaonyesha na hukumbuka chaguo lako.
+"""

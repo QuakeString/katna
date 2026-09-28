@@ -50,3 +50,4 @@ search-clear = Sula usesho
 search-options-show = Bonisa okukhethwa kukho kosesho
 settings = Izilungiselelo
 account-add = Engeza i-akhawunti
+account-wheel-hint = Skrola ukushintsha i-akhawunti

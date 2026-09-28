@@ -15,6 +15,7 @@ compose-pop-out-reply = जवाफ छुट्टै विन्डोमा
 compose-edit-recipients = प्रापकहरू सम्पादन गर्नुहोस्
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = थप { $count }
 compose-show-trimmed = काटिएको सामग्री देखाउनुहोस्
 compose-hide-trimmed = काटिएको सामग्री लुकाउनुहोस्
 compose-remove-trimmed = उद्धृत पाठ हटाउनुहोस्

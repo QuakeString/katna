@@ -15,6 +15,7 @@ compose-pop-out-reply = 返信を別ウィンドウで開く
 compose-edit-recipients = 宛先を編集
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = 他 { $count } 人
 compose-show-trimmed = 省略されたコンテンツを表示
 compose-hide-trimmed = 省略されたコンテンツを非表示
 compose-remove-trimmed = 引用テキストを削除

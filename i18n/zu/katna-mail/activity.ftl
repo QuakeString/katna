@@ -55,3 +55,6 @@ activity-range-custom = Ngokwezifiso
 activity-range-from = Kusukela
 activity-range-to = Kuya
 activity-range-apply = Sebenzisa
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Wonke ama-akhawunti
+activity-accounts-tip = Bonisa i-akhawunti eyodwa noma yonke

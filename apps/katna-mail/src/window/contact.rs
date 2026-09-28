@@ -156,7 +156,7 @@ impl MailWindow {
     }
 
     /// The width the panel takes now.
-    fn contact_room(&self) -> f32 {
+    pub(super) fn contact_room(&self) -> f32 {
         (CONTACT_WIDTH + GAP) * self.contact.spring.value().clamp(0.0, 1.0)
     }
 

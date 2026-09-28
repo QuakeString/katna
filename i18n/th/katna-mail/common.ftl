@@ -38,3 +38,4 @@ search-clear = ล้างการค้นหา
 search-options-show = แสดงตัวเลือกการค้นหา
 settings = การตั้งค่า
 account-add = เพิ่มบัญชี
+account-wheel-hint = เลื่อนเพื่อสลับบัญชี

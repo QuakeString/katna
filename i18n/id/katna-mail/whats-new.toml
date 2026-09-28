@@ -980,3 +980,47 @@ terpisah, sehingga tanda tangan tetap valid. Email teks biasa tidak dapat
 menampilkan pembukaan, tetapi link-nya dilacak, sehingga Anda melihat saat
 seseorang mengikuti salah satunya.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Balas dimulai baru setelah jendela pesan ditutup"
+text = """
+Menutup pesan yang ditulis di jendelanya sendiri kini menyimpannya di Draf,
+dan Balas, Balas semua, serta Teruskan membuka pesan baru lagi, bukan
+mengembalikan pesan yang lama.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Bilah penelusuran berkaca buram"
+text = """
+Saat latar belakang buram aktif, bilah penelusuran meneruskan efek buram
+seperti bilah di sekelilingnya, bukan duduk di atasnya sebagai pil abu-abu
+pekat.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Gulir di atas gambar Anda untuk beralih akun"
+text = """
+Dengan penunjuk di atas gambar akun di kanan atas, putar roda mouse untuk
+pindah ke akun berikutnya atau sebelumnya, satu akun per klik. Gambar
+bergulir ke akun baru, seperti nama aplikasi bergulir saat Anda beralih
+aplikasi, dan memilih akun dari kartu membuatnya bergulir dengan cara yang
+sama.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruang untuk banyak penerima"
+text = """
+Penerima setelah baris pertama kini memakai seluruh lebar, dan daftar
+panjang bergulir dalam beberapa baris, sehingga pesannya sendiri selalu
+terjangkau. Tinggalkan kolom dan ia melipat menjadi satu baris, seperti
+"Kay, Sam, 19 lagi"; klik untuk melihat semuanya lagi.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Laporan aktivitas untuk satu akun"
+text = """
+Laporan aktivitas kini punya pemilih akun di samping tanggal. Pilih
+Semua akun atau salah satunya, dan pesan yang dilacak, tingkat, grafik,
+subjek, serta Kotak surat Anda akan mengikuti. Laporan menyebutkan akun
+yang ditampilkan dan mengingat pilihan Anda.
+"""

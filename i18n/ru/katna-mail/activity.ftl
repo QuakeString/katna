@@ -61,3 +61,6 @@ activity-range-custom = Другой период
 activity-range-from = С
 activity-range-to = По
 activity-range-apply = Применить
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Все аккаунты
+activity-accounts-tip = Показать один аккаунт или все

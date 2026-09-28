@@ -15,6 +15,7 @@ compose-pop-out-reply = Fungua jibu nje
 compose-edit-recipients = Hariri wapokeaji
 compose-summary-cc = Nakala: { $names }
 compose-summary-bcc = Nakala fiche: { $names }
+compose-more-recipients = wengine { $count }
 compose-show-trimmed = Onyesha maudhui yaliyofupishwa
 compose-hide-trimmed = Ficha maudhui yaliyofupishwa
 compose-remove-trimmed = Ondoa maandishi yaliyonukuliwa

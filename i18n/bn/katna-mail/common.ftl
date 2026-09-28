@@ -50,3 +50,4 @@ search-clear = সার্চ মুছুন
 search-options-show = সার্চের বিকল্প দেখান
 settings = সেটিংস
 account-add = অ্যাকাউন্ট যোগ করুন
+account-wheel-hint = অ্যাকাউন্ট বদলাতে স্ক্রল করুন

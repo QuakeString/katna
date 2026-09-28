@@ -54,3 +54,4 @@ search-clear = Cancella ricerca
 search-options-show = Mostra opzioni di ricerca
 settings = Impostazioni
 account-add = Aggiungi un account
+account-wheel-hint = Scorri per cambiare account

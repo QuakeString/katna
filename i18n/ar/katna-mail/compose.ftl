@@ -15,6 +15,14 @@ compose-pop-out-reply = فتح الرد في نافذة منفصلة
 compose-edit-recipients = تعديل المستلمين
 compose-summary-cc = نسخة: { $names }
 compose-summary-bcc = نسخة مخفية: { $names }
+compose-more-recipients = { $count ->
+    [zero] { $count } آخرين
+    [one] واحد آخر
+    [two] اثنان آخران
+    [few] { $count } آخرين
+    [many] { $count } آخر
+   *[other] { $count } آخر
+}
 compose-show-trimmed = عرض المحتوى المقتطع
 compose-hide-trimmed = إخفاء المحتوى المقتطع
 compose-remove-trimmed = إزالة النص المقتبس

@@ -980,3 +980,46 @@ handtekeningen geldig blijven. E-mail in platte tekst kan geen openingen
 tonen, maar de links erin worden wel gevolgd, zodat je ziet wanneer iemand
 er een volgt.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Beantwoorden begint opnieuw na het sluiten van een berichtvenster"
+text = """
+Als u een bericht sluit dat in een eigen venster is geschreven, blijft het
+nu in Concepten staan, en Beantwoorden, Allen beantwoorden en Doorsturen
+openen weer een nieuw bericht in plaats van het oude terug te halen.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Een bevroren zoekbalk"
+text = """
+Met de wazige achtergrond aan laat de zoekbalk de vervaging door, net als de
+balk eromheen, in plaats van als een effen grijze pil erop te liggen.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Scroll over uw afbeelding om van account te wisselen"
+text = """
+Houd de aanwijzer boven de accountafbeelding rechtsboven en draai aan het
+muiswiel om naar het volgende of vorige account te gaan, één account per
+klik. De afbeelding rolt naar het nieuwe account, zoals de naam van de app
+rolt als u van app wisselt, en een account kiezen op de kaart laat hem op
+dezelfde manier rollen.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Ruimte voor veel ontvangers"
+text = """
+Ontvangers na de eerste regel gebruiken nu de volle breedte, en een lange
+lijst scrolt binnen enkele regels, zodat het bericht zelf altijd binnen
+bereik blijft. Verlaat u het veld, dan klapt het in tot één regel, zoals
+"Kay, Sam, 19 meer"; klik erop om ze weer allemaal te zien.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Activiteitenrapport voor één account"
+text = """
+Het activiteitenrapport heeft nu een accountkiezer naast de datums. Kies
+Alle accounts of één ervan, en de gevolgde berichten, percentages, de
+grafiek, de onderwerpregels en Je mailbox volgen je keuze. Het rapport
+zegt welk account het toont en onthoudt je keuze.
+"""

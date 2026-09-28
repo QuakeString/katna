@@ -15,6 +15,7 @@ compose-pop-out-reply = ଉତ୍ତରକୁ ଅଲଗା ୱିଣ୍ଡୋର
 compose-edit-recipients = ପ୍ରାପକମାନଙ୍କୁ ସମ୍ପାଦନ କରନ୍ତୁ
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = ଆଉ { $count }
 compose-show-trimmed = କଟାଯାଇଥିବା ବିଷୟବସ୍ତୁ ଦେଖାନ୍ତୁ
 compose-hide-trimmed = କଟାଯାଇଥିବା ବିଷୟବସ୍ତୁ ଲୁଚାନ୍ତୁ
 compose-remove-trimmed = ଉଦ୍ଧୃତ ଟେକ୍ସଟ କାଢ଼ନ୍ତୁ

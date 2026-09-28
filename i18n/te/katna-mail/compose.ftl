@@ -15,6 +15,7 @@ compose-pop-out-reply = రిప్లయిని విడిగా తెర
 compose-edit-recipients = స్వీకర్తలను ఎడిట్ చేయండి
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = మరో { $count }
 compose-show-trimmed = కత్తిరించిన కంటెంట్‌ను చూపండి
 compose-hide-trimmed = కత్తిరించిన కంటెంట్‌ను దాచండి
 compose-remove-trimmed = కోట్ చేసిన టెక్స్ట్‌ను తీసివేయండి

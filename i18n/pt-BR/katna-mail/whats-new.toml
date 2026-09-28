@@ -980,3 +980,46 @@ assinaturas continuem válidas. E-mails em texto simples não podem mostrar
 aberturas, mas seus links são rastreados, para que você veja quando alguém
 acessa um.
 """
+
+["2026-09-28-1834-reply-after-closed-window"]
+title = "Responder recomeça do zero depois de fechar a janela de uma mensagem"
+text = """
+Fechar uma mensagem escrita em sua própria janela agora a mantém em
+Rascunhos, e Responder, Responder a todos e Encaminhar voltam a abrir uma
+mensagem nova em vez de trazer a antiga de volta.
+"""
+
+["2026-09-28-1852-frosted-search-bar"]
+title = "Uma barra de pesquisa fosca"
+text = """
+Com o fundo desfocado ativado, a barra de pesquisa deixa o desfoque passar
+como a barra ao redor dela, em vez de ficar por cima como uma pílula cinza
+sólida.
+"""
+
+["2026-09-28-1906-scroll-to-switch-accounts"]
+title = "Role sobre a sua imagem para trocar de conta"
+text = """
+Com o ponteiro sobre a imagem da conta, no canto superior direito, gire a
+roda do mouse para ir à conta seguinte ou anterior, uma conta por clique. A
+imagem rola até a nova conta, como o nome do app rola quando você troca de
+app, e escolher uma conta no cartão a faz rolar do mesmo jeito.
+"""
+
+["2026-09-28-1918-many-recipients"]
+title = "Espaço para muitos destinatários"
+text = """
+Os destinatários depois da primeira linha agora usam toda a largura, e uma
+lista longa rola dentro de poucas linhas, de modo que a própria mensagem
+sempre fica ao alcance. Saia do campo e ele se recolhe em uma linha, como
+"Kay, Sam, mais 19"; clique nele para ver todos de novo.
+"""
+
+["2026-09-28-1952-activity-by-account"]
+title = "Relatório de atividade de uma conta"
+text = """
+O relatório de atividade agora tem um seletor de conta ao lado das
+datas. Escolha Todas as contas ou uma delas, e as mensagens rastreadas,
+as taxas, o gráfico, os assuntos e Sua caixa de correio acompanham a
+escolha. O relatório informa qual conta mostra e lembra da sua escolha.
+"""

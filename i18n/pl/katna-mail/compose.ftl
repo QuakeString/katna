@@ -15,6 +15,7 @@ compose-pop-out-reply = Otwórz odpowiedź w osobnym oknie
 compose-edit-recipients = Edytuj odbiorców
 compose-summary-cc = DW: { $names }
 compose-summary-bcc = UDW: { $names }
+compose-more-recipients = jeszcze { $count }
 compose-show-trimmed = Pokaż przyciętą treść
 compose-hide-trimmed = Ukryj przyciętą treść
 compose-remove-trimmed = Usuń cytowany tekst

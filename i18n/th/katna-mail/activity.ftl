@@ -46,3 +46,6 @@ activity-range-custom = กำหนดเอง
 activity-range-from = ตั้งแต่
 activity-range-to = ถึง
 activity-range-apply = ใช้
+activity-range-of = { $days } · { $account }
+activity-accounts-all = ทุกบัญชี
+activity-accounts-tip = แสดงหนึ่งบัญชีหรือทุกบัญชี

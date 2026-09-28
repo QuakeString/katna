@@ -55,3 +55,6 @@ activity-range-custom = ಕಸ್ಟಮ್
 activity-range-from = ಇಂದ
 activity-range-to = ವರೆಗೆ
 activity-range-apply = ಅನ್ವಯಿಸಿ
+activity-range-of = { $days } · { $account }
+activity-accounts-all = ಎಲ್ಲಾ ಖಾತೆಗಳು
+activity-accounts-tip = ಒಂದು ಖಾತೆ ಅಥವಾ ಎಲ್ಲವನ್ನೂ ತೋರಿಸಿ

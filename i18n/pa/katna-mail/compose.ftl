@@ -15,6 +15,7 @@ compose-pop-out-reply = ਜਵਾਬ ਵੱਖਰੀ ਵਿੰਡੋ ਵਿੱ�
 compose-edit-recipients = ਪ੍ਰਾਪਤਕਰਤਾ ਸੋਧੋ
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = ਹੋਰ { $count }
 compose-show-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਦਿਖਾਓ
 compose-hide-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਲੁਕਾਓ
 compose-remove-trimmed = ਹਵਾਲੇ ਵਾਲਾ ਟੈਕਸਟ ਹਟਾਓ

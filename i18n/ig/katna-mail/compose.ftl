@@ -15,6 +15,7 @@ compose-pop-out-reply = Mepee nzaghachi na windo nke ya
 compose-edit-recipients = Dezie ndị nnata
 compose-summary-cc = Cc: { $names }
 compose-summary-bcc = Bcc: { $names }
+compose-more-recipients = { $count } ọzọ
 compose-show-trimmed = Gosi ọdịnaya e wepụrụ
 compose-hide-trimmed = Zoo ọdịnaya e wepụrụ
 compose-remove-trimmed = Wepụ ederede e hotara
