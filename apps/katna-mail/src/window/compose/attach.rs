@@ -334,7 +334,7 @@ impl MailWindow {
     /// message.
     pub(in crate::window) fn render_drop_target(&self, th: &Theme) -> AnyElement {
         let (surface, accent) = (th.surface, th.accent);
-        let content = |paths: &ExternalPaths| gpui_linux::dropped_content(paths).is_some();
+        let content = |paths: &ExternalPaths| katna_ui::native::dropped_content(paths).is_some();
         // One label over the other; the drag shows the one that fits it.
         let label = |id: &'static str, text: String, for_content: bool| {
             div()

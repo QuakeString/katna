@@ -136,7 +136,7 @@ impl Application {
 pub fn start(request: Option<Request>, single: bool) -> Started {
     let (sender, requests) = async_channel::unbounded();
     let connection = future::block_on(async {
-        let connection = Connection::session().await.ok()?;
+        let connection = katna_dbus::session().await.ok()?;
         if !single {
             return Some(Ok(connection));
         }

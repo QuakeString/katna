@@ -6,6 +6,9 @@
 //! list, reading pane (plain text) and search. Accounts, sync and sending
 //! come with `katna-daemon`.
 
+// No console window on Windows.
+#![cfg_attr(all(windows, not(test)), windows_subsystem = "windows")]
+
 mod assets;
 mod autostart;
 mod daemon;
@@ -264,7 +267,7 @@ fn serve_menu_bar(
     match served {
         Ok(menu) => {
             cx.set_global(window::MenuBar(menu));
-            gpui_linux::set_kde_appmenu(service, MAIL_MENU_BAR_PATH);
+            katna_ui::native::set_kde_appmenu(service, MAIL_MENU_BAR_PATH);
         }
         Err(err) => tracing::warn!(%err, "no menu bar for the global menu"),
     }

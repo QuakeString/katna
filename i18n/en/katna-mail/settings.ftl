@@ -8,9 +8,11 @@
 settings-tab-general = General
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
-settings-tab-katna-account = Katna account
-# The tab listing newsletters and mailing lists, to unsubscribe from.
+# The tab with the Katna account (an account on Katna's own server, for
+# its features; like a Mailspring ID), and later any paid plan.
 settings-tab-subscriptions = Subscription
+# The heading inside the Subscription tab.
+settings-tab-katna-account = Katna account
 settings-tab-appearance = Appearance
 # The tab of keyboard shortcuts.
 settings-tab-shortcuts = Shortcuts
@@ -26,7 +28,6 @@ settings-tab-experimental = Experimental
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = See the newsletters and mailing lists you get, and unsubscribe in one click.
 settings-tab-folders-rules-coming = Create, rename, move and hide folders and labels, and choose which ones sync. Rules sort, label, forward or delete new mail by itself, by sender, subject or words.
 settings-tab-mcp-server-coming = Let AI assistants on this computer search, read and draft your mail, with your say.
 

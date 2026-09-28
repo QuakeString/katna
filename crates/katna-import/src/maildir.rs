@@ -210,6 +210,7 @@ mod tests {
         fs::write(path, b"Subject: x\r\n\r\nbody\r\n").unwrap();
     }
 
+    #[cfg(unix)]
     fn walk(root: &Path) -> Vec<(String, String, Flags)> {
         Walker::new(root)
             .unwrap()
@@ -226,6 +227,8 @@ mod tests {
             .collect()
     }
 
+    // Enron's file names end in a dot, which Windows drops.
+    #[cfg(unix)]
     #[test]
     fn plain_tree_like_enron() {
         let dir = tempfile::tempdir().unwrap();
@@ -250,6 +253,9 @@ mod tests {
     }
 
     #[test]
+    // Maildir flags follow a `:` in the file name, which Windows file names
+    // can't hold (NTFS reads it as a stream name).
+    #[cfg(unix)]
     fn maildir_plus_plus() {
         let dir = tempfile::tempdir().unwrap();
         write(dir.path(), "new/1700000002.M1.host");
@@ -295,6 +301,9 @@ mod tests {
     }
 
     #[test]
+    // Maildir flags follow a `:` in the file name, which Windows file names
+    // can't hold (NTFS reads it as a stream name).
+    #[cfg(unix)]
     fn nested_maildirs() {
         let dir = tempfile::tempdir().unwrap();
         write(dir.path(), "work/cur/1:2,");

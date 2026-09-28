@@ -45,7 +45,7 @@ impl Look {
     /// Whether the compositor blurs what is behind a window (KWin's blur
     /// effect). Elsewhere [`Look::blur`] has no effect.
     pub fn blur_available() -> bool {
-        gpui_linux::compositor_blur()
+        katna_ui::native::compositor_blur()
     }
 }
 
@@ -207,7 +207,7 @@ impl WindowChrome {
             });
         }
         // The compositor's blur follows the frame's round corners.
-        gpui_linux::set_client_corner_radius(self.tokens(window).window_radius);
+        katna_ui::native::set_client_corner_radius(self.tokens(window).window_radius);
     }
 
     /// Makes the frame light (`Some(false)`) or dark (`Some(true)`) whatever
@@ -312,9 +312,7 @@ impl WindowChrome {
             return (0.0, 0.0);
         }
         let t = self.tokens(window);
-        let layout = cx
-            .button_layout()
-            .unwrap_or_else(WindowButtonLayout::linux_default);
+        let layout = cx.button_layout().unwrap_or_else(default_button_layout);
         let controls = window.window_controls();
         let room = |side: &[Option<WindowButton>]| {
             let n = side
@@ -577,9 +575,7 @@ impl WindowChrome {
                 .children(end);
         }
 
-        let layout = cx
-            .button_layout()
-            .unwrap_or_else(WindowButtonLayout::linux_default);
+        let layout = cx.button_layout().unwrap_or_else(default_button_layout);
         let controls = window.window_controls();
         let buttons = |side: &[Option<WindowButton>]| {
             side.iter()
@@ -816,4 +812,17 @@ fn icon_canvas(icon: Icon, preset: Preset, color: u32, icon_size: f32) -> impl I
         },
     )
     .size(px(icon_size))
+}
+
+/// The window buttons when the desktop names none: minimize, maximize and
+/// close at the end, as on Windows and most Linux desktops.
+fn default_button_layout() -> WindowButtonLayout {
+    WindowButtonLayout {
+        left: [None; 3],
+        right: [
+            Some(WindowButton::Minimize),
+            Some(WindowButton::Maximize),
+            Some(WindowButton::Close),
+        ],
+    }
 }

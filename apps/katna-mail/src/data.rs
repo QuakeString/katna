@@ -1178,6 +1178,7 @@ pub fn cached_address_book(paths: &Paths) -> Option<katna_search::contacts::Cont
 /// Saves the address book for the next run, readable only by the user.
 pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBook) {
     use std::io::Write;
+    #[cfg(unix)]
     use std::os::unix::fs::OpenOptionsExt;
     let file = address_book_file(paths);
     let partial = file.with_extension("json.part");
@@ -1185,13 +1186,11 @@ pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBo
         .map_err(std::io::Error::other)
         .and_then(|bytes| {
             std::fs::create_dir_all(paths.cache_dir())?;
-            std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .mode(0o600)
-                .open(&partial)?
-                .write_all(&bytes)?;
+            let mut options = std::fs::OpenOptions::new();
+            options.write(true).create(true).truncate(true);
+            #[cfg(unix)]
+            options.mode(0o600);
+            options.open(&partial)?.write_all(&bytes)?;
             std::fs::rename(&partial, &file)
         });
     if let Err(err) = saved {

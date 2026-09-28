@@ -526,7 +526,7 @@ pub struct MailWindow {
     crash_notice: Option<crash_notice::CrashNotice>,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
-    /// Settings > Katna account, once shown.
+    /// Settings > Subscription (the Katna account), once shown.
     katna: Option<katna_account::KatnaPage>,
     compose: Option<compose::Compose>,
     /// Attachment thumbnails and the attachment viewer.
