@@ -110,6 +110,7 @@ tracking-receipt-other = വായിച്ചതിന്റെ രസീത്
 ## Remote images and pictures
 
 remote-hidden = ഈ സന്ദേശത്തിലെ ചിത്രങ്ങൾ മറച്ചിരിക്കുന്നു.
+remote-hidden-unconfirmed = ചിത്രങ്ങൾ മറച്ചിരിക്കുന്നു: അയച്ചയാളെ സ്ഥിരീകരിക്കാനായില്ല.
 remote-show = ചിത്രങ്ങൾ കാണിക്കുക
 remote-always-show = ഈ അയച്ചയാളിൽ നിന്നുള്ളവ എപ്പോഴും കാണിക്കുക
 remote-picture-use = ഉപയോഗിക്കുക

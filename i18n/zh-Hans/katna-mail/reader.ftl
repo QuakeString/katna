@@ -98,6 +98,7 @@ tracking-receipt-other = 已读回执：{ $who } 未打开就删除或处理了�
 ## Remote images and pictures
 
 remote-hidden = 此邮件中的图片已隐藏。
+remote-hidden-unconfirmed = 图片已隐藏：无法确认发件人。
 remote-show = 显示图片
 remote-always-show = 始终显示此发件人的图片
 remote-picture-use = 使用

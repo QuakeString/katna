@@ -98,6 +98,7 @@ tracking-receipt-other = ใบตอบรับการอ่าน: { $who }
 ## Remote images and pictures
 
 remote-hidden = รูปภาพในข้อความนี้ถูกซ่อนไว้
+remote-hidden-unconfirmed = ซ่อนรูปภาพไว้: ไม่สามารถยืนยันผู้ส่งได้
 remote-show = แสดงรูปภาพ
 remote-always-show = แสดงรูปภาพจากผู้ส่งนี้เสมอ
 remote-picture-use = ใช้

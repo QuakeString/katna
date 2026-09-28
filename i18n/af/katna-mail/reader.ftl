@@ -110,6 +110,7 @@ tracking-receipt-other = Leesbewys: { $who } het jou boodskap uitgevee of hantee
 ## Remote images and pictures
 
 remote-hidden = Prente in hierdie boodskap is versteek.
+remote-hidden-unconfirmed = Prente is versteek: die sender kon nie bevestig word nie.
 remote-show = Wys prente
 remote-always-show = Wys altyd van hierdie sender
 remote-picture-use = Gebruik

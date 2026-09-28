@@ -110,6 +110,7 @@ tracking-receipt-other = రీడ్ రసీదు: { $who } మీ మెస
 ## Remote images and pictures
 
 remote-hidden = ఈ మెసేజ్‌లోని ఇమేజ్‌లు దాచబడ్డాయి.
+remote-hidden-unconfirmed = ఇమేజ్‌లు దాచబడ్డాయి: పంపినవారిని నిర్ధారించడం సాధ్యం కాలేదు.
 remote-show = ఇమేజ్‌లను చూపండి
 remote-always-show = ఈ పంపినవారి నుండి ఎల్లప్పుడూ చూపండి
 remote-picture-use = ఉపయోగించండి

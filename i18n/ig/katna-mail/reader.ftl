@@ -98,6 +98,7 @@ tracking-receipt-other = Akara na-egosi na a gụrụ ozi: { $who } hichapụr�
 ## Remote images and pictures
 
 remote-hidden = Ezochiri foto ndị dị n'ozi a.
+remote-hidden-unconfirmed = Ezochiri foto: enweghị ike ịkwado onye zitere ya.
 remote-show = Gosi foto
 remote-always-show = Na-egosi mgbe niile site n'aka onye zitere a
 remote-picture-use = Jiri

@@ -110,6 +110,7 @@ tracking-receipt-other = پڑھنے کی رسید: { $who } نے آپ کا پی�
 ## Remote images and pictures
 
 remote-hidden = اس پیغام میں تصاویر چھپی ہوئی ہیں۔
+remote-hidden-unconfirmed = تصاویر چھپی ہوئی ہیں: مرسل کی تصدیق نہیں ہو سکی۔
 remote-show = تصاویر دکھائیں
 remote-always-show = اس مرسل سے ہمیشہ دکھائیں
 remote-picture-use = استعمال کریں

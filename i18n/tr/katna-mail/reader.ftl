@@ -110,6 +110,7 @@ tracking-receipt-other = Okundu bilgisi: { $who } iletinizi açmadan sildi veya 
 ## Remote images and pictures
 
 remote-hidden = Bu iletideki resimler gizlendi.
+remote-hidden-unconfirmed = Resimler gizlendi: gönderen doğrulanamadı.
 remote-show = Resimleri göster
 remote-always-show = Bu gönderenden her zaman göster
 remote-picture-use = Kullan

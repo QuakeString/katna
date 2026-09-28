@@ -1089,3 +1089,14 @@ hızlı açar ve posta inerken listeyi birkaç iletide bir değil, her toplu
 indirmede bir kez günceller; böylece eşitleme sırasında kaydırma ve
 yazma akıcı kalır.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Bir bağlantının nereye gittiğini görün"
+text = """
+İşaretçiyi bir iletideki bağlantının üzerinde tutun; bağlantının
+gerçekte açtığı adres, sitenin adı vurgulanmış olarak okuma bölmesinin
+altında görünür, bağlantı metni ne derse desin. Resimlerini her zaman
+gösterdiğiniz bir gönderenin resimleri artık yalnızca e-posta
+sağlayıcınız iletinin gerçekten o gönderenden geldiğini doğruladığında
+yüklenir.
+"""

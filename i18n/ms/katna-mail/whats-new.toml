@@ -1108,3 +1108,14 @@ dan semasa mel dimuat turun, ia mengemas kini senarai sekali bagi setiap
 kelompok dan bukannya selepas setiap beberapa mesej, jadi tatal dan
 menaip kekal lancar semasa penyegerakan.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Lihat ke mana pautan pergi"
+text = """
+Letakkan penuding pada pautan dalam mesej, dan alamat yang sebenarnya
+dibukanya muncul di bahagian bawah anak tetingkap bacaan, dengan nama
+tapak diserlahkan, walau apa pun teks pautan itu. Imej daripada pengirim
+yang imejnya sentiasa anda tunjukkan kini dimuatkan hanya apabila
+penyedia e-mel anda mengesahkan bahawa mesej itu benar-benar datang
+daripadanya.
+"""

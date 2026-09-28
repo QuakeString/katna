@@ -110,6 +110,7 @@ tracking-receipt-other = পঢ়াৰ ৰচিদ: { $who }-এ আপোন
 ## Remote images and pictures
 
 remote-hidden = এই বাৰ্তাটোৰ ছবিসমূহ লুকুৱাই ৰখা হৈছে।
+remote-hidden-unconfirmed = ছবিসমূহ লুকুৱাই ৰখা হৈছে: প্ৰেৰকক নিশ্চিত কৰিব পৰা নগ'ল।
 remote-show = ছবি দেখুৱাওক
 remote-always-show = এই প্ৰেৰকৰ পৰা সদায় দেখুৱাওক
 remote-picture-use = ব্যৱহাৰ কৰক

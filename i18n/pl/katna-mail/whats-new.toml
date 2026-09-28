@@ -1088,3 +1088,13 @@ szybciej, a podczas pobierania poczty odświeża listę raz na partię,
 zamiast co kilka wiadomości, dzięki czemu przewijanie i pisanie pozostają
 płynne podczas synchronizacji.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Sprawdź, dokąd prowadzi link"
+text = """
+Zatrzymaj wskaźnik na linku w wiadomości, a adres, który faktycznie
+otwiera, pojawi się u dołu okienka odczytu, z wyróżnioną nazwą witryny,
+niezależnie od tekstu linku. Obrazy od nadawcy, od którego zawsze
+pokazujesz obrazy, są teraz wczytywane tylko wtedy, gdy dostawca poczty
+potwierdzi, że wiadomość rzeczywiście od niego pochodzi.
+"""

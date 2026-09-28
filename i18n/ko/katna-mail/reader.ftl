@@ -98,6 +98,7 @@ tracking-receipt-other = 읽음 확인: { $who }님이 메일을 열지 않고 �
 ## Remote images and pictures
 
 remote-hidden = 이 메일의 이미지가 숨겨져 있습니다.
+remote-hidden-unconfirmed = 이미지가 숨겨져 있습니다. 보낸사람을 확인할 수 없습니다.
 remote-show = 이미지 표시
 remote-always-show = 이 보낸사람의 이미지 항상 표시
 remote-picture-use = 사용

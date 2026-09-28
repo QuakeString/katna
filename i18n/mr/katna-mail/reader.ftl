@@ -110,6 +110,7 @@ tracking-receipt-other = वाचल्याची पावती: { $who } �
 ## Remote images and pictures
 
 remote-hidden = या मेसेजमधील इमेज लपवल्या आहेत.
+remote-hidden-unconfirmed = इमेज लपवल्या आहेत: प्रेषकाची खात्री करता आली नाही.
 remote-show = इमेज दाखवा
 remote-always-show = या प्रेषकाकडील इमेज नेहमी दाखवा
 remote-picture-use = वापरा

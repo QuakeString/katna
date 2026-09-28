@@ -1098,3 +1098,14 @@ mail wordt gedownload, wordt de lijst één keer per batch bijgewerkt in
 plaats van na elke paar berichten, zodat scrollen en typen soepel blijven
 tijdens het synchroniseren.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Zie waar een link naartoe gaat"
+text = """
+Houd de aanwijzer op een link in een bericht en onderaan het leesvenster
+verschijnt het adres dat de link echt opent, met de naam van de site
+benadrukt, wat de tekst van de link ook zegt. Afbeeldingen van een
+afzender van wie u altijd afbeeldingen toont, worden nu alleen geladen
+als uw e-mailprovider bevestigt dat het bericht echt van die afzender
+komt.
+"""

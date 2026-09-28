@@ -110,6 +110,7 @@ tracking-receipt-other = Läskvitto: { $who } raderade eller hanterade ditt medd
 ## Remote images and pictures
 
 remote-hidden = Bilder i det här meddelandet är dolda.
+remote-hidden-unconfirmed = Bilder är dolda: avsändaren kunde inte bekräftas.
 remote-show = Visa bilder
 remote-always-show = Visa alltid från den här avsändaren
 remote-picture-use = Använd

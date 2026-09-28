@@ -1063,3 +1063,13 @@ terwyl pos afgelaai word, werk dit die lys een keer per bondel op in
 plaas van ná elke paar boodskappe, sodat rol en tik gladder bly tydens
 sinkronisering.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Sien waarheen ’n skakel gaan"
+text = """
+Hou die wyser op ’n skakel in ’n boodskap, en die adres wat dit werklik
+oopmaak, verskyn onderaan die leesvenster, met die webwerf se naam
+uitgelig, wat die skakel se teks ook al sê. Prente van ’n sender van wie
+jy altyd prente wys, word nou net gelaai wanneer jou e-posverskaffer
+bevestig dat die boodskap regtig van hom af kom.
+"""

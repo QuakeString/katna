@@ -1109,3 +1109,13 @@ velocemente e, mentre la posta viene scaricata, aggiorna l’elenco una
 volta per gruppo invece che ogni pochi messaggi, così scorrimento e
 scrittura restano fluidi durante una sincronizzazione.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Scopri dove porta un link"
+text = """
+Passa il puntatore su un link in un messaggio e l’indirizzo che apre
+davvero compare in fondo al riquadro di lettura, con il nome del sito in
+evidenza, qualunque sia il testo del link. Le immagini di un mittente da
+cui mostri sempre le immagini ora vengono caricate solo se il tuo
+provider di posta conferma che il messaggio proviene davvero da lui.
+"""

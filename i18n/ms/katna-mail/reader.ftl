@@ -98,6 +98,7 @@ tracking-receipt-other = Resit baca: { $who } memadamkan atau menguruskan mesej 
 ## Remote images and pictures
 
 remote-hidden = Imej dalam mesej ini disembunyikan.
+remote-hidden-unconfirmed = Imej disembunyikan: pengirim tidak dapat disahkan.
 remote-show = Tunjukkan imej
 remote-always-show = Sentiasa tunjukkan daripada pengirim ini
 remote-picture-use = Gunakan

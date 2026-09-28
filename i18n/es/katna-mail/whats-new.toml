@@ -1103,3 +1103,14 @@ más rápido, y mientras se descarga el correo actualiza la lista una vez
 por lote en lugar de cada pocos mensajes, así que el desplazamiento y la
 escritura siguen fluidos durante una sincronización.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Comprueba adónde lleva un enlace"
+text = """
+Coloca el puntero sobre un enlace de un mensaje y la dirección que abre
+realmente aparecerá en la parte inferior del panel de lectura, con el
+nombre del sitio resaltado, sea cual sea el texto del enlace. Las
+imágenes de un remitente del que siempre muestras las imágenes ahora
+solo se cargan cuando tu proveedor de correo confirma que el mensaje
+procede realmente de él.
+"""

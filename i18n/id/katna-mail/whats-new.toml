@@ -1099,3 +1099,14 @@ saat surat diunduh, daftar diperbarui sekali per kelompok, bukan setelah
 setiap beberapa pesan, sehingga pengguliran dan pengetikan tetap mulus
 selama sinkronisasi.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Lihat ke mana tautan mengarah"
+text = """
+Arahkan penunjuk ke tautan dalam pesan, dan alamat yang sebenarnya
+dibukanya muncul di bagian bawah panel baca, dengan nama situs
+ditonjolkan, apa pun teks tautannya. Gambar dari pengirim yang gambarnya
+selalu Anda tampilkan kini hanya dimuat jika penyedia email Anda
+mengonfirmasi bahwa pesan itu benar-benar berasal dari pengirim
+tersebut.
+"""

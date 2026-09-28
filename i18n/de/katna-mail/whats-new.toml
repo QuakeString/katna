@@ -1121,3 +1121,14 @@ und während Mails heruntergeladen werden, wird die Liste nur einmal pro
 Stapel aktualisiert statt nach jeweils wenigen Nachrichten. So bleiben
 Scrollen und Tippen bei einer Synchronisierung flüssig.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Sehen, wohin ein Link führt"
+text = """
+Halten Sie den Mauszeiger über einen Link in einer Nachricht, dann
+erscheint am unteren Rand des Lesebereichs die Adresse, die er
+tatsächlich öffnet, wobei der Name der Website hervorgehoben ist, egal
+was der Linktext sagt. Bilder von einem Absender, von dem Sie immer
+Bilder anzeigen, werden jetzt nur noch geladen, wenn Ihr E-Mail-Anbieter
+bestätigt, dass die Nachricht wirklich von ihm stammt.
+"""

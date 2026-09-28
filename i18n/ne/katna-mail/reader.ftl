@@ -110,6 +110,7 @@ tracking-receipt-other = पढेको रसिद: { $who } ले तपा
 ## Remote images and pictures
 
 remote-hidden = यो सन्देशका तस्बिरहरू लुकाइएका छन्।
+remote-hidden-unconfirmed = तस्बिरहरू लुकाइएका छन्: प्रेषकको पुष्टि गर्न सकिएन।
 remote-show = तस्बिरहरू देखाउनुहोस्
 remote-always-show = यो प्रेषकबाट सधैँ देखाउनुहोस्
 remote-picture-use = प्रयोग गर्नुहोस्

@@ -110,6 +110,7 @@ tracking-receipt-other = رسید خواندن: { $who } پیام شما را ب
 ## Remote images and pictures
 
 remote-hidden = تصاویر این پیام پنهان شده‌اند.
+remote-hidden-unconfirmed = تصاویر پنهان شده‌اند: فرستنده تأیید نشد.
 remote-show = نمایش تصاویر
 remote-always-show = همیشه از این فرستنده نمایش داده شود
 remote-picture-use = استفاده

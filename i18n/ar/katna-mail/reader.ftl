@@ -126,6 +126,7 @@ tracking-receipt-other = إشعار بالقراءة: حذف { $who } رسالت
 ## Remote images and pictures
 
 remote-hidden = الصور في هذه الرسالة مخفية.
+remote-hidden-unconfirmed = الصور مخفية: تعذّر التأكد من هوية المُرسِل.
 remote-show = عرض الصور
 remote-always-show = العرض دائمًا من هذا المُرسِل
 remote-picture-use = استخدام

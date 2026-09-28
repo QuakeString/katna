@@ -110,6 +110,7 @@ tracking-receipt-other = Isaziso sokufunda: u-{ $who } ususile noma uphathe umla
 ## Remote images and pictures
 
 remote-hidden = Izithombe kulo mlayezo zifihliwe.
+remote-hidden-unconfirmed = Izithombe zifihliwe: umthumeli akakwazanga ukuqinisekiswa.
 remote-show = Bonisa izithombe
 remote-always-show = Bonisa njalo kusuka kulo mthumeli
 remote-picture-use = Sebenzisa

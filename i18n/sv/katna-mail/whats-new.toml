@@ -1070,3 +1070,13 @@ post hämtas uppdateras listan en gång per omgång i stället för efter
 varje par meddelanden, så att rullning och skrivning förblir smidiga
 under en synkronisering.
 """
+
+["2026-09-28-2111-link-addresses"]
+title = "Se vart en länk leder"
+text = """
+Håll pekaren över en länk i ett meddelande så visas adressen som den
+faktiskt öppnar längst ned i läsrutan, med webbplatsens namn framhävt,
+oavsett vad länkens text säger. Bilder från en avsändare du alltid visar
+bilder från läses nu bara in när din e-postleverantör bekräftar att
+meddelandet verkligen kommer från den avsändaren.
+"""
