@@ -23,6 +23,7 @@ add-account-outgoing = Utgående e-post ({ $protocol })
 add-account-field-server = Server
 add-account-field-port = Port
 add-account-security-none = Ingen
+add-account-security-none-warning = Inte krypterad: ditt lösenord och din e-post kan läsas på vägen.
 add-account-field-username = Användarnamn
 add-account-field-password = Lösenord
 add-account-show-password = Visa lösenord

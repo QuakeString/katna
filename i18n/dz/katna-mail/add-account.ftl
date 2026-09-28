@@ -23,6 +23,7 @@ add-account-outgoing = ཕྱིར་འགྱོ་གློག་འཕྲི
 add-account-field-server = སར་བར
 add-account-field-port = འདྲེན་ལམ
 add-account-security-none = མེད
+add-account-security-none-warning = ཨེན་ཀིརིཔྚ་མ་འབད་བས: ཁྱོད་ཀྱི་ཆོག་ཡིག་དང་ཡིག་འཕྲིན་ལམ་ལུ་ ལྷག་ཚུགས།
 add-account-field-username = ལག་ལེན་པའི་མིང
 add-account-field-password = ཆོག་ཡིག
 add-account-show-password = ཆོག་ཡིག་སྟོན།

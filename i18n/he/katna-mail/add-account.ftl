@@ -23,6 +23,7 @@ add-account-outgoing = דואר יוצא ({ $protocol })
 add-account-field-server = שרת
 add-account-field-port = פורט
 add-account-security-none = ללא
+add-account-security-none-warning = לא מוצפן: אפשר לקרוא את הסיסמה והדואר שלך בדרך.
 add-account-field-username = שם משתמש
 add-account-field-password = סיסמה
 add-account-show-password = הצגת הסיסמה

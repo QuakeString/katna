@@ -23,6 +23,7 @@ add-account-outgoing = សំបុត្រចេញ ({ $protocol })
 add-account-field-server = ម៉ាស៊ីនមេ
 add-account-field-port = ច្រក
 add-account-security-none = គ្មាន
+add-account-security-none-warning = មិនបានអ៊ិនគ្រីប៖ ពាក្យសម្ងាត់ និងសំបុត្ររបស់អ្នកអាចត្រូវបានអានតាមផ្លូវ។
 add-account-field-username = ឈ្មោះអ្នកប្រើ
 add-account-field-password = ពាក្យសម្ងាត់
 add-account-show-password = បង្ហាញពាក្យសម្ងាត់

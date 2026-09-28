@@ -23,6 +23,7 @@ add-account-outgoing = යන තැපැල් ({ $protocol })
 add-account-field-server = සේවාදායකය
 add-account-field-port = තොට
 add-account-security-none = කිසිවක් නැත
+add-account-security-none-warning = සංකේතනය කර නැත: ඔබේ මුරපදය සහ තැපෑල මඟදී කියවිය හැක.
 add-account-field-username = පරිශීලක නාමය
 add-account-field-password = මුරපදය
 add-account-show-password = මුරපදය පෙන්වන්න

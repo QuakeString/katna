@@ -1036,3 +1036,12 @@ Outlook.com, Hotmail en ander Microsoft-rekeninge stuur nou lêers bo die
 poslimiet soos Google-rekeninge: die lêer gaan na jou OneDrive sodra jy
 dit heg, en die boodskap bevat die skakel, soos in Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Geen Meld aan-flits meer in Aktiwiteit nie"
+text = """
+Net nadat Katna begin, wys Aktiwiteit ’n dun laaibalk terwyl dit jou
+Katna-rekening nagaan, in plaas daarvan om jou kortliks te vra om aan te
+meld. Katna gaan die rekening ook nog by die begin na, sodat die wagtyd
+korter is.
+"""

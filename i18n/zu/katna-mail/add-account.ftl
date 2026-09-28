@@ -23,6 +23,7 @@ add-account-outgoing = Imeyili ephumayo ({ $protocol })
 add-account-field-server = Iseva
 add-account-field-port = Imbobo
 add-account-security-none = Lutho
+add-account-security-none-warning = Ayifihlwanga: iphasiwedi lakho nemeyili kungafundwa endleleni.
 add-account-field-username = Igama lomsebenzisi
 add-account-field-password = Iphasiwedi
 add-account-show-password = Bonisa iphasiwedi

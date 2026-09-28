@@ -23,6 +23,7 @@ add-account-outgoing = Wasiƙu masu fita ({ $protocol })
 add-account-field-server = Sabar
 add-account-field-port = Tashar sadarwa
 add-account-security-none = Babu
+add-account-security-none-warning = Ba a ɓoye ba: ana iya karanta kalmar sirrinku da wasiƙunku a hanya.
 add-account-field-username = Sunan mai amfani
 add-account-field-password = Kalmar sirri
 add-account-show-password = Nuna kalmar sirri

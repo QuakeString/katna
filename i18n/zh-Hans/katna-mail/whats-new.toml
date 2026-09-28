@@ -919,3 +919,10 @@ Outlook.com、Hotmail 等 Microsoft 账号现在\
 会立即存入你的 OneDrive，邮件中会附上其链接，与 Outlook \
 一样。
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "动态中不再闪现登录提示"
+text = """
+Katna 启动后，动态会在检查你的 Katna 账号时显示一条细细的加载条，\
+而不是短暂地要求你登录。Katna 也会在启动时立即检查账号，因此等待时间更短。
+"""

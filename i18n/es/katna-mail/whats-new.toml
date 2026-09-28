@@ -1076,3 +1076,12 @@ que superan el límite del correo igual que las cuentas de Google: el
 archivo va a tu OneDrive en cuanto lo adjuntas, y el mensaje lleva su
 enlace, como en Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Adiós al destello de «Iniciar sesión» en Actividad"
+text = """
+Justo después de iniciarse Katna, Actividad muestra una fina barra de
+carga mientras comprueba tu cuenta de Katna, en lugar de pedirte
+brevemente que inicies sesión. Katna también comprueba la cuenta en
+cuanto arranca, así que la espera es más corta.
+"""

@@ -23,6 +23,7 @@ add-account-outgoing = 外寄郵件（{ $protocol }）
 add-account-field-server = 伺服器
 add-account-field-port = 連接埠
 add-account-security-none = 無
+add-account-security-none-warning = 未加密：你的密碼和郵件在傳輸途中可能被讀取。
 add-account-field-username = 使用者名稱
 add-account-field-password = 密碼
 add-account-show-password = 顯示密碼

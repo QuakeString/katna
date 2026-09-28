@@ -23,6 +23,7 @@ add-account-outgoing = Uitgaande e-mail ({ $protocol })
 add-account-field-server = Server
 add-account-field-port = Poort
 add-account-security-none = Geen
+add-account-security-none-warning = Niet versleuteld: je wachtwoord en e-mail kunnen onderweg worden meegelezen.
 add-account-field-username = Gebruikersnaam
 add-account-field-password = Wachtwoord
 add-account-show-password = Wachtwoord tonen

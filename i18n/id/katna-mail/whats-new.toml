@@ -1072,3 +1072,12 @@ yang melebihi batas email seperti akun Google: file langsung dikirim ke
 OneDrive Anda begitu dilampirkan, dan pesan membawa link-nya, seperti di
 Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Tak ada lagi kilatan Masuk di Aktivitas"
+text = """
+Tepat setelah Katna dimulai, Aktivitas menampilkan bilah pemuatan tipis
+saat memeriksa akun Katna Anda, bukan sesaat meminta Anda masuk. Katna
+juga memeriksa akun begitu dimulai, sehingga waktu tunggunya lebih
+singkat.
+"""

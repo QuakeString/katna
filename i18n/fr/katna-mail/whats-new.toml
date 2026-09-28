@@ -1106,3 +1106,12 @@ envoient désormais les fichiers dépassant la limite du courrier comme
 les comptes Google : le fichier est placé dans votre OneDrive dès que
 vous le joignez, et le message contient son lien, comme dans Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Fini le flash « Se connecter » dans Activité"
+text = """
+Juste après le démarrage de Katna, Activité affiche une fine barre de
+chargement pendant la vérification de votre compte Katna, au lieu de
+vous demander brièvement de vous connecter. Katna vérifie aussi le
+compte dès son démarrage, l’attente est donc plus courte.
+"""

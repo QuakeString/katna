@@ -1081,3 +1081,12 @@ yang melebihi had mel seperti akaun Google: fail dihantar ke OneDrive
 anda sebaik sahaja anda melampirkannya, dan mesej membawa pautannya,
 seperti dalam Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Tiada lagi kelipan Log masuk dalam Aktiviti"
+text = """
+Sebaik sahaja Katna bermula, Aktiviti memaparkan bar pemuatan nipis
+semasa menyemak akaun Katna anda, bukannya meminta anda log masuk
+seketika. Katna juga menyemak akaun sebaik sahaja bermula, jadi masa
+menunggu lebih singkat.
+"""

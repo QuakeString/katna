@@ -1109,3 +1109,12 @@ nagpapadala na ngayon ng file na lampas sa limitasyon ng mail tulad ng
 mga Google account: mapupunta ang file sa iyong OneDrive sa sandaling
 i-attach mo ito, at dala ng mensahe ang link nito, tulad sa Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Wala nang kislap ng Sign in sa Aktibidad"
+text = """
+Pagkasimula ng Katna, magpapakita ang Aktibidad ng manipis na loading
+bar habang sinusuri ang iyong Katna account, sa halip na saglit kang
+hilingang mag-sign in. Sinusuri rin ng Katna ang account sa mismong
+pagsisimula nito, kaya mas maikli ang paghihintay.
+"""

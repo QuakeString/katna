@@ -1062,3 +1062,12 @@ przekraczające limit poczty tak jak konta Google: plik trafia na Twój
 OneDrive od razu po dołączeniu, a wiadomość zawiera jego link, jak w
 Outlooku.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Koniec z mignięciem „Zaloguj się” w Aktywności"
+text = """
+Zaraz po uruchomieniu Katna Aktywność pokazuje cienki pasek ładowania
+podczas sprawdzania konta Katna, zamiast na chwilę prosić o zalogowanie
+się. Katna sprawdza też konto od razu po uruchomieniu, więc czekanie
+jest krótsze.
+"""

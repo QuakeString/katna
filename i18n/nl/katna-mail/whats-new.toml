@@ -1071,3 +1071,12 @@ boven de mailgrens nu net als Google-accounts: het bestand gaat direct
 na het bijvoegen naar je OneDrive, en het bericht bevat de link, net als
 in Outlook.
 """
+
+["2026-09-28-2108-activity-checking"]
+title = "Geen Aanmelden-flits meer in Activiteit"
+text = """
+Direct na het starten van Katna toont Activiteit een dunne laadbalk
+terwijl je Katna-account wordt gecontroleerd, in plaats van je even te
+vragen om je aan te melden. Katna controleert het account ook meteen bij
+het starten, zodat je minder lang wacht.
+"""
