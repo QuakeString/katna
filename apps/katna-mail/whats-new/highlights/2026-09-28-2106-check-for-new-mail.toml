@@ -4,6 +4,7 @@ title = "Check for new mail"
 text = """
 Right-click a folder or an account in the folder pane for Check for new
 mail, Mark all as read, a new folder inside it, or Empty Trash. Refresh
-above the list now fetches from the server too, and its arrow turns until
-the check is done.
+above the list now fetches from the server too. While Katna checks, the
+arrows turn on Refresh and beside the inbox, and "Checking for new mail…"
+shows at the top when it takes more than a moment.
 """

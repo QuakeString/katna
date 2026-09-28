@@ -9,9 +9,9 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
-    ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, Transformation,
-    anchored, deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, percentage,
-    point, prelude::*, relative, rgba, svg,
+    ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored,
+    deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*,
+    relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
@@ -567,18 +567,11 @@ impl MailWindow {
             .rounded_full()
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(tip(tr!("list-checking"), th))
-            .child(
-                svg()
-                    .path("icons/refresh.svg")
-                    .size(px(20.0))
-                    .flex_none()
-                    .text_color(rgba(th.text_dim))
-                    .with_animation(
-                        "refresh-turning",
-                        Animation::new(Duration::from_millis(900)).repeat(),
-                        |arrow, t| arrow.with_transformation(Transformation::rotate(percentage(t))),
-                    ),
-            )
+            .child(super::nav_menu::turning_arrow(
+                "refresh-turning",
+                th.text_dim,
+                20.0,
+            ))
     }
 
     /// Archive, Report spam and Delete, less those `squeeze` leaves to

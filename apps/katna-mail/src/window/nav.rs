@@ -676,12 +676,22 @@ impl MailWindow {
 
     fn render_nav_row(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         match &self.nav_rows[ix] {
-            sidebar::Row::AllAccounts { expanded } => {
-                self.render_heading(ix, tr!("nav-all-accounts"), *expanded, th, cx)
-            }
-            sidebar::Row::Account { name, expanded, .. } => {
-                self.render_heading(ix, name.clone(), *expanded, th, cx)
-            }
+            sidebar::Row::AllAccounts { expanded } => self.render_heading(
+                ix,
+                tr!("nav-all-accounts"),
+                (*expanded, self.checking_mail()),
+                th,
+                cx,
+            ),
+            sidebar::Row::Account {
+                id, name, expanded, ..
+            } => self.render_heading(
+                ix,
+                name.clone(),
+                (*expanded, self.checking_account(*id)),
+                th,
+                cx,
+            ),
             sidebar::Row::Labels { account } => {
                 let account = *account;
                 let gmail = self.tree.is_gmail(account);
@@ -745,6 +755,7 @@ impl MailWindow {
                         selected: self.listing == listing,
                         bold: true,
                         chevron: Some(*expanded),
+                        checking: *view == Unified::Inbox && self.checking_mail(),
                     },
                     th,
                     cx,
@@ -779,6 +790,7 @@ impl MailWindow {
                         // Addresses are long; the count tells of new mail.
                         bold: false,
                         chevron: None,
+                        checking: *view == Unified::Inbox && self.checking_account(*account),
                     },
                     th,
                     cx,
@@ -817,6 +829,11 @@ impl MailWindow {
                         selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
                         bold: true,
                         chevron: has_children.then_some(*expanded),
+                        // New mail lands in the inbox.
+                        checking: *role == Role::Inbox
+                            && folder
+                                .and_then(|f| self.tree.account_of(f))
+                                .is_some_and(|a| self.checking_account(a)),
                     },
                     th,
                     cx,
@@ -831,7 +848,7 @@ impl MailWindow {
         &self,
         ix: usize,
         name: String,
-        expanded: bool,
+        (expanded, checking): (bool, bool),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -864,7 +881,14 @@ impl MailWindow {
                     this.open_nav_menu(ix, event.position, cx);
                 }),
             )
-            .child(div().flex_1().min_w_0().pb(px(2.0)).truncate().child(name))
+            .child(div().min_w_0().pb(px(2.0)).truncate().child(name))
+            .child(div().flex_1().pl(px(6.0)).pb(px(3.0)).when(checking, |d| {
+                d.child(super::nav_menu::turning_arrow(
+                    "heading-checking",
+                    th.text_faint,
+                    12.0,
+                ))
+            }))
             .child(
                 div()
                     .id(("nav-heading-arrow", ix))
@@ -896,6 +920,7 @@ impl MailWindow {
             selected,
             bold,
             chevron,
+            checking,
         } = pill;
         let indent = 12.0 * depth as f32;
         let text = if selected {
@@ -960,6 +985,18 @@ impl MailWindow {
                     .truncate()
                     .child(label),
             )
+            .when(checking, |d| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(8.0))
+                        .child(super::nav_menu::turning_arrow(
+                            "nav-checking",
+                            th.text_dim,
+                            14.0,
+                        )),
+                )
+            })
             .when(unread > 0, |d| {
                 d.child(
                     div()
@@ -1116,6 +1153,8 @@ struct Pill {
     bold: bool,
     /// The arrow, pointing down when what it holds shows.
     chevron: Option<bool>,
+    /// Mail is being checked for: a turning arrow beside the name.
+    checking: bool,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.

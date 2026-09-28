@@ -509,7 +509,8 @@ pub struct MailWindow {
     /// The right-click menu of the folder pane.
     nav_menu: Option<nav_menu::NavMenu>,
     /// Checks for new mail under way; the refresh arrow turns meanwhile.
-    checking: usize,
+    checking: Vec<nav_menu::Check>,
+    check_seq: u64,
     /// The snooze menu, or its date and time picker.
     snooze_menu: Option<snooze::SnoozeMenu>,
     /// The navigation is open (not folded to the rail).
@@ -766,7 +767,8 @@ impl MailWindow {
             menu: None,
             context_menu: None,
             nav_menu: None,
-            checking: 0,
+            checking: Vec::new(),
+            check_seq: 0,
             snooze_menu: None,
             nav_open: true,
             nav_peek: false,
@@ -3047,6 +3049,7 @@ impl Render for MailWindow {
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
+        let checking_pill = self.render_checking_pill(&th);
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -3082,6 +3085,7 @@ impl Render for MailWindow {
             .children(add_account)
             .children(context_menu)
             .children(nav_menu)
+            .children(checking_pill)
             .children(snooze_menu)
             .children(danger)
             .children(delete_ask)
