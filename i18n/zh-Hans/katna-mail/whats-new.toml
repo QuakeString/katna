@@ -910,3 +910,12 @@ text = """
 获取邮件。Katna 检查时，“刷新”和收件箱旁边的箭头会转动；如果耗时较长\
 ，顶部会显示“正在检查新邮件…”。
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "通过 OneDrive 发送大文件"
+text = """
+Outlook.com、Hotmail 等 Microsoft 账号现在\
+也能像 Google 账号一样发送超过邮件上限的文件：文件在添加为附件后\
+会立即存入你的 OneDrive，邮件中会附上其链接，与 Outlook \
+一样。
+"""

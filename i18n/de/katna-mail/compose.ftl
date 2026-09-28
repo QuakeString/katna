@@ -78,6 +78,17 @@ compose-drive-share-link = Per Link freigeben
 compose-drive-send-without = Ohne Freigabe senden
 compose-drive-share-cancel = Abbrechen
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } ist größer als { $limit } und wird deshalb in Ihrem OneDrive abgelegt; die Nachricht enthält einen Link.
+compose-onedrive-tip = In Ihrem OneDrive; die Nachricht enthält einen Link
+compose-onedrive-allow = OneDrive erlauben
+compose-onedrive-allow-tip = Melden Sie sich erneut bei Microsoft an, damit Katna große Dateien in Ihrem OneDrive ablegen darf
+compose-onedrive-not-uploaded = { $name } ist noch nicht in OneDrive
+compose-onedrive-share-failed = Die Dateien in OneDrive konnten nicht freigegeben werden: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive kann die Dateien nicht für { $addresses } freigeben. Stattdessen kann jeder mit dem Link sie öffnen.
+   *[other] OneDrive kann die Dateien nicht für { $addresses } freigeben. Stattdessen kann jeder mit dem Link sie öffnen.
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = Dateien hier ablegen
 compose-drop-here = Hier ablegen
 compose-paste-keep-formatting = Formatierung beibehalten

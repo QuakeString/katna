@@ -1053,3 +1053,12 @@ artık sunucudan da getiriyor. Katna denetlerken oklar “Yenile”de ve
 Gelen Kutusu'nun yanında döner, işlem bir andan uzun sürerse üstte “Yeni
 postalar denetleniyor…” görünür.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Büyük dosyalar OneDrive ile"
+text = """
+Outlook.com, Hotmail ve diğer Microsoft hesapları artık posta sınırını
+aşan dosyaları Google hesapları gibi gönderiyor: dosya eklediğiniz anda
+OneDrive'ınıza gider ve ileti, Outlook'taki gibi dosyanın bağlantısını
+taşır.
+"""

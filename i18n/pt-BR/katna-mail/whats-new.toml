@@ -1061,3 +1061,12 @@ lista, agora também busca no servidor. Enquanto o Katna verifica, as
 setas giram em “Atualizar” e ao lado da Caixa de entrada, e “Verificando
 novos e-mails…” aparece no topo se demorar mais que um instante.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Arquivos grandes pelo OneDrive"
+text = """
+Outlook.com, Hotmail e outras contas Microsoft agora enviam arquivos
+acima do limite do e-mail como as contas Google: o arquivo vai para o
+seu OneDrive assim que você o anexa, e a mensagem leva o link dele, como
+no Outlook.
+"""

@@ -1073,3 +1073,12 @@ Mentre Katna controlla, le frecce girano su «Aggiorna» e accanto a Posta
 in arrivo, e «Controllo della nuova posta…» compare in alto se ci vuole
 più di un momento.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "File grandi con OneDrive"
+text = """
+Outlook.com, Hotmail e gli altri account Microsoft ora inviano i file
+oltre il limite della posta come gli account Google: il file va nel tuo
+OneDrive appena lo alleghi, e il messaggio contiene il suo link, come in
+Outlook.
+"""

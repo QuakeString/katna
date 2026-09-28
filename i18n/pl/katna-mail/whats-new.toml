@@ -1053,3 +1053,12 @@ dane także z serwera. Gdy Katna sprawdza, strzałki obracają się przy
 „Odśwież” i obok folderu Odebrane, a u góry pojawia się „Sprawdzanie
 nowej poczty…”, jeśli trwa to dłużej niż chwilę.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Duże pliki przez OneDrive"
+text = """
+Konta Outlook.com, Hotmail i inne konta Microsoft wysyłają teraz pliki
+przekraczające limit poczty tak jak konta Google: plik trafia na Twój
+OneDrive od razu po dołączeniu, a wiadomość zawiera jego link, jak w
+Outlooku.
+"""

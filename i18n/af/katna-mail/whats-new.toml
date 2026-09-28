@@ -1028,3 +1028,11 @@ Asblik leeg”. “Herlaai” bo die lys haal nou ook van die bediener af.
 Terwyl Katna kyk, draai die pyle op “Herlaai” en langs Inkassie, en “Kyk
 tans vir nuwe e-pos…” verskyn bo as dit langer as 'n oomblik neem.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Groot lêers deur OneDrive"
+text = """
+Outlook.com, Hotmail en ander Microsoft-rekeninge stuur nou lêers bo die
+poslimiet soos Google-rekeninge: die lêer gaan na jou OneDrive sodra jy
+dit heg, en die boodskap bevat die skakel, soos in Outlook.
+"""

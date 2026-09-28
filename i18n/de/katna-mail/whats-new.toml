@@ -1085,3 +1085,12 @@ Während Katna prüft, drehen sich die Pfeile bei „Aktualisieren“ und
 neben dem Posteingang, und „Auf neue E-Mails wird geprüft…“ erscheint
 oben, wenn es länger dauert.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Große Dateien über OneDrive"
+text = """
+Outlook.com, Hotmail und andere Microsoft-Konten senden Dateien über dem
+Mail-Limit jetzt wie Google-Konten: Die Datei landet sofort nach dem
+Anhängen in Ihrem OneDrive, und die Nachricht enthält ihren Link, wie in
+Outlook.
+"""

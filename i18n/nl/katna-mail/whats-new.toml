@@ -1062,3 +1062,12 @@ nu ook gegevens van de server op. Terwijl Katna controleert, draaien de
 pijlen op ‘Vernieuwen’ en naast Inbox, en bovenaan staat ‘Controleren op
 nieuwe e-mail…’ als het langer dan even duurt.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Grote bestanden via OneDrive"
+text = """
+Outlook.com, Hotmail en andere Microsoft-accounts versturen bestanden
+boven de mailgrens nu net als Google-accounts: het bestand gaat direct
+na het bijvoegen naar je OneDrive, en het bericht bevat de link, net als
+in Outlook.
+"""

@@ -1072,3 +1072,12 @@ berputar pada “Muat semula” dan di sebelah Peti Masuk, dan “Menyemak mel
 baharu…” dipaparkan di atas jika ia mengambil masa lebih daripada
 seketika.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Fail besar melalui OneDrive"
+text = """
+Akaun Outlook.com, Hotmail dan akaun Microsoft lain kini menghantar fail
+yang melebihi had mel seperti akaun Google: fail dihantar ke OneDrive
+anda sebaik sahaja anda melampirkannya, dan mesej membawa pautannya,
+seperti dalam Outlook.
+"""

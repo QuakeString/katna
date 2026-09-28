@@ -1063,3 +1063,12 @@ server. Saat Katna memeriksa, panah berputar di “Muat ulang” dan di
 samping Kotak Masuk, dan “Memeriksa email baru…” muncul di atas jika
 butuh lebih dari sesaat.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "File besar melalui OneDrive"
+text = """
+Akun Outlook.com, Hotmail, dan akun Microsoft lainnya kini mengirim file
+yang melebihi batas email seperti akun Google: file langsung dikirim ke
+OneDrive Anda begitu dilampirkan, dan pesan membawa link-nya, seperti di
+Outlook.
+"""

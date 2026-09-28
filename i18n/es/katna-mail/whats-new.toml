@@ -1067,3 +1067,12 @@ también consulta el servidor. Mientras Katna busca, las flechas giran en
 «Actualizar» y junto a Recibidos, y «Buscando correo nuevo…» aparece
 arriba si tarda más de un momento.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Archivos grandes con OneDrive"
+text = """
+Outlook.com, Hotmail y otras cuentas de Microsoft ahora envían archivos
+que superan el límite del correo igual que las cuentas de Google: el
+archivo va a tu OneDrive en cuanto lo adjuntas, y el mensaje lleva su
+enlace, como en Outlook.
+"""

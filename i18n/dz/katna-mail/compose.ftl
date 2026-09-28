@@ -76,6 +76,16 @@ compose-drive-share-link = འབྲེལ་མཐུད་དང་བརྗ�
 compose-drive-send-without = བརྗེ་སོར་མ་འབད་བར་གཏང་།
 compose-drive-share-cancel = ཆ་མེད་གཏང་།
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } འདི་ { $limit } ལས་ལྷག་སྟེ་ཡོདཔ་ལས་ ཁྱོད་ཀྱི་ OneDrive ནང་འགྱོཝ་ཨིནམ་དང་ འཕྲིན་ཡིག་གི་ཁར་ འབྲེལ་མཐུད་ཅིག་ཡོད།
+compose-onedrive-tip = ཁྱོད་ཀྱི་ OneDrive ནང་། འཕྲིན་ཡིག་གི་ཁར་ འབྲེལ་མཐུད་ཅིག་ཡོད།
+compose-onedrive-allow = OneDrive གནང་བ་སྤྲོད།
+compose-onedrive-allow-tip = ཡིག་སྣོད་ཆེན་པོ་ཚུ་ ཁྱོད་ཀྱི་ OneDrive ནང་ Katna གིས་བཙུགས་ཚུགསཔ་བཟོ་ནིའི་དོན་ལུ་ Microsoft གིས་ ལོག་ནང་བསྐྱོད་འབད།
+compose-onedrive-not-uploaded = { $name } ད་ཅིག་ OneDrive ནང་མིན་འདུག
+compose-onedrive-share-failed = OneDrive ནང་ ཡིག་སྣོད་ཚུ་ བརྗེ་སོར་འབད་མ་ཚུགས: { $error }
+compose-onedrive-share-text = { $count ->
+   *[other] OneDrive གིས་ { $addresses } དང་ ཡིག་སྣོད་ཚུ་ བརྗེ་སོར་འབད་མི་ཚུགས། དེ་གི་ཚབ་ལུ་ འབྲེལ་མཐུད་ཡོད་མི་ སུ་ཡང་ཁ་ཕྱེ་ཚུགས།
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
 compose-drop-here = ནཱ་ལུ་བཀོག
 compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག

@@ -78,6 +78,17 @@ compose-drive-share-link = লিংকৰে শ্বেয়াৰ কৰক
 compose-drive-send-without = শ্বেয়াৰ নকৰাকৈ পঠিয়াওক
 compose-drive-share-cancel = বাতিল কৰক
 compose-drive-card-detail = { $size } · Google Drive
+compose-onedrive-note = { $name } { $limit }তকৈ ডাঙৰ, গতিকে ই আপোনাৰ OneDrive-লৈ যায় আৰু বাৰ্তাত ইয়াৰ লিংক থাকে।
+compose-onedrive-tip = আপোনাৰ OneDrive-ত; বাৰ্তাত লিংক থাকে
+compose-onedrive-allow = OneDrive-ৰ অনুমতি দিয়ক
+compose-onedrive-allow-tip = ডাঙৰ ফাইল আপোনাৰ OneDrive-ত ৰাখিবলৈ Katna-ক অনুমতি দিবলৈ Microsoft-ৰে পুনৰ ছাইন ইন কৰক
+compose-onedrive-not-uploaded = { $name } এতিয়ালৈকে OneDrive-ত নাই
+compose-onedrive-share-failed = OneDrive-ত ফাইলবোৰ শ্বেয়াৰ কৰিব পৰা নগ'ল: { $error }
+compose-onedrive-share-text = { $count ->
+    [one] OneDrive-এ { $addresses }ৰ সৈতে ফাইলবোৰ শ্বেয়াৰ কৰিব নোৱাৰে। ইয়াৰ সলনি লিংক থকা যিকোনোৱে সেইবোৰ খুলিব পাৰে।
+   *[other] OneDrive-এ { $addresses }ৰ সৈতে ফাইলবোৰ শ্বেয়াৰ কৰিব নোৱাৰে। ইয়াৰ সলনি লিংক থকা যিকোনোৱে সেইবোৰ খুলিব পাৰে।
+}
+compose-onedrive-card-detail = { $size } · OneDrive
 compose-drop-files = ফাইলসমূহ ইয়াত এৰক
 compose-drop-here = ইয়াত এৰক
 compose-paste-keep-formatting = ফৰ্মেটিং ৰাখক

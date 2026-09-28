@@ -913,3 +913,12 @@ text = """
 也會從伺服器擷取郵件。Katna 檢查時，「重新整理」和收件匣旁的箭頭會轉動\
 ；如果需要較久，頂端會顯示「正在檢查新郵件…」。
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "透過 OneDrive 傳送大型檔案"
+text = """
+Outlook.com、Hotmail 等 Microsoft 帳戶現在\
+也能像 Google 帳戶一樣傳送超過郵件上限的檔案：檔案在附加後會立即\
+存入你的 OneDrive，郵件中會附上其連結，與 Outlook 相同\
+。
+"""

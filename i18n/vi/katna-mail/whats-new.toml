@@ -1029,3 +1029,12 @@ tải từ máy chủ. Khi Katna đang kiểm tra, các mũi tên xoay trên “
 và bên cạnh Hộp thư đến, còn “Đang kiểm tra thư mới…” hiện ở trên cùng
 nếu mất hơn một lúc.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Tệp lớn qua OneDrive"
+text = """
+Các tài khoản Outlook.com, Hotmail và tài khoản Microsoft khác nay gửi
+tệp vượt quá giới hạn thư giống như tài khoản Google: tệp được đưa lên
+OneDrive của bạn ngay khi bạn đính kèm, và thư kèm liên kết của tệp, như
+trong Outlook.
+"""

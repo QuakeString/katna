@@ -1100,3 +1100,12 @@ ang Katna, umiikot ang mga arrow sa “I-refresh” at sa tabi ng Inbox, at
 lalabas sa itaas ang “Tinitingnan kung may bagong mail…” kapag tumagal
 nang higit sa sandali.
 """
+
+["2026-09-28-2101-large-files-onedrive"]
+title = "Malalaking file sa pamamagitan ng OneDrive"
+text = """
+Ang mga account na Outlook.com, Hotmail, at iba pang Microsoft ay
+nagpapadala na ngayon ng file na lampas sa limitasyon ng mail tulad ng
+mga Google account: mapupunta ang file sa iyong OneDrive sa sandaling
+i-attach mo ito, at dala ng mensahe ang link nito, tulad sa Outlook.
+"""
