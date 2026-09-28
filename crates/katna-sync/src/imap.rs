@@ -1287,6 +1287,9 @@ fn istring(value: &IString<'_>) -> String {
 }
 
 /// `12 FETCH (X-GM-THRID 1278455344230334865 UID 4)` → `(4, 1278…)`.
+/// A storage limit from one pebibyte (in KiB) up means no limit.
+const UNLIMITED_KIB: u64 = 1 << 40;
+
 /// The storage limit of an untagged `QUOTA root (STORAGE used limit …)`
 /// response, whose numbers count units of 1024 bytes. `None` for other
 /// responses and for roots without a storage limit.
@@ -1309,7 +1312,10 @@ fn storage_quota(line: &str) -> Option<Quota> {
             }
             let used: u64 = used.parse().ok()?;
             let limit: u64 = limit.parse().ok()?;
-            (limit > 0).then(|| Quota {
+            // Unlimited plans report a huge limit instead (a Google
+            // Workspace account sent 7 × 2⁵⁰ KiB); no mailbox has a
+            // pebibyte.
+            (limit > 0 && limit < UNLIMITED_KIB).then(|| Quota {
                 used: used.saturating_mul(1024),
                 limit: limit.saturating_mul(1024),
             })
@@ -1621,5 +1627,9 @@ mod tests {
         assert_eq!(storage_quota("QUOTA \"\" (MESSAGE 3 1000)"), None);
         assert_eq!(storage_quota("QUOTAROOT INBOX \"\""), None);
         assert_eq!(storage_quota("QUOTA \"\" (STORAGE 1 0)"), None);
+        assert_eq!(
+            storage_quota("QUOTA \"\" (STORAGE 12 7881299347898368)"),
+            None
+        );
     }
 }
