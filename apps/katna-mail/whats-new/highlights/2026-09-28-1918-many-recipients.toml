@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Room for many recipients"
+text = """
+Recipients after the first line now use the whole width, and a long list
+scrolls within a few lines, so the message itself always stays in reach.
+Leave the field and it folds to one line, such as "Kay, Sam, 19 more"; click
+it to see them all again.
+"""
