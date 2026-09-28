@@ -2,7 +2,8 @@
 
 //! Icons built into the binary, served to GPUI's `svg()` element, and the
 //! language picker's flags (`flags/`, from `flag-icons`, MIT) and Katna's
-//! logo (`logo/`), served to `img()`.
+//! logo (`logo/`), served to `img()`. The GitHub and X marks
+//! (`icons/brand-*.svg`) are from Simple Icons, CC0.
 
 use std::borrow::Cow;
 
@@ -27,6 +28,9 @@ icons!(
     "attachment",
     "back",
     "bolt",
+    "brand-github",
+    "brand-linkedin",
+    "brand-x",
     "calendar",
     "check-circle",
     "check",

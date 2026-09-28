@@ -387,7 +387,10 @@ impl MailWindow {
             .occlude()
             .w(px(width))
             .when(phone, |d| d.h_full())
-            .when(!phone, |d| d.max_h_full().min_h_0())
+            .when(!phone, |d| {
+                d.max_h(px(super::about::dialog_max_height(window)))
+                    .min_h_0()
+            })
             .flex()
             .flex_col()
             .overflow_hidden()
