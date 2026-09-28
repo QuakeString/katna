@@ -77,6 +77,12 @@ It also carries clipboard and drag-and-drop content beyond plain text
   kind before it turns Pending into a move, so after typing nothing counted
   as hovered and the drop landed nowhere.
 
+It also raises windows with another app's activation token
+(`src/linux/activation.rs`): `set_activation_token(token)` keeps the token
+a tray icon or notification passed along, and the next Wayland
+`Window::activate` uses it, so the window comes forward (and out of
+minimized) instead of only asking for attention.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream

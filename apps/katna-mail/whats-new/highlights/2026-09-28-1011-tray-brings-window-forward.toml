@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The tray icon brings Katna Mail forward"
+text = """
+Clicking the tray icon, or Open Inbox, New Message or Preferences in its
+menu, now brings the Katna Mail window to the front on Wayland, even when
+it was minimized or behind other windows. Before, KDE only flashed it in
+the taskbar.
+"""

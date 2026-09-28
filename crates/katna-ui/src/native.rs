@@ -3,13 +3,15 @@
 //! What Katna adds to GPUI's platform backend, in one place for every
 //! system. On Linux this is Katna's patched copy of GPUI's backend
 //! (`vendor/gpui-pre-linux/KATNA.md`): rich clipboard and drops, window
-//! placement, compositor blur and the KDE global menu. On Windows GPUI's
+//! placement, compositor blur, the KDE global menu and raising a window
+//! with another app's activation token. On Windows GPUI's
 //! own backend is used and these fall back to what it does by itself.
 
 #[cfg(not(windows))]
 pub use gpui_linux::{
     DroppedContent, Placement, clipboard_html, compositor_blur, dropped_content, html_item,
-    placement_session, read_rich, restore_placement, set_client_corner_radius, set_kde_appmenu,
+    placement_session, read_rich, restore_placement, set_activation_token,
+    set_client_corner_radius, set_kde_appmenu,
 };
 
 #[cfg(windows)]
@@ -76,6 +78,9 @@ mod fallback {
     }
 
     pub fn set_client_corner_radius(_radius: f32) {}
+
+    /// Windows raises windows without a token.
+    pub fn set_activation_token(_token: impl Into<String>) {}
 
     /// The KDE global menu exists only on Linux.
     pub fn set_kde_appmenu(_service: impl Into<String>, _object_path: impl Into<String>) {}
