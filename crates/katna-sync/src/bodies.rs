@@ -127,6 +127,21 @@ async fn fetch_and_save<B: MailBackend>(
         };
         let parsed = katna_import::parse_message(raw).unwrap_or_default();
         batch.set_message_body(id, raw, parsed.snippet.as_deref(), parsed.has_attachments)?;
+        // A delivery or read receipt: a tick beside that recipient of the
+        // sent message. The receipt itself stays in the mailbox.
+        if let Some(report) = katna_import::report::parse(raw) {
+            use katna_import::report::Outcome;
+            use katna_store::ReceiptKind;
+            let at = parsed.date.unwrap_or_else(unix_now);
+            for (recipient, outcome) in &report.outcomes {
+                let kind = match outcome {
+                    Outcome::Delivered => ReceiptKind::Delivered,
+                    Outcome::Failed => ReceiptKind::Failed,
+                    Outcome::Read => ReceiptKind::Read,
+                };
+                batch.record_receipt(&report.original, recipient, kind, at)?;
+            }
+        }
         // Mail stored before its structure was read, or whose structure
         // could not be read, gets its list of files now.
         batch.list_attachments(
@@ -147,4 +162,10 @@ async fn fetch_and_save<B: MailBackend>(
     }
     batch.commit()?;
     Ok(saved)
+}
+
+fn unix_now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |elapsed| elapsed.as_secs() as i64)
 }

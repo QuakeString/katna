@@ -37,6 +37,13 @@ reader-date-ago = { $date } ({ $ago })
 reader-me = me
 # Under the sender's name. $names: the recipients, separated by commas ("me, Bob").
 reader-to = to { $names }
+# Before the recipients when each has a delivered or read tick.
+reader-to-label = to
+reader-tick-delivered = Delivered { $when }
+reader-tick-no-bounce = Sent { $when }; no bounce came back, so it most likely arrived
+reader-tick-bounced = Not delivered: bounced { $when }
+reader-tick-read = Read { $when } (read receipt)
+reader-tick-opened = Opened, last { $when } (open tracking)
 # Tooltip of the star button on a starred message.
 reader-starred = Starred
 # Tooltip of the star button on a message that is not starred.

@@ -36,6 +36,7 @@ use crate::widgets::{
 };
 
 mod security;
+mod ticks;
 mod tracking;
 use security::Secured;
 
@@ -96,9 +97,11 @@ struct Part {
     /// A read receipt for one of the user's messages; `None` inside
     /// until looked at.
     receipt: Option<Option<crate::receipts::Receipt>>,
-    /// The user's own message's `Message-ID`, when the conversation has a
-    /// read receipt to match it with.
+    /// The user's own message's `Message-ID`.
     message_id: Option<String>,
+    /// For the user's own message: its recipients' delivery and read
+    /// ticks, by address (lower case).
+    ticks: std::collections::HashMap<String, ticks::Tick>,
 }
 
 impl Part {
@@ -115,6 +118,7 @@ impl Part {
             activity: None,
             receipt: None,
             message_id: None,
+            ticks: std::collections::HashMap::new(),
         }
     }
 
@@ -288,14 +292,33 @@ impl Conversation {
                 part.receipt = Some((!mine(part)).then(|| mail.receipt(part.id)).flatten());
             }
         }
-        let receipts = self
-            .parts
-            .iter()
-            .any(|p| matches!(p.receipt, Some(Some(_))));
         for part in &mut self.parts {
-            if receipts && part.message_id.is_none() && mine(part) {
+            if part.message_id.is_none() && mine(part) {
                 part.message_id = mail.message_id_header(part.id);
             }
+        }
+        let ticks: Vec<_> = self
+            .parts
+            .iter()
+            .map(|part| match &part.message_id {
+                Some(id) if mine(part) => {
+                    // Read receipts in the conversation, with when they came.
+                    let read: Vec<_> = self
+                        .parts
+                        .iter()
+                        .filter_map(|p| {
+                            let receipt = p.receipt.as_ref()?.as_ref()?;
+                            (receipt.original.as_ref() == Some(id))
+                                .then(|| (receipt, p.row.as_ref().and_then(|r| r.date)))
+                        })
+                        .collect();
+                    ticks::ticks(&mail.receipts(id), &read, part.activity.as_ref())
+                }
+                _ => std::collections::HashMap::new(),
+            })
+            .collect();
+        for (part, ticks) in self.parts.iter_mut().zip(ticks) {
+            part.ticks = ticks;
         }
     }
 
@@ -900,7 +923,44 @@ impl MailWindow {
         let recipients = view.map(|v| {
             let mut all = v.to.clone();
             all.extend(v.cc.iter().cloned());
-            tr!("reader-to", names = names(&all))
+            if part.ticks.is_empty() {
+                return div()
+                    .min_w_0()
+                    .truncate()
+                    .child(tr!("reader-to", names = names(&all)))
+                    .into_any_element();
+            }
+            // Each name with its delivered or read tick.
+            let mut seen = std::collections::HashSet::new();
+            let people: Vec<(bool, &katna_render::Address)> = all
+                .iter()
+                .filter(|a| seen.insert(a.email.to_lowercase()))
+                .map(|a| (self.is_me(&a.email), a))
+                .collect();
+            let labels = recipient_names(&people, full_names);
+            let count = labels.len();
+            div()
+                .min_w_0()
+                .flex()
+                .flex_row()
+                .items_center()
+                .overflow_hidden()
+                .whitespace_nowrap()
+                .child(div().flex_none().mr(px(4.0)).child(tr!("reader-to-label")))
+                .children(people.iter().zip(labels).enumerate().map(
+                    |(i, ((_, address), label))| {
+                        let tick = part.ticks.get(&address.email.to_lowercase());
+                        div()
+                            .flex_none()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(label)
+                            .children(self.render_tick(tick, ("part-tick", ix * 1000 + i), th))
+                            .when(i + 1 < count, |d| d.child(div().mr(px(4.0)).child(",")))
+                    },
+                ))
+                .into_any_element()
         });
         // Clicking \u{201c}to\u{201d} turns the details the other way from the
         // Full headers setting.
@@ -970,7 +1030,7 @@ impl MailWindow {
                                     }
                                     cx.notify();
                                 }))
-                                .child(div().min_w_0().truncate().child(recipients))
+                                .child(recipients)
                                 .child(icon("drop-down", th.text_faint, 18.0)),
                         )
                     }),

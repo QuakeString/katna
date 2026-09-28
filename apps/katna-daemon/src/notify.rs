@@ -7,7 +7,7 @@
 //! the inbox anywhere.
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     sync::{
         Mutex, Weak,
         atomic::{AtomicBool, Ordering},
@@ -31,14 +31,45 @@ const NEWER_THAN: Duration = Duration::from_secs(2 * 24 * 3600);
 /// At most this many messages go into one notification.
 const PER_NOTIFICATION: u32 = 50;
 
+/// Unread inbox mail newer than this many is not looked for: a day of mail
+/// for a busy account, far more than one notification shows.
+const CANDIDATES: u32 = 1000;
+
 /// What was already looked at for one account.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 struct Seen {
-    /// Messages up to this one were considered.
+    /// Messages up to this one were stored before watching began.
     after: MessageId,
     /// `false` until the account's first sync: a new account's mail is
     /// not news.
     primed: bool,
+    /// Newer messages already announced (or skipped while notifications
+    /// were off). A message is news when it reaches the inbox, not when it
+    /// is stored: Gmail's new mail can land in All Mail a sync before its
+    /// inbox copy, and its tab can change from Updates to Primary.
+    announced: HashSet<MessageId>,
+}
+
+impl Seen {
+    /// Unread inbox mail dated `since` or later that was not looked at
+    /// yet; nothing the first time, when all mail is old news.
+    fn fresh(
+        &mut self,
+        store: &Store,
+        account: AccountId,
+        since: i64,
+    ) -> katna_store::Result<Vec<MessageId>> {
+        if !self.primed {
+            self.after = store.latest_message(account)?;
+            self.primed = true;
+            return Ok(Vec::new());
+        }
+        Ok(store
+            .new_inbox_mail(account, self.after, since, CANDIDATES)?
+            .into_iter()
+            .filter(|id| self.announced.insert(*id))
+            .collect())
+    }
 }
 
 /// New mail to announce: the account's address, what to show, and the
@@ -103,6 +134,7 @@ impl NewMailNotices {
         self.seen.lock().unwrap().entry(account).or_insert(Seen {
             after: latest,
             primed: latest.0 > 0,
+            announced: HashSet::new(),
         });
     }
 
@@ -205,26 +237,19 @@ impl NewMailNotices {
 
     /// The account's address, its new mail and their IDs, if any.
     fn find_new(&self, store: &Store, account: AccountId) -> katna_store::Result<Option<Found>> {
-        let latest = store.latest_message(account)?;
-        let seen = {
+        let since = unix_now().saturating_sub(NEWER_THAN.as_secs() as i64);
+        let mut ids = {
             let mut all = self.seen.lock().unwrap();
             let Some(seen) = all.get_mut(&account) else {
                 return Ok(None);
             };
-            let before = *seen;
-            seen.after = latest.max(seen.after);
-            seen.primed = true;
-            before
+            seen.fresh(store, account, since)?
         };
-        if !seen.primed || !self.enabled.load(Ordering::Relaxed) {
+        if ids.is_empty() || !self.enabled.load(Ordering::Relaxed) {
             return Ok(None);
         }
-        let since = unix_now().saturating_sub(NEWER_THAN.as_secs() as i64);
-        let mut ids = store.new_inbox_mail(account, seen.after, since, PER_NOTIFICATION)?;
-        ids.retain(|id| id.0 <= latest.0);
-        if ids.is_empty() {
-            return Ok(None);
-        }
+        // The newest, when there are more than one notification shows.
+        ids.drain(..ids.len().saturating_sub(PER_NOTIFICATION as usize));
         let origin = store
             .accounts()?
             .into_iter()
@@ -396,4 +421,78 @@ fn unix_now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |d| d.as_secs() as i64)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use katna_core::{AccountKind, MailCategory};
+    use katna_store::{Added, Mode, RemoteMessage};
+
+    fn message(uid: u32, gm_msgid: u64, category: MailCategory) -> RemoteMessage<'static> {
+        RemoteMessage {
+            uid,
+            message_id_hdr: Some("1@example.org"),
+            subject: Some("Hello"),
+            date: Some(unix_now()),
+            size: 1234,
+            flags: MessageFlags::empty(),
+            keywords: &[],
+            has_attachments: false,
+            list_id: None,
+            participants: &[],
+            in_reply_to: None,
+            references: &[],
+            gm_thread_id: None,
+            gm_msgid: Some(gm_msgid),
+            category: Some(category),
+            attachments: &[],
+        }
+    }
+
+    #[test]
+    fn mail_is_news_when_it_reaches_the_inbox() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = katna_core::Paths::with_root(tmp.path());
+        let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        let account = store
+            .add_account(AccountKind::Imap, "Gmail", "me@gmail.com")
+            .unwrap()
+            .id;
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let all_mail = batch
+            .upsert_folder(account, "[Gmail]/All Mail", Some(FolderRole::All))
+            .unwrap();
+        batch.commit().unwrap();
+        let mut seen = Seen {
+            after: MessageId(0),
+            primed: false,
+            announced: HashSet::new(),
+        };
+        let since = unix_now() - 60;
+        assert!(seen.fresh(&store, account, since).unwrap().is_empty());
+
+        // All Mail syncs first: the message is stored, but not in the inbox.
+        let mut batch = store.mail_batch().unwrap();
+        let added = batch
+            .add_remote_message(account, all_mail, &message(1, 7, MailCategory::Primary))
+            .unwrap();
+        let Added::Message(id) = added else {
+            panic!("{added:?}");
+        };
+        batch.commit().unwrap();
+        assert!(seen.fresh(&store, account, since).unwrap().is_empty());
+
+        // Its inbox copy comes with the next sync, and is news once.
+        let mut batch = store.mail_batch().unwrap();
+        batch
+            .add_remote_message(account, inbox, &message(1, 7, MailCategory::Primary))
+            .unwrap();
+        batch.commit().unwrap();
+        assert_eq!(seen.fresh(&store, account, since).unwrap(), [id]);
+        assert!(seen.fresh(&store, account, since).unwrap().is_empty());
+    }
 }
