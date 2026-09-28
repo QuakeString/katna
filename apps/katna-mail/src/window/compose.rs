@@ -599,6 +599,52 @@ fn draft(
     }
 }
 
+/// A message already being written when another is started.
+#[derive(Debug, Clone, Copy)]
+struct Existing {
+    mode: Mode,
+    closing: bool,
+    touched: bool,
+    /// It answers the conversation open now.
+    here: bool,
+    /// Its window of its own is still there.
+    window_open: bool,
+}
+
+/// What starting another message does with the one being written.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum OnNew {
+    /// Its reply is in the open conversation: the cursor goes back to it.
+    Focus,
+    /// It is in its own window: that comes forward.
+    RaiseWindow,
+    /// It shows elsewhere in the mail window, and stays.
+    ShowElsewhere,
+    /// Its window is gone without closing it: it is saved as a draft and
+    /// the new message starts.
+    SaveAndReplace,
+    /// Nothing was written in it: the new message takes its place.
+    Replace,
+}
+
+impl Existing {
+    fn on_new_message(self) -> OnNew {
+        if self.closing || !self.touched {
+            OnNew::Replace
+        } else if self.mode == Mode::Inline && self.here {
+            OnNew::Focus
+        } else if self.mode == Mode::Window {
+            if self.window_open {
+                OnNew::RaiseWindow
+            } else {
+                OnNew::SaveAndReplace
+            }
+        } else {
+            OnNew::ShowElsewhere
+        }
+    }
+}
+
 impl MailWindow {
     /// Opens the compose window. `source` picks the message a reply or
     /// forward starts from; by default the newest of the open conversation.
@@ -610,23 +656,42 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let open = self.reader.as_ref().map(|r| r.key);
-        if let Some(compose) = &mut self.compose
-            && !compose.closing
-            && compose.touched(cx)
-        {
-            let inline_here = compose.mode == Mode::Inline && compose.conversation == open;
-            if inline_here {
-                window.focus(&compose.body.focus_handle(cx), cx);
-            } else if compose.mode == Mode::Window {
+        let window_open = self
+            .writing
+            .compose_window
+            .is_some_and(|handle| handle.update(cx, |_, _, _| ()).is_ok());
+        let existing = self.compose.as_ref().map(|c| Existing {
+            mode: c.mode,
+            closing: c.closing,
+            touched: c.touched(cx),
+            here: c.conversation == open,
+            window_open,
+        });
+        match existing.map(Existing::on_new_message) {
+            Some(OnNew::Focus) => {
+                if let Some(c) = &self.compose {
+                    window.focus(&c.body.focus_handle(cx), cx);
+                }
+                cx.notify();
+                return;
+            }
+            Some(OnNew::RaiseWindow) => {
                 self.pop_out_compose(window, cx);
-            } else {
-                if compose.mode == Mode::Minimized {
-                    compose.mode = Mode::Open;
+                cx.notify();
+                return;
+            }
+            Some(OnNew::ShowElsewhere) => {
+                if let Some(c) = &mut self.compose
+                    && c.mode == Mode::Minimized
+                {
+                    c.mode = Mode::Open;
                 }
                 self.show_snackbar(tr!("compose-open-elsewhere"), None, cx);
+                cx.notify();
+                return;
             }
-            cx.notify();
-            return;
+            Some(OnNew::SaveAndReplace) => self.close_compose_saving(cx),
+            Some(OnNew::Replace) | None => {}
         }
         let date = |d: Option<i64>| {
             d.and_then(|d| format::local(d, &self.tz))
@@ -2461,6 +2526,57 @@ fn sender_label(account: &katna_core::Account) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn existing(mode: Mode, window_open: bool, here: bool) -> Existing {
+        Existing {
+            mode,
+            closing: false,
+            touched: true,
+            here,
+            window_open,
+        }
+    }
+
+    #[test]
+    fn a_closed_popout_never_takes_over_the_next_reply() {
+        // Its window was closed from its own title bar: saved, and the
+        // reply starts fresh.
+        assert_eq!(
+            existing(Mode::Window, false, false).on_new_message(),
+            OnNew::SaveAndReplace
+        );
+        assert_eq!(
+            existing(Mode::Window, false, true).on_new_message(),
+            OnNew::SaveAndReplace
+        );
+        // Still open: it comes forward.
+        assert_eq!(
+            existing(Mode::Window, true, false).on_new_message(),
+            OnNew::RaiseWindow
+        );
+    }
+
+    #[test]
+    fn untouched_or_closing_messages_make_way() {
+        let mut e = existing(Mode::Open, false, false);
+        e.touched = false;
+        assert_eq!(e.on_new_message(), OnNew::Replace);
+        let mut e = existing(Mode::Window, false, false);
+        e.closing = true;
+        assert_eq!(e.on_new_message(), OnNew::Replace);
+    }
+
+    #[test]
+    fn a_reply_here_gets_the_cursor_back() {
+        assert_eq!(
+            existing(Mode::Inline, false, true).on_new_message(),
+            OnNew::Focus
+        );
+        assert_eq!(
+            existing(Mode::Inline, false, false).on_new_message(),
+            OnNew::ShowElsewhere
+        );
+    }
 
     #[test]
     fn scroll_offsets_snap_to_device_pixels() {

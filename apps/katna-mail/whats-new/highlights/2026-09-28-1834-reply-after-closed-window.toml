@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Reply starts fresh after closing a message window"
+text = """
+Closing a message written in its own window now keeps it in Drafts, and
+Reply, Reply all and Forward open a new message again instead of bringing
+the old one back.
+"""
