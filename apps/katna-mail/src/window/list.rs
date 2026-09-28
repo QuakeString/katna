@@ -345,24 +345,14 @@ impl MailWindow {
         let select = self.with_menu(select, Menu::Select, th, cx);
         let mut bar = toolbar(th).child(select);
         if checked == 0 {
-            bar = bar
-                .child(
-                    icon_button("refresh", "refresh", 20.0, th)
-                        .tooltip(tip(tr!("list-refresh"), th))
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)),
-                        ),
-                )
-                .child({
-                    let more = icon_button("list-more", "more", 20.0, th)
-                        .when(self.menu != Some(Menu::ListMore), |d| {
-                            d.tooltip(tip(tr!("list-more"), th))
-                        })
-                        .on_click(
-                            cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
-                        );
-                    self.with_menu(more, Menu::ListMore, th, cx)
-                });
+            bar = bar.child(self.refresh_button("refresh", th, cx)).child({
+                let more = icon_button("list-more", "more", 20.0, th)
+                    .when(self.menu != Some(Menu::ListMore), |d| {
+                        d.tooltip(tip(tr!("list-more"), th))
+                    })
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
+                self.with_menu(more, Menu::ListMore, th, cx)
+            });
         } else {
             let any_unread = self.checked_rows().iter().any(|r| r.unread);
             let read_button = if any_unread {
@@ -547,17 +537,43 @@ impl MailWindow {
                     .text_color(rgba(th.text_dim))
                     .child(label),
             )
-            .child(
-                icon_button("refresh", "refresh", 20.0, th)
-                    .tooltip(tip(tr!("list-refresh"), th))
-                    .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx))),
-            )
+            .child(self.refresh_button("refresh", th, cx))
             .child(self.with_menu(more, Menu::ListMore, th, cx))
             .into_any_element()
     }
 
     /// Archive, spam and delete, for the ticked lines or the open
     /// conversation.
+    /// Refresh, whose arrow turns while mail is being checked for.
+    fn refresh_button(
+        &self,
+        id: &'static str,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Stateful<Div> {
+        if !self.checking_mail() {
+            return icon_button(id, "refresh", 20.0, th)
+                .tooltip(tip(tr!("list-refresh"), th))
+                .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)));
+        }
+        // Like `icon_button`, with the arrow turning.
+        div()
+            .id(id)
+            .size(px(40.0))
+            .flex_none()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .tooltip(tip(tr!("list-checking"), th))
+            .child(super::nav_menu::turning_arrow(
+                "refresh-turning",
+                th.text_dim,
+                20.0,
+            ))
+    }
+
     /// Archive, Report spam and Delete, less those `squeeze` leaves to
     /// the More menu.
     pub(super) fn action_buttons(

@@ -1016,3 +1016,21 @@ hesaplar’ı ya da bunlardan birini seçin; izlenen iletiler, oranlar,
 grafik, konu satırları ve Posta kutunuz seçiminize göre değişir. Rapor
 hangi hesabı gösterdiğini belirtir ve seçiminizi hatırlar.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Daha yeni ve Daha eski her zaman araç çubuğunda"
+text = """
+Okuma bölmesi ne kadar dar olursa olsun, sayaç ile Daha yeni ve Daha eski
+okları araç çubuğunun sağında kalır. En az kullandığınız düğmeler ise tek
+tek Diğer menüsüne taşınır; kişi ayrıntıları ve özgün renkler anahtarları
+da bunlara dahildir.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Her boyutta dosya gönderin"
+text = """
+Google ile oturum açmış bir hesapta, 25 MB posta sınırını aşan dosya
+eklediğiniz anda Google Drive'ınıza gider ve ileti, Gmail'deki gibi
+dosyanın bağlantısını taşır. Gönder'e bastığınızda alıcılarınızla
+paylaşılır; Katna yalnızca birine erişim verilemiyorsa sorar.
+"""

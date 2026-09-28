@@ -34,6 +34,11 @@ contact-number-copied = Number copied
 # Their time now, from the time zone their mail is dated in: "9:41 PM
 # their time (UTC+5:30)".
 contact-local-time = { $time } their time ({ $offset })
+# Shown for mail only between the user's own addresses, instead of the
+# mail exchanged with them.
+contact-own-account = This is one of your accounts.
+# The panel when the open conversation names no one.
+contact-nobody = No one to show for this conversation
 contact-conversations = Recent conversations
 # Under the first few recent conversations: show all of them, and fold
 # them back.

@@ -992,3 +992,21 @@ Alle rekeninge of een daarvan, en die nagespoorde boodskappe, koerse,
 grafiek, onderwerpreëls en Jou posbus volg jou keuse. Die verslag sê
 watter rekening dit wys en onthou jou keuse.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "Nuwer en Ouer altyd op die nutsbalk"
+text = """
+Hoe smal die leesruit ook al is, die teller en die Nuwer- en Ouer-pyle bly
+regs op sy nutsbalk. Die knoppies wat jy die minste gebruik, skuif eerder
+een vir een na die Meer-kieslys, insluitend die kontakbesonderhede- en
+oorspronklike kleure-skakelaars.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Stuur lêers van enige grootte"
+text = """
+Met 'n rekening wat met Google aangemeld is, gaan 'n lêer bo die 25
+MB-poslimiet na jou Google Drive sodra jy dit heg, en die boodskap bevat
+die skakel, soos in Gmail. Dit word met jou ontvangers gedeel wanneer jy
+Stuur druk; Katna vra net as iemand nie toegang gegee kan word nie.
+"""

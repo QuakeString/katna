@@ -59,6 +59,23 @@ compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲ�
 compose-attachments-total = { $count ->
    *[other] ཡིག་སྣོད་ { $count }། { $size }
 }
+compose-drive-note = { $name } འདི་ { $limit } ལས་ལྷག་སྟེ་ཡོདཔ་ལས་ ཁྱོད་ཀྱི་ Google Drive ནང་འགྱོཝ་ཨིནམ་དང་ འཕྲིན་ཡིག་གི་ཁར་ འབྲེལ་མཐུད་ཅིག་ཡོད།
+compose-drive-tip = ཁྱོད་ཀྱི་ Google Drive ནང་། འཕྲིན་ཡིག་གི་ཁར་ འབྲེལ་མཐུད་ཅིག་ཡོད།
+compose-drive-uploading = སྤར་དོ། { $percent }%
+compose-drive-allow = Drive གནང་བ་སྤྲོད།
+compose-drive-allow-tip = ཡིག་སྣོད་ཆེན་པོ་ཚུ་ ཁྱོད་ཀྱི་ Drive ནང་ Katna གིས་བཙུགས་ཚུགསཔ་བཟོ་ནིའི་དོན་ལུ་ Google གིས་ ལོག་ནང་བསྐྱོད་འབད།
+compose-drive-retry = ལོག་འབད་རྩོལ་བསྐྱེད།
+compose-drive-sends-when-uploaded = { $name } སྤར་ཞིནམ་ལས་ གཏང་འོང་།
+compose-drive-not-uploaded = { $name } ད་ཅིག་ Google Drive ནང་མིན་འདུག
+compose-drive-share-failed = Google Drive ནང་ ཡིག་སྣོད་ཚུ་ བརྗེ་སོར་འབད་མ་ཚུགས: { $error }
+compose-drive-share-title = ཡིག་སྣོད་ཚུ་ མི་ཆ་མཉམ་དང་ བརྗེ་སོར་འབད་ནི་ཨིན་ན།
+compose-drive-share-text = { $count ->
+   *[other] Google རྩིས་ཐོ་མེད་མི་ { $addresses } དང་ Google Drive གིས་ ཡིག་སྣོད་ཚུ་ བརྗེ་སོར་འབད་མི་ཚུགས། དེ་གི་ཚབ་ལུ་ འབྲེལ་མཐུད་ཡོད་མི་ སུ་ཡང་ཁ་ཕྱེ་ཚུགས།
+}
+compose-drive-share-link = འབྲེལ་མཐུད་དང་བརྗེ་སོར་འབད།
+compose-drive-send-without = བརྗེ་སོར་མ་འབད་བར་གཏང་།
+compose-drive-share-cancel = ཆ་མེད་གཏང་།
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
 compose-drop-here = ནཱ་ལུ་བཀོག
 compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག

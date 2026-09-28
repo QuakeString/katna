@@ -9,9 +9,9 @@ use std::ops::Range;
 use std::f32::consts::FRAC_PI_2;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, ElementId, FontWeight, PathBuilder, SharedString,
-    SpringAnimation, Transformation, canvas, div, point, prelude::*, radians, rgba, svg,
-    uniform_list,
+    AnimationExt, AnyElement, Context, ElementId, FontWeight, MouseButton, MouseDownEvent,
+    PathBuilder, SharedString, SpringAnimation, Transformation, canvas, div, point, prelude::*,
+    radians, rgba, svg, uniform_list,
 };
 use katna_ui::Ripple;
 use katna_ui::motion::{self, lerp};
@@ -676,12 +676,22 @@ impl MailWindow {
 
     fn render_nav_row(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         match &self.nav_rows[ix] {
-            sidebar::Row::AllAccounts { expanded } => {
-                self.render_heading(ix, tr!("nav-all-accounts"), *expanded, th, cx)
-            }
-            sidebar::Row::Account { name, expanded, .. } => {
-                self.render_heading(ix, name.clone(), *expanded, th, cx)
-            }
+            sidebar::Row::AllAccounts { expanded } => self.render_heading(
+                ix,
+                tr!("nav-all-accounts"),
+                (*expanded, self.checking_mail()),
+                th,
+                cx,
+            ),
+            sidebar::Row::Account {
+                id, name, expanded, ..
+            } => self.render_heading(
+                ix,
+                name.clone(),
+                (*expanded, self.checking_account(*id)),
+                th,
+                cx,
+            ),
             sidebar::Row::Labels { account } => {
                 let account = *account;
                 let gmail = self.tree.is_gmail(account);
@@ -745,6 +755,7 @@ impl MailWindow {
                         selected: self.listing == listing,
                         bold: true,
                         chevron: Some(*expanded),
+                        checking: *view == Unified::Inbox && self.checking_mail(),
                     },
                     th,
                     cx,
@@ -779,6 +790,7 @@ impl MailWindow {
                         // Addresses are long; the count tells of new mail.
                         bold: false,
                         chevron: None,
+                        checking: *view == Unified::Inbox && self.checking_account(*account),
                     },
                     th,
                     cx,
@@ -817,6 +829,11 @@ impl MailWindow {
                         selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
                         bold: true,
                         chevron: has_children.then_some(*expanded),
+                        // New mail lands in the inbox.
+                        checking: *role == Role::Inbox
+                            && folder
+                                .and_then(|f| self.tree.account_of(f))
+                                .is_some_and(|a| self.checking_account(a)),
                     },
                     th,
                     cx,
@@ -831,7 +848,7 @@ impl MailWindow {
         &self,
         ix: usize,
         name: String,
-        expanded: bool,
+        (expanded, checking): (bool, bool),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -857,7 +874,21 @@ impl MailWindow {
                 th,
             ))
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
-            .child(div().flex_1().min_w_0().pb(px(2.0)).truncate().child(name))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_nav_menu(ix, event.position, cx);
+                }),
+            )
+            .child(div().min_w_0().pb(px(2.0)).truncate().child(name))
+            .child(div().flex_1().pl(px(6.0)).pb(px(3.0)).when(checking, |d| {
+                d.child(super::nav_menu::turning_arrow(
+                    "heading-checking",
+                    th.text_faint,
+                    12.0,
+                ))
+            }))
             .child(
                 div()
                     .id(("nav-heading-arrow", ix))
@@ -889,6 +920,7 @@ impl MailWindow {
             selected,
             bold,
             chevron,
+            checking,
         } = pill;
         let indent = 12.0 * depth as f32;
         let text = if selected {
@@ -936,6 +968,13 @@ impl MailWindow {
             .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .cursor_pointer()
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_nav_menu(ix, event.position, cx);
+                }),
+            )
             .child(Ripple::new(("nav-ripple", ix), rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
             .child(icon(icon_name, text, 20.0))
             .child(
@@ -946,6 +985,18 @@ impl MailWindow {
                     .truncate()
                     .child(label),
             )
+            .when(checking, |d| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(8.0))
+                        .child(super::nav_menu::turning_arrow(
+                            "nav-checking",
+                            th.text_dim,
+                            14.0,
+                        )),
+                )
+            })
             .when(unread > 0, |d| {
                 d.child(
                     div()
@@ -1042,7 +1093,7 @@ impl MailWindow {
 
     /// Before a line of the folder pane opens `next`: the search gives
     /// way, and the list fades in again when it shows the same.
-    fn leave_listing(&mut self, next: Listing, cx: &mut Context<Self>) {
+    pub(super) fn leave_listing(&mut self, next: Listing, cx: &mut Context<Self>) {
         self.clear_search(cx);
         self.search_panel = None;
         if self.listing.as_ref() == Some(&next) && !self.reading {
@@ -1051,7 +1102,7 @@ impl MailWindow {
     }
 
     /// After a line of the folder pane opened a list.
-    fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+    pub(super) fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
         self.leave_settings(window, cx);
         self.reader = None;
         // A folder picked from the opened navigation closes it.
@@ -1102,6 +1153,8 @@ struct Pill {
     bold: bool,
     /// The arrow, pointing down when what it holds shows.
     chevron: Option<bool>,
+    /// Mail is being checked for: a turning arrow beside the name.
+    checking: bool,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.

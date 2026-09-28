@@ -1024,3 +1024,21 @@ Ripoti ya shughuli sasa ina kichagua akaunti kando ya tarehe. Chagua Akaunti zot
 au moja kati yake, na ujumbe unaofuatiliwa, viwango, chati, mada na Kisanduku chako
 cha barua vyote hufuata. Ripoti hueleza ni akaunti gani inaonyesha na hukumbuka chaguo lako.
 """
+
+["2026-09-28-2002-reader-arrows-always-shown"]
+title = "“Mpya zaidi” na “Ya zamani zaidi” daima kwenye upau wa zana"
+text = """
+Kidirisha cha kusoma kiwe chembamba kiasi gani, kaunta na mishale ya Mpya zaidi na
+Ya zamani zaidi hubaki upande wa kulia wa upau wake wa zana. Vitufe unavyotumia kwa
+nadra hamishiwa kwenye menyu ya Zaidi kimoja baada ya kingine, ikiwemo swichi za
+maelezo ya mwasiliani na rangi asili.
+"""
+
+["2026-09-28-2026-large-files-drive"]
+title = "Tuma faili za ukubwa wowote"
+text = """
+Ukiwa umeingia kwa Google, faili lenye ukubwa zaidi ya kikomo cha barua cha 25 MB huenda
+kwenye Google Drive yako mara tu unapoliambatisha, na ujumbe hubeba kiungo chake, kama
+Gmail. Hushirikiwa na wapokeaji unapobonyeza Tuma; Katna huuliza tu ikiwa mtu hawezi
+kupewa ufikiaji.
+"""

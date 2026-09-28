@@ -60,6 +60,24 @@ compose-attachments-total = { $count ->
     [one] { $count } ફાઇલ, { $size }
    *[other] { $count } ફાઇલ, { $size }
 }
+compose-drive-note = { $name } { $limit } કરતાં મોટી છે, તેથી તે તમારા Google Drive માં જાય છે અને મેસેજમાં તેની લિંક હોય છે.
+compose-drive-tip = તમારા Google Drive માં; મેસેજમાં લિંક હોય છે
+compose-drive-uploading = અપલોડ થઈ રહ્યું છે { $percent }%
+compose-drive-allow = Drive ને મંજૂરી આપો
+compose-drive-allow-tip = મોટી ફાઇલો તમારા Drive માં મૂકવાની Katna ને મંજૂરી આપવા Google વડે ફરી સાઇન ઇન કરો
+compose-drive-retry = ફરી પ્રયાસ કરો
+compose-drive-sends-when-uploaded = { $name } અપલોડ થતાં જ મોકલવામાં આવશે
+compose-drive-not-uploaded = { $name } હજી Google Drive માં નથી
+compose-drive-share-failed = Google Drive માં ફાઇલો શેર કરી શકાઈ નથી: { $error }
+compose-drive-share-title = ફાઇલો બધા સાથે શેર કરીએ?
+compose-drive-share-text = { $count ->
+    [one] Google Drive ફાઇલો { $addresses } સાથે શેર કરી શકતું નથી, જેમનું Google એકાઉન્ટ નથી. તેના બદલે લિંક ધરાવનાર કોઈપણ તેને ખોલી શકે છે.
+   *[other] Google Drive ફાઇલો { $addresses } સાથે શેર કરી શકતું નથી, જેમનાં Google એકાઉન્ટ નથી. તેના બદલે લિંક ધરાવનાર કોઈપણ તેને ખોલી શકે છે.
+}
+compose-drive-share-link = લિંક વડે શેર કરો
+compose-drive-send-without = શેર કર્યા વિના મોકલો
+compose-drive-share-cancel = રદ કરો
+compose-drive-card-detail = { $size } · Google Drive
 compose-drop-files = ફાઇલો અહીં મૂકો
 compose-drop-here = અહીં મૂકો
 compose-paste-keep-formatting = ફૉર્મેટિંગ રાખો
