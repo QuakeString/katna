@@ -13,6 +13,9 @@ compose-save-close = Zapisz i zamknij
 compose-back-to-mail = Wróć do okna poczty
 compose-pop-out-reply = Otwórz odpowiedź w osobnym oknie
 compose-show-trimmed = Pokaż przyciętą treść
+compose-hide-trimmed = Ukryj przyciętą treść
+compose-remove-trimmed = Usuń cytowany tekst
+compose-trimmed-removed = Usunięto cytowany tekst
 
 ## Recipients and subject
 

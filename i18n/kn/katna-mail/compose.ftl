@@ -13,6 +13,9 @@ compose-save-close = ಉಳಿಸಿ ಮತ್ತು ಮುಚ್ಚಿ
 compose-back-to-mail = ಮೇಲ್ ವಿಂಡೋಗೆ ಹಿಂತಿರುಗಿ
 compose-pop-out-reply = ಪ್ರತ್ಯುತ್ತರವನ್ನು ಪ್ರತ್ಯೇಕ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ
 compose-show-trimmed = ಟ್ರಿಮ್ ಮಾಡಿದ ವಿಷಯವನ್ನು ತೋರಿಸಿ
+compose-hide-trimmed = ಟ್ರಿಮ್ ಮಾಡಿದ ವಿಷಯವನ್ನು ಮರೆಮಾಡಿ
+compose-remove-trimmed = ಉಲ್ಲೇಖಿಸಿದ ಪಠ್ಯವನ್ನು ತೆಗೆದುಹಾಕಿ
+compose-trimmed-removed = ಉಲ್ಲೇಖಿಸಿದ ಪಠ್ಯವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ
 
 ## Recipients and subject
 

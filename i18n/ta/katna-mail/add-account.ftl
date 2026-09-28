@@ -84,3 +84,4 @@ add-account-signed-in = { $provider } மூலம் உள்நுழைந�
 
 add-account-menu-another = இன்னொரு கணக்கைச் சேர்
 add-account-menu-manage = கணக்குகளை நிர்வகி
+app-menu = முதன்மை மெனு

@@ -782,3 +782,88 @@ yahamishwe kwenye Tupio. Teua “Usiulize tena” ili kuruka swali hili, au
 liwashe tena katika Mipangilio > Jumla. Kufuta kabisa, katika Tupio,
 huuliza kila wakati.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna kwa Windows"
+text = """
+Katna Mail sasa inafanya kazi pia kwenye Windows 10 na 11, ikisakinishwa na
+Katna Setup yake, pamoja na aikoni ya trei, arifa, kuanza unapoingia na
+viungo vya barua vinavyofunguka katika Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Kitufe cha kuondoa kwenye kila anwani"
+text = """
+Kila kipande cha anwani katika Kwa, Nakala na Nakala fiche sasa huonyesha x
+yake kila wakati, ili uweze kukiondoa bila kukielekezea kwanza.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Upau wa uumbizaji wa mviringo zaidi"
+text = """
+Upau wa uumbizaji katika Tunga (Aa) sasa una umbo la kidonge wenye ukingo
+hafifu, ili ujitenge na maandishi yako katika mandhari angavu na meusi.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Mazungumzo marefu ya barua pepe hufunguka haraka"
+text = """
+Barua iliyoumbizwa inayonukuu majibu mengi ya awali, kama mfululizo mrefu wa
+manukuu, sasa hufunguka mara moja na kusogeza kwa ulaini badala ya
+kulipunguza kasi dirisha zima.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Nani ameiona, nyuma ya jicho"
+text = """
+Barua uliyotuma na ufuatiliaji haina tena kisanduku cha mistari juu yake.
+Jicho kando ya nyota hubadilika kuwa rangi yako ya msisitizo mara mtu
+anapoifungua; lielekezee kiashiria ili uone nani aliifungua au kufuata
+kiungo, na lini.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Piga simu na unakili kutoka kwenye maelezo ya mwasiliani"
+text = """
+Katika maelezo ya mwasiliani kando ya mazungumzo, bofya nambari ya simu ili
+kuipigia kwa programu yako ya simu au KDE Connect, au tumia kitufe cha
+kunakili kando yake. Maandishi yote ya kidirisha sasa yanaweza pia
+kuchaguliwa na kunakiliwa.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Ficha au ondoa barua iliyonukuliwa kwenye jibu"
+text = """
+Kitufe cha "..." chini ya jibu sasa huificha tena barua iliyonukuliwa baada
+ya kuifungua. Kielekezee kiashiria na ubofye x kwenye kona yake ili kuiondoa
+barua iliyonukuliwa kwenye jibu lako; Tendua au Ctrl+Z huirudisha. Upau wa
+zana wa jibu pia hubaki mahali pake unaposogeza.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Folda zinazoelea, na utafutaji mpana zaidi"
+text = """
+Folda zikiwa zimefichwa, kuweka kielekezi juu ya Tunga au Barua huzifungua
+kama kidirisha kilicho mbali na kingo, chenye ncha ndogo inayoelekeza kwenye
+kitufe. Kisanduku cha utafutaji hupanuka kujaza nafasi ambayo folda huacha,
+na kubofya folda uliyomo tayari hakufanyi tena orodha kupepesa.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Mapendekezo ya anwani katika Chaguo za utafutaji"
+text = """
+Kutoka na Kwa katika Chaguo za utafutaji sasa hupendekeza anwani
+unapoandika, kama Kwa, Nakala na Nakala fiche zinavyofanya katika Tunga.
+Chagua moja kwa Enter, Tab au kubofya.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menyu kuu kwenye kadi ya akaunti, Jibu wote kwenye dirisha lake"
+text = """
+Kadi ya akaunti ina kitufe cha ☰ kando ya Dhibiti akaunti. Hufungua menyu
+zilezile za Faili, Hariri, Tazama, Nenda, Ujumbe, Mipangilio na Usaidizi
+kama menyu ya jumla ya kompyuta ya mezani, kwa kompyuta za mezani
+zisizoonyesha menyu hiyo. Jibu wote kwenye arifa ya barua mpya sasa hufungua
+mazungumzo katika dirisha lake, tayari kwa kuandika, na huacha dirisha kuu
+mahali lilipo.
+"""

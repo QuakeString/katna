@@ -13,6 +13,9 @@ compose-save-close = ছেভ কৰি বন্ধ কৰক
 compose-back-to-mail = মেইল উইণ্ড'লৈ উভতি যাওক
 compose-pop-out-reply = উত্তৰ পৃথক উইণ্ড'ত খোলক
 compose-show-trimmed = চুটি কৰা অংশ দেখুৱাওক
+compose-hide-trimmed = চুটি কৰা অংশ লুকুৱাওক
+compose-remove-trimmed = উদ্ধৃত পাঠ আঁতৰাওক
+compose-trimmed-removed = উদ্ধৃত পাঠ আঁতৰোৱা হ'ল
 
 ## Recipients and subject
 

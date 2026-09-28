@@ -101,6 +101,7 @@ tracking-clicked = { $who }-এ { $clicks ->
    *[other] { $clicks } বাৰ
 } লিংক অনুসৰণ কৰিছে, শেষবাৰ { $when }
 tracking-maybe-opened = { $who }-এ হয়তো ইয়াক খুলিছে (গোপনীয়তাৰ বাবে Apple Mail-এ ছবি ল'ড কৰে)
+tracking-seen-none = এতিয়ালৈকে কোনেও ইয়াক খোলা নাই বা কোনো লিংক অনুসৰণ কৰা নাই
 tracking-receipt = { $who }-এ পঢ়াৰ ৰচিদ পঠিয়াইছে
 tracking-receipt-displayed = পঢ়াৰ ৰচিদ: { $who }-এ আপোনাৰ বাৰ্তা খুলিছে
 tracking-receipt-other = পঢ়াৰ ৰচিদ: { $who }-এ আপোনাৰ বাৰ্তা নোখোলাকৈ মচিছে বা ব্যৱস্থা লৈছে

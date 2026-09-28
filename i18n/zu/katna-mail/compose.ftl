@@ -13,6 +13,9 @@ compose-save-close = Londoloza bese uvala
 compose-back-to-mail = Buyela ewindini le-imeyili
 compose-pop-out-reply = Vula impendulo ngokwehlukile
 compose-show-trimmed = Bonisa okuqukethwe okufinyeziwe
+compose-hide-trimmed = Fihla okuqukethwe okufinyeziwe
+compose-remove-trimmed = Susa umbhalo ocashuniwe
+compose-trimmed-removed = Umbhalo ocashuniwe ususiwe
 
 ## Recipients and subject
 

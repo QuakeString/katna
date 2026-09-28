@@ -84,3 +84,4 @@ add-account-signed-in = 已使用 { $provider } 登入。正在接收你的郵�
 
 add-account-menu-another = 新增其他帳戶
 add-account-menu-manage = 管理帳戶
+app-menu = 主選單

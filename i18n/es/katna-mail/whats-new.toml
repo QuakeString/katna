@@ -784,3 +784,88 @@ se mueven a la papelera. Marca «No volver a preguntar» para saltarte la
 pregunta, o vuelve a activarla en Ajustes > General. La eliminación
 definitiva, en la papelera, pregunta siempre.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna para Windows"
+text = """
+Katna Mail ahora también funciona en Windows 10 y 11, instalado con su
+propio Katna Setup, con el icono en la bandeja del sistema, notificaciones,
+inicio al iniciar sesión y enlaces de correo que se abren en Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Botón de quitar en cada dirección"
+text = """
+Cada dirección en Para, Cc y Cco muestra ahora siempre su x, así que puedes
+quitarla sin tener que apuntar antes a ella.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Una barra de formato más redondeada"
+text = """
+La barra de formato al redactar (Aa) tiene ahora forma de píldora con un
+borde tenue, para que se distinga de tu texto en los temas claro y oscuro.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Los hilos de correo largos se abren rápido"
+text = """
+El correo con formato que cita muchas respuestas anteriores, como un largo
+hilo de citas, ahora se abre al instante y se desplaza con fluidez en lugar
+de ralentizar toda la ventana.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Quién lo ha visto, tras un ojo"
+text = """
+El correo que envías con seguimiento ya no tiene un recuadro de líneas
+encima. Un ojo junto a la estrella se vuelve de tu color de acento en cuanto
+alguien lo abre; apunta a él para ver quién lo abrió o siguió un enlace, y
+cuándo.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Llamar y copiar desde los detalles del contacto"
+text = """
+En los detalles del contacto junto a una conversación, haz clic en un número
+de teléfono para llamar con tu app de teléfono o KDE Connect, o usa el botón
+de copiar que tiene al lado. Ahora también puedes seleccionar y copiar todo
+el texto del panel.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Ocultar o quitar el correo citado en una respuesta"
+text = """
+El botón "..." bajo una respuesta ahora vuelve a ocultar el correo citado
+después de abrirlo. Apunta a él y haz clic en la x de su esquina para quitar
+el correo citado de tu respuesta; Deshacer o Ctrl+Z lo devuelve. Además, la
+barra de herramientas de la respuesta se queda en su sitio mientras te
+desplazas.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Carpetas flotantes y una búsqueda más ancha"
+text = """
+Con las carpetas ocultas, detenerte sobre Redactar o Correo las abre como un
+panel separado de los bordes, con una pequeña muesca que apunta al botón. El
+cuadro de búsqueda crece para ocupar el hueco que dejan las carpetas, y
+hacer clic en la carpeta en la que ya estás ya no hace parpadear la lista.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Sugerencias de direcciones en Opciones de búsqueda"
+text = """
+De y Para en Opciones de búsqueda ahora sugieren direcciones mientras
+escribes, igual que Para, Cc y Cco al redactar. Elige una con Intro, Tab o
+un clic.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menú principal en la tarjeta de la cuenta, Responder a todos en su propia ventana"
+text = """
+La tarjeta de la cuenta tiene un botón ☰ junto a Gestionar cuentas. Abre los
+mismos menús Archivo, Editar, Ver, Ir, Mensaje, Ajustes y Ayuda que el menú
+global del escritorio, para los escritorios que no lo muestran. Responder a
+todos en una notificación de correo nuevo ahora abre la conversación en su
+propia ventana, lista para escribir, y deja la ventana principal donde está.
+"""

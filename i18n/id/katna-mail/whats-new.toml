@@ -776,3 +776,91 @@ percakapan itu dipindahkan ke Sampah. Centang “Jangan tanya lagi” untuk
 melewati pertanyaannya, atau aktifkan kembali di Setelan > Umum.
 Penghapusan selamanya, di Sampah, selalu bertanya.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna untuk Windows"
+text = """
+Katna Mail kini juga berjalan di Windows 10 dan 11, dipasang dengan Katna
+Setup miliknya sendiri, lengkap dengan ikon baki sistem, notifikasi, mulai
+otomatis saat login, dan link email yang terbuka di Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Tombol hapus di setiap alamat"
+text = """
+Setiap chip alamat di Kepada, Cc, dan Bcc kini selalu menampilkan tanda
+x-nya, sehingga Anda bisa menghapusnya tanpa mengarahkan penunjuk ke sana
+terlebih dahulu.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Bilah format yang lebih bulat"
+text = """
+Bilah format saat menulis email (Aa) kini berbentuk pil dengan tepi tipis,
+sehingga terpisah dari teks Anda di tema terang maupun gelap.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Percakapan email panjang terbuka cepat"
+text = """
+Email berformat yang mengutip banyak balasan sebelumnya, seperti rangkaian
+kutipan yang panjang, kini langsung terbuka dan bergulir dengan mulus
+alih-alih memperlambat seluruh jendela.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Siapa yang sudah melihatnya, di balik ikon mata"
+text = """
+Email yang Anda kirim dengan pelacakan tidak lagi memiliki kotak berisi
+baris di atasnya. Ikon mata di samping bintang berubah ke warna aksen Anda
+begitu seseorang membukanya; arahkan penunjuk ke sana untuk melihat siapa
+yang membukanya atau mengikuti link, dan kapan.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Telepon dan salin dari detail kontak"
+text = """
+Di detail kontak di samping percakapan, klik nomor telepon untuk
+meneleponnya dengan aplikasi telepon atau KDE Connect, atau gunakan tombol
+salin di sebelahnya. Semua teks di panel itu kini juga bisa dipilih dan
+disalin.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Sembunyikan atau hapus email kutipan dalam balasan"
+text = """
+Tombol “...” di bawah balasan kini menyembunyikan lagi email kutipan setelah
+Anda membukanya. Arahkan penunjuk ke sana dan klik x di sudutnya untuk
+mengeluarkan email kutipan dari balasan Anda; Urungkan atau Ctrl+Z
+mengembalikannya. Toolbar balasan juga tetap di tempatnya saat Anda
+menggulir.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Folder yang melayang, dan penelusuran yang lebih lebar"
+text = """
+Saat folder disembunyikan, mengarahkan penunjuk ke Tulis atau Email
+membukanya sebagai panel yang berjarak dari tepi, dengan takik kecil yang
+menunjuk ke tombolnya. Kotak penelusuran melebar mengisi ruang yang
+ditinggalkan folder, dan mengklik folder yang sedang Anda buka tidak lagi
+membuat daftar berkedip.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Saran alamat di Opsi penelusuran"
+text = """
+Dari dan Kepada di Opsi penelusuran kini menyarankan alamat saat Anda
+mengetik, sama seperti Kepada, Cc, dan Bcc saat menulis email. Pilih salah
+satu dengan Enter, Tab, atau klik.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu utama di kartu akun, Balas semua di jendelanya sendiri"
+text = """
+Kartu akun kini punya tombol ☰ di samping Kelola akun. Tombol ini membuka
+menu Berkas, Sunting, Tampilan, Pergi, Pesan, Setelan, dan Bantuan yang sama
+dengan menu global desktop, untuk desktop yang tidak menampilkannya. Balas
+semua pada notifikasi email baru kini membuka percakapan di jendelanya
+sendiri, siap untuk diketik, dan membiarkan jendela utama tetap di
+tempatnya.
+"""

@@ -13,6 +13,9 @@ compose-save-close = አስቀምጥ እና ዝጋ
 compose-back-to-mail = ወደ ደብዳቤ መስኮቱ ተመለስ
 compose-pop-out-reply = ምላሹን በተለየ መስኮት ክፈት
 compose-show-trimmed = የተከረከመውን ይዘት አሳይ
+compose-hide-trimmed = የተከረከመውን ይዘት ደብቅ
+compose-remove-trimmed = የተጠቀሰውን ጽሑፍ አስወግድ
+compose-trimmed-removed = የተጠቀሰው ጽሑፍ ተወግዷል
 
 ## Recipients and subject
 

@@ -13,6 +13,9 @@ compose-save-close = সেভ করে বন্ধ করুন
 compose-back-to-mail = মেল উইন্ডোতে ফিরে যান
 compose-pop-out-reply = উত্তর আলাদা উইন্ডোতে খুলুন
 compose-show-trimmed = ছাঁটা অংশ দেখান
+compose-hide-trimmed = ছাঁটা অংশ লুকান
+compose-remove-trimmed = উদ্ধৃত লেখা সরান
+compose-trimmed-removed = উদ্ধৃত লেখা সরানো হয়েছে
 
 ## Recipients and subject
 

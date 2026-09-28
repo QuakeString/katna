@@ -13,6 +13,9 @@ compose-save-close = Lưu và đóng
 compose-back-to-mail = Quay lại cửa sổ thư
 compose-pop-out-reply = Mở thư trả lời riêng
 compose-show-trimmed = Hiện nội dung bị rút gọn
+compose-hide-trimmed = Ẩn nội dung bị rút gọn
+compose-remove-trimmed = Xóa phần trích dẫn
+compose-trimmed-removed = Đã xóa phần trích dẫn
 
 ## Recipients and subject
 

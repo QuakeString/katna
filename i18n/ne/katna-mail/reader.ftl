@@ -101,6 +101,7 @@ tracking-clicked = { $who } ले लिङ्क { $clicks ->
    *[other] { $clicks } पटक
 } खोल्नुभयो, पछिल्लो पटक { $when }
 tracking-maybe-opened = { $who } ले यो खोल्नुभएको हुन सक्छ (Apple Mail ले गोपनीयताका लागि तस्बिरहरू लोड गर्छ)
+tracking-seen-none = अहिलेसम्म कसैले यो खोल्नुभएको छैन वा कुनै लिङ्क खोल्नुभएको छैन
 tracking-receipt = { $who } ले पढेको रसिद पठाउनुभयो
 tracking-receipt-displayed = पढेको रसिद: { $who } ले तपाईंको सन्देश खोल्नुभयो
 tracking-receipt-other = पढेको रसिद: { $who } ले तपाईंको सन्देश नखोली मेटाउनुभयो वा व्यवस्थापन गर्नुभयो

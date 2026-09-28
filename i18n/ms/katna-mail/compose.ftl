@@ -13,6 +13,9 @@ compose-save-close = Simpan dan tutup
 compose-back-to-mail = Kembali ke tetingkap mel
 compose-pop-out-reply = Buka balasan dalam tetingkap sendiri
 compose-show-trimmed = Tunjukkan kandungan yang dipangkas
+compose-hide-trimmed = Sembunyikan kandungan yang dipangkas
+compose-remove-trimmed = Alih keluar teks petikan
+compose-trimmed-removed = Teks petikan dialih keluar
 
 ## Recipients and subject
 

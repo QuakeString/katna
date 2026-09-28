@@ -89,6 +89,7 @@ tracking-opened = { $who } đã mở thư { $count } lần, lần cuối { $when
 tracking-opens-clicks = { $who } đã mở thư { $opens } lần và mở liên kết { $clicks } lần, lần cuối { $when }
 tracking-clicked = { $who } đã mở liên kết { $clicks } lần, lần cuối { $when }
 tracking-maybe-opened = { $who } có thể đã mở thư (Apple Mail tải hình ảnh để bảo vệ quyền riêng tư)
+tracking-seen-none = Chưa có ai mở thư hoặc mở liên kết
 tracking-receipt = { $who } đã gửi xác nhận đã đọc
 tracking-receipt-displayed = Xác nhận đã đọc: { $who } đã mở thư của bạn
 tracking-receipt-other = Xác nhận đã đọc: { $who } đã xóa hoặc xử lý thư của bạn mà không mở

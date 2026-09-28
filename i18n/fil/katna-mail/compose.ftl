@@ -13,6 +13,9 @@ compose-save-close = I-save at isara
 compose-back-to-mail = Bumalik sa mail window
 compose-pop-out-reply = Buksan nang hiwalay ang sagot
 compose-show-trimmed = Ipakita ang tinabas na nilalaman
+compose-hide-trimmed = Itago ang tinabas na nilalaman
+compose-remove-trimmed = Alisin ang siniping teksto
+compose-trimmed-removed = Inalis ang siniping teksto
 
 ## Recipients and subject
 

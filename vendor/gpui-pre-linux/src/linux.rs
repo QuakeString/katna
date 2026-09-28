@@ -1,3 +1,4 @@
+mod activation;
 mod appmenu;
 mod dispatcher;
 mod effects;
@@ -17,6 +18,8 @@ mod x11;
 #[cfg(any(feature = "wayland", feature = "x11"))]
 mod xdg_desktop_portal;
 
+pub(crate) use activation::take_activation_token;
+pub use activation::set_activation_token;
 pub(crate) use appmenu::kde_appmenu;
 pub use appmenu::set_kde_appmenu;
 pub use dispatcher::*;

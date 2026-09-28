@@ -13,6 +13,9 @@ compose-save-close = Kaydet ve kapat
 compose-back-to-mail = Posta penceresine dön
 compose-pop-out-reply = Yanıtı ayrı aç
 compose-show-trimmed = Kırpılan içeriği göster
+compose-hide-trimmed = Kırpılan içeriği gizle
+compose-remove-trimmed = Alıntılanan metni kaldır
+compose-trimmed-removed = Alıntılanan metin kaldırıldı
 
 ## Recipients and subject
 

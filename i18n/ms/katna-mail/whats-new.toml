@@ -782,3 +782,88 @@ hendak mengalihkannya ke Sampah. Tandakan “Jangan tanya lagi” untuk
 melangkau soalan itu, atau hidupkannya semula dalam Tetapan > Umum.
 Pemadaman selama-lamanya, dalam Sampah, sentiasa bertanya.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna untuk Windows"
+text = """
+Katna Mail kini turut berjalan pada Windows 10 dan 11, dipasang oleh Katna
+Setup sendiri, dengan ikon dulang sistem, pemberitahuan, mula semasa log
+masuk dan pautan mel yang dibuka dalam Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Butang alih keluar pada setiap alamat"
+text = """
+Setiap cip alamat dalam Kepada, Sk dan Skt kini sentiasa menunjukkan x-nya,
+jadi anda boleh mengalih keluarnya tanpa menuding padanya dahulu.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Bar pemformatan yang lebih bulat"
+text = """
+Bar pemformatan semasa mengarang (Aa) kini berbentuk pil dengan tepi yang
+samar, jadi ia terpisah daripada teks anda dalam tema cerah dan gelap.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Perbualan mel yang panjang dibuka dengan pantas"
+text = """
+Mel berformat yang memetik banyak balasan terdahulu, seperti rangkaian
+petikan yang panjang, kini dibuka serta-merta dan ditatal dengan lancar
+tanpa melambatkan seluruh tetingkap.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Siapa yang telah melihatnya, di sebalik mata"
+text = """
+Mel yang anda hantar dengan penjejakan tidak lagi mempunyai kotak berisi
+baris di atasnya. Mata di sebelah bintang bertukar kepada warna aksen anda
+sebaik sahaja seseorang membukanya; tuding padanya untuk melihat siapa yang
+membukanya atau mengikuti pautan, dan bila.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Panggil dan salin daripada butiran kenalan"
+text = """
+Dalam butiran kenalan di sebelah perbualan, klik nombor telefon untuk
+memanggilnya dengan apl telefon anda atau KDE Connect, atau gunakan butang
+salin di sebelahnya. Semua teks dalam panel itu kini boleh dipilih dan
+disalin juga.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Sembunyikan atau alih keluar mel petikan dalam balasan"
+text = """
+Butang “...” di bawah balasan kini menyembunyikan semula mel petikan selepas
+anda membukanya. Tuding padanya dan klik x di penjurunya untuk mengeluarkan
+mel petikan daripada balasan anda; Buat asal atau Ctrl+Z mengembalikannya.
+Bar alat balasan juga kekal di tempatnya semasa anda menatal.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Folder yang terapung, dan carian yang lebih lebar"
+text = """
+Apabila folder disembunyikan, meletakkan penuding pada Karang atau Mel
+membukanya sebagai panel yang terpisah daripada tepi, dengan takuk kecil
+yang menuding ke butang itu. Kotak carian membesar untuk mengisi ruang yang
+ditinggalkan folder, dan mengklik folder yang sedang anda buka tidak lagi
+membuatkan senarai berkelip.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Cadangan alamat dalam Pilihan carian"
+text = """
+Daripada dan Kepada dalam Pilihan carian kini mencadangkan alamat semasa
+anda menaip, sama seperti Kepada, Sk dan Skt semasa mengarang. Pilih satu
+dengan Enter, Tab atau klik.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu utama dalam kad akaun, Balas semua dalam tetingkap sendiri"
+text = """
+Kad akaun mempunyai butang ☰ di sebelah Urus akaun. Ia membuka menu Fail,
+Sunting, Lihat, Pergi, Mesej, Tetapan dan Bantuan yang sama seperti menu
+global desktop, untuk desktop yang tidak memaparkannya. Balas semua pada
+pemberitahuan mel baharu kini membuka perbualan dalam tetingkapnya sendiri,
+sedia untuk menaip, dan membiarkan tetingkap utama di tempatnya.
+"""

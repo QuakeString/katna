@@ -13,6 +13,9 @@ compose-save-close = บันทึกและปิด
 compose-back-to-mail = กลับไปที่หน้าต่างอีเมล
 compose-pop-out-reply = แยกการตอบกลับออกมา
 compose-show-trimmed = แสดงเนื้อหาที่ตัดออก
+compose-hide-trimmed = ซ่อนเนื้อหาที่ตัดออก
+compose-remove-trimmed = นำข้อความที่อ้างอิงออก
+compose-trimmed-removed = นำข้อความที่อ้างอิงออกแล้ว
 
 ## Recipients and subject
 

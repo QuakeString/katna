@@ -13,6 +13,9 @@ compose-save-close = שמירה וסגירה
 compose-back-to-mail = חזרה לחלון הדואר
 compose-pop-out-reply = פתיחת התשובה בחלון נפרד
 compose-show-trimmed = הצגת התוכן שקוצץ
+compose-hide-trimmed = הסתרת התוכן שקוצץ
+compose-remove-trimmed = הסרת הטקסט המצוטט
+compose-trimmed-removed = הטקסט המצוטט הוסר
 
 ## Recipients and subject
 

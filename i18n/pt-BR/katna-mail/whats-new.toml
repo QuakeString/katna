@@ -781,3 +781,88 @@ ir para a Lixeira. Marque “Não perguntar novamente” para pular a pergunta,
 ou ative-a de novo em Configurações > Geral. A exclusão permanente, na
 Lixeira, sempre pergunta.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna para Windows"
+text = """
+O Katna Mail agora também funciona no Windows 10 e 11, instalado pelo
+próprio Katna Setup, com o ícone na bandeja do sistema, notificações, início
+ao entrar na sessão e links de e-mail abrindo no Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Botão de remover em cada endereço"
+text = """
+Cada endereço em Para, Cc e Cco agora sempre mostra o seu x, para você
+removê-lo sem ter que apontar para ele antes.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Uma barra de formatação mais arredondada"
+text = """
+A barra de formatação ao escrever (Aa) agora tem forma de pílula com uma
+borda suave, para se destacar do seu texto nos temas claro e escuro.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Longas sequências de e-mails abrem rápido"
+text = """
+E-mails formatados que citam muitas respostas anteriores, como uma longa
+sequência de citações, agora abrem na hora e rolam com suavidade em vez de
+deixar a janela inteira lenta.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Quem viu, atrás de um olho"
+text = """
+Os e-mails enviados com rastreamento não têm mais uma caixa de linhas acima
+deles. Um olho ao lado da estrela fica na sua cor de destaque assim que
+alguém abre o e-mail; aponte para ele para ver quem abriu ou acessou um
+link, e quando.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Ligar e copiar nos detalhes do contato"
+text = """
+Nos detalhes do contato ao lado de uma conversa, clique em um número de
+telefone para ligar pelo app de telefone ou pelo KDE Connect, ou use o botão
+de copiar ao lado. Todo o texto do painel agora também pode ser selecionado
+e copiado.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Ocultar ou remover o e-mail citado em uma resposta"
+text = """
+O botão "..." abaixo de uma resposta agora oculta de novo o e-mail citado
+depois que você o abre. Aponte para ele e clique no x do canto para tirar o
+e-mail citado da sua resposta; Desfazer ou Ctrl+Z o traz de volta. A barra
+de ferramentas da resposta também fica no lugar enquanto você rola.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Pastas flutuantes e uma pesquisa mais larga"
+text = """
+Com as pastas ocultas, parar o ponteiro sobre Escrever ou E-mail as abre
+como um painel afastado das bordas, com uma pequena ponta apontando para o
+botão. A caixa de pesquisa cresce para ocupar o espaço que as pastas deixam,
+e clicar na pasta em que você já está não faz mais a lista piscar.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Sugestões de endereço em Opções de pesquisa"
+text = """
+De e Para em Opções de pesquisa agora sugerem endereços enquanto você
+digita, do mesmo jeito que Para, Cc e Cco ao escrever. Escolha um com Enter,
+Tab ou um clique.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu principal no cartão da conta, Responder a todos em uma janela própria"
+text = """
+O cartão da conta tem um botão ☰ ao lado de Gerenciar contas. Ele abre os
+mesmos menus Arquivo, Editar, Exibir, Ir, Mensagem, Configurações e Ajuda do
+menu global da área de trabalho, para ambientes que não mostram um.
+Responder a todos numa notificação de novo e-mail agora abre a conversa em
+uma janela própria, pronta para digitar, e deixa a janela principal onde
+está.
+"""

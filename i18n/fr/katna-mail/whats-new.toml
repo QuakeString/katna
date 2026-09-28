@@ -804,3 +804,91 @@ elles doivent être placées dans la corbeille. Cochez « Ne plus demander »
 pour passer la question, ou réactivez-la dans Paramètres > Général. La
 suppression définitive, dans la corbeille, demande toujours.
 """
+
+["2026-09-28-0019-katna-for-windows"]
+title = "Katna pour Windows"
+text = """
+Katna Mail fonctionne désormais aussi sous Windows 10 et 11, installé par
+son propre Katna Setup, avec l’icône dans la zone de notification, les
+notifications, le lancement à l’ouverture de session et les liens de
+messagerie qui s’ouvrent dans Katna.
+"""
+
+["2026-09-28-0236-chip-remove-always"]
+title = "Un bouton de suppression sur chaque adresse"
+text = """
+Chaque adresse dans À, Cc et Cci affiche désormais toujours son x, pour que
+vous puissiez la retirer sans devoir d’abord la pointer.
+"""
+
+["2026-09-28-0244-pill-format-bar"]
+title = "Une barre de mise en forme plus arrondie"
+text = """
+La barre de mise en forme de la rédaction (Aa) a maintenant une forme de
+pilule avec un léger contour, pour se détacher de votre texte en thème clair
+comme en thème sombre.
+"""
+
+["2026-09-28-0325-long-threads-smooth"]
+title = "Les longs fils de messages s’ouvrent vite"
+text = """
+Un message mis en forme qui cite de nombreuses réponses précédentes, comme
+un long fil de citations, s’ouvre désormais tout de suite et défile avec
+fluidité au lieu de ralentir toute la fenêtre.
+"""
+
+["2026-09-28-0830-who-has-seen-it"]
+title = "Qui l’a vu, derrière un œil"
+text = """
+Les messages envoyés avec suivi n’ont plus d’encadré de lignes au-dessus. Un
+œil à côté de l’étoile prend votre couleur d’accentuation dès que quelqu’un
+ouvre le message ; pointez-le pour voir qui l’a ouvert ou a suivi un lien,
+et quand.
+"""
+
+["2026-09-28-0831-contact-call-copy"]
+title = "Appeler et copier depuis les détails du contact"
+text = """
+Dans les détails du contact à côté d’une conversation, cliquez sur un numéro
+de téléphone pour l’appeler avec votre application de téléphone ou KDE
+Connect, ou utilisez le bouton de copie à côté. Tout le texte du panneau
+peut aussi être sélectionné et copié.
+"""
+
+["2026-09-28-0848-quoted-text-hide-remove"]
+title = "Masquer ou supprimer le message cité dans une réponse"
+text = """
+Le bouton « ... » sous une réponse masque à nouveau le message cité après
+que vous l’avez ouvert. Pointez-le et cliquez sur le x dans son coin pour
+retirer le message cité de votre réponse ; Annuler ou Ctrl+Z le remet. La
+barre d’outils de la réponse reste aussi en place pendant le défilement.
+"""
+
+["2026-09-28-0854-floating-folders"]
+title = "Des dossiers flottants et une recherche plus large"
+text = """
+Quand les dossiers sont masqués, s’attarder sur Nouveau message ou Courrier
+les ouvre dans un panneau détaché des bords, avec une petite encoche pointée
+vers le bouton. Le champ de recherche s’agrandit pour occuper la place
+laissée par les dossiers, et cliquer sur le dossier où vous êtes déjà ne
+fait plus clignoter la liste.
+"""
+
+["2026-09-28-0928-search-address-suggestions"]
+title = "Suggestions d’adresses dans Options de recherche"
+text = """
+De et À dans Options de recherche suggèrent désormais des adresses pendant
+la saisie, comme À, Cc et Cci dans la rédaction. Choisissez-en une avec
+Entrée, Tab ou un clic.
+"""
+
+["2026-09-28-0935-app-menu-reply-all-window"]
+title = "Menu principal dans la carte du compte, Répondre à tous dans sa propre fenêtre"
+text = """
+La carte du compte a un bouton ☰ à côté de Gérer les comptes. Il ouvre les
+mêmes menus Fichier, Édition, Affichage, Aller, Message, Paramètres et Aide
+que le menu global du bureau, pour les bureaux qui n’en affichent pas.
+Répondre à tous sur une notification de nouveau message ouvre maintenant la
+conversation dans sa propre fenêtre, prête pour la saisie, et laisse la
+fenêtre principale où elle est.
+"""
