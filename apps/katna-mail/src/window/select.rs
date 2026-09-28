@@ -357,18 +357,28 @@ impl TextSelection {
             out.push_str(&text[range]);
             previous = Some(key);
         };
+        let mut texts: BTreeMap<Key, &str> = BTreeMap::new();
+        // All of the host's text, out of sight too, when it gives it.
         if let Some(all) = &self.all {
             let from = all.partition_point(|(key, _)| *key < start.key);
             for (key, text) in all[from..].iter().take_while(|(key, _)| *key <= end.key) {
-                add(*key, text);
+                texts.insert(*key, text.as_ref());
             }
-            return out;
         }
+        // Else as drawn, as is what is drawn beside it (the contact panel
+        // beside a conversation).
         let drawn = self.drawn.borrow();
+        let given: std::collections::BTreeSet<usize> = match &self.all {
+            Some(all) => all.iter().map(|(key, _)| key.part).collect(),
+            None => Default::default(),
+        };
         for (key, piece) in drawn.range(start.key..=end.key) {
-            if piece.frame == self.frame {
-                add(*key, &piece.text);
+            if piece.frame == self.frame && !given.contains(&key.part) {
+                texts.insert(*key, piece.text.as_ref());
             }
+        }
+        for (key, text) in texts {
+            add(key, text);
         }
         out
     }

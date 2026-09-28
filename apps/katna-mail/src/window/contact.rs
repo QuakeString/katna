@@ -15,8 +15,8 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, FontWeight, Window, div, ease_out_quint,
-    prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, SharedString, Window,
+    div, ease_out_quint, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_store::{ContactConversation, ContactFile};
@@ -25,6 +25,7 @@ use katna_ui::px;
 
 use super::MailWindow;
 use super::attachments::kind_badge;
+use super::select::{Pieces, selectable};
 use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
@@ -46,6 +47,10 @@ const STALE: Duration = Duration::from_secs(60);
 const KEEP_PROFILES: usize = 64;
 /// The picture beside the name.
 const PICTURE: f32 = 56.0;
+/// The part the card's text is in the window's text selection: after the
+/// conversation's messages, so a selection from one into the other keeps
+/// their order.
+const CONTACT_PART: usize = usize::MAX / 2;
 
 /// People by lower-case address, with a name if the mail gives one.
 type People = Rc<Vec<(String, Option<String>)>>;
@@ -302,6 +307,9 @@ impl MailWindow {
             .and_then(|p| p.summary.name.clone())
             .or_else(|| name.map(str::to_owned));
         let shown_name = name.clone().unwrap_or_else(|| email.to_owned());
+        // All of the card's text can be selected and copied, as the
+        // conversation's can.
+        let mut pieces = self.text.pieces(CONTACT_PART, th);
         let header = div()
             .flex()
             .flex_row()
@@ -316,48 +324,50 @@ impl MailWindow {
                     .flex_col()
                     .gap(px(2.0))
                     .child(
-                        div()
+                        words(&mut pieces, shown_name.clone())
                             .text_size(px(16.0))
                             .line_height(px(22.0))
                             .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text))
-                            .child(shown_name.clone()),
+                            .text_color(rgba(th.text)),
                     )
                     .when(name.is_some(), |d| {
                         d.child(
-                            div()
+                            words(&mut pieces, email.to_owned())
                                 .text_size(px(13.0))
                                 .line_height(px(18.0))
                                 .text_color(rgba(th.text_dim))
-                                .truncate()
-                                .child(email.to_owned()),
+                                .truncate(),
                         )
                     }),
             );
 
         let mut sections: Vec<AnyElement> = vec![header.into_any_element()];
         if let Some(profile) = &profile {
-            if let Some(details) = self.contact_details(profile, th) {
+            if let Some(details) = self.contact_details(profile, &mut pieces, th, cx) {
                 sections.push(details);
             }
-            sections.push(self.contact_mail(profile, th));
+            sections.push(self.contact_mail(profile, &mut pieces, th));
             if !profile.conversations.is_empty() {
-                sections.push(self.contact_conversations(&profile.conversations, th, cx));
+                sections.push(self.contact_conversations(
+                    &profile.conversations,
+                    &mut pieces,
+                    th,
+                    cx,
+                ));
             }
             if !profile.files.is_empty() {
-                sections.push(self.contact_files(&profile.files, th, cx));
+                sections.push(self.contact_files(&profile.files, &mut pieces, th, cx));
             }
         }
         if people.len() > 1 {
-            sections.push(self.contact_others(email, people, th, cx));
+            sections.push(self.contact_others(email, people, &mut pieces, th, cx));
         }
         if profile.is_some() {
             sections.push(
-                div()
+                words(&mut pieces, tr!("contact-local-only"))
                     .text_size(px(12.0))
                     .line_height(px(16.0))
                     .text_color(rgba(th.text_faint))
-                    .child(tr!("contact-local-only"))
                     .into_any_element(),
             );
         }
@@ -374,16 +384,23 @@ impl MailWindow {
             body = body.child(section);
         }
         // A new person fades in, as a conversation opens.
-        body.with_animation(
-            ("contact-person", person_number(email)),
-            Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
-            |el, t| el.opacity(t),
-        )
-        .into_any_element()
+        selectable(body, Some(CONTACT_PART), cx)
+            .with_animation(
+                ("contact-person", person_number(email)),
+                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                |el, t| el.opacity(t),
+            )
+            .into_any_element()
     }
 
     /// Phone, title and company, and their time of day.
-    fn contact_details(&self, profile: &Profile, th: &Theme) -> Option<AnyElement> {
+    fn contact_details(
+        &self,
+        profile: &Profile,
+        pieces: &mut Pieces,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let card = &profile.card;
         // The title, with the company under it in a quieter color.
         let work = card.title.as_ref().or(card.company.as_ref()).map(|first| {
@@ -391,10 +408,14 @@ impl MailWindow {
             div()
                 .flex()
                 .flex_col()
-                .child(first.clone())
-                .children(under.map(|company| div().text_color(rgba(th.text_dim)).child(company)))
+                .child(words(pieces, first.clone()))
+                .children(under.map(|company| words(pieces, company).text_color(rgba(th.text_dim))))
                 .into_any_element()
         });
+        let phone = card
+            .phone
+            .clone()
+            .map(|number| self.contact_phone(number, th, cx));
         let time = profile.offset.and_then(|minutes| {
             let offset = jiff::tz::Offset::from_seconds(minutes * 60).ok()?;
             let now = jiff::Timestamp::now().as_second();
@@ -405,15 +426,11 @@ impl MailWindow {
                 offset = profile::offset_label(minutes)
             ))
         });
-        let text = |text: Option<String>| text.map(|t| div().child(t).into_any_element());
-        let rows: Vec<(&str, AnyElement)> = [
-            ("work", work),
-            ("phone", text(card.phone.clone())),
-            ("schedule", text(time)),
-        ]
-        .into_iter()
-        .filter_map(|(icon, text)| Some((icon, text?)))
-        .collect();
+        let time = time.map(|t| words(pieces, t).into_any_element());
+        let rows: Vec<(&str, AnyElement)> = [("work", work), ("phone", phone), ("schedule", time)]
+            .into_iter()
+            .filter_map(|(icon, text)| Some((icon, text?)))
+            .collect();
         if rows.is_empty() {
             return None;
         }
@@ -443,15 +460,79 @@ impl MailWindow {
         )
     }
 
+    /// Their phone number: a click calls it (the desktop hands `tel:` to
+    /// the phone app or KDE Connect), and a copy button shows on hover.
+    fn contact_phone(&self, number: String, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let dial = format!("tel:{}", dialable(&number));
+        let copied = number.clone();
+        div()
+            .id("contact-phone")
+            .group("contact-phone")
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(4.0))
+            .child(
+                div()
+                    .id("contact-call")
+                    .min_w_0()
+                    .cursor_pointer()
+                    .text_color(rgba(th.accent))
+                    .hover(|s| s.underline())
+                    .tooltip(tip(tr!("contact-call"), th))
+                    .on_click(move |_, _, cx| cx.open_url(&dial))
+                    .child(number),
+            )
+            .child(
+                div()
+                    .id("contact-copy-number")
+                    .flex_none()
+                    .size(px(24.0))
+                    .my(px(-2.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .cursor_pointer()
+                    .opacity(0.0)
+                    .group_hover("contact-phone", |s| s.opacity(1.0))
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(tr!("contact-copy-number"), th))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.write_to_clipboard(ClipboardItem::new_string(copied.clone()));
+                        this.show_snackbar(tr!("contact-number-copied"), None, cx);
+                    }))
+                    .child(icon("copy", th.text_dim, 16.0)),
+            )
+            .into_any_element()
+    }
+
     /// How much mail was exchanged, and when.
-    fn contact_mail(&self, profile: &Profile, th: &Theme) -> AnyElement {
+    fn contact_mail(&self, profile: &Profile, pieces: &mut Pieces, th: &Theme) -> AnyElement {
         let summary = &profile.summary;
         let date = |unix: Option<i64>| {
             unix.and_then(|d| format::local(d, &self.tz))
                 .map(katna_i18n::format::day_month_year)
                 .unwrap_or_default()
         };
-        let fact = |label: String, value: String| {
+        let count = words(pieces, tr!("contact-messages", count = summary.messages))
+            .text_size(px(14.0))
+            .line_height(px(20.0))
+            .font_weight(FontWeight::MEDIUM)
+            .text_color(rgba(th.text));
+        let from_to = words(
+            pieces,
+            tr!(
+                "contact-from-to",
+                from = katna_i18n::format::number(summary.from_them),
+                to = katna_i18n::format::number(summary.to_them)
+            ),
+        )
+        .pb(px(4.0))
+        .text_size(px(13.0))
+        .line_height(px(18.0))
+        .text_color(rgba(th.text_dim));
+        let mut fact = |label: String, value: String| {
             div()
                 .flex()
                 .flex_row()
@@ -459,49 +540,35 @@ impl MailWindow {
                 .gap(px(12.0))
                 .text_size(px(13.0))
                 .line_height(px(18.0))
-                .child(div().text_color(rgba(th.text_dim)).child(label))
-                .child(div().text_color(rgba(th.text)).child(value))
+                .child(words(pieces, label).text_color(rgba(th.text_dim)))
+                .child(words(pieces, value).text_color(rgba(th.text)))
         };
+        let dates = summary.first.is_some().then(|| {
+            [
+                fact(tr!("contact-first"), date(summary.first)),
+                fact(tr!("contact-latest"), date(summary.last)),
+            ]
+        });
         div()
             .flex()
             .flex_col()
             .gap(px(6.0))
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(20.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(rgba(th.text))
-                    .child(tr!("contact-messages", count = summary.messages)),
-            )
-            .child(
-                div()
-                    .pb(px(4.0))
-                    .text_size(px(13.0))
-                    .line_height(px(18.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!(
-                        "contact-from-to",
-                        from = katna_i18n::format::number(summary.from_them),
-                        to = katna_i18n::format::number(summary.to_them)
-                    )),
-            )
-            .when(summary.first.is_some(), |d| {
-                d.child(fact(tr!("contact-first"), date(summary.first)))
-                    .child(fact(tr!("contact-latest"), date(summary.last)))
-            })
+            .child(count)
+            .child(from_to)
+            .children(dates.into_iter().flatten())
             .into_any_element()
     }
 
     fn contact_conversations(
         &self,
         conversations: &[ContactConversation],
+        pieces: &mut Pieces,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let now = format::local(jiff::Timestamp::now().as_second(), &self.tz);
         let open = self.reader.as_ref().map(|r| r.key);
-        section(tr!("contact-conversations"), th)
+        section(words(pieces, tr!("contact-conversations")), th)
             .children(conversations.iter().enumerate().map(|(ix, c)| {
                 let key = match c.thread {
                     Some(thread) => EntryKey::Thread(thread),
@@ -525,27 +592,27 @@ impl MailWindow {
                 row(("contact-conversation", ix), th)
                     .when(open == Some(key), |d| d.bg(rgba(th.hover)))
                     .child(
-                        div()
+                        words(pieces, subject)
                             .flex_1()
                             .min_w_0()
                             .truncate()
-                            .text_color(rgba(th.text))
-                            .child(subject),
+                            .cursor_pointer()
+                            .text_color(rgba(th.text)),
                     )
                     .when(c.count > 1, |d| {
                         d.child(
-                            div()
+                            words(pieces, katna_i18n::format::number(u64::from(c.count)))
                                 .flex_none()
-                                .text_color(rgba(th.text_faint))
-                                .child(katna_i18n::format::number(u64::from(c.count))),
+                                .cursor_pointer()
+                                .text_color(rgba(th.text_faint)),
                         )
                     })
                     .child(
-                        div()
+                        words(pieces, date)
                             .flex_none()
+                            .cursor_pointer()
                             .text_size(px(12.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(date),
+                            .text_color(rgba(th.text_dim)),
                     )
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.open_contact_entry(entry, window, cx)
@@ -557,10 +624,11 @@ impl MailWindow {
     fn contact_files(
         &self,
         files: &[ContactFile],
+        pieces: &mut Pieces,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        section(tr!("contact-files"), th)
+        section(words(pieces, tr!("contact-files")), th)
             .children(files.iter().enumerate().map(|(ix, f)| {
                 let file = RowFile {
                     message: f.message,
@@ -574,19 +642,19 @@ impl MailWindow {
                 row(("contact-file", ix), th)
                     .child(kind_badge(kind, 20.0))
                     .child(
-                        div()
+                        words(pieces, f.name.clone())
                             .flex_1()
                             .min_w_0()
                             .truncate()
-                            .text_color(rgba(th.text))
-                            .child(f.name.clone()),
+                            .cursor_pointer()
+                            .text_color(rgba(th.text)),
                     )
                     .child(
-                        div()
+                        words(pieces, format::size(f.size))
                             .flex_none()
+                            .cursor_pointer()
                             .text_size(px(12.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(format::size(f.size)),
+                            .text_color(rgba(th.text_dim)),
                     )
                     .on_click(
                         cx.listener(move |this, _, window, cx| {
@@ -602,11 +670,12 @@ impl MailWindow {
         &self,
         shown: &str,
         people: &[(String, Option<String>)],
+        pieces: &mut Pieces,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let key = self.reader.as_ref().map(|r| r.key);
-        section(tr!("contact-people"), th)
+        section(words(pieces, tr!("contact-people")), th)
             .children(
                 people
                     .iter()
@@ -619,12 +688,12 @@ impl MailWindow {
                         row(("contact-person", ix), th)
                             .child(self.person_avatar(&label, email, 24.0))
                             .child(
-                                div()
+                                words(pieces, label)
                                     .flex_1()
                                     .min_w_0()
                                     .truncate()
-                                    .text_color(rgba(th.text))
-                                    .child(label),
+                                    .cursor_pointer()
+                                    .text_color(rgba(th.text)),
                             )
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(key) = key {
@@ -660,16 +729,31 @@ impl MailWindow {
 }
 
 /// A titled list in the panel.
-fn section(title: String, th: &Theme) -> gpui::Div {
+fn section(title: gpui::Div, th: &Theme) -> gpui::Div {
     div().flex().flex_col().gap(px(2.0)).child(
-        div()
+        title
             .pb(px(6.0))
             .text_size(px(13.0))
             .line_height(px(18.0))
             .font_weight(FontWeight::MEDIUM)
-            .text_color(rgba(th.text_dim))
-            .child(title),
+            .text_color(rgba(th.text_dim)),
     )
+}
+
+/// `text` as a run of the card's selectable text, in a box to style.
+fn words(pieces: &mut Pieces, text: impl Into<SharedString>) -> gpui::Div {
+    let (styled, holder) = pieces.piece(text.into(), Vec::new());
+    holder.child(styled)
+}
+
+/// `number` as a `tel:` URI wants it: its digits, after a `+` if it has one.
+fn dialable(number: &str) -> String {
+    let digits: String = number.chars().filter(char::is_ascii_digit).collect();
+    if number.trim_start().starts_with('+') {
+        format!("+{digits}")
+    } else {
+        digits
+    }
 }
 
 /// A clickable line of a section, reaching the card's edges on hover.
