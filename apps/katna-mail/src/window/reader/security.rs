@@ -394,16 +394,22 @@ mod tests {
     fn encrypted_mail_is_marked_for_remote_blocking() {
         let raw = b"From: Ada <ada@example.org>\r\n\
 Content-Type: text/html\r\n\r\n<p>Hi<img src=\"https://example.org/t.png\"></p>\r\n";
-        let security = |decryption| {
+        let security_of = |decryption, whole| {
             Secured::Opened(katna_crypto::Security {
                 standard: katna_crypto::Standard::OpenPgp,
-                whole: true,
+                whole,
                 decryption,
                 signatures: Vec::new(),
             })
         };
+        let security = |decryption| security_of(decryption, true);
         let opened = shown(raw, Some(security(Some(Decryption::Decrypted))));
         assert!(!opened.remote.is_empty() && opened.encrypted());
+        // Partly encrypted mail is never laid out as HTML (EFAIL).
+        let partly = shown(raw, Some(security_of(Some(Decryption::Decrypted), false)));
+        assert!(partly.doc.is_none() && partly.remote.is_empty());
+        let signed = shown(raw, Some(security_of(None, false)));
+        assert!(signed.doc.is_some());
         assert!(!shown(raw, Some(security(None))).encrypted());
         assert!(!shown(raw, None).encrypted());
         let opening = sealed(

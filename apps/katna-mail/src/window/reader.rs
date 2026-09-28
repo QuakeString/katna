@@ -1667,7 +1667,14 @@ fn shown_body(raw: &[u8]) -> Body {
 /// The body of `raw` as the reading view shows it.
 fn shown(raw: &[u8], security: Option<Secured>) -> Body {
     let view = katna_render::message_view(raw);
-    let doc = katna_render::message_document(raw);
+    // Mail only partly encrypted shows as plain text: text around the
+    // opened part could be anyone's, and as HTML it could wrap the opened
+    // text into a link to their site (EFAIL).
+    let partly_encrypted = matches!(
+        &security,
+        Some(Secured::Opened(security)) if security.encrypted() && !security.whole
+    );
+    let doc = katna_render::message_document(raw).filter(|_| !partly_encrypted);
     let (blocks, cut) = match doc {
         Some(_) => (Vec::new(), false),
         None => body_blocks(&view.body, MAX_BODY_LINES),

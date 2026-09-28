@@ -203,6 +203,12 @@ impl Pop3Client {
                 return Ok(out);
             }
             out.extend_from_slice(line.strip_prefix(b".").unwrap_or(line));
+            if out.len() > crate::net::MAX_READ {
+                return Err(Error::Protocol(format!(
+                    "the POP3 server sent more than {} MiB in one answer",
+                    crate::net::MAX_READ >> 20
+                )));
+            }
         }
     }
 

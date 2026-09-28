@@ -36,6 +36,11 @@ pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(30);
 /// changes (IDLE) uses its own, longer limit.
 pub const READ_TIMEOUT: Duration = Duration::from_secs(120);
 
+/// Most bytes a server may send without ending a line, and the most one
+/// POP3 answer may hold. IMAP literals stop at 64 MiB (io-imap), so this
+/// only stops a server that never ends its line from using up the memory.
+pub const MAX_READ: usize = 256 * 1024 * 1024;
+
 /// TLS settings shared by all connections of the daemon.
 #[derive(Clone)]
 pub struct Tls {
@@ -183,6 +188,12 @@ impl Conn {
         let stream = self.stream.as_mut().ok_or_else(not_connected)?;
         loop {
             if self.filled == self.buf.len() {
+                if self.filled >= MAX_READ {
+                    return Err(Error::Protocol(format!(
+                        "the server sent more than {} MiB without a line end",
+                        MAX_READ >> 20
+                    )));
+                }
                 self.buf.resize(self.buf.len() * 2, 0);
             }
             // Once a line has started, the rest must follow promptly.

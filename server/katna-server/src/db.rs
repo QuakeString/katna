@@ -72,6 +72,25 @@ const MIGRATIONS: &[&str] = &[
          attempts INTEGER NOT NULL DEFAULT 0,
          PRIMARY KEY (account_id, purpose)
      );",
+    // 3: link targets stored once per request rather than once per
+    // recipient, and each account's use per day (kept after its installs
+    // go, so forgetting an install does not reset the daily limits).
+    "CREATE TABLE link_sets (
+         id BIGSERIAL PRIMARY KEY,
+         install_id TEXT NOT NULL REFERENCES installs (id) ON DELETE CASCADE,
+         created_at BIGINT NOT NULL,
+         links TEXT[] NOT NULL
+     );
+     CREATE INDEX link_sets_created ON link_sets (created_at);
+     ALTER TABLE tracks ADD COLUMN link_set BIGINT REFERENCES link_sets (id) ON DELETE CASCADE;
+     CREATE INDEX tracks_link_set ON tracks (link_set);
+     CREATE TABLE track_usage (
+         account_id TEXT NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+         created_at BIGINT NOT NULL,
+         ids INTEGER NOT NULL,
+         link_bytes BIGINT NOT NULL
+     );
+     CREATE INDEX track_usage_account_created ON track_usage (account_id, created_at);",
 ];
 
 /// Wrong guesses allowed for one emailed code.
@@ -155,8 +174,26 @@ pub struct Track {
     pub install: String,
     /// When it was created (the mail was sent).
     pub created_at: i64,
-    /// Link targets, in the order the daemon numbered them.
-    pub links: Vec<String>,
+    /// The link target asked for, when there is one with that number.
+    pub link: Option<String>,
+}
+
+/// An account's limits on new tracking IDs per 24 hours.
+#[derive(Clone, Copy, Debug)]
+pub struct TrackLimits {
+    /// Tracking IDs.
+    pub ids: u32,
+    /// Bytes of link targets, counted once per request.
+    pub link_bytes: u64,
+}
+
+/// Which daily limit a request for tracking IDs would pass.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum OverLimit {
+    /// Too many tracking IDs.
+    Ids,
+    /// Too many bytes of link targets.
+    LinkBytes,
 }
 
 /// The database.
@@ -543,40 +580,64 @@ impl Db {
         Ok(())
     }
 
-    /// How many tracking IDs `install` created since `since`.
-    pub async fn tracks_since(&self, install: &str, since: i64) -> Result<i64, DbError> {
-        let row = self
-            .pool
-            .get()
-            .await?
-            .query_one(
-                "SELECT count(*) FROM tracks WHERE install_id = $1 AND created_at >= $2",
-                &[&install, &since],
-            )
-            .await?;
-        Ok(row.get(0))
-    }
-
-    /// Stores new tracking IDs, each with the same link targets.
+    /// Stores new tracking IDs for `install` of `account`, all sharing the
+    /// link targets `links`, unless that would take the account past
+    /// `limits` for the 24 hours before `now`. Requests of one account take
+    /// turns, so parallel ones cannot pass the limits together.
     pub async fn create_tracks(
         &self,
+        account: &str,
         install: &str,
         ids: &[String],
         links: &[String],
         now: i64,
-    ) -> Result<(), DbError> {
+        limits: TrackLimits,
+    ) -> Result<Result<(), OverLimit>, DbError> {
+        let link_bytes: i64 = links.iter().map(|link| link.len() as i64).sum();
         let mut client = self.pool.get().await?;
         let tx = client.transaction().await?;
+        tx.execute(
+            "SELECT pg_advisory_xact_lock(hashtextextended($1, 7243902))",
+            &[&account],
+        )
+        .await?;
+        let used = tx
+            .query_one(
+                "SELECT COALESCE(sum(ids), 0)::BIGINT, COALESCE(sum(link_bytes), 0)::BIGINT
+                 FROM track_usage WHERE account_id = $1 AND created_at >= $2",
+                &[&account, &(now - 86_400_000)],
+            )
+            .await?;
+        let (used_ids, used_bytes): (i64, i64) = (used.get(0), used.get(1));
+        if used_ids + ids.len() as i64 > i64::from(limits.ids) {
+            return Ok(Err(OverLimit::Ids));
+        }
+        if used_bytes + link_bytes > i64::try_from(limits.link_bytes).unwrap_or(i64::MAX) {
+            return Ok(Err(OverLimit::LinkBytes));
+        }
+        tx.execute(
+            "INSERT INTO track_usage (account_id, created_at, ids, link_bytes) VALUES ($1, $2, $3, $4)",
+            &[&account, &now, &(ids.len() as i32), &link_bytes],
+        )
+        .await?;
+        let link_set: i64 = tx
+            .query_one(
+                "INSERT INTO link_sets (install_id, created_at, links) VALUES ($1, $2, $3) RETURNING id",
+                &[&install, &now, &links],
+            )
+            .await?
+            .get(0);
         let insert = tx
             .prepare(
-                "INSERT INTO tracks (id, install_id, created_at, links) VALUES ($1, $2, $3, $4)",
+                "INSERT INTO tracks (id, install_id, created_at, links, link_set) VALUES ($1, $2, $3, '{}', $4)",
             )
             .await?;
         for id in ids {
-            tx.execute(&insert, &[id, &install, &now, &links]).await?;
+            tx.execute(&insert, &[id, &install, &now, &link_set])
+                .await?;
         }
         tx.commit().await?;
-        Ok(())
+        Ok(Ok(()))
     }
 
     /// Deletes one of `install`'s tracking IDs with its events. Returns
@@ -587,28 +648,43 @@ impl Db {
             .get()
             .await?
             .execute(
-                "DELETE FROM tracks WHERE id = $1 AND install_id = $2",
+                "WITH gone AS (
+                     DELETE FROM tracks WHERE id = $1 AND install_id = $2 RETURNING link_set
+                 ), unused AS (
+                     DELETE FROM link_sets s USING gone
+                     WHERE s.id = gone.link_set
+                       AND NOT EXISTS (SELECT 1 FROM tracks t WHERE t.link_set = s.id AND t.id <> $1)
+                 )
+                 SELECT 1 FROM gone",
                 &[&id, &install],
             )
             .await?;
         Ok(deleted > 0)
     }
 
-    /// Looks a tracking ID up.
-    pub async fn track(&self, id: &str) -> Result<Option<Track>, DbError> {
+    /// Looks a tracking ID up, with its link target number `link` (from 0)
+    /// when asked for; only that one target is read.
+    pub async fn track(&self, id: &str, link: Option<u32>) -> Result<Option<Track>, DbError> {
+        // SQL arrays count from 1; 0 reads as no target.
+        let index = link
+            .and_then(|n| n.checked_add(1))
+            .and_then(|n| i32::try_from(n).ok())
+            .unwrap_or(0);
         let row = self
             .pool
             .get()
             .await?
             .query_opt(
-                "SELECT install_id, created_at, links FROM tracks WHERE id = $1",
-                &[&id],
+                "SELECT t.install_id, t.created_at, (COALESCE(s.links, t.links))[$2]
+                 FROM tracks t LEFT JOIN link_sets s ON s.id = t.link_set
+                 WHERE t.id = $1",
+                &[&id, &index],
             )
             .await?;
         Ok(row.map(|row| Track {
             install: row.get(0),
             created_at: row.get(1),
-            links: row.get(2),
+            link: row.get(2),
         }))
     }
 
@@ -682,6 +758,15 @@ impl Db {
         let client = self.pool.get().await?;
         let tracks = client
             .execute("DELETE FROM tracks WHERE created_at < $1", &[&before])
+            .await?;
+        client
+            .execute("DELETE FROM link_sets WHERE created_at < $1", &[&before])
+            .await?;
+        client
+            .execute(
+                "DELETE FROM track_usage WHERE created_at < $1",
+                &[&(now_ms() - 2 * 86_400_000)],
+            )
             .await?;
         let installs = client
             .execute("DELETE FROM installs WHERE last_seen < $1", &[&before])

@@ -1132,6 +1132,7 @@ fn write_for_opening(
 fn safe_name(name: &str) -> String {
     let name: String = name
         .chars()
+        .filter(|&c| !katna_preview::invisible(c))
         .map(|c| {
             if matches!(c, '/' | '\\' | '\0') || c.is_control() {
                 '_'
@@ -1302,6 +1303,7 @@ tmpfs /run/user/1000 tmpfs rw,nosuid,mode=700 0 0\n\
         assert_eq!(safe_name(".bashrc"), "bashrc");
         assert_eq!(safe_name("  "), "attachment");
         assert_eq!(safe_name("a\nb"), "a_b");
+        assert_eq!(safe_name("report\u{202e}fdp.exe"), "reportfdp.exe");
         let long = format!("{}.pdf", "x".repeat(300));
         let short = safe_name(&long);
         assert!(short.len() <= 200 && short.ends_with(".pdf"), "{short}");

@@ -2729,8 +2729,10 @@ file; the owner runs it on his own server at `server.katna.invenia.in`
 (`katna_core::ids::TRACKING_SERVER_URL`; September 2026). Unknown pixel IDs still get the picture; links redirect
 only to targets stored with the ID (`http`/`https` only). Installs register
 without an account and get a bearer token (stored hashed); limits are 10
-new installs per address per hour and 5000 tracked copies per install per
-day. Each event is labelled `person`, `apple_proxy` (Apple's network or a
+new installs per address per hour (an IPv6 address counts by its /64) and,
+per Katna account and day, 5000 tracked copies and 16 MiB of link targets
+(at most 256 KiB per request; the targets are stored once per message, not
+per copy). Each event is labelled `person`, `apple_proxy` (Apple's network or a
 bare `Mozilla/5.0` agent) or `scanner` (`HEAD`, bot-like agents, opens
 within 5 s or clicks within 30 s of sending); the address and user agent
 are read for the label and never stored. Events stream to the daemon as

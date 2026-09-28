@@ -238,6 +238,15 @@ pub(crate) struct Url<'a> {
 }
 
 pub(crate) fn parse_url(url: &str) -> Result<Url<'_>> {
+    // The URL goes into the request line as it is: a line break in it
+    // would start a second request (URLs come from mail, DNS and web
+    // pages), and a space would end the path early.
+    if url.bytes().any(|b| b <= b' ' || b == 0x7f) {
+        return Err(Error::Protocol(format!(
+            "{}: spaces or control characters in the URL",
+            url.escape_debug()
+        )));
+    }
     let rest = url
         .strip_prefix("https://")
         .ok_or_else(|| Error::Protocol(format!("{url}: only https URLs are fetched")))?;
@@ -642,6 +651,10 @@ mod tests {
         assert_eq!(parse_url("https://127.0.0.1:8443").unwrap().path, "/");
         assert!(parse_url("http://example.org/").is_err());
         assert!(parse_url("https://user@example.org/").is_err());
+        // No second request smuggled in through a line break.
+        assert!(parse_url("https://example.org/a\r\nX-Evil: 1\r\n\r\nGET /b").is_err());
+        assert!(parse_url("https://example.org/a b").is_err());
+        assert!(parse_url("https://example.org\t/a").is_err());
         assert_eq!(
             resolve("https://a.org/x", "/y").unwrap(),
             "https://a.org:443/y"
