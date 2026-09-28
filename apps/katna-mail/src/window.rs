@@ -2315,6 +2315,10 @@ impl MailWindow {
             self.reopen_closed_draft(window, cx);
             return;
         }
+        if undo == Command::RestoreQuote {
+            self.restore_quote(window, cx);
+            return;
+        }
         if let Command::UndoSend(_) = undo {
             // Taken back from the outbox: the message opens again.
             let connection = self.daemon.clone();
