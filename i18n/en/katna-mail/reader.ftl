@@ -206,6 +206,12 @@ print-preview-failed = the pages could not be shown
 print-preview-paper = Paper
 print-preview-a4 = A4
 print-preview-letter = Letter
+# How HTML mail prints: as the reading pane shows it, or its text alone.
+print-preview-layout = Layout
+print-preview-as-shown = As shown
+print-preview-simple = Simple text
+# Switch: print the background colors of HTML mail (off saves ink).
+print-preview-backgrounds = Backgrounds
 print-preview-cancel = Cancel
 print-preview-print = Print
 # In the printed page, in place of a message's text.

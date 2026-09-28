@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Print keeps the formatting"
+text = """
+Mail prints as it looks in the reading pane, with its tables, colors,
+borders, lists and pictures. The print preview can leave out background
+colors to save ink, or print the text alone with Simple text.
+"""

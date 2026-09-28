@@ -226,8 +226,11 @@ impl Conversation {
                     None => false,
                 };
                 Printable {
+                    id: part.id,
                     row: part.row.clone(),
                     view: body.view.clone(),
+                    doc: body.doc.clone().filter(|_| !sealed),
+                    encrypted: body.encrypted(),
                     sealed,
                 }
             })
@@ -425,9 +428,14 @@ impl Conversation {
 
 /// A message of the conversation, for printing.
 pub(super) struct Printable {
+    pub id: MessageId,
     pub row: Option<Rc<Row>>,
     /// `None` when it is not downloaded yet.
     pub view: Option<MessageView>,
+    /// Its HTML body laid out, as the reader draws it.
+    pub doc: Option<Document>,
+    /// Encrypted: its remote pictures are never loaded.
+    pub encrypted: bool,
     /// Encrypted or signed, and its text not opened.
     pub sealed: bool,
 }

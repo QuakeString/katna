@@ -1039,7 +1039,10 @@ message's colors are remapped (`window/dark.rs`): white becomes the reading
 pane, other light backgrounds become dark ones of the same hue as dark by
 eye as they were light, dark backgrounds stay, and text that falls under
 3:1 contrast on its new background has its lightness flipped and raised to
-4.5:1. Images are not changed. A `text/plain` part
+4.5:1. Images are not changed. Where the open conversation has such mail,
+a half-circle button on the reader's toolbar shows it in its sender's
+original colors on its own light page, and back; it holds for that
+conversation only. A `text/plain` part
 that is really an HTML document is rendered as HTML.
 
 Remote content is blocked by default. Tracking pixels (tiny images and
@@ -1364,9 +1367,19 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   an A4 or Letter switch lays them out again. Print hands off to the
   desktop's print dialog (XDG print portal), which starts on the previewed
   paper; if a different paper is picked there, the pages are laid out
-  again on it. The text of each message is printed, with sender, date,
-  recipients and attachment names; pictures and HTML styling are not, and
-  there is no font fallback for scripts the UI font lacks. Without a print
+  again on it. Each message prints with sender, date, recipients and
+  attachment names, and an HTML body as the reader draws it
+  (`print/flow.rs` follows `window/rich.rs`): boxes, table rows as cells
+  (stretched to the row's height), colors, borders, lists, quotes, links,
+  bold, italic and monospace faces, and pictures (the message's own, and
+  remote ones the reader has shown), at 10.5 pt for the mail's 16 px.
+  Everything is placed on one strip and cut into pages between lines,
+  never through a line, a picture or a short table row. The preview's
+  Layout switch picks As shown (the default) or Simple text (a line per
+  paragraph, a row's cells on one line); its Backgrounds switch leaves out
+  page, box and text backgrounds (light text is darkened) while the
+  formatting stays. There is no font fallback for scripts the UI font
+  lacks. Without a print
   portal the PDF opens in the default app. PDFs are written to
   `$XDG_RUNTIME_DIR/katna/print` and removed after an hour. Print and In
   new window sit right of the actions and move to the More menu when the
