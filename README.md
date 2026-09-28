@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="packaging/icons/src/katna.svg" width="96" height="96" alt="Katna logo">
+  <img src="packaging/icons/src/katna-wordmark.svg" height="160" alt="Katna Mail logo">
 </p>
 
 <h1 align="center">Katna</h1>

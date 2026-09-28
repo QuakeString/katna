@@ -2489,9 +2489,11 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is the app icon pre-rendered at each tray
-  size (`crates/katna-platform/icons/`, from `packaging/icons/render.py`)
-  with a red badge drawn in code with the count, `99+` above 99, since the
+  default on Ubuntu). The icon is the one-colour k
+  (`<mail app ID>-symbolic`), which the panel recolours. With unread mail
+  it is the coloured app icon, pre-rendered at each tray size
+  (`crates/katna-platform/icons/`, from `packaging/icons/render.py`), with
+  a red badge drawn in code with the count, `99+` above 99, since the
   protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
