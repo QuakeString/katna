@@ -116,7 +116,10 @@ impl Manifest {
         let size = (1..=MAX_SIZE).contains(&manifest.size);
         // A few short lines of printable text.
         let minisig = manifest.minisig.as_ref().is_none_or(|sig| {
-            sig.len() <= 1024 && sig.chars().all(|c| c == '\n' || c.is_ascii_graphic() || c == ' ')
+            sig.len() <= 1024
+                && sig
+                    .chars()
+                    .all(|c| c == '\n' || c.is_ascii_graphic() || c == ' ')
         });
         (plain_name && sha && size && minisig && parse_version(&manifest.version).is_some())
             .then_some(manifest)
@@ -186,7 +189,8 @@ mod tests {
         assert!(bad("0.0.0.r236.g1a2b3c4", "soon").is_none());
         // Signed builds carry their signature; old ones have none.
         assert_eq!(manifest.minisig, None);
-        let sig = "untrusted comment: signature\nRUQf6LRCGA9i5+Q=\ntrusted comment: katna-git\nabc=\n";
+        let sig =
+            "untrusted comment: signature\nRUQf6LRCGA9i5+Q=\ntrusted comment: katna-git\nabc=\n";
         let signed = bad("\"size\"", &format!("\"minisig\":{sig:?},\"size\""));
         assert_eq!(signed.unwrap().minisig.as_deref(), Some(sig));
         assert!(bad("\"size\"", "\"minisig\":\"a\\u0000b\",\"size\"").is_none());
