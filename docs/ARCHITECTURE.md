@@ -2671,7 +2671,7 @@ own on Katna Server; mail logins never go to the server.
   `KatnaDevices`, `KatnaSignOutDevice`, `KatnaChangePassword`,
   `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`, signal
   `KatnaAccountChanged`; errors carry `katna_dbus::katna_error` names.
-- **App:** Settings > Katna account. Features check
+- **App:** Settings > Subscription. Features check
   `MailWindow::katna_signed_in` and show `katna_sign_in_needed` ("Sign in
   to use this") when not.
 
@@ -2709,7 +2709,7 @@ owner's server, over on-device models or DeepL).
   is never offered for translation.
 - **App:** a bar above a message in another language: "Translate to
   <reading language>", then "Show original"; while signed out it says to
-  sign in to a Katna account, with a button to Settings > Katna account.
+  sign in to a Katna account, with a button to Settings > Subscription.
   Settings > General >
   Translation: offer translations (on), the reading language (the UI
   language by default), languages always translated (none by default, one

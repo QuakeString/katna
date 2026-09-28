@@ -62,7 +62,7 @@ impl MailWindow {
             .when(!trackable, |d| d.opacity(0.5))
             .on_click(cx.listener(move |this, _, window, cx| {
                 if trackable && !signed_in {
-                    this.open_settings_page(Section::KatnaAccount, window, cx);
+                    this.open_settings_page(Section::Subscriptions, window, cx);
                     return;
                 }
                 if let Some(c) = &mut this.compose

@@ -20,7 +20,6 @@ settings-tab-experimental = 실험실
 
 ## Settings page: tabs still to come
 
-settings-tab-subscriptions-coming = 받고 있는 뉴스레터와 메일링 리스트를 확인하고 클릭 한 번으로 구독을 취소하세요.
 settings-tab-folders-rules-coming = 폴더와 라벨을 만들고, 이름을 바꾸고, 옮기고, 숨기고, 동기화할 항목을 선택합니다. 규칙은 새 메일을 보낸사람, 제목 또는 단어에 따라 자동으로 분류하거나 라벨을 붙이거나 전달하거나 삭제합니다.
 settings-tab-mcp-server-coming = 이 컴퓨터의 AI 어시스턴트가 사용자의 동의하에 메일을 검색하고 읽고 초안을 작성할 수 있게 합니다.
 
