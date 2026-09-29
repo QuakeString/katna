@@ -3618,6 +3618,11 @@ server error is not.
   plants every Monday 8am"); a repeat without a day starts on its first
   day from today. Tasks have no place, so "at …" stays in the title, and
   a title that is only such words ("tomorrow") stays as typed.
+- **Search**: on the Tasks page the top bar's box says "Search tasks"
+  and shows only tasks whose title or notes hold every word typed, with
+  a step's task and a task's matching steps; lists with none found hide
+  in All tasks. The mail search's words come back on leaving the page,
+  as with Notes and Contacts.
 - **Drag to another list**: an open task (not a step) drags onto another
   list's card, which outlines itself while the task is over it; the drop
   is the same move as "Move to", with its toast and Undo. Order within a
