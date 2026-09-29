@@ -865,6 +865,18 @@ impl Store {
         let rows = stmt.query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
+
+    /// The saved cards with a birthday, as `(id, name, birthday)`: the
+    /// birthday is `YYYY-MM-DD`, or `--MM-DD` without the year.
+    pub fn contact_birthdays(&self) -> Result<Vec<(i64, String, String)>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT id, display_name, json_extract(card_json, '$.birthday') AS birthday
+             FROM contact WHERE birthday IS NOT NULL AND birthday != ''
+             ORDER BY sort_key, id",
+        )?;
+        let rows = stmt.query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
 }
 
 #[cfg(test)]
@@ -1037,6 +1049,41 @@ mod tests {
         // A collection removed on the server goes with its cards.
         store.remove_address_books_except(b, &[]).unwrap();
         assert_eq!(store.saved_contacts().unwrap()[0].ids.len(), 1);
+    }
+
+    #[test]
+    fn birthdays_are_read_from_the_cards() {
+        let (_tmp, mut store, a, _) = store();
+        let book = store
+            .ensure_address_book(Some(a), BookSource::Google, "", "Contacts")
+            .unwrap();
+        let mut asha = card("Asha", "asha@x.in");
+        asha.birthday = "1990-03-14".into();
+        let mut bilal = card("Bilal", "bilal@x.in");
+        bilal.birthday = "--07-02".into();
+        let sync = BookSync {
+            full: true,
+            contacts: vec![
+                synced("people/1", asha),
+                synced("people/2", bilal),
+                synced("people/3", card("Chen", "chen@x.in")),
+            ],
+            ..BookSync::default()
+        };
+        store.save_book_sync(book, &sync).unwrap();
+        let found: Vec<(String, String)> = store
+            .contact_birthdays()
+            .unwrap()
+            .into_iter()
+            .map(|(_, name, day)| (name, day))
+            .collect();
+        assert_eq!(
+            found,
+            [
+                ("Asha".into(), "1990-03-14".into()),
+                ("Bilal".into(), "--07-02".into())
+            ]
+        );
     }
 
     #[test]
