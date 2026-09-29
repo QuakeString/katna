@@ -997,6 +997,8 @@ impl Daemon {
             Some(id) => vec![self.account(id)?],
             None => self.store().accounts()?,
         };
+        // "Try again" looks for the calendars from scratch.
+        self.recheck_calendars(accounts.iter().map(|a| a.id));
         for account in accounts {
             let running = self
                 .workers()

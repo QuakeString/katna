@@ -3448,7 +3448,13 @@ most useful reason is shown. Changes go back the way their calendar came
   The Calendar page's side list shows every account, also one without
   calendars: one line under it gives that state's reason with its fix
   ("Sign in again to show calendars" for an OAuth2 account missing the
-  calendar scope, else "Try again", which is `SyncNow`).
+  calendar scope, else "Try again", which is `SyncNow` and looks for the
+  calendars from scratch). `none` carries what the server answered
+  ("calendar.zoho.in answered 404"); a Gmail or Outlook account added
+  with a password gets `use-sign-in` (detail: the provider) and "Sign in
+  with Google", since those providers let Katna into calendars only
+  through their own sign-in. A CalDAV server that answers without naming
+  the user's principal is asked for the calendar home itself.
 - How edits flow (`Pim1.EditEvent`, `katna_sync::calendar::edit`): the
   daemon writes the change to `pim.db` at once and says
   `CalendarChanged`, so the app shows it on reload; rows the service
