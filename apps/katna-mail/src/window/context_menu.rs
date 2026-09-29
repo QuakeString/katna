@@ -379,6 +379,17 @@ impl MailWindow {
                         }),
                     ),
                 )
+                .child(
+                    plain("context-add-note", "notes", &tr!("menu-add-note")).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            let Some(menu) = this.context_menu.take() else {
+                                return;
+                            };
+                            let keys = this.context_targets(menu.key);
+                            this.add_note_from(keys, window, cx);
+                        }),
+                    ),
+                )
             })
             .child(if row.flagged {
                 plain("context-star", "star", &tr!("menu-unstar")).on_click(act(Act::Star(false)))

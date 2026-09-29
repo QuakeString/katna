@@ -2615,9 +2615,16 @@ away; he can still change them.
   (Workspace only) and OneNote (work and school accounts only) have no
   API for personal accounts, so the Notes folder is the mail service's
   own feature that every IMAP account has.
-- **Later.** Notes on a conversation ("Add a note", §13.7), meeting notes
-  from an event, a checklist line made a task, labels, formatting,
-  pictures.
+- **On a mail.** Add a note (the mail's right-click and ⋮ menus) opens a
+  new note over the mail, titled with the conversation's subject and
+  keeping its newest message's `Message-ID` in `link`. The notes whose
+  `link` is any message of the open conversation show as small cards
+  under its subject, each opening over the mail, with "Add a note" after
+  them. A note with a link has a Mail chip (on its card and in the open
+  note) that opens the mail again. Gmail has no key for Keep, so there
+  is none.
+- **Later.** Meeting notes from an event, a checklist line made a task,
+  labels, formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 

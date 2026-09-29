@@ -424,6 +424,8 @@ menu-snooze = Snooze
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".
 menu-add-to-tasks = Add to Tasks
+# Makes a note about the mail (Katna Notes), opened over it.
+menu-add-note = Add a note
 # Prints every message of the open conversation.
 menu-print-all = Print all
 menu-new-window = Open in new window

@@ -11,8 +11,8 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, SharedString, Subscription,
-    Task, Window, div, prelude::*, rgba,
+    AnimationExt, AnyElement, Context, Div, ElementId, Entity, Focusable, FontWeight, SharedString,
+    Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_dbus::NoteItem;
 use katna_i18n::tr;
@@ -22,6 +22,7 @@ use katna_ui::{InputEvent, TextArea, TextInput, px, unpx};
 use super::MailWindow;
 use super::apps::APP_RAIL_WIDTH;
 use crate::daemon::{self, Command};
+use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, icon_button, icon_button_colored, placeholder, tip};
 
@@ -241,7 +242,8 @@ fn card_height(note: &Note) -> f32 {
         .sum::<usize>()
         .min(CARD_LINES);
     let title = if note.title.is_empty() { 0.0 } else { 28.0 };
-    32.0 + title + 20.0 * lines as f32
+    let mail = if note.link.is_some() { 32.0 } else { 0.0 };
+    32.0 + title + mail + 20.0 * lines as f32
 }
 
 /// Cards laid out in `columns` columns, each going to the shortest one,
@@ -264,7 +266,7 @@ fn masonry<'a>(notes: &[&'a Note], columns: usize) -> Vec<Vec<&'a Note>> {
 
 impl MailWindow {
     /// The Notes page, made and loaded the first time.
-    fn notes_page(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn notes_page(&mut self, cx: &mut Context<Self>) {
         if self.notes.is_some() {
             return;
         }
@@ -300,21 +302,24 @@ impl MailWindow {
     }
 
     /// Opens `note` over the board, or a new one for `None`; `checklist`
-    /// starts a new one as a list.
+    /// starts a new one as a list, and `about` (a subject and a
+    /// `Message-ID`) one about a mail, titled with its subject.
     fn open_note(
         &mut self,
         note: Option<&Note>,
         checklist: bool,
+        about: Option<(String, String)>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         self.close_note(cx);
         let accent = rgba(self.theme(window).accent).into();
+        let (about_title, about_link) = about.unzip();
         let (title_text, body_text) = note
             .map(|n| (n.title.clone(), n.body.clone()))
             .unwrap_or_else(|| {
                 (
-                    String::new(),
+                    about_title.clone().unwrap_or_default(),
                     if checklist {
                         UNTICKED.to_owned()
                     } else {
@@ -354,7 +359,7 @@ impl MailWindow {
             InputEvent::Cancel => this.close_note(cx),
             InputEvent::Submit => {}
         });
-        let focus = if note.is_some() || checklist {
+        let focus = if note.is_some() || checklist || about_title.is_some() {
             body.focus_handle(cx)
         } else {
             title.focus_handle(cx)
@@ -369,7 +374,7 @@ impl MailWindow {
             pinned: note.is_some_and(|n| n.pinned),
             archived: note.map_or(view == NotesView::Archive, |n| n.archived),
             labels: note.map(|n| n.labels.clone()).unwrap_or_default(),
-            link: note.and_then(|n| n.link.clone()),
+            link: note.and_then(|n| n.link.clone()).or(about_link),
             // A new note goes to the account whose mail was open, as a new
             // message comes from it; the picker on the note changes it.
             account: match note {
@@ -590,6 +595,187 @@ impl MailWindow {
         if open {
             self.close_note(cx);
         }
+    }
+
+    /// Add a note (the mail's ⋮ and right-click menus): a new note about
+    /// the first picked conversation, titled with its subject and keeping
+    /// its newest message's `Message-ID`, opened over the mail.
+    pub(super) fn add_note_from(
+        &mut self,
+        keys: Vec<EntryKey>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((subject, header)) = keys
+            .first()
+            .and_then(|key| self.mail.as_ref().ok()?.task_source(*key))
+        else {
+            return;
+        };
+        self.notes_page(cx);
+        self.open_note(None, false, Some((subject, header)), window, cx);
+    }
+
+    /// Opens the mail a note is about.
+    fn open_note_mail(&mut self, header: &str, window: &mut Window, cx: &mut Context<Self>) {
+        let found = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|m| m.message_with_header(header));
+        match found {
+            Some(message) => {
+                self.close_note(cx);
+                self.open_app(super::apps::App::Mail, cx);
+                self.show_message(message, window, cx);
+            }
+            None => self.show_snackbar(tr!("notes-mail-gone"), None, cx),
+        }
+    }
+
+    /// The "Mail" chip of a note about a mail, which opens it.
+    fn mail_chip(
+        &self,
+        id: impl Into<ElementId>,
+        link: String,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<Div> {
+        div()
+            .id(id)
+            .mt(px(8.0))
+            .h(px(24.0))
+            .pl(px(6.0))
+            .pr(px(10.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(4.0))
+            .rounded_full()
+            .bg(rgba(fade(th.text, 0.08)))
+            .text_size(px(12.0))
+            .text_color(rgba(th.text))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(fade(th.text, 0.14))))
+            .tooltip(tip(tr!("notes-open-mail"), th))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.open_note_mail(&link, window, cx);
+            }))
+            .child(icon("mail", th.text_dim, 16.0))
+            .child(tr!("notes-mail"))
+    }
+
+    /// The notes about an open conversation (its messages' `Message-ID`s
+    /// are `headers`), shown under its subject, as Keep shows them beside
+    /// Gmail; each opens over the mail.
+    pub(super) fn render_mail_notes(
+        &self,
+        headers: &[String],
+        indent: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let notes = self.notes.as_ref()?.notes.as_ref()?.as_ref().ok()?;
+        let about: Vec<&Note> = notes
+            .iter()
+            .filter(|n| {
+                n.trashed_at.is_none() && n.link.as_ref().is_some_and(|l| headers.contains(l))
+            })
+            .collect();
+        if about.is_empty() {
+            return None;
+        }
+        let header = headers.last().cloned().unwrap_or_default();
+        Some(
+            div()
+                .pl(px(indent))
+                .pr(px(16.0))
+                .pb(px(12.0))
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap(px(8.0))
+                .children(about.into_iter().map(|note| {
+                    let open = Rc::new(note.clone());
+                    let bg = note_color(note.color, th);
+                    let first = note.body.lines().find(|l| !l.trim().is_empty());
+                    let heading = if note.title.is_empty() {
+                        first.unwrap_or_default().to_owned()
+                    } else {
+                        note.title.clone()
+                    };
+                    let text =
+                        (!note.title.is_empty()).then(|| first.unwrap_or_default().to_owned());
+                    div()
+                        .id(("mail-note", note.id as usize))
+                        .w(px(220.0))
+                        .px(px(12.0))
+                        .py(px(8.0))
+                        .flex()
+                        .flex_row()
+                        .gap(px(8.0))
+                        .rounded(px(8.0))
+                        .border_1()
+                        .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
+                        .bg(rgba(bg.unwrap_or(th.surface)))
+                        .cursor_pointer()
+                        .hover(|s| s.shadow(elevation(th, 1.0)))
+                        .tooltip(tip(tr!("notes-open-note"), th))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.open_note(Some(&open), false, None, window, cx)
+                        }))
+                        .child(div().pt(px(2.0)).child(icon("notes", th.text_dim, 16.0)))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .child(
+                                    div()
+                                        .truncate()
+                                        .text_size(px(13.0))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .text_color(rgba(th.text))
+                                        .child(heading),
+                                )
+                                .children(text.filter(|t| !t.is_empty()).map(|t| {
+                                    div()
+                                        .truncate()
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(t)
+                                })),
+                        )
+                }))
+                .child(
+                    div()
+                        .id("mail-note-add")
+                        .h(px(36.0))
+                        .px(px(12.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
+                        .rounded(px(8.0))
+                        .text_size(px(13.0))
+                        .text_color(rgba(th.text_dim))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            let subject = this
+                                .reader
+                                .as_ref()
+                                .map(|r| r.subject().to_owned())
+                                .unwrap_or_default();
+                            this.open_note(None, false, Some((subject, header.clone())), window, cx)
+                        }))
+                        .child(icon("add", th.text_dim, 18.0))
+                        .child(tr!("menu-add-note")),
+                )
+                .into_any_element(),
+        )
     }
 
     /// Where a new note goes: the account whose mail is open, if its
@@ -929,9 +1115,9 @@ impl MailWindow {
                     .border_color(rgba(th.divider))
                     .shadow(elevation(th, 1.0))
                     .cursor_text()
-                    .on_click(
-                        cx.listener(|this, _, window, cx| this.open_note(None, false, window, cx)),
-                    )
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.open_note(None, false, None, window, cx)
+                    }))
                     .child(
                         div()
                             .flex_1()
@@ -945,7 +1131,7 @@ impl MailWindow {
                             .tooltip(tip(tr!("notes-new-list"), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 cx.stop_propagation();
-                                this.open_note(None, true, window, cx)
+                                this.open_note(None, true, None, window, cx)
                             })),
                     ),
             )
@@ -1120,7 +1306,7 @@ impl MailWindow {
             .hover(|s| s.shadow(elevation(th, 1.0)))
             .on_click(cx.listener(move |this, _, window, cx| {
                 if !trashed {
-                    this.open_note(Some(&open), false, window, cx)
+                    this.open_note(Some(&open), false, None, window, cx)
                 }
             }))
             .child(
@@ -1179,7 +1365,16 @@ impl MailWindow {
                                         .child(label.clone())
                                 })),
                         )
-                    }),
+                    })
+                    .children(note.link.clone().map(|link| {
+                        // A row, so the chip keeps its own width.
+                        div().flex().flex_row().child(self.mail_chip(
+                            ("note-card-mail", id as usize),
+                            link,
+                            th,
+                            cx,
+                        ))
+                    })),
             )
             .child(
                 div()
@@ -1197,7 +1392,7 @@ impl MailWindow {
     }
 
     /// The open note, over a dimmed board.
-    fn render_editor(
+    pub(super) fn render_editor(
         &self,
         th: &Theme,
         window: &mut Window,
@@ -1439,6 +1634,13 @@ impl MailWindow {
                     .gap(px(4.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_dim))
+                    .children(
+                        editor
+                            .link
+                            .clone()
+                            .map(|link| self.mail_chip("note-editor-mail", link, th, cx)),
+                    )
+                    .child(div().flex_1())
                     .children(edited.map(|edited| format!("{edited} ·")))
                     .child(
                         div()
