@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendar sets"
+text = """
+Save the calendars you're showing as a set, like "Work" or "Family",
+with + beside Calendar sets. One click on a set shows its calendars and
+hides the rest.
+"""

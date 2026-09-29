@@ -2920,7 +2920,7 @@ Served by the daemon, pure Rust, from the same search index.
 | Contact | name, address, organization | Compose email, copy address, open contact |
 | Email | subject, sender, text (confident matches only, or with a `mail:` prefix) | Open, reply all |
 | Organization | name, alias | Open organization view |
-| Event | title, attendees, location | Open event |
+| Event | title, location, details (the coming year) | Open its day in Calendar |
 | Task | title, details (open tasks) | Open the task |
 
 As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
@@ -2943,6 +2943,13 @@ of their title or details: at most three, those due first first, between
 people and mail, with the list they are in. Enter opens Katna Mail on the
 Tasks page with the task's details (app action `open-page` with
 `tasks:<id>`, which a task's reminder uses too).
+
+Events come up the same way, under Events, by their title, place or
+details: the next occurrence of each, from now to a year ahead, at most
+three, soonest first, after tasks. The line under says how soon (Now,
+Today, Tomorrow, In 3 days; the service formats no dates) and the place,
+or else the calendar. Enter opens the Calendar on that day
+(`calendar:YYYY-MM-DD`, as the clock does).
 
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
@@ -3472,7 +3479,9 @@ most useful reason is shown. Changes go back the way their calendar came
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events; a day opens Day, a month's
-  name opens Month) and Schedule, like Google Calendar, with calendars grouped by account; the week starts as the
+  name opens Month), Schedule and a custom view (X or 6: 2 to 7 days
+  from the day picked, 4 by default, chosen in the options menu as
+  `custom_days`), like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
 - The bar's options button (⚙ in Google, a tune icon here, beside the
   app's own gear) has Density and Second time zone (`[calendar]` in
@@ -3502,6 +3511,13 @@ most useful reason is shown. Changes go back the way their calendar came
   (shown calendars, not cancelled or declined) from 9:00 to 17:00 on the
   next five weekdays, from the next half hour today, with the UTC
   offset.
+- Calendar sets, as Fantastical has them (`window/calendar/sets.rs`):
+  named groups of calendars above the calendar list. + saves the
+  calendars on show under a name (the same name again replaces it), a
+  click shows a set's calendars and hides the rest (the same
+  `SetCalendarHidden` as the ticks), and the set matching what is on
+  show is highlighted. Kept in `config.toml` (`[[calendar.sets]]`, the
+  page's calendar IDs), not synced.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks

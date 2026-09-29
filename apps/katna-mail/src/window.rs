@@ -803,7 +803,7 @@ impl MailWindow {
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
-            calendar: calendar::CalendarPage::new(cx),
+            calendar: calendar::CalendarPage::new(config.calendar.custom_days(), cx),
             agenda: agenda::AgendaPanel::new(),
             undo_reopens: Vec::new(),
             reopen_after_undo: None,

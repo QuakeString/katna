@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 29 September 2026, through PR #324). Companion to
+> Status: **v0.2** (updated 29 September 2026, through PR #341). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -24,32 +24,21 @@ Mail that the phases did not name.
   of the UI translated; reading and sending encrypted mail; most of
   Phase 6: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service.
-- **Merged since the last refresh:** Calendar, Tasks, Notes and Contacts
-  as pages of the Katna window, switched by Ctrl+1 to Ctrl+5, the Go menu
-  and `--page` (#283). Calendar: sync with Google Calendar, Microsoft Graph
-  and CalDAV with Day, Week, Month and Schedule views (#290); adding,
-  changing and deleting events, trying each account's best sync way first
-  (#299); the invitation card in the mail (#307); Schedule a meeting from a
-  conversation and Running late (#312); focus time, out of office and
-  working location (#315); answering invitations by mail from accounts
-  without calendars (#318); reminder notifications with Join and Snooze
-  (#323). Tasks (6.4 complete): Google Tasks and To Do sync (#285), the
-  Tasks page (#291), Add to Tasks from a mail (#293), To Do steps (#297),
-  CalDAV to-dos (#302), the Today view (#304), best sync way first (#309),
-  task chips in the mail list (#313), tasks on the Calendar (#321). Notes:
-  the Notes page synced with each account's Notes folder (#286), notes on
-  a mail (#301), labels (#308), meeting notes (#320). Contacts: sync and
-  the Contacts page (#289), create, edit and delete (#295), labels and Add
-  to contacts from Mail (#305), best sync way first and Other contacts
-  (#317), Merge and fix, Import and Export (#324). Also: going to a PDF
-  page by number (#322), a calmer update checking bar (#288), a Windows
-  test fix (#287), translations (#279, #282, #284, #292, #294, #296, #298,
-  #300, #303, #306, #310, #311, #314, #316, #319).
-- **In progress:** the Calendar's density and second time zone (#325);
-  video meeting links from each account's own service plus Jitsi (6.15);
-  testing Katna on a Windows 11 virtual machine.
-- **Next:** the rest of Phase 6 (Calendar polish 6.5, Notes 6.9,
-  Contacts polish 6.13); usage statistics, feedback form and debug-file upload (C.3,
+- **Merged since the last refresh:** the Calendar's density and second
+  time zone (#325), typed quick add, Year view and Share free times (#336),
+  a custom days view, calendar sets and events in KRunner and GNOME search
+  (#341); video calls from Google Meet or Jitsi and Join buttons for call
+  links (#328); the clock's day menu with Add an Event and Add a Task
+  (#332); task reminders and repeating tasks (#333); tasks in KRunner and
+  GNOME search (#337); a note's checklist line made a task (#327);
+  contacts' birthdays in the Calendar, QR share, print, CSV import and
+  saved names in desktop search (#334); each account's sync, the outbox and
+  the PIM loops on threads of their own in the daemon (#338); only the
+  focused pane keeps its shadow (#331); sturdier sync and dev-server tests
+  (#330, #339); translations (#329, #335, #340).
+- **In progress:** testing Katna on a Windows 11 virtual machine.
+- **Next:** formatting in notes (6.9); the owner's live two-way checks
+  with a Microsoft account and a CalDAV server; usage statistics, feedback form and debug-file upload (C.3,
   C.6, C.7); right-to-left layout (L.2, L.3); the rest of the release
   track before any public release. Organizations (Phase 2) comes later.
 - **Size:** the owner raised the daemon's budget from 20 MiB to 50 MB
@@ -459,7 +448,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222, #228, #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268, #279, #282, #284, #292, #294, #296, #298, #300, #303, #306, #310, #311, #314, #316, #319; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222, #228, #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268, #279, #282, #284, #292, #294, #296, #298, #300, #303, #306, #310, #311, #314, #316, #319, #329, #335, #340; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
@@ -629,20 +618,20 @@ popover and density setting; calendars grouped by account with colors
 | Task | Deliverable |
 |---|---|
 | 6.1 See it ✅ #283, #290 | Page switcher on the app rail and in the menus; calendar tables in `katna-store`; daemon sync through Google Calendar API, Microsoft Graph and CalDAV (`katna-dav`), and local calendars; `calcard` parsing, recurrence with exceptions (`rrule`), time zones (`jiff`); Week, Day, Month and Schedule views, read-only, with account groups and colors; agenda side panel in Katna Mail; events in the Plasma clock |
-| 6.2 Change it ◐ #299, #323; density and second time zone in #325 | Create popover (press C, or click or drag on the grid) and full editor; drag to move and resize; repeat rules and exceptions; Undo and Ctrl+Z; reminder notifications with Join and Snooze; density, second time zone, keyboard shortcuts |
+| 6.2 Change it ✅ #299, #323, #325 | Create popover (press C, or click or drag on the grid) and full editor; drag to move and resize; repeat rules and exceptions; Undo and Ctrl+Z; reminder notifications with Join and Snooze; density, second time zone, keyboard shortcuts |
 | 6.3 Meetings ✅ #307, #312, #315, #318 | Invitation card in the reader with Yes, Maybe, No and the day around it; replies through Google or Graph, else iMIP mail; guests and busy times (freeBusy, getSchedule); Meet and Teams links; Schedule meeting from a conversation; running-late mail; focus time, out of office, working location |
-| 6.4 Tasks ✅ #285, #291, #293, #297, #302, #304, #309, #313, #321 | Google Tasks, To Do and CalDAV task sync with local extras; Tasks page and Today view; Add to tasks from mail (Shift+T) with the link back; task chips in the mail list; tasks on the calendar and drag to block time |
-| 6.5 Polish | Typed quick add for events and tasks, calendar sets, Year view, share free times as text, birthdays, holidays, events in KRunner and GNOME search |
-| 6.6 Katna Digital Clock ✅ #278 | Plasma: an alternative to the digital clock with Plasma's calendar and a task list under the day; GNOME: a Tasks card under the calendar; tasks stored locally in `pim.db` (v4); installed by the Arch package; events once 6.1 syncs them |
+| 6.4 Tasks ✅ #285, #291, #293, #297, #302, #304, #309, #313, #321; reminders and repeat #333, desktop search #337 | Google Tasks, To Do and CalDAV task sync with local extras; Tasks page and Today view; Add to tasks from mail (Shift+T) with the link back; task chips in the mail list; tasks on the calendar and drag to block time |
+| 6.5 Polish ✅ #336, #341; birthdays #334 | Typed quick add for events and tasks, calendar sets, Year view, share free times as text, birthdays, holidays, events in KRunner and GNOME search |
+| 6.6 Katna Digital Clock ✅ #278, #332 | Plasma: an alternative to the digital clock with Plasma's calendar and a task list under the day; GNOME: a Tasks card under the calendar; tasks stored locally in `pim.db` (v4); installed by the Arch package; the day menu adds events and tasks, and events open Katna's Calendar (#332) |
 | 6.7 Notes page ✅ #286 | A note table in `pim.db` with a change journal, "On this computer" notes with no account; the Notes page in Google Keep's look: Take a note bar, board of cards (grid and list), pinned first, a note that opens over the board and saves as you type, checklists with ticked items folding down, colors, archive, Trash for 7 days, Undo, search |
 | 6.8 Notes sync ✅ #286 | Each IMAP account's Notes folder in Apple's format (`X-Uniform-Type-Identifier: com.apple.mail-note`, one HTML message per note), so notes show in Apple Notes and Thunderbird; colors, pins, labels and links in Katna's own `X-Katna-*` headers; checklists as ☐/☑ lines; new notes go to the account last looked at, with a picker; checked against Stalwart and Dovecot. Google Keep and OneNote have no API for personal accounts |
-| 6.9 Notes ties ◐ notes on a mail #301, labels #308, meeting notes #320; a checklist line made a task and formatting left | Labels; "Add a note" on a conversation with a "Your note" card in the reader; meeting notes from an event; a checklist line made a task; bold, italic, headings, lists and links. Later: pictures, version history, links between notes, Nextcloud Notes |
+| 6.9 Notes ties ◐ notes on a mail #301, labels #308, meeting notes #320, a checklist line made a task #327; formatting left | Labels; "Add a note" on a conversation with a "Your note" card in the reader; meeting notes from an event; a checklist line made a task; bold, italic, headings, lists and links. Later: pictures, version history, links between notes, Nextcloud Notes |
 | 6.10 Contacts: see them ✅ #289, #317 | Contact tables in `pim.db` (phones, addresses, dates, labels, photo, raw vCard, source); daemon sync through the Google People API, Microsoft Graph and CardDAV, and a local address book; the Contacts page in Google Contacts' look (list with A–Z and starred, search, contact page with mail history and "Where it's saved"); one person across accounts, linked by email address; saved names in Mail and ranked first in address suggestions. Today's mail-derived list becomes Frequent |
 | 6.11 Contacts: edit ✅ #295, #305 | Create (Ctrl+N, "Save to" picker), edit in place (F2), delete with the Undo toast then the service's own Trash; Add to contacts from the contact panel and the reader; pictures |
 | 6.12 Contacts: labels and tidy ✅ #305, #317, #324 | Labels (Google groups, Graph categories, CardDAV group vCards) and mailing a label; Google's Other contacts, read-only with Add to contacts; Merge & fix; vCard and CSV import, vCard export. People written to are not saved on their own |
-| 6.13 Contacts: polish | Birthdays in Calendar, QR code share, print, saved contacts in KRunner and GNOME search |
+| 6.13 Contacts: polish ✅ #334 | Birthdays in Calendar, QR code share, print, saved contacts in KRunner and GNOME search |
 | 6.14 Upstream proposals | Merge requests to Plasma: "Add…" with date, click event to open, plugin action hook |
-| 6.15 Video meetings ◐ step 1 in progress (Video meetings thread) | Step 1: meeting links from each account's own service (Google Meet, Microsoft Teams) plus Jitsi for the rest, decided by the owner 29 September 2026. Calls inside Katna come later |
+| 6.15 Video meetings ◐ step 1 ✅ #328 | Step 1: meeting links from each account's own service (Google Meet, Microsoft Teams) plus Jitsi for the rest, decided by the owner 29 September 2026. Calls inside Katna come later |
 
 **Done when:** on the Katna window's Calendar page, events from Gmail,
 a Microsoft account and a CalDAV server (Nextcloud or Fastmail) sync both
@@ -653,6 +642,10 @@ written in Katna opens in Apple Notes from the same Gmail account and back;
 a contact edited in Katna shows the change in Google Contacts, and the
 same person saved in two accounts shows once; and the app stays within its
 size budget.
+
+Status (29 September 2026): all rows but 6.9's formatting, 6.14 and 6.15's
+later steps are merged. The owner's live two-way checks with a Microsoft
+account and a CalDAV server are still to do.
 
 ### Phase 7 — Katna Server (≈ 8 weeks)
 
