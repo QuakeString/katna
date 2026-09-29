@@ -1292,3 +1292,11 @@ Hoje, em Todas as tarefas, reúne o que vence hoje e tudo o que está
 atrasado em todas as listas, com a lista em que cada uma está. Uma
 tarefa adicionada ali vence hoje.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Convites no seu e-mail"
+text = """
+Um convite agora aparece como um cartão no topo do e-mail: quando e
+onde, quem organizou, seu dia ao redor com os conflitos marcados,
+Participar e Você vai? Sim, Não ou Talvez, com resposta ali mesmo.
+"""

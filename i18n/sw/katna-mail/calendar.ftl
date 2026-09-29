@@ -117,6 +117,24 @@ calendar-answered-yes = Unaenda
 calendar-answered-no = Huendi
 calendar-answered-maybe = Huenda ukaenda
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Mwaliko
+calendar-invite-cancelled = Tukio limeghairiwa
+calendar-invite-reply = { $name } amejibu
+calendar-invite-reply-yes = { $name } amekubali
+calendar-invite-reply-no = { $name } amekataa
+calendar-invite-reply-maybe = { $name } huenda akaenda
+calendar-invite-organizer = Imeandaliwa na { $name }
+calendar-invite-open = Fungua kwenye Kalenda
+calendar-invite-not-yet = Bado haipo kwenye kalenda yako. Unaweza kujibu itakapolandanishwa.
+calendar-invite-your-day = Siku yako
+calendar-invite-clashes =
+    { $count ->
+        [one] Inagongana na tukio { $count }
+       *[other] Inagongana na matukio { $count }
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Onyesha ratiba ya siku

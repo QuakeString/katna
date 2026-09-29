@@ -1250,3 +1250,11 @@ Hôm nay, trong Tất cả việc cần làm, tập hợp những việc đến 
 và mọi việc quá hạn từ tất cả danh sách, kèm danh sách chứa từng việc.
 Việc được thêm ở đó sẽ đến hạn hôm nay.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Lời mời trong thư của bạn"
+text = """
+Lời mời giờ đây hiển thị dưới dạng thẻ ở đầu thư: khi nào và ở đâu, ai
+tổ chức, ngày của bạn xung quanh với các xung đột được đánh dấu, Tham
+gia và Bạn có tham dự không? Có, Không hoặc Có thể, trả lời ngay tại đó.
+"""

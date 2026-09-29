@@ -1322,3 +1322,12 @@ text = """
 oder überfällig ist, samt der Liste, in der sich jede Aufgabe befindet.
 Eine dort hinzugefügte Aufgabe ist heute fällig.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Einladungen in Ihrer E-Mail"
+text = """
+Eine Einladung erscheint jetzt als Karte oben in der E-Mail: wann und
+wo, wer sie organisiert hat, Ihr Tag drumherum mit markierten
+Überschneidungen, Teilnehmen und Teilnehmen? Ja, Nein oder Vielleicht,
+direkt dort beantwortet.
+"""

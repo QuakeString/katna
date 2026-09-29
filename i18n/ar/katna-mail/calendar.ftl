@@ -133,6 +133,28 @@ calendar-answered-yes = ستحضر
 calendar-answered-no = لن تحضر
 calendar-answered-maybe = ربما تحضر
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = دعوة
+calendar-invite-cancelled = أُلغي الحدث
+calendar-invite-reply = { $name }: ردّ
+calendar-invite-reply-yes = { $name }: قبول
+calendar-invite-reply-no = { $name }: رفض
+calendar-invite-reply-maybe = { $name }: ربما
+calendar-invite-organizer = المنظِّم: { $name }
+calendar-invite-open = فتح في التقويم
+calendar-invite-not-yet = ليس في تقويمك بعد. يمكنك الرد بعد المزامنة.
+calendar-invite-your-day = يومك
+calendar-invite-clashes =
+    { $count ->
+        [zero] يتعارض مع { $count } حدث
+        [one] يتعارض مع { $count } حدث
+        [two] يتعارض مع { $count } حدثين
+        [few] يتعارض مع { $count } أحداث
+        [many] يتعارض مع { $count } حدثًا
+       *[other] يتعارض مع { $count } حدث
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = عرض أجندة اليوم

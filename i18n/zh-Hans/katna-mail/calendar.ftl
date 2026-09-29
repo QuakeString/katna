@@ -113,6 +113,23 @@ calendar-answered-yes = 您会参加
 calendar-answered-no = 您不会参加
 calendar-answered-maybe = 您可能会参加
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = 邀请
+calendar-invite-cancelled = 活动已取消
+calendar-invite-reply = { $name } 已回复
+calendar-invite-reply-yes = { $name }：已接受
+calendar-invite-reply-no = { $name }：已拒绝
+calendar-invite-reply-maybe = { $name }：可能参加
+calendar-invite-organizer = 组织者：{ $name }
+calendar-invite-open = 在日历中打开
+calendar-invite-not-yet = 尚未出现在您的日历中。同步后即可回复。
+calendar-invite-your-day = 您的一天
+calendar-invite-clashes =
+    { $count ->
+       *[other] 与 { $count } 个活动冲突
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = 显示当天日程

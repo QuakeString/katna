@@ -125,6 +125,26 @@ calendar-answered-yes = Ви прийдете
 calendar-answered-no = Ви не прийдете
 calendar-answered-maybe = Можливо, ви прийдете
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Запрошення
+calendar-invite-cancelled = Подію скасовано
+calendar-invite-reply = { $name }: відповідь на запрошення
+calendar-invite-reply-yes = { $name }: запрошення прийнято
+calendar-invite-reply-no = { $name }: запрошення відхилено
+calendar-invite-reply-maybe = { $name }: можливо, прийде
+calendar-invite-organizer = Організатор: { $name }
+calendar-invite-open = Відкрити в Календарі
+calendar-invite-not-yet = Ще немає у вашому календарі. Відповісти можна буде після синхронізації.
+calendar-invite-your-day = Ваш день
+calendar-invite-clashes =
+    { $count ->
+        [one] Збігається з { $count } подією
+        [few] Збігається з { $count } подіями
+        [many] Збігається з { $count } подіями
+       *[other] Збігається з { $count } події
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Показати порядок денний

@@ -117,6 +117,24 @@ calendar-answered-yes = ਤੁਸੀਂ ਜਾ ਰਹੇ ਹੋ
 calendar-answered-no = ਤੁਸੀਂ ਨਹੀਂ ਜਾ ਰਹੇ
 calendar-answered-maybe = ਤੁਸੀਂ ਸ਼ਾਇਦ ਜਾਓਗੇ
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = ਸੱਦਾ
+calendar-invite-cancelled = ਇਵੈਂਟ ਰੱਦ ਕੀਤਾ ਗਿਆ
+calendar-invite-reply = { $name } ਨੇ ਜਵਾਬ ਦਿੱਤਾ
+calendar-invite-reply-yes = { $name } ਨੇ ਮਨਜ਼ੂਰ ਕੀਤਾ
+calendar-invite-reply-no = { $name } ਨੇ ਨਾਮਨਜ਼ੂਰ ਕੀਤਾ
+calendar-invite-reply-maybe = { $name } ਦਾ ਜਵਾਬ: ਸ਼ਾਇਦ
+calendar-invite-organizer = { $name } ਵੱਲੋਂ ਆਯੋਜਿਤ
+calendar-invite-open = ਕੈਲੰਡਰ ਵਿੱਚ ਖੋਲ੍ਹੋ
+calendar-invite-not-yet = ਅਜੇ ਤੁਹਾਡੇ ਕੈਲੰਡਰ ਵਿੱਚ ਨਹੀਂ ਹੈ। ਸਿੰਕ ਹੋਣ ਤੋਂ ਬਾਅਦ ਜਵਾਬ ਦਿੱਤਾ ਜਾ ਸਕੇਗਾ।
+calendar-invite-your-day = ਤੁਹਾਡਾ ਦਿਨ
+calendar-invite-clashes =
+    { $count ->
+        [one] { $count } ਇਵੈਂਟ ਨਾਲ ਟਕਰਾਅ
+       *[other] { $count } ਇਵੈਂਟ ਨਾਲ ਟਕਰਾਅ
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = ਦਿਨ ਦਾ ਏਜੰਡਾ ਦਿਖਾਓ

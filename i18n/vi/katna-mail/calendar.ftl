@@ -113,6 +113,23 @@ calendar-answered-yes = Bạn sẽ tham dự
 calendar-answered-no = Bạn sẽ không tham dự
 calendar-answered-maybe = Bạn có thể tham dự
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Lời mời
+calendar-invite-cancelled = Sự kiện đã bị hủy
+calendar-invite-reply = { $name } đã trả lời
+calendar-invite-reply-yes = { $name } đã chấp nhận
+calendar-invite-reply-no = { $name } đã từ chối
+calendar-invite-reply-maybe = { $name } có thể tham dự
+calendar-invite-organizer = Người tổ chức: { $name }
+calendar-invite-open = Mở trong Lịch
+calendar-invite-not-yet = Chưa có trong lịch của bạn. Bạn có thể trả lời sau khi đồng bộ.
+calendar-invite-your-day = Ngày của bạn
+calendar-invite-clashes =
+    { $count ->
+       *[other] Trùng với { $count } sự kiện
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Hiện chương trình trong ngày

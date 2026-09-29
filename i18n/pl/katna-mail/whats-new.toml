@@ -1282,3 +1282,12 @@ Dziś, w sekcji Wszystkie zadania, zbiera to, co ma termin dzisiaj, oraz
 wszystko, co jest zaległe, ze wszystkich list, wraz z listą, w której
 znajduje się każde zadanie. Zadanie dodane tam ma termin dzisiaj.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Zaproszenia w Twojej poczcie"
+text = """
+Zaproszenie wyświetla się teraz jako karta na górze wiadomości: kiedy i
+gdzie, kto je zorganizował, Twój dzień wokół niego z zaznaczonymi
+kolizjami, Dołącz oraz Bierzesz udział? Tak, Nie lub Może, z odpowiedzią
+prosto tam.
+"""

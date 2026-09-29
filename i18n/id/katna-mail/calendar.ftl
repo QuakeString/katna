@@ -113,6 +113,23 @@ calendar-answered-yes = Anda akan hadir
 calendar-answered-no = Anda tidak akan hadir
 calendar-answered-maybe = Anda mungkin hadir
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Undangan
+calendar-invite-cancelled = Acara dibatalkan
+calendar-invite-reply = { $name } menjawab
+calendar-invite-reply-yes = { $name } menerima
+calendar-invite-reply-no = { $name } menolak
+calendar-invite-reply-maybe = { $name } mungkin hadir
+calendar-invite-organizer = Diselenggarakan oleh { $name }
+calendar-invite-open = Buka di Kalender
+calendar-invite-not-yet = Belum ada di kalender Anda. Anda dapat menjawab setelah disinkronkan.
+calendar-invite-your-day = Hari Anda
+calendar-invite-clashes =
+    { $count ->
+       *[other] Bentrok dengan { $count } acara
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Tampilkan agenda hari ini

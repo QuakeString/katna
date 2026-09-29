@@ -117,6 +117,24 @@ calendar-answered-yes = Za ka je
 calendar-answered-no = Ba za ka je ba
 calendar-answered-maybe = Wataƙila ka je
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Gayyata
+calendar-invite-cancelled = An soke taron
+calendar-invite-reply = { $name }: amsa
+calendar-invite-reply-yes = { $name }: Eh
+calendar-invite-reply-no = { $name }: A'a
+calendar-invite-reply-maybe = { $name }: Wataƙila
+calendar-invite-organizer = Mai shiryawa: { $name }
+calendar-invite-open = Buɗe a Kalanda
+calendar-invite-not-yet = Ba ya cikin kalandarka tukuna. Za ka iya amsawa bayan ya yi sync.
+calendar-invite-your-day = Ranarka
+calendar-invite-clashes =
+    { $count ->
+        [one] Yana karo da taro { $count }
+       *[other] Yana karo da tarurruka { $count }
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Nuna jadawalin ranar
