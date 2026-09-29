@@ -23,6 +23,10 @@ calendar-read-failed = The calendar could not be read: { $error }
 # Calendars kept on this computer, without an account.
 calendar-local = On this computer
 calendar-account-gone = Removed account
+# The calendar of saved contacts' birthdays, made on this computer.
+calendar-birthdays = Birthdays
+# A saved contact's birthday on the Calendar: "Asha Rao's birthday".
+calendar-birthday-of = { $name }'s birthday
 calendar-empty-title = No calendars yet
 calendar-empty-text = Katna shows the calendars of your Google and Microsoft accounts here once they are synced, and those of other servers that offer CalDAV.
 calendar-schedule-empty = Nothing planned for the next two months.
@@ -55,6 +59,7 @@ calendar-guest-answers = { $yes } yes, { $maybe } maybe, { $no } no, { $waiting 
 calendar-organizer = Organizer
 calendar-optional = Optional
 calendar-open-web = Open in the browser
+calendar-open-contact = Open contact
 calendar-close = Close
 
 ## Adding, changing and deleting events.

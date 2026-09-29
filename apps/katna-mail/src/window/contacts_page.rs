@@ -109,6 +109,8 @@ pub(super) struct ContactsPage {
     pub(super) adding: BTreeSet<String>,
     /// Other contacts being saved, hidden meanwhile.
     pub(super) saving_others: BTreeSet<i64>,
+    /// A person shown as a QR code.
+    pub(super) qr: Option<super::contacts_share::QrShare>,
 }
 
 pub(super) struct Open {
@@ -1127,6 +1129,27 @@ impl MailWindow {
                     .child(back)
                     .child(div().flex_1())
                     .child(
+                        crate::widgets::icon_button("contact-qr", "qr-code", 20.0, th)
+                            .tooltip(tip(tr!("contacts-qr"), th))
+                            .on_click(cx.listener({
+                                let (name, card) = (person.name.clone(), merged.clone());
+                                move |this, _, window, cx| {
+                                    window.focus(&this.dialog_focus, cx);
+                                    this.open_contact_qr(name.clone(), &card, cx)
+                                }
+                            })),
+                    )
+                    .child(
+                        crate::widgets::icon_button("contact-print", "print", 20.0, th)
+                            .tooltip(tip(tr!("contacts-print"), th))
+                            .on_click(cx.listener({
+                                let (name, ids) = (person.name.clone(), person.ids.clone());
+                                move |this, _, window, cx| {
+                                    this.print_contacts(name.clone(), vec![ids.clone()], window, cx)
+                                }
+                            })),
+                    )
+                    .child(
                         crate::widgets::icon_button("contact-delete", "trash", 20.0, th)
                             .tooltip(tip(tr!("contacts-delete"), th))
                             .on_click(cx.listener({
@@ -1420,7 +1443,7 @@ fn section(title: String, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Any
 }
 
 /// One card from several: the first name, every address and number once.
-fn merge(cards: &[StoredCard]) -> Card {
+pub(super) fn merge(cards: &[StoredCard]) -> Card {
     let mut out = cards.first().map(|c| c.card.clone()).unwrap_or_default();
     for other in cards.iter().skip(1).map(|c| &c.card) {
         for e in &other.emails {
@@ -1491,7 +1514,7 @@ fn source_name(source: BookSource) -> String {
 }
 
 /// `YYYY-MM-DD` or `--MM-DD` in the user's language.
-fn birthday(value: &str) -> Option<String> {
+pub(super) fn birthday(value: &str) -> Option<String> {
     let value = value.trim();
     if value.is_empty() {
         return None;

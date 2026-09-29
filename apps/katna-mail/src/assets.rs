@@ -114,6 +114,7 @@ icons!(
     "plain-text",
     "print",
     "pulse",
+    "qr-code",
     "quote",
     "read-receipt",
     "redo",

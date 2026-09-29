@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Birthdays on the calendar, contacts as QR codes"
+text = """
+Your contacts' birthdays now show on the Calendar, in a Birthdays calendar
+you can untick. A contact's page can show them as a QR code a phone's camera
+saves, and print them; Print under Fix and manage prints everyone on show.
+Import now reads CSV files from Google Contacts and Outlook too, and KRunner
+and GNOME search find your saved contacts.
+"""

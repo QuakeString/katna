@@ -41,6 +41,21 @@ pub(super) struct PrintJob {
 }
 
 impl PrintJob {
+    /// Pages of `messages` as plain text under `subject`, in the desktop's
+    /// UI font `family`: what prints for things other than mail.
+    pub(super) fn text(
+        subject: String,
+        messages: Vec<PrintMessage>,
+        family: Option<String>,
+    ) -> Self {
+        Self {
+            subject,
+            messages,
+            family,
+            mono: None,
+        }
+    }
+
     /// The conversation laid out on `paper`, as a PDF.
     pub(super) fn layout(&self, paper: Paper, options: PrintOptions) -> Result<Vec<u8>, String> {
         let fonts = fonts(self.family.as_deref(), self.mono.as_deref())

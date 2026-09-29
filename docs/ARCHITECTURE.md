@@ -994,18 +994,31 @@ contacts, leaving out anyone saved since; Add to contacts copies one with
 `copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
 Outlook and CardDAV have no such list.
 
-"Fix and manage" at the foot of the column has Merge and fix, Import and
-Export. Merge and fix suggests people who look like the same person (the
+"Fix and manage" at the foot of the column has Merge and fix, Import,
+Export and Print. Merge and fix suggests people who look like the same person (the
 same name, or a phone number ending in the same ten digits; people who
 share an address are one person already). Merging combines their cards
 (the first card's name, then every address, number, link and label the
 others add) and keeps one card per address book, deleting the rest there;
 the Undo writes the old cards back. Dismissed suggestions are kept in the
-settings file (`[contacts] dismissed_duplicates`). Import reads vCard files
-in the app and saves the new people with their categories as labels in
+settings file (`[contacts] dismissed_duplicates`). Import reads vCard files,
+and CSV files as Google Contacts, Outlook and Thunderbird export them (each
+column known by its heading), in the app and saves the new people with their categories as labels in
 the account in view (`ImportContacts`, with an Undo), leaving out anyone
 already saved; Export writes the people on screen (everyone or a label) as
-one vCard 3.0 file.
+one vCard 3.0 file, and Print prints them (their name, job and details, in
+mail's print preview). A person's page prints them alone and shows them as
+a QR code of their vCard, without notes or picture (addresses and links are
+dropped when it would not fit), which a phone's camera saves.
+
+Saved people's birthdays show on the Calendar and the agenda as a
+Birthdays calendar made on this computer (id -1, read-only, never stored):
+a yearly whole-day event per person, built from the cards each time the
+calendar is read, leaving out one a mail service's own calendar already has
+(a birthday event that day with their first name). Unticking it is kept in
+the settings (`[contacts] hide_birthdays`); a click opens the person's page.
+KRunner and GNOME search suggest saved people too, with their saved names
+(`ContactBook::with_saved`), read again when contacts change.
 
 ## 9. Background service (`katna-daemon`)
 

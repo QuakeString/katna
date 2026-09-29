@@ -68,8 +68,8 @@ pub(super) fn to_vcf(cards: &[StoredCard]) -> String {
 }
 
 impl MailWindow {
-    /// "Fix and manage" at the foot of the column: Merge and fix, Import
-    /// and Export.
+    /// "Fix and manage" at the foot of the column: Merge and fix, Import,
+    /// Export and Print.
     pub(super) fn contacts_manage_nav(
         &self,
         book: Option<&SavedBook>,
@@ -160,16 +160,26 @@ impl MailWindow {
                 action(2, "download", tr!("contacts-export"), false, None)
                     .on_click(cx.listener(|this, _, _, cx| this.export_contacts_file(cx))),
             )
+            .child(
+                action(3, "print", tr!("contacts-print"), false, None).on_click(cx.listener(
+                    |this, _, window, cx| {
+                        let (label, people) = this.people_on_show();
+                        let title = label.unwrap_or_else(|| tr!("contacts-print-title"));
+                        this.print_contacts(title, people, window, cx);
+                    },
+                )),
+            )
             .into_any_element()
     }
 
-    /// Asks for vCard files and saves their people in the account in view.
+    /// Asks for vCard or CSV files and saves their people in the account
+    /// in view.
     fn import_contacts_file(&mut self, cx: &mut Context<Self>) {
         let prompt = cx.prompt_for_paths(PathPromptOptions {
             files: true,
             directories: false,
             multiple: true,
-            prompt: Some(tr!("contacts-import-title").into()),
+            prompt: Some(tr!("contacts-import-file").into()),
         });
         let book = self.book_for_new_contact();
         let place = self
@@ -195,7 +205,13 @@ impl MailWindow {
                     let mut parsed = Vec::new();
                     for file in &files {
                         let bytes = std::fs::read(file).map_err(|e| e.to_string())?;
-                        parsed.extend(vcard::parse(&String::from_utf8_lossy(&bytes)));
+                        let text = String::from_utf8_lossy(&bytes);
+                        // A CSV file from Google, Outlook or Thunderbird.
+                        if text.to_ascii_uppercase().contains("BEGIN:VCARD") {
+                            parsed.extend(vcard::parse(&text));
+                        } else {
+                            parsed.extend(super::contacts_csv::parse(&text));
+                        }
                     }
                     Ok::<_, String>(to_import(parsed, &|e| saved.contains(e)))
                 })
@@ -256,15 +272,17 @@ impl MailWindow {
 
     /// Writes the people on screen (everyone, or the label in view) to a
     /// vCard file the user picks.
-    fn export_contacts_file(&mut self, cx: &mut Context<Self>) {
-        let Some(Ok(book)) = &self.contacts.book else {
-            return;
-        };
+    /// The label on show, if one is, and the cards of each person listed
+    /// under it (everyone saved without one).
+    pub(super) fn people_on_show(&self) -> (Option<String>, Vec<Vec<i64>>) {
         let label = match &self.contacts.view {
             View::Label(name) => Some(name.clone()),
             _ => None,
         };
-        let ids: Vec<i64> = visible(&book.people, &self.contacts.hidden)
+        let Some(Ok(book)) = &self.contacts.book else {
+            return (label, Vec::new());
+        };
+        let people = visible(&book.people, &self.contacts.hidden)
             .into_iter()
             .map(|ix| &book.people[ix])
             .filter(|p| {
@@ -273,7 +291,17 @@ impl MailWindow {
                         .contains(l)
                 })
             })
-            .filter_map(|p| p.ids.first().copied())
+            .filter(|p| !p.ids.is_empty())
+            .map(|p| p.ids.clone())
+            .collect();
+        (label, people)
+    }
+
+    fn export_contacts_file(&mut self, cx: &mut Context<Self>) {
+        let (label, people) = self.people_on_show();
+        let ids: Vec<i64> = people
+            .iter()
+            .filter_map(|ids| ids.first().copied())
             .collect();
         if ids.is_empty() {
             self.show_snackbar(tr!("contacts-export-none"), None, cx);
