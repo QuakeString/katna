@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Schedule a meeting from a mail"
+text = """
+Right-click a conversation, or open ⋮, and pick Schedule a meeting: a new
+event opens on the Calendar page with the subject as its title and
+everyone in the conversation as guests.
+"""

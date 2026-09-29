@@ -1301,3 +1301,12 @@ Hoy, dentro de Todas las tareas, reúne lo que vence hoy y todo lo
 vencido de todas las listas, con la lista en la que está cada una. Una
 tarea añadida ahí vence hoy.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Invitaciones en tu correo"
+text = """
+Una invitación ahora se muestra como una tarjeta en la parte superior
+del correo: cuándo y dónde, quién la organizó, tu día alrededor con los
+solapamientos marcados, Unirse y ¿Asistirás? Sí, No o Quizás, con
+respuesta allí mismo.
+"""

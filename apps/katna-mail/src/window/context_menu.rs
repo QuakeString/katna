@@ -380,6 +380,19 @@ impl MailWindow {
                     ),
                 )
                 .child(
+                    plain(
+                        "context-schedule-meeting",
+                        "calendar",
+                        &tr!("menu-schedule-meeting"),
+                    )
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        let Some(menu) = this.context_menu.take() else {
+                            return;
+                        };
+                        this.schedule_meeting_from(Some(menu.key), window, cx);
+                    })),
+                )
+                .child(
                     plain("context-add-note", "notes", &tr!("menu-add-note")).on_click(
                         cx.listener(|this, _, window, cx| {
                             let Some(menu) = this.context_menu.take() else {

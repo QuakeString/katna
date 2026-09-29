@@ -3352,6 +3352,14 @@ most useful reason is shown. Changes go back the way their calendar came
   (the whole series for an invitation to one). Until the calendar has it,
   the card says so. Answering by iMIP mail, for servers that don't
   schedule, is later.
+- Schedule a meeting (a conversation's ⋮ or right-click menu) opens the
+  whole event editor on the Calendar page with the subject, without
+  `Re:`/`Fwd:`, as the title and everyone in the conversation but the user
+  (From, To, Cc) as guests; saving sends the invitations as any new event.
+- An event's card has Email guests, and from an hour before its start
+  to its end, Running late: a new mail to the other guests from the
+  calendar's account, with a short "running late" line (Google Calendar's
+  Email guests and Running late).
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the

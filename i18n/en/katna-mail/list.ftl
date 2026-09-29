@@ -428,6 +428,9 @@ menu-snooze = Snooze
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".
 menu-add-to-tasks = Add to Tasks
+# Opens a new calendar event from the conversation: its subject as the
+# title and its people as guests.
+menu-schedule-meeting = Schedule a meeting
 # Makes a note about the mail (Katna Notes), opened over it.
 menu-add-note = Add a note
 # Prints every message of the open conversation.

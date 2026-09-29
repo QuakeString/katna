@@ -117,6 +117,24 @@ calendar-answered-yes = Pupunta ka
 calendar-answered-no = Hindi ka pupunta
 calendar-answered-maybe = Baka pumunta ka
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Imbitasyon
+calendar-invite-cancelled = Nakansela ang event
+calendar-invite-reply = Sumagot si { $name }
+calendar-invite-reply-yes = Tinanggap ni { $name } ang imbitasyon
+calendar-invite-reply-no = Tinanggihan ni { $name } ang imbitasyon
+calendar-invite-reply-maybe = Baka pumunta si { $name }
+calendar-invite-organizer = Inorganisa ni { $name }
+calendar-invite-open = Buksan sa Kalendaryo
+calendar-invite-not-yet = Wala pa sa kalendaryo mo. Makakasagot ka kapag na-sync na ito.
+calendar-invite-your-day = Ang araw mo
+calendar-invite-clashes =
+    { $count ->
+        [one] Nagsasalungatan sa { $count } event
+       *[other] Nagsasalungatan sa { $count } event
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Ipakita ang agenda ng araw

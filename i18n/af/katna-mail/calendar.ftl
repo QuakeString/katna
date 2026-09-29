@@ -117,6 +117,24 @@ calendar-answered-yes = Jy gaan
 calendar-answered-no = Jy gaan nie
 calendar-answered-maybe = Jy gaan dalk
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Uitnodiging
+calendar-invite-cancelled = Geleentheid gekanselleer
+calendar-invite-reply = { $name } het geantwoord
+calendar-invite-reply-yes = { $name } het aanvaar
+calendar-invite-reply-no = { $name } het van die hand gewys
+calendar-invite-reply-maybe = { $name } gaan dalk
+calendar-invite-organizer = Georganiseer deur { $name }
+calendar-invite-open = Maak in Kalender oop
+calendar-invite-not-yet = Nog nie in jou kalender nie. Jy kan antwoord sodra dit gesinkroniseer is.
+calendar-invite-your-day = Jou dag
+calendar-invite-clashes =
+    { $count ->
+        [one] Bots met { $count } geleentheid
+       *[other] Bots met { $count } geleenthede
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Wys die dag se agenda

@@ -848,6 +848,21 @@ impl MailWindow {
                             })),
                         )
                         .child(
+                            menu_item_icon(
+                                "more-schedule-meeting",
+                                "calendar",
+                                &tr!("menu-schedule-meeting"),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
+                                    this.menu = None;
+                                    let key = this.target_keys().first().copied();
+                                    this.schedule_meeting_from(key, window, cx);
+                                },
+                            )),
+                        )
+                        .child(
                             menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
                                 .on_click(cx.listener(|this, _, window, cx| {
                                     this.menu = None;
