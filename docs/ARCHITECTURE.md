@@ -2120,8 +2120,14 @@ Gemini or confidential mode):
   too narrow for the reading pane, New Message covers the whole window;
   the list's single-letter keys are switched off inside text
   fields. The list has a right-click menu (reply, reply all, forward,
-  archive, delete, spam, read, star, move to, find emails from the
-  sender) acting on the ticked lines or the clicked one. The "select all
+  archive, delete, read, snooze, star, then the submenus Move to, Follow
+  up (tasks, notes, meetings, calls) and More (spam, importance, pin),
+  and find emails from the sender) acting on the ticked lines or the
+  clicked one. It opens at the pointer, flips left or up where there is
+  no room and else is pushed in from the edge; where the window is too
+  narrow for a submenu beside it, or too short for the whole menu, a
+  submenu opens in its place under a row back, and only then does the
+  menu scroll. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.

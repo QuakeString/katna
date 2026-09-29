@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A shorter right-click menu that always fits"
+text = """
+The mail list's right-click menu keeps the everyday actions on top and puts
+the rest under Follow up (tasks, notes, meetings, calls) and More (spam,
+importance, pin). It opens where you click and stays inside the window;
+in a short or narrow window a submenu opens in the menu's place.
+"""
