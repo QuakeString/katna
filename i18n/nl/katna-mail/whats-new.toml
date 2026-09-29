@@ -1724,3 +1724,11 @@ text = """
 passen, met meer rijen eronder, zodat je elke lijst kunt bereiken. Een
 nieuwe lijst schuift in beeld zodra je hem maakt.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Soepel bladeren tussen bijlagen"
+text = """
+Naar de volgende of vorige bijlage gaan in de viewer met de pijlen
+flikkert niet meer. De viewer blijft open en het volgende bestand neemt
+de plaats van het vorige in zodra het klaar is.
+"""

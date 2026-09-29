@@ -1738,3 +1738,11 @@ yang muat dalam tetingkap, dengan lebih banyak baris di bawah, jadi
 setiap senarai boleh dicapai. Senarai baharu menatal ke dalam paparan
 sebaik sahaja anda membuatnya.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Beralih antara lampiran dengan lancar"
+text = """
+Pergi ke lampiran seterusnya atau sebelumnya dalam pemapar dengan anak
+panah tidak lagi berkelip. Pemapar kekal terbuka dan fail seterusnya
+menggantikan fail terakhir sebaik sahaja ia sedia.
+"""

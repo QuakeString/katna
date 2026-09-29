@@ -1727,3 +1727,11 @@ jendela, dengan baris lain di bawahnya, sehingga setiap daftar bisa
 dijangkau. Daftar baru langsung bergulir ke tampilan begitu Anda
 membuatnya.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Berpindah antarlampiran dengan mulus"
+text = """
+Berpindah ke lampiran berikutnya atau sebelumnya di penampil dengan
+tombol panah tidak lagi berkedip. Penampil tetap terbuka dan file
+berikutnya menggantikan yang sebelumnya begitu siap.
+"""

@@ -1734,3 +1734,11 @@ Todas las tareas muestra ahora tantas listas una al lado de otra como
 caben en la ventana, con más filas debajo, para que se pueda llegar a
 todas. Una lista nueva se desplaza a la vista en cuanto la creas.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Paso suave entre archivos adjuntos"
+text = """
+Ir al archivo adjunto siguiente o anterior en el visor con las flechas
+ya no parpadea. El visor sigue abierto y el siguiente archivo ocupa el
+lugar del anterior en cuanto está listo.
+"""

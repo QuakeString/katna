@@ -1785,3 +1785,11 @@ magkakatabi na kasya sa window, may iba pang hilera sa ibaba, kaya
 maaabot ang bawat listahan. Agad na nag-i-scroll papunta sa view ang
 bagong listahan pagkagawa mo nito.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Maayos na paglipat sa pagitan ng mga attachment"
+text = """
+Hindi na kumikislap ang paglipat sa susunod o nakaraang attachment sa
+viewer gamit ang mga arrow. Nananatiling bukas ang viewer at pinapalitan
+ng susunod na file ang nauna sa sandaling handa na ito.
+"""

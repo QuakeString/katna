@@ -1674,3 +1674,11 @@ Alle take wys nou soveel lyste langs mekaar as wat in die venster pas,
 met meer rye daaronder, sodat elke lys bereik kan word. 'n Nuwe lys rol
 in sig sodra jy dit maak.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Gladde blaai tussen aanhegsels"
+text = """
+Om met die pyltjies na die volgende of vorige aanhegsel in die kyker te
+gaan, flikker nie meer nie. Die kyker bly oop en die volgende lêer neem
+die plek van die vorige in sodra dit gereed is.
+"""

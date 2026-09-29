@@ -1706,3 +1706,11 @@ text = """
 da başka satırlarla gösteriyor; böylece her listeye ulaşılabiliyor. Yeni
 bir liste, oluşturduğunuz anda görünür alana kayıyor.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Ekler arasında akıcı geçiş"
+text = """
+Görüntüleyicide oklarla sonraki ya da önceki eke geçmek artık
+titremiyor. Görüntüleyici açık kalıyor ve sonraki dosya hazır olur olmaz
+öncekinin yerini alıyor.
+"""

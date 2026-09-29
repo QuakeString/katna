@@ -1690,3 +1690,11 @@ text = """
 fönstret, med fler rader nedanför, så att varje lista går att nå. En ny
 lista rullas fram så fort du skapar den.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Mjuk bläddring mellan bilagor"
+text = """
+Att gå till nästa eller föregående bilaga i visaren med pilarna flimrar
+inte längre. Visaren förblir öppen och nästa fil tar den förras plats så
+snart den är klar.
+"""

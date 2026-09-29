@@ -1720,3 +1720,11 @@ text = """
 janela, com mais fileiras abaixo, para que todas as listas possam ser
 alcançadas. Uma lista nova rola para a vista assim que você a cria.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Navegação suave entre anexos"
+text = """
+Ir para o anexo seguinte ou anterior no visualizador com as setas não
+pisca mais. O visualizador fica aberto e o próximo arquivo toma o lugar
+do anterior assim que fica pronto.
+"""

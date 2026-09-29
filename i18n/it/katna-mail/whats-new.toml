@@ -1739,3 +1739,11 @@ text = """
 entrano nella finestra, con altre righe sotto, così ogni elenco è
 raggiungibile. Un nuovo elenco scorre in vista appena lo crei.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Passaggio fluido tra gli allegati"
+text = """
+Passare all'allegato successivo o precedente nel visualizzatore con le
+frecce non provoca più sfarfallii. Il visualizzatore resta aperto e il
+file successivo prende il posto del precedente appena è pronto.
+"""

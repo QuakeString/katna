@@ -1713,3 +1713,11 @@ text = """
 w oknie, z kolejnymi rzędami poniżej, więc do każdej listy da się
 dotrzeć. Nowa lista przewija się do widoku, gdy tylko ją utworzysz.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Płynne przechodzenie między załącznikami"
+text = """
+Przechodzenie strzałkami do następnego lub poprzedniego załącznika w
+przeglądarce już nie migocze. Przeglądarka pozostaje otwarta, a następny
+plik zajmuje miejsce poprzedniego, gdy tylko jest gotowy.
+"""

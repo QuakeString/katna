@@ -1784,3 +1784,11 @@ fenêtre en contient, avec d’autres rangées en dessous, pour que chaque
 liste soit accessible. Une nouvelle liste défile à l’écran dès que vous
 la créez.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Passage fluide d’une pièce jointe à l’autre"
+text = """
+Passer à la pièce jointe suivante ou précédente dans la visionneuse avec
+les flèches ne clignote plus. La visionneuse reste ouverte et le fichier
+suivant prend la place du précédent dès qu’il est prêt.
+"""

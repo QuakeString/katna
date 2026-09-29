@@ -1766,3 +1766,11 @@ Alle Aufgaben zeigt jetzt so viele Listen nebeneinander, wie ins Fenster
 passen, mit weiteren Reihen darunter, sodass jede Liste erreichbar ist.
 Eine neue Liste rollt ins Bild, sobald Sie sie anlegen.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Flüssiges Blättern zwischen Anhängen"
+text = """
+Das Wechseln zum nächsten oder vorherigen Anhang im Betrachter mit den
+Pfeilen flackert nicht mehr. Der Betrachter bleibt offen, und die
+nächste Datei ersetzt die vorige, sobald sie bereit ist.
+"""

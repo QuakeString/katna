@@ -1668,3 +1668,11 @@ text = """
 cửa sổ, cùng thêm các hàng bên dưới, để danh sách nào cũng xem được.
 Danh sách mới sẽ được cuộn vào tầm nhìn ngay khi bạn tạo.
 """
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Chuyển giữa các tệp đính kèm mượt mà"
+text = """
+Chuyển sang tệp đính kèm kế tiếp hoặc trước đó trong trình xem bằng các
+mũi tên không còn nhấp nháy. Trình xem vẫn mở và tệp kế tiếp sẽ thay chỗ
+tệp trước ngay khi sẵn sàng.
+"""
