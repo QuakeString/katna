@@ -1360,7 +1360,7 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(12.0))
-                    .rounded(px(8.0))
+                    .rounded_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .focus_ring(th)
@@ -1400,7 +1400,7 @@ impl MailWindow {
                         .flex()
                         .flex_row()
                         .items_center()
-                        .rounded(px(8.0))
+                        .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .on_click(cx.listener(move |this, _, _, cx| {

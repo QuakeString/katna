@@ -339,36 +339,7 @@ impl MailWindow {
     pub(super) fn render_side_labels(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
         let current = self.notes.as_ref().and_then(|p| p.label.clone());
         let entry = |id: gpui::ElementId, name: &'static str, text: String, on: bool| {
-            div()
-                .id(id)
-                .h(px(48.0))
-                .pl(px(24.0))
-                .pr(px(12.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(20.0))
-                .rounded_r(px(24.0))
-                .cursor_pointer()
-                .text_size(px(14.0))
-                .font_weight(if on {
-                    FontWeight::BOLD
-                } else {
-                    FontWeight::MEDIUM
-                })
-                .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                .when(on, |d| d.bg(rgba(th.nav_selected)))
-                .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                .child(icon(
-                    name,
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    22.0,
-                ))
-                .child(div().flex_1().min_w_0().truncate().child(text))
+            crate::window::nav::side_row(id, name, text, on, th)
         };
         let labels = self.note_labels();
         let mut out: Vec<AnyElement> = labels

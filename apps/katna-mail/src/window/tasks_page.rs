@@ -1292,37 +1292,7 @@ impl MailWindow {
     fn render_tasks_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let row = |id: SharedString, icon_name: &'static str, label: String, on: bool| {
-            div()
-                .id(id)
-                .h(px(40.0))
-                .mx(px(8.0))
-                .pl(px(16.0))
-                .pr(px(12.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(16.0))
-                .rounded_full()
-                .cursor_pointer()
-                .text_size(px(14.0))
-                .when(on, |d| {
-                    d.bg(rgba(th.nav_selected))
-                        .text_color(rgba(th.nav_selected_text))
-                        .font_weight(FontWeight::BOLD)
-                })
-                .when(!on, |d| {
-                    d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
-                })
-                .child(icon(
-                    icon_name,
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
-                ))
-                .child(div().flex_1().min_w_0().truncate().child(label))
+            super::nav::side_row(id, icon_name, label, on, th)
         };
         let create = div()
             .id("tasks-create")

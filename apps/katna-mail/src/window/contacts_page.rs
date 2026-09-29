@@ -483,42 +483,7 @@ impl MailWindow {
                     view: View,
                     cx: &mut Context<Self>| {
             let on = self.contacts.view == view;
-            div()
-                .id(id)
-                .relative()
-                .overflow_hidden()
-                .h(px(36.0))
-                .mr(px(12.0))
-                .pl(px(20.0))
-                .pr(px(16.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(14.0))
-                .rounded_r_full()
-                .cursor_pointer()
-                .when(on, |d| d.bg(rgba(th.nav_selected)))
-                .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                .child(Ripple::new(id, rgba(th.ripple)))
-                .child(icon(
-                    glyph,
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
-                ))
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .truncate()
-                        .text_size(px(14.0))
-                        .when(on, |d| d.font_weight(FontWeight::SEMIBOLD))
-                        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                        .child(label),
-                )
+            super::nav::side_row(id, glyph, label, on, th)
                 .children(count.map(|n| {
                     div()
                         .flex_none()

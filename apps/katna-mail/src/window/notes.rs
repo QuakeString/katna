@@ -964,49 +964,21 @@ impl MailWindow {
             .w(px(SIDE_WIDTH))
             .h_full()
             .pt(px(8.0))
-            .pr(px(12.0))
             .flex()
             .flex_col()
             .children(NotesView::ALL.into_iter().flat_map(|v| {
                 let on = v == view && label.is_none();
-                let entry = div()
-                    .id(("notes-view", v as usize))
-                    .h(px(48.0))
-                    .pl(px(24.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(20.0))
-                    .rounded_r(px(24.0))
-                    .cursor_pointer()
-                    .text_size(px(14.0))
-                    .font_weight(if on {
-                        FontWeight::BOLD
-                    } else {
-                        FontWeight::MEDIUM
-                    })
-                    .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                    .when(on, |d| d.bg(rgba(th.nav_selected)))
-                    .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.close_note(cx);
-                        if let Some(page) = &mut this.notes {
-                            page.view = v;
-                            page.label = None;
-                        }
-                        cx.notify();
-                    }))
-                    .child(icon(
-                        v.icon(),
-                        if on {
-                            th.nav_selected_text
-                        } else {
-                            th.text_dim
-                        },
-                        22.0,
-                    ))
-                    .child(v.label())
-                    .into_any_element();
+                let entry =
+                    super::nav::side_row(("notes-view", v as usize), v.icon(), v.label(), on, th)
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.close_note(cx);
+                            if let Some(page) = &mut this.notes {
+                                page.view = v;
+                                page.label = None;
+                            }
+                            cx.notify();
+                        }))
+                        .into_any_element();
                 let labels = if v == NotesView::Notes {
                     std::mem::take(&mut side_labels)
                 } else {

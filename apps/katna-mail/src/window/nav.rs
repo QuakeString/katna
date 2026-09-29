@@ -37,12 +37,59 @@ const FLOAT_GAP: f32 = 8.0;
 const NOTCH: f32 = 8.0;
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
+/// The gap between a folder's pill and the pane's far edge.
+const NAV_ROW_END: f32 = 16.0;
 /// The gap around a folder's arrow, inside its pill's rounded end.
 const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// Where folder icons and headings start, from the pane's edge: after the
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
+
+/// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
+/// shape of Mail's folders: a full pill inset from both edges of the pane,
+/// with its icon and label where a folder's are. Add a count or other end
+/// pieces as children.
+pub(super) fn side_row(
+    id: impl Into<ElementId>,
+    icon_name: &str,
+    label: impl IntoElement,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    let id = id.into();
+    let text = if on { th.nav_selected_text } else { th.text };
+    div()
+        .id(id.clone())
+        .relative()
+        .flex_none()
+        .h(px(NAV_ROW_HEIGHT))
+        .ml(px(NAV_ROW_INSET))
+        .mr(px(NAV_ROW_END))
+        .pl(px(NAV_TEXT_LEFT - NAV_ROW_INSET))
+        .pr(px(12.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .rounded_full()
+        .cursor_pointer()
+        .text_size(px(14.0))
+        .text_color(rgba(text))
+        .when(on, |d| {
+            d.bg(rgba(th.nav_selected)).font_weight(FontWeight::BOLD)
+        })
+        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+        .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
+        .child(icon(icon_name, if on { text } else { th.text_dim }, 20.0))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .pl(px(18.0))
+                .truncate()
+                .child(label),
+        )
+}
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
 
@@ -971,7 +1018,7 @@ impl MailWindow {
             .id(("nav-row", ix))
             .relative()
             .h(px(NAV_ROW_HEIGHT))
-            .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
+            .w(px(NAV_WIDTH - NAV_ROW_END - NAV_ROW_INSET))
             .pl(px(NAV_TEXT_LEFT - NAV_ROW_INSET + indent))
             .pr(px(12.0))
             .flex()
