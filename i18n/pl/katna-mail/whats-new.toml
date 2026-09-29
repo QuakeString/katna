@@ -1634,3 +1634,11 @@ kontakty konta nie mogą się wczytać, wiersz pod nim mówi dlaczego i
 podaje jedno kliknięcie, które to naprawia, np. „Zaloguj się ponownie,
 aby wyświetlić kontakty” lub „Spróbuj ponownie”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Każde konto na stronie Zadania"
+text = """
+Każde konto jest teraz widoczne w panelu bocznym Zadań. Gdy zadania
+konta nie mogą się wczytać, wiersz pod nim mówi dlaczego i daje jedno
+kliknięcie, które to naprawia: ponowne zalogowanie lub ponowną próbę.
+"""

@@ -11,6 +11,23 @@ tasks-starred = Із зірочкою
 tasks-new-list = Створити новий список
 tasks-on-this-computer = На цьому комп’ютері
 tasks-my-tasks = Мої завдання
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Увійдіть знову, щоб показати завдання
+tasks-account-signed-in = Знову виконано вхід в { $address }. Отримання завдань…
+tasks-account-sign-in-refused = { $provider } не впустив Katna. Спробуйте ще раз і дозвольте доступ до завдань.
+tasks-account-refused = Сервер не прийняв пароль. Для Yahoo, iCloud, Zoho та інших потрібен пароль застосунку.
+tasks-account-change-password = Змінити пароль
+tasks-account-change-password-tooltip = Відкрити Налаштування > Облікові записи
+tasks-account-not-enabled = Доступ Katna до завдань ще не ввімкнено.
+tasks-account-failed = Не вдалося прочитати списки завдань.
+# $reason is the server's own words, in English.
+tasks-account-error = Не вдалося прочитати списки завдань: { $reason }
+tasks-account-none = Списків завдань не знайдено
+tasks-account-looking = Пошук списків завдань…
+tasks-account-try-again = Повторити спробу
+tasks-account-try-again-tooltip = Перевірити завдання цього облікового запису ще раз зараз
+tasks-account-fixing = Виправляємо…
 tasks-list-name-placeholder = Назва списку
 
 ## Lists and tasks

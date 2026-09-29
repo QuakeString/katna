@@ -11,6 +11,23 @@ tasks-starred = スター付き
 tasks-new-list = 新しいリストを作成
 tasks-on-this-computer = このパソコン
 tasks-my-tasks = マイタスク
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = もう一度サインインしてタスクを表示
+tasks-account-signed-in = { $address } に再度サインインしました。タスクを取得しています…
+tasks-account-sign-in-refused = { $provider } が Katna のアクセスを許可しませんでした。もう一度試して、タスクへのアクセスを許可してください。
+tasks-account-refused = サーバーがパスワードを受け付けませんでした。Yahoo、iCloud、Zoho などではアプリ パスワードが必要です。
+tasks-account-change-password = パスワードを変更
+tasks-account-change-password-tooltip = 設定 > アカウント を開く
+tasks-account-not-enabled = Katna のタスクへのアクセスはまだ有効になっていません。
+tasks-account-failed = タスクリストを読み込めませんでした。
+# $reason is the server's own words, in English.
+tasks-account-error = タスクリストを読み込めませんでした: { $reason }
+tasks-account-none = タスクリストが見つかりません
+tasks-account-looking = タスクリストを探しています…
+tasks-account-try-again = 再試行
+tasks-account-try-again-tooltip = このアカウントのタスクを今すぐ再確認
+tasks-account-fixing = 対応しています…
 tasks-list-name-placeholder = リスト名
 
 ## Lists and tasks

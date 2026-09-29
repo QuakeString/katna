@@ -11,6 +11,23 @@ tasks-starred = Àwọn tí a fi ìràwọ̀ sàmì sí
 tasks-new-list = Ṣẹ̀dá àtòjọ tuntun
 tasks-on-this-computer = Lórí kọ̀ǹpútà yìí
 tasks-my-tasks = Àwọn Iṣẹ́ Mi
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Wọlé lẹ́ẹ̀kan sí i láti fi àwọn iṣẹ́ hàn
+tasks-account-signed-in = O ti wọlé sí { $address } lẹ́ẹ̀kan sí i. À ń mú àwọn iṣẹ́ rẹ wá…
+tasks-account-sign-in-refused = { $provider } kò jẹ́ kí Katna wọlé. Gbìyànjú lẹ́ẹ̀kan sí i, kí o sì gba ààyè sí àwọn iṣẹ́ rẹ láàyè.
+tasks-account-refused = Sáfà kò gba ọ̀rọ̀ aṣínà náà. Yahoo, iCloud, Zoho àti àwọn mìíràn nílò ọ̀rọ̀ aṣínà áàpù.
+tasks-account-change-password = Yí ọ̀rọ̀ aṣínà padà
+tasks-account-change-password-tooltip = Ṣí Ètò > Àwọn àkáǹtì
+tasks-account-not-enabled = A kò tíì tan ààyè iṣẹ́ fún Katna.
+tasks-account-failed = A kò lè ka àwọn àtòjọ iṣẹ́.
+# $reason is the server's own words, in English.
+tasks-account-error = A kò lè ka àwọn àtòjọ iṣẹ́: { $reason }
+tasks-account-none = A kò rí àtòjọ iṣẹ́ kankan
+tasks-account-looking = À ń wá àwọn àtòjọ iṣẹ́…
+tasks-account-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
+tasks-account-try-again-tooltip = Ṣàyẹ̀wò àwọn iṣẹ́ àkáǹtì yìí lẹ́ẹ̀kan sí i báyìí
+tasks-account-fixing = À ń ṣiṣẹ́ lé e lórí…
 tasks-list-name-placeholder = Orúkọ àtòjọ
 
 ## Lists and tasks

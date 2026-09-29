@@ -1658,3 +1658,11 @@ persone. Quando i contatti di un account non si caricano, una riga sotto
 spiega perché, con il clic che risolve, come «Accedi di nuovo per
 mostrare i contatti» o «Riprova».
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Tutti gli account nella pagina Attività"
+text = """
+Ogni account ora compare nel pannello laterale di Attività. Quando le
+attività di un account non si caricano, una riga sotto spiega perché,
+con un clic per risolvere: accedere di nuovo o riprovare.
+"""

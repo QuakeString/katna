@@ -11,6 +11,23 @@ tasks-starred = তৰাচিহ্নিত
 tasks-new-list = নতুন তালিকা সৃষ্টি কৰক
 tasks-on-this-computer = এই কমপিউটাৰত
 tasks-my-tasks = মোৰ কাৰ্য
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = কাৰ্যসমূহ দেখুৱাবলৈ পুনৰ ছাইন ইন কৰক
+tasks-account-signed-in = { $address }ত পুনৰ ছাইন ইন কৰা হ'ল। আপোনাৰ কাৰ্যসমূহ অনা হৈছে…
+tasks-account-sign-in-refused = { $provider }এ Katnaক সোমাবলৈ নিদিলে। পুনৰ চেষ্টা কৰক, আৰু আপোনাৰ কাৰ্যসমূহলৈ প্ৰৱেশৰ অনুমতি দিয়ক।
+tasks-account-refused = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। Yahoo, iCloud, Zoho আৰু আনবোৰক এটা এপ পাছৱৰ্ড লাগে।
+tasks-account-change-password = পাছৱৰ্ড সলনি কৰক
+tasks-account-change-password-tooltip = ছেটিংছ > একাউণ্টসমূহ খোলক
+tasks-account-not-enabled = Katnaৰ বাবে কাৰ্য প্ৰৱেশ এতিয়াও অন কৰা হোৱা নাই।
+tasks-account-failed = কাৰ্য তালিকাবোৰ পঢ়িব পৰা নগ'ল।
+# $reason is the server's own words, in English.
+tasks-account-error = কাৰ্য তালিকাবোৰ পঢ়িব পৰা নগ'ল: { $reason }
+tasks-account-none = কোনো কাৰ্য তালিকা পোৱা নগ'ল
+tasks-account-looking = কাৰ্য তালিকা বিচৰা হৈছে…
+tasks-account-try-again = পুনৰ চেষ্টা কৰক
+tasks-account-try-again-tooltip = এই একাউণ্টৰ কাৰ্যসমূহ এতিয়াই পুনৰ পৰীক্ষা কৰক
+tasks-account-fixing = কাম চলি আছে…
 tasks-list-name-placeholder = তালিকাৰ নাম
 
 ## Lists and tasks
