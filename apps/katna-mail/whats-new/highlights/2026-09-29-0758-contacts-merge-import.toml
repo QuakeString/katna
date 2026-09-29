@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Merge duplicates, import and export contacts"
+text = """
+Contacts has Fix and manage: Merge and fix finds people saved twice (the
+same name or phone number) and merges them in one click, with an Undo.
+Import brings people in from a vCard file, leaving out anyone already
+saved, and Export saves everyone, or a label, as a vCard file.
+"""

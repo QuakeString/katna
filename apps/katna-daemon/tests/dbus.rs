@@ -2438,3 +2438,36 @@ fn labels_contacts_on_this_computer() {
         instance.shutdown().await;
     });
 }
+
+#[test]
+fn imports_contacts_with_their_labels() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        let card = |given: &str, email: &str| katna_core::contact::Card {
+            name: katna_core::contact::Name {
+                given: given.into(),
+                ..Default::default()
+            },
+            emails: vec![katna_core::contact::Typed::new(email, "")],
+            ..Default::default()
+        };
+        let cards = serde_json::json!([
+            { "card": card("Asha", "asha@rao.in"), "labels": ["Family"] },
+            { "card": card("Bo", "bo@y.io") },
+            { "card": katna_core::contact::Card::default() },
+        ])
+        .to_string();
+        let ids = pim.import_contacts(0, &cards).await.unwrap();
+        assert_eq!(ids.len(), 2, "the empty card is not saved");
+        let store = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let people = store.saved_contacts().unwrap();
+        assert_eq!(people.len(), 2);
+        assert_eq!(people[0].labels, ["Family"]);
+        assert!(pim.import_contacts(0, "[{\"card\": {}}]").await.is_err());
+        instance.shutdown().await;
+    });
+}

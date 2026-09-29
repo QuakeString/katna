@@ -29,6 +29,8 @@ use katna_ui::px;
 
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
+
+mod tasks;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{icon, icon_button, menu, menu_item, outlined_button, raised, tip};
 
@@ -199,6 +201,8 @@ pub(super) struct CalendarPage {
     /// An event being added or changed.
     pub(super) draft: Option<Draft>,
     pub(super) drag: Option<EventDrag>,
+    /// A task being dragged to another day or time.
+    task_drag: Option<tasks::TaskDrag>,
     /// Which occurrences of a repeating event a change is for, being asked.
     pub(super) ask: Option<ScopeAsk>,
     pub(super) focus: FocusHandle,
@@ -224,6 +228,7 @@ impl CalendarPage {
             open: None,
             draft: None,
             drag: None,
+            task_drag: None,
             ask: None,
             focus: cx.focus_handle(),
         }
@@ -811,6 +816,7 @@ impl MailWindow {
             .size_full()
             .child(page)
             .children(self.render_event_draft(th, cx))
+            .children(self.render_task_details(th, cx))
             .into_any_element()
     }
 
@@ -1338,7 +1344,8 @@ impl MailWindow {
             lanes[lane].push((from, last));
             bars.push((occurrence.clone(), lane, from, last));
         }
-        let all_day_height = (lanes.len().max(1) as f32) * ALL_DAY_LINE + 4.0;
+        let (task_lanes, task_bars) = self.render_all_day_tasks(&days, lanes.len(), th, cx);
+        let all_day_height = ((lanes.len() + task_lanes).max(1) as f32) * ALL_DAY_LINE + 4.0;
         let bars = bars
             .into_iter()
             .map(|(occurrence, lane, from, last)| {
@@ -1422,6 +1429,11 @@ impl MailWindow {
                         o.start < next && (o.end > start || (o.end == o.start && o.start >= start))
                     })
                     .collect();
+                let busy: Vec<(i64, i64)> = mine
+                    .iter()
+                    .map(|o| ((o.start - start) / 60, (o.end - start) / 60))
+                    .collect();
+                let day_tasks = self.render_timed_tasks(day, &busy, th, cx);
                 let placed = lay_out(&mine, start, next, hour_height);
                 let is_today = day == today;
                 let now_y = ((now.timestamp().as_second() - start) as f32 / 3600.0) * hour_height;
@@ -1483,6 +1495,7 @@ impl MailWindow {
                                 )
                             }),
                     )
+                    .children(day_tasks)
                     .when(is_today, |d| {
                         d.child(
                             div()
@@ -1514,6 +1527,16 @@ impl MailWindow {
             .rev()
             .map(|label| div().flex_1().pr(px(8.0)).flex().justify_end().child(label));
         div()
+            .id("calendar-days")
+            .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
+                if this.calendar.task_drag.is_some() {
+                    this.drag_task_to(event.position, cx);
+                }
+            }))
+            .on_mouse_up(
+                MouseButton::Left,
+                cx.listener(|this, _, _, cx| this.drop_dragged_task(cx)),
+            )
             .size_full()
             .flex()
             .flex_col()
@@ -1547,7 +1570,8 @@ impl MailWindow {
                             .relative()
                             .flex_1()
                             .h(px(all_day_height))
-                            .children(bars),
+                            .children(bars)
+                            .children(task_bars),
                     ),
             )
             .child(
@@ -1844,8 +1868,14 @@ impl MailWindow {
                     .iter()
                     .filter(|o| o.start < next && (o.end > start || o.start == start))
                     .collect();
-                let more = mine.len().saturating_sub(3);
-                let shown = if more > 0 { &mine[..2] } else { &mine[..] };
+                let mut day_tasks = self.tasks_on(day);
+                // Three lines, or two and "N more".
+                let total = mine.len() + day_tasks.len();
+                let room = if total > 3 { 2 } else { 3 };
+                let shown = &mine[..mine.len().min(room)];
+                day_tasks.truncate(room - shown.len());
+                let more = total - shown.len() - day_tasks.len();
+                let task_lines = self.render_month_tasks(day_tasks, day, th, cx);
                 let is_today = day == today;
                 let in_month = day.month() == month;
                 let lines = shown.iter().map(|occurrence| {
@@ -1949,6 +1979,7 @@ impl MailWindow {
                         ),
                     )
                     .children(lines)
+                    .children(task_lines)
                     .when(more > 0, |d| {
                         d.child(
                             div()
@@ -1968,7 +1999,7 @@ impl MailWindow {
                                     cx.stop_propagation();
                                     this.open_calendar_day(day, Some(CalView::Day), cx)
                                 }))
-                                .child(tr!("calendar-more", count = mine.len() - 2)),
+                                .child(tr!("calendar-more", count = more)),
                         )
                     })
             });
@@ -2011,6 +2042,17 @@ impl MailWindow {
                     Err(_) => break,
                 };
             }
+        }
+        // Days with only tasks due.
+        let mut day = first;
+        while day < end {
+            if !days.iter().any(|(d, _)| *d == day) && !self.tasks_on(day).is_empty() {
+                days.push((day, Vec::new()));
+            }
+            day = match day.tomorrow() {
+                Ok(next) => next,
+                Err(_) => break,
+            };
         }
         days.sort_by_key(|(d, _)| *d);
         if days.is_empty() {
@@ -2121,7 +2163,15 @@ impl MailWindow {
                                 ),
                         ),
                 )
-                .child(div().flex_1().min_w_0().flex().flex_col().children(events))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .children(events)
+                        .children(self.render_schedule_tasks(day, th, cx)),
+                )
         });
         div()
             .id("calendar-schedule")
