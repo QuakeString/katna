@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ngaphezulu
 calendar-repeats = Iyaphindaphinda
 calendar-join = Joyina
+calendar-email-guests = Thumela izihambeli i-imeyili
+calendar-running-late = Ngiyephuza
+calendar-late-subject = Ngiyephuza: { $title }
+calendar-late-body = Ngiyaxolisa, ngiphuza imizuzu embalwa ku-{ $title }. Ngizofika maduze.
 calendar-guests =
     { $count ->
         [one] Isihambeli { $count }

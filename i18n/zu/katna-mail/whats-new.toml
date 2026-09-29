@@ -1359,3 +1359,21 @@ nakwamanye ama-akhawunti anemisebenzi kuseva engeyona eyeyimeyili yawo.
 I-Katna izama indlela engcono kakhulu ye-akhawunti ngayinye kuqala, bese
 ikhumbula leyo esebenzayo.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Hlela umhlangano ngemeyili"
+text = """
+Chofoza kwesokudla enkulumweni, noma uvule ⋮ bese ukhetha Hlela
+umhlangano: umcimbi omusha uvulwa ekhasini Ikhalenda, isihloko
+sawo siba yisihloko, bese wonke umuntu okulo mkhulumo eba
+yizihambeli.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Uyephuza? Tshela wonke umuntu ngokuchofoza kanye"
+text = """
+Umcimbi onezihambeli manje unokuthi Thumela izihambeli
+i-imeyili, futhi kusukela ihora ngaphambi kokuba uqale,
+Ngiyephuza: imeyili eya kubo bonke, isuka ku-akhawunti
+yekhalenda, ilungele ukuthunyelwa.
+"""

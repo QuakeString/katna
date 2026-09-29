@@ -1288,3 +1288,19 @@ Uppgifter synkroniseras nu även med Yahoo, Zoho, iCloud, Fastmail och
 andra konton vars uppgifter finns på en annan server än e-posten. Katna
 prövar varje kontos bästa metod först och kommer ihåg den som fungerar.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Boka ett möte från ett mejl"
+text = """
+Högerklicka på en konversation, eller öppna ⋮, och välj Boka ett möte:
+en ny händelse öppnas på sidan Kalender med ämnet som titel och alla i
+konversationen som gäster.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Försenad? Meddela alla med ett klick"
+text = """
+En händelse med gäster har nu Skicka e-post till gäster och, från en
+timme innan den börjar, Jag är försenad: ett mejl till alla, från den
+kalenderns konto, klart att skickas.
+"""

@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ལྷག་མ
 calendar-repeats = བསྐྱར་ལོག་འབདཝ་ཨིན
 calendar-join = ཚུད་གནང་
+calendar-email-guests = འབོད་མི་ལུ་ གློག་འཕྲིན་གཏང་།
+calendar-running-late = འགོར་དོ།
+calendar-late-subject = འགོར་དོ།: { $title }
+calendar-late-body = དགོངས་པ་ཁྱད། { $title } གི་དོན་ལས་ ངེ་ལུ་ སྐར་མ་ ལེ་ཤ་ཅིག་ འགོར་དོ་ཡོད། ངེ་མགྱོགས་མགྱོགས་ལས་ སླེབས་འོང་།
 calendar-guests =
     { $count ->
        *[other] { $count } འབོད་མི
