@@ -1305,6 +1305,15 @@ che è scaduto da ogni elenco, con l’elenco in cui si trova ciascuna.
 Un’attività aggiunta qui scade oggi.
 """
 
+["2026-09-29-0631-invitation-card"]
+title = "Inviti nella tua posta"
+text = """
+Un invito ora appare come una scheda in cima alla mail: quando e dove,
+chi lo ha organizzato, la tua giornata intorno con le sovrapposizioni
+segnalate, Partecipa e Partecipi? Sì, No o Forse, con risposta
+direttamente lì.
+"""
+
 ["2026-09-29-0616-note-labels"]
 title = "Etichette sulle note"
 text = """

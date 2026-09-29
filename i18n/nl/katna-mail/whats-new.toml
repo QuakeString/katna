@@ -1293,6 +1293,15 @@ wat achterstallig is uit alle lijsten, met de lijst waarin elke taak
 staat. Een taak die je daar toevoegt, moet vandaag klaar zijn.
 """
 
+["2026-09-29-0631-invitation-card"]
+title = "Uitnodigingen in je mail"
+text = """
+Een uitnodiging verschijnt nu als kaart bovenaan de mail: wanneer en
+waar, wie hem organiseert, jouw dag eromheen met overlappingen
+gemarkeerd, Deelnemen en Ga je? Ja, Nee of Misschien, direct daar te
+beantwoorden.
+"""
+
 ["2026-09-29-0616-note-labels"]
 title = "Labels op notities"
 text = """

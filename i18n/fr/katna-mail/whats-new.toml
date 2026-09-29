@@ -1335,6 +1335,15 @@ aujourd’hui et tout ce qui est en retard, toutes listes confondues, avec
 la liste de chaque tâche. Une tâche ajoutée ici est due aujourd’hui.
 """
 
+["2026-09-29-0631-invitation-card"]
+title = "Les invitations dans votre courrier"
+text = """
+Une invitation s’affiche désormais sous forme de carte en haut du
+message : quand et où, qui l’a organisée, votre journée autour avec les
+chevauchements signalés, Participer, et Participez-vous ? Oui, Non ou
+Peut-être, avec une réponse directement sur place.
+"""
+
 ["2026-09-29-0616-note-labels"]
 title = "Libellés sur les notes"
 text = """

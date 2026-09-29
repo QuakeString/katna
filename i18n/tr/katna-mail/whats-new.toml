@@ -1281,6 +1281,15 @@ ve gecikmiş olanları, her birinin bulunduğu listeyle birlikte toplar.
 Oraya eklenen bir görevin son tarihi bugündür.
 """
 
+["2026-09-29-0631-invitation-card"]
+title = "Postanızdaki davetler"
+text = """
+Bir davet artık postanın en üstünde bir kart olarak görünüyor: ne zaman
+ve nerede, kimin düzenlediği, çevresindeki gününüz ve işaretli
+çakışmalar, Katıl ve Katılıyor musunuz? Evet, Hayır veya Belki, orada
+yanıtlanıyor.
+"""
+
 ["2026-09-29-0616-note-labels"]
 title = "Notlarda etiketler"
 text = """

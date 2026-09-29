@@ -1338,6 +1338,15 @@ ang listahang kinaroroonan ng bawat isa. Ang gawaing idinagdag doon ay
 due ngayon.
 """
 
+["2026-09-29-0631-invitation-card"]
+title = "Mga imbitasyon sa mail mo"
+text = """
+Lumalabas na ngayon ang imbitasyon bilang card sa itaas ng mail: kailan
+at saan, sino ang nag-organisa, ang araw mo sa paligid nito na may
+markang mga salungatan, Sumali, at Pupunta ka ba? Oo, Hindi o Baka, na
+masasagot mismo doon.
+"""
+
 ["2026-09-29-0616-note-labels"]
 title = "Mga label sa mga tala"
 text = """

@@ -117,6 +117,24 @@ calendar-answered-yes = ඔබ යනවා
 calendar-answered-no = ඔබ නොයයි
 calendar-answered-maybe = ඔබ සමහරවිට යයි
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = ආරාධනාව
+calendar-invite-cancelled = සිදුවීම අවලංගු කරන ලදී
+calendar-invite-reply = { $name } පිළිතුරු දුන්නා
+calendar-invite-reply-yes = { $name } පිළිගත්තා
+calendar-invite-reply-no = { $name } ප්‍රතික්ෂේප කළා
+calendar-invite-reply-maybe = { $name } සමහරවිට යයි
+calendar-invite-organizer = සංවිධානය කළේ { $name }
+calendar-invite-open = දින දර්ශනයේ විවෘත කරන්න
+calendar-invite-not-yet = තවම ඔබේ දින දර්ශනයේ නැත. සමමුහුර්ත වූ පසු පිළිතුරු දිය හැක.
+calendar-invite-your-day = ඔබේ දිනය
+calendar-invite-clashes =
+    { $count ->
+        [one] සිදුවීම { $count } සමඟ ගැටේ
+       *[other] සිදුවීම් { $count } සමඟ ගැටේ
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = දිනයේ න්‍යාය පත්‍රය පෙන්වන්න

@@ -121,6 +121,25 @@ calendar-answered-yes = Partecipi
 calendar-answered-no = Non partecipi
 calendar-answered-maybe = Forse partecipi
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Invito
+calendar-invite-cancelled = Evento annullato
+calendar-invite-reply = { $name } ha risposto
+calendar-invite-reply-yes = { $name } ha accettato
+calendar-invite-reply-no = { $name } ha rifiutato
+calendar-invite-reply-maybe = { $name } forse partecipa
+calendar-invite-organizer = Organizzato da { $name }
+calendar-invite-open = Apri in Calendario
+calendar-invite-not-yet = Non ancora nel tuo calendario. Potrai rispondere dopo la sincronizzazione.
+calendar-invite-your-day = La tua giornata
+calendar-invite-clashes =
+    { $count ->
+        [one] In conflitto con { $count } evento
+        [many] In conflitto con { $count } di eventi
+       *[other] In conflitto con { $count } eventi
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Mostra l’agenda del giorno

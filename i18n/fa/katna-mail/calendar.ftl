@@ -117,6 +117,24 @@ calendar-answered-yes = شرکت می‌کنید
 calendar-answered-no = شرکت نمی‌کنید
 calendar-answered-maybe = شاید شرکت کنید
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = دعوت‌نامه
+calendar-invite-cancelled = رویداد لغو شد
+calendar-invite-reply = { $name } پاسخ داد
+calendar-invite-reply-yes = { $name } پذیرفت
+calendar-invite-reply-no = { $name } رد کرد
+calendar-invite-reply-maybe = { $name } شاید شرکت کند
+calendar-invite-organizer = برگزارکننده: { $name }
+calendar-invite-open = باز کردن در تقویم
+calendar-invite-not-yet = هنوز در تقویم شما نیست. پس از همگام‌سازی می‌توانید پاسخ دهید.
+calendar-invite-your-day = روز شما
+calendar-invite-clashes =
+    { $count ->
+        [one] با { $count } رویداد تداخل دارد
+       *[other] با { $count } رویداد تداخل دارد
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = نمایش برنامهٔ روز

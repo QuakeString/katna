@@ -121,6 +121,25 @@ calendar-answered-yes = אישרת הגעה
 calendar-answered-no = סירבת להזמנה
 calendar-answered-maybe = ענית: אולי
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = הזמנה
+calendar-invite-cancelled = האירוע בוטל
+calendar-invite-reply = { $name }: תשובה
+calendar-invite-reply-yes = { $name }: אישור הגעה
+calendar-invite-reply-no = { $name }: סירוב
+calendar-invite-reply-maybe = { $name }: אולי
+calendar-invite-organizer = מארגן: { $name }
+calendar-invite-open = פתיחה ביומן
+calendar-invite-not-yet = עדיין לא ביומן שלך. אפשר לענות אחרי הסנכרון.
+calendar-invite-your-day = היום שלך
+calendar-invite-clashes =
+    { $count ->
+        [one] מתנגש עם { $count } אירוע
+        [two] מתנגש עם { $count } אירועים
+       *[other] מתנגש עם { $count } אירועים
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = הצגת סדר היום

@@ -117,6 +117,24 @@ calendar-answered-yes = Uyahamba
 calendar-answered-no = Awuhambi
 calendar-answered-maybe = Ungahamba
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Isimemo
+calendar-invite-cancelled = Umcimbi ukhanselwe
+calendar-invite-reply = { $name } uphendule
+calendar-invite-reply-yes = { $name } wamukele
+calendar-invite-reply-no = { $name } wenqabile
+calendar-invite-reply-maybe = { $name } angahamba
+calendar-invite-organizer = Kuhlelwe ngu-{ $name }
+calendar-invite-open = Vula ku-Khalenda
+calendar-invite-not-yet = Akukho ekhalendeni lakho okwamanje. Ungaphendula uma isivumelanisiwe.
+calendar-invite-your-day = Usuku lwakho
+calendar-invite-clashes =
+    { $count ->
+        [one] Kuphambana nomcimbi { $count }
+       *[other] Kuphambana nemicimbi { $count }
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Bonisa uhlelo losuku

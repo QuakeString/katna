@@ -1292,6 +1292,15 @@ dan yang terlambat dari semua daftar, beserta daftar tempat setiap tugas
 berada. Tugas yang ditambahkan di sana jatuh tempo hari ini.
 """
 
+["2026-09-29-0631-invitation-card"]
+title = "Undangan di email Anda"
+text = """
+Undangan kini tampil sebagai kartu di bagian atas email: kapan dan di
+mana, siapa penyelenggaranya, hari Anda di sekitarnya dengan bentrokan
+yang ditandai, Gabung, dan Hadir? Ya, Tidak atau Mungkin, yang bisa
+dijawab langsung di sana.
+"""
+
 ["2026-09-29-0616-note-labels"]
 title = "Label pada catatan"
 text = """

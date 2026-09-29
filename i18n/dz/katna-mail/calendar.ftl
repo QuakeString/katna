@@ -113,6 +113,23 @@ calendar-answered-yes = ཁྱོད་འགྱོ་དོ།
 calendar-answered-no = ཁྱོད་འགྱོ་མི་དོ།
 calendar-answered-maybe = ཁྱོད་འགྱོ་སྲིད།
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = འབོད་བརྡ།
+calendar-invite-cancelled = བྱུང་རིམ་ ཆ་མེད་བཏང་ཡི།
+calendar-invite-reply = { $name } གིས་ ལན་བཏབ་ཡི།
+calendar-invite-reply-yes = { $name } གིས་ ངོས་ལེན་འབད་ཡི།
+calendar-invite-reply-no = { $name } གིས་ ངོས་ལེན་མ་འབད།
+calendar-invite-reply-maybe = { $name } འགྱོ་སྲིད།
+calendar-invite-organizer = སྒྲིག་འཛིན་པ: { $name }
+calendar-invite-open = ཟླ་ཐོ་ནང་ཁ་ཕྱེ
+calendar-invite-not-yet = ད་ལྟོ་ཡང་ ཁྱོད་ཀྱི་ཟླ་ཐོ་ནང་མིན་འདུག ཟླ་སྒྲིག་འབད་ཞིནམ་ལས་ ལན་བཏབ་ཚུགས།
+calendar-invite-your-day = ཁྱོད་ཀྱི་ཉིནམ།
+calendar-invite-clashes =
+    { $count ->
+       *[other] བྱུང་རིམ་ { $count } དང་འཁྲུགས་དོ།
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = ཉིན་མོའི་ལས་རིམ་སྟོན
