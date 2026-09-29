@@ -1528,3 +1528,9 @@ title = "Kowane asusu a shafin Ayyuka"
 text = """
 Kowane asusu yanzu yana bayyana a fanel na gefe na Ayyuka. Idan ayyukan wani asusu ba su iya lodawa ba, layi a ƙarƙashinsa yana faɗin dalili, tare da danna ɗaya don gyara shi: sake shiga, ko sake gwadawa.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Tambayoyi kafin aikawa suna kasancewa a gani"
+text = """
+Tambayoyi kamar “Kuna nufin haɗa fayiloli?” yanzu suna buɗewa a tsakiyar taga, komai tsawon saƙon da kake rubutawa ko turawa, don haka ba za su taɓa ɓoyewa a ƙasan shafin ba. Enter yana amsawa da babban maɓalli, kuma Esc yana mayar da kai ga saƙon.
+"""

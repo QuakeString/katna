@@ -1603,3 +1603,12 @@ Elke rekening wys nou in die Take-sypaneel. As 'n rekening se take nie
 kan laai nie, sê 'n reël daaronder hoekom, met een klik om dit reg te
 maak: meld weer aan, of probeer weer.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Vrae voor stuur bly in sig"
+text = """
+Vrae soos “Wou jy lêers aanheg?” gaan nou in die middel van die venster
+oop, hoe lank die boodskap wat jy skryf of aanstuur ook al is, sodat
+hulle nooit verder onder op die bladsy versteek is nie. Enter antwoord
+met die hoofknoppie en Esc gaan terug na die boodskap.
+"""

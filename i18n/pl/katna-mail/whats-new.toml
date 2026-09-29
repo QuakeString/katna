@@ -1642,3 +1642,12 @@ Każde konto jest teraz widoczne w panelu bocznym Zadań. Gdy zadania
 konta nie mogą się wczytać, wiersz pod nim mówi dlaczego i daje jedno
 kliknięcie, które to naprawia: ponowne zalogowanie lub ponowną próbę.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Pytania przed wysłaniem są zawsze widoczne"
+text = """
+Pytania takie jak „Czy chcesz załączyć pliki?” otwierają się teraz na
+środku okna, niezależnie od długości pisanej lub przekazywanej
+wiadomości, więc nigdy nie chowają się niżej na stronie. Enter odpowiada
+głównym przyciskiem, a Esc wraca do wiadomości.
+"""

@@ -1635,3 +1635,12 @@ Her hesap artık Görevler'in kenar panelinde görünüyor. Bir hesabın
 görevleri yüklenemediğinde, altındaki bir satır nedenini söylüyor ve tek
 tıklamayla düzeltmeyi sunuyor: yeniden oturum açın ya da tekrar deneyin.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Göndermeden önceki sorular görünür kalıyor"
+text = """
+“Dosya eklemek mi istediniz?” gibi sorular artık yazdığınız ya da
+ilettiğiniz ileti ne kadar uzun olursa olsun pencerenin ortasında
+açılıyor, böylece hiçbir zaman sayfanın aşağısında gizli kalmıyor. Enter
+ana düğmeyle yanıtlıyor, Esc iletiye geri dönüyor.
+"""

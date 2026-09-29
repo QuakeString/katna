@@ -1666,3 +1666,12 @@ Ogni account ora compare nel pannello laterale di Attività. Quando le
 attività di un account non si caricano, una riga sotto spiega perché,
 con un clic per risolvere: accedere di nuovo o riprovare.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Le domande prima dell'invio restano in vista"
+text = """
+Domande come «Volevi allegare dei file?» ora si aprono al centro della
+finestra, per quanto lungo sia il messaggio che stai scrivendo o
+inoltrando, così non restano mai nascoste più in basso nella pagina.
+Invio risponde con il pulsante principale ed Esc torna al messaggio.
+"""
