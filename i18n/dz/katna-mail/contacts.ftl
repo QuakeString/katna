@@ -25,6 +25,39 @@ contacts-label-removed = { $name } ལས་བསུབས་ཡི།
 contacts-label-renamed = ཁ་ཡིག་གི་མིང་ { $name } ལུ་སྒྱུར་ཡི།
 contacts-label-deleted = ཁ་ཡིག་ { $name } བཏོན་གཏང་ཡི།
 contacts-label-no-email = ཁ་ཡིག་འདི་ལུ་ཡོད་མི་སུ་ལུ་ཡང་གློག་འཕྲིན་ཁ་བྱང་མིན་འདུག
+contacts-manage = ཐད་བསྒྲིགས་དང་འཛིན་སྐྱོང་
+contacts-merge = གཅིག་བསྡོམས་དང་ཐད་བསྒྲིགས་
+contacts-merge-about = { $count ->
+   *[other] བསམ་འཆར་ { $count }: མི་གཅིག་པ་བཟུམ་མའི་འབྲེལ་བ་ཚུ
+}
+contacts-merge-none = འདྲ་བཤུས་མིན་འདུག མིང་ཡང་ན་ཁ་པར་ཨང་གཅིག་པ་འབྲེལ་བ་ཚུ་འདི་ཁར་སྟོནམ་ཨིན།
+contacts-merge-count = { $count ->
+   *[other] འབྲེལ་བ་ { $count }
+}
+contacts-merge-all = ཆ་མཉམ་གཅིག་བསྡོམས་འབད།
+contacts-merge-button = གཅིག་བསྡོམས་འབད།
+contacts-merge-dismiss = བཏང་བཞག།
+contacts-merged = { $count ->
+    [1] འབྲེལ་བ་ཚུ་གཅིག་བསྡོམས་འབད་ཡི།
+   *[other] གཅིག་བསྡོམས་ { $count } ཚར་ཡི།
+}
+contacts-import = ནང་འདྲེན།
+contacts-export = ཕྱི་ཚུད།
+contacts-import-title = vCard ཡིག་སྣོད་ལས་འབྲེལ་བ་ཚུ་ནང་འདྲེན་འབད།
+contacts-imported = { $count ->
+   *[other] { $place } ནང་འབྲེལ་བ་ { $count } ནང་འདྲེན་འབད་ཡི།
+}
+contacts-imported-some = { $count ->
+   *[other] { $place } ནང་འབྲེལ་བ་ { $count } ནང་འདྲེན་འབད་ཡི། ཧེ་མ་ལས་སྲུངས་ཡོད་མི་ { $skipped } བཏང་ཡི།
+}
+contacts-import-none = { $name } ནང་འབྲེལ་བ་གང་ཡང་མ་ཐོབ།
+contacts-import-all-saved = { $name } ནང་གི་མི་ཆ་མཉམ་ཧེ་མ་ལས་སྲུངས་ཡོད།
+contacts-import-failed = { $name } ཀློགས་མ་ཚུགས། { $error }
+contacts-exported = { $count ->
+   *[other] { $path } ལུ་འབྲེལ་བ་ { $count } ཕྱི་ཚུད་འབད་ཡི།
+}
+contacts-export-none = ཕྱི་ཚུད་འབད་ཚུགས་པའི་འབྲེལ་བ་མིན་འདུག
+contacts-export-failed = འབྲེལ་བ་ཚུ་ཕྱི་ཚུད་འབད་མ་ཚུགས། { $error }
 contacts-create = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
 
 ## Search and the list

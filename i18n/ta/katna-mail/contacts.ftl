@@ -25,6 +25,45 @@ contacts-label-removed = { $name } இலிருந்து நீக்க�
 contacts-label-renamed = லேபிள் பெயர் { $name } என மாற்றப்பட்டது
 contacts-label-deleted = லேபிள் { $name } நீக்கப்பட்டது
 contacts-label-no-email = இந்த லேபிளில் உள்ள யாருக்கும் மின்னஞ்சல் முகவரி இல்லை
+contacts-manage = சரிசெய்து நிர்வகி
+contacts-merge = ஒன்றிணைத்துச் சரிசெய்
+contacts-merge-about = { $count ->
+    [one] { $count } பரிந்துரை: ஒரே நபராகத் தோன்றும் தொடர்புகள்
+   *[other] { $count } பரிந்துரை: ஒரே நபராகத் தோன்றும் தொடர்புகள்
+}
+contacts-merge-none = நகல்கள் இல்லை. ஒரே பெயர் அல்லது ஃபோன் எண் கொண்ட தொடர்புகள் இங்கே தோன்றும்.
+contacts-merge-count = { $count ->
+    [one] { $count } தொடர்புகள்
+   *[other] { $count } தொடர்புகள்
+}
+contacts-merge-all = அனைத்தையும் ஒன்றிணை
+contacts-merge-button = ஒன்றிணை
+contacts-merge-dismiss = நிராகரி
+contacts-merged = { $count ->
+    [1] தொடர்புகள் ஒன்றிணைக்கப்பட்டன
+    [one] { $count } ஒன்றிணைப்புகள் முடிந்தன
+   *[other] { $count } ஒன்றிணைப்புகள் முடிந்தன
+}
+contacts-import = இறக்குமதி செய்
+contacts-export = ஏற்றுமதி செய்
+contacts-import-title = vCard கோப்பிலிருந்து தொடர்புகளை இறக்குமதி செய்
+contacts-imported = { $count ->
+    [one] { $place } இல் { $count } தொடர்புகள் இறக்குமதி செய்யப்பட்டன
+   *[other] { $place } இல் { $count } தொடர்புகள் இறக்குமதி செய்யப்பட்டன
+}
+contacts-imported-some = { $count ->
+    [one] { $place } இல் { $count } தொடர்புகள் இறக்குமதி செய்யப்பட்டன; ஏற்கெனவே சேமிக்கப்பட்ட { $skipped } தவிர்க்கப்பட்டன
+   *[other] { $place } இல் { $count } தொடர்புகள் இறக்குமதி செய்யப்பட்டன; ஏற்கெனவே சேமிக்கப்பட்ட { $skipped } தவிர்க்கப்பட்டன
+}
+contacts-import-none = { $name } இல் தொடர்புகள் எதுவும் இல்லை
+contacts-import-all-saved = { $name } இல் உள்ள அனைவரும் ஏற்கெனவே சேமிக்கப்பட்டுள்ளனர்
+contacts-import-failed = { $name } ஐப் படிக்க முடியவில்லை: { $error }
+contacts-exported = { $count ->
+    [one] { $path } இல் { $count } தொடர்புகள் ஏற்றுமதி செய்யப்பட்டன
+   *[other] { $path } இல் { $count } தொடர்புகள் ஏற்றுமதி செய்யப்பட்டன
+}
+contacts-export-none = ஏற்றுமதி செய்ய தொடர்புகள் இல்லை
+contacts-export-failed = தொடர்புகளை ஏற்றுமதி செய்ய முடியவில்லை: { $error }
 contacts-create = தொடர்பை உருவாக்கு
 
 ## Search and the list

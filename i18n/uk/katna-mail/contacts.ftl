@@ -25,6 +25,57 @@ contacts-label-removed = Вилучено з мітки «{ $name }»
 contacts-label-renamed = Мітку перейменовано на «{ $name }»
 contacts-label-deleted = Мітку «{ $name }» видалено
 contacts-label-no-email = Ніхто з цією міткою не має адреси електронної пошти
+contacts-manage = Виправлення й керування
+contacts-merge = Об’єднання й виправлення
+contacts-merge-about = { $count ->
+    [one] { $count } пропозиція: контакти, схожі на одну людину
+    [few] { $count } пропозиції: контакти, схожі на одну людину
+    [many] { $count } пропозицій: контакти, схожі на одну людину
+   *[other] { $count } пропозиції: контакти, схожі на одну людину
+}
+contacts-merge-none = Дублікатів немає. Тут з’являться контакти з однаковим іменем або номером телефону.
+contacts-merge-count = { $count ->
+    [one] { $count } контакт
+    [few] { $count } контакти
+    [many] { $count } контактів
+   *[other] { $count } контакту
+}
+contacts-merge-all = Об’єднати всі
+contacts-merge-button = Об’єднати
+contacts-merge-dismiss = Відхилити
+contacts-merged = { $count ->
+    [1] Контакти об’єднано
+    [one] Виконано об’єднань: { $count }
+    [few] Виконано об’єднань: { $count }
+    [many] Виконано об’єднань: { $count }
+   *[other] Виконано об’єднань: { $count }
+}
+contacts-import = Імпортувати
+contacts-export = Експортувати
+contacts-import-title = Імпорт контактів із файлу vCard
+contacts-imported = { $count ->
+    [one] Імпортовано { $count } контакт до { $place }
+    [few] Імпортовано { $count } контакти до { $place }
+    [many] Імпортовано { $count } контактів до { $place }
+   *[other] Імпортовано { $count } контакту до { $place }
+}
+contacts-imported-some = { $count ->
+    [one] Імпортовано { $count } контакт до { $place }; пропущено вже збережених: { $skipped }
+    [few] Імпортовано { $count } контакти до { $place }; пропущено вже збережених: { $skipped }
+    [many] Імпортовано { $count } контактів до { $place }; пропущено вже збережених: { $skipped }
+   *[other] Імпортовано { $count } контакту до { $place }; пропущено вже збережених: { $skipped }
+}
+contacts-import-none = У файлі { $name } контактів не знайдено
+contacts-import-all-saved = Усі з файлу { $name } уже збережені
+contacts-import-failed = Не вдалося прочитати { $name }: { $error }
+contacts-exported = { $count ->
+    [one] Експортовано { $count } контакт до { $path }
+    [few] Експортовано { $count } контакти до { $path }
+    [many] Експортовано { $count } контактів до { $path }
+   *[other] Експортовано { $count } контакту до { $path }
+}
+contacts-export-none = Немає контактів для експорту
+contacts-export-failed = Не вдалося експортувати контакти: { $error }
 contacts-create = Створити контакт
 
 ## Search and the list

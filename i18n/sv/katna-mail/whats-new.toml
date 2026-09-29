@@ -1382,3 +1382,9 @@ title = "Påminnelser för dina händelser"
 text = """
 Händelser påminner dig nu med en avisering, även när Katna är stängt. Anslut öppnar videosamtalet och Snooza 5 min påminner dig igen om fem minuter.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Sammanfoga dubbletter, importera och exportera kontakter"
+text = """
+Kontakter har Åtgärda och hantera: Sammanfoga och åtgärda hittar personer som sparats två gånger (samma namn eller telefonnummer) och sammanfogar dem med ett klick, med Ångra. Importera hämtar personer från en vCard-fil och utelämnar dem som redan finns, och Exportera sparar alla, eller en etikett, som en vCard-fil.
+"""

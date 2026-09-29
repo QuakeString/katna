@@ -25,6 +25,51 @@ contacts-label-removed = Retiré de { $name }
 contacts-label-renamed = Libellé renommé en { $name }
 contacts-label-deleted = Libellé supprimé : { $name }
 contacts-label-no-email = Personne dans ce libellé n’a d’adresse e-mail
+contacts-manage = Corriger et gérer
+contacts-merge = Fusionner et corriger
+contacts-merge-about = { $count ->
+    [one] { $count } suggestion : des contacts qui semblent être la même personne
+    [many] { $count } de suggestions : des contacts qui semblent être la même personne
+   *[other] { $count } suggestions : des contacts qui semblent être la même personne
+}
+contacts-merge-none = Aucun doublon. Les contacts portant le même nom ou le même numéro de téléphone apparaissent ici.
+contacts-merge-count = { $count ->
+    [one] { $count } contact
+    [many] { $count } de contacts
+   *[other] { $count } contacts
+}
+contacts-merge-all = Tout fusionner
+contacts-merge-button = Fusionner
+contacts-merge-dismiss = Ignorer
+contacts-merged = { $count ->
+    [1] Contacts fusionnés
+    [one] { $count } fusion effectuée
+    [many] { $count } de fusions effectuées
+   *[other] { $count } fusions effectuées
+}
+contacts-import = Importer
+contacts-export = Exporter
+contacts-import-title = Importer des contacts depuis un fichier vCard
+contacts-imported = { $count ->
+    [one] { $count } contact importé dans { $place }
+    [many] { $count } de contacts importés dans { $place }
+   *[other] { $count } contacts importés dans { $place }
+}
+contacts-imported-some = { $count ->
+    [one] { $count } contact importé dans { $place } ; { $skipped } déjà enregistrés, ignorés
+    [many] { $count } de contacts importés dans { $place } ; { $skipped } déjà enregistrés, ignorés
+   *[other] { $count } contacts importés dans { $place } ; { $skipped } déjà enregistrés, ignorés
+}
+contacts-import-none = Aucun contact trouvé dans { $name }
+contacts-import-all-saved = Toutes les personnes de { $name } sont déjà enregistrées
+contacts-import-failed = Impossible de lire { $name } : { $error }
+contacts-exported = { $count ->
+    [one] { $count } contact exporté vers { $path }
+    [many] { $count } de contacts exportés vers { $path }
+   *[other] { $count } contacts exportés vers { $path }
+}
+contacts-export-none = Aucun contact à exporter
+contacts-export-failed = Impossible d’exporter les contacts : { $error }
 contacts-create = Créer un contact
 
 ## Search and the list

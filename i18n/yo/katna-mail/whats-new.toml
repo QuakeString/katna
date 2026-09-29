@@ -1326,3 +1326,10 @@ text = """
 Àwọn ìṣẹ̀lẹ̀ máa ń rán ọ létí pẹ̀lú ìwifúnni báyìí, àní nígbà tí Katna bá wà ní títìpa.
 Darapọ̀ ń ṣí ìpè fídíò, Sún síwájú ní ìṣẹ́jú 5 sì ń rán ọ létí lẹ́ẹ̀kan sí i lẹ́yìn ìṣẹ́jú márùn-ún.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Dàpọ̀ àwọn olùbásọ̀rọ̀ tó jọra, gbé wọlé àti gbé jáde"
+text = """
+Àwọn olùbásọ̀rọ̀ ní Àtúnṣe àti ìṣàkóso báyìí: Dàpọ̀ àti àtúnṣe ń wá àwọn ènìyàn tí a fipamọ́ lẹ́ẹ̀mejì (orúkọ tàbí nọ́ńbà fóònù kan náà) ó sì ń dà wọ́n pọ̀ pẹ̀lú títẹ̀ ẹ̀ẹ̀kan, pẹ̀lú Dá padà.
+Gbé wọlé ń mú àwọn ènìyàn wá láti fáìlì vCard, ó ń fi àwọn tí a ti fipamọ́ sílẹ̀, Gbé jáde sì ń fi gbogbo wọn, tàbí àmì kan, pamọ́ bí fáìlì vCard.
+"""

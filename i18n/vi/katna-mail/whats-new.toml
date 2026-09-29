@@ -1369,3 +1369,9 @@ title = "Nhắc nhở cho sự kiện của bạn"
 text = """
 Sự kiện giờ sẽ nhắc bạn bằng thông báo, kể cả khi Katna đã đóng. Tham gia sẽ mở cuộc gọi video, còn Báo lại sau 5 phút sẽ nhắc bạn lại sau năm phút.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Hợp nhất liên hệ trùng lặp, nhập và xuất liên hệ"
+text = """
+Danh bạ giờ có Sửa và quản lý: Hợp nhất và sửa tìm những người được lưu hai lần (cùng tên hoặc số điện thoại) và hợp nhất họ chỉ bằng một cú nhấp, kèm Hoàn tác. Nhập đưa người từ tệp vCard vào và bỏ qua những ai đã được lưu, còn Xuất lưu tất cả mọi người, hoặc một nhãn, thành tệp vCard.
+"""

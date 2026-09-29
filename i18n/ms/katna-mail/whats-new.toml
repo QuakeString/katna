@@ -1429,3 +1429,9 @@ title = "Peringatan untuk acara anda"
 text = """
 Acara kini mengingatkan anda melalui pemberitahuan, walaupun Katna ditutup. Sertai membuka panggilan video, dan Tunda 5 minit mengingatkan anda semula lima minit kemudian.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Gabungkan pendua, import dan eksport kenalan"
+text = """
+Kenalan kini mempunyai Betulkan dan urus: Gabung dan betulkan mencari orang yang disimpan dua kali (nama atau nombor telefon yang sama) dan menggabungkan mereka dengan satu klik, lengkap dengan Buat asal. Import membawa masuk orang daripada fail vCard dan meninggalkan sesiapa yang sudah disimpan, manakala Eksport menyimpan semua orang, atau satu label, sebagai fail vCard.
+"""

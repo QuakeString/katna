@@ -25,6 +25,39 @@ contacts-label-removed = { $name } မှ ဖယ်ရှားပြီးပ�
 contacts-label-renamed = အညွှန်းအမည်ကို { $name } သို့ ပြောင်းပြီးပါပြီ
 contacts-label-deleted = အညွှန်း { $name } ကို ဖျက်ပြီးပါပြီ
 contacts-label-no-email = ဤအညွှန်းရှိ မည်သူမျှ မေးလ်လိပ်စာ မရှိပါ
+contacts-manage = ပြင်ဆင်ပြီး စီမံရန်
+contacts-merge = ပေါင်းစည်းပြီး ပြင်ဆင်ရန်
+contacts-merge-about = { $count ->
+   *[other] အကြံပြုချက် { $count } ခု- လူတစ်ဦးတည်းဟု ထင်ရသော အဆက်အသွယ်များ
+}
+contacts-merge-none = ထပ်နေသည်များ မရှိပါ။ အမည် သို့မဟုတ် ဖုန်းနံပါတ် တူသော အဆက်အသွယ်များကို ဤနေရာတွင် ပြပါမည်။
+contacts-merge-count = { $count ->
+   *[other] အဆက်အသွယ် { $count } ခု
+}
+contacts-merge-all = အားလုံး ပေါင်းစည်းရန်
+contacts-merge-button = ပေါင်းစည်းရန်
+contacts-merge-dismiss = ပယ်ရန်
+contacts-merged = { $count ->
+    [1] အဆက်အသွယ်များ ပေါင်းစည်းပြီးပါပြီ
+   *[other] { $count } ခု ပေါင်းစည်းပြီးပါပြီ
+}
+contacts-import = ထည့်သွင်းရန်
+contacts-export = ထုတ်ယူရန်
+contacts-import-title = vCard ဖိုင်မှ အဆက်အသွယ်များ ထည့်သွင်းရန်
+contacts-imported = { $count ->
+   *[other] အဆက်အသွယ် { $count } ခုကို { $place } သို့ ထည့်သွင်းပြီးပါပြီ
+}
+contacts-imported-some = { $count ->
+   *[other] အဆက်အသွယ် { $count } ခုကို { $place } သို့ ထည့်သွင်းပြီးပါပြီ၊ သိမ်းပြီးသား { $skipped } ခုကို ချန်ထားပါသည်
+}
+contacts-import-none = { $name } တွင် အဆက်အသွယ် မတွေ့ပါ
+contacts-import-all-saved = { $name } ရှိ လူအားလုံးကို သိမ်းပြီးသားဖြစ်သည်
+contacts-import-failed = { $name } ကို မဖတ်နိုင်ပါ- { $error }
+contacts-exported = { $count ->
+   *[other] အဆက်အသွယ် { $count } ခုကို { $path } သို့ ထုတ်ယူပြီးပါပြီ
+}
+contacts-export-none = ထုတ်ယူရန် အဆက်အသွယ် မရှိပါ
+contacts-export-failed = အဆက်အသွယ်များ မထုတ်ယူနိုင်ပါ- { $error }
 contacts-create = အဆက်အသွယ် ဖန်တီးရန်
 
 ## Search and the list

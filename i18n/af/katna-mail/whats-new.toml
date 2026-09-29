@@ -1371,3 +1371,9 @@ title = "Herinnerings vir jou geleenthede"
 text = """
 Geleenthede herinner jou nou met ’n kennisgewing, selfs wanneer Katna toe is. Sluit aan maak die video-oproep oop, en Sluimer 5 min herinner jou oor vyf minute weer.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Voeg duplikate saam, voer kontakte in en uit"
+text = """
+Kontakte het nou Regstel en bestuur: Voeg saam en regstel vind mense wat twee keer gestoor is (dieselfde naam of foonnommer) en voeg hulle met een klik saam, met Ontdoen. Voer in bring mense in vanaf ’n vCard-lêer en laat diegene weg wat reeds gestoor is, en Voer uit stoor almal, of een etiket, as ’n vCard-lêer.
+"""

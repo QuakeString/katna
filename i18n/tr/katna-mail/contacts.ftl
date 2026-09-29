@@ -25,6 +25,45 @@ contacts-label-removed = { $name } etiketinden kaldırıldı
 contacts-label-renamed = Etiket adı { $name } olarak değiştirildi
 contacts-label-deleted = { $name } etiketi silindi
 contacts-label-no-email = Bu etiketteki hiç kimsenin e-posta adresi yok
+contacts-manage = Düzelt ve yönet
+contacts-merge = Birleştir ve düzelt
+contacts-merge-about = { $count ->
+    [one] { $count } öneri: aynı kişiye benzeyen kişiler
+   *[other] { $count } öneri: aynı kişiye benzeyen kişiler
+}
+contacts-merge-none = Yinelenen kişi yok. Aynı ada veya telefon numarasına sahip kişiler burada görünür.
+contacts-merge-count = { $count ->
+    [one] { $count } kişi
+   *[other] { $count } kişi
+}
+contacts-merge-all = Tümünü birleştir
+contacts-merge-button = Birleştir
+contacts-merge-dismiss = Kapat
+contacts-merged = { $count ->
+    [1] Kişiler birleştirildi
+    [one] { $count } birleştirme yapıldı
+   *[other] { $count } birleştirme yapıldı
+}
+contacts-import = İçe aktar
+contacts-export = Dışa aktar
+contacts-import-title = Kişileri vCard dosyasından içe aktar
+contacts-imported = { $count ->
+    [one] { $count } kişi { $place } konumuna aktarıldı
+   *[other] { $count } kişi { $place } konumuna aktarıldı
+}
+contacts-imported-some = { $count ->
+    [one] { $count } kişi { $place } konumuna aktarıldı; zaten kayıtlı olan { $skipped } kişi atlandı
+   *[other] { $count } kişi { $place } konumuna aktarıldı; zaten kayıtlı olan { $skipped } kişi atlandı
+}
+contacts-import-none = { $name } içinde kişi bulunamadı
+contacts-import-all-saved = { $name } içindeki herkes zaten kayıtlı
+contacts-import-failed = { $name } okunamadı: { $error }
+contacts-exported = { $count ->
+    [one] { $count } kişi { $path } konumuna aktarıldı
+   *[other] { $count } kişi { $path } konumuna aktarıldı
+}
+contacts-export-none = Dışa aktarılacak kişi yok
+contacts-export-failed = Kişiler dışa aktarılamadı: { $error }
 contacts-create = Kişi oluştur
 
 ## Search and the list

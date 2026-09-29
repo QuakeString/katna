@@ -1356,3 +1356,10 @@ text = """
 Matukio sasa hukukumbusha kwa arifa, hata wakati Katna imefungwa.
 Jiunge hufungua simu ya video, na Ahirisha dakika 5 hukukumbusha tena baada ya dakika tano.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Unganisha anwani zinazojirudia, leta na hamisha"
+text = """
+Anwani sasa zina Rekebisha na udhibiti: Unganisha na urekebishe hutafuta watu waliohifadhiwa mara mbili (jina au nambari ya simu sawa) na kuwaunganisha kwa mbofyo mmoja, pamoja na Tendua.
+Leta huingiza watu kutoka faili ya vCard, ikiwaacha wale waliohifadhiwa tayari, na Hamisha huhifadhi kila mtu, au lebo moja, kama faili ya vCard.
+"""

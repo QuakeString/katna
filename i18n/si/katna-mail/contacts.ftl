@@ -25,6 +25,45 @@ contacts-label-removed = { $name } වෙතින් ඉවත් කරන ල
 contacts-label-renamed = ලේබලයේ නම { $name } ලෙස වෙනස් කරන ලදී
 contacts-label-deleted = { $name } ලේබලය මකා දමන ලදී
 contacts-label-no-email = මෙම ලේබලයේ කිසිවෙකුට ඊමේල් ලිපිනයක් නැත
+contacts-manage = නිවැරදි කර කළමනාකරණය කරන්න
+contacts-merge = ඒකාබද්ධ කර නිවැරදි කරන්න
+contacts-merge-about = { $count ->
+    [one] යෝජනා { $count }ක්: එකම පුද්ගලයා ලෙස පෙනෙන සම්බන්ධතා
+   *[other] යෝජනා { $count }ක්: එකම පුද්ගලයා ලෙස පෙනෙන සම්බන්ධතා
+}
+contacts-merge-none = අනුපිටපත් නැත. එකම නම හෝ දුරකථන අංකය ඇති සම්බන්ධතා මෙහි පෙන්වයි.
+contacts-merge-count = { $count ->
+    [one] සම්බන්ධතා { $count }ක්
+   *[other] සම්බන්ධතා { $count }ක්
+}
+contacts-merge-all = සියල්ල ඒකාබද්ධ කරන්න
+contacts-merge-button = ඒකාබද්ධ කරන්න
+contacts-merge-dismiss = ඉවත ලන්න
+contacts-merged = { $count ->
+    [1] සම්බන්ධතා ඒකාබද්ධ කළා
+    [one] ඒකාබද්ධ කිරීම් { $count }ක් සම්පූර්ණයි
+   *[other] ඒකාබද්ධ කිරීම් { $count }ක් සම්පූර්ණයි
+}
+contacts-import = ආයාත කරන්න
+contacts-export = අපනයනය කරන්න
+contacts-import-title = vCard ගොනුවකින් සම්බන්ධතා ආයාත කරන්න
+contacts-imported = { $count ->
+    [one] { $place } වෙත සම්බන්ධතා { $count }ක් ආයාත කළා
+   *[other] { $place } වෙත සම්බන්ධතා { $count }ක් ආයාත කළා
+}
+contacts-imported-some = { $count ->
+    [one] { $place } වෙත සම්බන්ධතා { $count }ක් ආයාත කළා; දැනටමත් සුරකින ලද { $skipped }ක් ඉවත් කළා
+   *[other] { $place } වෙත සම්බන්ධතා { $count }ක් ආයාත කළා; දැනටමත් සුරකින ලද { $skipped }ක් ඉවත් කළා
+}
+contacts-import-none = { $name } හි සම්බන්ධතා හමු නොවීය
+contacts-import-all-saved = { $name } හි සිටින සියලුදෙනා දැනටමත් සුරැකී ඇත
+contacts-import-failed = { $name } කියවිය නොහැකි විය: { $error }
+contacts-exported = { $count ->
+    [one] { $path } වෙත සම්බන්ධතා { $count }ක් අපනයනය කළා
+   *[other] { $path } වෙත සම්බන්ධතා { $count }ක් අපනයනය කළා
+}
+contacts-export-none = අපනයනය කිරීමට සම්බන්ධතා නැත
+contacts-export-failed = සම්බන්ධතා අපනයනය කළ නොහැකි විය: { $error }
 contacts-create = සම්බන්ධතාව සාදන්න
 
 ## Search and the list

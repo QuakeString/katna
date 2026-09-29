@@ -1406,3 +1406,9 @@ title = "Przypomnienia o wydarzeniach"
 text = """
 Wydarzenia przypominają o sobie powiadomieniem, nawet gdy Katna jest zamknięta. Przycisk Dołącz otwiera rozmowę wideo, a Drzemka 5 min przypomni o wydarzeniu ponownie za pięć minut.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Scalanie duplikatów oraz import i eksport kontaktów"
+text = """
+W Kontaktach jest teraz „Napraw i zarządzaj”: „Scal i napraw” znajduje osoby zapisane dwukrotnie (o tej samej nazwie lub tym samym numerze telefonu) i scala je jednym kliknięciem, z opcją „Cofnij”. „Importuj” wczytuje osoby z pliku vCard, pomijając te już zapisane, a „Eksportuj” zapisuje wszystkich lub jedną etykietę do pliku vCard.
+"""

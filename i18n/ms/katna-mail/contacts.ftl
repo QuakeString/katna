@@ -25,6 +25,39 @@ contacts-label-removed = Dialih keluar daripada { $name }
 contacts-label-renamed = Label dinamakan semula kepada { $name }
 contacts-label-deleted = Label { $name } dipadam
 contacts-label-no-email = Tiada sesiapa pada label ini yang mempunyai alamat e-mel
+contacts-manage = Betulkan dan urus
+contacts-merge = Gabung dan betulkan
+contacts-merge-about = { $count ->
+   *[other] { $count } cadangan: kenalan yang kelihatan seperti orang yang sama
+}
+contacts-merge-none = Tiada pendua. Kenalan dengan nama atau nombor telefon yang sama akan muncul di sini.
+contacts-merge-count = { $count ->
+   *[other] { $count } kenalan
+}
+contacts-merge-all = Gabungkan semua
+contacts-merge-button = Gabung
+contacts-merge-dismiss = Ketepikan
+contacts-merged = { $count ->
+    [1] Kenalan digabungkan
+   *[other] { $count } penggabungan selesai
+}
+contacts-import = Import
+contacts-export = Eksport
+contacts-import-title = Import kenalan daripada fail vCard
+contacts-imported = { $count ->
+   *[other] { $count } kenalan diimport ke { $place }
+}
+contacts-imported-some = { $count ->
+   *[other] { $count } kenalan diimport ke { $place }; { $skipped } yang sudah disimpan ditinggalkan
+}
+contacts-import-none = Tiada kenalan ditemui dalam { $name }
+contacts-import-all-saved = Semua orang dalam { $name } sudah disimpan
+contacts-import-failed = Tidak dapat membaca { $name }: { $error }
+contacts-exported = { $count ->
+   *[other] { $count } kenalan dieksport ke { $path }
+}
+contacts-export-none = Tiada kenalan untuk dieksport
+contacts-export-failed = Tidak dapat mengeksport kenalan: { $error }
 contacts-create = Cipta kenalan
 
 ## Search and the list

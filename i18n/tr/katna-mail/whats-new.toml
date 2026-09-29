@@ -1402,3 +1402,9 @@ title = "Etkinlikleriniz için hatırlatmalar"
 text = """
 Etkinlikler artık Katna kapalıyken bile bir bildirimle sizi uyarıyor. Katıl görüntülü görüşmeyi açar, 5 dk ertele ise beş dakika sonra sizi yeniden uyarır.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Yinelenenleri birleştirin, kişileri içe ve dışa aktarın"
+text = """
+Kişiler artık Düzelt ve yönet aracına sahip: Birleştir ve düzelt, iki kez kaydedilmiş kişileri (aynı ad veya telefon numarası) bulur ve tek tıkla birleştirir, Geri al ile de işlemi geri alabilirsiniz. İçe aktar, kişileri bir vCard dosyasından getirir ve zaten kayıtlı olanları atlar, Dışa aktar ise herkesi ya da bir etiketi vCard dosyası olarak kaydeder.
+"""

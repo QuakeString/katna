@@ -1424,3 +1424,9 @@ title = "Recordatorios para tus eventos"
 text = """
 Ahora los eventos te avisan con una notificación, incluso con Katna cerrado. «Unirse» abre la videollamada y «Posponer 5 min» te lo recuerda de nuevo en cinco minutos.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Combina duplicados, importa y exporta contactos"
+text = """
+Contactos incluye «Corregir y administrar»: «Combinar y corregir» encuentra a las personas guardadas dos veces (con el mismo nombre o número de teléfono) y las combina con un clic, con la opción de deshacer. «Importar» añade personas desde un archivo vCard sin repetir las que ya tienes, y «Exportar» guarda a todos, o una etiqueta, en un archivo vCard.
+"""

@@ -25,6 +25,45 @@ contacts-label-removed = Naalis sa { $name }
 contacts-label-renamed = Pinalitan ang pangalan ng label sa { $name }
 contacts-label-deleted = Na-delete ang label na { $name }
 contacts-label-no-email = Walang may email address sa label na ito
+contacts-manage = Ayusin at pamahalaan
+contacts-merge = Pagsamahin at ayusin
+contacts-merge-about = { $count ->
+    [one] { $count } suhestiyon: mga contact na mukhang iisang tao
+   *[other] { $count } suhestiyon: mga contact na mukhang iisang tao
+}
+contacts-merge-none = Walang duplicate. Dito lalabas ang mga contact na may parehong pangalan o numero ng telepono.
+contacts-merge-count = { $count ->
+    [one] { $count } contact
+   *[other] { $count } contact
+}
+contacts-merge-all = Pagsamahin lahat
+contacts-merge-button = Pagsamahin
+contacts-merge-dismiss = Balewalain
+contacts-merged = { $count ->
+    [1] Napagsama ang mga contact
+    [one] { $count } pagsasama ang natapos
+   *[other] { $count } pagsasama ang natapos
+}
+contacts-import = I-import
+contacts-export = I-export
+contacts-import-title = Mag-import ng mga contact mula sa vCard file
+contacts-imported = { $count ->
+    [one] { $count } contact ang na-import sa { $place }
+   *[other] { $count } contact ang na-import sa { $place }
+}
+contacts-imported-some = { $count ->
+    [one] { $count } contact ang na-import sa { $place }; { $skipped } na naka-save na, hindi isinama
+   *[other] { $count } contact ang na-import sa { $place }; { $skipped } na naka-save na, hindi isinama
+}
+contacts-import-none = Walang nakitang contact sa { $name }
+contacts-import-all-saved = Naka-save na ang lahat sa { $name }
+contacts-import-failed = Hindi mabasa ang { $name }: { $error }
+contacts-exported = { $count ->
+    [one] { $count } contact ang na-export sa { $path }
+   *[other] { $count } contact ang na-export sa { $path }
+}
+contacts-export-none = Walang mga contact na ie-export
+contacts-export-failed = Hindi ma-export ang mga contact: { $error }
 contacts-create = Gumawa ng contact
 
 ## Search and the list

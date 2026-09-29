@@ -25,6 +25,39 @@ contacts-label-removed = 已從「{ $name }」移除
 contacts-label-renamed = 標籤已重新命名為「{ $name }」
 contacts-label-deleted = 已刪除標籤「{ $name }」
 contacts-label-no-email = 此標籤下沒有人有電子郵件地址
+contacts-manage = 修正及管理
+contacts-merge = 合併及修正
+contacts-merge-about = { $count ->
+   *[other] { $count } 項建議：看起來是同一個人的聯絡人
+}
+contacts-merge-none = 沒有重複項目。姓名或電話號碼相同的聯絡人會顯示在這裡。
+contacts-merge-count = { $count ->
+   *[other] { $count } 位聯絡人
+}
+contacts-merge-all = 全部合併
+contacts-merge-button = 合併
+contacts-merge-dismiss = 忽略
+contacts-merged = { $count ->
+    [1] 已合併聯絡人
+   *[other] 已完成 { $count } 次合併
+}
+contacts-import = 匯入
+contacts-export = 匯出
+contacts-import-title = 從 vCard 檔案匯入聯絡人
+contacts-imported = { $count ->
+   *[other] 已將 { $count } 位聯絡人匯入「{ $place }」
+}
+contacts-imported-some = { $count ->
+   *[other] 已將 { $count } 位聯絡人匯入「{ $place }」；已儲存的 { $skipped } 位已略過
+}
+contacts-import-none = 在 { $name } 中找不到聯絡人
+contacts-import-all-saved = { $name } 中的所有人都已儲存
+contacts-import-failed = 無法讀取 { $name }：{ $error }
+contacts-exported = { $count ->
+   *[other] 已將 { $count } 位聯絡人匯出至 { $path }
+}
+contacts-export-none = 沒有可匯出的聯絡人
+contacts-export-failed = 無法匯出聯絡人：{ $error }
 contacts-create = 建立聯絡人
 
 ## Search and the list

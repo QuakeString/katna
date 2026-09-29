@@ -1414,3 +1414,9 @@ title = "Pengingat untuk acara Anda"
 text = """
 Acara kini mengingatkan Anda lewat notifikasi, bahkan saat Katna tertutup. Gabung membuka panggilan video, dan Tunda 5 mnt mengingatkan Anda lagi lima menit kemudian.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Gabungkan duplikat, impor, dan ekspor kontak"
+text = """
+Kontak kini punya Perbaiki dan kelola: Gabungkan dan perbaiki menemukan orang yang tersimpan dua kali (nama atau nomor telepon yang sama) dan menggabungkannya dengan sekali klik, lengkap dengan Urungkan. Impor membawa orang dari file vCard dan melewati yang sudah tersimpan, sedangkan Ekspor menyimpan semua orang, atau satu label, sebagai file vCard.
+"""

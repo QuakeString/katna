@@ -1416,3 +1416,9 @@ title = "Herinneringen voor je evenementen"
 text = """
 Evenementen herinneren je nu met een melding, ook als Katna is gesloten. Met Deelnemen open je het videogesprek en met 5 min snoozen word je over vijf minuten opnieuw herinnerd.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Dubbele contacten samenvoegen, contacten importeren en exporteren"
+text = """
+Contacten heeft ‘Herstellen en beheren’: ‘Samenvoegen en herstellen’ vindt mensen die twee keer zijn opgeslagen (met dezelfde naam of hetzelfde telefoonnummer) en voegt ze met één klik samen, met ‘Ongedaan maken’. ‘Importeren’ haalt mensen uit een vCard-bestand en slaat wie al is opgeslagen over, en ‘Exporteren’ bewaart iedereen, of één label, als vCard-bestand.
+"""

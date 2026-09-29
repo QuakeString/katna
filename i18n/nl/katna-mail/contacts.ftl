@@ -25,6 +25,45 @@ contacts-label-removed = Verwijderd uit { $name }
 contacts-label-renamed = Label hernoemd naar { $name }
 contacts-label-deleted = Label { $name } verwijderd
 contacts-label-no-email = Niemand met dit label heeft een e-mailadres
+contacts-manage = Herstellen en beheren
+contacts-merge = Samenvoegen en herstellen
+contacts-merge-about = { $count ->
+    [one] { $count } suggestie: contacten die op dezelfde persoon lijken
+   *[other] { $count } suggesties: contacten die op dezelfde persoon lijken
+}
+contacts-merge-none = Geen dubbele contacten. Contacten met dezelfde naam of hetzelfde telefoonnummer verschijnen hier.
+contacts-merge-count = { $count ->
+    [one] { $count } contact
+   *[other] { $count } contacten
+}
+contacts-merge-all = Alles samenvoegen
+contacts-merge-button = Samenvoegen
+contacts-merge-dismiss = Negeren
+contacts-merged = { $count ->
+    [1] Contacten samengevoegd
+    [one] { $count } samenvoeging uitgevoerd
+   *[other] { $count } samenvoegingen uitgevoerd
+}
+contacts-import = Importeren
+contacts-export = Exporteren
+contacts-import-title = Contacten importeren uit een vCard-bestand
+contacts-imported = { $count ->
+    [one] { $count } contact geïmporteerd naar { $place }
+   *[other] { $count } contacten geïmporteerd naar { $place }
+}
+contacts-imported-some = { $count ->
+    [one] { $count } contact geïmporteerd naar { $place }; { $skipped } al opgeslagen, overgeslagen
+   *[other] { $count } contacten geïmporteerd naar { $place }; { $skipped } al opgeslagen, overgeslagen
+}
+contacts-import-none = Geen contacten gevonden in { $name }
+contacts-import-all-saved = Iedereen in { $name } is al opgeslagen
+contacts-import-failed = Kan { $name } niet lezen: { $error }
+contacts-exported = { $count ->
+    [one] { $count } contact geëxporteerd naar { $path }
+   *[other] { $count } contacten geëxporteerd naar { $path }
+}
+contacts-export-none = Geen contacten om te exporteren
+contacts-export-failed = Kan contacten niet exporteren: { $error }
 contacts-create = Contact maken
 
 ## Search and the list

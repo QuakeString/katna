@@ -25,6 +25,69 @@ contacts-label-removed = تمت الإزالة من { $name }
 contacts-label-renamed = تمت إعادة تسمية التصنيف إلى { $name }
 contacts-label-deleted = تم حذف التصنيف { $name }
 contacts-label-no-email = لا أحد في هذا التصنيف لديه عنوان بريد إلكتروني
+contacts-manage = إصلاح وإدارة
+contacts-merge = دمج وإصلاح
+contacts-merge-about = { $count ->
+    [zero] { $count } اقتراح: جهات اتصال تبدو كأنها الشخص نفسه
+    [one] { $count } اقتراح: جهات اتصال تبدو كأنها الشخص نفسه
+    [two] { $count } اقتراحان: جهات اتصال تبدو كأنها الشخص نفسه
+    [few] { $count } اقتراحات: جهات اتصال تبدو كأنها الشخص نفسه
+    [many] { $count } اقتراح: جهات اتصال تبدو كأنها الشخص نفسه
+   *[other] { $count } اقتراح: جهات اتصال تبدو كأنها الشخص نفسه
+}
+contacts-merge-none = لا توجد نسخ مكررة. تظهر هنا جهات الاتصال التي لها الاسم أو رقم الهاتف نفسه.
+contacts-merge-count = { $count ->
+    [zero] { $count } جهة اتصال
+    [one] { $count } جهة اتصال
+    [two] { $count } جهتا اتصال
+    [few] { $count } جهات اتصال
+    [many] { $count } جهة اتصال
+   *[other] { $count } جهة اتصال
+}
+contacts-merge-all = دمج الكل
+contacts-merge-button = دمج
+contacts-merge-dismiss = تجاهل
+contacts-merged = { $count ->
+    [1] تم دمج جهات الاتصال
+    [zero] تم إجراء { $count } عملية دمج
+    [one] تم إجراء { $count } عملية دمج
+    [two] تم إجراء { $count } عمليتي دمج
+    [few] تم إجراء { $count } عمليات دمج
+    [many] تم إجراء { $count } عملية دمج
+   *[other] تم إجراء { $count } عملية دمج
+}
+contacts-import = استيراد
+contacts-export = تصدير
+contacts-import-title = استيراد جهات الاتصال من ملف vCard
+contacts-imported = { $count ->
+    [zero] تم استيراد { $count } جهة اتصال إلى { $place }
+    [one] تم استيراد { $count } جهة اتصال إلى { $place }
+    [two] تم استيراد { $count } جهتي اتصال إلى { $place }
+    [few] تم استيراد { $count } جهات اتصال إلى { $place }
+    [many] تم استيراد { $count } جهة اتصال إلى { $place }
+   *[other] تم استيراد { $count } جهة اتصال إلى { $place }
+}
+contacts-imported-some = { $count ->
+    [zero] تم استيراد { $count } جهة اتصال إلى { $place }؛ وتم تجاوز { $skipped } محفوظة مسبقًا
+    [one] تم استيراد { $count } جهة اتصال إلى { $place }؛ وتم تجاوز { $skipped } محفوظة مسبقًا
+    [two] تم استيراد { $count } جهتي اتصال إلى { $place }؛ وتم تجاوز { $skipped } محفوظة مسبقًا
+    [few] تم استيراد { $count } جهات اتصال إلى { $place }؛ وتم تجاوز { $skipped } محفوظة مسبقًا
+    [many] تم استيراد { $count } جهة اتصال إلى { $place }؛ وتم تجاوز { $skipped } محفوظة مسبقًا
+   *[other] تم استيراد { $count } جهة اتصال إلى { $place }؛ وتم تجاوز { $skipped } محفوظة مسبقًا
+}
+contacts-import-none = لم يتم العثور على جهات اتصال في { $name }
+contacts-import-all-saved = جميع الأشخاص في { $name } محفوظون مسبقًا
+contacts-import-failed = تعذّرت قراءة { $name }: { $error }
+contacts-exported = { $count ->
+    [zero] تم تصدير { $count } جهة اتصال إلى { $path }
+    [one] تم تصدير { $count } جهة اتصال إلى { $path }
+    [two] تم تصدير { $count } جهتي اتصال إلى { $path }
+    [few] تم تصدير { $count } جهات اتصال إلى { $path }
+    [many] تم تصدير { $count } جهة اتصال إلى { $path }
+   *[other] تم تصدير { $count } جهة اتصال إلى { $path }
+}
+contacts-export-none = لا توجد جهات اتصال لتصديرها
+contacts-export-failed = تعذّر تصدير جهات الاتصال: { $error }
 contacts-create = إنشاء جهة اتصال
 
 ## Search and the list

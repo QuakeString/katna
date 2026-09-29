@@ -25,6 +25,45 @@ contacts-label-removed = { $name } मधून काढले
 contacts-label-renamed = लेबलचे नाव बदलून { $name } केले
 contacts-label-deleted = लेबल { $name } हटवले
 contacts-label-no-email = या लेबलवरील कोणाकडेही ईमेल पत्ता नाही
+contacts-manage = दुरुस्त करा आणि व्यवस्थापित करा
+contacts-merge = विलीन करा आणि दुरुस्त करा
+contacts-merge-about = { $count ->
+    [one] { $count } सूचना: एकाच व्यक्तीचे वाटणारे संपर्क
+   *[other] { $count } सूचना: एकाच व्यक्तीचे वाटणारे संपर्क
+}
+contacts-merge-none = डुप्लिकेट नाहीत. समान नाव किंवा फोन नंबर असलेले संपर्क येथे दिसतील.
+contacts-merge-count = { $count ->
+    [one] { $count } संपर्क
+   *[other] { $count } संपर्क
+}
+contacts-merge-all = सर्व विलीन करा
+contacts-merge-button = विलीन करा
+contacts-merge-dismiss = रद्द करा
+contacts-merged = { $count ->
+    [1] संपर्क विलीन केले
+    [one] { $count } विलीनीकरणे पूर्ण झाली
+   *[other] { $count } विलीनीकरणे पूर्ण झाली
+}
+contacts-import = आयात करा
+contacts-export = निर्यात करा
+contacts-import-title = vCard फाइलमधून संपर्क आयात करा
+contacts-imported = { $count ->
+    [one] { $place } मध्ये { $count } संपर्क आयात केले
+   *[other] { $place } मध्ये { $count } संपर्क आयात केले
+}
+contacts-imported-some = { $count ->
+    [one] { $place } मध्ये { $count } संपर्क आयात केले; आधीच सेव्ह केलेले { $skipped } वगळले
+   *[other] { $place } मध्ये { $count } संपर्क आयात केले; आधीच सेव्ह केलेले { $skipped } वगळले
+}
+contacts-import-none = { $name } मध्ये कोणतेही संपर्क आढळले नाहीत
+contacts-import-all-saved = { $name } मधील सर्वजण आधीच सेव्ह केलेले आहेत
+contacts-import-failed = { $name } वाचता आले नाही: { $error }
+contacts-exported = { $count ->
+    [one] { $path } मध्ये { $count } संपर्क निर्यात केले
+   *[other] { $path } मध्ये { $count } संपर्क निर्यात केले
+}
+contacts-export-none = निर्यात करण्यासाठी संपर्क नाहीत
+contacts-export-failed = संपर्क निर्यात करता आले नाहीत: { $error }
 contacts-create = संपर्क तयार करा
 
 ## Search and the list

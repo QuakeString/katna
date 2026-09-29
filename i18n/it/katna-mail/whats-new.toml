@@ -1428,3 +1428,9 @@ title = "Promemoria per i tuoi eventi"
 text = """
 Ora gli eventi ti avvisano con una notifica, anche quando Katna è chiuso. «Partecipa» apre la videochiamata e «Posticipa di 5 min» ti ricorda di nuovo tra cinque minuti.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Unisci i duplicati, importa ed esporta i contatti"
+text = """
+Contatti ha “Correggi e gestisci”: “Unisci e correggi” trova le persone salvate due volte (stesso nome o numero di telefono) e le unisce con un clic, con la possibilità di annullare. “Importa” aggiunge persone da un file vCard escludendo quelle già salvate, ed “Esporta” salva tutti, o un’etichetta, in un file vCard.
+"""

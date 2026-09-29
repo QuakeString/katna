@@ -1413,3 +1413,9 @@ title = "Lembretes para seus eventos"
 text = """
 Agora os eventos avisam você com uma notificação, mesmo com o Katna fechado. Participar abre a videochamada e Adiar 5 min lembra você de novo em cinco minutos.
 """
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Mescle duplicatas, importe e exporte contatos"
+text = """
+Contatos tem “Corrigir e gerenciar”: “Mesclar e corrigir” encontra pessoas salvas duas vezes (com o mesmo nome ou número de telefone) e as mescla com um clique, com a opção de desfazer. “Importar” traz pessoas de um arquivo vCard, ignorando quem já está salvo, e “Exportar” salva todo mundo, ou um marcador, em um arquivo vCard.
+"""
