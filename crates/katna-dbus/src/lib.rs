@@ -744,6 +744,10 @@ macro_rules! pim_proxy {
             /// how many existed.
             fn delete_notes(&self, ids: &[i64]) -> zbus::Result<u32>;
 
+            /// Puts notes `ids` in this order, the first on top, in the
+            /// places they had among themselves. Returns how many moved.
+            fn order_notes(&self, ids: &[i64]) -> zbus::Result<u32>;
+
             /// Takes label `old` off notes `ids` and puts `new` on those
             /// that had it; with `old` empty, puts `new` on all of them,
             /// and with `new` empty, only takes `old` off. Renames, deletes
