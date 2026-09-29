@@ -164,6 +164,25 @@ pub fn attachment_file(raw: &[u8], index: usize) -> Option<AttachmentFile> {
     })
 }
 
+/// The iCalendar text of `raw`'s first `text/calendar` part, inline or
+/// attached: an invitation, an answer to one or a cancellation.
+pub fn calendar_part(raw: &[u8]) -> Option<String> {
+    let message = MessageParser::default().parse(raw)?;
+    message
+        .parts
+        .iter()
+        .find(|part| {
+            part.content_type().is_some_and(|ct| {
+                ct.ctype().eq_ignore_ascii_case("text")
+                    && ct
+                        .subtype()
+                        .is_some_and(|s| s.eq_ignore_ascii_case("calendar"))
+            })
+        })
+        .map(|part| String::from_utf8_lossy(part.contents()).into_owned())
+        .filter(|text| text.contains("BEGIN:VCALENDAR"))
+}
+
 fn attachment_name(part: &MessagePart<'_>) -> String {
     part.attachment_name()
         .map(str::to_owned)
@@ -304,5 +323,18 @@ From: c@example.org\r\nSubject: Old news\r\n\r\nHi.\r\n\
     #[test]
     fn garbage_gives_an_empty_view() {
         assert_eq!(message_view(b""), MessageView::default());
+    }
+
+    #[test]
+    fn finds_an_invitation_inline_or_attached() {
+        let raw = b"From: ada@example.org\r\nSubject: Invitation\r\nMIME-Version: 1.0\r\n\
+Content-Type: multipart/alternative; boundary=b\r\n\r\n--b\r\n\
+Content-Type: text/plain\r\n\r\nYou are invited.\r\n--b\r\n\
+Content-Type: text/calendar; method=REQUEST; charset=utf-8\r\n\r\n\
+BEGIN:VCALENDAR\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\nUID:x@test\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n\
+--b--\r\n";
+        let ics = calendar_part(raw).unwrap();
+        assert!(ics.contains("METHOD:REQUEST"));
+        assert_eq!(calendar_part(b"Subject: hi\r\n\r\nhello\r\n"), None);
     }
 }

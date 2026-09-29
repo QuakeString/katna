@@ -753,7 +753,7 @@ impl MailWindow {
         self.send_response(occurrence, status.to_owned(), EditScope::This, cx);
     }
 
-    fn send_response(
+    pub(super) fn send_response(
         &mut self,
         occurrence: Occurrence,
         status: String,

@@ -41,6 +41,7 @@ pub(super) fn sealed(raw: Vec<u8>, protection: Protection) -> Body {
         security: Some(Secured::Opening(protection)),
         sealed: Some(raw),
         opened: None,
+        invite: None,
     }
 }
 
@@ -71,6 +72,7 @@ fn opened_body(raw: &[u8], opened: Option<Opened>) -> Body {
                 security: Some(Secured::Opened(security)),
                 sealed: None,
                 opened: None,
+                invite: None,
             }
         }
         Some(Opened { raw, security }) => {

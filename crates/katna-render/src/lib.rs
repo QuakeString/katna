@@ -16,6 +16,7 @@ mod rich;
 
 pub use auth::sender_authenticated;
 pub use plain::{
-    Address, Attachment, AttachmentFile, MAX_BODY_BYTES, MessageView, attachment_file, message_view,
+    Address, Attachment, AttachmentFile, MAX_BODY_BYTES, MessageView, attachment_file,
+    calendar_part, message_view,
 };
 pub use rich::message_document;

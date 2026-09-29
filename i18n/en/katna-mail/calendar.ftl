@@ -124,6 +124,26 @@ calendar-answered-yes = You're going
 calendar-answered-no = You're not going
 calendar-answered-maybe = You might go
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Invitation
+calendar-invite-cancelled = Event canceled
+# An answer to the user's own invitation: "Priya Nair accepted".
+calendar-invite-reply = { $name } answered
+calendar-invite-reply-yes = { $name } accepted
+calendar-invite-reply-no = { $name } declined
+calendar-invite-reply-maybe = { $name } might go
+calendar-invite-organizer = Organized by { $name }
+calendar-invite-open = Open in Calendar
+# The invitation is not in the user's calendar yet (it has not synced).
+calendar-invite-not-yet = Not in your calendar yet. Answering is possible once it syncs.
+calendar-invite-your-day = Your day
+calendar-invite-clashes =
+    { $count ->
+        [one] Clashes with 1 event
+       *[other] Clashes with { $count } events
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Show the day's agenda
