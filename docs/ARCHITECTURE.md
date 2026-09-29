@@ -3552,6 +3552,12 @@ most useful reason is shown. Changes go back the way their calendar came
   the event is saved plain. Graph gets `showAs` `oof` or
   `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
   Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
+- The small new-event card also has a Task tab (Google's): the title,
+  start day and time (none when all day), description and a repeat typed
+  into the title make a task due then, in a task list picked on the card
+  (the default list of the calendar's account at first). It goes to the
+  daemon as the Tasks page's Add does. With no calendar to add events to
+  but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events; a day opens Day, a month's

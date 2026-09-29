@@ -209,7 +209,7 @@ impl TasksPage {
             .unwrap_or(task.starred)
     }
 
-    fn columns(&self) -> &[Column] {
+    pub(super) fn columns(&self) -> &[Column] {
         match &self.board {
             Some(Ok(board)) => &board.columns,
             _ => &[],
@@ -2542,7 +2542,7 @@ pub(super) fn say(say: Say<'_>) -> String {
 }
 
 /// A list's name; the one on this computer is named in the app's language.
-fn list_title(column: &Column) -> String {
+pub(super) fn list_title(column: &Column) -> String {
     if column.list.account.is_none() && column.list.is_default && column.list.title == "My Tasks" {
         tr!("tasks-my-tasks")
     } else {
