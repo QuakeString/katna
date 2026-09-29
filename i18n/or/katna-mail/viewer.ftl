@@ -16,3 +16,37 @@ viewer-slide = ସ୍ଲାଇଡ { $number }
 viewer-page = ପୃଷ୍ଠା
 viewer-page-count = { $count } ମଧ୍ୟରୁ
 viewer-go-to-page-tip = ପୃଷ୍ଠା ନମ୍ବର ଟାଇପ୍ କରି Enter ଦବାନ୍ତୁ (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = ଚିହ୍ନିତ କରନ୍ତୁ
+viewer-tool-select = ଟେକ୍ସଟ ବାଛନ୍ତୁ
+viewer-tool-highlight = ହାଇଲାଇଟ
+viewer-tool-underline = ଅଣ୍ଡରଲାଇନ
+viewer-tool-squiggly = ତରଙ୍ଗ ରେଖା
+viewer-tool-strike = କାଟି ଦିଅନ୍ତୁ
+viewer-tool-pen = କଲମ
+viewer-tool-eraser = ଇରେଜର
+viewer-color-yellow = ହଳଦିଆ
+viewer-color-green = ସବୁଜ
+viewer-color-blue = ନୀଳ
+viewer-color-pink = ଗୋଲାପି
+viewer-color-orange = କମଳା
+viewer-color-red = ନାଲି
+viewer-color-black = କଳା
+viewer-color-purple = ବାଇଗଣି
+viewer-marks-undo-tip = ପୂର୍ବବତ୍ କରନ୍ତୁ (Ctrl+Z)
+viewer-marks-redo-tip = ପୁଣି କରନ୍ତୁ (Ctrl+Shift+Z)
+viewer-save-marked-tip = ଆପଣଙ୍କ ଚିହ୍ନ ସହିତ ଏକ କପି ସେଭ କରନ୍ତୁ (Ctrl+S)
+viewer-markup-protected = ଏହି PDF ପରିବର୍ତ୍ତନରୁ ସୁରକ୍ଷିତ, ତେଣୁ ଏହାକୁ ଚିହ୍ନିତ କରାଯାଇପାରିବ ନାହିଁ।
+viewer-marks-save-failed = ଚିହ୍ନିତ କପି ସେଭ କରାଯାଇପାରିଲା ନାହିଁ।
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = ଆପଣଙ୍କ ଚିହ୍ନ ସେଭ କରିବେ?
+viewer-marks-unsaved-text = ଏହି PDFରେ ଆପଣଙ୍କ ଚିହ୍ନ ଏପର୍ଯ୍ୟନ୍ତ ସେଭ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକ ଏକ କପିରେ ଯାଏ; ଆଟାଚମେଣ୍ଟ ନିଜେ ଯେମିତି ଥିଲା ସେମିତି ରହେ।
+viewer-marks-discard = ବାତିଲ କରନ୍ତୁ
+viewer-marks-keep = ଚିହ୍ନିତ କରିବା ଜାରି ରଖନ୍ତୁ
+viewer-marks-save = କପି ସେଭ କରନ୍ତୁ
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (ଚିହ୍ନିତ)

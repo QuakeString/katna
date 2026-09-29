@@ -16,3 +16,37 @@ viewer-slide = ਸਲਾਈਡ { $number }
 viewer-page = ਸਫ਼ਾ
 viewer-page-count = { $count } ਵਿੱਚੋਂ
 viewer-go-to-page-tip = ਸਫ਼ਾ ਨੰਬਰ ਲਿਖੋ ਅਤੇ Enter ਦਬਾਓ (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = ਨਿਸ਼ਾਨ ਲਗਾਓ
+viewer-tool-select = ਟੈਕਸਟ ਚੁਣੋ
+viewer-tool-highlight = ਹਾਈਲਾਈਟ
+viewer-tool-underline = ਹੇਠਾਂ ਰੇਖਾ
+viewer-tool-squiggly = ਲਹਿਰਦਾਰ ਰੇਖਾ
+viewer-tool-strike = ਕੱਟੋ
+viewer-tool-pen = ਪੈੱਨ
+viewer-tool-eraser = ਇਰੇਜ਼ਰ
+viewer-color-yellow = ਪੀਲਾ
+viewer-color-green = ਹਰਾ
+viewer-color-blue = ਨੀਲਾ
+viewer-color-pink = ਗੁਲਾਬੀ
+viewer-color-orange = ਸੰਤਰੀ
+viewer-color-red = ਲਾਲ
+viewer-color-black = ਕਾਲਾ
+viewer-color-purple = ਜਾਮਨੀ
+viewer-marks-undo-tip = ਅਣਕੀਤਾ ਕਰੋ (Ctrl+Z)
+viewer-marks-redo-tip = ਮੁੜ ਕਰੋ (Ctrl+Shift+Z)
+viewer-save-marked-tip = ਆਪਣੇ ਨਿਸ਼ਾਨਾਂ ਨਾਲ ਇੱਕ ਕਾਪੀ ਰੱਖਿਅਤ ਕਰੋ (Ctrl+S)
+viewer-markup-protected = ਇਹ PDF ਤਬਦੀਲੀਆਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹੈ, ਇਸ ਲਈ ਇਸ 'ਤੇ ਨਿਸ਼ਾਨ ਨਹੀਂ ਲਗਾਏ ਜਾ ਸਕਦੇ।
+viewer-marks-save-failed = ਨਿਸ਼ਾਨਾਂ ਵਾਲੀ ਕਾਪੀ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = ਕੀ ਆਪਣੇ ਨਿਸ਼ਾਨ ਰੱਖਿਅਤ ਕਰਨੇ ਹਨ?
+viewer-marks-unsaved-text = ਇਸ PDF 'ਤੇ ਤੁਹਾਡੇ ਨਿਸ਼ਾਨ ਅਜੇ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਗਏ। ਉਹ ਇੱਕ ਕਾਪੀ ਵਿੱਚ ਜਾਂਦੇ ਹਨ; ਅਟੈਚਮੈਂਟ ਖੁਦ ਜਿਵੇਂ ਸੀ ਉਵੇਂ ਹੀ ਰਹਿੰਦੀ ਹੈ।
+viewer-marks-discard = ਰੱਦ ਕਰੋ
+viewer-marks-keep = ਨਿਸ਼ਾਨ ਲਗਾਉਂਦੇ ਰਹੋ
+viewer-marks-save = ਕਾਪੀ ਰੱਖਿਅਤ ਕਰੋ
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (ਨਿਸ਼ਾਨਾਂ ਵਾਲੀ)

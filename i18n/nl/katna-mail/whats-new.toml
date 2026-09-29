@@ -1659,3 +1659,13 @@ venster, hoe lang het bericht dat je schrijft of doorstuurt ook is,
 zodat ze nooit verder op de pagina verborgen zijn. Enter antwoordt met
 de hoofdknop en Esc gaat terug naar het bericht.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Pdf’s annoteren"
+text = """
+Druk op de pen in de pdf-viewer om tekst te markeren, te onderstrepen,
+met een golflijn te onderstrepen of door te halen, of om met een pen te
+tekenen, in de kleur die je kiest. Maak ongedaan met Ctrl+Z, wis een
+aantekening met de gum en sla daarna een kopie met aantekeningen op. De
+oorspronkelijke bijlage blijft zoals hij was.
+"""

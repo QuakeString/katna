@@ -1718,3 +1718,13 @@ message que vous écrivez ou transférez, et ne sont donc jamais cachées
 plus bas dans la page. Entrée répond avec le bouton principal et Échap
 revient au message.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Annoter les PDF"
+text = """
+Appuyez sur le stylo dans la visionneuse PDF pour surligner, souligner,
+onduler ou barrer du texte, ou dessiner au stylo, dans la couleur de
+votre choix. Annulez avec Ctrl+Z, effacez une annotation avec la gomme,
+puis enregistrez une copie annotée. La pièce jointe d’origine reste
+telle quelle.
+"""
