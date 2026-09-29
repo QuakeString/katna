@@ -45,6 +45,8 @@ pub enum Command {
     TrashNotes(Vec<i64>, bool),
     /// Deletes notes for good.
     DeleteNotes(Vec<i64>),
+    /// A change on the Tasks page.
+    Task(Box<crate::tasks::TaskCommand>),
 }
 
 /// Most messages one call to the daemon changes. A large selection ("all
@@ -120,7 +122,8 @@ impl Command {
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
-            | Self::Several(_) => {
+            | Self::Several(_)
+            | Self::Task(_) => {
                 return None;
             }
         })
@@ -207,6 +210,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
         Command::ReopenDraft | Command::RestoreQuote => return Ok(()),
+        Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;

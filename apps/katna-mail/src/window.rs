@@ -65,6 +65,7 @@ mod sign_in_again;
 mod snooze;
 mod storage;
 mod tab_strip;
+mod tasks_page;
 mod tour;
 mod translate;
 mod unified;
@@ -437,6 +438,8 @@ pub struct MailWindow {
     /// The Notes page, once opened.
     notes: Option<notes::NotesPage>,
     people_task: Option<Task<()>>,
+    /// The Tasks page.
+    tasks: tasks_page::TasksPage,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
     /// How far text in a pill goes up to look centred in it, per pixel
@@ -780,6 +783,7 @@ impl MailWindow {
             people: None,
             notes: None,
             people_task: None,
+            tasks: Default::default(),
             font,
             pill_text_lift: 0.0,
             mail: Mail::open(&paths),
