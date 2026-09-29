@@ -115,6 +115,9 @@ pub(super) struct TasksPage {
     loading: Option<Task<()>>,
     /// Reads again whenever the daemon says tasks changed.
     watching: Option<Task<()>>,
+    /// The open task made from each mail line's mail, for its chip in the
+    /// mail list.
+    from_mail: HashMap<EntryKey, i64>,
 }
 
 impl TasksPage {
@@ -259,6 +262,12 @@ impl MailWindow {
         if self.tasks.focus.is_none() {
             self.tasks.focus = Some(cx.focus_handle());
         }
+        self.watch_tasks(cx);
+    }
+
+    /// Reads the lists, and keeps them read as they change: from the
+    /// start, for the task chips in the mail list.
+    pub(super) fn watch_tasks(&mut self, cx: &mut Context<Self>) {
         self.load_tasks(cx);
         if self.tasks.watching.is_none() {
             let connection = self.daemon.clone();
@@ -281,6 +290,78 @@ impl MailWindow {
                 }
             }));
         }
+    }
+
+    /// Finds the mail line of each open task made from a mail. When a
+    /// line has several, the one due first wins.
+    pub(super) fn map_task_mails(&mut self) {
+        let mut from_mail: HashMap<EntryKey, i64> = HashMap::new();
+        if let (Some(Ok(board)), Ok(mail)) = (&self.tasks.board, &self.mail) {
+            let mut tasks: Vec<&TaskItem> = board
+                .columns
+                .iter()
+                .flat_map(|c| c.tasks.iter())
+                .filter(|t| t.done_at.is_none() && !t.mail.is_empty())
+                .collect();
+            // Undated last, each key keeping the first it gets.
+            tasks.sort_by_key(|t| (t.due.is_empty(), t.due.clone(), t.due_time));
+            for task in tasks {
+                let Some(message) = mail.message_with_header(&task.mail) else {
+                    continue;
+                };
+                from_mail
+                    .entry(EntryKey::Message(message))
+                    .or_insert(task.id);
+                if let Some(thread) = mail.message_thread(message) {
+                    from_mail.entry(EntryKey::Thread(thread)).or_insert(task.id);
+                }
+            }
+        }
+        self.tasks.from_mail = from_mail;
+    }
+
+    /// The chip on a mail line with an open task made from its mail: the
+    /// task's due day, or "Task"; it opens the task.
+    pub(super) fn render_row_task(
+        &self,
+        ix: usize,
+        key: EntryKey,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let id = *self.tasks.from_mail.get(&key)?;
+        let task = self.tasks.task(id)?;
+        let (label, past) = due_label(task, today()).unwrap_or((tr!("row-task"), false));
+        let color = if past { th.error } else { th.text_dim };
+        Some(
+            div()
+                .id(("row-task", ix))
+                .flex_none()
+                .h(px(22.0))
+                .pl(px(6.0))
+                .pr(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(4.0))
+                .rounded_full()
+                .border_1()
+                .border_color(rgba(fade(th.text, 0.16)))
+                .text_size(px(12.0))
+                .text_color(rgba(color))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(fade(th.text, 0.08))))
+                .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
+                .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.show_page(super::apps::App::Tasks, window, cx);
+                    this.task_open_details(id, window, cx);
+                }))
+                .child(icon("tasks", color, 14.0))
+                .child(label)
+                .into_any_element(),
+        )
     }
 
     fn load_tasks(&mut self, cx: &mut Context<Self>) {
@@ -307,6 +388,7 @@ impl MailWindow {
                     });
                 }
                 page.board = Some(board);
+                this.map_task_mails();
                 cx.notify();
             })
             .ok();

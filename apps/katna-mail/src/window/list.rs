@@ -1882,6 +1882,7 @@ impl MailWindow {
                         })))
                         .child(
                             line(snippet)
+                                .children(self.render_row_task(ix, key, th, cx))
                                 .when(row.attachments && !has_chips, |d| {
                                     d.child(icon("attachment", th.text_faint, 16.0))
                                 })
@@ -1941,6 +1942,10 @@ impl MailWindow {
                     .child(correspondent),
             )
             .child(div().flex_1().min_w_0().truncate().child(text))
+            .children(
+                self.render_row_task(ix, key, th, cx)
+                    .map(|chip| div().pl(px(8.0)).child(chip)),
+            )
             .when(row.attachments && !has_chips, |d| {
                 d.child(
                     div()
