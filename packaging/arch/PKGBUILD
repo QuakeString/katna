@@ -34,7 +34,7 @@ depends=(
   'vulkan-icd-loader'
   'wayland'
 )
-makedepends=('cargo' 'git')
+makedepends=('cargo' 'gettext' 'git')
 optdepends=(
   'gnupg: read and send encrypted and signed mail (OpenPGP and S/MIME)'
   'org.freedesktop.secrets: keeps account passwords (GNOME Keyring, KWallet or KeePassXC)'
@@ -124,5 +124,23 @@ package() {
   if [[ -f packaging/keys/katna-update.pub ]]; then
     install -Dm644 packaging/keys/katna-update.pub "$pkgdir/usr/lib/katna/update-key.pub"
   fi
+  # The desktop clock (integrations/README.md): Katna Digital Clock for
+  # Plasma and Katna's GNOME Shell extension. Each desktop ignores the
+  # other's files. The widget's folder is named by its plugin ID.
+  local clock file
+  clock=$(sed -n 's/^ *"Id": "\(.*\)",\{0,1\}$/\1/p' integrations/plasma-clock/package/metadata.json)
+  (cd integrations/plasma-clock/package && find . -type f) | while read -r file; do
+    install -Dm644 "integrations/plasma-clock/package/$file" \
+      "$pkgdir/usr/share/plasma/plasmoids/$clock/${file#./}"
+  done
+  (cd integrations/gnome-shell-extension && find . -type f) | while read -r file; do
+    install -Dm644 "integrations/gnome-shell-extension/$file" \
+      "$pkgdir/usr/share/gnome-shell/extensions/${file#./}"
+  done
+  for file in integrations/po/*.po; do
+    [[ -e $file ]] || continue
+    install -d "$pkgdir/usr/share/locale/$(basename "$file" .po)/LC_MESSAGES"
+    msgfmt -o "$pkgdir/usr/share/locale/$(basename "$file" .po)/LC_MESSAGES/katna-clock.mo" "$file"
+  done
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

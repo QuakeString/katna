@@ -1109,6 +1109,14 @@ quando seu provedor de e-mail confirma que a mensagem realmente veio
 dele.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Mais sobre a sua compilação"
+text = """
+A janela Atualizações agora mostra a última alteração de cada versão, de
+onde veio a sua cópia e quando o Katna verificou atualizações pela
+última vez.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Uma pequena peça em Me pague um café"
 text = """

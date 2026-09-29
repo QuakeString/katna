@@ -1099,6 +1099,14 @@ pokazujesz obrazy, są teraz wczytywane tylko wtedy, gdy dostawca poczty
 potwierdzi, że wiadomość rzeczywiście od niego pochodzi.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Więcej o Twojej wersji"
+text = """
+Okno Aktualizacje pokazuje teraz ostatnią zmianę w każdej wersji, skąd
+pochodzi Twoja kopia i kiedy Katna ostatnio sprawdzała dostępność
+aktualizacji.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Małe przedstawienie w przycisku Postaw mi kawę"
 text = """

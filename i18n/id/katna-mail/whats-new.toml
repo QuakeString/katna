@@ -1111,6 +1111,13 @@ mengonfirmasi bahwa pesan itu benar-benar berasal dari pengirim
 tersebut.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Lebih lanjut tentang build Anda"
+text = """
+Jendela Pembaruan kini menampilkan perubahan terbaru setiap versi, asal
+salinan Anda, dan kapan Katna terakhir memeriksa pembaruan.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Sandiwara kecil di Traktir saya kopi"
 text = """

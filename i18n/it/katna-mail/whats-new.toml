@@ -1120,6 +1120,14 @@ cui mostri sempre le immagini ora vengono caricate solo se il tuo
 provider di posta conferma che il messaggio proviene davvero da lui.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Più dettagli sulla tua build"
+text = """
+La finestra «Aggiornamenti» ora indica l’ultima modifica di ogni
+versione, da dove proviene la tua copia e quando Katna ha cercato
+aggiornamenti l’ultima volta.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Una piccola scenetta su «Offrimi un caffè»"
 text = """

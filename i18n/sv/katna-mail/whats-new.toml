@@ -1081,6 +1081,13 @@ bilder från läses nu bara in när din e-postleverantör bekräftar att
 meddelandet verkligen kommer från den avsändaren.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Mer om ditt bygge"
+text = """
+Fönstret Uppdateringar visar nu senaste ändringen i varje version, var
+din kopia kommer ifrån och när Katna senast sökte efter uppdateringar.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Ett litet skådespel i Bjud mig på en kaffe"
 text = """

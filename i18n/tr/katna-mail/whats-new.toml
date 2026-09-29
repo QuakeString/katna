@@ -1101,6 +1101,14 @@ sağlayıcınız iletinin gerçekten o gönderenden geldiğini doğruladığınd
 yüklenir.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Sürümünüz hakkında daha fazlası"
+text = """
+Güncellemeler penceresi artık her sürümün son değişikliğini, kopyanızın
+nereden geldiğini ve Katna'nın güncellemeleri en son ne zaman
+denetlediğini gösteriyor.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Bana bir kahve ısmarla düğmesinde küçük bir oyun"
 text = """

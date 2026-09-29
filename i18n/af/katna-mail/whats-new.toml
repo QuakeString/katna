@@ -1074,6 +1074,14 @@ jy altyd prente wys, word nou net gelaai wanneer jou e-posverskaffer
 bevestig dat die boodskap regtig van hom af kom.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Meer oor jou bou"
+text = """
+Die Opdaterings-venster noem nou elke weergawe se jongste verandering,
+sê waar jou kopie vandaan kom en wanneer Katna laas vir opdaterings
+gekyk het.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "’n Klein toneelstukkie in Koop vir my ’n koffie"
 text = """

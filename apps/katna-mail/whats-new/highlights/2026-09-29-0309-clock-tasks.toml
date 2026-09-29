@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks in your desktop clock"
+text = """
+Click the clock to add a task and tick tasks off. On Plasma, right-click
+the clock and choose Show Alternatives to pick Katna Digital Clock. On
+GNOME, a Tasks card shows under the clock's calendar from your next
+sign-in.
+"""

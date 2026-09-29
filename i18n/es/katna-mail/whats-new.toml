@@ -1115,6 +1115,14 @@ solo se cargan cuando tu proveedor de correo confirma que el mensaje
 procede realmente de él.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Más información sobre tu compilación"
+text = """
+La ventana «Actualizaciones» ahora indica el último cambio de cada
+versión, de dónde procede tu copia y cuándo buscó Katna actualizaciones
+por última vez.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Una pequeña función en «Invítame a un café»"
 text = """

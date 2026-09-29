@@ -1133,6 +1133,14 @@ Bilder anzeigen, werden jetzt nur noch geladen, wenn Ihr E-Mail-Anbieter
 bestätigt, dass die Nachricht wirklich von ihm stammt.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Mehr über Ihren Build"
+text = """
+Das Fenster „Updates“ nennt jetzt die letzte Änderung jeder Version,
+zeigt, woher Ihre Kopie stammt, und wann Katna zuletzt nach Updates
+gesucht hat.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Ein kleines Theaterstück bei „Spendieren Sie mir einen Kaffee“"
 text = """

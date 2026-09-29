@@ -1075,6 +1075,13 @@ hình ảnh nay chỉ được tải khi nhà cung cấp thư của bạn xác n
 sự đến từ họ.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Thêm về bản dựng của bạn"
+text = """
+Cửa sổ Cập nhật giờ cho biết thay đổi mới nhất của từng phiên bản, bản
+của bạn đến từ đâu và lần gần nhất Katna kiểm tra cập nhật là khi nào.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Một màn diễn nhỏ ở nút Mời tôi một ly cà phê"
 text = """

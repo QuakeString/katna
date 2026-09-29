@@ -1148,6 +1148,14 @@ mga larawan ay ilo-load na ngayon lamang kapag kinumpirma ng iyong mail
 provider na talagang galing sa kanya ang mensahe.
 """
 
+["2026-09-29-0120-update-build-details"]
+title = "Higit pa tungkol sa iyong build"
+text = """
+Ipinapakita na ngayon ng window na Mga Update ang pinakabagong pagbabago
+ng bawat bersyon, kung saan galing ang iyong kopya, at kung kailan
+huling tumingin ang Katna ng mga update.
+"""
+
 ["2026-09-29-0213-coffee-button-play"]
 title = "Munting dula sa Ilibre ako ng kape"
 text = """
