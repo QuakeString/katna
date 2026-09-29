@@ -7,6 +7,7 @@
 notes-view-notes = નોંધો
 notes-view-archive = આર્કાઇવ
 notes-view-trash = કચરાપેટી
+notes-edit-labels = લેબલ સંપાદિત કરો
 notes-search = નોંધો શોધો
 notes-loading = તમારી નોંધો ખોલી રહ્યાં છીએ…
 
@@ -20,6 +21,7 @@ notes-empty = તમે ઉમેરેલી નોંધો અહીં દ�
 notes-archive-empty = તમારી આર્કાઇવ કરેલી નોંધો અહીં દેખાશે
 notes-trash-empty = કચરાપેટીમાં કોઈ નોંધ નથી
 notes-none-found = કોઈ મેળ ખાતી નોંધ નથી
+notes-label-empty = આ લેબલવાળી કોઈ નોંધ હજી નથી
 notes-trash-note = કચરાપેટીમાંની નોંધો 7 દિવસ પછી ડિલીટ થઈ જાય છે.
 notes-empty-trash = કચરાપેટી ખાલી કરો
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = પાછી લાવો
 notes-delete-forever = કાયમ માટે ડિલીટ કરો
 notes-color = બૅકગ્રાઉન્ડનો રંગ
 notes-checkboxes = ચેકબૉક્સ બતાવો અથવા છુપાવો
+notes-labels = લેબલ
 notes-close = બંધ કરો
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = શીર્ષક
 notes-edited = સંપાદિત: { $date }
 notes-on-this-computer = આ કમ્પ્યુટર પર
 notes-where = આ નોંધ ક્યાં રાખેલી છે
+
+## Labels
+
+notes-label-note = નોંધને લેબલ કરો
+notes-label-name = લેબલનું નામ દાખલ કરો
+notes-label-create = “{ $name }” બનાવો
+notes-label-remove = લેબલ દૂર કરો
+notes-label-delete = લેબલ ડિલીટ કરો
+notes-labels-none = હજી કોઈ લેબલ નથી. નોંધના લેબલ બટનથી એક ઉમેરો.
+notes-labels-done = થઈ ગયું
+notes-label-renamed = લેબલનું નામ બદલીને “{ $name }” કર્યું
+notes-label-deleted = લેબલ “{ $name }” ડિલીટ કર્યું
 
 ## A note about a mail
 

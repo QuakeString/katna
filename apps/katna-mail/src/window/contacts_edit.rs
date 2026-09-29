@@ -294,6 +294,111 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Saves someone from Mail at once: to the address book of the account
+    /// in view, else the first account's, else this computer. Undo
+    /// deletes them again.
+    pub(super) fn add_to_contacts(
+        &mut self,
+        email: &str,
+        name: Option<String>,
+        signature: Option<crate::profile::Card>,
+        cx: &mut Context<Self>,
+    ) {
+        let email = email.trim().to_lowercase();
+        if email.is_empty() || !self.contacts.adding.insert(email.clone()) {
+            return;
+        }
+        let (given, family) = split_name(name.as_deref().unwrap_or_default());
+        let signature = signature.unwrap_or_default();
+        let card = Card {
+            name: katna_core::contact::Name {
+                given,
+                family,
+                ..Default::default()
+            },
+            emails: vec![Typed::new(&email, "")],
+            phones: signature
+                .phone
+                .map(|p| vec![Typed::new(&p, "")])
+                .unwrap_or_default(),
+            title: signature.title.unwrap_or_default(),
+            organization: signature.company.unwrap_or_default(),
+            ..Card::default()
+        };
+        let book = self.book_for_new_contact();
+        let shown = name.unwrap_or_else(|| email.clone());
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = async {
+                let connection = match connection {
+                    Some(connection) => connection,
+                    None => daemon::connect().await?,
+                };
+                daemon::save_contact(&connection, 0, book, &card).await
+            }
+            .await;
+            this.update(cx, |this, cx| {
+                match result {
+                    Ok(id) => {
+                        // Saved: the panel offers the contact until read back.
+                        this.contacts.by_email.insert(email.clone(), id);
+                        this.load_contacts(cx);
+                        this.show_snackbar(
+                            tr!("contacts-added", name = shown),
+                            Some(Command::DeleteContacts(vec![id])),
+                            cx,
+                        );
+                    }
+                    Err(err) => this.show_snackbar(crate::format::sentence(&err), None, cx),
+                }
+                this.contacts.adding.remove(&email);
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+        cx.notify();
+    }
+
+    /// Where Add to contacts saves: the account in view's address book,
+    /// the first account's, or this computer (0).
+    fn book_for_new_contact(&self) -> i64 {
+        let books = self.writable_books();
+        let Some(Ok(saved)) = &self.contacts.book else {
+            return 0;
+        };
+        let account = self.account();
+        let of_account = books.iter().find(|(id, _)| {
+            saved
+                .books
+                .iter()
+                .any(|b| b.id == *id && b.account.is_some() && b.account == account)
+        });
+        of_account
+            .or_else(|| books.iter().find(|(id, _)| *id != 0))
+            .map_or(0, |(id, _)| *id)
+    }
+
+    /// Opens the Contacts page on the person saved at `email`.
+    pub(super) fn show_saved_contact(&mut self, email: &str, cx: &mut Context<Self>) {
+        let Some(Ok(book)) = &self.contacts.book else {
+            return;
+        };
+        let email = email.trim().to_lowercase();
+        let Some(person) = book
+            .people
+            .iter()
+            .find(|p| p.emails.contains(&email))
+            .cloned()
+        else {
+            return;
+        };
+        self.open_app(super::apps::App::Contacts, cx);
+        self.contacts.view = super::contacts_page::View::Contacts;
+        self.contacts.edit = None;
+        self.open_saved_contact(person, cx);
+    }
+
     /// Deletes `person` from every account that keeps them, once the
     /// snackbar's Undo is gone.
     pub(super) fn delete_contact(

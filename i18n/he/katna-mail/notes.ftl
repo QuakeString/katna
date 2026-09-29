@@ -7,6 +7,7 @@
 notes-view-notes = הערות
 notes-view-archive = ארכיון
 notes-view-trash = אשפה
+notes-edit-labels = עריכת תוויות
 notes-search = חיפוש הערות
 notes-loading = פותח את ההערות שלך…
 
@@ -20,6 +21,7 @@ notes-empty = הערות שתוסיפו יופיעו כאן
 notes-archive-empty = הערות שהועברו לארכיון יופיעו כאן
 notes-trash-empty = אין הערות באשפה
 notes-none-found = לא נמצאו הערות תואמות
+notes-label-empty = אין עדיין הערות עם התווית הזו
 notes-trash-note = הערות באשפה נמחקות אחרי 7 ימים.
 notes-empty-trash = ריקון האשפה
 notes-ticked = { $count ->
@@ -39,6 +41,7 @@ notes-restore = שחזור
 notes-delete-forever = מחיקה סופית
 notes-color = אפשרויות רקע
 notes-checkboxes = הצגה או הסתרה של תיבות סימון
+notes-labels = תוויות
 notes-close = סגירה
 
 ## The open note
@@ -47,6 +50,18 @@ notes-title = כותרת
 notes-edited = נערך לאחרונה: { $date }
 notes-on-this-computer = במחשב הזה
 notes-where = המקום שבו ההערה נשמרת
+
+## Labels
+
+notes-label-note = הוספת תווית להערה
+notes-label-name = הזנת שם תווית
+notes-label-create = יצירת "{ $name }"
+notes-label-remove = הסרת תווית
+notes-label-delete = מחיקת תווית
+notes-labels-none = אין עדיין תוויות. אפשר להוסיף תווית מכפתור התווית של הערה.
+notes-labels-done = סיום
+notes-label-renamed = שם התווית שונה ל-"{ $name }"
+notes-label-deleted = התווית "{ $name }" נמחקה
 
 ## A note about a mail
 

@@ -11,7 +11,7 @@ use jiff::tz::TimeZone;
 use katna_dav::ical;
 use katna_store::{
     Store,
-    calendar::{Calendar, EventData, EventStatus},
+    calendar::{Calendar, EventData, EventKind, EventStatus},
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -84,6 +84,38 @@ fn response(status: &str) -> &'static str {
         "declined" => "declined",
         _ => "needsAction",
     }
+}
+
+/// Adds Google's event type for `event`'s kind to a new event's `body`;
+/// whether it had one. Google fixes the type when the event is made.
+pub(crate) fn kind_fields(event: &EventData, body: &mut Value) -> bool {
+    match event.kind {
+        EventKind::Focus => {
+            body["eventType"] = json!("focusTime");
+            body["focusTimeProperties"] = json!({
+                "autoDeclineMode": "declineNone",
+                "chatStatus": "doNotDisturb",
+            });
+        }
+        EventKind::OutOfOffice => {
+            body["eventType"] = json!("outOfOffice");
+            body["outOfOfficeProperties"] = json!({
+                "autoDeclineMode": "declineOnlyNewConflictingInvitations",
+                "declineMessage": event.description,
+            });
+        }
+        EventKind::WorkingLocation => {
+            body["eventType"] = json!("workingLocation");
+            body["visibility"] = json!("public");
+            body["transparency"] = json!("transparent");
+            body["workingLocationProperties"] = json!({
+                "type": "customLocation",
+                "customLocation": { "label": event.title },
+            });
+        }
+        EventKind::Default | EventKind::Birthday => return false,
+    }
+    true
 }
 
 /// `event` as Google's event resource: what Katna changes of it.
@@ -218,9 +250,22 @@ impl GoogleCalendar {
             let mut new = body.clone();
             new["id"] = json!(data.remote_id);
             new["iCalUID"] = json!(data.uid);
-            let reply = self
+            let typed = kind_fields(data, &mut new);
+            let mut reply = self
                 .send("POST", &format!("{base}{query}"), Some(&new))
                 .await?;
+            if typed && reply.status == 400 {
+                // Focus time, out of office and working locations are for
+                // some accounts and main calendars only: a plain event
+                // holds the time elsewhere.
+                tracing::info!("Google refused the event type; saving a plain event");
+                let mut plain = body.clone();
+                plain["id"] = json!(data.remote_id);
+                plain["iCalUID"] = json!(data.uid);
+                reply = self
+                    .send("POST", &format!("{base}{query}"), Some(&plain))
+                    .await?;
+            }
             if reply.status == 409 {
                 // Google has it already: an earlier try went through.
                 self.send("PATCH", &url, Some(&body)).await?

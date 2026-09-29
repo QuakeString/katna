@@ -7,6 +7,7 @@
 notes-view-notes = টোকাসমূহ
 notes-view-archive = আৰ্কাইভ
 notes-view-trash = ট্ৰেশ
+notes-edit-labels = লেবেল সম্পাদনা কৰক
 notes-search = টোকা বিচাৰক
 notes-loading = আপোনাৰ টোকাসমূহ খোলা হৈছে…
 
@@ -20,6 +21,7 @@ notes-empty = আপুনি যোগ কৰা টোকাসমূহ ই�
 notes-archive-empty = আপোনাৰ আৰ্কাইভ কৰা টোকাসমূহ ইয়াত দেখা যাব
 notes-trash-empty = ট্ৰেশত কোনো টোকা নাই
 notes-none-found = মিল থকা কোনো টোকা নাই
+notes-label-empty = এই লেবেলৰ কোনো টোকা এতিয়াও নাই
 notes-trash-note = ট্ৰেশত থকা টোকাসমূহ 7 দিনৰ পিছত মচি পেলোৱা হয়।
 notes-empty-trash = ট্ৰেশ খালী কৰক
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = পুনৰুদ্ধাৰ কৰক
 notes-delete-forever = চিৰদিনৰ বাবে মচক
 notes-color = নেপথ্যৰ ৰং
 notes-checkboxes = চেকবাকচ দেখুৱাওক বা লুকুৱাওক
+notes-labels = লেবেল
 notes-close = বন্ধ কৰক
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = শিৰোনাম
 notes-edited = সম্পাদনা কৰা হ’ল: { $date }
 notes-on-this-computer = এই কম্পিউটাৰত
 notes-where = এই টোকাটো ক’ত ৰখা হৈছে
+
+## Labels
+
+notes-label-note = টোকাত লেবেল দিয়ক
+notes-label-name = লেবেলৰ নাম লিখক
+notes-label-create = “{ $name }” সৃষ্টি কৰক
+notes-label-remove = লেবেল আঁতৰাওক
+notes-label-delete = লেবেল মচক
+notes-labels-none = এতিয়ালৈকে কোনো লেবেল নাই। টোকাৰ লেবেল বুটামৰ পৰা এটা যোগ কৰক।
+notes-labels-done = হ'ল
+notes-label-renamed = লেবেলৰ নাম সলনি কৰি “{ $name }” কৰা হ'ল
+notes-label-deleted = লেবেল “{ $name }” মচা হ'ল
 
 ## A note about a mail
 

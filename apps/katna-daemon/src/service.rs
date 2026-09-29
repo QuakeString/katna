@@ -272,6 +272,18 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_contacts(&ids).await?)
             }
 
+            async fn set_contact_labels(
+                &self,
+                contact: i64,
+                labels: Vec<String>,
+            ) -> fdo::Result<()> {
+                Ok(self.daemon.set_contact_labels(contact, labels).await?)
+            }
+
+            async fn rename_contact_label(&self, old: String, new: String) -> fdo::Result<()> {
+                Ok(self.daemon.rename_contact_label(&old, &new).await?)
+            }
+
             async fn save_note(&self, note: NoteItem) -> fdo::Result<i64> {
                 Ok(self.daemon.save_note(note)?)
             }

@@ -1234,3 +1234,24 @@ text = """
 “Yau”, a ƙarƙashin “Duk ayyuka”, yana tattara abin da ya kamata a yi yau da duk wanda lokacinsa ya wuce daga dukkan jerin, tare da jerin da kowanne yake ciki.
 Aikin da aka ƙara a can zai kasance na yau.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Gayyata a cikin wasiƙarka"
+text = """
+Yanzu gayyata tana bayyana a matsayin kati a saman wasiƙar: lokaci da wuri, wanda ya shirya ta, ranarka a kewayenta tare da alamar duk wani karo, Shiga,
+da Za ka je? Eh, A'a ko Wataƙila, ana amsawa nan take.
+"""
+
+["2026-09-29-0616-note-labels"]
+title = "Lakabobi a kan bayanai"
+text = """
+Maɓallin lakabi a kan bayani yana sanya masa lakabobi, kamar a Keep. Ana jera lakabobinka kusa da “Bayanai”, kowanne yana nuna bayanansa kawai.
+“Gyara lakabobi” yana sake musu suna ko share su, tare da Warware.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Ayyuka daga ƙarin asusu"
+text = """
+Yanzu ayyuka suna daidaita da Yahoo, Zoho, iCloud, Fastmail da sauran asusu waɗanda ayyukansu suke a wani sabar dabam da na wasiƙarsu.
+Katna tana fara gwada mafi kyawun hanyar kowane asusu, sannan ta tuna wadda ta yi aiki.
+"""

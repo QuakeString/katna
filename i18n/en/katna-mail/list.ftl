@@ -382,6 +382,10 @@ row-important = Important. Click to mark as not important.
 row-mark-important = Mark as important
 # Tooltip of the pin icon on a pinned line.
 row-pinned = Pinned to the top
+# The chip on a mail line with a task made from the mail, when the task
+# has no due day.
+row-task = Task
+row-task-open = Open the task: { $title }
 # Tooltips of the eye on a line of mail sent with open and click tracking.
 # $opened and $clicked: how many of its $recipients opened it or followed
 # a link in it.
@@ -424,6 +428,9 @@ menu-snooze = Snooze
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".
 menu-add-to-tasks = Add to Tasks
+# Opens a new calendar event from the conversation: its subject as the
+# title and its people as guests.
+menu-schedule-meeting = Schedule a meeting
 # Makes a note about the mail (Katna Notes), opened over it.
 menu-add-note = Add a note
 # Prints every message of the open conversation.

@@ -759,6 +759,34 @@ impl Mail {
         Some((subject, header))
     }
 
+    /// What a meeting set up from line `key` starts with: the
+    /// conversation's subject without `Re:` and `Fwd:`, and everyone in it
+    /// but the user, as (name, address), in the order they first appear.
+    pub fn meeting_source(&self, key: EntryKey) -> Option<(String, Vec<(String, String)>)> {
+        let messages = self.store.messages_by_id(&self.entry_messages(key)).ok()?;
+        let subject =
+            katna_core::subject::without_reply_prefixes(&messages.first()?.subject).to_owned();
+        let mut people: Vec<(String, String)> = Vec::new();
+        for p in messages.iter().flat_map(|m| &m.participants) {
+            let role = matches!(
+                p.role,
+                ParticipantRole::From | ParticipantRole::To | ParticipantRole::Cc
+            );
+            if !role
+                || !p.email_norm.contains('@')
+                || self.is_me(&p.email_norm)
+                || people
+                    .iter()
+                    .any(|(_, e)| e.eq_ignore_ascii_case(&p.email_norm))
+            {
+                continue;
+            }
+            let name = p.display_name.as_deref().unwrap_or_default().trim();
+            people.push((name.to_owned(), p.email_norm.clone()));
+        }
+        Some((subject, people))
+    }
+
     /// The newest stored message with `Message-ID` `header`.
     pub fn message_with_header(&self, header: &str) -> Option<MessageId> {
         self.store.message_with_header(header).ok().flatten()

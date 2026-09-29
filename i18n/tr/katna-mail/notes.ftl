@@ -7,6 +7,7 @@
 notes-view-notes = Notlar
 notes-view-archive = Arşiv
 notes-view-trash = Çöp kutusu
+notes-edit-labels = Etiketleri düzenle
 notes-search = Notlarda ara
 notes-loading = Notlarınız açılıyor…
 
@@ -20,6 +21,7 @@ notes-empty = Eklediğiniz notlar burada görünür
 notes-archive-empty = Arşivlenen notlarınız burada görünür
 notes-trash-empty = Çöp kutusunda not yok
 notes-none-found = Eşleşen not yok
+notes-label-empty = Bu etikete sahip not henüz yok
 notes-trash-note = Çöp kutusundaki notlar 7 gün sonra silinir.
 notes-empty-trash = Çöp kutusunu boşalt
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Geri yükle
 notes-delete-forever = Kalıcı olarak sil
 notes-color = Arka plan rengi
 notes-checkboxes = Onay kutularını göster veya gizle
+notes-labels = Etiketler
 notes-close = Kapat
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Başlık
 notes-edited = Düzenlenme: { $date }
 notes-on-this-computer = Bu bilgisayarda
 notes-where = Bu notun saklandığı yer
+
+## Labels
+
+notes-label-note = Nota etiket ekle
+notes-label-name = Etiket adını girin
+notes-label-create = “{ $name }” oluştur
+notes-label-remove = Etiketi kaldır
+notes-label-delete = Etiketi sil
+notes-labels-none = Henüz etiket yok. Bir notun etiket düğmesinden ekleyin.
+notes-labels-done = Bitti
+notes-label-renamed = Etiket adı “{ $name }” olarak değiştirildi
+notes-label-deleted = “{ $name }” etiketi silindi
 
 ## A note about a mail
 

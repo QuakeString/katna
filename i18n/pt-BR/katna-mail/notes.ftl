@@ -7,6 +7,7 @@
 notes-view-notes = Notas
 notes-view-archive = Arquivo
 notes-view-trash = Lixeira
+notes-edit-labels = Editar marcadores
 notes-search = Pesquisar notas
 notes-loading = Abrindo suas notas…
 
@@ -20,6 +21,7 @@ notes-empty = As notas que você adicionar aparecerão aqui
 notes-archive-empty = Suas notas arquivadas aparecerão aqui
 notes-trash-empty = Nenhuma nota na lixeira
 notes-none-found = Nenhuma nota correspondente
+notes-label-empty = Ainda não há notas com este marcador
 notes-trash-note = As notas na lixeira são excluídas após 7 dias.
 notes-empty-trash = Esvaziar lixeira
 notes-ticked = { $count ->
@@ -39,6 +41,7 @@ notes-restore = Restaurar
 notes-delete-forever = Excluir permanentemente
 notes-color = Cor do plano de fundo
 notes-checkboxes = Mostrar ou ocultar caixas de seleção
+notes-labels = Marcadores
 notes-close = Fechar
 
 ## The open note
@@ -47,6 +50,18 @@ notes-title = Título
 notes-edited = Editada: { $date }
 notes-on-this-computer = Neste computador
 notes-where = Onde esta nota é mantida
+
+## Labels
+
+notes-label-note = Marcar nota
+notes-label-name = Digite o nome do marcador
+notes-label-create = Criar “{ $name }”
+notes-label-remove = Remover marcador
+notes-label-delete = Excluir marcador
+notes-labels-none = Ainda não há marcadores. Adicione um pelo botão de marcador de uma nota.
+notes-labels-done = Concluído
+notes-label-renamed = Marcador renomeado para “{ $name }”
+notes-label-deleted = Marcador “{ $name }” excluído
 
 ## A note about a mail
 

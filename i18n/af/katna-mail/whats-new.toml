@@ -1253,3 +1253,27 @@ Vandag, onder Alle take, bring saam wat vandag verskuldig is en alles
 wat agterstallig is uit alle lyste, saam met die lys waarin elkeen is.
 ’n Taak wat daar bygevoeg word, is vandag verskuldig.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Uitnodigings in jou e-pos"
+text = """
+’n Uitnodiging verskyn nou as ’n kaart boaan die e-pos: wanneer en waar,
+wie dit georganiseer het, jou dag daaromheen met botsings gemerk, Sluit
+aan en Gaan jy? Ja, Nee of Miskien, wat jy dadelik daar beantwoord.
+"""
+
+["2026-09-29-0616-note-labels"]
+title = "Etikette op notas"
+text = """
+Die etiketknoppie op ’n nota plak etikette daarop, soos in Keep. Jou
+etikette word langs Notas gelys, elk met net sy notas, en Wysig etikette
+hernoem of vee hulle uit, met Ontdoen.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Take van meer rekeninge"
+text = """
+Take sinkroniseer nou ook met Yahoo, Zoho, iCloud, Fastmail en ander
+rekeninge wie se take op ’n ander bediener as hul e-pos is. Katna
+probeer eers elke rekening se beste manier en onthou die een wat werk.
+"""

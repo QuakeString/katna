@@ -113,6 +113,23 @@ calendar-answered-yes = သင် သွားမည်
 calendar-answered-no = သင် မသွားပါ
 calendar-answered-maybe = သင် သွားချင်သွားနိုင်သည်
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = ဖိတ်ကြားချက်
+calendar-invite-cancelled = ဖြစ်ရပ်ကို ပယ်ဖျက်ထားသည်
+calendar-invite-reply = { $name } ပြန်ကြားပြီး
+calendar-invite-reply-yes = { $name } လက်ခံပြီး
+calendar-invite-reply-no = { $name } ငြင်းပယ်ပြီး
+calendar-invite-reply-maybe = { $name } သွားချင်သွားနိုင်သည်
+calendar-invite-organizer = { $name } က စီစဉ်သည်
+calendar-invite-open = ပြက္ခဒိန်တွင် ဖွင့်ရန်
+calendar-invite-not-yet = သင့်ပြက္ခဒိန်တွင် မရှိသေးပါ။ စင့်ခ်လုပ်ပြီးမှ ပြန်ကြားနိုင်ပါမည်။
+calendar-invite-your-day = သင့်နေ့
+calendar-invite-clashes =
+    { $count ->
+       *[other] ဖြစ်ရပ် { $count } ခုနှင့် ထပ်နေသည်
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = ယနေ့အစီအစဉ်ကို ပြရန်

@@ -7,6 +7,7 @@
 notes-view-notes = నోట్స్
 notes-view-archive = ఆర్కైవ్
 notes-view-trash = ట్రాష్
+notes-edit-labels = లేబుల్‌లను ఎడిట్ చేయండి
 notes-search = నోట్స్‌ను శోధించండి
 notes-loading = మీ నోట్స్‌ను తెరుస్తోంది…
 
@@ -20,6 +21,7 @@ notes-empty = మీరు జోడించిన గమనికలు ఇక
 notes-archive-empty = మీరు ఆర్కైవ్ చేసిన గమనికలు ఇక్కడ కనిపిస్తాయి
 notes-trash-empty = ట్రాష్‌లో గమనికలు లేవు
 notes-none-found = సరిపోలే గమనికలు లేవు
+notes-label-empty = ఈ లేబుల్ ఉన్న గమనికలు ఇంకా లేవు
 notes-trash-note = ట్రాష్‌లోని గమనికలు 7 రోజుల తర్వాత తొలగించబడతాయి.
 notes-empty-trash = ట్రాష్‌ను ఖాళీ చేయండి
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = పునరుద్ధరించండి
 notes-delete-forever = శాశ్వతంగా తొలగించండి
 notes-color = నేపథ్య రంగు
 notes-checkboxes = చెక్‌బాక్స్‌లను చూపండి లేదా దాచండి
+notes-labels = లేబుల్‌లు
 notes-close = మూసివేయండి
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = శీర్షిక
 notes-edited = సవరించినది: { $date }
 notes-on-this-computer = ఈ కంప్యూటర్‌లో
 notes-where = ఈ గమనిక ఎక్కడ ఉంచబడింది
+
+## Labels
+
+notes-label-note = గమనికకు లేబుల్ ఇవ్వండి
+notes-label-name = లేబుల్ పేరును నమోదు చేయండి
+notes-label-create = “{ $name }” క్రియేట్ చేయండి
+notes-label-remove = లేబుల్‌ను తీసివేయండి
+notes-label-delete = లేబుల్‌ను తొలగించండి
+notes-labels-none = ఇంకా లేబుల్‌లు లేవు. గమనిక లేబుల్ బటన్ నుండి ఒకదాన్ని జోడించండి.
+notes-labels-done = పూర్తయింది
+notes-label-renamed = లేబుల్ పేరు “{ $name }”గా మార్చబడింది
+notes-label-deleted = లేబుల్ “{ $name }” తొలగించబడింది
 
 ## A note about a mail
 

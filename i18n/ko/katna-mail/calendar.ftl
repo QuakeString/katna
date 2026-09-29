@@ -113,6 +113,23 @@ calendar-answered-yes = 참석합니다
 calendar-answered-no = 참석하지 않습니다
 calendar-answered-maybe = 참석할 수도 있습니다
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = 초대장
+calendar-invite-cancelled = 일정이 취소되었습니다
+calendar-invite-reply = { $name }님이 응답했습니다
+calendar-invite-reply-yes = { $name }님이 수락했습니다
+calendar-invite-reply-no = { $name }님이 거절했습니다
+calendar-invite-reply-maybe = { $name }님이 참석할 수도 있습니다
+calendar-invite-organizer = 주최자: { $name }
+calendar-invite-open = 캘린더에서 열기
+calendar-invite-not-yet = 아직 캘린더에 없습니다. 동기화되면 응답할 수 있습니다.
+calendar-invite-your-day = 내 하루
+calendar-invite-clashes =
+    { $count ->
+       *[other] 일정 { $count }개와 겹칩니다
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = 오늘 일정 표시

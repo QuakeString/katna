@@ -966,8 +966,20 @@ and `DELETE`. What the service answers is saved in `pim.db`. A new contact
 goes to the book picked under "Save to" (an account, or this computer); a
 person kept in several accounts is changed in the first one. Delete hides
 the person and waits for its Undo to go before it is sent; Google and
-Outlook keep deleted contacts in their trash. Other contacts, merge and
-import/export follow in the next phases of the study.
+Outlook keep deleted contacts in their trash.
+
+Labels (`SetContactLabels`, `RenameContactLabel`) are written the way each
+service keeps them: Google contact groups (`contactGroups` create, rename
+with the group's etag, `members:modify`, delete with `deleteContacts=false`;
+Google's own groups such as My Contacts are not shown as labels), Graph
+`categories` on each contact, CardDAV `CATEGORIES` on each card (Apple-style
+group cards are read, not changed), and a card on this computer by name. A
+label ticked on a person goes on each of their cards; renaming or deleting
+a label changes it in every account, and its people stay. A label nobody
+has is forgotten except at Google, which keeps empty labels. Each change
+has an Undo; "Email everyone" on a label starts a message to all of them.
+Other contacts, merge and import/export follow in the next phases of the
+study.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -3359,6 +3371,22 @@ most useful reason is shown. Changes go back the way their calendar came
   (the whole series for an invitation to one). Until the calendar has it,
   the card says so. Answering by iMIP mail, for servers that don't
   schedule, is later.
+- Schedule a meeting (a conversation's ⋮ or right-click menu) opens the
+  whole event editor on the Calendar page with the subject, without
+  `Re:`/`Fwd:`, as the title and everyone in the conversation but the user
+  (From, To, Cc) as guests; saving sends the invitations as any new event.
+- An event's card has Email guests, and from an hour before its start
+  to its end, Running late: a new mail to the other guests from the
+  calendar's account, with a short "running late" line (Google Calendar's
+  Email guests and Running late).
+- Event kinds: a new event can be Focus time, Out of office or a Working
+  location (tabs above its times, as Google's; fixed once made, as Google
+  fixes `eventType`). Google gets the event type and its properties
+  (Do not disturb, declining new invitations while out, a custom place);
+  when Google refuses the type (not every account or calendar has it),
+  the event is saved plain. Graph gets `showAs` `oof` or
+  `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
+  Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the
@@ -3429,7 +3457,11 @@ server error is not.
 - **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
   right-click and ⋮ menus) makes a task in the default list titled with the
   conversation's subject, keeping the newest message's `Message-ID` in
-  `task.mail`; the task's Mail chip opens that mail again.
+  `task.mail`; the task's Mail chip opens that mail again. Back in the
+  mail list, a line whose mail has an open task shows a chip with the
+  task's due day (red when past; "Task" with none), which opens the task.
+  The window reads the tasks from the start and maps each `task.mail` to
+  its line (the one due first wins) whenever tasks or mail change.
 
 ## 19. Security and privacy
 

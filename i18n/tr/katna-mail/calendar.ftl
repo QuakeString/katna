@@ -117,6 +117,24 @@ calendar-answered-yes = Katılıyorsunuz
 calendar-answered-no = Katılmıyorsunuz
 calendar-answered-maybe = Belki katılırsınız
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Davet
+calendar-invite-cancelled = Etkinlik iptal edildi
+calendar-invite-reply = { $name } yanıtladı
+calendar-invite-reply-yes = { $name } kabul etti
+calendar-invite-reply-no = { $name } reddetti
+calendar-invite-reply-maybe = { $name } belki katılacak
+calendar-invite-organizer = Organizatör: { $name }
+calendar-invite-open = Takvim’de aç
+calendar-invite-not-yet = Henüz takviminizde değil. Eşitlendikten sonra yanıt verebilirsiniz.
+calendar-invite-your-day = Gününüz
+calendar-invite-clashes =
+    { $count ->
+        [one] { $count } etkinlikle çakışıyor
+       *[other] { $count } etkinlikle çakışıyor
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Günün ajandasını göster

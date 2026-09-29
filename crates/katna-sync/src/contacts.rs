@@ -46,6 +46,18 @@ organizations,birthdays,urls,biographies";
 /// Google's group of starred contacts.
 const STARRED: &str = "contactGroups/starred";
 
+/// Google's own groups, which Google Contacts does not show as labels.
+const SYSTEM_GROUPS: [&str; 8] = [
+    "contactGroups/myContacts",
+    "contactGroups/starred",
+    "contactGroups/friends",
+    "contactGroups/family",
+    "contactGroups/coworkers",
+    "contactGroups/chatBuddies",
+    "contactGroups/all",
+    "contactGroups/blocked",
+];
+
 /// One Google account's contacts.
 #[derive(Clone)]
 pub struct GoogleContacts {
@@ -166,6 +178,65 @@ impl GoogleContacts {
             return Ok(());
         }
         check(&reply, "deleting a contact")
+    }
+
+    /// Contact `remote_id` as Google keeps it now.
+    pub async fn person(&self, remote_id: &str) -> Result<SyncedContact> {
+        let url = format!("{}/v1/{remote_id}?personFields={PERSON_FIELDS}", self.api);
+        let reply = self.get(&url).await?;
+        check(&reply, "reading a contact")?;
+        let person: Person = parse(&reply.body)?;
+        Ok(person.into_synced())
+    }
+
+    /// Makes a label called `name`.
+    pub async fn create_group(&self, name: &str) -> Result<SyncedGroup> {
+        let url = format!("{}/v1/contactGroups", self.api);
+        let body = serde_json::json!({ "contactGroup": { "name": name } }).to_string();
+        let reply = self.send("POST", &url, Some(body.as_bytes())).await?;
+        check(&reply, "making a label")?;
+        let group: GroupReply = parse(&reply.body)?;
+        Ok(group.into_synced())
+    }
+
+    /// Renames label `group`.
+    pub async fn rename_group(&self, group: &str, name: &str) -> Result<SyncedGroup> {
+        let url = format!("{}/v1/{group}", self.api);
+        // Google wants the label's current etag with the change.
+        let reply = self.get(&url).await?;
+        check(&reply, "reading a label")?;
+        let current: GroupReply = parse(&reply.body)?;
+        let body = serde_json::json!({
+            "contactGroup": { "name": name, "etag": current.etag },
+            "updateGroupFields": "name",
+        })
+        .to_string();
+        let reply = self.send("PUT", &url, Some(body.as_bytes())).await?;
+        check(&reply, "renaming a label")?;
+        let group: GroupReply = parse(&reply.body)?;
+        Ok(group.into_synced())
+    }
+
+    /// Deletes label `group`; its people stay. One already gone is fine.
+    pub async fn delete_group(&self, group: &str) -> Result<()> {
+        let url = format!("{}/v1/{group}?deleteContacts=false", self.api);
+        let reply = self.send("DELETE", &url, None).await?;
+        if reply.status == 404 {
+            return Ok(());
+        }
+        check(&reply, "deleting a label")
+    }
+
+    /// Adds people to label `group` and takes others off it.
+    pub async fn modify_group(&self, group: &str, add: &[&str], remove: &[&str]) -> Result<()> {
+        let url = format!("{}/v1/{group}/members:modify", self.api);
+        let body = serde_json::json!({
+            "resourceNamesToAdd": add,
+            "resourceNamesToRemove": remove,
+        })
+        .to_string();
+        let reply = self.send("POST", &url, Some(body.as_bytes())).await?;
+        check(&reply, "changing a label")
     }
 
     /// The user's own labels (not Google's system groups).
@@ -475,8 +546,37 @@ impl Person {
             card,
             raw: None,
             starred: groups.iter().any(|g| g == STARRED),
-            groups: groups.into_iter().filter(|g| g != STARRED).collect(),
+            groups: groups
+                .into_iter()
+                .filter(|g| !SYSTEM_GROUPS.contains(&g.as_str()))
+                .collect(),
             photo: None,
+        }
+    }
+}
+
+/// A label as Google answers a change to it.
+#[derive(Deserialize)]
+struct GroupReply {
+    #[serde(rename = "resourceName")]
+    resource: String,
+    #[serde(default)]
+    etag: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default, rename = "formattedName")]
+    formatted: String,
+}
+
+impl GroupReply {
+    fn into_synced(self) -> SyncedGroup {
+        SyncedGroup {
+            remote_id: self.resource,
+            name: if self.formatted.is_empty() {
+                self.name
+            } else {
+                self.formatted
+            },
         }
     }
 }
@@ -566,6 +666,21 @@ impl MicrosoftContacts {
             }
         };
         check(&reply, "saving a contact")?;
+        let contact: GraphContact = parse(&reply.body)?;
+        Ok(contact.into_synced())
+    }
+
+    /// Sets the categories (labels) of contact `remote_id`; returns the
+    /// contact as Microsoft keeps it.
+    pub async fn set_categories(
+        &self,
+        remote_id: &str,
+        categories: &[String],
+    ) -> Result<SyncedContact> {
+        let url = format!("{}/me/contacts/{remote_id}", self.api);
+        let body = serde_json::json!({ "categories": categories }).to_string();
+        let reply = self.send("PATCH", &url, Some(body.as_bytes())).await?;
+        check(&reply, "changing labels")?;
         let contact: GraphContact = parse(&reply.body)?;
         Ok(contact.into_synced())
     }

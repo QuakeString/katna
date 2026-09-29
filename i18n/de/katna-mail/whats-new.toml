@@ -1322,3 +1322,30 @@ text = """
 oder überfällig ist, samt der Liste, in der sich jede Aufgabe befindet.
 Eine dort hinzugefügte Aufgabe ist heute fällig.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Einladungen in Ihrer E-Mail"
+text = """
+Eine Einladung erscheint jetzt als Karte oben in der E-Mail: wann und
+wo, wer sie organisiert hat, Ihr Tag drumherum mit markierten
+Überschneidungen, Teilnehmen und Teilnehmen? Ja, Nein oder Vielleicht,
+direkt dort beantwortet.
+"""
+
+["2026-09-29-0616-note-labels"]
+title = "Labels für Notizen"
+text = """
+Über die Label-Schaltfläche an einer Notiz versehen Sie sie wie in Keep
+mit Labels. Ihre Labels stehen neben „Notizen“ und zeigen jeweils nur
+ihre Notizen. Mit „Labels bearbeiten“ benennen Sie sie um oder löschen
+sie, mit „Rückgängig“.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Aufgaben von mehr Konten"
+text = """
+Aufgaben werden jetzt auch mit Yahoo, Zoho, iCloud, Fastmail und anderen
+Konten synchronisiert, deren Aufgaben auf einem anderen Server liegen
+als ihre E-Mails. Katna probiert zuerst den besten Weg jedes Kontos aus
+und merkt sich den, der funktioniert.
+"""

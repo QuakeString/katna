@@ -848,6 +848,21 @@ impl MailWindow {
                             })),
                         )
                         .child(
+                            menu_item_icon(
+                                "more-schedule-meeting",
+                                "calendar",
+                                &tr!("menu-schedule-meeting"),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
+                                    this.menu = None;
+                                    let key = this.target_keys().first().copied();
+                                    this.schedule_meeting_from(key, window, cx);
+                                },
+                            )),
+                        )
+                        .child(
                             menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
                                 .on_click(cx.listener(|this, _, window, cx| {
                                     this.menu = None;
@@ -1867,6 +1882,7 @@ impl MailWindow {
                         })))
                         .child(
                             line(snippet)
+                                .children(self.render_row_task(ix, key, th, cx))
                                 .when(row.attachments && !has_chips, |d| {
                                     d.child(icon("attachment", th.text_faint, 16.0))
                                 })
@@ -1926,6 +1942,10 @@ impl MailWindow {
                     .child(correspondent),
             )
             .child(div().flex_1().min_w_0().truncate().child(text))
+            .children(
+                self.render_row_task(ix, key, th, cx)
+                    .map(|chip| div().pl(px(8.0)).child(chip)),
+            )
             .when(row.attachments && !has_chips, |d| {
                 d.child(
                     div()

@@ -7,6 +7,7 @@
 notes-view-notes = الملاحظات
 notes-view-archive = الأرشيف
 notes-view-trash = سلة المهملات
+notes-edit-labels = تعديل التصنيفات
 notes-search = البحث في الملاحظات
 notes-loading = جارٍ فتح ملاحظاتك…
 
@@ -20,6 +21,7 @@ notes-empty = تظهر الملاحظات التي تضيفها هنا
 notes-archive-empty = تظهر الملاحظات المؤرشفة هنا
 notes-trash-empty = لا توجد ملاحظات في سلة المهملات
 notes-none-found = لا توجد ملاحظات مطابقة
+notes-label-empty = لا توجد ملاحظات بهذا التصنيف بعد
 notes-trash-note = تُحذف الملاحظات في سلة المهملات بعد 7 أيام.
 notes-empty-trash = تفريغ سلة المهملات
 notes-ticked = { $count ->
@@ -42,6 +44,7 @@ notes-restore = استعادة
 notes-delete-forever = حذف نهائي
 notes-color = خيارات الخلفية
 notes-checkboxes = إظهار مربّعات الاختيار أو إخفاؤها
+notes-labels = التصنيفات
 notes-close = إغلاق
 
 ## The open note
@@ -50,6 +53,18 @@ notes-title = العنوان
 notes-edited = آخر تعديل: { $date }
 notes-on-this-computer = على هذا الكمبيوتر
 notes-where = مكان حفظ هذه الملاحظة
+
+## Labels
+
+notes-label-note = تصنيف الملاحظة
+notes-label-name = أدخل اسم التصنيف
+notes-label-create = إنشاء «{ $name }»
+notes-label-remove = إزالة التصنيف
+notes-label-delete = حذف التصنيف
+notes-labels-none = لا توجد تصنيفات بعد. أضِف تصنيفًا من زر التصنيفات في الملاحظة.
+notes-labels-done = تم
+notes-label-renamed = تمت إعادة تسمية التصنيف إلى «{ $name }»
+notes-label-deleted = تم حذف التصنيف «{ $name }»
 
 ## A note about a mail
 

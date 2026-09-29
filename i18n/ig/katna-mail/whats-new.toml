@@ -1250,3 +1250,28 @@ Taa, n'okpuru Ọrụ niile, na-ekpokọta ihe ga-emecha taa na nke gafere oge
 site n'ndepụta niile, ya na ndepụta nke ọ bụla dị n'ime ya. Ọrụ agbakwunyere
 ebe ahụ ga-emecha taa.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Oku n'ime ozi"
+text = """
+Oku na-apụta ugbu a dị ka kaadị n'elu ozi: mgbe na ebe,
+onye nhazi ya, ụbọchị gị gburugburu ya na ihe ọ bụla na-
+agbakọta akara, Sonye, na Ị ga-aga? Ee, Mba ma ọ bụ
+Ikekwe, ebe ahụ n'onwe ya.
+"""
+
+["2026-09-29-0616-note-labels"]
+title = "Leebụl na ndetu"
+text = """
+Bọtịnụ leebụl dị na ndetu na-etinye leebụl na ya, dị ka ọ dị na Keep. A
+na-edepụta leebụl gị n'akụkụ Ndetu, nke ọ bụla na-egosi naanị ndetu ya,
+Dezie leebụl na-agbanwe aha ha ma ọ bụ hichapụ ha, ya na Megharịa.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Ọrụ site n'akaụntụ ndị ọzọ"
+text = """
+Ọrụ na-emekọrịtakwa ugbu a na Yahoo, Zoho, iCloud, Fastmail na akaụntụ
+ndị ọzọ nke ọrụ ha dị na sava ọzọ karịa ozi ha. Katna na-anwale ụzọ
+kacha mma nke akaụntụ ọ bụla ka ọ malite, ma na-echeta nke na-arụ ọrụ.
+"""

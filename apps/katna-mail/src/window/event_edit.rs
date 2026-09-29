@@ -9,6 +9,8 @@
 //! `pim.db` at once and then to the calendar's service; the snackbar
 //! offers Undo, and Ctrl+Z works too.
 
+use std::rc::Rc;
+
 use gpui::{
     AnyElement, ClickEvent, Context, Entity, Focusable, FontWeight, MouseButton, Pixels, Point,
     ScrollHandle, SharedString, Subscription, Window, anchored, deferred, div, prelude::*, rgba,
@@ -18,16 +20,18 @@ use jiff::tz::TimeZone;
 use jiff::{Timestamp, ToSpan, Zoned};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
-use katna_store::calendar::{Attendee, Calendar, EditScope, EventChange, EventEdit};
+use katna_store::calendar::{Attendee, Calendar, EditScope, EventChange, EventEdit, EventKind};
 use katna_ui::px;
 use katna_ui::text_area::TextArea;
 use katna_ui::text_input::{InputEvent, TextInput};
 
 use super::MailWindow;
+use super::apps::App;
 use super::calendar::civil;
 use super::compose::schedule;
 use crate::daemon::{self, Command};
-use crate::theme::Theme;
+use crate::data::EntryKey;
+use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised, tip};
 
 /// How long a new event lasts.
@@ -179,6 +183,9 @@ pub(super) struct Draft {
     busy: bool,
     /// The whole editor, not the small card.
     full: bool,
+    /// Focus time, out of office or a working location; chosen for a new
+    /// event only, as services fix it when the event is made.
+    kind: EventKind,
     /// Where the small card points.
     at: Point<Pixels>,
     pick: Option<(Pick, Point<Pixels>)>,
@@ -437,6 +444,7 @@ impl MailWindow {
             reminder,
             busy,
             full: false,
+            kind: data.as_ref().map(|d| d.kind).unwrap_or_default(),
             at,
             pick: None,
             pick_month: start_day,
@@ -491,6 +499,122 @@ impl MailWindow {
         self.start_new_event(day, None, false, at, window, cx);
         // Google's C opens the whole editor.
         self.more_options(window, cx);
+    }
+
+    /// Schedule a meeting from the conversation on line `key`: the whole
+    /// editor on the Calendar page, titled with its subject and with its
+    /// people as guests, at the next hour.
+    pub(super) fn schedule_meeting_from(
+        &mut self,
+        key: Option<EntryKey>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((subject, people)) = key.and_then(|key| {
+            self.mail
+                .as_ref()
+                .ok()
+                .and_then(|mail| mail.meeting_source(key))
+        }) else {
+            return;
+        };
+        self.show_page(App::Calendar, window, cx);
+        // The page reads its calendars in the background; the new event
+        // needs them now.
+        if self.calendar.calendars.is_empty() {
+            self.calendar.calendars = Rc::new(super::calendar::read_calendars(&self.paths));
+        }
+        self.create_event_key(window, cx);
+        let Some(draft) = &mut self.calendar.draft else {
+            return;
+        };
+        draft
+            .title
+            .update(cx, |input, cx| input.set_text(subject, cx));
+        draft.guests = people
+            .into_iter()
+            .map(|(name, email)| Attendee {
+                email,
+                name,
+                status: "needs_action".to_owned(),
+                ..Attendee::default()
+            })
+            .collect();
+        cx.notify();
+    }
+
+    /// The open event's guests other than the user, as addresses.
+    pub(super) fn other_guests(&self, occurrence: &Occurrence) -> Vec<String> {
+        occurrence
+            .event
+            .data
+            .attendees
+            .iter()
+            .filter(|a| {
+                !a.is_self
+                    && a.email.contains('@')
+                    && !self
+                        .accounts
+                        .iter()
+                        .any(|me| me.address.eq_ignore_ascii_case(&a.email))
+            })
+            .map(|a| {
+                if a.name.is_empty() {
+                    a.email.clone()
+                } else {
+                    format!("{} <{}>", a.name.replace(['<', '>', ','], ""), a.email)
+                }
+            })
+            .collect()
+    }
+
+    /// A new mail to the open event's guests, from the calendar's account:
+    /// titled with the event, or, when `late`, saying the user is running
+    /// late, as Google Calendar's Email guests and Running late.
+    pub(super) fn email_guests(&mut self, late: bool, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(open) = &self.calendar.open else {
+            return;
+        };
+        let occurrence = open.occurrence.clone();
+        let to = self.other_guests(&occurrence);
+        if to.is_empty() {
+            return;
+        }
+        let data = &occurrence.event.data;
+        let title = if data.title.is_empty() {
+            tr!("calendar-no-title")
+        } else {
+            data.title.clone()
+        };
+        let account = self
+            .calendar
+            .calendars
+            .iter()
+            .find(|c| c.id == occurrence.event.calendar_id)
+            .and_then(|c| c.account);
+        let (subject, body) = if late {
+            (
+                tr!("calendar-late-subject", title = title.clone()),
+                tr!("calendar-late-body", title = title),
+            )
+        } else {
+            (title, String::new())
+        };
+        self.calendar.open = None;
+        self.open_mailto(
+            crate::mailto::Mailto {
+                to,
+                subject,
+                body,
+                ..Default::default()
+            },
+            window,
+            cx,
+        );
+        if let Some(account) = account {
+            self.send_compose_from(account);
+        }
+        cx.notify();
     }
 
     /// Opens the whole editor on the open event.
@@ -567,7 +691,87 @@ impl MailWindow {
             reminders: draft.reminder.into_iter().collect(),
             attendees: draft.guests.clone(),
             add_call: draft.add_call,
+            kind: draft.kind,
         })
+    }
+
+    /// Makes the new event focus time, out of office, a working location
+    /// or a plain event, with what Google gives each: its name as the
+    /// title until one is typed, busy or free, and no reminder but for
+    /// events; a working location is for the whole day.
+    fn set_draft_kind(&mut self, kind: EventKind, cx: &mut Context<Self>) {
+        let Some(draft) = &mut self.calendar.draft else {
+            return;
+        };
+        if draft.kind == kind || draft.editing.is_some() {
+            return;
+        }
+        let typed = draft.title.read(cx).text().trim().to_owned();
+        if typed.is_empty() || typed == kind_title(draft.kind) {
+            let title = kind_title(kind);
+            draft
+                .title
+                .update(cx, |input, cx| input.set_text(title, cx));
+        }
+        draft.kind = kind;
+        draft.busy = kind != EventKind::WorkingLocation;
+        draft.reminder = (kind == EventKind::Default).then_some(10);
+        if kind == EventKind::WorkingLocation {
+            draft.all_day = true;
+        }
+        cx.notify();
+    }
+
+    /// Event, Focus time, Out of office and Working location, above a new
+    /// event's times, as Google's tabs.
+    fn render_kind_tabs(
+        &self,
+        draft: &Draft,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if draft.editing.is_some() {
+            return None;
+        }
+        let tabs = [
+            EventKind::Default,
+            EventKind::Focus,
+            EventKind::OutOfOffice,
+            EventKind::WorkingLocation,
+        ]
+        .into_iter()
+        .map(|kind| {
+            let on = draft.kind == kind;
+            div()
+                .id(("draft-kind", kind as usize))
+                .h(px(32.0))
+                .px(px(8.0))
+                .whitespace_nowrap()
+                .flex()
+                .items_center()
+                .rounded(px(4.0))
+                .text_size(px(13.0))
+                .font_weight(FontWeight::MEDIUM)
+                .cursor_pointer()
+                .when(on, |d| {
+                    d.bg(rgba(fade(th.accent, 0.14)))
+                        .text_color(rgba(th.accent))
+                })
+                .when(!on, |d| {
+                    d.text_color(rgba(th.text_dim))
+                        .hover(|s| s.bg(rgba(th.hover)))
+                })
+                .child(kind_label(kind))
+                .on_click(cx.listener(move |this, _, _, cx| this.set_draft_kind(kind, cx)))
+        });
+        Some(
+            div()
+                .flex()
+                .flex_row()
+                .gap(px(2.0))
+                .children(tabs)
+                .into_any_element(),
+        )
     }
 
     /// Adds the addresses in `text` (separated by commas, semicolons or
@@ -1207,6 +1411,10 @@ impl MailWindow {
                 .text_size(px(22.0))
                 .child(draft.title.clone()),
         )
+        .children(
+            self.render_kind_tabs(draft, th, cx)
+                .map(|tabs| div().ml(px(40.0)).mr(px(8.0)).child(tabs)),
+        )
         .child(
             div()
                 .px(px(8.0))
@@ -1340,6 +1548,7 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .gap(px(12.0))
+                            .children(self.render_kind_tabs(draft, th, cx))
                             .child(self.render_when(draft, th, cx))
                             .child(
                                 div()
@@ -1996,6 +2205,37 @@ fn self_length(draft: &Draft) -> i64 {
         .and_then(|span| span.total(jiff::Unit::Minute).ok())
         .map_or(NEW_EVENT_MINUTES, |m| m as i64)
         .max(0)
+}
+
+/// The name of an event kind, as its tab says.
+pub(super) fn kind_label(kind: EventKind) -> String {
+    match kind {
+        EventKind::Focus => tr!("calendar-kind-focus"),
+        EventKind::OutOfOffice => tr!("calendar-kind-out-of-office"),
+        EventKind::WorkingLocation => tr!("calendar-kind-working-location"),
+        EventKind::Default | EventKind::Birthday => tr!("calendar-kind-event"),
+    }
+}
+
+/// The title a new event of `kind` starts with; empty for an event.
+fn kind_title(kind: EventKind) -> String {
+    match kind {
+        EventKind::Focus => tr!("calendar-kind-focus"),
+        EventKind::OutOfOffice => tr!("calendar-kind-out-of-office"),
+        EventKind::WorkingLocation => tr!("calendar-working-home"),
+        EventKind::Default | EventKind::Birthday => String::new(),
+    }
+}
+
+/// The icon beside an event of `kind` in the views; none for events.
+pub(super) fn kind_icon(kind: EventKind) -> Option<&'static str> {
+    match kind {
+        EventKind::Focus => Some("headphones"),
+        EventKind::OutOfOffice => Some("flight"),
+        EventKind::WorkingLocation => Some("home"),
+        EventKind::Birthday => Some("cake"),
+        EventKind::Default => None,
+    }
 }
 
 /// A dropdown's face: its value, which opens its list on a click.

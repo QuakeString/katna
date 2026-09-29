@@ -7,6 +7,7 @@
 notes-view-notes = नोट
 notes-view-archive = संग्रह
 notes-view-trash = ट्रैश
+notes-edit-labels = लेबल में बदलाव करें
 notes-search = नोट खोजें
 notes-loading = आपके नोट खोले जा रहे हैं…
 
@@ -20,6 +21,7 @@ notes-empty = आपके जोड़े गए नोट यहां दि�
 notes-archive-empty = आपके संग्रहित नोट यहां दिखाई देंगे
 notes-trash-empty = ट्रैश में कोई नोट नहीं है
 notes-none-found = कोई मिलता-जुलता नोट नहीं मिला
+notes-label-empty = इस लेबल वाला कोई नोट अभी नहीं है
 notes-trash-note = ट्रैश में मौजूद नोट 7 दिन बाद मिटा दिए जाते हैं।
 notes-empty-trash = ट्रैश खाली करें
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = वापस लाएं
 notes-delete-forever = हमेशा के लिए मिटाएं
 notes-color = बैकग्राउंड का रंग
 notes-checkboxes = चेकबॉक्स दिखाएं या छिपाएं
+notes-labels = लेबल
 notes-close = बंद करें
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = शीर्षक
 notes-edited = संपादित: { $date }
 notes-on-this-computer = इस कंप्यूटर पर
 notes-where = यह नोट कहां रखा है
+
+## Labels
+
+notes-label-note = नोट को लेबल करें
+notes-label-name = लेबल का नाम डालें
+notes-label-create = “{ $name }” बनाएं
+notes-label-remove = लेबल हटाएं
+notes-label-delete = लेबल मिटाएं
+notes-labels-none = अभी कोई लेबल नहीं है। किसी नोट के लेबल बटन से जोड़ें।
+notes-labels-done = हो गया
+notes-label-renamed = लेबल का नाम बदलकर “{ $name }” कर दिया गया
+notes-label-deleted = लेबल “{ $name }” मिटा दिया गया
 
 ## A note about a mail
 

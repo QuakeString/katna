@@ -573,6 +573,13 @@ macro_rules! pim_proxy {
             /// Deletes saved cards, from their accounts' services too.
             fn delete_contacts(&self, ids: &[i64]) -> zbus::Result<()>;
 
+            /// Gives a saved card exactly these labels, by name.
+            fn set_contact_labels(&self, contact: i64, labels: &[String]) -> zbus::Result<()>;
+
+            /// Renames a label in every address book; an empty new name
+            /// takes the label away and keeps its people.
+            fn rename_contact_label(&self, old: &str, new: &str) -> zbus::Result<()>;
+
             /// Forgets a cancelled or failed message. Returns whether it
             /// was one.
             fn discard_send(&self, id: i64) -> zbus::Result<bool>;

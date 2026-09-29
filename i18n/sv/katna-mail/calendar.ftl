@@ -117,6 +117,24 @@ calendar-answered-yes = Du kommer
 calendar-answered-no = Du kommer inte
 calendar-answered-maybe = Du kommer kanske
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Inbjudan
+calendar-invite-cancelled = Händelse inställd
+calendar-invite-reply = { $name } har svarat
+calendar-invite-reply-yes = { $name } har tackat ja
+calendar-invite-reply-no = { $name } har tackat nej
+calendar-invite-reply-maybe = { $name } kommer kanske
+calendar-invite-organizer = Arrangeras av { $name }
+calendar-invite-open = Öppna i Kalender
+calendar-invite-not-yet = Finns inte i din kalender än. Du kan svara när den har synkroniserats.
+calendar-invite-your-day = Din dag
+calendar-invite-clashes =
+    { $count ->
+        [one] Krockar med { $count } händelse
+       *[other] Krockar med { $count } händelser
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Visa dagens agenda

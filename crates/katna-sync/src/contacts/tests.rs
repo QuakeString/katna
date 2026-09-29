@@ -42,6 +42,7 @@ const PAGE_1: &str = r#"{"connections":[{"resourceName":"people/c1","etag":"e1",
   "birthdays":[{"date":{"month":3,"day":14}}],
   "photos":[{"url":"https://lh3.test/letter","default":true}],
   "memberships":[{"contactGroupMembership":{"contactGroupResourceName":"contactGroups/starred"}},
+                 {"contactGroupMembership":{"contactGroupResourceName":"contactGroups/myContacts"}},
                  {"contactGroupMembership":{"contactGroupResourceName":"contactGroups/abc"}}]}],
   "nextPageToken":"p2"}"#;
 
@@ -94,6 +95,11 @@ fn google_reads_every_page_then_changes() {
     assert_eq!(arjun.remote_id, "people/c1");
     assert_eq!(arjun.etag.as_deref(), Some("e1"));
     assert!(arjun.starred);
+    assert_eq!(
+        arjun.groups,
+        ["contactGroups/abc"],
+        "Google's own groups are not labels"
+    );
     assert_eq!(arjun.card.display_name(), "Arjun Mehta");
     assert_eq!(
         arjun.card.phones[0],
@@ -291,4 +297,81 @@ fn microsoft_creates_updates_and_deletes() {
     assert_eq!(body["homePhones"][0], "+91 3");
     assert_eq!(body["birthday"], "1990-03-14T11:59:00Z");
     assert!(body.get("categories").is_none());
+}
+
+#[test]
+fn google_makes_renames_fills_and_deletes_labels() {
+    let (api, seen) = serve(|req, _| {
+        match (req.method.as_str(), req.path.as_str()) {
+        ("POST", "/v1/contactGroups") => (
+            200,
+            vec![],
+            r#"{"resourceName":"contactGroups/f1","etag":"g1","name":"Family","formattedName":"Family"}"#.into(),
+        ),
+        ("GET", "/v1/contactGroups/f1") => (
+            200,
+            vec![],
+            r#"{"resourceName":"contactGroups/f1","etag":"g1","name":"Family"}"#.into(),
+        ),
+        ("PUT", "/v1/contactGroups/f1") => (
+            200,
+            vec![],
+            r#"{"resourceName":"contactGroups/f1","etag":"g2","name":"Home","formattedName":"Home"}"#.into(),
+        ),
+        ("POST", "/v1/contactGroups/f1/members:modify") => (200, vec![], "{}".into()),
+        ("GET", p) if p.starts_with("/v1/people/c1?") => (
+            200,
+            vec![],
+            r#"{"resourceName":"people/c1","etag":"e5","names":[{"displayName":"Arjun"}],
+               "memberships":[{"contactGroupMembership":{"contactGroupResourceName":"contactGroups/f1"}}]}"#
+                .into(),
+        ),
+        ("DELETE", "/v1/contactGroups/f1?deleteContacts=false") => (200, vec![], "{}".into()),
+        ("DELETE", _) => (404, vec![], "{}".into()),
+        _ => (400, vec![], "{}".into()),
+    }
+    });
+    let google = google(&api, GOOGLE_CONTACTS);
+    let made = smol::block_on(google.create_group("Family")).unwrap();
+    assert_eq!(made.remote_id, "contactGroups/f1");
+    assert_eq!(made.name, "Family");
+    smol::block_on(google.modify_group("contactGroups/f1", &["people/c1"], &[])).unwrap();
+    let arjun = smol::block_on(google.person("people/c1")).unwrap();
+    assert_eq!(arjun.etag.as_deref(), Some("e5"));
+    assert_eq!(arjun.groups, ["contactGroups/f1"]);
+    let renamed = smol::block_on(google.rename_group("contactGroups/f1", "Home")).unwrap();
+    assert_eq!(renamed.name, "Home");
+    smol::block_on(google.delete_group("contactGroups/f1")).unwrap();
+    smol::block_on(google.delete_group("contactGroups/gone")).unwrap();
+
+    let requests = seen.lock().unwrap().clone();
+    let create: serde_json::Value = serde_json::from_slice(&requests[0].body).unwrap();
+    assert_eq!(create["contactGroup"]["name"], "Family");
+    let modify: serde_json::Value = serde_json::from_slice(&requests[1].body).unwrap();
+    assert_eq!(modify["resourceNamesToAdd"][0], "people/c1");
+    let rename = requests.iter().find(|r| r.method == "PUT").unwrap();
+    let rename: serde_json::Value = serde_json::from_slice(&rename.body).unwrap();
+    assert_eq!(rename["contactGroup"]["etag"], "g1");
+    assert_eq!(rename["updateGroupFields"], "name");
+}
+
+#[test]
+fn microsoft_sets_categories() {
+    let (api, seen) = serve(|_, _| {
+        (
+            200,
+            vec![],
+            r#"{"id":"m9","changeKey":"k10","displayName":"Asha Rao","categories":["Family"]}"#
+                .into(),
+        )
+    });
+    let tokens = TokenSource::new(provider(OAuthProvider::Microsoft), "rt".into(), None)
+        .with_access_token_for(MICROSOFT_CONTACTS, "gt-1".into(), Duration::from_secs(3600));
+    let ms = MicrosoftContacts::with_api(Arc::new(tokens), Tls::insecure_for_local_tests(), &api);
+    let saved = smol::block_on(ms.set_categories("m9", &["Family".to_owned()])).unwrap();
+    assert_eq!(saved.groups, ["Family"]);
+    let requests = seen.lock().unwrap().clone();
+    assert_eq!(requests[0].method, "PATCH");
+    let body: serde_json::Value = serde_json::from_slice(&requests[0].body).unwrap();
+    assert_eq!(body, serde_json::json!({ "categories": ["Family"] }));
 }

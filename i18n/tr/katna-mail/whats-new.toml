@@ -1280,3 +1280,30 @@ Bugün, Tüm görevler altında, tüm listelerden bugün yapılması gerekenleri
 ve gecikmiş olanları, her birinin bulunduğu listeyle birlikte toplar.
 Oraya eklenen bir görevin son tarihi bugündür.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Postanızdaki davetler"
+text = """
+Bir davet artık postanın en üstünde bir kart olarak görünüyor: ne zaman
+ve nerede, kimin düzenlediği, çevresindeki gününüz ve işaretli
+çakışmalar, Katıl ve Katılıyor musunuz? Evet, Hayır veya Belki, orada
+yanıtlanıyor.
+"""
+
+["2026-09-29-0616-note-labels"]
+title = "Notlarda etiketler"
+text = """
+Bir notun etiket düğmesi, Keep’teki gibi ona etiket ekler. Etiketleriniz
+Notlar’ın yanında listelenir ve her biri yalnızca kendi notlarını
+gösterir; Etiketleri düzenle ise onları yeniden adlandırır veya siler,
+Geri al ile.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Daha fazla hesaptan görevler"
+text = """
+Görevler artık Yahoo, Zoho, iCloud, Fastmail ve görevleri
+e-postalarından farklı bir sunucuda bulunan diğer hesaplarla da
+eşitleniyor. Katna her hesap için önce en iyi yolu dener ve işe yarayanı
+hatırlar.
+"""

@@ -40,6 +40,12 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } more
 calendar-repeats = Repeats
 calendar-join = Join
+# Opens a new mail to the event's guests.
+calendar-email-guests = Email guests
+# Opens a new mail telling the event's guests the user is late.
+calendar-running-late = Running late
+calendar-late-subject = Running late: { $title }
+calendar-late-body = Sorry, I'm running a few minutes late for { $title }. I'll be there soon.
 calendar-guests =
     { $count ->
         [one] 1 guest
@@ -71,6 +77,13 @@ calendar-discard = Discard changes
 calendar-edit = Edit event
 calendar-delete = Delete event
 calendar-event-details = Event details
+# Tabs above a new event's times, as Google Calendar's.
+calendar-kind-event = Event
+calendar-kind-focus = Focus time
+calendar-kind-out-of-office = Out of office
+calendar-kind-working-location = Working location
+# A new working location's title until another place is typed.
+calendar-working-home = Home
 calendar-busy = Busy
 calendar-free = Free
 calendar-cancel = Cancel

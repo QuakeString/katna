@@ -7,6 +7,7 @@
 notes-view-notes = Bayanai
 notes-view-archive = Ma’ajiya
 notes-view-trash = Kwandon shara
+notes-edit-labels = Gyara lakabobi
 notes-search = Bincika bayanai
 notes-loading = Ana buɗe bayananka…
 
@@ -20,6 +21,7 @@ notes-empty = Bayanan da ka ƙara za su bayyana a nan
 notes-archive-empty = Bayanan da ka ajiye a ma’ajiya za su bayyana a nan
 notes-trash-empty = Babu bayani a Kwandon shara
 notes-none-found = Babu bayanan da suka yi daidai
+notes-label-empty = Babu bayanai masu wannan lakabin tukuna
 notes-trash-note = Ana share bayanan da ke Kwandon shara bayan kwana 7.
 notes-empty-trash = Kwashe Kwandon shara
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Maido
 notes-delete-forever = Share har abada
 notes-color = Zaɓuɓɓukan bango
 notes-checkboxes = Nuna ko ɓoye akwatunan duba
+notes-labels = Lakabobi
 notes-close = Rufe
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Take
 notes-edited = An gyara { $date }
 notes-on-this-computer = A wannan kwamfuta
 notes-where = Inda ake ajiye wannan bayani
+
+## Labels
+
+notes-label-note = Sanya lakabi a bayani
+notes-label-name = Shigar da sunan lakabi
+notes-label-create = Ƙirƙiri “{ $name }”
+notes-label-remove = Cire lakabi
+notes-label-delete = Share lakabi
+notes-labels-none = Babu lakabobi tukuna. Ƙara daga maɓallin lakabi na bayani.
+notes-labels-done = An gama
+notes-label-renamed = An canza sunan lakabi zuwa “{ $name }”
+notes-label-deleted = An share lakabin “{ $name }”
 
 ## A note about a mail
 

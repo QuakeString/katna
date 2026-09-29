@@ -117,6 +117,24 @@ calendar-answered-yes = ይሄዳሉ
 calendar-answered-no = አይሄዱም
 calendar-answered-maybe = ምናልባት ይሄዳሉ
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = ግብዣ
+calendar-invite-cancelled = ክስተቱ ተሰርዟል
+calendar-invite-reply = { $name }፦ መልስ ሰጥተዋል
+calendar-invite-reply-yes = { $name }፦ ተቀብለዋል
+calendar-invite-reply-no = { $name }፦ ውድቅ አድርገዋል
+calendar-invite-reply-maybe = { $name }፦ ምናልባት ይሄዳሉ
+calendar-invite-organizer = አዘጋጅ፦ { $name }
+calendar-invite-open = በቀን መቁጠሪያ ውስጥ ክፈት
+calendar-invite-not-yet = ገና በቀን መቁጠሪያዎ ውስጥ የለም። ከተመሳሰለ በኋላ መልስ መስጠት ይቻላል።
+calendar-invite-your-day = የእርስዎ ቀን
+calendar-invite-clashes =
+    { $count ->
+        [one] ከ{ $count } ክስተት ጋር ይጋጫል
+       *[other] ከ{ $count } ክስተቶች ጋር ይጋጫል
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = የቀኑን አጀንዳ አሳይ

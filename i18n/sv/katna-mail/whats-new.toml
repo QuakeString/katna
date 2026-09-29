@@ -1262,3 +1262,29 @@ I dag, under Alla uppgifter, samlar det som förfaller i dag och allt som
 är försenat från alla listor, med listan som varje uppgift finns i. En
 uppgift som läggs till där förfaller i dag.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Inbjudningar i din e-post"
+text = """
+En inbjudan visas nu som ett kort överst i e-postmeddelandet: när och
+var, vem som arrangerar den, din dag runt omkring med krockar markerade,
+Anslut och Kommer du? Ja, Nej eller Kanske, som du kan besvara direkt
+där.
+"""
+
+["2026-09-29-0616-note-labels"]
+title = "Etiketter på anteckningar"
+text = """
+Etikettknappen på en anteckning sätter etiketter på den, som i Keep.
+Dina etiketter listas bredvid Anteckningar och visar var och en bara
+sina anteckningar, och Redigera etiketter byter namn på eller raderar
+dem, med Ångra.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Uppgifter från fler konton"
+text = """
+Uppgifter synkroniseras nu även med Yahoo, Zoho, iCloud, Fastmail och
+andra konton vars uppgifter finns på en annan server än e-posten. Katna
+prövar varje kontos bästa metod först och kommer ihåg den som fungerar.
+"""

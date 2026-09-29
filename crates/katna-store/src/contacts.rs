@@ -741,6 +741,52 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
+    /// The labels of `book`.
+    pub fn contact_groups(&self, book: i64) -> Result<Vec<SyncedGroup>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT remote_id, name FROM contact_group WHERE book_id = ?1
+             ORDER BY name COLLATE NOCASE",
+        )?;
+        let rows = stmt.query_map([book], |row| {
+            Ok(SyncedGroup {
+                remote_id: row.get(0)?,
+                name: row.get(1)?,
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The cards of `book` with label `remote_id`.
+    pub fn contacts_in_group(&self, book: i64, remote_id: &str) -> Result<Vec<i64>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT m.contact_id FROM contact_group_member m
+             JOIN contact_group g ON g.id = m.group_id
+             WHERE g.book_id = ?1 AND g.remote_id = ?2 ORDER BY m.contact_id",
+        )?;
+        let rows = stmt.query_map(params![book, remote_id], |row| row.get(0))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Forgets label `remote_id` of `book`; its cards stay.
+    pub fn remove_contact_group(&self, book: i64, remote_id: &str) -> Result<bool> {
+        self.check_writable()?;
+        Ok(self.pim.execute(
+            "DELETE FROM contact_group WHERE book_id = ?1 AND remote_id = ?2",
+            params![book, remote_id],
+        )? > 0)
+    }
+
+    /// Forgets the labels of `book` nobody has, for services where a
+    /// label lives only on its cards.
+    pub fn remove_empty_contact_groups(&self, book: i64) -> Result<usize> {
+        self.check_writable()?;
+        Ok(self.pim.execute(
+            "DELETE FROM contact_group WHERE book_id = ?1 AND NOT EXISTS
+             (SELECT 1 FROM contact_group_member m WHERE m.group_id = contact_group.id)",
+            [book],
+        )?)
+    }
+
     /// The address book `id`.
     pub fn address_book(&self, id: i64) -> Result<Option<AddressBook>> {
         Ok(self.address_books()?.into_iter().find(|b| b.id == id))
@@ -920,6 +966,17 @@ mod tests {
                 count: 1
             }]
         );
+
+        assert_eq!(store.contact_groups(book).unwrap()[0].name, "Suppliers");
+        let bilal = store.contact_id(book, "people/2").unwrap().unwrap();
+        assert_eq!(
+            store.contacts_in_group(book, "contactGroups/9").unwrap(),
+            [bilal]
+        );
+        assert_eq!(store.remove_empty_contact_groups(book).unwrap(), 0);
+        assert!(store.remove_contact_group(book, "contactGroups/9").unwrap());
+        assert!(store.contact_labels().unwrap().is_empty());
+        assert!(store.saved_contacts().unwrap()[0].labels.is_empty());
 
         let sweep = BookSync {
             full: true,

@@ -22,12 +22,12 @@ use jiff::{ToSpan, Zoned};
 use katna_core::Paths;
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
-use katna_store::calendar::{Calendar, EventStatus};
+use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
 use katna_ui::px;
 
 use super::MailWindow;
-use super::event_edit::{Draft, ScopeAsk};
+use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{icon, icon_button, outlined_button, raised, tip};
 
@@ -326,6 +326,17 @@ pub(super) fn read(
         .event_rows_in_range(from, to)
         .map_err(|err| err.to_string())?;
     Ok((calendars, katna_dav::occurrences(rows, from, to, tz)))
+}
+
+/// Reads the calendars alone, for an event made before the page has read
+/// them.
+pub(super) fn read_calendars(paths: &Paths) -> Vec<Calendar> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.calendars())
+        .unwrap_or_else(|err| {
+            tracing::warn!(%err, "reading the calendars failed");
+            Vec::new()
+        })
 }
 
 impl MailWindow {
@@ -1424,9 +1435,19 @@ impl MailWindow {
                     .when(!short, |d| {
                         d.child(
                             div()
-                                .font_weight(FontWeight::MEDIUM)
-                                .when(declined, |d| d.line_through())
-                                .child(title),
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(4.0))
+                                .children(kind_icon(data.kind).map(|name| icon(name, text, 12.0)))
+                                .child(
+                                    div()
+                                        .min_w_0()
+                                        .truncate()
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .when(declined, |d| d.line_through())
+                                        .child(title),
+                                ),
                         )
                         .child(div().text_color(rgba(th.text_dim)).child(time))
                         .when(
@@ -1902,6 +1923,14 @@ impl MailWindow {
         let join = data.join_url.clone();
         let web = data.web_link.clone();
         let editable = self.can_edit(occurrence);
+        let emails = !self.other_guests(occurrence).is_empty();
+        // Running late, from an hour before the start to the end.
+        let now = jiff::Timestamp::now().as_second();
+        let late = emails
+            && !occurrence.all_day()
+            && data.status != EventStatus::Cancelled
+            && now >= occurrence.start - 3600
+            && now < occurrence.end;
         let title = if data.title.is_empty() {
             tr!("calendar-no-title")
         } else {
@@ -1941,6 +1970,15 @@ impl MailWindow {
                         icon_button("event-delete", "trash", 20.0, th)
                             .tooltip(tip(tr!("calendar-delete"), th))
                             .on_click(cx.listener(|this, _, _, cx| this.delete_open_event(cx))),
+                    )
+                })
+                .when(emails, |d| {
+                    d.child(
+                        icon_button("event-email", "mail", 20.0, th)
+                            .tooltip(tip(tr!("calendar-email-guests"), th))
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.email_guests(false, window, cx)
+                            })),
                     )
                 })
                 .when(!web.is_empty(), |d| {
@@ -2028,6 +2066,26 @@ impl MailWindow {
                         ),
                 )
             })
+            .when(late, |d| {
+                d.child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .gap(px(16.0))
+                        .items_center()
+                        .child(icon("schedule", th.text_dim, 20.0))
+                        .child(
+                            outlined_button("event-late", tr!("calendar-running-late"), th)
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    this.email_guests(true, window, cx)
+                                })),
+                        ),
+                )
+            })
+            .when_some(
+                kind_icon(data.kind).filter(|_| data.kind != EventKind::Birthday),
+                |d, name| d.child(line(name, kind_label(data.kind))),
+            )
             .when(!data.location.is_empty(), |d| {
                 d.child(line("pin", data.location.clone()))
             })
