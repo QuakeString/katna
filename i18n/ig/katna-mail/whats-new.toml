@@ -1276,6 +1276,22 @@ ndị ọzọ nke ọrụ ha dị na sava ọzọ karịa ozi ha. Katna na-anwal
 kacha mma nke akaụntụ ọ bụla ka ọ malite, ma na-echeta nke na-arụ ọrụ.
 """
 
+["2026-09-29-0651-schedule-meeting"]
+title = "Hazie nnọkọ site na mail"
+text = """
+Pịa aka nri na mkparịta ụka, ma ọ bụ mepee ⋮ họrọ Hazie nnọkọ:
+ihe omume ọhụrụ ga-emepe na ibe Kalịnda, isiokwu ya ga-abụ aha
+ya, ndị niile nọ na mkparịta ụka ga-abụkwa ndị ọbịa.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Ana-egbu oge? Gwa mmadụ niile n'otu ntinye"
+text = """
+Ihe omume nwere ndị ọbịa nwere Zipụ ndị ọbịa email ugbu a, na
+site n'otu awa tupu ọ malite, Ana m egbu oge: mail nye mmadụ
+niile, site na akaụntụ kalịnda ahụ, dị njikere izipu.
+"""
+
 ["2026-09-29-0607-contact-labels"]
 title = "Leebụl kọntaktị"
 text = """

@@ -384,6 +384,7 @@ menu-unpin = Lossa
 menu-snooze = Snooza
 menu-unsnooze = Avbryt snooze
 menu-add-to-tasks = Lägg till i Uppgifter
+menu-schedule-meeting = Boka ett möte
 menu-add-note = Lägg till en anteckning
 menu-print-all = Skriv ut alla
 menu-new-window = Öppna i nytt fönster

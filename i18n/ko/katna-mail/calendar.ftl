@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count }개 더보기
 calendar-repeats = 반복
 calendar-join = 참여
+calendar-email-guests = 게스트에게 이메일 보내기
+calendar-running-late = 늦는 중
+calendar-late-subject = 늦는 중: { $title }
+calendar-late-body = 죄송합니다. { $title }에 몇 분 늦을 것 같습니다. 곧 도착하겠습니다.
 calendar-guests =
     { $count ->
        *[other] 게스트 { $count }명

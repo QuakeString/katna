@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = 還有 { $count } 項
 calendar-repeats = 重複
 calendar-join = 加入
+calendar-email-guests = 傳送電子郵件給訪客
+calendar-running-late = 我會遲到
+calendar-late-subject = 我會遲到：{ $title }
+calendar-late-body = 抱歉，「{ $title }」我會晚幾分鐘到，馬上就到。
 calendar-guests =
     { $count ->
        *[other] { $count } 位訪客

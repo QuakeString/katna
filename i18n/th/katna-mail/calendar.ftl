@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = อีก { $count } รายการ
 calendar-repeats = เกิดซ้ำ
 calendar-join = เข้าร่วม
+calendar-email-guests = ส่งอีเมลถึงแขก
+calendar-running-late = จะไปสาย
+calendar-late-subject = จะไปสาย: { $title }
+calendar-late-body = ขออภัยที่ต้องไปถึง { $title } ช้าไปสองสามนาที เดี๋ยวจะไปถึงเร็ว ๆ นี้
 calendar-guests =
     { $count ->
        *[other] แขก { $count } คน

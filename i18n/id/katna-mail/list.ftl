@@ -231,6 +231,7 @@ menu-unpin = Lepas sematan
 menu-snooze = Tunda
 menu-unsnooze = Batalkan penundaan
 menu-add-to-tasks = Tambahkan ke Tugas
+menu-schedule-meeting = Jadwalkan rapat
 menu-add-note = Tambahkan catatan
 menu-print-all = Cetak semua
 menu-new-window = Buka di jendela baru

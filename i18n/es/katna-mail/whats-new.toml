@@ -1329,6 +1329,22 @@ de su correo. Katna prueba primero el mejor método de cada cuenta y
 recuerda el que funciona.
 """
 
+["2026-09-29-0651-schedule-meeting"]
+title = "Programa una reunión desde un correo"
+text = """
+Haz clic derecho en una conversación, o abre ⋮, y elige Programar una
+reunión: se abre un evento nuevo en la página Calendario con el asunto
+como título y todas las personas de la conversación como invitados.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "¿Llegas tarde? Avisa a todos con un clic"
+text = """
+Un evento con invitados ahora tiene Enviar correo a los invitados y,
+desde una hora antes de que empiece, Llegaré tarde: un correo para
+todos, desde la cuenta de ese calendario, listo para enviar.
+"""
+
 ["2026-09-29-0607-contact-labels"]
 title = "Etiquetas de contactos"
 text = """

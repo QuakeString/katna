@@ -1318,6 +1318,22 @@ O Katna tenta primeiro o melhor método de cada conta e lembra qual
 funciona.
 """
 
+["2026-09-29-0651-schedule-meeting"]
+title = "Agende uma reunião a partir de um e-mail"
+text = """
+Clique com o botão direito em uma conversa, ou abra ⋮, e escolha Agendar
+uma reunião: um novo evento abre na página Agenda com o assunto como
+título e todos da conversa como convidados.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Vai se atrasar? Avise todos com um clique"
+text = """
+Um evento com convidados agora tem Enviar e-mail aos convidados e, a
+partir de uma hora antes do início, Vou me atrasar: um e-mail para
+todos, da conta dessa agenda, pronto para enviar.
+"""
+
 ["2026-09-29-0607-contact-labels"]
 title = "Marcadores de contatos"
 text = """

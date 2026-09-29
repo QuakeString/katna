@@ -381,6 +381,7 @@ menu-unpin = Sabitlemeyi kaldır
 menu-snooze = Ertele
 menu-unsnooze = Ertelemeyi kaldır
 menu-add-to-tasks = Görevlere ekle
+menu-schedule-meeting = Toplantı planla
 menu-add-note = Not ekle
 menu-print-all = Tümünü yazdır
 menu-new-window = Yeni pencerede aç

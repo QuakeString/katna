@@ -311,6 +311,7 @@ menu-unpin = བཙུགས་མི་བཏོན།
 menu-snooze = ཤུལ་མར་བཞག།
 menu-unsnooze = ཤུལ་མར་བཞག་མི་བཏོན།
 menu-add-to-tasks = ལཱ་ནང་ཁ་སྣོན་འབད།
+menu-schedule-meeting = ཞལ་འཛོམས་ཅིག་ལུ་ དུས་ཚོད་བཞག།
 menu-add-note = དྲན་ཐོ་ཅིག་ཁ་སྣོན་འབད།
 menu-print-all = ཆ་མཉམ་དཔར་བསྐྲུན་འབད།
 menu-new-window = སྒོ་སྒྲིག་གསརཔ་ནང་ཁ་ཕྱེ།

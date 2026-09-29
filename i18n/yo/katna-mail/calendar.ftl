@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = àwọn mìíràn { $count }
 calendar-repeats = Ó ń tún ṣẹlẹ̀
 calendar-join = Darapọ̀
+calendar-email-guests = Fi lẹ́tà ránṣẹ́ sí àwọn àlejò
+calendar-running-late = Mo ń pẹ́
+calendar-late-subject = Mo ń pẹ́: { $title }
+calendar-late-body = Má bínú, mo ń pẹ́ díẹ̀ fún { $title }. Màá débẹ̀ láìpẹ́.
 calendar-guests =
     { $count ->
        *[other] { $count } àlejò

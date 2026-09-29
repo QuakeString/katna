@@ -381,6 +381,7 @@ menu-unpin = আনপিন করুন
 menu-snooze = স্নুজ করুন
 menu-unsnooze = স্নুজ বাতিল করুন
 menu-add-to-tasks = টাস্কে যোগ করুন
+menu-schedule-meeting = মিটিং শিডিউল করুন
 menu-add-note = নোট যোগ করুন
 menu-print-all = সব প্রিন্ট করুন
 menu-new-window = নতুন উইন্ডোতে খুলুন

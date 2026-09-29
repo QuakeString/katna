@@ -231,6 +231,7 @@ menu-unpin = 固定を解除
 menu-snooze = スヌーズ
 menu-unsnooze = スヌーズを解除
 menu-add-to-tasks = タスクに追加
+menu-schedule-meeting = 会議を設定
 menu-add-note = メモを追加
 menu-print-all = すべて印刷
 menu-new-window = 新しいウィンドウで開く

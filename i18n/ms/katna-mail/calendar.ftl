@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } lagi
 calendar-repeats = Berulang
 calendar-join = Sertai
+calendar-email-guests = E-mel tetamu
+calendar-running-late = Saya lewat
+calendar-late-subject = Lewat: { $title }
+calendar-late-body = Maaf, saya akan lewat beberapa minit untuk { $title }. Saya akan sampai tidak lama lagi.
 calendar-guests =
     { $count ->
        *[other] { $count } tetamu

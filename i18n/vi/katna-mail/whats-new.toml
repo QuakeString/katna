@@ -1276,6 +1276,22 @@ tài khoản khác có việc cần làm nằm trên máy chủ khác với thư
 cách tốt nhất của từng tài khoản trước và ghi nhớ cách hoạt động.
 """
 
+["2026-09-29-0651-schedule-meeting"]
+title = "Lên lịch cuộc họp từ một thư"
+text = """
+Nhấp chuột phải vào một cuộc trò chuyện, hoặc mở ⋮, rồi chọn Lên lịch
+cuộc họp: một sự kiện mới mở ra ở trang Lịch với chủ đề làm tiêu đề và
+mọi người trong cuộc trò chuyện làm khách.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Đến muộn? Báo cho mọi người chỉ với một cú nhấp"
+text = """
+Sự kiện có khách giờ có Gửi thư cho khách và, từ một giờ trước khi bắt
+đầu, Tôi đến muộn: một thư gửi mọi người, từ tài khoản của lịch đó, sẵn
+sàng để gửi.
+"""
+
 ["2026-09-29-0607-contact-labels"]
 title = "Nhãn liên hệ"
 text = """

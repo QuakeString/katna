@@ -381,6 +381,7 @@ menu-unpin = Nicht mehr anheften
 menu-snooze = Zurückstellen
 menu-unsnooze = Nicht mehr zurückstellen
 menu-add-to-tasks = Zu Aufgaben hinzufügen
+menu-schedule-meeting = Besprechung planen
 menu-add-note = Notiz hinzufügen
 menu-print-all = Alle drucken
 menu-new-window = In neuem Fenster öffnen

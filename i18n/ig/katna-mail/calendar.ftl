@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ọzọ
 calendar-repeats = Na-agbaghachi
 calendar-join = Sonye
+calendar-email-guests = Zipụ ndị ọbịa email
+calendar-running-late = Ana m egbu oge
+calendar-late-subject = Ana m egbu oge: { $title }
+calendar-late-body = Ndo, ana m egbu oge ọtụtụ nkeji maka { $title }. Aga m abịarute n'oge na-adịghị anya.
 calendar-guests =
     { $count ->
        *[other] { $count } ọbịa

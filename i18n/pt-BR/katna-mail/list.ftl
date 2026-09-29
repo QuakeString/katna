@@ -435,6 +435,7 @@ menu-unpin = Desafixar
 menu-snooze = Adiar
 menu-unsnooze = Cancelar adiamento
 menu-add-to-tasks = Adicionar às Tarefas
+menu-schedule-meeting = Agendar uma reunião
 menu-add-note = Adicionar uma nota
 menu-print-all = Imprimir tudo
 menu-new-window = Abrir em nova janela

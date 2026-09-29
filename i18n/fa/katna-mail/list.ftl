@@ -381,6 +381,7 @@ menu-unpin = برداشتن سنجاق
 menu-snooze = به تعویق انداختن
 menu-unsnooze = لغو تعویق
 menu-add-to-tasks = افزودن به کارها
+menu-schedule-meeting = زمان‌بندی جلسه
 menu-add-note = افزودن یادداشت
 menu-print-all = چاپ همه
 menu-new-window = باز کردن در پنجرهٔ جدید

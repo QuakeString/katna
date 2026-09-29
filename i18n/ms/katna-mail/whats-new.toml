@@ -1331,6 +1331,22 @@ mencuba cara terbaik setiap akaun dahulu dan mengingati cara yang
 berfungsi.
 """
 
+["2026-09-29-0651-schedule-meeting"]
+title = "Jadualkan mesyuarat daripada sebuah mel"
+text = """
+Klik kanan perbualan, atau buka ⋮, dan pilih Jadualkan mesyuarat: acara
+baharu dibuka pada halaman Kalendar dengan subjek sebagai tajuk dan
+semua orang dalam perbualan sebagai tetamu.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Lewat? Beritahu semua orang dengan satu klik"
+text = """
+Acara yang ada tetamu kini mempunyai E-mel tetamu dan, bermula sejam
+sebelum ia bermula, Saya lewat: mel kepada semua orang, daripada akaun
+kalendar itu, sedia untuk dihantar.
+"""
+
 ["2026-09-29-0607-contact-labels"]
 title = "Label kenalan"
 text = """

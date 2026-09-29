@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = மேலும் { $count }
 calendar-repeats = மீண்டும் நிகழும்
 calendar-join = சேர்
+calendar-email-guests = விருந்தினர்களுக்கு மின்னஞ்சல் அனுப்பு
+calendar-running-late = தாமதமாகிறது
+calendar-late-subject = தாமதமாகிறது: { $title }
+calendar-late-body = மன்னிக்கவும், { $title } நிகழ்வுக்கு வர எனக்குச் சில நிமிடங்கள் தாமதமாகிறது. விரைவில் வந்துவிடுவேன்.
 calendar-guests =
     { $count ->
         [one] { $count } விருந்தினர்

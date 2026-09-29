@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = আরও { $count }
 calendar-repeats = পুনরাবৃত্ত হয়
 calendar-join = যোগ দিন
+calendar-email-guests = অতিথিদের ইমেল করুন
+calendar-running-late = দেরি হচ্ছে
+calendar-late-subject = দেরি হচ্ছে: { $title }
+calendar-late-body = দুঃখিত, { $title }-এর জন্য আমার কয়েক মিনিট দেরি হচ্ছে। আমি শীঘ্রই পৌঁছে যাব।
 calendar-guests =
     { $count ->
         [one] { $count } জন অতিথি

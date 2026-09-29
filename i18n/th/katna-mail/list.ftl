@@ -231,6 +231,7 @@ menu-unpin = เลิกปักหมุด
 menu-snooze = เลื่อนเวลา
 menu-unsnooze = ยกเลิกการเลื่อนเวลา
 menu-add-to-tasks = เพิ่มในงาน
+menu-schedule-meeting = นัดประชุม
 menu-add-note = เพิ่มโน้ต
 menu-print-all = พิมพ์ทั้งหมด
 menu-new-window = เปิดในหน้าต่างใหม่
