@@ -331,7 +331,7 @@ pub mod app_action {
     pub const INSTALL_UPDATE: &str = "install-update";
     /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
     /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
-    /// `contacts`, `tasks`, `notes`).
+    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task.
     pub const OPEN_PAGE: &str = "open-page";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it

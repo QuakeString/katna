@@ -7,7 +7,8 @@
 //! People the user writes with come up as they are typed. Mail comes up
 //! only when every word is in its subject or sender, so a word typed to
 //! start an app does not fill the list with mail; `mail:` searches all of
-//! it as Katna Mail's search box does.
+//! it as Katna Mail's search box does. Open tasks come up when every word
+//! starts a word of their title or details, and open in the Tasks page.
 
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -41,6 +42,9 @@ const BOOK_AGE: Duration = Duration::from_secs(10 * 60);
 /// Match IDs: a message ID or an address after a letter saying which.
 const MAIL_ID: char = 'm';
 const CONTACT_ID: char = 'c';
+const TASK_ID: char = 't';
+/// Tasks shown at most.
+const TASKS: usize = 3;
 
 /// Action IDs on KRunner's results. Without one, a message opens and a
 /// person gets a new message.
@@ -67,6 +71,10 @@ pub(crate) struct Found {
 impl Found {
     fn is_mail(&self) -> bool {
         self.id.starts_with(MAIL_ID)
+    }
+
+    fn is_task(&self) -> bool {
+        self.id.starts_with(TASK_ID)
     }
 }
 
@@ -141,6 +149,7 @@ impl Finder {
             }
         } else if text.chars().count() >= MIN_CHARS {
             found = self.contacts(text);
+            found.extend(self.tasks(text, None));
             found.extend(self.mail(text, false));
         }
         found.sort_by(|a, b| {
@@ -171,6 +180,7 @@ impl Finder {
         }
         match parse_id(id)? {
             Target::Mail(message) => self.messages(&[message], None).pop(),
+            Target::Task(task) => self.tasks("", Some(task)).pop(),
             Target::Contact(email) => {
                 let book = lock(&self.book).book.clone()?;
                 let contact = book.contacts().iter().find(|c| c.email == email)?;
@@ -201,6 +211,78 @@ impl Finder {
                         .as_deref()
                         .is_some_and(|n| n.to_lowercase() == wanted);
                 contact_result(&s.email, s.name.as_deref(), s.score, exact)
+            })
+            .collect()
+    }
+
+    /// Open tasks with each word of `text` starting a word of their title
+    /// or details, those due first first; or only task `only`.
+    fn tasks(&self, text: &str, only: Option<i64>) -> Vec<Found> {
+        if only.is_none() && text.contains(':') {
+            return Vec::new();
+        }
+        let words: Vec<String> = text.split_whitespace().map(str::to_lowercase).collect();
+        let read = |store: &Store| -> katna_store::Result<_> {
+            Ok((store.tasks(unix_now())?, store.task_lists()?))
+        };
+        let (tasks, lists) = {
+            let mut guard = lock(&self.store);
+            if guard.is_none() {
+                match Store::open(&self.paths, Mode::ReadOnly) {
+                    Ok(store) => *guard = Some(store),
+                    Err(err) => {
+                        tracing::warn!(%err, "desktop search: opening the store");
+                        return Vec::new();
+                    }
+                }
+            }
+            let Some(store) = guard.as_ref() else {
+                return Vec::new();
+            };
+            match read(store) {
+                Ok(read) => read,
+                Err(err) => {
+                    tracing::debug!(%err, "desktop search: reading tasks");
+                    return Vec::new();
+                }
+            }
+        };
+        let mut matched: Vec<_> = tasks
+            .into_iter()
+            .filter(|t| t.done_at.is_none() && !t.title.trim().is_empty())
+            .filter(|t| match only {
+                Some(id) => t.id == id,
+                None => starts_words(&format!("{} {}", t.title, t.notes).to_lowercase(), &words),
+            })
+            .collect();
+        // Those due first, then the rest.
+        matched.sort_by(|a, b| {
+            (a.due.is_empty(), &a.due, a.due_time).cmp(&(b.due.is_empty(), &b.due, b.due_time))
+        });
+        matched.truncate(TASKS);
+        let wanted = words.join(" ");
+        matched
+            .into_iter()
+            .enumerate()
+            .map(|(rank, task)| {
+                let list = lists
+                    .iter()
+                    .find(|l| l.id == task.list)
+                    .map(|l| l.title.trim())
+                    .filter(|t| !t.is_empty());
+                let exact = task.title.trim().to_lowercase() == wanted;
+                Found {
+                    id: format!("{TASK_ID}{}", task.id),
+                    text: task.title.trim().to_owned(),
+                    subtext: match list {
+                        Some(list) => tr!("search-task-in", list = list),
+                        None => String::new(),
+                    },
+                    icon: "view-task",
+                    kind: if exact { EXACT_MATCH } else { POSSIBLE_MATCH },
+                    // Below people, above mail.
+                    relevance: 0.58 - rank as f64 * 0.01,
+                }
             })
             .collect()
     }
@@ -410,6 +492,10 @@ impl Finder {
                 mail_app::open_mailto(connection, &mailto(&email), token).await;
             }
             (Some(Target::Contact(email)), COPY) => copy(connection, &email).await,
+            (Some(Target::Task(task)), "") => {
+                let page = vec![Value::from(format!("tasks:{task}"))];
+                mail_app::run(connection, Some(app_action::OPEN_PAGE), page, token).await;
+            }
             (Some(Target::Contact(email)), FIND) => {
                 let query = format!("from:{email} OR to:{email}");
                 search(connection, &query, token).await;
@@ -457,6 +543,7 @@ fn contact_result(email: &str, name: Option<&str>, score: f64, exact: bool) -> F
 enum Target {
     Mail(MessageId),
     Contact(String),
+    Task(i64),
 }
 
 fn parse_id(id: &str) -> Option<Target> {
@@ -468,6 +555,7 @@ fn parse_id(id: &str) -> Option<Target> {
             .ok()
             .map(|id| Target::Mail(MessageId(id))),
         CONTACT_ID if chars.as_str().contains('@') => Some(Target::Contact(chars.as_str().into())),
+        TASK_ID => chars.as_str().parse().ok().map(Target::Task),
         _ => None,
     }
 }
@@ -632,6 +720,8 @@ impl Runner {
 fn krunner_match(found: Found) -> Match {
     let (category, actions) = if found.is_mail() {
         (tr!("search-category-mail"), vec![REPLY_ALL])
+    } else if found.is_task() {
+        (tr!("search-category-tasks"), vec![])
     } else {
         (tr!("search-category-people"), vec![COPY, FIND])
     };
@@ -750,6 +840,7 @@ mod tests {
         assert!(
             matches!(parse_id("cada@example.org"), Some(Target::Contact(e)) if e == "ada@example.org")
         );
+        assert!(matches!(parse_id("t7"), Some(Target::Task(7))));
         assert!(parse_id("cnobody").is_none());
         assert!(parse_id("x1").is_none());
         assert!(parse_id("").is_none());

@@ -459,6 +459,41 @@ impl MailWindow {
 
     // --- Changes -----------------------------------------------------------
 
+    /// Opens task `id`'s details, once the tasks are read if they aren't
+    /// yet (Katna Mail started from the desktop's search or a reminder).
+    pub(super) fn task_open_when_read(
+        &mut self,
+        id: i64,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.tasks.board.is_some() {
+            self.task_open_details(id, window, cx);
+            return;
+        }
+        cx.spawn_in(window, async move |this, cx| {
+            // At most a few seconds: reading tasks takes milliseconds.
+            for _ in 0..100 {
+                cx.background_executor()
+                    .timer(std::time::Duration::from_millis(50))
+                    .await;
+                let read = this
+                    .update_in(cx, |this, window, cx| {
+                        let read = this.tasks.board.is_some();
+                        if read {
+                            this.task_open_details(id, window, cx);
+                        }
+                        read
+                    })
+                    .unwrap_or(true);
+                if read {
+                    break;
+                }
+            }
+        })
+        .detach();
+    }
+
     pub(super) fn task_toggle_done(&mut self, id: i64, cx: &mut Context<Self>) {
         let Some(task) = self.tasks.task(id) else {
             return;

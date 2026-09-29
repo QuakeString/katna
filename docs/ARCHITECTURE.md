@@ -2901,6 +2901,7 @@ Served by the daemon, pure Rust, from the same search index.
 | Email | subject, sender, text (confident matches only, or with a `mail:` prefix) | Open, reply all |
 | Organization | name, alias | Open organization view |
 | Event | title, attendees, location | Open event |
+| Task | title, details (open tasks) | Open the task |
 
 As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
 addresses in the mail (the recipient-suggestion `ContactBook`, read in the
@@ -2916,6 +2917,12 @@ are Reply all on mail, Copy address (through Klipper) and Find mail on
 people. GNOME's "search in app" opens Katna Mail with the words in its
 search box (app action `search`). Organization results come with Phase 2.
 Answers take a few milliseconds on 60,000 messages.
+
+Open tasks (§18.1) come up too, under Tasks, when every word starts a word
+of their title or details: at most three, those due first first, between
+people and mail, with the list they are in. Enter opens Katna Mail on the
+Tasks page with the task's details (app action `open-page` with
+`tasks:<id>`, which a task's reminder uses too).
 
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
