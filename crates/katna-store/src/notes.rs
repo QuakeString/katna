@@ -226,6 +226,42 @@ impl Store {
 
     /// Deletes `ids` for good, here and in their Notes folders. Returns
     /// how many existed.
+    /// Takes label `old` off notes `ids` and puts `new` on them (an empty
+    /// one is neither taken nor put): renaming, deleting and adding a label
+    /// in one. Returns how many notes changed.
+    pub fn relabel_notes(&mut self, ids: &[i64], old: &str, new: &str) -> Result<usize> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let now = unix_now();
+        let mut changed = 0;
+        for &id in ids {
+            let Some(labels) = tx
+                .query_row("SELECT labels FROM note WHERE id = ?1", [id], |row| {
+                    row.get::<_, String>(0)
+                })
+                .optional()?
+            else {
+                continue;
+            };
+            let labels: Vec<String> = serde_json::from_str(&labels).unwrap_or_default();
+            let relabeled = relabel(&labels, old, new);
+            if relabeled == labels {
+                continue;
+            }
+            let json = serde_json::to_string(&relabeled).unwrap_or_else(|_| "[]".to_owned());
+            tx.execute(
+                "UPDATE note SET labels = ?2, updated_at = ?3, dirty = 1 WHERE id = ?1",
+                params![id, json, now],
+            )?;
+            journal::record(&tx, ObjectKind::Note, id, ChangeOp::Update)?;
+            changed += 1;
+        }
+        tx.commit()?;
+        Ok(changed)
+    }
+
     pub fn delete_notes(&mut self, ids: &[i64]) -> Result<usize> {
         self.check_writable()?;
         let tx = self
@@ -460,6 +496,34 @@ fn forget_server_copy(tx: &rusqlite::Transaction<'_>, id: i64) -> Result<()> {
     Ok(())
 }
 
+/// `labels` with `old` taken off and `new` put on once, in `old`'s place;
+/// with no `old`, `new` goes at the end. Labels without `old` stay as
+/// they are.
+fn relabel(labels: &[String], old: &str, new: &str) -> Vec<String> {
+    if !old.is_empty() && !labels.iter().any(|l| l == old) {
+        return labels.to_vec();
+    }
+    let mut out: Vec<String> = Vec::with_capacity(labels.len() + 1);
+    let mut placed = new.is_empty();
+    for label in labels {
+        if !old.is_empty() && label == old {
+            if !placed {
+                out.push(new.to_owned());
+                placed = true;
+            }
+        } else if label != new || !placed {
+            if label == new {
+                placed = true;
+            }
+            out.push(label.clone());
+        }
+    }
+    if !placed {
+        out.push(new.to_owned());
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -480,6 +544,42 @@ mod tests {
             labels: vec!["Home".to_owned()],
             ..Note::default()
         }
+    }
+
+    #[test]
+    fn relabel_renames_deletes_and_adds_once() {
+        let labels = |l: &[&str]| l.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
+        assert_eq!(relabel(&labels(&["a", "c"]), "a", "b"), ["b", "c"]);
+        assert_eq!(relabel(&labels(&["a", "b"]), "a", "b"), ["b"]);
+        assert_eq!(relabel(&labels(&["b", "a"]), "a", "b"), ["b"]);
+        assert_eq!(relabel(&labels(&["a", "c"]), "a", ""), ["c"]);
+        assert_eq!(relabel(&labels(&["c"]), "", "b"), ["c", "b"]);
+        assert_eq!(relabel(&labels(&["b"]), "", "b"), ["b"]);
+        assert_eq!(relabel(&labels(&["c"]), "a", "b"), ["c"]);
+    }
+
+    #[test]
+    fn relabeling_notes_marks_only_the_changed_ones() {
+        let (_dir, mut store) = store();
+        let a = store.save_note(&note("a")).unwrap();
+        let b = store
+            .save_note(&Note {
+                labels: vec!["Work".to_owned()],
+                ..note("b")
+            })
+            .unwrap();
+        let journal = journal::changes_since(&store.pim, 0, 1000).unwrap().len();
+        assert_eq!(store.relabel_notes(&[a, b], "Home", "Family").unwrap(), 1);
+        assert_eq!(store.note(a).unwrap().unwrap().labels, ["Family"]);
+        assert_eq!(store.note(b).unwrap().unwrap().labels, ["Work"]);
+        assert_eq!(
+            journal::changes_since(&store.pim, 0, 1000).unwrap().len(),
+            journal + 1
+        );
+        assert_eq!(store.relabel_notes(&[a, b], "", "Home").unwrap(), 2);
+        assert_eq!(store.note(b).unwrap().unwrap().labels, ["Work", "Home"]);
+        assert_eq!(store.relabel_notes(&[a, b, 999], "Home", "").unwrap(), 2);
+        assert_eq!(store.note(a).unwrap().unwrap().labels, ["Family"]);
     }
 
     #[test]

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Labels on notes"
+text = """
+The label button on a note puts labels on it, as in Keep. Your labels are
+listed beside Notes, each showing just its notes, and Edit labels renames or
+deletes them, with Undo.
+"""

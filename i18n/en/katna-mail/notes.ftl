@@ -8,6 +8,8 @@
 notes-view-notes = Notes
 notes-view-archive = Archive
 notes-view-trash = Trash
+# Opens the dialog that renames and deletes labels.
+notes-edit-labels = Edit labels
 notes-search = Search notes
 notes-loading = Opening your notes…
 
@@ -24,6 +26,7 @@ notes-empty = Notes you add appear here
 notes-archive-empty = Your archived notes appear here
 notes-trash-empty = No notes in Trash
 notes-none-found = No matching notes
+notes-label-empty = No notes with this label yet
 notes-trash-note = Notes in Trash are deleted after 7 days.
 notes-empty-trash = Empty Trash
 # Under a checklist on a card: how many of its items are ticked.
@@ -43,6 +46,7 @@ notes-restore = Restore
 notes-delete-forever = Delete forever
 notes-color = Background color
 notes-checkboxes = Show or hide checkboxes
+notes-labels = Labels
 notes-close = Close
 
 ## The open note
@@ -55,6 +59,23 @@ notes-edited = Edited { $date }
 notes-on-this-computer = On this computer
 # Tooltip of where the note is kept, which opens the choice of accounts.
 notes-where = Where this note is kept
+
+## Labels
+
+# Over the box on an open note that finds or makes a label.
+notes-label-note = Label note
+notes-label-name = Enter label name
+# Makes a label that does not exist yet. $name: what was typed.
+notes-label-create = Create "{ $name }"
+# Tooltip of the × on a label chip of an open note.
+notes-label-remove = Remove label
+notes-label-delete = Delete label
+# In Edit labels when no note has a label.
+notes-labels-none = No labels yet. Add one from a note's label button.
+notes-labels-done = Done
+# Snackbars, with Undo. $name: the label's (new) name.
+notes-label-renamed = Label renamed to "{ $name }"
+notes-label-deleted = Label "{ $name }" deleted
 
 ## A note about a mail
 

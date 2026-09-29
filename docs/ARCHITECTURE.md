@@ -2589,8 +2589,9 @@ away; he can still change them.
   times, `trashed_at`, `server_uid` and `dirty`. `note_gone` lists server
   copies still to delete. Changes are journaled as `note`.
 - **D-Bus.** `SaveNote(NoteItem)` (ID 0 makes a new one on top) returns
-  the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`. Apps read notes
-  from the store.
+  the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`;
+  `RelabelNotes(ids, old, new)` renames, deletes or adds a label (at
+  most 50 characters). Apps read notes from the store.
 - **Sync.** A note of a mail account is kept in that account's `Notes`
   folder in Apple's format (`katna_sync::notes`): one message per note
   with `X-Uniform-Type-Identifier: com.apple.mail-note`,
@@ -2623,8 +2624,18 @@ away; he can still change them.
   them. A note with a link has a Mail chip (on its card and in the open
   note) that opens the mail again. Gmail has no key for Keep, so there
   is none.
+- **Labels.** As in Keep. The label button on an open note opens "Label
+  note": a box to find or make a label over the labels to tick; Enter
+  makes the one typed. A note shows its labels as chips (× takes one off
+  in the open note; a chip on a card opens that label's board). The side
+  list lists every label between Notes and Edit labels, and a label's
+  board shows its notes, with "Take a note…" making notes that have it.
+  Edit labels renames labels (Enter or Done) and deletes them, with Undo;
+  a label lives only on its notes, so there is no empty label, and a
+  label's board goes back to Notes once no note has it. Labels travel in
+  `X-Katna-Labels`; there is no schema change.
 - **Later.** Meeting notes from an event, a checklist line made a task,
-  labels, formatting, pictures.
+  formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 

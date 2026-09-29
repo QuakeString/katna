@@ -639,6 +639,12 @@ macro_rules! pim_proxy {
             /// how many existed.
             fn delete_notes(&self, ids: &[i64]) -> zbus::Result<u32>;
 
+            /// Takes label `old` off notes `ids` and puts `new` on those
+            /// that had it; with `old` empty, puts `new` on all of them,
+            /// and with `new` empty, only takes `old` off. Renames, deletes
+            /// and adds labels. Returns how many notes changed.
+            fn relabel_notes(&self, ids: &[i64], old: &str, new: &str) -> zbus::Result<u32>;
+
             /// Saves `message` (RFC 5322, with `Bcc` if any) as a draft of
             /// `account` in its Drafts folder, here and on the server,
             /// in place of the copies saved before with the same
