@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The day's agenda beside the inbox, as Gmail's side panel has it: a thin
-//! strip at the right of the mail with a Calendar button, which opens a
-//! card with one day's events (today first), their times, and Join for a
+//! The day's agenda beside the inbox, as Gmail's side panel has it: a
+//! Calendar button on the top bar, beside the language button, opens a
+//! card at the right of the mail with one day's events (today first), their times, and Join for a
 //! call about to start. Clicking an event opens the Calendar page on its
 //! day. Desktop windows only, as the contact panel; the two take turns.
 
@@ -25,8 +25,8 @@ use crate::widgets::{card_outline, card_shadow, filled_button, icon, icon_button
 
 /// The card's width.
 const AGENDA_WIDTH: f32 = 300.0;
-/// The strip with the buttons.
-pub(super) const STRIP_WIDTH: f32 = 56.0;
+/// The top bar's button, as wide as Settings.
+pub(super) const AGENDA_BUTTON_WIDTH: f32 = 40.0;
 /// The gap between the cards and the agenda card.
 const GAP: f32 = 16.0;
 /// Join shows this long before a call starts.
@@ -60,8 +60,8 @@ impl AgendaPanel {
 }
 
 impl MailWindow {
-    /// Whether the strip shows: the main window's Mail page on a desktop.
-    fn agenda_strip_shown(&self) -> bool {
+    /// Whether the button shows: the main window's Mail page on a desktop.
+    pub(super) fn agenda_button_shown(&self) -> bool {
         !self.detached
             && self.layout.shape.is_desktop()
             && self.app == RailApp::Mail
@@ -70,30 +70,30 @@ impl MailWindow {
 
     /// Whether the card fits beside the mail.
     fn agenda_fits(&self, available: f32) -> bool {
-        available - AGENDA_WIDTH - GAP - STRIP_WIDTH >= KEEP
+        available - AGENDA_WIDTH - GAP >= KEEP
     }
 
     /// The agenda card is open, so the contact panel waits.
     pub(super) fn agenda_open(&self) -> bool {
-        self.config.mail.agenda_panel && self.agenda_strip_shown()
+        self.config.mail.agenda_panel && self.agenda_button_shown()
     }
 
     /// Moves the card toward shown or hidden for this frame, and returns
-    /// the width the strip and the card take now and when settled.
+    /// the width the card takes now and when settled.
     pub(super) fn tick_agenda(
         &mut self,
         available: f32,
         window: &Window,
         reduce: bool,
     ) -> (f32, f32) {
-        if !self.agenda_strip_shown() {
+        if !self.agenda_button_shown() {
             self.agenda.spring.snap(0.0);
             return (0.0, 0.0);
         }
         let open = self.config.mail.agenda_panel && self.agenda_fits(available);
         self.agenda.spring.set(if open { 1.0 } else { 0.0 });
         let t = self.agenda.spring.tick(window, reduce).clamp(0.0, 1.0);
-        let room = |t: f32| STRIP_WIDTH + (AGENDA_WIDTH + GAP) * t;
+        let room = |t: f32| (AGENDA_WIDTH + GAP) * t;
         (room(t), room(self.agenda.spring.target()))
     }
 
@@ -146,47 +146,37 @@ impl MailWindow {
         }
     }
 
-    /// The strip at the right of the mail with its buttons.
-    fn render_agenda_strip(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// The top bar's button, beside the language button, which opens and
+    /// closes the card.
+    pub(super) fn render_agenda_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let on = self.config.mail.agenda_panel;
-        div()
-            .flex_none()
-            .w(px(STRIP_WIDTH))
-            .h_full()
-            .pt(px(8.0))
-            .flex()
-            .flex_col()
-            .items_center()
-            .gap(px(8.0))
-            .child(
-                icon_button_colored(
-                    "agenda-toggle",
-                    "calendar",
-                    20.0,
-                    if on { th.accent } else { th.text_dim },
-                    th,
-                )
-                .when(on, |d| d.bg(rgba(th.nav_selected)))
-                .tooltip(tip(
-                    if on {
-                        tr!("agenda-hide")
-                    } else {
-                        tr!("agenda-show")
-                    },
-                    th,
-                ))
-                .on_click(cx.listener(|this, _, _, cx| this.toggle_agenda(cx))),
-            )
-            .into_any_element()
+        icon_button_colored(
+            "agenda-toggle",
+            "calendar",
+            24.0,
+            if on { th.accent } else { th.text_dim },
+            th,
+        )
+        .when(on, |d| d.bg(rgba(th.nav_selected)))
+        .tooltip(tip(
+            if on {
+                tr!("agenda-hide")
+            } else {
+                tr!("agenda-show")
+            },
+            th,
+        ))
+        .on_click(cx.listener(|this, _, _, cx| this.toggle_agenda(cx)))
+        .into_any_element()
     }
 
-    /// The agenda card and the strip, at the right of the cards.
+    /// The agenda card, at the right of the cards.
     pub(super) fn render_agenda_panel(
         &mut self,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        if !self.agenda_strip_shown() {
+        if !self.agenda_button_shown() {
             return None;
         }
         if self.agenda_open() && self.agenda.loaded.is_none() && self.agenda.task.is_none() {
@@ -194,12 +184,18 @@ impl MailWindow {
         }
         let t = self.agenda.spring.value().clamp(0.0, 1.0);
         let room = crate::widgets::CARD_SHADOW_ROOM;
-        let card = (t > 0.001).then(|| {
+        if t <= 0.001 {
+            return None;
+        }
+        Some(
             div()
                 .flex_none()
                 .w(px((AGENDA_WIDTH + GAP) * t + room))
+                // The shadow's room reaches into the window's margin, so
+                // the card lines up with the cards' right edge.
                 .mt(px(-room))
                 .mb(px(-room))
+                .mr(px(-room))
                 .py(px(room))
                 .pl(px(GAP * t))
                 .overflow_hidden()
@@ -211,15 +207,6 @@ impl MailWindow {
                         .opacity(t)
                         .child(self.render_agenda_card(th, cx)),
                 )
-        });
-        Some(
-            div()
-                .flex_none()
-                .h_full()
-                .flex()
-                .flex_row()
-                .children(card)
-                .child(self.render_agenda_strip(th, cx))
                 .into_any_element(),
         )
     }
