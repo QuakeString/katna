@@ -13,9 +13,9 @@
 use std::collections::{HashMap, HashSet};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight,
-    KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription, Task,
-    Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Bounds, Context, Entity, FocusHandle, Focusable,
+    FontWeight, KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription,
+    Task, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
@@ -134,10 +134,40 @@ pub(super) struct TasksPage {
     /// The lists there were when a new one was sent: the one not among
     /// them is scrolled into view once it is read back.
     reveal_new: Option<HashSet<i64>>,
+    /// A task being dragged over the lists, while it is.
+    drag: Option<Drag>,
 }
 
-/// A task being dragged onto another list: it follows the pointer as a
-/// lifted card, as in Google Tasks.
+/// A task being dragged: the lists open a gap where it would land, as in
+/// Google Tasks. Only while GPUI has a [`TaskDragged`] under way.
+struct Drag {
+    id: i64,
+    /// Its list, and its slot there among the open tasks shown.
+    from: (i64, usize),
+    /// The height of its row with its steps: the gap it leaves and opens.
+    height: f32,
+    /// The list and slot where it lands if let go now: before the slot's
+    /// task among the list's open tasks shown (itself left out), or after
+    /// the last. `None` over no list.
+    to: Option<(i64, usize)>,
+    /// Whether the gap at `to` opens at once: the one it left, as it
+    /// lifts.
+    at_once: bool,
+    /// Gaps closing where it no longer lands, each with its animation's
+    /// number.
+    closing: Vec<(i64, usize, usize)>,
+    /// The number of the gap opening at `to`; each new place has its own,
+    /// so its animation starts afresh.
+    serial: usize,
+    /// Each task's row with its steps, as last seen during the drag.
+    rows: HashMap<i64, Bounds<Pixels>>,
+}
+
+/// How long a gap takes to open or close.
+const GAP_MS: u64 = 150;
+
+/// A task being dragged to another place in its list or another: it
+/// follows the pointer as a lifted card, as in Google Tasks.
 #[derive(Clone)]
 struct TaskDragged {
     id: i64,
@@ -323,6 +353,53 @@ impl TasksPage {
             self.board_scroll.scroll_to_item(ix);
             self.reveal_new = None;
         }
+    }
+
+    /// The open tasks (not steps) list `list` shows, in order, less task
+    /// `except`: the slots a dragged task lands between.
+    fn slots(&self, list: i64, except: i64) -> Vec<i64> {
+        self.columns()
+            .iter()
+            .filter(|c| c.list.id == list)
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| t.parent.is_none() && t.id != except && !self.done(t) && self.found(t))
+            .map(|t| t.id)
+            .collect()
+    }
+
+    /// The drag of `dragged` as tracked here: a new one when it isn't yet.
+    fn drag_of(&mut self, dragged: &TaskDragged) -> &mut Drag {
+        if self.drag.as_ref().is_none_or(|d| d.id != dragged.id) {
+            let slots = self.slots(dragged.list, -1);
+            let slot = slots.iter().position(|t| *t == dragged.id).unwrap_or(0);
+            self.drag = Some(Drag {
+                id: dragged.id,
+                from: (dragged.list, slot),
+                height: 44.0,
+                to: Some((dragged.list, slot)),
+                at_once: true,
+                closing: Vec::new(),
+                serial: 0,
+                rows: HashMap::new(),
+            });
+        }
+        self.drag.as_mut().expect("just set")
+    }
+
+    /// The dragged task would land at `to` now; a gap opens there and the
+    /// one it left closes. Returns whether that changed.
+    fn drag_to(&mut self, dragged: &TaskDragged, to: Option<(i64, usize)>) -> bool {
+        let drag = self.drag_of(dragged);
+        if drag.to == to {
+            return false;
+        }
+        if let Some((list, slot)) = drag.to {
+            drag.closing.push((list, slot, drag.serial));
+        }
+        drag.serial += 1;
+        drag.to = to;
+        drag.at_once = false;
+        true
     }
 
     fn shown_columns(&self) -> Vec<&Column> {
@@ -894,6 +971,143 @@ impl MailWindow {
             TaskCommand::Move(id, list),
             Some(tr!("tasks-toast-moved", list = name)),
             Some(TaskCommand::Move(id, from)),
+            cx,
+        );
+        cx.notify();
+    }
+
+    /// A dragged task moved over list `list`'s card (`card`, drawn there):
+    /// the gap follows the pointer, between the tasks it is between.
+    fn task_drag_over(
+        &mut self,
+        list: i64,
+        card: Bounds<Pixels>,
+        at: Point<Pixels>,
+        dragged: &TaskDragged,
+        cx: &mut Context<Self>,
+    ) {
+        let page = &mut self.tasks;
+        let slots = page.slots(list, dragged.id);
+        let drag = page.drag_of(dragged);
+        if drag.rows.is_empty() {
+            // Not a row seen yet: the gap stays where the task was.
+            return;
+        }
+        let to = if card.contains(&at) {
+            let slot = slots
+                .iter()
+                .filter(|t| drag.rows.get(t).is_some_and(|b| b.center().y < at.y))
+                .count();
+            Some((list, slot))
+        } else if drag.to.is_some_and(|(l, _)| l == list) {
+            // Out of this list, over none yet.
+            None
+        } else {
+            return;
+        };
+        if page.drag_to(dragged, to) {
+            cx.notify();
+        }
+    }
+
+    /// Where task `task`'s row, with its steps, is drawn while a task is
+    /// dragged.
+    fn task_drag_row(&mut self, task: i64, row: Bounds<Pixels>, dragged: &TaskDragged) {
+        let drag = self.tasks.drag_of(dragged);
+        if task == dragged.id {
+            drag.height = katna_ui::unpx(row.size.height);
+        }
+        drag.rows.insert(task, row);
+    }
+
+    /// The dragged task was let go on list `list`: it goes where the gap
+    /// is, at once here, and Undo puts it back where it was.
+    fn task_drop(&mut self, list: i64, dragged: &TaskDragged, cx: &mut Context<Self>) {
+        let Some(drag) = self.tasks.drag.take() else {
+            return;
+        };
+        let Some((to_list, slot)) = drag.to.filter(|(l, _)| *l == list) else {
+            return;
+        };
+        if drag.id != dragged.id || (to_list, slot) == drag.from {
+            cx.notify();
+            return;
+        }
+        let id = drag.id;
+        let Some(task) = self.tasks.task(id).cloned() else {
+            return;
+        };
+        let slots = self.tasks.slots(list, id);
+        let after = slot.checked_sub(1).and_then(|ix| slots.get(ix).copied());
+        // Where it was: after the task before it in its list, done ones
+        // and those the search hides too.
+        let before = self
+            .tasks
+            .columns()
+            .iter()
+            .filter(|c| c.list.id == task.list)
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| t.parent.is_none())
+            .take_while(|t| t.id != id)
+            .last()
+            .map(|t| t.id);
+        let from = task.list;
+        // Shown there at once; the store follows.
+        if let Some(Ok(board)) = &mut self.tasks.board {
+            let mut moving = Vec::new();
+            for column in &mut board.columns {
+                column.tasks.retain(|t| {
+                    let ours = t.id == id || t.parent == Some(id);
+                    if ours {
+                        moving.push(t.clone());
+                    }
+                    !ours
+                });
+            }
+            for t in &mut moving {
+                t.list = list;
+            }
+            if let Some(column) = board.columns.iter_mut().find(|c| c.list.id == list) {
+                let at = match after {
+                    None => 0,
+                    Some(after) => {
+                        column
+                            .tasks
+                            .iter()
+                            .position(|t| t.id == after)
+                            .map_or(0, |ix| {
+                                // After its steps too.
+                                ix + 1
+                                    + column.tasks[ix + 1..]
+                                        .iter()
+                                        .take_while(|t| t.parent == Some(after))
+                                        .count()
+                            })
+                    }
+                };
+                column.tasks.splice(at..at, moving);
+            }
+        }
+        let text = if from == list {
+            tr!("tasks-toast-placed")
+        } else {
+            let name = self
+                .tasks
+                .columns()
+                .iter()
+                .find(|c| c.list.id == list)
+                .map(list_title)
+                .unwrap_or_default();
+            tr!("tasks-toast-moved", list = name)
+        };
+        self.send_task(
+            TaskCommand::Place { id, list, after },
+            Some(text),
+            Some(TaskCommand::Place {
+                id,
+                list: from,
+                after: before,
+            }),
             cx,
         );
         cx.notify();
@@ -1828,17 +2042,55 @@ impl MailWindow {
             .filter(|t| page.parent_open(t) || !page.done(t))
             .filter(|t| page.found(t))
             .partition(|t| page.done(t));
-        // Open tasks; a step whose task is done shows among the done.
-        let open_rows: Vec<AnyElement> = open
-            .iter()
-            .flat_map(|t| {
-                let mut rows = vec![self.render_task_row(t, None, today, th, cx)];
-                if let Some(adding) = page.adding.as_ref().filter(|a| a.parent == Some(t.id)) {
-                    rows.push(self.adding_row(adding, true, th, cx));
+        // Open tasks, each with its steps; a step whose task is done shows
+        // among the done.
+        let mut groups: Vec<(Option<i64>, Vec<AnyElement>)> = Vec::new();
+        for t in &open {
+            if t.parent.is_none() || groups.is_empty() {
+                groups.push((t.parent.is_none().then_some(t.id), Vec::new()));
+            }
+            let rows = &mut groups.last_mut().expect("just pushed").1;
+            rows.push(self.render_task_row(t, None, today, th, cx));
+            if let Some(adding) = page.adding.as_ref().filter(|a| a.parent == Some(t.id)) {
+                rows.push(self.adding_row(adding, true, th, cx));
+            }
+        }
+        let drag = page.drag.as_ref().filter(|_| cx.has_active_drag());
+        let mut open_rows: Vec<AnyElement> = Vec::new();
+        let mut slot = 0;
+        for (task, rows) in groups {
+            let Some(task) = task else {
+                open_rows.extend(rows);
+                continue;
+            };
+            if let Some(drag) = drag {
+                // The dragged task leaves its place; a gap follows the
+                // pointer.
+                if task == drag.id {
+                    continue;
                 }
-                rows
-            })
-            .collect();
+                open_rows.extend(drag_gaps(drag, id, slot, th));
+            }
+            slot += 1;
+            // Each task with its steps says where it is to a drag.
+            open_rows.push(
+                div()
+                    .id(("task-group", task as usize))
+                    .flex()
+                    .flex_col()
+                    .on_drag_move(cx.listener(
+                        move |this, event: &gpui::DragMoveEvent<TaskDragged>, _, cx| {
+                            let dragged = event.drag(cx).clone();
+                            this.task_drag_row(task, event.bounds, &dragged);
+                        },
+                    ))
+                    .children(rows)
+                    .into_any_element(),
+            );
+        }
+        if let Some(drag) = drag {
+            open_rows.extend(drag_gaps(drag, id, slot, th));
+        }
         let done_open = page.open_done.contains(&id);
         let done_count = done.len();
         let done_rows: Vec<AnyElement> = if done_open {
@@ -1962,7 +2214,8 @@ impl MailWindow {
                 })
                 .children(done_rows),
         )
-        // Another list's task dropped here moves to this list.
+        // A task dragged here, from this list or another, lands where the
+        // gap opened.
         .drag_over::<TaskDragged>({
             let accent = th.accent;
             move |style, dragged, _, _| {
@@ -1973,10 +2226,14 @@ impl MailWindow {
                 }
             }
         })
+        .on_drag_move(cx.listener(
+            move |this, event: &gpui::DragMoveEvent<TaskDragged>, _, cx| {
+                let dragged = event.drag(cx).clone();
+                this.task_drag_over(id, event.bounds, event.event.position, &dragged, cx);
+            },
+        ))
         .on_drop(cx.listener(move |this, dragged: &TaskDragged, _, cx| {
-            if dragged.list != id {
-                this.move_task_to(dragged.id, id, cx);
-            }
+            this.task_drop(id, dragged, cx);
         }))
         .into_any_element()
     }
@@ -2270,18 +2527,27 @@ impl MailWindow {
                     .children(chips),
             )
             .when(!done, |d| d.child(star))
-            // An open task, not a step, drags onto another list.
-            .when(!done && task.parent.is_none() && editing.is_none(), |d| {
-                d.on_drag(
-                    TaskDragged {
-                        id,
-                        list: task.list,
-                        title: task.title.clone(),
-                        th: *th,
-                    },
-                    |drag, _, _, cx| cx.new(|_| drag.clone()),
-                )
-            })
+            // An open task, not a step, drags to another place in its list
+            // or in another, on the lists' cards.
+            .when(
+                !done && task.parent.is_none() && editing.is_none() && list.is_none(),
+                |d| {
+                    d.on_drag(
+                        TaskDragged {
+                            id,
+                            list: task.list,
+                            title: task.title.clone(),
+                            th: *th,
+                        },
+                        |drag, _, _, cx| cx.new(|_| drag.clone()),
+                    )
+                    // A drag let go over no list is forgotten by the next.
+                    .on_mouse_down(
+                        MouseButton::Left,
+                        cx.listener(|this, _, _, _| this.tasks.drag = None),
+                    )
+                },
+            )
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
                     if event.click_count() >= 2 {
@@ -2555,6 +2821,54 @@ fn list_title(column: &Column) -> String {
     } else {
         column.list.title.clone()
     }
+}
+
+/// What list `list` shows before its slot `slot` while `drag` is under way:
+/// the gap opening where the task would land, and gaps closing where it no
+/// longer would. The tasks below slide as they open and close.
+fn drag_gaps(drag: &Drag, list: i64, slot: usize, th: &Theme) -> Vec<AnyElement> {
+    let height = drag.height;
+    let timing =
+        || Animation::new(std::time::Duration::from_millis(GAP_MS)).with_easing(gpui::ease_in_out);
+    // A faint place for the task, as tall as the gap is.
+    let gap = |open: f32| {
+        div()
+            .flex_none()
+            .overflow_hidden()
+            .h(px(height * open))
+            .child(
+                div().h(px(height)).py(px(2.0)).px(px(8.0)).child(
+                    div()
+                        .size_full()
+                        .rounded(px(8.0))
+                        .bg(rgba(fade(th.accent, 0.08))),
+                ),
+            )
+    };
+    let mut gaps = Vec::new();
+    for &(l, s, serial) in &drag.closing {
+        if (l, s) == (list, slot) {
+            gaps.push(
+                gap(1.0)
+                    .with_animation(("task-gap-close", serial), timing(), move |el, t| {
+                        el.h(px(height * (1.0 - t)))
+                    })
+                    .into_any_element(),
+            );
+        }
+    }
+    if drag.to == Some((list, slot)) {
+        gaps.push(if drag.at_once {
+            gap(1.0).into_any_element()
+        } else {
+            gap(0.0)
+                .with_animation(("task-gap-open", drag.serial), timing(), move |el, t| {
+                    el.h(px(height * t))
+                })
+                .into_any_element()
+        });
+    }
+    gaps
 }
 
 fn card_heading(title: String, th: &Theme) -> gpui::Div {

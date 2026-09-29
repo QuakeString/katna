@@ -318,6 +318,27 @@ impl GoogleTasks {
         Ok(Some(item.into()))
     }
 
+    /// Moves task `id` (a task, not a subtask) right after task `after`
+    /// of `list`, or first (`tasks.move` with `previous`); `None` when
+    /// Google no longer has it.
+    pub async fn place(
+        &self,
+        list: &str,
+        id: &str,
+        after: Option<&str>,
+    ) -> Result<Option<RemoteTask>> {
+        let mut path = format!("lists/{}/tasks/{}/move", segment(list), segment(id));
+        if let Some(after) = after {
+            path.push_str(&format!("?{}", form_encode(&[("previous", after)])));
+        }
+        let reply = self.call("POST", &path, None).await?;
+        if gone(&reply) {
+            return Ok(None);
+        }
+        let item: Item = parse(&reply, "moving a task")?;
+        Ok(Some(item.into()))
+    }
+
     pub async fn delete(&self, list: &str, id: &str) -> Result<()> {
         let path = format!("lists/{}/tasks/{}", segment(list), segment(id));
         let reply = self.call("DELETE", &path, None).await?;

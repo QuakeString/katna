@@ -13,7 +13,7 @@
 
 use std::collections::HashMap;
 
-use katna_core::AccountId;
+use katna_core::{AccountId, OAuthProvider};
 use rusqlite::{OptionalExtension, Row, Transaction, TransactionBehavior, params};
 
 use crate::Store;
@@ -126,10 +126,31 @@ pub struct PendingTask {
     pub parent_remote: Option<String>,
     pub etag: Option<String>,
     pub deleted: bool,
+    /// Its fields changed here (or it is new), besides its place.
+    pub edited: bool,
+    /// Where it goes on the service, when it was dragged to a new place
+    /// in its list here (Google Tasks only).
+    pub place: Option<Place>,
     /// `updated_at` when read: [`Store::task_pushed`] keeps the row dirty
     /// if it changed again meanwhile.
     pub stamp: i64,
 }
+
+/// Where a task dragged here goes among its list's tasks on the service.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Place {
+    First,
+    /// Right after the task with this service ID.
+    After(String),
+    /// After a task not on the service yet: next round.
+    Waiting,
+}
+
+/// What `task.dirty` holds: bits of what is waiting to go to the service.
+/// A change of its fields (or a new task, or a deletion)…
+const EDITED: i64 = 1;
+/// …and a new place in its list ([`Store::place_task`]).
+const MOVED: i64 = 2;
 
 const TASK_COLUMNS: &str = "id, list_id, parent_id, title, notes, due, due_time, remind_at, \
                             repeat, starred, done_at, position, mail";
@@ -175,6 +196,104 @@ fn synced(tx: &Transaction<'_>, list: i64) -> rusqlite::Result<bool> {
 
 fn due_or_null(due: &str) -> Option<&str> {
     (!due.is_empty()).then_some(due)
+}
+
+/// Task `id`, unless deleted.
+fn task_in(tx: &Transaction<'_>, id: i64) -> rusqlite::Result<Option<Task>> {
+    tx.prepare_cached(&format!(
+        "SELECT {TASK_COLUMNS} FROM task WHERE id = ?1 AND deleted = 0"
+    ))?
+    .query_row([id], task_row)
+    .optional()
+}
+
+/// The tasks (not steps) of list `list`, done ones too, in the order
+/// [`Store::tasks_in`] shows them: each with its position.
+fn top_level(conn: &rusqlite::Connection, list: i64) -> rusqlite::Result<Vec<(i64, String)>> {
+    conn.prepare_cached(
+        "SELECT id, position FROM task
+         WHERE list_id = ?1 AND parent_id IS NULL AND deleted = 0
+         ORDER BY position = '' DESC, position, created_at DESC, id DESC",
+    )?
+    .query_map([list], |row| Ok((row.get(0)?, row.get(1)?)))?
+    .collect()
+}
+
+/// Moves task `id`, with its steps, to list `list`, on top: what was on
+/// the old list's service goes as a tombstone; the task itself is sent to
+/// the new list's service.
+fn move_to_list(tx: &Transaction<'_>, id: i64, list: i64) -> rusqlite::Result<()> {
+    let now = unix_now();
+    let dirty = synced(tx, list)?;
+    let mut ids = vec![id];
+    ids.extend(
+        tx.prepare_cached("SELECT id FROM task WHERE parent_id = ?1 AND deleted = 0")?
+            .query_map([id], |row| row.get::<_, i64>(0))?
+            .collect::<rusqlite::Result<Vec<_>>>()?,
+    );
+    for each in ids {
+        let (old_list, remote, etag): (i64, Option<String>, Option<String>) = tx.query_row(
+            "SELECT list_id, remote_id, etag FROM task WHERE id = ?1",
+            [each],
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+        )?;
+        tx.execute(
+            "UPDATE task SET list_id = ?2, remote_id = NULL, etag = NULL, position = '',
+                             dirty = ?3, updated_at = ?4
+             WHERE id = ?1",
+            params![each, list, dirty, now],
+        )?;
+        if remote.is_some() {
+            tx.execute(
+                "INSERT INTO task (list_id, title, remote_id, etag, deleted, dirty,
+                                   created_at, updated_at)
+                 VALUES (?1, '', ?2, ?3, 1, 1, ?4, ?4)",
+                params![old_list, remote, etag, now],
+            )?;
+        }
+    }
+    Ok(())
+}
+
+/// A position that sorts (as text) after `low` and before `high` (none:
+/// after `low` only), as short as it can be and never ending in `0`, so
+/// there is always room for another; `None` when there is none between
+/// (`high` not above `low`). Positions are digits, as Google's are.
+pub(crate) fn between(low: &str, high: Option<&str>) -> Option<String> {
+    if low
+        .bytes()
+        .chain(high.unwrap_or("").bytes())
+        .any(|b| !b.is_ascii_digit())
+    {
+        return None;
+    }
+    let digit = |text: &str, ix: usize| text.as_bytes().get(ix).map(|b| b - b'0');
+    let mut out = String::new();
+    // While `out` is still the start of `high`, the next digit can't go
+    // above `high`'s.
+    let mut under_high = high;
+    for ix in 0.. {
+        // Past its end, `low` goes on as zeros.
+        let l = digit(low, ix).unwrap_or(0);
+        let h = match under_high {
+            // `high` ended: it is not above `low`.
+            Some(high) => digit(high, ix)?,
+            None => 10,
+        };
+        if h < l {
+            return None;
+        }
+        if h - l >= 2 {
+            out.push(char::from(b'0' + (l + h) / 2));
+            return Some(out);
+        }
+        if h - l == 1 {
+            // Below `high` now, whatever follows.
+            under_high = None;
+        }
+        out.push(char::from(b'0' + l));
+    }
+    None
 }
 
 impl Store {
@@ -391,8 +510,8 @@ impl Store {
         let changed = self.pim.execute(
             "UPDATE task SET title = ?2, notes = ?3, due = ?4, due_time = ?5, remind_at = ?6,
                              repeat = ?7, starred = ?8, mail = ?9, updated_at = ?10,
-                             dirty = (SELECT account_id IS NOT NULL FROM task_list
-                                      WHERE task_list.id = task.list_id)
+                             dirty = (dirty & 2) | (SELECT account_id IS NOT NULL FROM task_list
+                                                    WHERE task_list.id = task.list_id)
              WHERE id = ?1 AND deleted = 0",
             params![
                 id,
@@ -418,8 +537,8 @@ impl Store {
         let changed = self.pim.execute(
             "UPDATE task SET done_at = CASE WHEN ?2 IS NULL THEN NULL ELSE COALESCE(done_at, ?2) END,
                              updated_at = ?3,
-                             dirty = (SELECT account_id IS NOT NULL FROM task_list
-                                      WHERE task_list.id = task.list_id)
+                             dirty = (dirty & 2) | (SELECT account_id IS NOT NULL FROM task_list
+                                                    WHERE task_list.id = task.list_id)
              WHERE id = ?1 AND deleted = 0",
             params![id, done_at, now],
         )?;
@@ -433,51 +552,104 @@ impl Store {
         let tx = self
             .pim
             .transaction_with_behavior(TransactionBehavior::Immediate)?;
-        let Some(task) = tx
-            .prepare_cached(&format!(
-                "SELECT {TASK_COLUMNS} FROM task WHERE id = ?1 AND deleted = 0"
-            ))?
-            .query_row([id], task_row)
-            .optional()?
-        else {
+        let Some(task) = task_in(&tx, id)? else {
             return Ok(false);
         };
-        if task.list == list {
-            return Ok(true);
+        if task.list != list {
+            move_to_list(&tx, id, list)?;
         }
+        tx.commit()?;
+        Ok(true)
+    }
+
+    /// Puts task `id` (a task, not a step) in list `list` right after
+    /// task `after` of that list, or first, as dragging it on the Tasks
+    /// page does; from another list it moves as with [`Self::move_task`].
+    /// Google Tasks keeps the order, so there the task is marked to be
+    /// moved on Google too ([`PendingTask::place`]); other lists keep it
+    /// here only, their tasks numbered anew. Returns whether it exists (a
+    /// step is never placed).
+    pub fn place_task(&mut self, id: i64, list: i64, after: Option<i64>) -> Result<bool> {
+        let google = self.list_keeps_order(list)?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let Some(task) = task_in(&tx, id)? else {
+            return Ok(false);
+        };
+        if task.parent.is_some() {
+            return Ok(false);
+        }
+        if task.list != list {
+            move_to_list(&tx, id, list)?;
+        }
+        let siblings: Vec<(i64, String)> = top_level(&tx, list)?
+            .into_iter()
+            .filter(|(sibling, _)| *sibling != id)
+            .collect();
+        // Right after `after`; first when it is gone meanwhile.
+        let at = after
+            .and_then(|after| siblings.iter().position(|(s, _)| *s == after))
+            .map_or(0, |ix| ix + 1);
         let now = unix_now();
-        let dirty = synced(&tx, list)?;
-        let mut ids = vec![id];
-        ids.extend(
-            tx.prepare_cached("SELECT id FROM task WHERE parent_id = ?1 AND deleted = 0")?
-                .query_map([id], |row| row.get::<_, i64>(0))?
-                .collect::<rusqlite::Result<Vec<_>>>()?,
-        );
-        for each in ids {
-            // What was on the old list's service goes as a tombstone; the
-            // task itself moves and is sent to the new list's service.
-            let (old_list, remote, etag): (i64, Option<String>, Option<String>) = tx.query_row(
-                "SELECT list_id, remote_id, etag FROM task WHERE id = ?1",
-                [each],
-                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
-            )?;
+        if google {
+            // Between its neighbours as Google placed them; those not sent
+            // yet have no place there, and sort first anyway.
+            let before = siblings[..at]
+                .iter()
+                .rev()
+                .map(|(_, p)| p.as_str())
+                .find(|p| !p.is_empty())
+                .unwrap_or("");
+            let next = siblings[at..]
+                .iter()
+                .map(|(_, p)| p.as_str())
+                .find(|p| !p.is_empty());
+            let position = between(before, next).unwrap_or_else(|| format!("{before}5"));
             tx.execute(
-                "UPDATE task SET list_id = ?2, remote_id = NULL, etag = NULL, position = '',
-                                 dirty = ?3, updated_at = ?4
-                 WHERE id = ?1",
-                params![each, list, dirty, now],
+                &format!(
+                    "UPDATE task SET position = ?2, dirty = dirty | {MOVED}, updated_at = ?3
+                     WHERE id = ?1"
+                ),
+                params![id, position, now],
             )?;
-            if remote.is_some() {
-                tx.execute(
-                    "INSERT INTO task (list_id, title, remote_id, etag, deleted, dirty,
-                                       created_at, updated_at)
-                     VALUES (?1, '', ?2, ?3, 1, 1, ?4, ?4)",
-                    params![old_list, remote, etag, now],
-                )?;
+        } else {
+            let mut order: Vec<i64> = siblings.iter().map(|(s, _)| *s).collect();
+            order.insert(at, id);
+            let old: HashMap<i64, String> = siblings.into_iter().collect();
+            for (ix, each) in order.into_iter().enumerate() {
+                let position = format!("{:010}", ix + 1);
+                if old.get(&each) != Some(&position) {
+                    tx.execute(
+                        "UPDATE task SET position = ?2 WHERE id = ?1",
+                        params![each, position],
+                    )?;
+                }
             }
         }
         tx.commit()?;
         Ok(true)
+    }
+
+    /// Whether list `list` is on Google Tasks, which keeps the order of
+    /// its tasks; the order of other lists is kept here only.
+    fn list_keeps_order(&self, list: i64) -> Result<bool> {
+        let account: Option<i64> = self
+            .pim
+            .query_row(
+                "SELECT account_id FROM task_list WHERE id = ?1",
+                [list],
+                |row| row.get(0),
+            )
+            .optional()?
+            .flatten();
+        let Some(account) = account else {
+            return Ok(false);
+        };
+        Ok(self
+            .account_settings(AccountId(account))?
+            .and_then(|s| s.oauth)
+            == Some(OAuthProvider::Google))
     }
 
     /// Deletes task `id` and its steps. Returns it, so it can be put back
@@ -621,11 +793,12 @@ impl Store {
     pub fn pending_tasks(&self, list: i64) -> Result<Vec<PendingTask>> {
         let mut stmt = self.pim.prepare_cached(&format!(
             "SELECT {TASK_COLUMNS}, remote_id, etag, deleted, updated_at,
-                    (SELECT p.remote_id FROM task p WHERE p.id = task.parent_id)
-             FROM task WHERE list_id = ?1 AND dirty = 1
+                    (SELECT p.remote_id FROM task p WHERE p.id = task.parent_id), dirty
+             FROM task WHERE list_id = ?1 AND dirty != 0
              ORDER BY parent_id IS NOT NULL, created_at, id"
         ))?;
         let rows = stmt.query_map([list], |row| {
+            let dirty: i64 = row.get(18)?;
             Ok(PendingTask {
                 task: task_row(row)?,
                 remote_id: row.get(13)?,
@@ -633,19 +806,55 @@ impl Store {
                 deleted: row.get(15)?,
                 stamp: row.get(16)?,
                 parent_remote: row.get(17)?,
+                edited: dirty & EDITED != 0,
+                place: (dirty & MOVED != 0).then_some(Place::First),
             })
         })?;
-        Ok(rows.collect::<rusqlite::Result<_>>()?)
+        let mut pending: Vec<PendingTask> = rows.collect::<rusqlite::Result<_>>()?;
+        if pending.iter().any(|p| p.place.is_some()) {
+            // The task before each moved one, as the list shows them.
+            let order = top_level(&self.pim, list)?;
+            for each in pending.iter_mut().filter(|p| p.place.is_some()) {
+                let ix = order.iter().position(|(id, _)| *id == each.task.id);
+                let before = ix.and_then(|ix| ix.checked_sub(1)).map(|ix| order[ix].0);
+                each.place = Some(match before {
+                    None => Place::First,
+                    Some(before) => {
+                        let remote: Option<String> = self.pim.query_row(
+                            "SELECT remote_id FROM task WHERE id = ?1",
+                            [before],
+                            |row| row.get(0),
+                        )?;
+                        remote.map_or(Place::Waiting, Place::After)
+                    }
+                });
+            }
+        }
+        Ok(pending)
     }
 
-    /// Task `id` is on the service as `remote`, as it was at `stamp`; it
-    /// stays dirty if it changed again since.
-    pub fn task_pushed(&mut self, id: i64, stamp: i64, remote: &RemoteTask) -> Result<()> {
+    /// Task `id` is on the service as `remote`, as it was at `stamp`, and
+    /// in its place there unless `placed` is false (it waits for the task
+    /// before it); it stays dirty if it changed again since. A service
+    /// that keeps no order (an empty [`RemoteTask::position`]) leaves the
+    /// place it has here.
+    pub fn task_pushed(
+        &mut self,
+        id: i64,
+        stamp: i64,
+        remote: &RemoteTask,
+        placed: bool,
+    ) -> Result<()> {
+        let position = if placed { remote.position.as_str() } else { "" };
         self.pim.execute(
-            "UPDATE task SET remote_id = ?3, etag = ?4, position = ?5,
-                             dirty = (updated_at != ?2)
-             WHERE id = ?1",
-            params![id, stamp, remote.remote_id, remote.etag, remote.position],
+            &format!(
+                "UPDATE task SET remote_id = ?3, etag = ?4,
+                                 position = CASE WHEN ?5 = '' THEN position ELSE ?5 END,
+                                 dirty = CASE WHEN updated_at != ?2 THEN dirty
+                                              WHEN ?6 THEN 0 ELSE {MOVED} END
+                 WHERE id = ?1"
+            ),
+            params![id, stamp, remote.remote_id, remote.etag, position, placed],
         )?;
         Ok(())
     }
@@ -733,7 +942,8 @@ impl Store {
                 Some((id, false, _)) => {
                     changed += tx.execute(
                         "UPDATE task SET title = ?2, notes = ?3, due = ?4, done_at = ?5,
-                                         position = ?6, etag = ?7, updated_at = ?8
+                                         position = CASE WHEN ?6 = '' THEN position ELSE ?6 END,
+                                         etag = ?7, updated_at = ?8
                          WHERE id = ?1",
                         params![
                             id,

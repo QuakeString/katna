@@ -215,6 +215,24 @@ fn google(state: &mut Google, request: &Seen, _base: &str) -> (u16, Value) {
             }
             (200, state.put(list, task))
         }
+        ("POST", ["lists", list, "tasks", id, "move"]) => {
+            let Some((_, mut task)) = state.tasks.get(*id).cloned() else {
+                return (
+                    404,
+                    json!({ "error": { "code": 404, "message": "Not Found" } }),
+                );
+            };
+            // Right after `previous`, or before every other.
+            let position = match query.strip_prefix("previous=") {
+                Some(previous) => {
+                    let (_, before) = &state.tasks[previous];
+                    format!("{}5", before["position"].as_str().unwrap())
+                }
+                None => "0".to_owned(),
+            };
+            task["position"] = json!(position);
+            (200, state.put(list, task))
+        }
         ("DELETE", ["lists", _, "tasks", id]) => {
             state.tasks.remove(*id);
             (204, Value::Null)
@@ -393,6 +411,123 @@ fn google_tasks_sync_both_ways() {
         .collect();
     assert_eq!(titles.len(), 2, "{titles:?}");
     assert!(!titles.contains(&"Book the train".to_owned()));
+}
+
+/// The titles of the fake Google's top-level tasks of `list`, in order.
+fn google_order(fake: &Fake<Google>, list: &str) -> Vec<String> {
+    let fake = fake.lock().unwrap();
+    let mut tasks: Vec<&Value> = fake
+        .0
+        .tasks
+        .values()
+        .filter(|(l, t)| l == list && t["parent"].is_null())
+        .map(|(_, t)| t)
+        .collect();
+    tasks.sort_by_key(|t| t["position"].as_str().unwrap_or_default().to_owned());
+    tasks
+        .into_iter()
+        .map(|t| t["title"].as_str().unwrap().to_owned())
+        .collect()
+}
+
+#[test]
+fn a_task_dragged_here_moves_on_google() {
+    let mut fake = Google::default();
+    fake.lists.insert("L0".into(), "My Tasks".into());
+    fake.lists.insert("L9".into(), "Work".into());
+    for (id, title, position) in [("A", "a", "1"), ("B", "b", "2"), ("C", "c", "3")] {
+        fake.put(
+            "L0",
+            json!({ "id": id, "title": title, "status": "needsAction", "position": position }),
+        );
+    }
+    fake.put(
+        "L9",
+        json!({ "id": "W", "title": "w", "status": "needsAction", "position": "1" }),
+    );
+    let (api, fake) = serve(fake, google);
+    let service = google_service(&api);
+    let (_dir, store, account) = store();
+    store
+        .lock()
+        .unwrap()
+        .set_account_settings(
+            account,
+            &katna_core::AccountSettings {
+                oauth: Some(OAuthProvider::Google),
+                ..katna_core::AccountSettings::default()
+            },
+        )
+        .unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = account_lists(&store);
+    let list = |title: &str| lists.iter().find(|l| l.title == title).unwrap().id;
+    let (mine, work) = (list("My Tasks"), list("Work"));
+    let id = |list: i64, title: &str| {
+        store
+            .lock()
+            .unwrap()
+            .tasks_in(list)
+            .unwrap()
+            .into_iter()
+            .find(|t| t.title == title)
+            .unwrap()
+            .id
+    };
+    let (a, c) = (id(mine, "a"), id(mine, "c"));
+
+    // Within the list: only a move goes, no change of its fields.
+    assert!(store.lock().unwrap().place_task(c, mine, Some(a)).unwrap());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(google_order(&fake, "L0"), ["a", "c", "b"]);
+    {
+        let fake = fake.lock().unwrap();
+        let sent: Vec<&Seen> = fake.1.iter().filter(|s| s.method != "GET").collect();
+        assert_eq!(sent.len(), 1, "{sent:?}");
+        assert_eq!(sent[0].path, "/tasks/v1/lists/L0/tasks/C/move?previous=A");
+    }
+    let store_order = |list: i64| -> Vec<String> {
+        store
+            .lock()
+            .unwrap()
+            .tasks_in(list)
+            .unwrap()
+            .into_iter()
+            .map(|t| t.title)
+            .collect()
+    };
+    assert_eq!(store_order(mine), ["a", "c", "b"]);
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_tasks(mine)
+            .unwrap()
+            .is_empty()
+    );
+
+    // First in another list: out of this one, in at the top of that one.
+    let w = id(work, "w");
+    assert!(store.lock().unwrap().place_task(a, work, None).unwrap());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(google_order(&fake, "L0"), ["c", "b"]);
+    assert_eq!(google_order(&fake, "L9"), ["a", "w"]);
+    assert_eq!(store_order(work), ["a", "w"]);
+
+    // After a task there.
+    let b = id(mine, "b");
+    assert!(store.lock().unwrap().place_task(b, work, Some(w)).unwrap());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(google_order(&fake, "L9"), ["a", "w", "b"]);
+    assert_eq!(store_order(work), ["a", "w", "b"]);
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_tasks(work)
+            .unwrap()
+            .is_empty()
+    );
 }
 
 #[test]
