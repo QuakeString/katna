@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! What the contact panel shows about one person, read from the local
-//! mail only: the mail exchanged, recent conversations and files, their
-//! phone, title and company from their signatures, and their UTC offset
-//! from the `Date` headers of their mail. Nothing is looked up online.
+//! mail only: the mail exchanged, recent conversations and files, open
+//! tasks made from mail with them, their phone, title and company from
+//! their signatures, and their UTC offset from the `Date` headers of their
+//! mail. Nothing is looked up online.
 
 use katna_core::Paths;
 use katna_store::{ContactConversation, ContactFile, ContactSummary, MessageId, Mode, Store};
@@ -30,6 +31,8 @@ pub struct Profile {
     /// Their offset from UTC in minutes, from the `Date` header of their
     /// newest stored message.
     pub offset: Option<i32>,
+    /// The mails of open tasks (`Message-ID`s) they take part in.
+    pub task_mails: Vec<String>,
 }
 
 /// What their signature says.
@@ -53,9 +56,10 @@ impl Card {
     }
 }
 
-/// Reads the profile of `email`. Opens its own connection, for a
+/// Reads the profile of `email`, with which of `task_mails` (the mails of
+/// open tasks) they take part in. Opens its own connection, for a
 /// background thread.
-pub fn read(paths: &Paths, email: &str) -> Result<Profile, String> {
+pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile, String> {
     let email = email.trim().to_lowercase();
     let store = Store::open(paths, Mode::ReadOnly).map_err(|e| e.to_string())?;
     let summary = store.contact_summary(&email).map_err(|e| e.to_string())?;
@@ -64,6 +68,9 @@ pub fn read(paths: &Paths, email: &str) -> Result<Profile, String> {
         .map_err(|e| e.to_string())?;
     let files = store
         .contact_files(&email, FILES)
+        .map_err(|e| e.to_string())?;
+    let task_mails = store
+        .contact_on_mail(&email, task_mails)
         .map_err(|e| e.to_string())?;
     let mut card = Card::default();
     let mut offset = None;
@@ -86,6 +93,7 @@ pub fn read(paths: &Paths, email: &str) -> Result<Profile, String> {
         files,
         card,
         offset,
+        task_mails,
     })
 }
 

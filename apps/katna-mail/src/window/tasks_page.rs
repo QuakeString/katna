@@ -118,6 +118,9 @@ pub(super) struct TasksPage {
     /// The open task made from each mail line's mail, for its chip in the
     /// mail list.
     from_mail: HashMap<EntryKey, i64>,
+    /// The mails (`Message-ID`s) of open tasks made from mail, sorted, for
+    /// the contact panel's Tasks.
+    pub(super) open_mails: Vec<String>,
 }
 
 impl TasksPage {
@@ -305,7 +308,7 @@ fn day_text(day: jiff::civil::Date, today: jiff::civil::Date) -> String {
 /// A due day as the page shows it: "Today", "Tomorrow", a weekday this
 /// week, else the day and month; with the time if it has one. The flag
 /// says it is past.
-fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)> {
+pub(super) fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)> {
     let day: jiff::civil::Date = task.due.parse().ok()?;
     let days = (day - today).get_days();
     let at = day.to_datetime(jiff::civil::Time::midnight());
@@ -334,7 +337,7 @@ fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)
     Some((label, past))
 }
 
-fn today() -> jiff::civil::Date {
+pub(super) fn today() -> jiff::civil::Date {
     jiff::Zoned::now().date()
 }
 
@@ -407,6 +410,40 @@ impl MailWindow {
             }
         }
         self.tasks.from_mail = from_mail;
+        let mut open_mails: Vec<String> = match &self.tasks.board {
+            Some(Ok(board)) => board
+                .columns
+                .iter()
+                .flat_map(|c| c.tasks.iter())
+                .filter(|t| t.done_at.is_none() && !t.mail.is_empty())
+                .filter(|t| super::notes::note_of_task(&t.mail).is_none())
+                .map(|t| t.mail.clone())
+                .collect(),
+            _ => Vec::new(),
+        };
+        open_mails.sort_unstable();
+        open_mails.dedup();
+        // The contact panel reads whose they are again.
+        if open_mails != self.tasks.open_mails {
+            self.tasks.open_mails = open_mails;
+            self.contact.forget_profiles();
+        }
+    }
+
+    /// The open tasks made from `mails`, due first first, and whether each
+    /// is ticked, counting ticks not yet read back.
+    pub(super) fn tasks_of_mails(&self, mails: &[String]) -> Vec<(&TaskItem, bool)> {
+        let Some(Ok(board)) = &self.tasks.board else {
+            return Vec::new();
+        };
+        let mut tasks: Vec<&TaskItem> = board
+            .columns
+            .iter()
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| t.done_at.is_none() && mails.contains(&t.mail))
+            .collect();
+        tasks.sort_by_key(|t| (t.due.is_empty(), t.due.clone(), t.due_time));
+        tasks.into_iter().map(|t| (t, self.tasks.done(t))).collect()
     }
 
     /// The chip on a mail line with an open task made from its mail: the
@@ -2274,7 +2311,7 @@ fn card_heading(title: String, th: &Theme) -> gpui::Div {
 
 /// The round tick of a task: an empty ring, a check on hover, and a
 /// filled disc with a check once done.
-fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
+pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
     let ring = div()
         .size(px(20.0))
         .flex()
