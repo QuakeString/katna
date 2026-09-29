@@ -848,6 +848,14 @@ impl MailWindow {
                             })),
                         )
                         .child(
+                            menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    this.menu = None;
+                                    let keys = this.target_keys();
+                                    this.add_note_from(keys, window, cx);
+                                })),
+                        )
+                        .child(
                             menu_item_icon("more-pin", "pin", &tr!("menu-pin"), th).on_click(
                                 cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Pin(true), cx)

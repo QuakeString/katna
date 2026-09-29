@@ -73,6 +73,8 @@ pub(super) struct Conversation {
     /// Its stored messages that are drafts, read with the messages rather
     /// than on every frame.
     drafts: HashSet<MessageId>,
+    /// Its messages' `Message-ID`s, oldest first, for the notes about it.
+    headers: Vec<String>,
 }
 
 /// One message of the conversation.
@@ -324,6 +326,10 @@ impl Conversation {
             .iter()
             .find_map(|p| p.row.as_ref().map(|r| r.subject.clone()))
             .unwrap_or_else(|| tr!("reader-no-subject"));
+        let headers = ids
+            .iter()
+            .filter_map(|id| mail.message_id_header(*id))
+            .collect();
         let mut conversation = Self {
             key,
             subject,
@@ -332,6 +338,7 @@ impl Conversation {
             original_colors: false,
             seen: None,
             drafts: HashSet::new(),
+            headers,
         };
         conversation.read_tracking(mail);
         conversation.read_drafts(mail);
@@ -999,6 +1006,15 @@ impl MailWindow {
         {
             self.hovered_link = None;
         }
+        // Notes about the conversation show under its subject.
+        let notes = self
+            .reader
+            .as_ref()
+            .map(|r| r.headers.clone())
+            .and_then(|headers| {
+                self.notes_page(cx);
+                self.render_mail_notes(&headers, self.reader_indent(), th, cx)
+            });
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -1151,6 +1167,7 @@ impl MailWindow {
                                     .flex_col()
                                     .pb(px(24.0))
                                     .child(title)
+                                    .children(notes)
                                     .children(reply_above)
                                     .children(parts)
                                     .children(reply_below)

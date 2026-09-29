@@ -3182,7 +3182,13 @@ impl Render for MailWindow {
                     .flex_1()
                     .min_h_0()
                     .child(content)
-                    .children(self.render_compose_button(&th, compose_text, cx)),
+                    .children(self.render_compose_button(&th, compose_text, cx))
+                    // A note opened from a mail, over the mail.
+                    .children(if self.app == RailApp::Mail {
+                        self.render_editor(&th, window, cx)
+                    } else {
+                        None
+                    }),
             )
             .children(if onboarding {
                 None
