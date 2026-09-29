@@ -186,6 +186,11 @@ impl TextArea {
         }
     }
 
+    /// Where the cursor is, as a byte offset into [`TextArea::text`].
+    pub fn cursor(&self) -> usize {
+        self.cursor_offset()
+    }
+
     pub fn set_placeholder(&mut self, placeholder: impl Into<SharedString>) {
         self.placeholder = placeholder.into();
     }
