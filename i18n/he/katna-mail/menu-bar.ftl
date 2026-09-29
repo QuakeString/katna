@@ -14,6 +14,7 @@ desktop-menu-select-none = _ביטול הבחירה
 desktop-menu-find = _חיפוש…
 desktop-menu-view = _תצוגה
 desktop-menu-folder-list = _הצגת רשימת התיקיות
+desktop-menu-side-panel = _הצגת החלונית הצדדית
 desktop-menu-refresh = _רענון
 desktop-menu-go = _מעבר
 desktop-menu-inbox = _דואר נכנס

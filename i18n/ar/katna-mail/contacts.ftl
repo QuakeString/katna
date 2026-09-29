@@ -25,6 +25,24 @@ contacts-label-removed = تمت الإزالة من { $name }
 contacts-label-renamed = تمت إعادة تسمية التصنيف إلى { $name }
 contacts-label-deleted = تم حذف التصنيف { $name }
 contacts-label-no-email = لا أحد في هذا التصنيف لديه عنوان بريد إلكتروني
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = الحسابات
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = سجّل الدخول مجددًا لإظهار جهات الاتصال
+contacts-account-signed-in = تم تسجيل الدخول إلى { $address } مجددًا. جارٍ جلب جهات اتصالك…
+contacts-account-sign-in-refused = لم يسمح { $provider } لـ Katna بالدخول. حاول مجددًا، واسمح بالوصول إلى جهات اتصالك.
+contacts-account-password = لم يقبل الخادم كلمة المرور. تحتاج Yahoo وiCloud وZoho وغيرها إلى كلمة مرور للتطبيقات.
+contacts-account-change-password = تغيير كلمة المرور
+contacts-account-change-password-tooltip = فتح الإعدادات > الحسابات
+contacts-account-failed = تعذّرت قراءة جهات الاتصال.
+# $reason is the server's own words, in English.
+contacts-account-error = تعذّرت قراءة جهات الاتصال: { $reason }
+contacts-account-none = لم يُعثر على دفتر عناوين
+contacts-account-looking = جارٍ البحث عن جهات الاتصال…
+contacts-account-try-again = إعادة المحاولة
+contacts-account-try-again-tooltip = التحقق من جهات اتصال هذا الحساب مجددًا الآن
+contacts-account-fixing = جارٍ العمل على ذلك…
 contacts-manage = إصلاح وإدارة
 contacts-merge = دمج وإصلاح
 contacts-merge-about = { $count ->

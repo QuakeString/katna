@@ -14,6 +14,7 @@ desktop-menu-select-none = Tout _désélectionner
 desktop-menu-find = _Rechercher…
 desktop-menu-view = _Affichage
 desktop-menu-folder-list = Afficher la liste des _dossiers
+desktop-menu-side-panel = Afficher le _panneau latéral
 desktop-menu-refresh = Actua_liser
 desktop-menu-go = A_ller
 desktop-menu-inbox = _Boîte de réception

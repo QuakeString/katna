@@ -14,6 +14,7 @@ desktop-menu-select-none = _لغو انتخاب
 desktop-menu-find = _یافتن…
 desktop-menu-view = _نما
 desktop-menu-folder-list = _نمایش فهرست پوشه‌ها
+desktop-menu-side-panel = _نمایش پنل کناری
 desktop-menu-refresh = _بازخوانی
 desktop-menu-go = _رفتن
 desktop-menu-inbox = _صندوق ورودی

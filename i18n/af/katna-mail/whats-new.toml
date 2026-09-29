@@ -1522,3 +1522,76 @@ en onderstreep, soos in Keep. Die bord wys dit ook, en dit reis saam met
 die nota na jou e-posrekening se Notas-vouer, waar formatering van 'n
 iPhone nou terugkom soos dit was.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Wys net 'n paar dae"
+text = """
+Kalender het 'n Pasgemaakte aansig langs Skedule: 4 dae vanaf die dag
+wat jy kies, of enigiets van 2 tot 7. Druk X, en kies hoeveel in Opsies.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Vind geleenthede vanaf die werkskerm"
+text = """
+Tik 'n geleentheid se naam in KRunner of GNOME se soektog om te sien
+wanneer dit volgende is, en druk Enter om daardie dag in Kalender oop te
+maak.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalender, Kontakte, Take en Notas op 'n foon"
+text = """
+In 'n smal venster pas hierdie bladsye nou op die skerm soos E-pos: hul
+sylys gaan oop vanaf die kieslysknoppie, Kontakte wys elke naam met die
+adres daaronder, en Notas plaas twee kaarte langs mekaar.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Die dag se agenda, vanaf die boonste balk"
+text = """
+Die knoppie wat die dag se agenda langs jou e-pos wys, is nou op die
+boonste balk, langs die taalknoppie, en die e-pos kry die spasie wat die
+systrook gebruik het.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Versteek die sypaneel op elke bladsy"
+text = """
+Die kieslysknoppie links bo vou nou ook die sypaneel op Kalender,
+Kontakte, Take en Notas weg, en skuif dit uit die pad soos by E-pos se
+vouers. Elke bladsy onthou of jy dit oop gelaat het.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Die hoofkieslys op 'n foon"
+text = """
+Op 'n foon maak die hoofkieslys agter die rekeningprent Lêer, Wysig,
+Aansig en die res op dieselfde plek oop, met 'n Terug-ry bo-aan, in
+plaas daarvan dat dit by die kant van die skerm uitsteek.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Elke rekening op die Kalender"
+text = """
+Die Kalender se sylys wys nou al jou rekeninge. As een se kalenders nie
+kan laai nie, sê 'n reël daaronder hoekom, met die een klik wat dit
+regmaak, soos “Meld weer aan om kalenders te wys”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Wissel rekeninge sonder om die bladsy te verlaat"
+text = """
+As jy 'n ander rekening kies vanaf jou prent regs bo, of die wieletjie
+daaroor draai, bly jy nou op Kalender, Take, Kontakte of Notas. Nuwe
+items gaan na daardie rekening, en E-pos wys dit wanneer jy teruggaan.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Elke rekening in Kontakte"
+text = """
+Kontakte lys nou al jou rekeninge onder Rekeninge, met hoeveel mense
+elkeen bevat; klik op een om net sy mense te sien. As 'n rekening se
+kontakte nie kan laai nie, sê 'n reël daaronder hoekom, met die een klik
+wat dit regmaak, soos “Meld weer aan om kontakte te wys” of “Probeer
+weer”.
+"""

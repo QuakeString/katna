@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = លាក់ថត
 folders-show = បង្ហាញថត
+side-pane-hide = លាក់ផ្ទាំងចំហៀង
+side-pane-show = បង្ហាញផ្ទាំងចំហៀង
 compose = សរសេរ
 search = ស្វែងរក
 search-mail = ស្វែងរកសំបុត្រ

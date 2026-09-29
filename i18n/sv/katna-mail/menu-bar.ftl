@@ -14,6 +14,7 @@ desktop-menu-select-none = Markera _inga
 desktop-menu-find = _Sök…
 desktop-menu-view = _Visa
 desktop-menu-folder-list = Visa _mapplista
+desktop-menu-side-panel = Visa _sidopanel
 desktop-menu-refresh = _Uppdatera
 desktop-menu-go = _Gå
 desktop-menu-inbox = _Inkorgen

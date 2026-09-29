@@ -28,6 +28,12 @@ pub enum Error {
     #[error("server refused the command: {0}")]
     Rejected(String),
 
+    /// The provider has the API switched off for Katna's app (an API not
+    /// enabled in Katna's Google Cloud project): signing in again does
+    /// not help.
+    #[error("not enabled: {0}")]
+    NotEnabled(String),
+
     /// The server said something we could not understand, or broke the
     /// protocol.
     #[error("protocol: {0}")]
@@ -48,10 +54,13 @@ pub enum Error {
 
 impl Error {
     /// Whether the connection is unusable after this error. Only
-    /// [`Error::Rejected`] (and store errors, which never touch it) leave it
+    /// [`Error::Rejected`], [`Error::NotEnabled`] (and store errors, which never touch it) leave it
     /// ready for the next command.
     pub fn is_fatal(&self) -> bool {
-        !matches!(self, Self::Rejected(_) | Self::Store(_))
+        !matches!(
+            self,
+            Self::Rejected(_) | Self::NotEnabled(_) | Self::Store(_)
+        )
     }
 
     /// Whether trying again later, on a new connection, may succeed.

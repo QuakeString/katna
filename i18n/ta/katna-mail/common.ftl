@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = ஃபோல்டர்களை மறை
 folders-show = ஃபோல்டர்களைக் காட்டு
+side-pane-hide = பக்கப் பலகத்தை மறை
+side-pane-show = பக்கப் பலகத்தைக் காட்டு
 compose = எழுது
 search = தேடு
 search-mail = அஞ்சலில் தேடு

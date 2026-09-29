@@ -14,6 +14,7 @@ desktop-menu-select-none = _Зняти вибір
 desktop-menu-find = З_найти…
 desktop-menu-view = _Перегляд
 desktop-menu-folder-list = Показувати _список папок
+desktop-menu-side-panel = Показувати _бічну панель
 desktop-menu-refresh = _Оновити
 desktop-menu-go = П_ерейти
 desktop-menu-inbox = _Вхідні

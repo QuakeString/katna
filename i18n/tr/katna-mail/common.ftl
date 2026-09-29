@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Klasörleri gizle
 folders-show = Klasörleri göster
+side-pane-hide = Kenar panelini gizle
+side-pane-show = Kenar panelini göster
 compose = Oluştur
 search = Ara
 search-mail = Postalarda ara

@@ -1578,3 +1578,80 @@ subrayado, como en Keep. El tablero también lo muestra, y viaja con la
 nota a la carpeta Notas de tu cuenta de correo, donde el formato que
 llega de un iPhone ahora vuelve tal como era.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Muestra solo unos días"
+text = """
+Calendario tiene una Vista personalizada junto a Agenda: 4 días desde el
+día que elijas, o cualquier número de 2 a 7. Pulsa X y elige cuántos en
+Opciones.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Encuentra eventos desde el escritorio"
+text = """
+Escribe el nombre de un evento en KRunner o en la búsqueda de GNOME para
+ver cuándo es el próximo, y pulsa Enter para abrir ese día en
+Calendario.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Calendario, Contactos, Tareas y Notas en un teléfono"
+text = """
+En una ventana estrecha, estas páginas ahora se ajustan a la pantalla
+como lo hace Correo: su lista lateral se abre desde el botón de menú,
+Contactos muestra cada nombre con la dirección debajo y Notas coloca dos
+tarjetas en cada fila.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "La agenda del día, desde la barra superior"
+text = """
+El botón que muestra la agenda del día junto a tu correo ahora está en
+la barra superior, al lado del botón de idioma, y el correo gana el
+espacio que ocupaba la franja lateral.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Oculta el panel lateral en todas las páginas"
+text = """
+El botón de menú de arriba a la izquierda ahora también pliega el panel
+lateral en Calendario, Contactos, Tareas y Notas, deslizándolo como hace
+con las carpetas de Correo. Cada página recuerda si lo dejaste abierto.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "El menú principal en un teléfono"
+text = """
+En un teléfono, el menú principal tras la foto de la cuenta abre
+Archivo, Editar, Ver y el resto en el mismo sitio, con una fila Atrás
+arriba, en lugar de salirse por el lado de la pantalla.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Todas las cuentas en Calendario"
+text = """
+La lista lateral de Calendario ahora muestra todas tus cuentas. Cuando
+los calendarios de una no pueden cargarse, una línea debajo dice por
+qué, con el único clic que lo arregla, como «Vuelve a iniciar sesión
+para mostrar los calendarios».
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Cambia de cuenta sin salir de la página"
+text = """
+Elegir otra cuenta desde tu foto arriba a la derecha, o girar la rueda
+sobre ella, ahora te mantiene en Calendario, Tareas, Contactos o Notas.
+Los elementos nuevos van a esa cuenta, y Correo la muestra cuando
+vuelves.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Todas las cuentas en Contactos"
+text = """
+Contactos ahora muestra todas tus cuentas en Cuentas, con cuántas
+personas tiene cada una; haz clic en una para ver solo sus personas.
+Cuando los contactos de una cuenta no pueden cargarse, una línea debajo
+dice por qué, con el único clic que lo arregla, como «Vuelve a iniciar
+sesión para mostrar los contactos» o «Reintentar».
+"""

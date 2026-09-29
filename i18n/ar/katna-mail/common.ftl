@@ -58,6 +58,8 @@ size-tb = { $size } تيرابايت
 
 folders-hide = إخفاء المجلدات
 folders-show = إظهار المجلدات
+side-pane-hide = إخفاء اللوحة الجانبية
+side-pane-show = إظهار اللوحة الجانبية
 compose = إنشاء
 search = بحث
 search-mail = البحث في البريد

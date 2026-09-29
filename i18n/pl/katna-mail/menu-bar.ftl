@@ -14,6 +14,7 @@ desktop-menu-select-none = _Odznacz wszystko
 desktop-menu-find = _Znajdź…
 desktop-menu-view = _Widok
 desktop-menu-folder-list = Pokaż listę _folderów
+desktop-menu-side-panel = Pokaż panel _boczny
 desktop-menu-refresh = _Odśwież
 desktop-menu-go = _Przejdź
 desktop-menu-inbox = _Odebrane

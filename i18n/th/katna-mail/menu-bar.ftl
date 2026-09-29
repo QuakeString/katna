@@ -14,6 +14,7 @@ desktop-menu-select-none = _ไม่เลือกเลย
 desktop-menu-find = _ค้นหา…
 desktop-menu-view = _มุมมอง
 desktop-menu-folder-list = _แสดงรายการโฟลเดอร์
+desktop-menu-side-panel = แสดง_แผงด้านข้าง
 desktop-menu-refresh = _รีเฟรช
 desktop-menu-go = _ไปที่
 desktop-menu-inbox = _กล่องจดหมาย

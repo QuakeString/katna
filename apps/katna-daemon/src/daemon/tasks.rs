@@ -8,11 +8,12 @@
 //!
 //! A round runs every few minutes, and shortly after a task changes in
 //! Katna (the desktop clock, the Tasks page), so a tick shows on the
-//! phone within seconds. Accounts signed in before Katna asked for their
-//! tasks are skipped until they sign in again.
+//! phone within seconds. Each account's last result (synced, a sign-in
+//! that did not allow tasks, a refused password, the API switched off, a
+//! failure) is kept for the Tasks page's side list (`TasksStatus`).
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     sync::{Arc, Weak},
     time::Duration,
 };
@@ -21,6 +22,7 @@ use async_channel::Receiver;
 use futures_lite::FutureExt;
 use jiff::tz::TimeZone;
 use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
+use katna_dbus::task_state;
 use katna_store::tasks::TaskFields;
 use katna_sync::{
     Error,
@@ -44,14 +46,16 @@ const SETTLE: Duration = Duration::from_secs(2);
 /// Each account's task service for each way, and what it depends on.
 type Services = HashMap<(AccountId, Method), (String, TaskService)>;
 
-/// Whether `service` lets Katna in.
-async fn allowed(account: AccountId, service: &TaskService) -> bool {
-    match service.allowed().await {
-        Ok(allowed) => allowed,
-        Err(err) => {
-            tracing::debug!(account = account.0, %err, "could not ask about tasks");
-            false
-        }
+/// What an account's tasks show: a [`task_state`] and a detail.
+pub(crate) type Status = (&'static str, String);
+
+/// Where one account's tasks stood after a round, in the side list of the
+/// Tasks page (`TasksStatus`).
+fn status_of(err: &Error) -> Status {
+    match err {
+        Error::Auth(detail) => (task_state::NEEDS_SIGN_IN, detail.clone()),
+        Error::NotEnabled(detail) => (task_state::NOT_ENABLED, detail.clone()),
+        err => (task_state::ERROR, err.to_string()),
     }
 }
 
@@ -167,61 +171,84 @@ impl Daemon {
         Some((key, TaskService::CalDav(DavTasks::new(dav))))
     }
 
-    /// `account`'s task service the way `method`, if it has one and its
-    /// sign-in lets Katna into it (kept in `known` between rounds, so a
-    /// CalDAV server is looked for once).
+    /// `account`'s task service the way `method`, if it has one (kept in
+    /// `known` between rounds, so a CalDAV server is looked for once),
+    /// and whether its sign-in lets Katna in: `Ok(false)` when it asked
+    /// for no tasks (signed in before Katna asked, or a server without
+    /// CalDAV).
     async fn task_service<'a>(
         &self,
         account: &Account,
         method: Method,
         known: &'a mut Services,
-    ) -> Option<&'a TaskService> {
+    ) -> Option<(&'a TaskService, katna_sync::Result<bool>)> {
         let (key, service) = self.new_task_service(account, method).await?;
         let at = (account.id, method);
         if known.get(&at).is_none_or(|(old, _)| *old != key) {
             known.insert(at, (key, service));
         }
         let service = &known[&at].1;
-        allowed(account.id, service).await.then_some(service)
+        let allowed = service.allowed().await;
+        Some((service, allowed))
     }
 
     /// Syncs `account`'s tasks, the best way first and the others when it
-    /// is not available. Returns whether any way let Katna in, and
+    /// is not available. Returns what its side list line shows, and
     /// whether anything changed.
-    async fn sync_account_tasks(&self, account: &Account, known: &mut Services) -> (bool, bool) {
-        let Ok(settings) = self.store().account_settings(account.id) else {
-            return (false, false);
+    async fn sync_account_tasks(&self, account: &Account, known: &mut Services) -> (Status, bool) {
+        let provider = match self.store().account_settings(account.id) {
+            Ok(settings) => settings.and_then(|s| s.oauth),
+            Err(err) => return ((task_state::ERROR, err.to_string()), false),
         };
-        let provider = settings.and_then(|s| s.oauth);
         let now = super::unix_now();
         let order = methods::order(&self.store(), account.id, Data::Tasks, provider, now);
-        let mut reached = false;
+        // What to show when no way works: the most useful reason.
+        let mut shown = (task_state::NONE, String::new());
         for method in order {
-            let Some(service) = self.task_service(account, method, known).await else {
+            let Some((service, allowed)) = self.task_service(account, method, known).await else {
                 continue;
             };
-            reached = true;
-            match sync_account(service, &self.store, account.id).await {
+            let result = match allowed {
+                Ok(true) => sync_account(service, &self.store, account.id).await,
+                // Signed in before Katna asked for tasks.
+                Ok(false) if provider.is_some() => Err(Error::Auth(
+                    "the sign-in did not allow Katna into its tasks".into(),
+                )),
+                // No CalDAV on the server.
+                Ok(false) => continue,
+                Err(err) => Err(err),
+            };
+            let status = match result {
                 Ok(changed) => {
                     methods::remember(&mut self.store(), account.id, Data::Tasks, method, now);
-                    return (true, changed);
+                    return ((task_state::OK, String::new()), changed);
                 }
-                // A refused sign-in: another way may still let Katna in.
-                Err(Error::Auth(err)) => {
-                    tracing::info!(account = account.id.0, ?method, %err, "tasks need a new sign-in");
-                }
+                // A refused sign-in, or the API switched off: another way
+                // may still let Katna in.
+                Err(err @ (Error::Auth(_) | Error::NotEnabled(_))) => status_of(&err),
                 // The network or the server: not a reason to go another way.
                 Err(err) => {
                     tracing::warn!(account = account.id.0, ?method, %err, "task sync failed");
-                    return (true, false);
+                    return (status_of(&err), false);
                 }
+            };
+            tracing::debug!(
+                account = account.id.0,
+                ?method,
+                state = status.0,
+                detail = status.1,
+                "tasks way not available"
+            );
+            if shown.0 == task_state::NONE {
+                shown = status;
             }
         }
-        (reached, false)
+        (shown, false)
     }
 
-    /// One round for every account. Returns whether anything changed.
-    async fn sync_tasks(&self, told: &mut HashSet<AccountId>, known: &mut Services) -> bool {
+    /// One round for every account. Returns whether anything changed,
+    /// the tasks or where an account's stand.
+    async fn sync_tasks(&self, known: &mut Services) -> bool {
         let Ok(accounts) = self.store().accounts() else {
             return false;
         };
@@ -230,24 +257,51 @@ impl Daemon {
             if self.closing() {
                 break;
             }
-            let (reached, account_changed) = self.sync_account_tasks(&account, known).await;
+            let (status, account_changed) = self.sync_account_tasks(&account, known).await;
             changed |= account_changed;
-            if reached {
-                told.remove(&account.id);
-            } else if told.insert(account.id) {
-                tracing::info!(
-                    account = account.id.0,
-                    "no task service, or its sign-in didn't allow tasks"
-                );
+            let old = self
+                .tasks_status
+                .lock()
+                .unwrap()
+                .insert(account.id, status.clone());
+            if old.as_ref() != Some(&status) {
+                if status.0 != task_state::OK {
+                    tracing::info!(
+                        account = account.id.0,
+                        state = status.0,
+                        detail = status.1,
+                        "task sync"
+                    );
+                }
+                changed = true;
             }
         }
         changed
+    }
+
+    /// Where each account's task sync stands.
+    pub fn tasks_status(&self) -> Result<Vec<(i64, String, String)>, CommandError> {
+        let accounts = self.store().accounts()?;
+        let status = self.tasks_status.lock().unwrap();
+        Ok(accounts
+            .into_iter()
+            .map(|account| {
+                let (state, detail) = status.get(&account.id).cloned().unwrap_or_else(|| {
+                    let state = if account.kind == AccountKind::Imap {
+                        task_state::OK
+                    } else {
+                        task_state::NONE
+                    };
+                    (state, String::new())
+                });
+                (account.id.0, state.to_owned(), detail)
+            })
+            .collect())
     }
 }
 
 /// Runs task sync until the daemon goes.
 pub(crate) async fn run(daemon: Weak<Daemon>, wakes: Receiver<()>) {
-    let mut told = HashSet::new();
     let mut known = Services::new();
     let mut wait = FIRST;
     loop {
@@ -268,7 +322,7 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wakes: Receiver<()>) {
         if daemon.closing() {
             return;
         }
-        if daemon.sync_tasks(&mut told, &mut known).await {
+        if daemon.sync_tasks(&mut known).await {
             let _ = daemon.notices().try_send(Notice::TasksChanged);
         }
     }

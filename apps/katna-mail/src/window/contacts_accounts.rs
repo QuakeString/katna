@@ -19,7 +19,7 @@ use super::MailWindow;
 use super::contacts_edit::visible;
 use super::contacts_page::View;
 use super::settings_page::Section;
-use crate::daemon::{self, AddError, CalendarStatus};
+use crate::daemon::{self, AccountState, AddError};
 use crate::data::SavedBook;
 use crate::theme::Theme;
 use crate::widgets::{icon, tip};
@@ -27,7 +27,7 @@ use crate::widgets::{icon, tip};
 /// Where the accounts' contacts stand, as last read from the daemon.
 #[derive(Default)]
 pub(super) struct AccountStatus {
-    status: HashMap<i64, CalendarStatus>,
+    status: HashMap<i64, AccountState>,
     /// Accounts being fixed now (signing in, or syncing again).
     busy: HashSet<i64>,
     task: Option<Task<()>>,

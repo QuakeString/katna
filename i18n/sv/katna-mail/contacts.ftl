@@ -25,6 +25,24 @@ contacts-label-removed = Togs bort från { $name }
 contacts-label-renamed = Etiketten bytte namn till { $name }
 contacts-label-deleted = Etiketten { $name } raderades
 contacts-label-no-email = Ingen med den här etiketten har en e-postadress
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Konton
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Logga in igen för att visa kontakter
+contacts-account-signed-in = Inloggad på { $address } igen. Hämtar dina kontakter…
+contacts-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till dina kontakter.
+contacts-account-password = Servern godtog inte lösenordet. Yahoo, iCloud, Zoho och andra kräver ett applösenord.
+contacts-account-change-password = Ändra lösenord
+contacts-account-change-password-tooltip = Öppna Inställningar > Konton
+contacts-account-failed = Det gick inte att läsa kontakterna.
+# $reason is the server's own words, in English.
+contacts-account-error = Det gick inte att läsa kontakterna: { $reason }
+contacts-account-none = Ingen adressbok hittades
+contacts-account-looking = Letar efter kontakter…
+contacts-account-try-again = Försök igen
+contacts-account-try-again-tooltip = Kontrollera det här kontots kontakter igen nu
+contacts-account-fixing = Arbetar på det…
 contacts-manage = Åtgärda och hantera
 contacts-merge = Sammanfoga och åtgärda
 contacts-merge-about = { $count ->

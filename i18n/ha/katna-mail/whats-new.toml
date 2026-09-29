@@ -1468,3 +1468,57 @@ title = "Tsarawa a cikin bayanai"
 text = """
 Zaɓi Tsarawa a cikin bayani don Kanu 1, Kanu 2, mai kauri, mai karkata da ja layi a ƙasa, kamar a Keep. Allo ma yana nuna shi, kuma yana tafiya tare da bayanin zuwa babban fayil na Bayanai na asusun wasiƙarka, inda tsarawa daga iPhone yanzu ke dawowa kamar yadda take.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Nuna ’yan kwanaki kaɗan kawai"
+text = """
+Kalanda yana da Kallon na musamman kusa da Jadawali: kwanaki 4 daga ranar da ka zaɓa, ko kowane adadi daga 2 zuwa 7. Danna X, sannan ka zaɓi adadin a Zaɓuka.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Nemo taruka daga tebur"
+text = """
+Rubuta sunan taro a KRunner ko binciken GNOME don ganin yaushe ne na gaba, sannan danna Enter don buɗe ranar a Kalanda.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalanda, Lambobin sadarwa, Ayyuka da Bayanai a waya"
+text = """
+A cikin ƙunƙuntar taga, waɗannan shafuka yanzu suna dacewa da allo kamar yadda Wasiƙu ke yi: jerinsu na gefe yana buɗewa daga maɓallin menu, Lambobin sadarwa yana nuna kowane suna da adireshi a ƙarƙashinsa, kuma Bayanai yana jera katuna biyu gefe da gefe.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Jadawalin ranar, daga sandar sama"
+text = """
+Maɓallin da ke nuna jadawalin ranar kusa da wasiƙunka yanzu yana kan sandar sama, kusa da maɓallin harshe, kuma wasiƙun suna samun wurin da ɗan zirin gefe ya ɗauka.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Ɓoye fanel na gefe a kowane shafi"
+text = """
+Maɓallin menu a saman hagu yanzu yana naɗe fanel na gefe a Kalanda, Lambobin sadarwa, Ayyuka da Bayanai ma, yana zame shi gefe kamar yadda yake yi da manyan fayilolin Wasiƙu. Kowane shafi yana tuna ko ka bar shi a buɗe.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Babban menu a waya"
+text = """
+A waya, babban menu da ke bayan hoton asusu yana buɗe Fayil, Gyara, Duba da sauran a wurinsu, tare da layin Koma baya a sama, maimakon ya fita ta gefen allo.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Kowane asusu a Kalanda"
+text = """
+Jerin gefe na Kalanda yanzu yana nuna dukkan asusunka. Idan kalandojin ɗaya ba su iya lodawa ba, layi a ƙarƙashinsa yana faɗin dalili, tare da danna ɗaya da ke gyara shi, kamar “Sake shiga don nuna kalandoji”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Canja asusu ba tare da barin shafin ba"
+text = """
+Zaɓar wani asusu daga hotonka a saman dama, ko juya ƙafafun linzami a kansa, yanzu yana ajiye ka a Kalanda, Ayyuka, Lambobin sadarwa ko Bayanai. Sababbin abubuwa suna zuwa wannan asusun, kuma Wasiƙu yana nuna shi idan ka koma.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Kowane asusu a Lambobin sadarwa"
+text = """
+Lambobin sadarwa yanzu yana jera dukkan asusunka a ƙarƙashin Asusu, tare da yawan mutanen da kowanne ke riƙe; danna ɗaya don ganin mutanensa kaɗai. Idan lambobin sadarwar wani asusu ba su iya lodawa ba, layi a ƙarƙashinsa yana faɗin dalili, tare da danna ɗaya da ke gyara shi, kamar “Sake shiga don nuna lambobin sadarwa” ko “Sake gwadawa”.
+"""

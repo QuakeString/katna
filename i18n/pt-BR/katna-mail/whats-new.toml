@@ -1564,3 +1564,80 @@ itálico e sublinhado, como no Keep. O quadro também mostra a formatação,
 e ela acompanha a nota até a pasta Notas da sua conta de e-mail, onde a
 formatação feita num iPhone agora volta como estava.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Mostre só alguns dias"
+text = """
+A Agenda tem uma Visualização personalizada ao lado de Programação: 4
+dias a partir do dia que você escolher, ou de 2 a 7. Pressione X e
+escolha quantos em Opções.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Encontre eventos pela área de trabalho"
+text = """
+Digite o nome de um evento no KRunner ou na pesquisa do GNOME para ver
+quando ele acontece de novo, e pressione Enter para abrir esse dia na
+Agenda.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Agenda, Contatos, Tarefas e Notas no celular"
+text = """
+Numa janela estreita, essas páginas agora se ajustam à tela como o
+E-mail: a lista lateral abre pelo botão de menu, Contatos mostra cada
+nome com o endereço embaixo, e Notas coloca dois cartões lado a lado.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Os compromissos do dia, na barra superior"
+text = """
+O botão que mostra os compromissos do dia ao lado dos seus e-mails agora
+fica na barra superior, ao lado do botão de idioma, e os e-mails ganham
+o espaço que a faixa lateral ocupava.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Oculte o painel lateral em todas as páginas"
+text = """
+O botão de menu no canto superior esquerdo agora recolhe o painel
+lateral também em Agenda, Contatos, Tarefas e Notas, deslizando-o para
+fora como faz com as pastas do E-mail. Cada página lembra se você o
+deixou aberto.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "O menu principal no celular"
+text = """
+No celular, o menu principal por trás da foto da conta abre Arquivo,
+Editar, Exibir e os demais ali mesmo, com uma linha Voltar no topo, em
+vez de sair pela lateral da tela.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Todas as contas na Agenda"
+text = """
+A lista lateral da Agenda agora mostra todas as suas contas. Quando as
+agendas de uma delas não carregam, uma linha abaixo dela diz o motivo,
+com o clique que resolve, como “Fazer login de novo para mostrar as
+agendas”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Troque de conta sem sair da página"
+text = """
+Escolher outra conta pela sua foto no canto superior direito, ou girar a
+roda do mouse sobre ela, agora mantém você em Agenda, Tarefas, Contatos
+ou Notas. Novos itens vão para essa conta, e o E-mail a mostra quando
+você volta.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Todas as contas em Contatos"
+text = """
+Contatos agora lista todas as suas contas em Contas, com quantas pessoas
+cada uma tem; clique em uma para ver só as pessoas dela. Quando os
+contatos de uma conta não carregam, uma linha abaixo dela diz o motivo,
+com o clique que resolve, como “Fazer login de novo para mostrar os
+contatos” ou “Tentar de novo”.
+"""

@@ -14,6 +14,7 @@ desktop-menu-select-none = _Usichague Yoyote
 desktop-menu-find = Ta_futa…
 desktop-menu-view = _Onyesha
 desktop-menu-folder-list = Onyesha Orodha ya _Folda
+desktop-menu-side-panel = Onyesha Paneli ya _Pembeni
 desktop-menu-refresh = Onyesha _Upya
 desktop-menu-go = _Nenda
 desktop-menu-inbox = _Kikasha

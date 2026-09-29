@@ -8,13 +8,14 @@ use std::collections::{HashMap, HashSet};
 
 use futures_lite::{Stream, StreamExt};
 use katna_core::{AccountId, OAuthProvider, Paths};
+use katna_dbus::PimProxy;
 use katna_dbus::agenda::{AgendaProxy, Item, edit, task};
 use katna_dbus::zbus::Connection;
 use katna_dbus::zbus::zvariant::{OwnedValue, Value};
 use katna_store::tasks::{Task, TaskList};
 use katna_store::{Mode, Store};
 
-use crate::daemon::describe;
+use crate::daemon::{AccountState, describe};
 
 /// A task's ID on the wire (`t` and its row ID).
 pub fn wire_id(id: i64) -> String {
@@ -96,6 +97,30 @@ pub fn load(paths: &Paths) -> Result<Board, String> {
         Ok(Board { columns })
     };
     read().map_err(|err| format!("Reading tasks failed: {err}"))
+}
+
+/// Where each account's task sync stands, by account.
+pub async fn status(connection: &Connection) -> Result<HashMap<i64, AccountState>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    let status = pim.tasks_status().await.map_err(|err| describe(&err))?;
+    Ok(status
+        .into_iter()
+        .map(|(id, state, detail)| {
+            let sign_in = accounts
+                .iter()
+                .find(|a| a.id == id)
+                .and_then(|a| a.sign_in.parse().ok());
+            let state = AccountState {
+                state,
+                detail,
+                sign_in,
+            };
+            (id, state)
+        })
+        .collect())
 }
 
 /// Fields of a task to change; `None` leaves one as it is.

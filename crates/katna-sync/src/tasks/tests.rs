@@ -477,6 +477,22 @@ fn a_missing_tasks_scope_asks_to_sign_in_again() {
     assert!(matches!(err, Error::Auth(_)), "{err}");
 }
 
+#[test]
+fn a_switched_off_tasks_api_is_not_a_sign_in() {
+    let (api, _) = serve((), |_, _, _| {
+        (
+            403,
+            json!({ "error": { "code": 403, "status": "PERMISSION_DENIED",
+                               "message": "Google Tasks API has not been used in project 1.",
+                               "errors": [{ "reason": "accessNotConfigured" }],
+                               "details": [{ "reason": "SERVICE_DISABLED" }] } }),
+        )
+    });
+    let (_dir, store, account) = store();
+    let err = smol::block_on(sync_account(&google_service(&api), &store, account)).unwrap_err();
+    assert!(matches!(err, Error::NotEnabled(_)), "{err}");
+}
+
 // --- Microsoft To Do --------------------------------------------------------------
 
 #[derive(Default)]

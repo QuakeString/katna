@@ -14,6 +14,7 @@ desktop-menu-select-none = _ਕੋਈ ਨਾ ਚੁਣੋ
 desktop-menu-find = _ਲੱਭੋ…
 desktop-menu-view = _ਵੇਖੋ
 desktop-menu-folder-list = _ਫੋਲਡਰ ਸੂਚੀ ਦਿਖਾਓ
+desktop-menu-side-panel = _ਸਾਈਡ ਪੈਨਲ ਦਿਖਾਓ
 desktop-menu-refresh = _ਤਾਜ਼ਾ ਕਰੋ
 desktop-menu-go = _ਜਾਓ
 desktop-menu-inbox = _ਇਨਬਾਕਸ

@@ -14,6 +14,7 @@ desktop-menu-select-none = _කිසිවක් නොතෝරන්න
 desktop-menu-find = _සොයන්න…
 desktop-menu-view = _දසුන
 desktop-menu-folder-list = _ෆෝල්ඩර ලැයිස්තුව පෙන්වන්න
+desktop-menu-side-panel = _පැති පැනලය පෙන්වන්න
 desktop-menu-refresh = _නැවුම් කරන්න
 desktop-menu-go = _යන්න
 desktop-menu-inbox = _එන ලිපි

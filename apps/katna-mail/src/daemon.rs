@@ -186,6 +186,18 @@ pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     }
 }
 
+/// Where one account's calendars, tasks or contacts stand, for the line
+/// under it in a page's side list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AccountState {
+    /// A [`katna_dbus::calendar_state`] (or [`katna_dbus::task_state`]).
+    pub state: String,
+    /// Why, for people; may be empty.
+    pub detail: String,
+    /// The provider it signs in with, when that is OAuth2.
+    pub sign_in: Option<OAuthProvider>,
+}
+
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
     katna_dbus::session()
@@ -650,21 +662,10 @@ pub async fn signed_out(
         .collect())
 }
 
-/// Where one account's calendars stand, for the Calendar page's side list.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CalendarStatus {
-    /// A [`katna_dbus::calendar_state`].
-    pub state: String,
-    /// Why, for people; may be empty.
-    pub detail: String,
-    /// The provider it signs in with, when that is OAuth2.
-    pub sign_in: Option<OAuthProvider>,
-}
-
 /// Where each account's calendar sync stands, by account.
 pub async fn calendar_status(
     connection: &Connection,
-) -> Result<HashMap<i64, CalendarStatus>, String> {
+) -> Result<HashMap<i64, AccountState>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
@@ -679,7 +680,7 @@ pub async fn calendar_status(
                 .and_then(|a| a.sign_in.parse().ok());
             (
                 id,
-                CalendarStatus {
+                AccountState {
                     state,
                     detail,
                     sign_in,
@@ -693,7 +694,7 @@ pub async fn calendar_status(
 /// [`katna_dbus::contacts_state`].
 pub async fn contacts_status(
     connection: &Connection,
-) -> Result<HashMap<i64, CalendarStatus>, String> {
+) -> Result<HashMap<i64, AccountState>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
@@ -708,7 +709,7 @@ pub async fn contacts_status(
                 .and_then(|a| a.sign_in.parse().ok());
             (
                 id,
-                CalendarStatus {
+                AccountState {
                     state,
                     detail,
                     sign_in,
@@ -718,7 +719,8 @@ pub async fn contacts_status(
         .collect())
 }
 
-/// Wakes `account`'s sync (mail, calendars and contacts) without waiting.
+/// Wakes `account`'s sync (mail, calendars, contacts and tasks) without
+/// waiting.
 pub async fn sync_now(connection: &Connection, account: i64) -> Result<(), String> {
     let pim = PimProxy::new(connection)
         .await

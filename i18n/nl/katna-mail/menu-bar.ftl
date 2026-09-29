@@ -14,6 +14,7 @@ desktop-menu-select-none = _Niets selecteren
 desktop-menu-find = _Zoeken…
 desktop-menu-view = Beel_d
 desktop-menu-folder-list = _Mappenlijst tonen
+desktop-menu-side-panel = _Zijpaneel tonen
 desktop-menu-refresh = _Vernieuwen
 desktop-menu-go = _Ga
 desktop-menu-inbox = _Inbox

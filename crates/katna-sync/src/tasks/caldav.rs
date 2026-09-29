@@ -60,7 +60,7 @@ struct State {
 fn failed(err: CalendarError) -> Error {
     match err {
         CalendarError::NeedsSignIn(message) => Error::Auth(message),
-        CalendarError::NotEnabled(message) => Error::Rejected(message),
+        CalendarError::NotEnabled(message) => Error::NotEnabled(message),
         CalendarError::NotOffered => Error::Rejected("the server offers no to-dos".into()),
         CalendarError::Failed(err) => err,
     }

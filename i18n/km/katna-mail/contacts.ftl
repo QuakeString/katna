@@ -25,6 +25,24 @@ contacts-label-removed = បានយកចេញពី { $name }
 contacts-label-renamed = បានប្តូរឈ្មោះស្លាកទៅ { $name }
 contacts-label-deleted = បានលុបស្លាក { $name }
 contacts-label-no-email = គ្មាននរណាម្នាក់នៅក្នុងស្លាកនេះមានអាសយដ្ឋានអ៊ីមែលទេ
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = គណនី
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = ចូលម្ដងទៀត ដើម្បីបង្ហាញទំនាក់ទំនង
+contacts-account-signed-in = បានចូល { $address } ម្ដងទៀត។ កំពុងទទួលទំនាក់ទំនងរបស់អ្នក…
+contacts-account-sign-in-refused = { $provider } មិនបានអនុញ្ញាតឱ្យ Katna ចូលទេ។ សូមព្យាយាមម្ដងទៀត ហើយអនុញ្ញាតឱ្យចូលប្រើទំនាក់ទំនងរបស់អ្នក។
+contacts-account-password = ម៉ាស៊ីនមេមិនបានទទួលយកពាក្យសម្ងាត់ទេ។ Yahoo, iCloud, Zoho និងផ្សេងទៀតត្រូវការពាក្យសម្ងាត់កម្មវិធី។
+contacts-account-change-password = ប្ដូរពាក្យសម្ងាត់
+contacts-account-change-password-tooltip = បើក ការកំណត់ > គណនី
+contacts-account-failed = មិនអាចអានទំនាក់ទំនងបានទេ។
+# $reason is the server's own words, in English.
+contacts-account-error = មិនអាចអានទំនាក់ទំនងបានទេ៖ { $reason }
+contacts-account-none = រកមិនឃើញសៀវភៅអាសយដ្ឋានទេ
+contacts-account-looking = កំពុងស្វែងរកទំនាក់ទំនង…
+contacts-account-try-again = ព្យាយាមម្ដងទៀត
+contacts-account-try-again-tooltip = ពិនិត្យទំនាក់ទំនងរបស់គណនីនេះម្ដងទៀតឥឡូវនេះ
+contacts-account-fixing = កំពុងដោះស្រាយ…
 contacts-manage = ជួសជុល និងគ្រប់គ្រង
 contacts-merge = បញ្ចូលគ្នា និងជួសជុល
 contacts-merge-about = { $count ->

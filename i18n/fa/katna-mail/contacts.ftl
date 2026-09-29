@@ -25,6 +25,24 @@ contacts-label-removed = از { $name } حذف شد
 contacts-label-renamed = نام برچسب به { $name } تغییر کرد
 contacts-label-deleted = برچسب { $name } حذف شد
 contacts-label-no-email = هیچ‌کس در این برچسب نشانی ایمیل ندارد
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = حساب‌ها
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = برای نمایش مخاطبین دوباره وارد شوید
+contacts-account-signed-in = دوباره به { $address } وارد شدید. در حال دریافت مخاطبین‌تان…
+contacts-account-sign-in-refused = { $provider } به Katna اجازهٔ ورود نداد. دوباره امتحان کنید و اجازهٔ دسترسی به مخاطبین‌تان را بدهید.
+contacts-account-password = سرور گذرواژه را نپذیرفت. Yahoo، iCloud، Zoho و دیگران به گذرواژهٔ برنامه نیاز دارند.
+contacts-account-change-password = تغییر گذرواژه
+contacts-account-change-password-tooltip = باز کردن تنظیمات > حساب‌ها
+contacts-account-failed = خواندن مخاطبین ممکن نشد.
+# $reason is the server's own words, in English.
+contacts-account-error = خواندن مخاطبین ممکن نشد: { $reason }
+contacts-account-none = هیچ دفترچهٔ نشانی‌ای پیدا نشد
+contacts-account-looking = در حال جست‌وجوی مخاطبین…
+contacts-account-try-again = امتحان مجدد
+contacts-account-try-again-tooltip = همین حالا مخاطبین این حساب را دوباره بررسی کنید
+contacts-account-fixing = در حال انجام…
 contacts-manage = اصلاح و مدیریت
 contacts-merge = ادغام و اصلاح
 contacts-merge-about = { $count ->

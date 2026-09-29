@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = ફોલ્ડર છુપાવો
 folders-show = ફોલ્ડર બતાવો
+side-pane-hide = બાજુની પેનલ છુપાવો
+side-pane-show = બાજુની પેનલ બતાવો
 compose = લખો
 search = શોધો
 search-mail = મેઇલ શોધો

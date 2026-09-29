@@ -86,3 +86,4 @@ add-account-signed-in = Accesso eseguito con { $provider }. Scaricamento della p
 add-account-menu-another = Aggiungi un altro account
 add-account-menu-manage = Gestisci gli account
 app-menu = Menu principale
+app-menu-back = Indietro

@@ -14,6 +14,7 @@ desktop-menu-select-none = _ບໍ່ເລືອກ
 desktop-menu-find = _ຊອກຫາ…
 desktop-menu-view = _ມຸມມອງ
 desktop-menu-folder-list = _ສະແດງລາຍການໂຟນເດີ
+desktop-menu-side-panel = _ສະແດງແຜງດ້ານຂ້າງ
 desktop-menu-refresh = _ໂຫຼດຄືນໃໝ່
 desktop-menu-go = _ໄປທີ່
 desktop-menu-inbox = _ກ່ອງຈົດໝາຍເຂົ້າ

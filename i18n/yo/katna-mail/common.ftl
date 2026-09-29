@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = Fi àwọn fódà pamọ́
 folders-show = Fi àwọn fódà hàn
+side-pane-hide = Fi pánẹ́lì ẹ̀gbẹ́ pamọ́
+side-pane-show = Fi pánẹ́lì ẹ̀gbẹ́ hàn
 compose = Kọ̀wé
 search = Ṣàwárí
 search-mail = Ṣàwárí lẹ́tà

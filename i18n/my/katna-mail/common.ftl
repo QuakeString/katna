@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = ဖိုင်တွဲများ ဖျောက်ရန်
 folders-show = ဖိုင်တွဲများ ပြရန်
+side-pane-hide = ဘေးဘက်အကန့် ဖျောက်ရန်
+side-pane-show = ဘေးဘက်အကန့် ပြရန်
 compose = စာရေးရန်
 search = ရှာရန်
 search-mail = မေးလ် ရှာရန်

@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Mappen verbergen
 folders-show = Mappen tonen
+side-pane-hide = Zijpaneel verbergen
+side-pane-show = Zijpaneel tonen
 compose = Opstellen
 search = Zoeken
 search-mail = Zoeken in e-mail

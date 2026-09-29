@@ -1558,3 +1558,79 @@ pogrubienia, kursywy i podkreślenia, jak w Keep. Tablica też je
 pokazuje, a formatowanie trafia razem z notatką do folderu Notatki na
 Twoim koncie poczty, skąd formatowanie z iPhone’a wraca teraz bez zmian.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Tylko kilka dni"
+text = """
+Kalendarz ma obok widoku Harmonogram Widok niestandardowy: 4 dni od
+wybranego dnia albo dowolnie od 2 do 7. Naciśnij X, a liczbę dni wybierz
+w Opcjach.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Znajduj wydarzenia z pulpitu"
+text = """
+Wpisz nazwę wydarzenia w KRunner lub wyszukiwarce GNOME, aby zobaczyć,
+kiedy odbędzie się najbliższe, i naciśnij Enter, aby otworzyć ten dzień
+w Kalendarzu.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalendarz, Kontakty, Zadania i Notatki na telefonie"
+text = """
+W wąskim oknie te strony dopasowują się teraz do ekranu tak jak Poczta:
+ich boczna lista otwiera się przyciskiem menu, Kontakty pokazują każde
+imię z adresem pod spodem, a Notatki układają po dwie karty w rzędzie.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Plan dnia z górnego paska"
+text = """
+Przycisk, który pokazuje plan dnia obok poczty, jest teraz na górnym
+pasku, obok przycisku języka, a poczta zyskuje miejsce zajmowane dotąd
+przez boczny pasek.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Ukryj panel boczny na każdej stronie"
+text = """
+Przycisk menu w lewym górnym rogu zwija teraz panel boczny także w
+Kalendarzu, Kontaktach, Zadaniach i Notatkach, wysuwając go tak jak
+foldery Poczty. Każda strona pamięta, czy zostawiono go otwartym.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Menu główne na telefonie"
+text = """
+Na telefonie menu główne pod zdjęciem konta otwiera Plik, Edycja, Widok
+i resztę w miejscu, z wierszem Wstecz na górze, zamiast poza krawędzią
+ekranu.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Każde konto w Kalendarzu"
+text = """
+Boczna lista Kalendarza pokazuje teraz wszystkie Twoje konta. Gdy
+kalendarze któregoś z nich nie mogą się wczytać, wiersz pod nim mówi
+dlaczego i podaje jedno kliknięcie, które to naprawia, np. „Zaloguj się
+ponownie, aby wyświetlić kalendarze”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Zmieniaj konto bez opuszczania strony"
+text = """
+Wybranie innego konta ze zdjęcia w prawym górnym rogu lub obrócenie nad
+nim kółka myszy zostawia Cię teraz w Kalendarzu, Zadaniach, Kontaktach
+lub Notatkach. Nowe elementy trafiają na to konto, a Poczta pokazuje je
+po powrocie.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Każde konto w Kontaktach"
+text = """
+Kontakty pokazują teraz wszystkie Twoje konta w sekcji Konta, z liczbą
+osób na każdym; kliknij jedno, aby zobaczyć tylko jego osoby. Gdy
+kontakty konta nie mogą się wczytać, wiersz pod nim mówi dlaczego i
+podaje jedno kliknięcie, które to naprawia, np. „Zaloguj się ponownie,
+aby wyświetlić kontakty” lub „Spróbuj ponownie”.
+"""

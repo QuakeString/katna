@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = フォルダを非表示
 folders-show = フォルダを表示
+side-pane-hide = サイドパネルを非表示
+side-pane-show = サイドパネルを表示
 compose = 作成
 search = 検索
 search-mail = メールを検索

@@ -86,3 +86,4 @@ add-account-signed-in = O ti wọlé pẹ̀lú { $provider }. À ń gba lẹ́t�
 add-account-menu-another = Ṣàfikún àkáǹtì míì
 add-account-menu-manage = Ṣàkóso àwọn àkáǹtì
 app-menu = Mẹ́nù pàtàkì
+app-menu-back = Padà
