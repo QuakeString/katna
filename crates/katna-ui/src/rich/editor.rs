@@ -1846,6 +1846,40 @@ impl RichEditor {
         });
     }
 
+    /// Changes the character style of every paragraph the selection or
+    /// cursor is in, whole (a heading), and of what is typed next.
+    pub fn restyle_paras_text(
+        &mut self,
+        f: impl Fn(&mut CharStyle) + 'static,
+        cx: &mut Context<Self>,
+    ) {
+        if self.plain {
+            return;
+        }
+        let mut style = self.style_for_typing_raw();
+        f(&mut style);
+        self.format(cx, |doc, (start, end)| {
+            for path in doc.paths() {
+                if path < start.path || path > end.path {
+                    continue;
+                }
+                let len = doc.para(path).map_or(0, Para::len);
+                doc.restyle(Pos::new(path, 0), Pos::new(path, len), &f);
+            }
+        });
+        self.typing = Some(style);
+    }
+
+    /// Changes the text with `f`, as one edit Undo takes back.
+    pub fn edit_doc(&mut self, f: impl FnOnce(&mut Doc), cx: &mut Context<Self>) {
+        self.format(cx, |doc, _| f(doc));
+    }
+
+    /// Where the cursor is.
+    pub fn cursor(&self) -> Pos {
+        self.head
+    }
+
     /// The paragraph style where the cursor is.
     pub fn para_style(&self) -> ParaStyle {
         self.doc

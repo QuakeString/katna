@@ -166,15 +166,33 @@ pub fn build_note(note: &Note, from: &str, now: i64) -> Vec<u8> {
     let mut html = String::from("<html><head></head><body>");
     // Apple takes a note's first line as its title.
     html.push_str(&format!("<div>{}</div>", escape(title)));
-    let mut lines: Vec<&str> = note.body.split('\n').collect();
-    if note.title.trim().is_empty() && lines.first().is_some_and(|l| l.trim() == title) {
-        lines.remove(0);
-    }
-    for line in lines {
-        if line.is_empty() {
-            html.push_str("<div><br></div>");
+    if note.html.is_empty() {
+        let mut lines: Vec<&str> = note.body.split('\n').collect();
+        if note.title.trim().is_empty() && lines.first().is_some_and(|l| l.trim() == title) {
+            lines.remove(0);
+        }
+        for line in lines {
+            if line.is_empty() {
+                html.push_str("<div><br></div>");
+            } else {
+                html.push_str(&format!("<div>{}</div>", escape(line)));
+            }
+        }
+    } else {
+        // Formatted: the app's HTML after the title line, which
+        // `parse_note` takes off again. With no title of its own, the
+        // first line is the title line, as with plain lines.
+        let first_is_title = note.title.trim().is_empty()
+            && note.body.split('\n').next().map(str::trim) == Some(title);
+        if first_is_title {
+            let inner = note
+                .html
+                .strip_prefix("<div dir=\"ltr\">")
+                .and_then(|h| h.strip_suffix("</div>"))
+                .unwrap_or(&note.html);
+            html.push_str(after_first_block(inner));
         } else {
-            html.push_str(&format!("<div>{}</div>", escape(line)));
+            html.push_str(&note.html);
         }
     }
     html.push_str("</body></html>");
@@ -246,8 +264,9 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
     let uuid = raw_header("X-Universally-Unique-Identifier")
         .or_else(|| message.message_id().map(str::to_owned))?;
     let subject = message.subject().unwrap_or("").trim().to_owned();
-    let text = match message.body_html(0) {
-        Some(html) => html_lines(&html),
+    let html = message.body_html(0);
+    let text = match &html {
+        Some(html) => html_lines(html),
         None => message
             .body_text(0)
             .map(|t| t.replace("\r\n", "\n"))
@@ -268,6 +287,22 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
         None if first_is_title => subject,
         None => String::new(),
     };
+    // Formatting kept as it is, without the title line.
+    let html = html
+        .map(|html| {
+            let body = body_of(&html);
+            let body = if first_is_title {
+                after_first_block(body)
+            } else {
+                body
+            };
+            if is_formatted(body) {
+                body.trim().to_owned()
+            } else {
+                String::new()
+            }
+        })
+        .unwrap_or_default();
     let labels = raw_header("X-Katna-Labels")
         .and_then(|v| STANDARD.decode(v.as_bytes()).ok())
         .and_then(|json| serde_json::from_slice::<Vec<String>>(&json).ok())
@@ -277,6 +312,7 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
         uuid,
         title,
         body: lines.join("\n"),
+        html,
         color: raw_header("X-Katna-Color")
             .and_then(|c| c.parse().ok())
             .unwrap_or(0),
@@ -286,6 +322,81 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
         link: raw_header("X-Katna-Link"),
         updated_at: message.date().map_or(0, |d| d.to_timestamp()),
     })
+}
+
+/// What is inside `html`'s `body`, or all of it when it has none.
+fn body_of(html: &str) -> &str {
+    let start = html
+        .find("<body")
+        .and_then(|at| html[at..].find('>').map(|end| at + end + 1))
+        .unwrap_or(0);
+    let body = &html[start..];
+    body.find("</body").map_or(body, |end| &body[..end])
+}
+
+/// `html` without its first element (the title line of a note).
+fn after_first_block(html: &str) -> &str {
+    let html = html.trim_start();
+    let name: String = html
+        .strip_prefix('<')
+        .unwrap_or("")
+        .chars()
+        .take_while(char::is_ascii_alphanumeric)
+        .collect::<String>()
+        .to_ascii_lowercase();
+    if name.is_empty() {
+        return html;
+    }
+    let lower = html.to_ascii_lowercase();
+    let (open, close) = (format!("<{name}"), format!("</{name}"));
+    let mut depth = 0usize;
+    let mut at = 0;
+    while let Some(lt) = lower[at..].find('<').map(|ix| at + ix) {
+        let rest = &lower[lt..];
+        let boundary = |tag: &str| {
+            rest.starts_with(tag)
+                && rest[tag.len()..]
+                    .chars()
+                    .next()
+                    .is_some_and(|c| !c.is_ascii_alphanumeric())
+        };
+        if boundary(&close) {
+            depth = depth.saturating_sub(1);
+            if depth == 0 {
+                return rest.find('>').map_or("", |gt| &html[lt + gt + 1..]);
+            }
+        } else if boundary(&open) {
+            depth += 1;
+        }
+        at = lt + 1;
+    }
+    ""
+}
+
+/// Whether a note's HTML has any formatting: bold, italic, underline,
+/// struck, headings, lists or sized text.
+fn is_formatted(html: &str) -> bool {
+    const TAGS: [&str; 16] = [
+        "b", "strong", "i", "em", "u", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "ul",
+        "ol", "font",
+    ];
+    const STYLES: [&str; 4] = ["font-weight", "font-style", "text-decoration", "font-size"];
+    let lower = html.to_ascii_lowercase();
+    let mut rest = lower.as_str();
+    while let Some(lt) = rest.find('<') {
+        let tag = &rest[lt + 1..];
+        let end = tag.find('>').unwrap_or(tag.len());
+        let inside = &tag[..end];
+        let name: String = inside
+            .chars()
+            .take_while(char::is_ascii_alphanumeric)
+            .collect();
+        if TAGS.contains(&name.as_str()) || STYLES.iter().any(|s| inside.contains(s)) {
+            return true;
+        }
+        rest = &tag[end..];
+    }
+    false
 }
 
 /// The lines of a note's HTML, as Apple Notes writes it: a `div` per
@@ -462,6 +573,42 @@ Content-Transfer-Encoding: quoted-printable\r\n\
         assert_eq!(note.title, "Shopping");
         assert_eq!(note.body, "Milk\nBread");
         assert_eq!(note.uuid, "12345678-AAAA-4BBB-8CCC-1234567890AB");
+    }
+
+    #[test]
+    fn formatting_goes_there_and_back() {
+        let mut n = note();
+        n.body = "Plan\n☐ Book train".to_owned();
+        n.html = "<div dir=\"ltr\"><div><b>Plan</b></div><div>☐ Book train</div></div>".to_owned();
+        let back = parse_note(&build_note(&n, "me@example.org", 1_790_650_000)).unwrap();
+        assert_eq!(back.body, n.body);
+        assert_eq!(back.html, n.html);
+        // With no title of its own, the first line is the title, as with
+        // plain lines.
+        n.title = String::new();
+        n.html = "<div dir=\"ltr\"><div>Plan</div><div><i>☐ Book train</i></div></div>".to_owned();
+        let back = parse_note(&build_note(&n, "me@example.org", 1_790_650_000)).unwrap();
+        assert_eq!(
+            (back.title.as_str(), back.body.as_str()),
+            ("Plan", "☐ Book train")
+        );
+        assert_eq!(back.html, "<div><i>☐ Book train</i></div>");
+    }
+
+    #[test]
+    fn an_apple_note_keeps_its_formatting_but_not_its_title() {
+        let raw = b"Subject: Shopping\r\n\
+X-Uniform-Type-Identifier: com.apple.mail-note\r\n\
+X-Universally-Unique-Identifier: 12345678-AAAA-4BBB-8CCC-1234567890AB\r\n\
+Content-Type: text/html; charset=utf-8\r\n\
+\r\n\
+<html><head></head><body><div><b>Shopping</b></div><div><i>Milk</i></div><div>Bread<br></div></body></html>\r\n";
+        let note = parse_note(raw).unwrap();
+        assert_eq!(note.body, "Milk\nBread");
+        assert_eq!(note.html, "<div><i>Milk</i></div><div>Bread<br></div>");
+        // Plain lines keep no HTML.
+        let plain = parse_note(&build_note(&super::tests::note(), "me@example.org", 0)).unwrap();
+        assert!(plain.html.is_empty());
     }
 
     #[test]

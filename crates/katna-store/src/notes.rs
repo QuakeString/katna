@@ -29,6 +29,9 @@ pub struct Note {
     pub title: String,
     /// Plain text; lines starting "☐ " or "☑ " are checklist items.
     pub body: String,
+    /// The same text formatted, as HTML with one paragraph per line of
+    /// `body`; empty when it has no formatting.
+    pub html: String,
     /// 0 for none, else a number in the Notes palette.
     pub color: i64,
     pub pinned: bool,
@@ -49,7 +52,7 @@ pub struct Note {
 }
 
 const COLUMNS: &str = "id, account_id, uuid, title, body, color, pinned, archived, labels, link,
-     position, created_at, updated_at, trashed_at, server_uid, dirty";
+     position, created_at, updated_at, trashed_at, server_uid, dirty, html";
 
 fn note_row(row: &Row<'_>) -> rusqlite::Result<Note> {
     let labels: String = row.get(8)?;
@@ -70,6 +73,7 @@ fn note_row(row: &Row<'_>) -> rusqlite::Result<Note> {
         trashed_at: row.get(13)?,
         server_uid: row.get(14)?,
         dirty: row.get(15)?,
+        html: row.get(16)?,
     })
 }
 
@@ -138,7 +142,7 @@ impl Store {
                 tx.execute(
                     "UPDATE note SET account_id = ?2, title = ?3, body = ?4, color = ?5,
                             pinned = ?6, archived = ?7, labels = ?8, link = ?9,
-                            updated_at = ?10, dirty = 1
+                            updated_at = ?10, dirty = 1, html = ?11
                      WHERE id = ?1",
                     params![
                         note.id,
@@ -150,7 +154,8 @@ impl Store {
                         note.archived,
                         labels,
                         note.link,
-                        now
+                        now,
+                        note.html
                     ],
                 )?;
                 journal::record(&tx, ObjectKind::Note, note.id, ChangeOp::Update)?;
@@ -162,9 +167,10 @@ impl Store {
                         "WITH r(h) AS (SELECT hex(randomblob(16)))
                          INSERT INTO note (account_id, uuid, title, body, color, pinned,
                                            archived, labels, link, position, created_at,
-                                           updated_at, dirty)
+                                           updated_at, dirty, html)
                          SELECT ?1, {NEW_UUID}, ?2, ?3, ?4, ?5, ?6, ?7, ?8,
-                                (SELECT coalesce(max(position), 0) + 1 FROM note), ?9, ?9, 1
+                                (SELECT coalesce(max(position), 0) + 1 FROM note), ?9, ?9, 1,
+                                ?10
                          FROM r"
                     ),
                     params![
@@ -176,7 +182,8 @@ impl Store {
                         note.archived,
                         labels,
                         note.link,
-                        now
+                        now,
+                        note.html
                     ],
                 )?;
                 let id = tx.last_insert_rowid();
@@ -302,6 +309,8 @@ pub struct RemoteNote {
     pub uuid: String,
     pub title: String,
     pub body: String,
+    /// As [`Note::html`].
+    pub html: String,
     pub color: i64,
     pub pinned: bool,
     pub archived: bool,
@@ -396,7 +405,7 @@ impl Store {
                         "UPDATE note SET account_id = ?2, server_uid = ?3, title = ?4,
                                 body = ?5, color = ?6, pinned = ?7, archived = ?8,
                                 labels = ?9, link = ?10,
-                                updated_at = max(updated_at, ?11)
+                                updated_at = max(updated_at, ?11), html = ?12
                          WHERE id = ?1",
                         params![
                             id,
@@ -409,7 +418,8 @@ impl Store {
                             remote.archived,
                             labels,
                             remote.link,
-                            remote.updated_at
+                            remote.updated_at,
+                            remote.html
                         ],
                     )?;
                     journal::record(&tx, ObjectKind::Note, id, ChangeOp::Update)?;
@@ -419,10 +429,10 @@ impl Store {
                 tx.execute(
                     "INSERT INTO note (account_id, uuid, title, body, color, pinned, archived,
                                        labels, link, position, created_at, updated_at,
-                                       server_uid, dirty)
+                                       server_uid, dirty, html)
                      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,
                              (SELECT coalesce(max(position), 0) + 1 FROM note), ?10, ?10,
-                             ?11, 0)",
+                             ?11, 0, ?12)",
                     params![
                         account,
                         remote.uuid,
@@ -434,7 +444,8 @@ impl Store {
                         labels,
                         remote.link,
                         remote.updated_at,
-                        uid
+                        uid,
+                        remote.html
                     ],
                 )?;
                 let id = tx.last_insert_rowid();

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Formatting in notes"
+text = """
+Pick Formatting in a note for Heading 1, Heading 2, bold, italic and
+underline, as in Keep. The board shows it too, and it travels with the note
+to your mail account's Notes folder, where formatting from an iPhone now
+comes back as it was.
+"""

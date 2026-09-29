@@ -82,10 +82,15 @@ impl MailWindow {
         if let Some(editor) = self.notes.as_ref().and_then(|p| p.editor.as_ref()) {
             // Typed text goes under "Notes"; left as it is, the note is
             // not kept.
-            let at = body.find("\n\n\n").map_or(body.len(), |ix| ix + 1);
-            editor
-                .body
-                .update(cx, |area, cx| area.set_text(body, at, cx));
+            let doc = super::format::doc_of(&body, "");
+            let line = body[..body.find("\n\n\n").map_or(body.len(), |ix| ix + 1)]
+                .matches('\n')
+                .count();
+            let at = doc
+                .paths()
+                .get(line)
+                .map_or(doc.end(), |path| katna_ui::rich::Pos::new(*path, 0));
+            editor.body.update(cx, |area, cx| area.set_doc(doc, at, cx));
         }
         if let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) {
             editor.changed = false;

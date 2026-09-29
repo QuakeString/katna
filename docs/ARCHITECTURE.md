@@ -2721,7 +2721,16 @@ away; he can still change them.
   a task made from a mail keeps its Message-ID (the field stays on this
   computer), so its Note chip on the Tasks page opens the note; Undo takes
   the task back.
-- **Later.** Formatting, pictures.
+- **Formatting.** Keep's set: Heading 1, Heading 2 and Normal text for a
+  line, Bold, Italic and Underline, Clear formatting (Formatting in the
+  note's toolbar; Ctrl+B, I and U). The note is edited with the compose
+  window's `RichEditor`. `body` stays the plain text, one line per
+  paragraph, for the board, search and checklists; `html` (pim.db v11)
+  holds the same paragraphs formatted, empty while nothing is. The Notes
+  folder copy carries that HTML after the title line, and formatting from
+  another app (an iPhone's bold or headings) is kept when read. Cards draw
+  the formatting when the HTML's paragraphs line up with `body`.
+- **Later.** Pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 

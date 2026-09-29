@@ -7,6 +7,7 @@
 //! the way Apple's Notes folder keeps them. Archive and Trash sit in the
 //! list at the left; Trash empties itself after seven days.
 
+mod format;
 mod labels;
 mod line_tasks;
 mod meetings;
@@ -23,7 +24,8 @@ use gpui::{
 use katna_dbus::NoteItem;
 use katna_i18n::tr;
 use katna_store::Note;
-use katna_ui::{InputEvent, TextArea, TextInput, px, unpx};
+use katna_ui::rich::{RichEditor, RichEvent};
+use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
 use crate::daemon::{self, Command};
@@ -129,7 +131,7 @@ struct Editor {
     /// 0 until the new note is first saved.
     id: i64,
     title: Entity<TextInput>,
-    body: Entity<TextArea>,
+    body: Entity<RichEditor>,
     color: i64,
     pinned: bool,
     archived: bool,
@@ -143,6 +145,10 @@ struct Editor {
     palette: bool,
     /// The account row is open.
     places: bool,
+    /// The formatting row is open.
+    format: bool,
+    /// A new note from the "Take a note" bar, shown in the bar's place.
+    in_bar: bool,
     /// The label picker, when open.
     picker: Option<labels::Picker>,
     /// A save is on its way; another waits for it.
@@ -157,7 +163,8 @@ impl Editor {
             id: self.id,
             account: self.account.unwrap_or(0),
             title: self.title.read(cx).text().to_owned(),
-            body: self.body.read(cx).text().to_owned(),
+            body: format::text_of(self.body.read(cx).doc()),
+            html: format::html_of(self.body.read(cx).doc()),
             color: self.color,
             pinned: self.pinned,
             archived: self.archived,
@@ -167,7 +174,7 @@ impl Editor {
     }
 
     fn is_empty(&self, cx: &gpui::App) -> bool {
-        self.title.read(cx).text().trim().is_empty() && self.body.read(cx).text().trim().is_empty()
+        self.title.read(cx).text().trim().is_empty() && self.body.read(cx).is_blank()
     }
 }
 
@@ -183,6 +190,7 @@ fn item_of(note: &Note) -> NoteItem {
         archived: note.archived,
         labels: note.labels.clone(),
         link: note.link.clone().unwrap_or_default(),
+        html: note.html.clone(),
     }
 }
 
@@ -339,16 +347,20 @@ impl MailWindow {
         self.calendar.open = None;
         let accent = rgba(self.theme(window).accent).into();
         let (about_title, about_link) = about.unzip();
-        let (title_text, body_text) = note
-            .map(|n| (n.title.clone(), n.body.clone()))
+        let in_bar = note.is_none() && about_link.is_none();
+        let (title_text, (body_text, body_html)) = note
+            .map(|n| (n.title.clone(), (n.body.clone(), n.html.clone())))
             .unwrap_or_else(|| {
                 (
                     about_title.clone().unwrap_or_default(),
-                    if checklist {
-                        UNTICKED.to_owned()
-                    } else {
-                        String::new()
-                    },
+                    (
+                        if checklist {
+                            UNTICKED.to_owned()
+                        } else {
+                            String::new()
+                        },
+                        String::new(),
+                    ),
                 )
             });
         let title = cx.new(|cx| {
@@ -357,11 +369,13 @@ impl MailWindow {
             input.set_text(title_text, cx);
             input
         });
+        let palette = super::compose::palette(&self.theme(window));
         let body = cx.new(|cx| {
-            let mut area = TextArea::new(tr!("notes-take-a-note"), cx);
-            area.set_accent(accent);
-            let end = body_text.len();
-            area.set_text(body_text, end, cx);
+            let mut area = RichEditor::new(tr!("notes-take-a-note"), cx);
+            area.set_palette(palette);
+            let doc = format::doc_of(&body_text, &body_html);
+            let end = doc.end();
+            area.set_doc(doc, end, cx);
             area
         });
         let on_title =
@@ -378,13 +392,13 @@ impl MailWindow {
                     InputEvent::Cancel => this.close_note(cx),
                 }
             });
-        let on_body = cx.subscribe(&body, |this, _, event: &InputEvent, cx| match event {
-            InputEvent::Changed => this.note_typed(cx),
-            InputEvent::Cancel => this.close_note(cx),
-            InputEvent::Submit => {}
+        let on_body = cx.subscribe(&body, |this, _, event: &RichEvent, cx| match event {
+            RichEvent::Changed => this.note_typed(cx),
+            RichEvent::Cancel => this.close_note(cx),
+            // Make it a task and the formatting row follow the cursor.
+            RichEvent::Selection => cx.notify(),
+            _ => {}
         });
-        // Make it a task follows the cursor from line to line.
-        let on_cursor = cx.observe(&body, |_, _, cx| cx.notify());
         let focus = if note.is_some() || checklist || about_title.is_some() {
             body.focus_handle(cx)
         } else {
@@ -420,10 +434,12 @@ impl MailWindow {
             changed: false,
             palette: false,
             places: false,
+            format: false,
+            in_bar,
             picker: None,
             saving: false,
             _save: None,
-            _subscriptions: vec![on_title, on_body, on_cursor],
+            _subscriptions: vec![on_title, on_body],
         };
         if let Some(page) = &mut self.notes {
             page.editor = Some(editor);
@@ -1000,8 +1016,14 @@ impl MailWindow {
             }));
 
         let query = self.search.read(cx).text().trim().to_lowercase();
-        let board = self.render_board(th, &query, cx);
-        let editor = self.render_editor(th, window, cx);
+        let board = self.render_board(th, &query, window, cx);
+        // A new note opens in place of the "Take a note" bar, as in Keep;
+        // a saved one opens over the page.
+        let editor = if self.new_note_inline() {
+            None
+        } else {
+            self.render_editor(th, false, window, cx)
+        };
         let dialog = self.render_labels_dialog(th, window, cx);
         let side = self.page_side(side.into_any_element(), SIDE_WIDTH, true, th, cx);
         div()
@@ -1017,7 +1039,13 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn render_board(&self, th: &Theme, query: &str, cx: &mut Context<Self>) -> AnyElement {
+    fn render_board(
+        &self,
+        th: &Theme,
+        query: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let Some(page) = &self.notes else {
             return div().into_any_element();
         };
@@ -1028,10 +1056,14 @@ impl MailWindow {
             Some(Err(err)) => return placeholder(err, th),
             Some(Ok(notes)) => notes.clone(),
         };
+        // A new note being written in the bar's place joins the board when
+        // it closes, as in Keep.
+        let writing = page.editor.as_ref().filter(|e| e.in_bar).map(|e| e.id);
         let shown: Vec<&Note> = notes
             .iter()
             .filter(|n| {
-                view.shows(n)
+                Some(n.id) != writing
+                    && view.shows(n)
                     && matches(n, query)
                     && label.as_ref().is_none_or(|l| n.labels.contains(l))
             })
@@ -1074,7 +1106,7 @@ impl MailWindow {
             .flex()
             .flex_col();
         if view == NotesView::Notes {
-            body = body.child(self.render_take_note(th, cx));
+            body = body.child(self.render_take_note(th, window, cx));
         }
         if view == NotesView::Trash {
             let ids: Vec<i64> = shown.iter().map(|n| n.id).collect();
@@ -1188,51 +1220,71 @@ impl MailWindow {
     }
 
     /// Keep's "Take a note…" bar, with a new list at its right.
-    fn render_take_note(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        div()
+    /// Whether the open note is a new one from the "Take a note" bar, which
+    /// opens in the bar's place rather than over the page.
+    fn new_note_inline(&self) -> bool {
+        self.notes.as_ref().is_some_and(|page| {
+            page.view == NotesView::Notes && page.editor.as_ref().is_some_and(|e| e.in_bar)
+        })
+    }
+
+    fn render_take_note(
+        &self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let row = div()
             .flex()
             .flex_row()
             .justify_center()
             .pt(px(32.0))
-            .pb(px(24.0))
-            .child(
-                div()
-                    .id("notes-take")
-                    .w_full()
-                    .max_w(px(EDITOR_WIDTH))
-                    .h(px(48.0))
-                    .pl(px(16.0))
-                    .pr(px(4.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .bg(rgba(th.surface))
-                    .border_1()
-                    .border_color(rgba(th.divider))
-                    .shadow(elevation(th, 1.0))
-                    .cursor_text()
-                    .on_click(cx.listener(|this, _, window, cx| {
+            .pb(px(24.0));
+        if self.new_note_inline()
+            && let Some(card) = self.render_editor(th, true, window, cx)
+        {
+            return row.child(card).into_any_element();
+        }
+        row.child(
+            div()
+                .id("notes-take")
+                .w_full()
+                .max_w(px(EDITOR_WIDTH))
+                .h(px(48.0))
+                .pl(px(16.0))
+                .pr(px(4.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .rounded(px(8.0))
+                .bg(rgba(th.surface))
+                .border_1()
+                .border_color(rgba(th.divider))
+                .shadow(elevation(th, 1.0))
+                .cursor_text()
+                .on_click(
+                    cx.listener(|this, _, window, cx| {
                         this.open_note(None, false, None, window, cx)
-                    }))
-                    .child(
-                        div()
-                            .flex_1()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("notes-take-a-note")),
-                    )
-                    .child(
-                        icon_button("notes-new-list", "checkbox-checked", 22.0, th)
-                            .tooltip(tip(tr!("notes-new-list"), th))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                cx.stop_propagation();
-                                this.open_note(None, true, None, window, cx)
-                            })),
-                    ),
-            )
-            .into_any_element()
+                    }),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .text_size(px(15.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("notes-take-a-note")),
+                )
+                .child(
+                    icon_button("notes-new-list", "checkbox-checked", 22.0, th)
+                        .tooltip(tip(tr!("notes-new-list"), th))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.open_note(None, true, None, window, cx)
+                        })),
+                ),
+        )
+        .into_any_element()
     }
 
     fn render_card(&self, note: &Note, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -1260,14 +1312,29 @@ impl MailWindow {
         }
         let more = lines.len().saturating_sub(CARD_LINES);
         lines.truncate(CARD_LINES);
+        // A formatted note shows its headings, bold, italic and underline.
+        let formatted = format::card_paras(&note.body, &note.html);
         let body = lines.into_iter().map(|(ix, check, text)| {
+            let styled = formatted
+                .as_ref()
+                .and_then(|paras| paras.get(ix))
+                .map(|para| {
+                    let skip = if check.is_some() { UNTICKED.len() } else { 0 };
+                    format::card_line(para, skip)
+                });
+            let scale = styled.as_ref().map_or(1.0, |(_, scale)| *scale);
             let row = div()
                 .flex()
                 .flex_row()
                 .items_start()
                 .gap(px(8.0))
-                .text_size(px(14.0))
-                .line_height(px(20.0));
+                .text_size(px(14.0 * scale))
+                .line_height(px(20.0 * scale));
+            let text = match styled {
+                Some((element, _)) => element,
+                None if text.is_empty() => " ".to_owned().into_any_element(),
+                None => text.into_any_element(),
+            };
             match check {
                 Some(done) => {
                     let item = base.clone();
@@ -1280,6 +1347,10 @@ impl MailWindow {
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 let mut item = item.clone();
+                                if !item.html.is_empty() {
+                                    item.html =
+                                        format::toggle_html_line(&item.body, &item.html, ix);
+                                }
                                 item.body = toggle_line(&item.body, ix);
                                 this.change_note(item, cx)
                             }))
@@ -1291,11 +1362,7 @@ impl MailWindow {
                     )
                     .child(div().flex_1().min_w_0().child(text))
                 }
-                None => row.child(div().flex_1().min_w_0().child(if text.is_empty() {
-                    " ".to_owned()
-                } else {
-                    text
-                })),
+                None => row.child(div().flex_1().min_w_0().child(text)),
             }
         });
         let footer = |name: &'static str, tip_text: String| {
@@ -1497,9 +1564,12 @@ impl MailWindow {
     }
 
     /// The open note, over a dimmed board.
+    /// The open note: `inline` in the board's flow, otherwise centred over
+    /// the page on a scrim.
     pub(super) fn render_editor(
         &self,
         th: &Theme,
+        inline: bool,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
@@ -1656,9 +1726,12 @@ impl MailWindow {
             .id("note-editor")
             .occlude()
             .relative()
-            .w(px(
-                EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
-            ))
+            .when(inline, |d| d.w_full().max_w(px(EDITOR_WIDTH)))
+            .when(!inline, |d| {
+                d.w(px(
+                    EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
+                ))
+            })
             .max_h(px(vh * 0.7))
             .flex()
             .flex_col()
@@ -1777,6 +1850,7 @@ impl MailWindow {
             )
             .children(places)
             .children(palette)
+            .children(self.render_format_row(th, cx))
             .children(self.render_label_picker(th, cx))
             .child(
                 div()
@@ -1787,6 +1861,24 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(2.0))
+                    .child(
+                        tool("format-text", tr!("notes-format")).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                let Some(editor) =
+                                    this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                else {
+                                    return;
+                                };
+                                editor.format = !editor.format;
+                                editor.palette = false;
+                                editor.places = false;
+                                editor.picker = None;
+                                let focus = editor.body.focus_handle(cx);
+                                window.focus(&focus, cx);
+                                cx.notify();
+                            },
+                        )),
+                    )
                     .child(tool("text-color", tr!("notes-color")).on_click(cx.listener(
                         |this, _, _, cx| {
                             if let Some(editor) =
@@ -1812,9 +1904,7 @@ impl MailWindow {
                                 };
                                 let body = editor.body.clone();
                                 body.update(cx, |area, cx| {
-                                    let text = toggle_checklist(area.text());
-                                    let end = text.len();
-                                    area.set_text(text, end, cx);
+                                    area.edit_doc(format::toggle_checklist_doc, cx)
                                 });
                                 window.focus(&body.focus_handle(cx), cx);
                             },
@@ -1882,6 +1972,13 @@ impl MailWindow {
                             .child(tr!("notes-close")),
                     ),
             );
+        if inline {
+            // Clicking anywhere else on the page closes it, as in Keep.
+            return Some(
+                card.on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_note(cx)))
+                    .into_any_element(),
+            );
+        }
         Some(
             div()
                 .id("note-editor-scrim")
