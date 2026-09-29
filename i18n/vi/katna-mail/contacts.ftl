@@ -39,6 +39,12 @@ contacts-account-failed = Không đọc được danh bạ.
 # $reason is the server's own words, in English.
 contacts-account-error = Không đọc được danh bạ: { $reason }
 contacts-account-none = Không tìm thấy sổ địa chỉ nào
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Không tìm thấy sổ địa chỉ nào: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } chỉ hiện danh bạ cho Katna khi đăng nhập bằng { $provider }.
+contacts-account-sign-in-with = Đăng nhập bằng { $provider }
 contacts-account-looking = Đang tìm danh bạ…
 contacts-account-try-again = Thử lại
 contacts-account-try-again-tooltip = Kiểm tra lại danh bạ của tài khoản này ngay

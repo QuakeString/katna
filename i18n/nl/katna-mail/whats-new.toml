@@ -1679,3 +1679,32 @@ Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
 aan om aan te melden met Google of Microsoft, wat hun agenda’s nodig
 hebben.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Selectievakjes die afvinken"
+text = """
+Elk selectievakje in Katna Mail is nu even groot als de ronde knoppen
+ernaast. Het vinkje tekent zich wanneer je het aanvinkt en veegt weg
+wanneer je het uitvinkt, in Instellingen, de e-maillijst, Agenda,
+Contacten, Notities en dialoogvensters.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Een korter rechtsklikmenu dat altijd past"
+text = """
+Het rechtsklikmenu van de e-maillijst houdt de dagelijkse acties
+bovenaan en zet de rest onder “Opvolgen” (taken, notities,
+vergaderingen, gesprekken) en “Meer” (spam, belangrijk, vastzetten). Het
+opent waar je klikt en blijft binnen het venster; in een laag of smal
+venster opent een submenu op de plek van het menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Waarom een account geen contacten heeft"
+text = """
+Als de contacten van een account niet verschijnen, zegt Contacten nu wat
+de server antwoordde, en “Opnieuw proberen” zoekt meteen opnieuw. Een
+Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
+aan om aan te melden met Google of Microsoft, wat hun contacten nodig
+hebben.
+"""

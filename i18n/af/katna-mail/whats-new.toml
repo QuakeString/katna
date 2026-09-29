@@ -1631,3 +1631,31 @@ bediener geantwoord het, en Probeer weer soek dadelik weer daarna. 'n
 Gmail- of Outlook-rekening wat met 'n wagwoord bygevoeg is, bied aan om
 met Google of Microsoft aan te meld, wat hul kalenders nodig het.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Merkblokkies wat regmerk"
+text = """
+Elke merkblokkie in Katna Mail is nou so groot soos die ronde knoppies
+langsaan. Sy regmerkie teken homself in wanneer jy dit merk en vee weg
+wanneer jy dit leegmaak, in Instellings, die e-poslys, Kalender,
+Kontakte, Notas en dialoë.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "'n Korter regsklikkieslys wat altyd pas"
+text = """
+Die e-poslys se regsklikkieslys hou die alledaagse aksies bo en sit die
+res onder Volg op (take, notas, vergaderings, oproepe) en Meer
+(strooipos, belangrikheid, vasspeld). Dit gaan oop waar jy klik en bly
+binne die venster; in 'n kort of smal venster gaan 'n subkieslys op die
+kieslys se plek oop.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Waarom 'n rekening geen kontakte het nie"
+text = """
+As 'n rekening se kontakte nie wys nie, sê Kontakte nou wat die bediener
+geantwoord het, en Probeer weer soek dadelik weer daarna. 'n Gmail- of
+Outlook-rekening wat met 'n wagwoord bygevoeg is, bied aan om met Google
+of Microsoft aan te meld, wat hul kontakte nodig het.
+"""

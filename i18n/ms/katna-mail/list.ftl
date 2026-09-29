@@ -237,6 +237,12 @@ menu-add-note = Tambah nota
 menu-print-all = Cetak semua
 menu-new-window = Buka dalam tetingkap baharu
 menu-move-to = Alih ke
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Susulan
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Lagi
 menu-move-to-heading = Alih ke:
 menu-find-from = Cari e-mel daripada { $name }
 

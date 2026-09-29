@@ -1682,3 +1682,31 @@ jawaban server, dan Coba lagi langsung mencarinya lagi. Akun Gmail atau
 Outlook yang ditambahkan dengan sandi menawarkan untuk masuk dengan
 Google atau Microsoft, yang dibutuhkan kalendernya.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kotak centang yang mencentang"
+text = """
+Setiap kotak centang di Katna Mail kini seukuran tombol bulat di
+sampingnya. Centangnya tergambar saat Anda mencentangnya dan terhapus
+saat Anda mengosongkannya, di Setelan, daftar email, Kalender, Kontak,
+Catatan, maupun dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu klik kanan yang lebih pendek dan selalu muat"
+text = """
+Menu klik kanan daftar email menaruh tindakan sehari-hari di atas dan
+sisanya di bawah Tindak lanjut (tugas, catatan, rapat, panggilan) dan
+Lainnya (spam, penting, sematkan). Menu terbuka di tempat Anda mengklik
+dan tetap di dalam jendela; di jendela yang pendek atau sempit, submenu
+terbuka di tempat menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Mengapa akun tidak punya kontak"
+text = """
+Jika kontak sebuah akun tidak muncul, Kontak kini memberi tahu jawaban
+server, dan Coba lagi langsung mencarinya lagi. Akun Gmail atau Outlook
+yang ditambahkan dengan sandi menawarkan untuk masuk dengan Google atau
+Microsoft, yang dibutuhkan kontaknya.
+"""

@@ -1546,3 +1546,21 @@ title = "Dalilin da asusu ba shi da kalandoji"
 text = """
 Idan kalandojin wani asusu ba su bayyana ba, Kalanda yanzu yana faɗin abin da sabar ta amsa, kuma Sake gwadawa yana sake nemansu nan take. Asusun Gmail ko Outlook da aka ƙara da kalmar sirri yana ba da damar shiga da Google ko Microsoft, abin da kalandojinsa ke buƙata.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Akwatunan zaɓi masu alamar tabbatarwa"
+text = """
+Kowane akwatin zaɓi a Katna Mail yanzu girmansa daidai yake da maɓallan zagaye da ke kusa da shi. Alamarsa tana zana kanta idan ka zaɓa kuma tana gogewa idan ka cire, a Saituna, jerin wasiƙu, Kalanda, Lambobin sadarwa, Bayanai da akwatunan maganganu duka.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Gajeren menu na danna dama wanda koyaushe yake dacewa"
+text = """
+Menu na danna dama na jerin wasiƙu yana ajiye ayyukan yau da kullum a sama kuma yana sa sauran a ƙarƙashin Bibiya (ayyuka, bayanai, taruka, kira) da Ƙari (saƙon banza, muhimmanci, maƙala). Yana buɗewa inda ka danna kuma yana zama a cikin taga; a gajeriyar taga ko ƙunƙuntar taga, ƙaramin menu yana buɗewa a wurin menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Dalilin da asusu ba shi da lambobin sadarwa"
+text = """
+Idan lambobin sadarwar wani asusu ba su bayyana ba, Lambobin sadarwa yanzu yana faɗin abin da sabar ta amsa, kuma Sake gwadawa yana sake nemansu nan take. Asusun Gmail ko Outlook da aka ƙara da kalmar sirri yana ba da damar shiga da Google ko Microsoft, abin da lambobin sadarwarsa ke buƙata.
+"""

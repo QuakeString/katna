@@ -1721,3 +1721,32 @@ erneut danach. Ein mit Passwort hinzugefügtes Gmail- oder Outlook-Konto
 bietet an, sich mit Google oder Microsoft anzumelden, was dessen
 Kalender brauchen.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kontrollkästchen mit Häkchen"
+text = """
+Jedes Kontrollkästchen in Katna Mail ist jetzt so groß wie die runden
+Tasten daneben. Sein Häkchen zeichnet sich beim Ankreuzen ein und
+verschwindet beim Leeren wieder, in Einstellungen, der Mailliste,
+Kalender, Kontakte, Notizen und Dialogen gleichermaßen.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Ein kürzeres Kontextmenü, das immer passt"
+text = """
+Das Kontextmenü der Mailliste behält die alltäglichen Aktionen oben und
+legt den Rest unter Nachverfolgen (Aufgaben, Notizen, Besprechungen,
+Anrufe) und Mehr (Spam, Wichtigkeit, Anheften). Es öffnet sich dort, wo
+Sie klicken, und bleibt im Fenster; in einem niedrigen oder schmalen
+Fenster öffnet sich ein Untermenü an der Stelle des Menüs.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Warum ein Konto keine Kontakte hat"
+text = """
+Wenn die Kontakte eines Kontos nicht erscheinen, sagt Kontakte jetzt,
+was der Server geantwortet hat, und Erneut versuchen sucht sofort erneut
+danach. Ein mit Passwort hinzugefügtes Gmail- oder Outlook-Konto bietet
+an, sich mit Google oder Microsoft anzumelden, was dessen Kontakte
+brauchen.
+"""

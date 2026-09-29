@@ -237,6 +237,12 @@ menu-add-note = 新增記事
 menu-print-all = 全部列印
 menu-new-window = 在新視窗中開啟
 menu-move-to = 移至
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = 後續處理
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = 更多
 menu-move-to-heading = 移至：
 menu-find-from = 搜尋來自 { $name } 的郵件
 

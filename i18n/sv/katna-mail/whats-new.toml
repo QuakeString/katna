@@ -1646,3 +1646,31 @@ svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
 Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
 eller Microsoft, vilket deras kalendrar kräver.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kryssrutor som bockas i"
+text = """
+Varje kryssruta i Katna Mail är nu lika stor som de runda knapparna
+bredvid. Bocken ritas fram när du markerar rutan och suddas bort när du
+avmarkerar den, i Inställningar, e-postlistan, Kalender, Kontakter,
+Anteckningar och dialogrutor.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "En kortare högerklicksmeny som alltid får plats"
+text = """
+E-postlistans högerklicksmeny har de vardagliga åtgärderna överst och
+lägger resten under Följ upp (uppgifter, anteckningar, möten, samtal)
+och Mer (skräppost, viktigt, fäst). Den öppnas där du klickar och håller
+sig inom fönstret; i ett lågt eller smalt fönster öppnas en undermeny i
+menyns ställe.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Varför ett konto saknar kontakter"
+text = """
+När ett kontos kontakter inte visas säger Kontakter nu vad servern
+svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
+Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
+eller Microsoft, vilket deras kontakter kräver.
+"""

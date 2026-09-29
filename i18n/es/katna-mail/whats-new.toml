@@ -1690,3 +1690,31 @@ qué respondió el servidor, y Reintentar los vuelve a buscar al momento.
 Una cuenta de Gmail u Outlook añadida con contraseña ofrece iniciar
 sesión con Google o Microsoft, que es lo que necesitan sus calendarios.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Casillas que se marcan"
+text = """
+Cada casilla de Katna Mail tiene ahora el mismo tamaño que los botones
+redondos de al lado. Su marca se dibuja al marcarla y se borra al
+desmarcarla, tanto en Ajustes como en la lista de correo, Calendario,
+Contactos, Notas y los diálogos.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Un menú contextual más corto que siempre cabe"
+text = """
+El menú contextual de la lista de correo deja arriba las acciones de
+todos los días y pone el resto en Hacer seguimiento (tareas, notas,
+reuniones, llamadas) y Más (spam, importancia, fijar). Se abre donde
+haces clic y se queda dentro de la ventana; en una ventana baja o
+estrecha, un submenú se abre en el lugar del menú.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Por qué una cuenta no tiene contactos"
+text = """
+Cuando los contactos de una cuenta no aparecen, Contactos ahora dice qué
+respondió el servidor, y Reintentar los vuelve a buscar al momento. Una
+cuenta de Gmail u Outlook añadida con contraseña ofrece iniciar sesión
+con Google o Microsoft, que es lo que necesitan sus contactos.
+"""

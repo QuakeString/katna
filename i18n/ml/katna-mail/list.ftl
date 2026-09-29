@@ -387,6 +387,12 @@ menu-add-note = കുറിപ്പ് ചേർക്കുക
 menu-print-all = എല്ലാം പ്രിന്റ് ചെയ്യുക
 menu-new-window = പുതിയ വിൻഡോയിൽ തുറക്കുക
 menu-move-to = ഇതിലേക്ക് നീക്കുക
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = തുടർനടപടി
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = കൂടുതൽ
 menu-move-to-heading = ഇതിലേക്ക് നീക്കുക:
 menu-find-from = { $name } അയച്ച ഇമെയിലുകൾ കണ്ടെത്തുക
 

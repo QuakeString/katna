@@ -390,6 +390,12 @@ menu-add-note = Lägg till en anteckning
 menu-print-all = Skriv ut alla
 menu-new-window = Öppna i nytt fönster
 menu-move-to = Flytta till
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Följ upp
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Mer
 menu-move-to-heading = Flytta till:
 menu-find-from = Hitta e-post från { $name }
 

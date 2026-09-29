@@ -237,6 +237,12 @@ menu-add-note = เพิ่มโน้ต
 menu-print-all = พิมพ์ทั้งหมด
 menu-new-window = เปิดในหน้าต่างใหม่
 menu-move-to = ย้ายไปที่
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ติดตามผล
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = เพิ่มเติม
 menu-move-to-heading = ย้ายไปที่:
 menu-find-from = ค้นหาอีเมลจาก { $name }
 

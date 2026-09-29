@@ -1571,3 +1571,32 @@ lẹ́sẹ̀kẹsẹ̀. Àkáǹtì Gmail tàbí Outlook tí a fi ọ̀rọ̀ a�
 fúnni láti wọlé pẹ̀lú Google tàbí Microsoft, èyí tí àwọn kàlẹ́ńdà wọn
 nílò.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Àwọn àpótí àmì tí ń fi àmì hàn"
+text = """
+Gbogbo àpótí àmì nínú Katna Mail ti tóbi tó àwọn bọ́tìnnì yíká tó wà
+lẹ́gbẹ̀ẹ́ wọn báyìí. Àmì rẹ̀ máa ń ya ara rẹ̀ nígbà tí o bá sàmì sí i, ó
+sì máa ń parẹ́ nígbà tí o bá yọ ọ́, nínú Ètò, àtòjọ lẹ́tà, Kàlẹ́ńdà,
+Olùbásọ̀rọ̀, Àkọsílẹ̀ àti àwọn àpótí ìbánisọ̀rọ̀.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Àkójọ títẹ̀ ọ̀tún tó kúrú tí ó máa ń bá a mu"
+text = """
+Àkójọ títẹ̀ ọ̀tún àtòjọ lẹ́tà ń fi àwọn ìṣe ojoojúmọ́ sí òkè, ó sì ń fi
+ìyókù sábẹ́ Tẹ̀lé e (iṣẹ́, àkọsílẹ̀, ìpàdé, ìpè) àti Síwájú sí i
+(àwúrúju, pàtàkì, lílẹ̀ mọ́). Ó máa ń ṣí níbi tí o tẹ̀, ó sì máa ń dúró
+nínú fèrèsé; nínú fèrèsé kúkúrú tàbí tóóró, àkójọ kékeré máa ń ṣí ní ipò
+àkójọ náà.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Ìdí tí àkáǹtì kan kò fi ní olùbásọ̀rọ̀"
+text = """
+Nígbà tí àwọn olùbásọ̀rọ̀ àkáǹtì kan kò bá hàn, Olùbásọ̀rọ̀ ti ń sọ ohun
+tí sáfà dáhùn báyìí, “Gbìyànjú lẹ́ẹ̀kan sí i” sì ń wá wọn lẹ́ẹ̀kan sí i
+lẹ́sẹ̀kẹsẹ̀. Àkáǹtì Gmail tàbí Outlook tí a fi ọ̀rọ̀ aṣínà kún máa ń
+fúnni láti wọlé pẹ̀lú Google tàbí Microsoft, èyí tí àwọn olùbásọ̀rọ̀ wọn
+nílò.
+"""

@@ -387,6 +387,12 @@ menu-add-note = افزودن یادداشت
 menu-print-all = چاپ همه
 menu-new-window = باز کردن در پنجرهٔ جدید
 menu-move-to = انتقال به
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = پیگیری
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = بیشتر
 menu-move-to-heading = انتقال به:
 menu-find-from = یافتن ایمیل‌های { $name }
 

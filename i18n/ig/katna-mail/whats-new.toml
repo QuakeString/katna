@@ -1600,3 +1600,21 @@ title = "Ihe mere akaụntụ enweghị kalịnda"
 text = """
 Mgbe kalịnda nke akaụntụ anaghị egosi, Kalịnda na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kalịnda ha chọrọ.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Igbe nlele na-akara"
+text = """
+Igbe nlele ọ bụla na Katna Mail nwere ugbu a otu nha dị ka bọtịnụ gburugburu dị n'akụkụ ya. Akara ya na-ese onwe ya mgbe ị pịrị ya ma na-ehichapụ mgbe ị kagharịrị ya, n'otu ụzọ na Ntọala, ndepụta ozi, Kalịnda, Kọntaktị, Ndetu na igbe mkparịta ụka.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu pịa aka nri dị mkpụmkpụ nke na-adaba mgbe niile"
+text = """
+Menu pịa aka nri nke ndepụta ozi na-edebe omume kwa ụbọchị n'elu ma tinye ndị ọzọ n'okpuru “Soro ya” (ọrụ, ndetu, nzukọ, oku) na “Ndị ọzọ” (spam, mkpa, ntụkwasị). Ọ na-emepe ebe ị pịrị ma na-anọ n'ime windo; na windo dị mkpụmkpụ ma ọ bụ warara, menu nta na-emepe n'ọnọdụ menu ahụ.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Ihe mere akaụntụ enweghị kọntaktị"
+text = """
+Mgbe kọntaktị nke akaụntụ anaghị egosi, Kọntaktị na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kọntaktị ha chọrọ.
+"""

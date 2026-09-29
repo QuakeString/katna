@@ -1738,3 +1738,32 @@ aussitôt. Un compte Gmail ou Outlook ajouté avec un mot de passe propose
 de se connecter avec Google ou Microsoft, ce dont ses calendriers ont
 besoin.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Des cases qui se cochent"
+text = """
+Chaque case à cocher de Katna Mail a désormais la taille des boutons
+ronds voisins. Sa coche se dessine quand vous la cochez et s’efface
+quand vous la décochez, dans Paramètres, la liste des messages,
+Calendrier, Contacts, Notes et les boîtes de dialogue.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Un menu contextuel plus court qui tient toujours"
+text = """
+Le menu contextuel de la liste des messages garde les actions courantes
+en haut et range le reste sous Assurer le suivi (tâches, notes,
+réunions, appels) et Plus (spam, importance, épingler). Il s’ouvre là où
+vous cliquez et reste dans la fenêtre ; dans une fenêtre basse ou
+étroite, un sous-menu s’ouvre à la place du menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Pourquoi un compte n’a pas de contacts"
+text = """
+Quand les contacts d’un compte ne s’affichent pas, Contacts indique
+maintenant ce que le serveur a répondu, et Réessayer les recherche
+aussitôt. Un compte Gmail ou Outlook ajouté avec un mot de passe propose
+de se connecter avec Google ou Microsoft, ce dont ses contacts ont
+besoin.
+"""

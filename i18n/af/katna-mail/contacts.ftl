@@ -39,6 +39,12 @@ contacts-account-failed = Die kontakte kon nie gelees word nie.
 # $reason is the server's own words, in English.
 contacts-account-error = Die kontakte kon nie gelees word nie: { $reason }
 contacts-account-none = Geen adresboek gevind nie
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Geen adresboek gevind nie: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } wys kontakte net aan Katna as dit met { $provider } aangemeld is.
+contacts-account-sign-in-with = Meld aan met { $provider }
 contacts-account-looking = Soek tans kontakte…
 contacts-account-try-again = Probeer weer
 contacts-account-try-again-tooltip = Kyk nou weer na hierdie rekening se kontakte

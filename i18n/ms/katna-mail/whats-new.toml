@@ -1693,3 +1693,31 @@ memberitahu jawapan pelayan, dan “Cuba lagi” terus mencarinya semula.
 Akaun Gmail atau Outlook yang ditambah dengan kata laluan menawarkan log
 masuk dengan Google atau Microsoft, yang diperlukan oleh kalendarnya.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kotak semak yang menanda"
+text = """
+Setiap kotak semak dalam Katna Mail kini sama saiz dengan butang bulat
+di sebelahnya. Tandanya terlukis apabila anda menandanya dan terpadam
+apabila anda mengosongkannya, dalam Tetapan, senarai mel, Kalendar,
+Kenalan, Nota dan dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu klik kanan yang lebih pendek dan sentiasa muat"
+text = """
+Menu klik kanan senarai mel mengekalkan tindakan harian di atas dan
+meletakkan yang lain di bawah “Susulan” (tugas, nota, mesyuarat,
+panggilan) dan “Lagi” (spam, kepentingan, semat). Ia dibuka di tempat
+anda klik dan kekal di dalam tetingkap; dalam tetingkap yang pendek atau
+sempit, submenu dibuka di tempat menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Mengapa akaun tiada kenalan"
+text = """
+Apabila kenalan sesuatu akaun tidak dipaparkan, Kenalan kini memberitahu
+jawapan pelayan, dan “Cuba lagi” terus mencarinya semula. Akaun Gmail
+atau Outlook yang ditambah dengan kata laluan menawarkan log masuk
+dengan Google atau Microsoft, yang diperlukan oleh kenalannya.
+"""

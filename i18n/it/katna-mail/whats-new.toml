@@ -1694,3 +1694,32 @@ ha risposto il server, e «Riprova» li cerca di nuovo subito. Un account
 Gmail o Outlook aggiunto con una password propone di accedere con Google
 o Microsoft, come richiedono i loro calendari.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Caselle di controllo con la spunta"
+text = """
+Ogni casella di controllo in Katna Mail ora ha la stessa dimensione dei
+pulsanti rotondi accanto. La spunta si disegna quando la selezioni e si
+cancella quando la deselezioni, allo stesso modo in Impostazioni,
+nell'elenco dei messaggi, in Calendario, Contatti, Note e nelle finestre
+di dialogo.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Un menu del clic destro più corto che entra sempre"
+text = """
+Il menu del clic destro dell'elenco dei messaggi tiene in alto le azioni
+di tutti i giorni e mette il resto sotto «Dai seguito» (attività, note,
+riunioni, chiamate) e «Altro» (spam, importanza, fissaggio). Si apre
+dove fai clic e resta dentro la finestra; in una finestra bassa o
+stretta un sottomenu si apre al posto del menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Perché un account non ha contatti"
+text = """
+Quando i contatti di un account non compaiono, Contatti ora dice cosa ha
+risposto il server, e «Riprova» li cerca di nuovo subito. Un account
+Gmail o Outlook aggiunto con una password propone di accedere con Google
+o Microsoft, come richiedono i loro contatti.
+"""

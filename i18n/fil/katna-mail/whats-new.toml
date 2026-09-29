@@ -1739,3 +1739,32 @@ agad ng Subukang muli ang mga ito. Nag-aalok ang Gmail o Outlook account
 na idinagdag gamit ang password na mag-sign in gamit ang Google o
 Microsoft, na kailangan ng mga kalendaryo nito.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Mga checkbox na may tsek"
+text = """
+Kasinlaki na ngayon ng mga bilog na button sa tabi nito ang bawat
+checkbox sa Katna Mail. Kusang iginuguhit ang tsek nito kapag chineck mo
+at nabubura kapag inalis mo, sa Mga setting, sa listahan ng mail,
+Kalendaryo, Mga Contact, Mga Tala at mga dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Mas maikling right-click menu na laging kasya"
+text = """
+Pinapanatili ng right-click menu ng listahan ng mail sa itaas ang mga
+pang-araw-araw na aksyon at inilalagay ang iba sa ilalim ng I-follow up
+(mga gawain, tala, pulong, tawag) at Iba pa (spam, kahalagahan, pin).
+Bumubukas ito kung saan ka nag-click at nananatili sa loob ng window; sa
+maikli o makitid na window, bumubukas ang submenu sa puwesto ng menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Kung bakit walang contact ang isang account"
+text = """
+Kapag hindi lumalabas ang mga contact ng isang account, sinasabi na
+ngayon ng Mga Contact kung ano ang sagot ng server, at hinahanap muli
+agad ng Subukang muli ang mga ito. Nag-aalok ang Gmail o Outlook account
+na idinagdag gamit ang password na mag-sign in gamit ang Google o
+Microsoft, na kailangan ng mga contact nito.
+"""

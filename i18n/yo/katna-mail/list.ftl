@@ -237,6 +237,12 @@ menu-add-note = Fi àkọsílẹ̀ kún un
 menu-print-all = Tẹ gbogbo rẹ̀ jáde
 menu-new-window = Ṣí ní fèrèsé tuntun
 menu-move-to = Gbé lọ sí
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Tẹ̀lé e
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Síwájú sí i
 menu-move-to-heading = Gbé lọ sí:
 menu-find-from = Wá àwọn ímeèlì láti ọ̀dọ̀ { $name }
 

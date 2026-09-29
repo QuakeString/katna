@@ -387,6 +387,12 @@ menu-add-note = Notitie toevoegen
 menu-print-all = Alles afdrukken
 menu-new-window = Openen in nieuw venster
 menu-move-to = Verplaatsen naar
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Opvolgen
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Meer
 menu-move-to-heading = Verplaatsen naar:
 menu-find-from = E-mails van { $name } zoeken
 

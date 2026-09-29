@@ -1735,3 +1735,33 @@ iphendule ngani, futhi u-“Zama futhi” uwafuna futhi ngokushesha.
 I-akhawunti ye-Gmail noma ye-Outlook engezwe ngephasiwedi inikeza
 ukungena nge-Google noma nge-Microsoft, okudingwa amakhalenda ayo.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Amabhokisi okuhlola afaka umaki"
+text = """
+Wonke amabhokisi okuhlola ku-Katna Mail manje alingana nezinkinobho
+eziyindilinga eziseduze kwawo. Umaki wawo uyazidweba lapho uwuhlola
+futhi uyasuleka lapho uwususa, ku-Izilungiselelo, ohlwini lweposi,
+eKhalendeni, ku-Oxhumana nabo, ku-Amanothi nasemabhokisini engxoxo.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Imenyu emfushane yokuchofoza kwesokudla ehlala ilingana"
+text = """
+Imenyu yokuchofoza kwesokudla yohlu lweposi igcina izenzo zansuku zonke
+phezulu bese ibeka okunye ngaphansi kokuthi Landelela (imisebenzi,
+amanothi, imihlangano, amakholi) nokuthi Okwengeziwe (ugaxekile,
+ukubaluleka, ukuphina). Ivuleka lapho uchofoza khona futhi ihlala
+ngaphakathi kwewindi; ewindini elifushane noma elincane imenyu
+engaphansi ivuleka esikhundleni semenyu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Kungani i-akhawunti ingenabo oxhumana nabo"
+text = """
+Uma oxhumana nabo be-akhawunti bengaveli, i-Oxhumana nabo manje isho
+ukuthi iseva iphendule ngani, futhi u-“Zama futhi” uyabafuna futhi
+ngokushesha. I-akhawunti ye-Gmail noma ye-Outlook engezwe ngephasiwedi
+inikeza ukungena nge-Google noma nge-Microsoft, okudingwa oxhumana nabo
+bayo.
+"""

@@ -1662,3 +1662,31 @@ verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
 Parolayla eklenmiş bir Gmail ya da Outlook hesabı, takvimlerinin
 gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "İşaretlenen onay kutuları"
+text = """
+Katna Mail'deki her onay kutusu artık yanındaki yuvarlak düğmelerle aynı
+boyutta. İşareti, kutuyu işaretlediğinizde kendini çiziyor,
+kaldırdığınızda siliniyor; Ayarlar'da, posta listesinde, Takvim'de,
+Kişiler'de, Notlar'da ve iletişim kutularında.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Her zaman sığan daha kısa bir sağ tık menüsü"
+text = """
+Posta listesinin sağ tık menüsü günlük işlemleri üstte tutuyor, gerisini
+Takip et (görevler, notlar, toplantılar, aramalar) ve Diğer (spam, önem,
+sabitleme) altına koyuyor. Tıkladığınız yerde açılıyor ve pencerenin
+içinde kalıyor; kısa ya da dar bir pencerede alt menü, menünün yerinde
+açılıyor.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Bir hesapta neden kişi yok"
+text = """
+Bir hesabın kişileri görünmediğinde Kişiler artık sunucunun ne yanıt
+verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
+Parolayla eklenmiş bir Gmail ya da Outlook hesabı, kişilerinin
+gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
+"""

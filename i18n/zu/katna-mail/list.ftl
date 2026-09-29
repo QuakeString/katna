@@ -387,6 +387,12 @@ menu-add-note = Engeza inothi
 menu-print-all = Phrinta konke
 menu-new-window = Vula ewindini elisha
 menu-move-to = Hambisa ku-
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Landelela
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Okwengeziwe
 menu-move-to-heading = Hambisa ku:
 menu-find-from = Thola ama-imeyili avela ku-{ $name }
 

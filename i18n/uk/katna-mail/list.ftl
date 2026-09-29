@@ -492,6 +492,12 @@ menu-add-note = Додати нотатку
 menu-print-all = Надрукувати все
 menu-new-window = Відкрити в новому вікні
 menu-move-to = Перемістити в
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Подальші кроки
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Більше
 menu-move-to-heading = Перемістити в:
 menu-find-from = Знайти листи від { $name }
 

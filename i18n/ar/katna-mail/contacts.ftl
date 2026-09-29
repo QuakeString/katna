@@ -39,6 +39,12 @@ contacts-account-failed = تعذّرت قراءة جهات الاتصال.
 # $reason is the server's own words, in English.
 contacts-account-error = تعذّرت قراءة جهات الاتصال: { $reason }
 contacts-account-none = لم يُعثر على دفتر عناوين
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = لم يُعثر على دفتر عناوين: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = لا يعرض { $provider } جهات الاتصال إلا لـ Katna المسجَّل دخوله باستخدام { $provider }.
+contacts-account-sign-in-with = تسجيل الدخول باستخدام { $provider }
 contacts-account-looking = جارٍ البحث عن جهات الاتصال…
 contacts-account-try-again = إعادة المحاولة
 contacts-account-try-again-tooltip = التحقق من جهات اتصال هذا الحساب مجددًا الآن

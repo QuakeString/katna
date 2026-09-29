@@ -237,6 +237,12 @@ menu-add-note = မှတ်စု ထည့်ရန်
 menu-print-all = အားလုံးကို ပုံနှိပ်ရန်
 menu-new-window = ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်
 menu-move-to = သို့ ရွှေ့ရန်
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = နောက်ဆက်တွဲ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = နောက်ထပ်
 menu-move-to-heading = သို့ ရွှေ့ရန်-
 menu-find-from = { $name } ထံမှ မေးလ်များကို ရှာရန်
 
