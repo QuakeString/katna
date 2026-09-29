@@ -1212,3 +1212,13 @@ quando più account le conservano, con etichette, foto e dettagli. Anche
 i loro nomi e le loro foto compaiono nella posta e nei suggerimenti
 degli indirizzi.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Il tuo calendario, accanto alla posta"
+text = """
+Calendario mostra i tuoi calendari Google, Microsoft e altri per giorno,
+settimana, mese o come agenda, con le scorciatoie di Google Calendar. Il
+pulsante del calendario a destra della posta apre l’agenda del giorno, con
+«Partecipa» per le chiamate. Accedi di nuovo a un account per permettere a
+Katna di leggerne il calendario.
+"""

@@ -1188,3 +1188,13 @@ Gmail i Outlook oraz na serwerach CardDAV, każdą tylko raz, nawet jeśli
 przechowuje ją kilka kont, wraz z etykietami, zdjęciami i szczegółami.
 Ich nazwy i zdjęcia widać także w poczcie i w podpowiedziach adresów.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Twój kalendarz obok poczty"
+text = """
+Kalendarz pokazuje Twoje kalendarze Google, Microsoft i inne w widoku
+dnia, tygodnia, miesiąca lub jako harmonogram, ze skrótami klawiszowymi
+Kalendarza Google. Przycisk kalendarza po prawej stronie poczty otwiera
+plan dnia z przyciskiem Dołącz do rozmów. Zaloguj się ponownie na konto,
+aby Katna mogła odczytać jego kalendarz.
+"""

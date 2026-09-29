@@ -1189,3 +1189,13 @@ yalnızca bir kez olmak üzere, etiketleri, fotoğrafları ve ayrıntılarıyla
 listeliyor. Adları ve fotoğrafları e-postalarınızda ve adres
 önerilerinde de görünür.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Takviminiz, postanızın yanında"
+text = """
+Takvim; Google, Microsoft ve diğer takvimlerinizi gün, hafta, ay olarak
+veya program şeklinde, Google Takvim’in kısayol tuşlarıyla gösterir.
+Postanızın sağındaki takvim düğmesi, aramalar için Katıl düğmesiyle
+birlikte günün ajandasını açar. Katna’nın bir hesabın takvimini
+okuyabilmesi için hesapta yeniden oturum açın.
+"""

@@ -1207,3 +1207,13 @@ aunque varias cuentas las guarden, con etiquetas, fotos y sus datos. Sus
 nombres y fotos también aparecen en tu correo y en las sugerencias de
 direcciones.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Tu calendario, junto a tu correo"
+text = """
+Calendario muestra tus calendarios de Google, Microsoft y otros por día,
+semana, mes o como agenda, con los atajos de Google Calendar. El botón de
+calendario a la derecha de tu correo abre la agenda del día, con «Unirse»
+para las llamadas. Vuelve a iniciar sesión en una cuenta para que Katna
+pueda leer su calendario.
+"""

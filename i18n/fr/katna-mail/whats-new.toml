@@ -1239,3 +1239,13 @@ CardDAV, une seule fois même si plusieurs comptes les conservent, avec
 libellés, photos et détails. Leurs noms et leurs photos apparaissent
 aussi dans votre courrier et dans les suggestions d’adresses.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Votre calendrier, à côté de vos e-mails"
+text = """
+Calendrier affiche vos calendriers Google, Microsoft et autres par jour,
+semaine, mois ou sous forme de planning, avec les raccourcis de Google
+Agenda. Le bouton de calendrier à droite de vos e-mails ouvre l’agenda du
+jour, avec « Participer » pour les appels. Reconnectez-vous à un compte
+pour que Katna puisse lire son calendrier.
+"""

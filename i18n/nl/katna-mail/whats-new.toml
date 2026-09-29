@@ -1199,3 +1199,13 @@ Gmail- en Outlook-accounts en op CardDAV-servers, elk één keer, ook als
 meerdere accounts ze bewaren, met labels, foto’s en hun gegevens. Hun
 namen en foto’s verschijnen ook in je e-mail en in de adressuggesties.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Je agenda, naast je e-mail"
+text = """
+Agenda toont je Google-, Microsoft- en andere agenda’s per dag, week,
+maand of als schema, met de sneltoetsen van Google Agenda. De agendaknop
+rechts van je e-mail opent de agenda van de dag, met Deelnemen voor
+gesprekken. Meld je opnieuw aan bij een account zodat Katna de agenda
+ervan kan lezen.
+"""

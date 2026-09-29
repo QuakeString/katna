@@ -1169,3 +1169,13 @@ Gmail- och Outlook-konton och på CardDAV-servrar, en gång var även när
 flera konton har dem, med etiketter, bilder och deras uppgifter. Deras
 namn och bilder visas också i din e-post och i adressförslagen.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Din kalender, bredvid din e-post"
+text = """
+Kalender visar dina Google-, Microsoft- och andra kalendrar per dag,
+vecka, månad eller som schema, med Google Kalenders kortkommandon.
+Kalenderknappen till höger om din e-post öppnar dagens agenda, med Anslut
+för samtal. Logga in på ett konto igen så att Katna kan läsa dess
+kalender.
+"""

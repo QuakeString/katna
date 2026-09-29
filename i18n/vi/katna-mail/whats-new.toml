@@ -1160,3 +1160,13 @@ khoản Gmail và Outlook của bạn và trên máy chủ CardDAV, mỗi ngư�
 một lần dù nhiều tài khoản cùng lưu, kèm nhãn, ảnh và chi tiết của họ.
 Tên và ảnh của họ cũng hiện trong thư của bạn và trong gợi ý địa chỉ.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Lịch của bạn, ngay cạnh thư"
+text = """
+Lịch hiển thị lịch Google, Microsoft và các lịch khác của bạn theo
+ngày, tuần, tháng hoặc dưới dạng lịch biểu, với các phím tắt của Google
+Calendar. Nút lịch ở bên phải thư của bạn mở chương trình trong ngày, có
+nút Tham gia cho các cuộc gọi. Hãy đăng nhập lại vào tài khoản để Katna
+có thể đọc lịch của tài khoản đó.
+"""
