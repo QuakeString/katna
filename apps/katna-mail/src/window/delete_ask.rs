@@ -26,6 +26,8 @@ pub(super) struct DeleteAsk {
     forever: bool,
     dont_ask: bool,
     closing: bool,
+    /// The dialog has had the keys given to it.
+    focused: bool,
     shown: Spring,
 }
 
@@ -49,6 +51,7 @@ impl MailWindow {
             forever,
             dont_ask: false,
             closing: false,
+            focused: false,
             shown,
         });
         cx.notify();
@@ -94,6 +97,12 @@ impl MailWindow {
             return None;
         }
         let t = t.clamp(0.0, 1.0);
+        // The keys go to the question, off the list behind it: Enter
+        // deletes, Esc cancels, Tab goes round its buttons.
+        if !ask.focused {
+            ask.focused = true;
+            window.focus(&self.dialog_focus, cx);
+        }
         let ask = self.delete_ask.as_ref()?;
         let count = ask.keys.len() as u64;
         let kind = if self.config.mail.conversations {
@@ -147,7 +156,7 @@ impl MailWindow {
         });
         let confirm = div()
             .id("delete-ask-confirm")
-            .focus_ring(th)
+            .focus_ring_filled(th)
             .flex_none()
             .h(px(36.0))
             .px(px(20.0))
@@ -224,8 +233,24 @@ impl MailWindow {
             );
         let viewport = window.viewport_size();
         let vw = unpx(viewport.width);
+        let focus = self.dialog_focus.clone();
         let card = div()
             .id("delete-ask")
+            .track_focus(&focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &focus))
+            .on_key_down(
+                cx.listener(move |this, event: &gpui::KeyDownEvent, window, cx| {
+                    let stroke = &event.keystroke;
+                    // Enter on a focused button presses that button.
+                    if stroke.key == "enter"
+                        && !stroke.modifiers.modified()
+                        && focus.is_focused(window)
+                    {
+                        cx.stop_propagation();
+                        this.confirm_delete_ask(cx);
+                    }
+                }),
+            )
             .occlude()
             .w(px(WIDTH.min(vw - 32.0)))
             .flex()

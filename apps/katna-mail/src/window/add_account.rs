@@ -26,10 +26,11 @@ use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
+use super::MenuKey;
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{avatar, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, avatar, elevation, filled_button, icon, raised};
 
 const WIDTH: f32 = 448.0;
 const MENU_WIDTH: f32 = 340.0;
@@ -948,6 +949,7 @@ impl MailWindow {
                                 tr!("add-account-sign-in-instead", provider = provider.name()),
                                 th,
                             )
+                            .focus_ring(th)
                             .on_click(cx.listener(
                                 move |this, _, window, cx| this.start_sign_in(provider, window, cx),
                             )),
@@ -994,8 +996,9 @@ impl MailWindow {
                     .items_center()
                     .gap(px(8.0))
                     .child(
-                        text_button(secondary, secondary_label, th).on_click(cx.listener(
-                            |this, _, window, cx| {
+                        text_button(secondary, secondary_label, th)
+                            .focus_ring(th)
+                            .on_click(cx.listener(|this, _, window, cx| {
                                 let step = this.add_account.as_ref().map(|d| d.step);
                                 match step {
                                     Some(Step::Servers) => {
@@ -1012,17 +1015,18 @@ impl MailWindow {
                                     Some(_) => this.add_account_servers(window, cx),
                                     None => {}
                                 }
-                            },
-                        )),
+                            })),
                     )
                     .child(div().flex_1())
                     .child(
                         text_button("add-account-cancel", tr!("add-account-cancel"), th)
+                            .focus_ring(th)
                             .on_click(cx.listener(|this, _, _, cx| this.close_add_account(cx))),
                     )
                     .when(!browser, |row| {
                         row.child(
                             filled_button("add-account-next", next_label, th)
+                                .focus_ring_filled(th)
                                 .when(busy, |d| d.opacity(0.6))
                                 .on_click(cx.listener(|this, _, window, cx| {
                                     this.add_account_next(window, cx)
@@ -1033,6 +1037,8 @@ impl MailWindow {
 
         let card = div()
             .id("add-account")
+            .track_focus(&self.dialog_focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &self.dialog_focus))
             .key_context("AddAccount")
             .occlude()
             .relative()
@@ -1336,6 +1342,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .when(current, |d| d.bg(rgba(th.nav_selected)))
                 .hover(move |s| s.bg(rgba(if current { th.nav_selected } else { th.hover })))
+                .menu_key(th)
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.account_menu = false;
                     this.pick_account(id, cx);
@@ -1392,6 +1399,7 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
+            .menu_key(th)
             .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
             .child(
                 div()
@@ -1410,6 +1418,7 @@ impl MailWindow {
         let card = app_menu.unwrap_or_else(|| {
             div()
                 .id("account-menu")
+                .key_context(crate::widgets::MENU_CONTEXT)
                 .occlude()
                 .absolute()
                 .right(px(16.0))
@@ -1447,6 +1456,7 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(th.hover)))
+                            .menu_key(th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.account_menu = false;
                                 this.open_settings_page(

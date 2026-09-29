@@ -108,6 +108,7 @@ use search_panel::SearchPanel;
 
 pub use desktop::{MenuBar, menu_bar, refresh_menu_bar};
 pub use look::look;
+pub(crate) use popovers::MenuKey;
 
 actions!(
     katna_mail,
@@ -118,6 +119,8 @@ actions!(
         FocusPrevious,
         NextPane,
         PreviousPane,
+        SendMail,
+        OpenContextMenu,
         SelectFirst,
         SelectLast,
         PageDown,
@@ -653,6 +656,17 @@ pub struct MailWindow {
     /// Whether the conversation beside the list has the keys, as of this
     /// frame: the list's cursor dims and the pane's outline lights.
     reader_keys: bool,
+    /// A dialog without fields of its own to focus (the delete question),
+    /// and any dialog's frame that keeps Tab inside it.
+    dialog_focus: FocusHandle,
+    /// The folder pane while it has the keys, the line they are on, and
+    /// whether it had them when this frame was drawn.
+    nav_focus: FocusHandle,
+    nav_cursor: Option<usize>,
+    nav_keys_shown: bool,
+    /// The keys, not the pointer, last moved in the folder pane: its line
+    /// shows a ring.
+    nav_by_keys: bool,
     /// The whole window: where the menu bar's actions start when the
     /// keyboard focus is on something no longer drawn.
     window_focus: FocusHandle,
@@ -879,6 +893,11 @@ impl MailWindow {
             list_focus: cx.focus_handle(),
             reader_focus: cx.focus_handle(),
             reader_keys: false,
+            dialog_focus: cx.focus_handle(),
+            nav_focus: cx.focus_handle(),
+            nav_cursor: None,
+            nav_keys_shown: false,
+            nav_by_keys: false,
             window_focus: cx.focus_handle(),
             list_state: lines::Lines::new(),
             files_menu: None,
@@ -1483,6 +1502,24 @@ impl MailWindow {
         }
     }
 
+    /// Shift+F10 or the Menu key: the selected line's right-click menu,
+    /// at its left edge, as on any desktop.
+    fn open_context_menu_key(
+        &mut self,
+        _: &OpenContextMenu,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(ix) = self.selected.filter(|&ix| ix < self.entries.len()) else {
+            return;
+        };
+        let Some(bounds) = self.list_state.bounds_for_item(ix) else {
+            return;
+        };
+        let at = bounds.origin + gpui::point(px(48.0), bounds.size.height);
+        self.open_context_menu(ix, self.entries[ix].key, at, cx);
+    }
+
     /// Esc (or U, Backspace) in the conversation beside the list: the keys
     /// go back to the list, and the conversation stays shown.
     fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
@@ -1513,28 +1550,48 @@ impl MailWindow {
         if self.settings_page.is_some() || self.mail.is_err() {
             return false;
         }
-        let search = self.search.focus_handle(cx);
-        let pane_open = self.pane_open();
-        let at = if search.is_focused(window) {
-            0
+        #[derive(Clone, Copy, PartialEq)]
+        enum Pane {
+            Folders,
+            List,
+            Reader,
+            Search,
+        }
+        // In the order they sit, left to right, then the search box.
+        let mut panes = Vec::with_capacity(4);
+        if self.nav_reachable() {
+            panes.push(Pane::Folders);
+        }
+        panes.push(Pane::List);
+        if self.pane_open() {
+            panes.push(Pane::Reader);
+        }
+        panes.push(Pane::Search);
+        let here = if self.search.focus_handle(cx).is_focused(window) {
+            Pane::Search
         } else if self.list_focus.is_focused(window) {
-            1
-        } else if pane_open
-            && (self.reader_focus.is_focused(window) || self.text.focus.is_focused(window))
-        {
-            2
+            Pane::List
+        } else if self.nav_focus.is_focused(window) {
+            Pane::Folders
+        } else if self.reader_focus.is_focused(window) || self.text.focus.is_focused(window) {
+            Pane::Reader
         } else {
             return false;
         };
-        let count = if pane_open { 3 } else { 2 };
-        match if forward {
+        let Some(at) = panes.iter().position(|p| *p == here) else {
+            return false;
+        };
+        let count = panes.len();
+        let next = if forward {
             (at + 1) % count
         } else {
             (at + count - 1) % count
-        } {
-            0 => self.focus_search(&FocusSearch, window, cx),
-            1 => self.focus_list(&FocusList, window, cx),
-            _ => window.focus(&self.reader_focus, cx),
+        };
+        match panes[next] {
+            Pane::Folders => self.focus_nav(window, cx),
+            Pane::List => self.focus_list(&FocusList, window, cx),
+            Pane::Reader => window.focus(&self.reader_focus, cx),
+            Pane::Search => self.focus_search(&FocusSearch, window, cx),
         }
         cx.notify();
         true
@@ -2934,9 +2991,24 @@ impl Render for MailWindow {
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
             .set(if search_focused { 1.0 } else { 0.0 });
+        // Keys that lost their place (a message sent or closed, a dialog
+        // gone) come back to the list, so its keys work without a click.
+        let dialog_gone = self.dialog_focus.is_focused(window)
+            && self.delete_ask.is_none()
+            && self.new_label.is_none()
+            && self.add_account.is_none()
+            && self.danger.is_none();
+        if dialog_gone || window.focused(cx).is_none() {
+            match &self.settings_page {
+                Some(page) => window.focus(&page.focus, cx),
+                None if self.mail.is_ok() => window.focus(&self.list_focus, cx),
+                None => {}
+            }
+        }
         let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
         self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);
+        self.nav_keys_shown = self.nav_focus.is_focused(window);
         self.settings_spring
             .set(if self.settings_open { 1.0 } else { 0.0 });
         self.search_panel_spring

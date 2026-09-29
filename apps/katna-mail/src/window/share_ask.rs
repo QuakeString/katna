@@ -18,7 +18,7 @@ use super::onboarding::{feature, lead, title};
 use super::settings::Change;
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, outlined_button};
+use crate::widgets::{FocusRing, elevation, icon, outlined_button};
 
 const WIDTH: f32 = 520.0;
 
@@ -75,10 +75,12 @@ pub(super) fn answers(
         .gap(px(12.0))
         .child(
             outlined_button(id("no"), tr!("share-dont-send"), th)
+                .focus_ring(th)
                 .on_click(cx.listener(move |this, _, window, cx| answer(this, false, window, cx))),
         )
         .child(
             outlined_button(id("yes"), tr!("share-send"), th)
+                .focus_ring(th)
                 .on_click(cx.listener(move |this, _, window, cx| answer(this, true, window, cx))),
         )
         .into_any_element()
@@ -210,6 +212,7 @@ impl MailWindow {
         let card = div()
             .id("share-ask")
             .track_focus(&focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &focus))
             .on_key_down(cx.listener(Self::share_ask_key))
             .occlude()
             .w(px(width))

@@ -27,7 +27,9 @@ use katna_i18n::tr;
 use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, tip};
+use crate::widgets::{
+    elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
+};
 
 /// How far the floating folder pane stands off the rail and the top bar.
 const FLOAT_GAP: f32 = 8.0;
@@ -573,6 +575,7 @@ impl MailWindow {
         let gap = if drawer { 0.0 } else { FLOAT_GAP * float };
         let panel = div()
             .id("navigation-panel")
+            .map(|d| self.nav_keys(d, cx))
             .occlude()
             .absolute()
             .top(px(gap))
@@ -860,6 +863,8 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_faint))
             .cursor_pointer()
+            .rounded_full()
+            .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             .tooltip(tip(
                 if expanded {
                     tr!("nav-collapse")
@@ -961,6 +966,7 @@ impl MailWindow {
             .text_color(rgba(text))
             .when(bold, |d| d.font_weight(FontWeight::BOLD))
             .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             .cursor_pointer()
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
             .on_mouse_down(
@@ -1027,6 +1033,8 @@ impl MailWindow {
         let Some(row) = self.nav_rows.get(ix).cloned() else {
             return;
         };
+        self.nav_cursor = Some(ix);
+        self.nav_by_keys = false;
         // The list already shown stays as it is, without a blink.
         if let Some(next) = listing_of(&row)
             && self.showing(&next, cx)
@@ -1119,6 +1127,8 @@ impl MailWindow {
 
     /// The arrow of line `ix`: folds or opens what is under it.
     fn toggle_nav_row(&mut self, ix: usize, cx: &mut Context<Self>) {
+        self.nav_cursor = Some(ix);
+        self.nav_by_keys = false;
         match self.nav_rows.get(ix).cloned() {
             Some(sidebar::Row::AllAccounts { .. }) => self.toggle_all_accounts(cx),
             Some(sidebar::Row::Account { id, .. }) => self.toggle_account(id, cx),
@@ -1400,6 +1410,133 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
             account: Some(*account),
         }),
         _ => None,
+    }
+}
+
+/// The key context of the folder pane while it has the keys.
+const NAV_CONTEXT: &str = "Navigation";
+
+/// The folder pane by keyboard, as in Thunderbird, Outlook and KDE's
+/// apps: F6 or Tab gives it the keys; Up and Down go through its lines and
+/// open each list at once; Right opens what a line holds and Left folds
+/// it; Enter (or Space) goes on to the list, or folds a heading.
+impl MailWindow {
+    /// Gives the pane its keys.
+    fn nav_keys(
+        &self,
+        panel: gpui::Stateful<gpui::Div>,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<gpui::Div> {
+        panel
+            .key_context(NAV_CONTEXT)
+            .track_focus(&self.nav_focus)
+            .on_key_down(cx.listener(Self::nav_key))
+    }
+
+    /// Whether the pane can take the keys: open beside the list.
+    pub(super) fn nav_reachable(&self) -> bool {
+        self.nav_docked() && !self.nav_rows.is_empty()
+    }
+
+    /// The line the keys are on while the pane has them.
+    fn nav_cursor_on(&self, ix: usize) -> bool {
+        self.nav_keys_shown && self.nav_by_keys && self.nav_cursor == Some(ix)
+    }
+
+    /// The pane takes the keys, on the line of the list on show.
+    pub(super) fn focus_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        let shown = self
+            .nav_rows
+            .iter()
+            .position(|row| listing_of(row).is_some_and(|l| self.listing.as_ref() == Some(&l)));
+        self.nav_cursor = shown.or(self.nav_cursor).or(Some(0));
+        self.nav_by_keys = true;
+        window.focus(&self.nav_focus, cx);
+        cx.notify();
+    }
+
+    fn nav_key(
+        &mut self,
+        event: &gpui::KeyDownEvent,
+        window: &mut gpui::Window,
+        cx: &mut Context<Self>,
+    ) {
+        let stroke = &event.keystroke;
+        if stroke.modifiers.modified() || !self.nav_focus.is_focused(window) {
+            return;
+        }
+        let last = self.nav_rows.len().saturating_sub(1);
+        let at = self.nav_cursor.unwrap_or(0).min(last);
+        let expanded = match self.nav_rows.get(at) {
+            Some(
+                sidebar::Row::AllAccounts { expanded }
+                | sidebar::Row::Unified { expanded, .. }
+                | sidebar::Row::Account { expanded, .. },
+            ) => Some(*expanded),
+            Some(sidebar::Row::Folder {
+                has_children: true,
+                expanded,
+                ..
+            }) => Some(*expanded),
+            _ => None,
+        };
+        match stroke.key.as_str() {
+            "down" => self.nav_move(at, 1, window, cx),
+            "up" => self.nav_move(at, -1, window, cx),
+            "home" => self.nav_move(0, 0, window, cx),
+            "end" => self.nav_move(last, 0, window, cx),
+            "right" if expanded == Some(false) => self.toggle_nav_row(at, cx),
+            "right" => self.nav_move(at, 1, window, cx),
+            "left" if expanded == Some(true) => self.toggle_nav_row(at, cx),
+            "left" => self.nav_move(at, -1, window, cx),
+            "enter" | "space" => {
+                if listing_of(&self.nav_rows[at]).is_some() {
+                    self.click_nav_row(at, window, cx);
+                    window.focus(&self.list_focus, cx);
+                } else {
+                    self.toggle_nav_row(at, cx);
+                }
+            }
+            _ => return,
+        }
+        self.nav_by_keys = true;
+        cx.stop_propagation();
+        cx.notify();
+    }
+
+    /// Moves the keys `by` lines from `from` (0: onto `from` itself), past
+    /// lines that do nothing, and opens the list of the line reached.
+    fn nav_move(
+        &mut self,
+        from: usize,
+        by: isize,
+        window: &mut gpui::Window,
+        cx: &mut Context<Self>,
+    ) {
+        let usable = |row: &sidebar::Row| !matches!(row, sidebar::Row::Labels { .. });
+        let count = self.nav_rows.len() as isize;
+        let step = if by == 0 { 1 } else { by.signum() };
+        let mut ix = from as isize + by;
+        while (0..count).contains(&ix) && !usable(&self.nav_rows[ix as usize]) {
+            ix += step;
+        }
+        if !(0..count).contains(&ix) {
+            return;
+        }
+        let ix = ix as usize;
+        self.nav_cursor = Some(ix);
+        if let Some(item) = self
+            .nav_items
+            .iter()
+            .position(|i| (i.start..i.start + i.len).contains(&ix))
+        {
+            self.nav_list.scroll_to_reveal_item(item);
+        }
+        // Each list opens as the keys reach it; the keys stay here.
+        if listing_of(&self.nav_rows[ix]).is_some() {
+            self.click_nav_row(ix, window, cx);
+            window.focus(&self.nav_focus, cx);
+        }
     }
 }
 

@@ -1609,8 +1609,8 @@ Gemini or confidential mode):
   conversation beside it; Tab or Enter gives them to the conversation,
   where Up and Down scroll, and Esc (or U, Backspace) and Shift+Tab give
   them back. Tab and Shift+Tab (or F6 and Shift+F6, which also leave a
-  field) go round the search box, the list and the
-  open conversation. The list's cursor turns grey and the conversation's
+  field) go round the folder pane, the list, the open conversation and
+  the search box. The list's cursor turns grey and the conversation's
   edge takes a faint accent while the conversation has the keys. Esc in
   the list closes the conversation beside it.
 - **Conversations.** The list shows one line per conversation by default
@@ -1711,6 +1711,21 @@ Gemini or confidential mode):
   between table cells and indents list items. Controls in the quick
   settings panel and toolbars stay out of the Tab order, since focusing
   them on a click would take the keys away from the list or the editor.
+- **Menus, dialogs and New Message by keyboard.** The usual desktop keys,
+  nothing new to learn. Up, Down, Home and End move through any open
+  menu's items, Enter or Space picks one (`popovers::MenuKey`: items sit
+  last in the Tab order, and a menu's frame has the `Menu` key context).
+  Shift+F10 and the Menu key open the selected line's right-click menu. A
+  dialog takes the keys when it opens: Enter presses its main button (the
+  delete question deletes), Esc cancels (the account dialogs too), and Tab
+  goes round its own fields and buttons only (`keep_tab_inside`); filled
+  buttons show the ring round them. In a message being written Ctrl+Enter
+  sends from any field, and Esc closes it and keeps a draft, as in Gmail,
+  Outlook and Thunderbird (a reply in the conversation stays). In the
+  folder pane Up and Down open each folder, Right and Left unfold and
+  fold, and Enter goes to its mail, as in Thunderbird and Outlook. Whenever
+  the keys lose their place (a message sent, a menu or dialog gone) they
+  come back to the list, or to the Settings page while it is open.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both

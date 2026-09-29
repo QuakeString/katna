@@ -142,7 +142,7 @@ pub(super) struct TextSelection {
     /// What the click that started the drag selected (a word or paragraph).
     origin: Option<(Spot, Spot)>,
     /// The right-click menu, where the pointer was.
-    menu: Option<Point<Pixels>>,
+    pub(super) menu: Option<Point<Pixels>>,
 }
 
 impl TextSelection {
@@ -692,6 +692,7 @@ pub(super) fn copy_menu<T: 'static>(
         cx.listener(move |this: &mut T, _: &MouseDownEvent, _, cx| act(this, MenuAct::Close, cx))
     };
     let list = div()
+        .key_context(crate::widgets::MENU_CONTEXT)
         .w(px(200.0))
         .py(px(8.0))
         .flex()

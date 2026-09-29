@@ -25,7 +25,7 @@ use katna_ui::{px, unpx};
 use super::{CheckForUpdates, MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
 use crate::updater::{self, InstallError};
-use crate::widgets::{elevation, filled_button, icon, outlined_button};
+use crate::widgets::{FocusRing, elevation, filled_button, icon, outlined_button};
 use crate::{daemon, format, whats_new};
 
 const WIDTH: f32 = 560.0;
@@ -664,6 +664,7 @@ impl MailWindow {
                 .child(
                     div().mt(px(8.0)).flex().flex_row().child(
                         outlined_button("update-compare", tr!("update-dialog-compare"), th)
+                            .focus_ring(th)
                             .gap(px(8.0))
                             .child(icon("open-external", th.accent, 16.0))
                             .on_click(move |_, _, cx| cx.open_url(&compare)),
@@ -694,6 +695,7 @@ impl MailWindow {
         };
         let close = (!busy).then(|| {
             outlined_button("update-close", close_label, th)
+                .focus_ring(th)
                 .on_click(cx.listener(|this, _, window, cx| this.close_update_dialog(window, cx)))
         });
         let next = if busy {
@@ -702,19 +704,23 @@ impl MailWindow {
             match status.state.as_str() {
                 state::READY => Some(
                     filled_button("update-install", tr!("about-update-restart"), th)
+                        .focus_ring_filled(th)
                         .on_click(cx.listener(|this, _, _, cx| this.install_update(cx))),
                 ),
                 state::AVAILABLE => Some(
                     filled_button("update-download", tr!("about-update-download"), th)
+                        .focus_ring_filled(th)
                         .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
                 ),
                 state::DOWNLOAD_FAILED => Some(
                     filled_button("update-retry", tr!("about-update-retry"), th)
+                        .focus_ring_filled(th)
                         .on_click(cx.listener(|this, _, _, cx| this.download_update(cx))),
                 ),
                 state::CHECKING | state::DOWNLOADING | state::UNSUPPORTED => None,
                 _ => Some(
                     filled_button("update-check", tr!("about-update-check"), th)
+                        .focus_ring_filled(th)
                         .on_click(cx.listener(|this, _, _, cx| this.check_for_update(cx))),
                 ),
             }
@@ -737,6 +743,7 @@ impl MailWindow {
         let card = div()
             .id("update-dialog")
             .track_focus(&dialog.focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &dialog.focus))
             .on_key_down(cx.listener(Self::update_dialog_key))
             .occlude()
             .w(px(width))

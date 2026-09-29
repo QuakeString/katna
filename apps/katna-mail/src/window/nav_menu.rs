@@ -17,6 +17,7 @@ use katna_i18n::tr;
 use katna_store::FolderId;
 use katna_ui::px;
 
+use super::MenuKey;
 use super::{Act, Listing, MailWindow};
 use crate::daemon;
 use crate::sidebar::{self, Role};
@@ -309,12 +310,14 @@ impl MailWindow {
                 .gap(px(16.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
                 .child(icon(name, th.text_dim, 20.0))
                 .child(div().flex_1().min_w_0().truncate().child(label))
         };
         let account = menu.account;
         let gmail = account.is_some_and(|a| self.tree.is_gmail(a));
         let list = div()
+            .key_context(crate::widgets::MENU_CONTEXT)
             .w(px(MENU_WIDTH))
             .py(px(8.0))
             .flex()

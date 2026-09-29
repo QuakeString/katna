@@ -16,6 +16,7 @@ use jiff::{Timestamp, Zoned};
 use katna_i18n::{format, tr};
 use katna_ui::{InputEvent, TextInput, px};
 
+use super::MenuKey;
 use super::compose::schedule;
 use super::{Act, MailWindow};
 use crate::data::EntryKey;
@@ -117,6 +118,13 @@ impl MailWindow {
             picker: None,
         });
         cx.notify();
+    }
+
+    /// Whether the menu of times is open (not its date picker).
+    pub(super) fn snooze_times_open(&self) -> bool {
+        self.snooze_menu
+            .as_ref()
+            .is_some_and(|m| m.picker.is_none())
     }
 
     /// Closes the snooze menu or its picker. Returns whether one was open.
@@ -275,6 +283,7 @@ impl MailWindow {
                 .gap(px(16.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
                 .child(div().flex_1().child(preset.label))
                 .child(
                     div()
@@ -285,6 +294,7 @@ impl MailWindow {
         });
         raised(
             div()
+                .key_context(crate::widgets::MENU_CONTEXT)
                 .w(px(MENU_WIDTH))
                 .py(px(8.0))
                 .flex()
@@ -318,6 +328,7 @@ impl MailWindow {
                 .gap(px(16.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
                 .child(icon("calendar", th.text_dim, 20.0))
                 .child(tr!("snooze-pick"))
                 .on_click(cx.listener(|this, _, window, cx| this.open_snooze_picker(window, cx))),

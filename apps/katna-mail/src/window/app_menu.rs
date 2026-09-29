@@ -10,6 +10,7 @@ use katna_platform::dbusmenu::MenuItem;
 use katna_ui::px;
 
 use super::MailWindow;
+use super::MenuKey;
 use super::desktop;
 use crate::theme::Theme;
 use crate::widgets::{icon, icon_button, raised, tip};
@@ -67,6 +68,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .when(open, |d| d.bg(rgba(th.hover)))
                 .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
                 .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                     if let Some(menu) = this.app_menu.as_mut()
                         && *hovered
@@ -95,6 +97,7 @@ impl MailWindow {
             raised(
                 div()
                     .id("app-menu")
+                    .key_context(crate::widgets::MENU_CONTEXT)
                     .occlude()
                     .absolute()
                     .right(px(16.0))
@@ -142,6 +145,7 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
+                    .menu_key(th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
                         this.app_menu = None;

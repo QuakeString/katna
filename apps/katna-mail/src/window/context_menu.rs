@@ -17,6 +17,7 @@ use katna_ui::unpx;
 
 use katna_i18n::tr;
 
+use super::MenuKey;
 use super::compose::Kind;
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
@@ -153,6 +154,7 @@ impl MailWindow {
                 .gap(px(16.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
                 .child(icon(name, th.text_dim, 20.0))
                 .child(div().flex_1().min_w_0().truncate().child(label))
         };
@@ -230,6 +232,7 @@ impl MailWindow {
                                         .gap(px(16.0))
                                         .cursor_pointer()
                                         .hover(|s| s.bg(rgba(th.hover)))
+                                        .menu_key(th)
                                         .on_click(cx.listener(move |this, _, _, cx| {
                                             this.context_act(Act::MoveTo(id), cx)
                                         }))
@@ -296,6 +299,7 @@ impl MailWindow {
             })
             .flatten();
         let list = div()
+            .key_context(crate::widgets::MENU_CONTEXT)
             .w(px(MENU_WIDTH))
             .py(px(8.0))
             .flex()
