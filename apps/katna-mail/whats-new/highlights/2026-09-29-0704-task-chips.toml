@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks on your mail"
+text = """
+A mail you turned into a task now shows the task's due day in the list,
+in red once it's late. Click it to open the task.
+"""

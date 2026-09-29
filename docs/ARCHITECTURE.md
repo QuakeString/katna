@@ -3411,7 +3411,11 @@ server error is not.
 - **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
   right-click and ⋮ menus) makes a task in the default list titled with the
   conversation's subject, keeping the newest message's `Message-ID` in
-  `task.mail`; the task's Mail chip opens that mail again.
+  `task.mail`; the task's Mail chip opens that mail again. Back in the
+  mail list, a line whose mail has an open task shows a chip with the
+  task's due day (red when past; "Task" with none), which opens the task.
+  The window reads the tasks from the start and maps each `task.mail` to
+  its line (the one due first wins) whenever tasks or mail change.
 
 ## 19. Security and privacy
 

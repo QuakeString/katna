@@ -1115,6 +1115,7 @@ impl MailWindow {
                     this.watch_scheduled(connection.clone(), cx);
                     this.watch_updates(connection.clone(), cx);
                     this.watch_contacts(connection.clone(), cx);
+                    this.watch_tasks(cx);
                     this.check_first_sync(cx);
                     this.check_signed_out(cx);
                 }
@@ -1972,6 +1973,8 @@ impl MailWindow {
         if let Ok(mail) = &mut self.mail {
             mail.refresh();
         }
+        // A task's mail may have just come in.
+        self.map_task_mails();
         self.pending.clear();
         if self.detached {
             self.expanded = expanded;
