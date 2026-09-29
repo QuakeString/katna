@@ -316,13 +316,18 @@ fn utc_midnight(day: Date) -> i64 {
 }
 
 impl MailWindow {
-    /// The calendar new events go in: the first account's main calendar
-    /// the user can change, else any they can.
+    /// The calendar new events go in: the main calendar of the account
+    /// picked under the account picture, else the first account's main
+    /// calendar the user can change, else any they can.
     fn default_calendar(&self) -> Option<&Calendar> {
         let calendars = &self.calendar.calendars;
+        let main =
+            |c: &&Calendar| c.is_primary && c.access.can_edit() && !self.calendar_hidden(c.id);
+        let picked = self.account();
         calendars
             .iter()
-            .find(|c| c.is_primary && c.access.can_edit() && !self.calendar_hidden(c.id))
+            .find(|c| picked.is_some() && c.account == picked && main(c))
+            .or_else(|| calendars.iter().find(main))
             .or_else(|| calendars.iter().find(|c| c.access.can_edit()))
     }
 
