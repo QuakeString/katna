@@ -377,6 +377,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   rest of the daemon holds cloneable handles. Dropping a caller only drops
   the answer. A request from any handle ends an IDLE wait cleanly (DONE),
   then runs.
+- **A thread per account:** the engine calls the synchronous store from
+  async code, so a call that waits (a big first sync, a slow disk, SQLite's
+  busy timeout) blocks whatever runs it. The daemon runs each account's
+  worker, the outbox and the contacts, tasks, notes, calendar, alarm and
+  reminder loops on threads of their own (`katna-daemon/src/threads.rs`);
+  smol's shared executor keeps only short work such as event forwarding and
+  D-Bus signals.
 - **Level-1 sync (`katna_sync::engine`):** per folder, SELECT with
   CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
   HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
