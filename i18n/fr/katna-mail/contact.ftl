@@ -26,5 +26,6 @@ contact-more = Plus
 contact-less = Moins
 contact-files = Fichiers
 contact-tasks = Tâches
+contact-meetings = Réunions à venir
 contact-people = Dans cette conversation
 contact-local-only = Uniquement d’après vos messages sur cet ordinateur

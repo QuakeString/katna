@@ -1542,3 +1542,18 @@ Il pannello del contatto accanto a una conversazione ora elenca le tue
 attività aperte create da messaggi con quella persona. Spuntane una per
 completarla, o fai clic per aprirla in Attività.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Le tue prossime riunioni con loro"
+text = """
+Il pannello del contatto accanto a una conversazione ora mostra le tue
+prossime riunioni con quella persona. Fai clic su una per aprirla nel
+Calendario.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Trascina un'attività in un altro elenco"
+text = """
+In Attività, trascina un'attività su un altro elenco per spostarla lì.
+Annulla la riporta indietro.
+"""

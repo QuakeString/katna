@@ -1520,3 +1520,17 @@ Panel kontaktu obok konwersacji pokazuje teraz Twoje otwarte zadania
 utworzone z wiadomości wymienianych z tą osobą. Zaznacz jedno, aby je
 ukończyć, lub kliknij je, aby otworzyć je w Zadaniach.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Twoje najbliższe spotkania z tą osobą"
+text = """
+Panel kontaktu obok konwersacji pokazuje teraz Twoje najbliższe
+spotkania z tą osobą. Kliknij jedno, aby otworzyć je w Kalendarzu.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Przeciągnij zadanie na inną listę"
+text = """
+W Zadaniach przeciągnij zadanie na inną listę, aby je tam przenieść.
+Cofnij przywraca je na miejsce.
+"""

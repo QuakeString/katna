@@ -1539,3 +1539,18 @@ Los detalles del contacto junto a una conversación ahora muestran tus
 tareas abiertas creadas a partir del correo con esa persona. Marca una
 para completarla, o haz clic en ella para abrirla en Tareas.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Tus próximas reuniones con esa persona"
+text = """
+Los detalles del contacto junto a una conversación ahora muestran tus
+próximas reuniones con esa persona. Haz clic en una para abrirla en el
+Calendario.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Arrastra una tarea a otra lista"
+text = """
+En Tareas, arrastra una tarea a otra lista para moverla allí. Deshacer
+la devuelve a su sitio.
+"""

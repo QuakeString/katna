@@ -22,5 +22,6 @@ contact-more = もっと見る
 contact-less = 閉じる
 contact-files = ファイル
 contact-tasks = タスク
+contact-meetings = 今後の予定
 contact-people = このスレッドの参加者
 contact-local-only = このコンピューター上のメールのみから取得

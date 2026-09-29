@@ -1564,3 +1564,18 @@ Aufgaben auf, die aus Mails mit dieser Person entstanden sind. Haken Sie
 eine ab, um sie zu erledigen, oder klicken Sie darauf, um sie in
 Aufgaben zu öffnen.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Ihre nächsten Termine mit ihnen"
+text = """
+Die Kontaktdetails neben einer Unterhaltung zeigen jetzt Ihre nächsten
+Termine mit dieser Person. Klicken Sie auf einen, um ihn im Kalender zu
+öffnen.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Aufgabe in eine andere Liste ziehen"
+text = """
+Ziehen Sie in Aufgaben eine Aufgabe auf eine andere Liste, um sie
+dorthin zu verschieben. Rückgängig legt sie zurück.
+"""

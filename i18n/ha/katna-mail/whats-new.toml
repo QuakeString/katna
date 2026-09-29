@@ -1438,3 +1438,15 @@ title = "Ayyuka tare da su, kusa da saƙonninsu"
 text = """
 Fanel na tuntuɓar da ke kusa da tattaunawa yanzu yana jera ayyukanku da ke buɗe waɗanda aka ƙirƙira daga saƙonni da mutumin. Yi alama a kan ɗaya don kammala shi, ko danna shi don buɗe shi a cikin Ayyuka.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Tarukanku na gaba da su"
+text = """
+Fanel na tuntuɓar da ke kusa da tattaunawa yanzu yana nuna tarukanku na gaba da mutumin. Danna ɗaya don buɗe shi a cikin Kalanda.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Ja aiki zuwa wani jeri"
+text = """
+A cikin Ayyuka, ja aiki zuwa wani jeri don mayar da shi can. Janye yana mayar da shi inda yake.
+"""

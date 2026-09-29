@@ -25,5 +25,6 @@ contact-more = थप
 contact-less = कम
 contact-files = फाइलहरू
 contact-tasks = कार्यहरू
+contact-meetings = आगामी बैठकहरू
 contact-people = यस वार्तालापमा
 contact-local-only = यस कम्प्युटरमा भएको तपाईंको मेलबाट मात्र

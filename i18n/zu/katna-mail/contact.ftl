@@ -25,5 +25,6 @@ contact-more = Okuningi
 contact-less = Okuncane
 contact-files = Amafayela
 contact-tasks = Imisebenzi
+contact-meetings = Imihlangano ezayo
 contact-people = Kule ngxoxo
 contact-local-only = Kusuka kumeyili yakho kule khompyutha kuphela

@@ -25,5 +25,6 @@ contact-more = Daha fazla
 contact-less = Daha az
 contact-files = Dosyalar
 contact-tasks = Görevler
+contact-meetings = Yaklaşan toplantılar
 contact-people = Bu ileti dizisinde
 contact-local-only = Yalnızca bu bilgisayardaki postalarınızdan

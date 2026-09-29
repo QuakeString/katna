@@ -22,5 +22,6 @@ contact-more = Síwájú sí i
 contact-less = Dínku
 contact-files = Àwọn fáìlì
 contact-tasks = Iṣẹ́
+contact-meetings = Àwọn ìpàdé tó ń bọ̀
 contact-people = Nínú ìjíròrò yìí
 contact-local-only = Láti inú lẹ́tà rẹ lórí kọ̀ǹpútà yìí nìkan

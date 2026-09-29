@@ -1495,3 +1495,17 @@ Kontaktpanelen bredvid en konversation listar nu dina öppna uppgifter
 som skapats från e-post med den personen. Bocka av en för att slutföra
 den, eller klicka på den för att öppna den i Uppgifter.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Dina nästa möten med dem"
+text = """
+Kontaktpanelen bredvid en konversation visar nu dina nästa möten med
+den personen. Klicka på ett för att öppna det i Kalender.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Dra en uppgift till en annan lista"
+text = """
+I Uppgifter drar du en uppgift till en annan lista för att flytta den
+dit. Ångra lägger tillbaka den.
+"""

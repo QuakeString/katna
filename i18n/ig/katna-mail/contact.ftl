@@ -22,5 +22,6 @@ contact-more = Ọzọ
 contact-less = Ntakịrị
 contact-files = Faịlụ
 contact-tasks = Ọrụ
+contact-meetings = Nnọkọ ndị na-abịa
 contact-people = N'ime mkparịta ụka a
 contact-local-only = Naanị site na ozi gị dị na kọmputa a

@@ -1455,3 +1455,15 @@ title = "Majukumu pamoja nao, kando ya barua zao"
 text = """
 Kidirisha cha mwasiliani kando ya mazungumzo sasa kinaorodhesha majukumu yako yaliyo wazi yaliyotokana na barua na mtu huyo. Weka alama kwenye moja ili kulikamilisha, au ulibofye ili kulifungua katika Majukumu.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Mikutano yako ijayo pamoja nao"
+text = """
+Kidirisha cha mwasiliani kando ya mazungumzo sasa kinaonyesha mikutano yako ijayo na mtu huyo. Bofya mmoja ili kuufungua katika Kalenda.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Buruta jukumu hadi orodha nyingine"
+text = """
+Katika Majukumu, buruta jukumu kwenye orodha nyingine ili kulihamishia huko. Tendua hulirudisha.
+"""

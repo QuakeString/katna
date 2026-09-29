@@ -1514,3 +1514,17 @@ Bir yazışmanın yanındaki kişi paneli artık o kişiyle olan e-postalardan
 oluşturulan açık görevlerinizi listeler. Tamamlamak için birini
 işaretleyin veya Görevler’de açmak için üzerine tıklayın.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Onlarla sonraki toplantılarınız"
+text = """
+Bir yazışmanın yanındaki kişi paneli artık o kişiyle sonraki
+toplantılarınızı gösterir. Takvim’de açmak için birine tıklayın.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Bir görevi başka bir listeye sürükleyin"
+text = """
+Görevler’de bir görevi taşımak için başka bir listenin üzerine
+sürükleyin. Geri al onu eski yerine koyar.
+"""

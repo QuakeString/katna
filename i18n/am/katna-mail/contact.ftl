@@ -25,5 +25,6 @@ contact-more = ተጨማሪ
 contact-less = ያነሰ
 contact-files = ፋይሎች
 contact-tasks = ተግባራት
+contact-meetings = መጪ ስብሰባዎች
 contact-people = በዚህ ውይይት ውስጥ
 contact-local-only = በዚህ ኮምፒውተር ላይ ካለው ደብዳቤዎ ብቻ

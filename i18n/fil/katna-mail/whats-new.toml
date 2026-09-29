@@ -1579,3 +1579,18 @@ Inililista na ngayon ng card ng contact sa tabi ng usapan ang iyong mga
 bukas na gawain na ginawa mula sa mail kasama ang taong iyon. I-tick ang
 isa para tapusin ito, o i-click ito para buksan sa Mga Gawain.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Ang mga susunod mong meeting kasama sila"
+text = """
+Ipinapakita na ngayon ng card ng contact sa tabi ng usapan ang mga
+susunod mong meeting kasama ang taong iyon. I-click ang isa para buksan
+ito sa Kalendaryo.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "I-drag ang gawain sa ibang listahan"
+text = """
+Sa Mga Gawain, i-drag ang isang gawain papunta sa ibang listahan para
+ilipat ito roon. Ibinabalik ito ng I-undo.
+"""

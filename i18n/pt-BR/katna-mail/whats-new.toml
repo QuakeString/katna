@@ -1526,3 +1526,17 @@ O painel de contato ao lado de uma conversa agora lista suas tarefas
 abertas criadas a partir de e-mails com essa pessoa. Marque uma para
 concluí-la ou clique nela para abri-la em Tarefas.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Suas próximas reuniões com a pessoa"
+text = """
+O painel de contato ao lado de uma conversa agora mostra suas próximas
+reuniões com essa pessoa. Clique em uma para abri-la na Agenda.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Arraste uma tarefa para outra lista"
+text = """
+Em Tarefas, arraste uma tarefa para outra lista para movê-la para lá.
+Desfazer a coloca de volta.
+"""

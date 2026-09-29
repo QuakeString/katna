@@ -1580,3 +1580,18 @@ tâches ouvertes créées à partir de messages échangés avec cette
 personne. Cochez-en une pour la terminer, ou cliquez dessus pour
 l’ouvrir dans Tâches.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Vos prochaines réunions avec cette personne"
+text = """
+Les détails du contact, à côté d’une conversation, affichent désormais
+vos prochaines réunions avec cette personne. Cliquez sur l’une d’elles
+pour l’ouvrir dans le Calendrier.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Glisser une tâche vers une autre liste"
+text = """
+Dans Tâches, faites glisser une tâche sur une autre liste pour l’y
+déplacer. Annuler la remet à sa place.
+"""

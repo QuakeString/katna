@@ -1484,3 +1484,17 @@ Die kontakpaneel langs 'n gesprek lys nou jou oop take wat uit e-pos met
 daardie persoon gemaak is. Merk een af om dit te voltooi, of klik daarop
 om dit in Take oop te maak.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Jou volgende vergaderings met hulle"
+text = """
+Die kontakpaneel langs 'n gesprek wys nou jou volgende vergaderings met
+daardie persoon. Klik op een om dit in Kalender oop te maak.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Sleep 'n taak na 'n ander lys"
+text = """
+Sleep in Take 'n taak na 'n ander lys om dit daarheen te skuif. Ontdoen
+sit dit terug.
+"""

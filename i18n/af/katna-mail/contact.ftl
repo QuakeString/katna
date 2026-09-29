@@ -25,5 +25,6 @@ contact-more = Meer
 contact-less = Minder
 contact-files = Lêers
 contact-tasks = Take
+contact-meetings = Komende vergaderings
 contact-people = In hierdie gesprek
 contact-local-only = Slegs uit jou e-pos op hierdie rekenaar

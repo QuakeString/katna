@@ -1543,3 +1543,17 @@ Panel kenalan di sebelah perbualan kini menyenaraikan tugas terbuka anda
 yang dibuat daripada mel dengan orang itu. Tandakan satu untuk
 menyelesaikannya, atau klik untuk membukanya dalam Tugas.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Mesyuarat anda yang seterusnya dengan mereka"
+text = """
+Panel kenalan di sebelah perbualan kini menunjukkan mesyuarat anda yang
+seterusnya dengan orang itu. Klik satu untuk membukanya dalam Kalendar.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Seret tugas ke senarai lain"
+text = """
+Dalam Tugas, seret tugas ke senarai lain untuk mengalihkannya ke sana.
+Buat asal meletakkannya semula.
+"""

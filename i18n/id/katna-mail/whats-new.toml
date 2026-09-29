@@ -1528,3 +1528,18 @@ Panel kontak di samping percakapan kini mencantumkan tugas terbuka Anda
 yang dibuat dari email dengan orang tersebut. Centang salah satunya
 untuk menyelesaikannya, atau klik untuk membukanya di Tugas.
 """
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Rapat Anda berikutnya dengan mereka"
+text = """
+Panel kontak di samping percakapan kini menampilkan rapat Anda
+berikutnya dengan orang tersebut. Klik salah satunya untuk membukanya di
+Kalender.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Seret tugas ke daftar lain"
+text = """
+Di Tugas, seret tugas ke daftar lain untuk memindahkannya ke sana.
+Urungkan mengembalikannya.
+"""

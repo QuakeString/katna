@@ -22,5 +22,6 @@ contact-more = 更多
 contact-less = 收合
 contact-files = 檔案
 contact-tasks = 工作
+contact-meetings = 即將舉行的會議
 contact-people = 此會話群組中的人
 contact-local-only = 僅來自這台電腦上你的郵件
