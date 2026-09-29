@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = zingine { $count }
 calendar-repeats = Hujirudia
 calendar-join = Jiunge
+calendar-email-guests = Tuma barua pepe kwa wageni
+calendar-running-late = Nimechelewa
+calendar-late-subject = Nimechelewa: { $title }
+calendar-late-body = Samahani, nitachelewa dakika chache kwa { $title }. Nitafika hivi karibuni.
 calendar-guests =
     { $count ->
         [one] mgeni { $count }

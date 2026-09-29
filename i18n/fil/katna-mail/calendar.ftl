@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } pa
 calendar-repeats = Umuulit
 calendar-join = Sumali
+calendar-email-guests = Mag-mail sa mga bisita
+calendar-running-late = Mahuhuli ako
+calendar-late-subject = Mahuhuli: { $title }
+calendar-late-body = Pasensya na, mahuhuli ako nang ilang minuto sa { $title }. Darating din ako agad.
 calendar-guests =
     { $count ->
         [one] { $count } bisita

@@ -375,3 +375,56 @@ fn microsoft_sets_categories() {
     let body: serde_json::Value = serde_json::from_slice(&requests[0].body).unwrap();
     assert_eq!(body, serde_json::json!({ "categories": ["Family"] }));
 }
+
+#[test]
+fn google_reads_and_saves_other_contacts() {
+    let (api, seen) = serve(|req, _| match (req.method.as_str(), req.path.as_str()) {
+        ("GET", p) if p.starts_with("/v1/otherContacts?") && p.contains("syncToken=o1") => (
+            200,
+            vec![],
+            r#"{"otherContacts":[{"resourceName":"otherContacts/c7","metadata":{"deleted":true}}],
+               "nextSyncToken":"o2"}"#
+                .into(),
+        ),
+        ("GET", p) if p.starts_with("/v1/otherContacts?") => (
+            200,
+            vec![],
+            r#"{"otherContacts":[{"resourceName":"otherContacts/c7","etag":"x",
+               "names":[{"displayName":"Ravi Kumar"}],
+               "emailAddresses":[{"value":"ravi@shop.in"}]}],
+               "nextSyncToken":"o1"}"#
+                .into(),
+        ),
+        ("POST", "/v1/otherContacts/c7:copyOtherContactToMyContactsGroup") => (
+            200,
+            vec![],
+            r#"{"resourceName":"people/c9","etag":"e9"}"#.into(),
+        ),
+        ("GET", p) if p.starts_with("/v1/people/c9?") => (
+            200,
+            vec![],
+            r#"{"resourceName":"people/c9","etag":"e9","names":[{"displayName":"Ravi Kumar"}],
+               "emailAddresses":[{"value":"ravi@shop.in"}]}"#
+                .into(),
+        ),
+        _ => (400, vec![], "{}".into()),
+    });
+    let google = google(&api, GOOGLE_OTHER_CONTACTS);
+    assert!(smol::block_on(google.other_allowed()).unwrap());
+    assert!(!smol::block_on(google.allowed()).unwrap());
+
+    let all = smol::block_on(google.other_contacts(None)).unwrap();
+    assert!(all.full);
+    assert_eq!(all.sync_token.as_deref(), Some("o1"));
+    assert_eq!(all.contacts[0].remote_id, "otherContacts/c7");
+    assert_eq!(all.contacts[0].card.display_name(), "Ravi Kumar");
+    let change = smol::block_on(google.other_contacts(Some("o1"))).unwrap();
+    assert_eq!(change.deleted, ["otherContacts/c7"]);
+
+    let saved = smol::block_on(google.copy_other("otherContacts/c7")).unwrap();
+    assert_eq!(saved.remote_id, "people/c9");
+    let requests = seen.lock().unwrap().clone();
+    let copy = requests.iter().find(|r| r.method == "POST").unwrap();
+    let copy: serde_json::Value = serde_json::from_slice(&copy.body).unwrap();
+    assert_eq!(copy["copyMask"], "names,emailAddresses,phoneNumbers");
+}

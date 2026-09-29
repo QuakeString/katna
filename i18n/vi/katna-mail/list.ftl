@@ -229,6 +229,7 @@ menu-unpin = Bỏ ghim
 menu-snooze = Tạm ẩn
 menu-unsnooze = Bỏ tạm ẩn
 menu-add-to-tasks = Thêm vào Việc cần làm
+menu-schedule-meeting = Lên lịch cuộc họp
 menu-add-note = Thêm ghi chú
 menu-print-all = In tất cả
 menu-new-window = Mở trong cửa sổ mới

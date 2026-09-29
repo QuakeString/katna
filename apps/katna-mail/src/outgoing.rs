@@ -43,6 +43,9 @@ pub struct Outgoing {
     /// is edited, so each save replaces the one before. Sent mail gets a
     /// new one from the daemon.
     pub message_id: Option<String>,
+    /// An iMIP calendar (RFC 6047), such as an answer to an invitation:
+    /// its `METHOD` and text, sent beside the text as an alternative.
+    pub calendar: Option<(String, String)>,
 }
 
 /// A file in a message.
@@ -159,9 +162,12 @@ pub fn build(message: &Outgoing) -> Vec<u8> {
     out.push_str("MIME-Version: 1.0\r\n");
     let seed = boundary_seed(message);
     let text = text_part(&message.body);
-    let body = match &message.html {
-        None => text,
-        Some(html) => {
+    let body = match (&message.html, &message.calendar) {
+        (None, Some((method, ics))) => {
+            multipart("alternative", &[text, calendar_part(method, ics)], seed + 1)
+        }
+        (None, None) => text,
+        (Some(html), _) => {
             let html = html_part(html);
             let html = if message.inline.is_empty() {
                 html
@@ -202,6 +208,24 @@ fn text_part(body: &str) -> String {
         out.push_str(&quoted_printable(&body));
     }
     out
+}
+
+/// An iMIP calendar part: `text/calendar` with its method, as Outlook
+/// and Gmail read it.
+fn calendar_part(method: &str, ics: &str) -> String {
+    let encoding = if ics.is_ascii() {
+        "7bit"
+    } else {
+        "quoted-printable"
+    };
+    let body = if ics.is_ascii() {
+        ics.replace("\r\n", "\n").replace('\n', "\r\n")
+    } else {
+        quoted_printable(ics)
+    };
+    format!(
+        "Content-Type: text/calendar; charset=utf-8; method={method}\r\nContent-Transfer-Encoding: {encoding}\r\n\r\n{body}"
+    )
 }
 
 fn html_part(html: &str) -> String {
@@ -454,6 +478,26 @@ mod tests {
              Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 7bit\r\n\r\n\
              Hi Bob,\r\n\r\nsee you.\r\n"
         );
+    }
+
+    #[test]
+    fn an_invitation_answer_carries_its_calendar_beside_the_text() {
+        let ics = "BEGIN:VCALENDAR\r\nMETHOD:REPLY\r\nEND:VCALENDAR\r\n";
+        let raw = String::from_utf8(build(&Outgoing {
+            from: Some(mailbox(None, "me@x.org")),
+            to: vec![mailbox(None, "priya@x.org")],
+            subject: "Accepted: Design review".to_owned(),
+            body: "Yes, I'll be there.\n".to_owned(),
+            calendar: Some(("REPLY".to_owned(), ics.to_owned())),
+            ..Outgoing::default()
+        }))
+        .unwrap();
+        assert!(raw.contains("Content-Type: multipart/alternative;"));
+        assert!(raw.contains(
+            "Content-Type: text/calendar; charset=utf-8; method=REPLY\r\n\
+             Content-Transfer-Encoding: 7bit\r\n\r\nBEGIN:VCALENDAR\r\nMETHOD:REPLY\r\n"
+        ));
+        assert!(raw.find("text/plain").unwrap() < raw.find("text/calendar").unwrap());
     }
 
     #[test]

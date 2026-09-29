@@ -579,6 +579,7 @@ menu-unpin = إلغاء التثبيت
 menu-snooze = تأجيل
 menu-unsnooze = إلغاء التأجيل
 menu-add-to-tasks = إضافة إلى المهام
+menu-schedule-meeting = جدولة اجتماع
 menu-add-note = إضافة ملاحظة
 menu-print-all = طباعة الكل
 menu-new-window = فتح في نافذة جديدة

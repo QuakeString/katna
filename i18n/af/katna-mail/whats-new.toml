@@ -1277,3 +1277,19 @@ Take sinkroniseer nou ook met Yahoo, Zoho, iCloud, Fastmail en ander
 rekeninge wie se take op ’n ander bediener as hul e-pos is. Katna
 probeer eers elke rekening se beste manier en onthou die een wat werk.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Skeduleer ’n vergadering vanuit ’n e-pos"
+text = """
+Regsklik op ’n gesprek, of maak ⋮ oop, en kies Skeduleer ’n vergadering:
+’n nuwe geleentheid open op die Kalender-bladsy met die onderwerp as
+titel en almal in die gesprek as gaste.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Laat? Laat almal met een klik weet"
+text = """
+’n Geleentheid met gaste het nou Stuur e-pos aan gaste en, van ’n uur
+voor dit begin, Ek is laat: ’n e-pos aan almal, vanaf daardie kalender
+se rekening, gereed om te stuur.
+"""

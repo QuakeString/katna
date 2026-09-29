@@ -1364,3 +1364,20 @@ at iba pang account na nasa ibang server ang mga gawain kaysa sa
 kanilang mail. Sinusubukan muna ng Katna ang pinakamahusay na paraan ng
 bawat account at naaalala ang gumagana.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Mag-iskedyul ng pulong mula sa isang mail"
+text = """
+I-right-click ang isang usapan, o buksan ang ⋮, at piliin ang
+Mag-iskedyul ng pulong: may bagong kaganapang magbubukas sa pahina ng
+Kalendaryo na ang paksa ang pamagat at ang lahat ng nasa usapan ang mga
+bisita.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Mahuhuli? Sabihan ang lahat sa isang click"
+text = """
+May Mag-mail sa mga bisita na ngayon ang kaganapang may mga bisita at,
+mula isang oras bago ito magsimula, Mahuhuli ako: isang mail sa lahat,
+mula sa account ng kalendaryong iyon, handa nang ipadala.
+"""
