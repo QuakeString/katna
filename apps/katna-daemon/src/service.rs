@@ -8,7 +8,7 @@ use async_channel::Receiver;
 use katna_core::{AccountId, ids};
 use katna_dbus::{
     AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    OutboxItem, TemplateItem, UpdateStatus, flag,
+    NoteItem, OutboxItem, TemplateItem, UpdateStatus, flag,
 };
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -257,6 +257,18 @@ macro_rules! pim_interface {
 
             async fn delete_template(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.delete_template(id)?)
+            }
+
+            async fn save_note(&self, note: NoteItem) -> fdo::Result<i64> {
+                Ok(self.daemon.save_note(note)?)
+            }
+
+            async fn trash_notes(&self, ids: Vec<i64>, trashed: bool) -> fdo::Result<u32> {
+                Ok(self.daemon.trash_notes(&ids, trashed)?)
+            }
+
+            async fn delete_notes(&self, ids: Vec<i64>) -> fdo::Result<u32> {
+                Ok(self.daemon.delete_notes(&ids)?)
             }
 
             async fn undo_send(&self, id: i64) -> fdo::Result<bool> {

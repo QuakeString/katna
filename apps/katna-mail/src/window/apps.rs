@@ -11,7 +11,7 @@ use std::ops::Range;
 use std::rc::Rc;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, rgba,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Window, div, prelude::*, rgba,
     uniform_list,
 };
 use katna_i18n::tr;
@@ -104,6 +104,7 @@ impl MailWindow {
         if app == App::Contacts && !matches!(self.people, Some(People::Loaded(_))) {
             self.load_people(cx);
         }
+        self.sync_notes_search(cx);
         cx.notify();
     }
 
@@ -280,9 +281,15 @@ impl MailWindow {
     }
 
     /// The page of an app other than Mail.
-    pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_app_page(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts(th, cx),
+            App::Notes => self.render_notes(th, window, cx),
             app => div()
                 .size_full()
                 .flex()

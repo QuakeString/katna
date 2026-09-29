@@ -45,6 +45,7 @@ mod list;
 mod look;
 mod nav;
 mod nav_menu;
+mod notes;
 mod onboarding;
 mod popovers;
 mod print;
@@ -428,6 +429,8 @@ pub struct MailWindow {
     /// 0 = Compose is in the rail, 1 = over the folders beside the list.
     compose_dock: Spring,
     people: Option<People>,
+    /// The Notes page, once opened.
+    notes: Option<notes::NotesPage>,
     people_task: Option<Task<()>>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
@@ -770,6 +773,7 @@ impl MailWindow {
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
             compose_dock: Spring::new(motion::SLIDE, 1.0),
             people: None,
+            notes: None,
             people_task: None,
             font,
             pill_text_lift: 0.0,
@@ -2028,6 +2032,10 @@ impl MailWindow {
             self.on_settings_search(event, window, cx);
             return;
         }
+        if self.app == RailApp::Notes {
+            self.on_notes_search(event, window, cx);
+            return;
+        }
         match event {
             InputEvent::Changed => {
                 let text = search.read(cx).text().trim().to_owned();
@@ -2511,6 +2519,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let connection = self.daemon.clone();
+        let notes = command.touches_notes();
         cx.spawn(async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -2524,6 +2533,9 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match result {
                 Ok(()) => {
+                    if notes {
+                        this.load_notes(cx);
+                    }
                     if let Some(done) = done {
                         this.show_snackbar(done, undo, cx);
                     }
@@ -3132,7 +3144,7 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(self.render_app_page(&th, cx))
+                .child(self.render_app_page(&th, window, cx))
                 .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };

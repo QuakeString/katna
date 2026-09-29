@@ -19,6 +19,7 @@ pub mod mail;
 mod mail_read;
 mod mail_view;
 pub mod meta;
+pub mod notes;
 pub mod ops;
 pub mod outbox;
 mod people;
@@ -55,6 +56,7 @@ pub use mail_view::{
     ThreadSummary,
 };
 pub use meta::MetaRow;
+pub use notes::{NOTE_TRASH_KEEP, Note};
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use outbox::{DELIVERY_RECEIPT_HEADER, OutboxEntry, SendState, take_delivery_receipt};
 pub use people::{Correspondent, Person};

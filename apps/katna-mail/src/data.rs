@@ -1265,6 +1265,14 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
+/// Every note, pinned first. Opens its own connection, for a background
+/// thread.
+pub fn notes(paths: &Paths) -> Result<Vec<katna_store::Note>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.notes())
+        .map_err(|err| format!("Reading notes failed: {err}"))
+}
+
 /// The mail templates, by name. Opens its own connection, for a
 /// background thread.
 pub fn templates(paths: &Paths) -> Result<Vec<katna_store::TemplateSummary>, String> {

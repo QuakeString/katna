@@ -47,6 +47,7 @@ use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
 mod drive;
+mod notes;
 mod reminders;
 
 pub use reminders::{SNOOZED, is_snoozed_path};
