@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The search box shows when it's active"
+text = """
+The search box at the top gets an accent edge while you type in it, like
+every other field, and its Ctrl+F hint steps aside until you leave it empty.
+"""

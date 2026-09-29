@@ -463,8 +463,9 @@ impl MailWindow {
             } else {
                 th.search
             }))
-            .border_1()
-            .border_color(rgba(fade(th.text_faint, 0.5 * t.clamp(0.0, 1.0))))
+            // Focused, it gains the accent edge every other field has.
+            .border_2()
+            .border_color(rgba(fade(th.accent, t.clamp(0.0, 1.0))))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
@@ -505,10 +506,21 @@ impl MailWindow {
                     // A narrow box cuts the keycap off rather than overlap.
                     .overflow_hidden()
                     .child(self.search.clone())
+                    // The shortcut hint goes while the box has the keys, and
+                    // comes back when they leave an empty box.
                     .children(
-                        (!has_text && !settings)
+                        (!has_text && !settings && t < 0.999)
                             .then(|| self.render_search_hint(th, window))
-                            .flatten(),
+                            .flatten()
+                            .map(|hint| {
+                                div()
+                                    .absolute()
+                                    .size_full()
+                                    .top_0()
+                                    .left_0()
+                                    .opacity(1.0 - t.clamp(0.0, 1.0))
+                                    .child(hint)
+                            }),
                     ),
             )
             .when(has_text, |d| {
