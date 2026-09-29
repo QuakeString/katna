@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 849 more of their own. Each keeps its own license.
+bring in 850 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
