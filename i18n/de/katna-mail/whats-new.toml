@@ -1294,3 +1294,23 @@ Konten, die sich mit einem Passwort anmelden, speichern ihre Aufgaben
 jetzt auf ihrem Mailserver, wenn dieser CalDAV anbietet. So erscheinen
 die Aufgaben auch in den eigenen Apps des Servers und auf dem Handy.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Termine hinzufügen und ändern"
+text = """
+Klicken oder ziehen Sie im Kalender oder drücken Sie C, um einen Termin
+hinzuzufügen. Ziehen Sie einen Termin, um ihn zu verschieben, oder
+seinen unteren Rand, um die Dauer zu ändern, und öffnen Sie ihn, um
+Zeit, Wiederholung, Erinnerungen und Gäste zu ändern oder einen Meet-
+oder Teams-Anruf hinzuzufügen. Beantworten Sie Einladungen mit Ja, Nein
+oder Vielleicht. Mit Rückgängig stellen Sie alles wieder her.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalender von mehr Konten"
+text = """
+Katna findet jetzt die Kalender von Yahoo, Zoho, iCloud, Fastmail, GMX
+und anderen Konten, auch wenn sie auf einem anderen Server liegen als
+die E-Mails. Es probiert zuerst den besten Weg jedes Kontos und einen
+anderen, wenn dieser nicht verfügbar ist.
+"""

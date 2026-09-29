@@ -1277,3 +1277,22 @@ Gli account che accedono con una password ora conservano le proprie
 attività sul server di posta quando questo offre CalDAV, così le
 attività compaiono anche nelle app del server e sul telefono.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Aggiungi e modifica eventi"
+text = """
+Fai clic o trascina nel calendario, oppure premi C, per aggiungere un
+evento. Trascina un evento per spostarlo o il suo bordo inferiore per
+cambiarne la durata, e aprilo per cambiare orario, ripetizione,
+promemoria e ospiti, o per aggiungere una chiamata Meet o Teams.
+Rispondi agli inviti con Sì, No o Forse. Annulla rimette tutto a posto.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Calendari di più account"
+text = """
+Katna ora trova i calendari di Yahoo, Zoho, iCloud, Fastmail, GMX e di
+altri account, anche quando si trovano su un server diverso da quello
+della posta. Prova prima il metodo migliore di ciascun account e un
+altro quando quello non è disponibile.
+"""

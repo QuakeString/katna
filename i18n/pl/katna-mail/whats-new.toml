@@ -1254,3 +1254,23 @@ Konta logujące się hasłem przechowują teraz swoje zadania na serwerze
 poczty, jeśli oferuje on CalDAV, dzięki czemu zadania widać także w
 aplikacjach serwera i na telefonie.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Dodawanie i zmienianie wydarzeń"
+text = """
+Kliknij lub przeciągnij w kalendarzu albo naciśnij C, aby dodać
+wydarzenie. Przeciągnij wydarzenie, aby je przenieść, lub jego dolną
+krawędź, aby zmienić czas trwania, a otwórz je, aby zmienić godzinę,
+powtarzanie, przypomnienia i gości albo dodać rozmowę w Meet lub Teams.
+Odpowiadaj na zaproszenia przyciskami Tak, Nie lub Może. Cofnij
+przywraca wszystko.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalendarze z większej liczby kont"
+text = """
+Katna znajduje teraz kalendarze Yahoo, Zoho, iCloud, Fastmail, GMX i
+innych kont, nawet gdy znajdują się na innym serwerze niż poczta.
+Najpierw próbuje najlepszego sposobu dla każdego konta, a gdy jest
+niedostępny, innego.
+"""

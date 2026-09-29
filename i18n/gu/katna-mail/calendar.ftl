@@ -39,8 +39,83 @@ calendar-guests =
        *[other] { $count } મહેમાન
     }
 calendar-guest-answers = { $yes } હા, { $maybe } કદાચ, { $no } ના, { $waiting } બાકી
+calendar-organizer = આયોજક
+calendar-optional = વૈકલ્પિક
 calendar-open-web = બ્રાઉઝરમાં ખોલો
 calendar-close = બંધ કરો
+
+## Adding, changing and deleting events.
+
+calendar-add-title = શીર્ષક ઉમેરો
+calendar-add-location = સ્થાન ઉમેરો
+calendar-add-notes = વર્ણન ઉમેરો
+calendar-add-guests = મહેમાનો ઉમેરો
+calendar-remove-guest = દૂર કરો
+calendar-add-meet = Google Meet વીડિયો કૉલ ઉમેરો
+calendar-add-teams = Teams મીટિંગ ઉમેરો
+calendar-has-call = વીડિયો કૉલ ઉમેર્યો
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = આખો દિવસ
+calendar-more-options = વધુ વિકલ્પો
+calendar-save = સેવ કરો
+calendar-saved = ઇવેન્ટ સેવ થયો
+calendar-deleted = ઇવેન્ટ ડિલીટ થયો
+calendar-discard = ફેરફારો કાઢી નાખો
+calendar-edit = ઇવેન્ટમાં ફેરફાર કરો
+calendar-delete = ઇવેન્ટ ડિલીટ કરો
+calendar-event-details = ઇવેન્ટની વિગતો
+calendar-busy = વ્યસ્ત
+calendar-free = ખાલી
+calendar-cancel = રદ કરો
+calendar-ok = ઠીક છે
+calendar-read-only = તમે આ કૅલેન્ડરના ઇવેન્ટ બદલી શકતા નથી
+calendar-none-editable = હજી એવું કોઈ કૅલેન્ડર નથી જેમાં તમે ઇવેન્ટ ઉમેરી શકો
+calendar-no-such-time = તમારા ટાઇમ ઝોનમાં આ સમય અસ્તિત્વમાં નથી
+calendar-end-before-start = ઇવેન્ટ શરૂ થાય તે પહેલાં પૂરો થાય છે
+calendar-repeat-never = પુનરાવર્તન થતું નથી
+calendar-repeat-daily = દરરોજ
+calendar-repeat-weekly = સાપ્તાહિક: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] માસિક: પહેલો { $weekday }
+        [2] માસિક: બીજો { $weekday }
+        [3] માસિક: ત્રીજો { $weekday }
+        [4] માસિક: ચોથો { $weekday }
+       *[other] માસિક: છેલ્લો { $weekday }
+    }
+calendar-repeat-yearly = વાર્ષિક: { $day }
+calendar-repeat-weekdays = દરેક કાર્યદિવસ (સોમવારથી શુક્રવાર)
+calendar-repeat-custom = કસ્ટમ
+calendar-reminder-none = કોઈ સૂચના નહીં
+calendar-reminder-at-start = શરૂઆતમાં
+calendar-reminder-minutes =
+    { $count ->
+        [one] { $count } મિનિટ પહેલાં
+       *[other] { $count } મિનિટ પહેલાં
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] { $count } કલાક પહેલાં
+       *[other] { $count } કલાક પહેલાં
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] { $count } દિવસ પહેલાં
+       *[other] { $count } દિવસ પહેલાં
+    }
+calendar-scope-edit-title = પુનરાવર્તિત ઇવેન્ટમાં ફેરફાર કરો
+calendar-scope-delete-title = પુનરાવર્તિત ઇવેન્ટ ડિલીટ કરો
+calendar-scope-this = આ ઇવેન્ટ
+calendar-scope-following = આ અને પછીના ઇવેન્ટ
+calendar-scope-all = બધા ઇવેન્ટ
+calendar-scope-respond-title = પુનરાવર્તિત ઇવેન્ટ માટે જવાબ
+calendar-going = તમે જવાના છો?
+calendar-answer-yes = હા
+calendar-answer-no = ના
+calendar-answer-maybe = કદાચ
+calendar-answered-yes = તમે જઈ રહ્યા છો
+calendar-answered-no = તમે નથી જઈ રહ્યા
+calendar-answered-maybe = તમે કદાચ જશો
 
 ## The day's agenda beside the mail.
 

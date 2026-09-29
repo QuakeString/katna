@@ -1275,3 +1275,22 @@ Akaun yang log masuk dengan kata laluan kini menyimpan tugasnya pada
 pelayan mel jika pelayan itu menawarkan CalDAV, supaya tugas turut
 dipaparkan dalam aplikasi pelayan itu sendiri dan pada telefon.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Tambah dan ubah acara"
+text = """
+Klik atau seret pada kalendar, atau tekan C, untuk menambah acara. Seret
+acara untuk mengalihkannya atau tepi bawahnya untuk mengubah tempohnya,
+dan buka untuk mengubah masa, ulangan, peringatan dan tetamu atau
+menambah panggilan Meet atau Teams. Jawab jemputan dengan Ya, Tidak atau
+Mungkin. Buat asal memulihkan semuanya.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalendar daripada lebih banyak akaun"
+text = """
+Katna kini menemui kalendar Yahoo, Zoho, iCloud, Fastmail, GMX dan akaun
+lain, walaupun ia berada pada pelayan lain daripada mel. Katna mencuba
+cara terbaik setiap akaun dahulu dan cara lain apabila cara itu tidak
+tersedia.
+"""

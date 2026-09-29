@@ -38,8 +38,80 @@ calendar-guests =
        *[other] ဧည့်သည် { $count } ဦး
     }
 calendar-guest-answers = ဟုတ်ကဲ့ { $yes }၊ ဖြစ်နိုင် { $maybe }၊ မဟုတ်ပါ { $no }၊ စောင့်ဆိုင်းနေ { $waiting }
+calendar-organizer = စီစဉ်သူ
+calendar-optional = ရွေးချယ်နိုင်သည်
 calendar-open-web = ဘရောက်ဇာတွင် ဖွင့်ရန်
 calendar-close = ပိတ်ရန်
+
+## Adding, changing and deleting events.
+
+calendar-add-title = ခေါင်းစဉ် ထည့်ရန်
+calendar-add-location = တည်နေရာ ထည့်ရန်
+calendar-add-notes = ဖော်ပြချက် ထည့်ရန်
+calendar-add-guests = ဧည့်သည်များ ထည့်ရန်
+calendar-remove-guest = ဖယ်ရှားရန်
+calendar-add-meet = Google Meet ဗီဒီယိုကွန်ဖရင့် ထည့်ရန်
+calendar-add-teams = Teams အစည်းအဝေး ထည့်ရန်
+calendar-has-call = ဗီဒီယိုခေါ်ဆိုမှု ထည့်ပြီးပါပြီ
+calendar-weekday-day = { $weekday }၊ { $day }
+calendar-all-day-box = တစ်ရက်လုံး
+calendar-more-options = နောက်ထပ် ရွေးစရာများ
+calendar-save = သိမ်းရန်
+calendar-saved = ဖြစ်ရပ်ကို သိမ်းပြီးပါပြီ
+calendar-deleted = ဖြစ်ရပ်ကို ဖျက်ပြီးပါပြီ
+calendar-discard = ပြောင်းလဲမှုများ ပယ်ရန်
+calendar-edit = ဖြစ်ရပ် တည်းဖြတ်ရန်
+calendar-delete = ဖြစ်ရပ် ဖျက်ရန်
+calendar-event-details = ဖြစ်ရပ် အသေးစိတ်
+calendar-busy = အလုပ်များ
+calendar-free = အားလပ်
+calendar-cancel = မလုပ်တော့ပါ
+calendar-ok = အိုကေ
+calendar-read-only = ဤပြက္ခဒိန်ရှိ ဖြစ်ရပ်များကို ပြောင်း၍ မရပါ
+calendar-none-editable = ဖြစ်ရပ်ထည့်နိုင်သော ပြက္ခဒိန် မရှိသေးပါ
+calendar-no-such-time = ထိုအချိန်သည် သင့်အချိန်ဇုန်တွင် မရှိပါ
+calendar-end-before-start = ဖြစ်ရပ်သည် မစတင်မီ ပြီးဆုံးနေသည်
+calendar-repeat-never = မထပ်ခါ
+calendar-repeat-daily = နေ့စဉ်
+calendar-repeat-weekly = အပတ်စဉ် { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] လစဉ် ပထမ { $weekday }
+        [2] လစဉ် ဒုတိယ { $weekday }
+        [3] လစဉ် တတိယ { $weekday }
+        [4] လစဉ် စတုတ္ထ { $weekday }
+       *[other] လစဉ် နောက်ဆုံး { $weekday }
+    }
+calendar-repeat-yearly = နှစ်စဉ် { $day }
+calendar-repeat-weekdays = အလုပ်ရက်တိုင်း (တနင်္လာမှ သောကြာအထိ)
+calendar-repeat-custom = စိတ်ကြိုက်
+calendar-reminder-none = အကြောင်းကြားချက် မရှိ
+calendar-reminder-at-start = စတင်ချိန်တွင်
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } မိနစ် အလို
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count } နာရီ အလို
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count } ရက် အလို
+    }
+calendar-scope-edit-title = ထပ်ခါထပ်ခါ ဖြစ်ရပ်ကို တည်းဖြတ်ရန်
+calendar-scope-delete-title = ထပ်ခါထပ်ခါ ဖြစ်ရပ်ကို ဖျက်ရန်
+calendar-scope-this = ဤဖြစ်ရပ်
+calendar-scope-following = ဤဖြစ်ရပ်နှင့် နောက်ဖြစ်ရပ်များ
+calendar-scope-all = ဖြစ်ရပ်အားလုံး
+calendar-scope-respond-title = ထပ်ခါထပ်ခါ ဖြစ်ရပ်အတွက် ဖြေကြားရန်
+calendar-going = သွားမလား။
+calendar-answer-yes = ဟုတ်ကဲ့
+calendar-answer-no = မဟုတ်ပါ
+calendar-answer-maybe = ဖြစ်နိုင်
+calendar-answered-yes = သင် သွားမည်
+calendar-answered-no = သင် မသွားပါ
+calendar-answered-maybe = သင် သွားချင်သွားနိုင်သည်
 
 ## The day's agenda beside the mail.
 

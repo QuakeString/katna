@@ -1264,3 +1264,22 @@ Akun yang masuk dengan kata sandi kini menyimpan tugasnya di server
 email jika server tersebut menyediakan CalDAV, sehingga tugas juga
 tampil di aplikasi milik server dan di ponsel.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Tambahkan dan ubah acara"
+text = """
+Klik atau seret pada kalender, atau tekan C, untuk menambahkan acara.
+Seret acara untuk memindahkannya atau tepi bawahnya untuk mengubah
+durasinya, lalu buka untuk mengubah waktu, pengulangan, pengingat, dan
+tamu atau menambahkan panggilan Meet atau Teams. Jawab undangan dengan
+Ya, Tidak, atau Mungkin. Urungkan mengembalikan semuanya.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalender dari lebih banyak akun"
+text = """
+Katna kini menemukan kalender Yahoo, Zoho, iCloud, Fastmail, GMX, dan
+akun lain, bahkan ketika berada di server yang berbeda dari email. Katna
+mencoba cara terbaik setiap akun terlebih dahulu dan cara lain saat cara
+itu tidak tersedia.
+"""

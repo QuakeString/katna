@@ -38,8 +38,80 @@ calendar-guests =
        *[other] { $count } ọbịa
     }
 calendar-guest-answers = { $yes } ee, { $maybe } ikekwe, { $no } mba, { $waiting } na-eche
+calendar-organizer = Onye nhazi
+calendar-optional = Nhọrọ
 calendar-open-web = Mepe na ihe nchọgharị
 calendar-close = Mechie
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Tinye aha ihe omume
+calendar-add-location = Tinye ebe
+calendar-add-notes = Tinye nkọwa
+calendar-add-guests = Tinye ndị ọbịa
+calendar-remove-guest = Wepụ
+calendar-add-meet = Tinye ọkpụkpọ vidiyo Google Meet
+calendar-add-teams = Tinye nzukọ Teams
+calendar-has-call = Etinyela ọkpụkpọ vidiyo
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Ogologo ụbọchị
+calendar-more-options = Nhọrọ ndị ọzọ
+calendar-save = Chekwaa
+calendar-saved = Echekwara ihe omume
+calendar-deleted = Ehichapụla ihe omume
+calendar-discard = Tụfuo mgbanwe
+calendar-edit = Dezie ihe omume
+calendar-delete = Hichapụ ihe omume
+calendar-event-details = Nkọwa ihe omume
+calendar-busy = Nwere ọrụ
+calendar-free = Nwere oge
+calendar-cancel = Kagbuo
+calendar-ok = Ọ dị mma
+calendar-read-only = Ị nweghị ike ịgbanwe ihe omume dị na kalenda a
+calendar-none-editable = Enweghị kalenda ị nwere ike itinye ihe omume na ya
+calendar-no-such-time = Oge ahụ adịghị n'ógbè oge gị
+calendar-end-before-start = Ihe omume ahụ ejedebe tupu ọ malite
+calendar-repeat-never = Anaghị emegharị
+calendar-repeat-daily = Kwa ụbọchị
+calendar-repeat-weekly = Kwa izu: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Kwa ọnwa: nke mbụ { $weekday }
+        [2] Kwa ọnwa: nke abụọ { $weekday }
+        [3] Kwa ọnwa: nke atọ { $weekday }
+        [4] Kwa ọnwa: nke anọ { $weekday }
+       *[other] Kwa ọnwa: nke ikpeazụ { $weekday }
+    }
+calendar-repeat-yearly = Kwa afọ: { $day }
+calendar-repeat-weekdays = Kwa ụbọchị ọrụ (Mọnde ruo Fraịde)
+calendar-repeat-custom = Nke gị
+calendar-reminder-none = Enweghị ọkwa
+calendar-reminder-at-start = Mgbe ọ na-amalite
+calendar-reminder-minutes =
+    { $count ->
+       *[other] Nkeji { $count } tupu oge ahụ
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] Awa { $count } tupu oge ahụ
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] Ụbọchị { $count } tupu oge ahụ
+    }
+calendar-scope-edit-title = Dezie ihe omume na-emegharị
+calendar-scope-delete-title = Hichapụ ihe omume na-emegharị
+calendar-scope-this = Ihe omume a
+calendar-scope-following = Ihe omume a na nke ndị na-esote
+calendar-scope-all = Ihe omume niile
+calendar-scope-respond-title = Azịza maka ihe omume na-emegharị
+calendar-going = Ị ga-aga?
+calendar-answer-yes = Ee
+calendar-answer-no = Mba
+calendar-answer-maybe = Ikekwe
+calendar-answered-yes = Ị na-aga
+calendar-answered-no = Ị naghị aga
+calendar-answered-maybe = Ị nwere ike ịga
 
 ## The day's agenda beside the mail.
 

@@ -40,8 +40,86 @@ calendar-guests =
        *[other] { $count } אורחים
     }
 calendar-guest-answers = { $yes } כן, { $maybe } אולי, { $no } לא, { $waiting } ממתינים
+calendar-organizer = מארגן
+calendar-optional = אופציונלי
 calendar-open-web = פתיחה בדפדפן
 calendar-close = סגירה
+
+## Adding, changing and deleting events.
+
+calendar-add-title = הוספת כותרת
+calendar-add-location = הוספת מיקום
+calendar-add-notes = הוספת תיאור
+calendar-add-guests = הוספת אורחים
+calendar-remove-guest = הסרה
+calendar-add-meet = הוספת שיחת וידאו ב-Google Meet
+calendar-add-teams = הוספת פגישה ב-Teams
+calendar-has-call = נוספה שיחת וידאו
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = כל היום
+calendar-more-options = אפשרויות נוספות
+calendar-save = שמירה
+calendar-saved = האירוע נשמר
+calendar-deleted = האירוע נמחק
+calendar-discard = מחיקת השינויים
+calendar-edit = עריכת אירוע
+calendar-delete = מחיקת אירוע
+calendar-event-details = פרטי האירוע
+calendar-busy = עסוק
+calendar-free = פנוי
+calendar-cancel = ביטול
+calendar-ok = אישור
+calendar-read-only = אי אפשר לשנות אירועים ביומן הזה
+calendar-none-editable = עדיין אין יומן שאפשר להוסיף לו אירועים
+calendar-no-such-time = השעה הזו לא קיימת באזור הזמן שלך
+calendar-end-before-start = האירוע מסתיים לפני שהוא מתחיל
+calendar-repeat-never = לא חוזר
+calendar-repeat-daily = מדי יום
+calendar-repeat-weekly = שבועי: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] חודשי: { $weekday } הראשון
+        [2] חודשי: { $weekday } השני
+        [3] חודשי: { $weekday } השלישי
+        [4] חודשי: { $weekday } הרביעי
+       *[other] חודשי: { $weekday } האחרון
+    }
+calendar-repeat-yearly = שנתי: { $day }
+calendar-repeat-weekdays = בכל יום חול (שני עד שישי)
+calendar-repeat-custom = מותאם אישית
+calendar-reminder-none = ללא התראה
+calendar-reminder-at-start = בזמן ההתחלה
+calendar-reminder-minutes =
+    { $count ->
+        [one] דקה אחת לפני
+        [two] שתי דקות לפני
+       *[other] { $count } דקות לפני
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] שעה אחת לפני
+        [two] שעתיים לפני
+       *[other] { $count } שעות לפני
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] יום אחד לפני
+        [two] יומיים לפני
+       *[other] { $count } ימים לפני
+    }
+calendar-scope-edit-title = עריכת אירוע חוזר
+calendar-scope-delete-title = מחיקת אירוע חוזר
+calendar-scope-this = האירוע הזה
+calendar-scope-following = האירוע הזה והאירועים הבאים
+calendar-scope-all = כל האירועים
+calendar-scope-respond-title = תשובה לאירוע חוזר
+calendar-going = מגיעים?
+calendar-answer-yes = כן
+calendar-answer-no = לא
+calendar-answer-maybe = אולי
+calendar-answered-yes = אישרת הגעה
+calendar-answered-no = סירבת להזמנה
+calendar-answered-maybe = ענית: אולי
 
 ## The day's agenda beside the mail.
 

@@ -1306,3 +1306,23 @@ désormais leurs tâches sur leur serveur de messagerie lorsqu’il
 propose CalDAV, si bien que les tâches apparaissent aussi dans les
 applications du serveur et sur le téléphone.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Ajouter et modifier des événements"
+text = """
+Cliquez ou faites glisser dans le calendrier, ou appuyez sur C, pour
+ajouter un événement. Faites glisser un événement pour le déplacer ou
+son bord inférieur pour changer sa durée, puis ouvrez-le pour modifier
+l’heure, la répétition, les rappels et les invités, ou pour ajouter un
+appel Meet ou Teams. Répondez aux invitations par Oui, Non ou Peut-être.
+Annuler remet tout en place.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Les calendriers de plus de comptes"
+text = """
+Katna trouve désormais les calendriers de Yahoo, Zoho, iCloud, Fastmail,
+GMX et d’autres comptes, même lorsqu’ils sont sur un autre serveur que
+le courrier. Il essaie d’abord la meilleure méthode de chaque compte,
+puis une autre si celle-ci est indisponible.
+"""

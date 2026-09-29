@@ -1253,3 +1253,22 @@ Parolayla oturum açan hesaplar, posta sunucusu CalDAV sunuyorsa
 görevlerini artık sunucuda saklıyor; böylece görevler sunucunun kendi
 uygulamalarında ve telefonda da görünüyor.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Etkinlik ekleyin ve değiştirin"
+text = """
+Etkinlik eklemek için takvimde tıklayın ya da sürükleyin veya C tuşuna
+basın. Bir etkinliği taşımak için sürükleyin, süresini değiştirmek için
+alt kenarını sürükleyin; saati, tekrarı, hatırlatıcıları ve konukları
+değiştirmek veya bir Meet ya da Teams görüşmesi eklemek için etkinliği
+açın. Davetlere Evet, Hayır veya Belki ile yanıt verin. Geri al her şeyi
+eski haline getirir.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Daha fazla hesabın takvimleri"
+text = """
+Katna artık Yahoo, Zoho, iCloud, Fastmail, GMX ve diğer hesapların
+takvimlerini, postadan farklı bir sunucuda olsalar bile buluyor. Önce
+her hesabın en iyi yolunu, o kullanılamıyorsa bir başkasını dener.
+"""

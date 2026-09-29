@@ -38,8 +38,80 @@ calendar-guests =
        *[other] ແຂກ { $count } ຄົນ
     }
 calendar-guest-answers = ຕອບຮັບ { $yes }, ອາດຈະ { $maybe }, ປະຕິເສດ { $no }, ລໍຖ້າ { $waiting }
+calendar-organizer = ຜູ້ຈັດ
+calendar-optional = ທາງເລືອກ
 calendar-open-web = ເປີດໃນບຣາວເຊີ
 calendar-close = ປິດ
+
+## Adding, changing and deleting events.
+
+calendar-add-title = ເພີ່ມຫົວຂໍ້
+calendar-add-location = ເພີ່ມສະຖານທີ່
+calendar-add-notes = ເພີ່ມຄຳອະທິບາຍ
+calendar-add-guests = ເພີ່ມແຂກ
+calendar-remove-guest = ລຶບອອກ
+calendar-add-meet = ເພີ່ມການປະຊຸມວິດີໂອ Google Meet
+calendar-add-teams = ເພີ່ມການປະຊຸມ Teams
+calendar-has-call = ເພີ່ມການໂທວິດີໂອແລ້ວ
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = ທັງມື້
+calendar-more-options = ຕົວເລືອກເພີ່ມເຕີມ
+calendar-save = ບັນທຶກ
+calendar-saved = ບັນທຶກເຫດການແລ້ວ
+calendar-deleted = ລຶບເຫດການແລ້ວ
+calendar-discard = ຖິ້ມການປ່ຽນແປງ
+calendar-edit = ແກ້ໄຂເຫດການ
+calendar-delete = ລຶບເຫດການ
+calendar-event-details = ລາຍລະອຽດເຫດການ
+calendar-busy = ບໍ່ຫວ່າງ
+calendar-free = ຫວ່າງ
+calendar-cancel = ຍົກເລີກ
+calendar-ok = ຕົກລົງ
+calendar-read-only = ເຈົ້າບໍ່ສາມາດປ່ຽນແປງເຫດການໃນປະຕິທິນນີ້ໄດ້
+calendar-none-editable = ຍັງບໍ່ມີປະຕິທິນທີ່ເຈົ້າສາມາດເພີ່ມເຫດການໄດ້
+calendar-no-such-time = ບໍ່ມີເວລານັ້ນໃນເຂດເວລາຂອງເຈົ້າ
+calendar-end-before-start = ເຫດການສິ້ນສຸດກ່ອນທີ່ຈະເລີ່ມ
+calendar-repeat-never = ບໍ່ເກີດຊ້ຳ
+calendar-repeat-daily = ທຸກມື້
+calendar-repeat-weekly = ທຸກອາທິດໃນ { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] ທຸກເດືອນໃນ { $weekday } ທຳອິດ
+        [2] ທຸກເດືອນໃນ { $weekday } ທີສອງ
+        [3] ທຸກເດືອນໃນ { $weekday } ທີສາມ
+        [4] ທຸກເດືອນໃນ { $weekday } ທີສີ່
+       *[other] ທຸກເດືອນໃນ { $weekday } ສຸດທ້າຍ
+    }
+calendar-repeat-yearly = ທຸກປີໃນ { $day }
+calendar-repeat-weekdays = ທຸກວັນເຮັດວຽກ (ຈັນຫາສຸກ)
+calendar-repeat-custom = ກຳນົດເອງ
+calendar-reminder-none = ບໍ່ມີການແຈ້ງເຕືອນ
+calendar-reminder-at-start = ເມື່ອເລີ່ມ
+calendar-reminder-minutes =
+    { $count ->
+       *[other] ກ່ອນ { $count } ນາທີ
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] ກ່ອນ { $count } ຊົ່ວໂມງ
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] ກ່ອນ { $count } ມື້
+    }
+calendar-scope-edit-title = ແກ້ໄຂເຫດການທີ່ເກີດຊ້ຳ
+calendar-scope-delete-title = ລຶບເຫດການທີ່ເກີດຊ້ຳ
+calendar-scope-this = ເຫດການນີ້
+calendar-scope-following = ເຫດການນີ້ ແລະ ເຫດການຕໍ່ໄປ
+calendar-scope-all = ທຸກເຫດການ
+calendar-scope-respond-title = ຕອບເຫດການທີ່ເກີດຊ້ຳ
+calendar-going = ຈະໄປບໍ?
+calendar-answer-yes = ແມ່ນ
+calendar-answer-no = ບໍ່
+calendar-answer-maybe = ອາດຈະ
+calendar-answered-yes = ເຈົ້າຈະໄປ
+calendar-answered-no = ເຈົ້າຈະບໍ່ໄປ
+calendar-answered-maybe = ເຈົ້າອາດຈະໄປ
 
 ## The day's agenda beside the mail.
 
