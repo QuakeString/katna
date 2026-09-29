@@ -3455,6 +3455,13 @@ server error is not.
   task's due day (red when past; "Task" with none), which opens the task.
   The window reads the tasks from the start and maps each `task.mail` to
   its line (the one due first wins) whenever tasks or mail change.
+- **On the Calendar**, as in Google Calendar: a task due on a day sits
+  with that day's whole-day events (Day and Week) and one due at a time
+  sits at that time for half an hour, beside any event it overlaps; Month
+  and Schedule list them with the events. Its circle ticks it off, a
+  click opens it over the Calendar, and dragging it to another day, time
+  or the whole-day row moves its due day and time (a quarter hour at a
+  time, with Undo), blocking that time for it.
 
 ## 19. Security and privacy
 
