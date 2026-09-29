@@ -10,12 +10,22 @@ search-category-mail = Mail
 search-category-people = People
 # The heading over tasks in KRunner's results.
 search-category-tasks = Tasks
+# The heading over events in KRunner's results.
+search-category-events = Events
 # The line under a message's subject: who sent it.
 search-mail-from = From { $sender }
 # A message without a subject.
 search-no-subject = (no subject)
 # The line under a task's title: the list it is in.
 search-task-in = In { $list }
+# The line under an event's title: when its next time is, and where or in
+# which calendar. $when is one of the four below.
+search-event-at = { $when } · { $place }
+search-event-in = { $when } · { $calendar }
+search-event-now = Now
+search-event-today = Today
+search-event-tomorrow = Tomorrow
+search-event-in-days = In { $count } days
 
 ## Buttons on a result in KRunner
 

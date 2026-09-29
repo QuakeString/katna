@@ -2913,7 +2913,7 @@ Served by the daemon, pure Rust, from the same search index.
 | Contact | name, address, organization | Compose email, copy address, open contact |
 | Email | subject, sender, text (confident matches only, or with a `mail:` prefix) | Open, reply all |
 | Organization | name, alias | Open organization view |
-| Event | title, attendees, location | Open event |
+| Event | title, location, details (the coming year) | Open its day in Calendar |
 | Task | title, details (open tasks) | Open the task |
 
 As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
@@ -2936,6 +2936,13 @@ of their title or details: at most three, those due first first, between
 people and mail, with the list they are in. Enter opens Katna Mail on the
 Tasks page with the task's details (app action `open-page` with
 `tasks:<id>`, which a task's reminder uses too).
+
+Events come up the same way, under Events, by their title, place or
+details: the next occurrence of each, from now to a year ahead, at most
+three, soonest first, after tasks. The line under says how soon (Now,
+Today, Tomorrow, In 3 days; the service formats no dates) and the place,
+or else the calendar. Enter opens the Calendar on that day
+(`calendar:YYYY-MM-DD`, as the clock does).
 
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
