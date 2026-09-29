@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click a day in the desktop clock"
+text = """
+In Katna Digital Clock, right-click a day in the month to add a task for
+that day, or an event in your calendar app. An empty Tasks list now shows
+a short line instead of a picture that covered the Add a task field.
+"""

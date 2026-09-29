@@ -424,6 +424,8 @@ PlasmaExtras.Representation {
         }
 
         KatnaTasks {
+            id: katnaTasks
+
             Layout.fillWidth: true
             Layout.fillHeight: !agenda.visible
             compact: agenda.visible
@@ -695,6 +697,13 @@ PlasmaExtras.Representation {
             KeyNavigation.tab: addEventButton.visible ? addEventButton : addEventButton.KeyNavigation.down
             Keys.onUpPressed: event => {
                 viewHeader.tabBar.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
+            }
+
+            // Katna: right-click a day for a menu. Left clicks go through.
+            KatnaDayMenu {
+                anchors.fill: parent
+                monthView: monthView
+                tasks: katnaTasks
             }
         }
     }

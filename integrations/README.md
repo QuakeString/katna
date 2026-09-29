@@ -34,6 +34,8 @@ know, with Katna's additions:
 
 - a Tasks list under the day's events: add a task (due on the day picked
   in the month, when that isn't today), tick one off;
+- right-click a day in the month to add a task for it, or an event in the
+  desktop's calendar app;
 - Katna's events open in Katna, and a meeting gets a Join button.
 
 It declares the same `X-Plasma-Provides` as Plasma's clock, so right-click
