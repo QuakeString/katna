@@ -16,6 +16,23 @@ tasks-new-list = Create new list
 tasks-on-this-computer = On this computer
 # The name of the list kept on this computer.
 tasks-my-tasks = My Tasks
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Sign in again to show tasks
+tasks-account-signed-in = Signed in to { $address } again. Getting your tasks…
+tasks-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your tasks.
+tasks-account-refused = The server did not accept the password. Yahoo, iCloud, Zoho and others need an app password.
+tasks-account-change-password = Change password
+tasks-account-change-password-tooltip = Open Settings > Accounts
+tasks-account-not-enabled = Task access for Katna is not switched on yet.
+tasks-account-failed = The task lists could not be read.
+# $reason is the server's own words, in English.
+tasks-account-error = The task lists could not be read: { $reason }
+tasks-account-none = No task lists found
+tasks-account-looking = Looking for task lists…
+tasks-account-try-again = Try again
+tasks-account-try-again-tooltip = Check this account's tasks again now
+tasks-account-fixing = Working on it…
 tasks-list-name-placeholder = List name
 
 ## Lists and tasks

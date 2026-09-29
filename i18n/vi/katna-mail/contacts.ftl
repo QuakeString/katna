@@ -25,6 +25,24 @@ contacts-label-removed = Đã xóa khỏi { $name }
 contacts-label-renamed = Đã đổi tên nhãn thành { $name }
 contacts-label-deleted = Đã xóa nhãn { $name }
 contacts-label-no-email = Không ai trong nhãn này có địa chỉ email
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Tài khoản
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Đăng nhập lại để hiện danh bạ
+contacts-account-signed-in = Đã đăng nhập lại vào { $address }. Đang tải danh bạ của bạn…
+contacts-account-sign-in-refused = { $provider } không cho Katna vào. Hãy thử lại và cho phép truy cập danh bạ của bạn.
+contacts-account-password = Máy chủ không chấp nhận mật khẩu. Yahoo, iCloud, Zoho và các dịch vụ khác cần mật khẩu ứng dụng.
+contacts-account-change-password = Đổi mật khẩu
+contacts-account-change-password-tooltip = Mở Cài đặt > Tài khoản
+contacts-account-failed = Không đọc được danh bạ.
+# $reason is the server's own words, in English.
+contacts-account-error = Không đọc được danh bạ: { $reason }
+contacts-account-none = Không tìm thấy sổ địa chỉ nào
+contacts-account-looking = Đang tìm danh bạ…
+contacts-account-try-again = Thử lại
+contacts-account-try-again-tooltip = Kiểm tra lại danh bạ của tài khoản này ngay
+contacts-account-fixing = Đang xử lý…
 contacts-manage = Sửa và quản lý
 contacts-merge = Hợp nhất và sửa
 contacts-merge-about = { $count ->

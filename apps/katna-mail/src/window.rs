@@ -17,6 +17,7 @@
 
 mod about;
 mod account_roll;
+mod account_status;
 mod account_view;
 mod accounts;
 mod activity;

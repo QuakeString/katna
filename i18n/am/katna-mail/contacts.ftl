@@ -25,6 +25,24 @@ contacts-label-removed = ከ{ $name } ተወግዷል
 contacts-label-renamed = መሰየሚያው ወደ { $name } ተቀይሯል
 contacts-label-deleted = መሰየሚያ { $name } ተሰርዟል
 contacts-label-no-email = በዚህ መሰየሚያ ውስጥ የኢሜይል አድራሻ ያለው ማንም የለም
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = መለያዎች
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = እውቂያዎችን ለማሳየት እንደገና ይግቡ
+contacts-account-signed-in = እንደገና ወደ { $address } ገብተዋል። እውቂያዎችዎን በማምጣት ላይ…
+contacts-account-sign-in-refused = { $provider } Katnaን አላስገባም። እንደገና ይሞክሩ፣ እና እውቂያዎችዎን እንዲደርስባቸው ይፍቀዱ።
+contacts-account-password = አገልጋዩ የይለፍ ቃሉን አልተቀበለም። Yahoo፣ iCloud፣ Zoho እና ሌሎችም የመተግበሪያ የይለፍ ቃል ያስፈልጋቸዋል።
+contacts-account-change-password = የይለፍ ቃል ቀይር
+contacts-account-change-password-tooltip = ቅንብሮች > መለያዎች ክፈት
+contacts-account-failed = እውቂያዎቹን ማንበብ አልተቻለም።
+# $reason is the server's own words, in English.
+contacts-account-error = እውቂያዎቹን ማንበብ አልተቻለም፦ { $reason }
+contacts-account-none = ምንም የአድራሻ ደብተር አልተገኘም
+contacts-account-looking = እውቂያዎችን በመፈለግ ላይ…
+contacts-account-try-again = እንደገና ሞክር
+contacts-account-try-again-tooltip = የዚህን መለያ እውቂያዎች አሁን እንደገና ፈትሽ
+contacts-account-fixing = በሂደት ላይ…
 contacts-manage = አስተካክል እና አስተዳድር
 contacts-merge = አዋህድ እና አስተካክል
 contacts-merge-about = { $count ->

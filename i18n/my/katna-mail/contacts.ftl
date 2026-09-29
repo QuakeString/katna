@@ -25,6 +25,24 @@ contacts-label-removed = { $name } မှ ဖယ်ရှားပြီးပ�
 contacts-label-renamed = အညွှန်းအမည်ကို { $name } သို့ ပြောင်းပြီးပါပြီ
 contacts-label-deleted = အညွှန်း { $name } ကို ဖျက်ပြီးပါပြီ
 contacts-label-no-email = ဤအညွှန်းရှိ မည်သူမျှ မေးလ်လိပ်စာ မရှိပါ
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = အကောင့်များ
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = အဆက်အသွယ်များ ပြရန် ထပ်မံ ဝင်ရောက်ပါ
+contacts-account-signed-in = { $address } သို့ ထပ်မံ ဝင်ရောက်ပြီးပါပြီ။ သင့်အဆက်အသွယ်များကို ရယူနေသည်…
+contacts-account-sign-in-refused = { $provider } က Katna ကို ဝင်ခွင့်မပေးပါ။ ထပ်စမ်းကြည့်ပြီး သင့်အဆက်အသွယ်များကို အသုံးပြုခွင့် ပေးပါ။
+contacts-account-password = ဆာဗာက စကားဝှက်ကို လက်မခံပါ။ Yahoo၊ iCloud၊ Zoho နှင့် အခြားများသည် အက်ပ်စကားဝှက် လိုအပ်သည်။
+contacts-account-change-password = စကားဝှက် ပြောင်းရန်
+contacts-account-change-password-tooltip = ဆက်တင်များ > အကောင့်များ ကို ဖွင့်ရန်
+contacts-account-failed = အဆက်အသွယ်များကို ဖတ်၍မရပါ။
+# $reason is the server's own words, in English.
+contacts-account-error = အဆက်အသွယ်များကို ဖတ်၍မရပါ- { $reason }
+contacts-account-none = လိပ်စာစာအုပ် မတွေ့ပါ
+contacts-account-looking = အဆက်အသွယ်များကို ရှာနေသည်…
+contacts-account-try-again = ထပ်စမ်းကြည့်ရန်
+contacts-account-try-again-tooltip = ဤအကောင့်၏ အဆက်အသွယ်များကို ယခု ထပ်စစ်ရန်
+contacts-account-fixing = ဆောင်ရွက်နေသည်…
 contacts-manage = ပြင်ဆင်ပြီး စီမံရန်
 contacts-merge = ပေါင်းစည်းပြီး ပြင်ဆင်ရန်
 contacts-merge-about = { $count ->

@@ -25,6 +25,24 @@ contacts-label-removed = นำออกจาก { $name } แล้ว
 contacts-label-renamed = เปลี่ยนชื่อป้ายกำกับเป็น { $name } แล้ว
 contacts-label-deleted = ลบป้ายกำกับ { $name } แล้ว
 contacts-label-no-email = ไม่มีใครในป้ายกำกับนี้ที่มีที่อยู่อีเมล
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = บัญชี
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = ลงชื่อเข้าใช้อีกครั้งเพื่อแสดงรายชื่อติดต่อ
+contacts-account-signed-in = ลงชื่อเข้าใช้ { $address } อีกครั้งแล้ว กำลังดึงรายชื่อติดต่อของคุณ…
+contacts-account-sign-in-refused = { $provider } ไม่อนุญาตให้ Katna เข้าใช้ ลองอีกครั้ง และอนุญาตให้เข้าถึงรายชื่อติดต่อของคุณ
+contacts-account-password = เซิร์ฟเวอร์ไม่ยอมรับรหัสผ่าน Yahoo, iCloud, Zoho และอื่นๆ ต้องใช้รหัสผ่านสำหรับแอป
+contacts-account-change-password = เปลี่ยนรหัสผ่าน
+contacts-account-change-password-tooltip = เปิด การตั้งค่า > บัญชี
+contacts-account-failed = อ่านรายชื่อติดต่อไม่ได้
+# $reason is the server's own words, in English.
+contacts-account-error = อ่านรายชื่อติดต่อไม่ได้: { $reason }
+contacts-account-none = ไม่พบสมุดที่อยู่
+contacts-account-looking = กำลังค้นหารายชื่อติดต่อ…
+contacts-account-try-again = ลองอีกครั้ง
+contacts-account-try-again-tooltip = ตรวจสอบรายชื่อติดต่อของบัญชีนี้อีกครั้งตอนนี้
+contacts-account-fixing = กำลังดำเนินการ…
 contacts-manage = แก้ไขและจัดการ
 contacts-merge = รวมและแก้ไข
 contacts-merge-about = { $count ->

@@ -25,6 +25,24 @@ contacts-label-removed = An cire daga { $name }
 contacts-label-renamed = An sake wa lakabin suna: { $name }
 contacts-label-deleted = An share lakabin { $name }
 contacts-label-no-email = Babu wanda ke da adireshin imel a wannan lakabin
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Asusu
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Sake shiga don nuna lambobin sadarwa
+contacts-account-signed-in = An sake shiga { $address }. Ana samo lambobin sadarwarku…
+contacts-account-sign-in-refused = { $provider } bai bar Katna ya shiga ba. Ku sake gwadawa, kuma ku ba da izinin shiga lambobin sadarwarku.
+contacts-account-password = Sabar ba ta karɓi kalmar sirrin ba. Yahoo, iCloud, Zoho da wasu suna buƙatar kalmar sirrin manhaja.
+contacts-account-change-password = Canza kalmar sirri
+contacts-account-change-password-tooltip = Buɗe Saituna > Asusu
+contacts-account-failed = Ba a iya karanta lambobin sadarwar ba.
+# $reason is the server's own words, in English.
+contacts-account-error = Ba a iya karanta lambobin sadarwar ba: { $reason }
+contacts-account-none = Ba a sami littafin adireshi ba
+contacts-account-looking = Ana neman lambobin sadarwa…
+contacts-account-try-again = Sake gwadawa
+contacts-account-try-again-tooltip = Sake duba lambobin sadarwar wannan asusun yanzu
+contacts-account-fixing = Ana aiki a kai…
 contacts-manage = Gyara da sarrafa
 contacts-merge = Haɗa da gyara
 contacts-merge-about = { $count ->

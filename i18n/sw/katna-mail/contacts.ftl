@@ -25,6 +25,24 @@ contacts-label-removed = Imeondolewa kutoka { $name }
 contacts-label-renamed = Lebo imepewa jina jipya: { $name }
 contacts-label-deleted = Lebo { $name } imefutwa
 contacts-label-no-email = Hakuna mtu kwenye lebo hii mwenye anwani ya barua pepe
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Akaunti
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Ingia tena ili kuonyesha anwani
+contacts-account-signed-in = Umeingia tena kwenye { $address }. Inapata anwani zako…
+contacts-account-sign-in-refused = { $provider } haikuruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa anwani zako.
+contacts-account-password = Seva haikukubali nenosiri. Yahoo, iCloud, Zoho na nyinginezo zinahitaji nenosiri la programu.
+contacts-account-change-password = Badilisha nenosiri
+contacts-account-change-password-tooltip = Fungua Mipangilio > Akaunti
+contacts-account-failed = Anwani hazikuweza kusomwa.
+# $reason is the server's own words, in English.
+contacts-account-error = Anwani hazikuweza kusomwa: { $reason }
+contacts-account-none = Hakuna kitabu cha anwani kilichopatikana
+contacts-account-looking = Inatafuta anwani…
+contacts-account-try-again = Jaribu tena
+contacts-account-try-again-tooltip = Kagua anwani za akaunti hii tena sasa
+contacts-account-fixing = Inashughulikia…
 contacts-manage = Rekebisha na udhibiti
 contacts-merge = Unganisha na urekebishe
 contacts-merge-about = { $count ->

@@ -27,10 +27,10 @@ use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
 use katna_ui::px;
 
+use super::account_status::{AccountStatus, Of, Say};
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
 
-mod accounts;
 mod birthdays;
 mod free;
 mod search;
@@ -250,7 +250,7 @@ pub(super) struct CalendarPage {
     /// The top bar's search box, finding events.
     pub(super) search: search::Search,
     /// Where each account's calendar sync stands.
-    accounts: accounts::AccountStatus,
+    pub(super) accounts: AccountStatus,
 }
 
 impl CalendarPage {
@@ -280,7 +280,7 @@ impl CalendarPage {
             focus: cx.focus_handle(),
             naming_set: None,
             search: search::Search::default(),
-            accounts: accounts::AccountStatus::default(),
+            accounts: AccountStatus::default(),
         }
     }
 
@@ -505,7 +505,7 @@ impl MailWindow {
         let paths = self.paths.clone();
         let birthdays = !self.config.contacts.hide_birthdays;
         self.calendar.loading = true;
-        self.load_calendar_status(cx);
+        self.load_account_status(Of::Calendar, cx);
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
@@ -1360,7 +1360,7 @@ impl MailWindow {
             };
             let note = match account {
                 Some(id) if calendars.is_empty() && !folded => {
-                    Some(self.render_calendar_account_note(id, th, cx))
+                    Some(self.render_account_status(Of::Calendar, id, th, cx))
                 }
                 _ => None,
             };
@@ -3110,6 +3110,28 @@ fn lay_out(
     let n = columns_end.len();
     flush(&mut cluster, n, &mut out);
     out
+}
+
+/// What the line under an account in the side list says on this page.
+pub(super) fn say(say: Say<'_>) -> String {
+    match say {
+        Say::SignIn => tr!("calendar-account-sign-in"),
+        Say::SignInRefused { provider } => {
+            tr!("calendar-account-sign-in-refused", provider = provider)
+        }
+        Say::SignedIn { address } => tr!("calendar-account-signed-in", address = address),
+        Say::Refused => tr!("calendar-account-refused"),
+        Say::ChangePassword => tr!("calendar-account-change-password"),
+        Say::ChangePasswordTooltip => tr!("calendar-account-change-password-tooltip"),
+        Say::NotEnabled => tr!("calendar-account-not-enabled"),
+        Say::Error { reason } => tr!("calendar-account-error", reason = reason),
+        Say::Failed => tr!("calendar-account-failed"),
+        Say::None => tr!("calendar-account-none"),
+        Say::Looking => tr!("calendar-account-looking"),
+        Say::TryAgain => tr!("calendar-account-try-again"),
+        Say::TryAgainTooltip => tr!("calendar-account-try-again-tooltip"),
+        Say::Fixing => tr!("calendar-account-fixing"),
+    }
 }
 
 #[cfg(test)]

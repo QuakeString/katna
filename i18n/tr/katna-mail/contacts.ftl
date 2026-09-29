@@ -25,6 +25,24 @@ contacts-label-removed = { $name } etiketinden kaldırıldı
 contacts-label-renamed = Etiket adı { $name } olarak değiştirildi
 contacts-label-deleted = { $name } etiketi silindi
 contacts-label-no-email = Bu etiketteki hiç kimsenin e-posta adresi yok
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Hesaplar
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Kişileri göstermek için yeniden oturum aç
+contacts-account-signed-in = { $address } hesabında yeniden oturum açıldı. Kişileriniz alınıyor…
+contacts-account-sign-in-refused = { $provider }, Katna'nın girişine izin vermedi. Tekrar deneyin ve kişilerinize erişime izin verin.
+contacts-account-password = Sunucu parolayı kabul etmedi. Yahoo, iCloud, Zoho ve diğerleri bir uygulama parolası gerektirir.
+contacts-account-change-password = Parolayı değiştir
+contacts-account-change-password-tooltip = Ayarlar > Hesaplar'ı aç
+contacts-account-failed = Kişiler okunamadı.
+# $reason is the server's own words, in English.
+contacts-account-error = Kişiler okunamadı: { $reason }
+contacts-account-none = Adres defteri bulunamadı
+contacts-account-looking = Kişiler aranıyor…
+contacts-account-try-again = Tekrar dene
+contacts-account-try-again-tooltip = Bu hesabın kişilerini şimdi yeniden denetle
+contacts-account-fixing = Üzerinde çalışılıyor…
 contacts-manage = Düzelt ve yönet
 contacts-merge = Birleştir ve düzelt
 contacts-merge-about = { $count ->

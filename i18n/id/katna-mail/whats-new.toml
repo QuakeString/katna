@@ -1568,3 +1568,80 @@ garis bawah, seperti di Keep. Papan juga menampilkannya, dan pemformatan
 ikut bersama catatan ke folder Catatan di akun email Anda, tempat
 pemformatan dari iPhone kini kembali seperti semula.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Tampilkan beberapa hari saja"
+text = """
+Kalender punya Tampilan khusus di samping Jadwal: 4 hari mulai dari hari
+yang Anda pilih, atau berapa saja dari 2 sampai 7. Tekan X, lalu pilih
+jumlahnya di Opsi.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Temukan acara dari desktop"
+text = """
+Ketik nama acara di KRunner atau penelusuran GNOME untuk melihat kapan
+acara itu berikutnya, lalu tekan Enter untuk membuka hari itu di
+Kalender.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalender, Kontak, Tugas, dan Catatan di ponsel"
+text = """
+Di jendela sempit, halaman-halaman ini kini pas di layar seperti Email:
+daftar sampingnya terbuka dari tombol menu, Kontak menampilkan setiap
+nama dengan alamat di bawahnya, dan Catatan menata dua kartu
+berdampingan.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Agenda hari ini, dari bilah atas"
+text = """
+Tombol yang menampilkan agenda hari ini di samping email Anda kini ada
+di bilah atas, di sebelah tombol bahasa, dan email mendapat ruang yang
+tadinya dipakai strip samping.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Sembunyikan panel samping di setiap halaman"
+text = """
+Tombol menu di kiri atas kini juga melipat panel samping di Kalender,
+Kontak, Tugas, dan Catatan, menggesernya pergi seperti folder di Email.
+Setiap halaman mengingat apakah Anda membiarkannya terbuka.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Menu utama di ponsel"
+text = """
+Di ponsel, menu utama di balik gambar akun kini membuka Berkas, Sunting,
+Tampilan, dan lainnya di tempat, dengan baris Kembali di atas, alih-alih
+keluar dari sisi layar.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Semua akun di Kalender"
+text = """
+Daftar samping Kalender kini menampilkan semua akun Anda. Jika kalender
+sebuah akun tidak bisa dimuat, baris di bawahnya menjelaskan alasannya,
+dengan satu klik yang memperbaikinya, seperti “Masuk lagi untuk
+menampilkan kalender”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Ganti akun tanpa meninggalkan halaman"
+text = """
+Memilih akun lain dari gambar Anda di kanan atas, atau memutar roda di
+atasnya, kini membuat Anda tetap di Kalender, Tugas, Kontak, atau
+Catatan. Item baru masuk ke akun itu, dan Email menampilkannya saat Anda
+kembali.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Semua akun di Kontak"
+text = """
+Kontak kini menampilkan semua akun Anda di bawah Akun, beserta jumlah
+orang di masing-masing; klik salah satu untuk melihat orang-orangnya
+saja. Jika kontak sebuah akun tidak bisa dimuat, baris di bawahnya
+menjelaskan alasannya, dengan satu klik yang memperbaikinya, seperti
+“Masuk lagi untuk menampilkan kontak” atau “Coba lagi”.
+"""

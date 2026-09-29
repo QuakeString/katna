@@ -1517,3 +1517,76 @@ in nghiêng và gạch chân, như trong Keep. Bảng cũng hiển thị định
 và định dạng đi cùng ghi chú đến thư mục Ghi chú trong tài khoản thư của
 bạn, nơi định dạng từ iPhone giờ trở lại đúng như cũ.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Chỉ hiện vài ngày"
+text = """
+Lịch có Chế độ xem tùy chỉnh bên cạnh Lịch biểu: 4 ngày kể từ ngày bạn
+chọn, hoặc từ 2 đến 7 ngày. Nhấn X, rồi chọn số ngày trong Tùy chọn.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Tìm sự kiện từ màn hình nền"
+text = """
+Gõ tên một sự kiện vào KRunner hoặc ô tìm kiếm của GNOME để xem lần tới
+của nó là khi nào, rồi nhấn Enter để mở ngày đó trong Lịch.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Lịch, Danh bạ, Việc cần làm và Ghi chú trên điện thoại"
+text = """
+Trong cửa sổ hẹp, các trang này giờ vừa màn hình như Thư: danh sách bên
+mở từ nút menu, Danh bạ hiện mỗi tên kèm địa chỉ bên dưới, và Ghi chú
+xếp hai thẻ trên một hàng.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Lịch trình trong ngày, từ thanh trên cùng"
+text = """
+Nút hiện lịch trình trong ngày bên cạnh thư của bạn giờ nằm trên thanh
+trên cùng, cạnh nút ngôn ngữ, và phần thư có thêm chỗ mà dải bên từng
+chiếm.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Ẩn bảng bên trên mọi trang"
+text = """
+Nút menu ở góc trên bên trái giờ cũng thu gọn bảng bên trong Lịch, Danh
+bạ, Việc cần làm và Ghi chú, trượt nó đi như với các thư mục của Thư.
+Mỗi trang nhớ bạn có để nó mở hay không.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Menu chính trên điện thoại"
+text = """
+Trên điện thoại, menu chính sau ảnh tài khoản giờ mở Tệp, Sửa, Xem và
+các mục khác ngay tại chỗ, với một hàng Quay lại ở trên cùng, thay vì
+tràn ra ngoài cạnh màn hình.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Mọi tài khoản trong Lịch"
+text = """
+Danh sách bên của Lịch giờ hiện tất cả tài khoản của bạn. Khi lịch của
+một tài khoản không tải được, một dòng bên dưới cho biết lý do, kèm một
+cú nhấp để khắc phục, chẳng hạn “Đăng nhập lại để hiện lịch”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Đổi tài khoản mà không rời trang"
+text = """
+Chọn tài khoản khác từ ảnh của bạn ở góc trên bên phải, hoặc lăn con lăn
+trên ảnh, giờ vẫn giữ bạn ở Lịch, Việc cần làm, Danh bạ hoặc Ghi chú.
+Mục mới sẽ vào tài khoản đó, và Thư sẽ hiện tài khoản đó khi bạn quay
+lại.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Mọi tài khoản trong Danh bạ"
+text = """
+Danh bạ giờ liệt kê tất cả tài khoản của bạn dưới mục Tài khoản, kèm số
+người trong mỗi tài khoản; nhấp vào một tài khoản để chỉ xem người của
+tài khoản đó. Khi danh bạ của một tài khoản không tải được, một dòng bên
+dưới cho biết lý do, kèm một cú nhấp để khắc phục, chẳng hạn “Đăng nhập
+lại để hiện danh bạ” hoặc “Thử lại”.
+"""

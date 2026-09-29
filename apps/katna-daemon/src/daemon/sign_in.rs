@@ -249,6 +249,7 @@ impl Daemon {
                 for data in [
                     katna_sync::methods::Data::Calendar,
                     katna_sync::methods::Data::Contacts,
+                    katna_sync::methods::Data::Tasks,
                 ] {
                     katna_sync::methods::forget(&mut self.store(), account.id, data);
                 }
@@ -258,6 +259,7 @@ impl Daemon {
             }
         };
         self.wake_contacts();
+        self.wake_task_sync();
         if !identity.picture.is_empty() {
             smol::spawn(save_picture(
                 Arc::downgrade(self),
