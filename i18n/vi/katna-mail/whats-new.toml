@@ -1500,3 +1500,11 @@ text = """
 Trên trang Việc cần làm, ô tìm kiếm ở trên cùng giờ tìm trong các việc
 cần làm, ghi chú và việc phụ của bạn thay vì trong thư.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Tìm sự kiện của bạn"
+text = """
+Trên trang Lịch, ô tìm kiếm ở trên cùng giờ tìm sự kiện theo tiêu đề,
+địa điểm, ghi chú hoặc khách mời, liệt kê theo ngày. Nhấp vào một sự kiện
+để mở nó ở ngày của nó; Esc đưa bạn trở lại kết quả.
+"""

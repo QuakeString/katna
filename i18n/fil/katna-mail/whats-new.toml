@@ -1602,3 +1602,12 @@ Sa page ng Mga Gawain, hinahanap na ngayon ng search box sa itaas ang
 iyong mga gawain, ang mga tala at subtask ng mga ito, sa halip na ang
 iyong mail.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Hanapin ang iyong mga event"
+text = """
+Sa page ng Kalendaryo, hinahanap na ngayon ng search box sa itaas ang
+mga event ayon sa pamagat, lugar, tala o bisita, nakalista ayon sa
+petsa. I-click ang isa para buksan ito sa araw nito; ibinabalik ka ng
+Esc sa mga resulta.
+"""

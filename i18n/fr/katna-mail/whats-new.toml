@@ -1603,3 +1603,12 @@ Sur la page Tâches, le champ de recherche en haut cherche désormais dans
 vos tâches, leurs notes et leurs sous-tâches, et non plus dans vos
 messages.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Rechercher dans vos événements"
+text = """
+Sur la page Calendrier, le champ de recherche en haut trouve désormais
+les événements par titre, lieu, notes ou invités, classés par date.
+Cliquez sur l’un d’eux pour l’ouvrir à son jour. Esc vous ramène aux
+résultats.
+"""

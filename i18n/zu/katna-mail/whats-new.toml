@@ -1602,3 +1602,9 @@ title = "Sesha imisebenzi yakho"
 text = """
 Ekhasini le-Imisebenzi, ibhokisi lokusesha phezulu manje lisesha imisebenzi yakho, amanothi ayo nemisebenzi emincane, esikhundleni seposi lakho.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Sesha imicimbi yakho"
+text = """
+Ekhasini le-Khalenda, ibhokisi lokusesha phezulu manje lithola imicimbi ngesihloko, indawo, amanothi noma izivakashi, ibalwe ngosuku. Chofoza owodwa ukuze uwuvule osukwini lwawo; i-Esc ikubuyisela emiphumeleni.
+"""

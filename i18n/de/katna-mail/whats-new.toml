@@ -1586,3 +1586,12 @@ text = """
 Auf der Seite Aufgaben durchsucht das Suchfeld oben jetzt Ihre Aufgaben,
 deren Notizen und Unteraufgaben statt Ihrer Mail.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Ihre Termine durchsuchen"
+text = """
+Auf der Seite Kalender findet das Suchfeld oben jetzt Termine nach
+Titel, Ort, Notizen oder Gästen, nach Datum sortiert. Klicken Sie auf
+einen, um ihn an seinem Tag zu öffnen; Esc bringt Sie zurück zu den
+Ergebnissen.
+"""

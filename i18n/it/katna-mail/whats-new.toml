@@ -1564,3 +1564,11 @@ text = """
 In Attività la casella di ricerca in alto ora cerca nelle tue attività,
 nelle loro note e sottoattività, invece che nella tua posta.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Cerca nei tuoi eventi"
+text = """
+Nella pagina Calendario la casella di ricerca in alto ora trova gli
+eventi per titolo, luogo, note o invitati, in ordine di data. Fai clic
+su uno per aprirlo nel suo giorno; Esc ti riporta ai risultati.
+"""

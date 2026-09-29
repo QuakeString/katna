@@ -1473,3 +1473,9 @@ title = "Tafuta majukumu yako"
 text = """
 Kwenye ukurasa wa Majukumu, kisanduku cha kutafuta kilicho juu sasa kinatafuta majukumu yako, maelezo yake na majukumu madogo, badala ya barua zako.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Tafuta matukio yako"
+text = """
+Kwenye ukurasa wa Kalenda, kisanduku cha kutafuta kilicho juu sasa kinapata matukio kwa kichwa, mahali, maelezo au wageni, yakiorodheshwa kwa tarehe. Bofya moja ili kulifungua katika siku yake; Esc inakurudisha kwenye matokeo.
+"""

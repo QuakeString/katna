@@ -1550,3 +1550,11 @@ text = """
 In Taken doorzoekt het zoekvak bovenaan nu je taken, hun notities en
 subtaken, in plaats van je mail.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Je afspraken doorzoeken"
+text = """
+Op de pagina Agenda vindt het zoekvak bovenaan nu afspraken op titel,
+plaats, notities of gasten, op datum gesorteerd. Klik op een afspraak om
+hem op zijn dag te openen; met Esc ga je terug naar de resultaten.
+"""

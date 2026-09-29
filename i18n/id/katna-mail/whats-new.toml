@@ -1550,3 +1550,12 @@ text = """
 Di halaman Tugas, kotak penelusuran di atas kini menelusuri tugas Anda,
 catatannya, dan subtugasnya, bukan email Anda.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Telusuri acara Anda"
+text = """
+Di halaman Kalender, kotak penelusuran di atas kini menemukan acara
+berdasarkan judul, tempat, catatan, atau tamu, diurutkan menurut
+tanggal. Klik salah satunya untuk membukanya di harinya; Esc membawa
+Anda kembali ke hasil.
+"""

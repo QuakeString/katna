@@ -1541,3 +1541,11 @@ text = """
 W Zadaniach pole wyszukiwania u góry przeszukuje teraz Twoje zadania,
 ich notatki i podzadania, a nie pocztę.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Szukaj w wydarzeniach"
+text = """
+W Kalendarzu pole wyszukiwania u góry znajduje teraz wydarzenia po
+tytule, miejscu, notatkach lub gościach, uporządkowane według daty.
+Kliknij jedno, aby otworzyć je w jego dniu; Esc wraca do wyników.
+"""
