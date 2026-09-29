@@ -46,6 +46,12 @@ calendar-next-period = Later
 calendar-title-months = { $first } – { $last }
 calendar-loading = Loading…
 calendar-read-failed = The calendar could not be read: { $error }
+# Named groups of calendars in the side column ("Work", "Personal"): a
+# click shows only a set's calendars.
+calendar-sets = Calendar sets
+calendar-set-add = Save the calendars on show as a set
+calendar-set-name = Name of the set
+calendar-set-remove = Remove set
 # Calendars kept on this computer, without an account.
 calendar-local = On this computer
 calendar-account-gone = Removed account

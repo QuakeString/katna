@@ -3511,6 +3511,13 @@ most useful reason is shown. Changes go back the way their calendar came
   (shown calendars, not cancelled or declined) from 9:00 to 17:00 on the
   next five weekdays, from the next half hour today, with the UTC
   offset.
+- Calendar sets, as Fantastical has them (`window/calendar/sets.rs`):
+  named groups of calendars above the calendar list. + saves the
+  calendars on show under a name (the same name again replaces it), a
+  click shows a set's calendars and hides the rest (the same
+  `SetCalendarHidden` as the ticks), and the set matching what is on
+  show is highlighted. Kept in `config.toml` (`[[calendar.sets]]`, the
+  page's calendar IDs), not synced.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks

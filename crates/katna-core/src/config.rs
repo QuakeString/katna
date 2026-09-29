@@ -915,6 +915,18 @@ pub struct CalendarView {
     pub second_time_zone: String,
     /// How many days the custom view shows, 2 to 7; 0 for the default.
     pub custom_days: u8,
+    /// Named groups of calendars shown together, as Fantastical's
+    /// calendar sets: one click shows a set's calendars and hides the rest.
+    pub sets: Vec<CalendarSet>,
+}
+
+/// One of [`CalendarView::sets`].
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CalendarSet {
+    pub name: String,
+    /// The calendars shown (the Calendar page's IDs; birthdays included).
+    pub calendars: Vec<i64>,
 }
 
 impl CalendarView {

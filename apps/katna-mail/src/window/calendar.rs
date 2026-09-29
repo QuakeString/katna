@@ -32,6 +32,7 @@ use super::{MailWindow, Menu, MenuKey};
 
 mod birthdays;
 mod free;
+mod sets;
 mod tasks;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
@@ -60,9 +61,14 @@ gpui::actions!(
 /// The key context of the Calendar page.
 pub(super) const CALENDAR_CONTEXT: &str = "CalendarPage";
 
-/// Google Calendar's keys, in the Calendar page only.
+/// Google Calendar's keys, in the Calendar page only, and not while
+/// typing in a field on it (a calendar set's name).
 pub(super) fn bindings() -> Vec<KeyBinding> {
-    let c = Some(CALENDAR_CONTEXT);
+    let keys = format!(
+        "{CALENDAR_CONTEXT} && !{}",
+        katna_ui::text_input::KEY_CONTEXT
+    );
+    let c = Some(keys.as_str());
     vec![
         KeyBinding::new("t", CalendarToday, c),
         KeyBinding::new("j", CalendarNext, c),
@@ -233,6 +239,8 @@ pub(super) struct CalendarPage {
     /// Which occurrences of a repeating event a change is for, being asked.
     pub(super) ask: Option<ScopeAsk>,
     pub(super) focus: FocusHandle,
+    /// A new calendar set's name being typed.
+    naming_set: Option<sets::Naming>,
 }
 
 impl CalendarPage {
@@ -259,6 +267,7 @@ impl CalendarPage {
             task_drag: None,
             ask: None,
             focus: cx.focus_handle(),
+            naming_set: None,
         }
     }
 
@@ -1098,6 +1107,9 @@ impl MailWindow {
             .border_r_1()
             .border_color(rgba(th.divider))
             .child(self.render_mini_month(th, cx))
+            .when(!self.calendar.calendars.is_empty(), |d| {
+                d.child(self.render_calendar_sets(th, cx))
+            })
             .child(self.render_calendar_list(th, cx))
             .into_any_element()
     }
