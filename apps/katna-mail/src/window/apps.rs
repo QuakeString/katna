@@ -228,6 +228,7 @@ impl MailWindow {
         let open = if self.page_side_open(app) { 1.0 } else { 0.0 };
         self.page_side_spring.snap(open);
         self.page_side_t = open;
+        super::desktop::menu_page_changed(app != App::Mail, cx);
         // Notes and Tasks hand the search box back before Contacts takes
         // it, and take it after Contacts hands it back.
         if from == App::Notes {

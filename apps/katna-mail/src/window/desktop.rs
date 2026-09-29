@@ -117,6 +117,7 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
 
 /// The menu bar with the actions this build has, and their shortcuts.
 pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
+    let side_panel = cx.try_global::<SidePanelMenu>().is_some_and(|page| page.0);
     MENU_BAR
         .iter()
         .filter_map(|(label, entries)| {
@@ -126,7 +127,12 @@ pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
                     Separator => Some(MenuItem::Separator),
                     Item(label, name) => {
                         let action = cx.build_action(name, None).ok()?;
-                        Some(MenuItem::action(tr!(*label), *name).shortcut(shortcut(&*action, cx)))
+                        let label = if *label == "desktop-menu-folder-list" && side_panel {
+                            "desktop-menu-side-panel"
+                        } else {
+                            label
+                        };
+                        Some(MenuItem::action(tr!(label), *name).shortcut(shortcut(&*action, cx)))
                     }
                 })
                 .collect();
@@ -140,6 +146,25 @@ pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
 pub struct MenuBar(pub Menu);
 
 impl Global for MenuBar {}
+
+/// Whether the window shows a page other than Mail, whose menu button folds
+/// a side panel rather than the folder list.
+#[derive(Default)]
+pub struct SidePanelMenu(pub bool);
+
+impl Global for SidePanelMenu {}
+
+/// Names the View menu's fold item for the page the window shows.
+pub fn menu_page_changed(side_panel: bool, cx: &mut App) {
+    if cx
+        .try_global::<SidePanelMenu>()
+        .is_some_and(|page| page.0 == side_panel)
+    {
+        return;
+    }
+    cx.set_global(SidePanelMenu(side_panel));
+    refresh_menu_bar(cx);
+}
 
 /// Sends the menu bar again, for new shortcuts or actions.
 pub fn refresh_menu_bar(cx: &mut App) {
