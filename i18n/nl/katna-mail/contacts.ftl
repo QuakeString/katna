@@ -6,6 +6,11 @@
 
 contacts-all = Contacten
 contacts-frequent = Vaak gebruikt
+contacts-other = Overige contacten
+contacts-other-about = Mensen naar wie je vanuit Gmail hebt gemaild maar die je niet hebt opgeslagen
+contacts-other-email = E-mail sturen
+contacts-other-empty = Geen overige contacten. Mensen naar wie je vanuit Gmail mailt maar die je niet opslaat, verschijnen hier.
+contacts-other-allow = Log opnieuw in op je Gmail-account en geef Katna toestemming om overige contacten te zien.
 contacts-labels = Labels
 contacts-label-options = Labelopties
 contacts-label-rename = Label hernoemen

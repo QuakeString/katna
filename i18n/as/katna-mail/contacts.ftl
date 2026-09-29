@@ -6,6 +6,11 @@
 
 contacts-all = সম্পৰ্কসমূহ
 contacts-frequent = ঘনঘন
+contacts-other = অন্য সম্পৰ্কসমূহ
+contacts-other-about = আপুনি Gmail ৰ পৰা মেইল কৰা কিন্তু ছেভ নকৰা লোকসকল
+contacts-other-email = ইমেইল পঠাওক
+contacts-other-empty = অন্য সম্পৰ্ক নাই। আপুনি Gmail ৰ পৰা মেইল কৰা কিন্তু ছেভ নকৰা লোকসকল ইয়াত দেখা যায়।
+contacts-other-allow = অন্য সম্পৰ্কসমূহ চাবলৈ আপোনাৰ Gmail একাউণ্টত পুনৰ ছাইন ইন কৰক আৰু Katna ক সেইবোৰ চাবলৈ অনুমতি দিয়ক।
 contacts-labels = লেবেলসমূহ
 contacts-label-options = লেবেলৰ বিকল্প
 contacts-label-rename = লেবেলৰ নাম সলনি কৰক

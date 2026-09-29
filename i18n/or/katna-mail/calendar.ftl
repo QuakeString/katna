@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } ହୁଏତ ଯିବେ
 calendar-invite-organizer = { $name } ଆୟୋଜନ କରିଛନ୍ତି
 calendar-invite-open = କ୍ୟାଲେଣ୍ଡରରେ ଖୋଲନ୍ତୁ
 calendar-invite-not-yet = ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ କ୍ୟାଲେଣ୍ଡରରେ ନାହିଁ। ସିଙ୍କ ହେଲେ ଉତ୍ତର ଦିଆଯାଇପାରିବ।
+calendar-invite-by-mail = ଆପଣଙ୍କ କ୍ୟାଲେଣ୍ଡରରେ ନାହିଁ: ଆପଣଙ୍କ ଉତ୍ତର ମେଲ ଦ୍ୱାରା ଆୟୋଜକଙ୍କ ପାଖକୁ ଯିବ।
+calendar-mail-yes = ଗ୍ରହଣ କରାଗଲା: { $title }
+calendar-mail-yes-body = { $name } ଏହି ନିମନ୍ତ୍ରଣ ଗ୍ରହଣ କରିଛନ୍ତି।
+calendar-mail-no = ପ୍ରତ୍ୟାଖ୍ୟାନ କରାଗଲା: { $title }
+calendar-mail-no-body = { $name } ଏହି ନିମନ୍ତ୍ରଣ ପ୍ରତ୍ୟାଖ୍ୟାନ କରିଛନ୍ତି।
+calendar-mail-maybe = ଅସ୍ଥାୟୀ ଭାବେ ଗ୍ରହଣ କରାଗଲା: { $title }
+calendar-mail-maybe-body = { $name } ଏହି ନିମନ୍ତ୍ରଣ ଅସ୍ଥାୟୀ ଭାବେ ଗ୍ରହଣ କରିଛନ୍ତି।
 calendar-invite-your-day = ଆପଣଙ୍କ ଦିନ
 calendar-invite-clashes =
     { $count ->

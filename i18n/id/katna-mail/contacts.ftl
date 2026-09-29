@@ -6,6 +6,11 @@
 
 contacts-all = Kontak
 contacts-frequent = Sering
+contacts-other = Kontak lainnya
+contacts-other-about = Orang yang pernah Anda kirimi email dari Gmail tetapi belum disimpan
+contacts-other-email = Kirim email
+contacts-other-empty = Tidak ada kontak lainnya. Orang yang Anda kirimi email dari Gmail tetapi tidak Anda simpan akan muncul di sini.
+contacts-other-allow = Untuk melihat kontak lainnya, masuk lagi ke akun Gmail Anda dan izinkan Katna melihatnya.
 contacts-labels = Label
 contacts-label-options = Opsi label
 contacts-label-rename = Ganti nama label

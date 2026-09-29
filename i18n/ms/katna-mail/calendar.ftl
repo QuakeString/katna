@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } mungkin hadir
 calendar-invite-organizer = Dianjurkan oleh { $name }
 calendar-invite-open = Buka dalam Kalendar
 calendar-invite-not-yet = Belum ada dalam kalendar anda. Anda boleh menjawab selepas disegerakkan.
+calendar-invite-by-mail = Tiada dalam kalendar anda: jawapan anda dihantar kepada penganjur melalui e-mel.
+calendar-mail-yes = Diterima: { $title }
+calendar-mail-yes-body = { $name } telah menerima jemputan ini.
+calendar-mail-no = Ditolak: { $title }
+calendar-mail-no-body = { $name } telah menolak jemputan ini.
+calendar-mail-maybe = Diterima secara tentatif: { $title }
+calendar-mail-maybe-body = { $name } telah menerima jemputan ini secara tentatif.
 calendar-invite-your-day = Hari anda
 calendar-invite-clashes =
     { $count ->

@@ -6,6 +6,11 @@
 
 contacts-all = Anwani
 contacts-frequent = Zinazotumika mara kwa mara
+contacts-other = Anwani nyingine
+contacts-other-about = Watu ambao umewatumia barua pepe kutoka Gmail lakini hujawahifadhi
+contacts-other-email = Tuma barua pepe
+contacts-other-empty = Hakuna anwani nyingine. Watu unaowatumia barua pepe kutoka Gmail lakini huwahifadhi huonekana hapa.
+contacts-other-allow = Ili kuona anwani nyingine, ingia tena kwenye akaunti yako ya Gmail na uruhusu Katna kuziona.
 contacts-labels = Lebo
 contacts-label-options = Chaguo za lebo
 contacts-label-rename = Badilisha jina la lebo

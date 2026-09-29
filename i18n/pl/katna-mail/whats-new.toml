@@ -1345,3 +1345,20 @@ Wiadomość, z której utworzono zadanie, pokazuje teraz na liście termin
 zadania, na czerwono, gdy jest po terminie. Kliknij go, aby otworzyć
 zadanie.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Inne kontakty"
+text = """
+W Kontaktach pojawiły się Inne kontakty: osoby, do których pisano z
+Gmaila, ale nigdy ich nie zapisano, tak jak przechowuje je Gmail. Zapisz
+każdą jednym kliknięciem, z opcją Cofnij, albo od razu napisz do niej
+wiadomość.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Odpowiadaj na zaproszenia z dowolnego konta"
+text = """
+Zaproszenie, które trafiło na konto bez kalendarza, ma teraz także Tak,
+Nie i Może: Twoja odpowiedź trafia do organizatora e-mailem, a jego
+kalendarz ją odnotowuje.
+"""

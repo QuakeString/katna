@@ -6,6 +6,11 @@
 
 contacts-all = सम्पर्कहरू
 contacts-frequent = बारम्बार
+contacts-other = अन्य सम्पर्कहरू
+contacts-other-about = तपाईंले Gmail बाट मेल गर्नुभएको तर सुरक्षित नगर्नुभएका मानिसहरू
+contacts-other-email = इमेल पठाउनुहोस्
+contacts-other-empty = अन्य सम्पर्कहरू छैनन्। तपाईंले Gmail बाट मेल गर्ने तर सुरक्षित नगर्ने मानिसहरू यहाँ देखिन्छन्।
+contacts-other-allow = अन्य सम्पर्कहरू हेर्न आफ्नो Gmail खातामा फेरि साइन इन गर्नुहोस् र Katna लाई ती हेर्न अनुमति दिनुहोस्।
 contacts-labels = लेबलहरू
 contacts-label-options = लेबल विकल्पहरू
 contacts-label-rename = लेबलको नाम बदल्नुहोस्

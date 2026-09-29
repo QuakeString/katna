@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name }：可能参加
 calendar-invite-organizer = 组织者：{ $name }
 calendar-invite-open = 在日历中打开
 calendar-invite-not-yet = 尚未出现在您的日历中。同步后即可回复。
+calendar-invite-by-mail = 不在您的日历中：您的回复将通过邮件发送给组织者。
+calendar-mail-yes = 已接受：{ $title }
+calendar-mail-yes-body = { $name } 已接受此邀请。
+calendar-mail-no = 已拒绝：{ $title }
+calendar-mail-no-body = { $name } 已拒绝此邀请。
+calendar-mail-maybe = 暂定：{ $title }
+calendar-mail-maybe-body = { $name } 已暂时接受此邀请。
 calendar-invite-your-day = 您的一天
 calendar-invite-clashes =
     { $count ->

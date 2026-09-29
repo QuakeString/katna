@@ -6,6 +6,11 @@
 
 contacts-all = Kontakter
 contacts-frequent = Ofta kontaktade
+contacts-other = Övriga kontakter
+contacts-other-about = Personer du har mejlat från Gmail men inte sparat
+contacts-other-email = Skicka e-post
+contacts-other-empty = Inga övriga kontakter. Personer du mejlar från Gmail men inte sparar visas här.
+contacts-other-allow = Om du vill se övriga kontakter loggar du in på ditt Gmail-konto igen och tillåter Katna att se dem.
 contacts-labels = Etiketter
 contacts-label-options = Etikettalternativ
 contacts-label-rename = Byt namn på etikett

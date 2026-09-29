@@ -1300,3 +1300,17 @@ text = """
 Barua uliyoibadilisha kuwa jukumu sasa inaonyesha siku ya mwisho ya jukumu kwenye orodha, kwa rangi nyekundu likishachelewa.
 Ibofye ili kufungua jukumu.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Anwani nyingine"
+text = """
+Anwani sasa ina Anwani nyingine: watu ambao umewatumia barua pepe kutoka Gmail lakini hukuwahi kuwahifadhi, jinsi Gmail inavyowaweka.
+Mhifadhi yeyote kwa mbofyo mmoja, ukiwa na Tendua, au anza barua pepe kwake.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Jibu mialiko kutoka akaunti yoyote"
+text = """
+Mwaliko uliofika kwenye akaunti isiyo na kalenda sasa una Ndiyo, Hapana na Labda pia:
+jibu lako hutumwa kwa mwandaaji kwa barua pepe, na kalenda yake huliweka alama.
+"""

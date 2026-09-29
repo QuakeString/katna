@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } သွားချင်သွားန�
 calendar-invite-organizer = { $name } က စီစဉ်သည်
 calendar-invite-open = ပြက္ခဒိန်တွင် ဖွင့်ရန်
 calendar-invite-not-yet = သင့်ပြက္ခဒိန်တွင် မရှိသေးပါ။ စင့်ခ်လုပ်ပြီးမှ ပြန်ကြားနိုင်ပါမည်။
+calendar-invite-by-mail = သင့်ပြက္ခဒိန်တွင် မရှိပါ− သင့်အဖြေကို စီစဉ်သူထံ မေးလ်ဖြင့် ပို့ပါမည်။
+calendar-mail-yes = လက်ခံပြီး− { $title }
+calendar-mail-yes-body = { $name } ဤဖိတ်ကြားချက်ကို လက်ခံပြီးပါပြီ။
+calendar-mail-no = ငြင်းပယ်ပြီး− { $title }
+calendar-mail-no-body = { $name } ဤဖိတ်ကြားချက်ကို ငြင်းပယ်ပြီးပါပြီ။
+calendar-mail-maybe = ယာယီလက်ခံ− { $title }
+calendar-mail-maybe-body = { $name } ဤဖိတ်ကြားချက်ကို ယာယီလက်ခံထားပါသည်။
 calendar-invite-your-day = သင့်နေ့
 calendar-invite-clashes =
     { $count ->

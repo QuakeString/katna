@@ -1353,3 +1353,20 @@ text = """
 Email yang Anda jadikan tugas kini menampilkan hari jatuh tempo tugas di
 daftar, dengan warna merah jika terlambat. Klik untuk membuka tugas.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Kontak lainnya"
+text = """
+Kontak kini punya Kontak lainnya: orang yang pernah Anda kirimi email
+dari Gmail tetapi tidak pernah disimpan, seperti yang disimpan Gmail.
+Simpan siapa saja dengan satu klik, dengan Urungkan, atau langsung mulai
+email untuk mereka.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Jawab undangan dari akun mana pun"
+text = """
+Undangan yang masuk ke akun tanpa kalender kini juga punya Ya, Tidak,
+dan Mungkin: jawaban Anda dikirim ke penyelenggara lewat email, dan
+kalender mereka mencatatnya.
+"""

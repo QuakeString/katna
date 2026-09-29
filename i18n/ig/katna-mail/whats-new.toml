@@ -1309,3 +1309,19 @@ text = """
 Ozi i mere ọrụ site na ya ga-egosi ụbọchị ọrụ ahụ kwesịrị ịgwụ n'ndepụta ugbu a,
 na uhie ma ọ gafee oge. Pịa ya ka imepe ọrụ ahụ.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Kọntaktị ndị ọzọ"
+text = """
+Kọntaktị nwere Kọntaktị ndị ọzọ ugbu a: ndị i zigara ozi site na Gmail
+ma i chekwabeghị ha ma ọlị, dị ka Gmail si edobe ha. Chekwaa onye ọ bụla
+site n'otu ihe mkpịa, na Megharịa, ma ọ bụ malite ide ha ozi.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Zaghachi oku sitere n'akaụntụ ọ bụla"
+text = """
+Oku bịara n'akaụntụ na-enweghị kalịnda nwere Ee, Mba na Ikekwe ugbu a:
+azịza gị na-aga n'aka onye nhazi site na ozi, kalịnda ya ga-akaritekwa
+ya.
+"""

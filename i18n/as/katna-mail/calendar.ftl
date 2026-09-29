@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name }: হয়তো যাব
 calendar-invite-organizer = আয়োজক: { $name }
 calendar-invite-open = কেলেণ্ডাৰত খোলক
 calendar-invite-not-yet = এতিয়াও আপোনাৰ কেলেণ্ডাৰত নাই। ছিংক হ'লে উত্তৰ দিব পাৰিব।
+calendar-invite-by-mail = আপোনাৰ কেলেণ্ডাৰত নাই: আপোনাৰ উত্তৰ মেইলযোগে আয়োজকলৈ যাব।
+calendar-mail-yes = গ্ৰহণ কৰা হ'ল: { $title }
+calendar-mail-yes-body = { $name } এই আমন্ত্ৰণ গ্ৰহণ কৰিছে।
+calendar-mail-no = প্ৰত্যাখ্যান কৰা হ'ল: { $title }
+calendar-mail-no-body = { $name } এই আমন্ত্ৰণ প্ৰত্যাখ্যান কৰিছে।
+calendar-mail-maybe = অস্থায়ীভাৱে গ্ৰহণ কৰা হ'ল: { $title }
+calendar-mail-maybe-body = { $name } এই আমন্ত্ৰণ অস্থায়ীভাৱে গ্ৰহণ কৰিছে।
 calendar-invite-your-day = আপোনাৰ দিন
 calendar-invite-clashes =
     { $count ->

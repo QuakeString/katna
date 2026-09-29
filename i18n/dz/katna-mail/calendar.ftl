@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } འགྱོ་སྲིད།
 calendar-invite-organizer = སྒྲིག་འཛིན་པ: { $name }
 calendar-invite-open = ཟླ་ཐོ་ནང་ཁ་ཕྱེ
 calendar-invite-not-yet = ད་ལྟོ་ཡང་ ཁྱོད་ཀྱི་ཟླ་ཐོ་ནང་མིན་འདུག ཟླ་སྒྲིག་འབད་ཞིནམ་ལས་ ལན་བཏབ་ཚུགས།
+calendar-invite-by-mail = ཁྱོད་ཀྱི་ཟླ་ཐོ་ནང་མིན་འདུག ཁྱོད་ཀྱི་ལན་ གློག་འཕྲིན་གྱིས་ སྒྲིག་འཛིན་པ་ལུ་འགྱོཝ་ཨིན།
+calendar-mail-yes = ངོས་ལེན་འབད་ཡི: { $title }
+calendar-mail-yes-body = { $name } གིས་ བརྡ་བཀོད་འདི་ ངོས་ལེན་འབད་ཡི།
+calendar-mail-no = ངོས་ལེན་མ་འབད: { $title }
+calendar-mail-no-body = { $name } གིས་ བརྡ་བཀོད་འདི་ ངོས་ལེན་མ་འབད།
+calendar-mail-maybe = གནས་སྐབས་ཅིག་ལུ་ ངོས་ལེན་འབད་ཡི: { $title }
+calendar-mail-maybe-body = { $name } གིས་ བརྡ་བཀོད་འདི་ གནས་སྐབས་ཅིག་ལུ་ ངོས་ལེན་འབད་ཡི།
 calendar-invite-your-day = ཁྱོད་ཀྱི་ཉིནམ།
 calendar-invite-clashes =
     { $count ->

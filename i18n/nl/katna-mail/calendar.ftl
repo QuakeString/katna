@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } komt misschien
 calendar-invite-organizer = Georganiseerd door { $name }
 calendar-invite-open = Openen in Agenda
 calendar-invite-not-yet = Nog niet in je agenda. Je kunt antwoorden zodra de synchronisatie klaar is.
+calendar-invite-by-mail = Niet in je agenda: je antwoord gaat per e-mail naar de organisator.
+calendar-mail-yes = Geaccepteerd: { $title }
+calendar-mail-yes-body = { $name } heeft deze uitnodiging geaccepteerd.
+calendar-mail-no = Geweigerd: { $title }
+calendar-mail-no-body = { $name } heeft deze uitnodiging geweigerd.
+calendar-mail-maybe = Voorlopig geaccepteerd: { $title }
+calendar-mail-maybe-body = { $name } heeft deze uitnodiging voorlopig geaccepteerd.
 calendar-invite-your-day = Jouw dag
 calendar-invite-clashes =
     { $count ->

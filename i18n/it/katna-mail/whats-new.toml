@@ -1367,3 +1367,19 @@ Un'e-mail che hai trasformato in attività ora mostra nell'elenco il
 giorno di scadenza dell'attività, in rosso se è in ritardo. Fai clic per
 aprire l'attività.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Altri contatti"
+text = """
+Contatti ora ha Altri contatti: le persone a cui hai scritto da Gmail ma
+che non hai mai salvato, così come le conserva Gmail. Salva chiunque con
+un clic, con Annulla, oppure scrivigli subito.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Rispondi agli inviti da qualsiasi account"
+text = """
+Un invito arrivato su un account senza calendario ora ha anche Sì, No e
+Forse: la tua risposta arriva all’organizzatore via e-mail e il suo
+calendario la registra.
+"""

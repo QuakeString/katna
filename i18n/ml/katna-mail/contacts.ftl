@@ -6,6 +6,11 @@
 
 contacts-all = കോൺടാക്റ്റുകൾ
 contacts-frequent = ഇടയ്ക്കിടെ
+contacts-other = മറ്റ് കോൺടാക്റ്റുകൾ
+contacts-other-about = നിങ്ങൾ Gmail-ൽ നിന്ന് മെയിൽ ചെയ്‌തിട്ടും സേവ് ചെയ്യാത്തവർ
+contacts-other-email = ഇമെയിൽ അയയ്ക്കുക
+contacts-other-empty = മറ്റ് കോൺടാക്റ്റുകളൊന്നുമില്ല. Gmail-ൽ നിന്ന് നിങ്ങൾ മെയിൽ ചെയ്യുകയും സേവ് ചെയ്യാതിരിക്കുകയും ചെയ്യുന്നവർ ഇവിടെ കാണിക്കും.
+contacts-other-allow = മറ്റ് കോൺടാക്റ്റുകൾ കാണാൻ, നിങ്ങളുടെ Gmail അക്കൗണ്ടിൽ വീണ്ടും സൈൻ ഇൻ ചെയ്ത് അവ കാണാൻ Katna-യെ അനുവദിക്കുക.
 contacts-labels = ലേബലുകൾ
 contacts-label-options = ലേബൽ ഓപ്‌ഷനുകൾ
 contacts-label-rename = ലേബലിന്റെ പേരു മാറ്റുക

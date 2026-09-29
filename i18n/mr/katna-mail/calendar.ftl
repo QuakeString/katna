@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name }: कदाचित
 calendar-invite-organizer = आयोजक: { $name }
 calendar-invite-open = कॅलेंडरमध्ये उघडा
 calendar-invite-not-yet = अजून तुमच्या कॅलेंडरमध्ये नाही. सिंक झाल्यावर उत्तर देता येईल.
+calendar-invite-by-mail = तुमच्या कॅलेंडरमध्ये नाही: तुमचे उत्तर मेलद्वारे आयोजकाला जाईल.
+calendar-mail-yes = स्वीकारले: { $title }
+calendar-mail-yes-body = { $name } यांनी हे आमंत्रण स्वीकारले आहे.
+calendar-mail-no = नाकारले: { $title }
+calendar-mail-no-body = { $name } यांनी हे आमंत्रण नाकारले आहे.
+calendar-mail-maybe = तात्पुरते स्वीकारले: { $title }
+calendar-mail-maybe-body = { $name } यांनी हे आमंत्रण तात्पुरते स्वीकारले आहे.
 calendar-invite-your-day = तुमचा दिवस
 calendar-invite-clashes =
     { $count ->

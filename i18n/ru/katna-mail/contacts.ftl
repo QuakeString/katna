@@ -6,6 +6,11 @@
 
 contacts-all = Контакты
 contacts-frequent = Часто используемые
+contacts-other = Другие контакты
+contacts-other-about = Люди, которым вы писали из Gmail, но которых не сохранили
+contacts-other-email = Написать письмо
+contacts-other-empty = Других контактов нет. Люди, которым вы пишете из Gmail, но которых не сохраняете, появятся здесь.
+contacts-other-allow = Чтобы увидеть другие контакты, снова войдите в аккаунт Gmail и разрешите Katna их просматривать.
 contacts-labels = Ярлыки
 contacts-label-options = Параметры ярлыка
 contacts-label-rename = Переименовать ярлык

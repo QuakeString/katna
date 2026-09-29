@@ -6,6 +6,11 @@
 
 contacts-all = Àwọn olùbásọ̀rọ̀
 contacts-frequent = Àwọn tí a máa ń kàn sí
+contacts-other = Àwọn olùbásọ̀rọ̀ mìíràn
+contacts-other-about = Àwọn tí o ti fi ìmeèlì ránṣẹ́ sí láti Gmail ṣùgbọ́n tí o kò tíì fipamọ́
+contacts-other-email = Fi ìmeèlì ránṣẹ́
+contacts-other-empty = Kò sí àwọn olùbásọ̀rọ̀ mìíràn. Àwọn tí o fi ìmeèlì ránṣẹ́ sí láti Gmail ṣùgbọ́n tí o kò fipamọ́ yóò hàn níbí.
+contacts-other-allow = Láti rí àwọn olùbásọ̀rọ̀ mìíràn, tún wọlé sí àkọọ́lẹ̀ Gmail rẹ kí o sì jẹ́ kí Katna rí wọn.
 contacts-labels = Àwọn àmì
 contacts-label-options = Àwọn àṣàyàn àmì
 contacts-label-rename = Tún orúkọ àmì ṣe

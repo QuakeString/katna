@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } شاید شرکت کند
 calendar-invite-organizer = برگزارکننده: { $name }
 calendar-invite-open = باز کردن در تقویم
 calendar-invite-not-yet = هنوز در تقویم شما نیست. پس از همگام‌سازی می‌توانید پاسخ دهید.
+calendar-invite-by-mail = در تقویم شما نیست: پاسخ شما با ایمیل به برگزارکننده فرستاده می‌شود.
+calendar-mail-yes = پذیرفته شد: { $title }
+calendar-mail-yes-body = { $name } این دعوت را پذیرفت.
+calendar-mail-no = رد شد: { $title }
+calendar-mail-no-body = { $name } این دعوت را رد کرد.
+calendar-mail-maybe = احتمالی: { $title }
+calendar-mail-maybe-body = { $name } این دعوت را به‌صورت احتمالی پذیرفت.
 calendar-invite-your-day = روز شما
 calendar-invite-clashes =
     { $count ->

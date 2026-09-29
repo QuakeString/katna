@@ -6,6 +6,11 @@
 
 contacts-all = Kọntaktị
 contacts-frequent = Ndị a na-akpọ ugboro ugboro
+contacts-other = Kọntaktị ndị ọzọ
+contacts-other-about = Ndị i zigara ozi site na Gmail ma ị chekwabeghị
+contacts-other-email = Zipu ozi ịntanetị
+contacts-other-empty = Enwere kọntaktị ndị ọzọ. Ndị ị na-ezigara ozi site na Gmail ma ị naghị echekwa ga-apụta ebe a.
+contacts-other-allow = Ka i hụ kọntaktị ndị ọzọ, banye n'akaụntụ Gmail gị ọzọ ma kwe ka Katna hụ ha.
 contacts-labels = Leebụl
 contacts-label-options = Nhọrọ leebụl
 contacts-label-rename = Megharịa aha leebụl

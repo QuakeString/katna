@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } सायद जानुहुनेछ
 calendar-invite-organizer = { $name } द्वारा आयोजित
 calendar-invite-open = पात्रोमा खोल्नुहोस्
 calendar-invite-not-yet = अझै तपाईंको पात्रोमा छैन। सिंक भएपछि जवाफ दिन सकिन्छ।
+calendar-invite-by-mail = तपाईंको पात्रोमा छैन: तपाईंको जवाफ मेलबाट आयोजकलाई जान्छ।
+calendar-mail-yes = स्वीकार गरियो: { $title }
+calendar-mail-yes-body = { $name } ले यो निमन्त्रणा स्वीकार गर्नुभएको छ।
+calendar-mail-no = अस्वीकार गरियो: { $title }
+calendar-mail-no-body = { $name } ले यो निमन्त्रणा अस्वीकार गर्नुभएको छ।
+calendar-mail-maybe = अस्थायी रूपमा स्वीकार गरियो: { $title }
+calendar-mail-maybe-body = { $name } ले यो निमन्त्रणा अस्थायी रूपमा स्वीकार गर्नुभएको छ।
 calendar-invite-your-day = तपाईंको दिन
 calendar-invite-clashes =
     { $count ->

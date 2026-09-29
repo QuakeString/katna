@@ -6,6 +6,11 @@
 
 contacts-all = እውቂያዎች
 contacts-frequent = ተደጋጋሚ
+contacts-other = ሌሎች እውቂያዎች
+contacts-other-about = ከGmail ኢሜይል የላካችኋቸው ግን ያላስቀመጣችኋቸው ሰዎች
+contacts-other-email = ኢሜይል ላክ
+contacts-other-empty = ሌሎች እውቂያዎች የሉም። ከGmail ኢሜይል የሚልኩላቸው ግን የማያስቀምጧቸው ሰዎች እዚህ ይታያሉ።
+contacts-other-allow = ሌሎች እውቂያዎችን ለማየት እንደገና ወደ የGmail መለያዎ ይግቡ እና Katna እንዲያያቸው ይፍቀዱ።
 contacts-labels = መሰየሚያዎች
 contacts-label-options = የመሰየሚያ አማራጮች
 contacts-label-rename = መሰየሚያን ዳግም ሰይም

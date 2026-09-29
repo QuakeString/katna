@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } có thể tham dự
 calendar-invite-organizer = Người tổ chức: { $name }
 calendar-invite-open = Mở trong Lịch
 calendar-invite-not-yet = Chưa có trong lịch của bạn. Bạn có thể trả lời sau khi đồng bộ.
+calendar-invite-by-mail = Không có trong lịch của bạn: câu trả lời của bạn được gửi đến người tổ chức qua email.
+calendar-mail-yes = Đã chấp nhận: { $title }
+calendar-mail-yes-body = { $name } đã chấp nhận lời mời này.
+calendar-mail-no = Đã từ chối: { $title }
+calendar-mail-no-body = { $name } đã từ chối lời mời này.
+calendar-mail-maybe = Chưa chắc chắn: { $title }
+calendar-mail-maybe-body = { $name } đã chấp nhận lời mời này một cách chưa chắc chắn.
 calendar-invite-your-day = Ngày của bạn
 calendar-invite-clashes =
     { $count ->

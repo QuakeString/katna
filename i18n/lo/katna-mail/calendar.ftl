@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } ອາດຈະໄປ
 calendar-invite-organizer = ຈັດໂດຍ { $name }
 calendar-invite-open = ເປີດໃນປະຕິທິນ
 calendar-invite-not-yet = ຍັງບໍ່ຢູ່ໃນປະຕິທິນຂອງເຈົ້າ. ຕອບໄດ້ເມື່ອຊິ້ງຂໍ້ມູນແລ້ວ.
+calendar-invite-by-mail = ບໍ່ຢູ່ໃນປະຕິທິນຂອງເຈົ້າ: ຄຳຕອບຂອງເຈົ້າຈະສົ່ງຫາຜູ້ຈັດທາງອີເມວ.
+calendar-mail-yes = ຕອບຮັບແລ້ວ: { $title }
+calendar-mail-yes-body = { $name } ຕອບຮັບຄຳເຊີນນີ້ແລ້ວ.
+calendar-mail-no = ປະຕິເສດແລ້ວ: { $title }
+calendar-mail-no-body = { $name } ປະຕິເສດຄຳເຊີນນີ້ແລ້ວ.
+calendar-mail-maybe = ອາດຈະໄປ: { $title }
+calendar-mail-maybe-body = { $name } ຕອບຮັບຄຳເຊີນນີ້ແບບຍັງບໍ່ແນ່ໃຈ.
 calendar-invite-your-day = ມື້ຂອງເຈົ້າ
 calendar-invite-clashes =
     { $count ->

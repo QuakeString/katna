@@ -141,6 +141,13 @@ calendar-invite-reply-maybe = { $name }: возможно, придёт
 calendar-invite-organizer = Организатор: { $name }
 calendar-invite-open = Открыть в Календаре
 calendar-invite-not-yet = Пока нет в вашем календаре. Ответить можно будет после синхронизации.
+calendar-invite-by-mail = Этого события нет в вашем календаре: ваш ответ будет отправлен организатору по почте.
+calendar-mail-yes = Принято: { $title }
+calendar-mail-yes-body = { $name }: приглашение принято.
+calendar-mail-no = Отклонено: { $title }
+calendar-mail-no-body = { $name }: приглашение отклонено.
+calendar-mail-maybe = Под вопросом: { $title }
+calendar-mail-maybe-body = { $name }: приглашение принято предварительно.
 calendar-invite-your-day = Ваш день
 calendar-invite-clashes =
     { $count ->

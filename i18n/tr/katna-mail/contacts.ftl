@@ -6,6 +6,11 @@
 
 contacts-all = Kişiler
 contacts-frequent = Sık kullanılanlar
+contacts-other = Diğer kişiler
+contacts-other-about = Gmail’den e-posta gönderdiğiniz ancak kaydetmediğiniz kişiler
+contacts-other-email = E-posta gönder
+contacts-other-empty = Başka kişi yok. Gmail’den e-posta gönderdiğiniz ancak kaydetmediğiniz kişiler burada görünür.
+contacts-other-allow = Diğer kişileri görmek için Gmail hesabınızda yeniden oturum açın ve Katna’nın onları görmesine izin verin.
 contacts-labels = Etiketler
 contacts-label-options = Etiket seçenekleri
 contacts-label-rename = Etiketi yeniden adlandır

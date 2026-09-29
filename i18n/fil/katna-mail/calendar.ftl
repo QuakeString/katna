@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = Baka pumunta si { $name }
 calendar-invite-organizer = Inorganisa ni { $name }
 calendar-invite-open = Buksan sa Kalendaryo
 calendar-invite-not-yet = Wala pa sa kalendaryo mo. Makakasagot ka kapag na-sync na ito.
+calendar-invite-by-mail = Wala sa kalendaryo mo: ipapadala ang sagot mo sa organizer sa pamamagitan ng email.
+calendar-mail-yes = Tinanggap: { $title }
+calendar-mail-yes-body = Tinanggap ni { $name } ang imbitasyong ito.
+calendar-mail-no = Tinanggihan: { $title }
+calendar-mail-no-body = Tinanggihan ni { $name } ang imbitasyong ito.
+calendar-mail-maybe = Pansamantalang tinanggap: { $title }
+calendar-mail-maybe-body = Pansamantalang tinanggap ni { $name } ang imbitasyong ito.
 calendar-invite-your-day = Ang araw mo
 calendar-invite-clashes =
     { $count ->

@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name }: કદાચ
 calendar-invite-organizer = { $name } દ્વારા આયોજિત
 calendar-invite-open = કૅલેન્ડરમાં ખોલો
 calendar-invite-not-yet = હજી તમારા કૅલેન્ડરમાં નથી. સિંક થયા પછી જવાબ આપી શકાશે.
+calendar-invite-by-mail = તમારા કૅલેન્ડરમાં નથી: તમારો જવાબ મેઇલ દ્વારા આયોજકને જશે.
+calendar-mail-yes = સ્વીકાર્યું: { $title }
+calendar-mail-yes-body = { $name } એ આ આમંત્રણ સ્વીકાર્યું છે.
+calendar-mail-no = નકાર્યું: { $title }
+calendar-mail-no-body = { $name } એ આ આમંત્રણ નકાર્યું છે.
+calendar-mail-maybe = કામચલાઉ સ્વીકાર્યું: { $title }
+calendar-mail-maybe-body = { $name } એ આ આમંત્રણ કામચલાઉ સ્વીકાર્યું છે.
 calendar-invite-your-day = તમારો દિવસ
 calendar-invite-clashes =
     { $count ->

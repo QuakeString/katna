@@ -6,6 +6,11 @@
 
 contacts-all = Kontakty
 contacts-frequent = Często używane
+contacts-other = Inne kontakty
+contacts-other-about = Osoby, do których wysłano wiadomości z Gmaila, ale nie zapisano ich
+contacts-other-email = Wyślij e-mail
+contacts-other-empty = Brak innych kontaktów. Osoby, do których piszesz z Gmaila, ale których nie zapisujesz, pojawią się tutaj.
+contacts-other-allow = Aby zobaczyć inne kontakty, zaloguj się ponownie na swoje konto Gmail i zezwól Katnie na ich wyświetlanie.
 contacts-labels = Etykiety
 contacts-label-options = Opcje etykiety
 contacts-label-rename = Zmień nazwę etykiety

@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } ប្រហែលជាទៅ
 calendar-invite-organizer = រៀបចំដោយ { $name }
 calendar-invite-open = បើកក្នុងប្រតិទិន
 calendar-invite-not-yet = មិនទាន់នៅក្នុងប្រតិទិនរបស់អ្នកទេ។ អាចឆ្លើយតបបានពេលធ្វើសមកាលកម្មរួច។
+calendar-invite-by-mail = មិននៅក្នុងប្រតិទិនរបស់អ្នកទេ៖ ចម្លើយរបស់អ្នកនឹងផ្ញើទៅអ្នករៀបចំតាមអ៊ីមែល។
+calendar-mail-yes = បានទទួលយក៖ { $title }
+calendar-mail-yes-body = { $name } បានទទួលយកការអញ្ជើញនេះ។
+calendar-mail-no = បានបដិសេធ៖ { $title }
+calendar-mail-no-body = { $name } បានបដិសេធការអញ្ជើញនេះ។
+calendar-mail-maybe = ប្រហែល៖ { $title }
+calendar-mail-maybe-body = { $name } បានទទួលយកការអញ្ជើញនេះជាបណ្ដោះអាសន្ន។
 calendar-invite-your-day = ថ្ងៃរបស់អ្នក
 calendar-invite-clashes =
     { $count ->

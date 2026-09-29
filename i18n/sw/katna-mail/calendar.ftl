@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } huenda akaenda
 calendar-invite-organizer = Imeandaliwa na { $name }
 calendar-invite-open = Fungua kwenye Kalenda
 calendar-invite-not-yet = Bado haipo kwenye kalenda yako. Unaweza kujibu itakapolandanishwa.
+calendar-invite-by-mail = Haipo kwenye kalenda yako: jibu lako litatumwa kwa mwandaaji kwa barua pepe.
+calendar-mail-yes = Imekubaliwa: { $title }
+calendar-mail-yes-body = Mwaliko huu umekubaliwa na { $name }.
+calendar-mail-no = Imekataliwa: { $title }
+calendar-mail-no-body = Mwaliko huu umekataliwa na { $name }.
+calendar-mail-maybe = Kwa muda: { $title }
+calendar-mail-maybe-body = Mwaliko huu umekubaliwa kwa muda na { $name }.
 calendar-invite-your-day = Siku yako
 calendar-invite-clashes =
     { $count ->

@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } gaan dalk
 calendar-invite-organizer = Georganiseer deur { $name }
 calendar-invite-open = Maak in Kalender oop
 calendar-invite-not-yet = Nog nie in jou kalender nie. Jy kan antwoord sodra dit gesinkroniseer is.
+calendar-invite-by-mail = Nie in jou kalender nie: jou antwoord gaan per e-pos na die organiseerder.
+calendar-mail-yes = Aanvaar: { $title }
+calendar-mail-yes-body = { $name } het hierdie uitnodiging aanvaar.
+calendar-mail-no = Van die hand gewys: { $title }
+calendar-mail-no-body = { $name } het hierdie uitnodiging van die hand gewys.
+calendar-mail-maybe = Voorlopig aanvaar: { $title }
+calendar-mail-maybe-body = { $name } het hierdie uitnodiging voorlopig aanvaar.
 calendar-invite-your-day = Jou dag
 calendar-invite-clashes =
     { $count ->

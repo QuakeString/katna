@@ -137,6 +137,13 @@ calendar-invite-reply-maybe = { $name } quizás asista
 calendar-invite-organizer = Organizado por { $name }
 calendar-invite-open = Abrir en Calendario
 calendar-invite-not-yet = Aún no está en tu calendario. Podrás responder cuando se sincronice.
+calendar-invite-by-mail = No está en tu calendario: tu respuesta se envía al organizador por correo.
+calendar-mail-yes = Aceptada: { $title }
+calendar-mail-yes-body = { $name } ha aceptado esta invitación.
+calendar-mail-no = Rechazada: { $title }
+calendar-mail-no-body = { $name } ha rechazado esta invitación.
+calendar-mail-maybe = Aceptada provisionalmente: { $title }
+calendar-mail-maybe-body = { $name } ha aceptado provisionalmente esta invitación.
 calendar-invite-your-day = Tu día
 calendar-invite-clashes =
     { $count ->

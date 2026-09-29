@@ -6,6 +6,11 @@
 
 contacts-all = Oxhumana nabo
 contacts-frequent = Ababuthakathaka
+contacts-other = Abanye oxhumana nabo
+contacts-other-about = Abantu obabhalele nge-Gmail kodwa ongabalondolozanga
+contacts-other-email = Thumela i-imeyili
+contacts-other-empty = Abekho abanye oxhumana nabo. Abantu obabhalela nge-Gmail kodwa ongabalondolozi bavela lapha.
+contacts-other-allow = Ukuze ubone abanye oxhumana nabo, ngena futhi ku-akhawunti yakho ye-Gmail bese uvumela i-Katna ukuthi ibabone.
 contacts-labels = Amalebula
 contacts-label-options = Izinketho zelebula
 contacts-label-rename = Qamba kabusha ilebula

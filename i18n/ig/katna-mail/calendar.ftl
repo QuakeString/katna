@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } nwere ike ịga
 calendar-invite-organizer = Onye nhazi: { $name }
 calendar-invite-open = Mepe na Kalịnda
 calendar-invite-not-yet = Ọ nọghị na kalịnda gị ka. Ị ga-azaghachi ozugbo ọ kwekọrọ.
+calendar-invite-by-mail = Ọ nọghị na kalịnda gị: azịza gị ga-aga n'aka onye nhazi site na ozi.
+calendar-mail-yes = Anabatara: { $title }
+calendar-mail-yes-body = { $name } anabatala oku a.
+calendar-mail-no = Jụrụ: { $title }
+calendar-mail-no-body = { $name } jụla oku a.
+calendar-mail-maybe = Anabatara nwa oge: { $title }
+calendar-mail-maybe-body = { $name } anabatala oku a nwa oge.
 calendar-invite-your-day = Ụbọchị gị
 calendar-invite-clashes =
     { $count ->

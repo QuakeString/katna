@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } lè lọ
 calendar-invite-organizer = Olùṣètò: { $name }
 calendar-invite-open = Ṣí i nínú Kàlẹ́ńdà
 calendar-invite-not-yet = Kò tíì sí nínú kàlẹ́ńdà rẹ. O lè fèsì nígbà tó bá ti ṣe àmúṣiṣẹ́pọ̀.
+calendar-invite-by-mail = Kò sí nínú kàlẹ́ńdà rẹ: ìdáhùn rẹ yóò lọ sí ọ̀dọ̀ olùṣètò nípasẹ̀ ìmeèlì.
+calendar-mail-yes = A gbà: { $title }
+calendar-mail-yes-body = A ti gba ìpè yìí láti ọ̀dọ̀ { $name }.
+calendar-mail-no = A kọ̀: { $title }
+calendar-mail-no-body = A ti kọ ìpè yìí láti ọ̀dọ̀ { $name }.
+calendar-mail-maybe = Fún ìgbà díẹ̀: { $title }
+calendar-mail-maybe-body = A ti gba ìpè yìí fún ìgbà díẹ̀ láti ọ̀dọ̀ { $name }.
 calendar-invite-your-day = Ọjọ́ rẹ
 calendar-invite-clashes =
     { $count ->

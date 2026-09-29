@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } อาจจะไป
 calendar-invite-organizer = จัดโดย { $name }
 calendar-invite-open = เปิดในปฏิทิน
 calendar-invite-not-yet = ยังไม่อยู่ในปฏิทินของคุณ ตอบได้เมื่อซิงค์แล้ว
+calendar-invite-by-mail = ไม่อยู่ในปฏิทินของคุณ: คำตอบของคุณจะส่งถึงผู้จัดทางอีเมล
+calendar-mail-yes = ตอบรับแล้ว: { $title }
+calendar-mail-yes-body = { $name } ตอบรับคำเชิญนี้แล้ว
+calendar-mail-no = ปฏิเสธแล้ว: { $title }
+calendar-mail-no-body = { $name } ปฏิเสธคำเชิญนี้แล้ว
+calendar-mail-maybe = อาจจะไป: { $title }
+calendar-mail-maybe-body = { $name } ตอบรับคำเชิญนี้แบบยังไม่แน่ใจ
 calendar-invite-your-day = วันของคุณ
 calendar-invite-clashes =
     { $count ->

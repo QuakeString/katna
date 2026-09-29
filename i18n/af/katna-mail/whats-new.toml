@@ -1310,3 +1310,20 @@ text = """
 'n E-pos wat jy in 'n taak omskep het, wys nou die taak se sperdatum in
 die lys, in rooi as dit laat is. Klik daarop om die taak oop te maak.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Ander kontakte"
+text = """
+Kontakte het nou Ander kontakte: mense aan wie jy vanaf Gmail e-pos
+gestuur het maar nooit gestoor het nie, soos Gmail hulle hou. Stoor
+enigiemand met een klik, met Ontdoen, of begin dadelik ’n e-pos aan
+hulle.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Beantwoord uitnodigings vanaf enige rekening"
+text = """
+’n Uitnodiging wat by ’n rekening sonder kalender aangekom het, het nou
+ook Ja, Nee en Miskien: jou antwoord gaan per e-pos na die
+organiseerder, en sy kalender merk dit.
+"""

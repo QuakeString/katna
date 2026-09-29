@@ -6,6 +6,11 @@
 
 contacts-all = Danh bạ
 contacts-frequent = Thường xuyên
+contacts-other = Danh bạ khác
+contacts-other-about = Những người bạn đã gửi email từ Gmail nhưng chưa lưu
+contacts-other-email = Gửi email
+contacts-other-empty = Không có danh bạ khác. Những người bạn gửi email từ Gmail nhưng không lưu sẽ hiện ở đây.
+contacts-other-allow = Để xem danh bạ khác, hãy đăng nhập lại tài khoản Gmail và cho phép Katna xem chúng.
 contacts-labels = Nhãn
 contacts-label-options = Tùy chọn nhãn
 contacts-label-rename = Đổi tên nhãn

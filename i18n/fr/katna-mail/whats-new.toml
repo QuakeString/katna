@@ -1399,3 +1399,20 @@ Un e-mail que vous avez transformé en tâche affiche désormais dans la
 liste le jour d'échéance de la tâche, en rouge une fois en retard.
 Cliquez dessus pour ouvrir la tâche.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Autres contacts"
+text = """
+Contacts propose désormais Autres contacts : les personnes à qui vous
+avez écrit depuis Gmail sans jamais les enregistrer, comme Gmail les
+conserve. Enregistrez n’importe qui en un clic, avec Annuler, ou
+écrivez-lui directement.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Répondre aux invitations depuis n’importe quel compte"
+text = """
+Une invitation reçue sur un compte sans agenda propose maintenant aussi
+Oui, Non et Peut-être : votre réponse est envoyée à l’organisateur par
+e-mail, et son agenda la note.
+"""

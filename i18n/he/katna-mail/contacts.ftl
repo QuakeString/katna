@@ -6,6 +6,11 @@
 
 contacts-all = אנשי קשר
 contacts-frequent = תדירים
+contacts-other = אנשי קשר אחרים
+contacts-other-about = אנשים ששלחת להם מייל מ-Gmail אבל לא שמרת
+contacts-other-email = שליחת אימייל
+contacts-other-empty = אין אנשי קשר אחרים. אנשים ששלחת להם מייל מ-Gmail ולא שמרת יופיעו כאן.
+contacts-other-allow = כדי לראות אנשי קשר אחרים, יש להיכנס שוב לחשבון Gmail ולאפשר ל-Katna לראות אותם.
 contacts-labels = תוויות
 contacts-label-options = אפשרויות תווית
 contacts-label-rename = שינוי שם התווית

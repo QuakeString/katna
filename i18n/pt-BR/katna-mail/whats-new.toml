@@ -1352,3 +1352,20 @@ Um e-mail que você transformou em tarefa agora mostra na lista o dia de
 vencimento da tarefa, em vermelho quando estiver atrasada. Clique nele
 para abrir a tarefa.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Outros contatos"
+text = """
+Contatos agora tem Outros contatos: pessoas para quem você enviou
+e-mails pelo Gmail, mas nunca salvou, como o Gmail as guarda. Salve
+qualquer pessoa com um clique, com Desfazer, ou comece um e-mail para
+ela.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Responda a convites de qualquer conta"
+text = """
+Um convite que chegou a uma conta sem agenda agora também tem Sim, Não e
+Talvez: sua resposta vai para o organizador por e-mail e a agenda dele a
+registra.
+"""

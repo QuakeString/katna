@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name } さん: 未定
 calendar-invite-organizer = 主催者: { $name }
 calendar-invite-open = カレンダーで開く
 calendar-invite-not-yet = まだカレンダーにありません。同期されると返信できます。
+calendar-invite-by-mail = カレンダーにない招待: 返信は主催者にメールで送られます。
+calendar-mail-yes = 承諾: { $title }
+calendar-mail-yes-body = { $name } さんがこの招待を承諾しました。
+calendar-mail-no = 辞退: { $title }
+calendar-mail-no-body = { $name } さんがこの招待を辞退しました。
+calendar-mail-maybe = 仮承諾: { $title }
+calendar-mail-maybe-body = { $name } さんがこの招待を仮承諾しました。
 calendar-invite-your-day = あなたの一日
 calendar-invite-clashes =
     { $count ->

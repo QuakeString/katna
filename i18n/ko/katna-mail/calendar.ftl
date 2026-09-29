@@ -129,6 +129,13 @@ calendar-invite-reply-maybe = { $name }님이 참석할 수도 있습니다
 calendar-invite-organizer = 주최자: { $name }
 calendar-invite-open = 캘린더에서 열기
 calendar-invite-not-yet = 아직 캘린더에 없습니다. 동기화되면 응답할 수 있습니다.
+calendar-invite-by-mail = 내 캘린더에 없음: 응답은 주최자에게 메일로 전송됩니다.
+calendar-mail-yes = 수락함: { $title }
+calendar-mail-yes-body = { $name }님이 이 초대를 수락했습니다.
+calendar-mail-no = 거절함: { $title }
+calendar-mail-no-body = { $name }님이 이 초대를 거절했습니다.
+calendar-mail-maybe = 미정: { $title }
+calendar-mail-maybe-body = { $name }님이 이 초대를 잠정 수락했습니다.
 calendar-invite-your-day = 내 하루
 calendar-invite-clashes =
     { $count ->

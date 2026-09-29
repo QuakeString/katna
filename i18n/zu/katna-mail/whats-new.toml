@@ -1394,3 +1394,20 @@ text = """
 Imeyili oyenze umsebenzi manje ibonisa usuku lokuphela komsebenziohlwini,
 ngokubomvu uma sekuphelelwe yisikhathi. Chofoza kuyo ukuvula umsebenzi.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Abanye oxhumana nabo"
+text = """
+Oxhumana nabo manje banabo Abanye oxhumana nabo: abantu obabhalele
+nge-Gmail kodwa ongabalondolozanga, njengoba i-Gmail ibagcina. Londoloza
+noma ubani ngokuchofoza kanye, nge-Hlehlisa, noma uqale ukubhalela
+imeyili.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Phendula izimemo ezivela ku-akhawunti ngayinye"
+text = """
+Isimemo esafika ku-akhawunti engenalo ikhalenda manje sinakho Yebo, Cha
+noma Mhlawumbe: impendulo yakho iya kumhleli ngeposi, futhi ikhalenda
+lakhe liyayimaka.
+"""

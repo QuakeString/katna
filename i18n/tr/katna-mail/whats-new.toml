@@ -1341,3 +1341,19 @@ text = """
 Görev haline getirdiğiniz bir posta artık listede görevin bitiş gününü
 gösterir, gecikince kırmızı olarak. Görevi açmak için tıklayın.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Diğer kişiler"
+text = """
+Kişiler’de artık Diğer kişiler var: Gmail’den e-posta gönderdiğiniz ama
+hiç kaydetmediğiniz kişiler, Gmail’in tuttuğu haliyle. Herkesi tek
+tıkla, Geri al seçeneğiyle kaydedin ya da doğrudan bir e-posta başlatın.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Davetleri her hesaptan yanıtlayın"
+text = """
+Takvimi olmayan bir hesaba gelen davette artık Evet, Hayır ve Belki de
+var: yanıtınız düzenleyiciye e-postayla gider ve onun takvimi bunu
+işler.
+"""

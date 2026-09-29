@@ -6,6 +6,11 @@
 
 contacts-all = 联系人
 contacts-frequent = 常用联系人
+contacts-other = 其他联系人
+contacts-other-about = 您发过邮件但未保存的 Gmail 联系人
+contacts-other-email = 发送电子邮件
+contacts-other-empty = 没有其他联系人。您通过 Gmail 发过邮件但未保存的人会显示在这里。
+contacts-other-allow = 要查看其他联系人，请重新登录您的 Gmail 账号，并允许 Katna 查看它们。
 contacts-labels = 标签
 contacts-label-options = 标签选项
 contacts-label-rename = 重命名标签

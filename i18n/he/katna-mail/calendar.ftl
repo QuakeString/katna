@@ -137,6 +137,13 @@ calendar-invite-reply-maybe = { $name }: אולי
 calendar-invite-organizer = מארגן: { $name }
 calendar-invite-open = פתיחה ביומן
 calendar-invite-not-yet = עדיין לא ביומן שלך. אפשר לענות אחרי הסנכרון.
+calendar-invite-by-mail = לא ביומן שלך: התשובה שלך תישלח למארגן במייל.
+calendar-mail-yes = התקבלה: { $title }
+calendar-mail-yes-body = ההזמנה הזו התקבלה על ידי { $name }.
+calendar-mail-no = נדחתה: { $title }
+calendar-mail-no-body = ההזמנה הזו נדחתה על ידי { $name }.
+calendar-mail-maybe = אולי: { $title }
+calendar-mail-maybe-body = ההזמנה הזו התקבלה על ידי { $name } בסימן שאלה.
 calendar-invite-your-day = היום שלך
 calendar-invite-clashes =
     { $count ->

@@ -1363,3 +1363,20 @@ Un correo que convertiste en tarea ahora muestra en la lista el día de
 vencimiento de la tarea, en rojo cuando está atrasada. Haz clic para
 abrir la tarea.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Otros contactos"
+text = """
+Contactos ahora tiene Otros contactos: personas a las que has escrito
+desde Gmail pero nunca has guardado, tal como Gmail las conserva. Guarda
+a cualquiera con un clic, con Deshacer, o empieza un correo para esa
+persona.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Responde a invitaciones desde cualquier cuenta"
+text = """
+Una invitación que llegó a una cuenta sin calendario ahora también tiene
+Sí, No y Quizás: tu respuesta se envía al organizador por correo y su
+calendario la registra.
+"""

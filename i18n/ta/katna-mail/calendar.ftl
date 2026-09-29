@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } செல்லக்கூடும்
 calendar-invite-organizer = ஏற்பாடு: { $name }
 calendar-invite-open = கேலெண்டரில் திற
 calendar-invite-not-yet = இன்னும் உங்கள் கேலெண்டரில் இல்லை. ஒத்திசைந்ததும் பதிலளிக்கலாம்.
+calendar-invite-by-mail = உங்கள் கேலெண்டரில் இல்லை: உங்கள் பதில் அஞ்சல் மூலம் ஏற்பாட்டாளருக்குச் செல்லும்.
+calendar-mail-yes = ஏற்கப்பட்டது: { $title }
+calendar-mail-yes-body = { $name } இந்த அழைப்பை ஏற்றுக்கொண்டுள்ளனர்.
+calendar-mail-no = நிராகரிக்கப்பட்டது: { $title }
+calendar-mail-no-body = { $name } இந்த அழைப்பை நிராகரித்துள்ளனர்.
+calendar-mail-maybe = தற்காலிகமாக ஏற்கப்பட்டது: { $title }
+calendar-mail-maybe-body = { $name } இந்த அழைப்பைத் தற்காலிகமாக ஏற்றுக்கொண்டுள்ளனர்.
 calendar-invite-your-day = உங்கள் நாள்
 calendar-invite-clashes =
     { $count ->

@@ -1283,3 +1283,17 @@ text = """
 Wasiƙar da ka mayar aiki yanzu tana nuna ranar ƙarshen aikin a cikin jerin, da ja idan ya ɗauki lokaci.
 Danna shi don buɗe aikin.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Sauran lambobin sadarwa"
+text = """
+Lambobin sadarwa yanzu suna da Sauran lambobin sadarwa: mutanen da ka aika wa imel daga Gmail amma ba ka taɓa adana su ba, yadda Gmail ke riƙe su.
+Ka adana kowa da danna ɗaya, tare da Janye, ko ka fara rubuta masa imel.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Amsa gayyata daga kowane asusu"
+text = """
+Gayyatar da ta zo asusun da ba shi da kalanda yanzu tana da Eh, A'a da Wataƙila ma:
+amsarka tana tafiya wurin mai shiryawa ta imel, kuma kalandarsa tana yi mata alama.
+"""

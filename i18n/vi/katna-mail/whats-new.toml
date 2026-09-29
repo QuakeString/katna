@@ -1309,3 +1309,19 @@ text = """
 Thư bạn đã chuyển thành việc cần làm giờ hiển thị ngày đến hạn của việc
 đó trong danh sách, màu đỏ khi đã quá hạn. Nhấp vào để mở việc cần làm.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Danh bạ khác"
+text = """
+Danh bạ giờ có Danh bạ khác: những người bạn đã gửi email từ Gmail nhưng
+chưa bao giờ lưu, đúng như cách Gmail giữ họ. Lưu bất kỳ ai chỉ bằng một
+lần bấm, có Hoàn tác, hoặc bắt đầu một email gửi họ.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Trả lời lời mời từ mọi tài khoản"
+text = """
+Lời mời gửi đến một tài khoản không có lịch giờ cũng có Có, Không và Có
+thể: câu trả lời của bạn được gửi đến người tổ chức qua email, và lịch
+của họ ghi nhận nó.
+"""

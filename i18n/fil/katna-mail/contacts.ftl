@@ -6,6 +6,11 @@
 
 contacts-all = Mga Contact
 contacts-frequent = Madalas
+contacts-other = Iba pang contact
+contacts-other-about = Mga taong na-email mo mula sa Gmail pero hindi mo pa nase-save
+contacts-other-email = Magpadala ng email
+contacts-other-empty = Walang iba pang contact. Lalabas dito ang mga taong ine-email mo mula sa Gmail pero hindi mo sine-save.
+contacts-other-allow = Para makita ang iba pang contact, mag-sign in ulit sa iyong Gmail account at payagan ang Katna na makita ang mga ito.
 contacts-labels = Mga Label
 contacts-label-options = Mga opsyon ng label
 contacts-label-rename = Palitan ang pangalan ng label

@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } belki katılacak
 calendar-invite-organizer = Organizatör: { $name }
 calendar-invite-open = Takvim’de aç
 calendar-invite-not-yet = Henüz takviminizde değil. Eşitlendikten sonra yanıt verebilirsiniz.
+calendar-invite-by-mail = Takviminizde yok: yanıtınız düzenleyiciye e-postayla gönderilir.
+calendar-mail-yes = Kabul edildi: { $title }
+calendar-mail-yes-body = { $name } bu daveti kabul etti.
+calendar-mail-no = Reddedildi: { $title }
+calendar-mail-no-body = { $name } bu daveti reddetti.
+calendar-mail-maybe = Geçici olarak kabul edildi: { $title }
+calendar-mail-maybe-body = { $name } bu daveti geçici olarak kabul etti.
 calendar-invite-your-day = Gününüz
 calendar-invite-clashes =
     { $count ->

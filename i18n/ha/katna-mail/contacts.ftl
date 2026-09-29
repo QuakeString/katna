@@ -6,6 +6,11 @@
 
 contacts-all = Lambobin sadarwa
 contacts-frequent = Masu yawa
+contacts-other = Sauran lambobin sadarwa
+contacts-other-about = Mutanen da ka aika wa imel daga Gmail amma ba ka adana su ba
+contacts-other-email = Aika imel
+contacts-other-empty = Babu sauran lambobin sadarwa. Mutanen da ka aika wa imel daga Gmail amma ba ka adana su ba suna bayyana a nan.
+contacts-other-allow = Don ganin sauran lambobin sadarwa, sake shiga asusun Gmail ɗinka kuma ka ƙyale Katna ta gan su.
 contacts-labels = Lakabobi
 contacts-label-options = Zaɓuɓɓukan lakabi
 contacts-label-rename = Sake sunan lakabi

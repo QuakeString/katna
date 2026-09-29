@@ -6,6 +6,11 @@
 
 contacts-all = 連絡先
 contacts-frequent = よく使う連絡先
+contacts-other = その他の連絡先
+contacts-other-about = Gmail でメールを送ったが保存していない相手
+contacts-other-email = メールを送信
+contacts-other-empty = その他の連絡先はありません。Gmail でメールを送ったが保存していない相手がここに表示されます。
+contacts-other-allow = その他の連絡先を表示するには、Gmail アカウントに再度ログインして、Katna による表示を許可してください。
 contacts-labels = ラベル
 contacts-label-options = ラベルのオプション
 contacts-label-rename = ラベル名を変更

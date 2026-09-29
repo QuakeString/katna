@@ -1401,3 +1401,20 @@ Ang mail na ginawa mong gawain ay nagpapakita na ngayon ng takdang araw
 ng gawain sa listahan, na pula kapag huli na. I-click ito para buksan
 ang gawain.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Iba pang contact"
+text = """
+May Iba pang contact na ang Mga Contact: mga taong na-email mo mula sa
+Gmail pero hindi mo pa nase-save, gaya ng pag-iingat ng Gmail sa kanila.
+I-save ang sinuman sa isang click, may I-undo, o magsimula agad ng email
+sa kanila.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Sagutin ang mga imbitasyon mula sa anumang account"
+text = """
+Ang imbitasyong dumating sa account na walang kalendaryo ay may Oo,
+Hindi, at Baka na rin: ipapadala ang sagot mo sa organizer sa
+pamamagitan ng email, at minamarkahan ito ng kalendaryo nila.
+"""

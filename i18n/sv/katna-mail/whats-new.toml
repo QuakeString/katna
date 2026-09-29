@@ -1322,3 +1322,19 @@ Ett mejl som du har gjort till en uppgift visar nu uppgiftens
 förfallodag i listan, i rött när den är försenad. Klicka på den för att
 öppna uppgiften.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Övriga kontakter"
+text = """
+Kontakter har nu Övriga kontakter: personer du har mejlat från Gmail men
+aldrig sparat, precis som Gmail behåller dem. Spara vem som helst med
+ett klick, med Ångra, eller börja ett mejl till dem.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Svara på inbjudningar från vilket konto som helst"
+text = """
+En inbjudan som kom till ett konto utan kalender har nu också Ja, Nej
+och Kanske: ditt svar skickas till arrangören med e-post, och
+arrangörens kalender registrerar det.
+"""

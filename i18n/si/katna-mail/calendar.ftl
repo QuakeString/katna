@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } සමහරවිට යයි
 calendar-invite-organizer = සංවිධානය කළේ { $name }
 calendar-invite-open = දින දර්ශනයේ විවෘත කරන්න
 calendar-invite-not-yet = තවම ඔබේ දින දර්ශනයේ නැත. සමමුහුර්ත වූ පසු පිළිතුරු දිය හැක.
+calendar-invite-by-mail = ඔබේ දින දර්ශනයේ නැත: ඔබේ පිළිතුර තැපෑලෙන් සංවිධායකයා වෙත යයි.
+calendar-mail-yes = පිළිගත්තා: { $title }
+calendar-mail-yes-body = { $name } මෙම ආරාධනාව පිළිගත්තා.
+calendar-mail-no = ප්‍රතික්ෂේප කළා: { $title }
+calendar-mail-no-body = { $name } මෙම ආරාධනාව ප්‍රතික්ෂේප කළා.
+calendar-mail-maybe = තාවකාලිකව පිළිගත්තා: { $title }
+calendar-mail-maybe-body = { $name } මෙම ආරාධනාව තාවකාලිකව පිළිගත්තා.
 calendar-invite-your-day = ඔබේ දිනය
 calendar-invite-clashes =
     { $count ->

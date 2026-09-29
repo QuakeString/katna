@@ -6,6 +6,11 @@
 
 contacts-all = Contactos
 contacts-frequent = Frecuentes
+contacts-other = Otros contactos
+contacts-other-about = Personas a las que has escrito desde Gmail pero no has guardado
+contacts-other-email = Enviar correo
+contacts-other-empty = No hay otros contactos. Las personas a las que escribes desde Gmail y no guardas aparecen aquí.
+contacts-other-allow = Para ver otros contactos, vuelve a iniciar sesión en tu cuenta de Gmail y permite que Katna los vea.
 contacts-labels = Etiquetas
 contacts-label-options = Opciones de etiqueta
 contacts-label-rename = Cambiar nombre de la etiqueta

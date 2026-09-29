@@ -149,6 +149,13 @@ calendar-invite-reply-maybe = { $name }: ربما
 calendar-invite-organizer = المنظِّم: { $name }
 calendar-invite-open = فتح في التقويم
 calendar-invite-not-yet = ليس في تقويمك بعد. يمكنك الرد بعد المزامنة.
+calendar-invite-by-mail = ليس في تقويمك: سيصل ردك إلى المنظّم بالبريد.
+calendar-mail-yes = تم القبول: { $title }
+calendar-mail-yes-body = تم قبول هذه الدعوة من { $name }.
+calendar-mail-no = تم الرفض: { $title }
+calendar-mail-no-body = تم رفض هذه الدعوة من { $name }.
+calendar-mail-maybe = مبدئي: { $title }
+calendar-mail-maybe-body = تم قبول هذه الدعوة مبدئيًا من { $name }.
 calendar-invite-your-day = يومك
 calendar-invite-clashes =
     { $count ->

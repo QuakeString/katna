@@ -6,6 +6,11 @@
 
 contacts-all = འབྲེལ་བ་ཚུ
 contacts-frequent = ཆེས་མང་སྤྱོད་མི
+contacts-other = འབྲེལ་བ་གཞན་ཚུ
+contacts-other-about = ཁྱོད་ཀྱིས་ Gmail ལས་ གློག་འཕྲིན་བཏང་ཡོདཔ་ད་ ཉར་ཚགས་མ་འབད་མི་ཚུ
+contacts-other-email = གློག་འཕྲིན་གཏང་།
+contacts-other-empty = འབྲེལ་བ་གཞན་མིན་འདུག ཁྱོད་ཀྱིས་ Gmail ལས་ གློག་འཕྲིན་གཏངམ་ད་ ཉར་ཚགས་མ་འབད་མི་ཚུ་ འདི་ཁ་ན་ མཐོང་ནི་ཨིན།
+contacts-other-allow = འབྲེལ་བ་གཞན་ཚུ་བལྟ་ནིའི་དོན་ལུ་ ཁྱོད་ཀྱི་ Gmail ཨེཀསེབ་ལུ་ ལོག་ནང་བསྒྱུར་འབད་ཞིནམ་ལས་ Katna ལུ་ དེ་ཚུ་བལྟ་ནིའི་གནང་བ་བྱིན།
 contacts-labels = ཁ་ཡིག་ཚུ
 contacts-label-options = ཁ་ཡིག་གི་གདམ་ཁ་ཚུ
 contacts-label-rename = ཁ་ཡིག་གི་མིང་བསྐྱར་མཚན་བཏགས།

@@ -1367,3 +1367,20 @@ E-mel yang anda jadikan tugas kini memaparkan hari tarikh akhir tugas
 dalam senarai, berwarna merah apabila lewat. Klik padanya untuk membuka
 tugas.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Kenalan lain"
+text = """
+Kenalan kini mempunyai Kenalan lain: orang yang anda e-melkan daripada
+Gmail tetapi tidak pernah disimpan, seperti yang disimpan oleh Gmail.
+Simpan sesiapa sahaja dengan satu klik, dengan Buat asal, atau terus
+mulakan e-mel kepada mereka.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Jawab jemputan daripada mana-mana akaun"
+text = """
+Jemputan yang masuk ke akaun tanpa kalendar kini turut mempunyai Ya,
+Tidak dan Mungkin: jawapan anda dihantar kepada penganjur melalui e-mel,
+dan kalendar mereka menandakannya.
+"""

@@ -1385,3 +1385,20 @@ Eine Mail, aus der Sie eine Aufgabe gemacht haben, zeigt in der Liste
 jetzt das Fälligkeitsdatum der Aufgabe, in Rot, sobald sie überfällig
 ist. Ein Klick öffnet die Aufgabe.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Weitere Kontakte"
+text = """
+Kontakte hat jetzt Weitere Kontakte: Personen, denen Sie aus Gmail
+geschrieben, aber nie gespeichert haben, so wie Gmail sie aufbewahrt.
+Speichern Sie jede Person mit einem Klick, mit Rückgängig, oder
+schreiben Sie ihr direkt eine Mail.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Einladungen von jedem Konto beantworten"
+text = """
+Eine Einladung, die bei einem Konto ohne Kalender eingegangen ist, hat
+jetzt ebenfalls Ja, Nein und Vielleicht: Ihre Antwort geht per E-Mail an
+den Organisator, und dessen Kalender vermerkt sie.
+"""

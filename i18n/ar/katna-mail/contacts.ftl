@@ -6,6 +6,11 @@
 
 contacts-all = جهات الاتصال
 contacts-frequent = الأكثر تواصلاً
+contacts-other = جهات الاتصال الأخرى
+contacts-other-about = أشخاص راسلتهم من Gmail ولكن لم تحفظهم
+contacts-other-email = إرسال رسالة إلكترونية
+contacts-other-empty = لا توجد جهات اتصال أخرى. سيظهر هنا الأشخاص الذين تراسلهم من Gmail ولا تحفظهم.
+contacts-other-allow = لعرض جهات الاتصال الأخرى، سجّل الدخول إلى حساب Gmail مرة أخرى واسمح لـ Katna بعرضها.
 contacts-labels = التصنيفات
 contacts-label-options = خيارات التصنيف
 contacts-label-rename = إعادة تسمية التصنيف

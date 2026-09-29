@@ -6,6 +6,11 @@
 
 contacts-all = အဆက်အသွယ်များ
 contacts-frequent = မကြာခဏ
+contacts-other = အခြားအဆက်အသွယ်များ
+contacts-other-about = Gmail မှ မေးလ်ပို့ဖူးသော်လည်း မသိမ်းထားသူများ
+contacts-other-email = အီးမေးလ်ပို့ရန်
+contacts-other-empty = အခြားအဆက်အသွယ် မရှိပါ။ Gmail မှ မေးလ်ပို့ဖူးသော်လည်း မသိမ်းထားသူများကို ဤနေရာတွင် ပြပါမည်။
+contacts-other-allow = အခြားအဆက်အသွယ်များကို ကြည့်ရန် သင့် Gmail အကောင့်သို့ ထပ်မံဝင်ပြီး Katna ကြည့်ခွင့်ပြုပါ။
 contacts-labels = အညွှန်းများ
 contacts-label-options = အညွှန်း ရွေးချယ်စရာများ
 contacts-label-rename = အညွှန်းအမည် ပြောင်းရန်

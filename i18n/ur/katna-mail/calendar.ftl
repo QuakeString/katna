@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name }: شاید
 calendar-invite-organizer = منتظم: { $name }
 calendar-invite-open = کیلنڈر میں کھولیں
 calendar-invite-not-yet = ابھی آپ کے کیلنڈر میں نہیں ہے۔ سنک ہونے کے بعد جواب دیا جا سکے گا۔
+calendar-invite-by-mail = آپ کے کیلنڈر میں نہیں ہے: آپ کا جواب منتظم کو میل کے ذریعے بھیجا جائے گا۔
+calendar-mail-yes = قبول کیا گیا: { $title }
+calendar-mail-yes-body = { $name } کی طرف سے یہ دعوت قبول کی گئی ہے۔
+calendar-mail-no = مسترد کیا گیا: { $title }
+calendar-mail-no-body = { $name } کی طرف سے یہ دعوت مسترد کی گئی ہے۔
+calendar-mail-maybe = عارضی: { $title }
+calendar-mail-maybe-body = { $name } کی طرف سے یہ دعوت عارضی طور پر قبول کی گئی ہے۔
 calendar-invite-your-day = آپ کا دن
 calendar-invite-clashes =
     { $count ->

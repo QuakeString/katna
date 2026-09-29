@@ -133,6 +133,13 @@ calendar-invite-reply-maybe = { $name } angahamba
 calendar-invite-organizer = Kuhlelwe ngu-{ $name }
 calendar-invite-open = Vula ku-Khalenda
 calendar-invite-not-yet = Akukho ekhalendeni lakho okwamanje. Ungaphendula uma isivumelanisiwe.
+calendar-invite-by-mail = Akukho ekhalendeni lakho: impendulo yakho iya kumhleli ngeposi.
+calendar-mail-yes = Yamukelwe: { $title }
+calendar-mail-yes-body = { $name } wamukele lesi simemo.
+calendar-mail-no = Yenqatshiwe: { $title }
+calendar-mail-no-body = { $name } wenqabile lesi simemo.
+calendar-mail-maybe = Yamukelwe okwesikhashana: { $title }
+calendar-mail-maybe-body = { $name } wamukele lesi simemo okwesikhashana.
 calendar-invite-your-day = Usuku lwakho
 calendar-invite-clashes =
     { $count ->

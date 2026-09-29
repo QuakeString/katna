@@ -1354,3 +1354,20 @@ Een mail die je in een taak hebt omgezet, toont in de lijst nu de
 vervaldag van de taak, in rood als die te laat is. Klik erop om de taak
 te openen.
 """
+
+["2026-09-29-0638-other-contacts"]
+title = "Overige contacten"
+text = """
+Contacten heeft nu Overige contacten: mensen naar wie je vanuit Gmail
+hebt gemaild maar die je nooit hebt opgeslagen, zoals Gmail ze bewaart.
+Sla iedereen op met één klik, met Ongedaan maken, of begin meteen een
+mail.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Uitnodigingen beantwoorden vanuit elk account"
+text = """
+Een uitnodiging die binnenkwam op een account zonder agenda heeft nu ook
+Ja, Nee en Misschien: je antwoord gaat per e-mail naar de organisator en
+hun agenda legt het vast.
+"""
