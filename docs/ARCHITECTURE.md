@@ -3347,7 +3347,10 @@ phone and in the web apps: Google Tasks for Google accounts, Microsoft
 To Do (Graph) for Microsoft accounts, to-dos (`VTODO`) on the CalDAV
 server of an account with a password, and lists kept on this computer.
 Google's and Microsoft's CalDAV servers keep no to-dos, so their accounts
-use their own APIs only.
+use their own APIs only. Tasks go through the same ways and remembered
+choice as calendars (§18, `katna_sync::methods`, `Data::Tasks`): a way
+whose sign-in refuses Katna is passed over for the next; a network or
+server error is not.
 
 - **Store** (`pim.db` v5, `katna_store::tasks`): `task_list` (an
   account's list, or one on this computer) and `task`. A change made in
@@ -3374,8 +3377,9 @@ use their own APIs only.
   by its delta link, CalDAV by the list's `getctag` and then the etags of
   its to-dos (only changed ones are downloaded; the list's sync state
   keeps each to-do's etag and `UID`, so a missing one is a deletion). The
-  CalDAV server is found the way its calendars are (§18) and kept between
-  rounds; a collection that holds to-dos is a list, the first holding
+  CalDAV server is found the way its calendars are (§18, so Yahoo, Zoho,
+  iCloud, Fastmail and the rest whose CalDAV is on another host than
+  their mail) and kept between rounds; a collection that holds to-dos is a list, the first holding
   only to-dos the default. A change made in Katna and not yet sent wins over the
   service's. Busy or failing services (429, 5xx) wait for the next round;
   a refused change is logged and left dirty.
