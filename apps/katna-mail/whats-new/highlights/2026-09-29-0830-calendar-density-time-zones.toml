@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendar density and a second time zone"
+text = """
+The options button in Calendar sets how tall the hours are (Responsive,
+Comfortable or Compact) and adds a second time zone beside yours, for
+the people you meet abroad.
+"""

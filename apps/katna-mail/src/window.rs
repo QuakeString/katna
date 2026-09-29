@@ -360,6 +360,10 @@ enum Menu {
     MoveTo,
     /// The open conversation's "more" button.
     ReaderMore,
+    /// The calendar bar's options: density, second time zone.
+    CalendarOptions,
+    /// The second time zones to choose from.
+    CalendarZones,
 }
 
 /// A change the user asks for on some lines of the list.

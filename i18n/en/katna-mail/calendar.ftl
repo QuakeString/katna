@@ -8,6 +8,16 @@ calendar-view-day = Day
 calendar-view-week = Week
 calendar-view-month = Month
 calendar-view-schedule = Schedule
+# The gear at the right of the calendar bar, and its menu.
+calendar-options = Options
+calendar-density = Density
+calendar-density-responsive = Responsive to your screen
+calendar-density-comfortable = Comfortable
+calendar-density-compact = Compact
+calendar-second-zone = Second time zone
+calendar-zone-none = None
+# A time zone to choose. $zone: its city ("New York"), $offset: "GMT+5:30".
+calendar-zone = { $zone } ({ $offset })
 calendar-previous-day = Previous day
 calendar-next-day = Next day
 calendar-previous-week = Previous week
