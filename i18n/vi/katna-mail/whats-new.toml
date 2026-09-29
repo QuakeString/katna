@@ -1493,3 +1493,10 @@ text = """
 Trong Việc cần làm, kéo một việc sang danh sách khác để chuyển nó tới
 đó. Hoàn tác sẽ đưa nó về chỗ cũ.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Tìm trong việc cần làm của bạn"
+text = """
+Trên trang Việc cần làm, ô tìm kiếm ở trên cùng giờ tìm trong các việc
+cần làm, ghi chú và việc phụ của bạn thay vì trong thư.
+"""

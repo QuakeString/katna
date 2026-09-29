@@ -17,6 +17,8 @@ tasks-list-name-placeholder = ലിസ്റ്റിന്റെ പേര്
 
 tasks-loading = നിങ്ങളുടെ ടാസ്‌ക്കുകൾ വായിക്കുന്നു…
 tasks-no-lists = നിങ്ങളുടെ ടാസ്‌ക് ലിസ്റ്റുകൾ ഇവിടെ കാണാം.
+tasks-search = ടാസ്‌ക്കുകൾ തിരയുക
+tasks-search-none = നിങ്ങളുടെ തിരയലുമായി പൊരുത്തപ്പെടുന്ന ടാസ്‌ക്കുകളൊന്നുമില്ല.
 tasks-add = ടാസ്‌ക് ചേർക്കുക
 tasks-title-placeholder = ശീർഷകം
 tasks-add-step = ഉപടാസ്‌ക് ചേർക്കുക

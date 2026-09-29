@@ -17,6 +17,8 @@ tasks-list-name-placeholder = 목록 이름
 
 tasks-loading = 할 일을 읽는 중…
 tasks-no-lists = 할 일 목록이 여기에 표시됩니다.
+tasks-search = 할 일 검색
+tasks-search-none = 검색과 일치하는 할 일이 없습니다.
 tasks-add = 할 일 추가
 tasks-title-placeholder = 제목
 tasks-add-step = 하위 할 일 추가

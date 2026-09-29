@@ -1579,3 +1579,10 @@ text = """
 Ziehen Sie in Aufgaben eine Aufgabe auf eine andere Liste, um sie
 dorthin zu verschieben. Rückgängig legt sie zurück.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Ihre Aufgaben durchsuchen"
+text = """
+Auf der Seite Aufgaben durchsucht das Suchfeld oben jetzt Ihre Aufgaben,
+deren Notizen und Unteraufgaben statt Ihrer Mail.
+"""

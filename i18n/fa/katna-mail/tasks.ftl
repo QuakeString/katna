@@ -17,6 +17,8 @@ tasks-list-name-placeholder = نام فهرست
 
 tasks-loading = در حال خواندن کارهای شما…
 tasks-no-lists = فهرست کارهای شما اینجا نمایش داده می‌شود.
+tasks-search = جستجوی کارها
+tasks-search-none = کاری مطابق جستجوی شما پیدا نشد.
 tasks-add = افزودن کار
 tasks-title-placeholder = عنوان
 tasks-add-step = افزودن زیرکار

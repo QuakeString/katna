@@ -28,7 +28,6 @@ use katna_ui::rich::{RichEditor, RichEvent};
 use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
-use super::apps::APP_RAIL_WIDTH;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
@@ -36,6 +35,8 @@ use crate::widgets::{elevation, icon, icon_button, icon_button_colored, placehol
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
+/// The narrowest a card gets, two across a phone.
+const NARROW_CARD_WIDTH: f32 = 140.0;
 /// Room between cards.
 const GAP: f32 = 16.0;
 /// The side list's width.
@@ -1024,13 +1025,15 @@ impl MailWindow {
             self.render_editor(th, false, window, cx)
         };
         let dialog = self.render_labels_dialog(th, window, cx);
+        let side = self.page_side(side.into_any_element(), SIDE_WIDTH, true, th, cx);
         div()
             .relative()
             .size_full()
             .flex()
             .flex_row()
-            .child(side)
+            .children(side.docked)
             .child(board)
+            .children(side.drawer)
             .children(editor)
             .children(dialog)
             .into_any_element()
@@ -1065,14 +1068,24 @@ impl MailWindow {
                     && label.as_ref().is_none_or(|l| n.labels.contains(l))
             })
             .collect();
-        // The board's width: the window less the rail, the side list and
-        // the page's margins.
-        let width = unpx(window.viewport_size().width) - APP_RAIL_WIDTH - SIDE_WIDTH - 16.0 - 48.0;
+        // The board's width: the window less the rail, the side list (a
+        // drawer on a phone or tablet), the page's margin and its own.
+        let shape = self.layout.shape;
+        let pad = if shape.is_phone() { GAP } else { 24.0 };
+        let side = if shape.is_desktop() { SIDE_WIDTH } else { 0.0 };
+        let width = shape.width - shape.rail() - side - shape.card_margin() - 2.0 * pad;
         let columns = (((width + GAP) / (CARD_WIDTH + GAP)).floor() as usize).clamp(1, 8);
+        // Too narrow for two whole cards, two narrower ones fill it, as
+        // Keep's phone app does.
+        let (columns, card) = if columns == 1 && width >= 2.0 * NARROW_CARD_WIDTH + GAP {
+            (2, ((width - GAP) / 2.0).min(CARD_WIDTH))
+        } else {
+            (columns, CARD_WIDTH)
+        };
         let heading = |text: String| {
             div()
                 .w_full()
-                .max_w(px(columns as f32 * (CARD_WIDTH + GAP) - GAP))
+                .max_w(px(columns as f32 * (card + GAP) - GAP))
                 .mx_auto()
                 .mt(px(8.0))
                 .mb(px(8.0))
@@ -1088,7 +1101,7 @@ impl MailWindow {
             .min_w_0()
             .h_full()
             .overflow_y_scroll()
-            .px(px(24.0))
+            .px(px(pad))
             .pb(px(48.0))
             .flex()
             .flex_col();
@@ -1153,6 +1166,7 @@ impl MailWindow {
                         .child(icon(name, fade(th.text_faint, 0.5), 120.0))
                         .child(
                             div()
+                                .text_center()
                                 .text_size(px(22.0))
                                 .text_color(rgba(th.text_dim))
                                 .child(text),
@@ -1164,7 +1178,7 @@ impl MailWindow {
         if !pinned.is_empty() {
             body = body
                 .child(heading(tr!("notes-pinned")))
-                .child(self.render_grid(&pinned, "notes-pinned", columns, th, cx));
+                .child(self.render_grid(&pinned, "notes-pinned", columns, card, th, cx));
             if !others.is_empty() {
                 body = body
                     .child(div().h(px(24.0)))
@@ -1174,7 +1188,7 @@ impl MailWindow {
             body = body.child(div().h(px(8.0)));
         }
         if !others.is_empty() {
-            body = body.child(self.render_grid(&others, "notes-others", columns, th, cx));
+            body = body.child(self.render_grid(&others, "notes-others", columns, card, th, cx));
         }
         body.into_any_element()
     }
@@ -1184,6 +1198,7 @@ impl MailWindow {
         notes: &[&Note],
         key: &'static str,
         columns: usize,
+        card: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1195,7 +1210,7 @@ impl MailWindow {
             .gap(px(GAP))
             .children(masonry(notes, columns).into_iter().map(|column| {
                 div()
-                    .w(px(CARD_WIDTH))
+                    .w(px(card))
                     .flex()
                     .flex_col()
                     .gap(px(GAP))

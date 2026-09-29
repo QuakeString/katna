@@ -17,6 +17,8 @@ tasks-list-name-placeholder = የዝርዝር ስም
 
 tasks-loading = ተግባሮችዎ በማንበብ ላይ…
 tasks-no-lists = የተግባር ዝርዝሮችዎ እዚህ ይታያሉ።
+tasks-search = ተግባራትን ፈልግ
+tasks-search-none = ከፍለጋዎ ጋር የሚዛመድ ተግባር የለም።
 tasks-add = ተግባር ያክሉ
 tasks-title-placeholder = ርዕስ
 tasks-add-step = ንዑስ ተግባር ያክሉ

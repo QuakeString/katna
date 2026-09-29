@@ -17,6 +17,8 @@ tasks-list-name-placeholder = リスト名
 
 tasks-loading = タスクを読み込んでいます…
 tasks-no-lists = タスクリストはここに表示されます。
+tasks-search = タスクを検索
+tasks-search-none = 検索条件に一致するタスクはありません。
 tasks-add = タスクを追加
 tasks-title-placeholder = タイトル
 tasks-add-step = サブタスクを追加

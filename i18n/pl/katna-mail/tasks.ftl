@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Nazwa listy
 
 tasks-loading = Wczytywanie zadań…
 tasks-no-lists = Tutaj pojawią się Twoje listy zadań.
+tasks-search = Szukaj zadań
+tasks-search-none = Brak zadań pasujących do wyszukiwania.
 tasks-add = Dodaj zadanie
 tasks-title-placeholder = Tytuł
 tasks-add-step = Dodaj podzadanie

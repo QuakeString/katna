@@ -1540,3 +1540,10 @@ text = """
 Em Tarefas, arraste uma tarefa para outra lista para movê-la para lá.
 Desfazer a coloca de volta.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Pesquise suas tarefas"
+text = """
+Na página Tarefas, a caixa de pesquisa no topo agora pesquisa suas
+tarefas, as notas e as subtarefas delas, em vez dos seus e-mails.
+"""

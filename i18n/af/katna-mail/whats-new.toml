@@ -1498,3 +1498,10 @@ text = """
 Sleep in Take 'n taak na 'n ander lys om dit daarheen te skuif. Ontdoen
 sit dit terug.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Soek jou take"
+text = """
+Op die Take-bladsy soek die soekkassie bo nou deur jou take, hul notas
+en subtake, in plaas van jou e-pos.
+"""

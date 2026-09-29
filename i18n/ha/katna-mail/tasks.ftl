@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Sunan jeri
 
 tasks-loading = Ana karanta ayyukanku…
 tasks-no-lists = Jerin ayyukanku za su bayyana a nan.
+tasks-search = Bincika ayyuka
+tasks-search-none = Babu ayyukan da suka dace da bincikenka.
 tasks-add = Ƙara aiki
 tasks-title-placeholder = Take
 tasks-add-step = Ƙara ƙaramin aiki

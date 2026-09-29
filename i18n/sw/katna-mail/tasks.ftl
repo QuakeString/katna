@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Jina la orodha
 
 tasks-loading = Inasoma majukumu yako…
 tasks-no-lists = Orodha za majukumu yako zitaonekana hapa.
+tasks-search = Tafuta majukumu
+tasks-search-none = Hakuna majukumu yanayolingana na utafutaji wako.
 tasks-add = Ongeza jukumu
 tasks-title-placeholder = Kichwa
 tasks-add-step = Ongeza jukumu dogo

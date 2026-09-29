@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Название списка
 
 tasks-loading = Чтение ваших задач…
 tasks-no-lists = Здесь появятся ваши списки задач.
+tasks-search = Поиск задач
+tasks-search-none = Нет задач, подходящих под запрос.
 tasks-add = Добавить задачу
 tasks-title-placeholder = Название
 tasks-add-step = Добавить подзадачу

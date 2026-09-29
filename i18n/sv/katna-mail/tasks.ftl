@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Listnamn
 
 tasks-loading = Läser dina uppgifter…
 tasks-no-lists = Dina uppgiftslistor visas här.
+tasks-search = Sök bland uppgifter
+tasks-search-none = Inga uppgifter matchar din sökning.
 tasks-add = Lägg till en uppgift
 tasks-title-placeholder = Titel
 tasks-add-step = Lägg till en deluppgift
