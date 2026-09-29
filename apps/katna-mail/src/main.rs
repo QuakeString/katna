@@ -27,6 +27,7 @@ mod sound;
 mod spell;
 mod suggest;
 mod tabs;
+mod tasks;
 mod templates;
 mod theme;
 mod updater;
