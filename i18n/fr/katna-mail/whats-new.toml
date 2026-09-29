@@ -1144,3 +1144,11 @@ dont vous affichez toujours les images ne se chargent désormais que
 lorsque votre fournisseur de messagerie confirme que le message provient
 bien de lui.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Plus de détails sur votre version"
+text = """
+La fenêtre « Mises à jour » indique désormais la dernière modification
+de chaque version, l’origine de votre copie et la date de la dernière
+recherche de mises à jour par Katna.
+"""

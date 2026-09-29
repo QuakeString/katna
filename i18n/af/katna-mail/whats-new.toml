@@ -1073,3 +1073,11 @@ uitgelig, wat die skakel se teks ook al sê. Prente van ’n sender van wie
 jy altyd prente wys, word nou net gelaai wanneer jou e-posverskaffer
 bevestig dat die boodskap regtig van hom af kom.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Meer oor jou bou"
+text = """
+Die Opdaterings-venster noem nou elke weergawe se jongste verandering,
+sê waar jou kopie vandaan kom en wanneer Katna laas vir opdaterings
+gekyk het.
+"""

@@ -1119,3 +1119,11 @@ yang imejnya sentiasa anda tunjukkan kini dimuatkan hanya apabila
 penyedia e-mel anda mengesahkan bahawa mesej itu benar-benar datang
 daripadanya.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Lebih lanjut tentang binaan anda"
+text = """
+Tetingkap Kemas kini kini menamakan perubahan terkini bagi setiap versi,
+menyatakan dari mana salinan anda datang dan bila Katna kali terakhir
+menyemak kemas kini.
+"""
