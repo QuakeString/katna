@@ -1466,3 +1466,9 @@ title = "Recordatorios y repeticiones de tareas"
 text = """
 Abre una tarea y elige Recordármelo: a la hora de la tarea, una hora o un día antes. El recordatorio aparece aunque Katna esté cerrado, con Marcar como completada y Posponer. Al marcar como completada una tarea que se repite, ahora vuelve el siguiente día que le toca.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Encuentra tareas desde el escritorio"
+text = """
+Escribe unas palabras de una tarea en KRunner o en la búsqueda de GNOME y aparecerá en Tareas. Pulsa Intro y Katna la abre, lista para editar.
+"""

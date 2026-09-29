@@ -1448,3 +1448,9 @@ title = "Przypomnienia o zadaniach i powtarzanie"
 text = """
 Otwórz zadanie i wybierz Przypomnij: w momencie zadania, godzinę lub dzień wcześniej. Przypomnienie pojawia się nawet przy zamkniętym Katna, z przyciskami Oznacz jako wykonane i Drzemka. Odhaczenie zadania cyklicznego przywraca je teraz w następnym terminie.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Znajdź zadania z poziomu pulpitu"
+text = """
+Wpisz kilka słów z zadania w KRunner lub w wyszukiwarce GNOME, a pojawi się ono w sekcji Zadania. Naciśnij Enter, a Katna otworzy je, gotowe do edycji.
+"""

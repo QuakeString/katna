@@ -1455,3 +1455,9 @@ title = "Lembretes e repetições de tarefas"
 text = """
 Abra uma tarefa e escolha Lembrar: na hora da tarefa, uma hora ou um dia antes. O lembrete aparece mesmo com o Katna fechado, com Marcar como concluída e Adiar. Ao concluir uma tarefa recorrente, ela agora volta no próximo dia previsto.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Encontre tarefas pela área de trabalho"
+text = """
+Digite algumas palavras de uma tarefa no KRunner ou na busca do GNOME e ela aparece em Tarefas. Pressione Enter e o Katna a abre, pronta para editar.
+"""

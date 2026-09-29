@@ -1456,3 +1456,9 @@ title = "Pengingat tugas dan pengulangan"
 text = """
 Buka tugas dan pilih Ingatkan saya: pada waktunya, satu jam atau sehari sebelumnya. Pengingat muncul meski Katna tertutup, dengan Tandai selesai dan Tunda. Menyelesaikan tugas berulang kini memunculkannya kembali pada harinya berikutnya.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Temukan tugas dari desktop"
+text = """
+Ketik beberapa kata dari sebuah tugas di KRunner atau pencarian GNOME, dan tugas itu muncul di bawah Tugas. Tekan Enter dan Katna membukanya, siap diedit.
+"""

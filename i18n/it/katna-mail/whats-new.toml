@@ -1470,3 +1470,9 @@ title = "Promemoria e ripetizioni delle attività"
 text = """
 Apri un'attività e scegli Ricordamelo: all'ora dell'attività, un'ora o un giorno prima. Il promemoria appare anche quando Katna è chiuso, con Segna come completata e Posticipa. Completando un'attività ricorrente, ora ritorna il giorno successivo previsto.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Trova le attività dal desktop"
+text = """
+Digita qualche parola di un'attività in KRunner o nella ricerca di GNOME e comparirà sotto Attività. Premi Invio e Katna la apre, pronta per essere modificata.
+"""

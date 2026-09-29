@@ -1458,3 +1458,9 @@ title = "Taakherinneringen en herhalingen"
 text = """
 Open een taak en kies Herinner mij: op het tijdstip zelf, een uur of een dag van tevoren. De herinnering verschijnt ook als Katna gesloten is, met Markeren als voltooid en Snoozen. Als je een terugkerende taak afvinkt, komt die nu terug op de volgende dag.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Vind taken vanaf het bureaublad"
+text = """
+Typ een paar woorden van een taak in KRunner of in de zoekfunctie van GNOME en de taak verschijnt onder Taken. Druk op Enter en Katna opent de taak, klaar om te bewerken.
+"""

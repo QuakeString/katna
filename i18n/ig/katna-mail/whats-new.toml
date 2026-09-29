@@ -1437,3 +1437,10 @@ Ncheta ahụ na-apụta ọbụna mgbe Katna emechiri, yana Maa ka emechara na Y
 Ọ bụrụ na ị maa ọrụ na-emegharị ka emechara, ọ na-alọghachi n'ụbọchị ya
 na-esote.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Chọta ọrụ site na desktọọpụ"
+text = """
+Pịnye ụfọdụ okwu nke ọrụ na ọchụchọ KRunner ma ọ bụ GNOME, ọ ga-apụta n’okpuru Ọrụ.
+Pịa Enter, Katna ga-emeghe ya ka i dezie ya.
+"""

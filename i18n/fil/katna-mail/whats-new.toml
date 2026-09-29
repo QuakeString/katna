@@ -1506,3 +1506,9 @@ title = "Mga paalala at pag-uulit ng gawain"
 text = """
 Magbukas ng gawain at piliin ang Paalalahanan ako: sa oras mismo, isang oras o isang araw bago. Lalabas ang paalala kahit sarado ang Katna, kasama ang Markahan bilang tapos na at I-snooze. Kapag minarkahan mong tapos na ang umuulit na gawain, babalik na ito sa susunod nitong araw.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Maghanap ng mga gawain mula sa desktop"
+text = """
+Mag-type ng ilang salita ng isang gawain sa KRunner o sa paghahanap ng GNOME at lalabas ito sa ilalim ng Mga Gawain. Pindutin ang Enter at bubuksan ito ng Katna, handa nang i-edit.
+"""

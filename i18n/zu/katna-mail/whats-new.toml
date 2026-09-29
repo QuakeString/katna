@@ -1529,3 +1529,10 @@ olulodwa ngaphambili. Isikhumbuzo siyavela nakuba iKatna ivaliwe, nge-Maka
 njengokwenziwe kanye ne-Libazisa. Uma umaka umsebenzi ophindaphindwayo
 njengokwenziwe, ubuya ngosuku lwawo olulandelayo.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Thola imisebenzi kudesktop"
+text = """
+Thayipha amagama ambalwa omsebenzi osesha lapho ukusesha kwe-KRunner noma kwe-GNOME, uzobonakala ngaphansi kwe-Imisebenzi.
+Enter ucindezele, iKatna izowuvula ukuze uwuhlele.
+"""

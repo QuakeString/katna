@@ -1384,3 +1384,9 @@ title = "Tunatarwar aiki da maimaitawa"
 text = """
 Buɗe aiki sannan ka zaɓi Tunatar da ni: a lokacin, awa ɗaya ko kwana ɗaya kafin lokaci. Tunatarwar tana bayyana ko da Katna a rufe take, tare da maɓallan Yi alama an gama da Jinkirta. Idan ka yi wa aiki mai maimaitawa alamar an gama, yanzu yana dawowa a ranarsa ta gaba.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Nemo ayyuka daga tebur ɗin kwamfuta"
+text = """
+Rubuta kalmomi kaɗan na aiki a binciken KRunner ko GNOME, sai ya bayyana ƙarƙashin Ayyuka. Danna Enter, Katna kuma za ta buɗe shi, a shirye don gyara.
+"""

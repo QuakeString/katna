@@ -1444,3 +1444,9 @@ title = "Görev hatırlatıcıları ve tekrarlar"
 text = """
 Bir görevi açın ve Bana hatırlat seçeneğini seçin: görev zamanında, bir saat veya bir gün önce. Hatırlatıcı Katna kapalıyken bile görünür ve Tamamlandı olarak işaretle ile Ertele düğmelerini içerir. Tekrarlanan bir görevi işaretlediğinizde artık bir sonraki günde geri gelir.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Görevleri masaüstünden bulun"
+text = """
+KRunner'da veya GNOME aramasında bir görevden birkaç sözcük yazın, görev Görevler başlığı altında görünür. Enter'a basın, Katna görevi düzenlemeye hazır hâlde açar.
+"""

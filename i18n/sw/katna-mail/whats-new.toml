@@ -1401,3 +1401,9 @@ title = "Vikumbusho na marudio ya majukumu"
 text = """
 Fungua jukumu na uchague Nikumbushe: wakati huo, saa moja au siku moja kabla. Kikumbusho huonekana hata Katna ikiwa imefungwa, chenye vitufe vya Weka alama kuwa imekamilika na Ahirisha. Ukiweka alama kuwa jukumu linalojirudia limekamilika, sasa hurudi siku yake inayofuata.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Tafuta majukumu kutoka kwenye eneo-kazi"
+text = """
+Andika maneno machache ya jukumu kwenye utafutaji wa KRunner au GNOME nalo litaonekana chini ya Majukumu. Bonyeza Enter na Katna italifungua, tayari kuhaririwa.
+"""

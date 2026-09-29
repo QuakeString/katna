@@ -1471,3 +1471,9 @@ title = "Peringatan tugasan dan ulangan"
 text = """
 Buka tugasan dan pilih Ingatkan saya: pada masanya, sejam atau sehari sebelum. Peringatan muncul walaupun Katna ditutup, dengan Tandakan sebagai selesai dan Tunda. Menandakan tugasan berulang sebagai selesai kini membawanya kembali pada hari seterusnya.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Cari tugas dari desktop"
+text = """
+Taip beberapa perkataan sesuatu tugas dalam KRunner atau carian GNOME dan tugas itu muncul di bawah Tugas. Tekan Enter dan Katna membukanya, sedia untuk disunting.
+"""

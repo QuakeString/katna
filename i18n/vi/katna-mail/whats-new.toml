@@ -1411,3 +1411,9 @@ title = "Lời nhắc và lặp lại của công việc"
 text = """
 Mở một công việc và chọn Nhắc tôi: đúng giờ, trước một giờ hoặc một ngày. Lời nhắc hiện ra ngay cả khi Katna đã đóng, kèm Đánh dấu là đã hoàn thành và Báo lại. Khi đánh dấu xong một công việc lặp lại, giờ đây nó sẽ quay lại vào ngày kế tiếp.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Tìm việc cần làm từ màn hình nền"
+text = """
+Gõ vài từ của một việc cần làm trong KRunner hoặc trong tìm kiếm của GNOME, việc đó sẽ hiện ở mục Việc cần làm. Nhấn Enter và Katna sẽ mở nó, sẵn sàng để chỉnh sửa.
+"""

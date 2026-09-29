@@ -1491,3 +1491,9 @@ title = "Aufgabenerinnerungen und Wiederholungen"
 text = """
 Öffnen Sie eine Aufgabe und wählen Sie Erinnern: zur festgelegten Zeit, eine Stunde oder einen Tag vorher. Die Erinnerung erscheint auch bei geschlossenem Katna, mit Als erledigt markieren und Zurückstellen. Wenn Sie eine wiederkehrende Aufgabe abhaken, kommt sie jetzt am nächsten Tag wieder.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Aufgaben über den Desktop finden"
+text = """
+Tippen Sie in KRunner oder in der Suche von GNOME ein paar Wörter einer Aufgabe ein, und sie erscheint unter Aufgaben. Drücken Sie die Eingabetaste, und Katna öffnet sie, bereit zum Bearbeiten.
+"""

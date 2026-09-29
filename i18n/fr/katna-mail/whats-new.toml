@@ -1505,3 +1505,9 @@ title = "Rappels de tâches et répétitions"
 text = """
 Ouvrez une tâche et choisissez Me le rappeler : à l'heure prévue, une heure ou un jour avant. Le rappel s'affiche même quand Katna est fermé, avec Marquer comme terminée et Répéter. Cocher une tâche récurrente la fait maintenant revenir à sa prochaine date.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Retrouvez vos tâches depuis le bureau"
+text = """
+Saisissez quelques mots d'une tâche dans KRunner ou dans la recherche de GNOME, et elle apparaît sous Tâches. Appuyez sur Entrée et Katna l'ouvre, prête à être modifiée.
+"""

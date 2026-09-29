@@ -1371,3 +1371,9 @@ title = "Àwọn ìránnilétí iṣẹ́ àti àtúnṣe"
 text = """
 Ṣí iṣẹ́ kan kí o yan Rán mi létí: ní àkókò náà, wákàtí kan tàbí ọjọ́ kan ṣáájú. Ìránnilétí náà á yọ jáde kódà bí Katna bá wà ní títì, pẹ̀lú àwọn bọ́tìnì Ṣàmì sí pé ó ti parí àti Sún síwájú. Tí o bá ṣàmì sí iṣẹ́ àtúnṣe pé ó ti parí, ó á padà ní ọjọ́ rẹ̀ tó kàn.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Wá àwọn iṣẹ́ láti orí déskitọ́pù"
+text = """
+Tẹ ọ̀rọ̀ díẹ̀ nínú iṣẹ́ kan sínú àwárí KRunner tàbí GNOME, yóò sì hàn lábẹ́ Iṣẹ́. Tẹ Enter, Katna yóò sì ṣí i, ó ṣetán fún àtúnṣe.
+"""
