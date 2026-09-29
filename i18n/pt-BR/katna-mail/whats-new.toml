@@ -1385,3 +1385,19 @@ Um convite que chegou a uma conta sem agenda agora também tem Sim, Não e
 Talvez: sua resposta vai para o organizador por e-mail e a agenda dele a
 registra.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Anotações de reunião"
+text = """
+Abra um evento na Agenda e escolha Fazer anotações da reunião: uma nota
+com o título do evento é aberta, já com os participantes e um espaço
+para os itens de ação. O cartão do evento lista suas notas, e o chip
+Evento de uma nota leva você de volta ao dia.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Ir direto a uma página do PDF"
+text = """
+O número da página abaixo de um PDF agora é uma caixa: clique nela ou
+pressione Ctrl+G, digite uma página e pressione Enter para ir até lá.
+"""

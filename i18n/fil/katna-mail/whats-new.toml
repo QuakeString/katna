@@ -1435,3 +1435,20 @@ Ang imbitasyong dumating sa account na walang kalendaryo ay may Oo,
 Hindi, at Baka na rin: ipapadala ang sagot mo sa organizer sa
 pamamagitan ng email, at minamarkahan ito ng kalendaryo nila.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Mga tala ng pulong"
+text = """
+Magbukas ng event sa Calendar at piliin ang Gumawa ng tala ng pulong:
+magbubukas ang isang tala na may pamagat ng event, kasama ang mga dadalo
+at lugar para sa mga aksyon. Nakalista sa card ng event ang mga tala
+nito, at ibinabalik ka ng chip na Event ng isang tala sa araw na iyon.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Diretso sa isang pahina ng PDF"
+text = """
+Ang numero ng pahina sa ilalim ng isang PDF ay isa nang kahon: i-click
+ito o pindutin ang Ctrl+G, mag-type ng pahina, at pindutin ang Enter
+para pumunta roon.
+"""

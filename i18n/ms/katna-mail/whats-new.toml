@@ -1400,3 +1400,20 @@ Jemputan yang masuk ke akaun tanpa kalendar kini turut mempunyai Ya,
 Tidak dan Mungkin: jawapan anda dihantar kepada penganjur melalui e-mel,
 dan kalendar mereka menandakannya.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Nota mesyuarat"
+text = """
+Buka acara dalam Kalendar dan pilih Buat nota mesyuarat: nota bertajuk
+acara itu akan dibuka, siap dengan senarai peserta dan ruang untuk item
+tindakan. Kad acara menyenaraikan notanya, dan cip Acara pada nota
+membawa anda kembali ke hari itu.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Terus ke halaman PDF"
+text = """
+Nombor halaman di bawah PDF kini ialah sebuah kotak: klik padanya atau
+tekan Ctrl+G, taip nombor halaman dan tekan Enter untuk melompat ke
+sana.
+"""

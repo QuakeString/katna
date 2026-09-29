@@ -68,6 +68,16 @@ notes-mail = E-mail
 notes-open-mail = De e-mail openen
 notes-open-note = De notitie openen
 
+## Meeting notes
+
+notes-meeting-take = Vergadernotities maken
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Deelnemers: { $names }
+notes-meeting-notes = Notities
+notes-meeting-actions = Actiepunten
+notes-event = Afspraak
+notes-open-event = De afspraak openen
+
 ## Colors (tooltips)
 
 notes-color-none = Geen kleur

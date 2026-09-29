@@ -1378,3 +1378,19 @@ Zaproszenie, które trafiło na konto bez kalendarza, ma teraz także Tak,
 Nie i Może: Twoja odpowiedź trafia do organizatora e-mailem, a jego
 kalendarz ją odnotowuje.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Notatki ze spotkań"
+text = """
+Otwórz wydarzenie w Kalendarzu i wybierz Notuj ze spotkania: otworzy się
+notatka z tytułem wydarzenia, z listą uczestników i miejscem na zadania
+do wykonania. Karta wydarzenia zawiera jego notatki, a znacznik
+Wydarzenie w notatce przenosi z powrotem do danego dnia.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Przejdź od razu do strony w pliku PDF"
+text = """
+Numer strony pod plikiem PDF jest teraz polem: kliknij go lub naciśnij
+Ctrl+G, wpisz numer strony i naciśnij Enter, aby tam przejść.
+"""

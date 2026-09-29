@@ -68,6 +68,16 @@ notes-mail = ایمیل
 notes-open-mail = باز کردن ایمیل
 notes-open-note = باز کردن یادداشت
 
+## Meeting notes
+
+notes-meeting-take = یادداشت‌برداری جلسه
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = حاضران: { $names }
+notes-meeting-notes = یادداشت‌ها
+notes-meeting-actions = اقدام‌ها
+notes-event = رویداد
+notes-open-event = باز کردن رویداد
+
 ## Colors (tooltips)
 
 notes-color-none = بدون رنگ

@@ -1354,3 +1354,19 @@ En inbjudan som kom till ett konto utan kalender har nu också Ja, Nej
 och Kanske: ditt svar skickas till arrangören med e-post, och
 arrangörens kalender registrerar det.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Mötesanteckningar"
+text = """
+Öppna en händelse i Kalendern och välj Anteckna mötet: en anteckning med
+händelsens titel öppnas, med deltagarna och plats för åtgärder.
+Händelsens kort listar dess anteckningar, och chipet Händelse i en
+anteckning tar dig tillbaka till dagen.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Gå direkt till en PDF-sida"
+text = """
+Sidnumret under en PDF är nu en ruta: klicka på den eller tryck på
+Ctrl+G, skriv en sida och tryck på Retur för att hoppa dit.
+"""

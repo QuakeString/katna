@@ -1429,3 +1429,20 @@ Isimemo esafika ku-akhawunti engenalo ikhalenda manje sinakho Yebo, Cha
 noma Mhlawumbe: impendulo yakho iya kumhleli ngeposi, futhi ikhalenda
 lakhe liyayimaka.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Amanothi omhlangano"
+text = """
+Vula umcimbi kuKhalenda bese ukhetha Thatha amanothi omhlangano:
+kuvuleka inothi elinesihloko somcimbi, selilungele ukuthi ngubani
+ozokuza nendawo yezinto zokwenza. Ikhadi lomcimbi lidwebe amanothi alo,
+futhi i-chip Yomcimbi yenothi ikubuyisela osukwini.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Yiya ngokuqondile ekhasini le-PDF"
+text = """
+Inombolo yekhasi engaphansi kwe-PDF manje iyibhokisi: chofoza kuyo noma
+ucindezele Ctrl+G, thayipha ikhasi bese ucindezela u-Enter ukuze uye
+lapho ngokuqondile.
+"""

@@ -13,3 +13,6 @@ viewer-document-unreadable = 无法读取此文档。
 viewer-slides-unreadable = 无法读取这些幻灯片。
 viewer-no-preview = 无可用预览
 viewer-slide = 幻灯片 { $number }
+viewer-page = 第
+viewer-page-count = 页，共 { $count } 页
+viewer-go-to-page-tip = 输入页码并按 Enter 键（Ctrl+G）

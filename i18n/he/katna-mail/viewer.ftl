@@ -13,3 +13,6 @@ viewer-document-unreadable = לא ניתן היה לקרוא את המסמך ה�
 viewer-slides-unreadable = לא ניתן היה לקרוא את השקפים האלה.
 viewer-no-preview = אין תצוגה מקדימה
 viewer-slide = שקף { $number }
+viewer-page = עמוד
+viewer-page-count = מתוך { $count }
+viewer-go-to-page-tip = הקלידו מספר עמוד ולחצו על Enter (Ctrl+G)

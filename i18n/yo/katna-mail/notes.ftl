@@ -67,6 +67,16 @@ notes-mail = Lẹ́tà
 notes-open-mail = Ṣí lẹ́tà
 notes-open-note = Ṣí àkọsílẹ̀ náà
 
+## Meeting notes
+
+notes-meeting-take = Ṣe àkọsílẹ̀ ìpàdé
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Àwọn tó wá: { $names }
+notes-meeting-notes = Àkọsílẹ̀
+notes-meeting-actions = Àwọn ohun tí a máa ṣe
+notes-event = Ìṣẹ̀lẹ̀
+notes-open-event = Ṣí ìṣẹ̀lẹ̀ náà
+
 ## Colors (tooltips)
 
 notes-color-none = Kò sí àwọ̀

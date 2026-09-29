@@ -67,6 +67,16 @@ notes-mail = 메일
 notes-open-mail = 메일 열기
 notes-open-note = 메모 열기
 
+## Meeting notes
+
+notes-meeting-take = 회의 메모 작성
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = 참석자: { $names }
+notes-meeting-notes = 메모
+notes-meeting-actions = 실행 항목
+notes-event = 일정
+notes-open-event = 일정 열기
+
 ## Colors (tooltips)
 
 notes-color-none = 색상 없음

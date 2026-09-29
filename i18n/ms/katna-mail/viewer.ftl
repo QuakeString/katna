@@ -13,3 +13,6 @@ viewer-document-unreadable = Dokumen ini tidak dapat dibaca.
 viewer-slides-unreadable = Slaid ini tidak dapat dibaca.
 viewer-no-preview = Tiada pratonton tersedia
 viewer-slide = Slaid { $number }
+viewer-page = Halaman
+viewer-page-count = daripada { $count }
+viewer-go-to-page-tip = Taip nombor halaman dan tekan Enter (Ctrl+G)

@@ -1419,3 +1419,21 @@ Eine Einladung, die bei einem Konto ohne Kalender eingegangen ist, hat
 jetzt ebenfalls Ja, Nein und Vielleicht: Ihre Antwort geht per E-Mail an
 den Organisator, und dessen Kalender vermerkt sie.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Besprechungsnotizen"
+text = """
+Öffnen Sie im Kalender ein Event und wählen Sie „Besprechungsnotizen
+erstellen“: Es öffnet sich eine Notiz mit dem Titel des Events, mit den
+Teilnehmern und Platz für Aufgaben. Die Karte des Events listet seine
+Notizen auf, und der Chip „Event“ in einer Notiz führt Sie zurück zum
+Tag.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Direkt zu einer PDF-Seite springen"
+text = """
+Die Seitenzahl unter einer PDF ist jetzt ein Feld: Klicken Sie darauf
+oder drücken Sie Strg+G, geben Sie eine Seite ein und drücken Sie die
+Eingabetaste, um dorthin zu springen.
+"""

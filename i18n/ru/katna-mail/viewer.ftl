@@ -13,3 +13,6 @@ viewer-document-unreadable = Не удалось прочитать этот д�
 viewer-slides-unreadable = Не удалось прочитать эти слайды.
 viewer-no-preview = Предпросмотр недоступен
 viewer-slide = Слайд { $number }
+viewer-page = Страница
+viewer-page-count = из { $count }
+viewer-go-to-page-tip = Введите номер страницы и нажмите Enter (Ctrl+G)

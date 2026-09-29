@@ -13,3 +13,6 @@ viewer-document-unreadable = Nie udało się odczytać tego dokumentu.
 viewer-slides-unreadable = Nie udało się odczytać tych slajdów.
 viewer-no-preview = Podgląd niedostępny
 viewer-slide = Slajd { $number }
+viewer-page = Strona
+viewer-page-count = z { $count }
+viewer-go-to-page-tip = Wpisz numer strony i naciśnij Enter (Ctrl+G)

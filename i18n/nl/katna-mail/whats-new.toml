@@ -1387,3 +1387,20 @@ Een uitnodiging die binnenkwam op een account zonder agenda heeft nu ook
 Ja, Nee en Misschien: je antwoord gaat per e-mail naar de organisator en
 hun agenda legt het vast.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Vergadernotities"
+text = """
+Open een afspraak in de Agenda en kies Vergadernotities maken: er opent
+een notitie met de titel van de afspraak, met de deelnemers en ruimte
+voor actiepunten. De kaart van de afspraak toont de bijbehorende
+notities, en de chip Afspraak in een notitie brengt je terug naar de
+dag.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Direct naar een pdf-pagina gaan"
+text = """
+Het paginanummer onder een pdf is nu een vak: klik erop of druk op
+Ctrl+G, typ een pagina en druk op Enter om ernaartoe te gaan.
+"""

@@ -13,3 +13,6 @@ viewer-document-unreadable = Hierdie dokument kon nie gelees word nie.
 viewer-slides-unreadable = Hierdie skyfies kon nie gelees word nie.
 viewer-no-preview = Geen voorskou beskikbaar nie
 viewer-slide = Skyfie { $number }
+viewer-page = Bladsy
+viewer-page-count = van { $count }
+viewer-go-to-page-tip = Tik ’n bladsynommer en druk Enter (Ctrl+G)

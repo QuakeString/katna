@@ -13,3 +13,6 @@ viewer-document-unreadable = No se ha podido leer este documento.
 viewer-slides-unreadable = No se han podido leer estas diapositivas.
 viewer-no-preview = No hay vista previa disponible
 viewer-slide = Diapositiva { $number }
+viewer-page = Página
+viewer-page-count = de { $count }
+viewer-go-to-page-tip = Escribe un número de página y pulsa Intro (Ctrl+G)

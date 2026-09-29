@@ -67,6 +67,16 @@ notes-mail = 郵件
 notes-open-mail = 開啟郵件
 notes-open-note = 開啟記事
 
+## Meeting notes
+
+notes-meeting-take = 撰寫會議記事
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = 與會者：{ $names }
+notes-meeting-notes = 記事
+notes-meeting-actions = 待辦事項
+notes-event = 活動
+notes-open-event = 開啟活動
+
 ## Colors (tooltips)
 
 notes-color-none = 無顏色

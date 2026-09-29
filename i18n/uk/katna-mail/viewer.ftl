@@ -13,3 +13,6 @@ viewer-document-unreadable = Не вдалося прочитати цей до�
 viewer-slides-unreadable = Не вдалося прочитати ці слайди.
 viewer-no-preview = Попередній перегляд недоступний
 viewer-slide = Слайд { $number }
+viewer-page = Сторінка
+viewer-page-count = із { $count }
+viewer-go-to-page-tip = Введіть номер сторінки й натисніть Enter (Ctrl+G)

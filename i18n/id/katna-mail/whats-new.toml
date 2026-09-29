@@ -1386,3 +1386,19 @@ Undangan yang masuk ke akun tanpa kalender kini juga punya Ya, Tidak,
 dan Mungkin: jawaban Anda dikirim ke penyelenggara lewat email, dan
 kalender mereka mencatatnya.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Catatan rapat"
+text = """
+Buka acara di Kalender lalu pilih Buat catatan rapat: catatan berjudul
+sesuai acara akan terbuka, sudah berisi daftar peserta dan ruang untuk
+item tindakan. Kartu acara mencantumkan catatannya, dan chip Acara pada
+catatan membawa Anda kembali ke harinya.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Langsung ke halaman PDF"
+text = """
+Nomor halaman di bawah PDF kini berupa kotak: klik atau tekan Ctrl+G,
+ketik nomor halaman, lalu tekan Enter untuk melompat ke sana.
+"""

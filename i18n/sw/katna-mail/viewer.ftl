@@ -13,3 +13,6 @@ viewer-document-unreadable = Hati hii haikuweza kusomwa.
 viewer-slides-unreadable = Slaidi hizi hazikuweza kusomwa.
 viewer-no-preview = Hakuna onyesho la kukagua
 viewer-slide = Slaidi { $number }
+viewer-page = Ukurasa
+viewer-page-count = kati ya { $count }
+viewer-go-to-page-tip = Andika nambari ya ukurasa kisha bonyeza Enter (Ctrl+G)

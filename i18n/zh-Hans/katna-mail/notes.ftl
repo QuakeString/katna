@@ -67,6 +67,16 @@ notes-mail = 邮件
 notes-open-mail = 打开邮件
 notes-open-note = 打开笔记
 
+## Meeting notes
+
+notes-meeting-take = 记录会议笔记
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = 参会者：{ $names }
+notes-meeting-notes = 笔记
+notes-meeting-actions = 待办事项
+notes-event = 活动
+notes-open-event = 打开活动
+
 ## Colors (tooltips)
 
 notes-color-none = 无颜色

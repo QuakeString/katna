@@ -69,6 +69,16 @@ notes-mail = E-mail
 notes-open-mail = Abrir o e-mail
 notes-open-note = Abrir a nota
 
+## Meeting notes
+
+notes-meeting-take = Fazer anotações da reunião
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Participantes: { $names }
+notes-meeting-notes = Anotações
+notes-meeting-actions = Itens de ação
+notes-event = Evento
+notes-open-event = Abrir o evento
+
 ## Colors (tooltips)
 
 notes-color-none = Sem cor

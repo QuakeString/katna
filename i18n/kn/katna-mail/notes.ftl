@@ -68,6 +68,16 @@ notes-mail = ಮೇಲ್
 notes-open-mail = ಮೇಲ್ ತೆರೆಯಿರಿ
 notes-open-note = ಟಿಪ್ಪಣಿ ತೆರೆಯಿರಿ
 
+## Meeting notes
+
+notes-meeting-take = ಸಭೆಯ ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = ಹಾಜರಿರುವವರು: { $names }
+notes-meeting-notes = ಟಿಪ್ಪಣಿಗಳು
+notes-meeting-actions = ಕ್ರಿಯಾ ಐಟಂಗಳು
+notes-event = ಈವೆಂಟ್
+notes-open-event = ಈವೆಂಟ್ ತೆರೆಯಿರಿ
+
 ## Colors (tooltips)
 
 notes-color-none = ಬಣ್ಣವಿಲ್ಲ

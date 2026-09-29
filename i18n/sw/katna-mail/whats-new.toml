@@ -1328,3 +1328,17 @@ text = """
 Mwaliko uliofika kwenye akaunti isiyo na kalenda sasa una Ndiyo, Hapana na Labda pia:
 jibu lako hutumwa kwa mwandaaji kwa barua pepe, na kalenda yake huliweka alama.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Madokezo ya mkutano"
+text = """
+Fungua tukio kwenye Kalenda kisha uchague Andika madokezo ya mkutano: dokezo lenye jina la tukio hufunguka, likiwa na orodha ya waliohudhuria na nafasi ya hatua za kuchukua.
+Kadi ya tukio huorodhesha madokezo yake, na chipu ya Tukio kwenye dokezo hukurudisha kwenye siku hiyo.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Nenda moja kwa moja kwenye ukurasa wa PDF"
+text = """
+Nambari ya ukurasa chini ya PDF sasa ni kisanduku:
+kibofye au bonyeza Ctrl+G, andika nambari ya ukurasa kisha bonyeza Enter ili kuruka hadi huko.
+"""

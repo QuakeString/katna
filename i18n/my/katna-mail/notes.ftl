@@ -67,6 +67,16 @@ notes-mail = မေးလ်
 notes-open-mail = မေးလ်ကို ဖွင့်ရန်
 notes-open-note = မှတ်စုကို ဖွင့်ရန်
 
+## Meeting notes
+
+notes-meeting-take = အစည်းအဝေးမှတ်စု ရေးရန်
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = တက်ရောက်သူများ- { $names }
+notes-meeting-notes = မှတ်စု
+notes-meeting-actions = လုပ်ဆောင်ရန်များ
+notes-event = ဖြစ်ရပ်
+notes-open-event = ဖြစ်ရပ်ကို ဖွင့်ရန်
+
 ## Colors (tooltips)
 
 notes-color-none = အရောင်မရှိ

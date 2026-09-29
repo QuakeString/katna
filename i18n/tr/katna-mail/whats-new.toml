@@ -1373,3 +1373,20 @@ Takvimi olmayan bir hesaba gelen davette artık Evet, Hayır ve Belki de
 var: yanıtınız düzenleyiciye e-postayla gider ve onun takvimi bunu
 işler.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Toplantı notları"
+text = """
+Takvim’de bir etkinliği açıp Toplantı notları al’ı seçin: etkinliğin
+başlığını taşıyan, katılımcıların yazılı olduğu ve eylem öğeleri için
+yer bulunan bir not açılır. Etkinliğin kartı notlarını listeler, bir
+notun Etkinlik çipi ise sizi o güne geri götürür.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Doğrudan bir PDF sayfasına gidin"
+text = """
+Bir PDF’in altındaki sayfa numarası artık bir kutu: üzerine tıklayın ya
+da Ctrl+G’ye basın, bir sayfa numarası yazın ve oraya gitmek için
+Enter’a basın.
+"""

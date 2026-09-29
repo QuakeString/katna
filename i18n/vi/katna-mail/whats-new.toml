@@ -1341,3 +1341,19 @@ Lời mời gửi đến một tài khoản không có lịch giờ cũng có C�
 thể: câu trả lời của bạn được gửi đến người tổ chức qua email, và lịch
 của họ ghi nhận nó.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Ghi chú cuộc họp"
+text = """
+Mở một sự kiện trong Lịch rồi chọn Ghi chú cuộc họp: một ghi chú mang
+tiêu đề của sự kiện sẽ mở ra, có sẵn người tham dự và chỗ cho các việc
+cần làm. Thẻ của sự kiện liệt kê các ghi chú của nó, và chip Sự kiện
+trong ghi chú đưa bạn quay lại ngày đó.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Đi thẳng tới một trang PDF"
+text = """
+Số trang bên dưới tệp PDF nay là một ô nhập: nhấp vào đó hoặc nhấn
+Ctrl+G, nhập số trang rồi nhấn Enter để chuyển tới đó.
+"""

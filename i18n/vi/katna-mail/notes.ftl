@@ -67,6 +67,16 @@ notes-mail = Thư
 notes-open-mail = Mở thư
 notes-open-note = Mở ghi chú
 
+## Meeting notes
+
+notes-meeting-take = Ghi chú cuộc họp
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Người tham dự: { $names }
+notes-meeting-notes = Ghi chú
+notes-meeting-actions = Việc cần làm
+notes-event = Sự kiện
+notes-open-event = Mở sự kiện
+
 ## Colors (tooltips)
 
 notes-color-none = Không có màu

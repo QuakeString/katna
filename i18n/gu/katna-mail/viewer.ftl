@@ -13,3 +13,6 @@ viewer-document-unreadable = આ દસ્તાવેજ વાંચી શક
 viewer-slides-unreadable = આ સ્લાઇડ વાંચી શકાઈ નથી.
 viewer-no-preview = કોઈ પૂર્વાવલોકન ઉપલબ્ધ નથી
 viewer-slide = સ્લાઇડ { $number }
+viewer-page = પૃષ્ઠ
+viewer-page-count = { $count } માંથી
+viewer-go-to-page-tip = પૃષ્ઠ નંબર લખો અને Enter દબાવો (Ctrl+G)

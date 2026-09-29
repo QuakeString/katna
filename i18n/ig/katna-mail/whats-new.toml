@@ -1341,3 +1341,19 @@ Oku bịara n'akaụntụ na-enweghị kalịnda nwere Ee, Mba na Ikekwe ugbu a:
 azịza gị na-aga n'aka onye nhazi site na ozi, kalịnda ya ga-akaritekwa
 ya.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Ndetu nzuko"
+text = """
+Meghee ihe omume na Kalịnda wee họrọ Dee ndetu nzuko: ndetu nwere aha
+ihe omume ga-emepe, ya na ndị bịara na ebe maka ihe a ga-eme dị njikere.
+Kaadị ihe omume na-egosi ndetu ya, chip Ihe omume nke ndetu na-eduga gị
+azụ n'ụbọchị ahụ.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Gaa ozugbo na peeji PDF"
+text = """
+Nọmba peeji dị n'okpuru PDF bụ igbe ugbu a: pịa ya ma ọ bụ pịa Ctrl+G,
+pịnye peeji wee pịa Enter ka i gaa ebe ahụ ozugbo.
+"""

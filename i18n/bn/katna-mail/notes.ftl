@@ -68,6 +68,16 @@ notes-mail = মেল
 notes-open-mail = মেল খুলুন
 notes-open-note = নোট খুলুন
 
+## Meeting notes
+
+notes-meeting-take = মিটিং নোট নিন
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = অংশগ্রহণকারী: { $names }
+notes-meeting-notes = নোট
+notes-meeting-actions = করণীয়
+notes-event = ইভেন্ট
+notes-open-event = ইভেন্ট খুলুন
+
 ## Colors (tooltips)
 
 notes-color-none = কোনো রঙ নেই

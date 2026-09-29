@@ -68,6 +68,16 @@ notes-mail = அஞ்சல்
 notes-open-mail = அஞ்சலைத் திற
 notes-open-note = குறிப்பைத் திற
 
+## Meeting notes
+
+notes-meeting-take = கூட்டக் குறிப்பு எடு
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = பங்கேற்பாளர்கள்: { $names }
+notes-meeting-notes = குறிப்புகள்
+notes-meeting-actions = செயல் உருப்படிகள்
+notes-event = நிகழ்வு
+notes-open-event = நிகழ்வைத் திற
+
 ## Colors (tooltips)
 
 notes-color-none = நிறம் இல்லை

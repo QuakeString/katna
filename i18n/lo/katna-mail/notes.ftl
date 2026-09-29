@@ -67,6 +67,16 @@ notes-mail = ອີເມວ
 notes-open-mail = ເປີດອີເມວ
 notes-open-note = ເປີດບັນທຶກ
 
+## Meeting notes
+
+notes-meeting-take = ບັນທຶກການປະຊຸມ
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = ຜູ້ເຂົ້າຮ່ວມ: { $names }
+notes-meeting-notes = ບັນທຶກ
+notes-meeting-actions = ລາຍການທີ່ຕ້ອງເຮັດ
+notes-event = ເຫດການ
+notes-open-event = ເປີດເຫດການ
+
 ## Colors (tooltips)
 
 notes-color-none = ບໍ່ມີສີ

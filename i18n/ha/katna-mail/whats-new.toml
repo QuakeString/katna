@@ -1311,3 +1311,17 @@ text = """
 Gayyatar da ta zo asusun da ba shi da kalanda yanzu tana da Eh, A'a da Wataƙila ma:
 amsarka tana tafiya wurin mai shiryawa ta imel, kuma kalandarsa tana yi mata alama.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Bayanan taro"
+text = """
+Buɗe wani taron a Kalanda sannan ka zaɓi Ɗauki bayanan taro: wani bayani mai sunan taron zai buɗe, tare da jerin mahalarta da wurin abubuwan da za a yi.
+Katin taron yana jera bayanansa, kuma alamar Taron da ke kan bayanin tana mayar da kai ranar.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Tsallaka kai tsaye zuwa shafin PDF"
+text = """
+Lambar shafi a ƙarƙashin PDF yanzu akwati ce:
+Danna ta ko ka latsa Ctrl+G, rubuta lambar shafi sannan ka latsa Enter don tsallakawa can.
+"""
