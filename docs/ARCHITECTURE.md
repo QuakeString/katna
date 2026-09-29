@@ -2131,7 +2131,15 @@ Gemini or confidential mode):
   narrow for a submenu beside it, or too short for the whole menu, a
   submenu opens in its place under a row back. In a short window its
   items first come closer together (36 px down to 28 px), and only then
-  does the menu scroll. The "select all
+  does the menu scroll; a long submenu does the same. The Calendar page
+  has right-click menus in the same card (`calendar/menu.rs`): on a free
+  time or day (a new event, focus time or out of office there, and Open
+  day), on an event (details, edit, duplicate, delete, Going?, join,
+  email guests, Google's eleven colors and Move to another calendar,
+  the browser or the contact) and on a task (details, done, star, Date:
+  today, tomorrow, in a week, all day or no date, and delete). Changes
+  go through the same paths as the event card and the Tasks page, so a
+  repeating event asks which occurrences and each change has Undo. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.
@@ -2692,8 +2700,13 @@ away; he can still change them.
 - **Look.** Google Keep: the Notes page of the main window (the rail's
   Notes button) has a side list (Notes, Archive, Trash), a "Take a note…"
   bar with a New list button, and a board of 240 px cards in columns,
-  each card going to the shortest column. Pinned notes come first under
-  "Pinned". Cards take Keep's eleven colors (light and dark). Hovering a
+  each card going to the shortest column by its drawn height, so no row
+  lines up and no gap opens. Pinned notes come first under "Pinned".
+  Dragging a card moves it among the notes of its section: the others
+  glide aside as it passes (they jump when motion is reduced), and
+  dropping it keeps the order (`OrderNotes`, with Ctrl+Z; the order stays
+  on this computer). Cards glide to their new places whenever the board
+  changes. Cards take Keep's eleven colors (light and dark). Hovering a
   card shows its pin and its Archive and Delete buttons; checklist items
   tick right on the card, and ticked ones fold into "+ N ticked items".
   A card opens as a note over the dimmed board (600 px, 15 px corners):
@@ -2715,6 +2728,7 @@ away; he can still change them.
   copies still to delete. Changes are journaled as `note`.
 - **D-Bus.** `SaveNote(NoteItem)` (ID 0 makes a new one on top) returns
   the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`;
+  `OrderNotes(ids)` puts notes in that order in the places they had;
   `RelabelNotes(ids, old, new)` renames, deletes or adds a label (at
   most 50 characters). Apps read notes from the store.
 - **Sync.** A note of a mail account is kept in that account's `Notes`

@@ -14,16 +14,19 @@ mod meetings;
 
 pub(super) use line_tasks::note_of_task;
 
+use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Div, ElementId, Entity, Focusable, FontWeight, SharedString,
-    Subscription, Task, Window, div, prelude::*, rgba,
+    AnimationExt, AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable,
+    FontWeight, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_dbus::NoteItem;
 use katna_i18n::tr;
 use katna_store::Note;
+use katna_ui::motion::{self, Spring};
 use katna_ui::rich::{RichEditor, RichEvent};
 use katna_ui::{InputEvent, TextInput, px, unpx};
 
@@ -123,7 +126,58 @@ pub(super) struct NotesPage {
     label: Option<String>,
     labels_dialog: Option<labels::LabelsDialog>,
     editor: Option<Editor>,
+    /// Cards' heights as last drawn, by note ID, so the board places
+    /// them with no gaps.
+    heights: Rc<RefCell<HashMap<i64, f32>>>,
+    /// Where each card is on its way to, so cards glide to new places.
+    slots: RefCell<HashMap<i64, Slot>>,
+    /// Each section's cards as last laid out, and whether every height
+    /// was drawn.
+    layout: RefCell<HashMap<&'static str, (Vec<Placed>, bool)>>,
+    /// The card being dragged to a new place.
+    drag: Option<NoteDrag>,
     _load: Option<Task<()>>,
+}
+
+/// A card as laid out: its note's ID, and its left, top, width and height
+/// in its section.
+type Placed = (i64, [f32; 4]);
+
+/// A card's place on the board, gliding.
+struct Slot {
+    /// The view and section it is in; elsewhere, it starts afresh.
+    at: (NotesView, &'static str),
+    x: Spring,
+    y: Spring,
+}
+
+/// A card being dragged among the notes of its section.
+struct NoteDrag {
+    id: i64,
+    section: &'static str,
+    /// The section's notes in the order they will have, top first.
+    order: Vec<i64>,
+    /// The order before, for Undo.
+    was: Vec<i64>,
+    /// The card last under the pointer, so the order changes once per
+    /// card passed.
+    over: Option<i64>,
+    /// The card's top left corner in its section, under the pointer.
+    at: (f32, f32),
+    /// Where on the card the pointer holds it.
+    grab: (f32, f32),
+}
+
+/// What a dragged card carries; the card itself follows the pointer.
+struct NoteDragged;
+
+/// The drag's own picture: none, as the card on the board is it.
+struct NoDragImage;
+
+impl Render for NoDragImage {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        div()
+    }
 }
 
 /// The note open over the board.
@@ -267,21 +321,55 @@ fn card_height(note: &Note) -> f32 {
     32.0 + title + mail + labels + 20.0 * lines as f32
 }
 
-/// Cards laid out in `columns` columns, each going to the shortest one,
-/// as Keep lays out its board.
-fn masonry<'a>(notes: &[&'a Note], columns: usize) -> Vec<Vec<&'a Note>> {
-    let columns = columns.max(1);
-    let mut out: Vec<Vec<&Note>> = vec![Vec::new(); columns];
-    let mut heights = vec![0.0_f32; columns];
-    for note in notes {
-        let (ix, _) = heights
-            .iter()
-            .enumerate()
-            .min_by(|a, b| a.1.total_cmp(b.1))
-            .unwrap_or((0, &0.0));
-        heights[ix] += card_height(note) + GAP;
-        out[ix].push(note);
+/// Where cards of `heights` go in `columns` columns `card` wide, each at
+/// the foot of the shortest column, as Keep lays out its board. Returns
+/// each card's left and top, and the tallest column's height.
+fn masonry(heights: &[f32], columns: usize, card: f32) -> (Vec<(f32, f32)>, f32) {
+    let mut tops = vec![0.0_f32; columns.max(1)];
+    let places = heights
+        .iter()
+        .map(|height| {
+            let (ix, _) = tops
+                .iter()
+                .enumerate()
+                .min_by(|a, b| a.1.total_cmp(b.1))
+                .unwrap_or((0, &0.0));
+            let place = (ix as f32 * (card + GAP), tops[ix]);
+            tops[ix] += height + GAP;
+            place
+        })
+        .collect();
+    let tallest = tops.iter().fold(0.0_f32, |a, &b| a.max(b));
+    (places, (tallest - GAP).max(0.0))
+}
+
+/// `notes` with `ids` put in that order, in the places they had among
+/// themselves, as the daemon's `OrderNotes` does, sorted as the store
+/// reads them.
+fn ordered(notes: &[Note], ids: &[i64]) -> Vec<Note> {
+    let found: Vec<i64> = ids
+        .iter()
+        .copied()
+        .filter(|id| notes.iter().any(|n| n.id == *id))
+        .collect();
+    let mut places: Vec<i64> = notes
+        .iter()
+        .filter(|n| found.contains(&n.id))
+        .map(|n| n.position)
+        .collect();
+    places.sort_unstable_by(|a, b| b.cmp(a));
+    for ix in 1..places.len() {
+        places[ix] = places[ix].min(places[ix - 1] - 1);
     }
+    let mut out = notes.to_vec();
+    for (id, place) in found.into_iter().zip(places) {
+        if let Some(note) = out.iter_mut().find(|n| n.id == id) {
+            note.position = place;
+        }
+    }
+    out.sort_by(|a, b| {
+        (b.pinned, b.position, b.updated_at, b.id).cmp(&(a.pinned, a.position, a.updated_at, a.id))
+    });
     out
 }
 
@@ -298,6 +386,10 @@ impl MailWindow {
             label: None,
             labels_dialog: None,
             editor: None,
+            heights: Rc::default(),
+            slots: RefCell::default(),
+            layout: RefCell::default(),
+            drag: None,
             _load: None,
         });
         self.load_notes(cx);
@@ -1076,7 +1168,8 @@ impl MailWindow {
             .px(px(pad))
             .pb(px(48.0))
             .flex()
-            .flex_col();
+            .flex_col()
+            .on_drop(cx.listener(|this, _: &NoteDragged, _, cx| this.drop_note(cx)));
         if view == NotesView::Notes {
             body = body.child(self.render_take_note(th, window, cx));
         }
@@ -1150,7 +1243,7 @@ impl MailWindow {
         if !pinned.is_empty() {
             body = body
                 .child(heading(tr!("notes-pinned")))
-                .child(self.render_grid(&pinned, "notes-pinned", columns, card, th, cx));
+                .child(self.render_grid(&pinned, "notes-pinned", columns, card, th, window, cx));
             if !others.is_empty() {
                 body = body
                     .child(div().h(px(24.0)))
@@ -1160,11 +1253,22 @@ impl MailWindow {
             body = body.child(div().h(px(8.0)));
         }
         if !others.is_empty() {
-            body = body.child(self.render_grid(&others, "notes-others", columns, card, th, cx));
+            body = body.child(self.render_grid(
+                &others,
+                "notes-others",
+                columns,
+                card,
+                th,
+                window,
+                cx,
+            ));
         }
         body.into_any_element()
     }
 
+    /// A section of the board: cards in columns, each at the foot of the
+    /// shortest, gliding to new places, and dragged to change the order.
+    #[allow(clippy::too_many_arguments)]
     fn render_grid(
         &self,
         notes: &[&Note],
@@ -1172,23 +1276,210 @@ impl MailWindow {
         columns: usize,
         card: f32,
         th: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        div()
-            .id(key)
-            .flex()
-            .flex_row()
-            .justify_center()
-            .gap(px(GAP))
-            .children(masonry(notes, columns).into_iter().map(|column| {
-                div()
+        let Some(page) = &self.notes else {
+            return div().into_any_element();
+        };
+        let drag = page
+            .drag
+            .as_ref()
+            .filter(|d| d.section == key && cx.has_active_drag());
+        let mut order = notes.to_vec();
+        if let Some(drag) = drag {
+            order.sort_by_key(|n| {
+                drag.order
+                    .iter()
+                    .position(|id| *id == n.id)
+                    .unwrap_or(usize::MAX)
+            });
+        }
+        let (heights, exact) = {
+            let known = page.heights.borrow();
+            let heights: Vec<f32> = order
+                .iter()
+                .map(|n| known.get(&n.id).copied().unwrap_or_else(|| card_height(n)))
+                .collect();
+            (heights, order.iter().all(|n| known.contains_key(&n.id)))
+        };
+        let (places, height) = masonry(&heights, columns, card);
+        // Cards glide only once the board stands on drawn heights, so
+        // the page doesn't move as it opens.
+        let glide = {
+            let mut layout = page.layout.borrow_mut();
+            let was_exact = layout.get(key).is_some_and(|(_, exact)| *exact);
+            let cards = order
+                .iter()
+                .zip(&places)
+                .zip(&heights)
+                .map(|((n, &(x, y)), &h)| (n.id, [x, y, card, h]))
+                .collect();
+            layout.insert(key, (cards, exact));
+            was_exact && exact
+        };
+        let reduce = cx.reduce_motion();
+        let here = (page.view, key);
+        let mut slots = page.slots.borrow_mut();
+        let mut cards: Vec<(i64, AnyElement)> = order
+            .iter()
+            .zip(&places)
+            .map(|(note, &(x, y))| {
+                let slot = slots.entry(note.id).or_insert_with(|| Slot {
+                    at: here,
+                    x: Spring::new(motion::SLIDE, x),
+                    y: Spring::new(motion::SLIDE, y),
+                });
+                let held = drag.filter(|d| d.id == note.id);
+                let (x, y) = if let Some(held) = held {
+                    // The dragged card is under the pointer, and glides
+                    // from there to its place when let go.
+                    slot.x.snap(held.at.0);
+                    slot.y.snap(held.at.1);
+                    held.at
+                } else if slot.at != here || !glide {
+                    slot.at = here;
+                    slot.x.snap(x);
+                    slot.y.snap(y);
+                    (x, y)
+                } else {
+                    slot.x.set(x);
+                    slot.y.set(y);
+                    (slot.x.tick(window, reduce), slot.y.tick(window, reduce))
+                };
+                let element = div()
+                    .absolute()
+                    .left(px(x))
+                    .top(px(y))
                     .w(px(card))
-                    .flex()
-                    .flex_col()
-                    .gap(px(GAP))
-                    .children(column.into_iter().map(|n| self.render_card(n, th, cx)))
-            }))
+                    .rounded(px(8.0))
+                    .when(held.is_some(), |d| d.shadow(elevation(th, 3.0)))
+                    .child(self.render_card(note, Some(key), th, cx))
+                    .into_any_element();
+                (note.id, element)
+            })
+            .collect();
+        drop(slots);
+        // The dragged card goes over the others.
+        if let Some(drag) = drag
+            && let Some(ix) = cards.iter().position(|(id, _)| *id == drag.id)
+        {
+            let held = cards.remove(ix);
+            cards.push(held);
+        }
+        let ids: Vec<i64> = cards.iter().map(|(id, _)| *id).collect();
+        let known = page.heights.clone();
+        div()
+            .relative()
+            .flex_none()
+            .mx_auto()
+            .w(px(columns as f32 * (card + GAP) - GAP))
+            .h(px(height))
+            .children(cards.into_iter().map(|(_, element)| element))
+            // Cards are placed by estimate until drawn once, then by the
+            // heights they came out.
+            .on_children_prepainted(move |bounds: Vec<Bounds<gpui::Pixels>>, window, _| {
+                let mut known = known.borrow_mut();
+                let mut changed = false;
+                for (id, bounds) in ids.iter().zip(bounds) {
+                    let height = unpx(bounds.size.height);
+                    if known.get(id).is_none_or(|was| (was - height).abs() > 0.5) {
+                        known.insert(*id, height);
+                        changed = true;
+                    }
+                }
+                if changed {
+                    window.refresh();
+                }
+            })
+            .id(key)
+            .on_drag_move(
+                cx.listener(move |this, event: &DragMoveEvent<NoteDragged>, _, cx| {
+                    let at = event.event.position - event.bounds.origin;
+                    this.drag_note_over(key, (unpx(at.x), unpx(at.y)), cx);
+                }),
+            )
             .into_any_element()
+    }
+
+    /// A card starts being dragged, held at `grab` on it.
+    fn start_note_drag(
+        &mut self,
+        id: i64,
+        section: &'static str,
+        grab: (f32, f32),
+        cx: &mut Context<Self>,
+    ) {
+        let Some(page) = self.notes.as_mut() else {
+            return;
+        };
+        let drag = page.layout.borrow().get(section).and_then(|(cards, _)| {
+            let at = cards.iter().find(|c| c.0 == id).map(|c| (c.1[0], c.1[1]))?;
+            let order: Vec<i64> = cards.iter().map(|c| c.0).collect();
+            Some(NoteDrag {
+                id,
+                section,
+                was: order.clone(),
+                order,
+                over: None,
+                at,
+                grab,
+            })
+        });
+        page.drag = drag;
+        cx.notify();
+    }
+
+    /// The pointer, at `at` in section `section`, drags a card: passing
+    /// over another card puts the dragged one in its place.
+    fn drag_note_over(&mut self, section: &'static str, at: (f32, f32), cx: &mut Context<Self>) {
+        let Some(page) = self.notes.as_mut() else {
+            return;
+        };
+        let Some(drag) = page.drag.as_mut().filter(|d| d.section == section) else {
+            return;
+        };
+        drag.at = (at.0 - drag.grab.0, at.1 - drag.grab.1);
+        let over = page.layout.borrow().get(section).and_then(|(cards, _)| {
+            cards
+                .iter()
+                .find(|(id, [x, y, w, h])| {
+                    *id != drag.id && (*x..x + w).contains(&at.0) && (*y..y + h).contains(&at.1)
+                })
+                .map(|c| c.0)
+        });
+        if over != drag.over {
+            drag.over = over;
+            if let Some(over) = over
+                && let Some(from) = drag.order.iter().position(|id| *id == drag.id)
+                && let Some(to) = drag.order.iter().position(|id| *id == over)
+            {
+                let id = drag.order.remove(from);
+                drag.order.insert(to, id);
+            }
+        }
+        cx.notify();
+    }
+
+    /// The dragged card is let go on the board: the notes keep their new
+    /// order, with Ctrl+Z to put them back.
+    fn drop_note(&mut self, cx: &mut Context<Self>) {
+        let Some(page) = self.notes.as_mut() else {
+            return;
+        };
+        let Some(drag) = page.drag.take() else {
+            return;
+        };
+        cx.notify();
+        if drag.order == drag.was {
+            return;
+        }
+        // The board shows the new order at once.
+        if let Some(Ok(notes)) = &mut page.notes {
+            *notes = Rc::new(ordered(notes, &drag.order));
+        }
+        self.remember(super::UndoStep::Command(Command::OrderNotes(drag.was)));
+        self.send(Command::OrderNotes(drag.order), None, None, false, cx);
     }
 
     /// Keep's "Take a note…" bar, with a new list at its right.
@@ -1259,7 +1550,14 @@ impl MailWindow {
         .into_any_element()
     }
 
-    fn render_card(&self, note: &Note, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// A note's card on the board; one of `section` drags to a new place.
+    fn render_card(
+        &self,
+        note: &Note,
+        section: Option<&'static str>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let bg = note_color(note.color, th);
         let id = note.id;
         let trashed = note.trashed_at.is_some();
@@ -1445,6 +1743,15 @@ impl MailWindow {
                     this.open_note(Some(&open), false, None, window, cx)
                 }
             }))
+            .when_some(section.filter(|_| !trashed), |d, section| {
+                let this = cx.entity().downgrade();
+                d.on_drag(NoteDragged, move |_, grab, _, cx| {
+                    let grab = (unpx(grab.x), unpx(grab.y));
+                    this.update(cx, |this, cx| this.start_note_drag(id, section, grab, cx))
+                        .ok();
+                    cx.new(|_| NoDragImage)
+                })
+            })
             .child(
                 div()
                     .px(px(16.0))
@@ -2009,15 +2316,46 @@ mod tests {
     }
 
     #[test]
+    fn a_dragged_order_takes_the_places_the_notes_had() {
+        let note = |id, pinned, position| Note {
+            id,
+            pinned,
+            position,
+            ..Note::default()
+        };
+        let notes = [
+            note(1, true, 9),
+            note(2, false, 8),
+            note(3, false, 5),
+            note(4, false, 2),
+        ];
+        let ids = |notes: &[Note]| notes.iter().map(|n| n.id).collect::<Vec<_>>();
+        // 4 goes above 2; 3 keeps its place between them.
+        let moved = ordered(&notes, &[4, 2]);
+        assert_eq!(ids(&moved), [1, 4, 3, 2]);
+        assert_eq!(ids(&ordered(&moved, &[2, 4])), [1, 2, 3, 4]);
+    }
+
+    #[test]
     fn the_board_fills_the_shortest_column() {
         let long = Note {
             body: "a\n".repeat(10),
             ..Note::default()
         };
         let short = Note::default();
-        let notes = [&long, &short, &short, &short];
-        let columns = masonry(&notes, 2);
-        assert_eq!(columns[0].len(), 1);
-        assert_eq!(columns[1].len(), 3);
+        let heights = [&long, &short, &short, &short].map(card_height);
+        let (places, height) = masonry(&heights, 2, CARD_WIDTH);
+        let right = CARD_WIDTH + GAP;
+        let below = |n: usize| n as f32 * (heights[1] + GAP);
+        assert_eq!(
+            places,
+            [
+                (0.0, 0.0),
+                (right, 0.0),
+                (right, below(1)),
+                (right, below(2))
+            ]
+        );
+        assert_eq!(height, heights[0]);
     }
 }

@@ -114,6 +114,13 @@ impl Daemon {
         Ok(u32::try_from(changed).unwrap_or(u32::MAX))
     }
 
+    /// Puts notes in a new order on the board. Returns how many moved.
+    pub fn order_notes(&self, ids: &[i64]) -> Result<u32, CommandError> {
+        let moved = self.store().order_notes(ids)?;
+        tracing::debug!(moved, "notes ordered");
+        Ok(u32::try_from(moved).unwrap_or(u32::MAX))
+    }
+
     /// Deletes notes for good. Returns how many existed.
     pub fn delete_notes(&self, ids: &[i64]) -> Result<u32, CommandError> {
         let accounts = self.note_accounts(ids)?;

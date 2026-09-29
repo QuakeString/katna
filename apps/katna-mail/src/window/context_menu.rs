@@ -7,6 +7,9 @@
 //! opens where the pointer is and always fits the window. It acts on the
 //! ticked lines when the clicked line is one of them, else on the clicked
 //! line.
+//!
+//! The Calendar page has its own menus in the same card
+//! (`calendar/menu.rs`): on a free time or day, an event and a task.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -42,19 +45,47 @@ const RULE_HEIGHT: f32 = 2.0 * RULE_MARGIN + 1.0;
 /// Room the menu keeps from the window's edges.
 const MARGIN: f32 = 8.0;
 
+use super::calendar::menu::CalTarget;
+
 /// The open right-click menu.
 pub(super) struct ContextMenu {
-    ix: usize,
-    key: EntryKey,
+    what: MenuFor,
     /// Where the pointer was, in the window.
     at: Point<Pixels>,
-    row: Rc<Row>,
     /// The open submenu.
     open: Option<Sub>,
     /// How tall the menu stands without a submenu, as last drawn.
     height: Cell<f32>,
-    /// Each item's height: less than [`ITEM_HEIGHT`] in a short window.
-    row_height: Cell<f32>,
+}
+
+/// What a right-click menu is for.
+enum MenuFor {
+    /// Line `ix` of the mail list.
+    Mail {
+        ix: usize,
+        key: EntryKey,
+        row: Rc<Row>,
+    },
+    Calendar(CalTarget),
+}
+
+impl ContextMenu {
+    fn new(what: MenuFor, at: Point<Pixels>) -> Self {
+        ContextMenu {
+            what,
+            at,
+            open: None,
+            height: Cell::new(0.0),
+        }
+    }
+
+    /// The mail list line it is for.
+    fn line(&self) -> Option<(usize, EntryKey)> {
+        match &self.what {
+            MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
+            MenuFor::Calendar(_) => None,
+        }
+    }
 }
 
 impl MailWindow {
@@ -81,16 +112,30 @@ impl MailWindow {
         };
         self.menu = None;
         self.selected = Some(ix);
-        self.context_menu = Some(ContextMenu {
-            ix,
-            key,
-            at,
-            row,
-            open: None,
-            height: Cell::new(0.0),
-            row_height: Cell::new(ITEM_HEIGHT),
-        });
+        self.context_menu = Some(ContextMenu::new(MenuFor::Mail { ix, key, row }, at));
         cx.notify();
+    }
+
+    /// Opens the menu for a thing on the Calendar page.
+    pub(super) fn open_calendar_context_menu(
+        &mut self,
+        target: CalTarget,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Calendar(target), at));
+        cx.notify();
+    }
+
+    /// Closes the menu; returns the Calendar thing it was for and where
+    /// it opened.
+    pub(super) fn take_calendar_target(&mut self) -> Option<(CalTarget, Point<Pixels>)> {
+        let menu = self.context_menu.take()?;
+        match menu.what {
+            MenuFor::Calendar(target) => Some((target, menu.at)),
+            MenuFor::Mail { .. } => None,
+        }
     }
 
     pub(super) fn close_context_menu(&mut self, cx: &mut Context<Self>) {
@@ -112,11 +157,16 @@ impl MailWindow {
         }
     }
 
+    /// Closes the menu; returns the mail list line it was for.
+    fn take_context_line(&mut self) -> Option<(usize, EntryKey)> {
+        self.context_menu.take().and_then(|m| m.line())
+    }
+
     fn context_act(&mut self, act: Act, cx: &mut Context<Self>) {
-        let Some(menu) = self.context_menu.take() else {
+        let Some((_, key)) = self.take_context_line() else {
             return;
         };
-        let keys = self.context_targets(menu.key);
+        let keys = self.context_targets(key);
         self.act(act, keys, cx);
     }
 
@@ -125,16 +175,19 @@ impl MailWindow {
         let Some(menu) = self.context_menu.take() else {
             return;
         };
-        let keys = self.context_targets(menu.key);
+        let Some((_, key)) = menu.line() else {
+            return;
+        };
+        let keys = self.context_targets(key);
         self.open_snooze_menu(keys, menu.at, cx);
     }
 
     /// Opens the conversation and starts the answer in it.
     fn context_reply(&mut self, kind: Kind, window: &mut Window, cx: &mut Context<Self>) {
-        let Some(menu) = self.context_menu.take() else {
+        let Some((ix, _)) = self.take_context_line() else {
             return;
         };
-        self.open(menu.ix, window, cx);
+        self.open(ix, window, cx);
         self.open_compose(kind, None, window, cx);
     }
 
@@ -170,18 +223,226 @@ impl MailWindow {
         let menu = self.context_menu.as_ref()?;
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
-        let row = &menu.row;
-        let rh = self.context_row_height(vh);
-        menu.row_height.set(rh);
-        // Resting on an item of the menu itself folds an open submenu away.
+        // The menu, and a submenu, get shorter with the window, their
+        // items closer together, down to MIN_ITEM_HEIGHT; below that they
+        // scroll.
+        let room = vh - 2.0 * MARGIN;
+        let squeeze = |rows: &Rows, room: f32| {
+            let rules = rows.rules as f32 * RULE_HEIGHT;
+            ((room - 2.0 * PADDING - rules) / rows.items.max(1) as f32)
+                .clamp(MIN_ITEM_HEIGHT, ITEM_HEIGHT)
+        };
+        let (mut main, mut parents) = self.context_main_rows(ITEM_HEIGHT, th, cx);
+        let mut rh = ITEM_HEIGHT;
+        if main.height() > room {
+            rh = squeeze(&main, room);
+            (main, parents) = self.context_main_rows(rh, th, cx);
+        }
+
+        // Where the window has no room for a submenu beside the menu, or
+        // for the whole menu, a submenu opens in the menu's place under a
+        // row back, as the main menu does on a phone.
+        let fits = |h: f32| h.min(vh - 2.0 * MARGIN);
+        menu.height.set(main.height());
+        let drills = self.context_menu_drills(window);
+        // Opens where the pointer is, flipping left or up where there is no
+        // room, else pushed back in from the edge.
+        let place = |at: f32, size: f32, room: f32| {
+            if at + size <= room - MARGIN {
+                at
+            } else if at - size >= MARGIN {
+                at - size
+            } else {
+                (room - MARGIN - size).max(MARGIN)
+            }
+        };
+        let at = (unpx(menu.at.x), unpx(menu.at.y));
+        let x = place(at.0, MENU_WIDTH, vw);
+        let y = place(at.1, fits(main.height()), vh);
+
+        let open = menu.open.map(|sub| {
+            // In the menu's place, under the row back.
+            let room = if drills {
+                room - rh - RULE_HEIGHT
+            } else {
+                room
+            };
+            let mut rows = self.context_sub_rows(sub, ITEM_HEIGHT, th, cx);
+            if rows.height() > room {
+                rows = self.context_sub_rows(sub, squeeze(&rows, room), th, cx);
+            }
+            (sub, rows)
+        });
+        let (content, card_y, beside) = match open {
+            Some((sub, rows)) if drills => {
+                let mut card = Rows::new(rh);
+                card.item(
+                    menu_row("context-back", "back", sub.label(), th, rh)
+                        .font_weight(FontWeight::MEDIUM)
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.open_context_sub(None, cx);
+                        })),
+                );
+                card.rule(th);
+                card.els.extend(rows.els);
+                card.h += rows.h - PADDING;
+                let h = fits(card.height());
+                (card, y.min(vh - MARGIN - h).max(MARGIN), None)
+            }
+            Some((sub, rows)) => {
+                // Beside its row, the first item level with it.
+                let top = parents
+                    .iter()
+                    .find(|(s, _)| *s == sub)
+                    .map_or(0.0, |(_, top)| *top);
+                let sub_x = if x + MENU_WIDTH - 4.0 + SUB_WIDTH <= vw - MARGIN {
+                    x + MENU_WIDTH - 4.0
+                } else {
+                    (x - SUB_WIDTH + 4.0).max(MARGIN)
+                };
+                let h = fits(rows.height());
+                let sub_y = (y + top - PADDING).min(vh - MARGIN - h).max(MARGIN);
+                (main, y, Some((sub, rows, sub_x, sub_y)))
+            }
+            None => (main, y, None),
+        };
+
+        let card = |id: SharedString, rows: Rows, x: f32, y: f32, width: f32, priority: usize| {
+            let h = fits(rows.height());
+            deferred(
+                anchored()
+                    .position(point(px(x), px(y)))
+                    .snap_to_window_with_margin(px(MARGIN))
+                    .child(
+                        div().occlude().child(
+                            div()
+                                .id(id.clone())
+                                .key_context(crate::widgets::MENU_CONTEXT)
+                                .w(px(width))
+                                .max_h(px(h))
+                                .overflow_y_scroll()
+                                .py(px(PADDING))
+                                .flex()
+                                .flex_col()
+                                .map(|d| raised(d, th, 8.0, 3.0))
+                                .text_size(px(14.0))
+                                .text_color(rgba(th.text))
+                                // Left goes back from a submenu.
+                                .on_key_down(cx.listener(|this, event: &KeyDownEvent, _, cx| {
+                                    if !event.keystroke.modifiers.modified()
+                                        && event.keystroke.key == "left"
+                                        && this.context_menu_back(cx)
+                                    {
+                                        cx.stop_propagation();
+                                    }
+                                }))
+                                .children(rows.els)
+                                .with_animation(
+                                    id,
+                                    Animation::new(Duration::from_millis(140))
+                                        .with_easing(ease_out_quint()),
+                                    |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
+                                ),
+                        ),
+                    ),
+            )
+            .with_priority(priority)
+        };
+        let close = || {
+            cx.listener(|this: &mut Self, _: &gpui::MouseDownEvent, _, cx| {
+                this.close_context_menu(cx)
+            })
+        };
+        let base = match &menu.what {
+            MenuFor::Mail { ix, .. } => format!("context-menu-{ix}"),
+            MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
+        };
+        let key = match (menu.open, drills) {
+            (Some(sub), true) => format!("{base}-{sub:?}"),
+            _ => base,
+        };
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .child(
+                    deferred(
+                        div()
+                            .id("context-scrim")
+                            .absolute()
+                            .top(px(-2000.0))
+                            .left(px(-4000.0))
+                            .w(px(8000.0))
+                            .h(px(6000.0))
+                            .occlude()
+                            .on_mouse_down(MouseButton::Left, close())
+                            .on_mouse_down(MouseButton::Right, close()),
+                    )
+                    .with_priority(3),
+                )
+                .child(card(key.into(), content, x, card_y, MENU_WIDTH, 4))
+                .children(beside.map(|(sub, rows, sub_x, sub_y)| {
+                    card(
+                        format!("context-sub-{sub:?}").into(),
+                        rows,
+                        sub_x,
+                        sub_y,
+                        SUB_WIDTH,
+                        5,
+                    )
+                }))
+                .into_any_element(),
+        )
+    }
+
+    /// The menu's own items at `rh` each, with where each submenu's row
+    /// starts.
+    fn context_main_rows(
+        &self,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> (Rows, Vec<(Sub, f32)>) {
+        match self.context_menu.as_ref().map(|m| &m.what) {
+            Some(MenuFor::Mail { row, .. }) => self.mail_menu_rows(row, rh, th, cx),
+            Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
+            None => (Rows::new(rh), Vec::new()),
+        }
+    }
+
+    /// An item of the menu itself: resting on it folds an open submenu
+    /// away.
+    pub(super) fn context_item(
+        &self,
+        id: impl Into<ElementId>,
+        name: &str,
+        label: impl Into<SharedString>,
+        rh: f32,
+        th: &Theme,
+        cx: &Context<Self>,
+    ) -> Stateful<Div> {
+        menu_row(id, name, label.into(), th, rh).on_hover(cx.listener(
+            |this, hovered: &bool, _, cx| {
+                if *hovered {
+                    this.open_context_sub(None, cx);
+                }
+            },
+        ))
+    }
+
+    /// The mail list's menu.
+    fn mail_menu_rows(
+        &self,
+        row: &Row,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> (Rows, Vec<(Sub, f32)>) {
         let plain = |id: &'static str, name: &str, label: &str| {
-            menu_row(id, name, label.to_owned().into(), th, rh).on_hover(cx.listener(
-                |this, hovered: &bool, _, cx| {
-                    if *hovered {
-                        this.open_context_sub(None, cx);
-                    }
-                },
-            ))
+            self.context_item(id, name, label.to_owned(), rh, th, cx)
         };
         let act = |act: Act| {
             cx.listener(
@@ -280,7 +541,7 @@ impl MailWindow {
             if sub == Sub::FollowUp && drafts {
                 continue;
             }
-            let top = main.item(self.context_parent(sub, th, cx));
+            let top = main.item(self.context_parent(sub, rh, th, cx));
             parents.push((sub, top));
         }
         main.rule(th);
@@ -292,18 +553,14 @@ impl MailWindow {
                 row.correspondent.clone()
             };
             main.item(
-                menu_row(
+                self.context_item(
                     "context-find",
                     "search",
-                    tr!("menu-find-from", name = name.as_str()).into(),
-                    th,
+                    tr!("menu-find-from", name = name.as_str()),
                     rh,
+                    th,
+                    cx,
                 )
-                .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
-                    if *hovered {
-                        this.open_context_sub(None, cx);
-                    }
-                }))
                 .on_click(cx.listener(move |this, _, window, cx| {
                     this.close_context_menu(cx);
                     this.search_for(format!("from:{sender}"), window, cx);
@@ -317,166 +574,25 @@ impl MailWindow {
                 &tr!("menu-new-window"),
             )
             .on_click(cx.listener(|this, _, _, cx| {
-                let key = this.context_menu.as_ref().map(|m| m.key);
-                this.close_context_menu(cx);
+                let key = this.take_context_line().map(|(_, key)| key);
+                cx.notify();
                 if let Some(ix) = this.entries.iter().position(|e| Some(e.key) == key) {
                     this.open_in_window(ix, cx);
                 }
             })),
         );
-
-        // Where the window has no room for a submenu beside the menu, or
-        // for the whole menu, a submenu opens in the menu's place under a
-        // row back, as the main menu does on a phone.
-        let fits = |h: f32| h.min(vh - 2.0 * MARGIN);
-        menu.height.set(main.height());
-        let drills = self.context_menu_drills(window);
-        // Opens where the pointer is, flipping left or up where there is no
-        // room, else pushed back in from the edge.
-        let place = |at: f32, size: f32, room: f32| {
-            if at + size <= room - MARGIN {
-                at
-            } else if at - size >= MARGIN {
-                at - size
-            } else {
-                (room - MARGIN - size).max(MARGIN)
-            }
-        };
-        let at = (unpx(menu.at.x), unpx(menu.at.y));
-        let x = place(at.0, MENU_WIDTH, vw);
-        let y = place(at.1, fits(main.height()), vh);
-
-        let open = menu
-            .open
-            .map(|sub| (sub, self.context_sub_rows(sub, th, cx)));
-        let (content, card_y, beside) = match open {
-            Some((sub, rows)) if drills => {
-                let mut card = Rows::new(rh);
-                card.item(
-                    menu_row("context-back", "back", sub.label(), th, rh)
-                        .font_weight(FontWeight::MEDIUM)
-                        .on_click(cx.listener(|this, _, _, cx| {
-                            cx.stop_propagation();
-                            this.open_context_sub(None, cx);
-                        })),
-                );
-                card.rule(th);
-                card.els.extend(rows.els);
-                card.h += rows.h - PADDING;
-                let h = fits(card.height());
-                (card, y.min(vh - MARGIN - h).max(MARGIN), None)
-            }
-            Some((sub, rows)) => {
-                // Beside its row, the first item level with it.
-                let top = parents
-                    .iter()
-                    .find(|(s, _)| *s == sub)
-                    .map_or(0.0, |(_, top)| *top);
-                let sub_x = if x + MENU_WIDTH - 4.0 + SUB_WIDTH <= vw - MARGIN {
-                    x + MENU_WIDTH - 4.0
-                } else {
-                    (x - SUB_WIDTH + 4.0).max(MARGIN)
-                };
-                let h = fits(rows.height());
-                let sub_y = (y + top - PADDING).min(vh - MARGIN - h).max(MARGIN);
-                (main, y, Some((sub, rows, sub_x, sub_y)))
-            }
-            None => (main, y, None),
-        };
-
-        let card = |id: SharedString, rows: Rows, x: f32, y: f32, width: f32, priority: usize| {
-            let h = fits(rows.height());
-            deferred(
-                anchored()
-                    .position(point(px(x), px(y)))
-                    .snap_to_window_with_margin(px(MARGIN))
-                    .child(
-                        div().occlude().child(
-                            div()
-                                .id(id.clone())
-                                .key_context(crate::widgets::MENU_CONTEXT)
-                                .w(px(width))
-                                .max_h(px(h))
-                                .overflow_y_scroll()
-                                .py(px(PADDING))
-                                .flex()
-                                .flex_col()
-                                .map(|d| raised(d, th, 8.0, 3.0))
-                                .text_size(px(14.0))
-                                .text_color(rgba(th.text))
-                                // Left goes back from a submenu.
-                                .on_key_down(cx.listener(|this, event: &KeyDownEvent, _, cx| {
-                                    if !event.keystroke.modifiers.modified()
-                                        && event.keystroke.key == "left"
-                                        && this.context_menu_back(cx)
-                                    {
-                                        cx.stop_propagation();
-                                    }
-                                }))
-                                .children(rows.els)
-                                .with_animation(
-                                    id,
-                                    Animation::new(Duration::from_millis(140))
-                                        .with_easing(ease_out_quint()),
-                                    |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
-                                ),
-                        ),
-                    ),
-            )
-            .with_priority(priority)
-        };
-        let close = || {
-            cx.listener(|this: &mut Self, _: &gpui::MouseDownEvent, _, cx| {
-                this.close_context_menu(cx)
-            })
-        };
-        let key = match (menu.open, drills) {
-            (Some(sub), true) => format!("context-menu-{}-{sub:?}", menu.ix),
-            _ => format!("context-menu-{}", menu.ix),
-        };
-        Some(
-            div()
-                .absolute()
-                .top_0()
-                .left_0()
-                .size_full()
-                .child(
-                    deferred(
-                        div()
-                            .id("context-scrim")
-                            .absolute()
-                            .top(px(-2000.0))
-                            .left(px(-4000.0))
-                            .w(px(8000.0))
-                            .h(px(6000.0))
-                            .occlude()
-                            .on_mouse_down(MouseButton::Left, close())
-                            .on_mouse_down(MouseButton::Right, close()),
-                    )
-                    .with_priority(3),
-                )
-                .child(card(key.into(), content, x, card_y, MENU_WIDTH, 4))
-                .children(beside.map(|(sub, rows, sub_x, sub_y)| {
-                    card(
-                        format!("context-sub-{sub:?}").into(),
-                        rows,
-                        sub_x,
-                        sub_y,
-                        SUB_WIDTH,
-                        5,
-                    )
-                }))
-                .into_any_element(),
-        )
+        (main, parents)
     }
 
     /// The row that opens submenu `sub`: as the pointer comes to it, or on
     /// a click where submenus open in the menu's place.
-    fn context_parent(&self, sub: Sub, th: &Theme, cx: &Context<Self>) -> Stateful<Div> {
-        let rh = self
-            .context_menu
-            .as_ref()
-            .map_or(ITEM_HEIGHT, |m| m.row_height.get());
+    pub(super) fn context_parent(
+        &self,
+        sub: Sub,
+        rh: f32,
+        th: &Theme,
+        cx: &Context<Self>,
+    ) -> Stateful<Div> {
         let open = self
             .context_menu
             .as_ref()
@@ -505,34 +621,6 @@ impl MailWindow {
             .child(icon("chevron-right", th.text_dim, 18.0))
     }
 
-    /// How tall each item stands: the menu gets shorter with the window,
-    /// its items closer together, down to [`MIN_ITEM_HEIGHT`].
-    fn context_row_height(&self, vh: f32) -> f32 {
-        let Some(menu) = self.context_menu.as_ref() else {
-            return ITEM_HEIGHT;
-        };
-        let role = self.folder_role();
-        let drafts = role == Role::Drafts;
-        // Counted as `render_context_menu` lays them out.
-        let answers = if drafts { 0 } else { 3 };
-        let archive = usize::from(!matches!(
-            role,
-            Role::Drafts | Role::Sent | Role::Junk | Role::Trash | Role::Archive | Role::All
-        ));
-        let to_inbox = usize::from(matches!(role, Role::Trash | Role::Archive | Role::All));
-        let snooze = usize::from(!matches!(
-            role,
-            Role::Drafts | Role::Sent | Role::Trash | Role::Junk
-        ));
-        let subs = if drafts { 2 } else { 3 };
-        let find = usize::from(!menu.row.sender.is_empty());
-        // Delete, read, star and new window.
-        let items = answers + archive + to_inbox + snooze + subs + find + 4;
-        let rules = if drafts { 2.0 } else { 3.0 };
-        let room = vh - 2.0 * MARGIN - 2.0 * PADDING - rules * RULE_HEIGHT;
-        (room / items as f32).clamp(MIN_ITEM_HEIGHT, ITEM_HEIGHT)
-    }
-
     /// Whether submenus open in the menu's place: the window is too narrow
     /// for one beside the menu, or too short for the whole menu.
     fn context_menu_drills(&self, window: &Window) -> bool {
@@ -543,12 +631,14 @@ impl MailWindow {
     }
 
     /// The items of submenu `sub`.
-    fn context_sub_rows(&self, sub: Sub, th: &Theme, cx: &Context<Self>) -> Rows {
-        let rh = self
-            .context_menu
-            .as_ref()
-            .map_or(ITEM_HEIGHT, |m| m.row_height.get());
-        let row = self.context_menu.as_ref().map(|m| m.row.clone());
+    fn context_sub_rows(&self, sub: Sub, rh: f32, th: &Theme, cx: &Context<Self>) -> Rows {
+        let row = match self.context_menu.as_ref().map(|m| &m.what) {
+            Some(MenuFor::Mail { row, .. }) => Some(row.clone()),
+            Some(MenuFor::Calendar(target)) => {
+                return self.calendar_sub_rows(target, sub, rh, th, cx);
+            }
+            None => None,
+        };
         let act = |act: Act| {
             cx.listener(
                 move |this: &mut Self, _: &gpui::ClickEvent, _: &mut Window, cx| {
@@ -589,10 +679,10 @@ impl MailWindow {
                         rh,
                     )
                     .on_click(cx.listener(|this, _, _, cx| {
-                        let Some(menu) = this.context_menu.take() else {
+                        let Some((_, key)) = this.take_context_line() else {
                             return;
                         };
-                        let keys = this.context_targets(menu.key);
+                        let keys = this.context_targets(key);
                         this.add_to_tasks_from(keys, cx);
                     })),
                 );
@@ -605,10 +695,10 @@ impl MailWindow {
                         rh,
                     )
                     .on_click(cx.listener(|this, _, window, cx| {
-                        let Some(menu) = this.context_menu.take() else {
+                        let Some((_, key)) = this.take_context_line() else {
                             return;
                         };
-                        let keys = this.context_targets(menu.key);
+                        let keys = this.context_targets(key);
                         this.add_note_from(keys, window, cx);
                     })),
                 );
@@ -621,10 +711,10 @@ impl MailWindow {
                         rh,
                     )
                     .on_click(cx.listener(|this, _, window, cx| {
-                        let Some(menu) = this.context_menu.take() else {
+                        let Some((_, key)) = this.take_context_line() else {
                             return;
                         };
-                        this.schedule_meeting_from(Some(menu.key), window, cx);
+                        this.schedule_meeting_from(Some(key), window, cx);
                     })),
                 );
                 rows.item(
@@ -636,10 +726,10 @@ impl MailWindow {
                         rh,
                     )
                     .on_click(cx.listener(|this, _, window, cx| {
-                        let Some(menu) = this.context_menu.take() else {
+                        let Some((_, key)) = this.take_context_line() else {
                             return;
                         };
-                        this.start_call_from(Some(menu.key), window, cx);
+                        this.start_call_from(Some(key), window, cx);
                     })),
                 );
             }
@@ -686,6 +776,8 @@ impl MailWindow {
                         .on_click(act(Act::Pin(true)))
                 });
             }
+            // The Calendar's, above.
+            Sub::Color | Sub::Calendar | Sub::Answer | Sub::Date => {}
         }
         rows
     }
@@ -700,6 +792,14 @@ pub(super) enum Sub {
     FollowUp,
     /// Spam, importance and pinning.
     More,
+    /// An event's color.
+    Color,
+    /// The calendars an event can move to.
+    Calendar,
+    /// Yes, No or Maybe to an invitation.
+    Answer,
+    /// Another day for a task.
+    Date,
 }
 
 impl Sub {
@@ -710,6 +810,10 @@ impl Sub {
             Sub::MoveTo => "context-move-to",
             Sub::FollowUp => "context-follow-up",
             Sub::More => "context-more",
+            Sub::Color => "context-color",
+            Sub::Calendar => "context-calendar",
+            Sub::Answer => "context-answer",
+            Sub::Date => "context-date",
         }
     }
 
@@ -718,6 +822,10 @@ impl Sub {
             Sub::MoveTo => "move-to",
             Sub::FollowUp => "event",
             Sub::More => "more",
+            Sub::Color => "contrast",
+            Sub::Calendar => "move-to",
+            Sub::Answer => "check-circle",
+            Sub::Date => "today",
         }
     }
 
@@ -726,38 +834,47 @@ impl Sub {
             Sub::MoveTo => tr!("menu-move-to"),
             Sub::FollowUp => tr!("menu-follow-up"),
             Sub::More => tr!("menu-more"),
+            Sub::Color => tr!("calendar-menu-color"),
+            Sub::Calendar => tr!("menu-move-to"),
+            Sub::Answer => tr!("calendar-going"),
+            Sub::Date => tr!("tasks-date"),
         }
         .into()
     }
 }
 
 /// A menu's rows and how tall they stand.
-struct Rows {
+pub(super) struct Rows {
     els: Vec<AnyElement>,
     /// Each item's height.
     row: f32,
     /// From the menu's top to below the last row.
     h: f32,
+    items: usize,
+    rules: usize,
 }
 
 impl Rows {
-    fn new(row: f32) -> Self {
+    pub(super) fn new(row: f32) -> Self {
         Rows {
             els: Vec::new(),
             row,
             h: PADDING,
+            items: 0,
+            rules: 0,
         }
     }
 
     /// Adds a row; returns where it starts, from the menu's top.
-    fn item(&mut self, row: impl IntoElement) -> f32 {
+    pub(super) fn item(&mut self, row: impl IntoElement) -> f32 {
         let top = self.h;
         self.els.push(row.into_any_element());
         self.h += self.row;
+        self.items += 1;
         top
     }
 
-    fn rule(&mut self, th: &Theme) {
+    pub(super) fn rule(&mut self, th: &Theme) {
         self.els.push(
             div()
                 .my(px(RULE_MARGIN))
@@ -766,6 +883,7 @@ impl Rows {
                 .into_any_element(),
         );
         self.h += RULE_HEIGHT;
+        self.rules += 1;
     }
 
     /// The whole menu's height, padding below included.
@@ -775,9 +893,20 @@ impl Rows {
 }
 
 /// One item of the menu: its icon and label.
-fn menu_row(
+pub(super) fn menu_row(
     id: impl Into<ElementId>,
     icon_name: &str,
+    label: SharedString,
+    th: &Theme,
+    height: f32,
+) -> Stateful<Div> {
+    menu_row_with(id, icon(icon_name, th.text_dim, 20.0), label, th, height)
+}
+
+/// An item led by `lead`, 20 px wide, in place of an icon.
+pub(super) fn menu_row_with(
+    id: impl Into<ElementId>,
+    lead: AnyElement,
     label: SharedString,
     th: &Theme,
     height: f32,
@@ -795,6 +924,14 @@ fn menu_row(
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .menu_key(th)
-        .child(icon(icon_name, th.text_dim, 20.0))
+        .child(
+            div()
+                .flex_none()
+                .size(px(20.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(lead),
+        )
         .child(div().flex_1().min_w_0().truncate().child(label))
 }

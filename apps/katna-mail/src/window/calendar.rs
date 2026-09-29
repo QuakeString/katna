@@ -30,9 +30,11 @@ use katna_ui::px;
 use super::account_status::{AccountStatus, Of, Say};
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
+use menu::CalTarget;
 
 mod birthdays;
 mod free;
+pub(super) mod menu;
 mod search;
 mod sets;
 mod tasks;
@@ -1631,6 +1633,10 @@ impl MailWindow {
                             .cursor_pointer()
                             .child(div().min_w_0().truncate().child(title)),
                     )
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Event(Box::new(occurrence.clone())), cx),
+                    )
                     .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                         this.open_calendar_event(open.clone(), event.position(), cx)
                     }))
@@ -1705,6 +1711,19 @@ impl MailWindow {
                     .min_w_0()
                     .h_full()
                     .when(ix > 0, |d| d.border_l_1().border_color(rgba(th.divider)))
+                    .on_mouse_down(MouseButton::Right, {
+                        let scroll = scroll.clone();
+                        cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                            let top = scroll.bounds().top() + scroll.offset().y;
+                            let y = katna_ui::unpx(event.position.y - top);
+                            let time = Some(super::event_edit::time_at(y, hour_height));
+                            this.open_calendar_menu(
+                                CalTarget::Slot { day, time },
+                                event.position,
+                                cx,
+                            );
+                        })
+                    })
                     .on_mouse_down(
                         MouseButton::Left,
                         cx.listener(move |this, event: &gpui::MouseDownEvent, window, cx| {
@@ -1824,6 +1843,15 @@ impl MailWindow {
                             .relative()
                             .flex_1()
                             .h(px(all_day_height))
+                            .on_mouse_down(
+                                MouseButton::Right,
+                                cx.listener(|this, event: &gpui::MouseDownEvent, _, cx| {
+                                    if let Some((day, _)) = this.grid_point(event.position) {
+                                        let slot = CalTarget::Slot { day, time: None };
+                                        this.open_calendar_menu(slot, event.position, cx);
+                                    }
+                                }),
+                            )
                             .children(bars)
                             .children(task_bars),
                     ),
@@ -1951,6 +1979,10 @@ impl MailWindow {
                     }
                 })
             })
+            .on_mouse_down(
+                MouseButton::Right,
+                self.calendar_menu_on(CalTarget::Event(Box::new(occurrence.clone())), cx),
+            )
             .when(dragged.is_some(), |d| d.opacity(0.85))
             .absolute()
             .top(px(top + 1.0))
@@ -2146,6 +2178,10 @@ impl MailWindow {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
+                            .on_mouse_down(
+                                MouseButton::Right,
+                                self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
+                            )
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.open_calendar_day(day, Some(CalView::Day), cx)
                             }))
@@ -2316,12 +2352,23 @@ impl MailWindow {
                                 )
                         })
                         .child(div().min_w_0().truncate().child(title))
+                        .on_mouse_down(
+                            MouseButton::Right,
+                            self.calendar_menu_on(
+                                CalTarget::Event(Box::new((*occurrence).clone())),
+                                cx,
+                            ),
+                        )
                         .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                             this.open_calendar_event(open.clone(), event.position(), cx)
                         }))
                 });
                 div()
                     .id(SharedString::from(format!("month-day-{day}")))
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
+                    )
                     .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
                         this.start_new_event(day, None, true, event.position(), window, cx)
                     }))
@@ -2450,7 +2497,10 @@ impl MailWindow {
         let rows = days.into_iter().map(|(day, list)| {
             let events = list.into_iter().map(|occurrence| {
                 let open = occurrence.clone();
+                let menu =
+                    self.calendar_menu_on(CalTarget::Event(Box::new(occurrence.clone())), cx);
                 self.schedule_event(&day.to_string(), occurrence, th)
+                    .on_mouse_down(MouseButton::Right, menu)
                     .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                         this.open_calendar_event(open.clone(), event.position(), cx)
                     }))

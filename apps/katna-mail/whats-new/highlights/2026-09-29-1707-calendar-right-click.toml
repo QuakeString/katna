@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click on the Calendar"
+text = """
+Right-click a free time or day to add an event, focus time or out of office
+there. Right-click an event to edit, duplicate, delete, answer, join,
+email the guests, color it or move it to another calendar, and a task to
+tick it off, star it, give it another day or delete it. Undo takes a change
+back.
+"""
