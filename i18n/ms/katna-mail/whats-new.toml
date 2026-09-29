@@ -1666,3 +1666,12 @@ sesuatu akaun tidak dapat dimuatkan, satu baris di bawahnya menerangkan
 sebabnya, dengan satu klik untuk membetulkannya: log masuk semula, atau
 cuba lagi.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Soalan sebelum menghantar kekal kelihatan"
+text = """
+Soalan seperti “Adakah anda mahu melampirkan fail?” kini dibuka di
+tengah tetingkap, walau sepanjang mana pun mesej yang anda tulis atau
+majukan, jadi ia tidak pernah tersembunyi lebih jauh ke bawah halaman.
+Enter menjawab dengan butang utama dan Esc kembali ke mesej.
+"""

@@ -1618,3 +1618,12 @@ Alla konton visas nu i sidopanelen i Uppgifter. När ett kontos uppgifter
 inte kan läsas in säger en rad under det varför, med ett klick som löser
 det: logga in igen eller försök igen.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Frågor före sändning syns alltid"
+text = """
+Frågor som ”Tänkte du bifoga filer?” öppnas nu mitt i fönstret, hur
+långt meddelandet du skriver eller vidarebefordrar än är, så att de
+aldrig göms längre ned på sidan. Enter svarar med huvudknappen och Esc
+går tillbaka till meddelandet.
+"""

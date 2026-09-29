@@ -1708,3 +1708,13 @@ Quand les tâches d’un compte ne se chargent pas, une ligne en dessous
 dit pourquoi, avec un clic pour régler le problème : se reconnecter, ou
 réessayer.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Les questions avant l’envoi restent en vue"
+text = """
+Les questions comme « Vouliez-vous joindre des fichiers ? » s’ouvrent
+désormais au milieu de la fenêtre, quelle que soit la longueur du
+message que vous écrivez ou transférez, et ne sont donc jamais cachées
+plus bas dans la page. Entrée répond avec le bouton principal et Échap
+revient au message.
+"""

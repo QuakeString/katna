@@ -1598,3 +1598,12 @@ Mọi tài khoản giờ đều hiện trong bảng bên của Việc cần làm
 làm của một tài khoản không tải được, một dòng bên dưới cho biết lý do,
 kèm một cú nhấp để khắc phục: đăng nhập lại hoặc thử lại.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Câu hỏi trước khi gửi luôn trong tầm nhìn"
+text = """
+Các câu hỏi như “Bạn có định đính kèm tệp không?” giờ mở ở giữa cửa sổ,
+dù thư bạn đang viết hay chuyển tiếp dài đến đâu, nên chúng không bao
+giờ bị khuất ở phía dưới trang. Enter trả lời bằng nút chính và Esc quay
+lại thư.
+"""

@@ -1706,3 +1706,13 @@ imisebenzi ye-akhawunti ingalayishi, umugqa ongaphansi kwayo usho
 isizathu, nokuchofoza okukodwa kokuyilungisa: ngena futhi, noma zama
 futhi.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Imibuzo ngaphambi kokuthumela ihlala ibonakala"
+text = """
+Imibuzo efana nokuthi “Ingabe ubuhlose ukunamathisela amafayela?” manje
+ivuleka phakathi newindi, noma ngabe umlayezo owubhalayo noma
+owudluliselayo mude kangakanani, ngakho ayifihleki neze ngezansi
+ekhasini. I-Enter iphendula ngenkinobho eyinhloko futhi i-Esc ibuyela
+emlayezweni.
+"""
