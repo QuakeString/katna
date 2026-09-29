@@ -1222,3 +1222,23 @@ Akaụntụ ndị na-abanye site na okwuntughe na-edebe ọrụ ha ugbu a na sav
 ozi ha mgbe ọ na-enye CalDAV, ya mere ọrụ ndị ahụ na-apụtakwa n'ngwa
 sava ahụ na n'ekwentị.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Tinye ma gbanwee ihe omume"
+text = """
+Pịa ma ọ bụ dọrọ na kalenda, ma ọ bụ pịa C, ka ịtinye ihe
+omume. Dọrọ ihe omume ka ị kpugharịa ya ma ọ bụ dọrọ ọnụ ala
+ya ka ịgbanwe ogologo ya, meghee ya ka ịgbanwe oge,
+nmegharị, ihe ncheta, ndị ọbịa ma ọ bụ tinye ọkpụkpọ Meet ma
+ọ bụ Teams. Zaa oku a kpọrọ gị site na Ee, Mba ma ọ bụ
+Ikekwe. Megharịa na-eweghachi ihe niile.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalenda sitere n'akaụntụ ndị ọzọ"
+text = """
+Katna na-achọtazi kalenda nke Yahoo, Zoho, iCloud, Fastmail,
+GMX na akaụntụ ndị ọzọ ugbu a, ọbụlagodi mgbe ha nọ na sava
+ọzọ karịa nke ozi ebe. Ọ na-anwa ụzọ kacha mma nke akaụntụ ọ
+bụla mbụ, wee nwaa nke ọzọ mgbe nke ahụ anaghị arụ ọrụ.
+"""

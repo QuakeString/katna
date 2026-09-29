@@ -38,8 +38,80 @@ calendar-guests =
        *[other] { $count } tetamu
     }
 calendar-guest-answers = { $yes } ya, { $maybe } mungkin, { $no } tidak, { $waiting } menunggu
+calendar-organizer = Penganjur
+calendar-optional = Tidak wajib
 calendar-open-web = Buka dalam pelayar
 calendar-close = Tutup
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Tambah tajuk
+calendar-add-location = Tambah lokasi
+calendar-add-notes = Tambah penerangan
+calendar-add-guests = Tambah tetamu
+calendar-remove-guest = Alih keluar
+calendar-add-meet = Tambah persidangan video Google Meet
+calendar-add-teams = Tambah mesyuarat Teams
+calendar-has-call = Persidangan video ditambahkan
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Sepanjang hari
+calendar-more-options = Lagi pilihan
+calendar-save = Simpan
+calendar-saved = Acara disimpan
+calendar-deleted = Acara dipadam
+calendar-discard = Buang perubahan
+calendar-edit = Edit acara
+calendar-delete = Padam acara
+calendar-event-details = Butiran acara
+calendar-busy = Sibuk
+calendar-free = Terluang
+calendar-cancel = Batal
+calendar-ok = OK
+calendar-read-only = Anda tidak boleh mengubah acara dalam kalendar ini
+calendar-none-editable = Belum ada kalendar yang boleh anda tambahkan acara
+calendar-no-such-time = Masa itu tidak wujud dalam zon waktu anda
+calendar-end-before-start = Acara tamat sebelum bermula
+calendar-repeat-never = Tidak berulang
+calendar-repeat-daily = Harian
+calendar-repeat-weekly = Mingguan pada hari { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Bulanan pada { $weekday } pertama
+        [2] Bulanan pada { $weekday } kedua
+        [3] Bulanan pada { $weekday } ketiga
+        [4] Bulanan pada { $weekday } keempat
+       *[other] Bulanan pada { $weekday } terakhir
+    }
+calendar-repeat-yearly = Tahunan pada { $day }
+calendar-repeat-weekdays = Setiap hari bekerja (Isnin hingga Jumaat)
+calendar-repeat-custom = Tersuai
+calendar-reminder-none = Tiada pemberitahuan
+calendar-reminder-at-start = Semasa bermula
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } minit sebelum
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count } jam sebelum
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count } hari sebelum
+    }
+calendar-scope-edit-title = Edit acara berulang
+calendar-scope-delete-title = Padam acara berulang
+calendar-scope-this = Acara ini
+calendar-scope-following = Acara ini dan acara seterusnya
+calendar-scope-all = Semua acara
+calendar-scope-respond-title = Jawapan untuk acara berulang
+calendar-going = Hadir?
+calendar-answer-yes = Ya
+calendar-answer-no = Tidak
+calendar-answer-maybe = Mungkin
+calendar-answered-yes = Anda akan hadir
+calendar-answered-no = Anda tidak akan hadir
+calendar-answered-maybe = Anda mungkin hadir
 
 ## The day's agenda beside the mail.
 

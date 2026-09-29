@@ -1226,3 +1226,22 @@ Rekeninge wat met ’n wagwoord aanmeld, hou nou hul take op hul
 e-posbediener as dit CalDAV bied, sodat die take ook in die bediener
 se eie toepassings en op die foon verskyn.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Voeg geleenthede by en verander hulle"
+text = """
+Klik of sleep op die kalender, of druk C, om ’n geleentheid by te voeg.
+Sleep ’n geleentheid om dit te skuif of sy onderste rand om sy lengte te
+verander, en maak dit oop om die tyd, herhaling, herinneringe en gaste
+te verander of ’n Meet- of Teams-oproep by te voeg. Antwoord op
+uitnodigings met Ja, Nee of Miskien. Ontdoen sit alles terug.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalenders van meer rekeninge"
+text = """
+Katna vind nou die kalenders van Yahoo, Zoho, iCloud, Fastmail, GMX en
+ander rekeninge, selfs wanneer hulle op ’n ander bediener as die e-pos
+is. Dit probeer eers elke rekening se beste manier en ’n ander wanneer
+daardie een af is.
+"""

@@ -153,6 +153,8 @@ pub enum TaskCommand {
         list: i64,
         parent: Option<i64>,
         title: String,
+        /// `YYYY-MM-DD`, or empty.
+        due: String,
         mail: String,
     },
     /// Takes back the newest open task made from each of these mails (Undo
@@ -185,17 +187,23 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
             list,
             parent,
             title,
+            due,
             mail,
         } => {
             let parent = parent.map(wire_id).unwrap_or_default();
             let added = async {
                 let id = agenda.add_task_to(*list, &parent, title).await?;
-                if !mail.is_empty() {
-                    let fields = Item::from([(
-                        edit::MAIL.to_owned(),
-                        OwnedValue::try_from(Value::from(mail.as_str()))
-                            .map_err(katna_dbus::zbus::Error::Variant)?,
-                    )]);
+                let mut fields = Item::new();
+                for (key, value) in [(edit::MAIL, mail), (edit::DUE, due)] {
+                    if !value.is_empty() {
+                        fields.insert(
+                            key.to_owned(),
+                            OwnedValue::try_from(Value::from(value.as_str()))
+                                .map_err(katna_dbus::zbus::Error::Variant)?,
+                        );
+                    }
+                }
+                if !fields.is_empty() {
                     agenda.edit_task(&id, fields).await?;
                 }
                 Ok::<_, katna_dbus::zbus::Error>(id)

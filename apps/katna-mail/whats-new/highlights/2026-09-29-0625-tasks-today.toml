@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Today in Tasks"
+text = """
+Today, under All tasks, gathers what is due today and anything overdue
+from every list, with the list each one is in. A task added there is due
+today.
+"""

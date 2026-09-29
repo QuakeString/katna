@@ -1302,3 +1302,25 @@ Ama-akhawunti angena ngephasiwedi manje agcina imisebenzi yawo kuseva
 yeyili uma inikeza i-CalDAV, ngakho imisebenzi iphinde ivele ezinhlelweni
 zeseva uqobo nasefonini.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Engeza futhi ushintshe imicimbi"
+text = """
+Chofoza noma donsa ekhalenda, noma ucindezele C, ukuze
+wengeze umcimbi. Donsa umcimbi ukuze uwuhambise noma
+unqenqema lwawo olungezansi ukuze ushintshe ubude bawo, bese
+uwuvula ukuze ushintshe isikhathi, ukuphinda, izikhumbuzo,
+izihambeli noma wengeze ikholi ye-Meet noma ye-Teams.
+Phendula izimemo ngokuthi Yebo, Cha noma Mhlawumbe. Hlehlisa
+kubuyisela yonke into.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Amakhalenda avela kuma-akhawunti amaningi"
+text = """
+I-Katna manje ithola amakhalenda e-Yahoo, Zoho, iCloud,
+Fastmail, GMX nawamanye ama-akhawunti, ngisho noma ehlala
+kwenye iseva hhayi leyo yemeyili. Izama kuqala indlela
+engcono kakhulu ye-akhawunti ngayinye, bese izama enye uma
+leyo ivaliwe.
+"""

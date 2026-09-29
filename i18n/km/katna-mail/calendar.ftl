@@ -38,8 +38,80 @@ calendar-guests =
        *[other] ភ្ញៀវ { $count } នាក់
     }
 calendar-guest-answers = បាទ/ចាស { $yes }, ប្រហែល { $maybe }, ទេ { $no }, កំពុងរង់ចាំ { $waiting }
+calendar-organizer = អ្នករៀបចំ
+calendar-optional = ស្រេចចិត្ត
 calendar-open-web = បើកក្នុងកម្មវិធីរុករក
 calendar-close = បិទ
+
+## Adding, changing and deleting events.
+
+calendar-add-title = បន្ថែមចំណងជើង
+calendar-add-location = បន្ថែមទីតាំង
+calendar-add-notes = បន្ថែមការពិពណ៌នា
+calendar-add-guests = បន្ថែមភ្ញៀវ
+calendar-remove-guest = ដកចេញ
+calendar-add-meet = បន្ថែមកិច្ចប្រជុំវីដេអូ Google Meet
+calendar-add-teams = បន្ថែមកិច្ចប្រជុំ Teams
+calendar-has-call = បានបន្ថែមការហៅជាវីដេអូ
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = ពេញមួយថ្ងៃ
+calendar-more-options = ជម្រើសបន្ថែម
+calendar-save = រក្សាទុក
+calendar-saved = បានរក្សាទុកព្រឹត្តិការណ៍
+calendar-deleted = បានលុបព្រឹត្តិការណ៍
+calendar-discard = បោះបង់ការផ្លាស់ប្តូរ
+calendar-edit = កែសម្រួលព្រឹត្តិការណ៍
+calendar-delete = លុបព្រឹត្តិការណ៍
+calendar-event-details = ព័ត៌មានលម្អិតនៃព្រឹត្តិការណ៍
+calendar-busy = រវល់
+calendar-free = ទំនេរ
+calendar-cancel = បោះបង់
+calendar-ok = យល់ព្រម
+calendar-read-only = អ្នកមិនអាចផ្លាស់ប្តូរព្រឹត្តិការណ៍ក្នុងប្រតិទិននេះបានទេ
+calendar-none-editable = មិនទាន់មានប្រតិទិនដែលអ្នកអាចបន្ថែមព្រឹត្តិការណ៍បាននៅឡើយទេ
+calendar-no-such-time = ពេលវេលានោះមិនមានក្នុងល្វែងម៉ោងរបស់អ្នកទេ
+calendar-end-before-start = ព្រឹត្តិការណ៍បញ្ចប់មុនពេលចាប់ផ្តើម
+calendar-repeat-never = មិនកើតឡើងម្តងទៀត
+calendar-repeat-daily = ប្រចាំថ្ងៃ
+calendar-repeat-weekly = ប្រចាំសប្តាហ៍នៅ { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] ប្រចាំខែនៅ { $weekday } ទីមួយ
+        [2] ប្រចាំខែនៅ { $weekday } ទីពីរ
+        [3] ប្រចាំខែនៅ { $weekday } ទីបី
+        [4] ប្រចាំខែនៅ { $weekday } ទីបួន
+       *[other] ប្រចាំខែនៅ { $weekday } ចុងក្រោយ
+    }
+calendar-repeat-yearly = ប្រចាំឆ្នាំនៅ { $day }
+calendar-repeat-weekdays = រាល់ថ្ងៃធ្វើការ (ច័ន្ទដល់សុក្រ)
+calendar-repeat-custom = កំណត់ដោយខ្លួនឯង
+calendar-reminder-none = គ្មានការជូនដំណឹង
+calendar-reminder-at-start = នៅពេលចាប់ផ្តើម
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } នាទីមុន
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count } ម៉ោងមុន
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count } ថ្ងៃមុន
+    }
+calendar-scope-edit-title = កែសម្រួលព្រឹត្តិការណ៍ដែលកើតឡើងម្តងទៀត
+calendar-scope-delete-title = លុបព្រឹត្តិការណ៍ដែលកើតឡើងម្តងទៀត
+calendar-scope-this = ព្រឹត្តិការណ៍នេះ
+calendar-scope-following = ព្រឹត្តិការណ៍នេះ និងព្រឹត្តិការណ៍បន្តបន្ទាប់
+calendar-scope-all = ព្រឹត្តិការណ៍ទាំងអស់
+calendar-scope-respond-title = ឆ្លើយតបសម្រាប់ព្រឹត្តិការណ៍ដែលកើតឡើងម្តងទៀត
+calendar-going = តើអ្នកនឹងទៅទេ?
+calendar-answer-yes = បាទ/ចាស
+calendar-answer-no = ទេ
+calendar-answer-maybe = ប្រហែល
+calendar-answered-yes = អ្នកនឹងទៅ
+calendar-answered-no = អ្នកនឹងមិនទៅទេ
+calendar-answered-maybe = អ្នកប្រហែលជាទៅ
 
 ## The day's agenda beside the mail.
 

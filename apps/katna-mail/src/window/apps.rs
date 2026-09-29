@@ -119,6 +119,12 @@ impl MailWindow {
         if app == App::Contacts {
             window.focus(&self.window_focus, cx);
         }
+        // Its keys and Ctrl+Z reach the page, not the hidden mail list.
+        if app == App::Tasks
+            && let Some(focus) = &self.tasks.focus
+        {
+            window.focus(focus, cx);
+        }
     }
 
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {

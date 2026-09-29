@@ -38,8 +38,80 @@ calendar-guests =
        *[other] { $count } àlejò
     }
 calendar-guest-answers = bẹ́ẹ̀ni { $yes }, bóyá { $maybe }, rárá { $no }, ń dúró { $waiting }
+calendar-organizer = Olùṣètò
+calendar-optional = Àṣàyàn
 calendar-open-web = Ṣí i nínú aṣàwákiri
 calendar-close = Padé
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Fi àkọlé kún
+calendar-add-location = Fi ibi kún
+calendar-add-notes = Fi àpèjúwe kún
+calendar-add-guests = Fi àwọn àlejò kún
+calendar-remove-guest = Yọ ọ́ kúrò
+calendar-add-meet = Fi ìpàdé fídíò Google Meet kún
+calendar-add-teams = Fi ìpàdé Teams kún
+calendar-has-call = A ti fi ìpè fídíò kún
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Ní gbogbo ọjọ́
+calendar-more-options = Àwọn àṣàyàn mìíràn
+calendar-save = Fi pamọ́
+calendar-saved = A ti fi ìṣẹ̀lẹ̀ pamọ́
+calendar-deleted = A ti pa ìṣẹ̀lẹ̀ rẹ́
+calendar-discard = Pa àwọn ìyípadà tì
+calendar-edit = Ṣàtúnṣe ìṣẹ̀lẹ̀
+calendar-delete = Pa ìṣẹ̀lẹ̀ rẹ́
+calendar-event-details = Àlàyé ìṣẹ̀lẹ̀
+calendar-busy = Ó ń ṣiṣẹ́
+calendar-free = Ó wà ní ìdẹ̀ra
+calendar-cancel = Fagilé
+calendar-ok = Ó dáa
+calendar-read-only = O kò lè yí àwọn ìṣẹ̀lẹ̀ inú kàlẹ́ńdà yìí padà
+calendar-none-editable = Kò tíì sí kàlẹ́ńdà tí o lè fi ìṣẹ̀lẹ̀ kún
+calendar-no-such-time = Àkókò yẹn kò sí ní agbègbè àkókò rẹ
+calendar-end-before-start = Ìṣẹ̀lẹ̀ náà parí kí ó tó bẹ̀rẹ̀
+calendar-repeat-never = Kì í tún ṣẹlẹ̀
+calendar-repeat-daily = Lójoojúmọ́
+calendar-repeat-weekly = Lọ́sọ̀ọ̀sẹ̀ ní { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Lóṣooṣù ní { $weekday } àkọ́kọ́
+        [2] Lóṣooṣù ní { $weekday } kejì
+        [3] Lóṣooṣù ní { $weekday } kẹta
+        [4] Lóṣooṣù ní { $weekday } kẹrin
+       *[other] Lóṣooṣù ní { $weekday } ìkẹyìn
+    }
+calendar-repeat-yearly = Lọ́dọọdún ní { $day }
+calendar-repeat-weekdays = Ní gbogbo ọjọ́ iṣẹ́ (Ọjọ́ Ajé sí Ọjọ́ Ẹtì)
+calendar-repeat-custom = Àdáni
+calendar-reminder-none = Kò sí ìwífúnni
+calendar-reminder-at-start = Nígbà tí ó bá bẹ̀rẹ̀
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } ìṣẹ́jú ṣáájú
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] wákàtí { $count } ṣáájú
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] ọjọ́ { $count } ṣáájú
+    }
+calendar-scope-edit-title = Ṣàtúnṣe ìṣẹ̀lẹ̀ tó ń tún ṣẹlẹ̀
+calendar-scope-delete-title = Pa ìṣẹ̀lẹ̀ tó ń tún ṣẹlẹ̀ rẹ́
+calendar-scope-this = Ìṣẹ̀lẹ̀ yìí
+calendar-scope-following = Ìṣẹ̀lẹ̀ yìí àti àwọn tó tẹ̀lé e
+calendar-scope-all = Gbogbo ìṣẹ̀lẹ̀
+calendar-scope-respond-title = Fèsì fún ìṣẹ̀lẹ̀ tó ń tún ṣẹlẹ̀
+calendar-going = Ṣé o ń lọ?
+calendar-answer-yes = Bẹ́ẹ̀ni
+calendar-answer-no = Rárá
+calendar-answer-maybe = Bóyá
+calendar-answered-yes = O ń lọ
+calendar-answered-no = O kò lọ
+calendar-answered-maybe = O lè lọ
 
 ## The day's agenda beside the mail.
 

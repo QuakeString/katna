@@ -38,8 +38,80 @@ calendar-guests =
        *[other] { $count } 位訪客
     }
 calendar-guest-answers = { $yes } 人參加，{ $maybe } 人可能參加，{ $no } 人不參加，{ $waiting } 人未回覆
+calendar-organizer = 主辦者
+calendar-optional = 選填
 calendar-open-web = 在瀏覽器中開啟
 calendar-close = 關閉
+
+## Adding, changing and deleting events.
+
+calendar-add-title = 新增標題
+calendar-add-location = 新增地點
+calendar-add-notes = 新增說明
+calendar-add-guests = 新增訪客
+calendar-remove-guest = 移除
+calendar-add-meet = 新增 Google Meet 視訊會議
+calendar-add-teams = 新增 Teams 會議
+calendar-has-call = 已新增視訊通話
+calendar-weekday-day = { $weekday }，{ $day }
+calendar-all-day-box = 整天
+calendar-more-options = 更多選項
+calendar-save = 儲存
+calendar-saved = 活動已儲存
+calendar-deleted = 活動已刪除
+calendar-discard = 捨棄變更
+calendar-edit = 編輯活動
+calendar-delete = 刪除活動
+calendar-event-details = 活動詳細資料
+calendar-busy = 忙碌
+calendar-free = 有空
+calendar-cancel = 取消
+calendar-ok = 確定
+calendar-read-only = 你無法變更這個日曆中的活動
+calendar-none-editable = 目前沒有可新增活動的日曆
+calendar-no-such-time = 你所在的時區沒有這個時間
+calendar-end-before-start = 活動的結束時間早於開始時間
+calendar-repeat-never = 不重複
+calendar-repeat-daily = 每天
+calendar-repeat-weekly = 每週的 { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] 每月第一個 { $weekday }
+        [2] 每月第二個 { $weekday }
+        [3] 每月第三個 { $weekday }
+        [4] 每月第四個 { $weekday }
+       *[other] 每月最後一個 { $weekday }
+    }
+calendar-repeat-yearly = 每年的 { $day }
+calendar-repeat-weekdays = 平日（週一至週五）
+calendar-repeat-custom = 自訂
+calendar-reminder-none = 不通知
+calendar-reminder-at-start = 開始時
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } 分鐘前
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count } 小時前
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count } 天前
+    }
+calendar-scope-edit-title = 編輯重複活動
+calendar-scope-delete-title = 刪除重複活動
+calendar-scope-this = 這個活動
+calendar-scope-following = 這個和後續活動
+calendar-scope-all = 所有活動
+calendar-scope-respond-title = 回覆重複活動
+calendar-going = 是否參加？
+calendar-answer-yes = 是
+calendar-answer-no = 否
+calendar-answer-maybe = 也許
+calendar-answered-yes = 你會參加
+calendar-answered-no = 你不會參加
+calendar-answered-maybe = 你可能會參加
 
 ## The day's agenda beside the mail.
 

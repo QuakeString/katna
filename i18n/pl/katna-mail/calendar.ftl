@@ -41,8 +41,89 @@ calendar-guests =
        *[other] { $count } gościa
     }
 calendar-guest-answers = { $yes } tak, { $maybe } może, { $no } nie, { $waiting } oczekuje
+calendar-organizer = Organizator
+calendar-optional = Opcjonalny
 calendar-open-web = Otwórz w przeglądarce
 calendar-close = Zamknij
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Dodaj tytuł
+calendar-add-location = Dodaj lokalizację
+calendar-add-notes = Dodaj opis
+calendar-add-guests = Dodaj gości
+calendar-remove-guest = Usuń
+calendar-add-meet = Dodaj wideokonferencję Google Meet
+calendar-add-teams = Dodaj spotkanie w Teams
+calendar-has-call = Dodano połączenie wideo
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Cały dzień
+calendar-more-options = Więcej opcji
+calendar-save = Zapisz
+calendar-saved = Zapisano wydarzenie
+calendar-deleted = Usunięto wydarzenie
+calendar-discard = Odrzuć zmiany
+calendar-edit = Edytuj wydarzenie
+calendar-delete = Usuń wydarzenie
+calendar-event-details = Szczegóły wydarzenia
+calendar-busy = Zajęty
+calendar-free = Dostępny
+calendar-cancel = Anuluj
+calendar-ok = OK
+calendar-read-only = Nie możesz zmieniać wydarzeń w tym kalendarzu
+calendar-none-editable = Nie ma jeszcze kalendarza, do którego możesz dodawać wydarzenia
+calendar-no-such-time = Ta godzina nie istnieje w Twojej strefie czasowej
+calendar-end-before-start = Wydarzenie kończy się, zanim się zacznie
+calendar-repeat-never = Nie powtarza się
+calendar-repeat-daily = Codziennie
+calendar-repeat-weekly = Co tydzień: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Co miesiąc: { $weekday }, pierwszy tydzień
+        [2] Co miesiąc: { $weekday }, drugi tydzień
+        [3] Co miesiąc: { $weekday }, trzeci tydzień
+        [4] Co miesiąc: { $weekday }, czwarty tydzień
+       *[other] Co miesiąc: { $weekday }, ostatni tydzień
+    }
+calendar-repeat-yearly = Co roku: { $day }
+calendar-repeat-weekdays = Każdego dnia roboczego (od poniedziałku do piątku)
+calendar-repeat-custom = Niestandardowe
+calendar-reminder-none = Brak powiadomienia
+calendar-reminder-at-start = Na początku
+calendar-reminder-minutes =
+    { $count ->
+        [one] { $count } minuta przed
+        [few] { $count } minuty przed
+        [many] { $count } minut przed
+       *[other] { $count } minuty przed
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] { $count } godzina przed
+        [few] { $count } godziny przed
+        [many] { $count } godzin przed
+       *[other] { $count } godziny przed
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] { $count } dzień przed
+        [few] { $count } dni przed
+        [many] { $count } dni przed
+       *[other] { $count } dnia przed
+    }
+calendar-scope-edit-title = Edytuj wydarzenie cykliczne
+calendar-scope-delete-title = Usuń wydarzenie cykliczne
+calendar-scope-this = To wydarzenie
+calendar-scope-following = To i kolejne wydarzenia
+calendar-scope-all = Wszystkie wydarzenia
+calendar-scope-respond-title = Odpowiedź dla wydarzenia cyklicznego
+calendar-going = Bierzesz udział?
+calendar-answer-yes = Tak
+calendar-answer-no = Nie
+calendar-answer-maybe = Może
+calendar-answered-yes = Bierzesz udział
+calendar-answered-no = Nie bierzesz udziału
+calendar-answered-maybe = Możesz wziąć udział
 
 ## The day's agenda beside the mail.
 

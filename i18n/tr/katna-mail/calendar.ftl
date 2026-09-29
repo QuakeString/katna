@@ -39,8 +39,83 @@ calendar-guests =
        *[other] { $count } konuk
     }
 calendar-guest-answers = { $yes } evet, { $maybe } belki, { $no } hayır, { $waiting } yanıt bekliyor
+calendar-organizer = Organizatör
+calendar-optional = İsteğe bağlı
 calendar-open-web = Tarayıcıda aç
 calendar-close = Kapat
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Başlık ekle
+calendar-add-location = Konum ekle
+calendar-add-notes = Açıklama ekle
+calendar-add-guests = Konuk ekle
+calendar-remove-guest = Kaldır
+calendar-add-meet = Google Meet görüntülü görüşmesi ekle
+calendar-add-teams = Teams toplantısı ekle
+calendar-has-call = Görüntülü görüşme eklendi
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Tüm gün
+calendar-more-options = Diğer seçenekler
+calendar-save = Kaydet
+calendar-saved = Etkinlik kaydedildi
+calendar-deleted = Etkinlik silindi
+calendar-discard = Değişiklikleri at
+calendar-edit = Etkinliği düzenle
+calendar-delete = Etkinliği sil
+calendar-event-details = Etkinlik ayrıntıları
+calendar-busy = Meşgul
+calendar-free = Müsait
+calendar-cancel = İptal
+calendar-ok = Tamam
+calendar-read-only = Bu takvimdeki etkinlikleri değiştiremezsiniz
+calendar-none-editable = Henüz etkinlik ekleyebileceğiniz bir takvim yok
+calendar-no-such-time = Bu saat saat diliminizde yok
+calendar-end-before-start = Etkinlik başlamadan önce bitiyor
+calendar-repeat-never = Tekrarlanmaz
+calendar-repeat-daily = Günlük
+calendar-repeat-weekly = Haftalık: { $weekday } günleri
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Aylık: ayın ilk { $weekday } günü
+        [2] Aylık: ayın ikinci { $weekday } günü
+        [3] Aylık: ayın üçüncü { $weekday } günü
+        [4] Aylık: ayın dördüncü { $weekday } günü
+       *[other] Aylık: ayın son { $weekday } günü
+    }
+calendar-repeat-yearly = Yıllık: { $day }
+calendar-repeat-weekdays = Her hafta içi gün (Pazartesi - Cuma)
+calendar-repeat-custom = Özel
+calendar-reminder-none = Bildirim yok
+calendar-reminder-at-start = Başlangıçta
+calendar-reminder-minutes =
+    { $count ->
+        [one] { $count } dakika önce
+       *[other] { $count } dakika önce
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] { $count } saat önce
+       *[other] { $count } saat önce
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] { $count } gün önce
+       *[other] { $count } gün önce
+    }
+calendar-scope-edit-title = Yinelenen etkinliği düzenle
+calendar-scope-delete-title = Yinelenen etkinliği sil
+calendar-scope-this = Bu etkinlik
+calendar-scope-following = Bu ve sonraki etkinlikler
+calendar-scope-all = Tüm etkinlikler
+calendar-scope-respond-title = Yinelenen etkinlik için yanıt
+calendar-going = Katılıyor musunuz?
+calendar-answer-yes = Evet
+calendar-answer-no = Hayır
+calendar-answer-maybe = Belki
+calendar-answered-yes = Katılıyorsunuz
+calendar-answered-no = Katılmıyorsunuz
+calendar-answered-maybe = Belki katılırsınız
 
 ## The day's agenda beside the mail.
 

@@ -38,8 +38,80 @@ calendar-guests =
        *[other] ゲスト { $count } 人
     }
 calendar-guest-answers = はい { $yes }、未定 { $maybe }、いいえ { $no }、返信待ち { $waiting }
+calendar-organizer = 主催者
+calendar-optional = 任意
 calendar-open-web = ブラウザで開く
 calendar-close = 閉じる
+
+## Adding, changing and deleting events.
+
+calendar-add-title = タイトルを追加
+calendar-add-location = 場所を追加
+calendar-add-notes = 説明を追加
+calendar-add-guests = ゲストを追加
+calendar-remove-guest = 削除
+calendar-add-meet = Google Meet のビデオ会議を追加
+calendar-add-teams = Teams 会議を追加
+calendar-has-call = ビデオ通話を追加済み
+calendar-weekday-day = { $weekday }、{ $day }
+calendar-all-day-box = 終日
+calendar-more-options = その他のオプション
+calendar-save = 保存
+calendar-saved = 予定を保存しました
+calendar-deleted = 予定を削除しました
+calendar-discard = 変更を破棄
+calendar-edit = 予定を編集
+calendar-delete = 予定を削除
+calendar-event-details = 予定の詳細
+calendar-busy = 予定あり
+calendar-free = 予定なし
+calendar-cancel = キャンセル
+calendar-ok = OK
+calendar-read-only = このカレンダーの予定は変更できません
+calendar-none-editable = 予定を追加できるカレンダーがまだありません
+calendar-no-such-time = その時刻はお使いのタイムゾーンには存在しません
+calendar-end-before-start = 予定の終了が開始より前になっています
+calendar-repeat-never = 繰り返さない
+calendar-repeat-daily = 毎日
+calendar-repeat-weekly = 毎週 { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] 毎月第 1 { $weekday }
+        [2] 毎月第 2 { $weekday }
+        [3] 毎月第 3 { $weekday }
+        [4] 毎月第 4 { $weekday }
+       *[other] 毎月最終 { $weekday }
+    }
+calendar-repeat-yearly = 毎年 { $day }
+calendar-repeat-weekdays = 平日（月曜日～金曜日）
+calendar-repeat-custom = カスタム
+calendar-reminder-none = 通知なし
+calendar-reminder-at-start = 開始時
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } 分前
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count } 時間前
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count } 日前
+    }
+calendar-scope-edit-title = 定期的な予定を編集
+calendar-scope-delete-title = 定期的な予定を削除
+calendar-scope-this = この予定
+calendar-scope-following = この予定以降のすべての予定
+calendar-scope-all = すべての予定
+calendar-scope-respond-title = 定期的な予定への返信
+calendar-going = 参加しますか？
+calendar-answer-yes = はい
+calendar-answer-no = いいえ
+calendar-answer-maybe = 未定
+calendar-answered-yes = 参加します
+calendar-answered-no = 参加しません
+calendar-answered-maybe = 参加未定です
 
 ## The day's agenda beside the mail.
 

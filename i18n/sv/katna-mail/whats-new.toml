@@ -1234,3 +1234,23 @@ Konton som loggar in med lösenord sparar nu sina uppgifter på
 e-postservern när den erbjuder CalDAV, så att uppgifterna också visas
 i serverns egna appar och på telefonen.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Lägg till och ändra händelser"
+text = """
+Klicka eller dra i kalendern, eller tryck på C, för att lägga till en
+händelse. Dra en händelse för att flytta den eller dess nedre kant för
+att ändra längden, och öppna den för att ändra tid, upprepning,
+påminnelser och gäster eller lägga till ett Meet- eller Teams-samtal.
+Svara på inbjudningar med Ja, Nej eller Kanske. Ångra ställer tillbaka
+allt.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalendrar från fler konton"
+text = """
+Katna hittar nu kalendrarna för Yahoo, Zoho, iCloud, Fastmail, GMX och
+andra konton, även när de ligger på en annan server än e-posten. Den
+provar först varje kontos bästa sätt och ett annat när det inte är
+tillgängligt.
+"""
