@@ -928,7 +928,7 @@ impl MailWindow {
     /// Whether the list has room for its columns beside the names.
     fn contacts_columns(&self) -> bool {
         let shape = self.layout.shape;
-        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        let side = self.page_side_width(NAV_WIDTH);
         shape.width - shape.rail() - side >= COLUMNS_FROM
     }
 

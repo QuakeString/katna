@@ -58,11 +58,14 @@ impl MailWindow {
         let shown = 1.0 - self.layout.shape.phone;
         // How far the folders show: docked beside the list on a desktop,
         // or a phone's or tablet's drawer.
-        let open = self
-            .reserve_spring
-            .value()
-            .max(self.layout.drawer_t())
-            .clamp(0.0, 1.0);
+        // The other pages' side column, folded on its own, on a desktop.
+        let page = self.app != super::RailApp::Mail;
+        let docked = if page && self.layout.shape.is_desktop() {
+            self.page_side_t
+        } else {
+            self.reserve_spring.value()
+        };
+        let open = docked.max(self.layout.drawer_t()).clamp(0.0, 1.0);
         let menu = div()
             .id("menu-button")
             .relative()
@@ -77,10 +80,11 @@ impl MailWindow {
             .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
-                if open > 0.5 {
-                    tr!("folders-hide")
-                } else {
-                    tr!("folders-show")
+                match (page, open > 0.5) {
+                    (false, true) => tr!("folders-hide"),
+                    (false, false) => tr!("folders-show"),
+                    (true, true) => tr!("side-pane-hide"),
+                    (true, false) => tr!("side-pane-show"),
                 },
                 th,
             ))

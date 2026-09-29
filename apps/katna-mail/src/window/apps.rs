@@ -126,8 +126,21 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> PageSide {
         if self.layout.shape.is_desktop() {
+            // Folded by the menu button, it narrows away and fades as
+            // Mail's folders do; its content keeps its width meanwhile.
+            let t = self.page_side_t.clamp(0.0, 1.0);
+            let docked = (t > 0.001).then(|| {
+                div()
+                    .flex_none()
+                    .h_full()
+                    .w(px(width * t))
+                    .overflow_hidden()
+                    .opacity(t)
+                    .child(div().h_full().w(px(width)).child(side))
+                    .into_any_element()
+            });
             return PageSide {
-                docked: Some(side),
+                docked,
                 drawer: None,
             };
         }
@@ -168,6 +181,21 @@ impl MailWindow {
         }
     }
 
+    /// Whether page `app` shows its side column beside it on a desktop.
+    pub(super) fn page_side_open(&self, app: App) -> bool {
+        !self.page_sides_folded.contains(&app)
+    }
+
+    /// The room a side column `width` wide takes beside the page now: none
+    /// on a phone or tablet, where it is a drawer, or while folded.
+    pub(super) fn page_side_width(&self, width: f32) -> f32 {
+        if self.layout.shape.is_desktop() {
+            width * self.page_side_t.clamp(0.0, 1.0)
+        } else {
+            0.0
+        }
+    }
+
     /// Shows page `app`, leaving Settings as picking a folder does.
     pub(super) fn show_page(&mut self, app: App, window: &mut Window, cx: &mut Context<Self>) {
         if self.settings_page.is_some() {
@@ -196,6 +224,10 @@ impl MailWindow {
         }
         let from = self.app;
         self.app = app;
+        // Each page shows its side column as it left it, without motion.
+        let open = if self.page_side_open(app) { 1.0 } else { 0.0 };
+        self.page_side_spring.snap(open);
+        self.page_side_t = open;
         // Notes and Tasks hand the search box back before Contacts takes
         // it, and take it after Contacts hands it back.
         if from == App::Notes {

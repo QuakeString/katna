@@ -1579,7 +1579,7 @@ impl MailWindow {
         // No wider than the page, less the board's margins: on a phone a
         // card fills it.
         let shape = self.layout.shape;
-        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        let side = self.page_side_width(NAV_WIDTH);
         let room = shape.width - shape.rail() - side - shape.card_margin() - 32.0;
         div()
             .id(id)

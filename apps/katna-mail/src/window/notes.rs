@@ -1072,7 +1072,7 @@ impl MailWindow {
         // drawer on a phone or tablet), the page's margin and its own.
         let shape = self.layout.shape;
         let pad = if shape.is_phone() { GAP } else { 24.0 };
-        let side = if shape.is_desktop() { SIDE_WIDTH } else { 0.0 };
+        let side = self.page_side_width(SIDE_WIDTH);
         let width = shape.width - shape.rail() - side - shape.card_margin() - 2.0 * pad;
         let columns = (((width + GAP) / (CARD_WIDTH + GAP)).floor() as usize).clamp(1, 8);
         // Too narrow for two whole cards, two narrower ones fill it, as
