@@ -1,7 +1,8 @@
 # Katna PIM — Architecture
 
 > Status: **Draft v0.2** (26 September 2026). This is the design reference for
-> Katna Mail, Katna Calendar, the Katna background service and Katna Server.
+> Katna Mail (with its Calendar, Tasks, Notes and Contacts pages), the Katna
+> background service and Katna Server.
 > Nothing here is built yet; sections marked **Decision needed** are open.
 >
 > Changes since v0.1: background service (`katna-daemon`) as the single owner
@@ -106,7 +107,7 @@ katna/
 ├── apps/
 │   ├── katna-daemon/          # background service (no GUI dependencies)
 │   ├── katna-mail/            # GPUI
-│   └── katna-calendar/        # GPUI
+│   └── katna-calendar/        # unused stub: Calendar is a page of katna-mail (§18)
 ├── integrations/
 │   ├── plasma-calendar-plugin/    # C++ CalendarEventsPlugin → daemon over D-Bus
 │   ├── plasma-clock/              # Katna Digital Clock: Plasma's clock (QML) + Tasks
@@ -3092,15 +3093,41 @@ ashpd), IMAP parsing and regex.
 
 ## 18. Katna Calendar
 
-- CalDAV sync via `io-webdav` (discovery, sync-token, multiget) in the
-  daemon; local `calendar.db`; also local-only calendars.
-- `calcard` for iCalendar/vCard; `rrule` for recurrence expansion;
-  `jiff` for time zones, including embedded `VTIMEZONE` definitions.
-- Correct handling of recurrence exceptions (`RECURRENCE-ID`, `EXDATE`).
-- Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail.
+**Pages of one window (decided 2026-09-29).** Calendar, Tasks, Notes and
+Contacts are pages of the Katna Mail window, not separate programs: the
+app rail switches them, as do Ctrl+1 to Ctrl+5 (Outlook's keys: Mail,
+Calendar, Contacts, Tasks, Notes), the Go menu, the desktop file's
+actions (right-click on the taskbar icon) and `katna-mail --page NAME`,
+which a running Katna Mail receives as
+`org.freedesktop.Application.ActivateAction("open-page", [NAME])`. The
+window reopens on the page it closed on. One GPUI program keeps switching
+instant, lets Mail show the day's agenda beside the inbox, and saves about
+20 MB over a second one. Each page lives in its own module under
+`apps/katna-mail/src/window/`, plugged in at `apps.rs`
+(`MailWindow::render_app_page`, `open_app`); a page not built yet shows
+what it will do. `apps/katna-calendar` stays an unused stub until it is
+removed.
+
+**Sync through each service's own API.** Following the feature rule
+(the mail service's own feature first): Gmail accounts use the Google
+Calendar API (Meet links, event types, colors; Google sends the
+invitations), Microsoft accounts use Microsoft Graph, other servers CalDAV
+(`katna-dav`), and there are local calendars for no account. Google's
+CalDAV endpoint can't make Meet links or event types, so it is not used.
+
+- Calendars and events live in `pim.db`, synced by the daemon; apps read
+  them read-only, as with mail.
+- `jiff` for time zones; recurrence is expanded when read, with
+  exceptions (`RECURRENCE-ID`, `EXDATE`).
+- Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail,
+  sent through Google or Graph when the invitation belongs to that account.
 - Alarms fire from the daemon as notifications (§15.1).
-- Views: day, week, month, agenda; organization filter.
-- Desktop: Plasma clock plugin and Katna Clock (§15.4); KRunner results (§15.3).
+- Views: Day, Week (the default), Month and Schedule, like Google
+  Calendar, with calendars grouped by account; the week starts as the
+  language says, with a choice in Settings.
+- Desktop: Katna Digital Clock (§15.4) through the daemon's
+  `in.invenia.katna.Agenda1`; KRunner results (§15.3).
+- No booking pages: free times are shared as text in a mail.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks
