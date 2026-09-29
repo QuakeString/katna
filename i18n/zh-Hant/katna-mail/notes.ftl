@@ -77,6 +77,17 @@ notes-meeting-actions = 待辦事項
 notes-event = 活動
 notes-open-event = 開啟活動
 
+## Formatting
+
+notes-format = 格式
+notes-format-heading-1 = 標題 1
+notes-format-heading-2 = 標題 2
+notes-format-normal = 內文
+notes-format-bold = 粗體
+notes-format-italic = 斜體
+notes-format-underline = 底線
+notes-format-clear = 清除格式
+
 ## Tasks
 
 notes-make-task = 設為工作

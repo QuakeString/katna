@@ -77,6 +77,17 @@ notes-meeting-actions = Item tindakan
 notes-event = Acara
 notes-open-event = Buka acara
 
+## Formatting
+
+notes-format = Pemformatan
+notes-format-heading-1 = Tajuk 1
+notes-format-heading-2 = Tajuk 2
+notes-format-normal = Teks biasa
+notes-format-bold = Tebal
+notes-format-italic = Condong
+notes-format-underline = Garis bawah
+notes-format-clear = Kosongkan pemformatan
+
 ## Tasks
 
 notes-make-task = Jadikan tugas

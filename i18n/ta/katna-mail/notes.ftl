@@ -78,6 +78,17 @@ notes-meeting-actions = செயல் உருப்படிகள்
 notes-event = நிகழ்வு
 notes-open-event = நிகழ்வைத் திற
 
+## Formatting
+
+notes-format = வடிவமைப்பு
+notes-format-heading-1 = தலைப்பு 1
+notes-format-heading-2 = தலைப்பு 2
+notes-format-normal = இயல்பான உரை
+notes-format-bold = தடிமன்
+notes-format-italic = சாய்வு
+notes-format-underline = அடிக்கோடு
+notes-format-clear = வடிவமைப்பை அழி
+
 ## Tasks
 
 notes-make-task = பணியாக்கு

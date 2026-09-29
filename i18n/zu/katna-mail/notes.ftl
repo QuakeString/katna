@@ -78,6 +78,17 @@ notes-meeting-actions = Izinto zokwenza
 notes-event = Umcimbi
 notes-open-event = Vula umcimbi
 
+## Formatting
+
+notes-format = Ukufometha
+notes-format-heading-1 = Isihloko 1
+notes-format-heading-2 = Isihloko 2
+notes-format-normal = Umbhalo ojwayelekile
+notes-format-bold = Okugqamile
+notes-format-italic = Okutshekile
+notes-format-underline = Dwebela
+notes-format-clear = Sula ukufometha
+
 ## Tasks
 
 notes-make-task = Yenze umsebenzi

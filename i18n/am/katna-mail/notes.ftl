@@ -78,6 +78,17 @@ notes-meeting-actions = የድርጊት ንጥሎች
 notes-event = ክስተት
 notes-open-event = ክስተቱን ክፈት
 
+## Formatting
+
+notes-format = ቅርጸት
+notes-format-heading-1 = ርዕስ 1
+notes-format-heading-2 = ርዕስ 2
+notes-format-normal = መደበኛ ጽሑፍ
+notes-format-bold = ደማቅ
+notes-format-italic = ሰያፍ
+notes-format-underline = ከስር አስምር
+notes-format-clear = ቅርጸትን አጽዳ
+
 ## Tasks
 
 notes-make-task = ተግባር አድርገው

@@ -78,6 +78,17 @@ notes-meeting-actions = Hatua za kuchukua
 notes-event = Tukio
 notes-open-event = Fungua tukio
 
+## Formatting
+
+notes-format = Uumbizaji
+notes-format-heading-1 = Kichwa cha 1
+notes-format-heading-2 = Kichwa cha 2
+notes-format-normal = Maandishi ya kawaida
+notes-format-bold = Herufi nzito
+notes-format-italic = Italiki
+notes-format-underline = Pigia mstari
+notes-format-clear = Futa uumbizaji
+
 ## Tasks
 
 notes-make-task = Ifanye jukumu

@@ -1479,3 +1479,12 @@ title = "Tafuta matukio yako"
 text = """
 Kwenye ukurasa wa Kalenda, kisanduku cha kutafuta kilicho juu sasa kinapata matukio kwa kichwa, mahali, maelezo au wageni, yakiorodheshwa kwa tarehe. Bofya moja ili kulifungua katika siku yake; Esc inakurudisha kwenye matokeo.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Uumbizaji katika madokezo"
+text = """
+Chagua Uumbizaji katika dokezo upate Kichwa cha 1, Kichwa cha 2, herufi
+nzito, italiki na kupigia mstari, kama katika Keep. Ubao pia huuonyesha,
+na husafiri pamoja na dokezo hadi folda ya Madokezo ya akaunti yako ya
+barua, ambapo uumbizaji kutoka kwa iPhone sasa hurudi jinsi ulivyokuwa.
+"""

@@ -78,6 +78,17 @@ notes-meeting-actions = Aksiepunte
 notes-event = Geleentheid
 notes-open-event = Maak die geleentheid oop
 
+## Formatting
+
+notes-format = Formatering
+notes-format-heading-1 = Opskrif 1
+notes-format-heading-2 = Opskrif 2
+notes-format-normal = Normale teks
+notes-format-bold = Vetdruk
+notes-format-italic = Kursief
+notes-format-underline = Onderstreep
+notes-format-clear = Vee formatering uit
+
 ## Tasks
 
 notes-make-task = Maak dit 'n taak

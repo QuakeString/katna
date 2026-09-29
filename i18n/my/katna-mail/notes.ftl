@@ -77,6 +77,17 @@ notes-meeting-actions = လုပ်ဆောင်ရန်များ
 notes-event = ဖြစ်ရပ်
 notes-open-event = ဖြစ်ရပ်ကို ဖွင့်ရန်
 
+## Formatting
+
+notes-format = ဖော်မတ်ချခြင်း
+notes-format-heading-1 = ခေါင်းစီး 1
+notes-format-heading-2 = ခေါင်းစီး 2
+notes-format-normal = ပုံမှန်စာသား
+notes-format-bold = စာလုံးထူ
+notes-format-italic = စာလုံးစောင်း
+notes-format-underline = အောက်မျဉ်း
+notes-format-clear = ဖော်မတ်ချခြင်းကို ရှင်းရန်
+
 ## Tasks
 
 notes-make-task = လုပ်ဆောင်စရာအဖြစ် ပြုလုပ်ရန်

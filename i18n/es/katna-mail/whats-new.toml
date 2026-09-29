@@ -1569,3 +1569,12 @@ En la página Calendario, el cuadro de búsqueda de arriba ahora encuentra
 eventos por título, lugar, notas o invitados, ordenados por fecha. Haz
 clic en uno para abrirlo en su día; Esc te devuelve a los resultados.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formato en las notas"
+text = """
+Elige Formato en una nota para Título 1, Título 2, negrita, cursiva y
+subrayado, como en Keep. El tablero también lo muestra, y viaja con la
+nota a la carpeta Notas de tu cuenta de correo, donde el formato que
+llega de un iPhone ahora vuelve tal como era.
+"""

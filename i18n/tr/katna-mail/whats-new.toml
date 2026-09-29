@@ -1543,3 +1543,12 @@ Takvim sayfasında üstteki arama kutusu artık etkinlikleri başlığa, yere,
 notlara veya konuklara göre bulur ve tarihe göre listeler. Bir etkinliği
 kendi gününde açmak için tıklayın; Esc sizi sonuçlara geri götürür.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Notlarda biçimlendirme"
+text = """
+Keep'teki gibi Başlık 1, Başlık 2, kalın, italik ve altı çizili yazı
+için bir notta Biçimlendirme'yi seçin. Pano da biçimlendirmeyi gösterir
+ve biçimlendirme notla birlikte e-posta hesabınızın Notlar klasörüne
+gider; bir iPhone'dan gelen biçimlendirme artık olduğu gibi geri gelir.
+"""

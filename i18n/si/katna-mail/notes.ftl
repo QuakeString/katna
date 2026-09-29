@@ -78,6 +78,17 @@ notes-meeting-actions = කළ යුතු දේ
 notes-event = සිදුවීම
 notes-open-event = සිදුවීම විවෘත කරන්න
 
+## Formatting
+
+notes-format = හැඩතල ගැන්වීම
+notes-format-heading-1 = ශීර්ෂය 1
+notes-format-heading-2 = ශීර්ෂය 2
+notes-format-normal = සාමාන්‍ය පෙළ
+notes-format-bold = තද
+notes-format-italic = ඇල
+notes-format-underline = යටි ඉර
+notes-format-clear = හැඩතල ගැන්වීම ඉවත් කරන්න
+
 ## Tasks
 
 notes-make-task = කාර්යයක් කරන්න

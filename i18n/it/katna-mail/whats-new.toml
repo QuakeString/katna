@@ -1572,3 +1572,12 @@ Nella pagina Calendario la casella di ricerca in alto ora trova gli
 eventi per titolo, luogo, note o invitati, in ordine di data. Fai clic
 su uno per aprirlo nel suo giorno; Esc ti riporta ai risultati.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formattazione nelle note"
+text = """
+Scegli Formattazione in una nota per Titolo 1, Titolo 2, grassetto,
+corsivo e sottolineato, come in Keep. Anche la bacheca la mostra, e
+viaggia con la nota fino alla cartella Note del tuo account di posta,
+dove ora la formattazione arrivata da un iPhone torna com'era.
+"""

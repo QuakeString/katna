@@ -82,6 +82,17 @@ notes-meeting-actions = بنود العمل
 notes-event = حدث
 notes-open-event = فتح الحدث
 
+## Formatting
+
+notes-format = التنسيق
+notes-format-heading-1 = عنوان 1
+notes-format-heading-2 = عنوان 2
+notes-format-normal = نص عادي
+notes-format-bold = غامق
+notes-format-italic = مائل
+notes-format-underline = تسطير
+notes-format-clear = محو التنسيق
+
 ## Tasks
 
 notes-make-task = تحويله إلى مهمة

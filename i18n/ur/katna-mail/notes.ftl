@@ -78,6 +78,17 @@ notes-meeting-actions = کرنے کے کام
 notes-event = ایونٹ
 notes-open-event = ایونٹ کھولیں
 
+## Formatting
+
+notes-format = فارمیٹنگ
+notes-format-heading-1 = سرخی 1
+notes-format-heading-2 = سرخی 2
+notes-format-normal = عام متن
+notes-format-bold = جلی
+notes-format-italic = ترچھا
+notes-format-underline = خط کشیدہ
+notes-format-clear = فارمیٹنگ صاف کریں
+
 ## Tasks
 
 notes-make-task = کام بنائیں
