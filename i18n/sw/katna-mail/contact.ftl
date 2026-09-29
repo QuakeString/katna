@@ -5,6 +5,8 @@ contact-panel-show = Onyesha maelezo ya mwasiliani
 contact-panel-hide = Ficha maelezo ya mwasiliani
 contact-email = Tuma barua pepe
 contact-search = Tafuta barua naye
+contact-add-to-contacts = Ongeza kwenye anwani
+contact-open-contact = Fungua anwani
 contact-messages = { $count ->
     [one] Ujumbe { $count }
    *[other] Jumbe { $count }

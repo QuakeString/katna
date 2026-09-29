@@ -6,7 +6,25 @@
 
 contacts-all = ລາຍຊື່ຜູ້ຕິດຕໍ່
 contacts-frequent = ຕິດຕໍ່ເລື້ອຍໆ
+contacts-other = ລາຍຊື່ຜູ້ຕິດຕໍ່ອື່ນໆ
+contacts-other-about = ຄົນທີ່ເຈົ້າເຄີຍສົ່ງອີເມວຫາຈາກ Gmail ແຕ່ບໍ່ໄດ້ບັນທຶກໄວ້
+contacts-other-email = ສົ່ງອີເມວ
+contacts-other-empty = ບໍ່ມີລາຍຊື່ຜູ້ຕິດຕໍ່ອື່ນໆ. ຄົນທີ່ເຈົ້າສົ່ງອີເມວຫາຈາກ Gmail ແຕ່ບໍ່ໄດ້ບັນທຶກໄວ້ຈະສະແດງຢູ່ບ່ອນນີ້.
+contacts-other-allow = ເພື່ອເບິ່ງລາຍຊື່ຜູ້ຕິດຕໍ່ອື່ນໆ, ໃຫ້ເຂົ້າສູ່ລະບົບບັນຊີ Gmail ຂອງເຈົ້າອີກຄັ້ງ ແລ້ວອະນຸຍາດໃຫ້ Katna ເບິ່ງລາຍຊື່ເຫຼົ່ານັ້ນ.
 contacts-labels = ປ້າຍກຳກັບ
+contacts-label-options = ຕົວເລືອກປ້າຍກຳກັບ
+contacts-label-rename = ປ່ຽນຊື່ປ້າຍກຳກັບ
+contacts-label-email = ສົ່ງອີເມວຫາທຸກຄົນ
+contacts-label-delete = ລຶບປ້າຍກຳກັບ
+contacts-label-new = ປ້າຍກຳກັບໃໝ່
+contacts-label-name = ຊື່ປ້າຍກຳກັບ
+contacts-label-button = ປ້າຍກຳກັບ
+contacts-label-menu = ໃສ່ປ້າຍກຳກັບເປັນ:
+contacts-label-added = ເພີ່ມໃສ່ { $name } ແລ້ວ
+contacts-label-removed = ເອົາອອກຈາກ { $name } ແລ້ວ
+contacts-label-renamed = ປ່ຽນຊື່ປ້າຍກຳກັບເປັນ { $name } ແລ້ວ
+contacts-label-deleted = ລຶບປ້າຍກຳກັບ { $name } ແລ້ວ
+contacts-label-no-email = ບໍ່ມີໃຜໃນປ້າຍກຳກັບນີ້ທີ່ມີທີ່ຢູ່ອີເມວ
 contacts-create = ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = ກັບໄປລາຍຊື່ຜູ້ຕິດຕໍ່
 contacts-edit = ແກ້ໄຂ
 contacts-delete = ລຶບ
 contacts-deleted = ລຶບ { $name } ແລ້ວ
+contacts-added = ເພີ່ມ { $name } ໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່ແລ້ວ
 contacts-find-mail = ອີເມວ
 contacts-details = ລາຍລະອຽດຜູ້ຕິດຕໍ່
 contacts-saved-in = ບັນທຶກໄວ້ໃນ

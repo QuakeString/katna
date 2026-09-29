@@ -1378,3 +1378,58 @@ Un événement avec des invités propose désormais Envoyer un e-mail aux
 invités et, dès une heure avant son début, En retard : un e-mail à tout
 le monde, depuis le compte de ce calendrier, prêt à être envoyé.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Libellés de contacts"
+text = """
+Le bouton Libellé sur la page d’un contact coche ou décoche des
+libellés, ou en crée un nouveau, et le ⋮ à côté d’un libellé permet de
+le renommer, de le supprimer ou d’écrire à tous ses membres. Les
+libellés restent synchronisés avec Google Contacts et Outlook, et chaque
+modification peut être annulée avec Annuler.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Ajouter aux contacts depuis le courrier"
+text = """
+Le panneau de contact à côté d’une conversation propose Ajouter aux
+contacts pour quelqu’un que vous n’avez pas enregistré : un clic
+enregistre son nom, son adresse, ainsi que le téléphone, le titre et
+l’entreprise de sa signature, avec Annuler. Pour une personne déjà
+enregistrée, le même bouton l’ouvre sur la page Contacts.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Temps de concentration, absence et lieu de travail"
+text = """
+Un nouvel événement peut désormais être un Temps de concentration, une
+absence (Absent du bureau) ou un Lieu de travail, comme dans Google
+Calendar : choisissez-le au-dessus des horaires. Google et Outlook les
+reconnaissent pour ce qu’ils sont, et Katna les affiche avec leur propre
+icône.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Des tâches sur vos e-mails"
+text = """
+Un e-mail que vous avez transformé en tâche affiche désormais dans la
+liste le jour d'échéance de la tâche, en rouge une fois en retard.
+Cliquez dessus pour ouvrir la tâche.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Autres contacts"
+text = """
+Contacts propose désormais Autres contacts : les personnes à qui vous
+avez écrit depuis Gmail sans jamais les enregistrer, comme Gmail les
+conserve. Enregistrez n’importe qui en un clic, avec Annuler, ou
+écrivez-lui directement.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Répondre aux invitations depuis n’importe quel compte"
+text = """
+Une invitation reçue sur un compte sans agenda propose maintenant aussi
+Oui, Non et Peut-être : votre réponse est envoyée à l’organisateur par
+e-mail, et son agenda la note.
+"""

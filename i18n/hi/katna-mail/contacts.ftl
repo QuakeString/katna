@@ -6,7 +6,25 @@
 
 contacts-all = संपर्क
 contacts-frequent = अक्सर
+contacts-other = अन्य संपर्क
+contacts-other-about = वे लोग जिन्हें आपने Gmail से मेल भेजा है, लेकिन सहेजा नहीं है
+contacts-other-email = ईमेल भेजें
+contacts-other-empty = कोई अन्य संपर्क नहीं है। Gmail से आप जिन्हें मेल भेजते हैं लेकिन सहेजते नहीं, वे यहाँ दिखते हैं।
+contacts-other-allow = अन्य संपर्क देखने के लिए अपने Gmail खाते में फिर से साइन इन करें और Katna को उन्हें देखने की अनुमति दें।
 contacts-labels = लेबल
+contacts-label-options = लेबल विकल्प
+contacts-label-rename = लेबल का नाम बदलें
+contacts-label-email = सभी को मेल भेजें
+contacts-label-delete = लेबल मिटाएं
+contacts-label-new = नया लेबल
+contacts-label-name = लेबल का नाम
+contacts-label-button = लेबल
+contacts-label-menu = इस रूप में लेबल करें:
+contacts-label-added = { $name } में जोड़ा गया
+contacts-label-removed = { $name } से हटाया गया
+contacts-label-renamed = लेबल का नाम बदलकर { $name } किया गया
+contacts-label-deleted = लेबल { $name } मिटाया गया
+contacts-label-no-email = इस लेबल पर किसी का ईमेल पता नहीं है
 contacts-create = संपर्क बनाएं
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = संपर्कों पर वापस जाएँ
 contacts-edit = बदलाव करें
 contacts-delete = मिटाएं
 contacts-deleted = { $name } मिटा दिया गया
+contacts-added = { $name } को संपर्क में जोड़ा गया
 contacts-find-mail = मेल
 contacts-details = संपर्क का ब्योरा
 contacts-saved-in = इसमें सहेजा गया

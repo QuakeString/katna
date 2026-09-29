@@ -3215,8 +3215,8 @@ impl Render for MailWindow {
                     .min_h_0()
                     .child(content)
                     .children(self.render_compose_button(&th, compose_text, cx))
-                    // A note opened from a mail, over the mail.
-                    .children(if self.app == RailApp::Mail {
+                    // A note opened from a mail or an event, over it.
+                    .children(if matches!(self.app, RailApp::Mail | RailApp::Calendar) {
                         self.render_editor(&th, window, cx)
                     } else {
                         None

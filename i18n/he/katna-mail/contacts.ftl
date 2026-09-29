@@ -6,7 +6,25 @@
 
 contacts-all = אנשי קשר
 contacts-frequent = תדירים
+contacts-other = אנשי קשר אחרים
+contacts-other-about = אנשים ששלחת להם מייל מ-Gmail אבל לא שמרת
+contacts-other-email = שליחת אימייל
+contacts-other-empty = אין אנשי קשר אחרים. אנשים ששלחת להם מייל מ-Gmail ולא שמרת יופיעו כאן.
+contacts-other-allow = כדי לראות אנשי קשר אחרים, יש להיכנס שוב לחשבון Gmail ולאפשר ל-Katna לראות אותם.
 contacts-labels = תוויות
+contacts-label-options = אפשרויות תווית
+contacts-label-rename = שינוי שם התווית
+contacts-label-email = שליחת אימייל לכולם
+contacts-label-delete = מחיקת התווית
+contacts-label-new = תווית חדשה
+contacts-label-name = שם התווית
+contacts-label-button = תווית
+contacts-label-menu = הוספת תווית:
+contacts-label-added = נוסף אל { $name }
+contacts-label-removed = הוסר מ-{ $name }
+contacts-label-renamed = שם התווית שונה ל-{ $name }
+contacts-label-deleted = התווית { $name } נמחקה
+contacts-label-no-email = לאף אחד בתווית הזו אין כתובת אימייל
 contacts-create = יצירת איש קשר
 
 ## Search and the list
@@ -44,6 +62,7 @@ contacts-back = חזרה לאנשי הקשר
 contacts-edit = עריכה
 contacts-delete = מחיקה
 contacts-deleted = איש הקשר { $name } נמחק
+contacts-added = { $name } נוסף לאנשי הקשר
 contacts-find-mail = אימייל
 contacts-details = פרטי איש קשר
 contacts-saved-in = נשמר ב

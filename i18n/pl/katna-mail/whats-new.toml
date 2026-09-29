@@ -1325,3 +1325,56 @@ Wydarzenie z gośćmi ma teraz Wyślij e-mail do gości, a od godziny przed
 jego rozpoczęciem także Spóźniam się: e-mail do wszystkich, z konta tego
 kalendarza, gotowy do wysłania.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Etykiety kontaktów"
+text = """
+Przycisk Etykieta na stronie kontaktu włącza i wyłącza etykiety albo
+tworzy nową, a ⋮ obok etykiety pozwala zmienić jej nazwę, usunąć ją lub
+napisać do wszystkich, którzy ją mają. Etykiety pozostają
+zsynchronizowane z Google Contacts i Outlookiem, a każda zmiana ma opcję
+Cofnij.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Dodawanie do kontaktów z poczty"
+text = """
+Panel kontaktu obok rozmowy ma przycisk Dodaj do kontaktów dla osoby,
+której nie zapisano: jedno kliknięcie zapisuje imię i nazwisko, adres
+oraz telefon, stanowisko i firmę z podpisu, z opcją Cofnij. Przy
+zapisanej osobie ten sam przycisk otwiera ją na stronie Kontakty.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Czas na skupienie, nieobecność i miejsce pracy"
+text = """
+Nowe wydarzenie może być teraz Czasem na skupienie, wpisem Poza biurem
+lub Miejscem pracy, tak jak w Google Calendar: wybierz to nad godzinami.
+Google i Outlook rozpoznają je jako to, czym są, a w Katna mają własną
+ikonę.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Zadania przy poczcie"
+text = """
+Wiadomość, z której utworzono zadanie, pokazuje teraz na liście termin
+zadania, na czerwono, gdy jest po terminie. Kliknij go, aby otworzyć
+zadanie.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Inne kontakty"
+text = """
+W Kontaktach pojawiły się Inne kontakty: osoby, do których pisano z
+Gmaila, ale nigdy ich nie zapisano, tak jak przechowuje je Gmail. Zapisz
+każdą jednym kliknięciem, z opcją Cofnij, albo od razu napisz do niej
+wiadomość.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Odpowiadaj na zaproszenia z dowolnego konta"
+text = """
+Zaproszenie, które trafiło na konto bez kalendarza, ma teraz także Tak,
+Nie i Może: Twoja odpowiedź trafia do organizatora e-mailem, a jego
+kalendarz ją odnotowuje.
+"""

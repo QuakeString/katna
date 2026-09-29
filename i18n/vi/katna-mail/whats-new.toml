@@ -1291,3 +1291,53 @@ Sự kiện có khách giờ có Gửi thư cho khách và, từ một giờ tr�
 đầu, Tôi đến muộn: một thư gửi mọi người, từ tài khoản của lịch đó, sẵn
 sàng để gửi.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Nhãn liên hệ"
+text = """
+Nút Gắn nhãn trên trang của một người liên hệ bật tắt các nhãn hoặc tạo
+nhãn mới, và ⋮ bên cạnh một nhãn cho phép đổi tên, xóa hoặc viết cho mọi
+người trong nhãn đó. Nhãn luôn đồng bộ với Google Contacts và Outlook,
+và mọi thay đổi đều có Hoàn tác.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Thêm vào danh bạ từ thư"
+text = """
+Bảng liên hệ bên cạnh một cuộc trò chuyện có Thêm vào danh bạ cho người
+bạn chưa lưu: một cú nhấp lưu tên, địa chỉ cùng điện thoại, chức danh và
+công ty từ chữ ký của họ, kèm Hoàn tác. Với người đã lưu, cùng nút đó mở
+họ trên trang Danh bạ.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Thời gian tập trung, vắng mặt và địa điểm làm việc"
+text = """
+Sự kiện mới giờ có thể là Thời gian tập trung, Vắng mặt hoặc Địa điểm
+làm việc, như trong Google Calendar: chọn ở phía trên các mốc giờ.
+Google và Outlook nhận ra chúng đúng như bản chất, và trong Katna chúng
+hiển thị với biểu tượng riêng.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Việc cần làm ngay trên thư"
+text = """
+Thư bạn đã chuyển thành việc cần làm giờ hiển thị ngày đến hạn của việc
+đó trong danh sách, màu đỏ khi đã quá hạn. Nhấp vào để mở việc cần làm.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Danh bạ khác"
+text = """
+Danh bạ giờ có Danh bạ khác: những người bạn đã gửi email từ Gmail nhưng
+chưa bao giờ lưu, đúng như cách Gmail giữ họ. Lưu bất kỳ ai chỉ bằng một
+lần bấm, có Hoàn tác, hoặc bắt đầu một email gửi họ.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Trả lời lời mời từ mọi tài khoản"
+text = """
+Lời mời gửi đến một tài khoản không có lịch giờ cũng có Có, Không và Có
+thể: câu trả lời của bạn được gửi đến người tổ chức qua email, và lịch
+của họ ghi nhận nó.
+"""

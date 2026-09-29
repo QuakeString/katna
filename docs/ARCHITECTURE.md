@@ -2158,8 +2158,9 @@ desktop's own app stays one click away.
   top bar (the window's own controls stay usable): a dark page with a bar
   naming the file, "Open with another app" and Save; arrows (and ←/→) go
   through the message's other attachments; a pill at the foot zooms
-  (−/+/0, 25 %–400 %, 100 % fits the window) and counts PDF pages.
-  Escape closes it. It is dark in light and dark themes alike.
+  (−/+/0, 25 %–400 %, 100 % fits the window) and shows a PDF's page as
+  "Page [n] of N": typing a number in the box (click it or Ctrl+G) and
+  Enter goes to that page, Escape leaves the box. Escape closes the viewer. It is dark in light and dark themes alike.
   - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
     Only pages on screen (and one either side) are drawn, at the zoom and
     the screen's scale, one at a time on a background thread; pages far
@@ -2660,8 +2661,15 @@ away; he can still change them.
   a label lives only on its notes, so there is no empty label, and a
   label's board goes back to Notes once no note has it. Labels travel in
   `X-Katna-Labels`; there is no schema change.
-- **Later.** Meeting notes from an event, a checklist line made a task,
-  formatting, pictures.
+- **Meeting notes.** As Google Calendar's "Take meeting notes": an
+  event's card on the Calendar page lists the notes about it and has
+  Take meeting notes, which opens a new note over the Calendar titled
+  "<event> · <day>" and started with "Attendees: …", "Notes" and
+  "Action items" with a checklist line; left as it is, it is not kept.
+  Its `link` is `event:<start>:<UID>`, so each occurrence of a repeating
+  event has its own notes. Such a note has an Event chip that opens the
+  Calendar's Day view on that day.
+- **Later.** A checklist line made a task, formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -2781,6 +2789,18 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
+- **Event reminders** (`apps/katna-daemon/src/daemon/alarms.rs`): each
+  reminder of an event in a shown calendar (not cancelled, not declined)
+  becomes a "Katna Calendar" notification at its time: the title, how soon
+  it starts ("In 10 minutes"; the daemon has no ICU, so no clock times)
+  and the place, with Open (the Calendar page), Join (the event's
+  `https://` video link, in the browser) and Snooze 5 min.
+  `category=x-katna.event`, `sound-name=alarm-clock-elapsed`, no timeout.
+  One task reads the next eight days of events, sleeps until the next
+  reminder (at most a minute, so edits count) and keeps up to when it
+  looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats
+  none; reminders missed while the computer was off show only when they
+  fell due in the last ten minutes. Snoozes live in memory.
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -3472,6 +3492,13 @@ server error is not.
   task's due day (red when past; "Task" with none), which opens the task.
   The window reads the tasks from the start and maps each `task.mail` to
   its line (the one due first wins) whenever tasks or mail change.
+- **On the Calendar**, as in Google Calendar: a task due on a day sits
+  with that day's whole-day events (Day and Week) and one due at a time
+  sits at that time for half an hour, beside any event it overlaps; Month
+  and Schedule list them with the events. Its circle ticks it off, a
+  click opens it over the Calendar, and dragging it to another day, time
+  or the whole-day row moves its due day and time (a quarter hour at a
+  time, with Undo), blocking that time for it.
 
 ### 18.2 Video calls
 

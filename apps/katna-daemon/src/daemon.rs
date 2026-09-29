@@ -46,6 +46,7 @@ use katna_sync::{
 use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+pub(crate) mod alarms;
 mod calendar;
 mod contact_labels;
 mod contacts;
@@ -56,6 +57,7 @@ mod other_contacts;
 mod reminders;
 
 pub use reminders::{SNOOZED, is_snoozed_path};
+pub(crate) use sign_in::open_in_browser;
 mod sign_in;
 mod tasks;
 
@@ -402,6 +404,7 @@ impl Daemon {
         ))
         .detach();
         smol::spawn(notes::run(Arc::downgrade(self), self.notes_wake.1.clone())).detach();
+        smol::spawn(alarms::run(Arc::downgrade(self))).detach();
         Ok(())
     }
 

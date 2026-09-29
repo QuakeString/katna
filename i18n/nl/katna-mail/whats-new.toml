@@ -1334,3 +1334,56 @@ Een afspraak met gasten heeft nu Gasten e-mailen en, vanaf een uur voor
 het begin, Ik ben te laat: een e-mail aan iedereen, vanaf het account
 van die agenda, klaar om te verzenden.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Labels voor contacten"
+text = """
+Met Label op de pagina van een contact zet je labels aan of uit of maak
+je een nieuw label, en met ⋮ naast een label hernoem of verwijder je
+het, of mail je iedereen erin. Labels blijven gelijklopen met Google
+Contacts en Outlook, en elke wijziging heeft een Ongedaan maken.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Toevoegen aan contacten vanuit mail"
+text = """
+Het contactpaneel naast een gesprek heeft Toevoegen aan contacten voor
+iemand die je nog niet hebt opgeslagen: met één klik sla je naam, adres
+en het telefoonnummer, de functie en het bedrijf uit de handtekening op,
+met Ongedaan maken. Bij iemand die al is opgeslagen opent dezelfde knop
+het contact op de pagina Contacten.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Focustijd, niet op kantoor en werklocatie"
+text = """
+Een nieuwe afspraak kan nu Focustijd, Niet op kantoor of een Werklocatie
+zijn, zoals in Google Calendar: kies het boven de tijden. Google en
+Outlook zien ze voor wat ze zijn en in Katna verschijnen ze met een
+eigen pictogram.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Taken bij je mail"
+text = """
+Een mail die je in een taak hebt omgezet, toont in de lijst nu de
+vervaldag van de taak, in rood als die te laat is. Klik erop om de taak
+te openen.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Overige contacten"
+text = """
+Contacten heeft nu Overige contacten: mensen naar wie je vanuit Gmail
+hebt gemaild maar die je nooit hebt opgeslagen, zoals Gmail ze bewaart.
+Sla iedereen op met één klik, met Ongedaan maken, of begin meteen een
+mail.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Uitnodigingen beantwoorden vanuit elk account"
+text = """
+Een uitnodiging die binnenkwam op een account zonder agenda heeft nu ook
+Ja, Nee en Misschien: je antwoord gaat per e-mail naar de organisator en
+hun agenda legt het vast.
+"""

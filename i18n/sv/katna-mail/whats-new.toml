@@ -1304,3 +1304,53 @@ En händelse med gäster har nu Skicka e-post till gäster och, från en
 timme innan den börjar, Jag är försenad: ett mejl till alla, från den
 kalenderns konto, klart att skickas.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Kontaktetiketter"
+text = """
+Etikett på en kontakts sida bockar etiketter av och på eller skapar en
+ny, och ⋮ bredvid en etikett byter namn på den, raderar den eller
+skriver till alla på den. Etiketterna hålls i takt med Google Contacts
+och Outlook, och varje ändring har en Ångra.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Lägg till i kontakter från e-posten"
+text = """
+Kontaktpanelen bredvid en konversation har Lägg till i kontakter för
+någon du inte har sparat: ett klick sparar namn, adress och telefon,
+titel och företag från signaturen, med Ångra. För någon som redan är
+sparad öppnar samma knapp personen på sidan Kontakter.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Fokustid, frånvaro och arbetsplats"
+text = """
+En ny händelse kan nu vara Fokustid, Frånvaro eller en Arbetsplats, som
+i Google Calendar: välj det ovanför tiderna. Google och Outlook ser dem
+som vad de är, och i Katna visas de med en egen ikon.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Uppgifter i din e-post"
+text = """
+Ett mejl som du har gjort till en uppgift visar nu uppgiftens
+förfallodag i listan, i rött när den är försenad. Klicka på den för att
+öppna uppgiften.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Övriga kontakter"
+text = """
+Kontakter har nu Övriga kontakter: personer du har mejlat från Gmail men
+aldrig sparat, precis som Gmail behåller dem. Spara vem som helst med
+ett klick, med Ångra, eller börja ett mejl till dem.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Svara på inbjudningar från vilket konto som helst"
+text = """
+En inbjudan som kom till ett konto utan kalender har nu också Ja, Nej
+och Kanske: ditt svar skickas till arrangören med e-post, och
+arrangörens kalender registrerar det.
+"""

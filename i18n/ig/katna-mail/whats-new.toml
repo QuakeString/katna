@@ -1291,3 +1291,53 @@ Ihe omume nwere ndị ọbịa nwere Zipụ ndị ọbịa email ugbu a, na
 site n'otu awa tupu ọ malite, Ana m egbu oge: mail nye mmadụ
 niile, site na akaụntụ kalịnda ahụ, dị njikere izipu.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Leebụl kọntaktị"
+text = """
+Bọtịnụ leebụl dị na peeji kọntaktị na-emeghe ma na-emechi leebụl ma ọ bụ
+na-emepụta nke ọhụrụ, ⋮ dị n'akụkụ leebụl na-agbanwe aha ya, na-ehichapụ
+ya ma ọ bụ na-eziga ndị niile nọ na ya ozi. Leebụl na-adịgide n'otu
+n'otu na Google Contacts na Outlook, mgbanwe ọ bụla nwekwara Megharịa.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Tinye na kọntaktị site na Ozi"
+text = """
+Ogwe kọntaktị dị n'akụkụ mkparịta ụka nwere Tinye na kọntaktị maka onye
+ị chekwabeghị: otu ogbugba na-echekwa aha ya, adreesị, na ekwentị, ọkwa
+na ụlọ ọrụ sitere na mbinye aka ya, yana Megharịa. Maka onye echekwara,
+otu bọtịnụ ahụ na-emeghe ya na peeji Kọntaktị.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Oge nlekwasị anya, n'èzí ọfịs na ebe ị na-arụ ọrụ"
+text = """
+Ugbu a, ihe omume ọhụrụ nwere ike ịbụ Oge nlekwasị anya, N'èzí ọfịs ma ọ
+bụ Ebe ọrụ, dị ka ọ dị na Google Calendar: họrọ ya n'elu oge ndị ahụ.
+Google na Outlook na-ahụ ha dị ka ha bụ, ha na-apụtakwa na Katna nwere
+akara nke ha.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Ọrụ dị na ozi"
+text = """
+Ozi i mere ọrụ site na ya ga-egosi ụbọchị ọrụ ahụ kwesịrị ịgwụ n'ndepụta ugbu a,
+na uhie ma ọ gafee oge. Pịa ya ka imepe ọrụ ahụ.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Kọntaktị ndị ọzọ"
+text = """
+Kọntaktị nwere Kọntaktị ndị ọzọ ugbu a: ndị i zigara ozi site na Gmail
+ma i chekwabeghị ha ma ọlị, dị ka Gmail si edobe ha. Chekwaa onye ọ bụla
+site n'otu ihe mkpịa, na Megharịa, ma ọ bụ malite ide ha ozi.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Zaghachi oku sitere n'akaụntụ ọ bụla"
+text = """
+Oku bịara n'akaụntụ na-enweghị kalịnda nwere Ee, Mba na Ikekwe ugbu a:
+azịza gị na-aga n'aka onye nhazi site na ozi, kalịnda ya ga-akaritekwa
+ya.
+"""

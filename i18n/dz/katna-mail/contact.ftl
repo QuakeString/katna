@@ -5,6 +5,8 @@ contact-panel-show = འབྲེལ་བའི་རྒྱས་བཤད་�
 contact-panel-hide = འབྲེལ་བའི་རྒྱས་བཤད་སྦ།
 contact-email = གློག་འཕྲིན་གཏང་།
 contact-search = ཁོང་དང་གློག་འཕྲིན་འཚོལ།
+contact-add-to-contacts = འབྲེལ་བ་ཚུ་ནང་ཁ་སྐོང་འབད།
+contact-open-contact = འབྲེལ་བ་ཁ་ཕྱེ།
 contact-messages = { $count ->
    *[other] འཕྲིན་དོན་ { $count }
 }

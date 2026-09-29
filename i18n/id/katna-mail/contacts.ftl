@@ -6,7 +6,25 @@
 
 contacts-all = Kontak
 contacts-frequent = Sering
+contacts-other = Kontak lainnya
+contacts-other-about = Orang yang pernah Anda kirimi email dari Gmail tetapi belum disimpan
+contacts-other-email = Kirim email
+contacts-other-empty = Tidak ada kontak lainnya. Orang yang Anda kirimi email dari Gmail tetapi tidak Anda simpan akan muncul di sini.
+contacts-other-allow = Untuk melihat kontak lainnya, masuk lagi ke akun Gmail Anda dan izinkan Katna melihatnya.
 contacts-labels = Label
+contacts-label-options = Opsi label
+contacts-label-rename = Ganti nama label
+contacts-label-email = Kirim email ke semua
+contacts-label-delete = Hapus label
+contacts-label-new = Label baru
+contacts-label-name = Nama label
+contacts-label-button = Label
+contacts-label-menu = Beri label:
+contacts-label-added = Ditambahkan ke { $name }
+contacts-label-removed = Dihapus dari { $name }
+contacts-label-renamed = Label diganti namanya menjadi { $name }
+contacts-label-deleted = Label { $name } dihapus
+contacts-label-no-email = Tidak ada orang di label ini yang memiliki alamat email
 contacts-create = Buat kontak
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = Kembali ke kontak
 contacts-edit = Edit
 contacts-delete = Hapus
 contacts-deleted = { $name } dihapus
+contacts-added = { $name } ditambahkan ke kontak
 contacts-find-mail = Email
 contacts-details = Detail kontak
 contacts-saved-in = Disimpan di

@@ -6,7 +6,25 @@
 
 contacts-all = കോൺടാക്റ്റുകൾ
 contacts-frequent = ഇടയ്ക്കിടെ
+contacts-other = മറ്റ് കോൺടാക്റ്റുകൾ
+contacts-other-about = നിങ്ങൾ Gmail-ൽ നിന്ന് മെയിൽ ചെയ്‌തിട്ടും സേവ് ചെയ്യാത്തവർ
+contacts-other-email = ഇമെയിൽ അയയ്ക്കുക
+contacts-other-empty = മറ്റ് കോൺടാക്റ്റുകളൊന്നുമില്ല. Gmail-ൽ നിന്ന് നിങ്ങൾ മെയിൽ ചെയ്യുകയും സേവ് ചെയ്യാതിരിക്കുകയും ചെയ്യുന്നവർ ഇവിടെ കാണിക്കും.
+contacts-other-allow = മറ്റ് കോൺടാക്റ്റുകൾ കാണാൻ, നിങ്ങളുടെ Gmail അക്കൗണ്ടിൽ വീണ്ടും സൈൻ ഇൻ ചെയ്ത് അവ കാണാൻ Katna-യെ അനുവദിക്കുക.
 contacts-labels = ലേബലുകൾ
+contacts-label-options = ലേബൽ ഓപ്‌ഷനുകൾ
+contacts-label-rename = ലേബലിന്റെ പേരു മാറ്റുക
+contacts-label-email = എല്ലാവർക്കും മെയിൽ അയയ്ക്കുക
+contacts-label-delete = ലേബൽ ഇല്ലാതാക്കുക
+contacts-label-new = പുതിയ ലേബൽ
+contacts-label-name = ലേബലിന്റെ പേര്
+contacts-label-button = ലേബൽ
+contacts-label-menu = ഇങ്ങനെ ലേബൽ ചെയ്യുക:
+contacts-label-added = { $name }-ലേക്ക് ചേർത്തു
+contacts-label-removed = { $name }-ൽ നിന്ന് നീക്കി
+contacts-label-renamed = ലേബലിന്റെ പേര് { $name } എന്നാക്കി മാറ്റി
+contacts-label-deleted = ലേബൽ { $name } ഇല്ലാതാക്കി
+contacts-label-no-email = ഈ ലേബലിലുള്ള ആർക്കും ഇമെയിൽ വിലാസമില്ല
 contacts-create = കോൺടാക്റ്റ് സൃഷ്ടിക്കുക
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = കോൺടാക്റ്റുകളിലേക്ക് മ
 contacts-edit = എഡിറ്റ് ചെയ്യുക
 contacts-delete = ഇല്ലാതാക്കുക
 contacts-deleted = { $name } ഇല്ലാതാക്കി
+contacts-added = { $name } കോൺടാക്റ്റുകളിലേക്ക് ചേർത്തു
 contacts-find-mail = മെയിൽ
 contacts-details = കോൺടാക്റ്റ് വിശദാംശങ്ങൾ
 contacts-saved-in = സംരക്ഷിച്ച സ്ഥലം

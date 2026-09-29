@@ -1293,3 +1293,53 @@ text = """
 voor dit begin, Ek is laat: ’n e-pos aan almal, vanaf daardie kalender
 se rekening, gereed om te stuur.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Kontaketikette"
+text = """
+Etiket op ’n kontak se bladsy skakel etikette aan en af of maak ’n nuwe
+een, en die ⋮ langs ’n etiket hernoem dit, vee dit uit of skryf aan
+almal daarop. Etikette bly in pas met Google Contacts en Outlook, en
+elke verandering het ’n Ontdoen.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Voeg by kontakte vanuit e-pos"
+text = """
+Die kontakpaneel langs ’n gesprek het Voeg by kontakte vir iemand wat jy
+nie gestoor het nie: een klik stoor hul naam, adres en die foon, titel
+en maatskappy uit hul handtekening, met Ontdoen. Vir iemand wat gestoor
+is, maak dieselfde knoppie hulle oop op die Kontakte-bladsy.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Fokustyd, uit die kantoor en werkplek"
+text = """
+’n Nuwe geleentheid kan nou Fokustyd, Uit die kantoor of ’n Werkplek
+wees, soos in Google Calendar: kies dit bo die tye. Google en Outlook
+sien dit vir wat dit is, en in Katna verskyn dit met sy eie ikoon.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Take by jou e-pos"
+text = """
+'n E-pos wat jy in 'n taak omskep het, wys nou die taak se sperdatum in
+die lys, in rooi as dit laat is. Klik daarop om die taak oop te maak.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Ander kontakte"
+text = """
+Kontakte het nou Ander kontakte: mense aan wie jy vanaf Gmail e-pos
+gestuur het maar nooit gestoor het nie, soos Gmail hulle hou. Stoor
+enigiemand met een klik, met Ontdoen, of begin dadelik ’n e-pos aan
+hulle.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Beantwoord uitnodigings vanaf enige rekening"
+text = """
+’n Uitnodiging wat by ’n rekening sonder kalender aangekom het, het nou
+ook Ja, Nee en Miskien: jou antwoord gaan per e-pos na die
+organiseerder, en sy kalender merk dit.
+"""

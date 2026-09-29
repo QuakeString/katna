@@ -5,6 +5,8 @@ contact-panel-show = পরিচিতির বিবরণ দেখান
 contact-panel-hide = পরিচিতির বিবরণ লুকান
 contact-email = মেল পাঠান
 contact-search = ওঁর মেল খুঁজুন
+contact-add-to-contacts = পরিচিতিতে যোগ করুন
+contact-open-contact = পরিচিতি খুলুন
 contact-messages = { $count ->
     [one] { $count }টি মেসেজ
    *[other] { $count }টি মেসেজ

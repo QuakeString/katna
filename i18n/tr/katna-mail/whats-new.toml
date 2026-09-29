@@ -1323,3 +1323,53 @@ Konuklu bir etkinlikte artık Konuklara posta gönder, başlamasına bir
 saat kala da Geç kalıyorum düğmesi var: bu takvimin hesabından herkese
 gönderilmeye hazır bir posta.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Kişi etiketleri"
+text = """
+Bir kişinin sayfasındaki Etiket düğmesi etiketleri açıp kapatır veya
+yenisini oluşturur; bir etiketin yanındaki ⋮ ise onu yeniden adlandırır,
+siler ya da üzerindeki herkese yazar. Etiketler Google Contacts ve
+Outlook ile uyumlu kalır ve her değişiklik Geri al ile geri alınabilir.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Postadan kişilere ekleme"
+text = """
+Bir yazışmanın yanındaki kişi paneli, kaydetmediğiniz biri için Kişilere
+ekle düğmesi sunar: tek tıklama adını, adresini ve imzasındaki telefon,
+unvan ve şirketi kaydeder, Geri al ile. Kayıtlı biri için aynı düğme onu
+Kişiler sayfasında açar.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Odaklanma zamanı, ofis dışında ve çalışma konumu"
+text = """
+Yeni bir etkinlik artık Google Calendar’daki gibi Odaklanma zamanı, Ofis
+dışında veya Çalışma konumu olabilir: saatlerin üstünden seçin. Google
+ve Outlook bunları gerçekte ne iseler öyle görür, Katna’da ise kendi
+simgeleriyle görünürler.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Postanızda görevler"
+text = """
+Görev haline getirdiğiniz bir posta artık listede görevin bitiş gününü
+gösterir, gecikince kırmızı olarak. Görevi açmak için tıklayın.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Diğer kişiler"
+text = """
+Kişiler’de artık Diğer kişiler var: Gmail’den e-posta gönderdiğiniz ama
+hiç kaydetmediğiniz kişiler, Gmail’in tuttuğu haliyle. Herkesi tek
+tıkla, Geri al seçeneğiyle kaydedin ya da doğrudan bir e-posta başlatın.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Davetleri her hesaptan yanıtlayın"
+text = """
+Takvimi olmayan bir hesaba gelen davette artık Evet, Hayır ve Belki de
+var: yanıtınız düzenleyiciye e-postayla gider ve onun takvimi bunu
+işler.
+"""

@@ -6,7 +6,25 @@
 
 contacts-all = Kọntaktị
 contacts-frequent = Ndị a na-akpọ ugboro ugboro
+contacts-other = Kọntaktị ndị ọzọ
+contacts-other-about = Ndị i zigara ozi site na Gmail ma ị chekwabeghị
+contacts-other-email = Zipu ozi ịntanetị
+contacts-other-empty = Enwere kọntaktị ndị ọzọ. Ndị ị na-ezigara ozi site na Gmail ma ị naghị echekwa ga-apụta ebe a.
+contacts-other-allow = Ka i hụ kọntaktị ndị ọzọ, banye n'akaụntụ Gmail gị ọzọ ma kwe ka Katna hụ ha.
 contacts-labels = Leebụl
+contacts-label-options = Nhọrọ leebụl
+contacts-label-rename = Megharịa aha leebụl
+contacts-label-email = Ziga ndị niile ozi
+contacts-label-delete = Hichapụ leebụl
+contacts-label-new = Leebụl ọhụrụ
+contacts-label-name = Aha leebụl
+contacts-label-button = Leebụl
+contacts-label-menu = Tinye leebụl dị ka:
+contacts-label-added = Agbakwunyere na { $name }
+contacts-label-removed = Wepụrụ na { $name }
+contacts-label-renamed = Agbanwela aha leebụl ka ọ bụrụ { $name }
+contacts-label-deleted = Ehichapụla leebụl { $name }
+contacts-label-no-email = Ọ dịghị onye nọ na leebụl a nwere adreesị ozi
 contacts-create = Mepụta kọntaktị
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = Laghachi na kọntaktị
 contacts-edit = Dezie
 contacts-delete = Hichapụ
 contacts-deleted = Ehichapụla { $name }
+contacts-added = Agbakwunyere { $name } na kọntaktị
 contacts-find-mail = Ozi
 contacts-details = Nkọwa kọntaktị
 contacts-saved-in = Echekwara na
