@@ -382,6 +382,7 @@ menu-snooze = Snoozen
 menu-unsnooze = Snooze opheffen
 menu-add-to-tasks = Toevoegen aan Taken
 menu-schedule-meeting = Vergadering plannen
+menu-start-call = Een videogesprek starten
 menu-add-note = Notitie toevoegen
 menu-print-all = Alles afdrukken
 menu-new-window = Openen in nieuw venster

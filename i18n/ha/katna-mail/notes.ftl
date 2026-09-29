@@ -78,6 +78,10 @@ notes-meeting-actions = Abubuwan da za a yi
 notes-event = Taron
 notes-open-event = Buɗe taron
 
+## Tasks
+
+notes-make-task = Mai da shi aiki
+
 ## Colors (tooltips)
 
 notes-color-none = Babu launi

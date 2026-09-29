@@ -7,20 +7,49 @@ calendar-today-tip = Naar vandaag gaan
 calendar-view-day = Dag
 calendar-view-week = Week
 calendar-view-month = Maand
+calendar-view-year = Jaar
 calendar-view-schedule = Agenda
+calendar-view-days =
+    { $count ->
+        [one] { $count } dag
+       *[other] { $count } dagen
+    }
+calendar-options = Opties
+calendar-density = Dichtheid
+calendar-density-responsive = Afgestemd op je scherm
+calendar-density-comfortable = Comfortabel
+calendar-density-compact = Compact
+calendar-custom-days = Aangepaste weergave
+calendar-second-zone = Tweede tijdzone
+calendar-zone-none = Geen
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Vrije tijden delen
+calendar-free-subject = Tijden dat ik vrij ben
+calendar-free-intro = Hier zijn enkele tijden dat ik vrij ben ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Ik heb de komende werkdagen geen vrije tijd.
 calendar-previous-day = Vorige dag
 calendar-next-day = Volgende dag
 calendar-previous-week = Vorige week
 calendar-next-week = Volgende week
 calendar-previous-month = Vorige maand
 calendar-next-month = Volgende maand
+calendar-previous-year = Vorig jaar
+calendar-next-year = Volgend jaar
 calendar-previous-period = Eerder
 calendar-next-period = Later
 calendar-title-months = { $first } – { $last }
 calendar-loading = Laden…
 calendar-read-failed = De agenda kon niet worden gelezen: { $error }
+calendar-sets = Agendagroepen
+calendar-set-add = Getoonde agenda’s als groep opslaan
+calendar-set-name = Naam van de groep
+calendar-set-remove = Groep verwijderen
 calendar-local = Deze computer
 calendar-account-gone = Verwijderd account
+calendar-birthdays = Verjaardagen
+calendar-birthday-of = Verjaardag van { $name }
 calendar-empty-title = Nog geen agenda’s
 calendar-empty-text = Katna toont hier de agenda’s van je Google- en Microsoft-accounts zodra ze zijn gesynchroniseerd, en die van andere servers die CalDAV bieden.
 calendar-schedule-empty = Er staat niets gepland voor de komende twee maanden.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } misschien, { $no } nee, { $wait
 calendar-organizer = Organisator
 calendar-optional = Optioneel
 calendar-open-web = Openen in de browser
+calendar-open-contact = Contact openen
 calendar-close = Sluiten
 
 ## Adding, changing and deleting events.

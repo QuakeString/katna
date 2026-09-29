@@ -77,6 +77,10 @@ notes-meeting-actions = 待办事项
 notes-event = 活动
 notes-open-event = 打开活动
 
+## Tasks
+
+notes-make-task = 设为任务
+
 ## Colors (tooltips)
 
 notes-color-none = 无颜色

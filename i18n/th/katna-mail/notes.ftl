@@ -77,6 +77,10 @@ notes-meeting-actions = รายการที่ต้องดำเนิ�
 notes-event = กิจกรรม
 notes-open-event = เปิดกิจกรรม
 
+## Tasks
+
+notes-make-task = ทำเป็นงาน
+
 ## Colors (tooltips)
 
 notes-color-none = ไม่มีสี

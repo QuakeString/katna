@@ -103,6 +103,7 @@ compose-tool-remove-link = Bağlantıyı kaldır
 ## More options
 
 compose-tool-full-screen = Varsayılan olarak tam ekran
+compose-tool-video-call = Görüntülü görüşme ekle
 compose-tool-label = Etiket
 compose-tool-label-coming = Gönderilen postalarda etiketler yakında geliyor. İleti gittikten sonra Gönderilmiş Postalar'da etiketleyin.
 compose-tool-plain-mode = Düz metin modu

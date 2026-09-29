@@ -7,20 +7,48 @@ calendar-today-tip = 今日に移動
 calendar-view-day = 日
 calendar-view-week = 週
 calendar-view-month = 月
+calendar-view-year = 年
 calendar-view-schedule = スケジュール
+calendar-view-days =
+    { $count ->
+       *[other] { $count } 日間
+    }
+calendar-options = 設定
+calendar-density = 情報密度
+calendar-density-responsive = 画面に合わせて調整
+calendar-density-comfortable = ゆったり
+calendar-density-compact = コンパクト
+calendar-custom-days = カスタム表示
+calendar-second-zone = セカンダリ タイムゾーン
+calendar-zone-none = なし
+calendar-zone = { $zone } （{ $offset }）
+calendar-share-free = 空き時間を共有
+calendar-free-subject = 空いている時間
+calendar-free-intro = 空いている時間をお知らせします（{ $zone }）：
+calendar-free-day = { $weekday } { $date }：{ $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = 今後数営業日に空き時間はありません。
 calendar-previous-day = 前の日
 calendar-next-day = 次の日
 calendar-previous-week = 前の週
 calendar-next-week = 次の週
 calendar-previous-month = 前の月
 calendar-next-month = 次の月
+calendar-previous-year = 前の年
+calendar-next-year = 次の年
 calendar-previous-period = 前へ
 calendar-next-period = 次へ
 calendar-title-months = { $first } – { $last }
 calendar-loading = 読み込み中…
 calendar-read-failed = カレンダーを読み込めませんでした: { $error }
+calendar-sets = カレンダー セット
+calendar-set-add = 表示中のカレンダーをセットとして保存
+calendar-set-name = セットの名前
+calendar-set-remove = セットを削除
 calendar-local = このコンピューター
 calendar-account-gone = 削除されたアカウント
+calendar-birthdays = 誕生日
+calendar-birthday-of = { $name }さんの誕生日
 calendar-empty-title = カレンダーはまだありません
 calendar-empty-text = Google や Microsoft アカウントのカレンダーは同期が完了するとここに表示されます。CalDAV に対応する他のサーバーのカレンダーも表示されます。
 calendar-schedule-empty = 今後 2 か月間の予定はありません。
@@ -45,6 +73,7 @@ calendar-guest-answers = はい { $yes }、未定 { $maybe }、いいえ { $no }
 calendar-organizer = 主催者
 calendar-optional = 任意
 calendar-open-web = ブラウザで開く
+calendar-open-contact = 連絡先を開く
 calendar-close = 閉じる
 
 ## Adding, changing and deleting events.

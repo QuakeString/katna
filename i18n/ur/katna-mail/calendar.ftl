@@ -7,20 +7,49 @@ calendar-today-tip = آج پر جائیں
 calendar-view-day = دن
 calendar-view-week = ہفتہ
 calendar-view-month = مہینہ
+calendar-view-year = سال
 calendar-view-schedule = شیڈول
+calendar-view-days =
+    { $count ->
+        [one] { $count } دن
+       *[other] { $count } دن
+    }
+calendar-options = اختیارات
+calendar-density = کثافت
+calendar-density-responsive = آپ کی اسکرین کے مطابق
+calendar-density-comfortable = آرام دہ
+calendar-density-compact = مختصر
+calendar-custom-days = حسب ضرورت منظر
+calendar-second-zone = دوسرا ٹائم زون
+calendar-zone-none = کوئی نہیں
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = خالی اوقات شیئر کریں
+calendar-free-subject = میرے خالی اوقات
+calendar-free-intro = یہ میرے کچھ خالی اوقات ہیں ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = آئندہ چند کام کے دنوں میں میرے پاس کوئی خالی وقت نہیں ہے۔
 calendar-previous-day = پچھلا دن
 calendar-next-day = اگلا دن
 calendar-previous-week = پچھلا ہفتہ
 calendar-next-week = اگلا ہفتہ
 calendar-previous-month = پچھلا مہینہ
 calendar-next-month = اگلا مہینہ
+calendar-previous-year = پچھلا سال
+calendar-next-year = اگلا سال
 calendar-previous-period = پہلے
 calendar-next-period = بعد میں
 calendar-title-months = { $first } – { $last }
 calendar-loading = لوڈ ہو رہا ہے…
 calendar-read-failed = کیلنڈر پڑھا نہیں جا سکا: { $error }
+calendar-sets = کیلنڈر سیٹ
+calendar-set-add = دکھائے جانے والے کیلنڈرز کو سیٹ کے طور پر محفوظ کریں
+calendar-set-name = سیٹ کا نام
+calendar-set-remove = سیٹ ہٹائیں
 calendar-local = یہ کمپیوٹر
 calendar-account-gone = ہٹایا گیا اکاؤنٹ
+calendar-birthdays = سالگرہیں
+calendar-birthday-of = { $name } کی سالگرہ
 calendar-empty-title = ابھی کوئی کیلنڈر نہیں
 calendar-empty-text = آپ کے Google اور Microsoft اکاؤنٹس کے کیلنڈر ہم آہنگ ہونے کے بعد یہاں دکھائے جائیں گے، اور CalDAV فراہم کرنے والے دوسرے سرورز کے بھی۔
 calendar-schedule-empty = اگلے دو مہینوں میں کچھ منصوبہ بند نہیں ہے۔
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ہاں، { $maybe } شاید، { $no } نہی�
 calendar-organizer = منتظم
 calendar-optional = اختیاری
 calendar-open-web = براؤزر میں کھولیں
+calendar-open-contact = رابطہ کھولیں
 calendar-close = بند کریں
 
 ## Adding, changing and deleting events.

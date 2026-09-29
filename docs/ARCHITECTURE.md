@@ -377,6 +377,13 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   rest of the daemon holds cloneable handles. Dropping a caller only drops
   the answer. A request from any handle ends an IDLE wait cleanly (DONE),
   then runs.
+- **A thread per account:** the engine calls the synchronous store from
+  async code, so a call that waits (a big first sync, a slow disk, SQLite's
+  busy timeout) blocks whatever runs it. The daemon runs each account's
+  worker, the outbox and the contacts, tasks, notes, calendar, alarm and
+  reminder loops on threads of their own (`katna-daemon/src/threads.rs`);
+  smol's shared executor keeps only short work such as event forwarding and
+  D-Bus signals.
 - **Level-1 sync (`katna_sync::engine`):** per folder, SELECT with
   CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
   HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
@@ -994,18 +1001,31 @@ contacts, leaving out anyone saved since; Add to contacts copies one with
 `copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
 Outlook and CardDAV have no such list.
 
-"Fix and manage" at the foot of the column has Merge and fix, Import and
-Export. Merge and fix suggests people who look like the same person (the
+"Fix and manage" at the foot of the column has Merge and fix, Import,
+Export and Print. Merge and fix suggests people who look like the same person (the
 same name, or a phone number ending in the same ten digits; people who
 share an address are one person already). Merging combines their cards
 (the first card's name, then every address, number, link and label the
 others add) and keeps one card per address book, deleting the rest there;
 the Undo writes the old cards back. Dismissed suggestions are kept in the
-settings file (`[contacts] dismissed_duplicates`). Import reads vCard files
-in the app and saves the new people with their categories as labels in
+settings file (`[contacts] dismissed_duplicates`). Import reads vCard files,
+and CSV files as Google Contacts, Outlook and Thunderbird export them (each
+column known by its heading), in the app and saves the new people with their categories as labels in
 the account in view (`ImportContacts`, with an Undo), leaving out anyone
 already saved; Export writes the people on screen (everyone or a label) as
-one vCard 3.0 file.
+one vCard 3.0 file, and Print prints them (their name, job and details, in
+mail's print preview). A person's page prints them alone and shows them as
+a QR code of their vCard, without notes or picture (addresses and links are
+dropped when it would not fit), which a phone's camera saves.
+
+Saved people's birthdays show on the Calendar and the agenda as a
+Birthdays calendar made on this computer (id -1, read-only, never stored):
+a yearly whole-day event per person, built from the cards each time the
+calendar is read, leaving out one a mail service's own calendar already has
+(a birthday event that day with their first name). Unticking it is kept in
+the settings (`[contacts] hide_birthdays`); a click opens the person's page.
+KRunner and GNOME search suggest saved people too, with their saved names
+(`ContactBook::with_saved`), read again when contacts change.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -2818,7 +2838,8 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   reminder (at most a minute, so edits count) and keeps up to when it
   looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats
   none; reminders missed while the computer was off show only when they
-  fell due in the last ten minutes. Snoozes live in memory.
+  fell due in the last ten minutes. Snoozes live in memory. Tasks'
+  reminders come through the same loop (§18.1).
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -2899,7 +2920,8 @@ Served by the daemon, pure Rust, from the same search index.
 | Contact | name, address, organization | Compose email, copy address, open contact |
 | Email | subject, sender, text (confident matches only, or with a `mail:` prefix) | Open, reply all |
 | Organization | name, alias | Open organization view |
-| Event | title, attendees, location | Open event |
+| Event | title, location, details (the coming year) | Open its day in Calendar |
+| Task | title, details (open tasks) | Open the task |
 
 As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
 addresses in the mail (the recipient-suggestion `ContactBook`, read in the
@@ -2916,6 +2938,19 @@ people. GNOME's "search in app" opens Katna Mail with the words in its
 search box (app action `search`). Organization results come with Phase 2.
 Answers take a few milliseconds on 60,000 messages.
 
+Open tasks (§18.1) come up too, under Tasks, when every word starts a word
+of their title or details: at most three, those due first first, between
+people and mail, with the list they are in. Enter opens Katna Mail on the
+Tasks page with the task's details (app action `open-page` with
+`tasks:<id>`, which a task's reminder uses too).
+
+Events come up the same way, under Events, by their title, place or
+details: the next occurrence of each, from now to a year ahead, at most
+three, soonest first, after tasks. The line under says how soon (Now,
+Today, Tomorrow, In 3 days; the service formats no dates) and the place,
+or else the calendar. Enter opens the Calendar on that day
+(`calendar:YYYY-MM-DD`, as the clock does).
+
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
 packages install it directly.
@@ -2931,10 +2966,12 @@ date. Events in its agenda have no click or right-click actions.
 Katna integrates in three layers. All of them read the daemon's
 `in.invenia.katna.Agenda1` (`crates/katna-dbus/src/agenda.rs`): events for
 a range of days and tasks, which they add and tick off; `Changed` says to
-read again. Until Katna syncs calendars it lists no events; tasks are
+read again. Events are those of the calendars Katna syncs; tasks are
 those of every task list, synced with each account's own service
 (§18.1), and a task added in the clock goes to the first account's
-default list.
+default list. `Open` shows an event (the Calendar on its day) or a task
+(the Tasks page) in Katna Mail, and `NewEvent` starts an event on a day
+there, both through `katna-mail --page` (`calendar:YYYY-MM-DD[:new]`).
 `integrations/README.md` has the details.
 
 **A. Calendar-events plugin (planned, `integrations/plasma-calendar-plugin`)**
@@ -2967,10 +3004,14 @@ default list.
   `KatnaJoinButton.qml`), with minimal edits to upstream files:
   - a Tasks list under the day's events: add a task (due on the day
     picked, when that isn't today), tick one off;
-  - click a Katna event to open it in Katna; a Join button for its video
-    call;
-  - later: quick-add events, right-click edit, delete, drag to reschedule,
-    organization badges and related emails.
+  - click a Katna event to open Katna's Calendar on its day; a Join
+    button for its video call;
+  - **"Add…"** starts a new event in Katna's Calendar on the day picked,
+    without needing a `text/calendar` app;
+  - right-click a day in the month (`KatnaDayMenu.qml`): Add a Task for
+    that day, Add an Event on it;
+  - later: right-click edit, delete, drag to reschedule, organization
+    badges and related emails.
 - Still reads events through the plugin system (A), so holidays and other
   plugins keep working. The plugins' event data carries no ID in Plasma
   6.7, so a Katna event is matched by title and start.
@@ -3436,8 +3477,11 @@ most useful reason is shown. Changes go back the way their calendar came
   `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
   Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
 - Alarms fire from the daemon as notifications (§15.1).
-- Views: Day, Week (the default), Month and Schedule, like Google
-  Calendar, with calendars grouped by account; the week starts as the
+- Views: Day, Week (the default), Month, Year (Y or 5: twelve small
+  months with a dot under days with events; a day opens Day, a month's
+  name opens Month), Schedule and a custom view (X or 6: 2 to 7 days
+  from the day picked, 4 by default, chosen in the options menu as
+  `custom_days`), like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
 - The bar's options button (⚙ in Google, a tune icon here, beside the
   app's own gear) has Density and Second time zone (`[calendar]` in
@@ -3447,9 +3491,33 @@ most useful reason is shown. Changes go back the way their calendar came
   second time zone adds a column of its hours at the left of Day and
   Week, each column headed by its offset ("GMT-4"); the menu offers
   sixteen common zones, and any IANA name typed into the file works.
+- Typed quick add, as in Fantastical and Todoist: one parser for events
+  and tasks, `katna_core::quick_add::parse(text, today, words)`. The new
+  event's title "Lunch with Anita Friday 1pm at Cafe Mocha" or "Standup
+  every weekday 9:30 for 15 min" fills the day, times ("1-2pm", "11am to
+  1pm"), length ("for 30 min"), repeat (an RRULE: "daily", "every 2
+  weeks", "every Mon and Thu", "every weekday") and place ("at …") as it
+  is typed; the card shows the place and repeat, and the rest is saved as
+  the title. Deleting the words puts the fields back. Days: today,
+  tonight, tomorrow, weekdays ("next Friday"), "Oct 5", "5th of
+  October". The words come from a `Words` table per language; only
+  English has one so far, and other languages use it. Bare numbers
+  ("Buy 3 books") stay in the title.
 - Desktop: Katna Digital Clock (§15.4) through the daemon's
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
-- No booking pages: free times are shared as text in a mail.
+- No booking pages: free times are shared as text in a mail. The options
+  menu's Share free times (`window/calendar/free.rs`) opens a new
+  message listing the gaps of at least 30 minutes between busy events
+  (shown calendars, not cancelled or declined) from 9:00 to 17:00 on the
+  next five weekdays, from the next half hour today, with the UTC
+  offset.
+- Calendar sets, as Fantastical has them (`window/calendar/sets.rs`):
+  named groups of calendars above the calendar list. + saves the
+  calendars on show under a name (the same name again replaces it), a
+  click shows a set's calendars and hides the rest (the same
+  `SetCalendarHidden` as the ticks), and the set matching what is on
+  show is highlighted. Kept in `config.toml` (`[[calendar.sets]]`, the
+  page's calendar IDs), not synced.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks
@@ -3524,7 +3592,31 @@ server error is not.
   and Schedule list them with the events. Its circle ticks it off, a
   click opens it over the Calendar, and dragging it to another day, time
   or the whole-day row moves its due day and time (a quarter hour at a
-  time, with Undo), blocking that time for it.
+  time, with Undo), blocking that time for it. A reminder moves with it.
+- **Reminders**: the task's details offer Don't remind, At the time (on
+  the day at 9 AM for a task without a time), An hour before (with a
+  time) and The day before; a time set elsewhere (To Do) shows as itself
+  and stays unless another is picked. `task.remind_at` is an instant.
+  The daemon's reminder loop (§15.1, `daemon/alarms.rs`) also reads open
+  tasks and shows a "Katna Tasks" notification at `remind_at`: the title
+  and the first line of its details, with Open (the Tasks page), Mark as
+  done and Snooze 5 min (`category=x-katna.task`). For Google Tasks the
+  reminder lives on this computer only (decision 3 of the study).
+- **Typed quick add**: a new task's title is read with Calendar's
+  parser (`katna_core::quick_add`, §18) as it is typed, and what it
+  found shows under the row as the task's chip will ("Mon, 8:00 AM ↻").
+  On Enter the words become the due day, time and repeat ("Water the
+  plants every Monday 8am"); a repeat without a day starts on its first
+  day from today. Tasks have no place, so "at …" stays in the title, and
+  a title that is only such words ("tomorrow") stays as typed.
+- **Repeating tasks**: ticking one off moves it to its next day after
+  both its due day and today, and it stays open (Google Tasks, CalDAV and
+  lists on this computer; `katna_dav::todo::next_due`, done by the
+  daemon's `set_task_done` so the clock and notifications do it too). A
+  `COUNT` goes down by the days used; an ended rule ticks it off. Its
+  reminder moves with it. To Do makes the next one itself, so there the
+  task is ticked off as usual. The toast names the next day, and Undo
+  puts the day back.
 
 ### 18.2 Video calls
 

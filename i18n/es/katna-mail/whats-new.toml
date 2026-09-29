@@ -1430,3 +1430,87 @@ title = "Combina duplicados, importa y exporta contactos"
 text = """
 Contactos incluye «Corregir y administrar»: «Combinar y corregir» encuentra a las personas guardadas dos veces (con el mismo nombre o número de teléfono) y las combina con un clic, con la opción de deshacer. «Importar» añade personas desde un archivo vCard sin repetir las que ya tienes, y «Exportar» guarda a todos, o una etiqueta, en un archivo vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Cumpleaños en el calendario, contactos como códigos QR"
+text = """
+Los cumpleaños de tus contactos ahora aparecen en el Calendario, en un calendario «Cumpleaños» que puedes desmarcar. La página de un contacto puede mostrarlo como un código QR que la cámara de un teléfono guarda, e imprimirlo; «Imprimir» en «Corregir y administrar» imprime a todas las personas que se ven. Además, la importación ahora lee también archivos CSV de Google Contactos y Outlook, y KRunner y la búsqueda de GNOME encuentran tus contactos guardados.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densidad del Calendario y segunda zona horaria"
+text = """
+El botón Opciones del Calendario define la altura de las horas (Adaptable a tu pantalla, Cómoda o Compacta) y añade una segunda zona horaria junto a la tuya, para las personas con las que te reúnes en el extranjero.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Inicia una videollamada desde un correo"
+text = """
+Haz clic derecho en una conversación, o abre ⋮, y elige Iniciar una videollamada: la llamada se abre y se envía un correo nuevo con su enlace a todos los de la conversación. Las cuentas de Gmail usan Google Meet; las demás obtienen una sala de Jitsi Meet. Los correos con un enlace de llamada de Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ahora muestran un botón Unirse.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Convierte una línea de lista en una tarea"
+text = """
+Coloca el cursor en una línea de lista de una nota y elige Convertir en tarea: la línea pasa a tus tareas. Su etiqueta Nota en la página Tareas vuelve a abrir la nota.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "El panel en el que estás destaca"
+text = """
+Junto a la lista, solo el panel que recibe el teclado conserva su sombra; la lista, la conversación o el panel de contacto que no usas se hunde con un borde más tenue, y el cambio te sigue con suavidad al hacer clic.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Recordatorios y repeticiones de tareas"
+text = """
+Abre una tarea y elige Recordármelo: a la hora de la tarea, una hora o un día antes. El recordatorio aparece aunque Katna esté cerrado, con Marcar como completada y Posponer. Al marcar como completada una tarea que se repite, ahora vuelve el siguiente día que le toca.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Encuentra tareas desde el escritorio"
+text = """
+Escribe unas palabras de una tarea en KRunner o en la búsqueda de GNOME y aparecerá en Tareas. Pulsa Intro y Katna la abre, lista para editar.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Añade eventos y tareas desde el reloj del escritorio"
+text = """
+En Katna Digital Clock, haz clic derecho en un día del mes para añadir
+una tarea o un evento para ese día; el evento se abre en el Calendario
+de Katna. Al hacer clic en uno de tus eventos, el Calendario se abre en
+su día.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Escribe un evento en una línea"
+text = """
+Escribe «Comida con Anita viernes 1pm en Cafe Mocha» o «Reunión de
+equipo cada día laborable 9:30» como título de un evento nuevo, y el
+Calendario rellena el día, la hora, la repetición y el lugar mientras
+escribes.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Mira el año entero"
+text = """
+El Calendario tiene una vista de Año: los doce meses a la vez, con un
+punto bajo los días que tienen eventos. Pulsa Y y haz clic en un día
+para abrirlo.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Comparte tus horas libres"
+text = """
+Compartir horas libres, en las opciones del Calendario, inicia un
+mensaje que enumera cuándo estás libre en los próximos días laborables,
+listo para enviarlo a quien quieras.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Grupos de calendarios"
+text = """
+Guarda los calendarios que estás mostrando como un grupo, como «Trabajo»
+o «Familia», con + junto a Grupos de calendarios. Un clic en un grupo
+muestra sus calendarios y oculta el resto.
+"""

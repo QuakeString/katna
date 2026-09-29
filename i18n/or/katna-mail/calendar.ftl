@@ -7,20 +7,49 @@ calendar-today-tip = ଆଜିକୁ ଯାଆନ୍ତୁ
 calendar-view-day = ଦିନ
 calendar-view-week = ସପ୍ତାହ
 calendar-view-month = ମାସ
+calendar-view-year = ବର୍ଷ
 calendar-view-schedule = ସୂଚୀ
+calendar-view-days =
+    { $count ->
+        [one] { $count } ଦିନ
+       *[other] { $count } ଦିନ
+    }
+calendar-options = ବିକଳ୍ପ
+calendar-density = ଘନତା
+calendar-density-responsive = ଆପଣଙ୍କ ସ୍କ୍ରିନ ଅନୁସାରେ
+calendar-density-comfortable = ଆରାମଦାୟକ
+calendar-density-compact = କମ୍ପାକ୍ଟ
+calendar-custom-days = କଷ୍ଟମ ଦୃଶ୍ୟ
+calendar-second-zone = ଦ୍ୱିତୀୟ ସମୟ ମଣ୍ଡଳ
+calendar-zone-none = କିଛି ନୁହେଁ
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = ଖାଲି ସମୟ ସେୟାର କରନ୍ତୁ
+calendar-free-subject = ମୋର ଖାଲି ସମୟ
+calendar-free-intro = ଏଠାରେ କିଛି ସମୟ ଯେତେବେଳେ ମୁଁ ଖାଲି ଅଛି ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ଆଗାମୀ କିଛି କାର୍ଯ୍ୟଦିବସରେ ମୋ ପାଖରେ ଖାଲି ସମୟ ନାହିଁ।
 calendar-previous-day = ପୂର୍ବ ଦିନ
 calendar-next-day = ପରବର୍ତ୍ତୀ ଦିନ
 calendar-previous-week = ପୂର୍ବ ସପ୍ତାହ
 calendar-next-week = ପରବର୍ତ୍ତୀ ସପ୍ତାହ
 calendar-previous-month = ପୂର୍ବ ମାସ
 calendar-next-month = ପରବର୍ତ୍ତୀ ମାସ
+calendar-previous-year = ପୂର୍ବ ବର୍ଷ
+calendar-next-year = ପରବର୍ତ୍ତୀ ବର୍ଷ
 calendar-previous-period = ପୂର୍ବରୁ
 calendar-next-period = ପରେ
 calendar-title-months = { $first } – { $last }
 calendar-loading = ଲୋଡ୍ ହେଉଛି…
 calendar-read-failed = କ୍ୟାଲେଣ୍ଡର ପଢ଼ାଯାଇପାରିଲା ନାହିଁ: { $error }
+calendar-sets = କ୍ୟାଲେଣ୍ଡର ସେଟ
+calendar-set-add = ଦେଖାଯାଉଥିବା କ୍ୟାଲେଣ୍ଡରକୁ ଏକ ସେଟ ଭାବେ ସେଭ କରନ୍ତୁ
+calendar-set-name = ସେଟର ନାମ
+calendar-set-remove = ସେଟ ହଟାନ୍ତୁ
 calendar-local = ଏହି କମ୍ପ୍ୟୁଟରରେ
 calendar-account-gone = ହଟାଯାଇଥିବା ଖାତା
+calendar-birthdays = ଜନ୍ମଦିନ
+calendar-birthday-of = { $name }ଙ୍କ ଜନ୍ମଦିନ
 calendar-empty-title = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି କ୍ୟାଲେଣ୍ଡର ନାହିଁ
 calendar-empty-text = Katna ଆପଣଙ୍କ Google ଓ Microsoft ଖାତାର କ୍ୟାଲେଣ୍ଡର, ଏବଂ CalDAV ଦେଉଥିବା ଅନ୍ୟ ସର୍ଭରର କ୍ୟାଲେଣ୍ଡର ସିଙ୍କ ହେଲେ ଏଠାରେ ଦେଖାଏ।
 calendar-schedule-empty = ଆସନ୍ତା ଦୁଇ ମାସରେ କିଛି ଯୋଜନା ନାହିଁ।
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ହଁ, { $maybe } ହୁଏତ, { $no } ନ�
 calendar-organizer = ଆୟୋଜକ
 calendar-optional = ଐଚ୍ଛିକ
 calendar-open-web = ବ୍ରାଉଜରରେ ଖୋଲନ୍ତୁ
+calendar-open-contact = ଯୋଗାଯୋଗ ଖୋଲନ୍ତୁ
 calendar-close = ବନ୍ଦ କରନ୍ତୁ
 
 ## Adding, changing and deleting events.

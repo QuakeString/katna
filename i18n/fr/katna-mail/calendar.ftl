@@ -7,20 +7,50 @@ calendar-today-tip = Aller à aujourd’hui
 calendar-view-day = Jour
 calendar-view-week = Semaine
 calendar-view-month = Mois
+calendar-view-year = Année
 calendar-view-schedule = Planning
+calendar-view-days =
+    { $count ->
+        [one] { $count } jour
+        [many] { $count } de jours
+       *[other] { $count } jours
+    }
+calendar-options = Options
+calendar-density = Densité
+calendar-density-responsive = Adaptée à votre écran
+calendar-density-comfortable = Confortable
+calendar-density-compact = Compacte
+calendar-custom-days = Vue personnalisée
+calendar-second-zone = Deuxième fuseau horaire
+calendar-zone-none = Aucun
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Partager mes disponibilités
+calendar-free-subject = Mes disponibilités
+calendar-free-intro = Voici quelques moments où je suis disponible ({ $zone }) :
+calendar-free-day = { $weekday } { $date } : { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Je n’ai aucun créneau libre dans les prochains jours ouvrés.
 calendar-previous-day = Jour précédent
 calendar-next-day = Jour suivant
 calendar-previous-week = Semaine précédente
 calendar-next-week = Semaine suivante
 calendar-previous-month = Mois précédent
 calendar-next-month = Mois suivant
+calendar-previous-year = Année précédente
+calendar-next-year = Année suivante
 calendar-previous-period = Plus tôt
 calendar-next-period = Plus tard
 calendar-title-months = { $first } – { $last }
 calendar-loading = Chargement…
 calendar-read-failed = Impossible de lire le calendrier : { $error }
+calendar-sets = Groupes de calendriers
+calendar-set-add = Enregistrer les calendriers affichés comme groupe
+calendar-set-name = Nom du groupe
+calendar-set-remove = Supprimer le groupe
 calendar-local = Cet ordinateur
 calendar-account-gone = Compte supprimé
+calendar-birthdays = Anniversaires
+calendar-birthday-of = Anniversaire de { $name }
 calendar-empty-title = Aucun calendrier pour le moment
 calendar-empty-text = Katna affiche ici les calendriers de vos comptes Google et Microsoft dès qu’ils sont synchronisés, ainsi que ceux des autres serveurs compatibles CalDAV.
 calendar-schedule-empty = Rien de prévu pour les deux prochains mois.
@@ -47,6 +77,7 @@ calendar-guest-answers = { $yes } oui, { $maybe } peut-être, { $no } non, { $wa
 calendar-organizer = Organisateur
 calendar-optional = Facultatif
 calendar-open-web = Ouvrir dans le navigateur
+calendar-open-contact = Ouvrir le contact
 calendar-close = Fermer
 
 ## Adding, changing and deleting events.

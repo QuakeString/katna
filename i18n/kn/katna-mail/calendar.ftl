@@ -7,20 +7,49 @@ calendar-today-tip = ಇಂದಿಗೆ ಹೋಗಿ
 calendar-view-day = ದಿನ
 calendar-view-week = ವಾರ
 calendar-view-month = ತಿಂಗಳು
+calendar-view-year = ವರ್ಷ
 calendar-view-schedule = ವೇಳಾಪಟ್ಟಿ
+calendar-view-days =
+    { $count ->
+        [one] { $count } ದಿನ
+       *[other] { $count } ದಿನಗಳು
+    }
+calendar-options = ಆಯ್ಕೆಗಳು
+calendar-density = ಸಾಂದ್ರತೆ
+calendar-density-responsive = ನಿಮ್ಮ ಪರದೆಗೆ ಸ್ಪಂದಿಸುವ
+calendar-density-comfortable = ಆರಾಮದಾಯಕ
+calendar-density-compact = ಕಾಂಪ್ಯಾಕ್ಟ್
+calendar-custom-days = ಕಸ್ಟಮ್ ನೋಟ
+calendar-second-zone = ಎರಡನೇ ಸಮಯ ವಲಯ
+calendar-zone-none = ಯಾವುದೂ ಇಲ್ಲ
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = ಖಾಲಿ ಸಮಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ
+calendar-free-subject = ನಾನು ಖಾಲಿ ಇರುವ ಸಮಯಗಳು
+calendar-free-intro = ನಾನು ಖಾಲಿ ಇರುವ ಕೆಲವು ಸಮಯಗಳು ಇಲ್ಲಿವೆ ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ಮುಂದಿನ ಕೆಲವು ಕೆಲಸದ ದಿನಗಳಲ್ಲಿ ನನಗೆ ಖಾಲಿ ಸಮಯವಿಲ್ಲ.
 calendar-previous-day = ಹಿಂದಿನ ದಿನ
 calendar-next-day = ಮುಂದಿನ ದಿನ
 calendar-previous-week = ಹಿಂದಿನ ವಾರ
 calendar-next-week = ಮುಂದಿನ ವಾರ
 calendar-previous-month = ಹಿಂದಿನ ತಿಂಗಳು
 calendar-next-month = ಮುಂದಿನ ತಿಂಗಳು
+calendar-previous-year = ಹಿಂದಿನ ವರ್ಷ
+calendar-next-year = ಮುಂದಿನ ವರ್ಷ
 calendar-previous-period = ಹಿಂದೆ
 calendar-next-period = ನಂತರ
 calendar-title-months = { $first } – { $last }
 calendar-loading = ಲೋಡ್ ಆಗುತ್ತಿದೆ…
 calendar-read-failed = ಕ್ಯಾಲೆಂಡರ್ ಅನ್ನು ಓದಲಾಗಲಿಲ್ಲ: { $error }
+calendar-sets = ಕ್ಯಾಲೆಂಡರ್ ಸೆಟ್‌ಗಳು
+calendar-set-add = ತೋರಿಸುತ್ತಿರುವ ಕ್ಯಾಲೆಂಡರ್‌ಗಳನ್ನು ಸೆಟ್ ಆಗಿ ಉಳಿಸಿ
+calendar-set-name = ಸೆಟ್‌ನ ಹೆಸರು
+calendar-set-remove = ಸೆಟ್ ತೆಗೆದುಹಾಕಿ
 calendar-local = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ
 calendar-account-gone = ತೆಗೆದುಹಾಕಿದ ಖಾತೆ
+calendar-birthdays = ಜನ್ಮದಿನಗಳು
+calendar-birthday-of = { $name } ಅವರ ಜನ್ಮದಿನ
 calendar-empty-title = ಇನ್ನೂ ಕ್ಯಾಲೆಂಡರ್‌ಗಳಿಲ್ಲ
 calendar-empty-text = ನಿಮ್ಮ Google ಮತ್ತು Microsoft ಖಾತೆಗಳ ಕ್ಯಾಲೆಂಡರ್‌ಗಳು ಹಾಗೂ CalDAV ನೀಡುವ ಇತರ ಸರ್ವರ್‌ಗಳ ಕ್ಯಾಲೆಂಡರ್‌ಗಳು ಸಿಂಕ್ ಆದ ನಂತರ Katna ಅವುಗಳನ್ನು ಇಲ್ಲಿ ತೋರಿಸುತ್ತದೆ.
 calendar-schedule-empty = ಮುಂದಿನ ಎರಡು ತಿಂಗಳಲ್ಲಿ ಏನನ್ನೂ ಯೋಜಿಸಿಲ್ಲ.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ಹೌದು, { $maybe } ಇರಬಹುದು
 calendar-organizer = ಸಂಘಟಕ
 calendar-optional = ಐಚ್ಛಿಕ
 calendar-open-web = ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ
+calendar-open-contact = ಸಂಪರ್ಕ ತೆರೆಯಿರಿ
 calendar-close = ಮುಚ್ಚಿ
 
 ## Adding, changing and deleting events.

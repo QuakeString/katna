@@ -110,8 +110,20 @@ QtObject {
         call("SetTaskDone", [id, done], "", null);
     }
 
+    // Katna came to the front for one of these: the popup closes.
+    signal shownInKatna()
+
     function open(id: string): void {
-        call("Open", [id], "", null);
+        call("Open", [id], "", shown => {
+            if (shown) {
+                agenda.shownInKatna();
+            }
+        });
+    }
+
+    // A new event on `day` in Katna's Calendar.
+    function newEvent(day: date): void {
+        call("NewEvent", [Qt.formatDate(day, "yyyy-MM-dd")], "", () => agenda.shownInKatna());
     }
 
     readonly property DBus.SignalWatcher watcher: DBus.SignalWatcher {

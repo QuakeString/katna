@@ -7,20 +7,49 @@ calendar-today-tip = Bugüne git
 calendar-view-day = Gün
 calendar-view-week = Hafta
 calendar-view-month = Ay
+calendar-view-year = Yıl
 calendar-view-schedule = Program
+calendar-view-days =
+    { $count ->
+        [one] { $count } gün
+       *[other] { $count } gün
+    }
+calendar-options = Seçenekler
+calendar-density = Yoğunluk
+calendar-density-responsive = Ekranınıza duyarlı
+calendar-density-comfortable = Rahat
+calendar-density-compact = Kompakt
+calendar-custom-days = Özel görünüm
+calendar-second-zone = İkinci saat dilimi
+calendar-zone-none = Yok
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Boş zamanları paylaş
+calendar-free-subject = Boş olduğum zamanlar
+calendar-free-intro = İşte boş olduğum bazı zamanlar ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Önümüzdeki birkaç iş gününde boş zamanım yok.
 calendar-previous-day = Önceki gün
 calendar-next-day = Sonraki gün
 calendar-previous-week = Önceki hafta
 calendar-next-week = Sonraki hafta
 calendar-previous-month = Önceki ay
 calendar-next-month = Sonraki ay
+calendar-previous-year = Önceki yıl
+calendar-next-year = Sonraki yıl
 calendar-previous-period = Daha önce
 calendar-next-period = Daha sonra
 calendar-title-months = { $first } – { $last }
 calendar-loading = Yükleniyor…
 calendar-read-failed = Takvim okunamadı: { $error }
+calendar-sets = Takvim kümeleri
+calendar-set-add = Gösterilen takvimleri küme olarak kaydet
+calendar-set-name = Kümenin adı
+calendar-set-remove = Kümeyi kaldır
 calendar-local = Bu bilgisayar
 calendar-account-gone = Kaldırılan hesap
+calendar-birthdays = Doğum günleri
+calendar-birthday-of = { $name } doğum günü
 calendar-empty-title = Henüz takvim yok
 calendar-empty-text = Katna, Google ve Microsoft hesaplarınızın takvimlerini eşitlendikten sonra, ayrıca CalDAV sunan diğer sunucuların takvimlerini burada gösterir.
 calendar-schedule-empty = Önümüzdeki iki ay için planlanmış bir şey yok.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } evet, { $maybe } belki, { $no } hayır, { $wai
 calendar-organizer = Organizatör
 calendar-optional = İsteğe bağlı
 calendar-open-web = Tarayıcıda aç
+calendar-open-contact = Kişiyi aç
 calendar-close = Kapat
 
 ## Adding, changing and deleting events.

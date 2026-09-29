@@ -7,20 +7,48 @@ calendar-today-tip = 오늘로 이동
 calendar-view-day = 일
 calendar-view-week = 주
 calendar-view-month = 월
+calendar-view-year = 연
 calendar-view-schedule = 일정
+calendar-view-days =
+    { $count ->
+       *[other] { $count }일
+    }
+calendar-options = 설정
+calendar-density = 밀도
+calendar-density-responsive = 화면에 맞게 조정
+calendar-density-comfortable = 편안하게
+calendar-density-compact = 간결하게
+calendar-custom-days = 사용자 지정 보기
+calendar-second-zone = 보조 시간대
+calendar-zone-none = 없음
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = 빈 시간 공유
+calendar-free-subject = 제가 비는 시간
+calendar-free-intro = 비는 시간을 알려 드립니다({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = 앞으로 며칠간의 근무일에는 비는 시간이 없습니다.
 calendar-previous-day = 전날
 calendar-next-day = 다음 날
 calendar-previous-week = 이전 주
 calendar-next-week = 다음 주
 calendar-previous-month = 이전 달
 calendar-next-month = 다음 달
+calendar-previous-year = 이전 해
+calendar-next-year = 다음 해
 calendar-previous-period = 이전
 calendar-next-period = 다음
 calendar-title-months = { $first } – { $last }
 calendar-loading = 로드 중…
 calendar-read-failed = 캘린더를 읽을 수 없습니다: { $error }
+calendar-sets = 캘린더 세트
+calendar-set-add = 표시 중인 캘린더를 세트로 저장
+calendar-set-name = 세트 이름
+calendar-set-remove = 세트 삭제
 calendar-local = 이 컴퓨터
 calendar-account-gone = 삭제된 계정
+calendar-birthdays = 생일
+calendar-birthday-of = { $name }님의 생일
 calendar-empty-title = 아직 캘린더가 없습니다
 calendar-empty-text = Google 및 Microsoft 계정의 캘린더는 동기화되면 여기에 표시됩니다. CalDAV를 지원하는 다른 서버의 캘린더도 표시됩니다.
 calendar-schedule-empty = 향후 2개월 동안 예정된 일정이 없습니다.
@@ -45,6 +73,7 @@ calendar-guest-answers = 예 { $yes }, 미정 { $maybe }, 아니요 { $no }, 응
 calendar-organizer = 주최자
 calendar-optional = 선택사항
 calendar-open-web = 브라우저에서 열기
+calendar-open-contact = 연락처 열기
 calendar-close = 닫기
 
 ## Adding, changing and deleting events.

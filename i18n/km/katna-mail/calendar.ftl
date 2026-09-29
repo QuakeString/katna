@@ -7,20 +7,48 @@ calendar-today-tip = ទៅថ្ងៃនេះ
 calendar-view-day = ថ្ងៃ
 calendar-view-week = សប្តាហ៍
 calendar-view-month = ខែ
+calendar-view-year = ឆ្នាំ
 calendar-view-schedule = កាលវិភាគ
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ថ្ងៃ
+    }
+calendar-options = ជម្រើស
+calendar-density = ដង់ស៊ីតេ
+calendar-density-responsive = ឆ្លើយតបតាមអេក្រង់របស់អ្នក
+calendar-density-comfortable = ស្រួល
+calendar-density-compact = បង្រួម
+calendar-custom-days = ទិដ្ឋភាពផ្ទាល់ខ្លួន
+calendar-second-zone = ល្វែងម៉ោងទីពីរ
+calendar-zone-none = គ្មាន
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = ចែករំលែកម៉ោងទំនេរ
+calendar-free-subject = ម៉ោងដែលខ្ញុំទំនេរ
+calendar-free-intro = នេះជាម៉ោងមួយចំនួនដែលខ្ញុំទំនេរ ({ $zone })៖
+calendar-free-day = { $weekday } { $date }៖ { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ខ្ញុំគ្មានម៉ោងទំនេរក្នុងប៉ុន្មានថ្ងៃធ្វើការខាងមុខទេ។
 calendar-previous-day = ថ្ងៃមុន
 calendar-next-day = ថ្ងៃបន្ទាប់
 calendar-previous-week = សប្តាហ៍មុន
 calendar-next-week = សប្តាហ៍បន្ទាប់
 calendar-previous-month = ខែមុន
 calendar-next-month = ខែបន្ទាប់
+calendar-previous-year = ឆ្នាំមុន
+calendar-next-year = ឆ្នាំក្រោយ
 calendar-previous-period = មុននេះ
 calendar-next-period = បន្ទាប់
 calendar-title-months = { $first } – { $last }
 calendar-loading = កំពុងផ្ទុក…
 calendar-read-failed = មិនអាចអានប្រតិទិនបានទេ៖ { $error }
+calendar-sets = សំណុំប្រតិទិន
+calendar-set-add = រក្សាទុកប្រតិទិនដែលកំពុងបង្ហាញជាសំណុំ
+calendar-set-name = ឈ្មោះសំណុំ
+calendar-set-remove = ដកសំណុំចេញ
 calendar-local = កុំព្យូទ័រនេះ
 calendar-account-gone = គណនីដែលបានដកចេញ
+calendar-birthdays = ថ្ងៃកំណើត
+calendar-birthday-of = ថ្ងៃកំណើតរបស់ { $name }
 calendar-empty-title = មិនទាន់មានប្រតិទិនទេ
 calendar-empty-text = ប្រតិទិនពីគណនី Google និង Microsoft របស់អ្នកនឹងបង្ហាញនៅទីនេះ នៅពេលបានធ្វើសមកាលកម្ម ព្រមទាំងប្រតិទិនពីម៉ាស៊ីនមេផ្សេងទៀតដែលគាំទ្រ CalDAV។
 calendar-schedule-empty = គ្មានកម្មវិធីគ្រោងទុកក្នុងរយៈពេល 2 ខែខាងមុខទេ។
@@ -45,6 +73,7 @@ calendar-guest-answers = បាទ/ចាស { $yes }, ប្រហែល { $may
 calendar-organizer = អ្នករៀបចំ
 calendar-optional = ស្រេចចិត្ត
 calendar-open-web = បើកក្នុងកម្មវិធីរុករក
+calendar-open-contact = បើកទំនាក់ទំនង
 calendar-close = បិទ
 
 ## Adding, changing and deleting events.

@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ထည့်သွင်းရန်
 contacts-export = ထုတ်ယူရန်
-contacts-import-title = vCard ဖိုင်မှ အဆက်အသွယ်များ ထည့်သွင်းရန်
+contacts-import-file = vCard သို့မဟုတ် CSV ဖိုင်မှ အဆက်အသွယ်များ ထည့်သွင်းရန်
 contacts-imported = { $count ->
    *[other] အဆက်အသွယ် { $count } ခုကို { $place } သို့ ထည့်သွင်းပြီးပါပြီ
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ထုတ်ယူရန် အဆက်အသွယ် မရှိပါ
 contacts-export-failed = အဆက်အသွယ်များ မထုတ်ယူနိုင်ပါ- { $error }
+contacts-print = ပရင့်ထုတ်ရန်
+contacts-print-title = အဆက်အသွယ်များ
+contacts-print-none = ပရင့်ထုတ်ရန် အဆက်အသွယ် မရှိပါ
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = မွေးနေ့- { $day }
+contacts-print-nickname = ချစ်စနိုးအမည်- { $name }
 contacts-create = အဆက်အသွယ် ဖန်တီးရန်
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = ခွင့်ပြုသည်
 contacts-back = အဆက်အသွယ်များသို့ ပြန်သွားရန်
 contacts-edit = တည်းဖြတ်ရန်
 contacts-delete = ဖျက်ရန်
+contacts-qr = QR ကုဒ်ဖြင့် မျှဝေရန်
+contacts-qr-about = ဖုန်းကင်မရာဖြင့် စကင်ဖတ်ပြီး အဆက်အသွယ်ကို သိမ်းပါ။
+contacts-qr-too-long = ဤအဆက်အသွယ်တွင် အသေးစိတ်အချက်အလက် များလွန်း၍ QR ကုဒ်ထဲ မဆန့်ပါ။
+contacts-qr-done = ပြီးပြီ
 contacts-deleted = { $name } ကို ဖျက်ပြီးပါပြီ
 contacts-added = { $name } ကို အဆက်အသွယ်များသို့ ထည့်ပြီးပါပြီ
 contacts-find-mail = မေးလ်

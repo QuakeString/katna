@@ -382,6 +382,7 @@ menu-snooze = Ahirisha
 menu-unsnooze = Acha kuahirisha
 menu-add-to-tasks = Ongeza kwenye Majukumu
 menu-schedule-meeting = Panga mkutano
+menu-start-call = Anzisha simu ya video
 menu-add-note = Ongeza dokezo
 menu-print-all = Chapisha zote
 menu-new-window = Fungua katika dirisha jipya

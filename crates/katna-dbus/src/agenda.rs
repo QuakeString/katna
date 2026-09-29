@@ -135,9 +135,13 @@ macro_rules! agenda_proxy {
 
             fn delete_task_list(&self, list: i64) -> zbus::Result<()>;
 
-            /// Shows an event or task in Katna. False when there is
-            /// nothing to show it in yet.
+            /// Shows an event (the Calendar on its day) or a task (the
+            /// Tasks page) in Katna. False for an ID it doesn't know.
             fn open(&self, id: &str) -> zbus::Result<bool>;
+
+            /// Starts a new event on `day` (`YYYY-MM-DD`) in Katna's
+            /// Calendar.
+            fn new_event(&self, day: &str) -> zbus::Result<()>;
 
             /// Events or tasks changed: read again.
             #[zbus(signal)]

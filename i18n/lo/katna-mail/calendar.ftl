@@ -7,20 +7,48 @@ calendar-today-tip = ໄປທີ່ມື້ນີ້
 calendar-view-day = ມື້
 calendar-view-week = ອາທິດ
 calendar-view-month = ເດືອນ
+calendar-view-year = ປີ
 calendar-view-schedule = ຕາຕະລາງ
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ມື້
+    }
+calendar-options = ທາງເລືອກ
+calendar-density = ຄວາມໜາແໜ້ນ
+calendar-density-responsive = ປັບຕາມໜ້າຈໍຂອງທ່ານ
+calendar-density-comfortable = ສະບາຍ
+calendar-density-compact = ກະທັດຮັດ
+calendar-custom-days = ມຸມມອງກຳນົດເອງ
+calendar-second-zone = ເຂດເວລາທີສອງ
+calendar-zone-none = ບໍ່ມີ
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = ແບ່ງປັນເວລາຫວ່າງ
+calendar-free-subject = ເວລາທີ່ຂ້ອຍຫວ່າງ
+calendar-free-intro = ນີ້ແມ່ນເວລາທີ່ຂ້ອຍຫວ່າງ ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ຂ້ອຍບໍ່ມີເວລາຫວ່າງໃນສອງສາມວັນເຮັດວຽກຂ້າງໜ້າ.
 calendar-previous-day = ມື້ກ່ອນ
 calendar-next-day = ມື້ຕໍ່ໄປ
 calendar-previous-week = ອາທິດກ່ອນ
 calendar-next-week = ອາທິດຕໍ່ໄປ
 calendar-previous-month = ເດືອນກ່ອນ
 calendar-next-month = ເດືອນຕໍ່ໄປ
+calendar-previous-year = ປີກ່ອນ
+calendar-next-year = ປີຕໍ່ໄປ
 calendar-previous-period = ກ່ອນໜ້າ
 calendar-next-period = ຕໍ່ໄປ
 calendar-title-months = { $first } – { $last }
 calendar-loading = ກຳລັງໂຫຼດ…
 calendar-read-failed = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້: { $error }
+calendar-sets = ຊຸດປະຕິທິນ
+calendar-set-add = ບັນທຶກປະຕິທິນທີ່ກຳລັງສະແດງເປັນຊຸດ
+calendar-set-name = ຊື່ຂອງຊຸດ
+calendar-set-remove = ລຶບຊຸດອອກ
 calendar-local = ຄອມພິວເຕີເຄື່ອງນີ້
 calendar-account-gone = ບັນຊີທີ່ຖືກລຶບອອກແລ້ວ
+calendar-birthdays = ວັນເກີດ
+calendar-birthday-of = ວັນເກີດຂອງ { $name }
 calendar-empty-title = ຍັງບໍ່ມີປະຕິທິນ
 calendar-empty-text = ປະຕິທິນຂອງບັນຊີ Google ແລະ Microsoft ຂອງທ່ານຈະສະແດງຢູ່ບ່ອນນີ້ເມື່ອຊິງຄ໌ແລ້ວ ພ້ອມທັງປະຕິທິນຈາກເຊີບເວີອື່ນທີ່ຮອງຮັບ CalDAV.
 calendar-schedule-empty = ບໍ່ມີແຜນໃນ 2 ເດືອນຂ້າງໜ້າ.
@@ -45,6 +73,7 @@ calendar-guest-answers = ຕອບຮັບ { $yes }, ອາດຈະ { $maybe }
 calendar-organizer = ຜູ້ຈັດ
 calendar-optional = ທາງເລືອກ
 calendar-open-web = ເປີດໃນບຣາວເຊີ
+calendar-open-contact = ເປີດລາຍຊື່ຜູ້ຕິດຕໍ່
 calendar-close = ປິດ
 
 ## Adding, changing and deleting events.

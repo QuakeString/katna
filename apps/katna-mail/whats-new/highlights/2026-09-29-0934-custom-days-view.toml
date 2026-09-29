@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Show just a few days"
+text = """
+Calendar has a custom view beside Schedule: 4 days from the day you
+pick, or anywhere from 2 to 7. Press X, and choose how many in Options.
+"""

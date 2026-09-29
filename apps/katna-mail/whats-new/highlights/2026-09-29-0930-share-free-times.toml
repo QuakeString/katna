@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Share your free times"
+text = """
+Share free times in Calendar's options starts a message listing when you
+are free in the next working days, ready to send to anyone.
+"""

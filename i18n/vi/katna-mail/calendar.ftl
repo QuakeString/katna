@@ -7,20 +7,48 @@ calendar-today-tip = Chuyển đến hôm nay
 calendar-view-day = Ngày
 calendar-view-week = Tuần
 calendar-view-month = Tháng
+calendar-view-year = Năm
 calendar-view-schedule = Lịch biểu
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ngày
+    }
+calendar-options = Tùy chọn
+calendar-density = Mật độ
+calendar-density-responsive = Tự điều chỉnh theo màn hình của bạn
+calendar-density-comfortable = Thoải mái
+calendar-density-compact = Gọn
+calendar-custom-days = Chế độ xem tùy chỉnh
+calendar-second-zone = Múi giờ thứ hai
+calendar-zone-none = Không có
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Chia sẻ giờ rảnh
+calendar-free-subject = Những lúc tôi rảnh
+calendar-free-intro = Đây là một số lúc tôi rảnh ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Tôi không có thời gian rảnh trong vài ngày làm việc tới.
 calendar-previous-day = Ngày trước
 calendar-next-day = Ngày sau
 calendar-previous-week = Tuần trước
 calendar-next-week = Tuần sau
 calendar-previous-month = Tháng trước
 calendar-next-month = Tháng sau
+calendar-previous-year = Năm trước
+calendar-next-year = Năm sau
 calendar-previous-period = Sớm hơn
 calendar-next-period = Muộn hơn
 calendar-title-months = { $first } – { $last }
 calendar-loading = Đang tải…
 calendar-read-failed = Không thể đọc lịch: { $error }
+calendar-sets = Bộ lịch
+calendar-set-add = Lưu các lịch đang hiển thị thành một bộ
+calendar-set-name = Tên của bộ
+calendar-set-remove = Xóa bộ
 calendar-local = Trên máy tính này
 calendar-account-gone = Tài khoản đã xóa
+calendar-birthdays = Sinh nhật
+calendar-birthday-of = Sinh nhật của { $name }
 calendar-empty-title = Chưa có lịch nào
 calendar-empty-text = Katna hiển thị tại đây lịch của các tài khoản Google và Microsoft của bạn sau khi đồng bộ, cùng lịch của các máy chủ khác hỗ trợ CalDAV.
 calendar-schedule-empty = Không có kế hoạch nào trong hai tháng tới.
@@ -45,6 +73,7 @@ calendar-guest-answers = { $yes } có, { $maybe } có thể, { $no } không, { $
 calendar-organizer = Người tổ chức
 calendar-optional = Không bắt buộc
 calendar-open-web = Mở trong trình duyệt
+calendar-open-contact = Mở người liên hệ
 calendar-close = Đóng
 
 ## Adding, changing and deleting events.

@@ -7,20 +7,49 @@ calendar-today-tip = আজিলৈ যাওক
 calendar-view-day = দিন
 calendar-view-week = সপ্তাহ
 calendar-view-month = মাহ
+calendar-view-year = বছৰ
 calendar-view-schedule = সময়সূচী
+calendar-view-days =
+    { $count ->
+        [one] { $count } দিন
+       *[other] { $count } দিন
+    }
+calendar-options = বিকল্প
+calendar-density = ঘনত্ব
+calendar-density-responsive = আপোনাৰ স্ক্ৰীন অনুসৰি
+calendar-density-comfortable = আৰামদায়ক
+calendar-density-compact = কমপেক্ট
+calendar-custom-days = কাষ্টম দৃশ্য
+calendar-second-zone = দ্বিতীয় সময় মণ্ডল
+calendar-zone-none = কোনো নাই
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = খালী সময় শ্বেয়াৰ কৰক
+calendar-free-subject = মোৰ খালী সময়
+calendar-free-intro = ইয়াত কিছুমান সময় যেতিয়া মই খালী আছোঁ ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = পিছৰ কেইটামান কামৰ দিনত মোৰ খালী সময় নাই।
 calendar-previous-day = আগৰ দিন
 calendar-next-day = পিছৰ দিন
 calendar-previous-week = আগৰ সপ্তাহ
 calendar-next-week = পিছৰ সপ্তাহ
 calendar-previous-month = আগৰ মাহ
 calendar-next-month = পিছৰ মাহ
+calendar-previous-year = আগৰ বছৰ
+calendar-next-year = পিছৰ বছৰ
 calendar-previous-period = আগতে
 calendar-next-period = পাছত
 calendar-title-months = { $first } – { $last }
 calendar-loading = ল'ড হৈ আছে…
 calendar-read-failed = কেলেণ্ডাৰ পঢ়িব পৰা নগ'ল: { $error }
+calendar-sets = কেলেণ্ডাৰৰ ছেট
+calendar-set-add = দেখুওৱা কেলেণ্ডাৰবোৰ এটা ছেট হিচাপে ছেভ কৰক
+calendar-set-name = ছেটৰ নাম
+calendar-set-remove = ছেট আঁতৰাওক
 calendar-local = এই কমপিউটাৰত
 calendar-account-gone = আঁতৰোৱা একাউণ্ট
+calendar-birthdays = জন্মদিন
+calendar-birthday-of = { $name }ৰ জন্মদিন
 calendar-empty-title = এতিয়াও কোনো কেলেণ্ডাৰ নাই
 calendar-empty-text = Katna-এ আপোনাৰ Google আৰু Microsoft একাউণ্টৰ কেলেণ্ডাৰ, আৰু CalDAV দিয়া আন ছাৰ্ভাৰৰ কেলেণ্ডাৰ ছিংক হ'লে ইয়াত দেখুৱায়।
 calendar-schedule-empty = পৰৱৰ্তী দুমাহত একো পৰিকল্পনা কৰা হোৱা নাই।
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } হয়, { $maybe } হয়তো, { $no }
 calendar-organizer = আয়োজক
 calendar-optional = ঐচ্ছিক
 calendar-open-web = ব্ৰাউজাৰত খোলক
+calendar-open-contact = সম্পৰ্ক খোলক
 calendar-close = বন্ধ কৰক
 
 ## Adding, changing and deleting events.

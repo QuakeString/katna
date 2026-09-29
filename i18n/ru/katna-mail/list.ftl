@@ -487,6 +487,7 @@ menu-snooze = Отложить
 menu-unsnooze = Вернуть сейчас
 menu-add-to-tasks = Добавить в Задачи
 menu-schedule-meeting = Запланировать встречу
+menu-start-call = Начать видеозвонок
 menu-add-note = Добавить заметку
 menu-print-all = Распечатать все
 menu-new-window = Открыть в новом окне

@@ -122,7 +122,7 @@ named `katna-test-…` and to alice's inbox.
 D-Bus bus (needs `dbus-daemon`):
 
 ```sh
-cargo test -p katna-daemon --test dbus -- --ignored --test-threads 1
+cargo test -p katna-daemon --test dbus -- --ignored
 ```
 
 ### The daemon by hand

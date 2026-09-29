@@ -41,6 +41,9 @@ tasks-delete = Hichapụ
 tasks-move-to = Kpọga na { $list }
 tasks-from-mail = Ozi
 tasks-open-mail = Mepee ozi
+tasks-from-note = Ndetu
+tasks-open-note = Mepee ndetu
+tasks-note-gone = Ndetu ahụ anọghịzi ebe a.
 tasks-no-subject = (enweghị isiokwu)
 
 ## The details dialog
@@ -56,6 +59,12 @@ tasks-repeat-weekly = Kwa izu
 tasks-repeat-monthly = Kwa ọnwa
 tasks-repeat-yearly = Kwa afọ
 tasks-repeat-other = Nke onwe
+tasks-remind = Chetara m
+tasks-remind-off = Echetala m
+tasks-remind-on-time = N'oge ahụ
+tasks-remind-morning = N'ụbọchị ahụ, { $time }
+tasks-remind-hour-before = Otu awa tupu oge ahụ
+tasks-remind-day-before = Otu ụbọchị tupu oge ahụ
 tasks-cancel = Kagbuo
 tasks-save = Chekwaa
 tasks-not-a-time = “{ $text }” abụghị oge, dịka { $example }.
@@ -70,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Emechara ọrụ
+tasks-toast-next = Emechara. Nke ọzọ dị na { $date }
 tasks-toast-deleted = Ehichapụla ọrụ
 tasks-toast-added = { $count ->
    *[other] Etinyela ọrụ { $count }

@@ -31,6 +31,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Ní gbogbo ọjọ́
 notify-event-join = Darapọ̀
 notify-event-snooze = Sún síwájú ní ìṣẹ́jú 5
+notify-task-done = Ṣàmì sí pé ó ti parí
 
 ## Its buttons
 

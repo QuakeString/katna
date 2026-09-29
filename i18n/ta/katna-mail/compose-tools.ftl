@@ -103,6 +103,7 @@ compose-tool-remove-link = லிங்க்கை அகற்று
 ## More options
 
 compose-tool-full-screen = இயல்பாக முழுத்திரையில் திற
+compose-tool-video-call = வீடியோ அழைப்பைச் சேர்
 compose-tool-label = லேபிள்
 compose-tool-label-coming = அனுப்பிய அஞ்சலுக்கு லேபிள்கள் விரைவில் வரும். மெசேஜ் அனுப்பப்பட்ட பிறகு அனுப்பியவை என்பதில் அதற்கு லேபிள் இடவும்.
 compose-tool-plain-mode = வெற்று உரைப் பயன்முறை

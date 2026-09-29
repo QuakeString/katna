@@ -7,20 +7,49 @@ calendar-today-tip = Gå till idag
 calendar-view-day = Dag
 calendar-view-week = Vecka
 calendar-view-month = Månad
+calendar-view-year = År
 calendar-view-schedule = Schema
+calendar-view-days =
+    { $count ->
+        [one] { $count } dag
+       *[other] { $count } dagar
+    }
+calendar-options = Alternativ
+calendar-density = Densitet
+calendar-density-responsive = Anpassas efter skärmen
+calendar-density-comfortable = Bekväm
+calendar-density-compact = Kompakt
+calendar-custom-days = Anpassad vy
+calendar-second-zone = Andra tidszon
+calendar-zone-none = Ingen
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Dela lediga tider
+calendar-free-subject = Tider då jag är ledig
+calendar-free-intro = Här är några tider då jag är ledig ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Jag har ingen ledig tid de närmaste arbetsdagarna.
 calendar-previous-day = Föregående dag
 calendar-next-day = Nästa dag
 calendar-previous-week = Föregående vecka
 calendar-next-week = Nästa vecka
 calendar-previous-month = Föregående månad
 calendar-next-month = Nästa månad
+calendar-previous-year = Föregående år
+calendar-next-year = Nästa år
 calendar-previous-period = Tidigare
 calendar-next-period = Senare
 calendar-title-months = { $first } – { $last }
 calendar-loading = Läser in …
 calendar-read-failed = Kalendern kunde inte läsas: { $error }
+calendar-sets = Kalenderuppsättningar
+calendar-set-add = Spara de visade kalendrarna som en uppsättning
+calendar-set-name = Uppsättningens namn
+calendar-set-remove = Ta bort uppsättning
 calendar-local = Den här datorn
 calendar-account-gone = Borttaget konto
+calendar-birthdays = Födelsedagar
+calendar-birthday-of = Födelsedag för { $name }
 calendar-empty-title = Inga kalendrar ännu
 calendar-empty-text = Katna visar här kalendrarna för dina Google- och Microsoft-konton när de har synkroniserats, och kalendrar från andra servrar som erbjuder CalDAV.
 calendar-schedule-empty = Inget planerat de kommande två månaderna.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } kanske, { $no } nej, { $waiting
 calendar-organizer = Arrangör
 calendar-optional = Valfri
 calendar-open-web = Öppna i webbläsaren
+calendar-open-contact = Öppna kontakt
 calendar-close = Stäng
 
 ## Adding, changing and deleting events.

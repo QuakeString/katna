@@ -30,9 +30,14 @@ use katna_ui::px;
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
 
+mod birthdays;
+mod free;
+mod sets;
 mod tasks;
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{icon, icon_button, menu, menu_item, outlined_button, raised, tip};
+use crate::widgets::{
+    icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
+};
 
 gpui::actions!(
     katna_calendar,
@@ -43,7 +48,9 @@ gpui::actions!(
         CalendarDayView,
         CalendarWeekView,
         CalendarMonthView,
+        CalendarYearView,
         CalendarScheduleView,
+        CalendarCustomView,
         CalendarCloseEvent,
         CalendarCreateEvent,
         CalendarEditEvent,
@@ -54,9 +61,14 @@ gpui::actions!(
 /// The key context of the Calendar page.
 pub(super) const CALENDAR_CONTEXT: &str = "CalendarPage";
 
-/// Google Calendar's keys, in the Calendar page only.
+/// Google Calendar's keys, in the Calendar page only, and not while
+/// typing in a field on it (a calendar set's name).
 pub(super) fn bindings() -> Vec<KeyBinding> {
-    let c = Some(CALENDAR_CONTEXT);
+    let keys = format!(
+        "{CALENDAR_CONTEXT} && !{}",
+        katna_ui::text_input::KEY_CONTEXT
+    );
+    let c = Some(keys.as_str());
     vec![
         KeyBinding::new("t", CalendarToday, c),
         KeyBinding::new("j", CalendarNext, c),
@@ -69,8 +81,12 @@ pub(super) fn bindings() -> Vec<KeyBinding> {
         KeyBinding::new("2", CalendarWeekView, c),
         KeyBinding::new("m", CalendarMonthView, c),
         KeyBinding::new("3", CalendarMonthView, c),
+        KeyBinding::new("y", CalendarYearView, c),
+        KeyBinding::new("5", CalendarYearView, c),
         KeyBinding::new("a", CalendarScheduleView, c),
         KeyBinding::new("4", CalendarScheduleView, c),
+        KeyBinding::new("x", CalendarCustomView, c),
+        KeyBinding::new("6", CalendarCustomView, c),
         KeyBinding::new("escape", CalendarCloseEvent, c),
         KeyBinding::new("c", CalendarCreateEvent, c),
         KeyBinding::new("e", CalendarEditEvent, c),
@@ -97,6 +113,8 @@ const ALL_DAY_LINE: f32 = 24.0;
 const MONTH_LINE: f32 = 22.0;
 /// The small month's days.
 const MINI_DAY: f32 = 28.0;
+/// A day in Year's small months.
+const YEAR_DAY: f32 = 32.0;
 /// How many days Schedule lists at once.
 const SCHEDULE_DAYS: i64 = 60;
 /// The event card's width.
@@ -131,19 +149,32 @@ pub(super) enum CalView {
     Day,
     Week,
     Month,
+    Year,
     Schedule,
+    /// The custom view: a few days from the one picked.
+    Days,
 }
 
 impl CalView {
-    const ALL: [Self; 4] = [Self::Day, Self::Week, Self::Month, Self::Schedule];
+    const ALL: [Self; 6] = [
+        Self::Day,
+        Self::Week,
+        Self::Month,
+        Self::Year,
+        Self::Schedule,
+        Self::Days,
+    ];
 
-    fn label(self) -> String {
-        tr!(match self {
-            Self::Day => "calendar-view-day",
-            Self::Week => "calendar-view-week",
-            Self::Month => "calendar-view-month",
-            Self::Schedule => "calendar-view-schedule",
-        })
+    /// The view's name; `days` is how many the custom view shows.
+    fn label(self, days: u8) -> String {
+        match self {
+            Self::Day => tr!("calendar-view-day"),
+            Self::Week => tr!("calendar-view-week"),
+            Self::Month => tr!("calendar-view-month"),
+            Self::Year => tr!("calendar-view-year"),
+            Self::Schedule => tr!("calendar-view-schedule"),
+            Self::Days => tr!("calendar-view-days", count = days),
+        }
     }
 }
 
@@ -179,6 +210,8 @@ impl EventDrag {
 /// The state of the Calendar page.
 pub(super) struct CalendarPage {
     view: CalView,
+    /// How many days the custom view shows.
+    custom_days: u8,
     /// The day the views are on.
     day: Date,
     /// The month the small month shows, by its first day.
@@ -206,13 +239,16 @@ pub(super) struct CalendarPage {
     /// Which occurrences of a repeating event a change is for, being asked.
     pub(super) ask: Option<ScopeAsk>,
     pub(super) focus: FocusHandle,
+    /// A new calendar set's name being typed.
+    naming_set: Option<sets::Naming>,
 }
 
 impl CalendarPage {
-    pub(super) fn new(cx: &mut App) -> Self {
+    pub(super) fn new(custom_days: u8, cx: &mut App) -> Self {
         let today = Zoned::now().date();
         Self {
             view: CalView::Week,
+            custom_days,
             day: today,
             mini: today.first_of_month(),
             loaded: None,
@@ -231,6 +267,7 @@ impl CalendarPage {
             task_drag: None,
             ask: None,
             focus: cx.focus_handle(),
+            naming_set: None,
         }
     }
 
@@ -241,7 +278,7 @@ impl CalendarPage {
         let (first, end) = self.days();
         if (first..end).contains(&today) {
             today
-        } else if self.view == CalView::Month {
+        } else if matches!(self.view, CalView::Month | CalView::Year) {
             self.day
         } else {
             first
@@ -268,10 +305,20 @@ impl CalendarPage {
                 let first = Self::week_start(self.day.first_of_month());
                 (first, first.checked_add(42.days()).unwrap_or(first))
             }
+            CalView::Year => {
+                let first = self.day.first_of_year();
+                (first, first.checked_add(1.year()).unwrap_or(first))
+            }
             CalView::Schedule => (
                 self.day,
                 self.day
                     .checked_add(SCHEDULE_DAYS.days())
+                    .unwrap_or(self.day),
+            ),
+            CalView::Days => (
+                self.day,
+                self.day
+                    .checked_add(i64::from(self.custom_days).days())
                     .unwrap_or(self.day),
             ),
         }
@@ -283,13 +330,15 @@ impl CalendarPage {
             CalView::Day => by.days(),
             CalView::Week => (7 * by).days(),
             CalView::Month => by.months(),
+            CalView::Year => by.years(),
             CalView::Schedule => (SCHEDULE_DAYS * by).days(),
+            CalView::Days => (i64::from(self.custom_days) * by).days(),
         };
         if let Ok(day) = self.day.checked_add(span) {
-            self.day = if self.view == CalView::Month {
-                day.first_of_month()
-            } else {
-                day
+            self.day = match self.view {
+                CalView::Month => day.first_of_month(),
+                CalView::Year => day.first_of_year(),
+                _ => day,
             };
             self.mini = self.day.first_of_month();
         }
@@ -396,19 +445,31 @@ pub(super) fn event_color(calendars: &[Calendar], occurrence: &Occurrence) -> u3
 /// Google's blue, for calendars without a color.
 const DEFAULT_COLOR: u32 = 0x039b_e5ff;
 
-/// Reads the calendars and the occurrences in `from..to`.
+/// Reads the calendars and the occurrences in `from..to`, with saved
+/// contacts' birthdays when `birthdays` are shown.
 pub(super) fn read(
     paths: &Paths,
     from: i64,
     to: i64,
     tz: &TimeZone,
+    birthdays: bool,
 ) -> Result<(Vec<Calendar>, Vec<Occurrence>), String> {
     let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
-    let calendars = store.calendars().map_err(|err| err.to_string())?;
+    let mut calendars = store.calendars().map_err(|err| err.to_string())?;
     let rows = store
         .event_rows_in_range(from, to)
         .map_err(|err| err.to_string())?;
-    Ok((calendars, katna_dav::occurrences(rows, from, to, tz)))
+    let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
+    birthdays::add_birthdays(
+        &store,
+        birthdays,
+        from,
+        to,
+        tz,
+        &mut calendars,
+        &mut occurrences,
+    );
+    Ok((calendars, occurrences))
 }
 
 /// Reads the calendars alone, for an event made before the page has read
@@ -429,11 +490,12 @@ impl MailWindow {
         let tz = self.tz.clone();
         let (from, to) = (midnight(first, &tz), midnight(end, &tz));
         let paths = self.paths.clone();
+        let birthdays = !self.config.contacts.hide_birthdays;
         self.calendar.loading = true;
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.calendar;
@@ -520,6 +582,10 @@ impl MailWindow {
     }
 
     fn toggle_calendar(&mut self, id: i64, cx: &mut Context<Self>) {
+        if id == birthdays::BIRTHDAYS {
+            self.toggle_birthdays(cx);
+            return;
+        }
         let shown = !self.calendar_hidden(id);
         if shown {
             self.calendar.hidden.insert(id);
@@ -620,8 +686,20 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// The calendar bar's options: the density, and the second time zone
-    /// (which opens the list of zones).
+    /// Shows the custom view with `days` days.
+    fn set_custom_days(&mut self, days: u8, cx: &mut Context<Self>) {
+        self.config.calendar.custom_days = days;
+        self.save_config();
+        self.calendar.custom_days = days;
+        self.menu = None;
+        self.calendar.view = CalView::Days;
+        self.calendar.scrolled = false;
+        self.calendar_moved(cx);
+    }
+
+    /// The calendar bar's options: the density, how many days the custom
+    /// view shows, and the second time zone (which opens the list of
+    /// zones).
     pub(super) fn calendar_options_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
         let density = self.config.calendar.density;
         let heading = |text: String| {
@@ -649,6 +727,30 @@ impl MailWindow {
             )
             .on_click(cx.listener(move |this, _, _, cx| this.set_calendar_density(choice, cx)))
         });
+        let custom = self.calendar.custom_days;
+        let counts = (2..=7u8).map(|days| {
+            let on = days == custom;
+            div()
+                .id(("calendar-custom-days", usize::from(days)))
+                .size(px(30.0))
+                .flex()
+                .flex_none()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .text_size(px(13.0))
+                .font_weight(FontWeight::MEDIUM)
+                .cursor_pointer()
+                .when(on, |d| {
+                    d.bg(rgba(th.nav_selected))
+                        .text_color(rgba(th.nav_selected_text))
+                })
+                .when(!on, |d| {
+                    d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
+                })
+                .on_click(cx.listener(move |this, _, _, cx| this.set_custom_days(days, cx)))
+                .child(format::number(u64::from(days)))
+        });
         let zone = self.second_zone().map_or_else(
             || tr!("calendar-zone-none"),
             |_| zone_name(&self.config.calendar.second_time_zone),
@@ -657,6 +759,16 @@ impl MailWindow {
             .min_w(px(240.0))
             .child(heading(tr!("calendar-density")))
             .children(densities)
+            .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+            .child(heading(tr!("calendar-custom-days")))
+            .child(
+                div()
+                    .px(px(12.0))
+                    .pb(px(4.0))
+                    .flex()
+                    .gap(px(4.0))
+                    .children(counts),
+            )
             .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
             .child(heading(tr!("calendar-second-zone")))
             .child(
@@ -668,6 +780,16 @@ impl MailWindow {
                         this.menu = Some(Menu::CalendarZones);
                         cx.notify();
                     })),
+            )
+            .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+            .child(
+                menu_item_icon(
+                    "calendar-share-free",
+                    "event",
+                    &tr!("calendar-share-free"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| this.share_free_times(window, cx))),
             )
     }
 
@@ -750,8 +872,9 @@ impl MailWindow {
             self.render_calendar_empty(th)
         } else {
             match self.calendar.view {
-                CalView::Day | CalView::Week => self.render_time_grid(th, cx),
+                CalView::Day | CalView::Week | CalView::Days => self.render_time_grid(th, cx),
                 CalView::Month => self.render_month(th, cx),
+                CalView::Year => self.render_year(th, cx),
                 CalView::Schedule => self.render_schedule(th, cx),
             }
         };
@@ -774,8 +897,14 @@ impl MailWindow {
             .on_action(cx.listener(|this, _: &CalendarMonthView, _, cx| {
                 this.set_calendar_view(CalView::Month, cx)
             }))
+            .on_action(cx.listener(|this, _: &CalendarYearView, _, cx| {
+                this.set_calendar_view(CalView::Year, cx)
+            }))
             .on_action(cx.listener(|this, _: &CalendarScheduleView, _, cx| {
                 this.set_calendar_view(CalView::Schedule, cx)
+            }))
+            .on_action(cx.listener(|this, _: &CalendarCustomView, _, cx| {
+                this.set_calendar_view(CalView::Days, cx)
             }))
             .on_action(cx.listener(Self::close_calendar_event))
             .on_action(cx.listener(|this, _: &CalendarCreateEvent, window, cx| {
@@ -827,7 +956,8 @@ impl MailWindow {
         let title = match page.view {
             CalView::Day => format::day_month_year(page.day.to_datetime(Time::midnight())),
             CalView::Month => format::month_year(page.day),
-            CalView::Week | CalView::Schedule => {
+            CalView::Year => format::year(page.day.year()),
+            CalView::Week | CalView::Schedule | CalView::Days => {
                 if first.year() == last.year() && first.month() == last.month() {
                     format::month_year(first)
                 } else if first.year() == last.year() {
@@ -849,7 +979,10 @@ impl MailWindow {
             CalView::Day => ("calendar-previous-day", "calendar-next-day"),
             CalView::Week => ("calendar-previous-week", "calendar-next-week"),
             CalView::Month => ("calendar-previous-month", "calendar-next-month"),
-            CalView::Schedule => ("calendar-previous-period", "calendar-next-period"),
+            CalView::Year => ("calendar-previous-year", "calendar-next-year"),
+            CalView::Schedule | CalView::Days => {
+                ("calendar-previous-period", "calendar-next-period")
+            }
         };
         let views = CalView::ALL.into_iter().map(|view| {
             let on = view == page.view;
@@ -872,7 +1005,7 @@ impl MailWindow {
                         .hover(|s| s.bg(rgba(th.hover)))
                 })
                 .on_click(cx.listener(move |this, _, _, cx| this.set_calendar_view(view, cx)))
-                .child(view.label())
+                .child(view.label(page.custom_days))
         });
         div()
             .flex_none()
@@ -974,6 +1107,9 @@ impl MailWindow {
             .border_r_1()
             .border_color(rgba(th.divider))
             .child(self.render_mini_month(th, cx))
+            .when(!self.calendar.calendars.is_empty(), |d| {
+                d.child(self.render_calendar_sets(th, cx))
+            })
             .child(self.render_calendar_list(th, cx))
             .into_any_element()
     }
@@ -1004,8 +1140,7 @@ impl MailWindow {
                 let is_today = day == today;
                 let picked = day == page.day;
                 let in_month = day.month() == page.mini.month();
-                let on_show = page.view != CalView::Month
-                    && page.view != CalView::Schedule
+                let on_show = matches!(page.view, CalView::Day | CalView::Week | CalView::Days)
                     && day >= shown_first
                     && day < shown_end;
                 div()
@@ -1840,6 +1975,140 @@ impl MailWindow {
     }
 
     /// The Month view: six weeks of days with their events.
+    /// Year: the twelve months side by side, as small months; a dot
+    /// under days with events, and a day opens in Day.
+    fn render_year(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let tz = self.tz.clone();
+        let today = Zoned::now().with_time_zone(tz.clone()).date();
+        let year = self.calendar.day.first_of_year();
+        let mut busy: HashMap<Date, u32> = HashMap::new();
+        for occurrence in self.shown_occurrences() {
+            let first = civil(occurrence.start, &tz).date();
+            let last = civil((occurrence.end - 1).max(occurrence.start), &tz).date();
+            let color = self.event_color(&occurrence);
+            let mut day = first;
+            while day <= last {
+                busy.entry(day).or_insert(color);
+                match day.tomorrow() {
+                    Ok(next) => day = next,
+                    Err(_) => break,
+                }
+            }
+        }
+        let head = format::weekdays_short();
+        let months = (0..12)
+            .filter_map(|m| year.checked_add(m.months()).ok())
+            .map(|month| {
+                let first = CalendarPage::week_start(month);
+                let head = head.iter().map(|(_, name)| {
+                    div()
+                        .w(px(YEAR_DAY))
+                        .h(px(20.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .text_size(px(11.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_faint))
+                        .child(name.chars().take(1).collect::<String>())
+                });
+                let weeks = (0..6).map(|week| {
+                    div().flex().flex_row().children((0..7).map(|ix| {
+                        let day = first.checked_add((week * 7 + ix).days()).unwrap_or(first);
+                        let cell = div().w(px(YEAR_DAY)).h(px(YEAR_DAY));
+                        if day.month() != month.month() || day.year() != month.year() {
+                            return cell.into_any_element();
+                        }
+                        let is_today = day == today;
+                        let dot = busy.get(&day).copied();
+                        cell.id(SharedString::from(format!("year-{day}")))
+                            .relative()
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .cursor_pointer()
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.open_calendar_day(day, Some(CalView::Day), cx)
+                            }))
+                            .child(
+                                div()
+                                    .size(px(YEAR_DAY - 4.0))
+                                    .flex()
+                                    .items_center()
+                                    .justify_center()
+                                    .rounded_full()
+                                    .text_size(px(12.0))
+                                    .when(is_today, |d| {
+                                        d.bg(rgba(th.accent))
+                                            .text_color(rgba(th.on_accent))
+                                            .font_weight(FontWeight::BOLD)
+                                    })
+                                    .when(!is_today, |d| {
+                                        d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
+                                    })
+                                    .child(format::number(day.day() as u64)),
+                            )
+                            .when_some(dot.filter(|_| !is_today), |d, color| {
+                                d.child(
+                                    div()
+                                        .absolute()
+                                        .bottom(px(1.0))
+                                        .left(px(YEAR_DAY / 2.0 - 2.0))
+                                        .size(px(4.0))
+                                        .rounded_full()
+                                        .bg(rgba(color)),
+                                )
+                            })
+                            .into_any_element()
+                    }))
+                });
+                div()
+                    .id(SharedString::from(format!("year-month-{month}")))
+                    .flex_none()
+                    .p(px(12.0))
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .id(SharedString::from(format!("year-title-{month}")))
+                            .pl(px(8.0))
+                            .pb(px(8.0))
+                            .text_size(px(15.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(
+                                if month.year() == today.year() && month.month() == today.month() {
+                                    th.accent
+                                } else {
+                                    th.text
+                                },
+                            ))
+                            .cursor_pointer()
+                            .hover(|s| s.underline())
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.open_calendar_day(month, Some(CalView::Month), cx)
+                            }))
+                            .child(format::month_name(month.month())),
+                    )
+                    .child(div().flex().flex_row().children(head))
+                    .children(weeks)
+            });
+        div()
+            .id("calendar-year")
+            .size_full()
+            .overflow_y_scroll()
+            .p(px(16.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .justify_center()
+                    .gap(px(8.0))
+                    .children(months),
+            )
+            .into_any_element()
+    }
+
     fn render_month(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let (first, _) = self.calendar.days();
         let tz = self.tz.clone();
@@ -2254,6 +2523,9 @@ impl MailWindow {
         let web = data.web_link.clone();
         let editable = self.can_edit(occurrence);
         let emails = !self.other_guests(occurrence).is_empty();
+        // A saved contact's birthday opens their contact page.
+        let birthday_of =
+            (occurrence.event.calendar_id == birthdays::BIRTHDAYS).then_some(occurrence.event.id);
         // Running late, from an hour before the start to the end.
         let now = jiff::Timestamp::now().as_second();
         let late = emails
@@ -2308,6 +2580,17 @@ impl MailWindow {
                             .tooltip(tip(tr!("calendar-email-guests"), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.email_guests(false, window, cx)
+                            })),
+                    )
+                })
+                .when(birthday_of.is_some(), |d| {
+                    d.child(
+                        icon_button("event-contact", "contacts", 20.0, th)
+                            .tooltip(tip(tr!("calendar-open-contact"), th))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                if let Some(card) = birthday_of {
+                                    this.open_birthday_contact(card, window, cx);
+                                }
                             })),
                     )
                 })
@@ -2502,7 +2785,10 @@ impl MailWindow {
                 let text: String = data.description.chars().take(1200).collect();
                 d.child(line("notes", text))
             })
-            .child(self.render_event_notes(occurrence, th, cx))
+            // Nothing to take notes of on a birthday.
+            .when(data.kind != EventKind::Birthday, |d| {
+                d.child(self.render_event_notes(occurrence, th, cx))
+            })
             .when_some(calendar, |d, calendar| {
                 d.child(line("calendar", calendar_name(calendar)))
             });

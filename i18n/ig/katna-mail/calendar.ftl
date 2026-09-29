@@ -7,20 +7,48 @@ calendar-today-tip = Gaa na taa
 calendar-view-day = Ụbọchị
 calendar-view-week = Izu
 calendar-view-month = Onwa
+calendar-view-year = Afọ
 calendar-view-schedule = Nhazi oge
+calendar-view-days =
+    { $count ->
+       *[other] Ụbọchị { $count }
+    }
+calendar-options = Nhọrọ
+calendar-density = Njupụta
+calendar-density-responsive = Na-eso ihuenyo gị
+calendar-density-comfortable = Ọ dị mma
+calendar-density-compact = Nke dị nso
+calendar-custom-days = Ọhụhụ ahaziri
+calendar-second-zone = Mpaghara oge nke abụọ
+calendar-zone-none = Ọ dịghị
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Kesaa oge ị nwere
+calendar-free-subject = Oge m nwere
+calendar-free-intro = Lee oge ụfọdụ m nwere ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Enweghị m oge ọ bụla n'ụbọchị ọrụ ole na ole na-abịa.
 calendar-previous-day = Ụbọchị gara aga
 calendar-next-day = Ụbọchị na-esote
 calendar-previous-week = Izu gara aga
 calendar-next-week = Izu na-esote
 calendar-previous-month = Onwa gara aga
 calendar-next-month = Onwa na-esote
+calendar-previous-year = Afọ gara aga
+calendar-next-year = Afọ na-esote
 calendar-previous-period = Nke gara aga
 calendar-next-period = Nke ga-abịa
 calendar-title-months = { $first } – { $last }
 calendar-loading = Na-ebugo…
 calendar-read-failed = Enweghị ike ịgụ kalịnda: { $error }
+calendar-sets = Otu kalịnda
+calendar-set-add = Chekwaa kalịnda ndị a na-egosi dị ka otu
+calendar-set-name = Aha otu ahụ
+calendar-set-remove = Wepụ otu
 calendar-local = Na kọmputa a
 calendar-account-gone = Akaụntụ e wepụrụ
+calendar-birthdays = Ụbọchị ọmụmụ
+calendar-birthday-of = Ụbọchị ọmụmụ { $name }
 calendar-empty-title = Enwebeghị kalịnda
 calendar-empty-text = Katna na-egosi kalịnda akaụntụ Google na Microsoft gị ebe a ozugbo e mekọrịtara ha, yana nke sava ndị ọzọ na-enye CalDAV.
 calendar-schedule-empty = Ọ nweghị ihe e mere atụmatụ n'ime ọnwa abụọ na-abịa.
@@ -45,6 +73,7 @@ calendar-guest-answers = { $yes } ee, { $maybe } ikekwe, { $no } mba, { $waiting
 calendar-organizer = Onye nhazi
 calendar-optional = Nhọrọ
 calendar-open-web = Mepe na ihe nchọgharị
+calendar-open-contact = Meghee kọntaktị
 calendar-close = Mechie
 
 ## Adding, changing and deleting events.

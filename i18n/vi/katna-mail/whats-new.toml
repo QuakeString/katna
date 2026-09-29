@@ -1375,3 +1375,83 @@ title = "Hợp nhất liên hệ trùng lặp, nhập và xuất liên hệ"
 text = """
 Danh bạ giờ có Sửa và quản lý: Hợp nhất và sửa tìm những người được lưu hai lần (cùng tên hoặc số điện thoại) và hợp nhất họ chỉ bằng một cú nhấp, kèm Hoàn tác. Nhập đưa người từ tệp vCard vào và bỏ qua những ai đã được lưu, còn Xuất lưu tất cả mọi người, hoặc một nhãn, thành tệp vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Sinh nhật trên lịch, liên hệ dưới dạng mã QR"
+text = """
+Sinh nhật của các liên hệ giờ hiển thị trên Lịch, trong một lịch Sinh nhật mà bạn có thể bỏ chọn. Trang của một liên hệ có thể hiện liên hệ đó dưới dạng mã QR để camera điện thoại lưu lại, và in ra; In trong Sửa và quản lý sẽ in tất cả những người đang hiển thị. Tính năng nhập giờ cũng đọc được tệp CSV từ Danh bạ Google và Outlook, còn KRunner và tìm kiếm của GNOME tìm được các liên hệ đã lưu của bạn.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Mật độ Lịch và múi giờ thứ hai"
+text = """
+Nút Tùy chọn trong Lịch đặt độ cao của các giờ (Tự điều chỉnh theo màn hình của bạn, Thoải mái hoặc Gọn) và thêm múi giờ thứ hai bên cạnh múi giờ của bạn, dành cho những người bạn gặp ở nước ngoài.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Bắt đầu cuộc gọi video từ một thư"
+text = """
+Nhấp chuột phải vào một cuộc trò chuyện, hoặc mở ⋮, rồi chọn Bắt đầu cuộc gọi video: cuộc gọi sẽ mở ra, kèm một thư mới chứa liên kết gửi đến mọi người trong cuộc trò chuyện. Tài khoản Gmail dùng Google Meet; các tài khoản khác nhận một phòng Jitsi Meet. Thư có liên kết cuộc gọi Meet, Teams, Zoom, Webex, Jitsi, WhatsApp hoặc Telegram nay hiển thị nút Tham gia.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Biến một dòng danh sách kiểm tra thành việc cần làm"
+text = """
+Đặt con trỏ vào một dòng danh sách kiểm tra trong ghi chú và chọn Biến thành việc cần làm: dòng đó sẽ chuyển sang mục Việc cần làm của bạn. Thẻ Ghi chú trên trang Việc cần làm sẽ mở lại ghi chú.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Ngăn bạn đang dùng nổi bật lên"
+text = """
+Bên cạnh danh sách, chỉ ngăn đang nhận bàn phím mới giữ bóng đổ; danh sách, cuộc trò chuyện hoặc bảng liên hệ mà bạn không dùng sẽ lùi xuống với viền nhạt hơn, và thay đổi đó nhẹ nhàng theo bạn khi bạn nhấp chuột.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Lời nhắc và lặp lại của công việc"
+text = """
+Mở một công việc và chọn Nhắc tôi: đúng giờ, trước một giờ hoặc một ngày. Lời nhắc hiện ra ngay cả khi Katna đã đóng, kèm Đánh dấu là đã hoàn thành và Báo lại. Khi đánh dấu xong một công việc lặp lại, giờ đây nó sẽ quay lại vào ngày kế tiếp.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Tìm việc cần làm từ màn hình nền"
+text = """
+Gõ vài từ của một việc cần làm trong KRunner hoặc trong tìm kiếm của GNOME, việc đó sẽ hiện ở mục Việc cần làm. Nhấn Enter và Katna sẽ mở nó, sẵn sàng để chỉnh sửa.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Thêm sự kiện và việc cần làm từ đồng hồ trên màn hình nền"
+text = """
+Trong Katna Digital Clock, nhấp chuột phải vào một ngày trong tháng để
+thêm việc cần làm hoặc sự kiện cho ngày đó; sự kiện sẽ mở trong Lịch của
+Katna. Nhấp vào một sự kiện của bạn sẽ mở Lịch ở đúng ngày đó.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Gõ một sự kiện trong một dòng"
+text = """
+Gõ “Ăn trưa với Anita thứ Sáu 1pm tại Cafe Mocha” hoặc “Họp nhanh mỗi
+ngày làm việc 9:30” làm tiêu đề của sự kiện mới, và Lịch sẽ điền ngày,
+giờ, lặp lại và địa điểm khi bạn gõ.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Xem cả năm"
+text = """
+Lịch có chế độ xem Năm: cả mười hai tháng cùng lúc, có một dấu chấm dưới
+những ngày có sự kiện. Nhấn Y, rồi nhấp vào một ngày để mở nó.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Chia sẻ giờ rảnh của bạn"
+text = """
+Chia sẻ giờ rảnh trong các tùy chọn của Lịch sẽ mở một thư liệt kê lúc
+bạn rảnh trong vài ngày làm việc tới, sẵn sàng gửi cho bất kỳ ai.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Bộ lịch"
+text = """
+Lưu các lịch bạn đang hiển thị thành một bộ, như “Công việc” hoặc “Gia
+đình”, bằng nút + cạnh Bộ lịch. Một cú nhấp vào một bộ sẽ hiện các lịch
+của bộ đó và ẩn phần còn lại.
+"""

@@ -7,20 +7,48 @@ calendar-today-tip = 前往今天
 calendar-view-day = 日
 calendar-view-week = 週
 calendar-view-month = 月
+calendar-view-year = 年
 calendar-view-schedule = 行程
+calendar-view-days =
+    { $count ->
+       *[other] { $count } 天
+    }
+calendar-options = 設定
+calendar-density = 資訊密度
+calendar-density-responsive = 隨螢幕自動調整
+calendar-density-comfortable = 舒適
+calendar-density-compact = 精簡
+calendar-custom-days = 自訂檢視
+calendar-second-zone = 次要時區
+calendar-zone-none = 無
+calendar-zone = { $zone } （{ $offset }）
+calendar-share-free = 分享空檔時間
+calendar-free-subject = 我的空檔時間
+calendar-free-intro = 以下是我的一些空檔時間（{ $zone }）：
+calendar-free-day = { $weekday } { $date }：{ $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = 接下來幾個工作日我都沒有空檔時間。
 calendar-previous-day = 前一天
 calendar-next-day = 後一天
 calendar-previous-week = 上週
 calendar-next-week = 下週
 calendar-previous-month = 上個月
 calendar-next-month = 下個月
+calendar-previous-year = 上一年
+calendar-next-year = 下一年
 calendar-previous-period = 較早
 calendar-next-period = 較晚
 calendar-title-months = { $first } – { $last }
 calendar-loading = 載入中…
 calendar-read-failed = 無法讀取日曆：{ $error }
+calendar-sets = 日曆組
+calendar-set-add = 將顯示的日曆儲存為組
+calendar-set-name = 組名稱
+calendar-set-remove = 移除組
 calendar-local = 這部電腦
 calendar-account-gone = 已移除的帳號
+calendar-birthdays = 生日
+calendar-birthday-of = { $name }的生日
 calendar-empty-title = 還沒有日曆
 calendar-empty-text = 你 Google 和 Microsoft 帳號的日曆同步後會顯示在這裡，其他支援 CalDAV 的伺服器上的日曆也一樣。
 calendar-schedule-empty = 接下來兩個月沒有任何行程。
@@ -45,6 +73,7 @@ calendar-guest-answers = { $yes } 人參加，{ $maybe } 人可能參加，{ $no
 calendar-organizer = 主辦者
 calendar-optional = 選填
 calendar-open-web = 在瀏覽器中開啟
+calendar-open-contact = 開啟聯絡人
 calendar-close = 關閉
 
 ## Adding, changing and deleting events.

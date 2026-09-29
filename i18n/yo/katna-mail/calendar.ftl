@@ -7,20 +7,48 @@ calendar-today-tip = Lọ sí òní
 calendar-view-day = Ọjọ́
 calendar-view-week = Ọ̀sẹ̀
 calendar-view-month = Oṣù
+calendar-view-year = Ọdún
 calendar-view-schedule = Àtòjọ àkókò
+calendar-view-days =
+    { $count ->
+       *[other] ọjọ́ { $count }
+    }
+calendar-options = Àwọn àṣàyàn
+calendar-density = Ìwọ̀n ìkọ̀pọ̀
+calendar-density-responsive = Ó ń bá ojú-ìwé rẹ mu
+calendar-density-comfortable = Ìtura
+calendar-density-compact = Kékeré ṣinṣin
+calendar-custom-days = Ìwòye àdáni
+calendar-second-zone = Agbègbè àkókò kejì
+calendar-zone-none = Kò sí
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Pín àwọn àkókò òmìnira
+calendar-free-subject = Àwọn àkókò tí mo wà ní òmìnira
+calendar-free-intro = Àwọn àkókò díẹ̀ tí mo wà ní òmìnira nìyí ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Kò sí àkókò òmìnira fún mi ní àwọn ọjọ́ iṣẹ́ díẹ̀ tó ń bọ̀.
 calendar-previous-day = Ọjọ́ tó kọjá
 calendar-next-day = Ọjọ́ tó kàn
 calendar-previous-week = Ọ̀sẹ̀ tó kọjá
 calendar-next-week = Ọ̀sẹ̀ tó kàn
 calendar-previous-month = Oṣù tó kọjá
 calendar-next-month = Oṣù tó kàn
+calendar-previous-year = Ọdún tó kọjá
+calendar-next-year = Ọdún tó kàn
 calendar-previous-period = Ṣáájú
 calendar-next-period = Lẹ́yìn
 calendar-title-months = { $first } – { $last }
 calendar-loading = Ń gbéwọlé…
 calendar-read-failed = A kò lè ka kàlẹ́ńdà náà: { $error }
+calendar-sets = Àwọn àkójọ kàlẹ́ńdà
+calendar-set-add = Fi àwọn kàlẹ́ńdà tó ń hàn pamọ́ gẹ́gẹ́ bí àkójọ kan
+calendar-set-name = Orúkọ àkójọ náà
+calendar-set-remove = Yọ àkójọ kúrò
 calendar-local = Kọ̀ǹpútà yìí
 calendar-account-gone = Àkọọ́lẹ̀ tí a yọ kúrò
+calendar-birthdays = Àwọn ọjọ́ ìbí
+calendar-birthday-of = Ọjọ́ ìbí { $name }
 calendar-empty-title = Kò tíì sí kàlẹ́ńdà kankan
 calendar-empty-text = Katna ń fi àwọn kàlẹ́ńdà àkọọ́lẹ̀ Google àti Microsoft rẹ hàn níbí nígbà tí a bá ti mú wọn bá ara wọn mu, pẹ̀lú ti àwọn olupín mìíràn tó ń ṣe atìlẹ́yìn CalDAV.
 calendar-schedule-empty = Kò sí ohun tí a ṣètò fún oṣù méjì tó ń bọ̀.
@@ -45,6 +73,7 @@ calendar-guest-answers = bẹ́ẹ̀ni { $yes }, bóyá { $maybe }, rárá { $no
 calendar-organizer = Olùṣètò
 calendar-optional = Àṣàyàn
 calendar-open-web = Ṣí i nínú aṣàwákiri
+calendar-open-contact = Ṣí olùbásọ̀rọ̀
 calendar-close = Padé
 
 ## Adding, changing and deleting events.

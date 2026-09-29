@@ -103,6 +103,7 @@ compose-tool-remove-link = Hapus link
 ## More options
 
 compose-tool-full-screen = Buka dalam layar penuh secara default
+compose-tool-video-call = Tambahkan panggilan video
 compose-tool-label = Label
 compose-tool-label-coming = Label pada email terkirim akan segera hadir. Beri label pada pesan di Terkirim setelah dikirim.
 compose-tool-plain-mode = Mode teks biasa

@@ -1333,3 +1333,77 @@ text = """
 Àwọn olùbásọ̀rọ̀ ní Àtúnṣe àti ìṣàkóso báyìí: Dàpọ̀ àti àtúnṣe ń wá àwọn ènìyàn tí a fipamọ́ lẹ́ẹ̀mejì (orúkọ tàbí nọ́ńbà fóònù kan náà) ó sì ń dà wọ́n pọ̀ pẹ̀lú títẹ̀ ẹ̀ẹ̀kan, pẹ̀lú Dá padà.
 Gbé wọlé ń mú àwọn ènìyàn wá láti fáìlì vCard, ó ń fi àwọn tí a ti fipamọ́ sílẹ̀, Gbé jáde sì ń fi gbogbo wọn, tàbí àmì kan, pamọ́ bí fáìlì vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Àwọn ọjọ́ ìbí lórí kàlẹ́ńdà, àwọn olùbásọ̀rọ̀ bí kóòdù QR"
+text = """
+Àwọn ọjọ́ ìbí àwọn olùbásọ̀rọ̀ rẹ ti hàn lórí Kàlẹ́ńdà báyìí, nínú kàlẹ́ńdà Àwọn ọjọ́ ìbí tí o lè yọ àmì rẹ̀ kúrò.
+Ojú-ìwé olùbásọ̀rọ̀ lè fi wọ́n hàn bí kóòdù QR tí kámẹ́rà fóònù ń fipamọ́, kí ó sì tẹ̀ wọ́n jáde; Tẹ̀jáde lábẹ́ Àtúnṣe àti ìṣàkóso ń tẹ̀ gbogbo ẹni tó wà lórí ìfihàn jáde.
+Gbé wọlé ti ń ka àwọn fáìlì CSV láti Àwọn olùbásọ̀rọ̀ Google àti Outlook pẹ̀lú báyìí, KRunner àti àwárí GNOME sì ń rí àwọn olùbásọ̀rọ̀ rẹ tí a fipamọ́.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Ìwọ̀n ìkọ̀pọ̀ Kàlẹ́ńdà àti agbègbè àkókò kejì"
+text = """
+Bọ́tìnì Àwọn àṣàyàn nínú Kàlẹ́ńdà ń ṣètò gíga àwọn wákàtí (Ó ń bá ojú-ìwé rẹ mu, Ìtura tàbí Kékeré ṣinṣin) ó sì ń fi agbègbè àkókò kejì kún èyí tìrẹ, fún àwọn ènìyàn tí o ń pàdé ní ilẹ̀ òkèèrè.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Bẹ̀rẹ̀ ìpè fídíò láti inú ìfiránṣẹ́"
+text = """
+Tẹ ìsọ̀rọ̀ kan pẹ̀lú bọ́tìnì ọ̀tún, tàbí ṣí ⋮, kí o sì yan Bẹ̀rẹ̀ ìpè fídíò: ìpè náà yóò ṣí, pẹ̀lú ìfiránṣẹ́ tuntun sí gbogbo ènìyàn tó wà nínú ìsọ̀rọ̀ náà tó gbé ìjápọ̀ rẹ̀ dání. Àwọn àkọọ́lẹ̀ Gmail ń lo Google Meet; àwọn mìíràn ń gba yàrá Jitsi Meet. Ìfiránṣẹ́ tó ní ìjápọ̀ ìpè Meet, Teams, Zoom, Webex, Jitsi, WhatsApp tàbí Telegram nísinsin yìí ń ṣàfihàn bọ́tìnì Darapọ̀.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Sọ ìlà àtòjọ àyẹ̀wò di iṣẹ́"
+text = """
+Gbé kọ́sọ̀ sórí ìlà àtòjọ àyẹ̀wò nínú àkọsílẹ̀, kí o yan Ṣe é ní iṣẹ́: ìlà náà á lọ sínú àwọn iṣẹ́ rẹ. Àmì Àkọsílẹ̀ rẹ̀ lórí ojú-ìwé Iṣẹ́ á tún ṣí àkọsílẹ̀ náà.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Ìgbóríyọ̀ tí o wà nínú rẹ̀ ta yọ"
+text = """
+Lẹ́gbẹ̀ẹ́ àtòjọ náà, ìgbóríyọ̀ tó ń gba àwọn kọ́kọ́rọ́ nìkan ló ń pa òjìji rẹ̀ mọ́; àtòjọ, ìjíròrò tàbí pánẹ́lì olùbáraẹni tí o kò lò á padà sẹ́yìn pẹ̀lú etí tó fẹ́rẹ̀ẹ́, ìyípadà náà á sì tẹ̀lé ọ ní ìrọ̀rùn bí o ṣe ń tẹ̀.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Àwọn ìránnilétí iṣẹ́ àti àtúnṣe"
+text = """
+Ṣí iṣẹ́ kan kí o yan Rán mi létí: ní àkókò náà, wákàtí kan tàbí ọjọ́ kan ṣáájú. Ìránnilétí náà á yọ jáde kódà bí Katna bá wà ní títì, pẹ̀lú àwọn bọ́tìnì Ṣàmì sí pé ó ti parí àti Sún síwájú. Tí o bá ṣàmì sí iṣẹ́ àtúnṣe pé ó ti parí, ó á padà ní ọjọ́ rẹ̀ tó kàn.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Wá àwọn iṣẹ́ láti orí déskitọ́pù"
+text = """
+Tẹ ọ̀rọ̀ díẹ̀ nínú iṣẹ́ kan sínú àwárí KRunner tàbí GNOME, yóò sì hàn lábẹ́ Iṣẹ́. Tẹ Enter, Katna yóò sì ṣí i, ó ṣetán fún àtúnṣe.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Fi àwọn ìṣẹ̀lẹ̀ àti iṣẹ́ kún un láti aago orí tábìlì"
+text = """
+Nínú Aago Dijítàlì Katna, tẹ ọjọ́ kan nínú oṣù lọ́tùn-ún láti fi iṣẹ́ tàbí ìṣẹ̀lẹ̀ kún un fún ọjọ́ náà; ìṣẹ̀lẹ̀ náà yóò ṣí nínú Kàlẹ́ńdà Katna. Títẹ ọ̀kan lára àwọn ìṣẹ̀lẹ̀ rẹ yóò ṣí Kàlẹ́ńdà ní ọjọ́ rẹ̀.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Tẹ ìṣẹ̀lẹ̀ kan sínú ìlà kan"
+text = """
+Tẹ "Oúnjẹ ọ̀sán pẹ̀lú Anita ọjọ́ Ẹtì 1 ọ̀sán ní Cafe Mocha" tàbí "Ìpàdé kúkúrú ní gbogbo ọjọ́ iṣẹ́ 9:30" gẹ́gẹ́ bí àkọlé ìṣẹ̀lẹ̀ tuntun, Kàlẹ́ńdà yóò sì kún ọjọ́, àkókò, àtúnṣe àti ibi bí o ṣe ń tẹ̀.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Wo gbogbo ọdún ní ẹ̀ẹ̀kan"
+text = """
+Kàlẹ́ńdà ní ìwòye Ọdún: gbogbo oṣù méjìlá papọ̀, pẹ̀lú ìkáwọ́ kékeré lábẹ́ àwọn ọjọ́ tí ó ní ìṣẹ̀lẹ̀. Tẹ Y, kí o sì tẹ ọjọ́ kan láti ṣí i.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Pín àwọn àkókò òmìnira rẹ"
+text = """
+Pín àwọn àkókò òmìnira nínú àwọn àṣàyàn Kàlẹ́ńdà yóò bẹ̀rẹ̀ ìfiránṣẹ́ tó ń ṣàkójọ àwọn àkókò tí o wà ní òmìnira ní àwọn ọjọ́ iṣẹ́ tó ń bọ̀, ó ṣetán láti fi ránṣẹ́ sí ẹnikẹ́ni.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Àwọn àkójọ kàlẹ́ńdà"
+text = """
+Fi àwọn kàlẹ́ńdà tí ò ń fihàn pamọ́ gẹ́gẹ́ bí àkójọ kan, bí "Iṣẹ́" tàbí "Ẹbí", pẹ̀lú + lẹ́gbẹ̀ẹ́ Àwọn àkójọ kàlẹ́ńdà. Títẹ àkójọ kan lẹ́ẹ̀kan yóò fi àwọn kàlẹ́ńdà rẹ̀ hàn, yóò sì fi àwọn yòókù pamọ́.
+"""

@@ -103,6 +103,7 @@ compose-tool-remove-link = 移除链接
 ## More options
 
 compose-tool-full-screen = 默认全屏
+compose-tool-video-call = 添加视频通话
 compose-tool-label = 标签
 compose-tool-label-coming = 即将支持给已发送的邮件添加标签。邮件发出后，可在“已发送”中为它添加标签。
 compose-tool-plain-mode = 纯文本模式

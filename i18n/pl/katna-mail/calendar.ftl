@@ -7,20 +7,51 @@ calendar-today-tip = Przejdź do dzisiaj
 calendar-view-day = Dzień
 calendar-view-week = Tydzień
 calendar-view-month = Miesiąc
+calendar-view-year = Rok
 calendar-view-schedule = Harmonogram
+calendar-view-days =
+    { $count ->
+        [one] { $count } dzień
+        [few] { $count } dni
+        [many] { $count } dni
+       *[other] { $count } dnia
+    }
+calendar-options = Opcje
+calendar-density = Gęstość
+calendar-density-responsive = Dopasowana do ekranu
+calendar-density-comfortable = Wygodna
+calendar-density-compact = Kompaktowa
+calendar-custom-days = Widok niestandardowy
+calendar-second-zone = Druga strefa czasowa
+calendar-zone-none = Brak
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Udostępnij wolne terminy
+calendar-free-subject = Kiedy jestem wolny
+calendar-free-intro = Oto kilka terminów, kiedy jestem wolny ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = W najbliższych dniach roboczych nie mam wolnego czasu.
 calendar-previous-day = Poprzedni dzień
 calendar-next-day = Następny dzień
 calendar-previous-week = Poprzedni tydzień
 calendar-next-week = Następny tydzień
 calendar-previous-month = Poprzedni miesiąc
 calendar-next-month = Następny miesiąc
+calendar-previous-year = Poprzedni rok
+calendar-next-year = Następny rok
 calendar-previous-period = Wcześniej
 calendar-next-period = Później
 calendar-title-months = { $first } – { $last }
 calendar-loading = Wczytywanie…
 calendar-read-failed = Nie udało się odczytać kalendarza: { $error }
+calendar-sets = Zestawy kalendarzy
+calendar-set-add = Zapisz widoczne kalendarze jako zestaw
+calendar-set-name = Nazwa zestawu
+calendar-set-remove = Usuń zestaw
 calendar-local = Ten komputer
 calendar-account-gone = Usunięte konto
+calendar-birthdays = Urodziny
+calendar-birthday-of = Urodziny: { $name }
 calendar-empty-title = Brak kalendarzy
 calendar-empty-text = Katna pokazuje tu kalendarze Twoich kont Google i Microsoft po ich zsynchronizowaniu oraz kalendarze innych serwerów obsługujących CalDAV.
 calendar-schedule-empty = Nic nie zaplanowano na najbliższe dwa miesiące.
@@ -48,6 +79,7 @@ calendar-guest-answers = { $yes } tak, { $maybe } może, { $no } nie, { $waiting
 calendar-organizer = Organizator
 calendar-optional = Opcjonalny
 calendar-open-web = Otwórz w przeglądarce
+calendar-open-contact = Otwórz kontakt
 calendar-close = Zamknij
 
 ## Adding, changing and deleting events.

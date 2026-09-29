@@ -103,6 +103,7 @@ compose-tool-remove-link = Wepụ njikọ
 ## More options
 
 compose-tool-full-screen = Mepee na ihuenyo zuru oke mgbe niile
+compose-tool-video-call = Tinye oku vidio
 compose-tool-label = Leebụl
 compose-tool-label-coming = Leebụl na ozi ezigara na-abịa n'oge na-adịghị anya. Tinye leebụl na ozi ahụ n'Ezigara ozugbo ọ pụrụ.
 compose-tool-plain-mode = Ọnọdụ ederede nkịtị

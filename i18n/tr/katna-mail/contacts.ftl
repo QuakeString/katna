@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = İçe aktar
 contacts-export = Dışa aktar
-contacts-import-title = Kişileri vCard dosyasından içe aktar
+contacts-import-file = Kişileri vCard veya CSV dosyasından içe aktar
 contacts-imported = { $count ->
     [one] { $count } kişi { $place } konumuna aktarıldı
    *[other] { $count } kişi { $place } konumuna aktarıldı
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Dışa aktarılacak kişi yok
 contacts-export-failed = Kişiler dışa aktarılamadı: { $error }
+contacts-print = Yazdır
+contacts-print-title = Kişiler
+contacts-print-none = Yazdırılacak kişi yok
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Doğum günü: { $day }
+contacts-print-nickname = Takma ad: { $name }
 contacts-create = Kişi oluştur
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = İzin ver
 contacts-back = Kişilere geri dön
 contacts-edit = Düzenle
 contacts-delete = Sil
+contacts-qr = QR kodu olarak paylaş
+contacts-qr-about = Kişiyi kaydetmek için bunu bir telefonun kamerasıyla tarayın.
+contacts-qr-too-long = Bu kişinin bilgileri bir QR koduna sığmayacak kadar fazla.
+contacts-qr-done = Bitti
 contacts-deleted = { $name } silindi
 contacts-added = { $name } kişilere eklendi
 contacts-find-mail = Posta

@@ -47,6 +47,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Увесь день
 notify-event-join = Приєднатися
 notify-event-snooze = Відкласти на 5 хв
+notify-task-done = Позначити як виконане
 notify-open = Відкрити
 notify-reply-all = Відповісти всім
 notify-mark-read = Позначити як прочитане

@@ -7,20 +7,49 @@ calendar-today-tip = ወደ ዛሬ ሂድ
 calendar-view-day = ቀን
 calendar-view-week = ሳምንት
 calendar-view-month = ወር
+calendar-view-year = ዓመት
 calendar-view-schedule = መርሐግብር
+calendar-view-days =
+    { $count ->
+        [one] { $count } ቀን
+       *[other] { $count } ቀናት
+    }
+calendar-options = አማራጮች
+calendar-density = ጥግግት
+calendar-density-responsive = ለማያ ገጽዎ ምላሽ ሰጪ
+calendar-density-comfortable = ምቹ
+calendar-density-compact = የታመቀ
+calendar-custom-days = ብጁ እይታ
+calendar-second-zone = ሁለተኛ የሰዓት ሰቅ
+calendar-zone-none = ምንም
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = ክፍት ጊዜዎችን አጋራ
+calendar-free-subject = ክፍት የሆንኩባቸው ጊዜዎች
+calendar-free-intro = ክፍት የምሆንባቸው አንዳንድ ጊዜዎች እነሆ ({ $zone })፦
+calendar-free-day = { $weekday } { $date }፦ { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = በሚቀጥሉት ጥቂት የሥራ ቀናት ውስጥ ክፍት ጊዜ የለኝም።
 calendar-previous-day = ያለፈው ቀን
 calendar-next-day = ቀጣዩ ቀን
 calendar-previous-week = ያለፈው ሳምንት
 calendar-next-week = ቀጣዩ ሳምንት
 calendar-previous-month = ያለፈው ወር
 calendar-next-month = ቀጣዩ ወር
+calendar-previous-year = ያለፈው ዓመት
+calendar-next-year = ቀጣዩ ዓመት
 calendar-previous-period = ቀደም ብሎ
 calendar-next-period = በኋላ
 calendar-title-months = { $first } – { $last }
 calendar-loading = በመጫን ላይ…
 calendar-read-failed = ቀን መቁጠሪያውን ማንበብ አልተቻለም፦ { $error }
+calendar-sets = የቀን መቁጠሪያ ስብስቦች
+calendar-set-add = የሚታዩትን ቀን መቁጠሪያዎች እንደ ስብስብ አስቀምጥ
+calendar-set-name = የስብስቡ ስም
+calendar-set-remove = ስብስብ አስወግድ
 calendar-local = ይህ ኮምፒውተር
 calendar-account-gone = የተወገደ መለያ
+calendar-birthdays = ልደቶች
+calendar-birthday-of = የ{ $name } ልደት
 calendar-empty-title = እስካሁን ምንም ቀን መቁጠሪያ የለም
 calendar-empty-text = የGoogle እና የMicrosoft መለያዎችዎ ቀን መቁጠሪያዎች ከተመሳሰሉ በኋላ እዚህ ይታያሉ፤ CalDAV የሚደግፉ ሌሎች አገልጋዮችም እንዲሁ።
 calendar-schedule-empty = በሚቀጥሉት ሁለት ወራት ውስጥ የታቀደ ምንም ነገር የለም።
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } አዎ፣ { $maybe } ምናልባት፣ { $no 
 calendar-organizer = አዘጋጅ
 calendar-optional = አማራጭ
 calendar-open-web = በአሳሽ ውስጥ ክፈት
+calendar-open-contact = እውቂያ ክፈት
 calendar-close = ዝጋ
 
 ## Adding, changing and deleting events.

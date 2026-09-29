@@ -3,8 +3,20 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = 邮件
 search-category-people = 联系人
+search-category-tasks = 任务
+search-category-events = 活动
 search-mail-from = 发件人：{ $sender }
 search-no-subject = （无主题）
+search-task-in = 位于 { $list }
+search-event-at = { $when } · { $place }
+search-event-in = { $when } · { $calendar }
+search-event-now = 现在
+search-event-today = 今天
+search-event-tomorrow = 明天
+search-event-in-days =
+    { $count ->
+       *[other] { $count } 天后
+    }
 search-reply-all = 全部回复
 search-copy-address = 复制地址
 search-find-mail = 查找邮件

@@ -4,10 +4,10 @@
 //! the Tasks page sends to the daemon over `in.invenia.katna.Agenda1`
 //! (`docs/ARCHITECTURE.md` §18.1). No GPUI here.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use futures_lite::{Stream, StreamExt};
-use katna_core::{AccountId, Paths};
+use katna_core::{AccountId, OAuthProvider, Paths};
 use katna_dbus::agenda::{AgendaProxy, Item, edit, task};
 use katna_dbus::zbus::Connection;
 use katna_dbus::zbus::zvariant::{OwnedValue, Value};
@@ -27,6 +27,9 @@ pub struct Column {
     pub list: TaskList,
     /// The account's address; empty for a list on this computer.
     pub account: String,
+    /// A Microsoft To Do list: To Do makes a repeating task's next one
+    /// itself, so Katna doesn't move it to its next day.
+    pub to_do: bool,
     /// Each task followed by its steps.
     pub tasks: Vec<Task>,
 }
@@ -61,11 +64,21 @@ impl Board {
 pub fn load(paths: &Paths) -> Result<Board, String> {
     let read = || -> katna_store::Result<Board> {
         let store = Store::open(paths, Mode::ReadOnly)?;
-        let addresses: HashMap<AccountId, String> = store
-            .accounts()?
-            .into_iter()
-            .map(|a| (a.id, a.address))
+        let accounts = store.accounts()?;
+        let to_do: HashSet<AccountId> = accounts
+            .iter()
+            .filter(|a| {
+                store
+                    .account_settings(a.id)
+                    .ok()
+                    .flatten()
+                    .and_then(|s| s.oauth)
+                    == Some(OAuthProvider::Microsoft)
+            })
+            .map(|a| a.id)
             .collect();
+        let addresses: HashMap<AccountId, String> =
+            accounts.into_iter().map(|a| (a.id, a.address)).collect();
         let mut columns = Vec::new();
         for list in store.task_lists()? {
             let tasks = store.tasks_in(list.id)?;
@@ -74,6 +87,7 @@ pub fn load(paths: &Paths) -> Result<Board, String> {
                 .and_then(|a| addresses.get(&a).cloned())
                 .unwrap_or_default();
             columns.push(Column {
+                to_do: list.account.is_some_and(|a| to_do.contains(&a)),
                 list,
                 account,
                 tasks,
@@ -170,6 +184,9 @@ pub enum TaskCommand {
         steps: Vec<Task>,
     },
     Move(i64, i64),
+    /// Adds a task ([`TaskCommand::Add`]), then gives it these fields: what
+    /// typed quick add found beyond a due day.
+    AddThen(Box<TaskCommand>, TaskEdit),
     /// Adds a list to an account, or to this computer.
     AddList(Option<AccountId>, String),
     RenameList(i64, String),
@@ -183,6 +200,18 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
         .map_err(|err| describe(&err))?;
     let row = |id: String| id.strip_prefix('t').and_then(|n| n.parse::<i64>().ok());
     let result = match command {
+        TaskCommand::AddThen(add, fields) => {
+            let id = Box::pin(send(connection, add)).await?;
+            if let Some(id) = id
+                && *fields != TaskEdit::default()
+            {
+                agenda
+                    .edit_task(&wire_id(id), fields.item())
+                    .await
+                    .map_err(|err| describe(&err))?;
+            }
+            return Ok(id);
+        }
         TaskCommand::Add {
             list,
             parent,

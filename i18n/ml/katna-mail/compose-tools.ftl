@@ -103,6 +103,7 @@ compose-tool-remove-link = ലിങ്ക് നീക്കം ചെയ്യ
 ## More options
 
 compose-tool-full-screen = ഡിഫോൾട്ടായി പൂർണ്ണ സ്ക്രീൻ
+compose-tool-video-call = വീഡിയോ കോൾ ചേർക്കുക
 compose-tool-label = ലേബൽ
 compose-tool-label-coming = അയച്ച മെയിലിലെ ലേബലുകൾ ഉടൻ വരുന്നു. സന്ദേശം അയച്ചശേഷം “അയച്ചവ” എന്നതിൽ അതിന് ലേബൽ നൽകുക.
 compose-tool-plain-mode = പ്ലെയിൻ ടെക്സ്റ്റ് മോഡ്

@@ -63,7 +63,8 @@ Options:
   --compose        Start a new message
   --inbox          Show the Inbox
   --page PAGE      Show a page of the window: mail, calendar, contacts,
-                   tasks or notes
+                   tasks or notes; calendar:YYYY-MM-DD shows that day,
+                   calendar:YYYY-MM-DD:new starts an event on it
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all

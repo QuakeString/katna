@@ -7,32 +7,58 @@ calendar-today-tip = Go to today
 calendar-view-day = Day
 calendar-view-week = Week
 calendar-view-month = Month
+calendar-view-year = Year
 calendar-view-schedule = Schedule
+# The custom view, as many days as chosen in Options.
+calendar-view-days = { $count } days
 # The gear at the right of the calendar bar, and its menu.
 calendar-options = Options
 calendar-density = Density
 calendar-density-responsive = Responsive to your screen
 calendar-density-comfortable = Comfortable
 calendar-density-compact = Compact
+# How many days the custom view shows: a row of numbers.
+calendar-custom-days = Custom view
 calendar-second-zone = Second time zone
 calendar-zone-none = None
 # A time zone to choose. $zone: its city ("New York"), $offset: "GMT+5:30".
 calendar-zone = { $zone } ({ $offset })
+# Opens a new message listing the free times of the next working days.
+calendar-share-free = Share free times
+calendar-free-subject = Times I'm free
+# $zone: "GMT+5:30".
+calendar-free-intro = Here are some times I'm free ({ $zone }):
+# $weekday: "Wednesday", $date: "30 Sep", $times: ranges, separated by commas.
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = I have no free time in the next few working days.
 calendar-previous-day = Previous day
 calendar-next-day = Next day
 calendar-previous-week = Previous week
 calendar-next-week = Next week
 calendar-previous-month = Previous month
 calendar-next-month = Next month
+calendar-previous-year = Previous year
+calendar-next-year = Next year
 calendar-previous-period = Earlier
 calendar-next-period = Later
 # The title when the days shown cross two months: "September – October 2026".
 calendar-title-months = { $first } – { $last }
 calendar-loading = Loading…
 calendar-read-failed = The calendar could not be read: { $error }
+# Named groups of calendars in the side column ("Work", "Personal"): a
+# click shows only a set's calendars.
+calendar-sets = Calendar sets
+calendar-set-add = Save the calendars on show as a set
+calendar-set-name = Name of the set
+calendar-set-remove = Remove set
 # Calendars kept on this computer, without an account.
 calendar-local = On this computer
 calendar-account-gone = Removed account
+# The calendar of saved contacts' birthdays, made on this computer.
+calendar-birthdays = Birthdays
+# A saved contact's birthday on the Calendar: "Asha Rao's birthday".
+calendar-birthday-of = { $name }'s birthday
 calendar-empty-title = No calendars yet
 calendar-empty-text = Katna shows the calendars of your Google and Microsoft accounts here once they are synced, and those of other servers that offer CalDAV.
 calendar-schedule-empty = Nothing planned for the next two months.
@@ -65,6 +91,7 @@ calendar-guest-answers = { $yes } yes, { $maybe } maybe, { $no } no, { $waiting 
 calendar-organizer = Organizer
 calendar-optional = Optional
 calendar-open-web = Open in the browser
+calendar-open-contact = Open contact
 calendar-close = Close
 
 ## Adding, changing and deleting events.

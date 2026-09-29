@@ -7,20 +7,48 @@ calendar-today-tip = Pergi ke hari ini
 calendar-view-day = Hari
 calendar-view-week = Minggu
 calendar-view-month = Bulan
+calendar-view-year = Tahun
 calendar-view-schedule = Jadual
+calendar-view-days =
+    { $count ->
+       *[other] { $count } hari
+    }
+calendar-options = Pilihan
+calendar-density = Ketumpatan
+calendar-density-responsive = Responsif kepada skrin anda
+calendar-density-comfortable = Selesa
+calendar-density-compact = Padat
+calendar-custom-days = Paparan tersuai
+calendar-second-zone = Zon waktu kedua
+calendar-zone-none = Tiada
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Kongsi masa terluang
+calendar-free-subject = Masa saya terluang
+calendar-free-intro = Berikut ialah beberapa masa saya terluang ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Saya tiada masa terluang dalam beberapa hari bekerja yang akan datang.
 calendar-previous-day = Hari sebelumnya
 calendar-next-day = Hari seterusnya
 calendar-previous-week = Minggu sebelumnya
 calendar-next-week = Minggu seterusnya
 calendar-previous-month = Bulan sebelumnya
 calendar-next-month = Bulan seterusnya
+calendar-previous-year = Tahun sebelumnya
+calendar-next-year = Tahun seterusnya
 calendar-previous-period = Lebih awal
 calendar-next-period = Lebih lewat
 calendar-title-months = { $first } – { $last }
 calendar-loading = Memuatkan…
 calendar-read-failed = Kalendar tidak dapat dibaca: { $error }
+calendar-sets = Set kalendar
+calendar-set-add = Simpan kalendar yang dipaparkan sebagai set
+calendar-set-name = Nama set
+calendar-set-remove = Alih keluar set
 calendar-local = Pada komputer ini
 calendar-account-gone = Akaun yang dialih keluar
+calendar-birthdays = Hari lahir
+calendar-birthday-of = Hari lahir { $name }
 calendar-empty-title = Belum ada kalendar
 calendar-empty-text = Katna memaparkan kalendar akaun Google dan Microsoft anda di sini setelah disegerakkan, serta kalendar daripada pelayan lain yang menawarkan CalDAV.
 calendar-schedule-empty = Tiada rancangan untuk dua bulan akan datang.
@@ -45,6 +73,7 @@ calendar-guest-answers = { $yes } ya, { $maybe } mungkin, { $no } tidak, { $wait
 calendar-organizer = Penganjur
 calendar-optional = Tidak wajib
 calendar-open-web = Buka dalam pelayar
+calendar-open-contact = Buka kenalan
 calendar-close = Tutup
 
 ## Adding, changing and deleting events.

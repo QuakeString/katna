@@ -7,20 +7,49 @@ calendar-today-tip = Gaan na vandag
 calendar-view-day = Dag
 calendar-view-week = Week
 calendar-view-month = Maand
+calendar-view-year = Jaar
 calendar-view-schedule = Skedule
+calendar-view-days =
+    { $count ->
+        [one] { $count } dag
+       *[other] { $count } dae
+    }
+calendar-options = Opsies
+calendar-density = Digtheid
+calendar-density-responsive = Reageer op jou skerm
+calendar-density-comfortable = Gemaklik
+calendar-density-compact = Kompak
+calendar-custom-days = Pasgemaakte aansig
+calendar-second-zone = Tweede tydsone
+calendar-zone-none = Geen
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Deel vrye tye
+calendar-free-subject = Tye wanneer ek vry is
+calendar-free-intro = Hier is 'n paar tye wanneer ek vry is ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Ek het nie vrye tyd in die volgende paar werksdae nie.
 calendar-previous-day = Vorige dag
 calendar-next-day = Volgende dag
 calendar-previous-week = Vorige week
 calendar-next-week = Volgende week
 calendar-previous-month = Vorige maand
 calendar-next-month = Volgende maand
+calendar-previous-year = Vorige jaar
+calendar-next-year = Volgende jaar
 calendar-previous-period = Vroeër
 calendar-next-period = Later
 calendar-title-months = { $first } – { $last }
 calendar-loading = Laai tans…
 calendar-read-failed = Die kalender kon nie gelees word nie: { $error }
+calendar-sets = Kalenderstelle
+calendar-set-add = Stoor die kalenders wat gewys word as ’n stel
+calendar-set-name = Naam van die stel
+calendar-set-remove = Verwyder stel
 calendar-local = Hierdie rekenaar
 calendar-account-gone = Verwyderde rekening
+calendar-birthdays = Verjaardae
+calendar-birthday-of = { $name } se verjaardag
 calendar-empty-title = Nog geen kalenders nie
 calendar-empty-text = Katna wys hier die kalenders van jou Google- en Microsoft-rekeninge sodra hulle gesinchroniseer is, en dié van ander bedieners wat CalDAV aanbied.
 calendar-schedule-empty = Niks beplan vir die volgende twee maande nie.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } miskien, { $no } nee, { $waitin
 calendar-organizer = Organiseerder
 calendar-optional = Opsioneel
 calendar-open-web = Maak in die blaaier oop
+calendar-open-contact = Maak kontak oop
 calendar-close = Maak toe
 
 ## Adding, changing and deleting events.

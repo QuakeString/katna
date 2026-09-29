@@ -7,20 +7,48 @@ calendar-today-tip = ယနေ့သို့ သွားရန်
 calendar-view-day = ရက်
 calendar-view-week = အပတ်
 calendar-view-month = လ
+calendar-view-year = နှစ်
 calendar-view-schedule = အချိန်ဇယား
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ရက်
+    }
+calendar-options = ရွေးချယ်စရာများ
+calendar-density = သိပ်သည်းဆ
+calendar-density-responsive = သင့်ဖန်သားပြင်နှင့် လိုက်လျောညီထွေ
+calendar-density-comfortable = သက်တောင့်သက်သာ
+calendar-density-compact = ကျစ်လစ်
+calendar-custom-days = စိတ်ကြိုက် မြင်ကွင်း
+calendar-second-zone = ဒုတိယ အချိန်ဇုန်
+calendar-zone-none = မရှိ
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = အားလပ်ချိန်များ မျှဝေရန်
+calendar-free-subject = ကျွန်ုပ်အားသောအချိန်များ
+calendar-free-intro = ကျွန်ုပ် အားသောအချိန်အချို့ ဤသည် ({ $zone })။
+calendar-free-day = { $weekday } { $date }။ { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = လာမည့် အလုပ်ရက်အနည်းငယ်တွင် ကျွန်ုပ်အားလပ်ချိန် မရှိပါ။
 calendar-previous-day = ယခင်ရက်
 calendar-next-day = နောက်ရက်
 calendar-previous-week = ယခင်အပတ်
 calendar-next-week = နောက်အပတ်
 calendar-previous-month = ယခင်လ
 calendar-next-month = နောက်လ
+calendar-previous-year = ယခင်နှစ်
+calendar-next-year = နောက်နှစ်
 calendar-previous-period = ယခင်
 calendar-next-period = နောက်
 calendar-title-months = { $first } – { $last }
 calendar-loading = ဖွင့်နေသည်…
 calendar-read-failed = ပြက္ခဒိန်ကို ဖတ်၍မရပါ- { $error }
+calendar-sets = ပြက္ခဒိန် အစုများ
+calendar-set-add = ပြသထားသော ပြက္ခဒိန်များကို အစုအဖြစ် သိမ်းရန်
+calendar-set-name = အစု၏ အမည်
+calendar-set-remove = အစုကို ဖယ်ရှားရန်
 calendar-local = ဤကွန်ပျူတာ
 calendar-account-gone = ဖယ်ရှားထားသော အကောင့်
+calendar-birthdays = မွေးနေ့များ
+calendar-birthday-of = { $name } ၏ မွေးနေ့
 calendar-empty-title = ပြက္ခဒိန် မရှိသေးပါ
 calendar-empty-text = သင်၏ Google နှင့် Microsoft အကောင့်များ၏ ပြက္ခဒိန်များကို ထပ်တူပြုပြီးသည်နှင့် ဤနေရာတွင် ပြပါမည်။ CalDAV ပံ့ပိုးသော အခြားဆာဗာများ၏ ပြက္ခဒိန်များလည်း ပါဝင်ပါသည်။
 calendar-schedule-empty = လာမည့် ၂ လအတွင်း စီစဉ်ထားသည် မရှိပါ။
@@ -45,6 +73,7 @@ calendar-guest-answers = ဟုတ်ကဲ့ { $yes }၊ ဖြစ်နို
 calendar-organizer = စီစဉ်သူ
 calendar-optional = ရွေးချယ်နိုင်သည်
 calendar-open-web = ဘရောက်ဇာတွင် ဖွင့်ရန်
+calendar-open-contact = အဆက်အသွယ် ဖွင့်ရန်
 calendar-close = ပိတ်ရန်
 
 ## Adding, changing and deleting events.

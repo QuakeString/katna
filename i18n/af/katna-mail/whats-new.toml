@@ -1377,3 +1377,86 @@ title = "Voeg duplikate saam, voer kontakte in en uit"
 text = """
 Kontakte het nou Regstel en bestuur: Voeg saam en regstel vind mense wat twee keer gestoor is (dieselfde naam of foonnommer) en voeg hulle met een klik saam, met Ontdoen. Voer in bring mense in vanaf ’n vCard-lêer en laat diegene weg wat reeds gestoor is, en Voer uit stoor almal, of een etiket, as ’n vCard-lêer.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Verjaardae in die kalender, kontakte as QR-kodes"
+text = """
+Jou kontakte se verjaardae verskyn nou in die Kalender, in ’n Verjaardae-kalender wat jy kan afmerk. ’n Kontak se bladsy kan hulle as ’n QR-kode wys wat ’n foon se kamera stoor, en hulle druk; Druk onder Regstel en bestuur druk almal wat gewys word. Invoer lees nou ook CSV-lêers van Google Kontakte en Outlook, en KRunner en GNOME-soektog vind jou gestoorde kontakte.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kalenderdigtheid en 'n tweede tydsone"
+text = """
+Die Opsies-knoppie in Kalender bepaal hoe hoog die ure is (Reageer op jou skerm, Gemaklik of Kompak) en voeg 'n tweede tydsone langs joune by, vir die mense wat jy oorsee ontmoet.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Begin ’n video-oproep vanuit ’n e-pos"
+text = """
+Regsklik op ’n gesprek, of maak ⋮ oop, en kies Begin ’n video-oproep: die oproep maak oop, met ’n nuwe e-pos met sy skakel aan almal in die gesprek. Gmail-rekeninge gebruik Google Meet; ander kry ’n Jitsi Meet-kamer. E-pos met ’n Meet-, Teams-, Zoom-, Webex-, Jitsi-, WhatsApp- of Telegram-oproepskakel wys nou ’n Sluit aan-knoppie.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Maak 'n kontrolelysreël 'n taak"
+text = """
+Plaas die wyser op 'n kontrolelysreël in 'n nota en kies Maak dit 'n taak: die reël gaan na jou take. Die Nota-skyfie op die Take-bladsy maak die nota weer oop.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Die paneel waarin jy is, val op"
+text = """
+Langs die lys behou net die paneel wat die sleutels het sy skaduwee; die lys, die gesprek of die kontakpaneel wat jy nie gebruik nie, sak terug met 'n vaagker rand, en die verandering volg jou sag terwyl jy klik.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Taakherinnerings en herhalings"
+text = """
+Maak 'n taak oop en kies Herinner my: op die tydstip, 'n uur of 'n dag vooraf. Die herinnering verskyn selfs wanneer Katna toe is, met Merk as klaar en Sluimer. As jy 'n herhalende taak afmerk, kom dit nou op sy volgende dag terug.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Vind take vanaf die werkskerm"
+text = """
+Tik ’n paar woorde van ’n taak in KRunner of GNOME se soektog, en dit verskyn onder Take. Druk Enter en Katna maak dit oop, gereed om te wysig.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Voeg geleenthede en take vanaf die werkskermhorlosie by"
+text = """
+Regsklik in Katna Digital Clock op 'n dag in die maand om 'n taak of 'n
+geleentheid vir daardie dag by te voeg; die geleentheid maak in Katna se
+Kalender oop. As jy op een van jou geleenthede klik, maak die Kalender
+op sy dag oop.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Tik 'n geleentheid op een reël"
+text = """
+Tik “Middagete met Anita Vrydag 13:00 by Cafe Mocha” of
+“Staanvergadering elke werksdag 9:30” as die titel van 'n nuwe
+geleentheid, en Kalender vul die dag, die tyd, die herhaling en die plek
+in terwyl jy tik.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Sien die hele jaar"
+text = """
+Kalender het 'n Jaar-aansig: al twaalf maande gelyk, met 'n kolletjie
+onder die dae wat geleenthede het. Druk Y en klik op 'n dag om dit oop
+te maak.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Deel jou vrye tye"
+text = """
+Deel vrye tye in Kalender se opsies begin 'n boodskap wat lys wanneer jy
+in die volgende werksdae vry is, gereed om aan enigiemand te stuur.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Kalenderstelle"
+text = """
+Stoor die kalenders wat jy wys as ’n stel, soos “Werk” of “Gesin”, met
++ langs Kalenderstelle. Een klik op ’n stel wys sy kalenders en
+versteek die res.
+"""

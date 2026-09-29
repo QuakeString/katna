@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See the whole year"
+text = """
+Calendar has a Year view: all twelve months at once, with a dot under
+the days that have events. Press Y, and click a day to open it.
+"""

@@ -34,6 +34,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Siku nzima
 notify-event-join = Jiunge
 notify-event-snooze = Ahirisha dakika 5
+notify-task-done = Weka alama kuwa imekamilika
 
 ## Its buttons
 

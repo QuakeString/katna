@@ -57,6 +57,7 @@ bring in 850 more of their own. Each keeps its own license.
 | [levenshtein_automata](https://github.com/tantivy-search/levenshtein-automata) 0.2.1 | Paul Masurel | MIT | Creates Levenshtein Automata in an efficient manner. |
 | [mail-parser](https://github.com/stalwartlabs/mail-parser) 0.11.9 | Stalwart Labs | Apache-2.0 OR MIT | Fast and robust e-mail parsing library for Rust |
 | [oo7](https://github.com/linux-credentials/oo7) 0.6.0 | Bilal Elmoussaoui, Maximiliano Sandoval, Sophie Herold | MIT | James Bond went on a new mission and this time as a Secret Service provider |
+| [qrcodegen](https://github.com/nayuki/QR-Code-generator) 1.8.0 | Project Nayuki | MIT | High-quality QR Code generator library |
 | [quick-xml](https://github.com/tafia/quick-xml) 0.41.0 | tafia | MIT | High performance xml reader and writer |
 | [resvg](https://github.com/linebender/resvg) 0.46.0 | linebender | Apache-2.0 OR MIT | An SVG rendering library. |
 | [ring](https://github.com/briansmith/ring) 0.17.14 | briansmith | Apache-2.0 AND ISC | An experiment. |

@@ -78,6 +78,10 @@ notes-meeting-actions = Hatua za kuchukua
 notes-event = Tukio
 notes-open-event = Fungua tukio
 
+## Tasks
+
+notes-make-task = Ifanye jukumu
+
 ## Colors (tooltips)
 
 notes-color-none = Bila rangi

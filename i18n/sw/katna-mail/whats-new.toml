@@ -1363,3 +1363,77 @@ text = """
 Anwani sasa zina Rekebisha na udhibiti: Unganisha na urekebishe hutafuta watu waliohifadhiwa mara mbili (jina au nambari ya simu sawa) na kuwaunganisha kwa mbofyo mmoja, pamoja na Tendua.
 Leta huingiza watu kutoka faili ya vCard, ikiwaacha wale waliohifadhiwa tayari, na Hamisha huhifadhi kila mtu, au lebo moja, kama faili ya vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Siku za kuzaliwa kwenye kalenda, anwani kama misimbo ya QR"
+text = """
+Siku za kuzaliwa za anwani zako sasa zinaonekana kwenye Kalenda, katika kalenda ya Siku za kuzaliwa unayoweza kuiondolea tiki.
+Ukurasa wa anwani unaweza kuzionyesha kama msimbo wa QR ambao kamera ya simu huhifadhi, na kuzichapisha; Chapisha chini ya Rekebisha na udhibiti huchapisha kila mtu anayeonyeshwa.
+Leta sasa husoma pia faili za CSV kutoka Anwani za Google na Outlook, na KRunner na utafutaji wa GNOME hupata anwani zako zilizohifadhiwa.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Msongamano wa Kalenda na saa za eneo la pili"
+text = """
+Kitufe cha Chaguo katika Kalenda huweka urefu wa saa (Hujirekebisha kulingana na skrini yako, Starehe au Fupi) na huongeza saa za eneo la pili kando ya zako, kwa watu unaokutana nao ughaibuni.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Anzisha simu ya video kutoka barua pepe"
+text = """
+Bofya kulia mazungumzo, au fungua ⋮, kisha uchague Anzisha simu ya video: simu hufunguka, pamoja na barua pepe mpya kwa kila mtu katika mazungumzo yenye kiungo chake. Akaunti za Gmail hutumia Google Meet; nyingine hupata chumba cha Jitsi Meet. Barua pepe zenye kiungo cha simu ya Meet, Teams, Zoom, Webex, Jitsi, WhatsApp au Telegram sasa zinaonyesha kitufe cha Jiunge.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Fanya mstari wa orodha hakiki kuwa jukumu"
+text = """
+Weka kielekezi kwenye mstari wa orodha hakiki katika dokezo, kisha uchague Ifanye jukumu: mstari huo huenda kwenye majukumu yako. Chipu yake ya Dokezo kwenye ukurasa wa Majukumu hufungua dokezo tena.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Kidirisha ulichomo kinajitokeza"
+text = """
+Kando ya orodha, ni kidirisha kinachopokea vitufe tu kinachobaki na kivuli chake; orodha, mazungumzo au paneli ya mwasiliani usiyoitumia hurudi nyuma ikiwa na ukingo hafifu zaidi, na mabadiliko hukufuata taratibu unapobofya.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Vikumbusho na marudio ya majukumu"
+text = """
+Fungua jukumu na uchague Nikumbushe: wakati huo, saa moja au siku moja kabla. Kikumbusho huonekana hata Katna ikiwa imefungwa, chenye vitufe vya Weka alama kuwa imekamilika na Ahirisha. Ukiweka alama kuwa jukumu linalojirudia limekamilika, sasa hurudi siku yake inayofuata.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Tafuta majukumu kutoka kwenye eneo-kazi"
+text = """
+Andika maneno machache ya jukumu kwenye utafutaji wa KRunner au GNOME nalo litaonekana chini ya Majukumu. Bonyeza Enter na Katna italifungua, tayari kuhaririwa.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Ongeza matukio na majukumu kutoka saa ya eneo-kazi"
+text = """
+Kwenye Saa ya Kidijitali ya Katna, bofya kulia siku katika mwezi ili kuongeza jukumu au tukio kwa siku hiyo; tukio hufunguka kwenye Kalenda ya Katna. Kubofya mojawapo ya matukio yako hufungua Kalenda kwenye siku hiyo.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Andika tukio kwa mstari mmoja"
+text = """
+Andika "Chakula cha mchana na Anita Ijumaa saa 7 mchana katika Cafe Mocha" au "Mkutano mfupi kila siku ya kazi 3:30 asubuhi" kama kichwa cha tukio jipya, na Kalenda hujaza siku, saa, marudio na mahali unapoandika.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Tazama mwaka mzima"
+text = """
+Kalenda ina mwonekano wa Mwaka: miezi yote kumi na miwili kwa pamoja, yenye nukta chini ya siku zenye matukio. Bonyeza Y, kisha ubofye siku ili kuifungua.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Shiriki nyakati zako zisizo na shughuli"
+text = """
+Shiriki nyakati zisizo na shughuli katika chaguo za Kalenda huanzisha barua inayoorodhesha nyakati ambazo huna shughuli katika siku zijazo za kazi, tayari kutumwa kwa yeyote.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Seti za kalenda"
+text = """
+Hifadhi kalenda unazoonyesha kama seti, kama “Kazi” au “Familia”, kwa + kando ya Seti za kalenda. Kubofya mara moja kwenye seti huonyesha kalenda zake na kuficha zingine.
+"""

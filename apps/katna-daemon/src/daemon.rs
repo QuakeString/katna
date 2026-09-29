@@ -43,6 +43,7 @@ use katna_sync::{
     worker::{self, Connector, Event, ImapConnector, Pop3Connector, WorkerConfig},
 };
 
+use crate::threads::{self, Threaded};
 use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
@@ -183,12 +184,12 @@ impl Status {
 
 struct Running {
     handle: worker::Handle,
-    task: smol::Task<()>,
+    task: Threaded,
 }
 
 struct Sending {
     handle: OutboxHandle,
-    task: smol::Task<()>,
+    task: Threaded,
 }
 
 /// Shared state of a running daemon.
@@ -394,18 +395,20 @@ impl Daemon {
         ))
         .detach();
         smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
-        smol::spawn(contacts::run(
-            Arc::downgrade(self),
-            self.contacts_wake.1.clone(),
-        ))
-        .detach();
-        smol::spawn(tasks::run(
-            Arc::downgrade(self),
-            self.task_sync_wake.1.clone(),
-        ))
-        .detach();
-        smol::spawn(notes::run(Arc::downgrade(self), self.notes_wake.1.clone())).detach();
-        smol::spawn(alarms::run(Arc::downgrade(self))).detach();
+        // Their database calls block too (crate::threads).
+        threads::detach(
+            "katna-contacts",
+            contacts::run(Arc::downgrade(self), self.contacts_wake.1.clone()),
+        );
+        threads::detach(
+            "katna-tasks",
+            tasks::run(Arc::downgrade(self), self.task_sync_wake.1.clone()),
+        );
+        threads::detach(
+            "katna-notes",
+            notes::run(Arc::downgrade(self), self.notes_wake.1.clone()),
+        );
+        threads::detach("katna-alarms", alarms::run(Arc::downgrade(self)));
         Ok(())
     }
 
@@ -1506,13 +1509,10 @@ impl Daemon {
         let (handle, control) = outbox::control();
         let (events, received) = async_channel::unbounded();
         let smtp = SmtpAccounts(Arc::downgrade(self));
-        let task = smol::spawn(outbox::run(
-            smtp,
-            store,
-            OutboxConfig::default(),
-            events,
-            control,
-        ));
+        let task = threads::spawn(
+            "katna-outbox",
+            outbox::run(smtp, store, OutboxConfig::default(), events, control),
+        );
         smol::spawn(self.clone().forward_sends(received)).detach();
         *self.outbox.lock().unwrap() = Some(Sending { handle, task });
         Ok(())
@@ -1644,13 +1644,17 @@ impl Daemon {
         let (events, received) = async_channel::unbounded();
         let mut config = self.config.clone();
         config.offline.days = *self.offline_days.lock().unwrap();
+        // A thread per account: its database calls block (crate::threads).
+        let name = format!("katna-sync-{id}");
         let task = match link {
-            Link::Imap(connector) => {
-                smol::spawn(worker::run(connector, store, id, config, events, control))
-            }
-            Link::Pop3(connector, keep) => smol::spawn(worker::run_pop3(
-                connector, store, id, keep, config, events, control,
-            )),
+            Link::Imap(connector) => threads::spawn(
+                &name,
+                worker::run(connector, store, id, config, events, control),
+            ),
+            Link::Pop3(connector, keep) => threads::spawn(
+                &name,
+                worker::run_pop3(connector, store, id, keep, config, events, control),
+            ),
         };
         // Ends when the worker does and drops its event sender.
         smol::spawn(self.clone().forward(id, received)).detach();
@@ -1775,9 +1779,9 @@ async fn stop(account: AccountId, running: Running) {
     wait_for(account, running.task).await;
 }
 
-async fn wait_for(account: AccountId, task: smol::Task<()>) {
+async fn wait_for(account: AccountId, task: Threaded) {
     let stopped = async {
-        task.await;
+        task.finished().await;
         true
     }
     .or(async {

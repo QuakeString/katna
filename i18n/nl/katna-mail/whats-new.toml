@@ -1422,3 +1422,86 @@ title = "Dubbele contacten samenvoegen, contacten importeren en exporteren"
 text = """
 Contacten heeft ‘Herstellen en beheren’: ‘Samenvoegen en herstellen’ vindt mensen die twee keer zijn opgeslagen (met dezelfde naam of hetzelfde telefoonnummer) en voegt ze met één klik samen, met ‘Ongedaan maken’. ‘Importeren’ haalt mensen uit een vCard-bestand en slaat wie al is opgeslagen over, en ‘Exporteren’ bewaart iedereen, of één label, als vCard-bestand.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Verjaardagen in de agenda, contacten als QR-codes"
+text = """
+De verjaardagen van je contacten verschijnen nu in de Agenda, in een agenda ‘Verjaardagen’ die je kunt uitvinken. De pagina van een contact kan het tonen als QR-code die de camera van een telefoon opslaat, en het afdrukken; ‘Afdrukken’ onder ‘Herstellen en beheren’ drukt iedereen af die je ziet. Importeren leest nu ook CSV-bestanden uit Google Contacten en Outlook, en KRunner en GNOME-zoeken vinden je opgeslagen contacten.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Dichtheid van de Agenda en een tweede tijdzone"
+text = """
+Met de knop Opties in de Agenda stel je in hoe hoog de uren zijn (Afgestemd op je scherm, Comfortabel of Compact) en voeg je naast de jouwe een tweede tijdzone toe, voor de mensen die je in het buitenland ontmoet.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Een videogesprek starten vanuit een mail"
+text = """
+Klik met de rechtermuisknop op een gesprek, of open ⋮, en kies Een videogesprek starten: het videogesprek wordt geopend, met een nieuwe mail met de link voor iedereen in het gesprek. Gmail-accounts gebruiken Google Meet; andere accounts krijgen een Jitsi Meet-ruimte. Bij mail met een link naar een gesprek via Meet, Teams, Zoom, Webex, Jitsi, WhatsApp of Telegram staat nu een knop Deelnemen.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Maak van een checklistregel een taak"
+text = """
+Zet de cursor op een checklistregel in een notitie en kies Er een taak van maken: de regel komt bij je taken. Het chipje Notitie op de pagina Taken opent de notitie weer.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Het deel waarin je zit valt op"
+text = """
+Naast de lijst houdt alleen het deel dat het toetsenbord heeft zijn schaduw; de lijst, het gesprek of het contactpaneel dat je niet gebruikt zakt weg met een vagere rand, en de verandering volgt je zacht terwijl je klikt.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Taakherinneringen en herhalingen"
+text = """
+Open een taak en kies Herinner mij: op het tijdstip zelf, een uur of een dag van tevoren. De herinnering verschijnt ook als Katna gesloten is, met Markeren als voltooid en Snoozen. Als je een terugkerende taak afvinkt, komt die nu terug op de volgende dag.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Vind taken vanaf het bureaublad"
+text = """
+Typ een paar woorden van een taak in KRunner of in de zoekfunctie van GNOME en de taak verschijnt onder Taken. Druk op Enter en Katna opent de taak, klaar om te bewerken.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Afspraken en taken toevoegen vanaf de bureaubladklok"
+text = """
+Klik in Katna Digital Clock met de rechtermuisknop op een dag in de
+maand om een taak of afspraak voor die dag toe te voegen; de afspraak
+opent in de Agenda van Katna. Klik op een van je afspraken en de Agenda
+opent op die dag.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Typ een afspraak in één regel"
+text = """
+Typ “Lunch met Anita vrijdag 13:00 bij Cafe Mocha” of “Stand-up elke
+werkdag 9:30” als titel van een nieuwe afspraak, en Agenda vult de dag,
+de tijd, de herhaling en de plaats in terwijl je typt.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Het hele jaar in één oogopslag"
+text = """
+Agenda heeft een jaarweergave: alle twaalf maanden tegelijk, met een
+stip onder de dagen met afspraken. Druk op Y en klik op een dag om die
+te openen.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Deel je vrije tijden"
+text = """
+Vrije tijden delen in de opties van Agenda start een bericht met daarin
+wanneer je de komende werkdagen vrij bent, klaar om naar iedereen te
+sturen.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Agendagroepen"
+text = """
+Sla de agenda’s die je toont op als groep, zoals "Werk" of "Gezin",
+met + naast Agendagroepen. Eén klik op een groep toont de agenda’s ervan
+en verbergt de rest.
+"""

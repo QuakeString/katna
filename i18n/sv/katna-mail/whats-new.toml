@@ -1388,3 +1388,86 @@ title = "Sammanfoga dubbletter, importera och exportera kontakter"
 text = """
 Kontakter har Åtgärda och hantera: Sammanfoga och åtgärda hittar personer som sparats två gånger (samma namn eller telefonnummer) och sammanfogar dem med ett klick, med Ångra. Importera hämtar personer från en vCard-fil och utelämnar dem som redan finns, och Exportera sparar alla, eller en etikett, som en vCard-fil.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Födelsedagar i kalendern, kontakter som QR-koder"
+text = """
+Dina kontakters födelsedagar visas nu i Kalender, i en kalender som heter Födelsedagar och som du kan bocka ur. En kontakts sida kan visa kontakten som en QR-kod som en telefons kamera sparar, och skriva ut den; Skriv ut under Åtgärda och hantera skriver ut alla som visas. Importen läser nu också CSV-filer från Google Kontakter och Outlook, och KRunner och GNOME-sökning hittar dina sparade kontakter.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kalenderns täthet och en andra tidszon"
+text = """
+Alternativknappen i Kalender styr hur höga timmarna är (Anpassas efter skärmen, Bekväm eller Kompakt) och lägger till en andra tidszon vid sidan av din egen, för de du möter utomlands.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Starta ett videosamtal från ett mejl"
+text = """
+Högerklicka på en konversation, eller öppna ⋮, och välj Starta ett videosamtal: samtalet öppnas, med ett nytt mejl med länken till alla i konversationen. Gmail-konton använder Google Meet; andra får ett Jitsi Meet-rum. Mejl med en samtalslänk till Meet, Teams, Zoom, Webex, Jitsi, WhatsApp eller Telegram visar nu en Anslut-knapp.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Gör en checklistrad till en uppgift"
+text = """
+Placera markören på en checklistrad i en anteckning och välj Gör till uppgift: raden hamnar bland dina uppgifter. Dess Anteckning-chip på sidan Uppgifter öppnar anteckningen igen.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Den ruta du är i sticker ut"
+text = """
+Bredvid listan behåller bara den ruta som har tangentbordet sin skugga; listan, konversationen eller kontaktpanelen som du inte använder sjunker tillbaka med en svagare kant, och ändringen följer dig mjukt när du klickar.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Uppgiftspåminnelser och upprepningar"
+text = """
+Öppna en uppgift och välj Påminn mig: när det är dags, en timme eller en dag före. Påminnelsen visas även när Katna är stängt, med Markera som klar och Snooza. När du bockar av en återkommande uppgift kommer den nu tillbaka nästa dag.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Hitta uppgifter från skrivbordet"
+text = """
+Skriv några ord ur en uppgift i KRunner eller GNOME:s sökning så visas den under Uppgifter. Tryck på Retur så öppnar Katna den, redo att redigeras.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Lägg till händelser och uppgifter från skrivbordsklockan"
+text = """
+I Katna Digital Clock högerklickar du på en dag i månaden för att lägga
+till en uppgift eller en händelse den dagen; händelsen öppnas i Katnas
+Kalender. Klickar du på en av dina händelser öppnas Kalender på den
+dagen.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Skriv en händelse på en rad"
+text = """
+Skriv ”Lunch med Anita fredag 13 på Cafe Mocha” eller ”Stand-up varje
+vardag 9:30” som titel på en ny händelse, så fyller Kalender i dag, tid,
+upprepning och plats medan du skriver.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Se hela året"
+text = """
+Kalender har en årsvy: alla tolv månaderna på en gång, med en prick
+under dagar som har händelser. Tryck på Y och klicka på en dag för att
+öppna den.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Dela dina lediga tider"
+text = """
+Dela lediga tider i Kalenders alternativ startar ett meddelande som
+listar när du är ledig de närmaste arbetsdagarna, redo att skickas till
+vem som helst.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Kalenderuppsättningar"
+text = """
+Spara kalendrarna du visar som en uppsättning, till exempel ”Arbete”
+eller ”Familj”, med + bredvid Kalenderuppsättningar. Ett klick på en
+uppsättning visar dess kalendrar och döljer resten.
+"""

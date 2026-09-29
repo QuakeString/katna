@@ -7,20 +7,49 @@ calendar-today-tip = අදට යන්න
 calendar-view-day = දිනය
 calendar-view-week = සතිය
 calendar-view-month = මාසය
+calendar-view-year = වසර
 calendar-view-schedule = කාලසටහන
+calendar-view-days =
+    { $count ->
+        [one] දින { $count }
+       *[other] දින { $count }
+    }
+calendar-options = විකල්ප
+calendar-density = ඝනත්වය
+calendar-density-responsive = ඔබේ තිරයට ප්‍රතිචාර දක්වයි
+calendar-density-comfortable = සුවපහසු
+calendar-density-compact = සංයුක්ත
+calendar-custom-days = අභිරුචි දසුන
+calendar-second-zone = දෙවන වේලා කලාපය
+calendar-zone-none = කිසිවක් නැත
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = නිදහස් වේලාවන් බෙදාගන්න
+calendar-free-subject = මට නිදහස් වේලාවන්
+calendar-free-intro = මා නිදහස් වේලාවන් කිහිපයක් මෙන්න ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ඉදිරි වැඩ දින කිහිපයේ මට නිදහස් වේලාවක් නැත.
 calendar-previous-day = පෙර දිනය
 calendar-next-day = ඊළඟ දිනය
 calendar-previous-week = පෙර සතිය
 calendar-next-week = ඊළඟ සතිය
 calendar-previous-month = පෙර මාසය
 calendar-next-month = ඊළඟ මාසය
+calendar-previous-year = පෙර වසර
+calendar-next-year = ඊළඟ වසර
 calendar-previous-period = කලින්
 calendar-next-period = පසුව
 calendar-title-months = { $first } – { $last }
 calendar-loading = පූරණය වෙමින්…
 calendar-read-failed = දින දර්ශනය කියවීමට නොහැකි විය: { $error }
+calendar-sets = දින දර්ශන කට්ටල
+calendar-set-add = පෙන්වන දින දර්ශන කට්ටලයක් ලෙස සුරකින්න
+calendar-set-name = කට්ටලයේ නම
+calendar-set-remove = කට්ටලය ඉවත් කරන්න
 calendar-local = මෙම පරිගණකයේ
 calendar-account-gone = ඉවත් කළ ගිණුම
+calendar-birthdays = උපන්දින
+calendar-birthday-of = { $name }ගේ උපන්දිනය
 calendar-empty-title = තවම දින දර්ශන නැත
 calendar-empty-text = ඔබේ Google සහ Microsoft ගිණුම්වල දින දර්ශන, සහ CalDAV සපයන වෙනත් සේවාදායකවල දින දර්ශන සමමුහූර්ත වූ පසු Katna ඒවා මෙහි පෙන්වයි.
 calendar-schedule-empty = ඉදිරි මාස දෙකට කිසිවක් සැලසුම් කර නැත.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } ඔව්, { $maybe } සමහරවිට, {
 calendar-organizer = සංවිධායක
 calendar-optional = විකල්ප
 calendar-open-web = බ්‍රව්සරයේ විවෘත කරන්න
+calendar-open-contact = සම්බන්ධතාව විවෘත කරන්න
 calendar-close = වසන්න
 
 ## Adding, changing and deleting events.

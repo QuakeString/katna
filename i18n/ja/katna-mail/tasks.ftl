@@ -41,6 +41,9 @@ tasks-delete = 削除
 tasks-move-to = { $list } に移動
 tasks-from-mail = メール
 tasks-open-mail = メールを開く
+tasks-from-note = メモ
+tasks-open-note = メモを開く
+tasks-note-gone = そのメモは見つかりません。
 tasks-no-subject = （件名なし）
 
 ## The details dialog
@@ -56,6 +59,12 @@ tasks-repeat-weekly = 毎週
 tasks-repeat-monthly = 毎月
 tasks-repeat-yearly = 毎年
 tasks-repeat-other = カスタム
+tasks-remind = リマインダー
+tasks-remind-off = 通知しない
+tasks-remind-on-time = その時刻に
+tasks-remind-morning = 当日 { $time }
+tasks-remind-hour-before = 1 時間前
+tasks-remind-day-before = 前日
 tasks-cancel = キャンセル
 tasks-save = 保存
 tasks-not-a-time = 「{ $text }」は時刻ではありません。例: { $example }
@@ -70,6 +79,7 @@ tasks-due-at = { $day } { $time }
 ## Notes at the bottom
 
 tasks-toast-done = タスクを完了しました
+tasks-toast-next = 完了しました。次回は { $date }
 tasks-toast-deleted = タスクを削除しました
 tasks-toast-added = { $count ->
    *[other] { $count } 件をタスクに追加しました

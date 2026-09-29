@@ -7,20 +7,49 @@ calendar-today-tip = Je zuwa yau
 calendar-view-day = Rana
 calendar-view-week = Mako
 calendar-view-month = Wata
+calendar-view-year = Shekara
 calendar-view-schedule = Jadawali
+calendar-view-days =
+    { $count ->
+        [one] rana { $count }
+       *[other] kwanaki { $count }
+    }
+calendar-options = Zaɓuka
+calendar-density = Yawa
+calendar-density-responsive = Yana daidaita da allonka
+calendar-density-comfortable = Mai sauƙi
+calendar-density-compact = Matsatsi
+calendar-custom-days = Kallon na musamman
+calendar-second-zone = Yankin lokaci na biyu
+calendar-zone-none = Babu
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Raba lokutan hutu
+calendar-free-subject = Lokutan da nake hutu
+calendar-free-intro = Ga wasu lokutan da nake hutu ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Ba ni da lokacin hutu a cikin ƙalilan na kwanakin aiki masu zuwa.
 calendar-previous-day = Ranar da ta gabata
 calendar-next-day = Ranar gobe
 calendar-previous-week = Makon da ya gabata
 calendar-next-week = Mako mai zuwa
 calendar-previous-month = Watan da ya gabata
 calendar-next-month = Wata mai zuwa
+calendar-previous-year = Shekarar da ta gabata
+calendar-next-year = Shekara mai zuwa
 calendar-previous-period = Na baya
 calendar-next-period = Na gaba
 calendar-title-months = { $first } – { $last }
 calendar-loading = Ana lodawa…
 calendar-read-failed = Ba a iya karanta kalanda ba: { $error }
+calendar-sets = Rukunin kalanda
+calendar-set-add = Ajiye kalandun da ake nunawa a matsayin rukuni
+calendar-set-name = Sunan rukunin
+calendar-set-remove = Cire rukuni
 calendar-local = Wannan kwamfutar
 calendar-account-gone = Asusun da aka cire
+calendar-birthdays = Ranakun haihuwa
+calendar-birthday-of = Ranar haihuwar { $name }
 calendar-empty-title = Babu kalanda tukuna
 calendar-empty-text = Katna yana nuna kalandar asusun Google da Microsoft naka a nan da zarar an daidaita su, tare da na sauran sabar da ke goyon bayan CalDAV.
 calendar-schedule-empty = Babu abin da aka tsara a cikin watanni biyu masu zuwa.
@@ -46,6 +75,7 @@ calendar-guest-answers = eh { $yes }, wataƙila { $maybe }, a'a { $no }, ana jir
 calendar-organizer = Mai shiryawa
 calendar-optional = Na zaɓi
 calendar-open-web = Buɗe a burauza
+calendar-open-contact = Buɗe lambar sadarwa
 calendar-close = Rufe
 
 ## Adding, changing and deleting events.

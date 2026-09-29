@@ -7,20 +7,49 @@ calendar-today-tip = رفتن به امروز
 calendar-view-day = روز
 calendar-view-week = هفته
 calendar-view-month = ماه
+calendar-view-year = سال
 calendar-view-schedule = برنامه
+calendar-view-days =
+    { $count ->
+        [one] { $count } روز
+       *[other] { $count } روز
+    }
+calendar-options = گزینه‌ها
+calendar-density = تراکم
+calendar-density-responsive = متناسب با صفحه‌نمایش شما
+calendar-density-comfortable = راحت
+calendar-density-compact = فشرده
+calendar-custom-days = نمای سفارشی
+calendar-second-zone = منطقه زمانی دوم
+calendar-zone-none = هیچ
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = هم‌رسانی زمان‌های آزاد
+calendar-free-subject = زمان‌های آزاد من
+calendar-free-intro = این چند زمان آزاد من است ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = در چند روز کاری آینده زمان آزاد ندارم.
 calendar-previous-day = روز قبل
 calendar-next-day = روز بعد
 calendar-previous-week = هفتهٔ قبل
 calendar-next-week = هفتهٔ بعد
 calendar-previous-month = ماه قبل
 calendar-next-month = ماه بعد
+calendar-previous-year = سال قبل
+calendar-next-year = سال بعد
 calendar-previous-period = قبلی
 calendar-next-period = بعدی
 calendar-title-months = { $first } – { $last }
 calendar-loading = در حال بارگیری…
 calendar-read-failed = خواندن تقویم ممکن نشد: { $error }
+calendar-sets = مجموعه‌های تقویم
+calendar-set-add = ذخیره تقویم‌های نمایش‌داده‌شده به‌عنوان مجموعه
+calendar-set-name = نام مجموعه
+calendar-set-remove = حذف مجموعه
 calendar-local = این رایانه
 calendar-account-gone = حساب حذف‌شده
+calendar-birthdays = تولدها
+calendar-birthday-of = تولد { $name }
 calendar-empty-title = هنوز تقویمی وجود ندارد
 calendar-empty-text = تقویم‌های حساب‌های Google و Microsoft شما پس از همگام‌سازی اینجا نمایش داده می‌شوند، همچنین تقویم‌های سرورهای دیگری که از CalDAV پشتیبانی می‌کنند.
 calendar-schedule-empty = برای دو ماه آینده چیزی برنامه‌ریزی نشده است.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } بله، { $maybe } شاید، { $no } خیر�
 calendar-organizer = برگزارکننده
 calendar-optional = اختیاری
 calendar-open-web = باز کردن در مرورگر
+calendar-open-contact = باز کردن مخاطب
 calendar-close = بستن
 
 ## Adding, changing and deleting events.

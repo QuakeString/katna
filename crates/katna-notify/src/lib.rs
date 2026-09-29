@@ -27,8 +27,10 @@ pub mod action {
     pub const UPDATE: &str = "update";
     /// On an event's reminder: open its video call.
     pub const JOIN: &str = "join";
-    /// On an event's reminder: remind again in a few minutes.
+    /// On an event's or a task's reminder: remind again in a few minutes.
     pub const SNOOZE: &str = "snooze";
+    /// On a task's reminder: tick the task off.
+    pub const DONE: &str = "done";
 }
 
 /// At most this many messages are listed in a grouped notification.
@@ -316,6 +318,54 @@ impl Notifier {
         self.proxy
             .notify(
                 "Katna Calendar",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                &body,
+                &actions,
+                hints,
+                0,
+            )
+            .await
+    }
+
+    /// Reminds of a task: `summary` (its title) over `lines` (the start of
+    /// its details), with Mark as done and Snooze. It stays until
+    /// dismissed, as event reminders do. Returns its ID.
+    pub async fn task_reminder(
+        &self,
+        summary: &str,
+        lines: &[String],
+        sound: bool,
+    ) -> zbus::Result<u32> {
+        let body = lines
+            .iter()
+            .map(|line| escape(&shorten(line, PREVIEW_CHARS)))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let labels = [
+            (action::OPEN, tr!("notify-open")),
+            (action::DONE, tr!("notify-task-done")),
+            (action::SNOOZE, tr!("notify-event-snooze")),
+        ];
+        let actions: Vec<&str> = labels
+            .iter()
+            .flat_map(|(key, label)| [*key, label.as_str()])
+            .collect();
+        let mut hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("x-katna.task")),
+            ("urgency", Value::U8(1)),
+            ("resident", Value::Bool(false)),
+        ]);
+        if sound {
+            hints.insert("sound-name", Value::from("alarm-clock-elapsed"));
+        } else {
+            hints.insert("suppress-sound", Value::Bool(true));
+        }
+        self.proxy
+            .notify(
+                "Katna Tasks",
                 0,
                 ids::MAIL_APP_ID,
                 summary,

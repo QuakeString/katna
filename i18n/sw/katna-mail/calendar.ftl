@@ -7,20 +7,49 @@ calendar-today-tip = Nenda leo
 calendar-view-day = Siku
 calendar-view-week = Wiki
 calendar-view-month = Mwezi
+calendar-view-year = Mwaka
 calendar-view-schedule = Ratiba
+calendar-view-days =
+    { $count ->
+        [one] siku { $count }
+       *[other] siku { $count }
+    }
+calendar-options = Chaguo
+calendar-density = Msongamano
+calendar-density-responsive = Hujirekebisha kulingana na skrini yako
+calendar-density-comfortable = Starehe
+calendar-density-compact = Fupi
+calendar-custom-days = Mwonekano maalum
+calendar-second-zone = Saa za eneo la pili
+calendar-zone-none = Hamna
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Shiriki nyakati zisizo na shughuli
+calendar-free-subject = Nyakati ambazo sina shughuli
+calendar-free-intro = Hizi ni baadhi ya nyakati ambazo sina shughuli ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Sina wakati wowote usio na shughuli katika siku chache zijazo za kazi.
 calendar-previous-day = Siku iliyotangulia
 calendar-next-day = Siku inayofuata
 calendar-previous-week = Wiki iliyotangulia
 calendar-next-week = Wiki ijayo
 calendar-previous-month = Mwezi uliotangulia
 calendar-next-month = Mwezi ujao
+calendar-previous-year = Mwaka uliotangulia
+calendar-next-year = Mwaka ujao
 calendar-previous-period = Mapema zaidi
 calendar-next-period = Baadaye zaidi
 calendar-title-months = { $first } – { $last }
 calendar-loading = Inapakia…
 calendar-read-failed = Kalenda haikuweza kusomwa: { $error }
+calendar-sets = Seti za kalenda
+calendar-set-add = Hifadhi kalenda zinazoonyeshwa kama seti
+calendar-set-name = Jina la seti
+calendar-set-remove = Ondoa seti
 calendar-local = Kompyuta hii
 calendar-account-gone = Akaunti iliyoondolewa
+calendar-birthdays = Siku za kuzaliwa
+calendar-birthday-of = Siku ya kuzaliwa ya { $name }
 calendar-empty-title = Bado hakuna kalenda
 calendar-empty-text = Katna huonyesha hapa kalenda za akaunti zako za Google na Microsoft zikishasawazishwa, pamoja na za seva nyingine zinazotumia CalDAV.
 calendar-schedule-empty = Hakuna kilichopangwa kwa miezi miwili ijayo.
@@ -46,6 +75,7 @@ calendar-guest-answers = ndiyo { $yes }, labda { $maybe }, hapana { $no }, wanas
 calendar-organizer = Mwandalizi
 calendar-optional = Hiari
 calendar-open-web = Fungua kwenye kivinjari
+calendar-open-contact = Fungua anwani
 calendar-close = Funga
 
 ## Adding, changing and deleting events.

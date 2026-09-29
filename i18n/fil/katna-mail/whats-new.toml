@@ -1470,3 +1470,86 @@ title = "Pagsamahin ang mga duplicate, mag-import at mag-export ng mga contact"
 text = """
 May Ayusin at pamahalaan na ang Mga Contact: hinahanap ng Pagsamahin at ayusin ang mga taong dalawang beses na-save (parehong pangalan o numero ng telepono) at pinagsasama sila sa isang click, may I-undo. Nagdadala ang I-import ng mga tao mula sa vCard file at hindi isinasama ang mga naka-save na, at sine-save ng I-export ang lahat, o isang label, bilang vCard file.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Mga kaarawan sa kalendaryo, mga contact bilang QR code"
+text = """
+Makikita na ngayon sa Kalendaryo ang mga kaarawan ng iyong mga contact, sa kalendaryong Mga kaarawan na maaari mong alisan ng check. Maipapakita ng pahina ng contact ang contact bilang QR code na sine-save ng camera ng telepono, at maipi-print ito; ang I-print sa ilalim ng Ayusin at pamahalaan ay nagpi-print ng lahat ng nakikita. Nababasa na rin ng pag-import ang mga CSV file mula sa Google Contacts at Outlook, at nahahanap ng KRunner at ng paghahanap ng GNOME ang iyong mga naka-save na contact.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densidad ng Kalendaryo at pangalawang time zone"
+text = """
+Itinatakda ng button na Mga opsyon sa Kalendaryo kung gaano kataas ang mga oras (Tumutugon sa iyong screen, Kumportable, o Compact) at nagdaragdag ng pangalawang time zone sa tabi ng sa iyo, para sa mga taong nakikilala mo sa ibang bansa.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Magsimula ng video call mula sa isang mail"
+text = """
+I-right-click ang isang usapan, o buksan ang ⋮, at piliin ang Magsimula ng video call: magbubukas ang call, kasama ang bagong mail na may link nito para sa lahat sa usapan. Ang mga Gmail account ay gumagamit ng Google Meet; ang iba ay nakakakuha ng Jitsi Meet room. Ang mga mail na may link ng call sa Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ay may Sumali button na ngayon.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Gawing gawain ang isang linya ng checklist"
+text = """
+Ilagay ang cursor sa isang linya ng checklist sa isang tala at piliin ang Gawing gawain: mapupunta ang linya sa iyong mga gawain. Ang chip na Tala sa pahina ng Mga Gawain ay muling nagbubukas ng tala.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Namumukod ang pane na kinaroroonan mo"
+text = """
+Sa tabi ng listahan, tanging ang pane na tumatanggap ng keyboard ang nagpapanatili ng anino nito; ang listahan, ang usapan o ang panel ng contact na hindi mo ginagamit ay umuurong na may mas mahinang gilid, at marahang sumusunod sa iyo ang pagbabago habang nagki-click ka.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Mga paalala at pag-uulit ng gawain"
+text = """
+Magbukas ng gawain at piliin ang Paalalahanan ako: sa oras mismo, isang oras o isang araw bago. Lalabas ang paalala kahit sarado ang Katna, kasama ang Markahan bilang tapos na at I-snooze. Kapag minarkahan mong tapos na ang umuulit na gawain, babalik na ito sa susunod nitong araw.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Maghanap ng mga gawain mula sa desktop"
+text = """
+Mag-type ng ilang salita ng isang gawain sa KRunner o sa paghahanap ng GNOME at lalabas ito sa ilalim ng Mga Gawain. Pindutin ang Enter at bubuksan ito ng Katna, handa nang i-edit.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Magdagdag ng mga event at gawain mula sa orasan ng desktop"
+text = """
+Sa Katna Digital Clock, i-right-click ang isang araw sa buwan para
+magdagdag ng gawain o event para sa araw na iyon; magbubukas ang event
+sa Kalendaryo ng Katna. Kapag nag-click ka sa isa sa mga event mo,
+bubukas ang Kalendaryo sa araw nito.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Mag-type ng event sa isang linya"
+text = """
+I-type ang “Lunch kasama si Anita Biyernes 1pm sa Cafe Mocha” o “Standup
+tuwing araw ng trabaho 9:30” bilang pamagat ng bagong event, at pupunan
+ng Kalendaryo ang araw, oras, pag-uulit at lugar habang nagta-type ka.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Tingnan ang buong taon"
+text = """
+May Taon na tanaw ang Kalendaryo: sabay-sabay ang labindalawang buwan,
+may tuldok sa ilalim ng mga araw na may event. Pindutin ang Y, at
+i-click ang isang araw para buksan ito.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Ibahagi ang iyong mga libreng oras"
+text = """
+Ang Ibahagi ang mga libreng oras sa mga opsyon ng Kalendaryo ay
+magsisimula ng mensaheng naglilista kung kailan ka libre sa susunod na
+mga araw ng trabaho, handang ipadala kaninuman.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Mga set ng kalendaryo"
+text = """
+I-save bilang set ang mga kalendaryong ipinapakita mo, gaya ng “Trabaho”
+o “Pamilya”, gamit ang + sa tabi ng Mga set ng kalendaryo. Isang click sa
+isang set ang magpapakita ng mga kalendaryo nito at magtatago sa iba.
+"""

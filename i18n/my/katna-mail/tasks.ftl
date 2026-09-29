@@ -41,6 +41,9 @@ tasks-delete = ဖျက်ရန်
 tasks-move-to = { $list } သို့ ရွှေ့ရန်
 tasks-from-mail = မေးလ်
 tasks-open-mail = မေးလ်ကို ဖွင့်ရန်
+tasks-from-note = မှတ်စု
+tasks-open-note = မှတ်စုကို ဖွင့်ရန်
+tasks-note-gone = ထိုမှတ်စု ဤနေရာတွင် မရှိတော့ပါ။
 tasks-no-subject = (ခေါင်းစဉ်မရှိ)
 
 ## The details dialog
@@ -56,6 +59,12 @@ tasks-repeat-weekly = အပတ်စဉ်
 tasks-repeat-monthly = လစဉ်
 tasks-repeat-yearly = နှစ်စဉ်
 tasks-repeat-other = စိတ်ကြိုက်
+tasks-remind = သတိပေးရန်
+tasks-remind-off = မသတိပေးပါနှင့်
+tasks-remind-on-time = သတ်မှတ်ချိန်တွင်
+tasks-remind-morning = ထိုနေ့ { $time }
+tasks-remind-hour-before = တစ်နာရီ အလို
+tasks-remind-day-before = တစ်ရက် အလို
 tasks-cancel = မလုပ်တော့ပါ
 tasks-save = သိမ်းရန်
 tasks-not-a-time = “{ $text }” သည် အချိန် မဟုတ်ပါ၊ ဥပမာ { $example }။
@@ -70,6 +79,7 @@ tasks-due-at = { $day }၊ { $time }
 ## Notes at the bottom
 
 tasks-toast-done = လုပ်ဆောင်စရာ ပြီးစီးပါပြီ
+tasks-toast-next = ပြီးပါပြီ။ နောက်တစ်ကြိမ်မှာ { $date }
 tasks-toast-deleted = လုပ်ဆောင်စရာ ဖျက်ပြီးပါပြီ
 tasks-toast-added = { $count ->
    *[other] လုပ်ဆောင်စရာ { $count } ခု ထည့်ပြီးပါပြီ

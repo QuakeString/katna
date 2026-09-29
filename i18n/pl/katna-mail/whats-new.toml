@@ -1412,3 +1412,87 @@ title = "Scalanie duplikatów oraz import i eksport kontaktów"
 text = """
 W Kontaktach jest teraz „Napraw i zarządzaj”: „Scal i napraw” znajduje osoby zapisane dwukrotnie (o tej samej nazwie lub tym samym numerze telefonu) i scala je jednym kliknięciem, z opcją „Cofnij”. „Importuj” wczytuje osoby z pliku vCard, pomijając te już zapisane, a „Eksportuj” zapisuje wszystkich lub jedną etykietę do pliku vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Urodziny w kalendarzu, kontakty jako kody QR"
+text = """
+Urodziny Twoich kontaktów są teraz widoczne w Kalendarzu, w kalendarzu Urodziny, który można odznaczyć. Strona kontaktu może pokazać go jako kod QR, który zapisuje aparat telefonu, oraz go wydrukować; „Drukuj” w sekcji „Napraw i zarządzaj” drukuje wszystkie widoczne osoby. Import wczytuje teraz także pliki CSV z Kontaktów Google i Outlooka, a KRunner i wyszukiwarka GNOME znajdują zapisane kontakty.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Gęstość Kalendarza i druga strefa czasowa"
+text = """
+Przycisk Opcje w Kalendarzu ustawia wysokość godzin (Dopasowana do ekranu, Wygodna lub Kompaktowa) i dodaje drugą strefę czasową obok Twojej, dla osób, które spotykasz za granicą.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Rozpocznij rozmowę wideo z wiadomości"
+text = """
+Kliknij konwersację prawym przyciskiem myszy lub otwórz ⋮ i wybierz Rozpocznij rozmowę wideo: rozmowa się otworzy, a do wszystkich w konwersacji trafi nowa wiadomość z linkiem. Konta Gmail używają Google Meet, pozostałe dostają pokój Jitsi Meet. Przy wiadomościach z linkiem do rozmowy w Meet, Teams, Zoom, Webex, Jitsi, WhatsApp lub Telegramie pojawia się teraz przycisk Dołącz.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Zamień wiersz listy kontrolnej w zadanie"
+text = """
+Ustaw kursor na wierszu listy kontrolnej w notatce i wybierz Zamień w zadanie: wiersz trafi do Twoich zadań. Jego znacznik Notatka na stronie Zadania ponownie otwiera notatkę.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Panel, w którym jesteś, się wyróżnia"
+text = """
+Obok listy tylko panel, który odbiera klawiaturę, zachowuje cień; lista, rozmowa lub panel kontaktu, z których nie korzystasz, cofa się z delikatniejszą krawędzią, a zmiana płynnie podąża za Twoim kliknięciem.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Przypomnienia o zadaniach i powtarzanie"
+text = """
+Otwórz zadanie i wybierz Przypomnij: w momencie zadania, godzinę lub dzień wcześniej. Przypomnienie pojawia się nawet przy zamkniętym Katna, z przyciskami Oznacz jako wykonane i Drzemka. Odhaczenie zadania cyklicznego przywraca je teraz w następnym terminie.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Znajdź zadania z poziomu pulpitu"
+text = """
+Wpisz kilka słów z zadania w KRunner lub w wyszukiwarce GNOME, a pojawi się ono w sekcji Zadania. Naciśnij Enter, a Katna otworzy je, gotowe do edycji.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Dodawaj wydarzenia i zadania z zegara na pulpicie"
+text = """
+W Katna Digital Clock kliknij dzień w miesiącu prawym przyciskiem myszy,
+aby dodać zadanie lub wydarzenie na ten dzień; wydarzenie otworzy się w
+Kalendarzu Katna. Kliknięcie jednego z Twoich wydarzeń otwiera Kalendarz
+na jego dniu.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Wpisz wydarzenie w jednym wierszu"
+text = """
+Wpisz „Lunch z Anitą w piątek o 13:00 w Cafe Mocha” lub „Spotkanie
+codziennie w dni robocze o 9:30” jako tytuł nowego wydarzenia, a
+Kalendarz uzupełni dzień, godzinę, powtarzanie i miejsce w trakcie
+pisania.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Zobacz cały rok"
+text = """
+Kalendarz ma widok Roku: wszystkie dwanaście miesięcy naraz, z kropką
+pod dniami, w których są wydarzenia. Naciśnij Y i kliknij dzień, aby go
+otworzyć.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Udostępnij swoje wolne terminy"
+text = """
+Udostępnij wolne terminy w opcjach Kalendarza tworzy wiadomość z listą
+terminów, w których jesteś wolny w najbliższych dniach roboczych, gotową
+do wysłania komukolwiek.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Zestawy kalendarzy"
+text = """
+Zapisz widoczne kalendarze jako zestaw, np. „Praca” lub „Rodzina”, za
+pomocą + obok Zestawy kalendarzy. Jedno kliknięcie zestawu pokazuje jego
+kalendarze i ukrywa pozostałe.
+"""

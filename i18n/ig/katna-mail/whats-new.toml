@@ -1384,3 +1384,93 @@ n'otu pịa, yana Megharịa. Bubata na-ebubata ndị si na faịlụ vCard ma
 hapụ onye ọ bụla echekwarala, Bupụ na-echekwa mmadụ niile, ma ọ bụ otu
 leebụl, dị ka faịlụ vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Ụbọchị ọmụmụ na Kalịnda, kọntaktị dị ka koodu QR"
+text = """
+Ụbọchị ọmụmụ kọntaktị gị na-egosi ugbu a na Kalịnda, na kalịnda Ụbọchị
+ọmụmụ ị nwere ike wepụ akara ya. Ibe kọntaktị nwere ike igosi kọntaktị
+ahụ dị ka koodu QR igwefoto foonu na-echekwa, ma bipụta ya; Bipụta
+n'okpuru Dozie ma jikwaa na-ebipụta onye ọ bụla e gosiri. Bubata ugbu a
+na-agụkwa faịlụ CSV sitere na Google Contacts na Outlook, KRunner na
+nchọta GNOME na-achọtakwa kọntaktị ị chekwara.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Njupụta kalịnda na mpaghara oge nke abụọ"
+text = """
+Bọtịnụ nhọrọ dị na Kalịnda na-ekpebi ogologo awa dị (Na-eso ihuenyo gị,
+Ọ dị mma ma ọ bụ Nke dị nso) ma na-agbakwunye mpaghara oge nke abụọ n'akụkụ nke gị,
+maka ndị ị na-ezute n'mba ọzọ.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Malite oku vidio site na ozi"
+text = """
+Pịa aka nri na mkparịta ụka, ma ọ bụ mepee ⋮ họrọ Malite oku vidio: oku ahụ na-
+emepe, ozi ọhụrụ nwere njikọ ya na-aga n'aka mmadụ niile nọ na mkparịta ụka ahụ.
+Akaụntụ Gmail na-eji Google Meet; ndị ọzọ na-enweta ụlọ Jitsi Meet. Ozi nwere njikọ
+oku Meet, Teams, Zoom, Webex, Jitsi, WhatsApp ma ọ bụ Telegram ugbu a na-egosi
+bọtịnụ Sonye.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Mee ahịrị ndepụta nyocha ọrụ"
+text = """
+Tinye cursor n'ahịrị ndepụta nyocha dị na ndetu wee họrọ Mee ya ọrụ: ahịrị ahụ
+na-aga na ọrụ gị. Mgbe ị pịrị Ndetu chip dị na ibe Ọrụ, ọ na-emepe ndetu ahụ ọzọ.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Pane ị nọ na ya pụtara ìhè"
+text = """
+N'akụkụ ndepụta ahụ, naanị pane nwere ndabere igodo na-edebe ndò ya; ndepụta,
+mkparịta ụka ma ọ bụ pane kọntaktị ị na-anaghị eji na-ada azụ na ọnụ ọnụ dị nro,
+mgbanwe ahụ na-esokwa gị nwayọọ mgbe ị pịrị.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Ncheta ọrụ na ọrụ na-emegharị"
+text = """
+Mepee ọrụ ma họrọ Chetara m: n'oge ahụ, otu awa ma ọ bụ otu ụbọchị tupu oge ahụ.
+Ncheta ahụ na-apụta ọbụna mgbe Katna emechiri, yana Maa ka emechara na Yigharịa.
+Ọ bụrụ na ị maa ọrụ na-emegharị ka emechara, ọ na-alọghachi n'ụbọchị ya
+na-esote.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Chọta ọrụ site na desktọọpụ"
+text = """
+Pịnye ụfọdụ okwu nke ọrụ na ọchụchọ KRunner ma ọ bụ GNOME, ọ ga-apụta n’okpuru Ọrụ.
+Pịa Enter, Katna ga-emeghe ya ka i dezie ya.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Tinye ihe omume na ọrụ site n'elekere desktọọpụ"
+text = """
+Na Katna Elekere Dijitalụ, pịa aka nri n'ụbọchị dị n'ọnwa iji tinye ọrụ ma ọ bụ ihe omume maka ụbọchị ahụ; ihe omume ahụ na-emeghe na Kalịnda Katna. Ịpị otu n'ime ihe omume gị na-emeghe Kalịnda n'ụbọchị ya.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Pịnye ihe omume n'otu ahịrị"
+text = """
+Pịnye "Nri ehihie na Anita Fraịde elekere 1 ehihie na Cafe Mocha" ma ọ bụ "Standup kwa ụbọchị ọrụ 9:30" dị ka aha ihe omume ọhụrụ, Kalịnda ga-ejupụta ụbọchị, oge, ugboro ugboro na ebe ka ị na-ede.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Hụ afọ niile"
+text = """
+Kalịnda nwere ọhụhụ Afọ: ọnwa iri na abụọ niile n'otu oge, yana ntụpọ n'okpuru ụbọchị ndị nwere ihe omume. Pịa Y, wee pịa ụbọchị ka i meghee ya.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Kesaa oge ị nwere"
+text = """
+Ịhọrọ Kesaa oge ị nwere na nhọrọ Kalịnda na-amalite ozi na-edepụta mgbe ị nwere oge n'ụbọchị ọrụ ndị na-abịa, nke dị njikere izipụ onye ọ bụla.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Otu kalịnda"
+text = """
+Chekwaa kalịnda ndị ị na-egosi dị ka otu, dị ka "Ọrụ" ma ọ bụ "Ezinụlọ", site na + dị n'akụkụ Otu kalịnda. Ịpị otu ugboro n'otu otu na-egosi kalịnda ya ma zoo ndị ọzọ.
+"""

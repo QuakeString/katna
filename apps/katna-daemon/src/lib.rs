@@ -21,6 +21,7 @@ mod on_demand;
 pub mod secrets;
 pub mod service;
 pub mod system;
+mod threads;
 mod tracking;
 pub mod translate;
 pub mod update;
@@ -404,7 +405,7 @@ fn start_indexer(paths: &Paths) -> Option<Indexer> {
 
 /// Passes `notices` on to `forward`, and wakes the indexer, updates the
 /// unread counts and has the desktop search read the addresses again when
-/// mail changed.
+/// mail or saved contacts changed.
 async fn watch_mail(
     notices: Receiver<Notice>,
     forward: Sender<Notice>,
@@ -418,6 +419,10 @@ async fn watch_mail(
                 indexer.changed();
             }
             desktop.mail_changed();
+            finder.mail_changed();
+        }
+        // Saved names are in the book too.
+        if let Notice::ContactsChanged = notice {
             finder.mail_changed();
         }
         if forward.send(notice).await.is_err() {

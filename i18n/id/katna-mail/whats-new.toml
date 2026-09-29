@@ -1420,3 +1420,86 @@ title = "Gabungkan duplikat, impor, dan ekspor kontak"
 text = """
 Kontak kini punya Perbaiki dan kelola: Gabungkan dan perbaiki menemukan orang yang tersimpan dua kali (nama atau nomor telepon yang sama) dan menggabungkannya dengan sekali klik, lengkap dengan Urungkan. Impor membawa orang dari file vCard dan melewati yang sudah tersimpan, sedangkan Ekspor menyimpan semua orang, atau satu label, sebagai file vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Ulang tahun di kalender, kontak sebagai kode QR"
+text = """
+Ulang tahun kontak Anda kini tampil di Kalender, dalam kalender Ulang tahun yang dapat Anda hapus centangnya. Halaman kontak dapat menampilkannya sebagai kode QR yang disimpan oleh kamera ponsel, dan mencetaknya; Cetak di bawah Perbaiki dan kelola mencetak semua orang yang tampil. Impor kini juga membaca file CSV dari Google Kontak dan Outlook, dan KRunner serta pencarian GNOME menemukan kontak tersimpan Anda.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kepadatan Kalender dan zona waktu kedua"
+text = """
+Tombol Opsi di Kalender mengatur setinggi apa jam ditampilkan (Responsif terhadap layar Anda, Nyaman, atau Ringkas) dan menambahkan zona waktu kedua di samping zona waktu Anda, untuk orang yang Anda temui di luar negeri.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Mulai panggilan video dari email"
+text = """
+Klik kanan percakapan, atau buka ⋮, lalu pilih Mulai panggilan video: panggilan terbuka, dan email baru berisi link-nya dikirim ke semua orang dalam percakapan. Akun Gmail menggunakan Google Meet; akun lain mendapat ruang Jitsi Meet. Email dengan link panggilan Meet, Teams, Zoom, Webex, Jitsi, WhatsApp, atau Telegram kini menampilkan tombol Gabung.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Jadikan baris daftar periksa sebuah tugas"
+text = """
+Letakkan kursor pada baris daftar periksa di sebuah catatan lalu pilih Jadikan tugas: baris itu masuk ke tugas Anda. Chip Catatan pada halaman Tugas membuka catatan itu lagi.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Panel yang sedang Anda pakai menonjol"
+text = """
+Di samping daftar, hanya panel yang menerima input keyboard yang tetap punya bayangan; daftar, percakapan, atau panel kontak yang tidak Anda pakai surut dengan tepi yang lebih samar, dan perubahannya mengikuti Anda dengan halus saat Anda mengeklik.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Pengingat tugas dan pengulangan"
+text = """
+Buka tugas dan pilih Ingatkan saya: pada waktunya, satu jam atau sehari sebelumnya. Pengingat muncul meski Katna tertutup, dengan Tandai selesai dan Tunda. Menyelesaikan tugas berulang kini memunculkannya kembali pada harinya berikutnya.
+"""
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Temukan tugas dari desktop"
+text = """
+Ketik beberapa kata dari sebuah tugas di KRunner atau pencarian GNOME, dan tugas itu muncul di bawah Tugas. Tekan Enter dan Katna membukanya, siap diedit.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Tambahkan acara dan tugas dari jam desktop"
+text = """
+Di Katna Digital Clock, klik kanan sebuah hari di bulan untuk
+menambahkan tugas atau acara pada hari itu; acara tersebut terbuka di
+Kalender Katna. Mengklik salah satu acara Anda membuka Kalender pada
+harinya.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Ketik acara dalam satu baris"
+text = """
+Ketik “Makan siang dengan Anita Jumat jam 13.00 di Cafe Mocha” atau
+“Rapat pagi setiap hari kerja jam 9.30” sebagai judul acara baru, dan
+Kalender mengisi hari, jam, pengulangan, dan tempat saat Anda mengetik.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Lihat satu tahun penuh"
+text = """
+Kalender punya tampilan Tahun: kedua belas bulan sekaligus, dengan titik
+di bawah hari yang punya acara. Tekan Y, lalu klik sebuah hari untuk
+membukanya.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Bagikan waktu luang Anda"
+text = """
+Bagikan waktu luang di opsi Kalender memulai pesan yang mencantumkan
+kapan Anda luang pada beberapa hari kerja ke depan, siap dikirim ke
+siapa saja.
+"""
+
+["2026-09-29-0952-calendar-sets"]
+title = "Set kalender"
+text = """
+Simpan kalender yang sedang ditampilkan sebagai set, seperti “Kerja”
+atau “Keluarga”, dengan + di samping Set kalender. Satu klik pada set
+menampilkan kalendernya dan menyembunyikan sisanya.
+"""

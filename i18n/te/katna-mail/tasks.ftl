@@ -42,6 +42,9 @@ tasks-delete = తొలగించండి
 tasks-move-to = { $list }కు తరలించండి
 tasks-from-mail = మెయిల్
 tasks-open-mail = మెయిల్‌ను తెరవండి
+tasks-from-note = గమనిక
+tasks-open-note = గమనికను తెరవండి
+tasks-note-gone = ఆ గమనిక ఇకపై ఇక్కడ లేదు.
 tasks-no-subject = (సబ్జెక్ట్ లేదు)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = ప్రతివారం
 tasks-repeat-monthly = ప్రతినెలా
 tasks-repeat-yearly = ప్రతి సంవత్సరం
 tasks-repeat-other = అనుకూలం
+tasks-remind = నాకు గుర్తు చేయండి
+tasks-remind-off = గుర్తు చేయవద్దు
+tasks-remind-on-time = ఆ సమయంలో
+tasks-remind-morning = ఆ రోజున, { $time }
+tasks-remind-hour-before = ఒక గంట ముందు
+tasks-remind-day-before = ఒక రోజు ముందు
 tasks-cancel = రద్దు చేయండి
 tasks-save = సేవ్ చేయండి
 tasks-not-a-time = “{ $text }” సమయం కాదు, ఉదాహరణకు { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = టాస్క్ పూర్తయింది
+tasks-toast-next = పూర్తయింది. తదుపరిది { $date } న
 tasks-toast-deleted = టాస్క్ తొలగించబడింది
 tasks-toast-added = { $count ->
     [one] టాస్క్‌లకు జోడించబడింది

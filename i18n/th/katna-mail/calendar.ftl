@@ -7,20 +7,48 @@ calendar-today-tip = ไปที่วันนี้
 calendar-view-day = วัน
 calendar-view-week = สัปดาห์
 calendar-view-month = เดือน
+calendar-view-year = ปี
 calendar-view-schedule = กำหนดการ
+calendar-view-days =
+    { $count ->
+       *[other] { $count } วัน
+    }
+calendar-options = ตัวเลือก
+calendar-density = ความหนาแน่น
+calendar-density-responsive = ปรับตามหน้าจอของคุณ
+calendar-density-comfortable = สบาย
+calendar-density-compact = กะทัดรัด
+calendar-custom-days = มุมมองกำหนดเอง
+calendar-second-zone = เขตเวลาที่สอง
+calendar-zone-none = ไม่มี
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = แชร์เวลาว่าง
+calendar-free-subject = เวลาที่ฉันว่าง
+calendar-free-intro = นี่คือเวลาที่ฉันว่าง ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ฉันไม่มีเวลาว่างในอีกสองสามวันทำการข้างหน้า
 calendar-previous-day = วันก่อนหน้า
 calendar-next-day = วันถัดไป
 calendar-previous-week = สัปดาห์ก่อนหน้า
 calendar-next-week = สัปดาห์ถัดไป
 calendar-previous-month = เดือนก่อนหน้า
 calendar-next-month = เดือนถัดไป
+calendar-previous-year = ปีก่อนหน้า
+calendar-next-year = ปีถัดไป
 calendar-previous-period = ก่อนหน้า
 calendar-next-period = ถัดไป
 calendar-title-months = { $first } – { $last }
 calendar-loading = กำลังโหลด…
 calendar-read-failed = อ่านปฏิทินไม่ได้: { $error }
+calendar-sets = ชุดปฏิทิน
+calendar-set-add = บันทึกปฏิทินที่แสดงอยู่เป็นชุด
+calendar-set-name = ชื่อชุด
+calendar-set-remove = นำชุดออก
 calendar-local = คอมพิวเตอร์เครื่องนี้
 calendar-account-gone = บัญชีที่ถูกนำออกแล้ว
+calendar-birthdays = วันเกิด
+calendar-birthday-of = วันเกิดของ { $name }
 calendar-empty-title = ยังไม่มีปฏิทิน
 calendar-empty-text = ปฏิทินของบัญชี Google และ Microsoft ของคุณจะแสดงที่นี่เมื่อซิงค์แล้ว รวมถึงปฏิทินจากเซิร์ฟเวอร์อื่นที่รองรับ CalDAV
 calendar-schedule-empty = ไม่มีกิจกรรมที่วางแผนไว้ใน 2 เดือนข้างหน้า
@@ -45,6 +73,7 @@ calendar-guest-answers = ตอบรับ { $yes }, อาจจะ { $maybe }
 calendar-organizer = ผู้จัด
 calendar-optional = ไม่บังคับ
 calendar-open-web = เปิดในเบราว์เซอร์
+calendar-open-contact = เปิดรายชื่อติดต่อ
 calendar-close = ปิด
 
 ## Adding, changing and deleting events.

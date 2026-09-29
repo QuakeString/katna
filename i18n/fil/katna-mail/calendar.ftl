@@ -7,20 +7,49 @@ calendar-today-tip = Pumunta sa ngayon
 calendar-view-day = Araw
 calendar-view-week = Linggo
 calendar-view-month = Buwan
+calendar-view-year = Taon
 calendar-view-schedule = Iskedyul
+calendar-view-days =
+    { $count ->
+        [one] { $count } araw
+       *[other] { $count } araw
+    }
+calendar-options = Mga opsyon
+calendar-density = Densidad
+calendar-density-responsive = Tumutugon sa iyong screen
+calendar-density-comfortable = Kumportable
+calendar-density-compact = Compact
+calendar-custom-days = Custom na view
+calendar-second-zone = Pangalawang time zone
+calendar-zone-none = Wala
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = Ibahagi ang mga libreng oras
+calendar-free-subject = Mga oras na libre ako
+calendar-free-intro = Narito ang ilang oras na libre ako ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = Wala akong libreng oras sa susunod na ilang araw ng trabaho.
 calendar-previous-day = Nakaraang araw
 calendar-next-day = Susunod na araw
 calendar-previous-week = Nakaraang linggo
 calendar-next-week = Susunod na linggo
 calendar-previous-month = Nakaraang buwan
 calendar-next-month = Susunod na buwan
+calendar-previous-year = Nakaraang taon
+calendar-next-year = Susunod na taon
 calendar-previous-period = Mas maaga
 calendar-next-period = Mas huli
 calendar-title-months = { $first } – { $last }
 calendar-loading = Naglo-load…
 calendar-read-failed = Hindi nabasa ang kalendaryo: { $error }
+calendar-sets = Mga set ng kalendaryo
+calendar-set-add = I-save bilang set ang mga kalendaryong nakikita
+calendar-set-name = Pangalan ng set
+calendar-set-remove = Alisin ang set
 calendar-local = Sa computer na ito
 calendar-account-gone = Inalis na account
+calendar-birthdays = Mga kaarawan
+calendar-birthday-of = Kaarawan ni { $name }
 calendar-empty-title = Wala pang kalendaryo
 calendar-empty-text = Ipinapakita rito ng Katna ang mga kalendaryo ng iyong mga Google at Microsoft account kapag na-sync na ang mga ito, pati ang sa iba pang server na may CalDAV.
 calendar-schedule-empty = Walang nakaplano sa susunod na dalawang buwan.
@@ -46,6 +75,7 @@ calendar-guest-answers = { $yes } oo, { $maybe } baka, { $no } hindi, { $waiting
 calendar-organizer = Organizer
 calendar-optional = Opsyonal
 calendar-open-web = Buksan sa browser
+calendar-open-contact = Buksan ang contact
 calendar-close = Isara
 
 ## Adding, changing and deleting events.

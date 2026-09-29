@@ -7,20 +7,53 @@ calendar-today-tip = الانتقال إلى اليوم
 calendar-view-day = يوم
 calendar-view-week = أسبوع
 calendar-view-month = شهر
+calendar-view-year = السنة
 calendar-view-schedule = جدول زمني
+calendar-view-days =
+    { $count ->
+        [zero] { $count } يوم
+        [one] يوم واحد
+        [two] يومان
+        [few] { $count } أيام
+        [many] { $count } يومًا
+       *[other] { $count } يوم
+    }
+calendar-options = خيارات
+calendar-density = الكثافة
+calendar-density-responsive = متجاوب مع شاشتك
+calendar-density-comfortable = مريحة
+calendar-density-compact = مضغوطة
+calendar-custom-days = عرض مخصص
+calendar-second-zone = المنطقة الزمنية الثانية
+calendar-zone-none = بدون
+calendar-zone = { $zone } ({ $offset })
+calendar-share-free = مشاركة الأوقات الفارغة
+calendar-free-subject = أوقاتي الفارغة
+calendar-free-intro = إليك بعض الأوقات التي أكون فيها متفرغًا ({ $zone }):
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = ليس لدي وقت فارغ في أيام العمل القليلة القادمة.
 calendar-previous-day = اليوم السابق
 calendar-next-day = اليوم التالي
 calendar-previous-week = الأسبوع السابق
 calendar-next-week = الأسبوع التالي
 calendar-previous-month = الشهر السابق
 calendar-next-month = الشهر التالي
+calendar-previous-year = السنة السابقة
+calendar-next-year = السنة التالية
 calendar-previous-period = الأقدم
 calendar-next-period = الأحدث
 calendar-title-months = { $first } – { $last }
 calendar-loading = جارٍ التحميل…
 calendar-read-failed = تعذّرت قراءة التقويم: { $error }
+calendar-sets = مجموعات التقويمات
+calendar-set-add = حفظ التقويمات المعروضة كمجموعة
+calendar-set-name = اسم المجموعة
+calendar-set-remove = إزالة المجموعة
 calendar-local = هذا الكمبيوتر
 calendar-account-gone = حساب محذوف
+calendar-birthdays = أعياد الميلاد
+calendar-birthday-of = عيد ميلاد { $name }
 calendar-empty-title = لا توجد تقاويم بعد
 calendar-empty-text = تظهر هنا تقاويم حساباتك على Google وMicrosoft بعد مزامنتها، وكذلك تقاويم الخوادم الأخرى التي تدعم CalDAV.
 calendar-schedule-empty = لا شيء مخطط له خلال الشهرين القادمين.
@@ -50,6 +83,7 @@ calendar-guest-answers = { $yes } نعم، { $maybe } ربما، { $no } لا، 
 calendar-organizer = المنظِّم
 calendar-optional = اختياري
 calendar-open-web = فتح في المتصفح
+calendar-open-contact = فتح جهة الاتصال
 calendar-close = إغلاق
 
 ## Adding, changing and deleting events.
