@@ -3317,7 +3317,13 @@ impl Render for MailWindow {
         };
         // The box gives way first, so the buttons after it keep their
         // gaps and never overlap.
-        let room = width - open_left - room_end - TOP_END_WIDTH - TOP_BAR_GAP;
+        // The agenda button before the language button, with its gap.
+        let agenda_room = if self.agenda_button_shown() {
+            agenda::AGENDA_BUTTON_WIDTH + TOP_BAR_GAP
+        } else {
+            0.0
+        };
+        let room = width - open_left - room_end - TOP_END_WIDTH - agenda_room - TOP_BAR_GAP;
         // Too narrow for both (wider than a phone, with wide window
         // buttons): the button goes rather than cover the language button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;

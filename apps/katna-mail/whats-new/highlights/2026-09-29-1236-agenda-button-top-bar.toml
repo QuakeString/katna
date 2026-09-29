@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The day's agenda, from the top bar"
+text = """
+The button that shows the day's agenda beside your mail is now on the top
+bar, next to the language button, and the mail gets the space the side
+strip took.
+"""

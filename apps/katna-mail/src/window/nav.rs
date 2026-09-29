@@ -509,6 +509,16 @@ impl MailWindow {
         // A phone has Settings in its drawer.
         let phone = self.layout.shape.phone;
         let mut end = Vec::new();
+        // The day's agenda, on the Mail page of a desktop window.
+        if self.agenda_button_shown() {
+            end.push(
+                div()
+                    .flex_none()
+                    .mr(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+                    .child(self.render_agenda_button(th, cx))
+                    .into_any_element(),
+            );
+        }
         if phone < 0.999 {
             end.push(
                 div()
