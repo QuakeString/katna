@@ -2,8 +2,9 @@
 
 //! The line under an account in a page's side list when its lists could
 //! not come: one short sentence says why, with the one click that fixes it
-//! ("Sign in again to show tasks", "Try again"), as the daemon reports
-//! each account's sync (`katna_dbus::task_state`). Each page gives its own
+//! ("Sign in again to show calendars", "Try again"), as the daemon
+//! reports each account's sync (`katna_dbus::calendar_state`,
+//! `katna_dbus::task_state`). Each page gives its own
 //! words ([`Say`]); the shape, the states and the fixes are the same on
 //! every page.
 
@@ -44,6 +45,7 @@ impl AccountStatus {
 /// The page whose accounts a line is about.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Of {
+    Calendar,
     Tasks,
 }
 
@@ -90,12 +92,22 @@ enum Fix {
 impl Of {
     fn say(self, say: Say<'_>) -> String {
         match self {
+            Self::Calendar => super::calendar::say(say),
             Self::Tasks => super::tasks_page::say(say),
+        }
+    }
+
+    /// How far the line sits in, under the account's heading.
+    fn inset(self) -> f32 {
+        match self {
+            Self::Calendar => 8.0,
+            Self::Tasks => 24.0,
         }
     }
 
     fn name(self) -> &'static str {
         match self {
+            Self::Calendar => "calendar",
             Self::Tasks => "tasks",
         }
     }
@@ -104,12 +116,14 @@ impl Of {
 impl MailWindow {
     fn account_status(&mut self, of: Of) -> &mut AccountStatus {
         match of {
+            Of::Calendar => &mut self.calendar.accounts,
             Of::Tasks => &mut self.tasks.accounts,
         }
     }
 
     fn account_status_ref(&self, of: Of) -> &AccountStatus {
         match of {
+            Of::Calendar => &self.calendar.accounts,
             Of::Tasks => &self.tasks.accounts,
         }
     }
@@ -124,6 +138,7 @@ impl MailWindow {
                 .background_executor()
                 .spawn(async move {
                     match of {
+                        Of::Calendar => daemon::calendar_status(&connection).await,
                         Of::Tasks => crate::tasks::status(&connection).await,
                     }
                 })
@@ -176,7 +191,7 @@ impl MailWindow {
                                     AddError::Other(err) => err,
                                 })
                         }
-                        _ => daemon::sync_account_now(&connection, id).await,
+                        _ => daemon::sync_now(&connection, id).await,
                     }
                 })
                 .await;
@@ -265,8 +280,8 @@ impl MailWindow {
         // A sign-in's button says it all; the others say why first.
         let text = (fix != Fix::SignIn).then_some(text);
         div()
-            .pl(px(24.0))
-            .pr(px(16.0))
+            .pl(px(of.inset()))
+            .pr(px(of.inset().min(16.0)))
             .pb(px(6.0))
             .flex()
             .flex_col()
