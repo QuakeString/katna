@@ -103,6 +103,7 @@ compose-tool-remove-link = Ta bort länk
 ## More options
 
 compose-tool-full-screen = Helskärm som standard
+compose-tool-video-call = Lägg till ett videosamtal
 compose-tool-label = Etikett
 compose-tool-label-coming = Etiketter på skickad e-post kommer snart. Sätt en etikett på meddelandet i Skickat när det har skickats.
 compose-tool-plain-mode = Oformaterad text

@@ -103,6 +103,7 @@ compose-tool-remove-link = Alih keluar pautan
 ## More options
 
 compose-tool-full-screen = Skrin penuh secara lalai
+compose-tool-video-call = Tambah panggilan video
 compose-tool-label = Label
 compose-tool-label-coming = Label pada mel yang dihantar akan datang tidak lama lagi. Labelkan mesej dalam Dihantar selepas ia dihantar.
 compose-tool-plain-mode = Mod teks biasa

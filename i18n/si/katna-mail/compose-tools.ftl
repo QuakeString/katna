@@ -103,6 +103,7 @@ compose-tool-remove-link = සබැඳිය ඉවත් කරන්න
 ## More options
 
 compose-tool-full-screen = පෙරනිමියෙන් පූර්ණ තිරය
+compose-tool-video-call = වීඩියෝ ඇමතුමක් එක් කරන්න
 compose-tool-label = ලේබලය
 compose-tool-label-coming = යවන තැපැල්වලට ලේබල ළඟදීම පැමිණේ. පණිවිඩය ගිය පසු යැවූ තුළ එයට ලේබලයක් දෙන්න.
 compose-tool-plain-mode = සරල පෙළ ප්‍රකාරය

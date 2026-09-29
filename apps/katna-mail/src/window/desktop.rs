@@ -274,10 +274,22 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
-            Request::Page(page) => match RailApp::from_key(&page) {
-                Some(app) => self.show_page(app, window, cx),
-                None => tracing::warn!(page, "unknown page"),
-            },
+            // `tasks:<id>` opens that task on the Tasks page.
+            Request::Page(page) => {
+                let (key, task) = match page.split_once(':') {
+                    Some((key, id)) => (key, id.parse::<i64>().ok()),
+                    None => (page.as_str(), None),
+                };
+                match RailApp::from_key(key) {
+                    Some(app) => {
+                        self.show_page(app, window, cx);
+                        if let (RailApp::Tasks, Some(id)) = (app, task) {
+                            self.task_open_when_read(id, window, cx);
+                        }
+                    }
+                    None => tracing::warn!(page, "unknown page"),
+                }
+            }
             Request::Action { name, message } => match name.as_str() {
                 app_action::OPEN_INBOX => {
                     if !self.run_action("katna_mail::GoToInbox", window, cx) {

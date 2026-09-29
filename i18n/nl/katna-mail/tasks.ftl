@@ -42,6 +42,9 @@ tasks-delete = Verwijderen
 tasks-move-to = Verplaatsen naar { $list }
 tasks-from-mail = E-mail
 tasks-open-mail = De e-mail openen
+tasks-from-note = Notitie
+tasks-open-note = De notitie openen
+tasks-note-gone = Die notitie is er niet meer.
 tasks-no-subject = (geen onderwerp)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = Wekelijks
 tasks-repeat-monthly = Maandelijks
 tasks-repeat-yearly = Jaarlijks
 tasks-repeat-other = Aangepast
+tasks-remind = Herinner mij
+tasks-remind-off = Niet herinneren
+tasks-remind-on-time = Op het tijdstip zelf
+tasks-remind-morning = Op de dag zelf, { $time }
+tasks-remind-hour-before = Een uur van tevoren
+tasks-remind-day-before = De dag ervoor
 tasks-cancel = Annuleren
 tasks-save = Opslaan
 tasks-not-a-time = “{ $text }” is geen tijd, bijvoorbeeld { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Taak voltooid
+tasks-toast-next = Klaar. De volgende is op { $date }
 tasks-toast-deleted = Taak verwijderd
 tasks-toast-added = { $count ->
     [one] Toegevoegd aan Taken

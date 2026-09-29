@@ -37,6 +37,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Duk rana
 notify-event-join = Shiga
 notify-event-snooze = Jinkirta na mintuna 5
+notify-task-done = Yi alama an gama
 
 ## Its buttons
 

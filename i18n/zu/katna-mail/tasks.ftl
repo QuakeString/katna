@@ -42,6 +42,9 @@ tasks-delete = Susa
 tasks-move-to = Hambisa ku-{ $list }
 tasks-from-mail = Imeyili
 tasks-open-mail = Vula imeyili
+tasks-from-note = Inothi
+tasks-open-note = Vula inothi
+tasks-note-gone = Leli nothi alisekho lapha.
 tasks-no-subject = (asikho isihloko)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = Njalo ngesonto
 tasks-repeat-monthly = Njalo ngenyanga
 tasks-repeat-yearly = Njalo ngonyaka
 tasks-repeat-other = Ngokwezifiso
+tasks-remind = Ngikhumbuze
+tasks-remind-off = Ungangikhumbuzi
+tasks-remind-on-time = Ngesikhathi
+tasks-remind-morning = Ngalolo suku, { $time }
+tasks-remind-hour-before = Ihora elilodwa ngaphambili
+tasks-remind-day-before = Usuku olulodwa ngaphambili
 tasks-cancel = Khansela
 tasks-save = Londoloza
 tasks-not-a-time = “{ $text }” akuyona isikhathi, isibonelo { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Umsebenzi uqediwe
+tasks-toast-next = Kwenziwe. Olandelayo ngomhla ka-{ $date }
 tasks-toast-deleted = Umsebenzi ususiwe
 tasks-toast-added = { $count ->
     [one] Kwengezwe Kumisebenzi

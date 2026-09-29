@@ -77,6 +77,10 @@ notes-meeting-actions = ລາຍການທີ່ຕ້ອງເຮັດ
 notes-event = ເຫດການ
 notes-open-event = ເປີດເຫດການ
 
+## Tasks
+
+notes-make-task = ເຮັດເປັນວຽກ
+
 ## Colors (tooltips)
 
 notes-color-none = ບໍ່ມີສີ

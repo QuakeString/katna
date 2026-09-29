@@ -77,6 +77,10 @@ notes-meeting-actions = Àwọn ohun tí a máa ṣe
 notes-event = Ìṣẹ̀lẹ̀
 notes-open-event = Ṣí ìṣẹ̀lẹ̀ náà
 
+## Tasks
+
+notes-make-task = Ṣe é ní iṣẹ́
+
 ## Colors (tooltips)
 
 notes-color-none = Kò sí àwọ̀

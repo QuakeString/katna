@@ -103,6 +103,7 @@ compose-tool-remove-link = Yọ ìjápọ̀ kúrò
 ## More options
 
 compose-tool-full-screen = Ojú-ìbòjú kíkún ní àtilẹ̀wá
+compose-tool-video-call = Fi ìpè fídíò kún
 compose-tool-label = Àmì
 compose-tool-label-coming = Àmì lórí lẹ́tà tí a fi ránṣẹ́ ń bọ̀ láìpẹ́. Fi àmì sí ìfiránṣẹ́ náà nínú Tí a fi ránṣẹ́ lẹ́yìn tí ó bá ti lọ.
 compose-tool-plain-mode = Ipò ọ̀rọ̀ lásán

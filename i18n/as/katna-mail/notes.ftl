@@ -78,6 +78,10 @@ notes-meeting-actions = কাৰ্য তালিকা
 notes-event = ইভেণ্ট
 notes-open-event = ইভেণ্ট খোলক
 
+## Tasks
+
+notes-make-task = কাৰ্য বনাওক
+
 ## Colors (tooltips)
 
 notes-color-none = কোনো ৰং নাই

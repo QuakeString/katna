@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Ụbọchị niile
 notify-event-join = Sonye
 notify-event-snooze = Yigharịa nkeji 5
+notify-task-done = Maa ka emechara
 
 ## Its buttons
 

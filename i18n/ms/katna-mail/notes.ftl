@@ -77,6 +77,10 @@ notes-meeting-actions = Item tindakan
 notes-event = Acara
 notes-open-event = Buka acara
 
+## Tasks
+
+notes-make-task = Jadikan tugas
+
 ## Colors (tooltips)
 
 notes-color-none = Tiada warna

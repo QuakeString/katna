@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Tüm gün
 notify-event-join = Katıl
 notify-event-snooze = 5 dk ertele
+notify-task-done = Tamamlandı olarak işaretle
 notify-open = Aç
 notify-reply-all = Tümünü yanıtla
 notify-mark-read = Okundu olarak işaretle

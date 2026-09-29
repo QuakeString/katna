@@ -34,6 +34,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = تمام روز
 notify-event-join = پیوستن
 notify-event-snooze = تعویق 5 دقیقه‌ای
+notify-task-done = علامت‌گذاری به‌عنوان انجام‌شده
 
 ## Its buttons
 

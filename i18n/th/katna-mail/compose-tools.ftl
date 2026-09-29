@@ -103,6 +103,7 @@ compose-tool-remove-link = นำลิงก์ออก
 ## More options
 
 compose-tool-full-screen = เปิดแบบเต็มหน้าจอเป็นค่าเริ่มต้น
+compose-tool-video-call = เพิ่มการประชุมทางวิดีโอ
 compose-tool-label = ป้ายกำกับ
 compose-tool-label-coming = ป้ายกำกับสำหรับอีเมลที่ส่งจะมาเร็วๆ นี้ ติดป้ายกำกับข้อความในส่งแล้วหลังจากส่งออกไป
 compose-tool-plain-mode = โหมดข้อความธรรมดา

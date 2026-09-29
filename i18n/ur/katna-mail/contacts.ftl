@@ -44,7 +44,7 @@ contacts-merged = { $count ->
 }
 contacts-import = درآمد کریں
 contacts-export = برآمد کریں
-contacts-import-title = vCard فائل سے رابطے درآمد کریں
+contacts-import-file = vCard یا CSV فائل سے رابطے درآمد کریں
 contacts-imported = { $count ->
     [one] { $count } رابطہ { $place } میں درآمد ہو گیا
    *[other] { $count } رابطے { $place } میں درآمد ہو گئے
@@ -62,6 +62,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = برآمد کرنے کے لیے کوئی رابطہ نہیں
 contacts-export-failed = رابطے برآمد نہیں ہو سکے: { $error }
+contacts-print = پرنٹ کریں
+contacts-print-title = رابطے
+contacts-print-none = پرنٹ کرنے کے لیے کوئی رابطہ نہیں
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = سالگرہ: { $day }
+contacts-print-nickname = عرفی نام: { $name }
 contacts-create = رابطہ بنائیں
 
 ## Search and the list
@@ -96,6 +102,10 @@ contacts-allow-button = اجازت دیں
 contacts-back = رابطوں پر واپس جائیں
 contacts-edit = ترمیم کریں
 contacts-delete = حذف کریں
+contacts-qr = QR کوڈ کے طور پر شیئر کریں
+contacts-qr-about = رابطہ محفوظ کرنے کے لیے فون کے کیمرے سے اسکین کریں۔
+contacts-qr-too-long = اس رابطے میں تفصیلات اتنی زیادہ ہیں کہ QR کوڈ میں نہیں سما سکتیں۔
+contacts-qr-done = ہو گیا
 contacts-deleted = { $name } حذف ہو گیا
 contacts-added = { $name } کو رابطوں میں شامل کیا گیا
 contacts-find-mail = میل

@@ -1430,3 +1430,39 @@ title = "Combina duplicados, importa y exporta contactos"
 text = """
 Contactos incluye «Corregir y administrar»: «Combinar y corregir» encuentra a las personas guardadas dos veces (con el mismo nombre o número de teléfono) y las combina con un clic, con la opción de deshacer. «Importar» añade personas desde un archivo vCard sin repetir las que ya tienes, y «Exportar» guarda a todos, o una etiqueta, en un archivo vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Cumpleaños en el calendario, contactos como códigos QR"
+text = """
+Los cumpleaños de tus contactos ahora aparecen en el Calendario, en un calendario «Cumpleaños» que puedes desmarcar. La página de un contacto puede mostrarlo como un código QR que la cámara de un teléfono guarda, e imprimirlo; «Imprimir» en «Corregir y administrar» imprime a todas las personas que se ven. Además, la importación ahora lee también archivos CSV de Google Contactos y Outlook, y KRunner y la búsqueda de GNOME encuentran tus contactos guardados.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densidad del Calendario y segunda zona horaria"
+text = """
+El botón Opciones del Calendario define la altura de las horas (Adaptable a tu pantalla, Cómoda o Compacta) y añade una segunda zona horaria junto a la tuya, para las personas con las que te reúnes en el extranjero.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Inicia una videollamada desde un correo"
+text = """
+Haz clic derecho en una conversación, o abre ⋮, y elige Iniciar una videollamada: la llamada se abre y se envía un correo nuevo con su enlace a todos los de la conversación. Las cuentas de Gmail usan Google Meet; las demás obtienen una sala de Jitsi Meet. Los correos con un enlace de llamada de Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ahora muestran un botón Unirse.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Convierte una línea de lista en una tarea"
+text = """
+Coloca el cursor en una línea de lista de una nota y elige Convertir en tarea: la línea pasa a tus tareas. Su etiqueta Nota en la página Tareas vuelve a abrir la nota.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "El panel en el que estás destaca"
+text = """
+Junto a la lista, solo el panel que recibe el teclado conserva su sombra; la lista, la conversación o el panel de contacto que no usas se hunde con un borde más tenue, y el cambio te sigue con suavidad al hacer clic.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Recordatorios y repeticiones de tareas"
+text = """
+Abre una tarea y elige Recordármelo: a la hora de la tarea, una hora o un día antes. El recordatorio aparece aunque Katna esté cerrado, con Marcar como completada y Posponer. Al marcar como completada una tarea que se repite, ahora vuelve el siguiente día que le toca.
+"""

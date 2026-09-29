@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ནང་འདྲེན།
 contacts-export = ཕྱི་ཚུད།
-contacts-import-title = vCard ཡིག་སྣོད་ལས་འབྲེལ་བ་ཚུ་ནང་འདྲེན་འབད།
+contacts-import-file = vCard ཡང་ན་ CSV ཡིག་སྣོད་ལས་འབྲེལ་བ་ཚུ་ནང་འདྲེན་འབད།
 contacts-imported = { $count ->
    *[other] { $place } ནང་འབྲེལ་བ་ { $count } ནང་འདྲེན་འབད་ཡི།
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ཕྱི་ཚུད་འབད་ཚུགས་པའི་འབྲེལ་བ་མིན་འདུག
 contacts-export-failed = འབྲེལ་བ་ཚུ་ཕྱི་ཚུད་འབད་མ་ཚུགས། { $error }
+contacts-print = པར་འདེབས།
+contacts-print-title = འབྲེལ་བ་ཚུ
+contacts-print-none = པར་འདེབས་འབད་ནིའི་འབྲེལ་བ་མིན་འདུག
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = སྐྱེས་ཚེས: { $day }
+contacts-print-nickname = མིང་ཆུང་: { $name }
 contacts-create = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = ཆོག་ཐམ་སྤྲོད།
 contacts-back = འབྲེལ་བ་ཚུ་ལུ་ལོག་འགྱོ།
 contacts-edit = ཞུན་དག་འབད།
 contacts-delete = བཏོན་གཏང་།
+contacts-qr = QR ཨང་རྟགས་སྦེ་བརྗེ་སོར་འབད།
+contacts-qr-about = འབྲེལ་བ་སྲུང་ནིའི་ཐོག་ལས་ འདི་ཁ་པར་གྱི་པར་ཆས་ཀྱིས་ཞིབ་བཤེར་འབད།
+contacts-qr-too-long = འབྲེལ་བ་འདི་ལུ་ཁ་གསལ་མང་དྲགས་ཏེ་ QR ཨང་རྟགས་ནང་མ་ཆུད།
+contacts-qr-done = ཚར།
 contacts-deleted = { $name } བཏོན་གཏང་ཡི།
 contacts-added = { $name } འབྲེལ་བ་ཚུ་ནང་ཁ་སྐོང་འབད་ཡི།
 contacts-find-mail = གློག་འཕྲིན

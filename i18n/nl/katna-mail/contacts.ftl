@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Importeren
 contacts-export = Exporteren
-contacts-import-title = Contacten importeren uit een vCard-bestand
+contacts-import-file = Contacten importeren uit een vCard- of CSV-bestand
 contacts-imported = { $count ->
     [one] { $count } contact geïmporteerd naar { $place }
    *[other] { $count } contacten geïmporteerd naar { $place }
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Geen contacten om te exporteren
 contacts-export-failed = Kan contacten niet exporteren: { $error }
+contacts-print = Afdrukken
+contacts-print-title = Contacten
+contacts-print-none = Geen contacten om af te drukken
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Verjaardag: { $day }
+contacts-print-nickname = Bijnaam: { $name }
 contacts-create = Contact maken
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = Toestaan
 contacts-back = Terug naar contacten
 contacts-edit = Bewerken
 contacts-delete = Verwijderen
+contacts-qr = Delen als QR-code
+contacts-qr-about = Scan dit met de camera van een telefoon om het contact op te slaan.
+contacts-qr-too-long = Dit contact heeft te veel gegevens voor een QR-code.
+contacts-qr-done = Klaar
 contacts-deleted = { $name } verwijderd
 contacts-added = { $name } toegevoegd aan contacten
 contacts-find-mail = E-mail

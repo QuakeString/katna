@@ -382,6 +382,7 @@ menu-snooze = ସ୍ନୁଜ କରନ୍ତୁ
 menu-unsnooze = ସ୍ନୁଜ ହଟାନ୍ତୁ
 menu-add-to-tasks = କାର୍ଯ୍ୟରେ ଯୋଗ କରନ୍ତୁ
 menu-schedule-meeting = ବୈଠକ ନିର୍ଦ୍ଧାରଣ କରନ୍ତୁ
+menu-start-call = ଭିଡିଓ କଲ ଆରମ୍ଭ କରନ୍ତୁ
 menu-add-note = ନୋଟ ଯୋଗ କରନ୍ତୁ
 menu-print-all = ସବୁ ପ୍ରିଣ୍ଟ କରନ୍ତୁ
 menu-new-window = ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ

@@ -103,6 +103,7 @@ compose-tool-remove-link = Usuń link
 ## More options
 
 compose-tool-full-screen = Domyślnie pełny ekran
+compose-tool-video-call = Dodaj rozmowę wideo
 compose-tool-label = Etykieta
 compose-tool-label-coming = Etykiety dla wysyłanej poczty pojawią się wkrótce. Po wysłaniu dodaj etykietę do wiadomości w folderze Wysłane.
 compose-tool-plain-mode = Tryb zwykłego tekstu

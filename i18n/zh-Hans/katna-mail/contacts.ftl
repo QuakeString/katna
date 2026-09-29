@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = 导入
 contacts-export = 导出
-contacts-import-title = 从 vCard 文件导入联系人
+contacts-import-file = 从 vCard 或 CSV 文件导入联系人
 contacts-imported = { $count ->
    *[other] 已将 { $count } 位联系人导入到“{ $place }”
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = 没有可导出的联系人
 contacts-export-failed = 无法导出联系人：{ $error }
+contacts-print = 打印
+contacts-print-title = 联系人
+contacts-print-none = 没有可打印的联系人
+contacts-print-typed = { $value }（{ $kind }）
+contacts-print-birthday = 生日：{ $day }
+contacts-print-nickname = 昵称：{ $name }
 contacts-create = 创建联系人
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = 允许
 contacts-back = 返回联系人
 contacts-edit = 修改
 contacts-delete = 删除
+contacts-qr = 通过二维码分享
+contacts-qr-about = 用手机摄像头扫描即可保存该联系人。
+contacts-qr-too-long = 此联系人的详细信息过多，无法放入二维码。
+contacts-qr-done = 完成
 contacts-deleted = 已删除 { $name }
 contacts-added = 已将 { $name } 添加到联系人
 contacts-find-mail = 邮件

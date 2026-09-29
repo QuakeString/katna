@@ -103,6 +103,7 @@ compose-tool-remove-link = ដកតំណចេញ
 ## More options
 
 compose-tool-full-screen = បើកជាអេក្រង់ពេញតាមលំនាំដើម
+compose-tool-video-call = បន្ថែមការហៅជាវីដេអូ
 compose-tool-label = ស្លាក
 compose-tool-label-coming = ស្លាកលើសំបុត្រដែលបានផ្ញើនឹងមកដល់ឆាប់ៗនេះ។ ដាក់ស្លាកលើសារក្នុង “បានផ្ញើ” បន្ទាប់ពីវាត្រូវបានផ្ញើចេញ។
 compose-tool-plain-mode = មុខងារអត្ថបទធម្មតា

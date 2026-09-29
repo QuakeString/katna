@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Gbé wọlé
 contacts-export = Gbé jáde
-contacts-import-title = Gbé àwọn olùbásọ̀rọ̀ wọlé láti fáìlì vCard
+contacts-import-file = Gbé àwọn olùbásọ̀rọ̀ wọlé láti fáìlì vCard tàbí CSV
 contacts-imported = { $count ->
    *[other] A gbé olùbásọ̀rọ̀ { $count } wọlé sí { $place }
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Kò sí olùbásọ̀rọ̀ láti gbé jáde
 contacts-export-failed = A kò lè gbé àwọn olùbásọ̀rọ̀ jáde: { $error }
+contacts-print = Tẹ̀jáde
+contacts-print-title = Àwọn olùbásọ̀rọ̀
+contacts-print-none = Kò sí olùbásọ̀rọ̀ láti tẹ̀jáde
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Ọjọ́ ìbí: { $day }
+contacts-print-nickname = Orúkọ ìnagijẹ: { $name }
 contacts-create = Ṣẹ̀dá olùbásọ̀rọ̀
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = Gbà láàyè
 contacts-back = Padà sí àwọn olùbásọ̀rọ̀
 contacts-edit = Ṣàtúnṣe
 contacts-delete = Pa rẹ́
+contacts-qr = Pín gẹ́gẹ́ bí kóòdù QR
+contacts-qr-about = Ṣàyẹ̀wò èyí pẹ̀lú kámẹ́rà fóònù láti fi olùbásọ̀rọ̀ pamọ́.
+contacts-qr-too-long = Olùbásọ̀rọ̀ yìí ní àwọn àlàyé tó pọ̀ jù láti wọ inú kóòdù QR.
+contacts-qr-done = Ti parí
 contacts-deleted = A pa { $name } rẹ́
 contacts-added = A fi { $name } kún àwọn olùbásọ̀rọ̀
 contacts-find-mail = Lẹ́tà

@@ -58,7 +58,7 @@ contacts-merged = { $count ->
 }
 contacts-import = استيراد
 contacts-export = تصدير
-contacts-import-title = استيراد جهات الاتصال من ملف vCard
+contacts-import-file = استيراد جهات الاتصال من ملف vCard أو CSV
 contacts-imported = { $count ->
     [zero] تم استيراد { $count } جهة اتصال إلى { $place }
     [one] تم استيراد { $count } جهة اتصال إلى { $place }
@@ -88,6 +88,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = لا توجد جهات اتصال لتصديرها
 contacts-export-failed = تعذّر تصدير جهات الاتصال: { $error }
+contacts-print = طباعة
+contacts-print-title = جهات الاتصال
+contacts-print-none = لا توجد جهات اتصال للطباعة
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = عيد الميلاد: { $day }
+contacts-print-nickname = الاسم المستعار: { $name }
 contacts-create = إنشاء جهة اتصال
 
 ## Search and the list
@@ -130,6 +136,10 @@ contacts-allow-button = السماح
 contacts-back = العودة إلى جهات الاتصال
 contacts-edit = تعديل
 contacts-delete = حذف
+contacts-qr = المشاركة كرمز QR
+contacts-qr-about = امسح هذا الرمز بكاميرا الهاتف لحفظ جهة الاتصال.
+contacts-qr-too-long = تحتوي جهة الاتصال هذه على تفاصيل أكثر من أن يتسع لها رمز QR.
+contacts-qr-done = تم
 contacts-deleted = تم حذف { $name }
 contacts-added = تمت إضافة { $name } إلى جهات الاتصال
 contacts-find-mail = البريد

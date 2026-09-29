@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Sepanjang hari
 notify-event-join = Sertai
 notify-event-snooze = Tunda 5 minit
+notify-task-done = Tandakan sebagai selesai
 notify-open = Buka
 notify-reply-all = Balas semua
 notify-mark-read = Tandai sebagai dibaca

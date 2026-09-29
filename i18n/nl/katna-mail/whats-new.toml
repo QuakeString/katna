@@ -1422,3 +1422,39 @@ title = "Dubbele contacten samenvoegen, contacten importeren en exporteren"
 text = """
 Contacten heeft ‘Herstellen en beheren’: ‘Samenvoegen en herstellen’ vindt mensen die twee keer zijn opgeslagen (met dezelfde naam of hetzelfde telefoonnummer) en voegt ze met één klik samen, met ‘Ongedaan maken’. ‘Importeren’ haalt mensen uit een vCard-bestand en slaat wie al is opgeslagen over, en ‘Exporteren’ bewaart iedereen, of één label, als vCard-bestand.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Verjaardagen in de agenda, contacten als QR-codes"
+text = """
+De verjaardagen van je contacten verschijnen nu in de Agenda, in een agenda ‘Verjaardagen’ die je kunt uitvinken. De pagina van een contact kan het tonen als QR-code die de camera van een telefoon opslaat, en het afdrukken; ‘Afdrukken’ onder ‘Herstellen en beheren’ drukt iedereen af die je ziet. Importeren leest nu ook CSV-bestanden uit Google Contacten en Outlook, en KRunner en GNOME-zoeken vinden je opgeslagen contacten.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Dichtheid van de Agenda en een tweede tijdzone"
+text = """
+Met de knop Opties in de Agenda stel je in hoe hoog de uren zijn (Afgestemd op je scherm, Comfortabel of Compact) en voeg je naast de jouwe een tweede tijdzone toe, voor de mensen die je in het buitenland ontmoet.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Een videogesprek starten vanuit een mail"
+text = """
+Klik met de rechtermuisknop op een gesprek, of open ⋮, en kies Een videogesprek starten: het videogesprek wordt geopend, met een nieuwe mail met de link voor iedereen in het gesprek. Gmail-accounts gebruiken Google Meet; andere accounts krijgen een Jitsi Meet-ruimte. Bij mail met een link naar een gesprek via Meet, Teams, Zoom, Webex, Jitsi, WhatsApp of Telegram staat nu een knop Deelnemen.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Maak van een checklistregel een taak"
+text = """
+Zet de cursor op een checklistregel in een notitie en kies Er een taak van maken: de regel komt bij je taken. Het chipje Notitie op de pagina Taken opent de notitie weer.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Het deel waarin je zit valt op"
+text = """
+Naast de lijst houdt alleen het deel dat het toetsenbord heeft zijn schaduw; de lijst, het gesprek of het contactpaneel dat je niet gebruikt zakt weg met een vagere rand, en de verandering volgt je zacht terwijl je klikt.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Taakherinneringen en herhalingen"
+text = """
+Open een taak en kies Herinner mij: op het tijdstip zelf, een uur of een dag van tevoren. De herinnering verschijnt ook als Katna gesloten is, met Markeren als voltooid en Snoozen. Als je een terugkerende taak afvinkt, komt die nu terug op de volgende dag.
+"""

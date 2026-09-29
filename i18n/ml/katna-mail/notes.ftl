@@ -78,6 +78,10 @@ notes-meeting-actions = ചെയ്യേണ്ട കാര്യങ്ങൾ
 notes-event = ഇവന്റ്
 notes-open-event = ഇവന്റ് തുറക്കുക
 
+## Tasks
+
+notes-make-task = ടാസ്‌ക് ആക്കുക
+
 ## Colors (tooltips)
 
 notes-color-none = നിറമില്ല
