@@ -549,9 +549,10 @@ impl MailWindow {
                 d.cursor_pointer()
                     .hover(move |s| s.bg(rgba(bg_hover)))
                     .child(Ripple::new(("contact-save", 0usize), rgba(th.ripple)).centered())
-                    .on_click(cx.listener(move |this, _, _, cx| {
+                    .on_click(cx.listener(move |this, _, window, cx| {
                         if this.is_saved_contact(&email) {
                             this.show_saved_contact(&email, cx);
+                            window.focus(&this.window_focus, cx);
                         } else {
                             this.add_to_contacts(&email, name.clone(), signature.clone(), cx);
                         }

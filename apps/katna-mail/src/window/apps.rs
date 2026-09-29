@@ -114,6 +114,11 @@ impl MailWindow {
         if app == App::Calendar {
             window.focus(&self.calendar.focus, cx);
         }
+        // Keys such as Ctrl+Z need focus in the page on screen, not the
+        // hidden mail list.
+        if app == App::Contacts {
+            window.focus(&self.window_focus, cx);
+        }
     }
 
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
