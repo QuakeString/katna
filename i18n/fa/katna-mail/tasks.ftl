@@ -6,6 +6,7 @@
 
 tasks-create = ایجاد
 tasks-all = همه کارها
+tasks-today = امروز
 tasks-starred = ستاره‌دار
 tasks-new-list = ایجاد فهرست جدید
 tasks-on-this-computer = روی این رایانه
@@ -21,6 +22,9 @@ tasks-title-placeholder = عنوان
 tasks-add-step = افزودن زیرکار
 tasks-empty = هنوز کاری نیست. یکی از بالا اضافه کنید.
 tasks-starred-empty = به یک کار ستاره بدهید تا اینجا دیده شود.
+tasks-today-empty = امروز کاری سررسید ندارد.
+tasks-today-date = { $weekday }، { $day }
+tasks-overdue = عقب‌افتاده
 tasks-completed = { $count ->
     [one] انجام‌شده ({ $count })
    *[other] انجام‌شده ({ $count })

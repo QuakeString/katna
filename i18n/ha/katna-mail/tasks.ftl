@@ -6,6 +6,7 @@
 
 tasks-create = Ƙirƙira
 tasks-all = Duk ayyuka
+tasks-today = Yau
 tasks-starred = Masu tauraro
 tasks-new-list = Ƙirƙiri sabon jeri
 tasks-on-this-computer = A kan wannan kwamfuta
@@ -21,6 +22,9 @@ tasks-title-placeholder = Take
 tasks-add-step = Ƙara ƙaramin aiki
 tasks-empty = Babu ayyuka tukuna. Ƙara ɗaya a sama.
 tasks-starred-empty = Sanya tauraro a kan aiki don ganinsa a nan.
+tasks-today-empty = Babu abin da ya kamata a yi yau.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Waɗanda suka wuce lokaci
 tasks-completed = { $count ->
     [one] An kammala ({ $count })
    *[other] An kammala ({ $count })

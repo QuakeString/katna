@@ -6,6 +6,7 @@
 
 tasks-create = ဖန်တီးရန်
 tasks-all = လုပ်ဆောင်စရာအားလုံး
+tasks-today = ယနေ့
 tasks-starred = ကြယ်ပွင့်ပေးထားသည်
 tasks-new-list = စာရင်းအသစ် ဖန်တီးရန်
 tasks-on-this-computer = ဤကွန်ပျူတာတွင်
@@ -21,6 +22,9 @@ tasks-title-placeholder = ခေါင်းစဉ်
 tasks-add-step = လုပ်ဆောင်စရာခွဲ ထည့်ရန်
 tasks-empty = လုပ်ဆောင်စရာ မရှိသေးပါ။ အပေါ်တွင် ထည့်ပါ။
 tasks-starred-empty = လုပ်ဆောင်စရာတစ်ခုကို ကြယ်ပွင့်ပေးပါက ဤနေရာတွင် မြင်ရမည်။
+tasks-today-empty = ယနေ့ ပြီးဆုံးရန် လုပ်ဆောင်စရာ မရှိပါ။
+tasks-today-date = { $weekday }၊ { $day }
+tasks-overdue = သတ်မှတ်ရက်ကျော်
 tasks-completed = { $count ->
    *[other] ပြီးစီးပြီး ({ $count })
 }

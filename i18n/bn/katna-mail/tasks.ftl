@@ -6,6 +6,7 @@
 
 tasks-create = তৈরি করুন
 tasks-all = সব টাস্ক
+tasks-today = আজ
 tasks-starred = তারকাচিহ্নিত
 tasks-new-list = নতুন তালিকা তৈরি করুন
 tasks-on-this-computer = এই কম্পিউটারে
@@ -21,6 +22,9 @@ tasks-title-placeholder = শিরোনাম
 tasks-add-step = সাবটাস্ক যোগ করুন
 tasks-empty = এখনও কোনো টাস্ক নেই। ওপরে একটি যোগ করুন।
 tasks-starred-empty = এখানে দেখতে কোনো টাস্কে তারকাচিহ্ন দিন।
+tasks-today-empty = আজকের জন্য কিছু নেই।
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = মেয়াদোত্তীর্ণ
 tasks-completed = { $count ->
     [one] সম্পন্ন ({ $count })
    *[other] সম্পন্ন ({ $count })

@@ -6,6 +6,7 @@
 
 tasks-create = יצירה
 tasks-all = כל המשימות
+tasks-today = היום
 tasks-starred = משימות מסומנות בכוכב
 tasks-new-list = יצירת רשימה חדשה
 tasks-on-this-computer = במחשב הזה
@@ -21,6 +22,9 @@ tasks-title-placeholder = כותרת
 tasks-add-step = הוספת תת-משימה
 tasks-empty = עדיין אין משימות. אפשר להוסיף אחת למעלה.
 tasks-starred-empty = כדי לראות משימה כאן, מסמנים אותה בכוכב.
+tasks-today-empty = אין משימות להיום.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = באיחור
 tasks-completed = { $count ->
     [one] הושלמה ({ $count })
     [two] הושלמו ({ $count })

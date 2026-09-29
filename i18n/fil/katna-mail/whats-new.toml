@@ -1328,3 +1328,12 @@ Fastmail, GMX at iba pang account, kahit nasa ibang server ang mga ito
 kaysa sa mail. Sinusubukan muna nito ang pinakamahusay na paraan ng
 bawat account at ang isa pa kapag hindi available ang paraang iyon.
 """
+
+["2026-09-29-0625-tasks-today"]
+title = "Ngayon sa Mga Gawain"
+text = """
+Ang Ngayon, sa ilalim ng Lahat ng gawain, ay nagtitipon ng mga due
+ngayon at anumang lampas na sa takda mula sa lahat ng listahan, kasama
+ang listahang kinaroroonan ng bawat isa. Ang gawaing idinagdag doon ay
+due ngayon.
+"""

@@ -6,6 +6,7 @@
 
 tasks-create = Ṣẹ̀dá
 tasks-all = Gbogbo iṣẹ́
+tasks-today = Òní
 tasks-starred = Àwọn tí a fi ìràwọ̀ sàmì sí
 tasks-new-list = Ṣẹ̀dá àtòjọ tuntun
 tasks-on-this-computer = Lórí kọ̀ǹpútà yìí
@@ -21,6 +22,9 @@ tasks-title-placeholder = Àkọlé
 tasks-add-step = Fi iṣẹ́ kékeré kún un
 tasks-empty = Kò sí iṣẹ́ kankan síbẹ̀. Fi ọ̀kan kún un lókè.
 tasks-starred-empty = Fi ìràwọ̀ sàmì sí iṣẹ́ kan láti rí i níbí.
+tasks-today-empty = Kò sí ohun tó yẹ kí a ṣe lónìí.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Tí ó ti kọjá àkókò
 tasks-completed = { $count ->
    *[other] Tí a parí ({ $count })
 }

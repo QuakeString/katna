@@ -1314,3 +1314,11 @@ und anderen Konten, auch wenn sie auf einem anderen Server liegen als
 die E-Mails. Es probiert zuerst den besten Weg jedes Kontos und einen
 anderen, wenn dieser nicht verfügbar ist.
 """
+
+["2026-09-29-0625-tasks-today"]
+title = "Heute in Aufgaben"
+text = """
+„Heute“ unter „Alle Aufgaben“ sammelt aus allen Listen, was heute fällig
+oder überfällig ist, samt der Liste, in der sich jede Aufgabe befindet.
+Eine dort hinzugefügte Aufgabe ist heute fällig.
+"""
