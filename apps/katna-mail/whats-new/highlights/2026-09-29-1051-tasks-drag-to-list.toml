@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drag a task to another list"
+text = """
+In Tasks, drag a task onto another list to move it there. Undo puts it
+back.
+"""
