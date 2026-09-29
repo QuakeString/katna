@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who }, { $subject } iletisindeki bir bağlantıya t
 notify-update-ready = Katna Mail güncellenebilir
 notify-update-ready-body = { $version } sürümü indirildi. Güncelleme onu kurar ve Katna Mail'i yeniden başlatır.
 notify-update = Güncelle
+notify-event-now = Şimdi
+notify-event-in-minutes = { $count ->
+   *[other] { $count } dakika sonra
+}
+notify-event-in-hours = { $count ->
+   *[other] { $count } saat sonra
+}
+notify-event-in-days = { $count ->
+    [1] Yarın
+   *[other] { $count } gün sonra
+}
+notify-event-all-day = Tüm gün
+notify-event-join = Katıl
+notify-event-snooze = 5 dk ertele
 notify-open = Aç
 notify-reply-all = Tümünü yanıtla
 notify-mark-read = Okundu olarak işaretle

@@ -67,6 +67,16 @@ notes-mail = メール
 notes-open-mail = メールを開く
 notes-open-note = メモを開く
 
+## Meeting notes
+
+notes-meeting-take = 会議メモを作成
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = 参加者: { $names }
+notes-meeting-notes = メモ
+notes-meeting-actions = アクション アイテム
+notes-event = 予定
+notes-open-event = 予定を開く
+
 ## Colors (tooltips)
 
 notes-color-none = 色なし

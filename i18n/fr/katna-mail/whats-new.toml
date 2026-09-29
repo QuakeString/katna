@@ -1433,3 +1433,39 @@ Une invitation reçue sur un compte sans agenda propose maintenant aussi
 Oui, Non et Peut-être : votre réponse est envoyée à l’organisateur par
 e-mail, et son agenda la note.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Notes de réunion"
+text = """
+Ouvrez un événement dans Agenda et choisissez « Prendre des notes de
+réunion » : une note portant le titre de l’événement s’ouvre, avec la
+liste des participants et un espace pour les actions à mener. La fiche
+de l’événement liste ses notes, et la pastille Événement d’une note vous
+ramène au jour concerné.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Accéder directement à une page d’un PDF"
+text = """
+Le numéro de page sous un PDF est désormais une zone de saisie : cliquez
+dessus ou appuyez sur Ctrl+G, saisissez un numéro de page et appuyez sur
+Entrée pour y accéder.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Les tâches dans le calendrier"
+text = """
+Les tâches avec une date d’échéance apparaissent désormais dans le Calendrier, à leur heure ou avec les événements de la journée entière. Cochez-les directement, cliquez pour en ouvrir une, ou faites-la glisser vers un autre jour ou une autre heure pour réserver ce créneau.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Des rappels pour vos événements"
+text = """
+Vos événements vous envoient désormais une notification de rappel, même quand Katna est fermé. « Participer » ouvre la visioconférence, et « Répéter 5 min » vous rappelle à nouveau dans cinq minutes.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Fusionner les doublons, importer et exporter des contacts"
+text = """
+Contacts propose « Corriger et gérer » : « Fusionner et corriger » repère les personnes enregistrées deux fois (même nom ou même numéro de téléphone) et les fusionne en un clic, avec « Annuler ». « Importer » ajoute des personnes depuis un fichier vCard sans reprendre celles déjà enregistrées, et « Exporter » enregistre tout le monde, ou un libellé, dans un fichier vCard.
+"""

@@ -81,3 +81,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = האימייל הזה כבר לא כאן.
 tasks-toast-list-deleted = הרשימה נמחקה
 tasks-toast-moved = הועברה אל { $list }
+tasks-toast-rescheduled = המשימה תוזמנה מחדש

@@ -79,3 +79,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = එම තැපැල් තවදුරටත් මෙහි නැත.
 tasks-toast-list-deleted = ලැයිස්තුව මකා දමන ලදී
 tasks-toast-moved = { $list } වෙත ගෙන යන ලදී
+tasks-toast-rescheduled = කාර්යය නැවත සැලසුම් කරන ලදී

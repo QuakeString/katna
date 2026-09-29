@@ -25,6 +25,45 @@ contacts-label-removed = { $name } ನಿಂದ ತೆಗೆದುಹಾಕಲ�
 contacts-label-renamed = ಲೇಬಲ್ ಹೆಸರನ್ನು { $name } ಎಂದು ಬದಲಾಯಿಸಲಾಗಿದೆ
 contacts-label-deleted = ಲೇಬಲ್ { $name } ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ
 contacts-label-no-email = ಈ ಲೇಬಲ್‌ನಲ್ಲಿರುವ ಯಾರಿಗೂ ಇಮೇಲ್ ವಿಳಾಸವಿಲ್ಲ
+contacts-manage = ಸರಿಪಡಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ
+contacts-merge = ವಿಲೀನಗೊಳಿಸಿ ಮತ್ತು ಸರಿಪಡಿಸಿ
+contacts-merge-about = { $count ->
+    [one] { $count } ಸಲಹೆ: ಒಂದೇ ವ್ಯಕ್ತಿಯಂತೆ ಕಾಣುವ ಸಂಪರ್ಕಗಳು
+   *[other] { $count } ಸಲಹೆ: ಒಂದೇ ವ್ಯಕ್ತಿಯಂತೆ ಕಾಣುವ ಸಂಪರ್ಕಗಳು
+}
+contacts-merge-none = ನಕಲುಗಳಿಲ್ಲ. ಒಂದೇ ಹೆಸರು ಅಥವಾ ಫೋನ್ ಸಂಖ್ಯೆ ಇರುವ ಸಂಪರ್ಕಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.
+contacts-merge-count = { $count ->
+    [one] { $count } ಸಂಪರ್ಕಗಳು
+   *[other] { $count } ಸಂಪರ್ಕಗಳು
+}
+contacts-merge-all = ಎಲ್ಲವನ್ನೂ ವಿಲೀನಗೊಳಿಸಿ
+contacts-merge-button = ವಿಲೀನಗೊಳಿಸಿ
+contacts-merge-dismiss = ವಜಾಗೊಳಿಸಿ
+contacts-merged = { $count ->
+    [1] ಸಂಪರ್ಕಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ
+    [one] { $count } ವಿಲೀನಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ
+   *[other] { $count } ವಿಲೀನಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ
+}
+contacts-import = ಆಮದು ಮಾಡಿ
+contacts-export = ರಫ್ತು ಮಾಡಿ
+contacts-import-title = vCard ಫೈಲ್‌ನಿಂದ ಸಂಪರ್ಕಗಳನ್ನು ಆಮದು ಮಾಡಿ
+contacts-imported = { $count ->
+    [one] { $place } ಗೆ { $count } ಸಂಪರ್ಕಗಳನ್ನು ಆಮದು ಮಾಡಲಾಗಿದೆ
+   *[other] { $place } ಗೆ { $count } ಸಂಪರ್ಕಗಳನ್ನು ಆಮದು ಮಾಡಲಾಗಿದೆ
+}
+contacts-imported-some = { $count ->
+    [one] { $place } ಗೆ { $count } ಸಂಪರ್ಕಗಳನ್ನು ಆಮದು ಮಾಡಲಾಗಿದೆ; ಈಗಾಗಲೇ ಉಳಿಸಿರುವ { $skipped } ಅನ್ನು ಬಿಡಲಾಗಿದೆ
+   *[other] { $place } ಗೆ { $count } ಸಂಪರ್ಕಗಳನ್ನು ಆಮದು ಮಾಡಲಾಗಿದೆ; ಈಗಾಗಲೇ ಉಳಿಸಿರುವ { $skipped } ಅನ್ನು ಬಿಡಲಾಗಿದೆ
+}
+contacts-import-none = { $name } ನಲ್ಲಿ ಯಾವುದೇ ಸಂಪರ್ಕಗಳು ಕಂಡುಬಂದಿಲ್ಲ
+contacts-import-all-saved = { $name } ನಲ್ಲಿರುವ ಎಲ್ಲರೂ ಈಗಾಗಲೇ ಉಳಿಸಲ್ಪಟ್ಟಿದ್ದಾರೆ
+contacts-import-failed = { $name } ಅನ್ನು ಓದಲಾಗಲಿಲ್ಲ: { $error }
+contacts-exported = { $count ->
+    [one] { $path } ಗೆ { $count } ಸಂಪರ್ಕಗಳನ್ನು ರಫ್ತು ಮಾಡಲಾಗಿದೆ
+   *[other] { $path } ಗೆ { $count } ಸಂಪರ್ಕಗಳನ್ನು ರಫ್ತು ಮಾಡಲಾಗಿದೆ
+}
+contacts-export-none = ರಫ್ತು ಮಾಡಲು ಸಂಪರ್ಕಗಳಿಲ್ಲ
+contacts-export-failed = ಸಂಪರ್ಕಗಳನ್ನು ರಫ್ತು ಮಾಡಲಾಗಲಿಲ್ಲ: { $error }
 contacts-create = ಸಂಪರ್ಕವನ್ನು ರಚಿಸಿ
 
 ## Search and the list

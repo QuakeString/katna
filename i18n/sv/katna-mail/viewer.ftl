@@ -13,3 +13,6 @@ viewer-document-unreadable = Dokumentet kunde inte läsas.
 viewer-slides-unreadable = Presentationsbilderna kunde inte läsas.
 viewer-no-preview = Ingen förhandsvisning tillgänglig
 viewer-slide = Bild { $number }
+viewer-page = Sida
+viewer-page-count = av { $count }
+viewer-go-to-page-tip = Skriv ett sidnummer och tryck på Retur (Ctrl+G)

@@ -13,3 +13,6 @@ viewer-document-unreadable = ਇਹ ਦਸਤਾਵੇਜ਼ ਪੜ੍ਹਿਆ 
 viewer-slides-unreadable = ਇਹ ਸਲਾਈਡਾਂ ਪੜ੍ਹੀਆਂ ਨਹੀਂ ਜਾ ਸਕੀਆਂ।
 viewer-no-preview = ਕੋਈ ਪੂਰਵ-ਝਲਕ ਉਪਲਬਧ ਨਹੀਂ
 viewer-slide = ਸਲਾਈਡ { $number }
+viewer-page = ਸਫ਼ਾ
+viewer-page-count = { $count } ਵਿੱਚੋਂ
+viewer-go-to-page-tip = ਸਫ਼ਾ ਨੰਬਰ ਲਿਖੋ ਅਤੇ Enter ਦਬਾਓ (Ctrl+G)

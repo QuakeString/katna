@@ -25,6 +25,45 @@ contacts-label-removed = { $name } నుండి తీసివేయబడ�
 contacts-label-renamed = లేబుల్ పేరు { $name }గా మార్చబడింది
 contacts-label-deleted = లేబుల్ { $name } తొలగించబడింది
 contacts-label-no-email = ఈ లేబుల్‌లో ఎవరికీ ఇమెయిల్ చిరునామా లేదు
+contacts-manage = పరిష్కరించండి మరియు నిర్వహించండి
+contacts-merge = విలీనం చేసి పరిష్కరించండి
+contacts-merge-about = { $count ->
+    [one] { $count } సూచన: ఒకే వ్యక్తిలా కనిపించే కాంటాక్ట్‌లు
+   *[other] { $count } సూచన: ఒకే వ్యక్తిలా కనిపించే కాంటాక్ట్‌లు
+}
+contacts-merge-none = డూప్లికేట్‌లు లేవు. ఒకే పేరు లేదా ఫోన్ నంబర్ ఉన్న కాంటాక్ట్‌లు ఇక్కడ కనిపిస్తాయి.
+contacts-merge-count = { $count ->
+    [one] { $count } కాంటాక్ట్‌లు
+   *[other] { $count } కాంటాక్ట్‌లు
+}
+contacts-merge-all = అన్నింటినీ విలీనం చేయండి
+contacts-merge-button = విలీనం చేయండి
+contacts-merge-dismiss = తీసివేయండి
+contacts-merged = { $count ->
+    [1] కాంటాక్ట్‌లు విలీనం అయ్యాయి
+    [one] { $count } విలీనాలు పూర్తయ్యాయి
+   *[other] { $count } విలీనాలు పూర్తయ్యాయి
+}
+contacts-import = దిగుమతి చేయండి
+contacts-export = ఎగుమతి చేయండి
+contacts-import-title = vCard ఫైల్ నుండి కాంటాక్ట్‌లను దిగుమతి చేయండి
+contacts-imported = { $count ->
+    [one] { $place }లో { $count } కాంటాక్ట్‌లు దిగుమతి అయ్యాయి
+   *[other] { $place }లో { $count } కాంటాక్ట్‌లు దిగుమతి అయ్యాయి
+}
+contacts-imported-some = { $count ->
+    [one] { $place }లో { $count } కాంటాక్ట్‌లు దిగుమతి అయ్యాయి; ఇప్పటికే సేవ్ చేసిన { $skipped } వదిలివేయబడ్డాయి
+   *[other] { $place }లో { $count } కాంటాక్ట్‌లు దిగుమతి అయ్యాయి; ఇప్పటికే సేవ్ చేసిన { $skipped } వదిలివేయబడ్డాయి
+}
+contacts-import-none = { $name }లో కాంటాక్ట్‌లు ఏవీ కనుగొనబడలేదు
+contacts-import-all-saved = { $name }లోని అందరూ ఇప్పటికే సేవ్ అయి ఉన్నారు
+contacts-import-failed = { $name }ను చదవడం సాధ్యం కాలేదు: { $error }
+contacts-exported = { $count ->
+    [one] { $path }కు { $count } కాంటాక్ట్‌లు ఎగుమతి అయ్యాయి
+   *[other] { $path }కు { $count } కాంటాక్ట్‌లు ఎగుమతి అయ్యాయి
+}
+contacts-export-none = ఎగుమతి చేయడానికి కాంటాక్ట్‌లు లేవు
+contacts-export-failed = కాంటాక్ట్‌లను ఎగుమతి చేయడం సాధ్యం కాలేదు: { $error }
 contacts-create = కాంటాక్ట్‌ను సృష్టించండి
 
 ## Search and the list

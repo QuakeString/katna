@@ -67,6 +67,16 @@ notes-mail = សំបុត្រ
 notes-open-mail = បើកសំបុត្រ
 notes-open-note = បើកកំណត់ចំណាំ
 
+## Meeting notes
+
+notes-meeting-take = កត់ត្រាកំណត់ចំណាំកិច្ចប្រជុំ
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = អ្នកចូលរួម៖ { $names }
+notes-meeting-notes = កំណត់ចំណាំ
+notes-meeting-actions = ធាតុសកម្មភាព
+notes-event = ព្រឹត្តិការណ៍
+notes-open-event = បើកព្រឹត្តិការណ៍
+
 ## Colors (tooltips)
 
 notes-color-none = គ្មានពណ៌

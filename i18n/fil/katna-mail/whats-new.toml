@@ -1435,3 +1435,38 @@ Ang imbitasyong dumating sa account na walang kalendaryo ay may Oo,
 Hindi, at Baka na rin: ipapadala ang sagot mo sa organizer sa
 pamamagitan ng email, at minamarkahan ito ng kalendaryo nila.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Mga tala ng pulong"
+text = """
+Magbukas ng event sa Calendar at piliin ang Gumawa ng tala ng pulong:
+magbubukas ang isang tala na may pamagat ng event, kasama ang mga dadalo
+at lugar para sa mga aksyon. Nakalista sa card ng event ang mga tala
+nito, at ibinabalik ka ng chip na Event ng isang tala sa araw na iyon.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Diretso sa isang pahina ng PDF"
+text = """
+Ang numero ng pahina sa ilalim ng isang PDF ay isa nang kahon: i-click
+ito o pindutin ang Ctrl+G, mag-type ng pahina, at pindutin ang Enter
+para pumunta roon.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Mga gawain sa kalendaryo"
+text = """
+Lumalabas na sa Kalendaryo ang mga gawaing may due date, sa oras nila o kasama ng mga event na buong araw. I-tick ang mga ito roon, i-click para buksan ang isa, o i-drag sa ibang araw o oras para i-block ang oras na iyon para sa gawain.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Mga paalala para sa iyong mga event"
+text = """
+Ipinapaalala na ngayon ng mga event ang sarili nila sa pamamagitan ng notification, kahit sarado ang Katna. Binubuksan ng Sumali ang video call, at ipapaalala ka ulit ng I-snooze nang 5 min pagkalipas ng limang minuto.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Pagsamahin ang mga duplicate, mag-import at mag-export ng mga contact"
+text = """
+May Ayusin at pamahalaan na ang Mga Contact: hinahanap ng Pagsamahin at ayusin ang mga taong dalawang beses na-save (parehong pangalan o numero ng telepono) at pinagsasama sila sa isang click, may I-undo. Nagdadala ang I-import ng mga tao mula sa vCard file at hindi isinasama ang mga naka-save na, at sine-save ng I-export ang lahat, o isang label, bilang vCard file.
+"""

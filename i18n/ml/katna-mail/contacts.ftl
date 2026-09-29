@@ -25,6 +25,45 @@ contacts-label-removed = { $name }-ൽ നിന്ന് നീക്കി
 contacts-label-renamed = ലേബലിന്റെ പേര് { $name } എന്നാക്കി മാറ്റി
 contacts-label-deleted = ലേബൽ { $name } ഇല്ലാതാക്കി
 contacts-label-no-email = ഈ ലേബലിലുള്ള ആർക്കും ഇമെയിൽ വിലാസമില്ല
+contacts-manage = പരിഹരിക്കുക & മാനേജ് ചെയ്യുക
+contacts-merge = ലയിപ്പിച്ച് പരിഹരിക്കുക
+contacts-merge-about = { $count ->
+    [one] { $count } നിർദ്ദേശം: ഒരേ വ്യക്തിയെന്ന് തോന്നുന്ന കോൺടാക്റ്റുകൾ
+   *[other] { $count } നിർദ്ദേശം: ഒരേ വ്യക്തിയെന്ന് തോന്നുന്ന കോൺടാക്റ്റുകൾ
+}
+contacts-merge-none = ഡ്യൂപ്ലിക്കേറ്റുകൾ ഇല്ല. ഒരേ പേരോ ഫോൺ നമ്പറോ ഉള്ള കോൺടാക്റ്റുകൾ ഇവിടെ കാണിക്കും.
+contacts-merge-count = { $count ->
+    [one] { $count } കോൺടാക്റ്റുകൾ
+   *[other] { $count } കോൺടാക്റ്റുകൾ
+}
+contacts-merge-all = എല്ലാം ലയിപ്പിക്കുക
+contacts-merge-button = ലയിപ്പിക്കുക
+contacts-merge-dismiss = ഒഴിവാക്കുക
+contacts-merged = { $count ->
+    [1] കോൺടാക്റ്റുകൾ ലയിപ്പിച്ചു
+    [one] { $count } ലയനങ്ങൾ പൂർത്തിയായി
+   *[other] { $count } ലയനങ്ങൾ പൂർത്തിയായി
+}
+contacts-import = ഇമ്പോർട്ട് ചെയ്യുക
+contacts-export = എക്‌സ്‌പോർട്ട് ചെയ്യുക
+contacts-import-title = vCard ഫയലിൽ നിന്ന് കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്യുക
+contacts-imported = { $count ->
+    [one] { $place }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്തു
+   *[other] { $place }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്തു
+}
+contacts-imported-some = { $count ->
+    [one] { $place }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്തു; നേരത്തേ സേവ് ചെയ്തിരുന്ന { $skipped } ഒഴിവാക്കി
+   *[other] { $place }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്തു; നേരത്തേ സേവ് ചെയ്തിരുന്ന { $skipped } ഒഴിവാക്കി
+}
+contacts-import-none = { $name }-ൽ കോൺടാക്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല
+contacts-import-all-saved = { $name }-ലെ എല്ലാവരും നേരത്തേ സേവ് ചെയ്തിട്ടുണ്ട്
+contacts-import-failed = { $name } വായിക്കാനായില്ല: { $error }
+contacts-exported = { $count ->
+    [one] { $path }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ എക്‌സ്‌പോർട്ട് ചെയ്തു
+   *[other] { $path }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ എക്‌സ്‌പോർട്ട് ചെയ്തു
+}
+contacts-export-none = എക്‌സ്‌പോർട്ട് ചെയ്യാൻ കോൺടാക്റ്റുകളില്ല
+contacts-export-failed = കോൺടാക്റ്റുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനായില്ല: { $error }
 contacts-create = കോൺടാക്റ്റ് സൃഷ്ടിക്കുക
 
 ## Search and the list

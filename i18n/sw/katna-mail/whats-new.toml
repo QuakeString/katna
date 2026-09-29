@@ -1328,3 +1328,38 @@ text = """
 Mwaliko uliofika kwenye akaunti isiyo na kalenda sasa una Ndiyo, Hapana na Labda pia:
 jibu lako hutumwa kwa mwandaaji kwa barua pepe, na kalenda yake huliweka alama.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Madokezo ya mkutano"
+text = """
+Fungua tukio kwenye Kalenda kisha uchague Andika madokezo ya mkutano: dokezo lenye jina la tukio hufunguka, likiwa na orodha ya waliohudhuria na nafasi ya hatua za kuchukua.
+Kadi ya tukio huorodhesha madokezo yake, na chipu ya Tukio kwenye dokezo hukurudisha kwenye siku hiyo.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Nenda moja kwa moja kwenye ukurasa wa PDF"
+text = """
+Nambari ya ukurasa chini ya PDF sasa ni kisanduku:
+kibofye au bonyeza Ctrl+G, andika nambari ya ukurasa kisha bonyeza Enter ili kuruka hadi huko.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Majukumu kwenye kalenda"
+text = """
+Majukumu yenye siku ya kukamilika sasa yanaonekana kwenye Kalenda, kwa wakati wake au pamoja na matukio ya siku nzima.
+Unaweza kuyatia alama kuwa yamekamilika hapo hapo, kubofya ili kufungua, au kuyaburuza hadi siku au wakati mwingine ili kutenga muda huo kwa ajili yake.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Vikumbusho vya matukio yako"
+text = """
+Matukio sasa hukukumbusha kwa arifa, hata wakati Katna imefungwa.
+Jiunge hufungua simu ya video, na Ahirisha dakika 5 hukukumbusha tena baada ya dakika tano.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Unganisha anwani zinazojirudia, leta na hamisha"
+text = """
+Anwani sasa zina Rekebisha na udhibiti: Unganisha na urekebishe hutafuta watu waliohifadhiwa mara mbili (jina au nambari ya simu sawa) na kuwaunganisha kwa mbofyo mmoja, pamoja na Tendua.
+Leta huingiza watu kutoka faili ya vCard, ikiwaacha wale waliohifadhiwa tayari, na Hamisha huhifadhi kila mtu, au lebo moja, kama faili ya vCard.
+"""

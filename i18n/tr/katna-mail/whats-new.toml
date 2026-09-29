@@ -1373,3 +1373,38 @@ Takvimi olmayan bir hesaba gelen davette artık Evet, Hayır ve Belki de
 var: yanıtınız düzenleyiciye e-postayla gider ve onun takvimi bunu
 işler.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Toplantı notları"
+text = """
+Takvim’de bir etkinliği açıp Toplantı notları al’ı seçin: etkinliğin
+başlığını taşıyan, katılımcıların yazılı olduğu ve eylem öğeleri için
+yer bulunan bir not açılır. Etkinliğin kartı notlarını listeler, bir
+notun Etkinlik çipi ise sizi o güne geri götürür.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Doğrudan bir PDF sayfasına gidin"
+text = """
+Bir PDF’in altındaki sayfa numarası artık bir kutu: üzerine tıklayın ya
+da Ctrl+G’ye basın, bir sayfa numarası yazın ve oraya gitmek için
+Enter’a basın.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Takvimde görevler"
+text = """
+Son tarihi olan görevler artık Takvim’de, kendi saatinde ya da günün tüm gün süren etkinlikleriyle birlikte görünüyor. Görevleri orada tamamlandı olarak işaretleyin, açmak için tıklayın veya o zamanı kendisine ayırmak için başka bir güne ya da saate sürükleyin.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Etkinlikleriniz için hatırlatmalar"
+text = """
+Etkinlikler artık Katna kapalıyken bile bir bildirimle sizi uyarıyor. Katıl görüntülü görüşmeyi açar, 5 dk ertele ise beş dakika sonra sizi yeniden uyarır.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Yinelenenleri birleştirin, kişileri içe ve dışa aktarın"
+text = """
+Kişiler artık Düzelt ve yönet aracına sahip: Birleştir ve düzelt, iki kez kaydedilmiş kişileri (aynı ad veya telefon numarası) bulur ve tek tıkla birleştirir, Geri al ile de işlemi geri alabilirsiniz. İçe aktar, kişileri bir vCard dosyasından getirir ve zaten kayıtlı olanları atlar, Dışa aktar ise herkesi ya da bir etiketi vCard dosyası olarak kaydeder.
+"""

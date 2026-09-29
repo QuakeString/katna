@@ -25,6 +25,45 @@ contacts-label-removed = { $name }ৰ পৰা আঁতৰোৱা হ'ল
 contacts-label-renamed = লেবেলৰ নাম সলনি কৰি { $name } কৰা হ'ল
 contacts-label-deleted = লেবেল { $name } মচা হ'ল
 contacts-label-no-email = এই লেবেলত কাৰো ইমেইল ঠিকনা নাই
+contacts-manage = ঠিক কৰক আৰু পৰিচালনা কৰক
+contacts-merge = মাৰ্জ কৰক আৰু ঠিক কৰক
+contacts-merge-about = { $count ->
+    [one] { $count }টা পৰামৰ্শ: একেজন ব্যক্তিৰ যেন লগা সম্পৰ্ক
+   *[other] { $count }টা পৰামৰ্শ: একেজন ব্যক্তিৰ যেন লগা সম্পৰ্ক
+}
+contacts-merge-none = কোনো ডুপ্লিকেট নাই। একেই নাম বা ফোন নম্বৰ থকা সম্পৰ্ক ইয়াত দেখা যাব।
+contacts-merge-count = { $count ->
+    [one] { $count }টা সম্পৰ্ক
+   *[other] { $count }টা সম্পৰ্ক
+}
+contacts-merge-all = সকলো মাৰ্জ কৰক
+contacts-merge-button = মাৰ্জ কৰক
+contacts-merge-dismiss = অগ্ৰাহ্য কৰক
+contacts-merged = { $count ->
+    [1] সম্পৰ্ক মাৰ্জ কৰা হ’ল
+    [one] { $count }টা মাৰ্জ সম্পূৰ্ণ হ’ল
+   *[other] { $count }টা মাৰ্জ সম্পূৰ্ণ হ’ল
+}
+contacts-import = আমদানি কৰক
+contacts-export = ৰপ্তানি কৰক
+contacts-import-title = vCard ফাইলৰ পৰা সম্পৰ্ক আমদানি কৰক
+contacts-imported = { $count ->
+    [one] { $place }ত { $count }টা সম্পৰ্ক আমদানি কৰা হ’ল
+   *[other] { $place }ত { $count }টা সম্পৰ্ক আমদানি কৰা হ’ল
+}
+contacts-imported-some = { $count ->
+    [one] { $place }ত { $count }টা সম্পৰ্ক আমদানি কৰা হ’ল; আগতেই সংৰক্ষণ কৰা { $skipped }টা বাদ দিয়া হ’ল
+   *[other] { $place }ত { $count }টা সম্পৰ্ক আমদানি কৰা হ’ল; আগতেই সংৰক্ষণ কৰা { $skipped }টা বাদ দিয়া হ’ল
+}
+contacts-import-none = { $name }ত কোনো সম্পৰ্ক পোৱা নগ’ল
+contacts-import-all-saved = { $name }ৰ সকলোৱে আগতেই সংৰক্ষিত হৈ আছে
+contacts-import-failed = { $name } পঢ়িব পৰা নগ’ল: { $error }
+contacts-exported = { $count ->
+    [one] { $path }ত { $count }টা সম্পৰ্ক ৰপ্তানি কৰা হ’ল
+   *[other] { $path }ত { $count }টা সম্পৰ্ক ৰপ্তানি কৰা হ’ল
+}
+contacts-export-none = ৰপ্তানি কৰিবলৈ কোনো সম্পৰ্ক নাই
+contacts-export-failed = সম্পৰ্ক ৰপ্তানি কৰিব পৰা নগ’ল: { $error }
 contacts-create = সম্পৰ্ক সৃষ্টি কৰক
 
 ## Search and the list

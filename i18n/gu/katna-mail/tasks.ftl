@@ -79,3 +79,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = તે મેઇલ હવે અહીં નથી.
 tasks-toast-list-deleted = સૂચિ ડિલીટ થઈ
 tasks-toast-moved = { $list } માં ખસેડ્યું
+tasks-toast-rescheduled = કાર્યનો સમય બદલ્યો

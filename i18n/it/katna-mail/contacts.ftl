@@ -25,6 +25,51 @@ contacts-label-removed = Rimosso da { $name }
 contacts-label-renamed = Etichetta rinominata in { $name }
 contacts-label-deleted = Etichetta eliminata: { $name }
 contacts-label-no-email = Nessuno con questa etichetta ha un indirizzo email
+contacts-manage = Correggi e gestisci
+contacts-merge = Unisci e correggi
+contacts-merge-about = { $count ->
+    [one] { $count } suggerimento: contatti che sembrano la stessa persona
+    [many] { $count } di suggerimenti: contatti che sembrano la stessa persona
+   *[other] { $count } suggerimenti: contatti che sembrano la stessa persona
+}
+contacts-merge-none = Nessun duplicato. I contatti con lo stesso nome o numero di telefono vengono mostrati qui.
+contacts-merge-count = { $count ->
+    [one] { $count } contatto
+    [many] { $count } di contatti
+   *[other] { $count } contatti
+}
+contacts-merge-all = Unisci tutti
+contacts-merge-button = Unisci
+contacts-merge-dismiss = Ignora
+contacts-merged = { $count ->
+    [1] Contatti uniti
+    [one] { $count } unione eseguita
+    [many] { $count } di unioni eseguite
+   *[other] { $count } unioni eseguite
+}
+contacts-import = Importa
+contacts-export = Esporta
+contacts-import-title = Importa contatti da un file vCard
+contacts-imported = { $count ->
+    [one] { $count } contatto importato in { $place }
+    [many] { $count } di contatti importati in { $place }
+   *[other] { $count } contatti importati in { $place }
+}
+contacts-imported-some = { $count ->
+    [one] { $count } contatto importato in { $place }; { $skipped } già salvati, esclusi
+    [many] { $count } di contatti importati in { $place }; { $skipped } già salvati, esclusi
+   *[other] { $count } contatti importati in { $place }; { $skipped } già salvati, esclusi
+}
+contacts-import-none = Nessun contatto trovato in { $name }
+contacts-import-all-saved = Tutte le persone in { $name } sono già salvate
+contacts-import-failed = Impossibile leggere { $name }: { $error }
+contacts-exported = { $count ->
+    [one] { $count } contatto esportato in { $path }
+    [many] { $count } di contatti esportati in { $path }
+   *[other] { $count } contatti esportati in { $path }
+}
+contacts-export-none = Nessun contatto da esportare
+contacts-export-failed = Impossibile esportare i contatti: { $error }
 contacts-create = Crea contatto
 
 ## Search and the list

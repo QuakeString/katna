@@ -1311,3 +1311,38 @@ text = """
 Gayyatar da ta zo asusun da ba shi da kalanda yanzu tana da Eh, A'a da Wataƙila ma:
 amsarka tana tafiya wurin mai shiryawa ta imel, kuma kalandarsa tana yi mata alama.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Bayanan taro"
+text = """
+Buɗe wani taron a Kalanda sannan ka zaɓi Ɗauki bayanan taro: wani bayani mai sunan taron zai buɗe, tare da jerin mahalarta da wurin abubuwan da za a yi.
+Katin taron yana jera bayanansa, kuma alamar Taron da ke kan bayanin tana mayar da kai ranar.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Tsallaka kai tsaye zuwa shafin PDF"
+text = """
+Lambar shafi a ƙarƙashin PDF yanzu akwati ce:
+Danna ta ko ka latsa Ctrl+G, rubuta lambar shafi sannan ka latsa Enter don tsallakawa can.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Ayyuka a kan kalanda"
+text = """
+Ayyukan da ke da ranar ƙarewa yanzu suna bayyana a Kalanda, a lokacinsu ko tare da al'amuran duk rana.
+Kuna iya yi musu alamar an gama a can, ku danna don buɗe ɗaya, ko ku jawo shi zuwa wata rana ko lokaci daban don ware masa wannan lokacin.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Tunatarwa ga al'amuranku"
+text = """
+Yanzu al'amura suna tunatar da ku ta sanarwa, ko da Katna a rufe take.
+Shiga yana buɗe kiran bidiyo, kuma Jinkirta na mintuna 5 yana sake tunatar da ku bayan mintuna biyar.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Haɗa lambobin sadarwa masu maimaitawa, shigo da da fitar da"
+text = """
+Lambobin sadarwa yanzu suna da Gyara da sarrafa: Haɗa da gyara yana gano mutanen da aka ajiye sau biyu (suna ko lambar waya iri ɗaya) ya haɗa su da danna sau ɗaya, tare da Janye.
+Shigo da yana kawo mutane daga fayil na vCard, yana barin waɗanda aka riga aka ajiye, kuma Fitar da yana ajiye kowa, ko lakabi guda, a matsayin fayil na vCard.
+"""

@@ -13,3 +13,6 @@ viewer-document-unreadable = A kò lè ka ìwé yìí.
 viewer-slides-unreadable = A kò lè ka àwọn sìláìdì wọ̀nyí.
 viewer-no-preview = Kò sí àwòtẹ́lẹ̀
 viewer-slide = Sìláìdì { $number }
+viewer-page = Ojú ìwé
+viewer-page-count = nínú { $count }
+viewer-go-to-page-tip = Tẹ nọ́mbà ojú ìwé, lẹ́yìn náà tẹ Enter (Ctrl+G)

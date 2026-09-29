@@ -1385,3 +1385,37 @@ Um convite que chegou a uma conta sem agenda agora também tem Sim, Não e
 Talvez: sua resposta vai para o organizador por e-mail e a agenda dele a
 registra.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Anotações de reunião"
+text = """
+Abra um evento na Agenda e escolha Fazer anotações da reunião: uma nota
+com o título do evento é aberta, já com os participantes e um espaço
+para os itens de ação. O cartão do evento lista suas notas, e o chip
+Evento de uma nota leva você de volta ao dia.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Ir direto a uma página do PDF"
+text = """
+O número da página abaixo de um PDF agora é uma caixa: clique nela ou
+pressione Ctrl+G, digite uma página e pressione Enter para ir até lá.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tarefas na agenda"
+text = """
+As tarefas com data de vencimento agora aparecem na Agenda, no horário delas ou junto com os eventos de dia inteiro. Marque-as como concluídas por lá, clique para abrir uma ou arraste-a para outro dia ou horário para reservar esse tempo para ela.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Lembretes para seus eventos"
+text = """
+Agora os eventos avisam você com uma notificação, mesmo com o Katna fechado. Participar abre a videochamada e Adiar 5 min lembra você de novo em cinco minutos.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Mescle duplicatas, importe e exporte contatos"
+text = """
+Contatos tem “Corrigir e gerenciar”: “Mesclar e corrigir” encontra pessoas salvas duas vezes (com o mesmo nome ou número de telefone) e as mescla com um clique, com a opção de desfazer. “Importar” traz pessoas de um arquivo vCard, ignorando quem já está salvo, e “Exportar” salva todo mundo, ou um marcador, em um arquivo vCard.
+"""

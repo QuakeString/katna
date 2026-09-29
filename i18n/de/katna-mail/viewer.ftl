@@ -13,3 +13,6 @@ viewer-document-unreadable = Dieses Dokument konnte nicht gelesen werden.
 viewer-slides-unreadable = Diese Folien konnten nicht gelesen werden.
 viewer-no-preview = Keine Vorschau verfügbar
 viewer-slide = Folie { $number }
+viewer-page = Seite
+viewer-page-count = von { $count }
+viewer-go-to-page-tip = Seitenzahl eingeben und Eingabetaste drücken (Strg+G)

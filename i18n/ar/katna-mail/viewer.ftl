@@ -13,3 +13,6 @@ viewer-document-unreadable = تعذّرت قراءة هذا المستند.
 viewer-slides-unreadable = تعذّرت قراءة هذه الشرائح.
 viewer-no-preview = لا تتوفر معاينة
 viewer-slide = الشريحة { $number }
+viewer-page = صفحة
+viewer-page-count = من { $count }
+viewer-go-to-page-tip = اكتب رقم الصفحة ثم اضغط Enter (Ctrl+G)

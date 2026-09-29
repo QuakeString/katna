@@ -13,3 +13,6 @@ viewer-document-unreadable = Bu belge okunamadı.
 viewer-slides-unreadable = Bu slaytlar okunamadı.
 viewer-no-preview = Önizleme yok
 viewer-slide = Slayt { $number }
+viewer-page = Sayfa
+viewer-page-count = / { $count }
+viewer-go-to-page-tip = Bir sayfa numarası yazıp Enter’a basın (Ctrl+G)

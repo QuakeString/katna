@@ -13,3 +13,6 @@ viewer-document-unreadable = មិនអាចអានឯកសារនេះ
 viewer-slides-unreadable = មិនអាចអានស្លាយទាំងនេះបានទេ។
 viewer-no-preview = មិនមានការមើលជាមុនទេ
 viewer-slide = ស្លាយ { $number }
+viewer-page = ទំព័រ
+viewer-page-count = នៃ { $count }
+viewer-go-to-page-tip = វាយលេខទំព័រ រួចចុច Enter (Ctrl+G)

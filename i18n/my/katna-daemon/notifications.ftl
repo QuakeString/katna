@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } က { $subject } ထဲရှိ လင့်
 notify-update-ready = Katna Mail ကို အပ်ဒိတ်လုပ်နိုင်သည်
 notify-update-ready-body = ဗားရှင်း { $version } ကို ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ။ အပ်ဒိတ်ကို နှိပ်လျှင် ၎င်းကို ထည့်သွင်းပြီး Katna Mail ကို ပြန်လည်စတင်ပေးသည်။
 notify-update = အပ်ဒိတ်
+notify-event-now = ယခု
+notify-event-in-minutes = { $count ->
+   *[other] { $count } မိနစ်အတွင်း
+}
+notify-event-in-hours = { $count ->
+   *[other] { $count } နာရီအတွင်း
+}
+notify-event-in-days = { $count ->
+    [1] မနက်ဖြန်
+   *[other] { $count } ရက်အတွင်း
+}
+notify-event-all-day = တစ်ရက်လုံး
+notify-event-join = ပါဝင်ရန်
+notify-event-snooze = 5 မိနစ် ခဏဆိုင်းရန်
 
 ## The buttons of new-mail notifications and reminders
 

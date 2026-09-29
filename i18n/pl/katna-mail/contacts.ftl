@@ -25,6 +25,57 @@ contacts-label-removed = Usunięto z etykiety { $name }
 contacts-label-renamed = Zmieniono nazwę etykiety na { $name }
 contacts-label-deleted = Usunięto etykietę { $name }
 contacts-label-no-email = Nikt z tą etykietą nie ma adresu e-mail
+contacts-manage = Napraw i zarządzaj
+contacts-merge = Scal i napraw
+contacts-merge-about = { $count ->
+    [one] { $count } sugestia: kontakty, które wyglądają na tę samą osobę
+    [few] { $count } sugestie: kontakty, które wyglądają na tę samą osobę
+    [many] { $count } sugestii: kontakty, które wyglądają na tę samą osobę
+   *[other] { $count } sugestii: kontakty, które wyglądają na tę samą osobę
+}
+contacts-merge-none = Brak duplikatów. Kontakty o tej samej nazwie lub tym samym numerze telefonu pojawią się tutaj.
+contacts-merge-count = { $count ->
+    [one] { $count } kontakt
+    [few] { $count } kontakty
+    [many] { $count } kontaktów
+   *[other] { $count } kontaktu
+}
+contacts-merge-all = Scal wszystkie
+contacts-merge-button = Scal
+contacts-merge-dismiss = Odrzuć
+contacts-merged = { $count ->
+    [1] Kontakty scalone
+    [one] Liczba scaleń: { $count }
+    [few] Liczba scaleń: { $count }
+    [many] Liczba scaleń: { $count }
+   *[other] Liczba scaleń: { $count }
+}
+contacts-import = Importuj
+contacts-export = Eksportuj
+contacts-import-title = Importuj kontakty z pliku vCard
+contacts-imported = { $count ->
+    [one] Zaimportowano { $count } kontakt do: { $place }
+    [few] Zaimportowano { $count } kontakty do: { $place }
+    [many] Zaimportowano { $count } kontaktów do: { $place }
+   *[other] Zaimportowano { $count } kontaktu do: { $place }
+}
+contacts-imported-some = { $count ->
+    [one] Zaimportowano { $count } kontakt do: { $place }; pominięto { $skipped } już zapisanych
+    [few] Zaimportowano { $count } kontakty do: { $place }; pominięto { $skipped } już zapisanych
+    [many] Zaimportowano { $count } kontaktów do: { $place }; pominięto { $skipped } już zapisanych
+   *[other] Zaimportowano { $count } kontaktu do: { $place }; pominięto { $skipped } już zapisanych
+}
+contacts-import-none = Nie znaleziono kontaktów w pliku { $name }
+contacts-import-all-saved = Wszystkie osoby z pliku { $name } są już zapisane
+contacts-import-failed = Nie można odczytać pliku { $name }: { $error }
+contacts-exported = { $count ->
+    [one] Wyeksportowano { $count } kontakt do: { $path }
+    [few] Wyeksportowano { $count } kontakty do: { $path }
+    [many] Wyeksportowano { $count } kontaktów do: { $path }
+   *[other] Wyeksportowano { $count } kontaktu do: { $path }
+}
+contacts-export-none = Brak kontaktów do wyeksportowania
+contacts-export-failed = Nie można wyeksportować kontaktów: { $error }
 contacts-create = Utwórz kontakt
 
 ## Search and the list

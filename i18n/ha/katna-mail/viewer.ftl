@@ -13,3 +13,6 @@ viewer-document-unreadable = Ba a iya karanta wannan takardar ba.
 viewer-slides-unreadable = Ba a iya karanta waɗannan silaidi ba.
 viewer-no-preview = Babu samfoti
 viewer-slide = Silaidi { $number }
+viewer-page = Shafi
+viewer-page-count = na { $count }
+viewer-go-to-page-tip = Rubuta lambar shafi sannan ka danna Enter (Ctrl+G)

@@ -1400,3 +1400,37 @@ Un invito arrivato su un account senza calendario ora ha anche Sì, No e
 Forse: la tua risposta arriva all’organizzatore via e-mail e il suo
 calendario la registra.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Appunti delle riunioni"
+text = """
+Apri un evento nel Calendario e scegli «Prendi appunti riunione»: si
+apre una nota con il titolo dell’evento, con i partecipanti e uno spazio
+per le azioni da svolgere. La scheda dell’evento elenca i suoi appunti e
+il chip Evento di una nota ti riporta al giorno.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Vai direttamente a una pagina di un PDF"
+text = """
+Il numero di pagina sotto un PDF ora è una casella: fai clic su di essa
+o premi Ctrl+G, digita una pagina e premi Invio per andarci.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Attività nel calendario"
+text = """
+Le attività con una scadenza ora compaiono nel Calendario, all’orario previsto o insieme agli eventi che durano tutto il giorno. Spuntale da lì, fai clic per aprirne una o trascinala su un altro giorno o orario per riservarle quel tempo.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Promemoria per i tuoi eventi"
+text = """
+Ora gli eventi ti avvisano con una notifica, anche quando Katna è chiuso. «Partecipa» apre la videochiamata e «Posticipa di 5 min» ti ricorda di nuovo tra cinque minuti.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Unisci i duplicati, importa ed esporta i contatti"
+text = """
+Contatti ha “Correggi e gestisci”: “Unisci e correggi” trova le persone salvate due volte (stesso nome o numero di telefono) e le unisce con un clic, con la possibilità di annullare. “Importa” aggiunge persone da un file vCard escludendo quelle già salvate, ed “Esporta” salva tutti, o un’etichetta, in un file vCard.
+"""

@@ -25,6 +25,41 @@ contacts-label-removed = Imeondolewa kutoka { $name }
 contacts-label-renamed = Lebo imepewa jina jipya: { $name }
 contacts-label-deleted = Lebo { $name } imefutwa
 contacts-label-no-email = Hakuna mtu kwenye lebo hii mwenye anwani ya barua pepe
+contacts-manage = Rekebisha na udhibiti
+contacts-merge = Unganisha na urekebishe
+contacts-merge-about = { $count ->
+    [one] Pendekezo { $count }: anwani zinazoonekana kuwa mtu yuleyule
+   *[other] Mapendekezo { $count }: anwani zinazoonekana kuwa mtu yuleyule
+}
+contacts-merge-none = Hakuna nakala rudufu. Anwani zenye jina au nambari ya simu sawa huonekana hapa.
+contacts-merge-count = { $count ->
+   *[other] Anwani { $count }
+}
+contacts-merge-all = Unganisha zote
+contacts-merge-button = Unganisha
+contacts-merge-dismiss = Ondoa
+contacts-merged = { $count ->
+    [1] Anwani zimeunganishwa
+    [one] Muungano { $count } umekamilika
+   *[other] Miungano { $count } imekamilika
+}
+contacts-import = Leta
+contacts-export = Hamisha
+contacts-import-title = Leta anwani kutoka faili ya vCard
+contacts-imported = { $count ->
+   *[other] Umeleta anwani { $count } kwenye { $place }
+}
+contacts-imported-some = { $count ->
+   *[other] Umeleta anwani { $count } kwenye { $place }; { $skipped } zilizohifadhiwa tayari zimeachwa
+}
+contacts-import-none = Hakuna anwani zilizopatikana kwenye { $name }
+contacts-import-all-saved = Kila mtu kwenye { $name } amehifadhiwa tayari
+contacts-import-failed = Imeshindwa kusoma { $name }: { $error }
+contacts-exported = { $count ->
+   *[other] Umehamisha anwani { $count } hadi { $path }
+}
+contacts-export-none = Hakuna anwani za kuhamisha
+contacts-export-failed = Imeshindwa kuhamisha anwani: { $error }
 contacts-create = Unda anwani
 
 ## Search and the list

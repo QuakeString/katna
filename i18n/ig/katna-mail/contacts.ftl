@@ -25,6 +25,39 @@ contacts-label-removed = Wepụrụ na { $name }
 contacts-label-renamed = Agbanwela aha leebụl ka ọ bụrụ { $name }
 contacts-label-deleted = Ehichapụla leebụl { $name }
 contacts-label-no-email = Ọ dịghị onye nọ na leebụl a nwere adreesị ozi
+contacts-manage = Dozie ma jikwaa
+contacts-merge = Jikọta ma dozie
+contacts-merge-about = { $count ->
+   *[other] Aro { $count }: kọntaktị ndị yiri otu onye
+}
+contacts-merge-none = Enweghị ihe myirịta. Kọntaktị ndị nwere otu aha ma ọ bụ otu ọnụọgụ ekwentị ga-apụta ebe a.
+contacts-merge-count = { $count ->
+   *[other] Kọntaktị { $count }
+}
+contacts-merge-all = Jikọta ha niile
+contacts-merge-button = Jikọta
+contacts-merge-dismiss = Chefuo
+contacts-merged = { $count ->
+    [1] Ejikọtara kọntaktị
+   *[other] Ejikọtala { $count }
+}
+contacts-import = Bubata
+contacts-export = Bupụ
+contacts-import-title = Bubata kọntaktị site na faịlụ vCard
+contacts-imported = { $count ->
+   *[other] E bubatara kọntaktị { $count } na { $place }
+}
+contacts-imported-some = { $count ->
+   *[other] E bubatara kọntaktị { $count } na { $place }; ahapụrụ { $skipped } echekwarala
+}
+contacts-import-none = Ahụghị kọntaktị ọ bụla na { $name }
+contacts-import-all-saved = Onye ọ bụla nọ na { $name } echekwarala
+contacts-import-failed = Enweghị ike ịgụ { $name }: { $error }
+contacts-exported = { $count ->
+   *[other] E bupụrụ kọntaktị { $count } na { $path }
+}
+contacts-export-none = Enweghị kọntaktị ị ga-ebupụ
+contacts-export-failed = Enweghị ike ibupụ kọntaktị: { $error }
 contacts-create = Mepụta kọntaktị
 
 ## Search and the list

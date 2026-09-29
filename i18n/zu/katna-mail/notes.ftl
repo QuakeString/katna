@@ -68,6 +68,16 @@ notes-mail = Imeyili
 notes-open-mail = Vula imeyili
 notes-open-note = Vula inothi
 
+## Meeting notes
+
+notes-meeting-take = Thatha amanothi omhlangano
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Abakhona: { $names }
+notes-meeting-notes = Amanothi
+notes-meeting-actions = Izinto zokwenza
+notes-event = Umcimbi
+notes-open-event = Vula umcimbi
+
 ## Colors (tooltips)
 
 notes-color-none = Awukho umbala

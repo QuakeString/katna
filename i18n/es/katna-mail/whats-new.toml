@@ -1396,3 +1396,37 @@ Una invitación que llegó a una cuenta sin calendario ahora también tiene
 Sí, No y Quizás: tu respuesta se envía al organizador por correo y su
 calendario la registra.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Notas de reuniones"
+text = """
+Abre un evento en el Calendario y elige «Tomar notas de la reunión»: se
+abre una nota con el título del evento, con los asistentes y un espacio
+para las tareas pendientes. La tarjeta del evento muestra sus notas, y
+la etiqueta Evento de una nota te lleva de vuelta al día.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Ir directamente a una página de un PDF"
+text = """
+El número de página bajo un PDF ahora es un cuadro: haz clic en él o
+pulsa Ctrl+G, escribe una página y pulsa Intro para ir a ella.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tareas en el calendario"
+text = """
+Las tareas con fecha de vencimiento ahora aparecen en el Calendario, a su hora o junto con los eventos de todo el día. Márcalas como hechas allí, haz clic para abrir una o arrástrala a otro día u hora para reservar ese tiempo para ella.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Recordatorios para tus eventos"
+text = """
+Ahora los eventos te avisan con una notificación, incluso con Katna cerrado. «Unirse» abre la videollamada y «Posponer 5 min» te lo recuerda de nuevo en cinco minutos.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Combina duplicados, importa y exporta contactos"
+text = """
+Contactos incluye «Corregir y administrar»: «Combinar y corregir» encuentra a las personas guardadas dos veces (con el mismo nombre o número de teléfono) y las combina con un clic, con la opción de deshacer. «Importar» añade personas desde un archivo vCard sin repetir las que ya tienes, y «Exportar» guarda a todos, o una etiqueta, en un archivo vCard.
+"""

@@ -68,6 +68,16 @@ notes-mail = E-pos
 notes-open-mail = Maak die e-pos oop
 notes-open-note = Maak die nota oop
 
+## Meeting notes
+
+notes-meeting-take = Neem vergadernotas
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Genooide: { $names }
+notes-meeting-notes = Notas
+notes-meeting-actions = Aksiepunte
+notes-event = Geleentheid
+notes-open-event = Maak die geleentheid oop
+
 ## Colors (tooltips)
 
 notes-color-none = Geen kleur

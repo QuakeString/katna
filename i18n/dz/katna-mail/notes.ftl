@@ -67,6 +67,16 @@ notes-mail = གློག་འཕྲིན
 notes-open-mail = གློག་འཕྲིན་ཁ་ཕྱེ།
 notes-open-note = དྲན་ཐོ་ཁ་ཕྱེ།
 
+## Meeting notes
+
+notes-meeting-take = ཚོགས་འདུའི་དྲན་ཐོ་བྲིས་
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = ཞུགས་མི་ཚུ: { $names }
+notes-meeting-notes = དྲན་ཐོ་ཚུ
+notes-meeting-actions = ལས་འགན་ཚུ
+notes-event = བྱུང་རིམ
+notes-open-event = བྱུང་རིམ་ཁ་ཕྱེ
+
 ## Colors (tooltips)
 
 notes-color-none = ཚོན་ཁ་མེད།

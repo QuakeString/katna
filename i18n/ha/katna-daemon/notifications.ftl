@@ -20,6 +20,23 @@ notify-tracking-clicked = { $who } ya danna mahaɗi a cikin { $subject }
 notify-update-ready = Ana iya sabunta Katna Mail
 notify-update-ready-body = An sauke sigar { $version }. Sabunta yana shigar da ita kuma yana sake kunna Katna Mail.
 notify-update = Sabunta
+notify-event-now = Yanzu
+notify-event-in-minutes = { $count ->
+    [one] Nan da minti { $count }
+   *[other] Nan da minti { $count }
+}
+notify-event-in-hours = { $count ->
+    [one] Nan da awa { $count }
+   *[other] Nan da awa { $count }
+}
+notify-event-in-days = { $count ->
+    [1] Gobe
+    [one] Nan da kwana { $count }
+   *[other] Nan da kwana { $count }
+}
+notify-event-all-day = Duk rana
+notify-event-join = Shiga
+notify-event-snooze = Jinkirta na mintuna 5
 
 ## Its buttons
 

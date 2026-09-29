@@ -25,6 +25,43 @@ contacts-label-removed = { $name } سے ہٹایا گیا
 contacts-label-renamed = لیبل کا نام بدل کر { $name } کر دیا گیا
 contacts-label-deleted = لیبل { $name } حذف ہو گیا
 contacts-label-no-email = اس لیبل میں کسی کا ای میل پتہ نہیں ہے
+contacts-manage = درست کریں اور نظم کریں
+contacts-merge = ضم کریں اور درست کریں
+contacts-merge-about = { $count ->
+   *[other] { $count } تجویز: ایسے رابطے جو ایک ہی شخص لگتے ہیں
+}
+contacts-merge-none = کوئی نقل نہیں۔ ایک ہی نام یا فون نمبر والے رابطے یہاں نظر آئیں گے۔
+contacts-merge-count = { $count ->
+    [one] { $count } رابطہ
+   *[other] { $count } رابطے
+}
+contacts-merge-all = سب ضم کریں
+contacts-merge-button = ضم کریں
+contacts-merge-dismiss = مسترد کریں
+contacts-merged = { $count ->
+    [1] رابطے ضم ہو گئے
+   *[other] { $count } انضمام مکمل ہوئے
+}
+contacts-import = درآمد کریں
+contacts-export = برآمد کریں
+contacts-import-title = vCard فائل سے رابطے درآمد کریں
+contacts-imported = { $count ->
+    [one] { $count } رابطہ { $place } میں درآمد ہو گیا
+   *[other] { $count } رابطے { $place } میں درآمد ہو گئے
+}
+contacts-imported-some = { $count ->
+    [one] { $count } رابطہ { $place } میں درآمد ہو گیا؛ پہلے سے محفوظ { $skipped } چھوڑ دیے گئے
+   *[other] { $count } رابطے { $place } میں درآمد ہو گئے؛ پہلے سے محفوظ { $skipped } چھوڑ دیے گئے
+}
+contacts-import-none = { $name } میں کوئی رابطہ نہیں ملا
+contacts-import-all-saved = { $name } کے سب لوگ پہلے سے محفوظ ہیں
+contacts-import-failed = { $name } کو پڑھا نہیں جا سکا: { $error }
+contacts-exported = { $count ->
+    [one] { $count } رابطہ { $path } میں برآمد ہو گیا
+   *[other] { $count } رابطے { $path } میں برآمد ہو گئے
+}
+contacts-export-none = برآمد کرنے کے لیے کوئی رابطہ نہیں
+contacts-export-failed = رابطے برآمد نہیں ہو سکے: { $error }
 contacts-create = رابطہ بنائیں
 
 ## Search and the list

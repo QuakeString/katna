@@ -67,6 +67,16 @@ notes-mail = Ozi
 notes-open-mail = Mepee ozi
 notes-open-note = Mepee ndetu
 
+## Meeting notes
+
+notes-meeting-take = Dee ndetu nzuko
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Ndị bịara: { $names }
+notes-meeting-notes = Ndetu
+notes-meeting-actions = Ihe a ga-eme
+notes-event = Ihe omume
+notes-open-event = Mepee ihe omume
+
 ## Colors (tooltips)
 
 notes-color-none = Enweghị agba

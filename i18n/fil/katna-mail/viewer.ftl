@@ -13,3 +13,6 @@ viewer-document-unreadable = Hindi mabasa ang dokumentong ito.
 viewer-slides-unreadable = Hindi mabasa ang mga slide na ito.
 viewer-no-preview = Walang available na preview
 viewer-slide = Slide { $number }
+viewer-page = Pahina
+viewer-page-count = ng { $count }
+viewer-go-to-page-tip = Mag-type ng numero ng pahina at pindutin ang Enter (Ctrl+G)

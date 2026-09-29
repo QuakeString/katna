@@ -1400,3 +1400,38 @@ Jemputan yang masuk ke akaun tanpa kalendar kini turut mempunyai Ya,
 Tidak dan Mungkin: jawapan anda dihantar kepada penganjur melalui e-mel,
 dan kalendar mereka menandakannya.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Nota mesyuarat"
+text = """
+Buka acara dalam Kalendar dan pilih Buat nota mesyuarat: nota bertajuk
+acara itu akan dibuka, siap dengan senarai peserta dan ruang untuk item
+tindakan. Kad acara menyenaraikan notanya, dan cip Acara pada nota
+membawa anda kembali ke hari itu.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Terus ke halaman PDF"
+text = """
+Nombor halaman di bawah PDF kini ialah sebuah kotak: klik padanya atau
+tekan Ctrl+G, taip nombor halaman dan tekan Enter untuk melompat ke
+sana.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tugas dalam kalendar"
+text = """
+Tugas yang mempunyai tarikh akhir kini dipaparkan dalam Kalendar, pada waktunya atau bersama acara sepanjang hari. Tandakan selesai di situ, klik untuk membukanya, atau seret ke hari atau masa lain untuk menempah masa itu bagi tugas tersebut.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Peringatan untuk acara anda"
+text = """
+Acara kini mengingatkan anda melalui pemberitahuan, walaupun Katna ditutup. Sertai membuka panggilan video, dan Tunda 5 minit mengingatkan anda semula lima minit kemudian.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Gabungkan pendua, import dan eksport kenalan"
+text = """
+Kenalan kini mempunyai Betulkan dan urus: Gabung dan betulkan mencari orang yang disimpan dua kali (nama atau nombor telefon yang sama) dan menggabungkan mereka dengan satu klik, lengkap dengan Buat asal. Import membawa masuk orang daripada fail vCard dan meninggalkan sesiapa yang sudah disimpan, manakala Eksport menyimpan semua orang, atau satu label, sebagai fail vCard.
+"""

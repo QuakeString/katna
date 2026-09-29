@@ -25,6 +25,45 @@ contacts-label-removed = { $name } बाट हटाइयो
 contacts-label-renamed = लेबलको नाम बदलेर { $name } बनाइयो
 contacts-label-deleted = लेबल { $name } मेटाइयो
 contacts-label-no-email = यो लेबलमा कसैको पनि इमेल ठेगाना छैन
+contacts-manage = ठीक गर्नुहोस् र व्यवस्थापन गर्नुहोस्
+contacts-merge = गाभ्नुहोस् र ठीक गर्नुहोस्
+contacts-merge-about = { $count ->
+    [one] { $count } सुझाव: उही व्यक्तिजस्ता देखिने सम्पर्कहरू
+   *[other] { $count } सुझाव: उही व्यक्तिजस्ता देखिने सम्पर्कहरू
+}
+contacts-merge-none = डुप्लिकेट छैनन्। उही नाम वा फोन नम्बर भएका सम्पर्कहरू यहाँ देखिन्छन्।
+contacts-merge-count = { $count ->
+    [one] { $count } सम्पर्कहरू
+   *[other] { $count } सम्पर्कहरू
+}
+contacts-merge-all = सबै गाभ्नुहोस्
+contacts-merge-button = गाभ्नुहोस्
+contacts-merge-dismiss = खारेज गर्नुहोस्
+contacts-merged = { $count ->
+    [1] सम्पर्कहरू गाभिए
+    [one] { $count } गाभ्ने काम सम्पन्न भए
+   *[other] { $count } गाभ्ने काम सम्पन्न भए
+}
+contacts-import = आयात गर्नुहोस्
+contacts-export = निर्यात गर्नुहोस्
+contacts-import-title = vCard फाइलबाट सम्पर्कहरू आयात गर्नुहोस्
+contacts-imported = { $count ->
+    [one] { $place } मा { $count } सम्पर्कहरू आयात गरियो
+   *[other] { $place } मा { $count } सम्पर्कहरू आयात गरियो
+}
+contacts-imported-some = { $count ->
+    [one] { $place } मा { $count } सम्पर्कहरू आयात गरियो; पहिले नै सुरक्षित गरिएका { $skipped } छोडियो
+   *[other] { $place } मा { $count } सम्पर्कहरू आयात गरियो; पहिले नै सुरक्षित गरिएका { $skipped } छोडियो
+}
+contacts-import-none = { $name } मा कुनै सम्पर्क फेला परेन
+contacts-import-all-saved = { $name } मा भएका सबै पहिले नै सुरक्षित छन्
+contacts-import-failed = { $name } पढ्न सकिएन: { $error }
+contacts-exported = { $count ->
+    [one] { $path } मा { $count } सम्पर्कहरू निर्यात गरियो
+   *[other] { $path } मा { $count } सम्पर्कहरू निर्यात गरियो
+}
+contacts-export-none = निर्यात गर्ने सम्पर्क छैन
+contacts-export-failed = सम्पर्कहरू निर्यात गर्न सकिएन: { $error }
 contacts-create = सम्पर्क सिर्जना गर्नुहोस्
 
 ## Search and the list

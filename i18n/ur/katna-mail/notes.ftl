@@ -68,6 +68,16 @@ notes-mail = میل
 notes-open-mail = میل کھولیں
 notes-open-note = نوٹ کھولیں
 
+## Meeting notes
+
+notes-meeting-take = میٹنگ کے نوٹس لکھیں
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = شرکاء: { $names }
+notes-meeting-notes = نوٹس
+notes-meeting-actions = کرنے کے کام
+notes-event = ایونٹ
+notes-open-event = ایونٹ کھولیں
+
 ## Colors (tooltips)
 
 notes-color-none = کوئی رنگ نہیں

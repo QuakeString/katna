@@ -1387,3 +1387,38 @@ Een uitnodiging die binnenkwam op een account zonder agenda heeft nu ook
 Ja, Nee en Misschien: je antwoord gaat per e-mail naar de organisator en
 hun agenda legt het vast.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Vergadernotities"
+text = """
+Open een afspraak in de Agenda en kies Vergadernotities maken: er opent
+een notitie met de titel van de afspraak, met de deelnemers en ruimte
+voor actiepunten. De kaart van de afspraak toont de bijbehorende
+notities, en de chip Afspraak in een notitie brengt je terug naar de
+dag.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Direct naar een pdf-pagina gaan"
+text = """
+Het paginanummer onder een pdf is nu een vak: klik erop of druk op
+Ctrl+G, typ een pagina en druk op Enter om ernaartoe te gaan.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Taken in de agenda"
+text = """
+Taken met een vervaldatum staan nu in de Agenda, op hun tijd of bij de evenementen die de hele dag duren. Vink ze daar af, klik om er een te openen of sleep een taak naar een andere dag of tijd om die tijd voor de taak te blokkeren.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Herinneringen voor je evenementen"
+text = """
+Evenementen herinneren je nu met een melding, ook als Katna is gesloten. Met Deelnemen open je het videogesprek en met 5 min snoozen word je over vijf minuten opnieuw herinnerd.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Dubbele contacten samenvoegen, contacten importeren en exporteren"
+text = """
+Contacten heeft ‘Herstellen en beheren’: ‘Samenvoegen en herstellen’ vindt mensen die twee keer zijn opgeslagen (met dezelfde naam of hetzelfde telefoonnummer) en voegt ze met één klik samen, met ‘Ongedaan maken’. ‘Importeren’ haalt mensen uit een vCard-bestand en slaat wie al is opgeslagen over, en ‘Exporteren’ bewaart iedereen, of één label, als vCard-bestand.
+"""
