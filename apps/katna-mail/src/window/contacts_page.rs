@@ -31,6 +31,7 @@ use zbus::Connection;
 use super::MailWindow;
 use super::apps::App;
 use super::contacts_edit::{Deleted, Editor, PendingDelete, visible};
+use super::contacts_labels::{LabelDialog, LabelMenu};
 use crate::daemon;
 use crate::data::SavedBook;
 use crate::theme::{Theme, mix};
@@ -95,11 +96,16 @@ pub(super) struct ContactsPage {
     pub(super) deleted: Vec<Deleted>,
     /// The card just saved: its person opens once read.
     pub(super) open_after_load: Option<i64>,
+    /// The labels menu, and the dialog naming a label.
+    pub(super) label_menu: Option<LabelMenu>,
+    pub(super) label_dialog: Option<LabelDialog>,
+    /// Labels of people as just changed, by first card, until read back.
+    pub(super) shown_labels: HashMap<i64, Vec<String>>,
 }
 
 pub(super) struct Open {
-    person: SavedContact,
-    cards: Option<Result<Vec<StoredCard>, String>>,
+    pub(super) person: SavedContact,
+    pub(super) cards: Option<Result<Vec<StoredCard>, String>>,
     _task: Task<()>,
 }
 
@@ -140,6 +146,7 @@ impl MailWindow {
                 match book {
                     Ok((book, with_photos)) => {
                         let page = &mut this.contacts;
+                        page.shown_labels.clear();
                         page.by_email.clear();
                         for person in &book.people {
                             let Some(&first) = person.ids.first() else {
@@ -421,6 +428,7 @@ impl MailWindow {
                     .children(self.allow_banner(book.as_deref(), th, cx))
                     .child(div().flex_1().min_h_0().child(body)),
             )
+            .children(self.render_label_menu(th, cx))
             .into_any_element()
     }
 
@@ -498,7 +506,11 @@ impl MailWindow {
                     .map(|l| {
                         let people = visible(&b.people, &self.contacts.hidden)
                             .into_iter()
-                            .filter(|&ix| b.people[ix].labels.contains(&l.name));
+                            .filter(|&ix| {
+                                let p = &b.people[ix];
+                                self.person_labels(p.ids.first().copied(), &p.labels)
+                                    .contains(&l.name)
+                            });
                         (l.name.clone(), people.count())
                     })
                     .collect()
@@ -542,6 +554,8 @@ impl MailWindow {
                 )
             })
             .children(labels.into_iter().enumerate().map(|(ix, (name, n))| {
+                let menu = name.clone();
+                let more = name.clone();
                 item(
                     ("contacts-label", ix),
                     "label",
@@ -549,6 +563,47 @@ impl MailWindow {
                     Some(n),
                     View::Label(name),
                     cx,
+                )
+                .group("contacts-label-item")
+                .on_mouse_down(
+                    gpui::MouseButton::Right,
+                    cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                        this.open_label_menu(
+                            LabelMenu::Label {
+                                name: menu.clone(),
+                                at: event.position,
+                            },
+                            cx,
+                        )
+                    }),
+                )
+                .child(
+                    div()
+                        .flex_none()
+                        .invisible()
+                        .group_hover("contacts-label-item", |s| s.visible())
+                        .child(
+                            crate::widgets::icon_button(
+                                ("contacts-label-more", ix),
+                                "more",
+                                18.0,
+                                th,
+                            )
+                            .size(px(28.0))
+                            .tooltip(tip(tr!("contacts-label-options"), th))
+                            .on_click(cx.listener(
+                                move |this, event: &gpui::ClickEvent, _, cx| {
+                                    cx.stop_propagation();
+                                    this.open_label_menu(
+                                        LabelMenu::Label {
+                                            name: more.clone(),
+                                            at: event.position(),
+                                        },
+                                        cx,
+                                    )
+                                },
+                            )),
+                        ),
                 )
             }))
             .into_any_element()
@@ -691,8 +746,10 @@ impl MailWindow {
             .into_iter()
             .filter(|&ix| {
                 let p = &book.people[ix];
-                label.as_ref().is_none_or(|l| p.labels.contains(l))
-                    && (query.is_empty() || matches(p, query))
+                label.as_ref().is_none_or(|l| {
+                    self.person_labels(p.ids.first().copied(), &p.labels)
+                        .contains(l)
+                }) && (query.is_empty() || matches(p, query))
             })
             .collect();
         if shown.is_empty() {
@@ -759,10 +816,52 @@ impl MailWindow {
             }),
         )
         .size_full();
+        let title = label.map(|name| {
+            let email = name.clone();
+            div()
+                .flex_none()
+                .h(px(48.0))
+                .mx(px(16.0))
+                .px(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(4.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .truncate()
+                        .text_size(px(20.0))
+                        .text_color(rgba(th.text))
+                        .child(name.clone()),
+                )
+                .child(
+                    crate::widgets::icon_button("contacts-label-email", "mail", 20.0, th)
+                        .tooltip(tip(tr!("contacts-label-email"), th))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.email_label(&email, window, cx)
+                        })),
+                )
+                .child(
+                    crate::widgets::icon_button("contacts-label-title-more", "more", 20.0, th)
+                        .tooltip(tip(tr!("contacts-label-options"), th))
+                        .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
+                            this.open_label_menu(
+                                LabelMenu::Label {
+                                    name: name.clone(),
+                                    at: event.position(),
+                                },
+                                cx,
+                            )
+                        })),
+                )
+        });
         div()
             .size_full()
             .flex()
             .flex_col()
+            .children(title)
             .child(header)
             .child(div().flex_1().min_h_0().child(list))
             .into_any_element()
@@ -807,11 +906,12 @@ impl MailWindow {
             .child(dim(column(1.6)).child(person.phone.clone()))
             .child(dim(column(2.0)).child(person.job.clone()))
             .child(
-                column(1.6)
-                    .flex()
-                    .flex_row()
-                    .gap(px(4.0))
-                    .children(person.labels.iter().take(2).map(|l| chip(l, th))),
+                column(1.6).flex().flex_row().gap(px(4.0)).children(
+                    self.person_labels(person.ids.first().copied(), &person.labels)
+                        .iter()
+                        .take(2)
+                        .map(|l| chip(l, th)),
+                ),
             );
         div().w_full().px(px(16.0)).child(row).into_any_element()
     }
@@ -879,16 +979,20 @@ impl MailWindow {
                                 .child(job),
                         )
                     })
-                    .when(!person.labels.is_empty(), |d| {
-                        d.child(
-                            div()
-                                .flex()
-                                .flex_row()
-                                .flex_wrap()
-                                .gap(px(6.0))
-                                .children(person.labels.iter().map(|l| chip(l, th))),
-                        )
-                    })
+                    .child(
+                        div()
+                            .flex()
+                            .flex_row()
+                            .flex_wrap()
+                            .items_center()
+                            .gap(px(6.0))
+                            .children(
+                                self.person_labels(person.ids.first().copied(), &person.labels)
+                                    .iter()
+                                    .map(|l| chip(l, th)),
+                            )
+                            .child(label_button(th, cx)),
+                    )
                     .child(self.contact_buttons(email, phone, th, cx)),
             );
         let mut details: Vec<AnyElement> = Vec::new();
@@ -1168,6 +1272,38 @@ fn chip(label: &str, th: &Theme) -> AnyElement {
         .text_size(px(12.0))
         .text_color(rgba(th.text_dim))
         .child(label.to_owned())
+        .into_any_element()
+}
+
+/// "Label", after a person's labels: opens the menu that ticks them.
+fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
+    div()
+        .id("contact-labels")
+        .flex_none()
+        .h(px(24.0))
+        .pl(px(6.0))
+        .pr(px(10.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(4.0))
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(th.divider))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .text_size(px(12.0))
+        .text_color(rgba(th.text_dim))
+        .child(icon("add", th.text_dim, 16.0))
+        .child(tr!("contacts-label-button"))
+        .on_click(cx.listener(|this, event: &gpui::ClickEvent, _, cx| {
+            this.open_label_menu(
+                LabelMenu::Person {
+                    at: event.position(),
+                },
+                cx,
+            )
+        }))
         .into_any_element()
 }
 

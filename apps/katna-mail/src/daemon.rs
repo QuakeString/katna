@@ -37,6 +37,11 @@ pub enum Command {
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
+    /// Gives saved cards these labels, by name: an undo on the Contacts
+    /// page.
+    ContactLabels(Vec<(i64, Vec<String>)>),
+    /// Renames a contact label; an empty new name takes it away.
+    RenameContactLabel(String, String),
     /// Has the daemon read the settings file again.
     ReloadConfig,
     /// These, one after the other: an undo that moves mail back to
@@ -122,6 +127,8 @@ impl Command {
             | Self::ReopenDraft
             | Self::RestoreQuote
             | Self::RestoreContacts(_)
+            | Self::ContactLabels(_)
+            | Self::RenameContactLabel(..)
             | Self::ReloadConfig
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
@@ -213,6 +220,15 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::SaveNote(note) => pim.save_note(note).await.map(|_| ()),
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
+        Command::ContactLabels(cards) => {
+            for (card, labels) in cards {
+                pim.set_contact_labels(*card, labels)
+                    .await
+                    .map_err(|err| describe(&err))?;
+            }
+            return Ok(());
+        }
+        Command::RenameContactLabel(old, new) => pim.rename_contact_label(old, new).await,
         Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
             return Ok(());
         }

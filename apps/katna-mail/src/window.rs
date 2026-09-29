@@ -30,6 +30,7 @@ mod colors;
 mod compose;
 mod contact;
 mod contacts_edit;
+mod contacts_labels;
 mod contacts_page;
 mod context_menu;
 mod crash_notice;
@@ -3309,6 +3310,7 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
+        let contact_label = self.render_label_dialog(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
@@ -3361,6 +3363,7 @@ impl Render for MailWindow {
             .children(danger)
             .children(delete_ask)
             .children(new_label)
+            .children(contact_label)
             .children(crash_notice)
             .children(sign_in_again)
             .children(whats_new)

@@ -47,6 +47,7 @@ use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
 mod calendar;
+mod contact_labels;
 mod contacts;
 mod drive;
 mod notes;
