@@ -939,6 +939,12 @@ folder, categories as labels), and CardDAV (RFC 6352) for the rest, found
 from the provider's known server or the `.well-known/carddav` of the mail
 and IMAP domains, read with `sync-collection` and `addressbook-multiget`
 (`katna_sync::{contacts, carddav}`; vCard 3.0/4.0 in `katna_dav::vcard`).
+Each account tries its best way first and the others when that one is not
+available (`katna_sync::methods`, `Data::Contacts`): a Google sign-in uses
+the People API, then Google's CardDAV server with the same token (scope
+`carddav`, CardDAV API enabled in the Cloud project); Outlook
+has only Graph; a password account has CardDAV. The way that worked is
+remembered and replaces the account's address books from any other way.
 The daemon syncs 20 s after start, every 15 minutes, on Sync now and after
 a sign-in, and signals `ContactsChanged`. Every source is read into one
 `katna_core::contact::Card`, kept as JSON beside the source's own form
@@ -978,8 +984,16 @@ label ticked on a person goes on each of their cards; renaming or deleting
 a label changes it in every account, and its people stay. A label nobody
 has is forgotten except at Google, which keeps empty labels. Each change
 has an Undo; "Email everyone" on a label starts a message to all of them.
-Other contacts, merge and import/export follow in the next phases of the
-study.
+
+Other contacts are Google's list of people a Gmail account mailed but never
+saved (People API `otherContacts`, scope `contacts.other.readonly`, read
+with a sync token each pass whatever way the account's own contacts come).
+They live apart from saved cards (`other_contact`, pim.db v10), so they
+never merge into people or labels. The page lists them under Other
+contacts, leaving out anyone saved since; Add to contacts copies one with
+`copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
+Outlook and CardDAV have no such list. Merge and import/export follow in
+the next phases of the study.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -3369,8 +3383,11 @@ most useful reason is shown. Changes go back the way their calendar came
   Google, Graph and scheduling CalDAV servers put invitations in the
   calendar themselves, so answering is the calendar's own `respond`
   (the whole series for an invitation to one). Until the calendar has it,
-  the card says so. Answering by iMIP mail, for servers that don't
-  schedule, is later.
+  the card says so. An invitation that came to an account without
+  calendars (plain IMAP) is answered by iMIP mail (RFC 6047): a reply to
+  it, from that account, to the organizer, with a `METHOD:REPLY`
+  calendar part holding only the user's `ATTENDEE` and the invitation's
+  UID, times and sequence (`katna_dav::ical::reply_calendar`).
 - Schedule a meeting (a conversation's ⋮ or right-click menu) opens the
   whole event editor on the Calendar page with the subject, without
   `Re:`/`Fwd:`, as the title and everyone in the conversation but the user

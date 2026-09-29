@@ -1318,3 +1318,19 @@ accounts waarvan de taken op een andere server staan dan hun e-mail.
 Katna probeert eerst de beste manier van elk account en onthoudt de
 manier die werkt.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Een vergadering plannen vanuit een e-mail"
+text = """
+Klik met de rechtermuisknop op een gesprek, of open ⋮, en kies
+Vergadering plannen: er opent een nieuwe afspraak op de pagina Agenda
+met het onderwerp als titel en iedereen uit het gesprek als gasten.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Te laat? Laat het iedereen met één klik weten"
+text = """
+Een afspraak met gasten heeft nu Gasten e-mailen en, vanaf een uur voor
+het begin, Ik ben te laat: een e-mail aan iedereen, vanaf het account
+van die agenda, klaar om te verzenden.
+"""

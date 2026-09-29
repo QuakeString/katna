@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } till
 calendar-repeats = Återkommer
 calendar-join = Anslut
+calendar-email-guests = Skicka e-post till gäster
+calendar-running-late = Jag är försenad
+calendar-late-subject = Försenad: { $title }
+calendar-late-body = Ursäkta, jag är några minuter försenad till { $title }. Jag kommer snart.
 calendar-guests =
     { $count ->
         [one] { $count } gäst

@@ -5,6 +5,12 @@
 
 contacts-all = Contacts
 contacts-frequent = Frequent
+# Google's "Other contacts": people you mailed but never saved.
+contacts-other = Other contacts
+contacts-other-about = People you've mailed from Gmail but haven't saved
+contacts-other-email = Send email
+contacts-other-empty = No other contacts. People you mail from Gmail but don't save show up here.
+contacts-other-allow = To see other contacts, sign in to your Gmail account again and allow Katna to see them.
 contacts-labels = Labels
 # The ⋮ beside a label in the column, and on a label's own page.
 contacts-label-options = Label options

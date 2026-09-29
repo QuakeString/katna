@@ -150,6 +150,15 @@ calendar-invite-organizer = Organized by { $name }
 calendar-invite-open = Open in Calendar
 # The invitation is not in the user's calendar yet (it has not synced).
 calendar-invite-not-yet = Not in your calendar yet. Answering is possible once it syncs.
+# An invitation none of the user's calendars holds: the answer is mailed.
+calendar-invite-by-mail = Not in your calendar: your answer goes to the organizer by mail.
+# Subjects and text of an answer mailed to an invitation's organizer.
+calendar-mail-yes = Accepted: { $title }
+calendar-mail-yes-body = { $name } has accepted this invitation.
+calendar-mail-no = Declined: { $title }
+calendar-mail-no-body = { $name } has declined this invitation.
+calendar-mail-maybe = Tentative: { $title }
+calendar-mail-maybe-body = { $name } has tentatively accepted this invitation.
 calendar-invite-your-day = Your day
 calendar-invite-clashes =
     { $count ->

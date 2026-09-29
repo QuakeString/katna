@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Keeps each account's contacts in `pim.db` (`docs/ARCHITECTURE.md`
-//! §8.6): Google's People API for Gmail, Microsoft Graph for Outlook, and
-//! CardDAV for the rest, found from the account's address. A pass runs
+//! §8.6): Google's People API for Gmail (Google's CardDAV server when the
+//! API is not available), Microsoft Graph for Outlook, and CardDAV for the
+//! rest, found from the account's address. A pass runs
 //! shortly after start, every 15 minutes, and when woken (Sync now, a new
 //! sign-in); only what changed since the last pass is read where the
 //! service allows.
@@ -20,6 +21,7 @@ use katna_sync::{
     Error as SyncError,
     carddav::{self, CardDav},
     contacts::{GoogleContacts, MicrosoftContacts},
+    methods::{self, Data, Dav, Method},
     net::Tls,
 };
 
@@ -29,7 +31,7 @@ use super::{CommandError, Daemon, Notice};
 const FIRST: Duration = Duration::from_secs(20);
 /// How often every account is read again.
 const EVERY: Duration = Duration::from_secs(15 * 60);
-/// How often an account without a CardDAV address book is looked at again.
+/// How often an account's CardDAV address books are looked for again.
 const LOOK_AGAIN: Duration = Duration::from_secs(24 * 3600);
 /// Pictures fetched in one pass, so a first sync of a large book does not
 /// hold the next pass up; the rest come in later passes.
@@ -82,6 +84,12 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
 }
 
 /// Syncs the address books of `account`; returns whether anything changed.
+///
+/// The best way for the account comes first and the others follow when it
+/// is not available ([`methods`]): Google's People API, then Google's
+/// CardDAV server with the same sign-in; Microsoft Graph; CardDAV with the
+/// password. What worked is remembered and replaces the account's address
+/// books from any other way, so nobody shows twice.
 async fn sync_account(
     daemon: &Arc<Daemon>,
     account: &Account,
@@ -93,110 +101,213 @@ async fn sync_account(
         .map_err(|e| e.to_string())?
         .unwrap_or_default();
     let tls = Tls::system().map_err(|e| e.to_string())?;
-    match settings.oauth {
-        Some(provider) => {
-            let source = match provider {
-                OAuthProvider::Google => BookSource::Google,
-                OAuthProvider::Microsoft => BookSource::Microsoft,
-            };
-            let book = daemon
-                .store()
-                .ensure_address_book(Some(account.id), source, "", "")
-                .map_err(|e| e.to_string())?;
-            let tokens = daemon.oauth_tokens(account.id, provider).await?;
-            let found = match provider {
-                OAuthProvider::Google => {
-                    let google = GoogleContacts::new(tokens, tls.clone());
-                    match google.allowed().await {
-                        Ok(true) => {
-                            let token = sync_token(daemon, book);
-                            google.sync(token.as_deref()).await
-                        }
-                        Ok(false) => Err(SyncError::Auth("contacts not allowed".into())),
-                        Err(e) => Err(e),
+    let provider = settings.oauth;
+    let now = unix_now();
+    let order = methods::order(&daemon.store(), account.id, Data::Contacts, provider, now);
+    // Other contacts only come from Google's API, whatever way the
+    // account's own contacts come.
+    let others = provider == Some(OAuthProvider::Google)
+        && super::other_contacts::sync(daemon, account, &tls).await;
+    let due = looked
+        .get(&account.id)
+        .is_none_or(|at| at.elapsed() >= LOOK_AGAIN);
+    if due {
+        looked.insert(account.id, Instant::now());
+    }
+    // Why the service's own API was refused, for the Allow banner.
+    let mut refused: Option<(BookSource, String)> = None;
+    for method in order {
+        let changed = match (method, provider) {
+            (Method::Api, Some(provider)) => {
+                match sync_api(daemon, account, provider, &tls).await {
+                    Ok(changed) => Some(changed),
+                    Err(SyncError::Auth(why)) => {
+                        let source = match provider {
+                            OAuthProvider::Google => BookSource::Google,
+                            OAuthProvider::Microsoft => BookSource::Microsoft,
+                        };
+                        refused = Some((source, why));
+                        None
                     }
+                    // The network or the service: not a reason to go another way.
+                    Err(err) => return Err(err.to_string()),
                 }
-                OAuthProvider::Microsoft => {
-                    let microsoft = MicrosoftContacts::new(tokens, tls.clone());
-                    match microsoft.allowed().await {
-                        Ok(true) => microsoft.sync().await,
-                        Ok(false) => Err(SyncError::Auth("contacts not allowed".into())),
-                        Err(e) => Err(e),
-                    }
-                }
-            };
-            let mut changed = save(daemon, book, found)?;
-            if provider == OAuthProvider::Google {
-                changed |= fetch_pictures(daemon, book, &tls).await;
             }
-            Ok(changed)
-        }
-        None => {
-            let Some(dav) = card_dav(daemon, account.id, tls).await? else {
-                return Ok(false);
-            };
-            let books: Vec<(i64, String)> = daemon
-                .store()
-                .address_books()
-                .map_err(|e| e.to_string())?
-                .into_iter()
-                .filter(|b| b.account == Some(account.id) && b.source == BookSource::CardDav)
-                .map(|b| (b.id, b.remote_id))
-                .collect();
-            let due = looked
-                .get(&account.id)
-                .is_none_or(|at| at.elapsed() >= LOOK_AGAIN);
-            let mut changed = false;
-            let books = if due {
-                looked.insert(account.id, Instant::now());
+            (Method::Dav, Some(OAuthProvider::Google)) => {
+                let starts = [methods::google_dav_start(Dav::Card, &account.address)];
+                sync_card_dav(daemon, account, &tls, &starts, due).await?
+            }
+            (Method::Dav, None) => {
                 let starts = carddav::start_urls(
                     None,
                     &account.address,
                     settings.imap.as_ref().map(|s| s.host.as_str()),
                 );
-                match dav.discover(&starts).await {
-                    Ok(found) => {
-                        let store = daemon.store();
-                        let mut kept = Vec::new();
-                        for collection in &found {
-                            let id = store
-                                .ensure_address_book(
-                                    Some(account.id),
-                                    BookSource::CardDav,
-                                    &collection.url,
-                                    &collection.name,
-                                )
-                                .map_err(|e| e.to_string())?;
-                            kept.push((id, collection.url.clone()));
-                        }
-                        let ids: Vec<i64> = kept.iter().map(|(id, _)| *id).collect();
-                        changed |= store
-                            .remove_address_books_except(account.id, &ids)
-                            .map_err(|e| e.to_string())?
-                            > 0;
-                        kept
-                    }
-                    // Keeps the books it had: the server may be down.
-                    Err(err) => {
-                        tracing::debug!(account = %account.id, %err, "contacts: no CardDAV");
-                        books
-                    }
-                }
-            } else {
-                books
-            };
-            for (book, url) in books {
-                let token = sync_token(daemon, book);
-                let known = daemon
-                    .store()
-                    .contact_etags(book)
-                    .map_err(|e| e.to_string())?;
-                let found = dav.sync(&url, token.as_deref(), &known).await;
-                changed |= save(daemon, book, found)?;
+                sync_card_dav(daemon, account, &tls, &starts, due).await?
             }
-            Ok(changed)
+            _ => None,
+        };
+        if let Some(changed) = changed {
+            methods::remember(&mut daemon.store(), account.id, Data::Contacts, method, now);
+            return Ok(changed || others);
+        }
+        tracing::debug!(account = %account.id, ?method, "contacts: this way is not available");
+    }
+    // No way worked: a refused API asks the user to allow contacts.
+    match refused {
+        Some((source, why)) => {
+            let book = daemon
+                .store()
+                .ensure_address_book(Some(account.id), source, "", "")
+                .map_err(|e| e.to_string())?;
+            Ok(save(daemon, book, Err(SyncError::Auth(why)))? || others)
+        }
+        None => Ok(others),
+    }
+}
+
+/// Syncs the account's contacts through Google's People API or Microsoft
+/// Graph; returns whether anything changed.
+async fn sync_api(
+    daemon: &Arc<Daemon>,
+    account: &Account,
+    provider: OAuthProvider,
+    tls: &Tls,
+) -> katna_sync::Result<bool> {
+    let tokens = daemon
+        .oauth_tokens(account.id, provider)
+        .await
+        .map_err(SyncError::Auth)?;
+    let source = match provider {
+        OAuthProvider::Google => BookSource::Google,
+        OAuthProvider::Microsoft => BookSource::Microsoft,
+    };
+    let found = match provider {
+        OAuthProvider::Google => {
+            let google = GoogleContacts::new(tokens, tls.clone());
+            if !google.allowed().await? {
+                return Err(SyncError::Auth("contacts not allowed".into()));
+            }
+            let token = api_token(daemon, account.id, source);
+            google.sync(token.as_deref()).await?
+        }
+        OAuthProvider::Microsoft => {
+            let microsoft = MicrosoftContacts::new(tokens, tls.clone());
+            if !microsoft.allowed().await? {
+                return Err(SyncError::Auth("contacts not allowed".into()));
+            }
+            microsoft.sync().await?
+        }
+    };
+    let failed = |e: String| SyncError::Protocol(e);
+    let book = daemon
+        .store()
+        .ensure_address_book(Some(account.id), source, "", "")
+        .map_err(|e| failed(e.to_string()))?;
+    let mut changed = save(daemon, book, Ok(found)).map_err(failed)?;
+    // Books another way brought would show everyone twice.
+    changed |= daemon
+        .store()
+        .remove_address_books_except(account.id, &[book])
+        .map_err(|e| failed(e.to_string()))?
+        > 0;
+    if provider == OAuthProvider::Google {
+        changed |= fetch_pictures(daemon, book, tls).await;
+    }
+    Ok(changed)
+}
+
+/// Where the account's last API read left off, without making its
+/// address book before the API has answered.
+fn api_token(daemon: &Daemon, account: AccountId, source: BookSource) -> Option<String> {
+    daemon
+        .store()
+        .address_books()
+        .ok()?
+        .into_iter()
+        .find(|b| b.account == Some(account) && b.source == source)?
+        .sync_token
+}
+
+/// The account's CardDAV address books: their ids and URLs.
+fn dav_books(daemon: &Daemon, account: AccountId) -> Result<Vec<(i64, String)>, String> {
+    Ok(daemon
+        .store()
+        .address_books()
+        .map_err(|e| e.to_string())?
+        .into_iter()
+        .filter(|b| b.account == Some(account) && b.source == BookSource::CardDav)
+        .map(|b| (b.id, b.remote_id))
+        .collect())
+}
+
+/// Syncs the account's CardDAV address books, looking for them from
+/// `starts` when `due` or none are known. `None` when the account has no
+/// way in or no address book there; otherwise whether anything changed.
+/// The account's books from any other way go.
+async fn sync_card_dav(
+    daemon: &Arc<Daemon>,
+    account: &Account,
+    tls: &Tls,
+    starts: &[String],
+    due: bool,
+) -> Result<Option<bool>, String> {
+    let Some(dav) = card_dav(daemon, account.id, tls.clone()).await? else {
+        return Ok(None);
+    };
+    let mut books = dav_books(daemon, account.id)?;
+    if due || books.is_empty() {
+        match dav.discover(starts).await {
+            Ok(found) if !found.is_empty() => {
+                let store = daemon.store();
+                let mut kept = Vec::new();
+                for collection in &found {
+                    let id = store
+                        .ensure_address_book(
+                            Some(account.id),
+                            BookSource::CardDav,
+                            &collection.url,
+                            &collection.name,
+                        )
+                        .map_err(|e| e.to_string())?;
+                    kept.push((id, collection.url.clone()));
+                }
+                books = kept;
+            }
+            Ok(_) => {
+                tracing::debug!(account = %account.id, "contacts: no CardDAV address book");
+            }
+            // Keeps the books it had: the server may be down.
+            Err(err) => {
+                tracing::debug!(account = %account.id, %err, "contacts: no CardDAV");
+            }
         }
     }
+    if books.is_empty() {
+        return Ok(None);
+    }
+    let ids: Vec<i64> = books.iter().map(|(id, _)| *id).collect();
+    let mut changed = daemon
+        .store()
+        .remove_address_books_except(account.id, &ids)
+        .map_err(|e| e.to_string())?
+        > 0;
+    for (book, url) in books {
+        let token = sync_token(daemon, book);
+        let known = daemon
+            .store()
+            .contact_etags(book)
+            .map_err(|e| e.to_string())?;
+        let found = dav.sync(&url, token.as_deref(), &known).await;
+        changed |= save(daemon, book, found)?;
+    }
+    Ok(Some(changed))
+}
+
+fn unix_now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs() as i64)
 }
 
 /// The account's CardDAV login: its password with its IMAP user name.
@@ -205,6 +316,29 @@ pub(super) async fn card_dav(
     account: AccountId,
     tls: Tls,
 ) -> Result<Option<CardDav>, String> {
+    let oauth = daemon
+        .store()
+        .account_settings(account)
+        .map_err(|e| e.to_string())?
+        .and_then(|s| s.oauth);
+    match oauth {
+        // Google's CardDAV server takes the account's sign-in.
+        Some(OAuthProvider::Google) => {
+            let tokens = daemon.oauth_tokens(account, OAuthProvider::Google).await?;
+            // A sign-in from before Katna asked for it cannot use it.
+            if !tokens
+                .has_scope(katna_sync::oauth::GOOGLE_CARDDAV)
+                .await
+                .map_err(|e| e.to_string())?
+            {
+                return Ok(None);
+            }
+            let token = tokens.access_token().await.map_err(|e| e.to_string())?;
+            return Ok(Some(CardDav::bearer(&token, tls)));
+        }
+        Some(OAuthProvider::Microsoft) => return Ok(None),
+        None => {}
+    }
     let Some(password) = daemon
         .secrets
         .password(account)

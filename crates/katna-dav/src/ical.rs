@@ -23,7 +23,9 @@ use crate::recurrence::{Rule, last_start};
 
 mod write;
 
-pub use write::{escape, fold, recurrence_lines, time_value, write_calendar, write_event};
+pub use write::{
+    escape, fold, recurrence_lines, reply_calendar, time_value, write_calendar, write_event,
+};
 
 /// One content line: `NAME;PARAM=value:VALUE`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -477,7 +479,7 @@ pub fn duration(text: &str) -> Option<i64> {
 }
 
 /// An address from `mailto:…`.
-fn address(value: &str) -> String {
+pub(crate) fn address(value: &str) -> String {
     let value = value.trim();
     let bare = if value.len() >= 7 && value[..7].eq_ignore_ascii_case("mailto:") {
         &value[7..]

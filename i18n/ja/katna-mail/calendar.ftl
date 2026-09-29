@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = 他 { $count } 件
 calendar-repeats = 繰り返し
 calendar-join = 参加
+calendar-email-guests = ゲストにメールを送信
+calendar-running-late = 遅れます
+calendar-late-subject = 遅れます: { $title }
+calendar-late-body = { $title } に数分遅れます。申し訳ありません。すぐに向かいます。
 calendar-guests =
     { $count ->
        *[other] ゲスト { $count } 人

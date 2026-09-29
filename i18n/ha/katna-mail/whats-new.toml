@@ -1255,3 +1255,17 @@ text = """
 Yanzu ayyuka suna daidaita da Yahoo, Zoho, iCloud, Fastmail da sauran asusu waɗanda ayyukansu suke a wani sabar dabam da na wasiƙarsu.
 Katna tana fara gwada mafi kyawun hanyar kowane asusu, sannan ta tuna wadda ta yi aiki.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Shirya taro daga wasiƙa"
+text = """
+Danna dama a kan tattaunawa, ko buɗe ⋮, sannan zaɓi Shirya taro: sabon taron yana buɗewa a shafin Kalanda
+da take na tattaunawar a matsayin sunansa, da duk waɗanda ke cikin tattaunawar a matsayin baƙi.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Kana makara? Gaya wa kowa da danna sau ɗaya"
+text = """
+Taron da ke da baƙi yanzu yana da Aika wa baƙi wasiƙa, kuma daga awa ɗaya kafin farawa, Ina makara:
+wasiƙa ga kowa, daga asusun kalandar, a shirye don aikawa.
+"""

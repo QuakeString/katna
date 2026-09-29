@@ -17,6 +17,7 @@ use katna_store::{BookSync, SyncedContact, SyncedGroup};
 use crate::{
     Error, Result,
     autoconfig::http::{self, Reply},
+    methods::{self, Dav},
     net::Tls,
 };
 
@@ -52,56 +53,19 @@ pub struct CardDav {
 }
 
 /// Where to look for an account's address books: a URL the user or a
-/// test gave, the provider's known server, then the `.well-known` address
-/// of the mail domain and of the IMAP server's domain.
+/// test gave, then the provider's known server and the `.well-known`
+/// addresses of the mail and IMAP domains
+/// ([`crate::methods::dav_start_urls`]).
 pub fn start_urls(configured: Option<&str>, address: &str, imap_host: Option<&str>) -> Vec<String> {
-    let mut urls: Vec<String> = Vec::new();
-    let mut add = |url: String| {
+    let mut urls: Vec<String> = configured
+        .map(str::trim)
+        .filter(|u| !u.is_empty())
+        .map(str::to_owned)
+        .into_iter()
+        .collect();
+    for url in methods::dav_start_urls(Dav::Card, address, imap_host) {
         if !urls.contains(&url) {
             urls.push(url);
-        }
-    };
-    if let Some(url) = http::test_url("KATNA_CARDDAV_URL") {
-        add(url);
-    }
-    if let Some(url) = configured.map(str::trim).filter(|u| !u.is_empty()) {
-        add(url.to_owned());
-    }
-    let domain = address
-        .rsplit_once('@')
-        .map(|(_, d)| d.trim().to_ascii_lowercase())
-        .unwrap_or_default();
-    let known = match domain.as_str() {
-        "fastmail.com" | "fastmail.fm" | "fastmail.net" | "sent.com" | "messagingengine.com" => {
-            Some("https://carddav.fastmail.com/.well-known/carddav")
-        }
-        "icloud.com" | "me.com" | "mac.com" => Some("https://contacts.icloud.com/"),
-        "yahoo.com" | "ymail.com" | "rocketmail.com" => {
-            Some("https://carddav.address.yahoo.com/.well-known/carddav")
-        }
-        "mailbox.org" => Some("https://dav.mailbox.org/.well-known/carddav"),
-        "posteo.de" | "posteo.net" => Some("https://posteo.de:8843/.well-known/carddav"),
-        _ => None,
-    };
-    if let Some(url) = known {
-        add(url.to_owned());
-    }
-    let valid = |d: &str| {
-        !d.is_empty()
-            && d.contains('.')
-            && d.chars()
-                .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-')
-    };
-    if valid(&domain) {
-        add(format!("https://{domain}/.well-known/carddav"));
-    }
-    if let Some(host) = imap_host.map(|h| h.trim().to_ascii_lowercase()) {
-        // imap.example.com → example.com, and the host itself.
-        let parent = host.split_once('.').map(|(_, rest)| rest.to_owned());
-        for d in [parent.unwrap_or_default(), host] {
-            if valid(&d) && d.contains('.') {
-                add(format!("https://{d}/.well-known/carddav"));
-            }
         }
     }
     urls
@@ -233,6 +197,14 @@ impl CardDav {
             base64::engine::general_purpose::STANDARD.encode(format!("{user}:{password}"));
         Self {
             authorization: format!("Basic {credentials}"),
+            tls,
+        }
+    }
+
+    /// Signs in with an OAuth access token, as Google's CardDAV server asks.
+    pub fn bearer(token: &str, tls: Tls) -> Self {
+        Self {
+            authorization: format!("Bearer {token}"),
             tls,
         }
     }

@@ -288,6 +288,17 @@ pub async fn save_contact(
         .map_err(|err| describe(&err))
 }
 
+/// Saves one of Google's other contacts; returns the new card, or 0 when
+/// it comes with the next sync.
+pub async fn save_other_contact(connection: &Connection, id: i64) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.save_other_contact(id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Deletes saved cards `ids`, from their accounts too.
 pub async fn delete_contacts(connection: &Connection, ids: &[i64]) -> Result<(), String> {
     let pim = PimProxy::new(connection)

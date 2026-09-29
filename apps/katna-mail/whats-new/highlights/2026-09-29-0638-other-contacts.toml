@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Other contacts"
+text = """
+Contacts has Other contacts: people you've mailed from Gmail but never
+saved, as Gmail keeps them. Save anyone with one click, with an Undo, or
+start a mail to them.
+"""

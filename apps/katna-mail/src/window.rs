@@ -31,6 +31,7 @@ mod compose;
 mod contact;
 mod contacts_edit;
 mod contacts_labels;
+mod contacts_other;
 mod contacts_page;
 mod context_menu;
 mod crash_notice;
