@@ -1190,3 +1190,13 @@ repetições e detalhes. As listas sincronizam com o Google Tasks e o
 Microsoft To Do, e as tarefas do relógio da área de trabalho também
 aparecem aqui.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Seus contatos, de todas as contas"
+text = """
+Contatos, na barra da esquerda, agora lista as pessoas salvas nas suas
+contas do Gmail e do Outlook e em servidores CardDAV, uma só vez mesmo
+quando várias contas as guardam, com marcadores, fotos e seus detalhes.
+Os nomes e as fotos delas também aparecem no seu e-mail e nas sugestões
+de endereços.
+"""

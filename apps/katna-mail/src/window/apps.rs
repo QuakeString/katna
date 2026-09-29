@@ -8,8 +8,8 @@
 //! all switch pages through [`MailWindow::show_page`].
 //!
 //! Adding a page: give it a module of its own under `window/` with a
-//! `render_<name>_page` method, call it from its arm in
-//! [`MailWindow::render_app_page`], and load what it needs in
+//! `render_<name>_page` method (as `calendar.rs` has), call it from its arm
+//! in [`MailWindow::render_app_page`], and load what it needs in
 //! [`MailWindow::open_app`]'s arm. Pages without one show "coming soon".
 
 use std::ops::Range;
@@ -111,6 +111,9 @@ impl MailWindow {
             self.close_settings_page(window, cx);
         }
         self.open_app(app, cx);
+        if app == App::Calendar {
+            window.focus(&self.calendar.focus, cx);
+        }
     }
 
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
@@ -136,6 +139,9 @@ impl MailWindow {
         self.search_panel = None;
         if app == App::Contacts && !matches!(self.contacts.book, Some(Ok(_))) {
             self.load_contacts(cx);
+        }
+        if app == App::Calendar {
+            self.load_calendar(cx);
         }
         if app == App::Notes {
             self.sync_notes_search(cx);
@@ -321,9 +327,10 @@ impl MailWindow {
     ) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts_page(th, window, cx),
+            App::Calendar => self.render_calendar_page(th, cx),
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
-            App::Mail | App::Calendar | App::Feeds => self.render_coming_soon(th),
+            App::Mail | App::Feeds => self.render_coming_soon(th),
         };
         div()
             .flex_1()

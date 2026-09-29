@@ -6,14 +6,16 @@
 //! Tasks are those of every list in `pim.db`: the accounts' own (Google
 //! Tasks, To Do), synced by the daemon, and the ones on this computer. A
 //! task added here goes to the first account's default list once one has
-//! synced. There are no events until Katna syncs calendars (Phase 6); the
-//! clock then shows the day's events from its other sources and the tasks.
+//! synced. Events are those of the calendars the daemon syncs
+//! (`daemon/calendar.rs`), repeating ones expanded in this computer's time
+//! zone ([`katna_dav::occurrences`]).
 
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use jiff::tz::TimeZone;
 use katna_core::{Paths, ids};
-use katna_dbus::agenda::{Item, edit, task};
+use katna_dbus::agenda::{Item, edit, event, task};
 use katna_store::tasks::{Task, TaskFields};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -30,6 +32,12 @@ const MAX_NOTES: usize = 8192;
 const DONE_SHOWN_SECS: i64 = 24 * 60 * 60;
 /// A task's ID on the wire: this letter and its row ID.
 const TASK_ID: char = 't';
+/// An event's ID on the wire: this letter, its row ID, `:` and the
+/// occurrence's start.
+const EVENT_ID: char = 'e';
+/// The longest range `Events` takes, so a caller can't have a series
+/// expanded for centuries.
+const MAX_EVENTS_RANGE: i64 = 400 * 24 * 60 * 60;
 /// Written once Katna's GNOME Shell extension was switched on, so it is
 /// switched on only once: after that, turning it off is the user's choice.
 const EXTENSION_ENABLED_FILE: &str = "gnome-clock-extension-enabled";
@@ -237,7 +245,65 @@ fn wire(task: Task, lists: &HashMap<i64, String>) -> Item {
     ])
 }
 
+/// Tells the clock to read again (calendars changed).
+pub(crate) async fn changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()> {
+    AgendaService::changed(emitter).await
+}
+
 impl AgendaService {
+    /// The occurrences of events overlapping `from..to`.
+    fn event_list(&self, from: i64, to: i64) -> Result<Vec<Item>, CommandError> {
+        if to <= from {
+            return Ok(Vec::new());
+        }
+        let to = to.min(from.saturating_add(MAX_EVENTS_RANGE));
+        let (rows, calendars) = {
+            let store = self.daemon.store();
+            (store.event_rows_in_range(from, to)?, store.calendars()?)
+        };
+        let calendars: std::collections::HashMap<i64, _> =
+            calendars.into_iter().map(|c| (c.id, c)).collect();
+        let tz = TimeZone::system();
+        Ok(katna_dav::occurrences(rows, from, to, &tz)
+            .into_iter()
+            .map(|occurrence| {
+                let data = &occurrence.event.data;
+                let calendar = calendars.get(&occurrence.event.calendar_id);
+                let color = if data.color.is_empty() {
+                    calendar.map(|c| c.color.clone()).unwrap_or_default()
+                } else {
+                    data.color.clone()
+                };
+                Item::from([
+                    (
+                        event::ID.to_owned(),
+                        value(
+                            format!("{EVENT_ID}{}:{}", occurrence.event.id, occurrence.start)
+                                .into(),
+                        ),
+                    ),
+                    (event::TITLE.to_owned(), value(data.title.clone().into())),
+                    (event::START.to_owned(), value(occurrence.start.into())),
+                    (event::END.to_owned(), value(occurrence.end.into())),
+                    (event::ALL_DAY.to_owned(), value(data.all_day.into())),
+                    (
+                        event::LOCATION.to_owned(),
+                        value(data.location.clone().into()),
+                    ),
+                    (event::COLOR.to_owned(), value(color.into())),
+                    (
+                        event::CALENDAR.to_owned(),
+                        value(calendar.map(|c| c.name.clone()).unwrap_or_default().into()),
+                    ),
+                    (
+                        event::JOIN_URL.to_owned(),
+                        value(data.join_url.clone().into()),
+                    ),
+                ])
+            })
+            .collect())
+    }
+
     /// A task changed in Katna: it goes to the service soon, and clients
     /// read again.
     async fn changed_here(&self, emitter: &SignalEmitter<'_>) -> zbus::Result<()> {
@@ -261,8 +327,8 @@ macro_rules! agenda_interface {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         #[zbus::interface(name = $interface)]
         impl AgendaService {
-            async fn events(&self, _from: i64, _to: i64) -> Vec<Item> {
-                Vec::new()
+            async fn events(&self, from: i64, to: i64) -> fdo::Result<Vec<Item>> {
+                Ok(self.event_list(from, to)?)
             }
 
             async fn tasks(&self) -> fdo::Result<Vec<Item>> {
