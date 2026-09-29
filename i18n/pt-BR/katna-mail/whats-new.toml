@@ -1547,3 +1547,11 @@ text = """
 Na página Tarefas, a caixa de pesquisa no topo agora pesquisa suas
 tarefas, as notas e as subtarefas delas, em vez dos seus e-mails.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Pesquise seus eventos"
+text = """
+Na página Agenda, a caixa de pesquisa no topo agora encontra eventos por
+título, local, notas ou convidados, listados por data. Clique em um para
+abri-lo no dia dele; Esc leva você de volta aos resultados.
+"""

@@ -1535,3 +1535,11 @@ text = """
 Görevler sayfasında üstteki arama kutusu artık postalarınız yerine
 görevlerinizde, notlarında ve alt görevlerinde arama yapar.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Etkinliklerinizde arayın"
+text = """
+Takvim sayfasında üstteki arama kutusu artık etkinlikleri başlığa, yere,
+notlara veya konuklara göre bulur ve tarihe göre listeler. Bir etkinliği
+kendi gününde açmak için tıklayın; Esc sizi sonuçlara geri götürür.
+"""

@@ -1564,3 +1564,12 @@ text = """
 Dalam Tugas, kotak carian di bahagian atas kini mencari tugas anda,
 nota dan subtugasnya, dan bukan lagi e-mel anda.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Cari acara anda"
+text = """
+Di halaman Kalendar, kotak carian di bahagian atas kini mencari acara
+mengikut tajuk, tempat, nota atau tetamu, disenaraikan mengikut tarikh.
+Klik satu untuk membukanya pada harinya; Esc membawa anda kembali ke
+hasil carian.
+"""

@@ -1516,3 +1516,11 @@ text = """
 På sidan Uppgifter söker sökrutan högst upp nu i dina uppgifter, deras
 anteckningar och deluppgifter i stället för i din e-post.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Sök i dina händelser"
+text = """
+På sidan Kalender hittar sökrutan högst upp nu händelser efter rubrik,
+plats, anteckningar eller gäster, listade efter datum. Klicka på en för
+att öppna den på dess dag; Esc tar dig tillbaka till resultaten.
+"""

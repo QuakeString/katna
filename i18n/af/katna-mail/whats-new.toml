@@ -1505,3 +1505,11 @@ text = """
 Op die Take-bladsy soek die soekkassie bo nou deur jou take, hul notas
 en subtake, in plaas van jou e-pos.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Soek jou geleenthede"
+text = """
+Op die Kalender-bladsy vind die soekkassie bo nou geleenthede volgens
+titel, plek, notas of gaste, gelys volgens datum. Klik op een om dit op
+sy dag oop te maak; Esc neem jou terug na die resultate.
+"""

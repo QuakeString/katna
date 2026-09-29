@@ -1561,3 +1561,11 @@ text = """
 En la página Tareas, el cuadro de búsqueda de arriba ahora busca en tus
 tareas, sus notas y subtareas, en lugar de en tu correo.
 """
+
+["2026-09-29-1130-calendar-search"]
+title = "Busca en tus eventos"
+text = """
+En la página Calendario, el cuadro de búsqueda de arriba ahora encuentra
+eventos por título, lugar, notas o invitados, ordenados por fecha. Haz
+clic en uno para abrirlo en su día; Esc te devuelve a los resultados.
+"""
