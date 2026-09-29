@@ -112,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ไม่มีอีเมลนั้นแล้ว
 tasks-toast-list-deleted = ลบรายการแล้ว
 tasks-toast-moved = ย้ายไปที่ { $list } แล้ว
+# A task dragged to another place in its own list.
+tasks-toast-placed = ย้ายงานแล้ว
 tasks-toast-rescheduled = เลื่อนเวลางานแล้ว

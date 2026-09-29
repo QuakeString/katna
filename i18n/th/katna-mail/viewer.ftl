@@ -26,6 +26,8 @@ viewer-tool-underline = ขีดเส้นใต้
 viewer-tool-squiggly = เส้นหยัก
 viewer-tool-strike = ขีดทับ
 viewer-tool-pen = ปากกา
+viewer-tool-note = โน้ตติด
+viewer-tool-text = กล่องข้อความ
 viewer-tool-eraser = ยางลบ
 viewer-color-yellow = เหลือง
 viewer-color-green = เขียว
@@ -38,6 +40,12 @@ viewer-color-purple = ม่วง
 viewer-marks-undo-tip = เลิกทำ (Ctrl+Z)
 viewer-marks-redo-tip = ทำซ้ำ (Ctrl+Shift+Z)
 viewer-save-marked-tip = บันทึกสำเนาพร้อมเครื่องหมายของคุณ (Ctrl+S)
+viewer-reply-marked-tip = ตอบกลับพร้อมสำเนาที่ทำเครื่องหมาย
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = เขียนโน้ต
+viewer-text-placeholder = พิมพ์ที่นี่
+viewer-note-done = เสร็จสิ้น
+viewer-note-delete = ลบ
 viewer-markup-protected = PDF นี้ได้รับการป้องกันการเปลี่ยนแปลง จึงทำเครื่องหมายไม่ได้
 viewer-marks-save-failed = บันทึกสำเนาที่ทำเครื่องหมายไม่ได้
 # Asked when closing a PDF, or moving to another attachment, with marks

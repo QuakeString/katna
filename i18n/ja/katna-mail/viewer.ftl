@@ -26,6 +26,8 @@ viewer-tool-underline = 下線
 viewer-tool-squiggly = 波線
 viewer-tool-strike = 取り消し線
 viewer-tool-pen = ペン
+viewer-tool-note = 付箋
+viewer-tool-text = テキストボックス
 viewer-tool-eraser = 消しゴム
 viewer-color-yellow = 黄
 viewer-color-green = 緑
@@ -38,6 +40,12 @@ viewer-color-purple = 紫
 viewer-marks-undo-tip = 元に戻す（Ctrl+Z）
 viewer-marks-redo-tip = やり直す（Ctrl+Shift+Z）
 viewer-save-marked-tip = マークを付けたコピーを保存（Ctrl+S）
+viewer-reply-marked-tip = マークを付けたコピーで返信
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = メモを書く
+viewer-text-placeholder = ここに入力
+viewer-note-done = 完了
+viewer-note-delete = 削除
 viewer-markup-protected = この PDF は変更から保護されているため、マークアップできません。
 viewer-marks-save-failed = マークを付けたコピーを保存できませんでした。
 # Asked when closing a PDF, or moving to another attachment, with marks

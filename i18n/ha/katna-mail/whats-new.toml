@@ -1598,3 +1598,28 @@ shi, share shi, amsa, shiga, aika wa baƙi imel, ba shi launi ko matsar
 da shi zuwa wata kalanda, kuma a kan aiki don kammala shi, sa masa
 tauraro, ba shi wata rana ko share shi. Janyewa na mayar da canji.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Bayanai da rubutu a kan PDF"
+text = """
+Yin alama a PDF yanzu yana da takardu masu manne da akwatunan rubutu:
+danna shafin, rubuta, sannan danna Ctrl+Enter. Sa mai nuni a kan bayani
+don karanta shi, ko danna shi don canza shi. Amsa na aika kwafinka da
+aka yi wa alama kai tsaye cikin amsa ga saƙon.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Ja ayyuka zuwa inda kake so"
+text = """
+Ja aiki sama ko ƙasa a jerinsa, ko zuwa wani jeri, kuma ayyukan da ke
+can za su matsa gefe don nuna inda zai sauka. Google Tasks yana riƙe
+sabon tsarin a wayarka ma, kuma Janyewa na mayar da aikin.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Ƙara aiki daga Kalanda"
+text = """
+Katin sabon taro yana da shafin Aiki, kamar a Google Calendar. Danna
+lokaci, zaɓi Aiki, kuma take, rana da lokaci za su zama aiki a jerin da
+ka zaɓa, tare da bayani idan kana so.
+"""

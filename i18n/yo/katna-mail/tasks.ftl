@@ -112,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Lẹ́tà yẹn kò sí níbí mọ́.
 tasks-toast-list-deleted = A pa àtòjọ náà rẹ́
 tasks-toast-moved = A gbé e lọ sí { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = A gbé iṣẹ́ náà lọ
 tasks-toast-rescheduled = A ti yí àkókò iṣẹ́ padà

@@ -1762,3 +1762,30 @@ escribir a los invitados, darle un color o moverlo a otro calendario, y
 en una tarea para marcarla como hecha, destacarla, darle otro día o
 eliminarla. Deshacer revierte un cambio.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notas y texto en los PDF"
+text = """
+Al marcar un PDF ahora tienes notas adhesivas y cuadros de texto: haz
+clic en la página, escribe y pulsa Ctrl+Enter. Pasa el puntero sobre una
+nota para leerla o haz clic en ella para cambiarla. Responder envía tu
+copia marcada directamente en una respuesta al mensaje.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Arrastra las tareas adonde quieras"
+text = """
+Arrastra una tarea hacia arriba o hacia abajo en su lista, o a otra
+lista, y las tareas de allí se apartan para mostrar dónde quedará.
+Google Tasks conserva el nuevo orden también en tu teléfono, y Deshacer
+devuelve la tarea a su sitio.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Añadir una tarea desde el Calendario"
+text = """
+La tarjeta de evento nuevo tiene una pestaña Tarea, como en Google
+Calendar. Haz clic en una hora, elige Tarea, y el título, el día y la
+hora se convierten en una tarea en la lista que elijas, con una
+descripción si quieres.
+"""

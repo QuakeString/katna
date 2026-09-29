@@ -1814,3 +1814,31 @@ le déplacer vers un autre calendrier, et sur une tâche de la cocher, la
 suivre, lui donner un autre jour ou la supprimer. Annuler revient sur
 une modification.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notes et texte sur les PDF"
+text = """
+L’annotation d’un PDF propose désormais des notes adhésives et des zones
+de texte : cliquez sur la page, tapez votre texte et appuyez sur
+Ctrl+Enter. Pointez sur une note pour la lire, ou cliquez dessus pour la
+modifier. Répondre renvoie directement votre copie annotée dans une
+réponse au message.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Glissez les tâches où vous voulez"
+text = """
+Faites glisser une tâche vers le haut ou le bas de sa liste, ou dans une
+autre liste : les tâches s’écartent pour montrer où elle va se placer.
+Google Tasks garde aussi le nouvel ordre sur votre téléphone, et Annuler
+remet la tâche à sa place.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Ajouter une tâche depuis l’agenda"
+text = """
+La fiche de nouvel événement a un onglet Tâche, comme dans Google
+Calendar. Cliquez sur une heure, choisissez Tâche, et le titre, le jour
+et l’heure deviennent une tâche dans la liste de votre choix, avec une
+description si vous le souhaitez.
+"""

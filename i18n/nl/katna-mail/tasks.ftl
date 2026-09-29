@@ -114,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Die e-mail is er niet meer.
 tasks-toast-list-deleted = Lijst verwijderd
 tasks-toast-moved = Verplaatst naar { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Taak verplaatst
 tasks-toast-rescheduled = Taak verplaatst

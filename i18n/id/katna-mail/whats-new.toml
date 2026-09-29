@@ -1755,3 +1755,29 @@ tamu, memberinya warna, atau memindahkannya ke kalender lain, dan klik
 kanan tugas untuk mencentangnya, memberinya bintang, memberinya hari
 lain, atau menghapusnya. Urungkan membatalkan perubahan.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Catatan dan teks di PDF"
+text = """
+Menandai PDF kini punya catatan tempel dan kotak teks: klik halaman,
+ketik, lalu tekan Ctrl+Enter. Arahkan penunjuk ke catatan untuk
+membacanya, atau klik untuk mengubahnya. Balas mengirim salinan bertanda
+Anda langsung kembali dalam balasan ke pesan.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Seret tugas ke tempat yang Anda mau"
+text = """
+Seret tugas ke atas atau ke bawah dalam daftarnya, atau ke daftar lain,
+dan tugas di sana bergeser untuk menunjukkan tempatnya mendarat. Google
+Tasks juga menyimpan urutan baru di ponsel Anda, dan Urungkan
+mengembalikan tugas itu.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tambahkan tugas dari Kalender"
+text = """
+Kartu acara baru kini punya tab Tugas, seperti di Google Calendar. Klik
+suatu waktu, pilih Tugas, lalu judul, hari, dan waktunya menjadi tugas
+di daftar yang Anda pilih, dengan deskripsi jika mau.
+"""

@@ -26,6 +26,8 @@ viewer-tool-underline = Dwebela
 viewer-tool-squiggly = Umugqa ogobile
 viewer-tool-strike = Dweba phakathi
 viewer-tool-pen = Usiba
+viewer-tool-note = Inothi elinamathelayo
+viewer-tool-text = Ibhokisi lombhalo
 viewer-tool-eraser = Isesula
 viewer-color-yellow = Phuzi
 viewer-color-green = Luhlaza
@@ -38,6 +40,12 @@ viewer-color-purple = Phephuli
 viewer-marks-undo-tip = Hlehlisa (Ctrl+Z)
 viewer-marks-redo-tip = Phinda wenze (Ctrl+Shift+Z)
 viewer-save-marked-tip = Londoloza ikhophi enamamaki akho (Ctrl+S)
+viewer-reply-marked-tip = Phendula ngekhophi emakiwe
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Bhala inothi
+viewer-text-placeholder = Thayipha lapha
+viewer-note-done = Kwenziwe
+viewer-note-delete = Susa
 viewer-markup-protected = Le PDF ivikelwe ezinguqukweni, ngakho ayikwazi ukumakwa.
 viewer-marks-save-failed = Ikhophi emakiwe ayikwazanga ukulondolozwa.
 # Asked when closing a PDF, or moving to another attachment, with marks

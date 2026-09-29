@@ -26,6 +26,8 @@ viewer-tool-underline = Gạch chân
 viewer-tool-squiggly = Gạch lượn sóng
 viewer-tool-strike = Gạch ngang
 viewer-tool-pen = Bút
+viewer-tool-note = Ghi chú dán
+viewer-tool-text = Hộp văn bản
 viewer-tool-eraser = Tẩy
 viewer-color-yellow = Vàng
 viewer-color-green = Xanh lá
@@ -38,6 +40,12 @@ viewer-color-purple = Tím
 viewer-marks-undo-tip = Hoàn tác (Ctrl+Z)
 viewer-marks-redo-tip = Làm lại (Ctrl+Shift+Z)
 viewer-save-marked-tip = Lưu một bản sao có đánh dấu của bạn (Ctrl+S)
+viewer-reply-marked-tip = Trả lời kèm bản sao đã đánh dấu
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Viết ghi chú
+viewer-text-placeholder = Nhập tại đây
+viewer-note-done = Xong
+viewer-note-delete = Xóa
 viewer-markup-protected = PDF này được bảo vệ khỏi thay đổi, nên không thể đánh dấu.
 viewer-marks-save-failed = Không lưu được bản sao đã đánh dấu.
 # Asked when closing a PDF, or moving to another attachment, with marks

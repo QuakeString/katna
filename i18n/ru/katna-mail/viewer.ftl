@@ -26,6 +26,8 @@ viewer-tool-underline = Подчеркнуть
 viewer-tool-squiggly = Волнистая линия
 viewer-tool-strike = Зачеркнуть
 viewer-tool-pen = Перо
+viewer-tool-note = Заметка
+viewer-tool-text = Текстовое поле
 viewer-tool-eraser = Ластик
 viewer-color-yellow = Жёлтый
 viewer-color-green = Зелёный
@@ -38,6 +40,12 @@ viewer-color-purple = Фиолетовый
 viewer-marks-undo-tip = Отменить (Ctrl+Z)
 viewer-marks-redo-tip = Повторить (Ctrl+Shift+Z)
 viewer-save-marked-tip = Сохранить копию с пометками (Ctrl+S)
+viewer-reply-marked-tip = Ответить с копией с пометками
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Напишите заметку
+viewer-text-placeholder = Введите текст
+viewer-note-done = Готово
+viewer-note-delete = Удалить
 viewer-markup-protected = Этот PDF защищён от изменений, поэтому на нём нельзя делать пометки.
 viewer-marks-save-failed = Не удалось сохранить копию с пометками.
 # Asked when closing a PDF, or moving to another attachment, with marks

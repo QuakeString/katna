@@ -1696,3 +1696,29 @@ gửi thư cho khách, đổi màu hoặc chuyển sang lịch khác, và vào m
 cần làm để đánh dấu hoàn thành, gắn dấu sao, dời sang ngày khác hoặc
 xóa. Hoàn tác sẽ hoàn lại một thay đổi.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Ghi chú và văn bản trên PDF"
+text = """
+Khi đánh dấu PDF, giờ đây bạn có ghi chú dán và hộp văn bản: nhấp vào
+trang, nhập nội dung rồi nhấn Ctrl+Enter. Di chuột lên ghi chú để đọc,
+hoặc nhấp vào để sửa. Trả lời gửi ngay bản sao đã đánh dấu của bạn
+trong thư trả lời cho thư đó.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Kéo việc cần làm đến nơi bạn muốn"
+text = """
+Kéo một việc cần làm lên hoặc xuống trong danh sách, hoặc sang danh
+sách khác, các việc ở đó sẽ trượt sang bên để cho thấy nó sẽ nằm ở
+đâu. Google Tasks cũng giữ thứ tự mới trên điện thoại của bạn, và Hoàn
+tác sẽ đặt việc cần làm về chỗ cũ.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Thêm việc cần làm từ Lịch"
+text = """
+Thẻ sự kiện mới có thẻ Việc cần làm, giống như trong Google Lịch. Nhấp
+vào một thời điểm, chọn Việc cần làm, và tiêu đề, ngày cùng giờ sẽ trở
+thành một việc cần làm trong danh sách bạn chọn, kèm mô tả nếu muốn.
+"""

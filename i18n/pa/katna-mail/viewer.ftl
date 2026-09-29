@@ -26,6 +26,8 @@ viewer-tool-underline = ਹੇਠਾਂ ਰੇਖਾ
 viewer-tool-squiggly = ਲਹਿਰਦਾਰ ਰੇਖਾ
 viewer-tool-strike = ਕੱਟੋ
 viewer-tool-pen = ਪੈੱਨ
+viewer-tool-note = ਚਿਪਕਣ ਵਾਲਾ ਨੋਟ
+viewer-tool-text = ਟੈਕਸਟ ਬਾਕਸ
 viewer-tool-eraser = ਇਰੇਜ਼ਰ
 viewer-color-yellow = ਪੀਲਾ
 viewer-color-green = ਹਰਾ
@@ -38,6 +40,12 @@ viewer-color-purple = ਜਾਮਨੀ
 viewer-marks-undo-tip = ਅਣਕੀਤਾ ਕਰੋ (Ctrl+Z)
 viewer-marks-redo-tip = ਮੁੜ ਕਰੋ (Ctrl+Shift+Z)
 viewer-save-marked-tip = ਆਪਣੇ ਨਿਸ਼ਾਨਾਂ ਨਾਲ ਇੱਕ ਕਾਪੀ ਰੱਖਿਅਤ ਕਰੋ (Ctrl+S)
+viewer-reply-marked-tip = ਨਿਸ਼ਾਨਾਂ ਵਾਲੀ ਕਾਪੀ ਨਾਲ ਜਵਾਬ ਦਿਓ
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ਨੋਟ ਲਿਖੋ
+viewer-text-placeholder = ਇੱਥੇ ਟਾਈਪ ਕਰੋ
+viewer-note-done = ਹੋ ਗਿਆ
+viewer-note-delete = ਮਿਟਾਓ
 viewer-markup-protected = ਇਹ PDF ਤਬਦੀਲੀਆਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹੈ, ਇਸ ਲਈ ਇਸ 'ਤੇ ਨਿਸ਼ਾਨ ਨਹੀਂ ਲਗਾਏ ਜਾ ਸਕਦੇ।
 viewer-marks-save-failed = ਨਿਸ਼ਾਨਾਂ ਵਾਲੀ ਕਾਪੀ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।
 # Asked when closing a PDF, or moving to another attachment, with marks

@@ -114,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = वह मेल अब यहां नहीं है।
 tasks-toast-list-deleted = सूची मिटाई गई
 tasks-toast-moved = { $list } में ले जाया गया
+# A task dragged to another place in its own list.
+tasks-toast-placed = टास्क ले जाया गया
 tasks-toast-rescheduled = कार्य का समय बदला गया

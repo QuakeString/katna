@@ -112,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Ozi ahụ anọghịzi ebe a.
 tasks-toast-list-deleted = Ehichapụla ndepụta
 tasks-toast-moved = Akpọgara na { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Akpọgara ọrụ
 tasks-toast-rescheduled = Agbanwere oge ọrụ

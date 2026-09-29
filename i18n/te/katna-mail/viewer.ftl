@@ -26,6 +26,8 @@ viewer-tool-underline = అండర్‌లైన్
 viewer-tool-squiggly = అలల గీత
 viewer-tool-strike = కొట్టివేత
 viewer-tool-pen = పెన్
+viewer-tool-note = స్టిక్కీ నోట్
+viewer-tool-text = టెక్స్ట్ బాక్స్
 viewer-tool-eraser = ఎరేజర్
 viewer-color-yellow = పసుపు
 viewer-color-green = ఆకుపచ్చ
@@ -38,6 +40,12 @@ viewer-color-purple = ఊదా
 viewer-marks-undo-tip = అన్‌డూ (Ctrl+Z)
 viewer-marks-redo-tip = రీడూ (Ctrl+Shift+Z)
 viewer-save-marked-tip = మీ మార్కులతో ఒక కాపీని సేవ్ చేయండి (Ctrl+S)
+viewer-reply-marked-tip = మార్క్ చేసిన కాపీతో రిప్లయి ఇవ్వండి
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = నోట్ రాయండి
+viewer-text-placeholder = ఇక్కడ టైప్ చేయండి
+viewer-note-done = పూర్తయింది
+viewer-note-delete = తొలగించండి
 viewer-markup-protected = ఈ PDF మార్పుల నుండి రక్షించబడింది, కాబట్టి దీనిపై మార్క్ చేయలేరు.
 viewer-marks-save-failed = మార్క్ చేసిన కాపీని సేవ్ చేయలేకపోయాము.
 # Asked when closing a PDF, or moving to another attachment, with marks
