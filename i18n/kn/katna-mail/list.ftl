@@ -387,6 +387,12 @@ menu-add-note = ಟಿಪ್ಪಣಿ ಸೇರಿಸಿ
 menu-print-all = ಎಲ್ಲವನ್ನೂ ಮುದ್ರಿಸಿ
 menu-new-window = ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ
 menu-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ಮುಂದಿನ ಕ್ರಮ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ಇನ್ನಷ್ಟು
 menu-move-to-heading = ಇಲ್ಲಿಗೆ ಸರಿಸಿ:
 menu-find-from = { $name } ಅವರಿಂದ ಬಂದ ಇಮೇಲ್‌ಗಳನ್ನು ಹುಡುಕಿ
 

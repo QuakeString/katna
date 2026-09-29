@@ -39,6 +39,12 @@ contacts-account-failed = အဆက်အသွယ်များကို ဖ�
 # $reason is the server's own words, in English.
 contacts-account-error = အဆက်အသွယ်များကို ဖတ်၍မရပါ- { $reason }
 contacts-account-none = လိပ်စာစာအုပ် မတွေ့ပါ
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = လိပ်စာစာအုပ် မတွေ့ပါ- { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } သည် { $provider } ဖြင့် ဝင်ရောက်ထားသော Katna ကိုသာ အဆက်အသွယ်များကို ပြပါသည်။
+contacts-account-sign-in-with = { $provider } ဖြင့် ဝင်ရောက်ရန်
 contacts-account-looking = အဆက်အသွယ်များကို ရှာနေသည်…
 contacts-account-try-again = ထပ်စမ်းကြည့်ရန်
 contacts-account-try-again-tooltip = ဤအကောင့်၏ အဆက်အသွယ်များကို ယခု ထပ်စစ်ရန်

@@ -39,6 +39,12 @@ contacts-account-failed = পরিচিতিগুলো পড়া যা�
 # $reason is the server's own words, in English.
 contacts-account-error = পরিচিতিগুলো পড়া যায়নি: { $reason }
 contacts-account-none = কোনো ঠিকানা বই পাওয়া যায়নি
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = কোনো ঠিকানা বই পাওয়া যায়নি: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } শুধু { $provider } দিয়ে সাইন ইন করা Katna-কেই পরিচিতি দেখায়।
+contacts-account-sign-in-with = { $provider } দিয়ে সাইন ইন করুন
 contacts-account-looking = পরিচিতি খোঁজা হচ্ছে…
 contacts-account-try-again = আবার চেষ্টা করুন
 contacts-account-try-again-tooltip = এই অ্যাকাউন্টের পরিচিতিগুলো এখনই আবার দেখুন

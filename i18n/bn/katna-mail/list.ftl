@@ -387,6 +387,12 @@ menu-add-note = নোট যোগ করুন
 menu-print-all = সব প্রিন্ট করুন
 menu-new-window = নতুন উইন্ডোতে খুলুন
 menu-move-to = এখানে সরান
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ফলো আপ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = আরও
 menu-move-to-heading = এখানে সরান:
 menu-find-from = { $name }-এর পাঠানো ইমেল খুঁজুন
 

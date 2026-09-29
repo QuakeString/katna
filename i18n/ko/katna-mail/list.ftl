@@ -237,6 +237,12 @@ menu-add-note = 메모 추가
 menu-print-all = 모두 인쇄
 menu-new-window = 새 창에서 열기
 menu-move-to = 이동
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = 후속 조치
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = 더보기
 menu-move-to-heading = 이동할 위치:
 menu-find-from = { $name }님이 보낸 메일 찾기
 

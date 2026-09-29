@@ -441,6 +441,12 @@ menu-add-note = Añadir una nota
 menu-print-all = Imprimir todo
 menu-new-window = Abrir en una ventana nueva
 menu-move-to = Mover a
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Hacer seguimiento
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Más
 menu-move-to-heading = Mover a:
 menu-find-from = Buscar correos de { $name }
 

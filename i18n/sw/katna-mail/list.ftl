@@ -387,6 +387,12 @@ menu-add-note = Ongeza dokezo
 menu-print-all = Chapisha zote
 menu-new-window = Fungua katika dirisha jipya
 menu-move-to = Hamishia
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Fuatilia
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Zaidi
 menu-move-to-heading = Hamishia:
 menu-find-from = Tafuta barua pepe kutoka kwa { $name }
 

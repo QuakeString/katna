@@ -1602,3 +1602,64 @@ nini, na “Jaribu tena” huzitafuta tena mara moja. Akaunti ya Gmail au
 Outlook iliyoongezwa kwa nenosiri hutoa chaguo la kuingia kwa Google au
 Microsoft, jambo ambalo kalenda zake zinahitaji.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Visanduku vya kuteua vinavyoweka tiki"
+text = """
+Kila kisanduku cha kuteua katika Katna Mail sasa kina ukubwa sawa na
+vitufe vya mviringo vilivyo kando yake. Tiki yake hujichora unapokiteua
+na hufutika unapokiondolea uteuzi, katika Mipangilio, orodha ya barua,
+Kalenda, Anwani, Madokezo na vidirisha.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menyu fupi ya kubofya kulia inayotoshea kila wakati"
+text = """
+Menyu ya kubofya kulia ya orodha ya barua huweka vitendo vya kila siku
+juu na kuweka vingine chini ya Fuatilia (majukumu, madokezo, mikutano,
+simu) na Zaidi (taka, umuhimu, kubandika). Hufunguka unapobofya na hukaa
+ndani ya dirisha; katika dirisha fupi au jembamba menyu ndogo hufunguka
+mahali pa menyu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Kwa nini akaunti haina anwani"
+text = """
+Anwani za akaunti zisipoonekana, Anwani sasa inaeleza seva ilijibu nini,
+na “Jaribu tena” huzitafuta tena mara moja. Akaunti ya Gmail au Outlook
+iliyoongezwa kwa nenosiri hutoa chaguo la kuingia kwa Google au
+Microsoft, jambo ambalo anwani zake zinahitaji.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Kisanduku cha kutafuta huonyesha kinapotumika"
+text = """
+Kisanduku cha kutafuta kilicho juu hupata ukingo wa rangi ya msisitizo
+unapoandika ndani yake, kama sehemu nyingine zote, na kidokezo chake cha
+Ctrl+F hujiweka kando hadi ukiache kitupu.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Kila orodha ya majukumu inaonekana"
+text = """
+“Majukumu yote” sasa huonyesha orodha nyingi kando kwa kando kadiri
+zinavyotoshea dirishani, na safu zaidi chini yake, ili kila orodha
+ifikiwe. Orodha mpya husogezwa ionekane mara tu unapoiunda.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Kupitia viambatisho kwa ulaini"
+text = """
+Kwenda kwenye kiambatisho kinachofuata au kilichotangulia katika
+kitazamaji kwa mishale hakumweki tena. Kitazamaji hubaki wazi na faili
+inayofuata huchukua nafasi ya iliyotangulia mara tu inapokuwa tayari.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Buruta madokezo kuyapanga"
+text = """
+Buruta dokezo kwenye ubao wa Madokezo ili kulisogeza, kama katika Keep.
+Madokezo mengine huteleza kando kutoa nafasi, nalo hubaki pale
+unapoliachilia. Ctrl+Z hulirudisha. Kadi sasa hukaa vizuri kwenye safu
+zake, bila mapengo chini ya madokezo mafupi.
+"""

@@ -1662,3 +1662,64 @@ verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
 Parolayla eklenmiş bir Gmail ya da Outlook hesabı, takvimlerinin
 gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "İşaretlenen onay kutuları"
+text = """
+Katna Mail'deki her onay kutusu artık yanındaki yuvarlak düğmelerle aynı
+boyutta. İşareti, kutuyu işaretlediğinizde kendini çiziyor,
+kaldırdığınızda siliniyor; Ayarlar'da, posta listesinde, Takvim'de,
+Kişiler'de, Notlar'da ve iletişim kutularında.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Her zaman sığan daha kısa bir sağ tık menüsü"
+text = """
+Posta listesinin sağ tık menüsü günlük işlemleri üstte tutuyor, gerisini
+Takip et (görevler, notlar, toplantılar, aramalar) ve Diğer (spam, önem,
+sabitleme) altına koyuyor. Tıkladığınız yerde açılıyor ve pencerenin
+içinde kalıyor; kısa ya da dar bir pencerede alt menü, menünün yerinde
+açılıyor.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Bir hesapta neden kişi yok"
+text = """
+Bir hesabın kişileri görünmediğinde Kişiler artık sunucunun ne yanıt
+verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
+Parolayla eklenmiş bir Gmail ya da Outlook hesabı, kişilerinin
+gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Arama kutusu etkin olduğunu gösteriyor"
+text = """
+Üstteki arama kutusu, içine yazarken diğer tüm alanlar gibi vurgu
+renginde bir kenar alıyor ve Ctrl+F ipucu, kutuyu boş bırakana kadar
+kenara çekiliyor.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Her görev listesi görünürde"
+text = """
+“Tüm görevler” artık pencereye sığdığı kadar listeyi yan yana, altında
+da başka satırlarla gösteriyor; böylece her listeye ulaşılabiliyor. Yeni
+bir liste, oluşturduğunuz anda görünür alana kayıyor.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Ekler arasında akıcı geçiş"
+text = """
+Görüntüleyicide oklarla sonraki ya da önceki eke geçmek artık
+titremiyor. Görüntüleyici açık kalıyor ve sonraki dosya hazır olur olmaz
+öncekinin yerini alıyor.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Notları sürükleyerek sıralayın"
+text = """
+Notlar panosunda bir notu taşımak için sürükleyin, Keep'teki gibi. Diğer
+notlar yer açmak için kayarak kenara çekiliyor ve not bıraktığınız yerde
+kalıyor. Ctrl+Z onu geri koyar. Kartlar artık sütunlarına sıkıca
+oturuyor; kısa notların altında boşluk kalmıyor.
+"""

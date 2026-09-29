@@ -39,6 +39,12 @@ contacts-account-failed = 連絡先を読み込めませんでした。
 # $reason is the server's own words, in English.
 contacts-account-error = 連絡先を読み込めませんでした: { $reason }
 contacts-account-none = アドレス帳が見つかりません
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = アドレス帳が見つかりません: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } の連絡先は、{ $provider } でサインインした Katna にのみ表示されます。
+contacts-account-sign-in-with = { $provider } でサインイン
 contacts-account-looking = 連絡先を探しています…
 contacts-account-try-again = 再試行
 contacts-account-try-again-tooltip = このアカウントの連絡先を今すぐ再確認

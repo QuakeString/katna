@@ -387,6 +387,12 @@ menu-add-note = ନୋଟ ଯୋଗ କରନ୍ତୁ
 menu-print-all = ସବୁ ପ୍ରିଣ୍ଟ କରନ୍ତୁ
 menu-new-window = ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ
 menu-move-to = ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ଫଲୋ ଅପ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ଅଧିକ
 menu-move-to-heading = ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ:
 menu-find-from = { $name }ଙ୍କଠାରୁ ଇମେଲ ଖୋଜନ୍ତୁ
 

@@ -39,6 +39,12 @@ contacts-account-failed = Kenalan tidak dapat dibaca.
 # $reason is the server's own words, in English.
 contacts-account-error = Kenalan tidak dapat dibaca: { $reason }
 contacts-account-none = Tiada buku alamat ditemui
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Tiada buku alamat ditemui: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } hanya menunjukkan kenalan kepada Katna yang log masuk dengan { $provider }.
+contacts-account-sign-in-with = Log masuk dengan { $provider }
 contacts-account-looking = Mencari kenalan…
 contacts-account-try-again = Cuba lagi
 contacts-account-try-again-tooltip = Semak kenalan akaun ini semula sekarang
