@@ -80,8 +80,8 @@ use std::time::{Duration, Instant};
 use futures_lite::StreamExt;
 use gpui::{
     AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, MouseButton,
-    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun,
-    UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, rgba,
+    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun, WeakEntity,
+    Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -662,7 +662,14 @@ pub struct MailWindow {
     files_menu: Option<EntryKey>,
     /// Layout and line height the list's lines were measured for.
     list_shape: (bool, u32),
-    nav_scroll: UniformListScrollHandle,
+    nav_list: gpui::ListState,
+    nav_items: Vec<nav::NavItem>,
+    /// Bumped when the folder pane's lines change; `nav_synced` is what
+    /// its list last showed.
+    nav_rev: u64,
+    nav_synced: u64,
+    /// Lines of the folder pane sliding open or shut.
+    nav_fold: Option<nav::Fold>,
     reader_scroll: ScrollHandle,
     tz: TimeZone,
     _subscriptions: Vec<Subscription>,
@@ -876,7 +883,11 @@ impl MailWindow {
             list_state: lines::Lines::new(),
             files_menu: None,
             list_shape: (false, 0),
-            nav_scroll: UniformListScrollHandle::new(),
+            nav_list: nav::nav_list(),
+            nav_items: Vec::new(),
+            nav_rev: 1,
+            nav_synced: 0,
+            nav_fold: None,
             reader_scroll: ScrollHandle::new(),
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
@@ -1128,6 +1139,13 @@ impl MailWindow {
 
     /// With one account the folders stand alone, without an account heading.
     fn rebuild_nav(&mut self) {
+        self.nav_fold = None;
+        self.nav_rev += 1;
+        self.nav_rows = self.nav_rows_now();
+    }
+
+    /// The lines the folder pane shows now.
+    fn nav_rows_now(&self) -> Vec<sidebar::Row> {
         let only = self.shown_account();
         // With one account on show its folders stand alone, never folded.
         let single = only.is_some() || self.tree.accounts.len() == 1;
@@ -1188,7 +1206,7 @@ impl MailWindow {
                 },
             );
         }
-        self.nav_rows = rows;
+        rows
     }
 
     /// The folder the list shows; `None` for search results.
@@ -2936,6 +2954,8 @@ impl Render for MailWindow {
         self.search_panel_spring.tick(window, reduce);
         self.tab_spring.tick(window, reduce);
         self.tick_reorder(window, reduce, cx);
+        self.tick_nav_fold(window, reduce);
+        self.sync_nav_list();
         // Forget the closed conversation once its pane has slid away.
         if !self.reading
             && self.reader.is_some()
