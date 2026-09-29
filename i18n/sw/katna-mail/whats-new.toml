@@ -1593,3 +1593,12 @@ kalamu, kwa rangi unayochagua. Tendua kwa Ctrl+Z, futa alama kwa
 kifutio, kisha uhifadhi nakala yenye alama. Kiambatisho asili kinabaki
 kama kilivyokuwa.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Kwa nini akaunti haina kalenda"
+text = """
+Kalenda za akaunti zisipoonekana, Kalenda sasa inaeleza seva ilijibu
+nini, na “Jaribu tena” huzitafuta tena mara moja. Akaunti ya Gmail au
+Outlook iliyoongezwa kwa nenosiri hutoa chaguo la kuingia kwa Google au
+Microsoft, jambo ambalo kalenda zake zinahitaji.
+"""

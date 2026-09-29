@@ -58,6 +58,12 @@ calendar-account-not-enabled = Ba a kunna damar shiga kalanda don Katna ba tukun
 calendar-account-failed = Ba a iya karanta kalandojin ba.
 calendar-account-error = Ba a iya karanta kalandojin ba: { $reason }
 calendar-account-none = Ba a sami kalanda ba
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Ba a sami kalanda ba: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } yana nuna kalandoji ga Katna ne kawai idan ya shiga da { $provider }.
+calendar-account-sign-in-with = Shiga da { $provider }
 calendar-account-looking = Ana neman kalandoji…
 calendar-account-try-again = Sake gwadawa
 calendar-account-try-again-tooltip = Sake duba kalandojin wannan asusun yanzu

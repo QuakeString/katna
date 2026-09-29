@@ -1622,3 +1622,12 @@ wat jy kies. Ontdoen met Ctrl+Z, vee 'n merk uit met die uitveër, en
 stoor dan 'n gemerkte kopie. Die oorspronklike aanhegsel bly soos dit
 was.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Waarom 'n rekening geen kalenders het nie"
+text = """
+As 'n rekening se kalenders nie wys nie, sê Kalender nou wat die
+bediener geantwoord het, en Probeer weer soek dadelik weer daarna. 'n
+Gmail- of Outlook-rekening wat met 'n wagwoord bygevoeg is, bied aan om
+met Google of Microsoft aan te meld, wat hul kalenders nodig het.
+"""

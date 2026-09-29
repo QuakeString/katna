@@ -58,6 +58,12 @@ calendar-account-not-enabled = ለKatna የቀን መቁጠሪያ መዳረሻ �
 calendar-account-failed = ቀን መቁጠሪያዎቹን ማንበብ አልተቻለም።
 calendar-account-error = ቀን መቁጠሪያዎቹን ማንበብ አልተቻለም፦ { $reason }
 calendar-account-none = ምንም ቀን መቁጠሪያ አልተገኘም
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ምንም ቀን መቁጠሪያ አልተገኘም: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } ቀን መቁጠሪያዎችን የሚያሳየው በ{ $provider } ለገባ Katna ብቻ ነው።
+calendar-account-sign-in-with = በ{ $provider } ይግቡ
 calendar-account-looking = ቀን መቁጠሪያዎችን በመፈለግ ላይ…
 calendar-account-try-again = እንደገና ሞክር
 calendar-account-try-again-tooltip = የዚህን መለያ ቀን መቁጠሪያዎች አሁን እንደገና ፈትሽ

@@ -24,6 +24,12 @@ tasks-account-failed = Không đọc được danh sách việc cần làm.
 # $reason is the server's own words, in English.
 tasks-account-error = Không đọc được danh sách việc cần làm: { $reason }
 tasks-account-none = Không tìm thấy danh sách việc cần làm nào
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Không tìm thấy danh sách việc cần làm nào: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } chỉ hiện việc cần làm cho Katna khi đăng nhập bằng { $provider }.
+tasks-account-sign-in-with = Đăng nhập bằng { $provider }
 tasks-account-looking = Đang tìm danh sách việc cần làm…
 tasks-account-try-again = Thử lại
 tasks-account-try-again-tooltip = Kiểm tra lại việc cần làm của tài khoản này ngay

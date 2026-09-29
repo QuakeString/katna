@@ -57,6 +57,12 @@ calendar-account-not-enabled = Agbanyebeghị ohere kalịnda maka Katna.
 calendar-account-failed = Enweghị ike ịgụ kalịnda.
 calendar-account-error = Enweghị ike ịgụ kalịnda: { $reason }
 calendar-account-none = Ahụghị kalịnda ọ bụla
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Ahụghị kalịnda ọ bụla: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } na-egosi kalịnda naanị Katna banyere na { $provider }.
+calendar-account-sign-in-with = Banye na { $provider }
 calendar-account-looking = Na-achọ kalịnda…
 calendar-account-try-again = Nwaa ọzọ
 calendar-account-try-again-tooltip = Lelee kalịnda akaụntụ a ọzọ ugbu a

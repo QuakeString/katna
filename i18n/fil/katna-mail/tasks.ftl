@@ -24,6 +24,12 @@ tasks-account-failed = Hindi mabasa ang mga listahan ng gawain.
 # $reason is the server's own words, in English.
 tasks-account-error = Hindi mabasa ang mga listahan ng gawain: { $reason }
 tasks-account-none = Walang nakitang listahan ng gawain
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Walang nakitang listahan ng gawain: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = Ipinapakita lang ng { $provider } ang mga gawain sa Katna kapag naka-sign in gamit ang { $provider }.
+tasks-account-sign-in-with = Mag-sign in gamit ang { $provider }
 tasks-account-looking = Naghahanap ng mga listahan ng gawain…
 tasks-account-try-again = Subukang muli
 tasks-account-try-again-tooltip = Suriin muli ngayon ang mga gawain ng account na ito

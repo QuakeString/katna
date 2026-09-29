@@ -1681,3 +1681,12 @@ ondulado o tachar texto, o dibujar con un lápiz, en el color que elijas.
 Deshaz con Ctrl+Z, borra una marca con el borrador y luego guarda una
 copia marcada. El adjunto original queda como estaba.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Por qué una cuenta no tiene calendarios"
+text = """
+Cuando los calendarios de una cuenta no aparecen, Calendario ahora dice
+qué respondió el servidor, y Reintentar los vuelve a buscar al momento.
+Una cuenta de Gmail u Outlook añadida con contraseña ofrece iniciar
+sesión con Google o Microsoft, que es lo que necesitan sus calendarios.
+"""

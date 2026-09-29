@@ -211,7 +211,9 @@ impl MailWindow {
             return false;
         }
         let closed = if self.context_menu.is_some() {
-            self.close_context_menu(cx);
+            if !self.context_menu_back(cx) {
+                self.close_context_menu(cx);
+            }
             true
         } else if self.nav_menu.is_some() {
             self.close_nav_menu(cx);

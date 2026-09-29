@@ -198,7 +198,12 @@ pub mod contacts_state {
     pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
     /// The last sync failed; the detail says why. It is tried again.
     pub const ERROR: &str = "error";
-    /// The account has no address book Katna can reach.
+    /// A mail account signed in with a password at a provider that lets
+    /// Katna into contacts only through its own sign-in (Google,
+    /// Microsoft). The detail is the provider (`OAuthProvider::as_str`).
+    pub const USE_SIGN_IN: &str = "use-sign-in";
+    /// The account has no address book Katna can reach; the detail says
+    /// what the server answered (may be empty).
     pub const NONE: &str = "none";
 }
 

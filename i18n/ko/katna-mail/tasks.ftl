@@ -24,6 +24,12 @@ tasks-account-failed = 할 일 목록을 읽을 수 없습니다.
 # $reason is the server's own words, in English.
 tasks-account-error = 할 일 목록을 읽을 수 없습니다: { $reason }
 tasks-account-none = 할 일 목록을 찾을 수 없음
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = 할 일 목록을 찾을 수 없음: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider }에서는 { $provider }로 로그인한 Katna에만 할 일을 보여 줍니다.
+tasks-account-sign-in-with = { $provider }로 로그인
 tasks-account-looking = 할 일 목록을 찾는 중…
 tasks-account-try-again = 다시 시도
 tasks-account-try-again-tooltip = 지금 이 계정의 할 일을 다시 확인

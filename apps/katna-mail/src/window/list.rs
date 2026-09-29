@@ -307,10 +307,10 @@ impl MailWindow {
         let page_checked = checked > 0
             && (self.page_pick == Some(checked)
                 || self.visible_keys().all(|k| self.checked.contains(&k)));
-        let (box_icon, box_color) = match checked {
-            0 => ("checkbox", th.text_dim),
-            _ if page_checked || self.checked_all => ("checkbox-checked", th.text),
-            _ => ("checkbox-partial", th.text),
+        let select_state = match checked {
+            0 => crate::widgets::Check::Off,
+            _ if page_checked || self.checked_all => crate::widgets::Check::On,
+            _ => crate::widgets::Check::Partial,
         };
         let select = div()
             .id("select")
@@ -339,7 +339,12 @@ impl MailWindow {
                         };
                         this.pick(pick, cx);
                     }))
-                    .child(icon(box_icon, box_color, 20.0)),
+                    .child(crate::widgets::checkbox_colored(
+                        "select-all-box",
+                        select_state,
+                        th.text,
+                        th,
+                    )),
             )
             .child(
                 div()
@@ -1665,11 +1670,23 @@ impl MailWindow {
                 this.picked = None;
                 cx.notify();
             }))
-            .child(if checked {
-                icon("checkbox-checked", th.text, 20.0)
-            } else {
-                off("row-check-rest", "checkbox", 20.0)
-            });
+            // One tree whether checked or not, so the tick can draw in.
+            .child(
+                div()
+                    .with_spring(
+                        ("row-check-rest", ix),
+                        SpringAnimation::new(ROW_LIFT).to(if rest && !checked { 0.0 } else { 1.0 }),
+                        move |el, s: f32| {
+                            el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0))
+                        },
+                    )
+                    .child(crate::widgets::checkbox_colored(
+                        ("row-box", ix),
+                        crate::widgets::Check::from(checked),
+                        th.text,
+                        th,
+                    )),
+            );
         let flagged = row.flagged;
         let star = div()
             .id(("row-star", ix))

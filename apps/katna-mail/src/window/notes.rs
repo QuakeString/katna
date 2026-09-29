@@ -1326,10 +1326,10 @@ impl MailWindow {
                                 item.body = toggle_line(&item.body, ix);
                                 this.change_note(item, cx)
                             }))
-                            .child(icon(
-                                if done { "checkbox-checked" } else { "checkbox" },
-                                th.text_dim,
-                                18.0,
+                            .child(crate::widgets::checkbox(
+                                ("note-check-box", ix),
+                                crate::widgets::Check::from(done),
+                                th,
                             )),
                     )
                     .child(div().flex_1().min_w_0().child(text))

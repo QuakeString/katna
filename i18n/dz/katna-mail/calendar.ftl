@@ -54,6 +54,12 @@ calendar-account-not-enabled = Katna གི་དོན་ལུ་ ཟླ་ཐ
 calendar-account-failed = ཟླ་ཐོ་ཚུ་ལྷག་མ་ཚུགས།
 calendar-account-error = ཟླ་ཐོ་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
 calendar-account-none = ཟླ་ཐོ་ག་ནི་ཡང་ མ་ཐོབ།
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ཟླ་ཐོ་ག་ནི་ཡང་ མ་ཐོབ།: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } གིས་ ཟླ་ཐོ་ཚུ་ { $provider } གིས་ནང་བསྐྱོད་འབད་མི་ Katna ལུ་རྐྱངམ་ཅིག་སྟོནམ་ཨིན།
+calendar-account-sign-in-with = { $provider } གིས་ ནང་བསྐྱོད་འབད།
 calendar-account-looking = ཟླ་ཐོ་ཚུ་འཚོལ་དོ…
 calendar-account-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
 calendar-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་ཟླ་ཐོ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།

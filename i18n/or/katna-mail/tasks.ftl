@@ -24,6 +24,12 @@ tasks-account-failed = କାର୍ଯ୍ୟ ତାଲିକା ପଢ଼ାଯ�
 # $reason is the server's own words, in English.
 tasks-account-error = କାର୍ଯ୍ୟ ତାଲିକା ପଢ଼ାଯାଇପାରିଲା ନାହିଁ: { $reason }
 tasks-account-none = କୌଣସି କାର୍ଯ୍ୟ ତାଲିକା ମିଳିଲା ନାହିଁ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = କୌଣସି କାର୍ଯ୍ୟ ତାଲିକା ମିଳିଲା ନାହିଁ: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } କେବଳ { $provider } ସହିତ ସାଇନ ଇନ ହୋଇଥିବା Katnaକୁ କାର୍ଯ୍ୟ ଦେଖାଏ।
+tasks-account-sign-in-with = { $provider } ସହିତ ସାଇନ ଇନ କରନ୍ତୁ
 tasks-account-looking = କାର୍ଯ୍ୟ ତାଲିକା ଖୋଜାଯାଉଛି…
 tasks-account-try-again = ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ
 tasks-account-try-again-tooltip = ଏହି ଆକାଉଣ୍ଟର କାର୍ଯ୍ୟ ଏବେ ପୁଣି ଯାଞ୍ଚ କରନ୍ତୁ

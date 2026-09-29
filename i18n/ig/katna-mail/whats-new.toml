@@ -1594,3 +1594,9 @@ title = "Tinye akara na PDF"
 text = """
 Pịa pen dị na onye nlele PDF iji mee ka ederede pụta ìhè, kpọọ akara n'okpuru ya, akara ebili mmiri ma ọ bụ gbachapụ ya, ma ọ bụ see ihe na pen, na agba ị họọrọ. Megharịa na Ctrl+Z, hichapụ akara na ihe nhichapụ, wee chekwaa mbipụta nwere akara. Mgbakwunye mbụ ahụ ka dị ka ọ dị.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Ihe mere akaụntụ enweghị kalịnda"
+text = """
+Mgbe kalịnda nke akaụntụ anaghị egosi, Kalịnda na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kalịnda ha chọrọ.
+"""

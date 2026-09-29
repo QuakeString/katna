@@ -24,6 +24,12 @@ tasks-account-failed = 无法读取任务列表。
 # $reason is the server's own words, in English.
 tasks-account-error = 无法读取任务列表：{ $reason }
 tasks-account-none = 未找到任务列表
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = 未找到任务列表：{ $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } 只向使用 { $provider } 登录的 Katna 显示任务。
+tasks-account-sign-in-with = 使用 { $provider } 登录
 tasks-account-looking = 正在查找任务列表…
 tasks-account-try-again = 重试
 tasks-account-try-again-tooltip = 立即重新检查此账号的任务

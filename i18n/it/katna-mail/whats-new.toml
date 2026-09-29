@@ -1685,3 +1685,12 @@ penna, nel colore che scegli. Annulla con Ctrl+Z, cancella un segno con
 la gomma, poi salva una copia annotata. L'allegato originale resta
 com'era.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Perché un account non ha calendari"
+text = """
+Quando i calendari di un account non compaiono, Calendario ora dice cosa
+ha risposto il server, e «Riprova» li cerca di nuovo subito. Un account
+Gmail o Outlook aggiunto con una password propone di accedere con Google
+o Microsoft, come richiedono i loro calendari.
+"""

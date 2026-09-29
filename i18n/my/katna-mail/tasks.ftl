@@ -24,6 +24,12 @@ tasks-account-failed = လုပ်ဆောင်စရာ စာရင်း�
 # $reason is the server's own words, in English.
 tasks-account-error = လုပ်ဆောင်စရာ စာရင်းများကို ဖတ်၍မရပါ- { $reason }
 tasks-account-none = လုပ်ဆောင်စရာ စာရင်း မတွေ့ပါ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = လုပ်ဆောင်စရာ စာရင်း မတွေ့ပါ- { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } သည် { $provider } ဖြင့် ဝင်ရောက်ထားသော Katna ကိုသာ လုပ်ဆောင်စရာများကို ပြပါသည်။
+tasks-account-sign-in-with = { $provider } ဖြင့် ဝင်ရောက်ရန်
 tasks-account-looking = လုပ်ဆောင်စရာ စာရင်းများကို ရှာနေသည်…
 tasks-account-try-again = ထပ်စမ်းကြည့်ရန်
 tasks-account-try-again-tooltip = ဤအကောင့်၏ လုပ်ဆောင်စရာများကို ယခု ထပ်စစ်ရန်

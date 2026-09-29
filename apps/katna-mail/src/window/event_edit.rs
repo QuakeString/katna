@@ -1455,10 +1455,10 @@ impl MailWindow {
             .hover(|s| s.bg(rgba(th.hover)))
             .text_size(px(14.0))
             .text_color(rgba(th.text))
-            .child(icon(
-                if on { "checkbox-checked" } else { "checkbox" },
-                if on { th.accent } else { th.text_dim },
-                20.0,
+            .child(crate::widgets::checkbox(
+                "calendar-all-day-box",
+                crate::widgets::Check::from(on),
+                th,
             ))
             .child(tr!("calendar-all-day-box"))
             .on_click(cx.listener(|this, _, _, cx| {

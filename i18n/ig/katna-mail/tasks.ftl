@@ -24,6 +24,12 @@ tasks-account-failed = Enweghị ike ịgụ ndepụta ọrụ.
 # $reason is the server's own words, in English.
 tasks-account-error = Enweghị ike ịgụ ndepụta ọrụ: { $reason }
 tasks-account-none = Ahụghị ndepụta ọrụ ọ bụla
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Ahụghị ndepụta ọrụ ọ bụla: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } na-egosi ọrụ naanị Katna banyere na { $provider }.
+tasks-account-sign-in-with = Banye na { $provider }
 tasks-account-looking = Na-achọ ndepụta ọrụ…
 tasks-account-try-again = Nwaa ọzọ
 tasks-account-try-again-tooltip = Lelee ọrụ akaụntụ a ọzọ ugbu a
