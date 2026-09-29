@@ -913,6 +913,31 @@ pub struct CalendarView {
     /// A second column of hours in another time zone (IANA name); empty
     /// for none.
     pub second_time_zone: String,
+    /// How many days the custom view shows, 2 to 7; 0 for the default.
+    pub custom_days: u8,
+    /// Named groups of calendars shown together, as Fantastical's
+    /// calendar sets: one click shows a set's calendars and hides the rest.
+    pub sets: Vec<CalendarSet>,
+}
+
+/// One of [`CalendarView::sets`].
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CalendarSet {
+    pub name: String,
+    /// The calendars shown (the Calendar page's IDs; birthdays included).
+    pub calendars: Vec<i64>,
+}
+
+impl CalendarView {
+    /// The days of the custom view: [`Self::custom_days`], or 4 as
+    /// Google Calendar starts it.
+    pub fn custom_days(&self) -> u8 {
+        match self.custom_days {
+            n @ 2..=7 => n,
+            _ => 4,
+        }
+    }
 }
 
 /// [`CalendarView::density`], as Google Calendar has them.

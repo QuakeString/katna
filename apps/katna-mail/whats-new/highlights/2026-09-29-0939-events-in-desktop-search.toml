@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Find events from the desktop"
+text = """
+Type an event's name in KRunner or GNOME's search to see when it's next,
+and press Enter to open that day in Calendar.
+"""
