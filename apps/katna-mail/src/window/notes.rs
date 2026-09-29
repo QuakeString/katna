@@ -1266,10 +1266,13 @@ impl MailWindow {
         // A formatted note shows its headings, bold, italic and underline.
         let formatted = format::card_paras(&note.body, &note.html);
         let body = lines.into_iter().map(|(ix, check, text)| {
-            let styled = formatted.as_ref().and_then(|paras| paras.get(ix)).map(|para| {
-                let skip = if check.is_some() { UNTICKED.len() } else { 0 };
-                format::card_line(para, skip)
-            });
+            let styled = formatted
+                .as_ref()
+                .and_then(|paras| paras.get(ix))
+                .map(|para| {
+                    let skip = if check.is_some() { UNTICKED.len() } else { 0 };
+                    format::card_line(para, skip)
+                });
             let scale = styled.as_ref().map_or(1.0, |(_, scale)| *scale);
             let row = div()
                 .flex()
@@ -1296,7 +1299,8 @@ impl MailWindow {
                                 cx.stop_propagation();
                                 let mut item = item.clone();
                                 if !item.html.is_empty() {
-                                    item.html = format::toggle_html_line(&item.body, &item.html, ix);
+                                    item.html =
+                                        format::toggle_html_line(&item.body, &item.html, ix);
                                 }
                                 item.body = toggle_line(&item.body, ix);
                                 this.change_note(item, cx)
@@ -1802,22 +1806,24 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(2.0))
-                    .child(tool("format-text", tr!("notes-format")).on_click(cx.listener(
-                        |this, _, window, cx| {
-                            let Some(editor) =
-                                this.notes.as_mut().and_then(|p| p.editor.as_mut())
-                            else {
-                                return;
-                            };
-                            editor.format = !editor.format;
-                            editor.palette = false;
-                            editor.places = false;
-                            editor.picker = None;
-                            let focus = editor.body.focus_handle(cx);
-                            window.focus(&focus, cx);
-                            cx.notify();
-                        },
-                    )))
+                    .child(
+                        tool("format-text", tr!("notes-format")).on_click(cx.listener(
+                            |this, _, window, cx| {
+                                let Some(editor) =
+                                    this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                else {
+                                    return;
+                                };
+                                editor.format = !editor.format;
+                                editor.palette = false;
+                                editor.places = false;
+                                editor.picker = None;
+                                let focus = editor.body.focus_handle(cx);
+                                window.focus(&focus, cx);
+                                cx.notify();
+                            },
+                        )),
+                    )
                     .child(tool("text-color", tr!("notes-color")).on_click(cx.listener(
                         |this, _, _, cx| {
                             if let Some(editor) =

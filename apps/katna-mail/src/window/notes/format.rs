@@ -62,7 +62,10 @@ pub(super) fn doc_of(body: &str, formatted: &str) -> Doc {
 
 /// The paragraphs of `doc`, table cells too, in order.
 fn paras(doc: &Doc) -> Vec<&Para> {
-    doc.paths().into_iter().filter_map(|p| doc.para(p)).collect()
+    doc.paths()
+        .into_iter()
+        .filter_map(|p| doc.para(p))
+        .collect()
 }
 
 /// `doc`'s plain text: a line per paragraph.
@@ -172,7 +175,7 @@ pub(super) fn card_line(para: &Para, skip: usize) -> (AnyElement, f32) {
             font_weight: style.bold.then_some(FontWeight::BOLD),
             font_style: style.italic.then_some(FontStyle::Italic),
             underline: style.underline.then(|| UnderlineStyle {
-                thickness: gpui::px(1.0),
+                thickness: px(1.0),
                 ..UnderlineStyle::default()
             }),
             ..HighlightStyle::default()
@@ -181,7 +184,11 @@ pub(super) fn card_line(para: &Para, skip: usize) -> (AnyElement, f32) {
             highlights.push((start..end, highlight));
         }
     }
-    let text = if text.is_empty() { " ".to_owned() } else { text };
+    let text = if text.is_empty() {
+        " ".to_owned()
+    } else {
+        text
+    };
     (
         StyledText::new(text)
             .with_highlights(highlights)
@@ -240,7 +247,9 @@ impl MailWindow {
                 .items_center()
                 .rounded(px(8.0))
                 .text_size(px(13.0))
-                .when(value != Heading::Normal, |d| d.font_weight(FontWeight::BOLD))
+                .when(value != Heading::Normal, |d| {
+                    d.font_weight(FontWeight::BOLD)
+                })
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .when(heading == value, |d| d.bg(rgba(th.nav_selected)))
@@ -275,7 +284,13 @@ impl MailWindow {
                     tr!("notes-format-normal"),
                     Heading::Normal,
                 ))
-                .child(div().w(px(1.0)).h(px(20.0)).mx(px(4.0)).bg(rgba(th.divider)))
+                .child(
+                    div()
+                        .w(px(1.0))
+                        .h(px(20.0))
+                        .mx(px(4.0))
+                        .bg(rgba(th.divider)),
+                )
                 .child(
                     tool(
                         "note-bold",

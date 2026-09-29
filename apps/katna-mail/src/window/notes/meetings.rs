@@ -90,9 +90,7 @@ impl MailWindow {
                 .paths()
                 .get(line)
                 .map_or(doc.end(), |path| katna_ui::rich::Pos::new(*path, 0));
-            editor
-                .body
-                .update(cx, |area, cx| area.set_doc(doc, at, cx));
+            editor.body.update(cx, |area, cx| area.set_doc(doc, at, cx));
         }
         if let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) {
             editor.changed = false;

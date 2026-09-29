@@ -99,6 +99,18 @@ notes-meeting-actions = Action items
 notes-event = Event
 notes-open-event = Open the event
 
+## Formatting
+
+# In a note's toolbar: shows the formatting row (Keep's "Formatting options").
+notes-format = Formatting
+notes-format-heading-1 = Heading 1
+notes-format-heading-2 = Heading 2
+notes-format-normal = Normal text
+notes-format-bold = Bold
+notes-format-italic = Italic
+notes-format-underline = Underline
+notes-format-clear = Clear formatting
+
 ## Tasks
 
 # In a note's toolbar: a task made from the checklist line the cursor is on.
