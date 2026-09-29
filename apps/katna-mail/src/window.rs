@@ -1963,6 +1963,7 @@ impl MailWindow {
             self.load_calendar(cx);
         }
         self.load_agenda(cx);
+        self.forget_invite_looks();
         if self.mail.is_err() {
             // The daemon may have made the store since.
             self.reopen(cx);

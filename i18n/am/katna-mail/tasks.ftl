@@ -6,6 +6,7 @@
 
 tasks-create = ፍጠር
 tasks-all = ሁሉም ተግባራት
+tasks-today = ዛሬ
 tasks-starred = ኮከብ የተደረገባቸው
 tasks-new-list = አዲስ ዝርዝር ፍጠር
 tasks-on-this-computer = በዚህ ኮምፒዩተር ላይ
@@ -21,6 +22,9 @@ tasks-title-placeholder = ርዕስ
 tasks-add-step = ንዑስ ተግባር ያክሉ
 tasks-empty = ገና ምንም ተግባር የለም። ከላይ አንድ ያክሉ።
 tasks-starred-empty = እዚህ ለማየት በተግባር ላይ ኮከብ ያድርጉ።
+tasks-today-empty = ዛሬ የሚጠናቀቅ ምንም የለም።
+tasks-today-date = { $weekday }፣ { $day }
+tasks-overdue = ያለፈባቸው
 tasks-completed = { $count ->
     [one] የተጠናቀቁ ({ $count })
    *[other] የተጠናቀቁ ({ $count })

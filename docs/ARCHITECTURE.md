@@ -2601,8 +2601,9 @@ away; he can still change them.
   times, `trashed_at`, `server_uid` and `dirty`. `note_gone` lists server
   copies still to delete. Changes are journaled as `note`.
 - **D-Bus.** `SaveNote(NoteItem)` (ID 0 makes a new one on top) returns
-  the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`. Apps read notes
-  from the store.
+  the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`;
+  `RelabelNotes(ids, old, new)` renames, deletes or adds a label (at
+  most 50 characters). Apps read notes from the store.
 - **Sync.** A note of a mail account is kept in that account's `Notes`
   folder in Apple's format (`katna_sync::notes`): one message per note
   with `X-Uniform-Type-Identifier: com.apple.mail-note`,
@@ -2635,8 +2636,18 @@ away; he can still change them.
   them. A note with a link has a Mail chip (on its card and in the open
   note) that opens the mail again. Gmail has no key for Keep, so there
   is none.
+- **Labels.** As in Keep. The label button on an open note opens "Label
+  note": a box to find or make a label over the labels to tick; Enter
+  makes the one typed. A note shows its labels as chips (× takes one off
+  in the open note; a chip on a card opens that label's board). The side
+  list lists every label between Notes and Edit labels, and a label's
+  board shows its notes, with "Take a note…" making notes that have it.
+  Edit labels renames labels (Enter or Done) and deletes them, with Undo;
+  a label lives only on its notes, so there is no empty label, and a
+  label's board goes back to Notes once no note has it. Labels travel in
+  `X-Katna-Labels`; there is no schema change.
 - **Later.** Meeting notes from an event, a checklist line made a task,
-  labels, formatting, pictures.
+  formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -3341,8 +3352,18 @@ most useful reason is shown. Changes go back the way their calendar came
   is no calendar at all.
 - `jiff` for time zones; recurrence is expanded when read, with
   exceptions (`RECURRENCE-ID`, `EXDATE`).
-- Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail,
-  sent through Google or Graph when the invitation belongs to that account.
+- Invitations (iTIP/iMIP) shared with Katna Mail: a mail with a
+  `text/calendar` part (`katna_render::calendar_part`) shows a card at the
+  top of the message (`apps/katna-mail/src/window/reader/invite.rs`):
+  `METHOD:REQUEST` shows the event, the user's day two hours either side
+  (clashes with busy events marked), Join, Open in Calendar and "Going? Yes
+  No Maybe"; `REPLY` says who answered and how; `CANCEL` crosses it out.
+  The card reads the calendars read-only and finds the event by its UID:
+  Google, Graph and scheduling CalDAV servers put invitations in the
+  calendar themselves, so answering is the calendar's own `respond`
+  (the whole series for an invitation to one). Until the calendar has it,
+  the card says so. Answering by iMIP mail, for servers that don't
+  schedule, is later.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the
@@ -3359,7 +3380,10 @@ phone and in the web apps: Google Tasks for Google accounts, Microsoft
 To Do (Graph) for Microsoft accounts, to-dos (`VTODO`) on the CalDAV
 server of an account with a password, and lists kept on this computer.
 Google's and Microsoft's CalDAV servers keep no to-dos, so their accounts
-use their own APIs only.
+use their own APIs only. Tasks go through the same ways and remembered
+choice as calendars (§18, `katna_sync::methods`, `Data::Tasks`): a way
+whose sign-in refuses Katna is passed over for the next; a network or
+server error is not.
 
 - **Store** (`pim.db` v5, `katna_store::tasks`): `task_list` (an
   account's list, or one on this computer) and `task`. A change made in
@@ -3386,8 +3410,9 @@ use their own APIs only.
   by its delta link, CalDAV by the list's `getctag` and then the etags of
   its to-dos (only changed ones are downloaded; the list's sync state
   keeps each to-do's etag and `UID`, so a missing one is a deletion). The
-  CalDAV server is found the way its calendars are (§18) and kept between
-  rounds; a collection that holds to-dos is a list, the first holding
+  CalDAV server is found the way its calendars are (§18, so Yahoo, Zoho,
+  iCloud, Fastmail and the rest whose CalDAV is on another host than
+  their mail) and kept between rounds; a collection that holds to-dos is a list, the first holding
   only to-dos the default. A change made in Katna and not yet sent wins over the
   service's. Busy or failing services (429, 5xx) wait for the next round;
   a refused change is logged and left dirty.

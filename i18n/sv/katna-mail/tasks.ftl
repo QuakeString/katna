@@ -6,6 +6,7 @@
 
 tasks-create = Skapa
 tasks-all = Alla uppgifter
+tasks-today = I dag
 tasks-starred = Stjärnmärkta
 tasks-new-list = Skapa ny lista
 tasks-on-this-computer = På den här datorn
@@ -21,6 +22,9 @@ tasks-title-placeholder = Titel
 tasks-add-step = Lägg till en deluppgift
 tasks-empty = Inga uppgifter än. Lägg till en ovan.
 tasks-starred-empty = Stjärnmärk en uppgift för att se den här.
+tasks-today-empty = Inget förfaller i dag.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Försenade
 tasks-completed = { $count ->
     [one] Slutförda ({ $count })
    *[other] Slutförda ({ $count })

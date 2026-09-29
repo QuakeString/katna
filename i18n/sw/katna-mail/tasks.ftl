@@ -6,6 +6,7 @@
 
 tasks-create = Unda
 tasks-all = Majukumu yote
+tasks-today = Leo
 tasks-starred = Yenye nyota
 tasks-new-list = Unda orodha mpya
 tasks-on-this-computer = Kwenye kompyuta hii
@@ -21,6 +22,9 @@ tasks-title-placeholder = Kichwa
 tasks-add-step = Ongeza jukumu dogo
 tasks-empty = Bado hakuna majukumu. Ongeza moja hapo juu.
 tasks-starred-empty = Weka nyota kwenye jukumu ili kuliona hapa.
+tasks-today-empty = Hakuna kinachostahili leo.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Zilizochelewa
 tasks-completed = { $count ->
     [one] Yaliyokamilika ({ $count })
    *[other] Yaliyokamilika ({ $count })

@@ -1274,3 +1274,11 @@ innych kont, nawet gdy znajdują się na innym serwerze niż poczta.
 Najpierw próbuje najlepszego sposobu dla każdego konta, a gdy jest
 niedostępny, innego.
 """
+
+["2026-09-29-0625-tasks-today"]
+title = "Dziś w Zadaniach"
+text = """
+Dziś, w sekcji Wszystkie zadania, zbiera to, co ma termin dzisiaj, oraz
+wszystko, co jest zaległe, ze wszystkich list, wraz z listą, w której
+znajduje się każde zadanie. Zadanie dodane tam ma termin dzisiaj.
+"""

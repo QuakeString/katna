@@ -410,7 +410,12 @@ impl MailWindow {
         }
     }
 
-    fn open_calendar_day(&mut self, day: Date, view: Option<CalView>, cx: &mut Context<Self>) {
+    pub(super) fn open_calendar_day(
+        &mut self,
+        day: Date,
+        view: Option<CalView>,
+        cx: &mut Context<Self>,
+    ) {
         self.calendar.day = day;
         self.calendar.mini = day.first_of_month();
         if let Some(view) = view {
@@ -2215,7 +2220,7 @@ impl MailWindow {
 }
 
 /// "9:00 – 9:30 AM": the start and end times of an event.
-fn time_range(start: i64, end: i64, tz: &TimeZone) -> String {
+pub(super) fn time_range(start: i64, end: i64, tz: &TimeZone) -> String {
     tr!(
         "calendar-time-range",
         start = format::time(civil(start, tz)),

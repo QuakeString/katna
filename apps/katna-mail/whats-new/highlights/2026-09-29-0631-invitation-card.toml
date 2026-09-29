@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Invitations in your mail"
+text = """
+An invitation now shows as a card at the top of the mail: when and where,
+who organized it, your day around it with any clash marked, Join, and
+Going? Yes, No or Maybe, answered right there.
+"""

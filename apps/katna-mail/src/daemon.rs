@@ -57,6 +57,8 @@ pub enum Command {
     TrashNotes(Vec<i64>, bool),
     /// Deletes notes for good.
     DeleteNotes(Vec<i64>),
+    /// Takes a label off notes and puts another on (see `RelabelNotes`).
+    RelabelNotes(Vec<i64>, String, String),
     /// A change on the Tasks page.
     Task(Box<crate::tasks::TaskCommand>),
 }
@@ -70,7 +72,10 @@ impl Command {
     /// Whether this changes notes, so the Notes page reads them again.
     pub fn touches_notes(&self) -> bool {
         match self {
-            Self::SaveNote(_) | Self::TrashNotes(..) | Self::DeleteNotes(_) => true,
+            Self::SaveNote(_)
+            | Self::TrashNotes(..)
+            | Self::DeleteNotes(_)
+            | Self::RelabelNotes(..) => true,
             Self::Several(commands) => commands.iter().any(Self::touches_notes),
             _ => false,
         }
@@ -138,6 +143,7 @@ impl Command {
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
+            | Self::RelabelNotes(..)
             | Self::Event(_)
             | Self::Several(_)
             | Self::Task(_) => {
@@ -236,6 +242,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::RenameContactLabel(old, new) => pim.rename_contact_label(old, new).await,
         Command::DeleteContacts(ids) => pim.delete_contacts(ids).await,
+        Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
         Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
             return Ok(());
         }

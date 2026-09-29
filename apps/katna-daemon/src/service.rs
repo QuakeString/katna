@@ -296,6 +296,15 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_notes(&ids)?)
             }
 
+            async fn relabel_notes(
+                &self,
+                ids: Vec<i64>,
+                old: String,
+                new: String,
+            ) -> fdo::Result<u32> {
+                Ok(self.daemon.relabel_notes(&ids, &old, &new)?)
+            }
+
             async fn undo_send(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.undo_send(id)?)
             }

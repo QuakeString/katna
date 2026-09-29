@@ -338,7 +338,18 @@ impl MailWindow {
     ) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts_page(th, window, cx),
-            App::Calendar => self.render_calendar_page(th, cx),
+            App::Calendar => {
+                // After Ctrl+2 focus is still on the mail list, which is not
+                // on show, so the page's keys and Ctrl+Z would go nowhere.
+                let focused = window.focused(cx);
+                if focused.is_none()
+                    || self.list_focus.is_focused(window)
+                    || self.window_focus.is_focused(window)
+                {
+                    window.focus(&self.calendar.focus, cx);
+                }
+                self.render_calendar_page(th, cx)
+            }
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
             App::Mail | App::Feeds => self.render_coming_soon(th),

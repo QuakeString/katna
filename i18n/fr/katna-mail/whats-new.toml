@@ -1326,3 +1326,11 @@ GMX et d’autres comptes, même lorsqu’ils sont sur un autre serveur que
 le courrier. Il essaie d’abord la meilleure méthode de chaque compte,
 puis une autre si celle-ci est indisponible.
 """
+
+["2026-09-29-0625-tasks-today"]
+title = "Aujourd’hui dans Tâches"
+text = """
+Aujourd’hui, sous Toutes les tâches, réunit ce qui est à faire
+aujourd’hui et tout ce qui est en retard, toutes listes confondues, avec
+la liste de chaque tâche. Une tâche ajoutée ici est due aujourd’hui.
+"""

@@ -36,6 +36,7 @@ use crate::widgets::{
     card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
 };
 
+mod invite;
 mod security;
 mod ticks;
 mod tracking;
@@ -178,6 +179,8 @@ struct Body {
     /// The message as GnuPG opened it (decrypted, or with the signature
     /// taken off), which the attachments are read from. In memory only.
     opened: Option<Arc<Vec<u8>>>,
+    /// The invitation (or answer, or cancellation) the message carries.
+    invite: Option<Arc<invite::Invite>>,
 }
 
 impl Body {
@@ -194,6 +197,13 @@ impl Body {
 }
 
 impl Conversation {
+    /// The invitations of the loaded messages.
+    fn invites(&self) -> impl Iterator<Item = &Arc<invite::Invite>> {
+        self.parts
+            .iter()
+            .filter_map(|p| p.body.as_ref()?.invite.as_ref())
+    }
+
     /// A loaded message of it is HTML that sets its own colors.
     fn has_own_colors(&self) -> bool {
         self.parts.iter().any(|p| {
@@ -1591,6 +1601,12 @@ impl MailWindow {
                     self.translation_bar(ix, id, &view.body, encrypted, th, cx)
                 };
                 let translated = self.translated_blocks(id);
+                let invite = part
+                    .body
+                    .as_ref()
+                    .and_then(|b| b.invite.as_ref())
+                    .filter(|_| !pending)
+                    .map(|invite| self.invite_card(ix, invite, th, cx));
                 div()
                     .flex()
                     .flex_col()
@@ -1611,6 +1627,7 @@ impl MailWindow {
                             .child(note)
                     }))
                     .children(banner)
+                    .children(invite)
                     .children(translation)
                     .child({
                         // Selection follows the order messages are shown in.
@@ -1927,6 +1944,7 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             security: None,
             sealed: None,
             opened: None,
+            invite: None,
         };
     };
     match katna_crypto::protection(&raw) {
@@ -1969,6 +1987,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         security,
         sealed: None,
         opened: None,
+        invite: invite::invite(raw),
     }
 }
 
