@@ -375,7 +375,9 @@ impl MailWindow {
             .pt(px(24.0))
             .flex()
             .flex_row()
-            .items_start()
+            // The title and the lines under it, together, centred on the
+            // icon.
+            .items_center()
             .gap(px(16.0))
             .child(
                 div()
@@ -392,12 +394,9 @@ impl MailWindow {
                 div()
                     .flex_1()
                     .min_w_0()
-                    // The title's first line (28 px) centred on the 48 px
-                    // icon.
-                    .pt(px(10.0))
                     .flex()
                     .flex_col()
-                    .gap(px(4.0))
+                    .gap(px(2.0))
                     .child(div().text_size(px(20.0)).line_height(px(28.0)).child(title))
                     .children(detail.map(|detail| {
                         div()
