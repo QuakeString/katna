@@ -1690,3 +1690,11 @@ verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
 Parolayla eklenmiş bir Gmail ya da Outlook hesabı, kişilerinin
 gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Arama kutusu etkin olduğunu gösteriyor"
+text = """
+Üstteki arama kutusu, içine yazarken diğer tüm alanlar gibi vurgu
+renginde bir kenar alıyor ve Ctrl+F ipucu, kutuyu boş bırakana kadar
+kenara çekiliyor.
+"""

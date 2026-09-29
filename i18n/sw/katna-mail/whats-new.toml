@@ -1630,3 +1630,11 @@ na “Jaribu tena” huzitafuta tena mara moja. Akaunti ya Gmail au Outlook
 iliyoongezwa kwa nenosiri hutoa chaguo la kuingia kwa Google au
 Microsoft, jambo ambalo anwani zake zinahitaji.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Kisanduku cha kutafuta huonyesha kinapotumika"
+text = """
+Kisanduku cha kutafuta kilicho juu hupata ukingo wa rangi ya msisitizo
+unapoandika ndani yake, kama sehemu nyingine zote, na kidokezo chake cha
+Ctrl+F hujiweka kando hadi ukiache kitupu.
+"""

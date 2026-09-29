@@ -1659,3 +1659,10 @@ geantwoord het, en Probeer weer soek dadelik weer daarna. 'n Gmail- of
 Outlook-rekening wat met 'n wagwoord bygevoeg is, bied aan om met Google
 of Microsoft aan te meld, wat hul kontakte nodig het.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Die soekkassie wys wanneer dit aktief is"
+text = """
+Die soekkassie bo kry 'n aksentrand terwyl jy daarin tik, soos elke
+ander veld, en sy Ctrl+F-wenk staan opsy totdat jy dit leeg laat.
+"""

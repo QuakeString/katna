@@ -1708,3 +1708,11 @@ Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
 aan om aan te melden met Google of Microsoft, wat hun contacten nodig
 hebben.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Het zoekvak laat zien wanneer het actief is"
+text = """
+Het zoekvak bovenaan krijgt een rand in de accentkleur terwijl je erin
+typt, net als elk ander veld, en de hint Ctrl+F gaat opzij totdat je het
+leeg laat.
+"""

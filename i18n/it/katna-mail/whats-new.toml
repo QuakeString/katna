@@ -1723,3 +1723,11 @@ risposto il server, e «Riprova» li cerca di nuovo subito. Un account
 Gmail o Outlook aggiunto con una password propone di accedere con Google
 o Microsoft, come richiedono i loro contatti.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "La casella di ricerca mostra quando è attiva"
+text = """
+La casella di ricerca in alto prende un bordo in colore d'accento mentre
+ci scrivi, come ogni altro campo, e il suo suggerimento Ctrl+F si fa da
+parte finché non la lasci vuota.
+"""

@@ -1674,3 +1674,11 @@ svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
 Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
 eller Microsoft, vilket deras kontakter kräver.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Sökrutan visar när den är aktiv"
+text = """
+Sökrutan högst upp får en accentkant medan du skriver i den, precis som
+alla andra fält, och dess Ctrl+F-tips flyttar undan tills du lämnar den
+tom.
+"""

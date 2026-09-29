@@ -1718,3 +1718,11 @@ respondió el servidor, y Reintentar los vuelve a buscar al momento. Una
 cuenta de Gmail u Outlook añadida con contraseña ofrece iniciar sesión
 con Google o Microsoft, que es lo que necesitan sus contactos.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "El cuadro de búsqueda muestra cuándo está activo"
+text = """
+El cuadro de búsqueda de arriba se marca con un borde de color mientras
+escribes en él, como cualquier otro campo, y su indicación Ctrl+F se
+aparta hasta que lo dejas vacío.
+"""

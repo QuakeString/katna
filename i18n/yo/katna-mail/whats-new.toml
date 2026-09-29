@@ -1600,3 +1600,11 @@ lẹ́sẹ̀kẹsẹ̀. Àkáǹtì Gmail tàbí Outlook tí a fi ọ̀rọ̀ a�
 fúnni láti wọlé pẹ̀lú Google tàbí Microsoft, èyí tí àwọn olùbásọ̀rọ̀ wọn
 nílò.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Àpótí ìwádìí ń fi hàn nígbà tó bá ń ṣiṣẹ́"
+text = """
+Àpótí ìwádìí lókè ń ní etí àwọ̀ àfihàn nígbà tí o bá ń tẹ̀ sínú rẹ̀, bí
+gbogbo ààyè mìíràn, ìtọ́sọ́nà Ctrl+F rẹ̀ sì ń yẹra títí tí o bá fi í
+sílẹ̀ ní òfo.
+"""

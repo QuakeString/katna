@@ -1653,3 +1653,10 @@ Khi danh bạ của một tài khoản không hiện, Danh bạ giờ cho biết
 được thêm bằng mật khẩu sẽ đề nghị đăng nhập bằng Google hoặc Microsoft,
 điều mà danh bạ của chúng cần.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Ô tìm kiếm cho thấy khi nào đang hoạt động"
+text = """
+Ô tìm kiếm ở trên cùng có viền màu nhấn khi bạn gõ vào, như mọi trường
+khác, và gợi ý Ctrl+F tạm ẩn đi cho đến khi bạn để trống ô.
+"""

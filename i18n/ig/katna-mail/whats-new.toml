@@ -1618,3 +1618,9 @@ title = "Ihe mere akaụntụ enweghị kọntaktị"
 text = """
 Mgbe kọntaktị nke akaụntụ anaghị egosi, Kọntaktị na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kọntaktị ha chọrọ.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Igbe ọchụchọ na-egosi mgbe ọ na-arụ ọrụ"
+text = """
+Igbe ọchụchọ dị n'elu na-enweta ọnụ agba ntụpọ mgbe ị na-ede na ya, dị ka ogige ọ bụla ọzọ, ntụziaka Ctrl+F ya na-ewepụkwa onwe ya ruo mgbe ị hapụrụ ya ka ọ tọgbọ chakoo.
+"""

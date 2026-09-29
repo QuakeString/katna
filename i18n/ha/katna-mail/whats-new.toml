@@ -1564,3 +1564,9 @@ title = "Dalilin da asusu ba shi da lambobin sadarwa"
 text = """
 Idan lambobin sadarwar wani asusu ba su bayyana ba, Lambobin sadarwa yanzu yana faɗin abin da sabar ta amsa, kuma Sake gwadawa yana sake nemansu nan take. Asusun Gmail ko Outlook da aka ƙara da kalmar sirri yana ba da damar shiga da Google ko Microsoft, abin da lambobin sadarwarsa ke buƙata.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Akwatin bincike yana nuna lokacin da yake aiki"
+text = """
+Akwatin bincike a sama yana samun gefe mai launi yayin da kake rubutu a cikinsa, kamar kowane fili, kuma alamar Ctrl+F ɗinsa tana kawar da kai har sai ka bar shi babu komai.
+"""

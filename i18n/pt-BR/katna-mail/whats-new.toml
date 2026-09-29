@@ -1704,3 +1704,11 @@ servidor respondeu, e “Tentar de novo” procura por eles de novo na hora.
 Uma conta do Gmail ou do Outlook adicionada com senha oferece fazer
 login com o Google ou a Microsoft, o que os contatos delas exigem.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "A caixa de pesquisa mostra quando está ativa"
+text = """
+A caixa de pesquisa no topo ganha uma borda de destaque enquanto você
+digita nela, como todos os outros campos, e a dica Ctrl+F sai do caminho
+até você deixá-la vazia.
+"""

@@ -1697,3 +1697,11 @@ odpowiedział serwer, a „Spróbuj ponownie” od razu szuka ich jeszcze raz.
 Konto Gmail lub Outlook dodane z hasłem proponuje zalogowanie się przez
 Google lub Microsoft, czego wymagają ich kontakty.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Pole wyszukiwania pokazuje, kiedy jest aktywne"
+text = """
+Pole wyszukiwania u góry dostaje obramowanie w kolorze akcentu, gdy w
+nim piszesz, tak jak każde inne pole, a podpowiedź Ctrl+F usuwa się na
+bok, dopóki nie zostawisz go pustego.
+"""

@@ -1765,3 +1765,11 @@ ngokushesha. I-akhawunti ye-Gmail noma ye-Outlook engezwe ngephasiwedi
 inikeza ukungena nge-Google noma nge-Microsoft, okudingwa oxhumana nabo
 bayo.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Ibhokisi lokusesha likhombisa uma lisebenza"
+text = """
+Ibhokisi lokusesha phezulu lithola unqenqema lombala wokugcizelela
+ngenkathi uthayipha kulo, njenganoma iyiphi enye indawo yokubhala, futhi
+isexwayiso salo se-Ctrl+F siyasuka size ulishiye lingenalutho.
+"""

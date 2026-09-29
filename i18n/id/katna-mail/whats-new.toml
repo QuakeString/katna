@@ -1710,3 +1710,11 @@ server, dan Coba lagi langsung mencarinya lagi. Akun Gmail atau Outlook
 yang ditambahkan dengan sandi menawarkan untuk masuk dengan Google atau
 Microsoft, yang dibutuhkan kontaknya.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Kotak penelusuran menunjukkan saat aktif"
+text = """
+Kotak penelusuran di atas kini mendapat tepi aksen saat Anda mengetik di
+dalamnya, seperti kolom lainnya, dan petunjuk Ctrl+F-nya menyingkir
+sampai Anda mengosongkannya.
+"""

@@ -1767,3 +1767,11 @@ aussitôt. Un compte Gmail ou Outlook ajouté avec un mot de passe propose
 de se connecter avec Google ou Microsoft, ce dont ses contacts ont
 besoin.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Le champ de recherche montre quand il est actif"
+text = """
+Le champ de recherche en haut prend un contour d’accent pendant que vous
+y tapez, comme tous les autres champs, et son indication Ctrl+F s’efface
+jusqu’à ce que vous le laissiez vide.
+"""

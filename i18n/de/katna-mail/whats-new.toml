@@ -1750,3 +1750,11 @@ danach. Ein mit Passwort hinzugefügtes Gmail- oder Outlook-Konto bietet
 an, sich mit Google oder Microsoft anzumelden, was dessen Kontakte
 brauchen.
 """
+
+["2026-09-29-1640-search-box-focus"]
+title = "Das Suchfeld zeigt, wenn es aktiv ist"
+text = """
+Das Suchfeld oben bekommt beim Tippen einen farbigen Rand wie jedes
+andere Feld, und sein Hinweis Strg+F tritt zur Seite, bis Sie es leer
+lassen.
+"""
