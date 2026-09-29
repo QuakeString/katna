@@ -141,6 +141,7 @@ icons!(
     "template",
     "text-color",
     "text-size",
+    "today",
     "tour",
     "translate",
     "trash",
