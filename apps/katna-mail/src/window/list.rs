@@ -725,6 +725,8 @@ impl MailWindow {
 
     fn menu_items(&self, which: Menu, th: &Theme, cx: &mut Context<Self>) -> Div {
         match which {
+            Menu::CalendarOptions => self.calendar_options_menu(th, cx),
+            Menu::CalendarZones => self.calendar_zones_menu(th, cx),
             Menu::Select => menu(th).children(
                 [
                     (Pick::All, tr!("list-pick-all")),

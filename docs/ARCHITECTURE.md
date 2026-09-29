@@ -3433,6 +3433,14 @@ most useful reason is shown. Changes go back the way their calendar came
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
+- The bar's options button (⚙ in Google, a tune icon here, beside the
+  app's own gear) has Density and Second time zone (`[calendar]` in
+  `config.toml`). Density: Responsive (default; an hour is a twelfth of
+  the grid's height, 40 to 72 px), Comfortable (48 px) or Compact
+  (36 px); the grid keeps the same time at its top when it changes. A
+  second time zone adds a column of its hours at the left of Day and
+  Week, each column headed by its offset ("GMT-4"); the menu offers
+  sixteen common zones, and any IANA name typed into the file works.
 - Desktop: Katna Digital Clock (§15.4) through the daemon's
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
 - No booking pages: free times are shared as text in a mail.
