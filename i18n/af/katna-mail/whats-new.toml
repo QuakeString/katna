@@ -1401,3 +1401,9 @@ title = "Die paneel waarin jy is, val op"
 text = """
 Langs die lys behou net die paneel wat die sleutels het sy skaduwee; die lys, die gesprek of die kontakpaneel wat jy nie gebruik nie, sak terug met 'n vaagker rand, en die verandering volg jou sag terwyl jy klik.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Taakherinnerings en herhalings"
+text = """
+Maak 'n taak oop en kies Herinner my: op die tydstip, 'n uur of 'n dag vooraf. Die herinnering verskyn selfs wanneer Katna toe is, met Merk as klaar en Sluimer. As jy 'n herhalende taak afmerk, kom dit nou op sy volgende dag terug.
+"""

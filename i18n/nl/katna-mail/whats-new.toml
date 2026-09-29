@@ -1446,3 +1446,9 @@ title = "Het deel waarin je zit valt op"
 text = """
 Naast de lijst houdt alleen het deel dat het toetsenbord heeft zijn schaduw; de lijst, het gesprek of het contactpaneel dat je niet gebruikt zakt weg met een vagere rand, en de verandering volgt je zacht terwijl je klikt.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Taakherinneringen en herhalingen"
+text = """
+Open een taak en kies Herinner mij: op het tijdstip zelf, een uur of een dag van tevoren. De herinnering verschijnt ook als Katna gesloten is, met Markeren als voltooid en Snoozen. Als je een terugkerende taak afvinkt, komt die nu terug op de volgende dag.
+"""

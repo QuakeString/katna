@@ -61,6 +61,12 @@ tasks-repeat-weekly = מדי שבוע
 tasks-repeat-monthly = מדי חודש
 tasks-repeat-yearly = מדי שנה
 tasks-repeat-other = מותאמת אישית
+tasks-remind = הזכירו לי
+tasks-remind-off = ללא תזכורת
+tasks-remind-on-time = בזמן המשימה
+tasks-remind-morning = ביום המשימה, { $time }
+tasks-remind-hour-before = שעה לפני
+tasks-remind-day-before = יום לפני
 tasks-cancel = ביטול
 tasks-save = שמירה
 tasks-not-a-time = “{ $text }” אינו שעה, לדוגמה { $example }.
@@ -75,6 +81,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = המשימה הושלמה
+tasks-toast-next = בוצע. המופע הבא ב-{ $date }
 tasks-toast-deleted = המשימה נמחקה
 tasks-toast-added = { $count ->
     [one] נוספה למשימות

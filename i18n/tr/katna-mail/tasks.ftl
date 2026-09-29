@@ -60,6 +60,12 @@ tasks-repeat-weekly = Haftalık
 tasks-repeat-monthly = Aylık
 tasks-repeat-yearly = Yıllık
 tasks-repeat-other = Özel
+tasks-remind = Bana hatırlat
+tasks-remind-off = Hatırlatma
+tasks-remind-on-time = Görev zamanında
+tasks-remind-morning = O gün, { $time }
+tasks-remind-hour-before = Bir saat önce
+tasks-remind-day-before = Bir gün önce
 tasks-cancel = İptal
 tasks-save = Kaydet
 tasks-not-a-time = “{ $text }” bir saat değil, örneğin { $example }.
@@ -74,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Görev tamamlandı
+tasks-toast-next = Bitti. Sonraki: { $date }
 tasks-toast-deleted = Görev silindi
 tasks-toast-added = { $count ->
     [one] Görevlere eklendi

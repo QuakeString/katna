@@ -1454,3 +1454,9 @@ title = "El panel en el que estás destaca"
 text = """
 Junto a la lista, solo el panel que recibe el teclado conserva su sombra; la lista, la conversación o el panel de contacto que no usas se hunde con un borde más tenue, y el cambio te sigue con suavidad al hacer clic.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Recordatorios y repeticiones de tareas"
+text = """
+Abre una tarea y elige Recordármelo: a la hora de la tarea, una hora o un día antes. El recordatorio aparece aunque Katna esté cerrado, con Marcar como completada y Posponer. Al marcar como completada una tarea que se repite, ahora vuelve el siguiente día que le toca.
+"""

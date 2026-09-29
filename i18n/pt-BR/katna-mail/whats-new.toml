@@ -1443,3 +1443,9 @@ title = "O painel em que você está se destaca"
 text = """
 Ao lado da lista, só o painel que recebe o teclado mantém a sombra; a lista, a conversa ou o painel de contato que você não está usando recua com uma borda mais tênue, e a mudança acompanha você suavemente conforme você clica.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Lembretes e repetições de tarefas"
+text = """
+Abra uma tarefa e escolha Lembrar: na hora da tarefa, uma hora ou um dia antes. O lembrete aparece mesmo com o Katna fechado, com Marcar como concluída e Adiar. Ao concluir uma tarefa recorrente, ela agora volta no próximo dia previsto.
+"""

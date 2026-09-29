@@ -59,6 +59,12 @@ tasks-repeat-weekly = Mingguan
 tasks-repeat-monthly = Bulanan
 tasks-repeat-yearly = Tahunan
 tasks-repeat-other = Suai
+tasks-remind = Ingatkan saya
+tasks-remind-off = Jangan ingatkan
+tasks-remind-on-time = Pada masanya
+tasks-remind-morning = Pada hari itu, { $time }
+tasks-remind-hour-before = Sejam sebelum
+tasks-remind-day-before = Sehari sebelum
 tasks-cancel = Batal
 tasks-save = Simpan
 tasks-not-a-time = “{ $text }” bukan masa, contohnya { $example }.
@@ -73,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Tugasan selesai
+tasks-toast-next = Selesai. Seterusnya pada { $date }
 tasks-toast-deleted = Tugasan dipadam
 tasks-toast-added = { $count ->
    *[other] { $count } tugasan ditambahkan

@@ -41,6 +41,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Tutto il giorno
 notify-event-join = Partecipa
 notify-event-snooze = Posticipa di 5 min
+notify-task-done = Segna come completata
 
 ## Its buttons
 

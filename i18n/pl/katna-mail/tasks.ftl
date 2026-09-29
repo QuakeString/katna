@@ -62,6 +62,12 @@ tasks-repeat-weekly = Co tydzień
 tasks-repeat-monthly = Co miesiąc
 tasks-repeat-yearly = Co rok
 tasks-repeat-other = Niestandardowe
+tasks-remind = Przypomnij
+tasks-remind-off = Nie przypominaj
+tasks-remind-on-time = W momencie zadania
+tasks-remind-morning = W dniu zadania, { $time }
+tasks-remind-hour-before = Godzinę wcześniej
+tasks-remind-day-before = Dzień wcześniej
 tasks-cancel = Anuluj
 tasks-save = Zapisz
 tasks-not-a-time = „{ $text }” to nie godzina, na przykład { $example }.
@@ -76,6 +82,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Zadanie ukończone
+tasks-toast-next = Gotowe. Następne: { $date }
 tasks-toast-deleted = Zadanie usunięte
 tasks-toast-added = { $count ->
     [one] Dodano do Zadań

@@ -1432,3 +1432,9 @@ title = "İçinde olduğunuz bölme öne çıkar"
 text = """
 Listenin yanında yalnızca klavyeyi alan bölme gölgesini korur; kullanmadığınız liste, konuşma veya kişi paneli daha soluk bir kenarla geri çekilir ve değişiklik tıkladıkça yumuşakça sizi izler.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Görev hatırlatıcıları ve tekrarlar"
+text = """
+Bir görevi açın ve Bana hatırlat seçeneğini seçin: görev zamanında, bir saat veya bir gün önce. Hatırlatıcı Katna kapalıyken bile görünür ve Tamamlandı olarak işaretle ile Ertele düğmelerini içerir. Tekrarlanan bir görevi işaretlediğinizde artık bir sonraki günde geri gelir.
+"""

@@ -60,6 +60,12 @@ tasks-repeat-weekly = Weekliks
 tasks-repeat-monthly = Maandeliks
 tasks-repeat-yearly = Jaarliks
 tasks-repeat-other = Pasgemaak
+tasks-remind = Herinner my
+tasks-remind-off = Moenie herinner nie
+tasks-remind-on-time = Op die tydstip
+tasks-remind-morning = Op die dag, { $time }
+tasks-remind-hour-before = 'n Uur vooraf
+tasks-remind-day-before = Die dag vooraf
 tasks-cancel = Kanselleer
 tasks-save = Stoor
 tasks-not-a-time = “{ $text }” is nie ’n tyd nie, byvoorbeeld { $example }.
@@ -74,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Taak voltooi
+tasks-toast-next = Klaar. Volgende een op { $date }
 tasks-toast-deleted = Taak uitgevee
 tasks-toast-added = { $count ->
     [one] By Take gevoeg

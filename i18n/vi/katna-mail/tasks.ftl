@@ -59,6 +59,12 @@ tasks-repeat-weekly = Hằng tuần
 tasks-repeat-monthly = Hằng tháng
 tasks-repeat-yearly = Hằng năm
 tasks-repeat-other = Tùy chỉnh
+tasks-remind = Nhắc tôi
+tasks-remind-off = Không nhắc
+tasks-remind-on-time = Đúng giờ
+tasks-remind-morning = Vào ngày đó, { $time }
+tasks-remind-hour-before = Trước một giờ
+tasks-remind-day-before = Trước một ngày
 tasks-cancel = Hủy
 tasks-save = Lưu
 tasks-not-a-time = “{ $text }” không phải là giờ, ví dụ { $example }.
@@ -73,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Đã hoàn thành việc cần làm
+tasks-toast-next = Xong. Lần tới vào { $date }
 tasks-toast-deleted = Đã xóa việc cần làm
 tasks-toast-added = { $count ->
    *[other] Đã thêm { $count } việc cần làm

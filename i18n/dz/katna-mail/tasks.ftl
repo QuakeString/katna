@@ -59,6 +59,12 @@ tasks-repeat-weekly = བདུན་ཕྲག་ཐེར།
 tasks-repeat-monthly = ཟླ་བ་ཐེར།
 tasks-repeat-yearly = ལོ་ཐེར།
 tasks-repeat-other = རང་བཟོ།
+tasks-remind = ང་ལུ་དྲན་སྐུལ་འབད་
+tasks-remind-off = དྲན་སྐུལ་མ་འབད།
+tasks-remind-on-time = དུས་ཚོད་དེ་ནང་
+tasks-remind-morning = ཉིན་དེ་ལུ་, { $time }
+tasks-remind-hour-before = ཆུ་ཚོད་གཅིག་ཧེ་མ་
+tasks-remind-day-before = ཉིན་གཅིག་ཧེ་མ་
 tasks-cancel = ཆ་མེད་གཏང་།
 tasks-save = སྲུང་།
 tasks-not-a-time = “{ $text }” འདི་ ཆུ་ཚོད་མེན། དཔེར་ན་ { $example }།
@@ -73,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = ལཱ་མཇུག་བསྡུཝ་ཨིན།
+tasks-toast-next = འབད་ཚར་ཡི། ཤུལ་མམ་དེ་ { $date } ལུ།
 tasks-toast-deleted = ལཱ་བཏོན་གཏང་ཡི།
 tasks-toast-added = { $count ->
    *[other] ལཱ་ { $count } ཁ་སྣོན་འབད་ཡི།

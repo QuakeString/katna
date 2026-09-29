@@ -1494,3 +1494,9 @@ title = "Namumukod ang pane na kinaroroonan mo"
 text = """
 Sa tabi ng listahan, tanging ang pane na tumatanggap ng keyboard ang nagpapanatili ng anino nito; ang listahan, ang usapan o ang panel ng contact na hindi mo ginagamit ay umuurong na may mas mahinang gilid, at marahang sumusunod sa iyo ang pagbabago habang nagki-click ka.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Mga paalala at pag-uulit ng gawain"
+text = """
+Magbukas ng gawain at piliin ang Paalalahanan ako: sa oras mismo, isang oras o isang araw bago. Lalabas ang paalala kahit sarado ang Katna, kasama ang Markahan bilang tapos na at I-snooze. Kapag minarkahan mong tapos na ang umuulit na gawain, babalik na ito sa susunod nitong araw.
+"""

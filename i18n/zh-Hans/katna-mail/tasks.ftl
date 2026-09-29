@@ -59,6 +59,12 @@ tasks-repeat-weekly = 每周
 tasks-repeat-monthly = 每月
 tasks-repeat-yearly = 每年
 tasks-repeat-other = 自定义
+tasks-remind = 提醒我
+tasks-remind-off = 不提醒
+tasks-remind-on-time = 准时
+tasks-remind-morning = 当天 { $time }
+tasks-remind-hour-before = 提前 1 小时
+tasks-remind-day-before = 提前 1 天
 tasks-cancel = 取消
 tasks-save = 保存
 tasks-not-a-time = “{ $text }”不是有效的时间，例如 { $example }。
@@ -73,6 +79,7 @@ tasks-due-at = { $day } { $time }
 ## Notes at the bottom
 
 tasks-toast-done = 任务已完成
+tasks-toast-next = 已完成。下一次在 { $date }
 tasks-toast-deleted = 任务已删除
 tasks-toast-added = { $count ->
    *[other] 已添加 { $count } 项任务

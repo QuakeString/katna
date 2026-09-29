@@ -1444,3 +1444,9 @@ title = "Panel yang sedang Anda pakai menonjol"
 text = """
 Di samping daftar, hanya panel yang menerima input keyboard yang tetap punya bayangan; daftar, percakapan, atau panel kontak yang tidak Anda pakai surut dengan tepi yang lebih samar, dan perubahannya mengikuti Anda dengan halus saat Anda mengeklik.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Pengingat tugas dan pengulangan"
+text = """
+Buka tugas dan pilih Ingatkan saya: pada waktunya, satu jam atau sehari sebelumnya. Pengingat muncul meski Katna tertutup, dengan Tandai selesai dan Tunda. Menyelesaikan tugas berulang kini memunculkannya kembali pada harinya berikutnya.
+"""

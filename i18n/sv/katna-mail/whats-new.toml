@@ -1412,3 +1412,9 @@ title = "Den ruta du är i sticker ut"
 text = """
 Bredvid listan behåller bara den ruta som har tangentbordet sin skugga; listan, konversationen eller kontaktpanelen som du inte använder sjunker tillbaka med en svagare kant, och ändringen följer dig mjukt när du klickar.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Uppgiftspåminnelser och upprepningar"
+text = """
+Öppna en uppgift och välj Påminn mig: när det är dags, en timme eller en dag före. Påminnelsen visas även när Katna är stängt, med Markera som klar och Snooza. När du bockar av en återkommande uppgift kommer den nu tillbaka nästa dag.
+"""

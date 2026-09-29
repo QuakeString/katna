@@ -60,6 +60,12 @@ tasks-repeat-weekly = Kila wiki
 tasks-repeat-monthly = Kila mwezi
 tasks-repeat-yearly = Kila mwaka
 tasks-repeat-other = Maalum
+tasks-remind = Nikumbushe
+tasks-remind-off = Usinikumbushe
+tasks-remind-on-time = Wakati huo
+tasks-remind-morning = Siku hiyo, { $time }
+tasks-remind-hour-before = Saa moja kabla
+tasks-remind-day-before = Siku moja kabla
 tasks-cancel = Ghairi
 tasks-save = Hifadhi
 tasks-not-a-time = “{ $text }” si saa, kwa mfano { $example }.
@@ -74,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Jukumu limekamilika
+tasks-toast-next = Imekamilika. Inayofuata ni { $date }
 tasks-toast-deleted = Jukumu limefutwa
 tasks-toast-added = { $count ->
     [one] Imeongezwa kwenye Majukumu

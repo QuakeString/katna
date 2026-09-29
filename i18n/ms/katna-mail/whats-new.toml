@@ -1459,3 +1459,9 @@ title = "Anak tetingkap yang anda gunakan menonjol"
 text = """
 Di sebelah senarai, hanya anak tetingkap yang menerima papan kekunci mengekalkan bayangnya; senarai, perbualan atau panel kenalan yang tidak anda gunakan surut dengan tepi yang lebih pudar, dan perubahan itu mengikuti anda dengan lembut apabila anda mengklik.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Peringatan tugasan dan ulangan"
+text = """
+Buka tugasan dan pilih Ingatkan saya: pada masanya, sejam atau sehari sebelum. Peringatan muncul walaupun Katna ditutup, dengan Tandakan sebagai selesai dan Tunda. Menandakan tugasan berulang sebagai selesai kini membawanya kembali pada hari seterusnya.
+"""

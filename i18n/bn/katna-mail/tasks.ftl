@@ -60,6 +60,12 @@ tasks-repeat-weekly = প্রতি সপ্তাহে
 tasks-repeat-monthly = প্রতি মাসে
 tasks-repeat-yearly = প্রতি বছর
 tasks-repeat-other = কাস্টম
+tasks-remind = আমাকে মনে করিয়ে দিন
+tasks-remind-off = মনে করাবেন না
+tasks-remind-on-time = ঠিক সময়ে
+tasks-remind-morning = ওই দিন, { $time }
+tasks-remind-hour-before = এক ঘণ্টা আগে
+tasks-remind-day-before = একদিন আগে
 tasks-cancel = বাতিল করুন
 tasks-save = সেভ করুন
 tasks-not-a-time = “{ $text }” কোনো সময় নয়, যেমন { $example }।
@@ -74,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = টাস্ক সম্পন্ন হয়েছে
+tasks-toast-next = হয়ে গেছে। পরেরটি { $date } তারিখে
 tasks-toast-deleted = টাস্ক মুছে ফেলা হয়েছে
 tasks-toast-added = { $count ->
     [one] টাস্কে যোগ করা হয়েছে

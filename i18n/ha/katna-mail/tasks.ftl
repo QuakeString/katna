@@ -60,6 +60,12 @@ tasks-repeat-weekly = Kowane mako
 tasks-repeat-monthly = Kowane wata
 tasks-repeat-yearly = Kowace shekara
 tasks-repeat-other = Na musamman
+tasks-remind = Tunatar da ni
+tasks-remind-off = Kada a tunatar
+tasks-remind-on-time = A lokacin
+tasks-remind-morning = A ranar, { $time }
+tasks-remind-hour-before = Awa ɗaya kafin lokaci
+tasks-remind-day-before = Kwana ɗaya kafin lokaci
 tasks-cancel = Soke
 tasks-save = Ajiye
 tasks-not-a-time = “{ $text }” ba lokaci ba ne, misali { $example }.
@@ -74,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = An kammala aikin
+tasks-toast-next = An gama. Na gaba shi ne { $date }
 tasks-toast-deleted = An share aikin
 tasks-toast-added = { $count ->
     [one] An ƙara a Ayyuka

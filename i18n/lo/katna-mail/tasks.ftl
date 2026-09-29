@@ -59,6 +59,12 @@ tasks-repeat-weekly = ທຸກອາທິດ
 tasks-repeat-monthly = ທຸກເດືອນ
 tasks-repeat-yearly = ທຸກປີ
 tasks-repeat-other = ກຳນົດເອງ
+tasks-remind = ເຕືອນຂ້ອຍ
+tasks-remind-off = ບໍ່ເຕືອນ
+tasks-remind-on-time = ຕາມເວລາ
+tasks-remind-morning = ໃນມື້ນັ້ນ { $time }
+tasks-remind-hour-before = ກ່ອນ 1 ຊົ່ວໂມງ
+tasks-remind-day-before = ກ່ອນ 1 ມື້
 tasks-cancel = ຍົກເລີກ
 tasks-save = ບັນທຶກ
 tasks-not-a-time = “{ $text }” ບໍ່ແມ່ນເວລາ, ຕົວຢ່າງ { $example }.
@@ -73,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = ວຽກສຳເລັດແລ້ວ
+tasks-toast-next = ສຳເລັດແລ້ວ. ຄັ້ງຕໍ່ໄປວັນທີ { $date }
 tasks-toast-deleted = ລຶບວຽກແລ້ວ
 tasks-toast-added = { $count ->
    *[other] ເພີ່ມ { $count } ວຽກແລ້ວ

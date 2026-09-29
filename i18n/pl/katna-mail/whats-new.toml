@@ -1436,3 +1436,9 @@ title = "Panel, w którym jesteś, się wyróżnia"
 text = """
 Obok listy tylko panel, który odbiera klawiaturę, zachowuje cień; lista, rozmowa lub panel kontaktu, z których nie korzystasz, cofa się z delikatniejszą krawędzią, a zmiana płynnie podąża za Twoim kliknięciem.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Przypomnienia o zadaniach i powtarzanie"
+text = """
+Otwórz zadanie i wybierz Przypomnij: w momencie zadania, godzinę lub dzień wcześniej. Przypomnienie pojawia się nawet przy zamkniętym Katna, z przyciskami Oznacz jako wykonane i Drzemka. Odhaczenie zadania cyklicznego przywraca je teraz w następnym terminie.
+"""

@@ -59,6 +59,12 @@ tasks-repeat-weekly = ทุกสัปดาห์
 tasks-repeat-monthly = ทุกเดือน
 tasks-repeat-yearly = ทุกปี
 tasks-repeat-other = กำหนดเอง
+tasks-remind = เตือนฉัน
+tasks-remind-off = ไม่ต้องเตือน
+tasks-remind-on-time = ตามเวลา
+tasks-remind-morning = ในวันนั้น { $time }
+tasks-remind-hour-before = 1 ชั่วโมงก่อน
+tasks-remind-day-before = 1 วันก่อน
 tasks-cancel = ยกเลิก
 tasks-save = บันทึก
 tasks-not-a-time = “{ $text }” ไม่ใช่เวลา ตัวอย่างเช่น { $example }
@@ -73,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = ทำงานเสร็จแล้ว
+tasks-toast-next = เสร็จแล้ว งานถัดไปวันที่ { $date }
 tasks-toast-deleted = ลบงานแล้ว
 tasks-toast-added = { $count ->
    *[other] เพิ่ม { $count } งานแล้ว

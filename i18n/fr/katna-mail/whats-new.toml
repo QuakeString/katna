@@ -1493,3 +1493,9 @@ title = "Le volet où vous êtes se distingue"
 text = """
 À côté de la liste, seul le volet qui reçoit le clavier garde son ombre ; la liste, la conversation ou le panneau de contact que vous n’utilisez pas s’efface avec un bord plus discret, et le changement vous suit en douceur quand vous cliquez.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Rappels de tâches et répétitions"
+text = """
+Ouvrez une tâche et choisissez Me le rappeler : à l'heure prévue, une heure ou un jour avant. Le rappel s'affiche même quand Katna est fermé, avec Marquer comme terminée et Répéter. Cocher une tâche récurrente la fait maintenant revenir à sa prochaine date.
+"""

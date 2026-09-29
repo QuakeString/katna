@@ -60,6 +60,12 @@ tasks-repeat-weekly = በየሳምንቱ
 tasks-repeat-monthly = በየወሩ
 tasks-repeat-yearly = በየዓመቱ
 tasks-repeat-other = ብጁ
+tasks-remind = አስታውሰኝ
+tasks-remind-off = አታስታውሰኝ
+tasks-remind-on-time = በሰዓቱ
+tasks-remind-morning = በዕለቱ፣ { $time }
+tasks-remind-hour-before = ከአንድ ሰዓት በፊት
+tasks-remind-day-before = ከአንድ ቀን በፊት
 tasks-cancel = ይቅር
 tasks-save = አስቀምጥ
 tasks-not-a-time = “{ $text }” ሰዓት አይደለም፣ ለምሳሌ { $example }።
@@ -74,6 +80,7 @@ tasks-due-at = { $day }፣ { $time }
 ## Notes at the bottom
 
 tasks-toast-done = ተግባሩ ተጠናቅቋል
+tasks-toast-next = ተጠናቋል። ቀጣዩ በ{ $date }
 tasks-toast-deleted = ተግባሩ ተሰርዟል
 tasks-toast-added = { $count ->
     [one] ወደ ተግባራት ታክሏል

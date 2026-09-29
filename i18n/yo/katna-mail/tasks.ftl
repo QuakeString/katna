@@ -59,6 +59,12 @@ tasks-repeat-weekly = Ní ọ̀sẹ̀ kọ̀ọ̀kan
 tasks-repeat-monthly = Ní oṣù kọ̀ọ̀kan
 tasks-repeat-yearly = Ní ọdún kọ̀ọ̀kan
 tasks-repeat-other = Àdáni
+tasks-remind = Rán mi létí
+tasks-remind-off = Má ṣe rán mi létí
+tasks-remind-on-time = Ní àkókò náà
+tasks-remind-morning = Ní ọjọ́ náà, { $time }
+tasks-remind-hour-before = Wákàtí kan ṣáájú
+tasks-remind-day-before = Ọjọ́ kan ṣáájú
 tasks-cancel = Fagilé
 tasks-save = Fi pamọ́
 tasks-not-a-time = “{ $text }” kì í ṣe àkókò, fún àpẹẹrẹ { $example }.
@@ -73,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Iṣẹ́ parí
+tasks-toast-next = Ó parí. Tí ó kàn ni { $date }
 tasks-toast-deleted = A pa iṣẹ́ náà rẹ́
 tasks-toast-added = { $count ->
    *[other] A fi iṣẹ́ { $count } kún

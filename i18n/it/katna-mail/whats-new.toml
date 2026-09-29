@@ -1458,3 +1458,9 @@ title = "Il riquadro in cui ti trovi risalta"
 text = """
 Accanto all’elenco, solo il riquadro che riceve la tastiera mantiene la sua ombra; l’elenco, la conversazione o il pannello del contatto che non usi si abbassa con un bordo più tenue, e il cambio ti segue con dolcezza mentre fai clic.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Promemoria e ripetizioni delle attività"
+text = """
+Apri un'attività e scegli Ricordamelo: all'ora dell'attività, un'ora o un giorno prima. Il promemoria appare anche quando Katna è chiuso, con Segna come completata e Posticipa. Completando un'attività ricorrente, ora ritorna il giorno successivo previsto.
+"""

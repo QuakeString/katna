@@ -1399,3 +1399,9 @@ title = "Ngăn bạn đang dùng nổi bật lên"
 text = """
 Bên cạnh danh sách, chỉ ngăn đang nhận bàn phím mới giữ bóng đổ; danh sách, cuộc trò chuyện hoặc bảng liên hệ mà bạn không dùng sẽ lùi xuống với viền nhạt hơn, và thay đổi đó nhẹ nhàng theo bạn khi bạn nhấp chuột.
 """
+
+["2026-09-29-0840-task-reminders"]
+title = "Lời nhắc và lặp lại của công việc"
+text = """
+Mở một công việc và chọn Nhắc tôi: đúng giờ, trước một giờ hoặc một ngày. Lời nhắc hiện ra ngay cả khi Katna đã đóng, kèm Đánh dấu là đã hoàn thành và Báo lại. Khi đánh dấu xong một công việc lặp lại, giờ đây nó sẽ quay lại vào ngày kế tiếp.
+"""
