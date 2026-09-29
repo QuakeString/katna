@@ -1430,3 +1430,36 @@ title = "Hitta uppgifter från skrivbordet"
 text = """
 Skriv några ord ur en uppgift i KRunner eller GNOME:s sökning så visas den under Uppgifter. Tryck på Retur så öppnar Katna den, redo att redigeras.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Lägg till händelser och uppgifter från skrivbordsklockan"
+text = """
+I Katna Digital Clock högerklickar du på en dag i månaden för att lägga
+till en uppgift eller en händelse den dagen; händelsen öppnas i Katnas
+Kalender. Klickar du på en av dina händelser öppnas Kalender på den
+dagen.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Skriv en händelse på en rad"
+text = """
+Skriv ”Lunch med Anita fredag 13 på Cafe Mocha” eller ”Stand-up varje
+vardag 9:30” som titel på en ny händelse, så fyller Kalender i dag, tid,
+upprepning och plats medan du skriver.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Se hela året"
+text = """
+Kalender har en årsvy: alla tolv månaderna på en gång, med en prick
+under dagar som har händelser. Tryck på Y och klicka på en dag för att
+öppna den.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Dela dina lediga tider"
+text = """
+Dela lediga tider i Kalenders alternativ startar ett meddelande som
+listar när du är ledig de närmaste arbetsdagarna, redo att skickas till
+vem som helst.
+"""

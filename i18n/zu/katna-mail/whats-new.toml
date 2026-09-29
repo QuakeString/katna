@@ -1536,3 +1536,27 @@ text = """
 Thayipha amagama ambalwa omsebenzi osesha lapho ukusesha kwe-KRunner noma kwe-GNOME, uzobonakala ngaphansi kwe-Imisebenzi.
 Enter ucindezele, iKatna izowuvula ukuze uwuhlele.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Engeza imicimbi nemisebenzi ewashini le-desktop"
+text = """
+Ku-Katna Iwashi Ledijithali, chofoza ngakwesokudla usuku enyangeni ukuze wengeze umsebenzi noma umcimbi walolo suku; umcimbi uvulwa ku-Calendar ye-Katna. Ukuchofoza omunye wemicimbi yakho kuvula ikhalenda ngosuku lwawo.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Thayipha umcimbi ngomugqa owodwa"
+text = """
+Thayipha "Isidlo sasemini no-Anita ngoLwesihlanu ngo-1pm e-Cafe Mocha" noma "Standup zonke izinsuku zomsebenzi 9:30" njengesihloko somcimbi omusha, futhi ikhalenda lizogcwalisa usuku, isikhathi, ukuphindaphinda nendawo njengoba uthayipha.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Bona unyaka wonke"
+text = """
+Ikhalenda linokubuka Unyaka: zonke izinyanga eziyishumi nambili ngesikhathi esisodwa, kanye nechashaza ngaphansi kwezinsuku ezinemicimbi. Cindezela Y, bese uchofoza usuku ukuze ulivule.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Yabelana ngezikhathi zakho zokukhululeka"
+text = """
+Ukukhetha Yabelana ngezikhathi zokukhululeka ezinketho zekhalenda kuqala umlayezo olandisa ukuthi ukhululekile nini ezinsukwini zomsebenzi ezilandelayo, ulungele ukuthunyelwa kunoma ubani.
+"""

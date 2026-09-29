@@ -42,6 +42,16 @@ msgstr "Bukas"
 msgid "No tasks"
 msgstr "Walang gawain"
 
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu %1 is a short date"
+msgid "Add a Task for %1"
+msgstr "Magdagdag ng gawain para sa %1"
+
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu"
+msgid "Add an Event"
+msgstr "Magdagdag ng event"
+
 # plasma-clock/package/contents/ui/KatnaJoinButton.qml
 msgctxt "@action:button join the event's video call"
 msgid "Join"

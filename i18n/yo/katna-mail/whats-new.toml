@@ -1377,3 +1377,27 @@ title = "Wá àwọn iṣẹ́ láti orí déskitọ́pù"
 text = """
 Tẹ ọ̀rọ̀ díẹ̀ nínú iṣẹ́ kan sínú àwárí KRunner tàbí GNOME, yóò sì hàn lábẹ́ Iṣẹ́. Tẹ Enter, Katna yóò sì ṣí i, ó ṣetán fún àtúnṣe.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Fi àwọn ìṣẹ̀lẹ̀ àti iṣẹ́ kún un láti aago orí tábìlì"
+text = """
+Nínú Aago Dijítàlì Katna, tẹ ọjọ́ kan nínú oṣù lọ́tùn-ún láti fi iṣẹ́ tàbí ìṣẹ̀lẹ̀ kún un fún ọjọ́ náà; ìṣẹ̀lẹ̀ náà yóò ṣí nínú Kàlẹ́ńdà Katna. Títẹ ọ̀kan lára àwọn ìṣẹ̀lẹ̀ rẹ yóò ṣí Kàlẹ́ńdà ní ọjọ́ rẹ̀.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Tẹ ìṣẹ̀lẹ̀ kan sínú ìlà kan"
+text = """
+Tẹ "Oúnjẹ ọ̀sán pẹ̀lú Anita ọjọ́ Ẹtì 1 ọ̀sán ní Cafe Mocha" tàbí "Ìpàdé kúkúrú ní gbogbo ọjọ́ iṣẹ́ 9:30" gẹ́gẹ́ bí àkọlé ìṣẹ̀lẹ̀ tuntun, Kàlẹ́ńdà yóò sì kún ọjọ́, àkókò, àtúnṣe àti ibi bí o ṣe ń tẹ̀.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Wo gbogbo ọdún ní ẹ̀ẹ̀kan"
+text = """
+Kàlẹ́ńdà ní ìwòye Ọdún: gbogbo oṣù méjìlá papọ̀, pẹ̀lú ìkáwọ́ kékeré lábẹ́ àwọn ọjọ́ tí ó ní ìṣẹ̀lẹ̀. Tẹ Y, kí o sì tẹ ọjọ́ kan láti ṣí i.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Pín àwọn àkókò òmìnira rẹ"
+text = """
+Pín àwọn àkókò òmìnira nínú àwọn àṣàyàn Kàlẹ́ńdà yóò bẹ̀rẹ̀ ìfiránṣẹ́ tó ń ṣàkójọ àwọn àkókò tí o wà ní òmìnira ní àwọn ọjọ́ iṣẹ́ tó ń bọ̀, ó ṣetán láti fi ránṣẹ́ sí ẹnikẹ́ni.
+"""

@@ -1464,3 +1464,36 @@ title = "Vind taken vanaf het bureaublad"
 text = """
 Typ een paar woorden van een taak in KRunner of in de zoekfunctie van GNOME en de taak verschijnt onder Taken. Druk op Enter en Katna opent de taak, klaar om te bewerken.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Afspraken en taken toevoegen vanaf de bureaubladklok"
+text = """
+Klik in Katna Digital Clock met de rechtermuisknop op een dag in de
+maand om een taak of afspraak voor die dag toe te voegen; de afspraak
+opent in de Agenda van Katna. Klik op een van je afspraken en de Agenda
+opent op die dag.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Typ een afspraak in één regel"
+text = """
+Typ “Lunch met Anita vrijdag 13:00 bij Cafe Mocha” of “Stand-up elke
+werkdag 9:30” als titel van een nieuwe afspraak, en Agenda vult de dag,
+de tijd, de herhaling en de plaats in terwijl je typt.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Het hele jaar in één oogopslag"
+text = """
+Agenda heeft een jaarweergave: alle twaalf maanden tegelijk, met een
+stip onder de dagen met afspraken. Druk op Y en klik op een dag om die
+te openen.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Deel je vrije tijden"
+text = """
+Vrije tijden delen in de opties van Agenda start een bericht met daarin
+wanneer je de komende werkdagen vrij bent, klaar om naar iedereen te
+sturen.
+"""

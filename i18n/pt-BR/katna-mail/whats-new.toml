@@ -1461,3 +1461,35 @@ title = "Encontre tarefas pela área de trabalho"
 text = """
 Digite algumas palavras de uma tarefa no KRunner ou na busca do GNOME e ela aparece em Tarefas. Pressione Enter e o Katna a abre, pronta para editar.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Adicione eventos e tarefas pelo relógio da área de trabalho"
+text = """
+No Katna Digital Clock, clique com o botão direito em um dia do mês para
+adicionar uma tarefa ou um evento nesse dia; o evento abre na Agenda do
+Katna. Clicar em um dos seus eventos abre a Agenda no dia dele.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Digite um evento em uma linha"
+text = """
+Digite “Almoço com a Anita sexta 13h no Cafe Mocha” ou “Reunião em pé
+todo dia útil 9:30” como título de um novo evento, e a Agenda preenche o
+dia, o horário, a repetição e o local enquanto você digita.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Veja o ano inteiro"
+text = """
+A Agenda tem uma visualização de Ano: os doze meses de uma vez, com um
+ponto embaixo dos dias que têm eventos. Pressione Y e clique em um dia
+para abri-lo.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Compartilhe seus horários livres"
+text = """
+Compartilhar horários livres, nas opções da Agenda, inicia uma mensagem
+listando quando você está livre nos próximos dias úteis, pronta para
+enviar a qualquer pessoa.
+"""

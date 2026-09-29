@@ -1477,3 +1477,36 @@ title = "Cari tugas dari desktop"
 text = """
 Taip beberapa perkataan sesuatu tugas dalam KRunner atau carian GNOME dan tugas itu muncul di bawah Tugas. Tekan Enter dan Katna membukanya, sedia untuk disunting.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Tambah acara dan tugas daripada jam desktop"
+text = """
+Dalam Katna Digital Clock, klik kanan pada sesuatu hari dalam bulan
+untuk menambah tugas atau acara bagi hari itu; acara itu dibuka dalam
+Kalendar Katna. Mengklik salah satu acara anda membuka Kalendar pada
+harinya.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Taip acara dalam satu baris"
+text = """
+Taip “Makan tengah hari dengan Anita Jumaat 1pm di Cafe Mocha” atau
+“Mesyuarat pagi setiap hari bekerja 9:30” sebagai tajuk acara baharu,
+dan Kalendar mengisi hari, masa, ulangan dan tempat semasa anda menaip.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Lihat setahun penuh"
+text = """
+Kalendar mempunyai paparan Tahun: kesemua dua belas bulan sekali gus,
+dengan titik di bawah hari yang mempunyai acara. Tekan Y, dan klik pada
+sesuatu hari untuk membukanya.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Kongsi masa terluang anda"
+text = """
+Kongsi masa terluang dalam pilihan Kalendar memulakan mesej yang
+menyenaraikan bila anda terluang dalam beberapa hari bekerja yang akan
+datang, sedia dihantar kepada sesiapa sahaja.
+"""

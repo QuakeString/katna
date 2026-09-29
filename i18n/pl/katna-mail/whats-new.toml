@@ -1454,3 +1454,37 @@ title = "Znajdź zadania z poziomu pulpitu"
 text = """
 Wpisz kilka słów z zadania w KRunner lub w wyszukiwarce GNOME, a pojawi się ono w sekcji Zadania. Naciśnij Enter, a Katna otworzy je, gotowe do edycji.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Dodawaj wydarzenia i zadania z zegara na pulpicie"
+text = """
+W Katna Digital Clock kliknij dzień w miesiącu prawym przyciskiem myszy,
+aby dodać zadanie lub wydarzenie na ten dzień; wydarzenie otworzy się w
+Kalendarzu Katna. Kliknięcie jednego z Twoich wydarzeń otwiera Kalendarz
+na jego dniu.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Wpisz wydarzenie w jednym wierszu"
+text = """
+Wpisz „Lunch z Anitą w piątek o 13:00 w Cafe Mocha” lub „Spotkanie
+codziennie w dni robocze o 9:30” jako tytuł nowego wydarzenia, a
+Kalendarz uzupełni dzień, godzinę, powtarzanie i miejsce w trakcie
+pisania.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Zobacz cały rok"
+text = """
+Kalendarz ma widok Roku: wszystkie dwanaście miesięcy naraz, z kropką
+pod dniami, w których są wydarzenia. Naciśnij Y i kliknij dzień, aby go
+otworzyć.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Udostępnij swoje wolne terminy"
+text = """
+Udostępnij wolne terminy w opcjach Kalendarza tworzy wiadomość z listą
+terminów, w których jesteś wolny w najbliższych dniach roboczych, gotową
+do wysłania komukolwiek.
+"""

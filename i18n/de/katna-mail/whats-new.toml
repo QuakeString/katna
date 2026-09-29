@@ -1497,3 +1497,36 @@ title = "Aufgaben über den Desktop finden"
 text = """
 Tippen Sie in KRunner oder in der Suche von GNOME ein paar Wörter einer Aufgabe ein, und sie erscheint unter Aufgaben. Drücken Sie die Eingabetaste, und Katna öffnet sie, bereit zum Bearbeiten.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Termine und Aufgaben über die Desktop-Uhr hinzufügen"
+text = """
+Klicken Sie in Katna Digital Clock mit der rechten Maustaste auf einen
+Tag im Monat, um für diesen Tag eine Aufgabe oder einen Termin
+hinzuzufügen; der Termin öffnet sich im Kalender von Katna. Ein Klick
+auf einen Ihrer Termine öffnet den Kalender an diesem Tag.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Einen Termin in einer Zeile eingeben"
+text = """
+Geben Sie als Titel eines neuen Termins „Mittagessen mit Anita Freitag
+13 Uhr im Cafe Mocha“ oder „Standup jeden Werktag 9:30“ ein, und der
+Kalender füllt Tag, Uhrzeit, Wiederholung und Ort beim Tippen aus.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Das ganze Jahr im Blick"
+text = """
+Der Kalender hat eine Jahresansicht: alle zwölf Monate auf einmal, mit
+einem Punkt unter den Tagen, an denen Termine liegen. Drücken Sie Y und
+klicken Sie auf einen Tag, um ihn zu öffnen.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Freie Zeiten teilen"
+text = """
+Freie Zeiten teilen in den Optionen des Kalenders beginnt eine
+Nachricht, die auflistet, wann Sie in den nächsten Werktagen frei sind,
+bereit zum Senden an beliebige Personen.
+"""

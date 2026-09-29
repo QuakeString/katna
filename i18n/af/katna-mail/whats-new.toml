@@ -1419,3 +1419,36 @@ title = "Vind take vanaf die werkskerm"
 text = """
 Tik ’n paar woorde van ’n taak in KRunner of GNOME se soektog, en dit verskyn onder Take. Druk Enter en Katna maak dit oop, gereed om te wysig.
 """
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Voeg geleenthede en take vanaf die werkskermhorlosie by"
+text = """
+Regsklik in Katna Digital Clock op 'n dag in die maand om 'n taak of 'n
+geleentheid vir daardie dag by te voeg; die geleentheid maak in Katna se
+Kalender oop. As jy op een van jou geleenthede klik, maak die Kalender
+op sy dag oop.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Tik 'n geleentheid op een reël"
+text = """
+Tik “Middagete met Anita Vrydag 13:00 by Cafe Mocha” of
+“Staanvergadering elke werksdag 9:30” as die titel van 'n nuwe
+geleentheid, en Kalender vul die dag, die tyd, die herhaling en die plek
+in terwyl jy tik.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Sien die hele jaar"
+text = """
+Kalender het 'n Jaar-aansig: al twaalf maande gelyk, met 'n kolletjie
+onder die dae wat geleenthede het. Druk Y en klik op 'n dag om dit oop
+te maak.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Deel jou vrye tye"
+text = """
+Deel vrye tye in Kalender se opsies begin 'n boodskap wat lys wanneer jy
+in die volgende werksdae vry is, gereed om aan enigiemand te stuur.
+"""
