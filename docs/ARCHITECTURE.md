@@ -2800,7 +2800,8 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   reminder (at most a minute, so edits count) and keeps up to when it
   looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats
   none; reminders missed while the computer was off show only when they
-  fell due in the last ten minutes. Snoozes live in memory.
+  fell due in the last ten minutes. Snoozes live in memory. Tasks'
+  reminders come through the same loop (§18.1).
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -3498,7 +3499,24 @@ server error is not.
   and Schedule list them with the events. Its circle ticks it off, a
   click opens it over the Calendar, and dragging it to another day, time
   or the whole-day row moves its due day and time (a quarter hour at a
-  time, with Undo), blocking that time for it.
+  time, with Undo), blocking that time for it. A reminder moves with it.
+- **Reminders**: the task's details offer Don't remind, At the time (on
+  the day at 9 AM for a task without a time), An hour before (with a
+  time) and The day before; a time set elsewhere (To Do) shows as itself
+  and stays unless another is picked. `task.remind_at` is an instant.
+  The daemon's reminder loop (§15.1, `daemon/alarms.rs`) also reads open
+  tasks and shows a "Katna Tasks" notification at `remind_at`: the title
+  and the first line of its details, with Open (the Tasks page), Mark as
+  done and Snooze 5 min (`category=x-katna.task`). For Google Tasks the
+  reminder lives on this computer only (decision 3 of the study).
+- **Repeating tasks**: ticking one off moves it to its next day after
+  both its due day and today, and it stays open (Google Tasks, CalDAV and
+  lists on this computer; `katna_dav::todo::next_due`, done by the
+  daemon's `set_task_done` so the clock and notifications do it too). A
+  `COUNT` goes down by the days used; an ended rule ticks it off. Its
+  reminder moves with it. To Do makes the next one itself, so there the
+  task is ticked off as usual. The toast names the next day, and Undo
+  puts the day back.
 
 ## 19. Security and privacy
 
