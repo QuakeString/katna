@@ -52,6 +52,15 @@ about-changelog = Changelog
 about-source = Source code
 # A button to support the author with a small donation.
 about-coffee = Buy me a coffee
+# A little play inside "Buy me a coffee" when the pointer rests on it: it
+# asks for less and less, settles for water, then thanks the reader. Keep
+# each line short, to fit the button.
+about-coffee-coffee = Coffee?
+about-coffee-tea = Tea?
+about-coffee-pizza = Pizza?
+about-coffee-nothing = Nothing? At all?
+about-coffee-water = I'll survive on water!!
+about-coffee-thanks = Thank you for using Katna
 # Tooltip on "Buy me a coffee" while it does nothing yet.
 about-coming-soon = Coming soon
 # Before the author's GitHub, x.com and LinkedIn links: "Follow me on GitHub"...
