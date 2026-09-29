@@ -24,5 +24,7 @@ contact-conversations = مکالمه‌های اخیر
 contact-more = بیشتر
 contact-less = کمتر
 contact-files = پرونده‌ها
+contact-tasks = کارها
+contact-meetings = جلسه‌های پیش رو
 contact-people = در این مکالمه
 contact-local-only = فقط از ایمیل‌های شما در این رایانه

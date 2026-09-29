@@ -1460,3 +1460,41 @@ Stoor die kalenders wat jy wys as ’n stel, soos “Werk” of “Gesin”, met
 + langs Kalenderstelle. Een klik op ’n stel wys sy kalenders en
 versteek die res.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Tik 'n taak op een reël"
+text = """
+Voeg 'n taak by soos “Bel die bank môre 15:00” of “Gee die plante water
+elke Maandag 08:00”, en Take stel die dag, die tyd en die herhaling vir
+jou in, en wys wat dit verstaan het terwyl jy tik.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalender in 'n smal venster"
+text = """
+In 'n smal venster hou Kalender Vandag en die datums in sy balk en sit
+die aansigte in een kieslys. Geleentheidstye breek nie meer middel-in 'n
+woord nie, en Tab bereik elke knoppie en kalender.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Take met hulle, langs hul e-pos"
+text = """
+Die kontakpaneel langs 'n gesprek lys nou jou oop take wat uit e-pos met
+daardie persoon gemaak is. Merk een af om dit te voltooi, of klik daarop
+om dit in Take oop te maak.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Jou volgende vergaderings met hulle"
+text = """
+Die kontakpaneel langs 'n gesprek wys nou jou volgende vergaderings met
+daardie persoon. Klik op een om dit in Kalender oop te maak.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Sleep 'n taak na 'n ander lys"
+text = """
+Sleep in Take 'n taak na 'n ander lys om dit daarheen te skuif. Ontdoen
+sit dit terug.
+"""

@@ -460,7 +460,8 @@ pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
         .p(px(24.0))
         .text_size(px(14.0))
         .text_color(rgba(th.text_faint))
-        .child(text.to_owned())
+        // Its own box, so a long line wraps in a narrow window.
+        .child(div().min_w_0().text_center().child(text.to_owned()))
         .into_any_element()
 }
 

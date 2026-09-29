@@ -41,6 +41,9 @@ use crate::widgets::{icon, placeholder, tip};
 const NAV_WIDTH: f32 = 248.0;
 /// Height of a line of the list.
 const ROW: f32 = 52.0;
+/// The list shows its columns (email, phone, job, labels) from this wide;
+/// narrower, each row is the name with the address under it.
+const COLUMNS_FROM: f32 = 640.0;
 /// What a round button on a contact's page does when clicked.
 type OnClick = Box<dyn Fn(&gpui::ClickEvent, &mut gpui::Window, &mut gpui::App)>;
 
@@ -442,11 +445,13 @@ impl MailWindow {
                 }
             }
         };
+        let nav = self.page_side(nav, NAV_WIDTH, true, th, cx);
         div()
+            .relative()
             .size_full()
             .flex()
             .flex_row()
-            .child(nav)
+            .children(nav.docked)
             .child(
                 div()
                     .flex_1()
@@ -458,6 +463,7 @@ impl MailWindow {
                     .children(self.allow_banner(book.as_deref(), th, cx))
                     .child(div().flex_1().min_h_0().child(body)),
             )
+            .children(nav.drawer)
             .children(self.render_label_menu(th, cx))
             .into_any_element()
     }
@@ -827,26 +833,29 @@ impl MailWindow {
         lines.extend(shown.iter().map(|&ix| Line::Person(ix)));
         let lines = Rc::new(lines);
         let book = book.clone();
-        let header = div()
-            .flex_none()
-            .h(px(36.0))
-            .mx(px(16.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(16.0))
-            .border_b_1()
-            .border_color(rgba(th.divider))
-            .text_size(px(12.0))
-            .font_weight(FontWeight::MEDIUM)
-            .text_color(rgba(th.text_dim))
-            .child(div().w(px(36.0)).flex_none())
-            .child(column(2.0).child(tr!("contacts-col-name")))
-            .child(column(2.4).child(tr!("contacts-col-email")))
-            .child(column(1.6).child(tr!("contacts-col-phone")))
-            .child(column(2.0).child(tr!("contacts-col-job")))
-            .child(column(1.6).child(tr!("contacts-col-labels")));
+        let columns = self.contacts_columns();
+        let header = columns.then(|| {
+            div()
+                .flex_none()
+                .h(px(36.0))
+                .mx(px(16.0))
+                .px(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(16.0))
+                .border_b_1()
+                .border_color(rgba(th.divider))
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.text_dim))
+                .child(div().w(px(36.0)).flex_none())
+                .child(column(2.0).child(tr!("contacts-col-name")))
+                .child(column(2.4).child(tr!("contacts-col-email")))
+                .child(column(1.6).child(tr!("contacts-col-phone")))
+                .child(column(2.0).child(tr!("contacts-col-job")))
+                .child(column(1.6).child(tr!("contacts-col-labels")))
+        });
         let count = lines.len();
         let list = uniform_list(
             "contacts",
@@ -911,9 +920,16 @@ impl MailWindow {
             .flex()
             .flex_col()
             .children(title)
-            .child(header)
+            .children(header)
             .child(div().flex_1().min_h_0().child(list))
             .into_any_element()
+    }
+
+    /// Whether the list has room for its columns beside the names.
+    fn contacts_columns(&self) -> bool {
+        let shape = self.layout.shape;
+        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        shape.width - shape.rail() - side >= COLUMNS_FROM
     }
 
     fn contact_row(
@@ -945,23 +961,56 @@ impl MailWindow {
                     .flex_none()
                     .child(self.contact_avatar(person, 36.0)),
             )
-            .child(
-                column(2.0)
-                    .text_color(rgba(th.text))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(person.name.clone()),
-            )
-            .child(dim(column(2.4)).child(person.emails.first().cloned().unwrap_or_default()))
-            .child(dim(column(1.6)).child(person.phone.clone()))
-            .child(dim(column(2.0)).child(person.job.clone()))
-            .child(
-                column(1.6).flex().flex_row().gap(px(4.0)).children(
-                    self.person_labels(person.ids.first().copied(), &person.labels)
-                        .iter()
-                        .take(2)
-                        .map(|l| chip(l, th)),
-                ),
-            );
+            .when(!self.contacts_columns(), |row| {
+                let under = person
+                    .emails
+                    .first()
+                    .filter(|e| !e.is_empty())
+                    .cloned()
+                    .unwrap_or_else(|| person.phone.clone());
+                row.child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            div()
+                                .truncate()
+                                .text_color(rgba(th.text))
+                                .font_weight(FontWeight::MEDIUM)
+                                .child(person.name.clone()),
+                        )
+                        .when(!under.is_empty(), |d| {
+                            d.child(
+                                div()
+                                    .truncate()
+                                    .text_size(px(12.0))
+                                    .text_color(rgba(th.text_dim))
+                                    .child(under),
+                            )
+                        }),
+                )
+            })
+            .when(self.contacts_columns(), |row| {
+                row.child(
+                    column(2.0)
+                        .text_color(rgba(th.text))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(person.name.clone()),
+                )
+                .child(dim(column(2.4)).child(person.emails.first().cloned().unwrap_or_default()))
+                .child(dim(column(1.6)).child(person.phone.clone()))
+                .child(dim(column(2.0)).child(person.job.clone()))
+                .child(
+                    column(1.6).flex().flex_row().gap(px(4.0)).children(
+                        self.person_labels(person.ids.first().copied(), &person.labels)
+                            .iter()
+                            .take(2)
+                            .map(|l| chip(l, th)),
+                    ),
+                )
+            });
         div().w_full().px(px(16.0)).child(row).into_any_element()
     }
 

@@ -21,5 +21,7 @@ contact-conversations = Perbualan terkini
 contact-more = Lagi
 contact-less = Kurang
 contact-files = Fail
+contact-tasks = Tugas
+contact-meetings = Mesyuarat akan datang
 contact-people = Dalam perbualan ini
 contact-local-only = Daripada mel anda pada komputer ini sahaja

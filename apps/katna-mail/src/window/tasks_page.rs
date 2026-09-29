@@ -121,6 +121,11 @@ pub(super) struct TasksPage {
     /// The mails (`Message-ID`s) of open tasks made from mail, sorted, for
     /// the contact panel's Tasks.
     pub(super) open_mails: Vec<String>,
+    /// What the top bar's search box holds while the page shows: only
+    /// tasks with every word show.
+    query: String,
+    /// The mail search's words, kept while the box searches tasks.
+    mail_query: Option<String>,
 }
 
 /// A task being dragged onto another list: it follows the pointer as a
@@ -152,6 +157,36 @@ impl Render for TaskDragged {
 }
 
 impl TasksPage {
+    /// Whether `task` shows for the search: its title or notes hold every
+    /// word, or its task's do (a step shows with its task), or one of its
+    /// steps' do.
+    fn found(&self, task: &TaskItem) -> bool {
+        let words: Vec<String> = self
+            .query
+            .split_whitespace()
+            .map(str::to_lowercase)
+            .collect();
+        if words.is_empty() {
+            return true;
+        }
+        let has = |t: &TaskItem| {
+            let text = format!("{}\n{}", t.title, t.notes).to_lowercase();
+            words.iter().all(|w| text.contains(w.as_str()))
+        };
+        has(task)
+            || task.parent.and_then(|p| self.task(p)).is_some_and(has)
+            || (task.parent.is_none()
+                && self
+                    .columns()
+                    .iter()
+                    .flat_map(|c| c.tasks.iter())
+                    .any(|t| t.parent == Some(task.id) && has(t)))
+    }
+
+    fn searching(&self) -> bool {
+        !self.query.trim().is_empty()
+    }
+
     fn done(&self, task: &TaskItem) -> bool {
         self.pending
             .get(&task.id)
@@ -213,7 +248,7 @@ impl TasksPage {
         let mut shown = Vec::new();
         for column in self.shown_columns() {
             for task in &column.tasks {
-                if !self.done(task) && self.parent_open(task) {
+                if !self.done(task) && self.parent_open(task) && self.found(task) {
                     shown.push(task.id);
                 }
             }
@@ -224,7 +259,12 @@ impl TasksPage {
             }
             View::Today => {
                 let (overdue, due) = self.due_now(today());
-                return overdue.into_iter().chain(due).map(|(_, t)| t.id).collect();
+                return overdue
+                    .into_iter()
+                    .chain(due)
+                    .filter(|(_, t)| self.found(t))
+                    .map(|(_, t)| t.id)
+                    .collect();
             }
             View::All | View::List(_) => {}
         }
@@ -267,7 +307,13 @@ impl TasksPage {
 
     fn shown_columns(&self) -> Vec<&Column> {
         match self.view {
-            View::All | View::Today | View::Starred => self.columns().iter().collect(),
+            // While searching, only the lists with a task found.
+            View::All => self
+                .columns()
+                .iter()
+                .filter(|c| !self.searching() || c.tasks.iter().any(|t| self.found(t)))
+                .collect(),
+            View::Today | View::Starred => self.columns().iter().collect(),
             View::List(id) => self.columns().iter().filter(|c| c.list.id == id).collect(),
         }
     }
@@ -456,6 +502,54 @@ impl MailWindow {
             self.tasks.open_mails = open_mails;
             self.contact.forget_profiles();
         }
+    }
+
+    /// Turns the top bar's search box to tasks while the page shows, and
+    /// back to mail after, each keeping its own words.
+    pub(super) fn swap_tasks_search(&mut self, entering: bool, cx: &mut Context<Self>) {
+        let (placeholder, text) = if entering {
+            self.tasks.mail_query = Some(self.search.read(cx).text().to_owned());
+            (tr!("tasks-search"), self.tasks.query.clone())
+        } else {
+            let text = self.tasks.mail_query.take().unwrap_or_default();
+            (tr!("search-mail"), text)
+        };
+        self.search.update(cx, |search, cx| {
+            search.set_placeholder(placeholder);
+            search.set_text(text, cx);
+        });
+    }
+
+    /// The top bar's search box changed while the page shows.
+    pub(super) fn on_tasks_search(
+        &mut self,
+        search: &Entity<TextInput>,
+        event: &InputEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        match event {
+            InputEvent::Changed => {
+                self.tasks.query = search.read(cx).text().to_owned();
+                // A picked task the search hides is let go.
+                if let Some(id) = self.tasks.picked
+                    && !self.tasks.shown().contains(&id)
+                {
+                    self.tasks.picked = None;
+                }
+            }
+            InputEvent::Cancel => {
+                self.tasks.query.clear();
+                search.update(cx, |search, cx| search.set_text("", cx));
+            }
+            // Enter goes to the tasks found, for the arrow keys.
+            InputEvent::Submit => {
+                if let Some(focus) = &self.tasks.focus {
+                    window.focus(focus, cx);
+                }
+            }
+        }
+        cx.notify();
     }
 
     /// The open tasks made from `mails`, due first first, and whether each
@@ -1172,15 +1266,19 @@ impl MailWindow {
         };
         let menu = self.render_tasks_menu(th, cx);
         let details = self.render_task_details(th, cx);
+        let side = self.render_tasks_nav(th, cx);
+        let side = self.page_side(side, NAV_WIDTH, true, th, cx);
         div()
             .id("tasks-page")
+            .relative()
             .size_full()
             .flex()
             .flex_row()
             .when_some(page.focus.as_ref(), |d, focus| d.track_focus(focus))
             .on_key_down(cx.listener(Self::tasks_key))
-            .child(self.render_tasks_nav(th, cx))
+            .children(side.docked)
             .child(div().flex_1().min_w_0().h_full().child(body))
+            .children(side.drawer)
             .children(menu)
             .children(details)
             .with_animation(
@@ -1429,6 +1527,9 @@ impl MailWindow {
     fn render_task_board(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let columns = page.shown_columns();
+        if columns.is_empty() && page.searching() {
+            return placeholder(&tr!("tasks-search-none"), th);
+        }
         if columns.is_empty() {
             return placeholder(&tr!("tasks-no-lists"), th);
         }
@@ -1475,10 +1576,15 @@ impl MailWindow {
         th: &Theme,
         rows: gpui::Div,
     ) -> gpui::Stateful<gpui::Div> {
+        // No wider than the page, less the board's margins: on a phone a
+        // card fills it.
+        let shape = self.layout.shape;
+        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        let room = shape.width - shape.rail() - side - shape.card_margin() - 32.0;
         div()
             .id(id)
             .flex_none()
-            .w(px(width))
+            .w(px(width.min(room)))
             .max_h_full()
             .overflow_y_scroll()
             .rounded(px(16.0))
@@ -1499,7 +1605,7 @@ impl MailWindow {
         let rows: Vec<AnyElement> = columns
             .iter()
             .flat_map(|c| c.tasks.iter().map(move |t| (*c, t)))
-            .filter(|(_, t)| page.starred(t) && !page.done(t))
+            .filter(|(_, t)| page.starred(t) && !page.done(t) && page.found(t))
             .map(|(c, t)| self.render_task_row(t, Some(&list_title(c)), today, th, cx))
             .collect();
         let empty = rows.is_empty();
@@ -1538,7 +1644,9 @@ impl MailWindow {
     fn render_today(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let day = today();
-        let (overdue, due) = page.due_now(day);
+        let (mut overdue, mut due) = page.due_now(day);
+        overdue.retain(|(_, t)| page.found(t));
+        due.retain(|(_, t)| page.found(t));
         // A task's row, and the row adding a step to it.
         let mut row = |(c, t): (&Column, &TaskItem)| {
             let mut rows = vec![self.render_task_row(t, Some(&list_title(c)), day, th, cx)];
@@ -1676,6 +1784,7 @@ impl MailWindow {
             .tasks
             .iter()
             .filter(|t| page.parent_open(t) || !page.done(t))
+            .filter(|t| page.found(t))
             .partition(|t| page.done(t));
         // Open tasks; a step whose task is done shows among the done.
         let open_rows: Vec<AnyElement> = open

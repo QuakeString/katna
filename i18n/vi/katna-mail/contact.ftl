@@ -21,5 +21,7 @@ contact-conversations = Cuộc hội thoại gần đây
 contact-more = Thêm
 contact-less = Thu gọn
 contact-files = Tệp
+contact-tasks = Việc cần làm
+contact-meetings = Cuộc họp sắp tới
 contact-people = Trong cuộc hội thoại này
 contact-local-only = Chỉ từ thư của bạn trên máy tính này

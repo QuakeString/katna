@@ -1496,3 +1496,41 @@ Zapisz widoczne kalendarze jako zestaw, np. „Praca” lub „Rodzina”, za
 pomocą + obok Zestawy kalendarzy. Jedno kliknięcie zestawu pokazuje jego
 kalendarze i ukrywa pozostałe.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Wpisz zadanie w jednym wierszu"
+text = """
+Dodaj zadanie, np. „Zadzwoń do banku jutro o 15:00” lub „Podlej kwiaty w
+każdy poniedziałek o 8:00”, a Zadania ustawią za Ciebie dzień, godzinę i
+powtarzanie, pokazując w trakcie pisania, co zrozumiały.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalendarz w wąskim oknie"
+text = """
+W wąskim oknie Kalendarz zachowuje na pasku przycisk Dzisiaj i daty, a
+widoki przenosi do jednego menu. Godziny wydarzeń nie łamią się już w
+połowie słowa, a Tab dociera do każdego przycisku i kalendarza.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Zadania z tą osobą obok jej poczty"
+text = """
+Panel kontaktu obok konwersacji pokazuje teraz Twoje otwarte zadania
+utworzone z wiadomości wymienianych z tą osobą. Zaznacz jedno, aby je
+ukończyć, lub kliknij je, aby otworzyć je w Zadaniach.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Twoje najbliższe spotkania z tą osobą"
+text = """
+Panel kontaktu obok konwersacji pokazuje teraz Twoje najbliższe
+spotkania z tą osobą. Kliknij jedno, aby otworzyć je w Kalendarzu.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Przeciągnij zadanie na inną listę"
+text = """
+W Zadaniach przeciągnij zadanie na inną listę, aby je tam przenieść.
+Cofnij przywraca je na miejsce.
+"""

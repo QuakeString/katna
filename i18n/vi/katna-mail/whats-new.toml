@@ -1455,3 +1455,41 @@ Lưu các lịch bạn đang hiển thị thành một bộ, như “Công việ
 đình”, bằng nút + cạnh Bộ lịch. Một cú nhấp vào một bộ sẽ hiện các lịch
 của bộ đó và ẩn phần còn lại.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Nhập một việc cần làm trên một dòng"
+text = """
+Thêm một việc như “Gọi ngân hàng lúc 15h ngày mai” hoặc “Tưới cây lúc 8h
+sáng thứ Hai hằng tuần”, và Việc cần làm sẽ đặt ngày, giờ và lặp lại cho
+bạn, đồng thời hiện những gì nó hiểu ngay khi bạn gõ.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Lịch trong cửa sổ hẹp"
+text = """
+Trong cửa sổ hẹp, Lịch giữ Hôm nay và các ngày trên thanh của nó và gom
+các chế độ xem vào một menu. Giờ sự kiện không còn bị ngắt giữa chữ, và
+Tab đi tới được mọi nút và mọi lịch.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Việc cần làm với họ, ngay cạnh thư của họ"
+text = """
+Bảng liên hệ cạnh một cuộc trò chuyện giờ liệt kê các việc cần làm đang
+mở được tạo từ thư với người đó. Đánh dấu một việc để hoàn thành, hoặc
+nhấp vào để mở nó trong Việc cần làm.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Các cuộc họp sắp tới của bạn với họ"
+text = """
+Bảng liên hệ cạnh một cuộc trò chuyện giờ hiển thị các cuộc họp sắp tới
+của bạn với người đó. Nhấp vào một cuộc họp để mở nó trong Lịch.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Kéo một việc cần làm sang danh sách khác"
+text = """
+Trong Việc cần làm, kéo một việc sang danh sách khác để chuyển nó tới
+đó. Hoàn tác sẽ đưa nó về chỗ cũ.
+"""

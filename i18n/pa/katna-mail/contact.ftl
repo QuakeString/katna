@@ -24,5 +24,7 @@ contact-conversations = ਹਾਲੀਆ ਗੱਲਬਾਤਾਂ
 contact-more = ਹੋਰ
 contact-less = ਘੱਟ
 contact-files = ਫ਼ਾਈਲਾਂ
+contact-tasks = ਕਾਰਜ
+contact-meetings = ਆਉਣ ਵਾਲੀਆਂ ਮੀਟਿੰਗਾਂ
 contact-people = ਇਸ ਗੱਲਬਾਤ ਵਿੱਚ
 contact-local-only = ਸਿਰਫ਼ ਇਸ ਕੰਪਿਊਟਰ ਉੱਤੇ ਤੁਹਾਡੀ ਮੇਲ ਤੋਂ

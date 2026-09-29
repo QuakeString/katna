@@ -21,5 +21,7 @@ contact-conversations = Percakapan terbaru
 contact-more = Lainnya
 contact-less = Lebih sedikit
 contact-files = File
+contact-tasks = Tugas
+contact-meetings = Rapat mendatang
 contact-people = Dalam percakapan ini
 contact-local-only = Hanya dari email Anda di komputer ini

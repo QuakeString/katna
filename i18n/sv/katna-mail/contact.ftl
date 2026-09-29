@@ -24,5 +24,7 @@ contact-conversations = Senaste konversationer
 contact-more = Mer
 contact-less = Mindre
 contact-files = Filer
+contact-tasks = Uppgifter
+contact-meetings = Kommande möten
 contact-people = I den här konversationen
 contact-local-only = Bara från din e-post på den här datorn

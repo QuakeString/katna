@@ -1553,3 +1553,44 @@ I-save bilang set ang mga kalendaryong ipinapakita mo, gaya ng “Trabaho”
 o “Pamilya”, gamit ang + sa tabi ng Mga set ng kalendaryo. Isang click sa
 isang set ang magpapakita ng mga kalendaryo nito at magtatago sa iba.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Mag-type ng gawain sa isang linya"
+text = """
+Magdagdag ng gawain gaya ng “Tawagan ang bangko bukas 3pm” o “Diligan
+ang halaman tuwing Lunes 8am”, at itatakda ng Mga Gawain ang araw, oras
+at pag-uulit para sa iyo, at ipinapakita nito ang naintindihan nito
+habang nagta-type ka.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalendaryo sa makitid na window"
+text = """
+Sa makitid na window, pinananatili ng Kalendaryo ang Ngayon at ang mga
+petsa sa bar nito at inilalagay ang mga view sa iisang menu. Hindi na
+napuputol sa gitna ng salita ang oras ng mga event, at naaabot ng Tab
+ang bawat button at kalendaryo.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Mga gawain kasama sila, katabi ng mail nila"
+text = """
+Inililista na ngayon ng card ng contact sa tabi ng usapan ang iyong mga
+bukas na gawain na ginawa mula sa mail kasama ang taong iyon. I-tick ang
+isa para tapusin ito, o i-click ito para buksan sa Mga Gawain.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Ang mga susunod mong meeting kasama sila"
+text = """
+Ipinapakita na ngayon ng card ng contact sa tabi ng usapan ang mga
+susunod mong meeting kasama ang taong iyon. I-click ang isa para buksan
+ito sa Kalendaryo.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "I-drag ang gawain sa ibang listahan"
+text = """
+Sa Mga Gawain, i-drag ang isang gawain papunta sa ibang listahan para
+ilipat ito roon. Ibinabalik ito ng I-undo.
+"""

@@ -1518,3 +1518,42 @@ Simpan kalendar yang anda paparkan sebagai set, seperti "Kerja" atau
 "Keluarga", dengan + di sebelah Set kalendar. Satu klik pada set
 memaparkan kalendarnya dan menyembunyikan yang lain.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Taip tugas dalam satu baris"
+text = """
+Tambah tugas seperti “Telefon bank esok 3pm” atau “Siram pokok setiap
+Isnin 8am”, dan Tugas menetapkan hari, masa dan ulangan untuk anda,
+sambil menunjukkan apa yang difahaminya semasa anda menaip.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalendar dalam tetingkap sempit"
+text = """
+Dalam tetingkap sempit, Kalendar mengekalkan Hari ini dan tarikh dalam
+barnya serta meletakkan paparan dalam satu menu. Masa acara tidak lagi
+terputus di tengah perkataan, dan Tab mencapai setiap butang dan
+kalendar.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Tugas bersama mereka, di sebelah mel mereka"
+text = """
+Panel kenalan di sebelah perbualan kini menyenaraikan tugas terbuka anda
+yang dibuat daripada mel dengan orang itu. Tandakan satu untuk
+menyelesaikannya, atau klik untuk membukanya dalam Tugas.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Mesyuarat anda yang seterusnya dengan mereka"
+text = """
+Panel kenalan di sebelah perbualan kini menunjukkan mesyuarat anda yang
+seterusnya dengan orang itu. Klik satu untuk membukanya dalam Kalendar.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Seret tugas ke senarai lain"
+text = """
+Dalam Tugas, seret tugas ke senarai lain untuk mengalihkannya ke sana.
+Buat asal meletakkannya semula.
+"""

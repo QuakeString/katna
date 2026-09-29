@@ -1471,3 +1471,41 @@ Spara kalendrarna du visar som en uppsättning, till exempel ”Arbete”
 eller ”Familj”, med + bredvid Kalenderuppsättningar. Ett klick på en
 uppsättning visar dess kalendrar och döljer resten.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Skriv en uppgift på en rad"
+text = """
+Lägg till en uppgift som ”Ring banken i morgon kl. 15” eller ”Vattna
+blommorna varje måndag kl. 8”, så ställer Uppgifter in dagen, tiden och
+upprepningen åt dig och visar vad den har förstått medan du skriver.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalender i ett smalt fönster"
+text = """
+I ett smalt fönster behåller Kalender Idag och datumen i sitt fält och
+samlar vyerna i en meny. Händelsetider bryts inte längre mitt i ord, och
+Tab når varje knapp och kalender.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Uppgifter med dem, bredvid deras e-post"
+text = """
+Kontaktpanelen bredvid en konversation listar nu dina öppna uppgifter
+som skapats från e-post med den personen. Bocka av en för att slutföra
+den, eller klicka på den för att öppna den i Uppgifter.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Dina nästa möten med dem"
+text = """
+Kontaktpanelen bredvid en konversation visar nu dina nästa möten med
+den personen. Klicka på ett för att öppna det i Kalender.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Dra en uppgift till en annan lista"
+text = """
+I Uppgifter drar du en uppgift till en annan lista för att flytta den
+dit. Ångra lägger tillbaka den.
+"""
