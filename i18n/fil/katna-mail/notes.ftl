@@ -7,6 +7,7 @@
 notes-view-notes = Mga Tala
 notes-view-archive = Archive
 notes-view-trash = Trash
+notes-edit-labels = I-edit ang mga label
 notes-search = Maghanap sa mga tala
 notes-loading = Binubuksan ang iyong mga tala…
 
@@ -20,6 +21,7 @@ notes-empty = Lalabas dito ang mga tala na idaragdag mo
 notes-archive-empty = Lalabas dito ang iyong mga naka-archive na tala
 notes-trash-empty = Walang tala sa Trash
 notes-none-found = Walang tugmang tala
+notes-label-empty = Wala pang mga tala na may ganitong label
 notes-trash-note = Ang mga tala sa Trash ay made-delete pagkalipas ng 7 araw.
 notes-empty-trash = Alisin ang laman ng Trash
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = I-restore
 notes-delete-forever = I-delete nang permanente
 notes-color = Kulay ng background
 notes-checkboxes = Ipakita o itago ang mga checkbox
+notes-labels = Mga Label
 notes-close = Isara
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Pamagat
 notes-edited = Na-edit { $date }
 notes-on-this-computer = Sa computer na ito
 notes-where = Kung saan itinatago ang talang ito
+
+## Labels
+
+notes-label-note = Lagyan ng label ang tala
+notes-label-name = Ilagay ang pangalan ng label
+notes-label-create = Gumawa ng “{ $name }”
+notes-label-remove = Alisin ang label
+notes-label-delete = Tanggalin ang label
+notes-labels-none = Wala pang mga label. Magdagdag mula sa button ng label ng isang tala.
+notes-labels-done = Tapos na
+notes-label-renamed = Pinalitan ang pangalan ng label ng “{ $name }”
+notes-label-deleted = Natanggal ang label na “{ $name }”
 
 ## A note about a mail
 

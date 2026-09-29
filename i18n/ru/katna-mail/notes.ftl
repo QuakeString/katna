@@ -7,6 +7,7 @@
 notes-view-notes = Заметки
 notes-view-archive = Архив
 notes-view-trash = Корзина
+notes-edit-labels = Изменить ярлыки
 notes-search = Поиск по заметкам
 notes-loading = Открываем ваши заметки…
 
@@ -20,6 +21,7 @@ notes-empty = Здесь будут ваши заметки
 notes-archive-empty = Здесь будут ваши заметки из архива
 notes-trash-empty = В корзине нет заметок
 notes-none-found = Подходящих заметок нет
+notes-label-empty = Заметок с этим ярлыком пока нет
 notes-trash-note = Заметки из корзины удаляются через 7 дней.
 notes-empty-trash = Очистить корзину
 notes-ticked = { $count ->
@@ -40,6 +42,7 @@ notes-restore = Восстановить
 notes-delete-forever = Удалить навсегда
 notes-color = Цвет фона
 notes-checkboxes = Показать или скрыть флажки
+notes-labels = Ярлыки
 notes-close = Закрыть
 
 ## The open note
@@ -48,6 +51,18 @@ notes-title = Название
 notes-edited = Изменено: { $date }
 notes-on-this-computer = На этом компьютере
 notes-where = Где хранится эта заметка
+
+## Labels
+
+notes-label-note = Добавить ярлык к заметке
+notes-label-name = Введите название ярлыка
+notes-label-create = Создать «{ $name }»
+notes-label-remove = Удалить ярлык с заметки
+notes-label-delete = Удалить ярлык
+notes-labels-none = Ярлыков пока нет. Добавьте ярлык кнопкой ярлыков в заметке.
+notes-labels-done = Готово
+notes-label-renamed = Ярлык переименован в «{ $name }»
+notes-label-deleted = Ярлык «{ $name }» удалён
 
 ## A note about a mail
 

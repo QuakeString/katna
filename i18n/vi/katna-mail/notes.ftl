@@ -7,6 +7,7 @@
 notes-view-notes = Ghi chú
 notes-view-archive = Lưu trữ
 notes-view-trash = Thùng rác
+notes-edit-labels = Chỉnh sửa nhãn
 notes-search = Tìm kiếm ghi chú
 notes-loading = Đang mở ghi chú của bạn…
 
@@ -20,6 +21,7 @@ notes-empty = Ghi chú bạn thêm sẽ xuất hiện ở đây
 notes-archive-empty = Ghi chú đã lưu trữ của bạn sẽ xuất hiện ở đây
 notes-trash-empty = Không có ghi chú nào trong thùng rác
 notes-none-found = Không có ghi chú phù hợp
+notes-label-empty = Chưa có ghi chú nào có nhãn này
 notes-trash-note = Ghi chú trong thùng rác sẽ bị xóa sau 7 ngày.
 notes-empty-trash = Dọn sạch thùng rác
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = Khôi phục
 notes-delete-forever = Xóa vĩnh viễn
 notes-color = Màu nền
 notes-checkboxes = Hiện hoặc ẩn hộp kiểm
+notes-labels = Nhãn
 notes-close = Đóng
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = Tiêu đề
 notes-edited = Đã chỉnh sửa { $date }
 notes-on-this-computer = Trên máy tính này
 notes-where = Nơi lưu ghi chú này
+
+## Labels
+
+notes-label-note = Gắn nhãn cho ghi chú
+notes-label-name = Nhập tên nhãn
+notes-label-create = Tạo “{ $name }”
+notes-label-remove = Xóa nhãn khỏi ghi chú
+notes-label-delete = Xóa nhãn
+notes-labels-none = Chưa có nhãn nào. Hãy thêm từ nút nhãn của một ghi chú.
+notes-labels-done = Xong
+notes-label-renamed = Đã đổi tên nhãn thành “{ $name }”
+notes-label-deleted = Đã xóa nhãn “{ $name }”
 
 ## A note about a mail
 

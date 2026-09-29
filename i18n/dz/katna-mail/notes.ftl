@@ -7,6 +7,7 @@
 notes-view-notes = དྲན་ཐོ་ཚུ
 notes-view-archive = ཡིག་མཛོད
 notes-view-trash = གད་སྙིགས
+notes-edit-labels = ཁ་ཡིག་ཚུ་ཞུན་དག་འབད།
 notes-search = དྲན་ཐོ་འཚོལ།
 notes-loading = ཁྱོད་ཀྱི་དྲན་ཐོ་ཚུ་ཁ་ཕྱེ་དོ…
 
@@ -20,6 +21,7 @@ notes-empty = ཁྱོད་ཀྱིས་ཁ་སྣོན་འབད་མ
 notes-archive-empty = ཁྱོད་ཀྱི་ཡིག་མཛོད་ནང་བཙུགས་ཡོད་པའི་དྲན་ཐོ་ཚུ་འདི་ལུ་སྟོནམ་ཨིན།
 notes-trash-empty = གད་སྙིགས་ནང་དྲན་ཐོ་མེད།
 notes-none-found = མཐུན་པའི་དྲན་ཐོ་མ་ཐོབ།
+notes-label-empty = ཁ་ཡིག་འདི་ཡོད་པའི་དྲན་ཐོ་ད་ལྟོ་ཡང་མིན་འདུག
 notes-trash-note = གད་སྙིགས་ནང་ལུ་ཡོད་མི་ དྲན་ཐོ་ཚུ་ཉིནམ་ 7 གི་ཤུལ་ལས་བཏོན་གཏངམ་ཨིན།
 notes-empty-trash = གད་སྙིགས་སྟོངམ་བཟོ།
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = སླར་ལོག་འབད།
 notes-delete-forever = ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་།
 notes-color = རྒྱབ་ལྗོངས་ཀྱི་ཚོན་ཁ།
 notes-checkboxes = རྟགས་བཀལ་སྒྲོམ་ཚུ་སྟོན་ ཡང་ན་སྦ།
+notes-labels = ཁ་ཡིག་ཚུ
 notes-close = ཁ་བསྡམ།
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = མགོ་མིང་།
 notes-edited = ཞུན་དག་འབད་ཡོདཔ་: { $date }
 notes-on-this-computer = གློག་ཀླད་འདི་གུ།
 notes-where = དྲན་ཐོ་འདི་གཏང་ཡོད་ས།
+
+## Labels
+
+notes-label-note = དྲན་ཐོ་ལུ་ཁ་ཡིག་བཏགས།
+notes-label-name = ཁ་ཡིག་གི་མིང་བཙུགས།
+notes-label-create = “{ $name }” གསར་བསྐྲུན་འབད།
+notes-label-remove = ཁ་ཡིག་ཕྱིར་བཏོན།
+notes-label-delete = ཁ་ཡིག་བཏོན་གཏང་།
+notes-labels-none = ད་ལྟོ་ཁ་ཡིག་མིན་འདུག དྲན་ཐོའི་ཁ་ཡིག་ཨེབ་རྟ་ལས་ཅིག་བསྣན།
+notes-labels-done = འབད་ཚར་ཡི།
+notes-label-renamed = ཁ་ཡིག་གི་མིང་ “{ $name }” ལུ་བསྒྱུར་ཡི།
+notes-label-deleted = ཁ་ཡིག་ “{ $name }” བཏོན་གཏང་ཡི།
 
 ## A note about a mail
 

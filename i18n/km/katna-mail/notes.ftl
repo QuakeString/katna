@@ -7,6 +7,7 @@
 notes-view-notes = កំណត់ចំណាំ
 notes-view-archive = ប័ណ្ណសារ
 notes-view-trash = ធុងសម្រាម
+notes-edit-labels = កែសម្រួលស្លាក
 notes-search = ស្វែងរកកំណត់ចំណាំ
 notes-loading = កំពុងបើកកំណត់ចំណាំរបស់អ្នក…
 
@@ -20,6 +21,7 @@ notes-empty = កំណត់ចំណាំដែលអ្នកបន្ថែ
 notes-archive-empty = កំណត់ចំណាំដែលបានរក្សាទុកក្នុងប័ណ្ណសារនឹងបង្ហាញនៅទីនេះ
 notes-trash-empty = គ្មានកំណត់ចំណាំក្នុងធុងសម្រាម
 notes-none-found = រកមិនឃើញកំណត់ចំណាំដែលត្រូវគ្នា
+notes-label-empty = មិនទាន់មានកំណត់ចំណាំដែលមានស្លាកនេះនៅឡើយ
 notes-trash-note = កំណត់ចំណាំក្នុងធុងសម្រាមនឹងត្រូវបានលុបបន្ទាប់ពី 7 ថ្ងៃ។
 notes-empty-trash = សម្អាតធុងសម្រាម
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = ស្ដារឡើងវិញ
 notes-delete-forever = លុបជាអចិន្ត្រៃយ៍
 notes-color = ជម្រើសផ្ទៃខាងក្រោយ
 notes-checkboxes = បង្ហាញ/លាក់ប្រអប់ធីក
+notes-labels = ស្លាក
 notes-close = បិទ
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = ចំណងជើង
 notes-edited = បានកែនៅ { $date }
 notes-on-this-computer = នៅលើកុំព្យូទ័រនេះ
 notes-where = កន្លែងរក្សាទុកកំណត់ចំណាំនេះ
+
+## Labels
+
+notes-label-note = ដាក់ស្លាកលើកំណត់ចំណាំ
+notes-label-name = បញ្ចូលឈ្មោះស្លាក
+notes-label-create = បង្កើត “{ $name }”
+notes-label-remove = ដកស្លាកចេញ
+notes-label-delete = លុបស្លាក
+notes-labels-none = មិនទាន់មានស្លាកទេ។ បន្ថែមបានពីប៊ូតុងស្លាករបស់កំណត់ចំណាំ។
+notes-labels-done = រួចរាល់
+notes-label-renamed = បានប្តូរឈ្មោះស្លាកទៅ “{ $name }”
+notes-label-deleted = បានលុបស្លាក “{ $name }”
 
 ## A note about a mail
 

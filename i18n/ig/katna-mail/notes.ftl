@@ -7,6 +7,7 @@
 notes-view-notes = Ndetu
 notes-view-archive = Ebe nchekwa
 notes-view-trash = Ihe mkpofu
+notes-edit-labels = Dezie leebụl
 notes-search = Chọọ ndetu
 notes-loading = Na-emepe ndetu gị…
 
@@ -20,6 +21,7 @@ notes-empty = Ndetu ị tinyere ga-apụta ebe a
 notes-archive-empty = Ndetu ị chekwara ga-apụta ebe a
 notes-trash-empty = Enweghị ndetu n'ime ihe mkpofu
 notes-none-found = Enweghị ndetu dabara
+notes-label-empty = Ọ dịghị ndetu nwere leebụl a
 notes-trash-note = A na-ehichapụ ndetu dị n'ime ihe mkpofu mgbe ụbọchị 7 gasịrị.
 notes-empty-trash = Mee ka ihe mkpofu tọgbọ chakoo
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = Weghachi
 notes-delete-forever = Hichapụ ruo mgbe ebighị ebi
 notes-color = Agba azụ
 notes-checkboxes = Gosi ma ọ bụ zoo igbe nhọrọ
+notes-labels = Leebụl
 notes-close = Mechie
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = Isiokwu
 notes-edited = Edezigharịrị: { $date }
 notes-on-this-computer = Na kọmputa a
 notes-where = Ebe echekwara ndetu a
+
+## Labels
+
+notes-label-note = Tinye leebụl na ndetu
+notes-label-name = Tinye aha leebụl
+notes-label-create = Mepụta “{ $name }”
+notes-label-remove = Wepụ leebụl
+notes-label-delete = Hichapụ leebụl
+notes-labels-none = Ọ dịghị leebụl ọ bụla. Tinye otu site na bọtịnụ leebụl nke ndetu.
+notes-labels-done = O mechara
+notes-label-renamed = Agbanwela aha leebụl ka ọ bụrụ “{ $name }”
+notes-label-deleted = Ehichapụla leebụl “{ $name }”
 
 ## A note about a mail
 

@@ -1301,3 +1301,20 @@ waar, wie hem organiseert, jouw dag eromheen met overlappingen
 gemarkeerd, Deelnemen en Ga je? Ja, Nee of Misschien, direct daar te
 beantwoorden.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Labels op notities"
+text = """
+Met de labelknop van een notitie geef je die labels, zoals in Keep. Je
+labels staan naast Notities en tonen elk alleen hun notities. Met Labels
+bewerken hernoem of verwijder je ze, met Ongedaan maken.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Taken van meer accounts"
+text = """
+Taken synchroniseren nu ook met Yahoo, Zoho, iCloud, Fastmail en andere
+accounts waarvan de taken op een andere server staan dan hun e-mail.
+Katna probeert eerst de beste manier van elk account en onthoudt de
+manier die werkt.
+"""

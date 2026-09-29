@@ -7,6 +7,7 @@
 notes-view-notes = Notizen
 notes-view-archive = Archiv
 notes-view-trash = Papierkorb
+notes-edit-labels = Labels bearbeiten
 notes-search = Notizen durchsuchen
 notes-loading = Ihre Notizen werden geöffnet…
 
@@ -20,6 +21,7 @@ notes-empty = Hier werden Ihre Notizen angezeigt
 notes-archive-empty = Hier werden Ihre archivierten Notizen angezeigt
 notes-trash-empty = Keine Notizen im Papierkorb
 notes-none-found = Keine passenden Notizen
+notes-label-empty = Noch keine Notizen mit diesem Label
 notes-trash-note = Notizen im Papierkorb werden nach 7 Tagen gelöscht.
 notes-empty-trash = Papierkorb leeren
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Wiederherstellen
 notes-delete-forever = Endgültig löschen
 notes-color = Hintergrundfarbe
 notes-checkboxes = Kontrollkästchen ein- oder ausblenden
+notes-labels = Labels
 notes-close = Schließen
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Titel
 notes-edited = Bearbeitet: { $date }
 notes-on-this-computer = Auf diesem Computer
 notes-where = Speicherort dieser Notiz
+
+## Labels
+
+notes-label-note = Notiz mit Label versehen
+notes-label-name = Labelnamen eingeben
+notes-label-create = „{ $name }“ erstellen
+notes-label-remove = Label entfernen
+notes-label-delete = Label löschen
+notes-labels-none = Noch keine Labels. Fügen Sie über die Label-Schaltfläche einer Notiz eines hinzu.
+notes-labels-done = Fertig
+notes-label-renamed = Label umbenannt in „{ $name }“
+notes-label-deleted = Label „{ $name }“ gelöscht
 
 ## A note about a mail
 

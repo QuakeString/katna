@@ -7,6 +7,7 @@
 notes-view-notes = Nota
 notes-view-archive = Arkib
 notes-view-trash = Sampah
+notes-edit-labels = Edit label
 notes-search = Cari nota
 notes-loading = Membuka nota anda…
 
@@ -20,6 +21,7 @@ notes-empty = Nota yang anda tambahkan muncul di sini
 notes-archive-empty = Nota yang diarkibkan muncul di sini
 notes-trash-empty = Tiada nota dalam Sampah
 notes-none-found = Tiada nota yang sepadan
+notes-label-empty = Belum ada nota dengan label ini
 notes-trash-note = Nota dalam Sampah dipadam selepas 7 hari.
 notes-empty-trash = Kosongkan Sampah
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = Pulihkan
 notes-delete-forever = Padam selama-lamanya
 notes-color = Warna latar belakang
 notes-checkboxes = Tunjukkan atau sembunyikan kotak semak
+notes-labels = Label
 notes-close = Tutup
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = Tajuk
 notes-edited = Diedit { $date }
 notes-on-this-computer = Pada komputer ini
 notes-where = Tempat nota ini disimpan
+
+## Labels
+
+notes-label-note = Labelkan nota
+notes-label-name = Masukkan nama label
+notes-label-create = Cipta “{ $name }”
+notes-label-remove = Alih keluar label
+notes-label-delete = Padam label
+notes-labels-none = Belum ada label. Tambah satu daripada butang label pada nota.
+notes-labels-done = Selesai
+notes-label-renamed = Label dinamakan semula kepada “{ $name }”
+notes-label-deleted = Label “{ $name }” dipadamkan
 
 ## A note about a mail
 

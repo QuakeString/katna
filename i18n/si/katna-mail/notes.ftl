@@ -7,6 +7,7 @@
 notes-view-notes = සටහන්
 notes-view-archive = සංරක්ෂිත
 notes-view-trash = කුණු කූඩය
+notes-edit-labels = ලේබල සංස්කරණය කරන්න
 notes-search = සටහන් සොයන්න
 notes-loading = ඔබේ සටහන් විවෘත කරමින්…
 
@@ -20,6 +21,7 @@ notes-empty = ඔබ එක් කරන සටහන් මෙහි දිස�
 notes-archive-empty = ඔබේ සංරක්ෂිත සටහන් මෙහි දිස්වේ
 notes-trash-empty = කුණු කූඩයේ සටහන් නැත
 notes-none-found = ගැළපෙන සටහන් නැත
+notes-label-empty = මෙම ලේබලය සහිත සටහන් තවම නැත
 notes-trash-note = කුණු කූඩයේ ඇති සටහන් දින 7කට පසු මකා දැමේ.
 notes-empty-trash = කුණු කූඩය හිස් කරන්න
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = ප්‍රතිසාධනය කරන්න
 notes-delete-forever = සදහටම මකන්න
 notes-color = පසුබිම් වර්ණය
 notes-checkboxes = ටික් කොටු පෙන්වන්න හෝ සඟවන්න
+notes-labels = ලේබල
 notes-close = වසන්න
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = මාතෘකාව
 notes-edited = සංස්කරණය කළේ: { $date }
 notes-on-this-computer = මෙම පරිගණකයේ
 notes-where = මෙම සටහන තබා ඇත්තේ කොහේද
+
+## Labels
+
+notes-label-note = සටහන ලේබල් කරන්න
+notes-label-name = ලේබලයේ නම ඇතුළු කරන්න
+notes-label-create = “{ $name }” සාදන්න
+notes-label-remove = ලේබලය ඉවත් කරන්න
+notes-label-delete = ලේබලය මකන්න
+notes-labels-none = තවම ලේබල නැත. සටහනක ලේබල බොත්තමෙන් එකක් එක් කරන්න.
+notes-labels-done = නිමයි
+notes-label-renamed = ලේබලයේ නම “{ $name }” ලෙස වෙනස් කරන ලදී
+notes-label-deleted = ලේබලය “{ $name }” මකන ලදී
 
 ## A note about a mail
 

@@ -7,6 +7,7 @@
 notes-view-notes = မှတ်စုများ
 notes-view-archive = မော်ကွန်း
 notes-view-trash = အမှိုက်ပုံး
+notes-edit-labels = အညွှန်းများ ပြင်ရန်
 notes-search = မှတ်စုများ ရှာရန်
 notes-loading = သင့်မှတ်စုများကို ဖွင့်နေသည်…
 
@@ -20,6 +21,7 @@ notes-empty = သင်ထည့်သော မှတ်စုများ ဤ�
 notes-archive-empty = မော်ကွန်းတင်ထားသော မှတ်စုများ ဤနေရာတွင် ပေါ်လာမည်
 notes-trash-empty = အမှိုက်ပုံးထဲတွင် မှတ်စုမရှိပါ
 notes-none-found = ကိုက်ညီသော မှတ်စု မရှိပါ
+notes-label-empty = ဤအညွှန်းပါသော မှတ်စု မရှိသေးပါ
 notes-trash-note = အမှိုက်ပုံးထဲရှိ မှတ်စုများကို 7 ရက်အကြာတွင် ဖျက်ပါမည်။
 notes-empty-trash = အမှိုက်ပုံးကို ရှင်းရန်
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = ပြန်ယူရန်
 notes-delete-forever = အပြီးဖျက်ရန်
 notes-color = နောက်ခံ ရွေးစရာများ
 notes-checkboxes = အမှန်ခြစ်ဘောက်စ်များ ပြရန်/ဖျောက်ရန်
+notes-labels = အညွှန်းများ
 notes-close = ပိတ်ရန်
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = ခေါင်းစဉ်
 notes-edited = { $date } တွင် ပြင်ထားသည်
 notes-on-this-computer = ဤကွန်ပျူတာတွင်
 notes-where = ဤမှတ်စုကို သိမ်းထားရာနေရာ
+
+## Labels
+
+notes-label-note = မှတ်စုကို အညွှန်းတပ်ရန်
+notes-label-name = အညွှန်းအမည် ထည့်ပါ
+notes-label-create = “{ $name }” ဖန်တီးရန်
+notes-label-remove = အညွှန်းကို ဖယ်ရှားရန်
+notes-label-delete = အညွှန်း ဖျက်ရန်
+notes-labels-none = အညွှန်း မရှိသေးပါ။ မှတ်စုရှိ အညွှန်းခလုတ်မှ ထည့်နိုင်ပါသည်။
+notes-labels-done = ပြီးပြီ
+notes-label-renamed = အညွှန်းအမည်ကို “{ $name }” သို့ ပြောင်းပြီးပါပြီ
+notes-label-deleted = အညွှန်း “{ $name }” ကို ဖျက်ပြီးပါပြီ
 
 ## A note about a mail
 

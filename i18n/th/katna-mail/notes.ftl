@@ -7,6 +7,7 @@
 notes-view-notes = โน้ต
 notes-view-archive = เก็บถาวร
 notes-view-trash = ถังขยะ
+notes-edit-labels = แก้ไขป้ายกำกับ
 notes-search = ค้นหาโน้ต
 notes-loading = กำลังเปิดโน้ตของคุณ…
 
@@ -20,6 +21,7 @@ notes-empty = โน้ตที่คุณเพิ่มจะปรากฏ
 notes-archive-empty = โน้ตที่เก็บถาวรจะปรากฏที่นี่
 notes-trash-empty = ไม่มีโน้ตในถังขยะ
 notes-none-found = ไม่พบโน้ตที่ตรงกัน
+notes-label-empty = ยังไม่มีโน้ตที่มีป้ายกำกับนี้
 notes-trash-note = โน้ตในถังขยะจะถูกลบหลังจาก 7 วัน
 notes-empty-trash = ล้างถังขยะ
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = กู้คืน
 notes-delete-forever = ลบถาวร
 notes-color = ตัวเลือกพื้นหลัง
 notes-checkboxes = แสดง/ซ่อนช่องทำเครื่องหมาย
+notes-labels = ป้ายกำกับ
 notes-close = ปิด
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = ชื่อ
 notes-edited = แก้ไขเมื่อ { $date }
 notes-on-this-computer = ในคอมพิวเตอร์เครื่องนี้
 notes-where = ที่เก็บโน้ตนี้
+
+## Labels
+
+notes-label-note = ติดป้ายกำกับโน้ต
+notes-label-name = ป้อนชื่อป้ายกำกับ
+notes-label-create = สร้าง “{ $name }”
+notes-label-remove = นำป้ายกำกับออก
+notes-label-delete = ลบป้ายกำกับ
+notes-labels-none = ยังไม่มีป้ายกำกับ เพิ่มได้จากปุ่มป้ายกำกับของโน้ต
+notes-labels-done = เสร็จสิ้น
+notes-label-renamed = เปลี่ยนชื่อป้ายกำกับเป็น “{ $name }” แล้ว
+notes-label-deleted = ลบป้ายกำกับ “{ $name }” แล้ว
 
 ## A note about a mail
 

@@ -7,6 +7,7 @@
 notes-view-notes = കുറിപ്പുകൾ
 notes-view-archive = ആർക്കൈവ്
 notes-view-trash = ട്രാഷ്
+notes-edit-labels = ലേബലുകൾ എഡിറ്റ് ചെയ്യുക
 notes-search = കുറിപ്പുകൾ തിരയുക
 notes-loading = നിങ്ങളുടെ കുറിപ്പുകൾ തുറക്കുന്നു…
 
@@ -20,6 +21,7 @@ notes-empty = നിങ്ങൾ ചേർക്കുന്ന കുറിപ�
 notes-archive-empty = നിങ്ങൾ ആർക്കൈവ് ചെയ്‌ത കുറിപ്പുകൾ ഇവിടെ ദൃശ്യമാകും
 notes-trash-empty = ട്രാഷിൽ കുറിപ്പുകളൊന്നുമില്ല
 notes-none-found = പൊരുത്തപ്പെടുന്ന കുറിപ്പുകളൊന്നുമില്ല
+notes-label-empty = ഈ ലേബലുള്ള കുറിപ്പുകൾ ഇതുവരെ ഇല്ല
 notes-trash-note = ട്രാഷിലെ കുറിപ്പുകൾ 7 ദിവസത്തിനു ശേഷം ഇല്ലാതാക്കും.
 notes-empty-trash = ട്രാഷ് ശൂന്യമാക്കുക
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = പുനഃസ്ഥാപിക്കുക
 notes-delete-forever = ശാശ്വതമായി ഇല്ലാതാക്കുക
 notes-color = പശ്ചാത്തല വർണ്ണം
 notes-checkboxes = ചെക്ക്ബോക്‌സുകൾ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക
+notes-labels = ലേബലുകൾ
 notes-close = അടയ്ക്കുക
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = ശീർഷകം
 notes-edited = എഡിറ്റ് ചെയ്‌തത്: { $date }
 notes-on-this-computer = ഈ കമ്പ്യൂട്ടറിൽ
 notes-where = ഈ കുറിപ്പ് എവിടെയാണ് സൂക്ഷിച്ചിരിക്കുന്നത്
+
+## Labels
+
+notes-label-note = കുറിപ്പിന് ലേബൽ നൽകുക
+notes-label-name = ലേബലിന്റെ പേര് നൽകുക
+notes-label-create = “{ $name }” സൃഷ്‌ടിക്കുക
+notes-label-remove = ലേബൽ നീക്കം ചെയ്യുക
+notes-label-delete = ലേബൽ ഇല്ലാതാക്കുക
+notes-labels-none = ഇതുവരെ ലേബലുകളൊന്നുമില്ല. കുറിപ്പിലെ ലേബൽ ബട്ടണിൽ നിന്ന് ഒന്ന് ചേർക്കുക.
+notes-labels-done = പൂർത്തിയായി
+notes-label-renamed = ലേബലിന്റെ പേര് “{ $name }” എന്നാക്കി മാറ്റി
+notes-label-deleted = ലേബൽ “{ $name }” ഇല്ലാതാക്കി
 
 ## A note about a mail
 

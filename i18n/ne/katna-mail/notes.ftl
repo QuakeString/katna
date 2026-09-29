@@ -7,6 +7,7 @@
 notes-view-notes = टिपोटहरू
 notes-view-archive = अभिलेख
 notes-view-trash = ट्रयास
+notes-edit-labels = लेबलहरू सम्पादन गर्नुहोस्
 notes-search = टिपोटहरू खोज्नुहोस्
 notes-loading = तपाईंका टिपोटहरू खोल्दै…
 
@@ -20,6 +21,7 @@ notes-empty = तपाईंले थपेका टिपोटहरू य
 notes-archive-empty = तपाईंका अभिलेखमा राखिएका टिपोटहरू यहाँ देखिन्छन्
 notes-trash-empty = ट्रयासमा कुनै टिपोट छैन
 notes-none-found = मेल खाने कुनै टिपोट भेटिएन
+notes-label-empty = यो लेबल भएको कुनै टिपोट अझै छैन
 notes-trash-note = ट्रयासमा रहेका टिपोटहरू ७ दिनपछि मेटिन्छन्।
 notes-empty-trash = ट्रयास खाली गर्नुहोस्
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = पुनःप्राप्त गर्नुहोस्
 notes-delete-forever = सधैंका लागि मेट्नुहोस्
 notes-color = पृष्ठभूमिको रङ
 notes-checkboxes = चेकबक्स देखाउनुहोस् वा लुकाउनुहोस्
+notes-labels = लेबलहरू
 notes-close = बन्द गर्नुहोस्
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = शीर्षक
 notes-edited = सम्पादन गरिएको: { $date }
 notes-on-this-computer = यो कम्प्युटरमा
 notes-where = यो टिपोट कहाँ राखिएको छ
+
+## Labels
+
+notes-label-note = टिपोटमा लेबल लगाउनुहोस्
+notes-label-name = लेबलको नाम प्रविष्ट गर्नुहोस्
+notes-label-create = “{ $name }” बनाउनुहोस्
+notes-label-remove = लेबल हटाउनुहोस्
+notes-label-delete = लेबल मेट्नुहोस्
+notes-labels-none = अझै कुनै लेबल छैन। टिपोटको लेबल बटनबाट एउटा थप्नुहोस्।
+notes-labels-done = सकियो
+notes-label-renamed = लेबलको नाम बदलेर “{ $name }” गरियो
+notes-label-deleted = लेबल “{ $name }” मेटियो
 
 ## A note about a mail
 

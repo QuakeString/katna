@@ -7,6 +7,7 @@
 notes-view-notes = Notatki
 notes-view-archive = Archiwum
 notes-view-trash = Kosz
+notes-edit-labels = Edytuj etykiety
 notes-search = Szukaj w notatkach
 notes-loading = Otwieranie notatek…
 
@@ -20,6 +21,7 @@ notes-empty = Dodane notatki pojawią się tutaj
 notes-archive-empty = Zarchiwizowane notatki pojawią się tutaj
 notes-trash-empty = Brak notatek w koszu
 notes-none-found = Brak pasujących notatek
+notes-label-empty = Nie ma jeszcze notatek z tą etykietą
 notes-trash-note = Notatki w koszu są usuwane po 7 dniach.
 notes-empty-trash = Opróżnij kosz
 notes-ticked = { $count ->
@@ -40,6 +42,7 @@ notes-restore = Przywróć
 notes-delete-forever = Usuń trwale
 notes-color = Kolor tła
 notes-checkboxes = Pokaż lub ukryj pola wyboru
+notes-labels = Etykiety
 notes-close = Zamknij
 
 ## The open note
@@ -48,6 +51,18 @@ notes-title = Tytuł
 notes-edited = Edytowano: { $date }
 notes-on-this-computer = Na tym komputerze
 notes-where = Gdzie jest przechowywana ta notatka
+
+## Labels
+
+notes-label-note = Dodaj etykietę do notatki
+notes-label-name = Wpisz nazwę etykiety
+notes-label-create = Utwórz „{ $name }”
+notes-label-remove = Usuń etykietę
+notes-label-delete = Usuń etykietę
+notes-labels-none = Nie ma jeszcze etykiet. Dodaj jedną przyciskiem etykiety w notatce.
+notes-labels-done = Gotowe
+notes-label-renamed = Zmieniono nazwę etykiety na „{ $name }”
+notes-label-deleted = Usunięto etykietę „{ $name }”
 
 ## A note about a mail
 

@@ -7,6 +7,7 @@
 notes-view-notes = メモ
 notes-view-archive = アーカイブ
 notes-view-trash = ゴミ箱
+notes-edit-labels = ラベルを編集
 notes-search = メモを検索
 notes-loading = メモを開いています…
 
@@ -20,6 +21,7 @@ notes-empty = 追加したメモがここに表示されます
 notes-archive-empty = アーカイブしたメモがここに表示されます
 notes-trash-empty = ゴミ箱にメモはありません
 notes-none-found = 一致するメモはありません
+notes-label-empty = このラベルのメモはまだありません
 notes-trash-note = ゴミ箱内のメモは 7 日後に削除されます。
 notes-empty-trash = ゴミ箱を空にする
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = 復元
 notes-delete-forever = 完全に削除
 notes-color = 背景オプション
 notes-checkboxes = チェックボックスを表示/非表示
+notes-labels = ラベル
 notes-close = 閉じる
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = タイトル
 notes-edited = 編集日: { $date }
 notes-on-this-computer = このコンピューター
 notes-where = メモの保存先
+
+## Labels
+
+notes-label-note = メモにラベルを付ける
+notes-label-name = ラベル名を入力
+notes-label-create = 「{ $name }」を作成
+notes-label-remove = ラベルを外す
+notes-label-delete = ラベルを削除
+notes-labels-none = ラベルはまだありません。メモのラベルボタンから追加できます。
+notes-labels-done = 完了
+notes-label-renamed = ラベル名を「{ $name }」に変更しました
+notes-label-deleted = ラベル「{ $name }」を削除しました
 
 ## A note about a mail
 

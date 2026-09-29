@@ -7,6 +7,7 @@
 notes-view-notes = 메모
 notes-view-archive = 보관처리
 notes-view-trash = 휴지통
+notes-edit-labels = 라벨 수정
 notes-search = 메모 검색
 notes-loading = 메모를 여는 중…
 
@@ -20,6 +21,7 @@ notes-empty = 추가한 메모가 여기에 표시됩니다
 notes-archive-empty = 보관처리된 메모가 여기에 표시됩니다
 notes-trash-empty = 휴지통에 메모 없음
 notes-none-found = 일치하는 메모 없음
+notes-label-empty = 이 라벨이 지정된 메모가 아직 없습니다
 notes-trash-note = 휴지통에 있는 메모는 7일 후에 삭제됩니다.
 notes-empty-trash = 휴지통 비우기
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = 복원
 notes-delete-forever = 완전히 삭제
 notes-color = 배경 옵션
 notes-checkboxes = 체크박스 표시/숨기기
+notes-labels = 라벨
 notes-close = 닫기
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = 제목
 notes-edited = 수정됨: { $date }
 notes-on-this-computer = 이 컴퓨터
 notes-where = 메모 저장 위치
+
+## Labels
+
+notes-label-note = 메모에 라벨 지정
+notes-label-name = 라벨 이름 입력
+notes-label-create = "{ $name }" 만들기
+notes-label-remove = 라벨 제거
+notes-label-delete = 라벨 삭제
+notes-labels-none = 라벨이 없습니다. 메모의 라벨 버튼으로 추가하세요.
+notes-labels-done = 완료
+notes-label-renamed = 라벨 이름이 "{ $name }"(으)로 변경되었습니다
+notes-label-deleted = "{ $name }" 라벨을 삭제했습니다
 
 ## A note about a mail
 

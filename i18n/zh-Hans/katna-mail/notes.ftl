@@ -7,6 +7,7 @@
 notes-view-notes = 笔记
 notes-view-archive = 归档
 notes-view-trash = 回收站
+notes-edit-labels = 修改标签
 notes-search = 搜索笔记
 notes-loading = 正在打开你的笔记…
 
@@ -20,6 +21,7 @@ notes-empty = 你添加的笔记会显示在此处
 notes-archive-empty = 已归档的笔记会显示在此处
 notes-trash-empty = 回收站中没有笔记
 notes-none-found = 没有匹配的笔记
+notes-label-empty = 还没有带此标签的笔记
 notes-trash-note = 回收站中的笔记会在 7 天后删除。
 notes-empty-trash = 清空回收站
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = 恢复
 notes-delete-forever = 永久删除
 notes-color = 背景选项
 notes-checkboxes = 显示/隐藏复选框
+notes-labels = 标签
 notes-close = 关闭
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = 标题
 notes-edited = 编辑时间：{ $date }
 notes-on-this-computer = 此计算机
 notes-where = 笔记的保存位置
+
+## Labels
+
+notes-label-note = 为笔记添加标签
+notes-label-name = 输入标签名称
+notes-label-create = 创建“{ $name }”
+notes-label-remove = 移除标签
+notes-label-delete = 删除标签
+notes-labels-none = 还没有标签。可通过笔记上的标签按钮添加。
+notes-labels-done = 完成
+notes-label-renamed = 标签已重命名为“{ $name }”
+notes-label-deleted = 已删除标签“{ $name }”
 
 ## A note about a mail
 
