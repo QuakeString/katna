@@ -37,12 +37,103 @@ const FLOAT_GAP: f32 = 8.0;
 const NOTCH: f32 = 8.0;
 
 const NAV_ROW_HEIGHT: f32 = 32.0;
+/// The gap between a folder's pill and the pane's far edge.
+const NAV_ROW_END: f32 = 16.0;
 /// The gap around a folder's arrow, inside its pill's rounded end.
 const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// Where folder icons and headings start, from the pane's edge: after the
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
+
+/// The button at the top of a page's side panel (Create contact, Create
+/// task), in the size, shape and colours of Mail's Compose over the
+/// folders: only its icon and word change. Wrap it in a flex `div` so a
+/// column does not stretch it.
+pub(super) fn side_create_button(
+    id: &'static str,
+    icon_name: &str,
+    label: String,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .relative()
+        .flex_none()
+        .ml(px(NAV_ROW_INSET))
+        .mt(px(super::COMPOSE_TOP))
+        .mb(px(super::COMPOSE_NAV_ROOM
+            - super::COMPOSE_TOP
+            - super::COMPOSE_HEIGHT))
+        .h(px(super::COMPOSE_HEIGHT))
+        .pl(px(16.0))
+        .pr(px(24.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .overflow_hidden()
+        .rounded(px(super::COMPOSE_RADIUS))
+        .bg(rgba(th.compose))
+        .text_color(rgba(th.compose_text))
+        .hover(|s| s.shadow(elevation(th, 1.5)))
+        .cursor_pointer()
+        .child(Ripple::new(id, rgba(th.ripple)).rounded(super::COMPOSE_RADIUS))
+        .child(icon(icon_name, th.compose_text, 24.0))
+        .child(
+            div()
+                .flex_none()
+                .pl(px(12.0))
+                .text_size(px(super::COMPOSE_TEXT_SIZE))
+                .font_weight(FontWeight::MEDIUM)
+                .whitespace_nowrap()
+                .child(label),
+        )
+}
+
+/// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
+/// shape of Mail's folders: a full pill inset from both edges of the pane,
+/// with its icon and label where a folder's are. Add a count or other end
+/// pieces as children.
+pub(super) fn side_row(
+    id: impl Into<ElementId>,
+    icon_name: &str,
+    label: impl IntoElement,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    let id = id.into();
+    let text = if on { th.nav_selected_text } else { th.text };
+    div()
+        .id(id.clone())
+        .relative()
+        .flex_none()
+        .h(px(NAV_ROW_HEIGHT))
+        .ml(px(NAV_ROW_INSET))
+        .mr(px(NAV_ROW_END))
+        .pl(px(NAV_TEXT_LEFT - NAV_ROW_INSET))
+        .pr(px(12.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .rounded_full()
+        .cursor_pointer()
+        .text_size(px(14.0))
+        .text_color(rgba(text))
+        .when(on, |d| {
+            d.bg(rgba(th.nav_selected)).font_weight(FontWeight::BOLD)
+        })
+        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+        .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
+        .child(icon(icon_name, if on { text } else { th.text_dim }, 20.0))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .pl(px(18.0))
+                .truncate()
+                .child(label),
+        )
+}
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
 
@@ -58,11 +149,14 @@ impl MailWindow {
         let shown = 1.0 - self.layout.shape.phone;
         // How far the folders show: docked beside the list on a desktop,
         // or a phone's or tablet's drawer.
-        let open = self
-            .reserve_spring
-            .value()
-            .max(self.layout.drawer_t())
-            .clamp(0.0, 1.0);
+        // The other pages' side column, folded on its own, on a desktop.
+        let page = self.app != super::RailApp::Mail;
+        let docked = if page && self.layout.shape.is_desktop() {
+            self.page_side_t
+        } else {
+            self.reserve_spring.value()
+        };
+        let open = docked.max(self.layout.drawer_t()).clamp(0.0, 1.0);
         let menu = div()
             .id("menu-button")
             .relative()
@@ -77,10 +171,11 @@ impl MailWindow {
             .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
-                if open > 0.5 {
-                    tr!("folders-hide")
-                } else {
-                    tr!("folders-show")
+                match (page, open > 0.5) {
+                    (false, true) => tr!("folders-hide"),
+                    (false, false) => tr!("folders-show"),
+                    (true, true) => tr!("side-pane-hide"),
+                    (true, false) => tr!("side-pane-show"),
                 },
                 th,
             ))
@@ -977,7 +1072,7 @@ impl MailWindow {
             .id(("nav-row", ix))
             .relative()
             .h(px(NAV_ROW_HEIGHT))
-            .w(px(NAV_WIDTH - 16.0 - NAV_ROW_INSET))
+            .w(px(NAV_WIDTH - NAV_ROW_END - NAV_ROW_INSET))
             .pl(px(NAV_TEXT_LEFT - NAV_ROW_INSET + indent))
             .pr(px(12.0))
             .flex()

@@ -488,42 +488,7 @@ impl MailWindow {
                     view: View,
                     cx: &mut Context<Self>| {
             let on = self.contacts.view == view;
-            div()
-                .id(id)
-                .relative()
-                .overflow_hidden()
-                .h(px(36.0))
-                .mr(px(12.0))
-                .pl(px(20.0))
-                .pr(px(16.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(14.0))
-                .rounded_r_full()
-                .cursor_pointer()
-                .when(on, |d| d.bg(rgba(th.nav_selected)))
-                .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                .child(Ripple::new(id, rgba(th.ripple)))
-                .child(icon(
-                    glyph,
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
-                ))
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .truncate()
-                        .text_size(px(14.0))
-                        .when(on, |d| d.font_weight(FontWeight::SEMIBOLD))
-                        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                        .child(label),
-                )
+            super::nav::side_row(id, glyph, label, on, th)
                 .children(count.map(|n| {
                     div()
                         .flex_none()
@@ -568,7 +533,6 @@ impl MailWindow {
             .w(px(NAV_WIDTH))
             .h_full()
             .overflow_y_scroll()
-            .pt(px(8.0))
             .pb(px(16.0))
             .flex()
             .flex_col()
@@ -673,40 +637,18 @@ impl MailWindow {
     /// "Create contact", at the top of the column like Compose in Mail.
     fn create_contact_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         div()
-            .pl(px(8.0))
-            .pb(px(12.0))
             .flex()
-            .flex_row()
             .child(
-                div()
-                    .id("contact-create")
-                    .relative()
-                    .overflow_hidden()
-                    .h(px(48.0))
-                    .pl(px(16.0))
-                    .pr(px(20.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(12.0))
-                    .rounded(px(16.0))
-                    .cursor_pointer()
-                    .bg(rgba(mix(
-                        th.surface,
-                        th.accent | 0xff,
-                        if th.dark { 0.22 } else { 0.18 },
-                    )))
-                    .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(rgba(th.text))
-                    .child(Ripple::new(("contact-create", 0usize), rgba(th.ripple)))
-                    .child(icon("person-add", th.text, 22.0))
-                    .child(tr!("contacts-create"))
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        this.contacts.open = None;
-                        this.start_contact_edit(None, window, cx)
-                    })),
+                super::nav::side_create_button(
+                    "contact-create",
+                    "person-add",
+                    tr!("contacts-create"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| {
+                    this.contacts.open = None;
+                    this.start_contact_edit(None, window, cx)
+                })),
             )
             .into_any_element()
     }
@@ -969,7 +911,7 @@ impl MailWindow {
     /// Whether the list has room for its columns beside the names.
     fn contacts_columns(&self) -> bool {
         let shape = self.layout.shape;
-        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        let side = self.page_side_width(NAV_WIDTH);
         shape.width - shape.rail() - side >= COLUMNS_FROM
     }
 

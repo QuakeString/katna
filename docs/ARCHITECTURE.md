@@ -2340,7 +2340,9 @@ becomes a drawer the menu button opens over the dimmed page, and on a
 phone the page is edge to edge. Contacts drops its columns to a name with
 the address under it when the list is narrower than 640 px; Notes lays two
 narrower cards across a phone; Tasks' cards and Calendar's event cards
-never grow wider than the window.
+never grow wider than the window. The ☰ application menu opens each menu
+to the left of its card where the window has room, and otherwise (a
+phone) in the card itself under a Back row (Left or Escape goes back).
 
 Settings rows put the name beside the controls and wrap on width alone,
 not on the layout: where the controls would get less than 300 px beside

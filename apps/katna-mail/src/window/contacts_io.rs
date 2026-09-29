@@ -13,7 +13,7 @@ use katna_core::contact::Card;
 use katna_dav::vcard::{self, Parsed};
 use katna_i18n::tr;
 use katna_store::StoredCard;
-use katna_ui::{Ripple, px};
+use katna_ui::px;
 
 use super::MailWindow;
 use super::attachments::{download_dir, unique_path};
@@ -22,7 +22,6 @@ use super::contacts_page::View;
 use crate::daemon::{self, Command};
 use crate::data::SavedBook;
 use crate::theme::Theme;
-use crate::widgets::icon;
 
 /// The cards of a file worth importing: not groups, not empty, and not
 /// someone already saved (`saved`, by lower-case address) or met earlier in
@@ -77,43 +76,8 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let action = |ix: usize, glyph: &str, label: String, on: bool, count: Option<usize>| {
-            div()
-                .id(("contacts-manage", ix))
-                .relative()
-                .overflow_hidden()
-                .h(px(36.0))
-                .mr(px(12.0))
-                .pl(px(20.0))
-                .pr(px(16.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(14.0))
-                .rounded_r_full()
-                .cursor_pointer()
-                .when(on, |d| d.bg(rgba(th.nav_selected)))
-                .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                .child(Ripple::new(("contacts-manage", ix), rgba(th.ripple)))
-                .child(icon(
-                    glyph,
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
-                ))
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .truncate()
-                        .text_size(px(14.0))
-                        .when(on, |d| d.font_weight(FontWeight::SEMIBOLD))
-                        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                        .child(label),
-                )
-                .children(count.map(|n| {
+            super::nav::side_row(("contacts-manage", ix), glyph, label, on, th).children(count.map(
+                |n| {
                     div()
                         .flex_none()
                         .text_size(px(12.0))
@@ -123,7 +87,8 @@ impl MailWindow {
                             th.text_faint
                         }))
                         .child(katna_i18n::format::number(n as u64))
-                }))
+                },
+            ))
         };
         let suggestions = book
             .map(|b| self.merge_suggestions(b).len())
