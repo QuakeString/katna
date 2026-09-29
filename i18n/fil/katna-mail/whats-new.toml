@@ -1300,3 +1300,12 @@ pamagat ay ang subject. Lalabas ang mga tala nito sa ilalim ng subject
 tuwing bubuksan mo ulit ang mail na iyon, at ibinabalik ka ng chip na
 Mail ng isang tala sa mail.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Mga gawain sa sarili mong mail server"
+text = """
+Ang mga account na nagsa-sign in gamit ang password ay itinatago na
+ngayon ang kanilang mga gawain sa mail server kung nag-aalok ito ng
+CalDAV, kaya lumalabas din ang mga gawain sa sariling mga app ng
+server at sa telepono.
+"""

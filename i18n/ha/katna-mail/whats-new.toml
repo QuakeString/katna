@@ -1205,3 +1205,10 @@ text = """
 Danna wasiƙa da maɓallin dama, ko buɗe menu ɗinta na ⋮, sannan ka zaɓi Ƙara bayani: bayani mai taken batun wasiƙar yana buɗewa a kan wasiƙar.
 Bayanan suna bayyana a ƙarƙashin batun duk lokacin da ka sake buɗe wannan wasiƙar, kuma alamar Wasiƙu ta bayanin tana mayar da kai zuwa wasiƙar.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Ayyuka a kan sabar wasiƙarka"
+text = """
+Asusun da ke shiga da kalmar sirri yanzu suna ajiye ayyukansu a kan sabar wasiƙarsu idan tana ba da CalDAV,
+saboda haka ayyukan kuma suna bayyana a manhajojin sabar da kanta da kuma a waya.
+"""

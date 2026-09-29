@@ -1286,3 +1286,11 @@ als Titel öffnet sich über der E-Mail. Ihre Notizen erscheinen unter
 dem Betreff, wenn Sie die E-Mail wieder öffnen, und das Chip E-Mail
 einer Notiz führt Sie zurück zur E-Mail.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Aufgaben auf Ihrem eigenen Mailserver"
+text = """
+Konten, die sich mit einem Passwort anmelden, speichern ihre Aufgaben
+jetzt auf ihrem Mailserver, wenn dieser CalDAV anbietet. So erscheinen
+die Aufgaben auch in den eigenen Apps des Servers und auf dem Handy.
+"""

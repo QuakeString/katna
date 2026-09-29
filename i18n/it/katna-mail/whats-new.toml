@@ -1269,3 +1269,11 @@ come titolo. Le sue note compaiono sotto l’oggetto ogni volta che
 riapri quell’email, e l’etichetta Posta di una nota ti riporta
 all’email.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Attività sul proprio server di posta"
+text = """
+Gli account che accedono con una password ora conservano le proprie
+attività sul server di posta quando questo offre CalDAV, così le
+attività compaiono anche nelle app del server e sul telefono.
+"""

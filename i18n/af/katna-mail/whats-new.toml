@@ -1218,3 +1218,11 @@ by: ’n nota met die onderwerp as titel gaan oor die e-pos oop. Sy
 notas verskyn onder die onderwerp elke keer as jy daardie e-pos weer
 oopmaak, en ’n nota se E-pos-merker bring jou terug na die e-pos.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Take op jou eie e-posbediener"
+text = """
+Rekeninge wat met ’n wagwoord aanmeld, hou nou hul take op hul
+e-posbediener as dit CalDAV bied, sodat die take ook in die bediener
+se eie toepassings en op die foon verskyn.
+"""

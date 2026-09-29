@@ -1226,3 +1226,11 @@ Lägg till en anteckning: en anteckning med ämnet som rubrik öppnas
 öppnar meddelandet igen, och etiketten E-post på en anteckning tar dig
 tillbaka till meddelandet.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Uppgifter på din egen e-postserver"
+text = """
+Konton som loggar in med lösenord sparar nu sina uppgifter på
+e-postservern när den erbjuder CalDAV, så att uppgifterna också visas
+i serverns egna appar och på telefonen.
+"""

@@ -1257,3 +1257,11 @@ onderwerp als titel. De notities staan onder het onderwerp telkens
 wanneer u die e-mail opnieuw opent, en met het label E-mail van een
 notitie gaat u terug naar de e-mail.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Taken op uw eigen mailserver"
+text = """
+Accounts die met een wachtwoord inloggen bewaren hun taken nu op hun
+mailserver als die CalDAV biedt, zodat de taken ook in de eigen apps
+van de server en op de telefoon verschijnen.
+"""

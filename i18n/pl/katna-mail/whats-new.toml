@@ -1246,3 +1246,11 @@ jako tytułem. Notatki wiadomości widać pod tematem za każdym razem,
 gdy otworzysz ją ponownie, a znacznik Poczta na notatce przenosi z
 powrotem do wiadomości.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Zadania na własnym serwerze poczty"
+text = """
+Konta logujące się hasłem przechowują teraz swoje zadania na serwerze
+poczty, jeśli oferuje on CalDAV, dzięki czemu zadania widać także w
+aplikacjach serwera i na telefonie.
+"""

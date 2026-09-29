@@ -1297,3 +1297,12 @@ s’ouvre par-dessus le message. Ses notes s’affichent sous l’objet
 chaque fois que vous rouvrez ce message, et la pastille Courrier d’une
 note vous ramène au message.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Tâches sur votre propre serveur de messagerie"
+text = """
+Les comptes qui se connectent avec un mot de passe conservent
+désormais leurs tâches sur leur serveur de messagerie lorsqu’il
+propose CalDAV, si bien que les tâches apparaissent aussi dans les
+applications du serveur et sur le téléphone.
+"""

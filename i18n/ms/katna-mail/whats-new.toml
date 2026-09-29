@@ -1267,3 +1267,11 @@ Tambah nota: nota bertajuk subjek mel terbuka di atas mel. Notanya
 dipaparkan di bawah subjek setiap kali anda membuka mel itu semula,
 dan cip Mel pada nota membawa anda kembali ke mel.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Tugas pada pelayan mel anda sendiri"
+text = """
+Akaun yang log masuk dengan kata laluan kini menyimpan tugasnya pada
+pelayan mel jika pelayan itu menawarkan CalDAV, supaya tugas turut
+dipaparkan dalam aplikasi pelayan itu sendiri dan pada telefon.
+"""

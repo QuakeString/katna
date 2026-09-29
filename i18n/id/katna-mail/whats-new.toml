@@ -1256,3 +1256,11 @@ catatan: catatan berjudul subjek email terbuka di atas email.
 Catatannya tampil di bawah subjek setiap kali Anda membuka email itu
 lagi, dan label Email pada catatan membawa Anda kembali ke email.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Tugas di server email Anda sendiri"
+text = """
+Akun yang masuk dengan kata sandi kini menyimpan tugasnya di server
+email jika server tersebut menyediakan CalDAV, sehingga tugas juga
+tampil di aplikasi milik server dan di ponsel.
+"""

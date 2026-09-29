@@ -1264,3 +1264,12 @@ nota: se abre sobre el correo una nota con el asunto como título. Sus
 notas aparecen bajo el asunto cada vez que vuelves a abrir ese correo,
 y la etiqueta Correo de una nota te lleva de vuelta al correo.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Tareas en su propio servidor de correo"
+text = """
+Las cuentas que inician sesión con contraseña ahora guardan sus tareas
+en su servidor de correo cuando este ofrece CalDAV, de modo que las
+tareas también aparecen en las aplicaciones del propio servidor y en
+el teléfono.
+"""

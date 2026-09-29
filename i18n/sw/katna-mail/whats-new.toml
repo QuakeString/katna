@@ -1222,3 +1222,10 @@ text = """
 Bofya kulia barua, au fungua menyu yake ya ⋮, kisha uchague Ongeza dokezo: dokezo lenye kichwa cha mada ya barua hufunguka juu ya barua.
 Madokezo yake huonekana chini ya mada kila unapofungua barua hiyo tena, na chip ya Barua ya dokezo hukurudisha kwenye barua.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Majukumu kwenye seva yako ya barua"
+text = """
+Akaunti zinazoingia kwa nenosiri sasa huweka majukumu yake kwenye seva ya barua inapotoa CalDAV,
+kwa hivyo majukumu pia huonekana kwenye programu za seva yenyewe na kwenye simu.
+"""

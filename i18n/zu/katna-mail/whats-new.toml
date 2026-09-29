@@ -1294,3 +1294,11 @@ Engeza inothi: inothi elinesihloko semeyili livuleka phezu kwemeyili.
 Amanothi ayo avela ngaphansi kwesihloko noma nini uma uvula leyo
 meyili futhi, futhi ishipi Imeyili lenothi likubuyisela kumeyili.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Imisebenzi kuseva yakho siqu yeyili"
+text = """
+Ama-akhawunti angena ngephasiwedi manje agcina imisebenzi yawo kuseva
+yeyili uma inikeza i-CalDAV, ngakho imisebenzi iphinde ivele ezinhlelweni
+zeseva uqobo nasefonini.
+"""

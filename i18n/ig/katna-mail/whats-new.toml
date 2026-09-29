@@ -1214,3 +1214,11 @@ nwere isiokwu ozi ahụ ga-emeghe n'elu ozi ahụ. Ndetu ya ga-apụta
 n'okpuru isiokwu ahụ mgbe ọ bụla ị meghegharịrị ozi ahụ, ma chip Ozi
 nke ndetu ahụ na-eduga gị azụ n'ozi ahụ.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Ọrụ dị na sava ozi gị"
+text = """
+Akaụntụ ndị na-abanye site na okwuntughe na-edebe ọrụ ha ugbu a na sava
+ozi ha mgbe ọ na-enye CalDAV, ya mere ọrụ ndị ahụ na-apụtakwa n'ngwa
+sava ahụ na n'ekwentị.
+"""

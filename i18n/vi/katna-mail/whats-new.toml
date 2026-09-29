@@ -1215,3 +1215,11 @@ chú: một ghi chú lấy chủ đề làm tiêu đề sẽ mở ra phía trên
 ghi chú hiện dưới chủ đề mỗi khi bạn mở lại thư đó, và nhãn Thư của
 ghi chú đưa bạn quay lại thư.
 """
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Việc cần làm trên máy chủ thư của riêng bạn"
+text = """
+Các tài khoản đăng nhập bằng mật khẩu giờ đây lưu việc cần làm trên
+máy chủ thư nếu máy chủ đó hỗ trợ CalDAV, nên việc cần làm cũng hiện
+trong các ứng dụng của chính máy chủ và trên điện thoại.
+"""
