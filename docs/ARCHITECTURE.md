@@ -992,8 +992,20 @@ They live apart from saved cards (`other_contact`, pim.db v10), so they
 never merge into people or labels. The page lists them under Other
 contacts, leaving out anyone saved since; Add to contacts copies one with
 `copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
-Outlook and CardDAV have no such list. Merge and import/export follow in
-the next phases of the study.
+Outlook and CardDAV have no such list.
+
+"Fix and manage" at the foot of the column has Merge and fix, Import and
+Export. Merge and fix suggests people who look like the same person (the
+same name, or a phone number ending in the same ten digits; people who
+share an address are one person already). Merging combines their cards
+(the first card's name, then every address, number, link and label the
+others add) and keeps one card per address book, deleting the rest there;
+the Undo writes the old cards back. Dismissed suggestions are kept in the
+settings file (`[contacts] dismissed_duplicates`). Import reads vCard files
+in the app and saves the new people with their categories as labels in
+the account in view (`ImportContacts`, with an Undo), leaving out anyone
+already saved; Export writes the people on screen (everyone or a label) as
+one vCard 3.0 file.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -2795,6 +2807,18 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
+- **Event reminders** (`apps/katna-daemon/src/daemon/alarms.rs`): each
+  reminder of an event in a shown calendar (not cancelled, not declined)
+  becomes a "Katna Calendar" notification at its time: the title, how soon
+  it starts ("In 10 minutes"; the daemon has no ICU, so no clock times)
+  and the place, with Open (the Calendar page), Join (the event's
+  `https://` video link, in the browser) and Snooze 5 min.
+  `category=x-katna.event`, `sound-name=alarm-clock-elapsed`, no timeout.
+  One task reads the next eight days of events, sleeps until the next
+  reminder (at most a minute, so edits count) and keeps up to when it
+  looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats
+  none; reminders missed while the computer was off show only when they
+  fell due in the last ten minutes. Snoozes live in memory.
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -3486,6 +3510,13 @@ server error is not.
   task's due day (red when past; "Task" with none), which opens the task.
   The window reads the tasks from the start and maps each `task.mail` to
   its line (the one due first wins) whenever tasks or mail change.
+- **On the Calendar**, as in Google Calendar: a task due on a day sits
+  with that day's whole-day events (Day and Week) and one due at a time
+  sits at that time for half an hour, beside any event it overlaps; Month
+  and Schedule list them with the events. Its circle ticks it off, a
+  click opens it over the Calendar, and dragging it to another day, time
+  or the whole-day row moves its due day and time (a quarter hour at a
+  time, with Undo), blocking that time for it.
 
 ## 19. Security and privacy
 

@@ -101,3 +101,5 @@ tasks-mail-gone = That mail isn't here any more.
 tasks-toast-list-deleted = List deleted
 # $list: the list's name.
 tasks-toast-moved = Moved to { $list }
+# A task dragged to another day or time on the Calendar.
+tasks-toast-rescheduled = Task rescheduled

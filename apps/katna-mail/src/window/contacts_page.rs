@@ -53,6 +53,8 @@ pub(super) enum View {
     Frequent,
     /// Google's other contacts ([`super::contacts_other`]).
     Other,
+    /// Suggested duplicates ([`super::contacts_merge`]).
+    Merge,
     Label(String),
 }
 
@@ -319,7 +321,7 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn set_contacts_view(&mut self, view: View, cx: &mut Context<Self>) {
+    pub(super) fn set_contacts_view(&mut self, view: View, cx: &mut Context<Self>) {
         self.contacts.view = view;
         self.contacts.open = None;
         self.contacts.edit = None;
@@ -420,6 +422,10 @@ impl MailWindow {
             (&self.contacts.view, &self.contacts.open, &book)
         {
             self.render_other_contacts(book, &query, th, cx)
+        } else if let (View::Merge, None, Some(book)) =
+            (&self.contacts.view, &self.contacts.open, &book)
+        {
+            self.render_merge_page(book, th, cx)
         } else if let Some(open) = &self.contacts.open {
             let person = open.person.clone();
             let cards = open.cards.clone();
@@ -544,10 +550,13 @@ impl MailWindow {
             })
             .unwrap_or_default();
         div()
+            .id("contacts-nav-column")
             .flex_none()
             .w(px(NAV_WIDTH))
             .h_full()
+            .overflow_y_scroll()
             .pt(px(8.0))
+            .pb(px(16.0))
             .flex()
             .flex_col()
             .gap(px(2.0))
@@ -643,6 +652,7 @@ impl MailWindow {
                         ),
                 )
             }))
+            .child(self.contacts_manage_nav(book, th, cx))
             .into_any_element()
     }
 

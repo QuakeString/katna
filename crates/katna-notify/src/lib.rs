@@ -5,8 +5,9 @@
 //!
 //! Talks to the desktop's `org.freedesktop.Notifications` server directly
 //! (Plasma, GNOME Shell, mako, dunst, …). So far: new-mail notifications
-//! with Open, Reply all, Mark as read and Archive, and reminders (snooze,
-//! follow-up) with Open, Mark as read and Archive.
+//! with Open, Reply all, Mark as read and Archive, reminders (snooze,
+//! follow-up) with Open, Mark as read and Archive, and event reminders
+//! with Join and Snooze.
 
 use std::collections::HashMap;
 
@@ -24,6 +25,10 @@ pub mod action {
     pub const ARCHIVE: &str = "archive";
     /// On the notification that an update is ready: install it.
     pub const UPDATE: &str = "update";
+    /// On an event's reminder: open its video call.
+    pub const JOIN: &str = "join";
+    /// On an event's reminder: remind again in a few minutes.
+    pub const SNOOZE: &str = "snooze";
 }
 
 /// At most this many messages are listed in a grouped notification.
@@ -269,6 +274,55 @@ impl Notifier {
                 &actions,
                 hints,
                 -1,
+            )
+            .await
+    }
+
+    /// Reminds of a calendar event: `summary` (its title) over `lines`
+    /// (when and where), with Join when it has a video call, and Snooze.
+    /// It stays until dismissed, as calendar reminders do. Returns its ID.
+    pub async fn event_reminder(
+        &self,
+        summary: &str,
+        lines: &[String],
+        join: bool,
+        sound: bool,
+    ) -> zbus::Result<u32> {
+        let body = lines
+            .iter()
+            .map(|line| escape(&shorten(line, PREVIEW_CHARS)))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let mut labels = vec![(action::OPEN, tr!("notify-open"))];
+        if join {
+            labels.push((action::JOIN, tr!("notify-event-join")));
+        }
+        labels.push((action::SNOOZE, tr!("notify-event-snooze")));
+        let actions: Vec<&str> = labels
+            .iter()
+            .flat_map(|(key, label)| [*key, label.as_str()])
+            .collect();
+        let mut hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("x-katna.event")),
+            ("urgency", Value::U8(1)),
+            ("resident", Value::Bool(false)),
+        ]);
+        if sound {
+            hints.insert("sound-name", Value::from("alarm-clock-elapsed"));
+        } else {
+            hints.insert("suppress-sound", Value::Bool(true));
+        }
+        self.proxy
+            .notify(
+                "Katna Calendar",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                &body,
+                &actions,
+                hints,
+                0,
             )
             .await
     }

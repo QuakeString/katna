@@ -421,7 +421,7 @@ impl MailWindow {
 
     // --- Changes -----------------------------------------------------------
 
-    fn task_toggle_done(&mut self, id: i64, cx: &mut Context<Self>) {
+    pub(super) fn task_toggle_done(&mut self, id: i64, cx: &mut Context<Self>) {
         let Some(task) = self.tasks.task(id) else {
             return;
         };
@@ -434,6 +434,55 @@ impl MailWindow {
         let undo = done.then_some(TaskCommand::SetDone(id, false));
         self.send_task(TaskCommand::SetDone(id, done), text, undo, cx);
         cx.notify();
+    }
+
+    /// The tasks with a due day, as the Calendar shows them: ticked ones
+    /// too, and whether each is ticked, counting ticks not yet read back.
+    pub(super) fn dated_tasks(&self) -> Vec<(&TaskItem, bool)> {
+        let Some(Ok(board)) = &self.tasks.board else {
+            return Vec::new();
+        };
+        board
+            .columns
+            .iter()
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| !t.due.is_empty())
+            .map(|t| (t, self.tasks.done(t)))
+            .collect()
+    }
+
+    /// Gives task `id` a new due day and time (`None`: the whole day), as
+    /// dragging it on the Calendar does; Undo puts them back.
+    pub(super) fn task_move_due(
+        &mut self,
+        id: i64,
+        due: String,
+        time: Option<u32>,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(task) = self.tasks.task(id) else {
+            return;
+        };
+        if task.due == due && task.due_time == time {
+            return;
+        }
+        let undo = TaskCommand::Edit(
+            id,
+            TaskEdit {
+                due: Some(task.due.clone()),
+                due_time: Some(task.due_time),
+                ..TaskEdit::default()
+            },
+        );
+        let edit = TaskCommand::Edit(
+            id,
+            TaskEdit {
+                due: Some(due),
+                due_time: Some(time),
+                ..TaskEdit::default()
+            },
+        );
+        self.send_task(edit, Some(tr!("tasks-toast-rescheduled")), Some(undo), cx);
     }
 
     fn task_toggle_star(&mut self, id: i64, cx: &mut Context<Self>) {

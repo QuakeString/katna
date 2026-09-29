@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks on the calendar"
+text = """
+Tasks with a due day now show on the Calendar, at their time or with the
+day's all-day events. Tick them off there, click to open one, or drag it
+to another day or time to block that time for it.
+"""

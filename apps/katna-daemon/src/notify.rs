@@ -24,6 +24,7 @@ use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store};
 use zbus::zvariant::Value;
 
 use crate::daemon::Daemon;
+use crate::daemon::alarms::{self, Alarm};
 
 /// Older mail is not news, even when it is new to the store (a folder
 /// synced for the first time, mail moved back into the inbox).
@@ -97,6 +98,10 @@ pub(crate) struct NewMailNotices {
     shown: Mutex<HashMap<u32, Shown>>,
     /// Activation tokens, sent by the server just before an action.
     tokens: Mutex<HashMap<u32, String>>,
+    /// Event reminders on show.
+    events: Mutex<HashMap<u32, Alarm>>,
+    /// Snoozed event reminders and when they show again.
+    snoozed: Mutex<Vec<Alarm>>,
 }
 
 impl NewMailNotices {
@@ -112,6 +117,8 @@ impl NewMailNotices {
             seen: Mutex::default(),
             shown: Mutex::default(),
             tokens: Mutex::default(),
+            events: Mutex::default(),
+            snoozed: Mutex::default(),
         })
     }
 
@@ -165,6 +172,39 @@ impl NewMailNotices {
             }
             Err(err) => tracing::warn!(%err, "could not show a tracking notification"),
         }
+    }
+
+    /// Shows the reminder of a calendar event.
+    pub(crate) async fn event_reminder(&self, alarm: Alarm) {
+        let sound = self.sound.load(Ordering::Relaxed);
+        match self
+            .notifier
+            .event_reminder(
+                &alarm.title,
+                &alarm.lines,
+                !alarm.join_url.is_empty(),
+                sound,
+            )
+            .await
+        {
+            Ok(id) => {
+                self.events.lock().unwrap().insert(id, alarm);
+            }
+            Err(err) => tracing::warn!(%err, "could not show an event reminder"),
+        }
+    }
+
+    /// The snoozed event reminders due at `now`, taken off the list.
+    pub(crate) fn snoozed_due(&self, now: i64) -> Vec<Alarm> {
+        let mut snoozed = self.snoozed.lock().unwrap();
+        let (due, later) = snoozed.drain(..).partition(|a| a.at <= now);
+        *snoozed = later;
+        due
+    }
+
+    /// When the next snoozed event reminder shows.
+    pub(crate) fn next_snoozed(&self) -> Option<i64> {
+        self.snoozed.lock().unwrap().iter().map(|a| a.at).min()
     }
 
     /// Says that the update to `version` is downloaded, with an Update
@@ -374,12 +414,14 @@ impl NewMailNotices {
             match got {
                 Got::Token(id, token) => {
                     if notices.shown.lock().unwrap().contains_key(&id)
+                        || notices.events.lock().unwrap().contains_key(&id)
                         || daemon.updates().is_notice(id)
                     {
                         notices.tokens.lock().unwrap().insert(id, token);
                     }
                 }
                 Got::Closed(id) => {
+                    notices.events.lock().unwrap().remove(&id);
                     daemon.updates().take_notice(id);
                     notices.shown.lock().unwrap().remove(&id);
                     notices.tokens.lock().unwrap().remove(&id);
@@ -395,6 +437,35 @@ impl NewMailNotices {
                         token,
                     )
                     .await;
+                    notices.close(vec![id]).await;
+                }
+                Got::Action(id, key) if notices.events.lock().unwrap().contains_key(&id) => {
+                    let Some(mut alarm) = notices.events.lock().unwrap().remove(&id) else {
+                        continue;
+                    };
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    tracing::info!(id, key, "event reminder action");
+                    match key.as_str() {
+                        // Only web links, whatever the event says.
+                        action::JOIN if alarm.join_url.starts_with("https://") => {
+                            crate::daemon::open_in_browser(&alarm.join_url).await;
+                        }
+                        action::JOIN => {}
+                        action::SNOOZE => {
+                            alarm.at = unix_now() + alarms::SNOOZE;
+                            notices.snoozed.lock().unwrap().push(alarm);
+                        }
+                        // The notification itself: the Calendar page.
+                        _ => {
+                            crate::mail_app::run(
+                                &notices.connection,
+                                Some(katna_dbus::app_action::OPEN_PAGE),
+                                vec![Value::from("calendar")],
+                                token,
+                            )
+                            .await;
+                        }
+                    }
                     notices.close(vec![id]).await;
                 }
                 Got::Action(id, key) => {
