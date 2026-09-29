@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every account on the Calendar"
+text = """
+The Calendar's side list now shows all your accounts. When one's calendars
+can't load, a line under it says why, with the one click that fixes it,
+such as "Sign in again to show calendars".
+"""
