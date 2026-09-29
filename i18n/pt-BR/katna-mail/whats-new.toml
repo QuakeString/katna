@@ -1335,3 +1335,12 @@ para quem você ainda não salvou: um clique salva o nome, o endereço e o
 telefone, o cargo e a empresa da assinatura, com Desfazer. Para quem já
 está salvo, o mesmo botão o abre na página Contatos.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Tempo de foco, ausência e local de trabalho"
+text = """
+Agora um novo evento pode ser Tempo de foco, Ausente ou Local de
+trabalho, como no Google Calendar: escolha acima dos horários. O Google
+e o Outlook os reconhecem pelo que são, e no Katna eles aparecem com um
+ícone próprio.
+"""

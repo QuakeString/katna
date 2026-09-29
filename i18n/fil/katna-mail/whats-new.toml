@@ -1384,3 +1384,12 @@ ng pangalan, address, at telepono, titulo at kumpanya mula sa lagda
 nila, kasama ang I-undo. Para sa taong naka-save na, binubuksan sila ng
 parehong button sa pahina ng Mga Contact.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Focus time, wala sa opisina at lokasyon ng trabaho"
+text = """
+Ang bagong event ay maaari nang maging Focus time, Wala sa opisina o
+Lokasyon ng trabaho, tulad sa Google Calendar: piliin ito sa itaas ng
+mga oras. Nakikilala ito ng Google at Outlook kung ano talaga ito, at
+may sarili itong icon sa Katna.
+"""

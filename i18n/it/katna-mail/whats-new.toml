@@ -1350,3 +1350,12 @@ contatti per chi non hai salvato: un clic salva nome, indirizzo e
 telefono, qualifica e azienda della firma, con Annulla. Per chi è già
 salvato, lo stesso pulsante lo apre nella pagina Contatti.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Tempo di concentrazione, fuori sede e luogo di lavoro"
+text = """
+Un nuovo evento può ora essere Tempo di concentrazione, Fuori sede o
+Luogo di lavoro, come in Google Calendar: sceglilo sopra gli orari.
+Google e Outlook li riconoscono per quello che sono e in Katna vengono
+mostrati con una propria icona.
+"""

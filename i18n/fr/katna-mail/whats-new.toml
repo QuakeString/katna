@@ -1381,3 +1381,13 @@ enregistre son nom, son adresse, ainsi que le téléphone, le titre et
 l’entreprise de sa signature, avec Annuler. Pour une personne déjà
 enregistrée, le même bouton l’ouvre sur la page Contacts.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Temps de concentration, absence et lieu de travail"
+text = """
+Un nouvel événement peut désormais être un Temps de concentration, une
+absence (Absent du bureau) ou un Lieu de travail, comme dans Google
+Calendar : choisissez-le au-dessus des horaires. Google et Outlook les
+reconnaissent pour ce qu’ils sont, et Katna les affiche avec leur propre
+icône.
+"""

@@ -1346,3 +1346,12 @@ para alguien que no has guardado: un clic guarda su nombre, su dirección
 y el teléfono, el cargo y la empresa de su firma, con Deshacer. Si ya
 está guardado, el mismo botón lo abre en la página Contactos.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Tiempo de concentración, ausencia y ubicación de trabajo"
+text = """
+Ahora un evento nuevo puede ser Tiempo de concentración, Fuera de la
+oficina o Ubicación de trabajo, como en Google Calendar: elígelo encima
+de las horas. Google y Outlook los reconocen tal como son, y en Katna se
+muestran con su propio icono.
+"""

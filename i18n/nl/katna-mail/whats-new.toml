@@ -1337,3 +1337,12 @@ en het telefoonnummer, de functie en het bedrijf uit de handtekening op,
 met Ongedaan maken. Bij iemand die al is opgeslagen opent dezelfde knop
 het contact op de pagina Contacten.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Focustijd, niet op kantoor en werklocatie"
+text = """
+Een nieuwe afspraak kan nu Focustijd, Niet op kantoor of een Werklocatie
+zijn, zoals in Google Calendar: kies het boven de tijden. Google en
+Outlook zien ze voor wat ze zijn en in Katna verschijnen ze met een
+eigen pictogram.
+"""

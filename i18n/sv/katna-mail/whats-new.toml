@@ -1306,3 +1306,11 @@ någon du inte har sparat: ett klick sparar namn, adress och telefon,
 titel och företag från signaturen, med Ångra. För någon som redan är
 sparad öppnar samma knapp personen på sidan Kontakter.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Fokustid, frånvaro och arbetsplats"
+text = """
+En ny händelse kan nu vara Fokustid, Frånvaro eller en Arbetsplats, som
+i Google Calendar: välj det ovanför tiderna. Google och Outlook ser dem
+som vad de är, och i Katna visas de med en egen ikon.
+"""

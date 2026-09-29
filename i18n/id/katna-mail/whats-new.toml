@@ -1337,3 +1337,12 @@ telepon, jabatan, dan perusahaan dari tanda tangannya, dengan Urungkan.
 Untuk orang yang sudah tersimpan, tombol yang sama membukanya di halaman
 Kontak.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Waktu fokus, di luar kantor, dan lokasi kerja"
+text = """
+Acara baru kini bisa berupa Waktu fokus, Di luar kantor, atau Lokasi
+kerja, seperti di Google Calendar: pilih di atas waktunya. Google dan
+Outlook mengenalinya sebagaimana adanya, dan di Katna semuanya tampil
+dengan ikonnya sendiri.
+"""

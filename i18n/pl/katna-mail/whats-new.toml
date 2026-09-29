@@ -1328,3 +1328,12 @@ której nie zapisano: jedno kliknięcie zapisuje imię i nazwisko, adres
 oraz telefon, stanowisko i firmę z podpisu, z opcją Cofnij. Przy
 zapisanej osobie ten sam przycisk otwiera ją na stronie Kontakty.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Czas na skupienie, nieobecność i miejsce pracy"
+text = """
+Nowe wydarzenie może być teraz Czasem na skupienie, wpisem Poza biurem
+lub Miejscem pracy, tak jak w Google Calendar: wybierz to nad godzinami.
+Google i Outlook rozpoznają je jako to, czym są, a w Katna mają własną
+ikonę.
+"""

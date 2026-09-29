@@ -1325,3 +1325,12 @@ ekle düğmesi sunar: tek tıklama adını, adresini ve imzasındaki telefon,
 unvan ve şirketi kaydeder, Geri al ile. Kayıtlı biri için aynı düğme onu
 Kişiler sayfasında açar.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Odaklanma zamanı, ofis dışında ve çalışma konumu"
+text = """
+Yeni bir etkinlik artık Google Calendar’daki gibi Odaklanma zamanı, Ofis
+dışında veya Çalışma konumu olabilir: saatlerin üstünden seçin. Google
+ve Outlook bunları gerçekte ne iseler öyle görür, Katna’da ise kendi
+simgeleriyle görünürler.
+"""

@@ -1368,3 +1368,12 @@ Adresse sowie Telefon, Position und Firma aus der Signatur, mit
 Rückgängig. Bei einem gespeicherten Kontakt öffnet dieselbe Schaltfläche
 ihn auf der Seite Kontakte.
 """
+
+["2026-09-29-0720-focus-time"]
+title = "Fokuszeit, Abwesenheit und Arbeitsort"
+text = """
+Ein neuer Termin kann jetzt Fokuszeit, Abwesend oder ein Arbeitsort
+sein, wie in Google Calendar: Wählen Sie es über den Zeiten aus. Google
+und Outlook erkennen sie als das, was sie sind, und in Katna erscheinen
+sie mit eigenem Symbol.
+"""
