@@ -30,6 +30,8 @@ size-tb = { $size }TB
 
 folders-hide = 폴더 숨기기
 folders-show = 폴더 표시
+side-pane-hide = 사이드 패널 숨기기
+side-pane-show = 사이드 패널 표시
 compose = 편지쓰기
 search = 검색
 search-mail = 메일 검색

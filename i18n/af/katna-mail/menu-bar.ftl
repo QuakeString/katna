@@ -14,6 +14,7 @@ desktop-menu-select-none = Kies _niks
 desktop-menu-find = _Vind…
 desktop-menu-view = _Aansig
 desktop-menu-folder-list = Wys _vouerlys
+desktop-menu-side-panel = Wys _sypaneel
 desktop-menu-refresh = _Herlaai
 desktop-menu-go = _Gaan
 desktop-menu-inbox = _Inkassie

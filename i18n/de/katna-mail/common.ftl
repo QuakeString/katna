@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Ordner ausblenden
 folders-show = Ordner einblenden
+side-pane-hide = Seitenleiste ausblenden
+side-pane-show = Seitenleiste einblenden
 compose = Schreiben
 search = Suchen
 search-mail = In E-Mails suchen

@@ -86,3 +86,4 @@ add-account-signed-in = Inloggad med { $provider }. Hämtar din e-post…
 add-account-menu-another = Lägg till ett konto till
 add-account-menu-manage = Hantera konton
 app-menu = Huvudmeny
+app-menu-back = Tillbaka

@@ -50,6 +50,8 @@ size-tb = { $size } ТБ
 
 folders-hide = Скрыть папки
 folders-show = Показать папки
+side-pane-hide = Скрыть боковую панель
+side-pane-show = Показать боковую панель
 compose = Написать
 search = Поиск
 search-mail = Поиск в почте

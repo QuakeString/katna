@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } ဖြင့် ဝင်ရောက်�
 add-account-menu-another = နောက်ထပ်အကောင့် ထည့်ရန်
 add-account-menu-manage = အကောင့်များ စီမံရန်
 app-menu = ပင်မ မီနူး
+app-menu-back = နောက်သို့

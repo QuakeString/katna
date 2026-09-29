@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } کے ساتھ سائن ان ہو گیا۔ 
 add-account-menu-another = ایک اور اکاؤنٹ شامل کریں
 add-account-menu-manage = اکاؤنٹس کا نظم کریں
 app-menu = مرکزی مینیو
+app-menu-back = واپس

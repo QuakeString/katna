@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } ने साइन इन केले. �
 add-account-menu-another = आणखी एक खाते जोडा
 add-account-menu-manage = खाती व्यवस्थापित करा
 app-menu = मुख्य मेनू
+app-menu-back = मागे

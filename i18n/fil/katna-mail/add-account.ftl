@@ -86,3 +86,4 @@ add-account-signed-in = Naka-sign in gamit ang { $provider }. Kinukuha ang mail 
 add-account-menu-another = Magdagdag ng isa pang account
 add-account-menu-manage = Pamahalaan ang mga account
 app-menu = Pangunahing menu
+app-menu-back = Bumalik

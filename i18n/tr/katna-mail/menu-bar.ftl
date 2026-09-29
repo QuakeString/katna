@@ -14,6 +14,7 @@ desktop-menu-select-none = _Hiçbirini Seçme
 desktop-menu-find = _Bul…
 desktop-menu-view = _Görünüm
 desktop-menu-folder-list = _Klasör Listesini Göster
+desktop-menu-side-panel = _Kenar Panelini Göster
 desktop-menu-refresh = _Yenile
 desktop-menu-go = G_it
 desktop-menu-inbox = _Gelen Kutusu

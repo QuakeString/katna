@@ -14,6 +14,7 @@ desktop-menu-select-none = _တစ်ခုမျှ မရွေးရန်
 desktop-menu-find = _ရှာရန်…
 desktop-menu-view = _မြင်ကွင်း
 desktop-menu-folder-list = _ဖိုင်တွဲစာရင်း ပြရန်
+desktop-menu-side-panel = _ဘေးဘက်အကန့် ပြရန်
 desktop-menu-refresh = _ပြန်လည်ဆန်းသစ်ရန်
 desktop-menu-go = _သွားရန်
 desktop-menu-inbox = _ဝင်စာ

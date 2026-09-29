@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Ficha folda
 folders-show = Onyesha folda
+side-pane-hide = Ficha paneli ya pembeni
+side-pane-show = Onyesha paneli ya pembeni
 compose = Tunga
 search = Tafuta
 search-mail = Tafuta barua

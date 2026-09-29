@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = Zoo folda
 folders-show = Gosi folda
+side-pane-hide = Zoo ogwe n'akụkụ
+side-pane-show = Gosi ogwe n'akụkụ
 compose = Dee
 search = Chọọ
 search-mail = Chọọ ozi

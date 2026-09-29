@@ -14,6 +14,7 @@ desktop-menu-select-none = _ག་ནི་ཡང་མ་གདམ།
 desktop-menu-find = _འཚོལ…
 desktop-menu-view = _མཐོང་སྣང
 desktop-menu-folder-list = _སྣོད་འཛིན་ཐོ་ཡིག་སྟོན།
+desktop-menu-side-panel = _ཟུར་གྱི་པེ་ནཱལ་སྟོན།
 desktop-menu-refresh = _གསར་བཟོ།
 desktop-menu-go = _འགྱོ།
 desktop-menu-inbox = _ནང་འབྱོར་སྒྲོམ

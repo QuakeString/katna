@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Dölj mappar
 folders-show = Visa mappar
+side-pane-hide = Dölj sidopanelen
+side-pane-show = Visa sidopanelen
 compose = Skriv
 search = Sök
 search-mail = Sök i e-post

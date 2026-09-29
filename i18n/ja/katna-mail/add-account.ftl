@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } でサインインしました。メール
 add-account-menu-another = 別のアカウントを追加
 add-account-menu-manage = アカウントを管理
 app-menu = メイン メニュー
+app-menu-back = 戻る

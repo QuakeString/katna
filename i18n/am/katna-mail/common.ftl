@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = አቃፊዎችን ደብቅ
 folders-show = አቃፊዎችን አሳይ
+side-pane-hide = የጎን ፓነልን ደብቅ
+side-pane-show = የጎን ፓነልን አሳይ
 compose = ጻፍ
 search = ፈልግ
 search-mail = ደብዳቤ ፈልግ

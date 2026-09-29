@@ -14,6 +14,7 @@ desktop-menu-select-none = _Deseleziona
 desktop-menu-find = _Trova…
 desktop-menu-view = _Visualizza
 desktop-menu-folder-list = Mostra l’elenco delle _cartelle
+desktop-menu-side-panel = Mostra il _pannello laterale
 desktop-menu-refresh = A_ggiorna
 desktop-menu-go = Va_i
 desktop-menu-inbox = Posta in _arrivo

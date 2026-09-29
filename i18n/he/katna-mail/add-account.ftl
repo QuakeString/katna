@@ -86,3 +86,4 @@ add-account-signed-in = התחברת עם { $provider }. מביאים את הד�
 add-account-menu-another = הוספת חשבון נוסף
 add-account-menu-manage = ניהול חשבונות
 app-menu = התפריט הראשי
+app-menu-back = חזרה
