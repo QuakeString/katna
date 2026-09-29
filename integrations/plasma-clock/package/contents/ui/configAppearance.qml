@@ -55,12 +55,12 @@ KCMUtils.SimpleKCM {
     Kirigami.FormLayout {
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Information:")
+            Kirigami.FormData.label: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Information:")
             spacing: Kirigami.Units.smallSpacing
 
             QQC2.CheckBox {
                 id: showDate
-                text: i18n("Show date")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Show date")
             }
 
             QQC2.ComboBox {
@@ -69,9 +69,9 @@ KCMUtils.SimpleKCM {
                 visible: Plasmoid.formFactor !== PlasmaCore.Types.Vertical
                 Layout.preferredWidth: appearancePage.comboBoxWidth
                 model: [
-                    i18n("Adaptive location"),
-                    i18n("Always beside time"),
-                    i18n("Always below time"),
+                    i18nd("plasma_applet_org.kde.plasma.digitalclock", "Adaptive location"),
+                    i18nd("plasma_applet_org.kde.plasma.digitalclock", "Always beside time"),
+                    i18nd("plasma_applet_org.kde.plasma.digitalclock", "Always below time"),
                 ]
                 onActivated: appearancePage.cfg_dateDisplayFormat = currentIndex
             }
@@ -84,11 +84,11 @@ KCMUtils.SimpleKCM {
         QQC2.ComboBox {
             id: showSecondsComboBox
             Layout.preferredWidth: appearancePage.comboBoxWidth
-            Kirigami.FormData.label: i18n("Show seconds:")
+            Kirigami.FormData.label: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Show seconds:")
             model: [
-                i18nc("@option:check", "Never"),
-                i18nc("@option:check", "Only in the tooltip"),
-                i18n("Always"),
+                i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@option:check", "Never"),
+                i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@option:check", "Only in the tooltip"),
+                i18nd("plasma_applet_org.kde.plasma.digitalclock", "Always"),
             ]
             onActivated: appearancePage.cfg_showSeconds = currentIndex;
         }
@@ -98,18 +98,18 @@ KCMUtils.SimpleKCM {
         }
 
         ColumnLayout {
-            Kirigami.FormData.label: i18n("Show time zone:")
+            Kirigami.FormData.label: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Show time zone:")
             Kirigami.FormData.buddyFor: showLocalTimeZoneWhenDifferent
             spacing: Kirigami.Units.smallSpacing
 
             QQC2.RadioButton {
                 id: showLocalTimeZoneWhenDifferent
-                text: i18n("Only when different from local time zone")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Only when different from local time zone")
             }
 
             QQC2.RadioButton {
                 id: showLocalTimeZone
-                text: i18n("Always")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Always")
             }
         }
 
@@ -118,7 +118,7 @@ KCMUtils.SimpleKCM {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Display time zone as:")
+            Kirigami.FormData.label: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Display time zone as:")
             Kirigami.FormData.buddyFor: displayTimeZoneFormat
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
@@ -128,9 +128,9 @@ KCMUtils.SimpleKCM {
 
                 Layout.preferredWidth: appearancePage.comboBoxWidth
                 model: [
-                    i18n("Code"),
-                    i18n("City"),
-                    i18n("Offset from UTC time"),
+                    i18nd("plasma_applet_org.kde.plasma.digitalclock", "Code"),
+                    i18nd("plasma_applet_org.kde.plasma.digitalclock", "City"),
+                    i18nd("plasma_applet_org.kde.plasma.digitalclock", "Offset from UTC time"),
                 ]
                 onActivated: appearancePage.cfg_displayTimezoneFormat = currentIndex
             }
@@ -138,7 +138,7 @@ KCMUtils.SimpleKCM {
                 id: switchTimeZoneButton
                 Layout.preferredWidth: Math.max(changeRegionalSettingsButton.implicitWidth, switchTimeZoneButton.implicitWidth)
                 visible: KConfig.KAuthorized.authorizeControlModule("kcm_clock")
-                text: i18nc("@action:button opens kcm", "Switch Time Zone…")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@action:button opens kcm", "Switch Time Zone…")
                 icon.name: "preferences-system-time"
                 onClicked: KCMUtils.KCMLauncher.openSystemSettings("kcm_clock")
             }
@@ -150,16 +150,16 @@ KCMUtils.SimpleKCM {
 
         RowLayout {
             Layout.fillWidth: true
-            Kirigami.FormData.label: i18nc("@label:listbox", "Time display:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label:listbox", "Time display:")
             spacing: Kirigami.Units.smallSpacing
 
             QQC2.ComboBox {
                 id: use24hFormat
                 Layout.preferredWidth: appearancePage.comboBoxWidth
                 model: [
-                    i18nc("@item:inlistbox time display option", "12-Hour"),
-                    i18nc("@item:inlistbox time display option", "Use region defaults"),
-                    i18nc("@item:inlistbox time display option", "24-Hour")
+                    i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox time display option", "12-Hour"),
+                    i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox time display option", "Use region defaults"),
+                    i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox time display option", "24-Hour")
                 ]
                 onActivated: appearancePage.cfg_use24hFormat = currentIndex
             }
@@ -168,7 +168,7 @@ KCMUtils.SimpleKCM {
                 id: changeRegionalSettingsButton
                 visible: KConfig.KAuthorized.authorizeControlModule("kcm_regionandlang")
                 Layout.preferredWidth: Math.max(changeRegionalSettingsButton.implicitWidth, switchTimeZoneButton.implicitWidth)
-                text: i18nc("@action:button opens kcm", "Change Regional Settings…")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@action:button opens kcm", "Change Regional Settings…")
                 icon.name: "preferences-desktop-locale"
                 onClicked: KCMUtils.KCMLauncher.openSystemSettings("kcm_regionandlang")
             }
@@ -179,7 +179,7 @@ KCMUtils.SimpleKCM {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18nc("@label:listbox", "Date format:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label:listbox", "Date format:")
             enabled: showDate.checked
             spacing: Kirigami.Units.smallSpacing
 
@@ -189,28 +189,28 @@ KCMUtils.SimpleKCM {
                 textRole: "label"
                 model: [
                     {
-                        label: i18nc("@item:inlistbox date display option, includes e.g. day of week and month as word", "Long date"),
+                        label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox date display option, includes e.g. day of week and month as word", "Long date"),
                         name: "longDate",
                         formatter(d) {
                             return Qt.formatDate(d, Qt.locale(), Locale.LongFormat);
                         },
                     },
                     {
-                        label: i18nc("@item:inlistbox date display option, e.g. all numeric", "Short date"),
+                        label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox date display option, e.g. all numeric", "Short date"),
                         name: "shortDate",
                         formatter(d) {
                             return Qt.formatDate(d, Qt.locale(), Locale.ShortFormat);
                         },
                     },
                     {
-                        label: i18nc("@item:inlistbox date display option, yyyy-mm-dd", "ISO date"),
+                        label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox date display option, yyyy-mm-dd", "ISO date"),
                         name: "isoDate",
                         formatter(d) {
                             return Qt.formatDate(d, Qt.ISODate);
                         },
                     },
                     {
-                        label: i18nc("@item:inlistbox custom date format", "Custom"),
+                        label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox custom date format", "Custom"),
                         name: "custom",
                         formatter(d) {
                             return Qt.locale().toString(d, customDateFormat.text);
@@ -250,7 +250,7 @@ KCMUtils.SimpleKCM {
         }
 
         QQC2.Label {
-            text: i18n("<a href=\"https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method\">Time Format Documentation</a>")
+            text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "<a href=\"https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method\">Time Format Documentation</a>")
             enabled: showDate.checked
             visible: appearancePage.cfg_dateFormat === "custom"
             wrapMode: Text.Wrap
@@ -276,16 +276,16 @@ KCMUtils.SimpleKCM {
 
         ColumnLayout {
             spacing: Kirigami.Units.smallSpacing
-            Kirigami.FormData.label: i18nc("@label:group", "Text display:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label:group", "Text display:")
             Kirigami.FormData.buddyFor: autoFontAndSizeRadioButton
 
             QQC2.RadioButton {
                 id: autoFontAndSizeRadioButton
-                text: i18nc("@option:radio", "Automatic")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@option:radio", "Automatic")
             }
 
             QQC2.Label {
-                text: i18nc("@label", "Text will follow the system font and expand to fill the available space.")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label", "Text will follow the system font and expand to fill the available space.")
                 Layout.leftMargin: autoFontAndSizeRadioButton.indicator.width + autoFontAndSizeRadioButton.spacing
                 textFormat: Text.PlainText
                 Layout.fillWidth: true
@@ -299,7 +299,7 @@ KCMUtils.SimpleKCM {
 
             QQC2.RadioButton {
                 id: manualFontAndSizeRadioButton
-                text: i18nc("@option:radio setting for manually configuring the font settings", "Manual")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@option:radio setting for manually configuring the font settings", "Manual")
                 checked: !appearancePage.cfg_autoFontAndSize
                 onClicked: {
                     if (appearancePage.cfg_fontFamily === "") {
@@ -309,7 +309,7 @@ KCMUtils.SimpleKCM {
             }
 
             QQC2.Button {
-                text: i18nc("@action:button", "Choose Style…")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@action:button", "Choose Style…")
                 icon.name: "settings-configure"
                 enabled: manualFontAndSizeRadioButton.checked
                 onClicked: {
@@ -326,14 +326,14 @@ KCMUtils.SimpleKCM {
             QQC2.Label {
                 visible: manualFontAndSizeRadioButton.checked
                 Layout.leftMargin: manualFontAndSizeRadioButton.indicator.width + manualFontAndSizeRadioButton.spacing
-                text: i18nc("@info %1 is the font size, %2 is the font family", "%1pt %2", cfg_fontSize, fontDialog.fontChosen.family)
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info %1 is the font size, %2 is the font family", "%1pt %2", cfg_fontSize, fontDialog.fontChosen.family)
                 textFormat: Text.PlainText
                 font: fontDialog.fontChosen
             }
             QQC2.Label {
                 visible: manualFontAndSizeRadioButton.checked
                 Layout.leftMargin: manualFontAndSizeRadioButton.indicator.width + manualFontAndSizeRadioButton.spacing
-                text: i18nc("@info", "Note: size may be reduced if the panel is not thick enough.")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info", "Note: size may be reduced if the panel is not thick enough.")
                 textFormat: Text.PlainText
                 font: Kirigami.Theme.smallFont
             }
@@ -347,7 +347,7 @@ KCMUtils.SimpleKCM {
     // We override the default dialog with our own in plasma-integration
     Platform.FontDialog {
         id: fontDialog
-        title: i18nc("@title:window", "Choose a Font")
+        title: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@title:window", "Choose a Font")
         modality: Qt.WindowModal
         parentWindow: appearancePage.Window.window
 

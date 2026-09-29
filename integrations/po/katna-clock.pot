@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Katna Digital Clock and the GNOME Shell extension. Made by update-pot.sh.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "heading of the tasks list"
+msgid "Tasks"
+msgstr ""
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "placeholder"
+msgid "Add a task"
+msgstr ""
+
+#. Translators: %s is a short date such as "3 Oct"
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+#, javascript-format
+msgctxt "placeholder"
+msgid "Add a task for %s"
+msgstr ""
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Yesterday"
+msgstr ""
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Today"
+msgstr ""
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Tomorrow"
+msgstr ""
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgid "No tasks"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaJoinButton.qml
+msgctxt "@action:button join the event's video call"
+msgid "Join"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Yesterday"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Today"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Tomorrow"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@title heading of the tasks list"
+msgid "Tasks"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder"
+msgid "Add a task"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder %1 is a short date"
+msgid "Add a task for %1"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@action:button"
+msgid "Done"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "No tasks"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "Katna isn't answering"
+msgstr ""

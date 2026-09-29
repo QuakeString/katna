@@ -34,7 +34,7 @@ MouseArea {
         }
 
         PlasmaComponents.Label {
-            text: i18nc("@label Shown in place of digital clock when no timezone is set", "Time zone is not set; click here to open Date & Time settings and set one")
+            text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label Shown in place of digital clock when no timezone is set", "Time zone is not set; click here to open Date & Time settings and set one")
             visible: Plasmoid.formFactor == PlasmaCore.Types.Horizontal
             textFormat: Text.PlainText
         }

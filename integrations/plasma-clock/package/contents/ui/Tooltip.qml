@@ -34,7 +34,7 @@ Item {
      * These accessible properties are used in the compact representation,
      * not here.
      */
-    Accessible.name: i18nc("@info:tooltip %1 is a localized long date", "Today is %1", tooltipSubtext.text)
+    Accessible.name: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info:tooltip %1 is a localized long date", "Today is %1", tooltipSubtext.text)
     Accessible.description: {
         const description = tooltipSubLabelText.visible ? [tooltipSubLabelText.text] : [];
         for (let i = 0; i < timeZoneRepeater.count; i += 2) {
@@ -72,7 +72,7 @@ Item {
                 return text.charAt(0).toUpperCase() + text.slice(1);
             }
             property bool anyTimezoneSet: !!mainText
-            text: anyTimezoneSet ? mainText : i18nc("@label main text shown in digital clock's tooltip when timezone is missing", "Time zone is not set")
+            text: anyTimezoneSet ? mainText : i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label main text shown in digital clock's tooltip when timezone is missing", "Time zone is not set")
             textFormat: Text.PlainText
             wrapMode: Text.Wrap
         }
@@ -93,7 +93,7 @@ Item {
                         .arg(Qt.formatDate(clock.dateTime, Qt.locale(), root.dateFormatString))
                 }
             }
-            text: tooltipMaintext.anyTimezoneSet ? subText : i18nc("@label sub text shown in digital clock's tooltip when timezone is missing", "Click the clock icon to open Date & Time settings and set a time zone.")
+            text: tooltipMaintext.anyTimezoneSet ? subText : i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label sub text shown in digital clock's tooltip when timezone is missing", "Click the clock icon to open Date & Time settings and set a time zone.")
             opacity: 0.75
             visible: !clocks.visible
             font.features: { "tnum": 1 }
@@ -148,7 +148,7 @@ Item {
                     // Layout.fillWidth is buggy here
                     Layout.alignment: index % 2 === 0 ? Qt.AlignRight : Qt.AlignLeft
                     text: index % 2 === 0
-                        ? i18nc("@label %1 is a city or time zone name", "%1:", tzLabel)
+                        ? i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label %1 is a city or time zone name", "%1:", tzLabel)
                         : formatTime(tzClock.dateTime, Plasmoid.configuration.showSeconds > 0) + formatOffset(tzClock.dateTime)
                     Clock {
                         id: tzClock
@@ -175,7 +175,7 @@ Item {
         PlasmaComponents.Label {
             Layout.maximumWidth: toolTipContentItem.maximumTextWidth
             visible: ApplicationIntegration.calendarInstalled
-            text: i18nc("@info:tooltip %1 is the name of a calendar application", "Middle-click to open %1", ApplicationIntegration.calendarApplicationName)
+            text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info:tooltip %1 is the name of a calendar application", "Middle-click to open %1", ApplicationIntegration.calendarApplicationName)
             textFormat: Text.PlainText
             opacity: 0.75
             wrapMode: Text.Wrap

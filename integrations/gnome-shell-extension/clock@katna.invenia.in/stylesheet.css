@@ -1,0 +1,35 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+
+/* The Tasks card borrows GNOME's own .events-button styles; only what
+   they don't cover is here. */
+
+.katna-tasks .events-list {
+    spacing: 4px;
+}
+
+.katna-task {
+    spacing: 8px;
+}
+
+.katna-task .check-box {
+    min-height: 0;
+}
+
+.katna-task-done .check-box StLabel {
+    color: rgba(128, 128, 128, 0.9);
+    text-decoration: line-through;
+}
+
+.katna-task-due {
+    font-size: 9pt;
+    font-feature-settings: "tnum";
+    color: rgba(128, 128, 128, 1);
+}
+
+.katna-task-late {
+    color: #e01b24;
+}
+
+.katna-task-entry {
+    margin-top: 6px;
+}

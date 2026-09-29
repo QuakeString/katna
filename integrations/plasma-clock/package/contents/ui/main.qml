@@ -30,6 +30,11 @@ PlasmoidItem {
     readonly property var currentTime: currentClock.dateTime
     readonly property string currentTimeZone: currentClock.timeZone
 
+    // Katna: its events and tasks, read while the popup is open.
+    readonly property KatnaAgenda katna: KatnaAgenda {
+        active: root.expanded
+    }
+
     Clock {
         id: currentClock
         timeZone: Plasmoid.configuration.lastSelectedTimezone
@@ -80,15 +85,15 @@ PlasmoidItem {
 
         if (offset > 0) {
             if (minuteOffset === 0) {
-                return i18ncp("@info offset from current time", " • %1 hour later", " • %1 hours later", hourOffset);
+                return i18ndcp("plasma_applet_org.kde.plasma.digitalclock", "@info offset from current time", " • %1 hour later", " • %1 hours later", hourOffset);
             } else {
-                return i18nc("@info offset from current time in hours and minutes", " • %1:%2 later", hourOffset, minuteOffset);
+                return i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info offset from current time in hours and minutes", " • %1:%2 later", hourOffset, minuteOffset);
             }
         } else {
             if (minuteOffset === 0) {
-                return i18ncp("@info offset from current time", " • %1 hour earlier", " • %1 hours earlier", hourOffset);
+                return i18ndcp("plasma_applet_org.kde.plasma.digitalclock", "@info offset from current time", " • %1 hour earlier", " • %1 hours earlier", hourOffset);
             } else {
-                return i18nc("@info offset from current time in hours and minutes", " • %1:%2 earlier", hourOffset, minuteOffset);
+                return i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info offset from current time in hours and minutes", " • %1:%2 earlier", hourOffset, minuteOffset);
             }
         }
     }
@@ -183,7 +188,7 @@ PlasmoidItem {
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
             id: clipboardAction
-            text: i18n("Copy to Clipboard")
+            text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Copy to Clipboard")
             icon.name: "edit-copy"
         }
     ]

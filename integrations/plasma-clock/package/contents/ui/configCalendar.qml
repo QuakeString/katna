@@ -47,21 +47,21 @@ KCMUtils.ScrollViewKCM {
 
         QQC2.CheckBox {
             id: showWeekNumbers
-            Kirigami.FormData.label: i18nc("@option:check formdata label", "General:")
-            text: i18nc("@option:check", "Show week numbers")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@option:check formdata label", "General:")
+            text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@option:check", "Show week numbers")
         }
 
 
         QQC2.ComboBox {
             id: firstDayOfWeekCombo
 
-            Kirigami.FormData.label: i18nc("@label:listbox", "First day of week:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label:listbox", "First day of week:")
             Layout.fillWidth: true
 
             textRole: "text"
             model: [-1, 0, 1, 5, 6].map(day => ({
                 day,
-                text: day === -1 ? i18nc("@item:inlistbox first day of week option", "Use region defaults") : Qt.locale().dayName(day),
+                text: day === -1 ? i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@item:inlistbox first day of week option", "Use region defaults") : Qt.locale().dayName(day),
             }))
             onActivated: index => {
                 cfg_firstDayOfWeek = model[index].day;
@@ -79,7 +79,7 @@ KCMUtils.ScrollViewKCM {
         activeFocusOnTab: true
         model: eventPluginsManager.model
         header: Kirigami.InlineViewHeader {
-                text: i18nc("@title:column", "Available Add-Ons")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@title:column", "Available Add-Ons")
                 width: pluginListView.width
         }
         headerPositioning: ListView.OverlayHeader

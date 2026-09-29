@@ -67,14 +67,14 @@ Kirigami.PageRow {
             }
         }
         QQC2.Button {
-            text: i18n("Cancel")
+            text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Cancel")
             onClicked: {
                 timeZonesRow.currentIndex = 0
                 timeZoneSelector.selectedTimeZone = ""
             }
         }
         QQC2.Button {
-            text: i18n("Add Selected Time Zone")
+            text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Add Selected Time Zone")
             icon.name: "list-add"
             enabled: timeZoneSelector.selectedTimeZone
             onClicked: {
@@ -91,7 +91,7 @@ Kirigami.PageRow {
 
         actions: [
             Kirigami.Action {
-                text: i18n("Add Time Zone…")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Add Time Zone…")
                 icon.name: "list-add-symbolic"
                 Accessible.name: text // https://bugreports.qt.io/browse/QTBUG-130360
                 onTriggered: {
@@ -150,9 +150,9 @@ Kirigami.PageRow {
                 subtitle: {
                     if (configuredTimeZoneList.count > 1) {
                         if (isCurrent) {
-                            return i18n("Clock is currently using this time zone");
+                            return i18nd("plasma_applet_org.kde.plasma.digitalclock", "Clock is currently using this time zone");
                         } else if (isIdenticalToLocal) {
-                            return i18nc("@label This list item shows a time zone city name that is identical to the local time zone's city, and will be hidden in the time zone display in the plasmoid's popup", "Hidden while this is the local time zone's city");
+                            return i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@label This list item shows a time zone city name that is identical to the local time zone's city, and will be hidden in the time zone display in the plasmoid's popup", "Hidden while this is the local time zone's city");
                         }
                     }
                     return "";
@@ -182,7 +182,7 @@ Kirigami.PageRow {
 
                     QQC2.Button {
                         visible: timeZoneListItem.model.isLocalTimeZone && KConfig.KAuthorized.authorizeControlModule("kcm_clock.desktop")
-                        text: i18n("Switch Systemwide Time Zone…")
+                        text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch Systemwide Time Zone…")
                         icon.name: "preferences-system-time"
                         font.bold: false
                         onClicked: KCMUtils.KCMLauncher.openSystemSettings("kcm_clock")
@@ -194,7 +194,7 @@ Kirigami.PageRow {
                         font.bold: false
                         onClicked: timeZoneListItem.model.checked = false;
                         QQC2.ToolTip {
-                            text: i18n("Remove this time zone")
+                            text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Remove this time zone")
                         }
                     }
                 }
@@ -206,7 +206,7 @@ Kirigami.PageRow {
                     required property string section
 
                     width: configuredTimeZoneList.width
-                    text: section === "true" ? i18n("Systemwide Time Zone") : i18n("Additional Time Zones")
+                    text: section === "true" ? i18nd("plasma_applet_org.kde.plasma.digitalclock", "Systemwide Time Zone") : i18nd("plasma_applet_org.kde.plasma.digitalclock", "Additional Time Zones")
                 }
             }
 
@@ -219,7 +219,7 @@ Kirigami.PageRow {
                     leftMargin: Kirigami.Units.largeSpacing * 6
                     rightMargin: Kirigami.Units.largeSpacing * 6
                 }
-                text: i18n("Add more time zones to display all of them in the applet's pop-up, or use one of them for the clock itself")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Add more time zones to display all of them in the applet's pop-up, or use one of them for the clock itself")
             }
         }
 
@@ -232,7 +232,7 @@ Kirigami.PageRow {
                 Layout.fillWidth: true
                 leftPadding: Application.layoutDirection === Qt.LeftToRight ? enableWheelCheckBox.spacing : Kirigami.Units.largeSpacing * 2
                 rightPadding: Application.layoutDirection === Qt.LeftToRight ? Kirigami.Units.largeSpacing * 2 : enableWheelCheckBox.spacing
-                text: i18nc("@info:usagetip shown below listview", "Tip: Add your home time zone to this list to see the time there even when you're traveling. It will not be shown twice while at home.")
+                text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info:usagetip shown below listview", "Tip: Add your home time zone to this list to see the time there even when you're traveling. It will not be shown twice while at home.")
                 font: Kirigami.Theme.smallFont
                 textFormat: Text.PlainText
                 wrapMode: Text.Wrap
@@ -242,7 +242,7 @@ Kirigami.PageRow {
                 enabled: configuredTimeZoneList.count > 1
                 Layout.fillWidth: true
                 Layout.topMargin: Kirigami.Units.largeSpacing
-                text: i18n("Switch displayed time zone by scrolling over clock applet")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch displayed time zone by scrolling over clock applet")
             }
 
             QQC2.Label {
@@ -251,7 +251,7 @@ Kirigami.PageRow {
                 Layout.fillWidth: true
                 Layout.leftMargin: enableWheelCheckBox.indicator.width + enableWheelCheckBox.spacing
                 Layout.rightMargin: Kirigami.Units.largeSpacing * 2
-                text: i18n("Using this feature does not change the systemwide time zone. When you travel, switch the systemwide time zone instead.")
+                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Using this feature does not change the systemwide time zone. When you travel, switch the systemwide time zone instead.")
                 textFormat: Text.PlainText
                 font: Kirigami.Theme.smallFont
                 wrapMode: Text.Wrap
@@ -261,7 +261,7 @@ Kirigami.PageRow {
 
     property Item addTimeZonePage: Kirigami.Page {
         padding: 0
-        title: i18n("Choose Time Zone")
+        title: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Choose Time Zone")
 
         Layout.fillHeight: true
         Layout.fillWidth: true

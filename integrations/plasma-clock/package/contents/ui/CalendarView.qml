@@ -39,7 +39,7 @@ PlasmaExtras.Representation {
     Kirigami.Theme.colorSet: Kirigami.Theme.Window
     Kirigami.Theme.inherit: false
 
-    Layout.minimumWidth: (calendar.showAgenda || calendar.showClocks) ? Kirigami.Units.gridUnit * 45 : Kirigami.Units.gridUnit * 22
+    Layout.minimumWidth: (calendar.showAgenda || calendar.showClocks || calendar.showTasks) ? Kirigami.Units.gridUnit * 45 : Kirigami.Units.gridUnit * 22
     Layout.maximumWidth: Kirigami.Units.gridUnit * 80
 
     Layout.minimumHeight: Kirigami.Units.gridUnit * 25
@@ -50,6 +50,8 @@ PlasmaExtras.Representation {
     readonly property int paddings: Kirigami.Units.largeSpacing
     readonly property bool showAgenda: eventPluginsManager.enabledPlugins.length > 0
     readonly property bool showClocks: clocksList.count > 1
+    // Katna: the Tasks list is always there.
+    readonly property bool showTasks: true
 
     readonly property alias monthView: monthView
     // This helps synchronize the header of the agenda and the monthView.
@@ -69,6 +71,13 @@ PlasmaExtras.Representation {
         }
     }
 
+    // Katna: the day picked in the month is the day Katna's events are read for.
+    Binding {
+        target: calendar.appletInterface.katna
+        property: "day"
+        value: monthView.currentDate
+    }
+
     PlasmaCalendar.EventPluginsManager {
         id: eventPluginsManager
         enabledPlugins: Plasmoid.configuration.enabledCalendarPlugins
@@ -84,7 +93,7 @@ PlasmaExtras.Representation {
     ColumnLayout {
         id: leadingColumn
 
-        visible: calendar.showAgenda || calendar.showClocks
+        visible: calendar.showAgenda || calendar.showClocks || calendar.showTasks
 
         anchors {
             top: parent.top
@@ -145,7 +154,7 @@ PlasmaExtras.Representation {
 
                         level: 2
 
-                        text: i18n("Events")
+                        text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Events")
                         textFormat: Text.PlainText
                         maximumLineCount: 1
                         elide: Text.ElideRight
@@ -154,11 +163,11 @@ PlasmaExtras.Representation {
                         id: addEventButton
 
                         visible: agenda.visible && ApplicationIntegration.calendarInstalled
-                        text: i18nc("@action:button Add event", "Add…")
+                        text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@action:button Add event", "Add…")
                         Layout.rightMargin: Kirigami.Units.smallSpacing
                         icon.name: "list-add"
 
-                        Accessible.description: i18nc("@info:tooltip", "Add a new event")
+                        Accessible.description: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@info:tooltip", "Add a new event")
                         KeyNavigation.down: KeyNavigation.tab
                         KeyNavigation.right: monthView.viewHeader.tabBar
 
@@ -267,6 +276,11 @@ PlasmaExtras.Representation {
 
                         text: eventTitle.text
                         hoverEnabled: true
+                        // Katna: its own events open in Katna.
+                        readonly property var katnaEvent: calendar.appletInterface.katna.eventFor(modelData.title, modelData.startDateTime)
+                        onClicked: if (katnaEvent) {
+                            calendar.appletInterface.katna.open(katnaEvent.id);
+                        }
                         highlighted: ListView.isCurrentItem
                         Accessible.description: modelData.description
                         readonly property bool hasTime: {
@@ -301,7 +315,7 @@ PlasmaExtras.Representation {
 
                         contentItem: GridLayout {
                             id: eventGrid
-                            columns: 3
+                            columns: 4 // Katna: 3, and the Join button
                             rows: 2
                             rowSpacing: 0
                             columnSpacing: Kirigami.Units.largeSpacing
@@ -371,6 +385,15 @@ PlasmaExtras.Representation {
                                 maximumLineCount: 2
                                 wrapMode: Text.Wrap
                             }
+
+                            // Katna: a meeting's video call, one click away.
+                            KatnaJoinButton {
+                                Layout.row: 0
+                                Layout.column: 3
+                                Layout.rowSpan: 2
+                                Layout.alignment: Qt.AlignVCenter
+                                event: eventItem.katnaEvent
+                            }
                         }
                     }
                 }
@@ -384,14 +407,34 @@ PlasmaExtras.Representation {
 
                 iconName: "checkmark"
                 text: monthView.isToday(monthView.currentDate)
-                    ? i18n("No events for today")
-                    : i18n("No events for this day");
+                    ? i18nd("plasma_applet_org.kde.plasma.digitalclock", "No events for today")
+                    : i18nd("plasma_applet_org.kde.plasma.digitalclock", "No events for this day");
             }
+        }
+
+        // Katna: the Tasks list, under the day's events.
+        KSvg.SvgItem {
+            visible: agenda.visible
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: naturalSize.height
+
+            imagePath: "widgets/line"
+            elementId: "horizontal-line"
+        }
+
+        KatnaTasks {
+            Layout.fillWidth: true
+            Layout.fillHeight: !agenda.visible
+            compact: agenda.visible
+            agenda: calendar.appletInterface.katna
+            selectedDate: monthView.currentDate
+            paddings: calendar.paddings
         }
 
         // Horizontal separator line between events and time zones
         KSvg.SvgItem {
-            visible: worldClocks.visible && agenda.visible
+            visible: worldClocks.visible
 
             Layout.fillWidth: true
             Layout.preferredHeight: naturalSize.height
@@ -424,7 +467,7 @@ PlasmaExtras.Representation {
 
                     level: 2
 
-                    text: i18n("Time Zones")
+                    text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Time Zones")
                     textFormat: Text.PlainText
                     maximumLineCount: 1
                     elide: Text.ElideRight
@@ -435,11 +478,11 @@ PlasmaExtras.Representation {
                     id: switchTimeZoneButton
 
                     visible: KConfig.KAuthorized.authorizeControlModule("kcm_clock.desktop")
-                    text: i18n("Switch…")
+                    text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch…")
                     icon.name: "preferences-system-time"
 
-                    Accessible.name: i18n("Switch to another time zone")
-                    Accessible.description: i18n("Switch to another time zone")
+                    Accessible.name: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch to another time zone")
+                    Accessible.description: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch to another time zone")
 
                     KeyNavigation.down: clocksList
                     Keys.onRightPressed: event => {
@@ -600,7 +643,7 @@ PlasmaExtras.Representation {
         }
 
         width: naturalSize.width
-        visible: calendar.showAgenda || calendar.showClocks
+        visible: calendar.showAgenda || calendar.showClocks || calendar.showTasks
 
         imagePath: "widgets/line"
         elementId: "vertical-line"
@@ -618,7 +661,7 @@ PlasmaExtras.Representation {
         }
 
         // Not anchoring to horizontalCenter to avoid sub-pixel misalignments
-        width: (calendar.showAgenda || calendar.showClocks) ? Math.round(parent.width / 2) : parent.width
+        width: (calendar.showAgenda || calendar.showClocks || calendar.showTasks) ? Math.round(parent.width / 2) : parent.width
 
         onActiveFocusChanged: if (activeFocus) {
             monthViewWrapper.nextItemInFocusChain().forceActiveFocus();
