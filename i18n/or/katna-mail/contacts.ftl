@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ଆମଦାନି କରନ୍ତୁ
 contacts-export = ରପ୍ତାନି କରନ୍ତୁ
-contacts-import-title = vCard ଫାଇଲରୁ ଯୋଗାଯୋଗ ଆମଦାନି କରନ୍ତୁ
+contacts-import-file = vCard କିମ୍ବା CSV ଫାଇଲରୁ ଯୋଗାଯୋଗ ଆମଦାନି କରନ୍ତୁ
 contacts-imported = { $count ->
     [one] { $place }ରେ { $count }ଟି ଯୋଗାଯୋଗ ଆମଦାନି ହେଲା
    *[other] { $place }ରେ { $count }ଟି ଯୋଗାଯୋଗ ଆମଦାନି ହେଲା
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ରପ୍ତାନି ପାଇଁ କୌଣସି ଯୋଗାଯୋଗ ନାହିଁ
 contacts-export-failed = ଯୋଗାଯୋଗ ରପ୍ତାନି କରାଗଲା ନାହିଁ: { $error }
+contacts-print = ପ୍ରିଣ୍ଟ କରନ୍ତୁ
+contacts-print-title = ଯୋଗାଯୋଗ
+contacts-print-none = ପ୍ରିଣ୍ଟ କରିବାକୁ କୌଣସି ଯୋଗାଯୋଗ ନାହିଁ
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = ଜନ୍ମଦିନ: { $day }
+contacts-print-nickname = ଡାକନାମ: { $name }
 contacts-create = ଯୋଗାଯୋଗ ତିଆରି କରନ୍ତୁ
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = ଅନୁମତି ଦିଅନ୍ତୁ
 contacts-back = ଯୋଗାଯୋଗକୁ ଫେରନ୍ତୁ
 contacts-edit = ଏଡିଟ କରନ୍ତୁ
 contacts-delete = ଡିଲିଟ କରନ୍ତୁ
+contacts-qr = QR କୋଡ୍ ଭାବେ ସେୟାର କରନ୍ତୁ
+contacts-qr-about = ଯୋଗାଯୋଗ ସେଭ୍ କରିବାକୁ ଫୋନର କ୍ୟାମେରାରେ ଏହାକୁ ସ୍କାନ କରନ୍ତୁ।
+contacts-qr-too-long = QR କୋଡ୍‌ରେ ଧରିବା ପାଇଁ ଏହି ଯୋଗାଯୋଗରେ ବହୁତ ଅଧିକ ବିବରଣୀ ଅଛି।
+contacts-qr-done = ହୋଇଗଲା
 contacts-deleted = { $name } ଡିଲିଟ ହୋଇଗଲା
 contacts-added = { $name }ଙ୍କୁ ଯୋଗାଯୋଗରେ ଯୋଡ଼ାଗଲା
 contacts-find-mail = ମେଲ

@@ -41,6 +41,9 @@ tasks-delete = 삭제
 tasks-move-to = { $list }(으)로 이동
 tasks-from-mail = 메일
 tasks-open-mail = 메일 열기
+tasks-from-note = 메모
+tasks-open-note = 메모 열기
+tasks-note-gone = 해당 메모가 더 이상 없습니다.
 tasks-no-subject = (제목 없음)
 
 ## The details dialog
@@ -56,6 +59,12 @@ tasks-repeat-weekly = 매주
 tasks-repeat-monthly = 매월
 tasks-repeat-yearly = 매년
 tasks-repeat-other = 맞춤설정
+tasks-remind = 알림
+tasks-remind-off = 알리지 않음
+tasks-remind-on-time = 정시
+tasks-remind-morning = 당일 { $time }
+tasks-remind-hour-before = 1시간 전
+tasks-remind-day-before = 하루 전
 tasks-cancel = 취소
 tasks-save = 저장
 tasks-not-a-time = “{ $text }”은(는) 시간이 아닙니다. 예: { $example }
@@ -70,6 +79,7 @@ tasks-due-at = { $day } { $time }
 ## Notes at the bottom
 
 tasks-toast-done = 할 일을 완료했습니다
+tasks-toast-next = 완료했습니다. 다음 일정: { $date }
 tasks-toast-deleted = 할 일을 삭제했습니다
 tasks-toast-added = { $count ->
    *[other] 할 일 { $count }개를 추가했습니다

@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = আমদানি কৰক
 contacts-export = ৰপ্তানি কৰক
-contacts-import-title = vCard ফাইলৰ পৰা সম্পৰ্ক আমদানি কৰক
+contacts-import-file = vCard বা CSV ফাইলৰ পৰা সম্পৰ্ক আমদানি কৰক
 contacts-imported = { $count ->
     [one] { $place }ত { $count }টা সম্পৰ্ক আমদানি কৰা হ’ল
    *[other] { $place }ত { $count }টা সম্পৰ্ক আমদানি কৰা হ’ল
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ৰপ্তানি কৰিবলৈ কোনো সম্পৰ্ক নাই
 contacts-export-failed = সম্পৰ্ক ৰপ্তানি কৰিব পৰা নগ’ল: { $error }
+contacts-print = প্ৰিণ্ট কৰক
+contacts-print-title = সম্পৰ্কসমূহ
+contacts-print-none = প্ৰিণ্ট কৰিবলৈ কোনো সম্পৰ্ক নাই
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = জন্মদিন: { $day }
+contacts-print-nickname = ডাকনাম: { $name }
 contacts-create = সম্পৰ্ক সৃষ্টি কৰক
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = অনুমতি দিয়ক
 contacts-back = সম্পৰ্কসমূহলৈ উভতি যাওক
 contacts-edit = সম্পাদনা কৰক
 contacts-delete = মচক
+contacts-qr = QR ক’ড হিচাপে শ্বেয়াৰ কৰক
+contacts-qr-about = সম্পৰ্কটো ছেভ কৰিবলৈ ফোনৰ কেমেৰাৰে এইটো স্কেন কৰক।
+contacts-qr-too-long = QR ক’ডত ধৰিবলৈ এই সম্পৰ্কত বহুত বেছি তথ্য আছে।
+contacts-qr-done = হ’ল
 contacts-deleted = { $name } মচা হ'ল
 contacts-added = { $name }ক সম্পৰ্কত যোগ কৰা হ'ল
 contacts-find-mail = মেইল

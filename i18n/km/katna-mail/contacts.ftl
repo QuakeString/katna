@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = នាំចូល
 contacts-export = នាំចេញ
-contacts-import-title = នាំចូលទំនាក់ទំនងពីឯកសារ vCard
+contacts-import-file = នាំចូលទំនាក់ទំនងពីឯកសារ vCard ឬ CSV
 contacts-imported = { $count ->
    *[other] បាននាំចូលទំនាក់ទំនង { $count } ទៅ { $place }
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = គ្មានទំនាក់ទំនងសម្រាប់នាំចេញទេ
 contacts-export-failed = មិនអាចនាំចេញទំនាក់ទំនងបានទេ៖ { $error }
+contacts-print = បោះពុម្ព
+contacts-print-title = ទំនាក់ទំនង
+contacts-print-none = គ្មានទំនាក់ទំនងត្រូវបោះពុម្ពទេ
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = ថ្ងៃកំណើត៖ { $day }
+contacts-print-nickname = ឈ្មោះហៅក្រៅ៖ { $name }
 contacts-create = បង្កើតទំនាក់ទំនង
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = អនុញ្ញាត
 contacts-back = ត្រឡប់ទៅទំនាក់ទំនង
 contacts-edit = កែសម្រួល
 contacts-delete = លុប
+contacts-qr = ចែករំលែកជាកូដ QR
+contacts-qr-about = ស្កេនវាដោយកាមេរ៉ាទូរសព្ទ ដើម្បីរក្សាទុកទំនាក់ទំនង។
+contacts-qr-too-long = ទំនាក់ទំនងនេះមានព័ត៌មានលម្អិតច្រើនពេក មិនអាចដាក់ក្នុងកូដ QR បានទេ។
+contacts-qr-done = រួចរាល់
 contacts-deleted = បានលុប { $name }
 contacts-added = បានបន្ថែម { $name } ទៅទំនាក់ទំនង
 contacts-find-mail = សំបុត្រ

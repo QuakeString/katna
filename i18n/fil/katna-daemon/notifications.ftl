@@ -34,6 +34,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Buong araw
 notify-event-join = Sumali
 notify-event-snooze = I-snooze nang 5 min
+notify-task-done = Markahan bilang tapos na
 notify-open = Buksan
 notify-reply-all = Sumagot sa lahat
 notify-mark-read = Markahan bilang nabasa na

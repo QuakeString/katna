@@ -382,6 +382,7 @@ menu-snooze = Sluimer
 menu-unsnooze = Ontsluimer
 menu-add-to-tasks = Voeg by Take
 menu-schedule-meeting = Skeduleer ’n vergadering
+menu-start-call = Begin ’n video-oproep
 menu-add-note = Voeg ’n nota by
 menu-print-all = Druk alles
 menu-new-window = Maak oop in nuwe venster

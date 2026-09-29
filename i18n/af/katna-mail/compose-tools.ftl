@@ -103,6 +103,7 @@ compose-tool-remove-link = Verwyder skakel
 ## More options
 
 compose-tool-full-screen = Volskerm by verstek
+compose-tool-video-call = Voeg ’n video-oproep by
 compose-tool-label = Etiket
 compose-tool-label-coming = Etikette op gestuurde pos kom binnekort. Gee die boodskap 'n etiket in Gestuur sodra dit weg is.
 compose-tool-plain-mode = Gewone teksmodus

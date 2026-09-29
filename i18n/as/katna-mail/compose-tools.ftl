@@ -103,6 +103,7 @@ compose-tool-remove-link = লিংক আঁতৰাওক
 ## More options
 
 compose-tool-full-screen = ডিফ'ল্টভাৱে সম্পূৰ্ণ স্ক্ৰীন
+compose-tool-video-call = ভিডিঅ' কল যোগ কৰক
 compose-tool-label = লেবেল
 compose-tool-label-coming = পঠিওৱা মেইলত লেবেল সোনকালে আহি আছে। বাৰ্তাটো গুচি যোৱাৰ পিছত প্ৰেৰিতত ইয়াক লেবেল দিয়ক।
 compose-tool-plain-mode = সাধাৰণ পাঠ ম'ড

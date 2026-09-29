@@ -232,6 +232,7 @@ menu-snooze = Sún síwájú
 menu-unsnooze = Mú padà báyìí
 menu-add-to-tasks = Fi kún Iṣẹ́
 menu-schedule-meeting = Ṣètò ìpàdé
+menu-start-call = Bẹ̀rẹ̀ ìpè fídíò
 menu-add-note = Fi àkọsílẹ̀ kún un
 menu-print-all = Tẹ gbogbo rẹ̀ jáde
 menu-new-window = Ṣí ní fèrèsé tuntun

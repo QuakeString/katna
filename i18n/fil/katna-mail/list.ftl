@@ -382,6 +382,7 @@ menu-snooze = I-snooze
 menu-unsnooze = I-unsnooze
 menu-add-to-tasks = Idagdag sa Mga Gawain
 menu-schedule-meeting = Mag-iskedyul ng pulong
+menu-start-call = Magsimula ng video call
 menu-add-note = Magdagdag ng tala
 menu-print-all = I-print lahat
 menu-new-window = Buksan sa bagong window

@@ -103,6 +103,7 @@ compose-tool-remove-link = Susa isixhumanisi
 ## More options
 
 compose-tool-full-screen = Isikrini esigcwele ngokuzenzakalelayo
+compose-tool-video-call = Engeza ikholi yevidiyo
 compose-tool-label = Ilebula
 compose-tool-label-coming = Amalebula emeyilini ethunyelwe azofika maduze. Faka ilebula emlayezweni kokuthi Okuthunyelwe uma usuthunyelwe.
 compose-tool-plain-mode = Imodi yombhalo osobala

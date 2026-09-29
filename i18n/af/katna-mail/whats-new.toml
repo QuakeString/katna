@@ -1377,3 +1377,39 @@ title = "Voeg duplikate saam, voer kontakte in en uit"
 text = """
 Kontakte het nou Regstel en bestuur: Voeg saam en regstel vind mense wat twee keer gestoor is (dieselfde naam of foonnommer) en voeg hulle met een klik saam, met Ontdoen. Voer in bring mense in vanaf ’n vCard-lêer en laat diegene weg wat reeds gestoor is, en Voer uit stoor almal, of een etiket, as ’n vCard-lêer.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Verjaardae in die kalender, kontakte as QR-kodes"
+text = """
+Jou kontakte se verjaardae verskyn nou in die Kalender, in ’n Verjaardae-kalender wat jy kan afmerk. ’n Kontak se bladsy kan hulle as ’n QR-kode wys wat ’n foon se kamera stoor, en hulle druk; Druk onder Regstel en bestuur druk almal wat gewys word. Invoer lees nou ook CSV-lêers van Google Kontakte en Outlook, en KRunner en GNOME-soektog vind jou gestoorde kontakte.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kalenderdigtheid en 'n tweede tydsone"
+text = """
+Die Opsies-knoppie in Kalender bepaal hoe hoog die ure is (Reageer op jou skerm, Gemaklik of Kompak) en voeg 'n tweede tydsone langs joune by, vir die mense wat jy oorsee ontmoet.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Begin ’n video-oproep vanuit ’n e-pos"
+text = """
+Regsklik op ’n gesprek, of maak ⋮ oop, en kies Begin ’n video-oproep: die oproep maak oop, met ’n nuwe e-pos met sy skakel aan almal in die gesprek. Gmail-rekeninge gebruik Google Meet; ander kry ’n Jitsi Meet-kamer. E-pos met ’n Meet-, Teams-, Zoom-, Webex-, Jitsi-, WhatsApp- of Telegram-oproepskakel wys nou ’n Sluit aan-knoppie.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Maak 'n kontrolelysreël 'n taak"
+text = """
+Plaas die wyser op 'n kontrolelysreël in 'n nota en kies Maak dit 'n taak: die reël gaan na jou take. Die Nota-skyfie op die Take-bladsy maak die nota weer oop.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Die paneel waarin jy is, val op"
+text = """
+Langs die lys behou net die paneel wat die sleutels het sy skaduwee; die lys, die gesprek of die kontakpaneel wat jy nie gebruik nie, sak terug met 'n vaagker rand, en die verandering volg jou sag terwyl jy klik.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Taakherinnerings en herhalings"
+text = """
+Maak 'n taak oop en kies Herinner my: op die tydstip, 'n uur of 'n dag vooraf. Die herinnering verskyn selfs wanneer Katna toe is, met Merk as klaar en Sluimer. As jy 'n herhalende taak afmerk, kom dit nou op sy volgende dag terug.
+"""

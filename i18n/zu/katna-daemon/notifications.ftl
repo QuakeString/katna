@@ -39,6 +39,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Usuku lonke
 notify-event-join = Joyina
 notify-event-snooze = Libazisa imizuzu emi-5
+notify-task-done = Maka njengokwenziwe
 
 ## Its buttons
 

@@ -78,6 +78,10 @@ notes-meeting-actions = Eylem öğeleri
 notes-event = Etkinlik
 notes-open-event = Etkinliği aç
 
+## Tasks
+
+notes-make-task = Göreve dönüştür
+
 ## Colors (tooltips)
 
 notes-color-none = Renk yok

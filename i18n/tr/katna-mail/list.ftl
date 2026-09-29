@@ -382,6 +382,7 @@ menu-snooze = Ertele
 menu-unsnooze = Ertelemeyi kaldır
 menu-add-to-tasks = Görevlere ekle
 menu-schedule-meeting = Toplantı planla
+menu-start-call = Görüntülü görüşme başlat
 menu-add-note = Not ekle
 menu-print-all = Tümünü yazdır
 menu-new-window = Yeni pencerede aç

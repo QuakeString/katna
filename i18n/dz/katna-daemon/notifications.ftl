@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = ཉིན་མོ་ཧྲིལ་བུ
 notify-event-join = ཚུད་གནང་
 notify-event-snooze = སྐར་མ་ 5 ཤུལ་མར་བཞགཔ
+notify-task-done = ཚར་ཡི་ཟེར་རྟགས་བཀོད་
 
 ## Its buttons
 

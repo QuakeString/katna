@@ -103,6 +103,7 @@ compose-tool-remove-link = लिंक काढा
 ## More options
 
 compose-tool-full-screen = नेहमी पूर्ण स्क्रीनमध्ये उघडा
+compose-tool-video-call = व्हिडिओ कॉल जोडा
 compose-tool-label = लेबल
 compose-tool-label-coming = पाठवलेल्या मेलवर लेबल लवकरच येत आहेत. मेसेज गेल्यानंतर पाठवलेले मध्ये त्याला लेबल लावा.
 compose-tool-plain-mode = साधा मजकूर मोड

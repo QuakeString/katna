@@ -82,6 +82,10 @@ notes-meeting-actions = بنود العمل
 notes-event = حدث
 notes-open-event = فتح الحدث
 
+## Tasks
+
+notes-make-task = تحويله إلى مهمة
+
 ## Colors (tooltips)
 
 notes-color-none = بلا لون

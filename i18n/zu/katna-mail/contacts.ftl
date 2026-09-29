@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Ngenisa
 contacts-export = Thumela
-contacts-import-title = Ngenisa oxhumana nabo kufayela le-vCard
+contacts-import-file = Ngenisa oxhumana nabo kufayela le-vCard noma le-CSV
 contacts-imported = { $count ->
     [one] Kungeniswe oxhumana nabo abangu-{ $count } ku-{ $place }
    *[other] Kungeniswe oxhumana nabo abangu-{ $count } ku-{ $place }
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Akukho oxhumana nabo okufanele bathunyelwe
 contacts-export-failed = Ayikwazanga ukuthumela oxhumana nabo: { $error }
+contacts-print = Phrinta
+contacts-print-title = Oxhumana nabo
+contacts-print-none = Akukho oxhumana nabo abazophrintwa
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Usuku lokuzalwa: { $day }
+contacts-print-nickname = Isidlaliso: { $name }
 contacts-create = Dala oxhumana naye
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = Vumela
 contacts-back = Buyela koxhumana nabo
 contacts-edit = Hlela
 contacts-delete = Susa
+contacts-qr = Yabelana njengekhodi ye-QR
+contacts-qr-about = Skena lokhu ngekhamera yefoni ukuze ugcine oxhumana naye.
+contacts-qr-too-long = Lo oxhumana naye unemininingwane eminingi kakhulu engangena ekhodini ye-QR.
+contacts-qr-done = Kwenziwe
 contacts-deleted = Kususiwe { $name }
 contacts-added = Kwengezwe { $name } koxhumana nabo
 contacts-find-mail = Imeyili

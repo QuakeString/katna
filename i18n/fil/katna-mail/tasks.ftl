@@ -42,6 +42,9 @@ tasks-delete = I-delete
 tasks-move-to = Ilipat sa { $list }
 tasks-from-mail = Mail
 tasks-open-mail = Buksan ang mail
+tasks-from-note = Tala
+tasks-open-note = Buksan ang tala
+tasks-note-gone = Wala na rito ang talang iyon.
 tasks-no-subject = (walang paksa)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = Lingguhan
 tasks-repeat-monthly = Buwan-buwan
 tasks-repeat-yearly = Taon-taon
 tasks-repeat-other = Custom
+tasks-remind = Paalalahanan ako
+tasks-remind-off = Huwag paalalahanan
+tasks-remind-on-time = Sa oras mismo
+tasks-remind-morning = Sa araw na iyon, { $time }
+tasks-remind-hour-before = Isang oras bago
+tasks-remind-day-before = Isang araw bago
 tasks-cancel = Kanselahin
 tasks-save = I-save
 tasks-not-a-time = Ang “{ $text }” ay hindi oras, halimbawa { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Tapos na ang gawain
+tasks-toast-next = Tapos na. Susunod sa { $date }
 tasks-toast-deleted = Na-delete ang gawain
 tasks-toast-added = { $count ->
     [one] Naidagdag sa Mga Gawain

@@ -103,6 +103,7 @@ compose-tool-remove-link = إزالة الرابط
 ## More options
 
 compose-tool-full-screen = ملء الشاشة افتراضيًا
+compose-tool-video-call = إضافة مكالمة فيديو
 compose-tool-label = تصنيف
 compose-tool-label-coming = ستتوفر التصنيفات على البريد المُرسَل قريبًا. صنّف الرسالة في «المُرسَلة» بعد إرسالها.
 compose-tool-plain-mode = وضع النص العادي

@@ -78,6 +78,10 @@ notes-meeting-actions = ಕ್ರಿಯಾ ಐಟಂಗಳು
 notes-event = ಈವೆಂಟ್
 notes-open-event = ಈವೆಂಟ್ ತೆರೆಯಿರಿ
 
+## Tasks
+
+notes-make-task = ಕಾರ್ಯವನ್ನಾಗಿ ಮಾಡಿ
+
 ## Colors (tooltips)
 
 notes-color-none = ಬಣ್ಣವಿಲ್ಲ

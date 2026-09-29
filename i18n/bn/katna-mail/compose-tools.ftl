@@ -103,6 +103,7 @@ compose-tool-remove-link = লিঙ্ক সরান
 ## More options
 
 compose-tool-full-screen = ডিফল্টভাবে পূর্ণ স্ক্রিন
+compose-tool-video-call = ভিডিও কল যোগ করুন
 compose-tool-label = লেবেল
 compose-tool-label-coming = পাঠানো মেলে লেবেল শিগগিরই আসছে। মেসেজটি চলে যাওয়ার পর “পাঠানো হয়েছে” ফোল্ডারে লেবেল দিন।
 compose-tool-plain-mode = সাধারণ টেক্সট মোড
