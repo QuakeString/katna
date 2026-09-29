@@ -30,7 +30,9 @@ mod colors;
 mod compose;
 mod contact;
 mod contacts_edit;
+mod contacts_io;
 mod contacts_labels;
+mod contacts_merge;
 mod contacts_other;
 mod contacts_page;
 mod context_menu;
@@ -360,6 +362,10 @@ enum Menu {
     MoveTo,
     /// The open conversation's "more" button.
     ReaderMore,
+    /// The calendar bar's options: density, second time zone.
+    CalendarOptions,
+    /// The second time zones to choose from.
+    CalendarZones,
 }
 
 /// A change the user asks for on some lines of the list.

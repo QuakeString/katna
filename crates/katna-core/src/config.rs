@@ -30,6 +30,7 @@ pub struct Config {
     pub logging: Logging,
     pub sending: Sending,
     pub mail: MailView,
+    pub calendar: CalendarView,
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
@@ -37,6 +38,17 @@ pub struct Config {
     pub experimental: Experimental,
     pub feedback: Feedback,
     pub updates: Updates,
+    pub contacts: ContactsConfig,
+}
+
+/// The Contacts page's own choices.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ContactsConfig {
+    /// Merge and fix suggestions dismissed, each by its people's first
+    /// cards (`"12,40"`), so they are not suggested again.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub dismissed_duplicates: Vec<String>,
 }
 
 /// Settings > General > Updates, and About's Update button
@@ -866,6 +878,28 @@ pub enum AccountsShown {
 #[serde(rename_all = "lowercase")]
 pub enum Density {
     Default,
+    Compact,
+}
+
+/// How Katna Calendar shows the days: the calendar bar's options menu.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CalendarView {
+    /// How tall the hours of Day and Week are.
+    pub density: CalendarDensity,
+    /// A second column of hours in another time zone (IANA name); empty
+    /// for none.
+    pub second_time_zone: String,
+}
+
+/// [`CalendarView::density`], as Google Calendar has them.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CalendarDensity {
+    /// Taller hours in a taller window.
+    #[default]
+    Responsive,
+    Comfortable,
     Compact,
 }
 

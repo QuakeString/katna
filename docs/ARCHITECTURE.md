@@ -992,8 +992,20 @@ They live apart from saved cards (`other_contact`, pim.db v10), so they
 never merge into people or labels. The page lists them under Other
 contacts, leaving out anyone saved since; Add to contacts copies one with
 `copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
-Outlook and CardDAV have no such list. Merge and import/export follow in
-the next phases of the study.
+Outlook and CardDAV have no such list.
+
+"Fix and manage" at the foot of the column has Merge and fix, Import and
+Export. Merge and fix suggests people who look like the same person (the
+same name, or a phone number ending in the same ten digits; people who
+share an address are one person already). Merging combines their cards
+(the first card's name, then every address, number, link and label the
+others add) and keeps one card per address book, deleting the rest there;
+the Undo writes the old cards back. Dismissed suggestions are kept in the
+settings file (`[contacts] dismissed_duplicates`). Import reads vCard files
+in the app and saves the new people with their categories as labels in
+the account in view (`ImportContacts`, with an Undo), leaving out anyone
+already saved; Export writes the people on screen (everyone or a label) as
+one vCard 3.0 file.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -3422,6 +3434,14 @@ most useful reason is shown. Changes go back the way their calendar came
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
+- The bar's options button (⚙ in Google, a tune icon here, beside the
+  app's own gear) has Density and Second time zone (`[calendar]` in
+  `config.toml`). Density: Responsive (default; an hour is a twelfth of
+  the grid's height, 40 to 72 px), Comfortable (48 px) or Compact
+  (36 px); the grid keeps the same time at its top when it changes. A
+  second time zone adds a column of its hours at the left of Day and
+  Week, each column headed by its offset ("GMT-4"); the menu offers
+  sixteen common zones, and any IANA name typed into the file works.
 - Desktop: Katna Digital Clock (§15.4) through the daemon's
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
 - No booking pages: free times are shared as text in a mail.
