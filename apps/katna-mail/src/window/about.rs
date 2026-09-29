@@ -7,7 +7,10 @@
 //! for Rust, KDE and Linux. Opened from Help in the menu bar, quick
 //! settings and the version in the Settings header.
 
+mod coffee;
+
 use std::sync::LazyLock;
+use std::time::Instant;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
@@ -206,6 +209,8 @@ pub(super) struct About {
     shown: Spring,
     /// Every library is listed, not only the heart of Katna.
     all: bool,
+    /// When the little play in "Buy me a coffee" began, while it plays.
+    coffee: Option<Instant>,
 }
 
 impl MailWindow {
@@ -238,6 +243,7 @@ impl MailWindow {
             closing: false,
             shown,
             all: false,
+            coffee: None,
         });
         cx.notify();
     }
@@ -307,6 +313,15 @@ impl MailWindow {
             return None;
         }
         let t = t.clamp(0.0, 1.0);
+        let scene = about.coffee.and_then(|at| {
+            let ms = u64::try_from(at.elapsed().as_millis()).unwrap_or(u64::MAX);
+            coffee::scene(ms)
+        });
+        if scene.is_some() {
+            window.request_animation_frame();
+        } else {
+            about.coffee = None;
+        }
         let about = self.about.as_ref()?;
         let phone = self.layout.shape.is_phone();
         let vw = unpx(window.viewport_size().width);
@@ -382,7 +397,7 @@ impl MailWindow {
         let button = div()
             .id("about-coffee")
             .flex_1()
-            .h(px(44.0))
+            .h(px(coffee::HEIGHT + 2.0))
             .px(px(20.0))
             .flex()
             .flex_row()
@@ -396,11 +411,21 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .text_size(px(16.0))
             .font_weight(FontWeight::SEMIBOLD)
-            .child(icon("coffee", th.text, 22.0))
-            .child(tr!("about-coffee"));
+            .child(coffee::render(scene, th.text));
         let button = match SUPPORT_URL {
             Some(url) => button
                 .cursor_pointer()
+                .when(!reduce, |d| {
+                    d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                        if let Some(about) = &mut this.about
+                            && *hovered
+                            && about.coffee.is_none()
+                        {
+                            about.coffee = Some(Instant::now());
+                            cx.notify();
+                        }
+                    }))
+                })
                 .hover(move |s| s.bg(rgba(hover)))
                 .active(move |s| s.bg(rgba(hover)))
                 .on_click(move |_, _, cx| cx.open_url(url)),

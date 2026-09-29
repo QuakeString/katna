@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A little play in Buy me a coffee"
+text = """
+Rest the pointer on Buy me a coffee in About Katna: it asks for coffee, tea,
+pizza, then nothing at all, settles for water and says thank you with a few
+sparkles. It plays once each time and stays still with reduced motion.
+"""
