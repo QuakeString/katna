@@ -151,6 +151,7 @@ icons!(
     "tune",
     "undo",
     "unread",
+    "upload",
     "video",
     "warning",
     "window-restore",

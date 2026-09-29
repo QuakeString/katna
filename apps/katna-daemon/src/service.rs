@@ -272,6 +272,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_contacts(&ids).await?)
             }
 
+            async fn import_contacts(&self, book: i64, cards: String) -> fdo::Result<Vec<i64>> {
+                Ok(self.daemon.import_contacts(book, &cards).await?)
+            }
+
             async fn save_other_contact(&self, id: i64) -> fdo::Result<i64> {
                 Ok(self.daemon.save_other_contact(id).await?)
             }

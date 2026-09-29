@@ -578,6 +578,11 @@ macro_rules! pim_proxy {
             /// next sync.
             fn save_other_contact(&self, id: i64) -> zbus::Result<i64>;
 
+            /// Saves cards read from a file (a JSON list of `{card,
+            /// labels}`) as new contacts in address book `book`; returns
+            /// their ids.
+            fn import_contacts(&self, book: i64, cards: &str) -> zbus::Result<Vec<i64>>;
+
             /// Gives a saved card exactly these labels, by name.
             fn set_contact_labels(&self, contact: i64, labels: &[String]) -> zbus::Result<()>;
 

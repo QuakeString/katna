@@ -50,6 +50,7 @@ pub(crate) mod alarms;
 mod calendar;
 mod contact_labels;
 mod contacts;
+mod contacts_import;
 mod drive;
 mod meet;
 mod notes;

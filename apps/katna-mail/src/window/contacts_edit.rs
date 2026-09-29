@@ -178,7 +178,7 @@ impl MailWindow {
 
     /// The books a new contact can be saved to: each account's that syncs,
     /// then this computer.
-    fn writable_books(&self) -> Vec<(i64, String)> {
+    pub(super) fn writable_books(&self) -> Vec<(i64, String)> {
         let mut out = Vec::new();
         if let Some(Ok(book)) = &self.contacts.book {
             for b in &book.books {
@@ -362,7 +362,7 @@ impl MailWindow {
 
     /// Where Add to contacts saves: the account in view's address book,
     /// the first account's, or this computer (0).
-    fn book_for_new_contact(&self) -> i64 {
+    pub(super) fn book_for_new_contact(&self) -> i64 {
         let books = self.writable_books();
         let Some(Ok(saved)) = &self.contacts.book else {
             return 0;
