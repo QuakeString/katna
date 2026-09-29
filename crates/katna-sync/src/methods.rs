@@ -14,6 +14,12 @@
 //! The way that worked is remembered per account and kind in `pim.db`'s
 //! `meta` table, and tried first; after [`RECHECK`] the best way is tried
 //! first again, so an API switched on later is used.
+//!
+//! A sync that worked replaces all of the account's collections of that
+//! kind (calendars, address books, task lists) with the ones its way
+//! found, whatever way brought the old ones, so nothing shows twice when
+//! an account switches ways. Changes go back the way their collection
+//! came.
 
 use katna_core::{AccountId, OAuthProvider};
 use katna_store::Store;
@@ -162,7 +168,9 @@ pub fn google_dav_start(dav: Dav, address: &str) -> String {
     let address = address.trim().to_ascii_lowercase();
     match dav {
         Dav::Cal => format!("https://apidata.googleusercontent.com/caldav/v2/{address}/user"),
-        Dav::Card => format!("https://www.googleapis.com/carddav/v1/principals/{address}/"),
+        Dav::Card => {
+            format!("https://www.googleapis.com/carddav/v1/principals/{address}/lists/default/")
+        }
     }
 }
 
@@ -255,10 +263,17 @@ fn known(
                 &["https://posteo.de:8443/.well-known/caldav"],
                 &["https://posteo.de:8843/.well-known/carddav"],
             )
-        } else if is(&["gmx.net", "gmx.de", "gmx.at", "gmx.ch", "gmx.com"]) {
+        } else if is(&["gmx.com"]) {
+            (&["https://caldav.gmx.com/"], &["https://carddav.gmx.com/"])
+        } else if is(&["gmx.net", "gmx.de", "gmx.at", "gmx.ch"]) {
             (&["https://caldav.gmx.net/"], &["https://carddav.gmx.net/"])
         } else if is(&["aol.com"]) {
             (&["https://caldav.aol.com/"], &["https://carddav.aol.com/"])
+        } else if is(&["yandex.ru", "yandex.com", "ya.ru"]) {
+            (
+                &["https://caldav.yandex.ru/.well-known/caldav"],
+                &["https://carddav.yandex.ru/.well-known/carddav"],
+            )
         } else if is(&["web.de"]) {
             (&["https://caldav.web.de/"], &["https://carddav.web.de/"])
         } else {
@@ -352,7 +367,7 @@ mod tests {
         assert!(urls.contains(&"https://yahoo.com/.well-known/caldav".to_owned()));
         assert_eq!(urls.last().unwrap(), "https://imap.mail.yahoo.com/");
 
-        let urls = dav_start_urls(Dav::Card, "me@example.org", Some("imap.zoho.in"));
+        let urls = dav_start_urls(Dav::Card, "me@example.org", Some("imappro.zoho.in"));
         assert_eq!(urls[0], "https://contacts.zoho.in/.well-known/carddav");
         assert!(urls.contains(&"https://example.org/.well-known/carddav".to_owned()));
 

@@ -3229,7 +3229,7 @@ server errors never switch ways. Google sign-ins: the Google API, then
 Google's CalDAV/CardDAV with the same token. Microsoft sign-ins: Graph
 (Outlook.com has no CalDAV). Password accounts: CalDAV/CardDAV looked for
 on the provider's known server (Yahoo, Zoho by region, iCloud, Fastmail,
-mailbox.org, Posteo, GMX, web.de, AOL; by mail domain or IMAP host), then
+mailbox.org, Posteo, GMX, web.de, Yandex, AOL; by mail domain or IMAP host), then
 `.well-known` on the mail domain, the IMAP server's domain and the IMAP
 server, and its root (`methods::dav_start_urls`). Credentials go only over
 TLS to hosts of the domains the search started on. When no way works, the
