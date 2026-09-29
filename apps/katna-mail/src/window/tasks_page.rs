@@ -242,6 +242,56 @@ impl TasksPage {
     }
 }
 
+/// What typed quick add found in a new task's title.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct TypedTask {
+    title: String,
+    /// `YYYY-MM-DD`; today when only a time or a repeat was typed.
+    due: Option<String>,
+    due_time: Option<u32>,
+    repeat: Option<String>,
+}
+
+/// Reads a day, a time and a repeat from a new task's title
+/// (`katna_core::quick_add`, shared with Calendar's events); `None` when it
+/// says none, or nothing would be left of the title. Tasks have no place,
+/// so "at" is left in the title.
+fn typed_task(text: &str, today: jiff::civil::Date) -> Option<TypedTask> {
+    use katna_core::quick_add;
+    let language = katna_i18n::current().language.tag.clone();
+    let words = quick_add::Words {
+        at: &[],
+        ..*quick_add::Words::for_language(&language)
+    };
+    let typed = quick_add::parse(text, today, &words);
+    let title = typed.title.trim().to_owned();
+    // The parser keeps a title made only of such words ("tomorrow") whole.
+    if !typed.found() || title.is_empty() || title == text.trim() {
+        return None;
+    }
+    let due_time = typed
+        .start
+        .map(|t| u32::try_from(i32::from(t.hour()) * 60 + i32::from(t.minute())).unwrap_or(0));
+    // A repeat without a day starts on its first day from today ("every
+    // Monday" typed on a Tuesday: next Monday); a time alone is today.
+    let first_repeat = typed.repeat.as_deref().and_then(|rule| {
+        let yesterday = today.yesterday().ok()?;
+        let (day, _) = katna_dav::todo::next_due(&yesterday.to_string(), rule, yesterday)?;
+        day.parse().ok()
+    });
+    let due = typed
+        .day
+        .or(first_repeat)
+        .or_else(|| (due_time.is_some() || typed.repeat.is_some()).then_some(today))
+        .map(|d| d.to_string());
+    Some(TypedTask {
+        title,
+        due,
+        due_time,
+        repeat: typed.repeat,
+    })
+}
+
 /// A day and month, with the year when it isn't this one.
 fn day_text(day: jiff::civil::Date, today: jiff::civil::Date) -> String {
     let at = day.to_datetime(jiff::civil::Time::midnight());
@@ -686,7 +736,8 @@ impl MailWindow {
             |this, _, event: &InputEvent, window, cx| match event {
                 InputEvent::Submit => this.task_finish_adding(true, window, cx),
                 InputEvent::Cancel => this.task_finish_adding(false, window, cx),
-                InputEvent::Changed => {}
+                // What the words say shows under the row as it is typed.
+                InputEvent::Changed => cx.notify(),
             },
         );
         window.focus(&input.focus_handle(cx), cx);
@@ -716,12 +767,32 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        let command = TaskCommand::Add {
+        // "Pay rent every month on the 1st": the day, time and repeat come
+        // from the words, as in Todoist.
+        let typed = typed_task(&title, today());
+        let (title, due, fields) = match typed {
+            Some(typed) => {
+                let due = typed.due.unwrap_or_else(|| adding.due.clone());
+                let fields = TaskEdit {
+                    due_time: typed.due_time.map(Some),
+                    repeat: typed.repeat,
+                    ..TaskEdit::default()
+                };
+                (typed.title, due, fields)
+            }
+            None => (title, adding.due.clone(), TaskEdit::default()),
+        };
+        let add = TaskCommand::Add {
             list: adding.list,
             parent: adding.parent,
             title,
-            due: adding.due.clone(),
+            due,
             mail: String::new(),
+        };
+        let command = if fields == TaskEdit::default() {
+            add
+        } else {
+            TaskCommand::AddThen(Box::new(add), fields)
         };
         adding.input.update(cx, |input, cx| input.set_text("", cx));
         self.send_task(command, None, None, cx);
@@ -1658,8 +1729,19 @@ impl MailWindow {
         adding: &Adding,
         step: bool,
         th: &Theme,
-        _cx: &mut Context<Self>,
+        cx: &mut Context<Self>,
     ) -> AnyElement {
+        let today = today();
+        // What typed quick add understood, as the task's chip will say it.
+        let understood = typed_task(adding.input.read(cx).text(), today).and_then(|typed| {
+            let shown = TaskItem {
+                due: typed.due?,
+                due_time: typed.due_time,
+                ..TaskItem::default()
+            };
+            let (label, _) = due_label(&shown, today)?;
+            Some((label, typed.repeat.is_some()))
+        });
         div()
             .min_h(px(44.0))
             .pl(px(if step { 48.0 } else { 16.0 }))
@@ -1674,8 +1756,23 @@ impl MailWindow {
                 div()
                     .flex_1()
                     .min_w_0()
+                    .flex()
+                    .flex_col()
                     .text_size(px(14.0))
-                    .child(adding.input.clone()),
+                    .child(adding.input.clone())
+                    .children(understood.map(|(label, repeats)| {
+                        div()
+                            .pb(px(6.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(4.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.accent))
+                            .child(icon("calendar", th.accent, 14.0))
+                            .child(label)
+                            .when(repeats, |d| d.child(icon("refresh", th.accent, 14.0)))
+                    })),
             )
             .into_any_element()
     }
@@ -2206,4 +2303,38 @@ fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
             )
         })
         .into_any_element()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn typed_tasks_get_a_day_a_time_and_a_repeat() {
+        let today: jiff::civil::Date = "2026-09-29".parse().unwrap();
+        let typed = |text: &str| typed_task(text, today);
+        assert_eq!(
+            typed("Call the bank tomorrow 3pm"),
+            Some(TypedTask {
+                title: "Call the bank".into(),
+                due: Some("2026-09-30".into()),
+                due_time: Some(15 * 60),
+                repeat: None,
+            })
+        );
+        // A repeat alone starts on its first day from today (a Tuesday).
+        let plants = typed("Water the plants every Monday").unwrap();
+        assert_eq!(plants.title, "Water the plants");
+        assert!(plants.repeat.is_some_and(|r| r.contains("FREQ=WEEKLY")));
+        assert_eq!(plants.due.as_deref(), Some("2026-10-05"));
+        assert_eq!(
+            typed("Stretch every day").and_then(|t| t.due).as_deref(),
+            Some("2026-09-29")
+        );
+        // Tasks have no place: "at" stays in the title.
+        assert_eq!(typed("Pick up the parcel at the post office"), None);
+        assert_eq!(typed("Buy milk"), None);
+        // Nothing would be left of the title.
+        assert_eq!(typed("tomorrow"), None);
+    }
 }

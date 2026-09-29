@@ -3579,6 +3579,13 @@ server error is not.
   and the first line of its details, with Open (the Tasks page), Mark as
   done and Snooze 5 min (`category=x-katna.task`). For Google Tasks the
   reminder lives on this computer only (decision 3 of the study).
+- **Typed quick add**: a new task's title is read with Calendar's
+  parser (`katna_core::quick_add`, §18) as it is typed, and what it
+  found shows under the row as the task's chip will ("Mon, 8:00 AM ↻").
+  On Enter the words become the due day, time and repeat ("Water the
+  plants every Monday 8am"); a repeat without a day starts on its first
+  day from today. Tasks have no place, so "at …" stays in the title, and
+  a title that is only such words ("tomorrow") stays as typed.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the

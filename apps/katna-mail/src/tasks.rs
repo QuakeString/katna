@@ -184,6 +184,9 @@ pub enum TaskCommand {
         steps: Vec<Task>,
     },
     Move(i64, i64),
+    /// Adds a task ([`TaskCommand::Add`]), then gives it these fields: what
+    /// typed quick add found beyond a due day.
+    AddThen(Box<TaskCommand>, TaskEdit),
     /// Adds a list to an account, or to this computer.
     AddList(Option<AccountId>, String),
     RenameList(i64, String),
@@ -197,6 +200,18 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
         .map_err(|err| describe(&err))?;
     let row = |id: String| id.strip_prefix('t').and_then(|n| n.parse::<i64>().ok());
     let result = match command {
+        TaskCommand::AddThen(add, fields) => {
+            let id = Box::pin(send(connection, add)).await?;
+            if let Some(id) = id
+                && *fields != TaskEdit::default()
+            {
+                agenda
+                    .edit_task(&wire_id(id), fields.item())
+                    .await
+                    .map_err(|err| describe(&err))?;
+            }
+            return Ok(id);
+        }
         TaskCommand::Add {
             list,
             parent,
