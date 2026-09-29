@@ -17,6 +17,7 @@ use katna_ui::px;
 use katna_ui::{Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
+use crate::window::MenuKey;
 
 pub const TOOLBAR_HEIGHT: f32 = 48.0;
 
@@ -281,11 +282,36 @@ pub trait FocusRing: Sized {
     /// The same for a control in a scrolling page: the page scrolls to
     /// show it when Tab moves to it.
     fn focus_ring_in(self, stops: &TabStops, th: &Theme, cx: &App) -> Self;
+    /// The same for a filled button, whose own color stays: the ring goes
+    /// round it, a little apart.
+    fn focus_ring_filled(self, th: &Theme) -> Self;
 }
 
 impl FocusRing for Stateful<Div> {
     fn focus_ring(self, th: &Theme) -> Self {
         self.tab_index(0).focus_visible(ring_style(th))
+    }
+
+    fn focus_ring_filled(self, th: &Theme) -> Self {
+        let (gap, ring) = (rgba(th.surface), rgba(th.accent));
+        self.tab_index(0).focus_visible(move |s| {
+            s.shadow(vec![
+                BoxShadow {
+                    color: gap.into(),
+                    offset: point(px(0.0), px(0.0)),
+                    blur_radius: px(0.0),
+                    spread_radius: px(2.0),
+                    inset: false,
+                },
+                BoxShadow {
+                    color: ring.into(),
+                    offset: point(px(0.0), px(0.0)),
+                    blur_radius: px(0.0),
+                    spread_radius: px(4.0),
+                    inset: false,
+                },
+            ])
+        })
     }
 
     fn focus_ring_in(mut self, stops: &TabStops, th: &Theme, cx: &App) -> Self {
@@ -426,10 +452,15 @@ pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
+/// The key context of a menu, whose items the arrow keys go through
+/// (`window::MenuKey`).
+pub const MENU_CONTEXT: &str = "Menu";
+
 /// A floating menu: a column of [`menu_item`]s on a raised surface.
 pub fn menu(th: &Theme) -> Div {
     raised(
         div()
+            .key_context(MENU_CONTEXT)
             .py(px(8.0))
             .min_w(px(180.0))
             .flex()
@@ -471,6 +502,7 @@ pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Sta
         .items_center()
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
+        .menu_key(th)
         .child(label.to_owned())
 }
 
@@ -491,6 +523,7 @@ pub fn menu_item_icon(
         .gap(px(16.0))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
+        .menu_key(th)
         .child(icon(name, th.text_dim, 20.0))
         .child(label.to_owned())
 }

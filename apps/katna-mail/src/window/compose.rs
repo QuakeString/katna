@@ -64,7 +64,7 @@ use katna_ui::rich::{
 use katna_ui::unpx;
 use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
-use super::{MailWindow, SNACKBAR_TIME};
+use super::{MailWindow, SNACKBAR_TIME, SendMail};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
@@ -1039,11 +1039,12 @@ impl MailWindow {
                     }
                     (InputEvent::Submit, None) => window.focus(&next, cx),
                     (InputEvent::Changed, Some(field)) => this.recipient_changed(field, cx),
-                    (InputEvent::Changed | InputEvent::Cancel, _) => {
-                        // Typing or Esc closes a card of fixes.
+                    (InputEvent::Changed, _) => {
+                        // Typing closes a card of fixes.
                         this.close_hint(cx);
                         cx.notify()
                     }
+                    (InputEvent::Cancel, _) => this.escape_compose(cx),
                 },
             ));
             if let Some(field) = field {
@@ -1100,13 +1101,7 @@ impl MailWindow {
                     cx.notify();
                 }
                 RichEvent::Selection => cx.notify(),
-                RichEvent::Cancel => {
-                    if let Some(c) = &mut this.compose
-                        && c.popup.take().is_some()
-                    {
-                        cx.notify();
-                    }
-                }
+                RichEvent::Cancel => this.escape_compose(cx),
                 RichEvent::EditLink => this.open_link_dialog(window, cx),
                 RichEvent::ContextMenu {
                     position,
@@ -1759,6 +1754,32 @@ impl MailWindow {
         }
     }
 
+    /// Whether a menu or card is open over the message (not a hint).
+    pub(super) fn compose_popup_open(&self) -> bool {
+        self.compose
+            .as_ref()
+            .and_then(|c| c.popup.as_ref())
+            .is_some_and(|p| !p.is_hint())
+    }
+
+    /// Esc in the message: first it closes a card or dialog over it; then
+    /// the message itself closes, kept as a draft, as Esc does in Gmail,
+    /// Outlook and Thunderbird. A reply written in the conversation stays.
+    fn escape_compose(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        match &c.popup {
+            Some(popup) if popup.is_hint() => self.close_hint(cx),
+            Some(_) => {
+                c.popup = None;
+                cx.notify();
+            }
+            None if c.mode != Mode::Inline && !c.closing => self.close_compose_saving(cx),
+            None => {}
+        }
+    }
+
     fn close_compose(&mut self, cx: &mut Context<Self>) {
         if let Some(compose) = &mut self.compose {
             compose.closing = true;
@@ -1940,6 +1961,9 @@ impl MailWindow {
         let panel = div()
             .id("compose")
             .key_context("Compose")
+            .on_action(
+                cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
+            )
             .occlude()
             .relative()
             .map(|d| {
@@ -2240,6 +2264,9 @@ impl MailWindow {
         let card = div()
             .id("inline-reply")
             .key_context("Compose")
+            .on_action(
+                cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
+            )
             .relative()
             .flex_1()
             .min_w_0()

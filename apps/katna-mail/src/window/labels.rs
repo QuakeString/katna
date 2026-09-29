@@ -18,7 +18,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, icon, radio};
+use crate::widgets::{FocusRing, elevation, filled_button, icon, radio};
 use crate::{daemon, format};
 
 const WIDTH: f32 = 420.0;
@@ -360,6 +360,7 @@ impl MailWindow {
                             },
                             th,
                         )
+                        .focus_ring_filled(th)
                         .when(!ready, |d| d.opacity(0.45).cursor_default())
                         .on_click(cx.listener(|this, _, _, cx| this.create_label(cx))),
                     ),
@@ -368,6 +369,8 @@ impl MailWindow {
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let card = div()
             .id("new-label")
+            .track_focus(&self.dialog_focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &self.dialog_focus))
             .occlude()
             .w(px(WIDTH.min(vw - 32.0)))
             .max_h(px((vh - 48.0).max(200.0)))

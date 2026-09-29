@@ -21,7 +21,7 @@ use katna_ui::unpx;
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
 use crate::whats_new;
-use crate::widgets::{elevation, filled_button, icon, outlined_button, tip};
+use crate::widgets::{FocusRing, elevation, filled_button, icon, outlined_button, tip};
 
 const WIDTH: f32 = 520.0;
 
@@ -259,8 +259,13 @@ impl MailWindow {
     }
 
     fn about_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
-        // Escape reaches `popovers` first.
-        if matches!(event.keystroke.key.as_str(), "escape" | "enter") {
+        // Escape reaches `popovers` first. Enter on a focused button
+        // presses that button instead.
+        let on_dialog = self
+            .about
+            .as_ref()
+            .is_some_and(|a| a.focus.is_focused(window));
+        if event.keystroke.key == "escape" || (event.keystroke.key == "enter" && on_dialog) {
             self.close_about(window, cx);
             cx.stop_propagation();
         }
@@ -356,12 +361,12 @@ impl MailWindow {
             .justify_center()
             .gap(px(8.0))
             .child(
-                outlined_button("about-whats-new", tr!("about-whats-new"), th).on_click(
-                    cx.listener(|this, _, window, cx| {
+                outlined_button("about-whats-new", tr!("about-whats-new"), th)
+                    .focus_ring(th)
+                    .on_click(cx.listener(|this, _, window, cx| {
                         this.close_about(window, cx);
                         this.show_whats_new(window, cx);
-                    }),
-                ),
+                    })),
             )
             .child(link_button(
                 "about-changelog",
@@ -764,12 +769,14 @@ impl MailWindow {
             )
             .child(
                 filled_button("about-close", tr!("about-close"), th)
+                    .focus_ring_filled(th)
                     .on_click(cx.listener(|this, _, window, cx| this.close_about(window, cx))),
             );
 
         let card = div()
             .id("about")
             .track_focus(&about.focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &about.focus))
             .on_key_down(cx.listener(Self::about_key))
             .occlude()
             .w(px(width))
@@ -829,6 +836,7 @@ fn link_button(
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
     outlined_button(id, label, th)
+        .focus_ring(th)
         .gap(px(8.0))
         .child(icon("open-external", th.accent, 16.0))
         .on_click(move |_, _, cx| cx.open_url(&url))

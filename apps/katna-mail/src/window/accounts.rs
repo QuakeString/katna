@@ -38,6 +38,8 @@ pub(super) struct Danger {
     busy: bool,
     error: Option<String>,
     closing: bool,
+    /// The dialog has had the keys given to it.
+    focused: bool,
     shown: Spring,
 }
 
@@ -852,6 +854,7 @@ impl MailWindow {
             busy: false,
             error: None,
             closing: false,
+            focused: false,
             shown,
         });
         cx.notify();
@@ -870,7 +873,9 @@ impl MailWindow {
                 window,
                 |this, _, event: &InputEvent, _, cx| match event {
                     InputEvent::Submit => this.confirm_danger(cx),
-                    InputEvent::Cancel => this.close_danger(cx),
+                    InputEvent::Cancel => {
+                        this.close_danger(cx);
+                    }
                     _ => cx.notify(),
                 },
             );
@@ -882,16 +887,21 @@ impl MailWindow {
             },
             cx,
         );
+        // Its field has the keys already.
+        if let Some(danger) = &mut self.danger {
+            danger.focused = true;
+        }
     }
 
-    fn close_danger(&mut self, cx: &mut Context<Self>) {
-        if let Some(danger) = &mut self.danger
-            && !danger.busy
-        {
-            danger.closing = true;
-            danger.shown.set(0.0);
-        }
+    /// Closes the dialog unless it is at work. Returns whether it closed.
+    pub(super) fn close_danger(&mut self, cx: &mut Context<Self>) -> bool {
+        let Some(danger) = self.danger.as_mut().filter(|d| !d.busy && !d.closing) else {
+            return false;
+        };
+        danger.closing = true;
+        danger.shown.set(0.0);
         cx.notify();
+        true
     }
 
     /// Whether the dialog's red button may be pressed.
@@ -1059,6 +1069,11 @@ impl MailWindow {
             return None;
         }
         let t = t.clamp(0.0, 1.0);
+        // The keys go to the dialog (to its field, if it has one).
+        if !danger.focused {
+            danger.focused = true;
+            window.focus(&self.dialog_focus, cx);
+        }
         let ready = self.danger_ready(cx);
         let danger = self.danger.as_ref()?;
         let (title, action, busy_text, items): (String, String, String, Vec<String>) =
@@ -1275,7 +1290,9 @@ impl MailWindow {
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
-                            .on_click(cx.listener(|this, _, _, cx| this.close_danger(cx)))
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.close_danger(cx);
+                            }))
                             .child(tr!("accounts-cancel")),
                     )
                     .child(
@@ -1287,7 +1304,7 @@ impl MailWindow {
                                 danger_button("danger-confirm", label, true, th)
                             }
                         }
-                        .focus_ring(th)
+                        .focus_ring_filled(th)
                         .when(!ready, |d| d.opacity(0.45).cursor_default())
                         .on_click(cx.listener(|this, _, _, cx| this.confirm_danger(cx))),
                     ),
@@ -1296,6 +1313,8 @@ impl MailWindow {
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let card = div()
             .id("danger")
+            .track_focus(&self.dialog_focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &self.dialog_focus))
             .occlude()
             .w(px(WIDTH.min(vw - 32.0)))
             .max_h(px((vh - 48.0).max(200.0)))
@@ -1324,7 +1343,9 @@ impl MailWindow {
                         .top_0()
                         .left_0()
                         .size_full()
-                        .on_click(cx.listener(|this, _, _, cx| this.close_danger(cx))),
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            this.close_danger(cx);
+                        })),
                 )
                 .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
                 .into_any_element(),

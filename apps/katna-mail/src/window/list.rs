@@ -189,6 +189,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
+            .on_action(cx.listener(Self::open_context_menu_key))
             .child(inner)
             .children(card_outline(th, radius, outline));
         card.into_any_element()

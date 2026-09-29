@@ -21,7 +21,7 @@ use super::attachments::bitmap;
 use super::print::{PrintJob, local_paper};
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, outlined_button, switch};
+use crate::widgets::{FocusRing, elevation, filled_button, outlined_button, switch};
 
 const WIDTH: f32 = 720.0;
 
@@ -203,6 +203,12 @@ impl MailWindow {
         self.print_pdf(job, pdf, paper, options, cx);
     }
 
+    fn print_preview_focused(&self, window: &Window) -> bool {
+        self.print_preview
+            .as_ref()
+            .is_some_and(|p| p.focus.is_focused(window))
+    }
+
     fn print_preview_key(
         &mut self,
         event: &KeyDownEvent,
@@ -212,7 +218,8 @@ impl MailWindow {
         match event.keystroke.key.as_str() {
             // Escape reaches `popovers` first.
             "escape" => self.close_print_preview(window, cx),
-            "enter" => self.print_previewed(window, cx),
+            // Unless a focused button takes it.
+            "enter" if self.print_preview_focused(window) => self.print_previewed(window, cx),
             _ => return,
         }
         cx.stop_propagation();
@@ -471,12 +478,15 @@ impl MailWindow {
                     .justify_end()
                     .gap(px(8.0))
                     .child(
-                        outlined_button("print-cancel", tr!("print-preview-cancel"), th).on_click(
-                            cx.listener(|this, _, window, cx| this.close_print_preview(window, cx)),
-                        ),
+                        outlined_button("print-cancel", tr!("print-preview-cancel"), th)
+                            .focus_ring(th)
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.close_print_preview(window, cx)
+                            })),
                     )
                     .child(
                         filled_button("print-go", tr!("print-preview-print"), th)
+                            .focus_ring_filled(th)
                             .when(!ready, |d| d.opacity(0.5).cursor_default())
                             .on_click(
                                 cx.listener(|this, _, window, cx| this.print_previewed(window, cx)),
@@ -486,6 +496,7 @@ impl MailWindow {
         let card = div()
             .id("print-preview")
             .track_focus(&focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &focus))
             .on_key_down(cx.listener(Self::print_preview_key))
             .occlude()
             .w(px(width))

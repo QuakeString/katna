@@ -12,11 +12,11 @@ use katna_i18n::tr;
 use super::{
     Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious, FocusSearch,
     Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
-    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane, OpenMessage,
-    OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply, ReplyAll,
-    ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll,
-    SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck,
-    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane, OpenContextMenu,
+    OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply,
+    ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp,
+    SelectAll, SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail,
+    ShowShortcuts, ToggleCheck, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -408,6 +408,16 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         "shift-f6",
         PreviousPane,
         Some(WINDOW_CONTEXT),
+    ));
+    // Shift+F10 and the Menu key open the selected line's menu.
+    for keys in ["shift-f10", "menu"] {
+        bindings.push(KeyBinding::new(keys, OpenContextMenu, Some(LIST_CONTEXT)));
+    }
+    // Ctrl+Enter sends from any field of a message, not only its text.
+    bindings.push(KeyBinding::new(
+        "ctrl-enter",
+        SendMail,
+        Some("Compose > TextInput"),
     ));
     // Typing in a field inside the reader (the inline reply) types: keys
     // that type text do nothing else there, and do not wait for a second

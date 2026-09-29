@@ -25,7 +25,7 @@ use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
 use crate::whats_new::{self, Highlight, Seen, Start};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{FocusRing, elevation, filled_button, icon};
 
 const WIDTH: f32 = 560.0;
 
@@ -183,8 +183,13 @@ impl MailWindow {
     }
 
     fn whats_new_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
-        // Escape reaches `popovers` first; this is for Enter.
-        if matches!(event.keystroke.key.as_str(), "escape" | "enter") {
+        // Escape reaches `popovers` first; this is for Enter, unless a
+        // focused button takes it.
+        let on_dialog = self
+            .whats_new
+            .as_ref()
+            .is_some_and(|d| d.focus.is_focused(window));
+        if event.keystroke.key == "escape" || (event.keystroke.key == "enter" && on_dialog) {
             self.close_whats_new(window, cx);
             cx.stop_propagation();
         }
@@ -370,6 +375,7 @@ impl MailWindow {
             .gap(px(8.0))
             .child(
                 text_button("whats-new-changelog", tr!("whats-new-changelog"), th)
+                    .focus_ring(th)
                     .gap(px(8.0))
                     .child(icon("open-external", th.accent, 18.0))
                     .on_click(move |_, _, cx| cx.open_url(&url)),
@@ -377,12 +383,14 @@ impl MailWindow {
             .child(div().flex_1())
             .child(
                 filled_button("whats-new-close", tr!("whats-new-got-it"), th)
+                    .focus_ring_filled(th)
                     .on_click(cx.listener(|this, _, window, cx| this.close_whats_new(window, cx))),
             );
 
         let card = div()
             .id("whats-new")
             .track_focus(&dialog.focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &dialog.focus))
             .on_key_down(cx.listener(Self::whats_new_key))
             .occlude()
             .w(px(width))

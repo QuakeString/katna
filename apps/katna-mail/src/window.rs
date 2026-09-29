@@ -108,6 +108,7 @@ use search_panel::SearchPanel;
 
 pub use desktop::{MenuBar, menu_bar, refresh_menu_bar};
 pub use look::look;
+pub(crate) use popovers::MenuKey;
 
 actions!(
     katna_mail,
@@ -118,6 +119,8 @@ actions!(
         FocusPrevious,
         NextPane,
         PreviousPane,
+        SendMail,
+        OpenContextMenu,
         SelectFirst,
         SelectLast,
         PageDown,
@@ -653,6 +656,9 @@ pub struct MailWindow {
     /// Whether the conversation beside the list has the keys, as of this
     /// frame: the list's cursor dims and the pane's outline lights.
     reader_keys: bool,
+    /// A dialog without fields of its own to focus (the delete question),
+    /// and any dialog's frame that keeps Tab inside it.
+    dialog_focus: FocusHandle,
     /// The whole window: where the menu bar's actions start when the
     /// keyboard focus is on something no longer drawn.
     window_focus: FocusHandle,
@@ -872,6 +878,7 @@ impl MailWindow {
             list_focus: cx.focus_handle(),
             reader_focus: cx.focus_handle(),
             reader_keys: false,
+            dialog_focus: cx.focus_handle(),
             window_focus: cx.focus_handle(),
             list_state: lines::Lines::new(),
             files_menu: None,
@@ -1463,6 +1470,24 @@ impl MailWindow {
                 window.focus(&self.reader_focus, cx);
             }
         }
+    }
+
+    /// Shift+F10 or the Menu key: the selected line's right-click menu,
+    /// at its left edge, as on any desktop.
+    fn open_context_menu_key(
+        &mut self,
+        _: &OpenContextMenu,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(ix) = self.selected.filter(|&ix| ix < self.entries.len()) else {
+            return;
+        };
+        let Some(bounds) = self.list_state.bounds_for_item(ix) else {
+            return;
+        };
+        let at = bounds.origin + gpui::point(px(48.0), bounds.size.height);
+        self.open_context_menu(ix, self.entries[ix].key, at, cx);
     }
 
     /// Esc (or U, Backspace) in the conversation beside the list: the keys
@@ -2916,6 +2941,20 @@ impl Render for MailWindow {
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
             .set(if search_focused { 1.0 } else { 0.0 });
+        // Keys that lost their place (a message sent or closed, a dialog
+        // gone) come back to the list, so its keys work without a click.
+        let dialog_gone = self.dialog_focus.is_focused(window)
+            && self.delete_ask.is_none()
+            && self.new_label.is_none()
+            && self.add_account.is_none()
+            && self.danger.is_none();
+        if dialog_gone || window.focused(cx).is_none() {
+            match &self.settings_page {
+                Some(page) => window.focus(&page.focus, cx),
+                None if self.mail.is_ok() => window.focus(&self.list_focus, cx),
+                None => {}
+            }
+        }
         let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
         self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);

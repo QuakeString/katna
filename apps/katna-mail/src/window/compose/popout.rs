@@ -18,7 +18,7 @@ use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::unpx;
 
-use super::super::MailWindow;
+use super::super::{MailWindow, SendMail};
 use super::Mode;
 use super::recipients::Field;
 use crate::theme::Theme;
@@ -201,6 +201,9 @@ impl MailWindow {
         let panel = div()
             .id("compose-window")
             .key_context("Compose")
+            .on_action(
+                cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
+            )
             .relative()
             .size_full()
             .flex()
