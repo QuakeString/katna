@@ -1534,3 +1534,9 @@ title = "Tambayoyi kafin aikawa suna kasancewa a gani"
 text = """
 Tambayoyi kamar “Kuna nufin haɗa fayiloli?” yanzu suna buɗewa a tsakiyar taga, komai tsawon saƙon da kake rubutawa ko turawa, don haka ba za su taɓa ɓoyewa a ƙasan shafin ba. Enter yana amsawa da babban maɓalli, kuma Esc yana mayar da kai ga saƙon.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Yi wa PDF alama"
+text = """
+Danna alƙalami a cikin mai duba PDF don haskaka, ja layi a ƙasa, layi mai lanƙwasa ko ja layi a tsakiyar rubutu, ko zana da alƙalami, a launin da ka zaɓa. Janye da Ctrl+Z, goge alama da magogi, sannan ka ajiye kwafi mai alama. Ainihin abin haɗawar yana nan kamar yadda yake.
+"""

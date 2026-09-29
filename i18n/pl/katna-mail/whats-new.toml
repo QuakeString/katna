@@ -1651,3 +1651,12 @@ Pytania takie jak „Czy chcesz załączyć pliki?” otwierają się teraz na
 wiadomości, więc nigdy nie chowają się niżej na stronie. Enter odpowiada
 głównym przyciskiem, a Esc wraca do wiadomości.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Adnotacje w plikach PDF"
+text = """
+Naciśnij pióro w przeglądarce PDF, aby wyróżnić, podkreślić, podkreślić
+falistą linią lub przekreślić tekst albo rysować piórem w wybranym
+kolorze. Cofnij za pomocą Ctrl+Z, usuń adnotację gumką, a potem zapisz
+kopię z adnotacjami. Oryginalny załącznik pozostaje bez zmian.
+"""

@@ -16,3 +16,37 @@ viewer-slide = સ્લાઇડ { $number }
 viewer-page = પૃષ્ઠ
 viewer-page-count = { $count } માંથી
 viewer-go-to-page-tip = પૃષ્ઠ નંબર લખો અને Enter દબાવો (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = માર્ક કરો
+viewer-tool-select = ટેક્સ્ટ પસંદ કરો
+viewer-tool-highlight = હાઇલાઇટ
+viewer-tool-underline = અન્ડરલાઇન
+viewer-tool-squiggly = લહેરિયું
+viewer-tool-strike = સ્ટ્રાઇકથ્રૂ
+viewer-tool-pen = પેન
+viewer-tool-eraser = ઇરેઝર
+viewer-color-yellow = પીળો
+viewer-color-green = લીલો
+viewer-color-blue = વાદળી
+viewer-color-pink = ગુલાબી
+viewer-color-orange = નારંગી
+viewer-color-red = લાલ
+viewer-color-black = કાળો
+viewer-color-purple = જાંબલી
+viewer-marks-undo-tip = પૂર્વવત્ કરો (Ctrl+Z)
+viewer-marks-redo-tip = ફરી કરો (Ctrl+Shift+Z)
+viewer-save-marked-tip = તમારાં નિશાન સાથે એક નકલ સાચવો (Ctrl+S)
+viewer-markup-protected = આ PDF ફેરફારો સામે સુરક્ષિત છે, તેથી તેના પર નિશાન કરી શકાતાં નથી.
+viewer-marks-save-failed = નિશાનવાળી નકલ સાચવી શકાઈ નથી.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = તમારાં નિશાન સાચવશો?
+viewer-marks-unsaved-text = આ PDF પરનાં તમારાં નિશાન હજી સાચવ્યાં નથી. તે એક નકલમાં જાય છે; જોડાણ પોતે જેવું હતું તેવું જ રહે છે.
+viewer-marks-discard = કાઢી નાખો
+viewer-marks-keep = માર્ક કરતા રહો
+viewer-marks-save = નકલ સાચવો
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (માર્ક કરેલું)
