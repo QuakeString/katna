@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Task reminders and repeats"
+text = """
+Open a task and pick Remind me: at the time, an hour or a day before.
+The reminder pops up even when Katna is closed, with Mark as done and
+Snooze. Ticking off a repeating task now brings it back on its next day.
+"""

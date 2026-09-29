@@ -30,6 +30,7 @@ use katna_ui::px;
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
 
+mod birthdays;
 mod free;
 mod tasks;
 use crate::theme::{Theme, fade, mix};
@@ -417,19 +418,31 @@ pub(super) fn event_color(calendars: &[Calendar], occurrence: &Occurrence) -> u3
 /// Google's blue, for calendars without a color.
 const DEFAULT_COLOR: u32 = 0x039b_e5ff;
 
-/// Reads the calendars and the occurrences in `from..to`.
+/// Reads the calendars and the occurrences in `from..to`, with saved
+/// contacts' birthdays when `birthdays` are shown.
 pub(super) fn read(
     paths: &Paths,
     from: i64,
     to: i64,
     tz: &TimeZone,
+    birthdays: bool,
 ) -> Result<(Vec<Calendar>, Vec<Occurrence>), String> {
     let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
-    let calendars = store.calendars().map_err(|err| err.to_string())?;
+    let mut calendars = store.calendars().map_err(|err| err.to_string())?;
     let rows = store
         .event_rows_in_range(from, to)
         .map_err(|err| err.to_string())?;
-    Ok((calendars, katna_dav::occurrences(rows, from, to, tz)))
+    let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
+    birthdays::add_birthdays(
+        &store,
+        birthdays,
+        from,
+        to,
+        tz,
+        &mut calendars,
+        &mut occurrences,
+    );
+    Ok((calendars, occurrences))
 }
 
 /// Reads the calendars alone, for an event made before the page has read
@@ -450,11 +463,12 @@ impl MailWindow {
         let tz = self.tz.clone();
         let (from, to) = (midnight(first, &tz), midnight(end, &tz));
         let paths = self.paths.clone();
+        let birthdays = !self.config.contacts.hide_birthdays;
         self.calendar.loading = true;
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.calendar;
@@ -541,6 +555,10 @@ impl MailWindow {
     }
 
     fn toggle_calendar(&mut self, id: i64, cx: &mut Context<Self>) {
+        if id == birthdays::BIRTHDAYS {
+            self.toggle_birthdays(cx);
+            return;
+        }
         let shown = !self.calendar_hidden(id);
         if shown {
             self.calendar.hidden.insert(id);
@@ -2424,6 +2442,9 @@ impl MailWindow {
         let web = data.web_link.clone();
         let editable = self.can_edit(occurrence);
         let emails = !self.other_guests(occurrence).is_empty();
+        // A saved contact's birthday opens their contact page.
+        let birthday_of =
+            (occurrence.event.calendar_id == birthdays::BIRTHDAYS).then_some(occurrence.event.id);
         // Running late, from an hour before the start to the end.
         let now = jiff::Timestamp::now().as_second();
         let late = emails
@@ -2478,6 +2499,17 @@ impl MailWindow {
                             .tooltip(tip(tr!("calendar-email-guests"), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.email_guests(false, window, cx)
+                            })),
+                    )
+                })
+                .when(birthday_of.is_some(), |d| {
+                    d.child(
+                        icon_button("event-contact", "contacts", 20.0, th)
+                            .tooltip(tip(tr!("calendar-open-contact"), th))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                if let Some(card) = birthday_of {
+                                    this.open_birthday_contact(card, window, cx);
+                                }
                             })),
                     )
                 })
@@ -2672,7 +2704,10 @@ impl MailWindow {
                 let text: String = data.description.chars().take(1200).collect();
                 d.child(line("notes", text))
             })
-            .child(self.render_event_notes(occurrence, th, cx))
+            // Nothing to take notes of on a birthday.
+            .when(data.kind != EventKind::Birthday, |d| {
+                d.child(self.render_event_notes(occurrence, th, cx))
+            })
             .when_some(calendar, |d, calendar| {
                 d.child(line("calendar", calendar_name(calendar)))
             });

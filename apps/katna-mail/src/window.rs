@@ -29,12 +29,14 @@ mod calendar;
 mod colors;
 mod compose;
 mod contact;
+mod contacts_csv;
 mod contacts_edit;
 mod contacts_io;
 mod contacts_labels;
 mod contacts_merge;
 mod contacts_other;
 mod contacts_page;
+mod contacts_share;
 mod context_menu;
 mod crash_notice;
 mod dark;
@@ -3369,6 +3371,7 @@ impl Render for MailWindow {
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
+        let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
@@ -3422,6 +3425,7 @@ impl Render for MailWindow {
             .children(delete_ask)
             .children(new_label)
             .children(contact_label)
+            .children(contact_qr)
             .children(crash_notice)
             .children(sign_in_again)
             .children(whats_new)

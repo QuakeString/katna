@@ -75,6 +75,14 @@ tasks-repeat-monthly = Monthly
 tasks-repeat-yearly = Yearly
 # A repeat set elsewhere that has no button here, like every second Tuesday.
 tasks-repeat-other = Custom
+# When a task reminds, in its details. The "morning" one is for a task
+# without a time: on its day at { $time } ("9:00 AM").
+tasks-remind = Remind me
+tasks-remind-off = Don't remind
+tasks-remind-on-time = At the time
+tasks-remind-morning = On the day, { $time }
+tasks-remind-hour-before = An hour before
+tasks-remind-day-before = The day before
 tasks-cancel = Cancel
 tasks-save = Save
 # $text: what was typed; $example: a time written the usual way, like "4:00 PM".
@@ -91,6 +99,8 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Task completed
+# A repeating task was ticked off and comes back on its next day ("5 Oct").
+tasks-toast-next = Done. Next one on { $date }
 tasks-toast-deleted = Task deleted
 tasks-toast-added = { $count ->
     [one] Added to Tasks
