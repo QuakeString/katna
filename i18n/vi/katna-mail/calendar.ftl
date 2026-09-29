@@ -9,11 +9,16 @@ calendar-view-week = Tuần
 calendar-view-month = Tháng
 calendar-view-year = Năm
 calendar-view-schedule = Lịch biểu
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ngày
+    }
 calendar-options = Tùy chọn
 calendar-density = Mật độ
 calendar-density-responsive = Tự điều chỉnh theo màn hình của bạn
 calendar-density-comfortable = Thoải mái
 calendar-density-compact = Gọn
+calendar-custom-days = Chế độ xem tùy chỉnh
 calendar-second-zone = Múi giờ thứ hai
 calendar-zone-none = Không có
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = Muộn hơn
 calendar-title-months = { $first } – { $last }
 calendar-loading = Đang tải…
 calendar-read-failed = Không thể đọc lịch: { $error }
+calendar-sets = Bộ lịch
+calendar-set-add = Lưu các lịch đang hiển thị thành một bộ
+calendar-set-name = Tên của bộ
+calendar-set-remove = Xóa bộ
 calendar-local = Trên máy tính này
 calendar-account-gone = Tài khoản đã xóa
 calendar-birthdays = Sinh nhật

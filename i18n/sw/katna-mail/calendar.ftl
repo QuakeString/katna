@@ -9,11 +9,17 @@ calendar-view-week = Wiki
 calendar-view-month = Mwezi
 calendar-view-year = Mwaka
 calendar-view-schedule = Ratiba
+calendar-view-days =
+    { $count ->
+        [one] siku { $count }
+       *[other] siku { $count }
+    }
 calendar-options = Chaguo
 calendar-density = Msongamano
 calendar-density-responsive = Hujirekebisha kulingana na skrini yako
 calendar-density-comfortable = Starehe
 calendar-density-compact = Fupi
+calendar-custom-days = Mwonekano maalum
 calendar-second-zone = Saa za eneo la pili
 calendar-zone-none = Hamna
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Baadaye zaidi
 calendar-title-months = { $first } – { $last }
 calendar-loading = Inapakia…
 calendar-read-failed = Kalenda haikuweza kusomwa: { $error }
+calendar-sets = Seti za kalenda
+calendar-set-add = Hifadhi kalenda zinazoonyeshwa kama seti
+calendar-set-name = Jina la seti
+calendar-set-remove = Ondoa seti
 calendar-local = Kompyuta hii
 calendar-account-gone = Akaunti iliyoondolewa
 calendar-birthdays = Siku za kuzaliwa

@@ -9,11 +9,16 @@ calendar-view-week = ອາທິດ
 calendar-view-month = ເດືອນ
 calendar-view-year = ປີ
 calendar-view-schedule = ຕາຕະລາງ
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ມື້
+    }
 calendar-options = ທາງເລືອກ
 calendar-density = ຄວາມໜາແໜ້ນ
 calendar-density-responsive = ປັບຕາມໜ້າຈໍຂອງທ່ານ
 calendar-density-comfortable = ສະບາຍ
 calendar-density-compact = ກະທັດຮັດ
+calendar-custom-days = ມຸມມອງກຳນົດເອງ
 calendar-second-zone = ເຂດເວລາທີສອງ
 calendar-zone-none = ບໍ່ມີ
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = ຕໍ່ໄປ
 calendar-title-months = { $first } – { $last }
 calendar-loading = ກຳລັງໂຫຼດ…
 calendar-read-failed = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້: { $error }
+calendar-sets = ຊຸດປະຕິທິນ
+calendar-set-add = ບັນທຶກປະຕິທິນທີ່ກຳລັງສະແດງເປັນຊຸດ
+calendar-set-name = ຊື່ຂອງຊຸດ
+calendar-set-remove = ລຶບຊຸດອອກ
 calendar-local = ຄອມພິວເຕີເຄື່ອງນີ້
 calendar-account-gone = ບັນຊີທີ່ຖືກລຶບອອກແລ້ວ
 calendar-birthdays = ວັນເກີດ

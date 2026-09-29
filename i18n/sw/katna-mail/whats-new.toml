@@ -1431,3 +1431,9 @@ title = "Shiriki nyakati zako zisizo na shughuli"
 text = """
 Shiriki nyakati zisizo na shughuli katika chaguo za Kalenda huanzisha barua inayoorodhesha nyakati ambazo huna shughuli katika siku zijazo za kazi, tayari kutumwa kwa yeyote.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Seti za kalenda"
+text = """
+Hifadhi kalenda unazoonyesha kama seti, kama “Kazi” au “Familia”, kwa + kando ya Seti za kalenda. Kubofya mara moja kwenye seti huonyesha kalenda zake na kuficha zingine.
+"""

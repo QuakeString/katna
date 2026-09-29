@@ -9,11 +9,17 @@ calendar-view-week = Week
 calendar-view-month = Maand
 calendar-view-year = Jaar
 calendar-view-schedule = Skedule
+calendar-view-days =
+    { $count ->
+        [one] { $count } dag
+       *[other] { $count } dae
+    }
 calendar-options = Opsies
 calendar-density = Digtheid
 calendar-density-responsive = Reageer op jou skerm
 calendar-density-comfortable = Gemaklik
 calendar-density-compact = Kompak
+calendar-custom-days = Pasgemaakte aansig
 calendar-second-zone = Tweede tydsone
 calendar-zone-none = Geen
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Later
 calendar-title-months = { $first } – { $last }
 calendar-loading = Laai tans…
 calendar-read-failed = Die kalender kon nie gelees word nie: { $error }
+calendar-sets = Kalenderstelle
+calendar-set-add = Stoor die kalenders wat gewys word as ’n stel
+calendar-set-name = Naam van die stel
+calendar-set-remove = Verwyder stel
 calendar-local = Hierdie rekenaar
 calendar-account-gone = Verwyderde rekening
 calendar-birthdays = Verjaardae

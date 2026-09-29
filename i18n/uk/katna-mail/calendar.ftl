@@ -9,11 +9,19 @@ calendar-view-week = Тиждень
 calendar-view-month = Місяць
 calendar-view-year = Рік
 calendar-view-schedule = Розклад
+calendar-view-days =
+    { $count ->
+        [one] { $count } день
+        [few] { $count } дні
+        [many] { $count } днів
+       *[other] { $count } дня
+    }
 calendar-options = Параметри
 calendar-density = Щільність
 calendar-density-responsive = Адаптується до екрана
 calendar-density-comfortable = Зручна
 calendar-density-compact = Компактна
+calendar-custom-days = Власний вигляд
 calendar-second-zone = Другий часовий пояс
 calendar-zone-none = Немає
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +44,10 @@ calendar-next-period = Пізніше
 calendar-title-months = { $first } – { $last }
 calendar-loading = Завантаження…
 calendar-read-failed = Не вдалося прочитати календар: { $error }
+calendar-sets = Набори календарів
+calendar-set-add = Зберегти показані календарі як набір
+calendar-set-name = Назва набору
+calendar-set-remove = Видалити набір
 calendar-local = Цей комп’ютер
 calendar-account-gone = Видалений обліковий запис
 calendar-birthdays = Дні народження

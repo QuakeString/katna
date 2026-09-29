@@ -9,11 +9,18 @@ calendar-view-week = שבוע
 calendar-view-month = חודש
 calendar-view-year = שנה
 calendar-view-schedule = לוח זמנים
+calendar-view-days =
+    { $count ->
+        [one] { $count } יום
+        [two] יומיים
+       *[other] { $count } ימים
+    }
 calendar-options = אפשרויות
 calendar-density = צפיפות
 calendar-density-responsive = מותאם למסך שלך
 calendar-density-comfortable = נוחה
 calendar-density-compact = קומפקטית
+calendar-custom-days = תצוגה מותאמת אישית
 calendar-second-zone = אזור זמן שני
 calendar-zone-none = ללא
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +43,10 @@ calendar-next-period = מאוחר יותר
 calendar-title-months = { $first } – { $last }
 calendar-loading = טוען…
 calendar-read-failed = לא ניתן היה לקרוא את היומן: { $error }
+calendar-sets = קבוצות יומנים
+calendar-set-add = שמירת היומנים המוצגים כקבוצה
+calendar-set-name = שם הקבוצה
+calendar-set-remove = הסרת הקבוצה
 calendar-local = המחשב הזה
 calendar-account-gone = חשבון שהוסר
 calendar-birthdays = ימי הולדת

@@ -9,11 +9,17 @@ calendar-view-week = Hafta
 calendar-view-month = Ay
 calendar-view-year = Yıl
 calendar-view-schedule = Program
+calendar-view-days =
+    { $count ->
+        [one] { $count } gün
+       *[other] { $count } gün
+    }
 calendar-options = Seçenekler
 calendar-density = Yoğunluk
 calendar-density-responsive = Ekranınıza duyarlı
 calendar-density-comfortable = Rahat
 calendar-density-compact = Kompakt
+calendar-custom-days = Özel görünüm
 calendar-second-zone = İkinci saat dilimi
 calendar-zone-none = Yok
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Daha sonra
 calendar-title-months = { $first } – { $last }
 calendar-loading = Yükleniyor…
 calendar-read-failed = Takvim okunamadı: { $error }
+calendar-sets = Takvim kümeleri
+calendar-set-add = Gösterilen takvimleri küme olarak kaydet
+calendar-set-name = Kümenin adı
+calendar-set-remove = Kümeyi kaldır
 calendar-local = Bu bilgisayar
 calendar-account-gone = Kaldırılan hesap
 calendar-birthdays = Doğum günleri

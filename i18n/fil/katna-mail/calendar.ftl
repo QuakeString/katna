@@ -9,11 +9,17 @@ calendar-view-week = Linggo
 calendar-view-month = Buwan
 calendar-view-year = Taon
 calendar-view-schedule = Iskedyul
+calendar-view-days =
+    { $count ->
+        [one] { $count } araw
+       *[other] { $count } araw
+    }
 calendar-options = Mga opsyon
 calendar-density = Densidad
 calendar-density-responsive = Tumutugon sa iyong screen
 calendar-density-comfortable = Kumportable
 calendar-density-compact = Compact
+calendar-custom-days = Custom na view
 calendar-second-zone = Pangalawang time zone
 calendar-zone-none = Wala
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Mas huli
 calendar-title-months = { $first } – { $last }
 calendar-loading = Naglo-load…
 calendar-read-failed = Hindi nabasa ang kalendaryo: { $error }
+calendar-sets = Mga set ng kalendaryo
+calendar-set-add = I-save bilang set ang mga kalendaryong nakikita
+calendar-set-name = Pangalan ng set
+calendar-set-remove = Alisin ang set
 calendar-local = Sa computer na ito
 calendar-account-gone = Inalis na account
 calendar-birthdays = Mga kaarawan

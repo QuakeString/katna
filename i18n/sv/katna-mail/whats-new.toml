@@ -1463,3 +1463,11 @@ Dela lediga tider i Kalenders alternativ startar ett meddelande som
 listar när du är ledig de närmaste arbetsdagarna, redo att skickas till
 vem som helst.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Kalenderuppsättningar"
+text = """
+Spara kalendrarna du visar som en uppsättning, till exempel ”Arbete”
+eller ”Familj”, med + bredvid Kalenderuppsättningar. Ett klick på en
+uppsättning visar dess kalendrar och döljer resten.
+"""

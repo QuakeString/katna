@@ -9,11 +9,17 @@ calendar-view-week = Iviki
 calendar-view-month = Inyanga
 calendar-view-year = Unyaka
 calendar-view-schedule = Uhlelo
+calendar-view-days =
+    { $count ->
+        [one] Usuku { $count }
+       *[other] Izinsuku { $count }
+    }
 calendar-options = Izinketho
 calendar-density = Ukuminyana
 calendar-density-responsive = Iyavumelana nesikrini sakho
 calendar-density-comfortable = Kunethezekile
 calendar-density-compact = Kuminyene
+calendar-custom-days = Ukubuka ngokwezifiso
 calendar-second-zone = Indawo yesikhathi yesibili
 calendar-zone-none = Lutho
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Kamuva
 calendar-title-months = { $first } – { $last }
 calendar-loading = Iyalayisha…
 calendar-read-failed = Ikhalenda alikwazanga ukufundwa: { $error }
+calendar-sets = Amasethi amakhalenda
+calendar-set-add = Londoloza amakhalenda aboniswayo njengesethi
+calendar-set-name = Igama lesethi
+calendar-set-remove = Susa isethi
 calendar-local = Kule khompyutha
 calendar-account-gone = I-akhawunti isusiwe
 calendar-birthdays = Osuku lokuzalwa

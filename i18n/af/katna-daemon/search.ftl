@@ -4,9 +4,20 @@
 search-category-mail = E-pos
 search-category-people = Mense
 search-category-tasks = Take
+search-category-events = Geleenthede
 search-mail-from = Van { $sender }
 search-no-subject = (geen onderwerp)
 search-task-in = In { $list }
+search-event-at = { $when } · { $place }
+search-event-in = { $when } · { $calendar }
+search-event-now = Nou
+search-event-today = Vandag
+search-event-tomorrow = Môre
+search-event-in-days =
+    { $count ->
+        [one] Oor { $count } dag
+       *[other] Oor { $count } dae
+    }
 search-reply-all = Antwoord almal
 search-copy-address = Kopieer adres
 search-find-mail = Vind e-pos

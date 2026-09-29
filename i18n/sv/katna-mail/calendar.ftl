@@ -9,11 +9,17 @@ calendar-view-week = Vecka
 calendar-view-month = Månad
 calendar-view-year = År
 calendar-view-schedule = Schema
+calendar-view-days =
+    { $count ->
+        [one] { $count } dag
+       *[other] { $count } dagar
+    }
 calendar-options = Alternativ
 calendar-density = Densitet
 calendar-density-responsive = Anpassas efter skärmen
 calendar-density-comfortable = Bekväm
 calendar-density-compact = Kompakt
+calendar-custom-days = Anpassad vy
 calendar-second-zone = Andra tidszon
 calendar-zone-none = Ingen
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Senare
 calendar-title-months = { $first } – { $last }
 calendar-loading = Läser in …
 calendar-read-failed = Kalendern kunde inte läsas: { $error }
+calendar-sets = Kalenderuppsättningar
+calendar-set-add = Spara de visade kalendrarna som en uppsättning
+calendar-set-name = Uppsättningens namn
+calendar-set-remove = Ta bort uppsättning
 calendar-local = Den här datorn
 calendar-account-gone = Borttaget konto
 calendar-birthdays = Födelsedagar

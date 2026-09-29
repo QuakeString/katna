@@ -9,11 +9,16 @@ calendar-view-week = 주
 calendar-view-month = 월
 calendar-view-year = 연
 calendar-view-schedule = 일정
+calendar-view-days =
+    { $count ->
+       *[other] { $count }일
+    }
 calendar-options = 설정
 calendar-density = 밀도
 calendar-density-responsive = 화면에 맞게 조정
 calendar-density-comfortable = 편안하게
 calendar-density-compact = 간결하게
+calendar-custom-days = 사용자 지정 보기
 calendar-second-zone = 보조 시간대
 calendar-zone-none = 없음
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = 다음
 calendar-title-months = { $first } – { $last }
 calendar-loading = 로드 중…
 calendar-read-failed = 캘린더를 읽을 수 없습니다: { $error }
+calendar-sets = 캘린더 세트
+calendar-set-add = 표시 중인 캘린더를 세트로 저장
+calendar-set-name = 세트 이름
+calendar-set-remove = 세트 삭제
 calendar-local = 이 컴퓨터
 calendar-account-gone = 삭제된 계정
 calendar-birthdays = 생일

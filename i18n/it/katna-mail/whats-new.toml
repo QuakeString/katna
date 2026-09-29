@@ -1509,3 +1509,11 @@ Condividi orari liberi, nelle opzioni del Calendario, avvia un messaggio
 che elenca quando sei libero nei prossimi giorni lavorativi, pronto da
 inviare a chiunque.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Gruppi di calendari"
+text = """
+Salva i calendari che stai visualizzando come gruppo, ad esempio
+"Lavoro" o "Famiglia", con + accanto a Gruppi di calendari. Un clic su
+un gruppo mostra i suoi calendari e nasconde gli altri.
+"""

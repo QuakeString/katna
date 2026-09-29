@@ -9,11 +9,21 @@ calendar-view-week = أسبوع
 calendar-view-month = شهر
 calendar-view-year = السنة
 calendar-view-schedule = جدول زمني
+calendar-view-days =
+    { $count ->
+        [zero] { $count } يوم
+        [one] يوم واحد
+        [two] يومان
+        [few] { $count } أيام
+        [many] { $count } يومًا
+       *[other] { $count } يوم
+    }
 calendar-options = خيارات
 calendar-density = الكثافة
 calendar-density-responsive = متجاوب مع شاشتك
 calendar-density-comfortable = مريحة
 calendar-density-compact = مضغوطة
+calendar-custom-days = عرض مخصص
 calendar-second-zone = المنطقة الزمنية الثانية
 calendar-zone-none = بدون
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +46,10 @@ calendar-next-period = الأحدث
 calendar-title-months = { $first } – { $last }
 calendar-loading = جارٍ التحميل…
 calendar-read-failed = تعذّرت قراءة التقويم: { $error }
+calendar-sets = مجموعات التقويمات
+calendar-set-add = حفظ التقويمات المعروضة كمجموعة
+calendar-set-name = اسم المجموعة
+calendar-set-remove = إزالة المجموعة
 calendar-local = هذا الكمبيوتر
 calendar-account-gone = حساب محذوف
 calendar-birthdays = أعياد الميلاد

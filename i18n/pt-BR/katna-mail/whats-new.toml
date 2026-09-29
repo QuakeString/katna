@@ -1493,3 +1493,11 @@ Compartilhar horários livres, nas opções da Agenda, inicia uma mensagem
 listando quando você está livre nos próximos dias úteis, pronta para
 enviar a qualquer pessoa.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Conjuntos de agendas"
+text = """
+Salve as agendas que você está exibindo como um conjunto, como
+“Trabalho” ou “Família”, com + ao lado de Conjuntos de agendas. Um
+clique em um conjunto mostra as agendas dele e oculta as demais.
+"""

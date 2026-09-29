@@ -9,11 +9,18 @@ calendar-view-week = Semaine
 calendar-view-month = Mois
 calendar-view-year = Année
 calendar-view-schedule = Planning
+calendar-view-days =
+    { $count ->
+        [one] { $count } jour
+        [many] { $count } de jours
+       *[other] { $count } jours
+    }
 calendar-options = Options
 calendar-density = Densité
 calendar-density-responsive = Adaptée à votre écran
 calendar-density-comfortable = Confortable
 calendar-density-compact = Compacte
+calendar-custom-days = Vue personnalisée
 calendar-second-zone = Deuxième fuseau horaire
 calendar-zone-none = Aucun
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +43,10 @@ calendar-next-period = Plus tard
 calendar-title-months = { $first } – { $last }
 calendar-loading = Chargement…
 calendar-read-failed = Impossible de lire le calendrier : { $error }
+calendar-sets = Groupes de calendriers
+calendar-set-add = Enregistrer les calendriers affichés comme groupe
+calendar-set-name = Nom du groupe
+calendar-set-remove = Supprimer le groupe
 calendar-local = Cet ordinateur
 calendar-account-gone = Compte supprimé
 calendar-birthdays = Anniversaires

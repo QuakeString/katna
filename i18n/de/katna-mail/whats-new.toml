@@ -1530,3 +1530,11 @@ Freie Zeiten teilen in den Optionen des Kalenders beginnt eine
 Nachricht, die auflistet, wann Sie in den nächsten Werktagen frei sind,
 bereit zum Senden an beliebige Personen.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Kalendergruppen"
+text = """
+Speichern Sie die angezeigten Kalender als Gruppe, etwa „Arbeit“ oder
+„Familie“, mit + neben Kalendergruppen. Ein Klick auf eine Gruppe zeigt
+ihre Kalender und blendet die übrigen aus.
+"""
