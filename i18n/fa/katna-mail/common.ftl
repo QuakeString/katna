@@ -42,6 +42,8 @@ size-tb = { $size } ترابایت
 
 folders-hide = پنهان کردن پوشه‌ها
 folders-show = نمایش پوشه‌ها
+side-pane-hide = پنهان کردن پنل کناری
+side-pane-show = نمایش پنل کناری
 compose = نوشتن
 search = جستجو
 search-mail = جستجوی ایمیل

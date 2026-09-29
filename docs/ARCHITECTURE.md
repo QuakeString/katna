@@ -2330,7 +2330,9 @@ becomes a drawer the menu button opens over the dimmed page, and on a
 phone the page is edge to edge. Contacts drops its columns to a name with
 the address under it when the list is narrower than 640 px; Notes lays two
 narrower cards across a phone; Tasks' cards and Calendar's event cards
-never grow wider than the window.
+never grow wider than the window. The ☰ application menu opens each menu
+to the left of its card where the window has room, and otherwise (a
+phone) in the card itself under a Back row (Left or Escape goes back).
 
 Settings rows put the name beside the controls and wrap on width alone,
 not on the layout: where the controls would get less than 300 px beside
@@ -3433,6 +3435,10 @@ most useful reason is shown. Changes go back the way their calendar came
   `not-enabled`, `error`, `none`) is `CalendarStatus()` on `Pim1`;
   `CalendarChanged()` (and the clock's `Agenda1.Changed()`) says when to
   read again; `SetCalendarHidden(id, hidden)` ticks calendars on and off.
+  The Calendar page's side list shows every account, also one without
+  calendars: one line under it gives that state's reason with its fix
+  ("Sign in again to show calendars" for an OAuth2 account missing the
+  calendar scope, else "Try again", which is `SyncNow`).
 - How edits flow (`Pim1.EditEvent`, `katna_sync::calendar::edit`): the
   daemon writes the change to `pim.db` at once and says
   `CalendarChanged`, so the app shows it on reload; rows the service

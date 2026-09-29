@@ -86,3 +86,4 @@ add-account-signed-in = 已使用 { $provider } 登录。正在收取你的邮�
 add-account-menu-another = 添加其他账号
 add-account-menu-manage = 管理账号
 app-menu = 主菜单
+app-menu-back = 返回

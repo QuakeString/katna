@@ -14,6 +14,7 @@ desktop-menu-select-none = _একো বাছনি নকৰিব
 desktop-menu-find = _বিচাৰক…
 desktop-menu-view = _দৰ্শন
 desktop-menu-folder-list = _ফ'ল্ডাৰ তালিকা দেখুৱাওক
+desktop-menu-side-panel = _কাষৰ পেনেল দেখুৱাওক
 desktop-menu-refresh = _ৰিফ্ৰেছ কৰক
 desktop-menu-go = _যাওক
 desktop-menu-inbox = _ইনবক্স

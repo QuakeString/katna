@@ -46,6 +46,8 @@ size-tb = { $size } TB
 
 folders-hide = Ocultar pastas
 folders-show = Mostrar pastas
+side-pane-hide = Ocultar painel lateral
+side-pane-show = Mostrar painel lateral
 compose = Escrever
 search = Pesquisar
 search-mail = Pesquisar e-mail

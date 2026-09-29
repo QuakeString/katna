@@ -46,6 +46,8 @@ size-tb = { $size } TB
 
 folders-hide = הסתרת התיקיות
 folders-show = הצגת התיקיות
+side-pane-hide = הסתרת החלונית הצדדית
+side-pane-show = הצגת החלונית הצדדית
 compose = כתיבה
 search = חיפוש
 search-mail = חיפוש באימייל

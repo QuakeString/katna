@@ -14,6 +14,7 @@ desktop-menu-select-none = _Wepụ nhọrọ niile
 desktop-menu-find = _Chọta…
 desktop-menu-view = _Lelee
 desktop-menu-folder-list = Gosi ndepụta _folda
+desktop-menu-side-panel = Gosi _ogwe n'akụkụ
 desktop-menu-refresh = Mee ọ_hụrụ
 desktop-menu-go = _Gaa
 desktop-menu-inbox = _Igbe ozi mbata

@@ -14,6 +14,7 @@ desktop-menu-select-none = _ምንም አትምረጥ
 desktop-menu-find = _ፈልግ…
 desktop-menu-view = _እይታ
 desktop-menu-folder-list = _የአቃፊ ዝርዝርን አሳይ
+desktop-menu-side-panel = _የጎን ፓነልን አሳይ
 desktop-menu-refresh = _አድስ
 desktop-menu-go = _ሂድ
 desktop-menu-inbox = _ገቢ መልዕክት ሳጥን

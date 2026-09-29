@@ -18,6 +18,8 @@ desktop-menu-find = _Find…
 desktop-menu-view = _View
 # Shows or hides the folders pane.
 desktop-menu-folder-list = Show _Folder List
+# The same item on Calendar, Contacts, Tasks and Notes.
+desktop-menu-side-panel = Show _Side Panel
 desktop-menu-refresh = _Refresh
 desktop-menu-go = _Go
 desktop-menu-inbox = _Inbox

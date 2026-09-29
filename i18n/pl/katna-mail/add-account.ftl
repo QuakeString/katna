@@ -86,3 +86,4 @@ add-account-signed-in = Zalogowano przez { $provider }. Pobieranie poczty…
 add-account-menu-another = Dodaj kolejne konto
 add-account-menu-manage = Zarządzaj kontami
 app-menu = Menu główne
+app-menu-back = Wstecz

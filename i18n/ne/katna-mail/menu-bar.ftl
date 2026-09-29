@@ -14,6 +14,7 @@ desktop-menu-select-none = _कुनै पनि चयन नगर्नु�
 desktop-menu-find = _खोज्नुहोस्…
 desktop-menu-view = _दृश्य
 desktop-menu-folder-list = _फोल्डर सूची देखाउनुहोस्
+desktop-menu-side-panel = _साइड प्यानल देखाउनुहोस्
 desktop-menu-refresh = _रिफ्रेस गर्नुहोस्
 desktop-menu-go = _जानुहोस्
 desktop-menu-inbox = _इनबक्स

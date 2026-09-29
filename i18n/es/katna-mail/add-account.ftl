@@ -86,3 +86,4 @@ add-account-signed-in = Has iniciado sesión con { $provider }. Descargando tu c
 add-account-menu-another = Añadir otra cuenta
 add-account-menu-manage = Gestionar cuentas
 app-menu = Menú principal
+app-menu-back = Atrás

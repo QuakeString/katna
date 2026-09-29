@@ -30,6 +30,7 @@ use katna_ui::px;
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
 
+mod accounts;
 mod birthdays;
 mod free;
 mod search;
@@ -248,6 +249,8 @@ pub(super) struct CalendarPage {
     naming_set: Option<sets::Naming>,
     /// The top bar's search box, finding events.
     pub(super) search: search::Search,
+    /// Where each account's calendar sync stands.
+    accounts: accounts::AccountStatus,
 }
 
 impl CalendarPage {
@@ -277,6 +280,7 @@ impl CalendarPage {
             focus: cx.focus_handle(),
             naming_set: None,
             search: search::Search::default(),
+            accounts: accounts::AccountStatus::default(),
         }
     }
 
@@ -501,6 +505,7 @@ impl MailWindow {
         let paths = self.paths.clone();
         let birthdays = !self.config.contacts.hide_birthdays;
         self.calendar.loading = true;
+        self.load_calendar_status(cx);
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
@@ -1325,7 +1330,13 @@ impl MailWindow {
     }
 
     fn render_calendar_list(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let mut groups: Vec<(Option<i64>, Vec<&Calendar>)> = Vec::new();
+        // Every account shows, also one whose calendars did not come, with
+        // the reason under it.
+        let mut groups: Vec<(Option<i64>, Vec<&Calendar>)> = self
+            .accounts
+            .iter()
+            .map(|a| (Some(a.id.0), Vec::new()))
+            .collect();
         for calendar in self.calendar.calendars.iter() {
             let key = calendar.account.map(|a| a.0);
             match groups.iter_mut().find(|(k, _)| *k == key) {
@@ -1347,6 +1358,12 @@ impl MailWindow {
                     .unwrap_or_else(|| tr!("calendar-account-gone")),
                 None => tr!("calendar-local"),
             };
+            let note = match account {
+                Some(id) if calendars.is_empty() && !folded => {
+                    Some(self.render_calendar_account_note(id, th, cx))
+                }
+                _ => None,
+            };
             let rows = calendars.into_iter().map(|calendar| {
                 let id = calendar.id;
                 let shown = !self.calendar_hidden(id);
@@ -1360,7 +1377,7 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(12.0))
-                    .rounded(px(8.0))
+                    .rounded_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .focus_ring(th)
@@ -1400,7 +1417,7 @@ impl MailWindow {
                         .flex()
                         .flex_row()
                         .items_center()
-                        .rounded(px(8.0))
+                        .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .on_click(cx.listener(move |this, _, _, cx| {
@@ -1425,6 +1442,7 @@ impl MailWindow {
                             20.0,
                         )),
                 )
+                .children(note)
                 .when(!folded, |d| d.children(rows))
         });
         div()

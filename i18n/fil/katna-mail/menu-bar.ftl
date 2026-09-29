@@ -14,6 +14,7 @@ desktop-menu-select-none = Alisin ang _Pagpili
 desktop-menu-find = _Hanapin…
 desktop-menu-view = _Tingnan
 desktop-menu-folder-list = Ipakita ang Listahan ng _Folder
+desktop-menu-side-panel = Ipakita ang _Side Panel
 desktop-menu-refresh = I-_refresh
 desktop-menu-go = _Pumunta
 desktop-menu-inbox = _Inbox

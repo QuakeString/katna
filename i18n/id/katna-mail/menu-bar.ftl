@@ -14,6 +14,7 @@ desktop-menu-select-none = _Batalkan Semua Pilihan
 desktop-menu-find = _Cari…
 desktop-menu-view = _Tampilan
 desktop-menu-folder-list = Tampilkan Daftar _Folder
+desktop-menu-side-panel = Tampilkan _Panel Samping
 desktop-menu-refresh = _Muat Ulang
 desktop-menu-go = _Pergi
 desktop-menu-inbox = Kotak _Masuk

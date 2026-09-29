@@ -14,6 +14,7 @@ desktop-menu-select-none = Auswahl auf_heben
 desktop-menu-find = _Suchen…
 desktop-menu-view = _Ansicht
 desktop-menu-folder-list = _Ordnerliste anzeigen
+desktop-menu-side-panel = _Seitenleiste anzeigen
 desktop-menu-refresh = A_ktualisieren
 desktop-menu-go = _Gehe zu
 desktop-menu-inbox = _Posteingang

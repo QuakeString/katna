@@ -5,6 +5,8 @@
 //! or a message could not be sent. The app never writes the store itself.
 //! No GPUI here.
 
+use std::collections::HashMap;
+
 use futures_lite::{Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
@@ -667,6 +669,53 @@ pub async fn signed_out(
         .filter(|a| a.state == state::AUTH_FAILED)
         .filter_map(|a| Some((a.id, a.address, a.sign_in.parse().ok()?)))
         .collect())
+}
+
+/// Where one account's calendars stand, for the Calendar page's side list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CalendarStatus {
+    /// A [`katna_dbus::calendar_state`].
+    pub state: String,
+    /// Why, for people; may be empty.
+    pub detail: String,
+    /// The provider it signs in with, when that is OAuth2.
+    pub sign_in: Option<OAuthProvider>,
+}
+
+/// Where each account's calendar sync stands, by account.
+pub async fn calendar_status(
+    connection: &Connection,
+) -> Result<HashMap<i64, CalendarStatus>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    let status = pim.calendar_status().await.map_err(|err| describe(&err))?;
+    Ok(status
+        .into_iter()
+        .map(|(id, state, detail)| {
+            let sign_in = accounts
+                .iter()
+                .find(|a| a.id == id)
+                .and_then(|a| a.sign_in.parse().ok());
+            (
+                id,
+                CalendarStatus {
+                    state,
+                    detail,
+                    sign_in,
+                },
+            )
+        })
+        .collect())
+}
+
+/// Wakes `account`'s sync (mail, calendars and contacts) without waiting.
+pub async fn sync_now(connection: &Connection, account: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.sync_now(account).await.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for a remote image of a message.

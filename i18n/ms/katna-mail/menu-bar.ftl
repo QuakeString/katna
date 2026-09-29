@@ -14,6 +14,7 @@ desktop-menu-select-none = Pilih _Tiada
 desktop-menu-find = _Cari…
 desktop-menu-view = _Lihat
 desktop-menu-folder-list = Tunjukkan Senarai _Folder
+desktop-menu-side-panel = Tunjukkan _Panel Sisi
 desktop-menu-refresh = _Muat Semula
 desktop-menu-go = _Pergi
 desktop-menu-inbox = _Peti Masuk

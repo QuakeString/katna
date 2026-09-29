@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } વડે સાઇન ઇન કર્ય
 add-account-menu-another = બીજું એકાઉન્ટ ઉમેરો
 add-account-menu-manage = એકાઉન્ટ મેનેજ કરો
 app-menu = મુખ્ય મેનૂ
+app-menu-back = પાછળ

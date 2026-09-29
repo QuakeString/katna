@@ -14,6 +14,7 @@ desktop-menu-select-none = _មិនជ្រើសរើសអ្វីសោ�
 desktop-menu-find = _ស្វែងរក…
 desktop-menu-view = _មើល
 desktop-menu-folder-list = _បង្ហាញបញ្ជីថត
+desktop-menu-side-panel = _បង្ហាញផ្ទាំងចំហៀង
 desktop-menu-refresh = _ផ្ទុកឡើងវិញ
 desktop-menu-go = _ទៅ
 desktop-menu-inbox = _ប្រអប់ទទួល

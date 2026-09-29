@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = 隱藏資料夾
 folders-show = 顯示資料夾
+side-pane-hide = 隱藏側邊欄
+side-pane-show = 顯示側邊欄
 compose = 撰寫
 search = 搜尋
 search-mail = 搜尋郵件

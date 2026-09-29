@@ -14,6 +14,7 @@ desktop-menu-select-none = _إلغاء التحديد
 desktop-menu-find = _بحث…
 desktop-menu-view = _عرض
 desktop-menu-folder-list = _إظهار قائمة المجلدات
+desktop-menu-side-panel = _إظهار اللوحة الجانبية
 desktop-menu-refresh = _إعادة التحميل
 desktop-menu-go = _انتقال
 desktop-menu-inbox = _البريد الوارد

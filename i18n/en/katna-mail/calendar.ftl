@@ -55,6 +55,21 @@ calendar-set-remove = Remove set
 # Calendars kept on this computer, without an account.
 calendar-local = On this computer
 calendar-account-gone = Removed account
+# The line under an account in the side column that shows no calendars:
+# why, and the one click that fixes it.
+calendar-account-sign-in = Sign in again to show calendars
+calendar-account-signed-in = Signed in to { $address } again. Getting your calendars…
+calendar-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your calendars.
+calendar-account-refused = The server did not let Katna into the calendars.
+calendar-account-not-enabled = Calendar access for Katna is not switched on yet.
+calendar-account-failed = The calendars could not be read.
+# $reason is the server's own words, in English.
+calendar-account-error = The calendars could not be read: { $reason }
+calendar-account-none = No calendars found
+calendar-account-looking = Looking for calendars…
+calendar-account-try-again = Try again
+calendar-account-try-again-tooltip = Check this account's calendars again now
+calendar-account-fixing = Working on it…
 # The calendar of saved contacts' birthdays, made on this computer.
 calendar-birthdays = Birthdays
 # A saved contact's birthday on the Calendar: "Asha Rao's birthday".

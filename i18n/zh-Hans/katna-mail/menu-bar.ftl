@@ -14,6 +14,7 @@ desktop-menu-select-none = 取消全选(_N)
 desktop-menu-find = 查找(_F)…
 desktop-menu-view = 查看(_V)
 desktop-menu-folder-list = 显示文件夹列表(_F)
+desktop-menu-side-panel = 显示侧边栏(_S)
 desktop-menu-refresh = 刷新(_R)
 desktop-menu-go = 转到(_G)
 desktop-menu-inbox = 收件箱(_I)

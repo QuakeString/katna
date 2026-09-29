@@ -14,7 +14,7 @@ use gpui::{
 use katna_core::AccountId;
 use katna_ui::{px, unpx};
 
-use super::{MailWindow, RailApp};
+use super::MailWindow;
 use crate::sidebar::Role;
 
 /// How far the wheel turns before the next account shows: one notch of a
@@ -121,10 +121,11 @@ impl MailWindow {
 
     /// Shows `account`, from the account card or the wheel: with one
     /// account at a time it becomes the one on show, else its inbox opens.
-    /// The picture rolls to it.
+    /// The page on show stays: on Calendar, Tasks, Contacts or Notes the
+    /// account becomes the one new items go to, and Mail shows it on the
+    /// way back. The picture rolls to it.
     pub(super) fn pick_account(&mut self, account: AccountId, cx: &mut Context<Self>) {
         let from = self.pictured_account().map(|a| a.id);
-        self.app = RailApp::Mail;
         self.settings_page = None;
         if self.shown_account().is_some() {
             self.switch_account(account, cx);

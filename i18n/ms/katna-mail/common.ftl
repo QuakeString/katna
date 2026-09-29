@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = Sembunyikan folder
 folders-show = Tunjukkan folder
+side-pane-hide = Sembunyikan panel sisi
+side-pane-show = Tunjukkan panel sisi
 compose = Karang
 search = Cari
 search-mail = Cari mel

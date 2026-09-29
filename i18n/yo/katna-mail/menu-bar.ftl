@@ -14,6 +14,7 @@ desktop-menu-select-none = Má ṣe yan _nǹkankan
 desktop-menu-find = _Wá…
 desktop-menu-view = Ì_wò
 desktop-menu-folder-list = Fi àkójọ _fódà hàn
+desktop-menu-side-panel = Fi pánẹ́lì _ẹ̀gbẹ́ hàn
 desktop-menu-refresh = _Sọdọ̀tun
 desktop-menu-go = _Lọ
 desktop-menu-inbox = _Àpótí-ìwọlé

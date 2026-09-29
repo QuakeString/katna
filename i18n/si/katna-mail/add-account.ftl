@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } සමඟ පුරනය විය. ඔ�
 add-account-menu-another = තවත් ගිණුමක් එක් කරන්න
 add-account-menu-manage = ගිණුම් කළමනාකරණය කරන්න
 app-menu = ප්‍රධාන මෙනුව
+app-menu-back = ආපසු

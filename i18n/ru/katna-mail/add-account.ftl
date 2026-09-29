@@ -86,3 +86,4 @@ add-account-signed-in = Вход через { $provider } выполнен. По
 add-account-menu-another = Добавить ещё аккаунт
 add-account-menu-manage = Управление аккаунтами
 app-menu = Главное меню
+app-menu-back = Назад

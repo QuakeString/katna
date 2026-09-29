@@ -1296,60 +1296,9 @@ impl MailWindow {
     fn render_tasks_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let row = |id: SharedString, icon_name: &'static str, label: String, on: bool| {
-            div()
-                .id(id)
-                .h(px(40.0))
-                .mx(px(8.0))
-                .pl(px(16.0))
-                .pr(px(12.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(16.0))
-                .rounded_full()
-                .cursor_pointer()
-                .text_size(px(14.0))
-                .when(on, |d| {
-                    d.bg(rgba(th.nav_selected))
-                        .text_color(rgba(th.nav_selected_text))
-                        .font_weight(FontWeight::BOLD)
-                })
-                .when(!on, |d| {
-                    d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
-                })
-                .child(icon(
-                    icon_name,
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
-                ))
-                .child(div().flex_1().min_w_0().truncate().child(label))
+            super::nav::side_row(id, icon_name, label, on, th)
         };
-        let create = div()
-            .id("tasks-create")
-            .ml(px(8.0))
-            .mt(px(8.0))
-            .mb(px(12.0))
-            .h(px(56.0))
-            .pl(px(16.0))
-            .pr(px(20.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(16.0))
-            .bg(rgba(th.compose))
-            .text_color(rgba(th.compose_text))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::MEDIUM)
-            .cursor_pointer()
-            .shadow(crate::widgets::elevation(th, 1.0))
-            .hover(|s| s.shadow(crate::widgets::elevation(th, 2.0)))
-            .child(icon("add", th.compose_text, 24.0))
-            .child(tr!("tasks-create"))
+        let create = super::nav::side_create_button("tasks-create", "add", tr!("tasks-create"), th)
             .on_click(cx.listener(|this, _, window, cx| {
                 let list = match this.tasks.view {
                     View::List(id) => Some(id),
@@ -1390,7 +1339,7 @@ impl MailWindow {
             .overflow_y_scroll()
             .flex()
             .flex_col()
-            .child(div().child(create))
+            .child(div().flex().child(create))
             .child(
                 row(
                     "tasks-all".into(),
@@ -1607,7 +1556,7 @@ impl MailWindow {
         // No wider than the page, less the board's margins: on a phone a
         // card fills it.
         let shape = self.layout.shape;
-        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        let side = self.page_side_width(NAV_WIDTH);
         let room = shape.width - shape.rail() - side - shape.card_margin() - 32.0;
         div()
             .id(id)

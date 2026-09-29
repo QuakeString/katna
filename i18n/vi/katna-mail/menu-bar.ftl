@@ -14,6 +14,7 @@ desktop-menu-select-none = _Bỏ chọn tất cả
 desktop-menu-find = Tì_m…
 desktop-menu-view = _Xem
 desktop-menu-folder-list = Hiện danh sách thư _mục
+desktop-menu-side-panel = Hiện _bảng bên
 desktop-menu-refresh = _Làm mới
 desktop-menu-go = Đ_i tới
 desktop-menu-inbox = _Hộp thư đến

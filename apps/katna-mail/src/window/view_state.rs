@@ -17,6 +17,12 @@ impl MailWindow {
     pub fn view_state(&self) -> ViewState {
         let mut expanded: Vec<String> = self.expanded.iter().cloned().collect();
         expanded.sort();
+        let mut pages_folded: Vec<String> = self
+            .page_sides_folded
+            .iter()
+            .map(|app| app.key().to_owned())
+            .collect();
+        pages_folded.sort();
         ViewState {
             app: if self.app == RailApp::Mail {
                 String::new()
@@ -35,6 +41,7 @@ impl MailWindow {
                 .map(|(account, open)| (account.0.to_string(), *open))
                 .collect(),
             all_accounts_folded: !self.all_accounts_open,
+            pages_folded,
         }
     }
 
@@ -77,6 +84,11 @@ impl MailWindow {
                 .filter(|&id| self.tree.accounts.iter().any(|a| a.id == id));
             self.open_unified(unified, account, cx);
         }
+        self.page_sides_folded = view
+            .pages_folded
+            .iter()
+            .filter_map(|key| RailApp::from_key(key))
+            .collect();
         if let Some(app) = RailApp::from_key(&view.app) {
             self.open_app(app, cx);
             self.title_from = app;

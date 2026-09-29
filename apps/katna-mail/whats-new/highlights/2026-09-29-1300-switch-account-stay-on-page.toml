@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Switch accounts without leaving the page"
+text = """
+Picking another account from your picture at the top right, or turning the
+wheel over it, now keeps you on Calendar, Tasks, Contacts or Notes. New
+items go to that account, and Mail shows it when you go back.
+"""

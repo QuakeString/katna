@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The main menu on a phone"
+text = """
+On a phone the main menu behind the account picture opens File, Edit,
+View and the rest in place, with a Back row at the top, instead of off
+the side of the screen.
+"""

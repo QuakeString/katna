@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = སྣོད་འཛིན་ཚུ་སྦ།
 folders-show = སྣོད་འཛིན་ཚུ་སྟོན།
+side-pane-hide = ཟུར་གྱི་པེ་ནཱལ་སྦ།
+side-pane-show = ཟུར་གྱི་པེ་ནཱལ་སྟོན།
 compose = བྲིས།
 search = འཚོལ།
 search-mail = གློག་འཕྲིན་འཚོལ།

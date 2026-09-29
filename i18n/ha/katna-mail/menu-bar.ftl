@@ -14,6 +14,7 @@ desktop-menu-select-none = Kada a zaɓi _komai
 desktop-menu-find = _Nemo…
 desktop-menu-view = _Duba
 desktop-menu-folder-list = Nuna jerin _folda
+desktop-menu-side-panel = Nuna fanel na _gefe
 desktop-menu-refresh = Sa_bunta
 desktop-menu-go = _Je zuwa
 desktop-menu-inbox = _Akwatin saƙo

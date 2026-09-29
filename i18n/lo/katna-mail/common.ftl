@@ -30,6 +30,8 @@ size-tb = { $size } TB
 
 folders-hide = ເຊື່ອງໂຟນເດີ
 folders-show = ສະແດງໂຟນເດີ
+side-pane-hide = ເຊື່ອງແຜງດ້ານຂ້າງ
+side-pane-show = ສະແດງແຜງດ້ານຂ້າງ
 compose = ຂຽນ
 search = ຊອກຫາ
 search-mail = ຊອກຫາອີເມວ

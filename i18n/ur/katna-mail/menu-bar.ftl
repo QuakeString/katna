@@ -14,6 +14,7 @@ desktop-menu-select-none = _انتخاب ختم کریں
 desktop-menu-find = _تلاش کریں…
 desktop-menu-view = _منظر
 desktop-menu-folder-list = _فولڈر فہرست دکھائیں
+desktop-menu-side-panel = _سائیڈ پینل دکھائیں
 desktop-menu-refresh = _ریفریش کریں
 desktop-menu-go = _جائیں
 desktop-menu-inbox = _ان باکس
