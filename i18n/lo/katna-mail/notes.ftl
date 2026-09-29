@@ -77,6 +77,17 @@ notes-meeting-actions = ລາຍການທີ່ຕ້ອງເຮັດ
 notes-event = ເຫດການ
 notes-open-event = ເປີດເຫດການ
 
+## Formatting
+
+notes-format = ການຈັດຮູບແບບ
+notes-format-heading-1 = ຫົວເລື່ອງ 1
+notes-format-heading-2 = ຫົວເລື່ອງ 2
+notes-format-normal = ຂໍ້ຄວາມທຳມະດາ
+notes-format-bold = ຕົວໜາ
+notes-format-italic = ຕົວເອນ
+notes-format-underline = ຂີດກ້ອງ
+notes-format-clear = ລ້າງການຈັດຮູບແບບ
+
 ## Tasks
 
 notes-make-task = ເຮັດເປັນວຽກ

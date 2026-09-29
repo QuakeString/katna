@@ -77,6 +77,17 @@ notes-meeting-actions = ធាតុសកម្មភាព
 notes-event = ព្រឹត្តិការណ៍
 notes-open-event = បើកព្រឹត្តិការណ៍
 
+## Formatting
+
+notes-format = ការធ្វើទ្រង់ទ្រាយ
+notes-format-heading-1 = ក្បាលអត្ថបទ 1
+notes-format-heading-2 = ក្បាលអត្ថបទ 2
+notes-format-normal = អត្ថបទធម្មតា
+notes-format-bold = ដិត
+notes-format-italic = ទ្រេត
+notes-format-underline = គូសបន្ទាត់ពីក្រោម
+notes-format-clear = សម្អាតការធ្វើទ្រង់ទ្រាយ
+
 ## Tasks
 
 notes-make-task = ធ្វើជាកិច្ចការ

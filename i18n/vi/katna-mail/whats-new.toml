@@ -1508,3 +1508,12 @@ Trên trang Lịch, ô tìm kiếm ở trên cùng giờ tìm sự kiện theo t
 địa điểm, ghi chú hoặc khách mời, liệt kê theo ngày. Nhấp vào một sự kiện
 để mở nó ở ngày của nó; Esc đưa bạn trở lại kết quả.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Định dạng trong ghi chú"
+text = """
+Chọn Định dạng trong một ghi chú để dùng Tiêu đề 1, Tiêu đề 2, in đậm,
+in nghiêng và gạch chân, như trong Keep. Bảng cũng hiển thị định dạng,
+và định dạng đi cùng ghi chú đến thư mục Ghi chú trong tài khoản thư của
+bạn, nơi định dạng từ iPhone giờ trở lại đúng như cũ.
+"""

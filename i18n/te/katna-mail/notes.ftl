@@ -78,6 +78,17 @@ notes-meeting-actions = చర్య అంశాలు
 notes-event = ఈవెంట్
 notes-open-event = ఈవెంట్‌ను తెరవండి
 
+## Formatting
+
+notes-format = ఫార్మాటింగ్
+notes-format-heading-1 = శీర్షిక 1
+notes-format-heading-2 = శీర్షిక 2
+notes-format-normal = సాధారణ టెక్స్ట్
+notes-format-bold = బోల్డ్
+notes-format-italic = ఇటాలిక్
+notes-format-underline = అండర్‌లైన్
+notes-format-clear = ఫార్మాటింగ్‌ను క్లియర్ చేయండి
+
 ## Tasks
 
 notes-make-task = టాస్క్‌గా చేయండి

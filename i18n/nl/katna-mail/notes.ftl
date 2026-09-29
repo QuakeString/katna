@@ -78,6 +78,17 @@ notes-meeting-actions = Actiepunten
 notes-event = Afspraak
 notes-open-event = De afspraak openen
 
+## Formatting
+
+notes-format = Opmaak
+notes-format-heading-1 = Kop 1
+notes-format-heading-2 = Kop 2
+notes-format-normal = Normale tekst
+notes-format-bold = Vet
+notes-format-italic = Cursief
+notes-format-underline = Onderstrepen
+notes-format-clear = Opmaak wissen
+
 ## Tasks
 
 notes-make-task = Er een taak van maken

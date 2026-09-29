@@ -77,6 +77,17 @@ notes-meeting-actions = アクション アイテム
 notes-event = 予定
 notes-open-event = 予定を開く
 
+## Formatting
+
+notes-format = 書式
+notes-format-heading-1 = 見出し 1
+notes-format-heading-2 = 見出し 2
+notes-format-normal = 標準テキスト
+notes-format-bold = 太字
+notes-format-italic = 斜体
+notes-format-underline = 下線
+notes-format-clear = 書式をクリア
+
 ## Tasks
 
 notes-make-task = タスクにする

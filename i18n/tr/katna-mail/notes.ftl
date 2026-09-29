@@ -78,6 +78,17 @@ notes-meeting-actions = Eylem öğeleri
 notes-event = Etkinlik
 notes-open-event = Etkinliği aç
 
+## Formatting
+
+notes-format = Biçimlendirme
+notes-format-heading-1 = Başlık 1
+notes-format-heading-2 = Başlık 2
+notes-format-normal = Normal metin
+notes-format-bold = Kalın
+notes-format-italic = İtalik
+notes-format-underline = Altı çizili
+notes-format-clear = Biçimlendirmeyi temizle
+
 ## Tasks
 
 notes-make-task = Göreve dönüştür

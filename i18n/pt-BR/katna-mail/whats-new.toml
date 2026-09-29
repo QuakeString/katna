@@ -1555,3 +1555,12 @@ Na página Agenda, a caixa de pesquisa no topo agora encontra eventos por
 título, local, notas ou convidados, listados por data. Clique em um para
 abri-lo no dia dele; Esc leva você de volta aos resultados.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formatação nas notas"
+text = """
+Escolha Formatação numa nota para usar Título 1, Título 2, negrito,
+itálico e sublinhado, como no Keep. O quadro também mostra a formatação,
+e ela acompanha a nota até a pasta Notas da sua conta de e-mail, onde a
+formatação feita num iPhone agora volta como estava.
+"""

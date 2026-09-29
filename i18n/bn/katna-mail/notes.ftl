@@ -78,6 +78,17 @@ notes-meeting-actions = করণীয়
 notes-event = ইভেন্ট
 notes-open-event = ইভেন্ট খুলুন
 
+## Formatting
+
+notes-format = ফরম্যাটিং
+notes-format-heading-1 = শিরোনাম 1
+notes-format-heading-2 = শিরোনাম 2
+notes-format-normal = সাধারণ টেক্সট
+notes-format-bold = বোল্ড
+notes-format-italic = ইটালিক
+notes-format-underline = আন্ডারলাইন
+notes-format-clear = ফরম্যাটিং সরান
+
 ## Tasks
 
 notes-make-task = টাস্ক বানান

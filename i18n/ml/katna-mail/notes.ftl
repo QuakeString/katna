@@ -78,6 +78,17 @@ notes-meeting-actions = ചെയ്യേണ്ട കാര്യങ്ങൾ
 notes-event = ഇവന്റ്
 notes-open-event = ഇവന്റ് തുറക്കുക
 
+## Formatting
+
+notes-format = ഫോർമാറ്റിംഗ്
+notes-format-heading-1 = തലക്കെട്ട് 1
+notes-format-heading-2 = തലക്കെട്ട് 2
+notes-format-normal = സാധാരണ ടെക്സ്റ്റ്
+notes-format-bold = ബോൾഡ്
+notes-format-italic = ഇറ്റാലിക്
+notes-format-underline = അടിവര
+notes-format-clear = ഫോർമാറ്റിംഗ് മായ്‌ക്കുക
+
 ## Tasks
 
 notes-make-task = ടാസ്‌ക് ആക്കുക

@@ -1549,3 +1549,12 @@ W Kalendarzu pole wyszukiwania u góry znajduje teraz wydarzenia po
 tytule, miejscu, notatkach lub gościach, uporządkowane według daty.
 Kliknij jedno, aby otworzyć je w jego dniu; Esc wraca do wyników.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formatowanie w notatkach"
+text = """
+Wybierz Formatowanie w notatce, aby użyć stylów Nagłówek 1, Nagłówek 2,
+pogrubienia, kursywy i podkreślenia, jak w Keep. Tablica też je
+pokazuje, a formatowanie trafia razem z notatką do folderu Notatki na
+Twoim koncie poczty, skąd formatowanie z iPhone’a wraca teraz bez zmian.
+"""

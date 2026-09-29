@@ -1559,3 +1559,12 @@ berdasarkan judul, tempat, catatan, atau tamu, diurutkan menurut
 tanggal. Klik salah satunya untuk membukanya di harinya; Esc membawa
 Anda kembali ke hasil.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Pemformatan di catatan"
+text = """
+Pilih Pemformatan di catatan untuk Judul 1, Judul 2, tebal, miring, dan
+garis bawah, seperti di Keep. Papan juga menampilkannya, dan pemformatan
+ikut bersama catatan ke folder Catatan di akun email Anda, tempat
+pemformatan dari iPhone kini kembali seperti semula.
+"""
