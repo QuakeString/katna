@@ -1282,3 +1282,21 @@ Dziś, w sekcji Wszystkie zadania, zbiera to, co ma termin dzisiaj, oraz
 wszystko, co jest zaległe, ze wszystkich list, wraz z listą, w której
 znajduje się każde zadanie. Zadanie dodane tam ma termin dzisiaj.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Etykiety w notatkach"
+text = """
+Przycisk etykiety w notatce dodaje do niej etykiety, tak jak w Keep.
+Twoje etykiety są wymienione obok Notatek, a każda pokazuje tylko swoje
+notatki. Edytuj etykiety pozwala zmieniać ich nazwy lub je usuwać, z
+opcją Cofnij.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Zadania z większej liczby kont"
+text = """
+Zadania synchronizują się teraz także z Yahoo, Zoho, iCloud, Fastmail i
+innymi kontami, których zadania znajdują się na innym serwerze niż
+poczta. Katna najpierw próbuje najlepszej metody dla każdego konta i
+zapamiętuje tę, która działa.
+"""

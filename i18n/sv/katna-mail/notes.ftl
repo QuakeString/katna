@@ -7,6 +7,7 @@
 notes-view-notes = Anteckningar
 notes-view-archive = Arkiv
 notes-view-trash = Papperskorgen
+notes-edit-labels = Redigera etiketter
 notes-search = Sök i anteckningar
 notes-loading = Öppnar dina anteckningar…
 
@@ -20,6 +21,7 @@ notes-empty = Anteckningar du lägger till visas här
 notes-archive-empty = Dina arkiverade anteckningar visas här
 notes-trash-empty = Inga anteckningar i papperskorgen
 notes-none-found = Inga matchande anteckningar
+notes-label-empty = Inga anteckningar med den här etiketten än
 notes-trash-note = Anteckningar i papperskorgen raderas efter 7 dagar.
 notes-empty-trash = Töm papperskorgen
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Återställ
 notes-delete-forever = Radera permanent
 notes-color = Bakgrundsfärg
 notes-checkboxes = Visa eller dölj kryssrutor
+notes-labels = Etiketter
 notes-close = Stäng
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Rubrik
 notes-edited = Redigerad { $date }
 notes-on-this-computer = På den här datorn
 notes-where = Var anteckningen sparas
+
+## Labels
+
+notes-label-note = Etikettera anteckning
+notes-label-name = Ange etikettnamn
+notes-label-create = Skapa ”{ $name }”
+notes-label-remove = Ta bort etikett
+notes-label-delete = Radera etikett
+notes-labels-none = Inga etiketter än. Lägg till en från etikettknappen på en anteckning.
+notes-labels-done = Klar
+notes-label-renamed = Etiketten fick namnet ”{ $name }”
+notes-label-deleted = Etiketten ”{ $name }” raderades
 
 ## A note about a mail
 

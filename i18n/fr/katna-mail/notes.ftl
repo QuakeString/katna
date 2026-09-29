@@ -7,6 +7,7 @@
 notes-view-notes = Notes
 notes-view-archive = Archives
 notes-view-trash = Corbeille
+notes-edit-labels = Modifier les libellés
 notes-search = Rechercher dans les notes
 notes-loading = Ouverture de vos notes…
 
@@ -20,6 +21,7 @@ notes-empty = Les notes que vous ajoutez s’affichent ici
 notes-archive-empty = Vos notes archivées s’affichent ici
 notes-trash-empty = Aucune note dans la corbeille
 notes-none-found = Aucune note correspondante
+notes-label-empty = Aucune note avec ce libellé pour le moment
 notes-trash-note = Les notes placées dans la corbeille sont supprimées au bout de 7 jours.
 notes-empty-trash = Vider la corbeille
 notes-ticked = { $count ->
@@ -39,6 +41,7 @@ notes-restore = Restaurer
 notes-delete-forever = Supprimer définitivement
 notes-color = Couleur d’arrière-plan
 notes-checkboxes = Afficher ou masquer les cases à cocher
+notes-labels = Libellés
 notes-close = Fermer
 
 ## The open note
@@ -47,6 +50,18 @@ notes-title = Titre
 notes-edited = Modifiée : { $date }
 notes-on-this-computer = Sur cet ordinateur
 notes-where = Emplacement de cette note
+
+## Labels
+
+notes-label-note = Ajouter un libellé à la note
+notes-label-name = Saisir le nom du libellé
+notes-label-create = Créer « { $name } »
+notes-label-remove = Retirer le libellé
+notes-label-delete = Supprimer le libellé
+notes-labels-none = Aucun libellé pour le moment. Ajoutez-en un depuis le bouton de libellé d’une note.
+notes-labels-done = OK
+notes-label-renamed = Libellé renommé en « { $name } »
+notes-label-deleted = Libellé « { $name } » supprimé
 
 ## A note about a mail
 

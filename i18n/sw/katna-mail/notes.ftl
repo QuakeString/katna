@@ -7,6 +7,7 @@
 notes-view-notes = Madokezo
 notes-view-archive = Kumbukumbu
 notes-view-trash = Tupio
+notes-edit-labels = Hariri lebo
 notes-search = Tafuta madokezo
 notes-loading = Inafungua madokezo yako…
 
@@ -20,6 +21,7 @@ notes-empty = Madokezo unayoongeza yataonekana hapa
 notes-archive-empty = Madokezo yako yaliyohifadhiwa kwenye kumbukumbu yataonekana hapa
 notes-trash-empty = Hakuna madokezo kwenye Tupio
 notes-none-found = Hakuna madokezo yanayolingana
+notes-label-empty = Bado hakuna madokezo yenye lebo hii
 notes-trash-note = Madokezo yaliyo kwenye Tupio hufutwa baada ya siku 7.
 notes-empty-trash = Safisha Tupio
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Rejesha
 notes-delete-forever = Futa milele
 notes-color = Chaguo za mandharinyuma
 notes-checkboxes = Onyesha au ficha visanduku vya kuteua
+notes-labels = Lebo
 notes-close = Funga
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Kichwa
 notes-edited = Ilihaririwa { $date }
 notes-on-this-computer = Kwenye kompyuta hii
 notes-where = Mahali dokezo hili linapohifadhiwa
+
+## Labels
+
+notes-label-note = Weka lebo kwenye dokezo
+notes-label-name = Weka jina la lebo
+notes-label-create = Unda “{ $name }”
+notes-label-remove = Ondoa lebo
+notes-label-delete = Futa lebo
+notes-labels-none = Bado hakuna lebo. Ongeza kutoka kwenye kitufe cha lebo cha dokezo.
+notes-labels-done = Nimemaliza
+notes-label-renamed = Lebo imepewa jina jipya “{ $name }”
+notes-label-deleted = Lebo “{ $name }” imefutwa
 
 ## A note about a mail
 

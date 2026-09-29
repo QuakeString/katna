@@ -1250,3 +1250,20 @@ Hôm nay, trong Tất cả việc cần làm, tập hợp những việc đến 
 và mọi việc quá hạn từ tất cả danh sách, kèm danh sách chứa từng việc.
 Việc được thêm ở đó sẽ đến hạn hôm nay.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Nhãn cho ghi chú"
+text = """
+Nút nhãn trên một ghi chú gắn nhãn cho ghi chú đó, như trong Keep. Các
+nhãn của bạn được liệt kê bên cạnh Ghi chú, mỗi nhãn chỉ hiển thị các
+ghi chú của nó, và Chỉnh sửa nhãn cho phép đổi tên hoặc xóa chúng, kèm
+Hoàn tác.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Việc cần làm từ nhiều tài khoản hơn"
+text = """
+Việc cần làm giờ cũng đồng bộ với Yahoo, Zoho, iCloud, Fastmail và các
+tài khoản khác có việc cần làm nằm trên máy chủ khác với thư. Katna thử
+cách tốt nhất của từng tài khoản trước và ghi nhớ cách hoạt động.
+"""

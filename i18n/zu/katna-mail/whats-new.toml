@@ -1332,3 +1332,21 @@ Namuhla, ngaphansi kwe-Yonke imisebenzi, iqoqa okufanele namuhla nanoma yini
 edlulelwe isikhathi kuwo wonke amalisi, nelisi ngalinye elikuyo. Umsebenzi
 owengezwe lapho ufanele namuhla.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Amalebula ezinothini"
+text = """
+Inkinobho yelebula kunothi ifaka amalebula kulo, njengaku-Keep.
+Amalebula akho abhalwe eceleni kwamanothi, ngalinye lisikhombisa
+amanothi alo kuphela, futhi Hlela amalebula iwaqamba kabusha noma
+iyawasula, ne-Hlehlisa.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Imisebenzi evela kuma-akhawunti amaningi"
+text = """
+Imisebenzi manje iyavumelanisa futhi ne-Yahoo, Zoho, iCloud, Fastmail
+nakwamanye ama-akhawunti anemisebenzi kuseva engeyona eyeyimeyili yawo.
+I-Katna izama indlela engcono kakhulu ye-akhawunti ngayinye kuqala, bese
+ikhumbula leyo esebenzayo.
+"""

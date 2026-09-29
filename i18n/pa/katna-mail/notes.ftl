@@ -7,6 +7,7 @@
 notes-view-notes = ਨੋਟ
 notes-view-archive = ਪੁਰਾਲੇਖ
 notes-view-trash = ਰੱਦੀ
+notes-edit-labels = ਲੇਬਲ ਸੰਪਾਦਿਤ ਕਰੋ
 notes-search = ਨੋਟ ਖੋਜੋ
 notes-loading = ਤੁਹਾਡੇ ਨੋਟ ਖੋਲ੍ਹੇ ਜਾ ਰਹੇ ਹਨ…
 
@@ -20,6 +21,7 @@ notes-empty = ਤੁਹਾਡੇ ਵੱਲੋਂ ਜੋੜੇ ਨੋਟ ਇੱ�
 notes-archive-empty = ਤੁਹਾਡੇ ਪੁਰਾਲੇਖਬੱਧ ਨੋਟ ਇੱਥੇ ਦਿਸਣਗੇ
 notes-trash-empty = ਰੱਦੀ ਵਿੱਚ ਕੋਈ ਨੋਟ ਨਹੀਂ
 notes-none-found = ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਨੋਟ ਨਹੀਂ
+notes-label-empty = ਇਸ ਲੇਬਲ ਵਾਲਾ ਕੋਈ ਨੋਟ ਅਜੇ ਨਹੀਂ
 notes-trash-note = ਰੱਦੀ ਵਿਚਲੇ ਨੋਟ 7 ਦਿਨਾਂ ਬਾਅਦ ਮਿਟਾ ਦਿੱਤੇ ਜਾਂਦੇ ਹਨ।
 notes-empty-trash = ਰੱਦੀ ਖਾਲੀ ਕਰੋ
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = ਮੁੜ-ਬਹਾਲ ਕਰੋ
 notes-delete-forever = ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਓ
 notes-color = ਬੈਕਗ੍ਰਾਊਂਡ ਦਾ ਰੰਗ
 notes-checkboxes = ਚੈੱਕਬਾਕਸ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ
+notes-labels = ਲੇਬਲ
 notes-close = ਬੰਦ ਕਰੋ
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = ਸਿਰਲੇਖ
 notes-edited = ਸੰਪਾਦਿਤ: { $date }
 notes-on-this-computer = ਇਸ ਕੰਪਿਊਟਰ ਉੱਤੇ
 notes-where = ਇਹ ਨੋਟ ਕਿੱਥੇ ਰੱਖਿਆ ਹੈ
+
+## Labels
+
+notes-label-note = ਨੋਟ ਨੂੰ ਲੇਬਲ ਕਰੋ
+notes-label-name = ਲੇਬਲ ਦਾ ਨਾਮ ਦਾਖਲ ਕਰੋ
+notes-label-create = “{ $name }” ਬਣਾਓ
+notes-label-remove = ਲੇਬਲ ਹਟਾਓ
+notes-label-delete = ਲੇਬਲ ਮਿਟਾਓ
+notes-labels-none = ਅਜੇ ਕੋਈ ਲੇਬਲ ਨਹੀਂ। ਨੋਟ ਦੇ ਲੇਬਲ ਬਟਨ ਤੋਂ ਇੱਕ ਜੋੜੋ।
+notes-labels-done = ਹੋ ਗਿਆ
+notes-label-renamed = ਲੇਬਲ ਦਾ ਨਾਮ ਬਦਲ ਕੇ “{ $name }” ਕੀਤਾ ਗਿਆ
+notes-label-deleted = ਲੇਬਲ “{ $name }” ਮਿਟਾਇਆ ਗਿਆ
 
 ## A note about a mail
 

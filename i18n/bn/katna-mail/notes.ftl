@@ -7,6 +7,7 @@
 notes-view-notes = নোট
 notes-view-archive = আর্কাইভ
 notes-view-trash = ট্র্যাশ
+notes-edit-labels = লেবেল সম্পাদনা করুন
 notes-search = নোট খুঁজুন
 notes-loading = আপনার নোট খোলা হচ্ছে…
 
@@ -20,6 +21,7 @@ notes-empty = আপনার যোগ করা নোট এখানে দ�
 notes-archive-empty = আপনার আর্কাইভ করা নোট এখানে দেখা যাবে
 notes-trash-empty = ট্র্যাশে কোনো নোট নেই
 notes-none-found = মিলে যাওয়া কোনো নোট নেই
+notes-label-empty = এই লেবেলে এখনও কোনো নোট নেই
 notes-trash-note = ট্র্যাশে থাকা নোট 7 দিন পরে মুছে ফেলা হয়।
 notes-empty-trash = ট্র্যাশ খালি করুন
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = পুনরুদ্ধার করুন
 notes-delete-forever = চিরতরে মুছে ফেলুন
 notes-color = ব্যাকগ্রাউন্ডের রঙ
 notes-checkboxes = চেকবক্স দেখান বা লুকান
+notes-labels = লেবেল
 notes-close = বন্ধ করুন
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = শিরোনাম
 notes-edited = সম্পাদিত: { $date }
 notes-on-this-computer = এই কম্পিউটারে
 notes-where = এই নোটটি কোথায় রাখা আছে
+
+## Labels
+
+notes-label-note = নোটে লেবেল দিন
+notes-label-name = লেবেলের নাম লিখুন
+notes-label-create = “{ $name }” তৈরি করুন
+notes-label-remove = লেবেল সরান
+notes-label-delete = লেবেল মুছুন
+notes-labels-none = এখনও কোনো লেবেল নেই। কোনো নোটের লেবেল বোতাম থেকে একটি যোগ করুন।
+notes-labels-done = হয়ে গেছে
+notes-label-renamed = লেবেলের নাম বদলে “{ $name }” করা হয়েছে
+notes-label-deleted = “{ $name }” লেবেল মুছে ফেলা হয়েছে
 
 ## A note about a mail
 

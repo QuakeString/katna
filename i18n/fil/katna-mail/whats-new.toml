@@ -1337,3 +1337,21 @@ ngayon at anumang lampas na sa takda mula sa lahat ng listahan, kasama
 ang listahang kinaroroonan ng bawat isa. Ang gawaing idinagdag doon ay
 due ngayon.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Mga label sa mga tala"
+text = """
+Ang button ng label sa isang tala ay naglalagay ng mga label dito, tulad
+sa Keep. Nakalista ang iyong mga label sa tabi ng Mga Tala, at bawat isa
+ay nagpapakita lang ng mga tala nito, at ang I-edit ang mga label ay
+nagpapalit ng pangalan o nagtatanggal sa mga ito, kasama ang I-undo.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Mga gawain mula sa mas maraming account"
+text = """
+Nagsi-sync na rin ngayon ang mga gawain sa Yahoo, Zoho, iCloud, Fastmail
+at iba pang account na nasa ibang server ang mga gawain kaysa sa
+kanilang mail. Sinusubukan muna ng Katna ang pinakamahusay na paraan ng
+bawat account at naaalala ang gumagana.
+"""

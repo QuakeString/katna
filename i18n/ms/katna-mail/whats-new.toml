@@ -1303,3 +1303,21 @@ hari ini dan yang tertunggak daripada semua senarai, beserta senarai
 tempat setiap tugasan berada. Tugasan yang ditambah di situ perlu
 disiapkan hari ini.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Label pada nota"
+text = """
+Butang label pada nota meletakkan label padanya, seperti dalam Keep.
+Label anda disenaraikan di sebelah Nota, setiap satu hanya memaparkan
+notanya, dan Edit label menamakan semula atau memadamkannya, dengan Buat
+asal.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Tugas daripada lebih banyak akaun"
+text = """
+Tugas kini turut disegerakkan dengan Yahoo, Zoho, iCloud, Fastmail dan
+akaun lain yang tugasnya berada di pelayan lain daripada e-melnya. Katna
+mencuba cara terbaik setiap akaun dahulu dan mengingati cara yang
+berfungsi.
+"""

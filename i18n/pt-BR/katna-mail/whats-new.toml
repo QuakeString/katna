@@ -1292,3 +1292,20 @@ Hoje, em Todas as tarefas, reúne o que vence hoje e tudo o que está
 atrasado em todas as listas, com a lista em que cada uma está. Uma
 tarefa adicionada ali vence hoje.
 """
+
+["2026-09-29-0616-note-labels"]
+title = "Marcadores nas notas"
+text = """
+O botão de marcador de uma nota aplica marcadores a ela, como no Keep.
+Seus marcadores ficam listados ao lado de Notas, cada um mostrando só as
+suas notas, e Editar marcadores os renomeia ou exclui, com Desfazer.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Tarefas de mais contas"
+text = """
+As tarefas agora também sincronizam com Yahoo, Zoho, iCloud, Fastmail e
+outras contas cujas tarefas ficam em outro servidor que não o do e-mail.
+O Katna tenta primeiro o melhor método de cada conta e lembra qual
+funciona.
+"""

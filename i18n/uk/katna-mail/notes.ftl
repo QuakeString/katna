@@ -7,6 +7,7 @@
 notes-view-notes = Нотатки
 notes-view-archive = Архів
 notes-view-trash = Кошик
+notes-edit-labels = Редагувати мітки
 notes-search = Пошук нотаток
 notes-loading = Відкриваємо ваші нотатки…
 
@@ -20,6 +21,7 @@ notes-empty = Тут з’являтимуться ваші нотатки
 notes-archive-empty = Тут з’являтимуться ваші архівовані нотатки
 notes-trash-empty = У кошику немає нотаток
 notes-none-found = Немає відповідних нотаток
+notes-label-empty = Нотаток із цією міткою ще немає
 notes-trash-note = Нотатки в кошику видаляються через 7 днів.
 notes-empty-trash = Очистити кошик
 notes-ticked = { $count ->
@@ -40,6 +42,7 @@ notes-restore = Відновити
 notes-delete-forever = Видалити назавжди
 notes-color = Колір фону
 notes-checkboxes = Показати або сховати прапорці
+notes-labels = Мітки
 notes-close = Закрити
 
 ## The open note
@@ -48,6 +51,18 @@ notes-title = Назва
 notes-edited = Змінено: { $date }
 notes-on-this-computer = На цьому комп’ютері
 notes-where = Де зберігається ця нотатка
+
+## Labels
+
+notes-label-note = Додати мітку до нотатки
+notes-label-name = Введіть назву мітки
+notes-label-create = Створити «{ $name }»
+notes-label-remove = Вилучити мітку
+notes-label-delete = Видалити мітку
+notes-labels-none = Міток ще немає. Додайте мітку кнопкою міток у нотатці.
+notes-labels-done = Готово
+notes-label-renamed = Мітку перейменовано на «{ $name }»
+notes-label-deleted = Мітку «{ $name }» видалено
 
 ## A note about a mail
 

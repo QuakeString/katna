@@ -7,6 +7,7 @@
 notes-view-notes = Notities
 notes-view-archive = Archief
 notes-view-trash = Prullenbak
+notes-edit-labels = Labels bewerken
 notes-search = Notities zoeken
 notes-loading = Je notities worden geopend…
 
@@ -20,6 +21,7 @@ notes-empty = Notities die je toevoegt, worden hier weergegeven
 notes-archive-empty = Je gearchiveerde notities worden hier weergegeven
 notes-trash-empty = Geen notities in de prullenbak
 notes-none-found = Geen overeenkomende notities
+notes-label-empty = Nog geen notities met dit label
 notes-trash-note = Notities in de prullenbak worden na 7 dagen verwijderd.
 notes-empty-trash = Prullenbak leegmaken
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Herstellen
 notes-delete-forever = Definitief verwijderen
 notes-color = Achtergrondkleur
 notes-checkboxes = Selectievakjes tonen of verbergen
+notes-labels = Labels
 notes-close = Sluiten
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Titel
 notes-edited = Bewerkt: { $date }
 notes-on-this-computer = Op deze computer
 notes-where = Waar deze notitie wordt bewaard
+
+## Labels
+
+notes-label-note = Label aan notitie toevoegen
+notes-label-name = Labelnaam invoeren
+notes-label-create = ‘{ $name }’ maken
+notes-label-remove = Label verwijderen
+notes-label-delete = Label verwijderen
+notes-labels-none = Nog geen labels. Voeg er een toe via de labelknop van een notitie.
+notes-labels-done = Klaar
+notes-label-renamed = Label hernoemd naar ‘{ $name }’
+notes-label-deleted = Label ‘{ $name }’ verwijderd
 
 ## A note about a mail
 
