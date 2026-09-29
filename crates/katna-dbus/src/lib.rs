@@ -760,6 +760,10 @@ macro_rules! pim_proxy {
             /// the tracking tables of the store again.
             #[zbus(signal)]
             fn tracking_changed(&self) -> zbus::Result<()>;
+
+            /// Saved contacts changed; read them from the store again.
+            #[zbus(signal)]
+            fn contacts_changed(&self) -> zbus::Result<()>;
         }
     };
 }

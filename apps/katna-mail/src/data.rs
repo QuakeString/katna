@@ -1273,6 +1273,49 @@ pub fn notes(paths: &Paths) -> Result<Vec<katna_store::Note>, String> {
         .map_err(|err| format!("Reading notes failed: {err}"))
 }
 
+/// The saved contacts with their labels and address books, for the
+/// Contacts page. Opens its own connection, for a background thread.
+pub fn saved_contacts(paths: &Paths) -> Result<SavedBook, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| {
+            Ok(SavedBook {
+                people: store.saved_contacts()?,
+                labels: store.contact_labels()?,
+                books: store.address_books()?,
+            })
+        })
+        .map_err(|err| format!("Reading contacts failed: {err}"))
+}
+
+/// Everyone saved, one entry per person, with the labels and books.
+#[derive(Debug, Default)]
+pub struct SavedBook {
+    pub people: Vec<katna_store::SavedContact>,
+    pub labels: Vec<katna_store::ContactLabel>,
+    pub books: Vec<katna_store::AddressBook>,
+}
+
+/// The cards that have a picture.
+pub fn people_with_photos(paths: &Paths) -> Result<std::collections::HashSet<i64>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.contacts_with_photos())
+        .map_err(|err| format!("Reading contact pictures failed: {err}"))
+}
+
+/// The saved cards `ids` of one person.
+pub fn saved_cards(paths: &Paths, ids: &[i64]) -> Result<Vec<katna_store::StoredCard>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.saved_cards(ids))
+        .map_err(|err| format!("Reading a contact failed: {err}"))
+}
+
+/// The picture of the first of `ids` that has one.
+pub fn contact_photo(paths: &Paths, ids: &[i64]) -> Result<Option<Vec<u8>>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.contact_photo(ids))
+        .map_err(|err| format!("Reading a contact picture failed: {err}"))
+}
+
 /// The mail templates, by name. Opens its own connection, for a
 /// background thread.
 pub fn templates(paths: &Paths) -> Result<Vec<katna_store::TemplateSummary>, String> {
@@ -1293,8 +1336,12 @@ pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>,
 /// background thread.
 pub fn address_book(paths: &Paths) -> Result<katna_search::contacts::ContactBook, String> {
     Store::open(paths, Mode::ReadOnly)
-        .and_then(|store| store.correspondents())
-        .map(katna_search::contacts::ContactBook::new)
+        .and_then(|store| {
+            let rows = store.correspondents()?;
+            // An older store without saved contacts still suggests.
+            let saved = store.saved_names().unwrap_or_default();
+            Ok(katna_search::contacts::ContactBook::with_saved(rows, saved))
+        })
         .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
 }
 

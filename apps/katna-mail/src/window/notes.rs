@@ -639,18 +639,11 @@ impl MailWindow {
             });
         } else {
             self.close_note(cx);
+            // The mail search comes back, as the other pages expect.
             let query = self.notes.as_mut().and_then(|p| p.mail_query.take());
-            let back_to_mail = self.app == super::apps::App::Mail;
             self.search.update(cx, |search, cx| {
                 search.set_placeholder(tr!("search-mail"));
-                search.set_text(
-                    if back_to_mail {
-                        query.unwrap_or_default()
-                    } else {
-                        String::new()
-                    },
-                    cx,
-                );
+                search.set_text(query.unwrap_or_default(), cx);
             });
         }
     }

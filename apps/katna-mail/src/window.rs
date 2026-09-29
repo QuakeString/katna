@@ -27,6 +27,7 @@ mod attachments;
 mod colors;
 mod compose;
 mod contact;
+mod contacts_page;
 mod context_menu;
 mod crash_notice;
 mod dark;
@@ -438,6 +439,8 @@ pub struct MailWindow {
     /// The Notes page, once opened.
     notes: Option<notes::NotesPage>,
     people_task: Option<Task<()>>,
+    /// The Contacts page: saved contacts and their pictures.
+    contacts: contacts_page::ContactsPage,
     /// The Tasks page.
     tasks: tasks_page::TasksPage,
     /// The desktop's UI font, or `None` to leave GPUI's default.
@@ -783,6 +786,7 @@ impl MailWindow {
             people: None,
             notes: None,
             people_task: None,
+            contacts: Default::default(),
             tasks: Default::default(),
             font,
             pill_text_lift: 0.0,
@@ -1099,6 +1103,7 @@ impl MailWindow {
                     this.watch_sending(connection.clone(), cx);
                     this.watch_scheduled(connection.clone(), cx);
                     this.watch_updates(connection.clone(), cx);
+                    this.watch_contacts(connection.clone(), cx);
                     this.check_first_sync(cx);
                     this.check_signed_out(cx);
                 }
@@ -2047,6 +2052,10 @@ impl MailWindow {
         }
         if self.app == RailApp::Notes {
             self.on_notes_search(event, window, cx);
+            return;
+        }
+        if self.app == RailApp::Contacts {
+            self.on_contacts_search(search, event, cx);
             return;
         }
         match event {
@@ -3373,6 +3382,7 @@ impl Render for MailWindow {
         };
         // Pictures of people asked for while drawing.
         self.fetch_pictures(cx);
+        self.fetch_saved_photos(cx);
         let frame = self.chrome.render_bar(bar, content, window, cx);
         // A phone's top bar slides up out of the window as the list moves
         // on; the content below takes its room.

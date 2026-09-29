@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your contacts, from every account"
+text = """
+Contacts on the left rail now lists the people saved in your Gmail and
+Outlook accounts and on CardDAV servers, once each even when several
+accounts keep them, with labels, pictures and their details. Their names
+and pictures also show in your mail and in the address suggestions.
+"""

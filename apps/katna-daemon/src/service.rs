@@ -482,6 +482,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn drive_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -542,6 +545,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
+            Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
         };
         if let Err(err) = sent {

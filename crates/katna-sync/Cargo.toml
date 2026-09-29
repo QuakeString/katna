@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-crypto.workspace = true
+katna-dav.workspace = true
 katna-import.workspace = true
 katna-store.workspace = true
 serde.workspace = true

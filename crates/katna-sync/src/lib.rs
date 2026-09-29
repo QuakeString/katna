@@ -38,10 +38,14 @@ pub mod auth_results;
 pub mod autoconfig;
 mod backend;
 pub mod bodies;
+pub mod carddav;
 pub mod connection;
+pub mod contacts;
 pub mod drive;
 pub mod engine;
 mod error;
+#[cfg(test)]
+mod fake_http;
 pub mod imap;
 pub mod net;
 pub mod notes;

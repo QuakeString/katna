@@ -1,32 +1,78 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
--- pim.db schema v6: notes (docs/ARCHITECTURE.md §13.11). A note of a mail
--- account is kept in that account's Notes folder in Apple's format; one
--- with no account stays on this computer.
+-- pim.db schema v6: contacts synced from each account's address books
+-- (Google People API, Microsoft Graph, CardDAV) or kept on this computer
+-- (docs/ARCHITECTURE.md §8.6). The v1 contact tables were never written,
+-- so they are made again with the columns sync needs.
 
-CREATE TABLE note (
-    id           INTEGER PRIMARY KEY,
-    account_id   INTEGER,                    -- NULL: on this computer only
-    uuid         TEXT    NOT NULL UNIQUE,    -- X-Universally-Unique-Identifier
-    title        TEXT    NOT NULL DEFAULT '',
-    body         TEXT    NOT NULL DEFAULT '', -- plain text; "☐ " / "☑ " lines are a checklist
-    color        INTEGER NOT NULL DEFAULT 0, -- 0 none, else a palette number
-    pinned       INTEGER NOT NULL DEFAULT 0,
-    archived     INTEGER NOT NULL DEFAULT 0,
-    labels       TEXT    NOT NULL DEFAULT '[]', -- JSON array of label names
-    link         TEXT,                       -- Message-ID of the mail the note is about
-    position     INTEGER NOT NULL DEFAULT 0, -- larger shows first
-    created_at   INTEGER NOT NULL,
-    updated_at   INTEGER NOT NULL,
-    trashed_at   INTEGER,                    -- in Trash since; gone for good 7 days later
-    server_uid   INTEGER,                    -- UID in the account's Notes folder
-    dirty        INTEGER NOT NULL DEFAULT 0  -- changed here, the server copy not yet
+DROP TABLE org_member;
+DROP TABLE contact_address;
+DROP TABLE contact;
+
+-- One address book: a Google account's contacts, a Microsoft contact
+-- folder, a CardDAV collection, or the book on this computer (no account).
+CREATE TABLE address_book (
+    id         INTEGER PRIMARY KEY,
+    account_id INTEGER REFERENCES account (id) ON DELETE CASCADE,
+    source     TEXT    NOT NULL CHECK (source IN ('google', 'microsoft', 'carddav', 'local')),
+    remote_id  TEXT    NOT NULL,                -- '' (Google), folder id, collection URL
+    name       TEXT    NOT NULL DEFAULT '',
+    sync_token TEXT,                            -- where the next sync picks up
+    synced_at  INTEGER,                         -- Unix seconds
+    state      TEXT    NOT NULL DEFAULT 'ok'
+               CHECK (state IN ('ok', 'needs-permission', 'failed')),
+    UNIQUE (account_id, remote_id)
 );
-CREATE INDEX note_by_account ON note (account_id, server_uid);
-CREATE INDEX note_by_order ON note (trashed_at, archived, pinned DESC, position DESC);
 
--- Notes deleted here whose server copy is still to be deleted.
-CREATE TABLE note_gone (
-    account_id INTEGER NOT NULL,
-    server_uid INTEGER NOT NULL,
-    PRIMARY KEY (account_id, server_uid)
+CREATE TABLE contact (
+    id           INTEGER PRIMARY KEY,
+    book_id      INTEGER NOT NULL REFERENCES address_book (id) ON DELETE CASCADE,
+    remote_id    TEXT    NOT NULL,              -- resourceName, Graph id, CardDAV href
+    etag         TEXT,
+    display_name TEXT    NOT NULL DEFAULT '',
+    sort_key     TEXT    NOT NULL DEFAULT '',
+    job          TEXT    NOT NULL DEFAULT '',   -- "Title, Company"
+    phone        TEXT    NOT NULL DEFAULT '',   -- the first one, for the list
+    starred      INTEGER NOT NULL DEFAULT 0 CHECK (starred IN (0, 1)),
+    card_json    TEXT    NOT NULL,              -- katna_core::contact::Card
+    raw          TEXT,                          -- the source's own form (vCard, JSON)
+    updated_at   INTEGER NOT NULL,
+    UNIQUE (book_id, remote_id)
+);
+CREATE INDEX contact_by_sort ON contact (sort_key);
+
+CREATE TABLE contact_address (
+    contact_id INTEGER NOT NULL REFERENCES contact (id) ON DELETE CASCADE,
+    email_norm TEXT    NOT NULL,
+    position   INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (contact_id, email_norm)
+);
+CREATE INDEX contact_address_by_email ON contact_address (email_norm);
+
+-- A label (Google contact group, Microsoft category, CardDAV group card).
+CREATE TABLE contact_group (
+    id        INTEGER PRIMARY KEY,
+    book_id   INTEGER NOT NULL REFERENCES address_book (id) ON DELETE CASCADE,
+    remote_id TEXT    NOT NULL,
+    name      TEXT    NOT NULL,
+    UNIQUE (book_id, remote_id)
+);
+
+CREATE TABLE contact_group_member (
+    group_id   INTEGER NOT NULL REFERENCES contact_group (id) ON DELETE CASCADE,
+    contact_id INTEGER NOT NULL REFERENCES contact (id) ON DELETE CASCADE,
+    PRIMARY KEY (group_id, contact_id)
+);
+CREATE INDEX contact_group_member_by_contact ON contact_group_member (contact_id);
+
+-- The contact's picture, fetched once per source value.
+CREATE TABLE contact_photo (
+    contact_id INTEGER PRIMARY KEY REFERENCES contact (id) ON DELETE CASCADE,
+    source     TEXT    NOT NULL,                -- URL or a hash of inline data
+    data       BLOB    NOT NULL
+);
+
+CREATE TABLE org_member (
+    org_id     INTEGER NOT NULL REFERENCES organization (id) ON DELETE CASCADE,
+    contact_id INTEGER NOT NULL REFERENCES contact (id) ON DELETE CASCADE,
+    PRIMARY KEY (org_id, contact_id)
 );
