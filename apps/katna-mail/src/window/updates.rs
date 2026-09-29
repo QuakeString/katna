@@ -322,11 +322,13 @@ impl MailWindow {
                     Some(tr!("about-update-unsupported")),
                 ),
                 state::CHECKING => ("refresh", th.accent, tr!("about-update-checking"), None),
+                // The emoji stays out of the translation, so every
+                // language gets it.
                 state::UP_TO_DATE => (
                     "check-circle",
                     th.accent,
-                    tr!("about-update-up-to-date"),
-                    None,
+                    format!("{} {UP_TO_DATE_EMOJI}", tr!("about-update-up-to-date")),
+                    checked_ago(status.checked).map(|ago| tr!("update-dialog-checked", ago = ago)),
                 ),
                 state::AVAILABLE => (
                     "download",
@@ -390,7 +392,9 @@ impl MailWindow {
                 div()
                     .flex_1()
                     .min_w_0()
-                    .pt(px(2.0))
+                    // The title's first line (28 px) centred on the 48 px
+                    // icon.
+                    .pt(px(10.0))
                     .flex()
                     .flex_col()
                     .gap(px(4.0))
@@ -452,25 +456,43 @@ impl MailWindow {
 
         // The installed version beside the new one.
         let installed = version_tile(
-            "update-installed",
-            tr!("update-dialog-installed"),
-            whats_new::VERSION,
-            whats_new::built(),
-            katna_core::update::commit_of(whats_new::VERSION).map(str::to_owned),
-            None,
+            Tile {
+                id: "update-installed",
+                label: tr!("update-dialog-installed"),
+                version: whats_new::VERSION,
+                title: whats_new::TITLE.map(str::to_owned),
+                built: whats_new::built(),
+                commit: katna_core::update::commit_of(whats_new::VERSION).map(str::to_owned),
+                source: source(),
+                size: None,
+            },
             th,
         );
         let new = offered.then(|| {
+            let commit = details
+                .map(|d| d.commit.clone())
+                .filter(|c| !c.is_empty())
+                .or_else(|| katna_core::update::commit_of(version).map(str::to_owned));
+            // The newest change is the new build's own commit.
+            let title = details
+                .and_then(|d| d.changes.first())
+                .filter(|change| {
+                    commit
+                        .as_deref()
+                        .is_some_and(|commit| commit.starts_with(&change.commit))
+                })
+                .map(|change| change.title.clone());
             version_tile(
-                "update-new",
-                tr!("update-dialog-new"),
-                version,
-                details.map(|d| d.built).filter(|built| *built > 0),
-                details
-                    .map(|d| d.commit.clone())
-                    .filter(|c| !c.is_empty())
-                    .or_else(|| katna_core::update::commit_of(version).map(str::to_owned)),
-                Some(details.map_or(status.total, |d| d.size)).filter(|size| *size > 0),
+                Tile {
+                    id: "update-new",
+                    label: tr!("update-dialog-new"),
+                    version,
+                    title,
+                    built: details.map(|d| d.built).filter(|built| *built > 0),
+                    commit,
+                    source: None,
+                    size: Some(details.map_or(status.total, |d| d.size)).filter(|size| *size > 0),
+                },
                 th,
             )
         });
@@ -768,15 +790,49 @@ fn section_title(text: String, th: &Theme) -> impl IntoElement {
 
 /// A version's box: what it is, when it was built, its commit (a link to
 /// it) and, for the new one, the download's size.
-fn version_tile(
+/// After "Katna Mail is up to date".
+const UP_TO_DATE_EMOJI: &str = "🎉";
+
+/// When the daemon last checked, as "5 minutes ago".
+fn checked_ago(checked: i64) -> Option<String> {
+    (checked > 0)
+        .then(|| format::ago(checked, jiff::Timestamp::now().as_second()))
+        .flatten()
+}
+
+/// Where this build came from, for packages that update themselves.
+fn source() -> Option<String> {
+    match katna_core::update::Package::current() {
+        katna_core::update::Package::Arch => Some(tr!("update-dialog-source-arch")),
+        katna_core::update::Package::Other => None,
+    }
+}
+
+/// What a version tile shows.
+struct Tile<'a> {
     id: &'static str,
     label: String,
-    version: &str,
+    version: &'a str,
+    /// The first line of the build's commit: its newest change.
+    title: Option<String>,
     built: Option<i64>,
     commit: Option<String>,
+    /// Where the installed build came from.
+    source: Option<String>,
     size: Option<u64>,
-    th: &Theme,
-) -> impl IntoElement {
+}
+
+fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
+    let Tile {
+        id,
+        label,
+        version,
+        title,
+        built,
+        commit,
+        source,
+        size,
+    } = tile;
     let fact = |text: String| {
         div()
             .text_size(px(13.0))
@@ -784,6 +840,13 @@ fn version_tile(
             .text_color(rgba(th.text_dim))
             .child(text)
     };
+    let title = title.map(|title| {
+        div()
+            .mb(px(4.0))
+            .text_size(px(13.0))
+            .line_height(px(19.0))
+            .child(tr!("update-dialog-latest-change", title = title))
+    });
     let built = built
         .and_then(|unix| format::local(unix, &TimeZone::system()))
         .map(|date| tr!("update-dialog-built", date = format::long_date(date)));
@@ -831,7 +894,9 @@ fn version_tile(
                 .font_weight(FontWeight::MEDIUM)
                 .child(version.to_owned()),
         )
+        .children(title)
         .children(built.map(fact))
+        .children(source.map(fact))
         .children(commit)
         .children(size.map(|size| fact(tr!("update-dialog-size", size = format::size(size)))))
 }

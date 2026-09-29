@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "More about your build"
+text = """
+The Update window now names each version's latest change, says where your
+copy came from and when Katna last checked for updates.
+"""
