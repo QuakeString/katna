@@ -22,6 +22,9 @@ tasks-list-name-placeholder = List name
 
 tasks-loading = Reading your tasks…
 tasks-no-lists = Your task lists show up here.
+# The top bar's search box on the Tasks page, and when nothing matches.
+tasks-search = Search tasks
+tasks-search-none = No tasks match your search.
 tasks-add = Add a task
 tasks-title-placeholder = Title
 tasks-add-step = Add a subtask

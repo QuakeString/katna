@@ -2122,6 +2122,10 @@ impl MailWindow {
             self.on_contacts_search(search, event, cx);
             return;
         }
+        if self.app == RailApp::Tasks {
+            self.on_tasks_search(search, event, window, cx);
+            return;
+        }
         match event {
             InputEvent::Changed => {
                 let text = search.read(cx).text().trim().to_owned();
