@@ -1201,6 +1201,34 @@ Os nomes e as fotos delas também aparecem no seu e-mail e nas sugestões
 de endereços.
 """
 
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notas"
+text = """
+Notas na barra lateral agora abre o Katna Notas, organizado como o
+Google Keep. Crie uma nota ou uma lista de verificação, dê uma cor a
+ela, fixe-a no topo e marque os itens direto no quadro. As notas são
+salvas enquanto você digita; a caixa de pesquisa as encontra; Arquivo e
+Lixeira as tiram do caminho, com Desfazer.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Notas em todos os dispositivos"
+text = """
+As notas agora ficam na pasta Notas da sua conta de e-mail, onde as
+Notas do iPhone e do Mac guardam as delas, então elas acompanham você
+para os outros dispositivos e voltam deles. O nome da conta sob uma nota
+mostra onde ela está guardada; clique nele para mover a nota ou
+mantenha-a somente neste computador.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Adicionar um e-mail às Tarefas"
+text = """
+Pressione Shift+T, como no Gmail, ou escolha Adicionar às Tarefas ao
+clicar com o botão direito em um e-mail. A tarefa usa o assunto do
+e-mail, e o chip E-mail em Tarefas abre o e-mail de novo.
+"""
+
 ["2026-09-29-0412-calendar"]
 title = "Sua agenda, ao lado do seu e-mail"
 text = """

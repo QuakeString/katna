@@ -432,6 +432,7 @@ menu-pin = Épingler en haut
 menu-unpin = Désépingler
 menu-snooze = Mettre en attente
 menu-unsnooze = Annuler la mise en attente
+menu-add-to-tasks = Ajouter aux tâches
 menu-print-all = Tout imprimer
 menu-new-window = Ouvrir dans une nouvelle fenêtre
 menu-move-to = Déplacer vers

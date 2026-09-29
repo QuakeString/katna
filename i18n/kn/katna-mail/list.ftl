@@ -378,6 +378,7 @@ menu-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 menu-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
 menu-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
 menu-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
+menu-add-to-tasks = ಕಾರ್ಯಗಳಿಗೆ ಸೇರಿಸಿ
 menu-print-all = ಎಲ್ಲವನ್ನೂ ಮುದ್ರಿಸಿ
 menu-new-window = ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ
 menu-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ

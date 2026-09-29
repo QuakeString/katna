@@ -36,6 +36,8 @@ tasks-details = Nkọwa
 tasks-delete = Hichapụ
 tasks-move-to = Kpọga na { $list }
 tasks-from-mail = Ozi
+tasks-open-mail = Mepee ozi
+tasks-no-subject = (enweghị isiokwu)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Emechara ọrụ
 tasks-toast-deleted = Ehichapụla ọrụ
+tasks-toast-added = { $count ->
+   *[other] Etinyela ọrụ { $count }
+}
+tasks-mail-gone = Ozi ahụ anọghịzi ebe a.
 tasks-toast-list-deleted = Ehichapụla ndepụta
 tasks-toast-moved = Akpọgara na { $list }

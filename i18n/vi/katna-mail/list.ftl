@@ -228,6 +228,7 @@ menu-pin = Ghim lên đầu
 menu-unpin = Bỏ ghim
 menu-snooze = Tạm ẩn
 menu-unsnooze = Bỏ tạm ẩn
+menu-add-to-tasks = Thêm vào Việc cần làm
 menu-print-all = In tất cả
 menu-new-window = Mở trong cửa sổ mới
 menu-move-to = Di chuyển tới

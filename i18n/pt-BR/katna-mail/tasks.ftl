@@ -38,6 +38,8 @@ tasks-details = Detalhes
 tasks-delete = Excluir
 tasks-move-to = Mover para { $list }
 tasks-from-mail = E-mail
+tasks-open-mail = Abrir o e-mail
+tasks-no-subject = (sem assunto)
 
 ## The details dialog
 
@@ -67,5 +69,11 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Tarefa concluída
 tasks-toast-deleted = Tarefa excluída
+tasks-toast-added = { $count ->
+    [one] Adicionada às Tarefas
+    [many] { $count } tarefas adicionadas
+   *[other] { $count } tarefas adicionadas
+}
+tasks-mail-gone = Esse e-mail não está mais aqui.
 tasks-toast-list-deleted = Lista excluída
 tasks-toast-moved = Tarefa movida para { $list }

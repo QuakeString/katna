@@ -36,6 +36,7 @@ shortcut-move-to = ውሰድ ወደ
 shortcut-mark-read = እንደተነበበ ምልክት አድርግ
 shortcut-mark-unread = እንዳልተነበበ ምልክት አድርግ
 shortcut-star = ኮከብ አክል ወይም አስወግድ
+shortcut-add-to-tasks = ወደ ተግባራት አክል
 shortcut-important = እንደ አስፈላጊ ምልክት አድርግ
 shortcut-not-important = አስፈላጊ እንዳልሆነ ምልክት አድርግ
 shortcut-check = ውይይቱን ምልክት አድርግ

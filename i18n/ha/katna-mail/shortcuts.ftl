@@ -36,6 +36,7 @@ shortcut-move-to = Matsar zuwa
 shortcut-mark-read = Yi alama an karanta
 shortcut-mark-unread = Yi alama ba a karanta ba
 shortcut-star = Saka ko cire tauraro
+shortcut-add-to-tasks = Ƙara a Ayyuka
 shortcut-important = Yi alama muhimmi
 shortcut-not-important = Yi alama ba muhimmi ba
 shortcut-check = Yi wa tattaunawa alamar zaɓi

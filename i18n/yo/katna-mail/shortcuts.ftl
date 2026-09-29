@@ -36,6 +36,7 @@ shortcut-move-to = Gbé lọ sí
 shortcut-mark-read = Sàmì sí bí kíkà
 shortcut-mark-unread = Sàmì sí bí àìkà
 shortcut-star = Fi ìràwọ̀ sí tàbí yọ ọ́ kúrò
+shortcut-add-to-tasks = Fi kún Iṣẹ́
 shortcut-important = Sàmì sí bí pàtàkì
 shortcut-not-important = Sàmì sí bí kò ṣe pàtàkì
 shortcut-check = Fi àmì sí ìjíròrò náà

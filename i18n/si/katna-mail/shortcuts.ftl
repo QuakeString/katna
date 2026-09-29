@@ -36,6 +36,7 @@ shortcut-move-to = වෙත ගෙන යන්න
 shortcut-mark-read = කියවූ ලෙස සලකුණු කරන්න
 shortcut-mark-unread = නොකියවූ ලෙස සලකුණු කරන්න
 shortcut-star = තරුව එක් කරන්න හෝ ඉවත් කරන්න
+shortcut-add-to-tasks = කාර්යයන් වෙත එක් කරන්න
 shortcut-important = වැදගත් ලෙස සලකුණු කරන්න
 shortcut-not-important = වැදගත් නොවන ලෙස සලකුණු කරන්න
 shortcut-check = සංවාදය සලකුණු කරන්න

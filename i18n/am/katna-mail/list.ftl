@@ -378,6 +378,7 @@ menu-pin = ከላይ ሰካ
 menu-unpin = ንቀል
 menu-snooze = አሸልብ
 menu-unsnooze = ማሸለብ ሰርዝ
+menu-add-to-tasks = ወደ ተግባራት አክል
 menu-print-all = ሁሉንም አትም
 menu-new-window = በአዲስ መስኮት ክፈት
 menu-move-to = ውሰድ ወደ

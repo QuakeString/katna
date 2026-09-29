@@ -1212,6 +1212,34 @@ butirannya. Nama dan gambar mereka juga dipaparkan dalam mel anda dan
 dalam cadangan alamat.
 """
 
+["2026-09-29-0350-katna-notes"]
+title = "Katna Nota"
+text = """
+Nota pada bar sisi kini membuka Katna Nota, dengan reka letak seperti
+Google Keep. Ambil nota atau senarai semak, beri warna, semat di
+bahagian atas dan tandakan item terus pada papan. Nota disimpan semasa
+anda menaip; kotak carian menjumpainya; Arkib dan Sampah
+mengetepikannya, dengan Buat asal.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Nota pada setiap peranti"
+text = """
+Nota kini disimpan dalam folder Nota akaun mel anda, tempat Nota iPhone
+dan Mac menyimpan nota mereka, jadi nota mengikut anda ke peranti lain
+dan kembali dari sana. Nama akaun di bawah nota menunjukkan tempat ia
+disimpan; klik untuk mengalihkan nota, atau simpan pada komputer ini
+sahaja.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Tambah mel pada Tugas"
+text = """
+Tekan Shift+T, seperti dalam Gmail, atau pilih Tambah pada Tugas apabila
+anda mengklik kanan mel. Tugasan mengambil subjek mel, dan cip Mel dalam
+Tugas membuka semula mel itu.
+"""
+
 ["2026-09-29-0412-calendar"]
 title = "Kalendar anda, di sebelah mel"
 text = """

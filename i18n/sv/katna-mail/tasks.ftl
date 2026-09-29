@@ -37,6 +37,8 @@ tasks-details = Information
 tasks-delete = Radera
 tasks-move-to = Flytta till { $list }
 tasks-from-mail = E-post
+tasks-open-mail = Öppna e-postmeddelandet
+tasks-no-subject = (inget ämne)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Uppgiften är slutförd
 tasks-toast-deleted = Uppgiften har raderats
+tasks-toast-added = { $count ->
+    [one] Har lagts till i Uppgifter
+   *[other] { $count } uppgifter har lagts till
+}
+tasks-mail-gone = Det e-postmeddelandet finns inte längre.
 tasks-toast-list-deleted = Listan har raderats
 tasks-toast-moved = Flyttad till { $list }

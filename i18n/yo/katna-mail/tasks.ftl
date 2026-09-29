@@ -36,6 +36,8 @@ tasks-details = Àlàyé
 tasks-delete = Pa rẹ́
 tasks-move-to = Gbé lọ sí { $list }
 tasks-from-mail = Lẹ́tà
+tasks-open-mail = Ṣí lẹ́tà
+tasks-no-subject = (kò sí àkọlé)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Iṣẹ́ parí
 tasks-toast-deleted = A pa iṣẹ́ náà rẹ́
+tasks-toast-added = { $count ->
+   *[other] A fi iṣẹ́ { $count } kún
+}
+tasks-mail-gone = Lẹ́tà yẹn kò sí níbí mọ́.
 tasks-toast-list-deleted = A pa àtòjọ náà rẹ́
 tasks-toast-moved = A gbé e lọ sí { $list }

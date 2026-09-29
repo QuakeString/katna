@@ -36,6 +36,7 @@ shortcut-move-to = 移至
 shortcut-mark-read = 标记为已读
 shortcut-mark-unread = 标记为未读
 shortcut-star = 加星标或移除星标
+shortcut-add-to-tasks = 添加到任务
 shortcut-important = 标记为重要
 shortcut-not-important = 标记为不重要
 shortcut-check = 勾选会话

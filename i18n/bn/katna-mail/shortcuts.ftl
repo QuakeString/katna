@@ -36,6 +36,7 @@ shortcut-move-to = এখানে সরান
 shortcut-mark-read = পঠিত হিসেবে চিহ্নিত করুন
 shortcut-mark-unread = অপঠিত হিসেবে চিহ্নিত করুন
 shortcut-star = তারকাচিহ্ন দিন বা সরান
+shortcut-add-to-tasks = টাস্কে যোগ করুন
 shortcut-important = গুরুত্বপূর্ণ হিসেবে চিহ্নিত করুন
 shortcut-not-important = গুরুত্বপূর্ণ নয় হিসেবে চিহ্নিত করুন
 shortcut-check = কথোপকথনে টিক দিন

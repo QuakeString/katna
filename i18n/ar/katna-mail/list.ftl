@@ -578,6 +578,7 @@ menu-pin = تثبيت في الأعلى
 menu-unpin = إلغاء التثبيت
 menu-snooze = تأجيل
 menu-unsnooze = إلغاء التأجيل
+menu-add-to-tasks = إضافة إلى المهام
 menu-print-all = طباعة الكل
 menu-new-window = فتح في نافذة جديدة
 menu-move-to = نقل إلى

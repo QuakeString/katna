@@ -36,6 +36,7 @@ shortcut-move-to = ຍ້າຍໄປທີ່
 shortcut-mark-read = ໝາຍວ່າອ່ານແລ້ວ
 shortcut-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ
 shortcut-star = ເພີ່ມ ຫຼື ລຶບດາວ
+shortcut-add-to-tasks = ເພີ່ມໃສ່ວຽກ
 shortcut-important = ໝາຍວ່າສຳຄັນ
 shortcut-not-important = ໝາຍວ່າບໍ່ສຳຄັນ
 shortcut-check = ໝາຍເລືອກການສົນທະນາ

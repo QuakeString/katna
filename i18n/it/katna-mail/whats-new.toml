@@ -1213,6 +1213,34 @@ i loro nomi e le loro foto compaiono nella posta e nei suggerimenti
 degli indirizzi.
 """
 
+["2026-09-29-0350-katna-notes"]
+title = "Katna Note"
+text = """
+Note nella barra laterale ora apre Katna Note, con un aspetto simile a
+Google Keep. Crea una nota o una lista di controllo, dalle un colore,
+fissala in alto e spunta gli elementi direttamente sulla bacheca. Le
+note si salvano mentre scrivi; la casella di ricerca le trova; Archivio
+e Cestino le tengono da parte, con Annulla.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Note su ogni dispositivo"
+text = """
+Le note ora si trovano nella cartella Note del tuo account di posta,
+dove anche Note di iPhone e Mac tengono le loro, così ti seguono sugli
+altri dispositivi e ne tornano indietro. Il nome dell’account sotto una
+nota mostra dove è salvata; fai clic per spostarla, oppure tienila solo
+su questo computer.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Aggiungi un’email ad Attività"
+text = """
+Premi Maiusc+T, come in Gmail, oppure scegli Aggiungi ad Attività
+facendo clic con il pulsante destro su un’email. L’attività prende
+l’oggetto dell’email e il suo chip Posta in Attività la riapre.
+"""
+
 ["2026-09-29-0412-calendar"]
 title = "Il tuo calendario, accanto alla posta"
 text = """

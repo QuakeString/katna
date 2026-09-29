@@ -36,6 +36,7 @@ shortcut-move-to = ইয়ালৈ স্থানান্তৰ কৰক
 shortcut-mark-read = পঢ়া বুলি চিহ্নিত কৰক
 shortcut-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
 shortcut-star = তৰাচিহ্ন যোগ কৰক বা আঁতৰাওক
+shortcut-add-to-tasks = কাৰ্যত যোগ কৰক
 shortcut-important = গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰক
 shortcut-not-important = গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰক
 shortcut-check = কথোপকথনত টিক দিয়ক

@@ -36,6 +36,7 @@ shortcut-move-to = ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ
 shortcut-mark-read = ପଢ଼ାଯାଇଛି ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 shortcut-mark-unread = ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 shortcut-star = ତାରା ଯୋଗ କରନ୍ତୁ କିମ୍ବା କାଢ଼ନ୍ତୁ
+shortcut-add-to-tasks = କାର୍ଯ୍ୟରେ ଯୋଗ କରନ୍ତୁ
 shortcut-important = ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 shortcut-not-important = ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ନୁହେଁ ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 shortcut-check = ବାର୍ତ୍ତାଳାପରେ ଟିକ ଦିଅନ୍ତୁ

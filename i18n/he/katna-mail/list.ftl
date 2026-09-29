@@ -428,6 +428,7 @@ menu-pin = הצמדה למעלה
 menu-unpin = ביטול ההצמדה
 menu-snooze = השהיה
 menu-unsnooze = ביטול ההשהיה
+menu-add-to-tasks = הוספה למשימות
 menu-print-all = הדפסת הכול
 menu-new-window = פתיחה בחלון חדש
 menu-move-to = העברה אל

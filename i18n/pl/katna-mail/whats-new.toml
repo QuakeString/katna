@@ -1189,6 +1189,35 @@ przechowuje ją kilka kont, wraz z etykietami, zdjęciami i szczegółami.
 Ich nazwy i zdjęcia widać także w poczcie i w podpowiedziach adresów.
 """
 
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notatki"
+text = """
+Notatki na pasku bocznym otwierają teraz Katna Notatki, ułożone jak w
+Google Keep. Utwórz notatkę lub listę kontrolną, nadaj jej kolor,
+przypnij ją na górze i zaznaczaj elementy bezpośrednio na tablicy.
+Notatki zapisują się w trakcie pisania; wyszukiwarka je znajduje;
+Archiwum i Kosz odkładają je na bok, z opcją Cofnij.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Notatki na każdym urządzeniu"
+text = """
+Notatki są teraz przechowywane w folderze Notatki na Twoim koncie
+poczty, tam gdzie Notatki na iPhonie i Macu trzymają swoje, więc
+podążają za Tobą na inne urządzenia i wracają z nich. Nazwa konta pod
+notatką pokazuje, gdzie jest przechowywana; kliknij ją, aby przenieść
+notatkę, albo zachowaj ją tylko na tym komputerze.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Dodawanie wiadomości do Zadań"
+text = """
+Naciśnij Shift+T, jak w Gmailu, albo wybierz Dodaj do Zadań po
+kliknięciu wiadomości prawym przyciskiem myszy. Zadanie przejmuje temat
+wiadomości, a jego znacznik Poczta w Zadaniach ponownie otwiera
+wiadomość.
+"""
+
 ["2026-09-29-0412-calendar"]
 title = "Twój kalendarz obok poczty"
 text = """

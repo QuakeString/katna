@@ -36,6 +36,7 @@ shortcut-move-to = ഇതിലേക്ക് നീക്കുക
 shortcut-mark-read = വായിച്ചതായി അടയാളപ്പെടുത്തുക
 shortcut-mark-unread = വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക
 shortcut-star = നക്ഷത്രമിടുക അല്ലെങ്കിൽ നീക്കുക
+shortcut-add-to-tasks = ടാസ്‌ക്കുകളിലേക്ക് ചേർക്കുക
 shortcut-important = പ്രധാനപ്പെട്ടതായി അടയാളപ്പെടുത്തുക
 shortcut-not-important = പ്രധാനപ്പെട്ടതല്ലെന്ന് അടയാളപ്പെടുത്തുക
 shortcut-check = സംഭാഷണം തിരഞ്ഞെടുക്കുക

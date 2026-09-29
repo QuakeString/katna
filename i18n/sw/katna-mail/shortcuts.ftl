@@ -36,6 +36,7 @@ shortcut-move-to = Hamishia
 shortcut-mark-read = Tia alama kuwa imesomwa
 shortcut-mark-unread = Tia alama kuwa haijasomwa
 shortcut-star = Weka au ondoa nyota
+shortcut-add-to-tasks = Ongeza kwenye Majukumu
 shortcut-important = Tia alama kuwa muhimu
 shortcut-not-important = Tia alama kuwa si muhimu
 shortcut-check = Weka tiki kwenye mazungumzo

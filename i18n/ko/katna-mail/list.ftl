@@ -228,6 +228,7 @@ menu-pin = 상단에 고정
 menu-unpin = 고정 해제
 menu-snooze = 다시 알림
 menu-unsnooze = 다시 알림 취소
+menu-add-to-tasks = 할 일에 추가
 menu-print-all = 모두 인쇄
 menu-new-window = 새 창에서 열기
 menu-move-to = 이동

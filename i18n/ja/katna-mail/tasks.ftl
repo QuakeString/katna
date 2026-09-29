@@ -36,6 +36,8 @@ tasks-details = 詳細
 tasks-delete = 削除
 tasks-move-to = { $list } に移動
 tasks-from-mail = メール
+tasks-open-mail = メールを開く
+tasks-no-subject = （件名なし）
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day } { $time }
 
 tasks-toast-done = タスクを完了しました
 tasks-toast-deleted = タスクを削除しました
+tasks-toast-added = { $count ->
+   *[other] { $count } 件をタスクに追加しました
+}
+tasks-mail-gone = そのメールは見つかりません。
 tasks-toast-list-deleted = リストを削除しました
 tasks-toast-moved = { $list } に移動しました
