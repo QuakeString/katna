@@ -14,8 +14,8 @@ use std::collections::{HashMap, HashSet};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight,
-    KeyDownEvent, MouseButton, Pixels, Point, SharedString, Subscription, Task, Window, anchored,
-    deferred, div, ease_out_quint, prelude::*, rgba,
+    KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription, Task,
+    Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
@@ -129,6 +129,11 @@ pub(super) struct TasksPage {
     mail_query: Option<String>,
     /// Where each account's task sync stands, for the line under it.
     pub(super) accounts: AccountStatus,
+    /// The All tasks board, to show a list just made.
+    board_scroll: ScrollHandle,
+    /// The lists there were when a new one was sent: the one not among
+    /// them is scrolled into view once it is read back.
+    reveal_new: Option<HashSet<i64>>,
 }
 
 /// A task being dragged onto another list: it follows the pointer as a
@@ -306,6 +311,18 @@ impl TasksPage {
         task.parent
             .and_then(|p| self.task(p))
             .is_none_or(|p| !self.done(p))
+    }
+
+    /// Scrolls the board to a list just made, once it is read back.
+    fn reveal_list(&mut self) {
+        let Some(known) = &self.reveal_new else {
+            return;
+        };
+        let columns = self.shown_columns();
+        if let Some(ix) = columns.iter().position(|c| !known.contains(&c.list.id)) {
+            self.board_scroll.scroll_to_item(ix);
+            self.reveal_new = None;
+        }
     }
 
     fn shown_columns(&self) -> Vec<&Column> {
@@ -640,6 +657,7 @@ impl MailWindow {
                     });
                 }
                 page.board = Some(board);
+                page.reveal_list();
                 this.map_task_mails();
                 cx.notify();
             })
@@ -1103,7 +1121,11 @@ impl MailWindow {
                     self.remember(super::UndoStep::Command(Command::Task(Box::new(undo))));
                 }
             }
-            None => self.send_task(TaskCommand::AddList(naming.account, title), None, None, cx),
+            None => {
+                let known = self.tasks.columns().iter().map(|c| c.list.id).collect();
+                self.tasks.reveal_new = Some(known);
+                self.send_task(TaskCommand::AddList(naming.account, title), None, None, cx)
+            }
         }
     }
 
@@ -1330,13 +1352,11 @@ impl MailWindow {
             let (overdue, due) = page.due_now(today());
             overdue.len() + due.len()
         };
+        // Rows keep their heights: a scrolling flex column would squeeze
+        // them first when there are many lists and accounts.
         let mut nav = div()
-            .id("tasks-nav")
             .flex_none()
-            .w(px(NAV_WIDTH))
-            .h_full()
             .pb(px(16.0))
-            .overflow_y_scroll()
             .flex()
             .flex_col()
             .child(div().flex().child(create))
@@ -1483,7 +1503,14 @@ impl MailWindow {
                 }),
             ),
         );
-        nav.into_any_element()
+        div()
+            .id("tasks-nav")
+            .flex_none()
+            .w(px(NAV_WIDTH))
+            .h_full()
+            .overflow_y_scroll()
+            .child(nav)
+            .into_any_element()
     }
 
     fn naming_row(&self, naming: &Naming, th: &Theme) -> AnyElement {
@@ -1511,14 +1538,19 @@ impl MailWindow {
             return placeholder(&tr!("tasks-no-lists"), th);
         }
         match page.view {
+            // As many lists side by side as fit, then more rows below,
+            // scrolling down: none is ever out of reach to the right.
             View::All => div()
                 .id("tasks-board")
                 .size_full()
-                .overflow_x_scroll()
+                .overflow_y_scroll()
+                .track_scroll(&page.board_scroll)
                 .p(px(16.0))
                 .flex()
                 .flex_row()
+                .flex_wrap()
                 .items_start()
+                .content_start()
                 .gap(px(16.0))
                 .children(
                     columns

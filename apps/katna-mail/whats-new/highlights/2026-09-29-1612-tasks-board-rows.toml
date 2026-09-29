@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every task list in view"
+text = """
+All tasks now shows as many lists side by side as fit the window, with
+more rows below, so every list can be reached. A new list scrolls into
+view as soon as you make it.
+"""
