@@ -45,6 +45,10 @@ size-tb = { $size } TB
 
 folders-hide = Hide folders
 folders-show = Show folders
+# The menu button on Calendar, Contacts, Tasks and Notes, which folds the
+# page's own side column (calendars, labels, lists).
+side-pane-hide = Hide side panel
+side-pane-show = Show side panel
 compose = Compose
 search = Search
 search-mail = Search mail

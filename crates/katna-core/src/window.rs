@@ -65,6 +65,9 @@ pub struct ViewState {
     pub accounts: BTreeMap<String, bool>,
     /// The unified inbox's lists were folded under "All Accounts".
     pub all_accounts_folded: bool,
+    /// The other pages whose side column was folded, by their keys.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub pages_folded: Vec<String>,
 }
 
 impl WindowState {
@@ -133,6 +136,7 @@ mod tests {
                 nav_folded: true,
                 expanded: vec!["1:Work".into()],
                 accounts: BTreeMap::from([("1".into(), false)]),
+                pages_folded: vec!["notes".into()],
                 ..ViewState::default()
             },
         };

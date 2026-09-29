@@ -580,6 +580,12 @@ pub struct MailWindow {
     peek_task: Option<Task<()>>,
     /// 0 = folded, 1 = open: the drawn navigation.
     nav_spring: Spring,
+    /// The pages other than Mail whose side column (calendars, lists,
+    /// labels) is folded away on a desktop, and how far the one on show
+    /// is open.
+    page_sides_folded: HashSet<RailApp>,
+    page_side_spring: Spring,
+    page_side_t: f32,
     /// 0 = folded, 1 = open: the space the navigation takes from the card.
     reserve_spring: Spring,
     search_spring: Spring,
@@ -881,6 +887,9 @@ impl MailWindow {
             peek_from: Hover::Mail,
             peek_task: None,
             nav_spring: Spring::new(motion::SLIDE, 1.0),
+            page_sides_folded: HashSet::new(),
+            page_side_spring: Spring::new(motion::SLIDE, 1.0),
+            page_side_t: 1.0,
             reserve_spring: Spring::new(motion::SLIDE, 1.0),
             search_spring: Spring::new(motion::SMOOTH, 0.0),
             pane_spring: Spring::new(motion::SLIDE, 0.0),
@@ -1735,6 +1744,14 @@ impl MailWindow {
             self.layout.drawer = !self.layout.drawer;
             self.nav_peek = false;
             self.peek_task = None;
+            cx.notify();
+            return;
+        }
+        // The other pages fold their own side column, each on its own.
+        if self.app != RailApp::Mail {
+            if !self.page_sides_folded.remove(&self.app) {
+                self.page_sides_folded.insert(self.app);
+            }
             cx.notify();
             return;
         }
@@ -3103,6 +3120,12 @@ impl Render for MailWindow {
         );
         self.reserve_spring
             .set(if self.nav_docked() { 1.0 } else { 0.0 });
+        self.page_side_spring.set(if self.page_side_open(self.app) {
+            1.0
+        } else {
+            0.0
+        });
+        self.page_side_t = self.page_side_spring.tick(window, reduce);
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
             .set(if search_focused { 1.0 } else { 0.0 });

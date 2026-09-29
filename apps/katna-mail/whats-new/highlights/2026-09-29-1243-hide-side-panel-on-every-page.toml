@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Hide the side panel on every page"
+text = """
+The menu button at the top left now folds the side panel on Calendar,
+Contacts, Tasks and Notes too, sliding it away as it does Mail's folders.
+Each page remembers whether you left it open.
+"""
