@@ -1182,7 +1182,7 @@ fn candidates(dir: &Path, name: &str) -> impl Iterator<Item = PathBuf> {
 }
 
 /// The first of `candidates` that does not exist yet.
-fn unique_path(dir: &Path, name: &str) -> PathBuf {
+pub(super) fn unique_path(dir: &Path, name: &str) -> PathBuf {
     candidates(dir, name)
         .find(|p| !p.exists())
         .unwrap_or_else(|| dir.join(name))
@@ -1221,7 +1221,7 @@ fn folder_label(dir: &Path) -> String {
 
 /// The user's download folder (`XDG_DOWNLOAD_DIR` of `user-dirs.dirs`),
 /// else `~/Downloads`, else home.
-fn download_dir() -> PathBuf {
+pub(super) fn download_dir() -> PathBuf {
     let home = std::env::var_os("HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|| "/".into());

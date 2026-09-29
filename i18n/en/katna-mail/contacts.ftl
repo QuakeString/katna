@@ -27,6 +27,43 @@ contacts-label-removed = Removed from { $name }
 contacts-label-renamed = Label renamed to { $name }
 contacts-label-deleted = Deleted label { $name }
 contacts-label-no-email = Nobody on this label has an email address
+# Under the labels: tools for the whole address book, as in Google Contacts.
+contacts-manage = Fix and manage
+# Suggested duplicates, as in Google Contacts.
+contacts-merge = Merge and fix
+contacts-merge-about = { $count ->
+    [one] 1 suggestion: contacts that look like the same person
+   *[other] { $count } suggestions: contacts that look like the same person
+}
+contacts-merge-none = No duplicates. Contacts with the same name or phone number show up here.
+contacts-merge-count = { $count } contacts
+contacts-merge-all = Merge all
+contacts-merge-button = Merge
+contacts-merge-dismiss = Dismiss
+contacts-merged = { $count ->
+    [one] Contacts merged
+   *[other] { $count } merges done
+}
+contacts-import = Import
+contacts-export = Export
+contacts-import-title = Import contacts from a vCard file
+contacts-imported = { $count ->
+    [one] Imported 1 contact to { $place }
+   *[other] Imported { $count } contacts to { $place }
+}
+contacts-imported-some = { $count ->
+    [one] Imported 1 contact to { $place }; { $skipped } already saved left out
+   *[other] Imported { $count } contacts to { $place }; { $skipped } already saved left out
+}
+contacts-import-none = No contacts found in { $name }
+contacts-import-all-saved = Everyone in { $name } is already saved
+contacts-import-failed = Couldn't read { $name }: { $error }
+contacts-exported = { $count ->
+    [one] Exported 1 contact to { $path }
+   *[other] Exported { $count } contacts to { $path }
+}
+contacts-export-none = No contacts to export
+contacts-export-failed = Couldn't export contacts: { $error }
 contacts-create = Create contact
 
 ## Search and the list
