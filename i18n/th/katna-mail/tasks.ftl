@@ -6,6 +6,7 @@
 
 tasks-create = สร้าง
 tasks-all = งานทั้งหมด
+tasks-today = วันนี้
 tasks-starred = ติดดาว
 tasks-new-list = สร้างรายการใหม่
 tasks-on-this-computer = ในคอมพิวเตอร์เครื่องนี้
@@ -21,6 +22,9 @@ tasks-title-placeholder = ชื่อ
 tasks-add-step = เพิ่มงานย่อย
 tasks-empty = ยังไม่มีงาน เพิ่มได้ด้านบน
 tasks-starred-empty = ติดดาวงานเพื่อดูที่นี่
+tasks-today-empty = ไม่มีงานที่ครบกำหนดวันนี้
+tasks-today-date = { $weekday } { $day }
+tasks-overdue = เลยกำหนด
 tasks-completed = { $count ->
    *[other] เสร็จแล้ว ({ $count })
 }

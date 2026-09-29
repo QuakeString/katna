@@ -6,6 +6,7 @@
 
 tasks-create = Tạo
 tasks-all = Tất cả việc cần làm
+tasks-today = Hôm nay
 tasks-starred = Có gắn dấu sao
 tasks-new-list = Tạo danh sách mới
 tasks-on-this-computer = Trên máy tính này
@@ -21,6 +22,9 @@ tasks-title-placeholder = Tiêu đề
 tasks-add-step = Thêm việc phụ
 tasks-empty = Chưa có việc cần làm nào. Hãy thêm một việc ở trên.
 tasks-starred-empty = Gắn dấu sao cho một việc để xem tại đây.
+tasks-today-empty = Không có gì đến hạn hôm nay.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Quá hạn
 tasks-completed = { $count ->
    *[other] Đã hoàn thành ({ $count })
 }

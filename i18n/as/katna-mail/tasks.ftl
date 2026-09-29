@@ -6,6 +6,7 @@
 
 tasks-create = সৃষ্টি কৰক
 tasks-all = সকলো কাৰ্য
+tasks-today = আজি
 tasks-starred = তৰাচিহ্নিত
 tasks-new-list = নতুন তালিকা সৃষ্টি কৰক
 tasks-on-this-computer = এই কমপিউটাৰত
@@ -21,6 +22,9 @@ tasks-title-placeholder = শিৰোনাম
 tasks-add-step = উপ-কাৰ্য যোগ কৰক
 tasks-empty = এতিয়াও কোনো কাৰ্য নাই। ওপৰত এটা যোগ কৰক।
 tasks-starred-empty = ইয়াত চাবলৈ কোনো কাৰ্যত তৰাচিহ্ন যোগ কৰক।
+tasks-today-empty = আজিৰ বাবে একো নাই।
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = ম্যাদ পাৰ হোৱা
 tasks-completed = { $count ->
     [one] সম্পূৰ্ণ ({ $count })
    *[other] সম্পূৰ্ণ ({ $count })

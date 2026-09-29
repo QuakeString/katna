@@ -6,6 +6,7 @@
 
 tasks-create = Dala
 tasks-all = Yonke imisebenzi
+tasks-today = Namuhla
 tasks-starred = Okunenkanyezi
 tasks-new-list = Dala uhlu olusha
 tasks-on-this-computer = Kule khompyutha
@@ -21,6 +22,9 @@ tasks-title-placeholder = Isihloko
 tasks-add-step = Engeza umsebenzi omncane
 tasks-empty = Ayikho imisebenzi okwamanje. Engeza owodwa ngenhla.
 tasks-starred-empty = Faka inkanyezi emsebenzini ukuze uwubone lapha.
+tasks-today-empty = Akukho okufanele namuhla.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Okwedlulelwe isikhathi
 tasks-completed = { $count ->
     [one] Kuqediwe ({ $count })
    *[other] Kuqediwe ({ $count })

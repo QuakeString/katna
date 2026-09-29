@@ -1296,3 +1296,11 @@ altri account, anche quando si trovano su un server diverso da quello
 della posta. Prova prima il metodo migliore di ciascun account e un
 altro quando quello non è disponibile.
 """
+
+["2026-09-29-0625-tasks-today"]
+title = "Oggi in Attività"
+text = """
+Oggi, sotto Tutte le attività, raccoglie ciò che scade oggi e tutto ciò
+che è scaduto da ogni elenco, con l’elenco in cui si trova ciascuna.
+Un’attività aggiunta qui scade oggi.
+"""

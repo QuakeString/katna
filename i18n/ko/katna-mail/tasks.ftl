@@ -6,6 +6,7 @@
 
 tasks-create = 만들기
 tasks-all = 모든 할 일
+tasks-today = 오늘
 tasks-starred = 별표 표시됨
 tasks-new-list = 새 목록 만들기
 tasks-on-this-computer = 이 컴퓨터
@@ -21,6 +22,9 @@ tasks-title-placeholder = 제목
 tasks-add-step = 하위 할 일 추가
 tasks-empty = 아직 할 일이 없습니다. 위에서 추가하세요.
 tasks-starred-empty = 할 일에 별표를 표시하면 여기에 나타납니다.
+tasks-today-empty = 오늘 마감인 할 일이 없습니다.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = 기한 경과
 tasks-completed = { $count ->
    *[other] 완료됨 ({ $count })
 }

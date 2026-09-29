@@ -6,6 +6,7 @@
 
 tasks-create = إنشاء
 tasks-all = كل المهام
+tasks-today = اليوم
 tasks-starred = المميّزة بنجمة
 tasks-new-list = إنشاء قائمة جديدة
 tasks-on-this-computer = على هذا الكمبيوتر
@@ -21,6 +22,9 @@ tasks-title-placeholder = العنوان
 tasks-add-step = إضافة مهمة فرعية
 tasks-empty = لا توجد مهام بعد. أضف مهمة أعلاه.
 tasks-starred-empty = ضع نجمة على مهمة لتظهر هنا.
+tasks-today-empty = لا شيء مستحق اليوم.
+tasks-today-date = { $weekday }، { $day }
+tasks-overdue = متأخرة
 tasks-completed = { $count ->
     [zero] مكتملة ({ $count })
     [one] مكتملة (مهمة واحدة)

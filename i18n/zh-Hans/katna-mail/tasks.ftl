@@ -6,6 +6,7 @@
 
 tasks-create = 创建
 tasks-all = 所有任务
+tasks-today = 今天
 tasks-starred = 已加星标
 tasks-new-list = 创建新列表
 tasks-on-this-computer = 此电脑
@@ -21,6 +22,9 @@ tasks-title-placeholder = 标题
 tasks-add-step = 添加子任务
 tasks-empty = 还没有任务。请在上方添加。
 tasks-starred-empty = 为任务加星标后，就会显示在这里。
+tasks-today-empty = 今天没有到期的任务。
+tasks-today-date = { $weekday }，{ $day }
+tasks-overdue = 已逾期
 tasks-completed = { $count ->
    *[other] 已完成 ({ $count })
 }
