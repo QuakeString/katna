@@ -747,6 +747,13 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Task `id` with whether it is ticked off and starred, counting
+    /// changes not yet read back.
+    pub(super) fn tasks_task(&self, id: i64) -> Option<(&TaskItem, bool, bool)> {
+        let task = self.tasks.task(id)?;
+        Some((task, self.tasks.done(task), self.tasks.starred(task)))
+    }
+
     /// The tasks with a due day, as the Calendar shows them: ticked ones
     /// too, and whether each is ticked, counting ticks not yet read back.
     pub(super) fn dated_tasks(&self) -> Vec<(&TaskItem, bool)> {
@@ -807,7 +814,7 @@ impl MailWindow {
         self.send_task(edit, Some(tr!("tasks-toast-rescheduled")), Some(undo), cx);
     }
 
-    fn task_toggle_star(&mut self, id: i64, cx: &mut Context<Self>) {
+    pub(super) fn task_toggle_star(&mut self, id: i64, cx: &mut Context<Self>) {
         let Some(task) = self.tasks.task(id) else {
             return;
         };
@@ -826,7 +833,7 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn task_delete(&mut self, id: i64, cx: &mut Context<Self>) {
+    pub(super) fn task_delete(&mut self, id: i64, cx: &mut Context<Self>) {
         let Some(Ok(board)) = &self.tasks.board else {
             return;
         };

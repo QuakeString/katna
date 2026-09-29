@@ -174,6 +174,9 @@ pub(super) struct Draft {
     guests: Vec<Attendee>,
     /// A video call is to be added when saved.
     add_call: bool,
+    /// `#rrggbb`, or empty for the calendar's: the event's own when
+    /// editing or duplicating it.
+    color: String,
     start_day: Date,
     end_day: Date,
     start_time: Time,
@@ -476,6 +479,7 @@ impl MailWindow {
                 .map(|d| d.attendees.clone())
                 .unwrap_or_default(),
             add_call: false,
+            color: data.as_ref().map(|d| d.color.clone()).unwrap_or_default(),
             start_day,
             end_day,
             start_time,
@@ -806,7 +810,6 @@ impl MailWindow {
                 schedule::moment(draft.end_day, draft.end_time, tz)?.as_second(),
             )
         };
-        let old = draft.editing.as_ref().map(|o| &o.event.data);
         Some(EventEdit {
             title: self.draft_title(draft, cx),
             location: draft.location.read(cx).text().trim().to_owned(),
@@ -817,7 +820,7 @@ impl MailWindow {
             time_zone: tz.iana_name().unwrap_or_default().to_owned(),
             rrule: draft.repeat.rule(draft.start_day),
             busy: draft.busy,
-            color: old.map(|d| d.color.clone()).unwrap_or_default(),
+            color: draft.color.clone(),
             reminders: draft.reminder.into_iter().collect(),
             attendees: draft.guests.clone(),
             add_call: draft.add_call,
@@ -829,7 +832,7 @@ impl MailWindow {
     /// or a plain event, with what Google gives each: its name as the
     /// title until one is typed, busy or free, and no reminder but for
     /// events; a working location is for the whole day.
-    fn set_draft_kind(&mut self, kind: EventKind, cx: &mut Context<Self>) {
+    pub(super) fn set_draft_kind(&mut self, kind: EventKind, cx: &mut Context<Self>) {
         let Some(draft) = &mut self.calendar.draft else {
             return;
         };
@@ -1045,9 +1048,7 @@ impl MailWindow {
                 .and_then(|at| at.to_zoned(tz.clone()).ok())
                 .map_or(seconds, |z| z.timestamp().as_second())
         };
-        let mut edit = EventEdit::of(&occurrence.event.data);
-        edit.start = occurrence.start;
-        edit.end = occurrence.end;
+        let mut edit = occurrence_edit(&occurrence);
         if drag.resize {
             edit.end = (occurrence.end + drag.minutes * 60).max(occurrence.start + 15 * 60);
         } else {
@@ -1055,14 +1056,86 @@ impl MailWindow {
             edit.end = shift(occurrence.end);
         }
         let calendar = occurrence.event.calendar_id;
+        self.change_occurrence(occurrence, edit, calendar, cx);
+    }
+
+    /// Saves `edit` for `occurrence` in `calendar`, after asking which
+    /// occurrences for a repeating event.
+    fn change_occurrence(
+        &mut self,
+        occurrence: Occurrence,
+        edit: EventEdit,
+        calendar: i64,
+        cx: &mut Context<Self>,
+    ) {
         if !occurrence.event.data.rrule.is_empty() || occurrence.series_start.is_some() {
             self.calendar.ask = Some(ScopeAsk {
                 change: ScopeChange::Save(occurrence, Box::new(edit), calendar),
                 scope: EditScope::This,
             });
+            cx.notify();
             return;
         }
         self.save_change(occurrence, edit, calendar, EditScope::This, cx);
+    }
+
+    /// Gives the event `color` (`#rrggbb`, or empty for its calendar's),
+    /// from its right-click menu.
+    pub(super) fn recolor_event(
+        &mut self,
+        occurrence: Occurrence,
+        color: String,
+        cx: &mut Context<Self>,
+    ) {
+        if occurrence.event.data.color == color {
+            return;
+        }
+        let mut edit = occurrence_edit(&occurrence);
+        edit.color = color;
+        let calendar = occurrence.event.calendar_id;
+        self.change_occurrence(occurrence, edit, calendar, cx);
+    }
+
+    /// Moves the event, the whole series of a repeating one, to
+    /// `calendar`, from its right-click menu.
+    pub(super) fn move_event_to(
+        &mut self,
+        occurrence: Occurrence,
+        calendar: i64,
+        cx: &mut Context<Self>,
+    ) {
+        if occurrence.event.calendar_id == calendar {
+            return;
+        }
+        let edit = occurrence_edit(&occurrence);
+        self.save_change(occurrence, edit, calendar, EditScope::All, cx);
+    }
+
+    /// Duplicate: the whole editor on a new event copied from
+    /// `occurrence`, as Google Calendar's; saving adds it.
+    pub(super) fn duplicate_event(
+        &mut self,
+        occurrence: Occurrence,
+        at: Point<Pixels>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.calendar.open = None;
+        let Some(mut draft) = self.new_draft(Some(occurrence), at, window, cx) else {
+            return;
+        };
+        draft.editing = None;
+        draft.full = true;
+        focus_later(&draft.title, window, cx);
+        self.calendar.draft = Some(draft);
+        cx.notify();
+    }
+
+    /// Closes a new event's small card, not the whole editor.
+    pub(super) fn close_quick_draft(&mut self) {
+        if self.calendar.draft.as_ref().is_some_and(|d| !d.full) {
+            self.calendar.draft = None;
+        }
     }
 
     /// Yes, No or Maybe on an invitation's card; a repeating one asks
@@ -2461,6 +2534,15 @@ fn dash(th: &Theme) -> AnyElement {
         .text_color(rgba(th.text_dim))
         .child("–")
         .into_any_element()
+}
+
+/// The event as saved, at `occurrence`'s own times, which a series' row
+/// does not have.
+fn occurrence_edit(occurrence: &Occurrence) -> EventEdit {
+    let mut edit = EventEdit::of(&occurrence.event.data);
+    edit.start = occurrence.start;
+    edit.end = occurrence.end;
+    edit
 }
 
 /// The time at `y` pixels into a day of the grid, to 15 minutes.
