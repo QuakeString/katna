@@ -56,6 +56,14 @@ notes-on-this-computer = On this computer
 # Tooltip of where the note is kept, which opens the choice of accounts.
 notes-where = Where this note is kept
 
+## A note about a mail
+
+# The chip on a note made from a mail, which opens that mail.
+notes-mail = Mail
+notes-open-mail = Open the mail
+# Tooltip of a note shown under a mail's subject.
+notes-open-note = Open the note
+
 ## Colors (tooltips)
 
 notes-color-none = No color
@@ -78,6 +86,7 @@ notes-unarchived = Note unarchived
 notes-trashed = Note moved to Trash
 notes-restored = Note restored
 notes-empty-discarded = Empty note discarded
+notes-mail-gone = That mail is no longer here
 notes-deleted-forever = { $count ->
     [one] Note deleted forever
    *[other] { $count } notes deleted forever

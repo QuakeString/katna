@@ -3,8 +3,9 @@
 //! Task lists synced with each account's own task service
 //! (`docs/ARCHITECTURE.md` §18.1): Google Tasks for Google accounts
 //! ([`google`]), Microsoft To Do through Graph for Microsoft accounts
-//! ([`graph`]). Only the few calls sync needs, over our own HTTPS client,
-//! with the account's OAuth2 tokens.
+//! ([`graph`]), and to-dos on the CalDAV server of an account with a
+//! password ([`caldav`]). Only the few calls sync needs, over our own
+//! HTTPS client.
 //!
 //! [`sync_account`] runs one round for an account: list changes made in
 //! Katna go out, the service's lists come in, then for each list the task
@@ -21,6 +22,7 @@ use katna_store::{
 
 use crate::{Error, Result, autoconfig::http::Reply};
 
+pub mod caldav;
 pub mod google;
 pub mod graph;
 
@@ -28,6 +30,7 @@ pub mod graph;
 pub enum TaskService {
     Google(google::GoogleTasks),
     Microsoft(graph::ToDo),
+    CalDav(caldav::DavTasks),
 }
 
 /// What a pull of one list brought.
@@ -57,6 +60,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.allowed().await,
             Self::Microsoft(service) => service.allowed().await,
+            Self::CalDav(service) => service.allowed().await,
         }
     }
 
@@ -64,6 +68,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.lists().await,
             Self::Microsoft(service) => service.lists().await,
+            Self::CalDav(service) => service.lists().await,
         }
     }
 
@@ -71,6 +76,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.add_list(title).await,
             Self::Microsoft(service) => service.add_list(title).await,
+            Self::CalDav(service) => service.add_list(title).await,
         }
     }
 
@@ -78,6 +84,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.rename_list(id, title).await,
             Self::Microsoft(service) => service.rename_list(id, title).await,
+            Self::CalDav(service) => service.rename_list(id, title).await,
         }
     }
 
@@ -85,6 +92,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.delete_list(id).await,
             Self::Microsoft(service) => service.delete_list(id).await,
+            Self::CalDav(service) => service.delete_list(id).await,
         }
     }
 
@@ -92,6 +100,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.pull(list, state).await,
             Self::Microsoft(service) => service.pull(list, state).await,
+            Self::CalDav(service) => service.pull(list, state).await,
         }
     }
 
@@ -100,6 +109,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.insert(list, task, parent).await,
             Self::Microsoft(service) => service.insert(list, task, parent).await,
+            Self::CalDav(service) => service.insert(list, task, parent).await,
         }
     }
 
@@ -108,6 +118,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.update(list, id, task).await,
             Self::Microsoft(service) => service.update(list, id, task).await,
+            Self::CalDav(service) => service.update(list, id, task).await,
         }
     }
 
@@ -115,6 +126,7 @@ impl TaskService {
         match self {
             Self::Google(service) => service.delete(list, id).await,
             Self::Microsoft(service) => service.delete(list, id).await,
+            Self::CalDav(service) => service.delete(list, id).await,
         }
     }
 }

@@ -1217,3 +1217,13 @@ Gmail’deki gibi Shift+T tuşlarına basın ya da bir e-postaya sağ tıklayıp
 Görevlere ekle’yi seçin. Görev e-postanın konusunu alır ve Görevler’deki
 Posta etiketi e-postayı yeniden açar.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Takviminiz, postanızın yanında"
+text = """
+Takvim; Google, Microsoft ve diğer takvimlerinizi gün, hafta, ay olarak
+veya program şeklinde, Google Takvim’in kısayol tuşlarıyla gösterir.
+Postanızın sağındaki takvim düğmesi, aramalar için Katıl düğmesiyle
+birlikte günün ajandasını açar. Katna’nın bir hesabın takvimini
+okuyabilmesi için hesapta yeniden oturum açın.
+"""

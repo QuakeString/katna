@@ -1256,3 +1256,13 @@ hinzufügen, wenn Sie mit der rechten Maustaste auf eine E-Mail klicken.
 Die Aufgabe übernimmt den Betreff der E-Mail, und ihr E-Mail-Chip in
 Aufgaben öffnet die E-Mail wieder.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Ihr Kalender, neben Ihren E-Mails"
+text = """
+Kalender zeigt Ihre Google-, Microsoft- und anderen Kalender nach Tag,
+Woche, Monat oder als Terminübersicht an, mit den Tastenkürzeln von Google
+Calendar. Die Kalender-Schaltfläche rechts neben Ihren E-Mails öffnet die
+Tagesübersicht, mit „Teilnehmen“ für Anrufe. Melden Sie sich erneut bei
+einem Konto an, damit Katna dessen Kalender lesen darf.
+"""

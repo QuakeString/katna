@@ -1197,3 +1197,13 @@ Tryck på Skift+T, som i Gmail, eller välj Lägg till i Uppgifter när du
 högerklickar på ett e-postmeddelande. Uppgiften får meddelandets ämne,
 och dess E-post-chip i Uppgifter öppnar meddelandet igen.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Din kalender, bredvid din e-post"
+text = """
+Kalender visar dina Google-, Microsoft- och andra kalendrar per dag,
+vecka, månad eller som schema, med Google Kalenders kortkommandon.
+Kalenderknappen till höger om din e-post öppnar dagens agenda, med Anslut
+för samtal. Logga in på ett konto igen så att Katna kan läsa dess
+kalender.
+"""

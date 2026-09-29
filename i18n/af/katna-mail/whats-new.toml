@@ -1190,3 +1190,13 @@ Druk Shift+T, soos in Gmail, of kies Voeg by Take wanneer jy met die
 regterknoppie op ’n e-pos klik. Die taak neem die e-pos se onderwerp, en
 sy E-pos-skildjie in Take maak die e-pos weer oop.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Jou kalender, langs jou e-pos"
+text = """
+Kalender wys jou Google-, Microsoft- en ander kalenders volgens dag,
+week, maand of as skedule, met Google Kalender se sleutels. Die
+kalenderknoppie regs van jou e-pos maak die dag se agenda oop, met Sluit
+aan vir oproepe. Teken weer by ’n rekening aan sodat Katna sy kalender
+kan lees.
+"""
