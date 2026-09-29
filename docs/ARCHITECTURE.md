@@ -2148,7 +2148,10 @@ Gemini or confidential mode):
   never in quoted text); their time of day from the UTC offset of their
   latest `Date` header; the mail exchanged over all accounts (server
   copies counted once by `Message-ID`); the five newest conversations and
-  six newest files, which open the conversation or the viewer. Everything
+  six newest files, which open the conversation or the viewer; and the
+  open tasks made from mail they take part in (the task's mail or another
+  message of its conversation, `contact_on_mail`), with a tick to complete
+  one and a click to open it on the Tasks page. Everything
   is local (`katna_store::Store::contact_*`); outside data (LinkedIn, X,
   company facts) is left for the Katna Server plan. It shows only while
   the list and reader keep 900 px (600 px with the reader alone), never on

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks with them, beside their mail"
+text = """
+The contact panel beside a conversation now lists your open tasks made
+from mail with that person. Tick one to complete it, or click it to open
+it in Tasks.
+"""

@@ -234,6 +234,30 @@ pub(crate) fn files(conn: &Connection, email: &str, limit: usize) -> Result<Vec<
     Ok(out)
 }
 
+/// See [`crate::Store::contact_on_mail`].
+pub(crate) fn on_mail(conn: &Connection, email: &str, headers: &[String]) -> Result<Vec<String>> {
+    let email = email.trim().to_lowercase();
+    // On the message itself, or on another message of its conversation.
+    let mut stmt = conn.prepare_cached(&format!(
+        "SELECT EXISTS (
+             SELECT 1 FROM message m JOIN participant p ON p.message_id = m.id
+             WHERE m.message_id_hdr = ?1 AND p.email_norm = ?2 AND {TAKES_PART}
+         ) OR EXISTS (
+             SELECT 1 FROM message m
+             JOIN message o ON o.thread_id = m.thread_id
+             JOIN participant p ON p.message_id = o.id
+             WHERE m.message_id_hdr = ?1 AND p.email_norm = ?2 AND {TAKES_PART}
+         )"
+    ))?;
+    let mut out = Vec::new();
+    for header in headers {
+        if stmt.query_row(params![header, email], |row| row.get::<_, bool>(0))? {
+            out.push(header.clone());
+        }
+    }
+    Ok(out)
+}
+
 /// See [`crate::Store::messages_from`].
 pub(crate) fn messages_from(
     conn: &Connection,
@@ -365,6 +389,18 @@ mod tests {
             .map(|f| (f.name.as_str(), f.from_them))
             .collect();
         assert_eq!(names, [("invoice.pdf", true), ("notes.txt", true)]);
+
+        let headers = ["b@x", "c@x", "gone@x"].map(String::from);
+        assert_eq!(
+            store.contact_on_mail("ada@example.net", &headers).unwrap(),
+            ["b@x", "c@x"]
+        );
+        assert!(
+            store
+                .contact_on_mail("nobody@example.net", &headers)
+                .unwrap()
+                .is_empty()
+        );
 
         let from = store.messages_from("ada@example.net", 5).unwrap();
         assert_eq!(from.len(), 2);
