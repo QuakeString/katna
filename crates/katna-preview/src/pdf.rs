@@ -7,9 +7,11 @@ use std::sync::Arc;
 use hayro::hayro_interpret::InterpreterSettings;
 use hayro::hayro_syntax::{LoadPdfError, Pdf};
 use hayro::vello_cpu::color::palette::css::WHITE;
+use hayro::vello_cpu::kurbo::Affine;
 use hayro::{RenderCache, RenderSettings};
 use image::RgbaImage;
 
+pub use crate::pdf_marks::SaveError;
 pub use crate::pdf_text::TextLine;
 
 /// A page is never drawn larger than this many pixels on a side...
@@ -97,6 +99,30 @@ impl Document {
             .get(page)
             .map(crate::pdf_text::lines)
             .unwrap_or_default()
+    }
+
+    /// Whether marks can be saved into this PDF: not when it is encrypted
+    /// or certified against changes. Reads the whole file again.
+    pub fn can_mark(&self) -> Result<(), SaveError> {
+        crate::pdf_marks::check(self.pdf.data().as_ref())
+    }
+
+    /// A copy of the file with `marks` added as annotations, the original
+    /// bytes unchanged at its start.
+    pub fn with_marks(&self, marks: &[crate::markup::Mark]) -> Result<Vec<u8>, SaveError> {
+        let transforms: Vec<_> = self
+            .pdf
+            .pages()
+            .iter()
+            .map(|page| {
+                // From points as drawn back to the page's own.
+                let [a, b, c, d, e, f] = page.initial_transform(true).as_coeffs();
+                Affine::new([a, b, c, d, e, f].map(f64::from))
+                    .inverse()
+                    .as_coeffs()
+            })
+            .collect();
+        crate::pdf_marks::write(self.pdf.data().as_ref(), &transforms, marks)
     }
 }
 
@@ -240,6 +266,100 @@ mod tests {
         assert!(doc.text(5).is_empty());
         // No text at all.
         assert!(Document::open(square_pdf()).unwrap().text(0).is_empty());
+    }
+
+    #[test]
+    fn marks_are_added_to_a_copy() {
+        use crate::markup::{Kind, Mark, Quad, Shape};
+        let original = text_pdf();
+        let doc = Document::open(original.clone()).unwrap();
+        assert_eq!(doc.can_mark(), Ok(()));
+        let line = &doc.text(0)[0];
+        let quad = Quad {
+            left: line.left(),
+            top: line.top,
+            right: line.right(),
+            bottom: line.bottom,
+        };
+        let marks = [
+            Mark {
+                page: 0,
+                kind: Kind::Highlight,
+                color: [1.0, 0.9, 0.0],
+                shape: Shape::Text {
+                    quads: vec![quad],
+                    text: "Hello wörld".into(),
+                },
+            },
+            Mark {
+                page: 0,
+                kind: Kind::Ink,
+                color: [1.0, 0.0, 0.0],
+                shape: Shape::Ink(vec![(300.0, 300.0), (400.0, 350.0)]),
+            },
+        ];
+        let copy = doc.with_marks(&marks).unwrap();
+        // An incremental update: the original, then the changes.
+        assert!(copy.starts_with(&original));
+        assert!(copy.len() > original.len());
+        let saved = lopdf::Document::load_mem(&copy).unwrap();
+        let page = saved.get_pages()[&1];
+        let annots = saved
+            .get_dictionary(page)
+            .unwrap()
+            .get(b"Annots")
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .clone();
+        let kinds: Vec<Vec<u8>> = annots
+            .iter()
+            .map(|a| {
+                let dict = saved.get_dictionary(a.as_reference().unwrap()).unwrap();
+                assert!(dict.has(b"AP"));
+                dict.get(b"Subtype").unwrap().as_name().unwrap().to_vec()
+            })
+            .collect();
+        assert_eq!(kinds, [b"Highlight".to_vec(), b"Ink".to_vec()]);
+        // The highlight sits on the text in the page's own coordinates:
+        // the baseline at 700 pt from the bottom.
+        let highlight = saved
+            .get_dictionary(annots[0].as_reference().unwrap())
+            .unwrap();
+        let rect: Vec<f32> = highlight
+            .get(b"Rect")
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_float().unwrap())
+            .collect();
+        assert!(rect[1] < 700.0 && rect[3] > 700.0, "{rect:?}");
+        assert!((rect[0] - 72.0).abs() < 1.0, "{rect:?}");
+        // hayro draws the new marks: yellow under the text, red for the pen.
+        let drawn = Document::open(copy).unwrap();
+        let page = drawn.render(0, 1.0).unwrap();
+        let pixel = |x: u32, y: u32| page.get_pixel(x, y).0;
+        let yellow = pixel(74, 84);
+        assert!(
+            yellow[0] > 200 && yellow[1] > 180 && yellow[2] < 80,
+            "{yellow:?}"
+        );
+        let red = pixel(350, 325);
+        assert!(red[0] > 200 && red[1] < 80, "{red:?}");
+    }
+
+    #[test]
+    fn protected_pdfs_cannot_be_marked() {
+        let mut doc = lopdf::Document::load_mem(&text_pdf()).unwrap();
+        let mut perms = lopdf::Dictionary::new();
+        perms.set("DocMDP", lopdf::Dictionary::new());
+        doc.catalog_mut().unwrap().set("Perms", perms);
+        let mut certified = Vec::new();
+        doc.save_to(&mut certified).unwrap();
+        let doc = Document::open(certified).unwrap();
+        assert_eq!(doc.can_mark(), Err(SaveError::Protected));
+        assert_eq!(doc.with_marks(&[]), Err(SaveError::Protected));
     }
 
     #[test]

@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 850 more of their own. Each keeps its own license.
+bring in 858 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -55,6 +55,7 @@ bring in 850 more of their own. Each keeps its own license.
 | [krilla](https://github.com/LaurenzV/krilla) 0.8.2 | Laurenz Stampfl | MIT OR Apache-2.0 | A high-level crate for creating PDF files. |
 | [lettre](https://github.com/lettre/lettre) 0.11.23 | Alexis Mousset, Paolo Barbolini | MIT | Email client |
 | [levenshtein_automata](https://github.com/tantivy-search/levenshtein-automata) 0.2.1 | Paul Masurel | MIT | Creates Levenshtein Automata in an efficient manner. |
+| [lopdf](https://github.com/J-F-Liu/lopdf) 0.45.0 | Emulator, Junfeng Liu | MIT | A Rust library for PDF document manipulation. |
 | [mail-parser](https://github.com/stalwartlabs/mail-parser) 0.11.9 | Stalwart Labs | Apache-2.0 OR MIT | Fast and robust e-mail parsing library for Rust |
 | [oo7](https://github.com/linux-credentials/oo7) 0.6.0 | Bilal Elmoussaoui, Maximiliano Sandoval, Sophie Herold | MIT | James Bond went on a new mission and this time as a Secret Service provider |
 | [qrcodegen](https://github.com/nayuki/QR-Code-generator) 1.8.0 | Project Nayuki | MIT | High-quality QR Code generator library |
