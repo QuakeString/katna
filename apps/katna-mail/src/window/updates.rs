@@ -826,8 +826,11 @@ fn source() -> Option<String> {
     }
 }
 
-/// A bar with no end: a stretch of the accent colour that runs across,
-/// as the Add account card shows while the daemon works.
+/// A bar with no end: a stretch of the accent colour that glides to and
+/// fro inside its track, slowing at each end like a pendulum. It never
+/// leaves the track and reappears at the start, and at its fastest (0.8
+/// track widths a second) it moves less each frame than a bar sweeping
+/// across in 1.3 s (1.1), so a late frame shows as a smaller step.
 fn working_bar(th: &Theme) -> impl IntoElement {
     div()
         .relative()
@@ -846,8 +849,11 @@ fn working_bar(th: &Theme) -> impl IntoElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "update-working",
-                    Animation::new(std::time::Duration::from_millis(1300)).repeat(),
-                    |bar, t| bar.left(relative(lerp(-0.4, 1.0, t))),
+                    Animation::new(std::time::Duration::from_millis(2400)).repeat(),
+                    |bar, t| {
+                        let swing = (1.0 - (t * std::f32::consts::TAU).cos()) / 2.0;
+                        bar.left(relative(lerp(0.0, 0.6, swing)))
+                    },
                 ),
         )
 }

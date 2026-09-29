@@ -1090,3 +1090,43 @@ text = """
 Taga ta Sabuntawa yanzu tana bayyana sabon canji na kowace sigar, tana faɗin inda kwafin ku
 ya fito da kuma lokacin da Katna ta duba sabuntawa na ƙarshe.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Ɗan wasan kwaikwayo cikin Saya min kofi"
+text = """
+Ajiye alamar linzamin kwamfuta a kan Saya min kofi a cikin Game da Katna: yana neman kofi, shayi,
+pizza, sannan babu komai kwata-kwata, ya gamsu da ruwa, kuma ya ce na gode da 'yan walƙiya. Yana
+wasa sau ɗaya a kowane lokaci, kuma yana tsayawa cak idan an rage motsi.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Taga ta Sabuntawa mafi bayyana"
+text = """
+Ana nuna sanda mai gudu yayin da Katna ke duba sabuntawa, kuma sabon sigar yana fitowa fili da
+launinsa kusa da wadda kuke da ita.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Maɓallan da ke bin wurin da kuke"
+text = """
+Idan tattaunawa tana kusa da jerin, ↑ da ↓ suna motsawa a cikin jerin kuma suna nuna kowace
+tattaunawa. Tab ko Enter yana shiga tattaunawar, inda ↑ da ↓ ke gungura ta; Esc ko Shift+Tab yana
+komawa jerin. F6 yana tsallakawa tsakanin sassa, kamar a sauran manhajojin imel.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Folda suna zamewa suna buɗewa suna rufewa"
+text = """
+Danna kibiya kusa da asusu ko folda a wurin folda yanzu yana buɗewa ko rufe abin da ke ciki ta
+hanyar zamewa, tare da folda na ƙasa suna zamewa tare, maimakon tsalle.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Folda, menu da akwatunan magana da madannai"
+text = """
+Shift+Tab ko F6 yana kaiwa wurin folda, inda ↑ da ↓ ke buɗe kowace folda kuma Enter yana zuwa ga
+saƙonnin imel ɗinta. ↑ da ↓ suna motsawa a kowane menu, kuma Enter yana zaɓa. Shift+F10 ko maɓallin
+menu yana buɗe menu na danna dama na imel ɗin da aka zaɓa. Akwatunan magana suna karɓar maɓallai da
+zarar sun buɗe: Enter yana amsawa, Esc yana soke, kuma Tab yana zama a cikinsu. A cikin sabon saƙo,
+Ctrl+Enter yana aikawa daga kowane fili, kuma Esc yana rufe shi tare da adana zayyana.
+"""

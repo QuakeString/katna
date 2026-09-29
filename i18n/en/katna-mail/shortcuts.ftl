@@ -59,6 +59,12 @@ shortcut-go-sent = Sent
 shortcut-go-drafts = Drafts
 # Under "Go to": opens All mail, every message of the account.
 shortcut-go-all = All mail
+# Under "Go to": the pages of the window, as in the app rail.
+shortcut-page-mail = Mail
+shortcut-page-calendar = Calendar
+shortcut-page-contacts = Contacts
+shortcut-page-tasks = Tasks
+shortcut-page-notes = Notes
 shortcut-search = Search mail
 # Shows or hides the folder pane on the left.
 shortcut-navigation = Show or fold the menu

@@ -1106,3 +1106,49 @@ Okno Aktualizacje pokazuje teraz ostatnią zmianę w każdej wersji, skąd
 pochodzi Twoja kopia i kiedy Katna ostatnio sprawdzała dostępność
 aktualizacji.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Małe przedstawienie w przycisku Postaw mi kawę"
+text = """
+Zatrzymaj wskaźnik na przycisku Postaw mi kawę w oknie O Katna: prosi o
+kawę, herbatę, pizzę, potem o zupełnie nic, zadowala się wodą i dziękuje
+kilkoma iskierkami. Za każdym razem gra raz i stoi w miejscu, gdy
+ograniczysz ruch.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Czytelniejsze okno aktualizacji"
+text = """
+Gdy Katna szuka aktualizacji, widać przesuwający się pasek, a nowa
+wersja wyróżnia się własnym kolorem obok tej, którą masz.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Klawisze podążające za panelem, w którym jesteś"
+text = """
+Gdy wątek jest obok listy, strzałki w górę i w dół przesuwają się teraz
+po liście i pokazują każdy wątek. Tab lub Enter wchodzi do wątku, gdzie
+strzałki w górę i w dół go przewijają; Esc lub Shift+Tab wraca do listy.
+F6 przełącza między panelami, jak w innych programach pocztowych.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Foldery rozsuwają się i zasuwają"
+text = """
+Kliknięcie strzałki obok konta lub folderu w panelu folderów rozsuwa
+teraz lub zasuwa jego zawartość, a foldery poniżej się z nią przesuwają,
+zamiast skakać.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Foldery, menu i okna dialogowe z klawiatury"
+text = """
+Shift+Tab lub F6 prowadzi do panelu folderów, gdzie strzałki w górę i w
+dół otwierają kolejne foldery, a Enter przechodzi do ich poczty.
+Strzałki w górę i w dół poruszają się po każdym menu, a Enter wybiera.
+Shift+F10 lub klawisz Menu otwiera menu prawego przycisku myszy dla
+zaznaczonej wiadomości. Okna dialogowe przejmują klawisze po otwarciu:
+Enter odpowiada, Esc anuluje, a Tab zostaje w ich wnętrzu. W nowej
+wiadomości Ctrl+Enter wysyła z dowolnego pola, a Esc ją zamyka,
+zachowując wersję roboczą.
+"""
