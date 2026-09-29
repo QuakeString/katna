@@ -1130,3 +1130,27 @@ menu yana buɗe menu na danna dama na imel ɗin da aka zaɓa. Akwatunan magana s
 zarar sun buɗe: Enter yana amsawa, Esc yana soke, kuma Tab yana zama a cikinsu. A cikin sabon saƙo,
 Ctrl+Enter yana aikawa daga kowane fili, kuma Esc yana rufe shi tare da adana zayyana.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Ayyuka a cikin agogon kwamfutarka"
+text = """
+Danna agogon don ƙara aiki da kuma yi wa ayyuka alama idan an gama. A kan Plasma, danna agogon
+dama sannan ka zaɓi Nuna Zaɓuɓɓuka Daban don zaɓar Agogon Dijital na Katna. A kan GNOME, katin
+Ayyuka zai bayyana a ƙarƙashin kalandar agogon daga shigarka ta gaba.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Shafuka ta madannai da daga ma’ajin ayyuka"
+text = """
+Ctrl+1 zuwa Ctrl+5 suna sauyawa tsakanin Wasiƙu, Kalanda, Lambobin sadarwa, Ayyuka da Bayanai,
+kamar a Outlook, kuma menu na Je zuwa ma yana jera su. Danna Katna Mail dama a kan ma’ajin
+ayyuka don buɗe Kalanda ko Lambobin sadarwa nan take.
+"""
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Ayyuka"
+text = """
+Danna Ctrl+4 ko zaɓi Ayyuka a hagu: dukkan jerin a gefe da gefe kamar a Google Tasks,
+tare da ƙananan ayyuka, taurari, ranakun ƙarshe, maimaitawa da bayanai. Jerin suna aiki tare da Google Tasks
+da Microsoft To Do, kuma ayyuka daga agogon kwamfuta suna bayyana a nan ma.
+"""

@@ -3209,6 +3209,14 @@ To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
   the first account's default list once it has synced, else to the list
   on this computer. Tasks the clock kept on this computer before any
   account's list synced move to that list once.
+- **The Tasks page** (`window/tasks_page.rs`) is a page of the mail
+  window, laid out like Google Tasks. It reads `pim.db` read-only and
+  sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, the
+  list calls), then reads again on `Changed`.
+- **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
+  right-click and ⋮ menus) makes a task in the default list titled with the
+  conversation's subject, keeping the newest message's `Message-ID` in
+  `task.mail`; the task's Mail chip opens that mail again.
 
 ## 19. Security and privacy
 

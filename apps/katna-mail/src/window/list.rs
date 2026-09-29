@@ -186,6 +186,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_read))
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
+            .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
@@ -831,6 +832,19 @@ impl MailWindow {
                             )
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.act_on_targets(Act::Important(false), cx)
+                            })),
+                        )
+                        .child(
+                            menu_item_icon(
+                                "more-add-to-tasks",
+                                "tasks",
+                                &tr!("menu-add-to-tasks"),
+                                th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.menu = None;
+                                let keys = this.target_keys();
+                                this.add_to_tasks_from(keys, cx);
                             })),
                         )
                         .child(

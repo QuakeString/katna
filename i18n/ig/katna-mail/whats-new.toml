@@ -1124,3 +1124,29 @@ igodo ozugbo ha mepere: Enter na-aza, Esc na-akagbu, Tab na-anọkwa n'ime
 ha. N'ozi ọhụrụ, Ctrl+Enter na-ezipụ site n'ebe ọ bụla, Esc na-emechi
 ya, na-echekwa ndebiri.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Ọrụ n'elekere desktọọpụ gị"
+text = """
+Pịa elekere iji tinye ọrụ ma kaa ọrụ ndị gụchara. Na Plasma, pịa elekere
+aka nri wee họrọ Gosi Nhọrọ Ndị Ọzọ iji họrọ Katna Elekere Dijitalụ. Na
+GNOME, kaadị Ọrụ na-apụta n'okpuru kalịnda elekere site n'ịbanye nke
+ọzọ.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Ibe site na kiiboodu na site na taskbar"
+text = """
+Ctrl+1 ruo Ctrl+5 na-agbanwe n'etiti Ozi, Kalịnda, Kọntaktị, Ọrụ na
+Ndetu, dị ka ọ dị na Outlook, menu Gaa na-edekwa ha. Pịa Katna Mail aka
+nri na taskbar iji mepee Kalịnda ma ọ bụ Kọntaktị ozugbo.
+"""
+
+["2026-09-29-0412-tasks-page"]
+title = "Ọrụ Katna"
+text = """
+Pịa Ctrl+4 ma ọ bụ họrọ Ọrụ n'aka ekpe: ndepụta ọ bụla n'akụkụ ibe
+ya dị ka Google Tasks, yana obere ọrụ, kpakpando, ụbọchị ikpeazụ,
+nmegharị na nkọwa. Ndepụta na-ejikọ na Google Tasks na Microsoft
+To Do, ọrụ sitere na elekere kọmputa ga-apụtakwa ebe a.
+"""

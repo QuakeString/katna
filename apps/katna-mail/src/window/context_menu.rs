@@ -367,6 +367,19 @@ impl MailWindow {
                         .on_click(act(Act::Unsnooze)),
                 )
             })
+            .when(!drafts, |d| {
+                d.child(
+                    plain("context-add-to-tasks", "tasks", &tr!("menu-add-to-tasks")).on_click(
+                        cx.listener(|this, _, _, cx| {
+                            let Some(menu) = this.context_menu.take() else {
+                                return;
+                            };
+                            let keys = this.context_targets(menu.key);
+                            this.add_to_tasks_from(keys, cx);
+                        }),
+                    ),
+                )
+            })
             .child(if row.flagged {
                 plain("context-star", "star", &tr!("menu-unstar")).on_click(act(Act::Star(false)))
             } else {

@@ -42,6 +42,7 @@ shortcut-move-to = Move to
 shortcut-mark-read = Mark as read
 shortcut-mark-unread = Mark as unread
 shortcut-star = Star or unstar
+shortcut-add-to-tasks = Add to Tasks
 shortcut-important = Mark as important
 shortcut-not-important = Mark as not important
 # Ticks the check box of the selected conversation in the list.
