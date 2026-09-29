@@ -3329,7 +3329,10 @@ use their own APIs only.
 - **The Tasks page** (`window/tasks_page.rs`) is a page of the mail
   window, laid out like Google Tasks. It reads `pim.db` read-only and
   sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, the
-  list calls), then reads again on `Changed`.
+  list calls), then reads again on `Changed`. Beside All tasks and
+  Starred, Today (as in To Do's My Day and TickTick) gathers the open
+  tasks due today or before from every list: Overdue first, then Today,
+  by day and time. A task added there goes to the default list, due today.
 - **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
   right-click and ⋮ menus) makes a task in the default list titled with the
   conversation's subject, keeping the newest message's `Message-ID` in
