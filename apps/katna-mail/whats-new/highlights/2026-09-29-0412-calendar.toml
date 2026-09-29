@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your calendar, beside your mail"
+text = """
+Calendar shows your Google, Microsoft and other calendars by day, week,
+month or as a schedule, with Google Calendar's keys. The calendar button
+at the right of your mail opens the day's agenda, with Join for calls.
+Sign in to an account again to let Katna read its calendar.
+"""

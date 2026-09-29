@@ -849,8 +849,8 @@ pub async fn check_mail(
     Ok(())
 }
 
-/// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`
-/// and `TrackingChanged` signal.
+/// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`,
+/// `TrackingChanged` and `CalendarChanged` signal.
 pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
     let pim = PimProxy::new(connection)
         .await
@@ -871,11 +871,16 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
         .receive_tracking_changed()
         .await
         .map_err(|err| describe(&err))?;
+    let calendar = pim
+        .receive_calendar_changed()
+        .await
+        .map_err(|err| describe(&err))?;
     Ok(changes
         .map(|_| ())
         .or(accounts.map(|_| ()))
         .or(status.map(|_| ()))
-        .or(tracking.map(|_| ())))
+        .or(tracking.map(|_| ()))
+        .or(calendar.map(|_| ())))
 }
 
 #[cfg(test)]
