@@ -25,6 +25,24 @@ contacts-label-removed = Kususwe ku-{ $name }
 contacts-label-renamed = Ilebula lifakwe igama elisha elithi { $name }
 contacts-label-deleted = Kususiwe ilebula { $name }
 contacts-label-no-email = Akekho kule lebula onekheli le-imeyili
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Ama-akhawunti
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Ngena futhi ukuze ubonise oxhumana nabo
+contacts-account-signed-in = Ungene futhi ku-{ $address }. Kutholwa oxhumana nabo…
+contacts-account-sign-in-refused = I-{ $provider } ayizange ivumele i-Katna ingene. Zama futhi, bese uvumela ukufinyelela koxhumana nabo.
+contacts-account-password = Iseva ayizange yamukele iphasiwedi. I-Yahoo, i-iCloud, i-Zoho nabanye badinga iphasiwedi yohlelo lokusebenza.
+contacts-account-change-password = Shintsha iphasiwedi
+contacts-account-change-password-tooltip = Vula Izilungiselelo > Ama-akhawunti
+contacts-account-failed = Oxhumana nabo abakwazanga ukufundwa.
+# $reason is the server's own words, in English.
+contacts-account-error = Oxhumana nabo abakwazanga ukufundwa: { $reason }
+contacts-account-none = Ayikho incwadi yamakheli etholakele
+contacts-account-looking = Kufunwa oxhumana nabo…
+contacts-account-try-again = Zama futhi
+contacts-account-try-again-tooltip = Hlola oxhumana nabo bale akhawunti futhi manje
+contacts-account-fixing = Kuyasebenzwa kukho…
 contacts-manage = Lungisa futhi uphathe
 contacts-merge = Hlanganisa futhi ulungise
 contacts-merge-about = { $count ->

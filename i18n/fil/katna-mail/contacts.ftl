@@ -25,6 +25,24 @@ contacts-label-removed = Naalis sa { $name }
 contacts-label-renamed = Pinalitan ang pangalan ng label sa { $name }
 contacts-label-deleted = Na-delete ang label na { $name }
 contacts-label-no-email = Walang may email address sa label na ito
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Mga Account
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Mag-sign in muli para ipakita ang mga contact
+contacts-account-signed-in = Naka-sign in muli sa { $address }. Kinukuha ang iyong mga contact…
+contacts-account-sign-in-refused = Hindi pinapasok ng { $provider } ang Katna. Subukang muli, at payagan ang access sa iyong mga contact.
+contacts-account-password = Hindi tinanggap ng server ang password. Kailangan ng Yahoo, iCloud, Zoho at iba pa ng app password.
+contacts-account-change-password = Palitan ang password
+contacts-account-change-password-tooltip = Buksan ang Mga setting > Mga Account
+contacts-account-failed = Hindi mabasa ang mga contact.
+# $reason is the server's own words, in English.
+contacts-account-error = Hindi mabasa ang mga contact: { $reason }
+contacts-account-none = Walang nakitang address book
+contacts-account-looking = Naghahanap ng mga contact…
+contacts-account-try-again = Subukang muli
+contacts-account-try-again-tooltip = Suriin muli ngayon ang mga contact ng account na ito
+contacts-account-fixing = Inaayos na…
 contacts-manage = Ayusin at pamahalaan
 contacts-merge = Pagsamahin at ayusin
 contacts-merge-about = { $count ->

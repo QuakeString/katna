@@ -25,6 +25,24 @@ contacts-label-removed = הוסר מ-{ $name }
 contacts-label-renamed = שם התווית שונה ל-{ $name }
 contacts-label-deleted = התווית { $name } נמחקה
 contacts-label-no-email = לאף אחד בתווית הזו אין כתובת אימייל
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = חשבונות
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = יש להתחבר שוב כדי להציג אנשי קשר
+contacts-account-signed-in = התחברת שוב אל { $address }. אנשי הקשר שלך נטענים…
+contacts-account-sign-in-refused = { $provider } לא הכניס את Katna. יש לנסות שוב ולאשר גישה לאנשי הקשר שלך.
+contacts-account-password = השרת לא קיבל את הסיסמה. Yahoo, iCloud, Zoho ואחרים דורשים סיסמה לאפליקציה.
+contacts-account-change-password = שינוי סיסמה
+contacts-account-change-password-tooltip = פתיחת הגדרות > חשבונות
+contacts-account-failed = לא ניתן היה לקרוא את אנשי הקשר.
+# $reason is the server's own words, in English.
+contacts-account-error = לא ניתן היה לקרוא את אנשי הקשר: { $reason }
+contacts-account-none = לא נמצא פנקס כתובות
+contacts-account-looking = מתבצע חיפוש אנשי קשר…
+contacts-account-try-again = ניסיון נוסף
+contacts-account-try-again-tooltip = בדיקה חוזרת של אנשי הקשר בחשבון הזה עכשיו
+contacts-account-fixing = מטפלים בזה…
 contacts-manage = תיקון וניהול
 contacts-merge = מיזוג ותיקון
 contacts-merge-about = { $count ->

@@ -25,6 +25,24 @@ contacts-label-removed = Van { $name } verwyder
 contacts-label-renamed = Etiket hernoem na { $name }
 contacts-label-deleted = Etiket { $name } is uitgevee
 contacts-label-no-email = Niemand op hierdie etiket het ’n e-posadres nie
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Rekeninge
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Meld weer aan om kontakte te wys
+contacts-account-signed-in = Weer aangemeld by { $address }. Haal tans jou kontakte…
+contacts-account-sign-in-refused = { $provider } het Katna nie ingelaat nie. Probeer weer, en gee toegang tot jou kontakte.
+contacts-account-password = Die bediener het die wagwoord nie aanvaar nie. Yahoo, iCloud, Zoho en ander het 'n programwagwoord nodig.
+contacts-account-change-password = Verander wagwoord
+contacts-account-change-password-tooltip = Maak Instellings > Rekeninge oop
+contacts-account-failed = Die kontakte kon nie gelees word nie.
+# $reason is the server's own words, in English.
+contacts-account-error = Die kontakte kon nie gelees word nie: { $reason }
+contacts-account-none = Geen adresboek gevind nie
+contacts-account-looking = Soek tans kontakte…
+contacts-account-try-again = Probeer weer
+contacts-account-try-again-tooltip = Kyk nou weer na hierdie rekening se kontakte
+contacts-account-fixing = Besig daarmee…
 contacts-manage = Regstel en bestuur
 contacts-merge = Voeg saam en regstel
 contacts-merge-about = { $count ->

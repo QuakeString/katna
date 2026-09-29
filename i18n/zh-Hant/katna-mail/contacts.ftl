@@ -25,6 +25,24 @@ contacts-label-removed = 已從「{ $name }」移除
 contacts-label-renamed = 標籤已重新命名為「{ $name }」
 contacts-label-deleted = 已刪除標籤「{ $name }」
 contacts-label-no-email = 此標籤下沒有人有電子郵件地址
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = 帳戶
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = 重新登入以顯示聯絡人
+contacts-account-signed-in = 已重新登入 { $address }。正在取得你的聯絡人…
+contacts-account-sign-in-refused = { $provider } 未允許 Katna 存取。請再試一次，並允許存取你的聯絡人。
+contacts-account-password = 伺服器未接受這組密碼。Yahoo、iCloud、Zoho 等需要應用程式密碼。
+contacts-account-change-password = 變更密碼
+contacts-account-change-password-tooltip = 開啟「設定 > 帳戶」
+contacts-account-failed = 無法讀取聯絡人。
+# $reason is the server's own words, in English.
+contacts-account-error = 無法讀取聯絡人：{ $reason }
+contacts-account-none = 找不到通訊錄
+contacts-account-looking = 正在尋找聯絡人…
+contacts-account-try-again = 再試一次
+contacts-account-try-again-tooltip = 立即重新檢查此帳戶的聯絡人
+contacts-account-fixing = 正在處理…
 contacts-manage = 修正及管理
 contacts-merge = 合併及修正
 contacts-merge-about = { $count ->

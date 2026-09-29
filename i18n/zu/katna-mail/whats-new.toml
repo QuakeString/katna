@@ -1618,3 +1618,82 @@ liyakukhombisa nalo, futhi kuhamba nenothi kuye kufolda ethi Amanothi
 ye-akhawunti yakho yeposi, lapho ukufometha okuvela ku-iPhone manje
 kubuya njengoba bekunjalo.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Bonisa izinsuku ezimbalwa nje"
+text = """
+IKhalenda manje ine-Ukubuka ngokwezifiso eduze kwe-Uhlelo: izinsuku
+ezi-4 kusukela osukwini olukhethayo, noma kusuka ku-2 kuya ku-7.
+Cindezela u-X, bese ukhetha ukuthi zingaki ku-Izinketho.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Thola imicimbi kudeskithophu"
+text = """
+Thayipha igama lomcimbi ku-KRunner noma ekuseseni kwe-GNOME ukuze ubone
+ukuthi uzoba nini ngokulandelayo, bese ucindezela u-Enter ukuze uvule
+lolo suku eKhalendeni.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "IKhalenda, Oxhumana nabo, Imisebenzi Namanothi efonini"
+text = """
+Ewindini elincane lawa makhasi manje alingana nesikrini njengoba kwenza
+i-Imeyili: uhlu lwawo lwaseceleni luvuleka enkinobhweni yemenyu,
+i-Oxhumana nabo ikhombisa igama ngalinye nekheli ngaphansi kwalo, futhi
+i-Amanothi ibeka amakhadi amabili eceleni kwelinye.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "I-ajenda yosuku, kubha engaphezulu"
+text = """
+Inkinobho ekhombisa i-ajenda yosuku eduze kweposi lakho manje isebheni
+engaphezulu, eduze kwenkinobho yolimi, futhi iposi lithola isikhala
+ebesithathwa umugqa waseceleni.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Fihla iphaneli yaseceleni kuwo wonke amakhasi"
+text = """
+Inkinobho yemenyu phezulu kwesobunxele manje igoqa iphaneli yaseceleni
+nase-Khalendeni, Oxhumana nabo, Imisebenzi Namanothi, iyishelelisa
+ngaphandle njengoba yenza ngamafolda e-Imeyili. Ikhasi ngalinye
+likhumbula ukuthi uyishiye ivuliwe yini.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Imenyu eyinhloko efonini"
+text = """
+Efonini, imenyu eyinhloko engemuva kwesithombe se-akhawunti manje ivula
+u-Ifayela, u-Hlela, u-Buka nokunye khona lapho, nomugqa othi Emuva
+phezulu, esikhundleni sokuphuma eceleni kwesikrini.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Wonke ama-akhawunti eKhalendeni"
+text = """
+Uhlu lwaseceleni lweKhalenda manje lukhombisa wonke ama-akhawunti akho.
+Uma amakhalenda e-akhawunti ethile engalayishi, umugqa ongaphansi kwayo
+usho isizathu, nokuchofoza okukodwa okulungisayo, njengokuthi “Ngena
+futhi ukuze ubonise amakhalenda”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Shintsha ama-akhawunti ngaphandle kokushiya ikhasi"
+text = """
+Ukukhetha enye i-akhawunti esithombeni sakho phezulu kwesokudla, noma
+ukuphendula isondo phezu kwaso, manje kukugcina ku-Khalenda, Imisebenzi,
+Oxhumana nabo noma Amanothi. Izinto ezintsha ziya kuleyo akhawunti,
+futhi i-Imeyili iyayikhombisa uma ubuyela emuva.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Wonke ama-akhawunti ku-Oxhumana nabo"
+text = """
+I-Oxhumana nabo manje ibala wonke ama-akhawunti akho ngaphansi kokuthi
+Ama-akhawunti, nokuthi bangaki abantu kuleyo naleyo; chofoza eyodwa
+ukuze ubone abantu bayo kuphela. Uma oxhumana nabo be-akhawunti
+bengalayishi, umugqa ongaphansi kwayo usho isizathu, nokuchofoza
+okukodwa okulungisayo, njengokuthi “Ngena futhi ukuze ubonise oxhumana
+nabo” noma “Zama futhi”.
+"""

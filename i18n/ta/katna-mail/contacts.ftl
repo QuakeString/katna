@@ -25,6 +25,24 @@ contacts-label-removed = { $name } இலிருந்து நீக்க�
 contacts-label-renamed = லேபிள் பெயர் { $name } என மாற்றப்பட்டது
 contacts-label-deleted = லேபிள் { $name } நீக்கப்பட்டது
 contacts-label-no-email = இந்த லேபிளில் உள்ள யாருக்கும் மின்னஞ்சல் முகவரி இல்லை
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = கணக்குகள்
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = தொடர்புகளைக் காட்ட மீண்டும் உள்நுழை
+contacts-account-signed-in = { $address } இல் மீண்டும் உள்நுழைந்தது. உங்கள் தொடர்புகளைப் பெறுகிறது…
+contacts-account-sign-in-refused = { $provider } Katna-வை உள்ளே அனுமதிக்கவில்லை. மீண்டும் முயன்று, உங்கள் தொடர்புகளுக்கான அணுகலை அனுமதிக்கவும்.
+contacts-account-password = சர்வர் கடவுச்சொல்லை ஏற்கவில்லை. Yahoo, iCloud, Zoho போன்றவற்றுக்கு ஆப் கடவுச்சொல் தேவை.
+contacts-account-change-password = கடவுச்சொல்லை மாற்று
+contacts-account-change-password-tooltip = அமைப்புகள் > கணக்குகள் என்பதைத் திற
+contacts-account-failed = தொடர்புகளைப் படிக்க முடியவில்லை.
+# $reason is the server's own words, in English.
+contacts-account-error = தொடர்புகளைப் படிக்க முடியவில்லை: { $reason }
+contacts-account-none = முகவரிப் புத்தகம் எதுவும் இல்லை
+contacts-account-looking = தொடர்புகளைத் தேடுகிறது…
+contacts-account-try-again = மீண்டும் முயல்க
+contacts-account-try-again-tooltip = இந்தக் கணக்கின் தொடர்புகளை இப்போது மீண்டும் சரிபார்
+contacts-account-fixing = சரிசெய்கிறது…
 contacts-manage = சரிசெய்து நிர்வகி
 contacts-merge = ஒன்றிணைத்துச் சரிசெய்
 contacts-merge-about = { $count ->

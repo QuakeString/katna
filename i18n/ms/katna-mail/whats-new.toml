@@ -1582,3 +1582,78 @@ garis bawah, seperti dalam Keep. Papan turut menunjukkannya, dan ia
 mengikut nota ke folder Nota akaun mel anda, tempat pemformatan dari
 iPhone kini kembali seperti asalnya.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Tunjukkan beberapa hari sahaja"
+text = """
+Kalendar mempunyai Paparan tersuai di sebelah Jadual: 4 hari dari hari
+yang anda pilih, atau antara 2 hingga 7. Tekan X, dan pilih bilangannya
+dalam Pilihan.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Cari acara dari desktop"
+text = """
+Taip nama acara dalam KRunner atau carian GNOME untuk melihat bila ia
+seterusnya, dan tekan Enter untuk membuka hari itu dalam Kalendar.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalendar, Kenalan, Tugas dan Nota pada telefon"
+text = """
+Dalam tetingkap sempit, halaman ini kini muat pada skrin seperti Mel:
+senarai sisinya dibuka daripada butang menu, Kenalan menunjukkan setiap
+nama dengan alamat di bawahnya, dan Nota menyusun dua kad sebaris.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Agenda hari ini, dari bar atas"
+text = """
+Butang yang menunjukkan agenda hari ini di sebelah mel anda kini berada
+di bar atas, bersebelahan butang bahasa, dan mel mendapat ruang yang
+dahulu diambil oleh jalur sisi.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Sembunyikan panel sisi pada setiap halaman"
+text = """
+Butang menu di kiri atas kini melipat panel sisi pada Kalendar, Kenalan,
+Tugas dan Nota juga, menggelongsorkannya ke tepi seperti folder Mel.
+Setiap halaman mengingati sama ada anda membiarkannya terbuka.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Menu utama pada telefon"
+text = """
+Pada telefon, menu utama di sebalik gambar akaun membuka Fail, Sunting,
+Lihat dan yang lain di tempat yang sama, dengan baris Kembali di atas,
+bukannya di luar tepi skrin.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Setiap akaun dalam Kalendar"
+text = """
+Senarai sisi Kalendar kini menunjukkan semua akaun anda. Apabila
+kalendar sesuatu akaun tidak dapat dimuatkan, satu baris di bawahnya
+menerangkan sebabnya, dengan satu klik yang membetulkannya, seperti “Log
+masuk semula untuk menunjukkan kalendar”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Tukar akaun tanpa meninggalkan halaman"
+text = """
+Memilih akaun lain daripada gambar anda di kanan atas, atau memutar roda
+di atasnya, kini mengekalkan anda di Kalendar, Tugas, Kenalan atau Nota.
+Item baharu pergi ke akaun itu, dan Mel menunjukkannya apabila anda
+kembali.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Setiap akaun dalam Kenalan"
+text = """
+Kenalan kini menyenaraikan semua akaun anda di bawah Akaun, dengan
+bilangan orang dalam setiap satu; klik satu untuk melihat orangnya
+sahaja. Apabila kenalan sesuatu akaun tidak dapat dimuatkan, satu baris
+di bawahnya menerangkan sebabnya, dengan satu klik yang membetulkannya,
+seperti “Log masuk semula untuk menunjukkan kenalan” atau “Cuba lagi”.
+"""

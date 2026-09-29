@@ -1488,3 +1488,81 @@ nzito, italiki na kupigia mstari, kama katika Keep. Ubao pia huuonyesha,
 na husafiri pamoja na dokezo hadi folda ya Madokezo ya akaunti yako ya
 barua, ambapo uumbizaji kutoka kwa iPhone sasa hurudi jinsi ulivyokuwa.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Onyesha siku chache tu"
+text = """
+Kalenda ina Mwonekano maalum kando ya Ratiba: siku 4 kuanzia siku
+unayochagua, au popote kati ya 2 hadi 7. Bonyeza X, na uchague ngapi
+katika Chaguo.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Tafuta matukio kutoka eneo-kazi"
+text = """
+Andika jina la tukio katika KRunner au utafutaji wa GNOME ili kuona
+litatokea lini tena, na ubonyeze Enter ili kufungua siku hiyo katika
+Kalenda.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalenda, Anwani, Majukumu na Madokezo kwenye simu"
+text = """
+Katika dirisha jembamba kurasa hizi sasa zinatoshea skrini kama Barua:
+orodha yao ya pembeni hufunguka kutoka kitufe cha menyu, Anwani
+huonyesha kila jina na anwani chini yake, na Madokezo hupanga kadi mbili
+kwa mstari.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Ajenda ya siku, kutoka upau wa juu"
+text = """
+Kitufe kinachoonyesha ajenda ya siku kando ya barua zako sasa kiko
+kwenye upau wa juu, karibu na kitufe cha lugha, na barua zinapata nafasi
+iliyochukuliwa na ukanda wa pembeni.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Ficha paneli ya pembeni kwenye kila ukurasa"
+text = """
+Kitufe cha menyu kilicho juu kushoto sasa hukunja paneli ya pembeni pia
+katika Kalenda, Anwani, Majukumu na Madokezo, kikiisogeza kando kama
+kinavyofanya kwa folda za Barua. Kila ukurasa hukumbuka kama uliiacha
+wazi.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Menyu kuu kwenye simu"
+text = """
+Kwenye simu, menyu kuu iliyo nyuma ya picha ya akaunti sasa hufungua
+Faili, Hariri, Onyesha na vingine papo hapo, ikiwa na safu ya Rudi juu,
+badala ya kutoka nje ya ukingo wa skrini.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Kila akaunti kwenye Kalenda"
+text = """
+Orodha ya pembeni ya Kalenda sasa inaonyesha akaunti zako zote. Kalenda
+za akaunti moja zisipopakia, mstari chini yake unaeleza sababu, pamoja
+na mbofyo mmoja unaorekebisha, kama vile “Ingia tena ili kuonyesha
+kalenda”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Badilisha akaunti bila kuondoka kwenye ukurasa"
+text = """
+Kuchagua akaunti nyingine kutoka kwa picha yako juu kulia, au kuzungusha
+gurudumu juu yake, sasa kunakuacha kwenye Kalenda, Majukumu, Anwani au
+Madokezo. Vipengee vipya huenda kwenye akaunti hiyo, na Barua huionyesha
+unaporudi.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Kila akaunti kwenye Anwani"
+text = """
+Anwani sasa huorodhesha akaunti zako zote chini ya Akaunti, pamoja na
+idadi ya watu katika kila moja; bofya moja ili kuona watu wake pekee.
+Anwani za akaunti zisipopakia, mstari chini yake unaeleza sababu, pamoja
+na mbofyo mmoja unaorekebisha, kama vile “Ingia tena ili kuonyesha
+anwani” au “Jaribu tena”.
+"""

@@ -1605,3 +1605,80 @@ auch, und sie wandert mit der Notiz in den Ordner Notizen Ihres
 E-Mail-Kontos, wo Formatierung von einem iPhone jetzt so zurückkommt,
 wie sie war.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Nur ein paar Tage anzeigen"
+text = """
+Der Kalender hat neben der Terminübersicht eine eigene Ansicht: 4 Tage
+ab dem gewählten Tag, oder beliebig zwischen 2 und 7. Drücken Sie X, und
+wählen Sie die Anzahl in Optionen.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Termine vom Desktop aus finden"
+text = """
+Geben Sie den Namen eines Termins in KRunner oder der Suche von GNOME
+ein, um zu sehen, wann er als Nächstes stattfindet, und drücken Sie
+Enter, um diesen Tag im Kalender zu öffnen.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalender, Kontakte, Aufgaben und Notizen auf dem Telefon"
+text = """
+In einem schmalen Fenster passen diese Seiten jetzt so auf den
+Bildschirm wie E-Mail: Ihre Seitenliste öffnet sich über die Menütaste,
+Kontakte zeigt jeden Namen mit der Adresse darunter, und Notizen legt
+zwei Karten nebeneinander.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Die Tagesübersicht in der oberen Leiste"
+text = """
+Die Taste, die die Tagesübersicht neben Ihrer E-Mail zeigt, sitzt jetzt
+in der oberen Leiste neben der Sprachtaste, und die E-Mail bekommt den
+Platz, den der seitliche Streifen belegt hat.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Die Seitenleiste auf jeder Seite ausblenden"
+text = """
+Die Menütaste oben links klappt die Seitenleiste jetzt auch in Kalender,
+Kontakte, Aufgaben und Notizen ein und schiebt sie weg wie die Ordner in
+E-Mail. Jede Seite merkt sich, ob Sie sie offen gelassen haben.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Das Hauptmenü auf dem Telefon"
+text = """
+Auf dem Telefon öffnet das Hauptmenü hinter dem Kontobild Datei,
+Bearbeiten, Ansicht und den Rest an Ort und Stelle, mit einer Zeile
+Zurück oben, statt seitlich über den Bildschirmrand hinaus.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Jedes Konto im Kalender"
+text = """
+Die Seitenliste des Kalenders zeigt jetzt alle Ihre Konten. Wenn die
+Kalender eines Kontos nicht laden, sagt eine Zeile darunter, warum, mit
+dem einen Klick, der es behebt, etwa „Erneut anmelden, um Kalender
+anzuzeigen“.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Konto wechseln, ohne die Seite zu verlassen"
+text = """
+Wenn Sie über Ihr Bild oben rechts ein anderes Konto wählen oder darüber
+am Mausrad drehen, bleiben Sie jetzt in Kalender, Aufgaben, Kontakte
+oder Notizen. Neue Einträge gehen an dieses Konto, und E-Mail zeigt es,
+wenn Sie zurückkehren.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Jedes Konto in Kontakte"
+text = """
+Kontakte listet jetzt alle Ihre Konten unter Konten auf, jeweils mit der
+Zahl der Personen darin; klicken Sie auf eines, um nur dessen Personen
+zu sehen. Wenn die Kontakte eines Kontos nicht laden, sagt eine Zeile
+darunter, warum, mit dem einen Klick, der es behebt, etwa „Erneut
+anmelden, um Kontakte anzuzeigen“ oder „Erneut versuchen“.
+"""

@@ -25,6 +25,24 @@ contacts-label-removed = Usunięto z etykiety { $name }
 contacts-label-renamed = Zmieniono nazwę etykiety na { $name }
 contacts-label-deleted = Usunięto etykietę { $name }
 contacts-label-no-email = Nikt z tą etykietą nie ma adresu e-mail
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Konta
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Zaloguj się ponownie, aby wyświetlić kontakty
+contacts-account-signed-in = Ponownie zalogowano do { $address }. Pobieranie kontaktów…
+contacts-account-sign-in-refused = { $provider } nie wpuścił aplikacji Katna. Spróbuj ponownie i zezwól na dostęp do kontaktów.
+contacts-account-password = Serwer nie przyjął hasła. Yahoo, iCloud, Zoho i inne wymagają hasła do aplikacji.
+contacts-account-change-password = Zmień hasło
+contacts-account-change-password-tooltip = Otwórz Ustawienia > Konta
+contacts-account-failed = Nie udało się odczytać kontaktów.
+# $reason is the server's own words, in English.
+contacts-account-error = Nie udało się odczytać kontaktów: { $reason }
+contacts-account-none = Nie znaleziono książki adresowej
+contacts-account-looking = Szukanie kontaktów…
+contacts-account-try-again = Spróbuj ponownie
+contacts-account-try-again-tooltip = Sprawdź teraz ponownie kontakty tego konta
+contacts-account-fixing = Trwa naprawianie…
 contacts-manage = Napraw i zarządzaj
 contacts-merge = Scal i napraw
 contacts-merge-about = { $count ->

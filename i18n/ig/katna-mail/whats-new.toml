@@ -1522,3 +1522,57 @@ title = "Nhazi na ndetu"
 text = """
 Pịa Nhazi na ndetu maka Isiokwu 1, Isiokwu 2, ọkpụrụkpụ, mkpọda na akara n'okpuru, dị ka na Keep. Bọọdụ na-egosikwa ya, ọ na-esokwa ndetu ahụ gaa na folda Notes nke akaụntụ ozi gị, ebe nhazi sitere na iPhone na-alaghachi ugbu a otu o si dị.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Gosi naanị ụbọchị ole na ole"
+text = """
+Kalịnda nwere Ọhụhụ ahaziri n'akụkụ Nhazi oge: ụbọchị 4 site n'ụbọchị ị họọrọ, ma ọ bụ site na 2 ruo 7. Pịa X, ma họrọ ole n'ime Nhọrọ.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Chọta ihe omume site na desktọọpụ"
+text = """
+Pịnye aha ihe omume na KRunner ma ọ bụ ọchụchọ GNOME ka ịhụ mgbe ọ ga-eme ọzọ, ma pịa Enter ka i meghee ụbọchị ahụ na Kalịnda.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalịnda, Kọntaktị, Ọrụ na Ndetu na ekwentị"
+text = """
+Na windo dị warara, peeji ndị a na-adaba ugbu a na ihuenyo dị ka Ozi si eme: ndepụta n'akụkụ ha na-emepe site na bọtịnụ menu, Kọntaktị na-egosi aha ọ bụla na adreesị n'okpuru ya, Ndetu na-edokwa kaadị abụọ n'ahịrị.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Usoro ihe omume ụbọchị, site n'ogwe dị n'elu"
+text = """
+Bọtịnụ na-egosi usoro ihe omume ụbọchị n'akụkụ ozi gị dị ugbu a n'ogwe dị n'elu, n'akụkụ bọtịnụ asụsụ, ozi gị na-enwetakwa ohere nke ogwe dị n'akụkụ were na mbụ.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Zoo ogwe n'akụkụ na peeji ọ bụla"
+text = """
+Bọtịnụ menu dị n'elu aka ekpe na-apịaji ugbu a ogwe n'akụkụ na Kalịnda, Kọntaktị, Ọrụ na Ndetu kwa, na-esegharị ya pụọ dị ka ọ na-eme folda Ozi. Peeji ọ bụla na-echeta ma ị hapụrụ ya ka o meghe.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Menu isi na ekwentị"
+text = """
+Na ekwentị, menu isi dị n'azụ foto akaụntụ na-emepe Faịlụ, Dezie, Lelee na ndị ọzọ n'otu ebe ahụ, ya na ahịrị Laghachi n'elu, kama ịpụ n'akụkụ ihuenyo.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Akaụntụ ọ bụla na Kalịnda"
+text = """
+Ndepụta n'akụkụ Kalịnda na-egosi ugbu a akaụntụ gị niile. Mgbe kalịnda nke otu akaụntụ enweghị ike ibu, ahịrị dị n'okpuru ya na-akọwa ihe kpatara ya, ya na otu pịa na-edozi ya, dị ka “Banye ọzọ iji gosi kalịnda”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Gbanwee akaụntụ n'ahapụghị peeji"
+text = """
+Ịhọrọ akaụntụ ọzọ site na foto gị dị n'elu aka nri, ma ọ bụ ịtụgharị wiil n'elu ya, na-ahapụ gị ugbu a na Kalịnda, Ọrụ, Kọntaktị ma ọ bụ Ndetu. Ihe ọhụrụ na-aga n'akaụntụ ahụ, Ozi na-egosikwa ya mgbe ị laghachiri.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Akaụntụ ọ bụla na Kọntaktị"
+text = """
+Kọntaktị na-edepụta ugbu a akaụntụ gị niile n'okpuru Akaụntụ, ya na ọnụọgụ mmadụ nke ọ bụla nwere; pịa otu ka ịhụ naanị ndị nke ya. Mgbe kọntaktị nke akaụntụ enweghị ike ibu, ahịrị dị n'okpuru ya na-akọwa ihe kpatara ya, ya na otu pịa na-edozi ya, dị ka “Banye ọzọ iji gosi kọntaktị” ma ọ bụ “Nwaa ọzọ”.
+"""

@@ -25,6 +25,24 @@ contacts-label-removed = { $name } से हटाया गया
 contacts-label-renamed = लेबल का नाम बदलकर { $name } किया गया
 contacts-label-deleted = लेबल { $name } मिटाया गया
 contacts-label-no-email = इस लेबल पर किसी का ईमेल पता नहीं है
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = खाते
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = संपर्क दिखाने के लिए फिर से साइन इन करें
+contacts-account-signed-in = { $address } में फिर से साइन इन हो गया। आपके संपर्क लाए जा रहे हैं…
+contacts-account-sign-in-refused = { $provider } ने Katna को अंदर नहीं आने दिया। फिर से कोशिश करें, और अपने संपर्कों तक पहुँच की अनुमति दें।
+contacts-account-password = सर्वर ने पासवर्ड स्वीकार नहीं किया। Yahoo, iCloud, Zoho और दूसरों को ऐप पासवर्ड चाहिए।
+contacts-account-change-password = पासवर्ड बदलें
+contacts-account-change-password-tooltip = सेटिंग > खाते खोलें
+contacts-account-failed = संपर्क पढ़े नहीं जा सके।
+# $reason is the server's own words, in English.
+contacts-account-error = संपर्क पढ़े नहीं जा सके: { $reason }
+contacts-account-none = कोई पता पुस्तिका नहीं मिली
+contacts-account-looking = संपर्क खोजे जा रहे हैं…
+contacts-account-try-again = फिर से कोशिश करें
+contacts-account-try-again-tooltip = इस खाते के संपर्क अभी फिर से जाँचें
+contacts-account-fixing = काम जारी है…
 contacts-manage = ठीक करें और प्रबंधित करें
 contacts-merge = मर्ज करें और ठीक करें
 contacts-merge-about = { $count ->

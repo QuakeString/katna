@@ -1552,3 +1552,78 @@ için bir notta Biçimlendirme'yi seçin. Pano da biçimlendirmeyi gösterir
 ve biçimlendirme notla birlikte e-posta hesabınızın Notlar klasörüne
 gider; bir iPhone'dan gelen biçimlendirme artık olduğu gibi geri gelir.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Yalnızca birkaç gün gösterin"
+text = """
+Takvim'de Program'ın yanında bir Özel görünüm var: seçtiğiniz günden
+itibaren 4 gün ya da 2 ile 7 arasında istediğiniz kadar. X'e basın ve
+kaç gün olacağını Seçenekler'den seçin.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Etkinlikleri masaüstünden bulun"
+text = """
+Bir etkinliğin bir sonraki ne zaman olduğunu görmek için adını KRunner'a
+ya da GNOME aramasına yazın ve o günü Takvim'de açmak için Enter'a
+basın.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Telefonda Takvim, Kişiler, Görevler ve Notlar"
+text = """
+Dar bir pencerede bu sayfalar artık Posta gibi ekrana sığıyor: yan
+listeleri menü düğmesinden açılıyor, Kişiler her adı altında adresiyle
+gösteriyor ve Notlar kartları yan yana ikişer diziyor.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Günün ajandası üst çubukta"
+text = """
+Postanızın yanında günün ajandasını gösteren düğme artık üst çubukta,
+dil düğmesinin yanında; yan şeridin kapladığı alan da postaya kalıyor.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Kenar panelini her sayfada gizleyin"
+text = """
+Sol üstteki menü düğmesi artık Takvim, Kişiler, Görevler ve Notlar'da da
+kenar panelini katlıyor ve onu Posta'nın klasörlerinde olduğu gibi
+kaydırarak kaldırıyor. Her sayfa, paneli açık bırakıp bırakmadığınızı
+hatırlıyor.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Telefonda ana menü"
+text = """
+Telefonda, hesap resminin arkasındaki ana menü Dosya, Düzen, Görünüm ve
+diğerlerini ekranın kenarından taşmak yerine yerinde, en üstte bir Geri
+satırıyla açıyor.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Takvim'de her hesap"
+text = """
+Takvim'in yan listesi artık tüm hesaplarınızı gösteriyor. Bir hesabın
+takvimleri yüklenemediğinde, altındaki bir satır nedenini ve sorunu
+çözen tek tıklamayı gösteriyor, örneğin “Takvimleri göstermek için
+yeniden oturum aç”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Sayfadan ayrılmadan hesap değiştirin"
+text = """
+Sağ üstteki resminizden başka bir hesap seçmek ya da üzerinde tekerleği
+çevirmek artık sizi Takvim, Görevler, Kişiler veya Notlar'da tutuyor.
+Yeni öğeler o hesaba gidiyor ve geri döndüğünüzde Posta onu gösteriyor.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Kişiler'de her hesap"
+text = """
+Kişiler artık tüm hesaplarınızı Hesaplar altında, her birinde kaç kişi
+olduğuyla birlikte listeliyor; yalnızca o hesabın kişilerini görmek için
+birine tıklayın. Bir hesabın kişileri yüklenemediğinde, altındaki bir
+satır nedenini ve sorunu çözen tek tıklamayı gösteriyor, örneğin
+“Kişileri göstermek için yeniden oturum aç” veya “Tekrar dene”.
+"""
