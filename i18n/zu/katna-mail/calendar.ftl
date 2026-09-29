@@ -39,7 +39,6 @@ calendar-guests =
        *[other] Izihambeli { $count }
     }
 calendar-guest-answers = { $yes } yebo, { $maybe } mhlawumbe, { $no } cha, { $waiting } okulindile
-calendar-organizer-name = { $name } (umhleli)
 calendar-open-web = Vula esiphequluli
 calendar-close = Vala
 

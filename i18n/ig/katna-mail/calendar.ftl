@@ -38,7 +38,6 @@ calendar-guests =
        *[other] { $count } ọbịa
     }
 calendar-guest-answers = { $yes } ee, { $maybe } ikekwe, { $no } mba, { $waiting } na-eche
-calendar-organizer-name = { $name } (onye nhazi)
 calendar-open-web = Mepe na ihe nchọgharị
 calendar-close = Mechie
 

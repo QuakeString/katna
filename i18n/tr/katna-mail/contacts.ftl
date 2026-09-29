@@ -7,6 +7,7 @@
 contacts-all = Kişiler
 contacts-frequent = Sık kullanılanlar
 contacts-labels = Etiketler
+contacts-create = Kişi oluştur
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = İzin ver
 ## A contact's page
 
 contacts-back = Kişilere geri dön
+contacts-edit = Düzenle
+contacts-delete = Sil
+contacts-deleted = { $name } silindi
 contacts-find-mail = Posta
 contacts-details = Kişi bilgileri
 contacts-saved-in = Kaydedildiği yer
@@ -52,3 +56,29 @@ contacts-kind-other = Diğer
 contacts-source-google = Google Kişiler
 contacts-source-microsoft = Outlook kişileri
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Kişi oluştur
+contacts-edit-title = Kişiyi düzenle
+contacts-edit-save = Kaydet
+contacts-edit-saving = Kaydediliyor…
+contacts-edit-cancel = İptal
+contacts-saved = Kişi kaydedildi
+contacts-edit-save-to = Kaydedilecek yer
+contacts-edit-changes-go-to = Değişiklikler { $place } konumuna kaydedilir.
+contacts-edit-given = Ad
+contacts-edit-family = Soyadı
+contacts-edit-company = Şirket
+contacts-edit-job = İş unvanı
+contacts-edit-email = E-posta
+contacts-edit-phone = Telefon
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = E-posta ekle
+contacts-edit-add-phone = Telefon ekle
+contacts-edit-street = Sokak adresi
+contacts-edit-city = Şehir
+contacts-edit-postcode = Posta kodu
+contacts-edit-country = Ülke
+contacts-edit-birthday = Doğum günü (YYYY-MM-DD)
+contacts-edit-empty = Önce bir ad, e-posta veya telefon numarası ekleyin.

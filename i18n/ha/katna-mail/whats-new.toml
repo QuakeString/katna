@@ -1191,3 +1191,24 @@ Kalanda tana nuna kalandar Google, Microsoft da sauran kalandarka ta rana, mako,
 Maɓallin kalanda a dama na wasiƙunka yana buɗe jadawalin ranar, tare da Shiga don kiran taro.
 Sake shiga asusu don barin Katna ta karanta kalandarsa.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Ƙirƙira da gyara lambobin sadarwa"
+text = """
+Ƙirƙiri lambar sadarwa a shafin Lambobin sadarwa yana ƙara mutum a asusun da ka zaɓa, kuma Gyara a shafin lambar sadarwa yana canza ta a can ma.
+Share yana da Janye, kuma Google da Outlook suna ajiye lambobin sadarwa da aka share a shara na ɗan lokaci.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Bayanai a kan wasiƙa"
+text = """
+Danna wasiƙa da maɓallin dama, ko buɗe menu ɗinta na ⋮, sannan ka zaɓi Ƙara bayani: bayani mai taken batun wasiƙar yana buɗewa a kan wasiƙar.
+Bayanan suna bayyana a ƙarƙashin batun duk lokacin da ka sake buɗe wannan wasiƙar, kuma alamar Wasiƙu ta bayanin tana mayar da kai zuwa wasiƙar.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Ayyuka a kan sabar wasiƙarka"
+text = """
+Asusun da ke shiga da kalmar sirri yanzu suna ajiye ayyukansu a kan sabar wasiƙarsu idan tana ba da CalDAV,
+saboda haka ayyukan kuma suna bayyana a manhajojin sabar da kanta da kuma a waya.
+"""

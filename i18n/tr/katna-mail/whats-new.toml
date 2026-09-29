@@ -1227,3 +1227,29 @@ Postanızın sağındaki takvim düğmesi, aramalar için Katıl düğmesiyle
 birlikte günün ajandasını açar. Katna’nın bir hesabın takvimini
 okuyabilmesi için hesapta yeniden oturum açın.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Kişileri oluşturma ve düzenleme"
+text = """
+Kişiler sayfasındaki Kişi oluştur, birini seçtiğiniz hesaba ekler; bir
+kişinin sayfasındaki Düzenle ise onu orada da değiştirir. Sil işleminin
+bir Geri al seçeneği vardır ve Google ile Outlook silinen kişileri bir
+süre çöp kutularında tutar.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Bir e-postaya not"
+text = """
+Bir e-postaya sağ tıklayın ya da ⋮ menüsünü açın ve Not ekle’yi seçin:
+konusu başlık olan bir not e-postanın üzerinde açılır. Notlar, o
+e-postayı her yeniden açtığınızda konunun altında görünür ve bir notun
+Posta etiketi sizi e-postaya geri götürür.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Görevler kendi posta sunucunuzda"
+text = """
+Parolayla oturum açan hesaplar, posta sunucusu CalDAV sunuyorsa
+görevlerini artık sunucuda saklıyor; böylece görevler sunucunun kendi
+uygulamalarında ve telefonda da görünüyor.
+"""

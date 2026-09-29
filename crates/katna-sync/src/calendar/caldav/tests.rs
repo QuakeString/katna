@@ -258,3 +258,54 @@ fn the_password_goes_only_to_the_accounts_domain() {
     );
     assert_eq!(path("https://imap.example.com/a/b.ics"), "/a/b.ics");
 }
+
+#[test]
+fn a_yahoo_password_goes_to_yahoos_calendar_server_only() {
+    let dav = CalDav::for_account(
+        "me@yahoo.com",
+        "imap.mail.yahoo.com",
+        "me",
+        "secret",
+        Tls::insecure_for_local_tests(),
+    );
+    assert_eq!(
+        dav.starts[0],
+        "https://caldav.calendar.yahoo.com/.well-known/caldav"
+    );
+    assert!(dav.trusted("https://caldav.calendar.yahoo.com/dav/me/"));
+    assert!(dav.trusted("https://imap.mail.yahoo.com/"));
+    assert!(!dav.trusted("https://yahoo.com.evil.test/"));
+    assert!(!dav.trusted("http://caldav.calendar.yahoo.com/"));
+}
+
+#[test]
+fn google_caldav_uses_the_sign_in_and_says_when_it_is_off() {
+    let (origin, seen) = fake::serve(|request| {
+        assert_eq!(request.header("Authorization"), Some("Bearer at-1"));
+        match request.route() {
+            "/caldav/v2/me/user" => Answer::xml(
+                403,
+                "CalDAV API has not been used in project 1 before or it is disabled.",
+            ),
+            _ => Answer::xml(404, ""),
+        }
+    });
+    let provider = crate::oauth::Provider {
+        kind: katna_core::OAuthProvider::Google,
+        auth_url: "https://accounts.test/auth".into(),
+        token_url: "http://127.0.0.1:1/token".into(),
+        client_id: "katna-test".into(),
+        client_secret: "not-secret".into(),
+        scope: String::new(),
+        consent: String::new(),
+        redirect_host: "127.0.0.1",
+        tls: Tls::insecure_for_local_tests(),
+    };
+    let tokens = TokenSource::new(provider, "rt".into(), None)
+        .with_access_token("at-1".into(), Duration::from_secs(3600));
+    let dav = CalDav::google_at(&origin, Arc::new(tokens), Tls::insecure_for_local_tests());
+    let (_dir, mut store) = store();
+    let err = smol::block_on(dav.sync(&mut store, ACCOUNT, "me@gmail.com")).unwrap_err();
+    assert!(matches!(err, CalendarError::NotEnabled(_)), "{err}");
+    assert_eq!(seen.lock().unwrap().len(), 1);
+}

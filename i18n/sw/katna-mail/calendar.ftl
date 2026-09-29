@@ -39,7 +39,6 @@ calendar-guests =
        *[other] wageni { $count }
     }
 calendar-guest-answers = ndiyo { $yes }, labda { $maybe }, hapana { $no }, wanasubiri { $waiting }
-calendar-organizer-name = { $name } (mratibu)
 calendar-open-web = Fungua kwenye kivinjari
 calendar-close = Funga
 

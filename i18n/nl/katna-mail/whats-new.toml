@@ -1237,3 +1237,31 @@ rechts van je e-mail opent de agenda van de dag, met Deelnemen voor
 gesprekken. Meld je opnieuw aan bij een account zodat Katna de agenda
 ervan kan lezen.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Contacten maken en bewerken"
+text = """
+Met Contact maken op de pagina Contacten voeg je iemand toe aan het
+account dat je kiest, en met Bewerken op de pagina van een contact
+wijzig je diegene ook daar. Verwijderen heeft een Ongedaan maken, en
+Google en Outlook bewaren verwijderde contacten nog een tijdje in hun
+prullenbak.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notities bij een e-mail"
+text = """
+Klik met de rechtermuisknop op een e-mail, of open het menu ⋮ ervan,
+en kies Notitie toevoegen: boven de e-mail opent een notitie met het
+onderwerp als titel. De notities staan onder het onderwerp telkens
+wanneer u die e-mail opnieuw opent, en met het label E-mail van een
+notitie gaat u terug naar de e-mail.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Taken op uw eigen mailserver"
+text = """
+Accounts die met een wachtwoord inloggen bewaren hun taken nu op hun
+mailserver als die CalDAV biedt, zodat de taken ook in de eigen apps
+van de server en op de telefoon verschijnen.
+"""

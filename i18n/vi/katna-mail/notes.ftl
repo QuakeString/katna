@@ -46,6 +46,12 @@ notes-edited = Đã chỉnh sửa { $date }
 notes-on-this-computer = Trên máy tính này
 notes-where = Nơi lưu ghi chú này
 
+## A note about a mail
+
+notes-mail = Thư
+notes-open-mail = Mở thư
+notes-open-note = Mở ghi chú
+
 ## Colors (tooltips)
 
 notes-color-none = Không có màu
@@ -68,6 +74,7 @@ notes-unarchived = Đã bỏ lưu trữ ghi chú
 notes-trashed = Đã chuyển ghi chú vào thùng rác
 notes-restored = Đã khôi phục ghi chú
 notes-empty-discarded = Đã bỏ ghi chú trống
+notes-mail-gone = Thư đó không còn ở đây nữa
 notes-deleted-forever = { $count ->
    *[other] Đã xóa vĩnh viễn { $count } ghi chú
 }

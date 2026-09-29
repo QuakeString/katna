@@ -229,6 +229,7 @@ menu-unpin = Wepụ n'elu
 menu-snooze = Yigharịa
 menu-unsnooze = Kagbuo iyigharị
 menu-add-to-tasks = Tinye na Ọrụ
+menu-add-note = Tinye ndetu
 menu-print-all = Bipụta niile
 menu-new-window = Mepee na windo ọhụrụ
 menu-move-to = Bugharịa gaa

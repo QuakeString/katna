@@ -47,6 +47,12 @@ notes-edited = Ilihaririwa { $date }
 notes-on-this-computer = Kwenye kompyuta hii
 notes-where = Mahali dokezo hili linapohifadhiwa
 
+## A note about a mail
+
+notes-mail = Barua
+notes-open-mail = Fungua barua
+notes-open-note = Fungua dokezo
+
 ## Colors (tooltips)
 
 notes-color-none = Bila rangi
@@ -69,6 +75,7 @@ notes-unarchived = Dokezo limetolewa kwenye kumbukumbu
 notes-trashed = Dokezo limehamishiwa kwenye Tupio
 notes-restored = Dokezo limerejeshwa
 notes-empty-discarded = Dokezo tupu limetupwa
+notes-mail-gone = Barua hiyo haipo hapa tena
 notes-deleted-forever = { $count ->
     [one] Dokezo limefutwa milele
    *[other] Madokezo { $count } yamefutwa milele

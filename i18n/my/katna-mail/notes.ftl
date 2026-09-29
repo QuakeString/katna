@@ -46,6 +46,12 @@ notes-edited = { $date } တွင် ပြင်ထားသည်
 notes-on-this-computer = ဤကွန်ပျူတာတွင်
 notes-where = ဤမှတ်စုကို သိမ်းထားရာနေရာ
 
+## A note about a mail
+
+notes-mail = မေးလ်
+notes-open-mail = မေးလ်ကို ဖွင့်ရန်
+notes-open-note = မှတ်စုကို ဖွင့်ရန်
+
 ## Colors (tooltips)
 
 notes-color-none = အရောင်မရှိ
@@ -68,6 +74,7 @@ notes-unarchived = မှတ်စုကို မော်ကွန်းမှ
 notes-trashed = မှတ်စုကို အမှိုက်ပုံးသို့ ရွှေ့ပြီးပါပြီ
 notes-restored = မှတ်စုကို ပြန်ယူပြီးပါပြီ
 notes-empty-discarded = မှတ်စုအလွတ်ကို ပယ်ပစ်ပြီးပါပြီ
+notes-mail-gone = ထိုမေးလ် ဤနေရာတွင် မရှိတော့ပါ
 notes-deleted-forever = { $count ->
    *[other] မှတ်စု { $count } ခုကို အပြီးဖျက်ပြီးပါပြီ
 }

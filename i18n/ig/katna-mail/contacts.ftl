@@ -7,6 +7,7 @@
 contacts-all = Kọntaktị
 contacts-frequent = Ndị a na-akpọ ugboro ugboro
 contacts-labels = Leebụl
+contacts-create = Mepụta kọntaktị
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = Kwe
 ## A contact's page
 
 contacts-back = Laghachi na kọntaktị
+contacts-edit = Dezie
+contacts-delete = Hichapụ
+contacts-deleted = Ehichapụla { $name }
 contacts-find-mail = Ozi
 contacts-details = Nkọwa kọntaktị
 contacts-saved-in = Echekwara na
@@ -50,3 +54,29 @@ contacts-kind-other = Ndị ọzọ
 contacts-source-google = Kọntaktị Google
 contacts-source-microsoft = Kọntaktị Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Mepụta kọntaktị
+contacts-edit-title = Dezie kọntaktị
+contacts-edit-save = Chekwaa
+contacts-edit-saving = Na-echekwa…
+contacts-edit-cancel = Kagbuo
+contacts-saved = Echekwara kọntaktị
+contacts-edit-save-to = Chekwaa na
+contacts-edit-changes-go-to = A na-echekwa mgbanwe na { $place }.
+contacts-edit-given = Aha mbụ
+contacts-edit-family = Aha ikpeazụ
+contacts-edit-company = Ụlọ ọrụ
+contacts-edit-job = Aha ọrụ
+contacts-edit-email = Imeel
+contacts-edit-phone = Ekwentị
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Tinye imeel
+contacts-edit-add-phone = Tinye ekwentị
+contacts-edit-street = Adreesị okporo ámá
+contacts-edit-city = Obodo
+contacts-edit-postcode = Koodu nzipu ozi
+contacts-edit-country = Mba
+contacts-edit-birthday = Ụbọchị ọmụmụ (YYYY-MM-DD)
+contacts-edit-empty = Buru ụzọ tinye aha, imeel ma ọ bụ nọmba ekwentị.

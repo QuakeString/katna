@@ -47,6 +47,12 @@ notes-edited = सम्पादन गरिएको: { $date }
 notes-on-this-computer = यो कम्प्युटरमा
 notes-where = यो टिपोट कहाँ राखिएको छ
 
+## A note about a mail
+
+notes-mail = मेल
+notes-open-mail = मेल खोल्नुहोस्
+notes-open-note = टिपोट खोल्नुहोस्
+
 ## Colors (tooltips)
 
 notes-color-none = कुनै रङ छैन
@@ -69,6 +75,7 @@ notes-unarchived = टिपोट अभिलेखबाट झिकिय�
 notes-trashed = टिपोट ट्रयासमा सारियो
 notes-restored = टिपोट पुनःप्राप्त गरियो
 notes-empty-discarded = खाली टिपोट हटाइयो
+notes-mail-gone = त्यो मेल अब यहाँ छैन
 notes-deleted-forever = { $count ->
     [one] टिपोट सधैंका लागि मेटियो
    *[other] { $count } टिपोट सधैंका लागि मेटिए

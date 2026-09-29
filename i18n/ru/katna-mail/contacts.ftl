@@ -7,6 +7,7 @@
 contacts-all = Контакты
 contacts-frequent = Часто используемые
 contacts-labels = Ярлыки
+contacts-create = Создать контакт
 
 ## Search and the list
 
@@ -42,6 +43,9 @@ contacts-allow-button = Разрешить
 ## A contact's page
 
 contacts-back = Назад к контактам
+contacts-edit = Изменить
+contacts-delete = Удалить
+contacts-deleted = Удалено: { $name }
 contacts-find-mail = Почта
 contacts-details = Контактная информация
 contacts-saved-in = Сохранён в
@@ -56,3 +60,29 @@ contacts-kind-other = Другой
 contacts-source-google = Google Контакты
 contacts-source-microsoft = Контакты Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Создать контакт
+contacts-edit-title = Изменить контакт
+contacts-edit-save = Сохранить
+contacts-edit-saving = Сохранение…
+contacts-edit-cancel = Отмена
+contacts-saved = Контакт сохранён
+contacts-edit-save-to = Сохранить в
+contacts-edit-changes-go-to = Изменения сохраняются в { $place }.
+contacts-edit-given = Имя
+contacts-edit-family = Фамилия
+contacts-edit-company = Компания
+contacts-edit-job = Должность
+contacts-edit-email = Электронная почта
+contacts-edit-phone = Телефон
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Добавить адрес электронной почты
+contacts-edit-add-phone = Добавить телефон
+contacts-edit-street = Улица
+contacts-edit-city = Город
+contacts-edit-postcode = Почтовый индекс
+contacts-edit-country = Страна
+contacts-edit-birthday = День рождения (YYYY-MM-DD)
+contacts-edit-empty = Сначала добавьте имя, адрес электронной почты или номер телефона.

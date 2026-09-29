@@ -2668,8 +2668,13 @@ detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
 → x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
 templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
 `SenderPicture(address) → ay` (images for the reading pane, §12),
-`SetCalendarHidden(x id, b hidden)` and `CalendarStatus() → a(xss)`
-(account, state, detail; §18), and the
+`SetCalendarHidden(x id, b hidden)`, `CalendarStatus() → a(xss)`
+(account, state, detail; §18) and `EditEvent(s json) → x` (a
+`katna_store::calendar::EventChange` as JSON, tagged by `op`: `add`,
+`change`, `delete`, `restore` or `respond`; written to `pim.db` at once,
+then sent to the calendar's service; returns the event row added or
+changed, or 0; `InvalidArgs` for a calendar that can't be changed; §18),
+and the
 signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)`,
 `OutboxChanged(id)` and `CalendarChanged()`. `MailChanged` carries the
@@ -3229,7 +3234,26 @@ removed.
 Calendar API (Meet links, event types, colors; Google sends the
 invitations), Microsoft accounts use Microsoft Graph, other servers CalDAV
 (`katna-dav`), and there are local calendars for no account. Google's
-CalDAV endpoint can't make Meet links or event types, so it is not used.
+CalDAV endpoint can't make Meet links or event types, so it is only the
+fallback.
+
+**Best way first, others when it is not available** (`katna_sync::methods`,
+shared by Calendar, Contacts and Tasks). Each kind of account has a best
+way, tried first; when it answers "not enabled", "not offered" or "sign in
+again", the next is tried, and the way that worked is remembered per
+account and kind (`meta` rows, object `account`, plugin
+`sync-method:calendar|contacts|tasks`) and tried first for 7 days, after
+which the best way goes first again. A new sign-in forgets it. Network or
+server errors never switch ways. Google sign-ins: the Google API, then
+Google's CalDAV/CardDAV with the same token. Microsoft sign-ins: Graph
+(Outlook.com has no CalDAV). Password accounts: CalDAV/CardDAV looked for
+on the provider's known server (Yahoo, Zoho by region, iCloud, Fastmail,
+mailbox.org, Posteo, GMX, web.de, Yandex, AOL; by mail domain or IMAP host), then
+`.well-known` on the mail domain, the IMAP server's domain and the IMAP
+server, and its root (`methods::dav_start_urls`). Credentials go only over
+TLS to hosts of the domains the search started on. When no way works, the
+most useful reason is shown. Changes go back the way their calendar came
+(`calendar.source`).
 
 - Calendars and events live in `pim.db`, synced by the daemon; apps read
   them read-only, as with mail.
@@ -3255,9 +3279,9 @@ CalDAV endpoint can't make Meet links or event types, so it is not used.
   that refuses the expansion shows its series without changed
   occurrences). Scope `https://graph.microsoft.com/Calendars.ReadWrite`,
   consented at sign-in beside `Files.ReadWrite`, its tokens separate.
-  **Other IMAP accounts**: CalDAV found through `/.well-known/caldav` (or
-  `/`) on the IMAP host, with the IMAP password over TLS, only to that
-  host's domain; a calendar whose `getctag`/`sync-token` didn't change is
+  **CalDAV** (password accounts, and Google's fallback): found from the
+  places above, with the IMAP password (or Google's token) over TLS; a
+  calendar whose `getctag`/`sync-token` didn't change is
   skipped, otherwise the etags of its `VEVENT`s are compared with the
   store and only changed ones fetched by `calendar-multiget`
   (`katna_dav::ical` reads them). A server without CalDAV is asked again
@@ -3265,7 +3289,44 @@ CalDAV endpoint can't make Meet links or event types, so it is not used.
   `not-enabled`, `error`, `none`) is `CalendarStatus()` on `Pim1`;
   `CalendarChanged()` (and the clock's `Agenda1.Changed()`) says when to
   read again; `SetCalendarHidden(id, hidden)` ticks calendars on and off.
-  Only reading so far: events are not yet created or changed from Katna.
+- How edits flow (`Pim1.EditEvent`, `katna_sync::calendar::edit`): the
+  daemon writes the change to `pim.db` at once and says
+  `CalendarChanged`, so the app shows it on reload; rows the service
+  doesn't have yet are marked (`event.pending`: 1 changed, 2 deleted and
+  hidden until the service deleted it too), and a sync leaves marked rows
+  (and their CalDAV resource) alone. A second task then sends the change,
+  one change after another, with the services the sync uses and never
+  while it syncs. Once sent, the marks go; if the service refuses, the
+  marks go with the rows' etags and the calendar's sync token, and the
+  calendar syncs again, which undoes the change here. Marks left when the
+  daemon stopped are dropped the same way at start. New events get a UID
+  `…@katna`, and where the service lets Katna choose (Google's event ID,
+  the CalDAV resource name) their remote ID too. One occurrence of a
+  series becomes a changed occurrence (Google patches its instance
+  `ID_YYYYMMDDTHHMMSSZ`, Graph finds it through the series' `instances`,
+  CalDAV adds a `VEVENT` with `RECURRENCE-ID` to the resource); deleting
+  one skips it (`EXDATE` here, the instance deleted on the service);
+  "this and following" ends the series the day before (`UNTIL`) and adds
+  a new series; "all" moves the series by as much as the occurrence
+  moved. Moving to another calendar is Google's `move` within an account,
+  else a delete and an add. **Google**: `insert` with `recurrence` lines,
+  reminder overrides and `transparency`, `patch`, `delete`;
+  `sendUpdates=all` when there are attendees; a Meet call through
+  `conferenceData.createRequest`. **Graph**: `POST`/`PATCH`/`DELETE`, the
+  `RRULE`s the editor makes mapped back to Graph's `recurrence` (times in
+  the zone's Windows name, else UTC), Teams through `isOnlineMeeting`;
+  Graph can't bring back a deleted occurrence, so Undo there is refused
+  and synced over. **CalDAV**: the whole resource written by
+  `katna_dav::ical::write_calendar` (escaped, folded, with `VTIMEZONE`s)
+  and `PUT` with `If-Match` (or `If-None-Match: *` for a new one), the
+  server's new `ETag` kept; the user is `ORGANIZER` of events with
+  attendees, so the server sends the invitations. Answers to invitations
+  (`respond`) set the user's status here, then Google patches the
+  attendees, Graph `accept`s, `tentativelyAccept`s or `decline`s with
+  `sendResponse`, and CalDAV writes the user's `PARTSTAT`. Calendars on
+  this computer (`source` `local`, no account) only store; the daemon
+  makes one, without a name (apps show "On this computer"), when there
+  is no calendar at all.
 - `jiff` for time zones; recurrence is expanded when read, with
   exceptions (`RECURRENCE-ID`, `EXDATE`).
 - Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail,

@@ -47,6 +47,12 @@ notes-edited = సవరించినది: { $date }
 notes-on-this-computer = ఈ కంప్యూటర్‌లో
 notes-where = ఈ గమనిక ఎక్కడ ఉంచబడింది
 
+## A note about a mail
+
+notes-mail = మెయిల్
+notes-open-mail = మెయిల్‌ను తెరవండి
+notes-open-note = గమనికను తెరవండి
+
 ## Colors (tooltips)
 
 notes-color-none = రంగు లేదు
@@ -69,6 +75,7 @@ notes-unarchived = గమనిక ఆర్కైవ్ నుండి తీ�
 notes-trashed = గమనిక ట్రాష్‌కు తరలించబడింది
 notes-restored = గమనిక పునరుద్ధరించబడింది
 notes-empty-discarded = ఖాళీ గమనిక విస్మరించబడింది
+notes-mail-gone = ఆ మెయిల్ ఇకపై ఇక్కడ లేదు
 notes-deleted-forever = { $count ->
     [one] గమనిక శాశ్వతంగా తొలగించబడింది
    *[other] { $count } గమనికలు శాశ్వతంగా తొలగించబడ్డాయి

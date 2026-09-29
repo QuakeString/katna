@@ -7,6 +7,7 @@
 contacts-all = Lambobin sadarwa
 contacts-frequent = Masu yawa
 contacts-labels = Lakabobi
+contacts-create = Ƙirƙiri lambar sadarwa
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Ƙyale
 ## A contact's page
 
 contacts-back = Koma zuwa lambobin sadarwa
+contacts-edit = Gyara
+contacts-delete = Share
+contacts-deleted = An share { $name }
 contacts-find-mail = Wasiƙu
 contacts-details = Bayanan lamba
 contacts-saved-in = An adana a
@@ -52,3 +56,29 @@ contacts-kind-other = Wani
 contacts-source-google = Lambobin sadarwa na Google
 contacts-source-microsoft = Lambobin sadarwa na Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Ƙirƙiri lambar sadarwa
+contacts-edit-title = Gyara lambar sadarwa
+contacts-edit-save = Ajiye
+contacts-edit-saving = Ana ajiyewa…
+contacts-edit-cancel = Soke
+contacts-saved = An ajiye lambar sadarwa
+contacts-edit-save-to = Ajiye a
+contacts-edit-changes-go-to = Ana ajiye canje-canje a { $place }.
+contacts-edit-given = Sunan farko
+contacts-edit-family = Sunan ƙarshe
+contacts-edit-company = Kamfani
+contacts-edit-job = Matsayin aiki
+contacts-edit-email = Imel
+contacts-edit-phone = Waya
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Ƙara imel
+contacts-edit-add-phone = Ƙara waya
+contacts-edit-street = Adireshin titi
+contacts-edit-city = Birni
+contacts-edit-postcode = Lambar gidan waya
+contacts-edit-country = Ƙasa
+contacts-edit-birthday = Ranar haihuwa (YYYY-MM-DD)
+contacts-edit-empty = Da farko ƙara suna, imel ko lambar waya.

@@ -7,6 +7,7 @@
 contacts-all = رابطے
 contacts-frequent = اکثر
 contacts-labels = لیبلز
+contacts-create = رابطہ بنائیں
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = اجازت دیں
 ## A contact's page
 
 contacts-back = رابطوں پر واپس جائیں
+contacts-edit = ترمیم کریں
+contacts-delete = حذف کریں
+contacts-deleted = { $name } حذف ہو گیا
 contacts-find-mail = میل
 contacts-details = رابطے کی تفصیلات
 contacts-saved-in = محفوظ کردہ در
@@ -52,3 +56,29 @@ contacts-kind-other = دیگر
 contacts-source-google = Google رابطے
 contacts-source-microsoft = Outlook رابطے
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = رابطہ بنائیں
+contacts-edit-title = رابطے میں ترمیم کریں
+contacts-edit-save = محفوظ کریں
+contacts-edit-saving = محفوظ کیا جا رہا ہے…
+contacts-edit-cancel = منسوخ کریں
+contacts-saved = رابطہ محفوظ ہو گیا
+contacts-edit-save-to = اس میں محفوظ کریں
+contacts-edit-changes-go-to = تبدیلیاں { $place } میں محفوظ کی جاتی ہیں۔
+contacts-edit-given = پہلا نام
+contacts-edit-family = آخری نام
+contacts-edit-company = کمپنی
+contacts-edit-job = عہدہ
+contacts-edit-email = ای میل
+contacts-edit-phone = فون
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ای میل شامل کریں
+contacts-edit-add-phone = فون شامل کریں
+contacts-edit-street = گلی کا پتا
+contacts-edit-city = شہر
+contacts-edit-postcode = پوسٹل کوڈ
+contacts-edit-country = ملک
+contacts-edit-birthday = سالگرہ (YYYY-MM-DD)
+contacts-edit-empty = پہلے نام، ای میل یا فون نمبر شامل کریں۔

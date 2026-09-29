@@ -38,7 +38,6 @@ calendar-guests =
        *[other] ភ្ញៀវ { $count } នាក់
     }
 calendar-guest-answers = បាទ/ចាស { $yes }, ប្រហែល { $maybe }, ទេ { $no }, កំពុងរង់ចាំ { $waiting }
-calendar-organizer-name = { $name } (អ្នករៀបចំ)
 calendar-open-web = បើកក្នុងកម្មវិធីរុករក
 calendar-close = បិទ
 

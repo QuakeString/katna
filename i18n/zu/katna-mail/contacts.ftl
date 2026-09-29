@@ -7,6 +7,7 @@
 contacts-all = Oxhumana nabo
 contacts-frequent = Ababuthakathaka
 contacts-labels = Amalebula
+contacts-create = Dala oxhumana naye
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Vumela
 ## A contact's page
 
 contacts-back = Buyela koxhumana nabo
+contacts-edit = Hlela
+contacts-delete = Susa
+contacts-deleted = Kususiwe { $name }
 contacts-find-mail = Imeyili
 contacts-details = Imininingwane yoxhumana naye
 contacts-saved-in = Kugcinwe ku-
@@ -52,3 +56,29 @@ contacts-kind-other = Okunye
 contacts-source-google = Oxhumana nabo be-Google
 contacts-source-microsoft = Oxhumana nabo be-Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Dala oxhumana naye
+contacts-edit-title = Hlela oxhumana naye
+contacts-edit-save = Londoloza
+contacts-edit-saving = Iyalondoloza…
+contacts-edit-cancel = Khansela
+contacts-saved = Oxhumana naye ulondolozwe
+contacts-edit-save-to = Londoloza ku-
+contacts-edit-changes-go-to = Izinguquko zilondolozwa ku-{ $place }.
+contacts-edit-given = Igama lokuqala
+contacts-edit-family = Isibongo
+contacts-edit-company = Inkampani
+contacts-edit-job = Isihloko somsebenzi
+contacts-edit-email = I-imeyili
+contacts-edit-phone = Ifoni
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Engeza i-imeyili
+contacts-edit-add-phone = Engeza ifoni
+contacts-edit-street = Ikheli lomgwaqo
+contacts-edit-city = Idolobha
+contacts-edit-postcode = Ikhodi yeposi
+contacts-edit-country = Izwe
+contacts-edit-birthday = Usuku lokuzalwa (YYYY-MM-DD)
+contacts-edit-empty = Qala ngokwengeza igama, i-imeyili noma inombolo yefoni.

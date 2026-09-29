@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } bisita
     }
 calendar-guest-answers = { $yes } oo, { $maybe } baka, { $no } hindi, { $waiting } naghihintay
-calendar-organizer-name = { $name } (organizer)
 calendar-open-web = Buksan sa browser
 calendar-close = Isara
 

@@ -1276,3 +1276,29 @@ Calendar. Inkinobho yekhalenda ngakwesokudla semeyili ivula uhlelo
 losuku, nenkinobho ethi Joyina yamakholi. Ngena futhi ku-akhawunti ukuze
 i-Katna ifunde ikhalenda layo.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Dala futhi ushintshe oxhumana nabo"
+text = """
+Dala oxhumana naye ekhasini loxhumana nabo kwengeza umuntu ku-akhawunti
+oyikhethayo, futhi Hlela ekhasini loxhumana naye kumshintsha lapho
+futhi. Susa inalo Hlehlisa, futhi i-Google ne-Outlook zigcina oxhumana
+nabo abasusiwe kumkhumbi wazo isikhathi esithile.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Amanothi ku-imeyili"
+text = """
+Chofoza kwesokudla kumeyili, noma uvule imenyu yayo ye-⋮, bese ukhetha
+Engeza inothi: inothi elinesihloko semeyili livuleka phezu kwemeyili.
+Amanothi ayo avela ngaphansi kwesihloko noma nini uma uvula leyo
+meyili futhi, futhi ishipi Imeyili lenothi likubuyisela kumeyili.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Imisebenzi kuseva yakho siqu yeyili"
+text = """
+Ama-akhawunti angena ngephasiwedi manje agcina imisebenzi yawo kuseva
+yeyili uma inikeza i-CalDAV, ngakho imisebenzi iphinde ivele ezinhlelweni
+zeseva uqobo nasefonini.
+"""

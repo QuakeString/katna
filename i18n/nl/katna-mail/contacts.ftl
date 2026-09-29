@@ -7,6 +7,7 @@
 contacts-all = Contacten
 contacts-frequent = Vaak gebruikt
 contacts-labels = Labels
+contacts-create = Contact maken
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Toestaan
 ## A contact's page
 
 contacts-back = Terug naar contacten
+contacts-edit = Bewerken
+contacts-delete = Verwijderen
+contacts-deleted = { $name } verwijderd
 contacts-find-mail = E-mail
 contacts-details = Contactgegevens
 contacts-saved-in = Opgeslagen in
@@ -52,3 +56,29 @@ contacts-kind-other = Overig
 contacts-source-google = Google Contacten
 contacts-source-microsoft = Outlook-contacten
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Contact maken
+contacts-edit-title = Contact bewerken
+contacts-edit-save = Opslaan
+contacts-edit-saving = Opslaan…
+contacts-edit-cancel = Annuleren
+contacts-saved = Contact opgeslagen
+contacts-edit-save-to = Opslaan in
+contacts-edit-changes-go-to = Wijzigingen worden opgeslagen in { $place }.
+contacts-edit-given = Voornaam
+contacts-edit-family = Achternaam
+contacts-edit-company = Bedrijf
+contacts-edit-job = Functie
+contacts-edit-email = E-mail
+contacts-edit-phone = Telefoon
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = E-mailadres toevoegen
+contacts-edit-add-phone = Telefoonnummer toevoegen
+contacts-edit-street = Straatadres
+contacts-edit-city = Plaats
+contacts-edit-postcode = Postcode
+contacts-edit-country = Land
+contacts-edit-birthday = Verjaardag (YYYY-MM-DD)
+contacts-edit-empty = Voeg eerst een naam, e-mailadres of telefoonnummer toe.

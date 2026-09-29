@@ -47,6 +47,12 @@ notes-edited = An gyara { $date }
 notes-on-this-computer = A wannan kwamfuta
 notes-where = Inda ake ajiye wannan bayani
 
+## A note about a mail
+
+notes-mail = Wasiƙu
+notes-open-mail = Buɗe wasiƙar
+notes-open-note = Buɗe bayanin
+
 ## Colors (tooltips)
 
 notes-color-none = Babu launi
@@ -69,6 +75,7 @@ notes-unarchived = An cire bayanin daga ma’ajiya
 notes-trashed = An mayar da bayanin cikin Kwandon shara
 notes-restored = An maido da bayanin
 notes-empty-discarded = An watsar da bayani mara komai
+notes-mail-gone = Wannan wasiƙar ba ta nan kuma
 notes-deleted-forever = { $count ->
     [one] An share bayanin har abada
    *[other] An share bayanai { $count } har abada

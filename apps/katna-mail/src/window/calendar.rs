@@ -27,6 +27,7 @@ use katna_store::{Mode, Store};
 use katna_ui::px;
 
 use super::MailWindow;
+use super::event_edit::{Draft, ScopeAsk};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{icon, icon_button, outlined_button, raised, tip};
 
@@ -41,6 +42,9 @@ gpui::actions!(
         CalendarMonthView,
         CalendarScheduleView,
         CalendarCloseEvent,
+        CalendarCreateEvent,
+        CalendarEditEvent,
+        CalendarDeleteEvent,
     ]
 );
 
@@ -65,6 +69,10 @@ pub(super) fn bindings() -> Vec<KeyBinding> {
         KeyBinding::new("a", CalendarScheduleView, c),
         KeyBinding::new("4", CalendarScheduleView, c),
         KeyBinding::new("escape", CalendarCloseEvent, c),
+        KeyBinding::new("c", CalendarCreateEvent, c),
+        KeyBinding::new("e", CalendarEditEvent, c),
+        KeyBinding::new("delete", CalendarDeleteEvent, c),
+        KeyBinding::new("backspace", CalendarDeleteEvent, c),
     ]
 }
 
@@ -117,9 +125,27 @@ struct Loaded {
 }
 
 /// An open event's card.
-struct OpenEvent {
-    occurrence: Occurrence,
-    at: Point<Pixels>,
+pub(super) struct OpenEvent {
+    pub(super) occurrence: Occurrence,
+    pub(super) at: Point<Pixels>,
+}
+
+/// An event being dragged to another time or day, or its end to another
+/// time.
+pub(super) struct EventDrag {
+    pub(super) occurrence: Occurrence,
+    origin: Point<Pixels>,
+    pub(super) resize: bool,
+    /// How far it has gone, in minutes (by quarter hours) and days.
+    pub(super) minutes: i64,
+    pub(super) days: i64,
+    pub(super) moved: bool,
+}
+
+impl EventDrag {
+    fn is(&self, occurrence: &Occurrence) -> bool {
+        self.occurrence.event.id == occurrence.event.id && self.occurrence.start == occurrence.start
+    }
 }
 
 /// The state of the Calendar page.
@@ -130,7 +156,7 @@ pub(super) struct CalendarPage {
     /// The month the small month shows, by its first day.
     mini: Date,
     loaded: Option<Loaded>,
-    calendars: Rc<Vec<Calendar>>,
+    pub(super) calendars: Rc<Vec<Calendar>>,
     /// Calendars unticked here and not yet read back as hidden.
     hidden: HashSet<i64>,
     /// Accounts whose calendars are folded away in the side column.
@@ -141,7 +167,12 @@ pub(super) struct CalendarPage {
     grid_scroll: ScrollHandle,
     /// The grid was scrolled to the morning since it last appeared.
     scrolled: bool,
-    open: Option<OpenEvent>,
+    pub(super) open: Option<OpenEvent>,
+    /// An event being added or changed.
+    pub(super) draft: Option<Draft>,
+    pub(super) drag: Option<EventDrag>,
+    /// Which occurrences of a repeating event a change is for, being asked.
+    pub(super) ask: Option<ScopeAsk>,
     pub(super) focus: FocusHandle,
 }
 
@@ -162,7 +193,24 @@ impl CalendarPage {
             grid_scroll: ScrollHandle::new(),
             scrolled: false,
             open: None,
+            draft: None,
+            drag: None,
+            ask: None,
             focus: cx.focus_handle(),
+        }
+    }
+
+    /// The day new events start on: today when it is on show, else the
+    /// first day shown.
+    pub(super) fn view_day(&self) -> Date {
+        let today = Zoned::now().date();
+        let (first, end) = self.days();
+        if (first..end).contains(&today) {
+            today
+        } else if self.view == CalView::Month {
+            self.day
+        } else {
+            first
         }
     }
 
@@ -233,6 +281,21 @@ fn parse_color(text: &str) -> Option<u32> {
         .then(|| u32::from_str_radix(hex, 16).ok())
         .flatten()
         .map(|rgb| (rgb << 8) | 0xff)
+}
+
+/// A calendar's color.
+/// A calendar's name; the calendar the daemon makes on this computer has
+/// none of its own.
+pub(super) fn calendar_name(calendar: &Calendar) -> String {
+    if calendar.name.is_empty() && calendar.account.is_none() {
+        tr!("calendar-local")
+    } else {
+        calendar.name.clone()
+    }
+}
+
+pub(super) fn calendar_color(calendar: &Calendar) -> u32 {
+    parse_color(&calendar.color).unwrap_or(DEFAULT_COLOR)
 }
 
 /// The color of an event: its own, else its calendar's.
@@ -368,7 +431,7 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn calendar_hidden(&self, id: i64) -> bool {
+    pub(super) fn calendar_hidden(&self, id: i64) -> bool {
         self.calendar.hidden.contains(&id)
             || self
                 .calendar
@@ -446,7 +509,10 @@ impl MailWindow {
                 CalView::Schedule => self.render_schedule(th, cx),
             }
         };
-        div()
+        if self.event_editor_open() {
+            return self.render_event_editor(th, cx);
+        }
+        let page = div()
             .id("calendar-page")
             .key_context(CALENDAR_CONTEXT)
             .track_focus(&self.calendar.focus)
@@ -466,10 +532,21 @@ impl MailWindow {
                 this.set_calendar_view(CalView::Schedule, cx)
             }))
             .on_action(cx.listener(Self::close_calendar_event))
+            .on_action(cx.listener(|this, _: &CalendarCreateEvent, window, cx| {
+                this.create_event_key(window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &CalendarEditEvent, window, cx| {
+                this.edit_open_event(window, cx)
+            }))
+            .on_action(
+                cx.listener(|this, _: &CalendarDeleteEvent, _, cx| this.delete_open_event(cx)),
+            )
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, _, window, cx| {
-                    window.focus(&this.calendar.focus, cx);
+                    if this.calendar.draft.is_none() {
+                        window.focus(&this.calendar.focus, cx);
+                    }
                 }),
             )
             .relative()
@@ -487,7 +564,12 @@ impl MailWindow {
                     .child(self.render_calendar_bar(th, cx))
                     .child(div().flex_1().min_h_0().child(main)),
             )
-            .children(self.render_event_card(th, cx))
+            .children(self.render_event_card(th, cx));
+        div()
+            .relative()
+            .size_full()
+            .child(page)
+            .children(self.render_event_draft(th, cx))
             .into_any_element()
     }
 
@@ -799,7 +881,7 @@ impl MailWindow {
                             .truncate()
                             .text_size(px(14.0))
                             .text_color(rgba(th.text))
-                            .child(calendar.name.clone()),
+                            .child(calendar_name(calendar)),
                     )
             });
             div()
@@ -1045,52 +1127,101 @@ impl MailWindow {
                 .h(px(1.0))
                 .bg(rgba(th.divider))
         });
-        let columns = days.iter().enumerate().map(|(ix, &day)| {
-            let start = midnight(day, &tz);
-            let next = midnight(day.tomorrow().unwrap_or(day), &tz);
-            let mine: Vec<&Occurrence> = timed
-                .iter()
-                .filter(|o| {
-                    o.start < next && (o.end > start || (o.end == o.start && o.start >= start))
-                })
-                .collect();
-            let placed = lay_out(&mine, start, next);
-            let is_today = day == today;
-            let now_y = ((now.timestamp().as_second() - start) as f32 / 3600.0) * HOUR_HEIGHT;
-            div()
-                .relative()
-                .flex_1()
-                .min_w_0()
-                .h_full()
-                .when(ix > 0, |d| d.border_l_1().border_color(rgba(th.divider)))
-                .children(
-                    placed
-                        .into_iter()
-                        .map(|(occurrence, top, height, col, cols)| {
-                            self.render_timed_event(occurrence, top, height, col, cols, &tz, th, cx)
+        let columns = days
+            .iter()
+            .enumerate()
+            .map(|(ix, &day)| {
+                let start = midnight(day, &tz);
+                let next = midnight(day.tomorrow().unwrap_or(day), &tz);
+                let mine: Vec<&Occurrence> = timed
+                    .iter()
+                    .filter(|o| {
+                        o.start < next && (o.end > start || (o.end == o.start && o.start >= start))
+                    })
+                    .collect();
+                let placed = lay_out(&mine, start, next);
+                let is_today = day == today;
+                let now_y = ((now.timestamp().as_second() - start) as f32 / 3600.0) * HOUR_HEIGHT;
+                let scroll = self.calendar.grid_scroll.clone();
+                let placeholder = self
+                    .calendar
+                    .draft
+                    .as_ref()
+                    .filter(|d| d.placeholder_on(day))
+                    .map(|d| d.placeholder(cx));
+                div()
+                    .id(("grid-day", ix))
+                    .relative()
+                    .flex_1()
+                    .min_w_0()
+                    .h_full()
+                    .when(ix > 0, |d| d.border_l_1().border_color(rgba(th.divider)))
+                    .on_mouse_down(
+                        MouseButton::Left,
+                        cx.listener(move |this, event: &gpui::MouseDownEvent, window, cx| {
+                            let top = scroll.bounds().top() + scroll.offset().y;
+                            let y = katna_ui::unpx(event.position.y - top);
+                            let time = super::event_edit::time_at(y, HOUR_HEIGHT);
+                            this.start_new_event(
+                                day,
+                                Some(time),
+                                false,
+                                event.position,
+                                window,
+                                cx,
+                            );
                         }),
-                )
-                .when(is_today, |d| {
-                    d.child(
+                    )
+                    .children(placeholder.map(|(start, end, title)| {
+                        let top = (start / 60.0) * HOUR_HEIGHT;
+                        let height = ((end - start) / 60.0 * HOUR_HEIGHT).max(20.0);
                         div()
                             .absolute()
-                            .top(px(now_y - 1.0))
-                            .left_0()
-                            .right_0()
-                            .h(px(2.0))
-                            .bg(rgba(0xea43_35ff)),
+                            .top(px(top))
+                            .left(px(2.0))
+                            .right(px(8.0))
+                            .h(px(height - 2.0))
+                            .px(px(8.0))
+                            .py(px(4.0))
+                            .rounded(px(6.0))
+                            .bg(rgba(th.accent))
+                            .shadow(crate::widgets::elevation(th, 2.0))
+                            .text_color(rgba(th.on_accent))
+                            .text_size(px(12.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .child(title)
+                    }))
+                    .children(
+                        placed
+                            .into_iter()
+                            .map(|(occurrence, top, height, col, cols)| {
+                                self.render_timed_event(
+                                    occurrence, top, height, col, cols, &tz, th, cx,
+                                )
+                            }),
                     )
-                    .child(
-                        div()
-                            .absolute()
-                            .top(px(now_y - 6.0))
-                            .left(px(-6.0))
-                            .size(px(12.0))
-                            .rounded_full()
-                            .bg(rgba(0xea43_35ff)),
-                    )
-                })
-        });
+                    .when(is_today, |d| {
+                        d.child(
+                            div()
+                                .absolute()
+                                .top(px(now_y - 1.0))
+                                .left_0()
+                                .right_0()
+                                .h(px(2.0))
+                                .bg(rgba(0xea43_35ff)),
+                        )
+                        .child(
+                            div()
+                                .absolute()
+                                .top(px(now_y - 6.0))
+                                .left(px(-6.0))
+                                .size(px(12.0))
+                                .rounded_full()
+                                .bg(rgba(0xea43_35ff)),
+                        )
+                    })
+            })
+            .collect::<Vec<_>>();
         let zone = now.strftime("GMT%:z").to_string().replace(":00", "");
         div()
             .size_full()
@@ -1134,6 +1265,15 @@ impl MailWindow {
             .child(
                 div()
                     .id("calendar-grid")
+                    .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
+                        if this.calendar.drag.is_some() {
+                            this.drag_event_to(event.position, cx);
+                        }
+                    }))
+                    .on_mouse_up(
+                        MouseButton::Left,
+                        cx.listener(|this, _, _, cx| this.drop_dragged_event(cx)),
+                    )
                     .flex_1()
                     .min_h_0()
                     .overflow_y_scroll()
@@ -1198,8 +1338,24 @@ impl MailWindow {
         };
         let text = if past { th.text_dim } else { th.text };
         let width = 1.0 / cols as f32;
-        let left = col as f32 * width;
-        let time = time_range(occurrence.start, occurrence.end, tz);
+        let mut left = col as f32 * width;
+        let (mut top, mut height) = (top, height);
+        let (mut start, mut end) = (occurrence.start, occurrence.end);
+        let dragged = self.calendar.drag.as_ref().filter(|d| d.is(&occurrence));
+        if let Some(drag) = dragged {
+            let by = drag.minutes as f32 / 60.0 * HOUR_HEIGHT;
+            if drag.resize {
+                height = (height + by).max(HOUR_HEIGHT / 4.0);
+                end = (end + drag.minutes * 60).max(start + 15 * 60);
+            } else {
+                top += by;
+                left += drag.days as f32;
+                start += drag.minutes * 60 + drag.days * 24 * 3600;
+                end += drag.minutes * 60 + drag.days * 24 * 3600;
+            }
+        }
+        let editable = self.can_edit(&occurrence);
+        let time = time_range(start, end, tz);
         let short = height < 34.0;
         let title = if data.title.is_empty() {
             tr!("calendar-no-title")
@@ -1207,11 +1363,21 @@ impl MailWindow {
             data.title.clone()
         };
         let open = occurrence.clone();
-        div()
+        let block = div()
             .id(SharedString::from(format!(
                 "event-{}-{}",
                 occurrence.event.id, occurrence.start
             )))
+            .on_mouse_down(MouseButton::Left, {
+                let occurrence = occurrence.clone();
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    if editable {
+                        this.start_event_drag(occurrence.clone(), event.position, false);
+                    }
+                })
+            })
+            .when(dragged.is_some(), |d| d.opacity(0.85))
             .absolute()
             .top(px(top + 1.0))
             .h(px((height - 2.0).max(18.0)))
@@ -1271,10 +1437,76 @@ impl MailWindow {
                         )
                     }),
             )
+            .when(editable && height >= 30.0, |d| {
+                let occurrence = occurrence.clone();
+                d.child(
+                    div()
+                        .id("resize")
+                        .absolute()
+                        .bottom_0()
+                        .left_0()
+                        .right(px(4.0))
+                        .h(px(6.0))
+                        .cursor(gpui::CursorStyle::ResizeUpDown)
+                        .on_mouse_down(
+                            MouseButton::Left,
+                            cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                                cx.stop_propagation();
+                                this.start_event_drag(occurrence.clone(), event.position, true);
+                            }),
+                        ),
+                )
+            })
             .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
+                // The end of a drag, not a click.
+                if this.calendar.drag.as_ref().is_some_and(|d| d.moved) {
+                    return;
+                }
                 this.open_calendar_event(open.clone(), event.position(), cx)
-            }))
-            .into_any_element()
+            }));
+        if dragged.is_some() {
+            // Over the events it passes.
+            return deferred(block.shadow(crate::widgets::elevation(th, 3.0)))
+                .with_priority(1)
+                .into_any_element();
+        }
+        block.into_any_element()
+    }
+
+    fn start_event_drag(&mut self, occurrence: Occurrence, at: Point<Pixels>, resize: bool) {
+        self.calendar.drag = Some(EventDrag {
+            occurrence,
+            origin: at,
+            resize,
+            minutes: 0,
+            days: 0,
+            moved: false,
+        });
+    }
+
+    /// Follows the pointer while an event is dragged: quarter hours up and
+    /// down, days left and right.
+    fn drag_event_to(&mut self, at: Point<Pixels>, cx: &mut Context<Self>) {
+        let (first, end) = self.calendar.days();
+        let count = (end - first).get_days().max(1) as f32;
+        let width = katna_ui::unpx(self.calendar.grid_scroll.bounds().size.width) - GUTTER;
+        let Some(drag) = &mut self.calendar.drag else {
+            return;
+        };
+        let dy = katna_ui::unpx(at.y - drag.origin.y);
+        let dx = katna_ui::unpx(at.x - drag.origin.x);
+        let minutes = ((dy / HOUR_HEIGHT * 60.0 / 15.0).round() as i64) * 15;
+        let days = if drag.resize || width <= 0.0 {
+            0
+        } else {
+            (dx / (width / count)).round() as i64
+        };
+        if (minutes, days) != (drag.minutes, drag.days) {
+            drag.minutes = minutes;
+            drag.days = days;
+            drag.moved = true;
+            cx.notify();
+        }
     }
 
     /// The Month view: six weeks of days with their events.
@@ -1365,6 +1597,9 @@ impl MailWindow {
                 });
                 div()
                     .id(SharedString::from(format!("month-day-{day}")))
+                    .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
+                        this.start_new_event(day, None, true, event.position(), window, cx)
+                    }))
                     .flex_1()
                     .min_w_0()
                     .h_full()
@@ -1397,6 +1632,7 @@ impl MailWindow {
                                     .hover(|s| s.bg(rgba(th.hover)))
                                 })
                                 .on_click(cx.listener(move |this, _, _, cx| {
+                                    cx.stop_propagation();
                                     this.open_calendar_day(day, Some(CalView::Day), cx)
                                 }))
                                 .child(if day.day() == 1 {
@@ -1423,6 +1659,7 @@ impl MailWindow {
                                 .cursor_pointer()
                                 .hover(|s| s.bg(rgba(th.hover)))
                                 .on_click(cx.listener(move |this, _, _, cx| {
+                                    cx.stop_propagation();
                                     this.open_calendar_day(day, Some(CalView::Day), cx)
                                 }))
                                 .child(tr!("calendar-more", count = mine.len() - 2)),
@@ -1657,6 +1894,7 @@ impl MailWindow {
         let answers = |status: &str| data.attendees.iter().filter(|a| a.status == status).count();
         let join = data.join_url.clone();
         let web = data.web_link.clone();
+        let editable = self.can_edit(occurrence);
         let title = if data.title.is_empty() {
             tr!("calendar-no-title")
         } else {
@@ -1684,6 +1922,20 @@ impl MailWindow {
                 .flex_row()
                 .justify_end()
                 .gap(px(4.0))
+                .when(editable, |d| {
+                    d.child(
+                        icon_button("event-edit", "compose", 20.0, th)
+                            .tooltip(tip(tr!("calendar-edit"), th))
+                            .on_click(
+                                cx.listener(|this, _, window, cx| this.edit_open_event(window, cx)),
+                            ),
+                    )
+                    .child(
+                        icon_button("event-delete", "trash", 20.0, th)
+                            .tooltip(tip(tr!("calendar-delete"), th))
+                            .on_click(cx.listener(|this, _, _, cx| this.delete_open_event(cx))),
+                    )
+                })
                 .when(!web.is_empty(), |d| {
                     d.child(
                         icon_button("event-web", "open-external", 20.0, th)
@@ -1773,44 +2025,147 @@ impl MailWindow {
                 d.child(line("pin", data.location.clone()))
             })
             .when(guests > 0, |d| {
-                let mut text = tr!("calendar-guests", count = guests);
-                let yes = answers("accepted");
-                let maybe = answers("tentative");
-                let no = answers("declined");
-                let waiting = answers("needs_action");
-                text.push_str(&format!(
-                    "\n{}",
+                let head = format!(
+                    "{}\n{}",
+                    tr!("calendar-guests", count = guests),
                     tr!(
                         "calendar-guest-answers",
-                        yes = yes,
-                        maybe = maybe,
-                        no = no,
-                        waiting = waiting
+                        yes = answers("accepted"),
+                        maybe = answers("tentative"),
+                        no = answers("declined"),
+                        waiting = answers("needs_action")
                     )
-                ));
-                for attendee in data.attendees.iter().take(12) {
+                );
+                let rows = data.attendees.iter().take(20).map(|attendee| {
                     let name = if attendee.name.is_empty() {
                         attendee.email.clone()
                     } else {
                         attendee.name.clone()
                     };
-                    let name = if attendee.organizer {
-                        tr!("calendar-organizer-name", name = name)
-                    } else {
-                        name
+                    let mark = match attendee.status.as_str() {
+                        "accepted" => Some(("check", 0x1e8e_3eff)),
+                        "declined" => Some(("close", 0xd930_25ff)),
+                        "tentative" => Some(("info", th.text_dim)),
+                        _ => None,
                     };
-                    text.push_str(&format!("\n{name}"));
-                }
-                d.child(line("people", text))
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(10.0))
+                        .child(
+                            div()
+                                .relative()
+                                .flex_none()
+                                .child(crate::widgets::avatar(&name, &attendee.email, 24.0))
+                                .children(mark.map(|(name, color)| {
+                                    div()
+                                        .absolute()
+                                        .bottom(px(-3.0))
+                                        .right(px(-3.0))
+                                        .size(px(13.0))
+                                        .flex()
+                                        .items_center()
+                                        .justify_center()
+                                        .rounded_full()
+                                        .bg(rgba(th.menu))
+                                        .child(icon(name, color, 11.0))
+                                })),
+                        )
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .text_size(px(13.0))
+                                .child(div().truncate().child(name))
+                                .when(attendee.organizer || attendee.optional, |d| {
+                                    d.child(
+                                        div()
+                                            .text_size(px(11.0))
+                                            .text_color(rgba(th.text_dim))
+                                            .child(if attendee.organizer {
+                                                tr!("calendar-organizer")
+                                            } else {
+                                                tr!("calendar-optional")
+                                            }),
+                                    )
+                                }),
+                        )
+                });
+                d.child(line("people", head)).child(
+                    div()
+                        .pl(px(36.0))
+                        .flex()
+                        .flex_col()
+                        .gap(px(8.0))
+                        .children(rows),
+                )
             })
             .when(!data.description.is_empty(), |d| {
                 let text: String = data.description.chars().take(1200).collect();
                 d.child(line("notes", text))
             })
             .when_some(calendar, |d, calendar| {
-                d.child(line("calendar", calendar.name.clone()))
+                d.child(line("calendar", calendar_name(calendar)))
             });
         card = card.child(body);
+        let me = data.attendees.iter().find(|a| a.is_self);
+        let invited = editable && me.is_some_and(|a| !a.organizer);
+        let mine = if data.self_status.is_empty() {
+            me.map(|a| a.status.clone()).unwrap_or_default()
+        } else {
+            data.self_status.clone()
+        };
+        if invited {
+            let answer = |id: &'static str, label: String, status: &'static str| {
+                let on = mine == status;
+                div()
+                    .id(id)
+                    .h(px(32.0))
+                    .px(px(16.0))
+                    .flex()
+                    .items_center()
+                    .rounded_full()
+                    .border_1()
+                    .border_color(rgba(if on { th.accent } else { th.divider }))
+                    .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
+                    .text_size(px(14.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(if on { th.accent } else { th.text }))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .child(label)
+                    .on_click(cx.listener(move |this, _, _, cx| this.respond_to_event(status, cx)))
+            };
+            card = card.child(
+                div()
+                    .mt(px(4.0))
+                    .pt(px(12.0))
+                    .px(px(16.0))
+                    .border_t_1()
+                    .border_color(rgba(th.divider))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .child(
+                        div()
+                            .flex_1()
+                            .text_size(px(14.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(tr!("calendar-going")),
+                    )
+                    .child(answer("answer-yes", tr!("calendar-answer-yes"), "accepted"))
+                    .child(answer("answer-no", tr!("calendar-answer-no"), "declined"))
+                    .child(answer(
+                        "answer-maybe",
+                        tr!("calendar-answer-maybe"),
+                        "tentative",
+                    )),
+            );
+        }
         let at = open.at;
         Some(
             div()

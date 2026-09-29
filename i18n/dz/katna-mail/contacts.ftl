@@ -7,6 +7,7 @@
 contacts-all = འབྲེལ་བ་ཚུ
 contacts-frequent = ཆེས་མང་སྤྱོད་མི
 contacts-labels = ཁ་ཡིག་ཚུ
+contacts-create = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = ཆོག་ཐམ་སྤྲོད།
 ## A contact's page
 
 contacts-back = འབྲེལ་བ་ཚུ་ལུ་ལོག་འགྱོ།
+contacts-edit = ཞུན་དག་འབད།
+contacts-delete = བཏོན་གཏང་།
+contacts-deleted = { $name } བཏོན་གཏང་ཡི།
 contacts-find-mail = གློག་འཕྲིན
 contacts-details = འབྲེལ་བའི་ཕྲ་ཞིབ།
 contacts-saved-in = ཉར་ཚགས་འབད་ཡོད་སའི་ས་ཁོངས།
@@ -50,3 +54,29 @@ contacts-kind-other = གཞན།
 contacts-source-google = Google འབྲེལ་བ་ཚུ
 contacts-source-microsoft = Outlook འབྲེལ་བ་ཚུ
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
+contacts-edit-title = འབྲེལ་བ་ཞུན་དག་འབད།
+contacts-edit-save = སྲུང་།
+contacts-edit-saving = སྲུང་དོ…
+contacts-edit-cancel = ཆ་མེད་གཏང་།
+contacts-saved = འབྲེལ་བ་སྲུངས་ཡི།
+contacts-edit-save-to = འདི་ནང་སྲུང་།
+contacts-edit-changes-go-to = བསྒྱུར་བཅོས་ཚུ་ { $place } ནང་སྲུངམ་ཨིན།
+contacts-edit-given = མིང་དང་པོ
+contacts-edit-family = མིང་མཇུག
+contacts-edit-company = ཀམ་པ་ནི།
+contacts-edit-job = ལས་ཀའི་མིང་།
+contacts-edit-email = གློག་འཕྲིན་
+contacts-edit-phone = ཁ་པར།
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = གློག་འཕྲིན་ཁ་སྣོན་འབད།
+contacts-edit-add-phone = ཁ་པར་ཁ་སྣོན་འབད།
+contacts-edit-street = ལམ་ཁའི་ཁ་བྱང་།
+contacts-edit-city = གྲོང་ཁྱེར།
+contacts-edit-postcode = ཡིག་ཚང་ཨང་།
+contacts-edit-country = རྒྱལ་ཁབ།
+contacts-edit-birthday = སྐྱེས་ཚེས། (YYYY-MM-DD)
+contacts-edit-empty = ཐོག་མར་མིང་ ཡང་ན་ གློག་འཕྲིན་ ཡང་ན་ ཁ་པར་ཨང་ཁ་སྣོན་འབད།

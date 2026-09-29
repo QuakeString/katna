@@ -7,6 +7,7 @@
 contacts-all = ಸಂಪರ್ಕಗಳು
 contacts-frequent = ಆಗಾಗ್ಗೆ
 contacts-labels = ಲೇಬಲ್‌ಗಳು
+contacts-create = ಸಂಪರ್ಕವನ್ನು ರಚಿಸಿ
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = ಅನುಮತಿಸಿ
 ## A contact's page
 
 contacts-back = ಸಂಪರ್ಕಗಳಿಗೆ ಹಿಂತಿರುಗಿ
+contacts-edit = ಎಡಿಟ್ ಮಾಡಿ
+contacts-delete = ಅಳಿಸಿ
+contacts-deleted = { $name } ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ
 contacts-find-mail = ಮೇಲ್
 contacts-details = ಸಂಪರ್ಕ ವಿವರಗಳು
 contacts-saved-in = ಉಳಿಸಿದ ಸ್ಥಳ
@@ -52,3 +56,29 @@ contacts-kind-other = ಇತರೆ
 contacts-source-google = Google ಸಂಪರ್ಕಗಳು
 contacts-source-microsoft = Outlook ಸಂಪರ್ಕಗಳು
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = ಸಂಪರ್ಕವನ್ನು ರಚಿಸಿ
+contacts-edit-title = ಸಂಪರ್ಕವನ್ನು ಎಡಿಟ್ ಮಾಡಿ
+contacts-edit-save = ಉಳಿಸಿ
+contacts-edit-saving = ಉಳಿಸಲಾಗುತ್ತಿದೆ…
+contacts-edit-cancel = ರದ್ದುಮಾಡಿ
+contacts-saved = ಸಂಪರ್ಕವನ್ನು ಉಳಿಸಲಾಗಿದೆ
+contacts-edit-save-to = ಇಲ್ಲಿ ಉಳಿಸಿ
+contacts-edit-changes-go-to = ಬದಲಾವಣೆಗಳನ್ನು { $place } ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.
+contacts-edit-given = ಮೊದಲ ಹೆಸರು
+contacts-edit-family = ಕೊನೆಯ ಹೆಸರು
+contacts-edit-company = ಕಂಪನಿ
+contacts-edit-job = ಉದ್ಯೋಗದ ಶೀರ್ಷಿಕೆ
+contacts-edit-email = ಇಮೇಲ್
+contacts-edit-phone = ಫೋನ್
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ಇಮೇಲ್ ಸೇರಿಸಿ
+contacts-edit-add-phone = ಫೋನ್ ಸೇರಿಸಿ
+contacts-edit-street = ರಸ್ತೆ ವಿಳಾಸ
+contacts-edit-city = ನಗರ
+contacts-edit-postcode = ಅಂಚೆ ಸಂಕೇತ
+contacts-edit-country = ದೇಶ
+contacts-edit-birthday = ಜನ್ಮದಿನ (YYYY-MM-DD)
+contacts-edit-empty = ಮೊದಲು ಹೆಸರು, ಇಮೇಲ್ ಅಥವಾ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ.

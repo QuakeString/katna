@@ -229,6 +229,7 @@ menu-unpin = Lepas sematan
 menu-snooze = Tunda
 menu-unsnooze = Batalkan penundaan
 menu-add-to-tasks = Tambahkan ke Tugas
+menu-add-note = Tambahkan catatan
 menu-print-all = Cetak semua
 menu-new-window = Buka di jendela baru
 menu-move-to = Pindahkan ke

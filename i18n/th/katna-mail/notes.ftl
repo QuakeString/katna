@@ -46,6 +46,12 @@ notes-edited = แก้ไขเมื่อ { $date }
 notes-on-this-computer = ในคอมพิวเตอร์เครื่องนี้
 notes-where = ที่เก็บโน้ตนี้
 
+## A note about a mail
+
+notes-mail = อีเมล
+notes-open-mail = เปิดอีเมล
+notes-open-note = เปิดโน้ต
+
 ## Colors (tooltips)
 
 notes-color-none = ไม่มีสี
@@ -68,6 +74,7 @@ notes-unarchived = เลิกเก็บโน้ตถาวรแล้ว
 notes-trashed = ย้ายโน้ตไปที่ถังขยะแล้ว
 notes-restored = กู้คืนโน้ตแล้ว
 notes-empty-discarded = ทิ้งโน้ตเปล่าแล้ว
+notes-mail-gone = ไม่มีอีเมลนั้นแล้ว
 notes-deleted-forever = { $count ->
    *[other] ลบโน้ต { $count } รายการถาวรแล้ว
 }

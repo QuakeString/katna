@@ -46,6 +46,12 @@ notes-edited = ཞུན་དག་འབད་ཡོདཔ་: { $date }
 notes-on-this-computer = གློག་ཀླད་འདི་གུ།
 notes-where = དྲན་ཐོ་འདི་གཏང་ཡོད་ས།
 
+## A note about a mail
+
+notes-mail = གློག་འཕྲིན
+notes-open-mail = གློག་འཕྲིན་ཁ་ཕྱེ།
+notes-open-note = དྲན་ཐོ་ཁ་ཕྱེ།
+
 ## Colors (tooltips)
 
 notes-color-none = ཚོན་ཁ་མེད།
@@ -68,6 +74,7 @@ notes-unarchived = དྲན་ཐོ་ཡིག་མཛོད་ལས་བ�
 notes-trashed = དྲན་ཐོ་གད་སྙིགས་ནང་སྤོ་ཡི།
 notes-restored = དྲན་ཐོ་སླར་ལོག་འབད་ཡི།
 notes-empty-discarded = དྲན་ཐོ་སྟོངམ་བཏོན་གཏང་ཡི།
+notes-mail-gone = གློག་འཕྲིན་དེ་ད་ལུ་འདི་ལུ་མིན་འདུག
 notes-deleted-forever = { $count ->
    *[other] དྲན་ཐོ་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏང་ཡི།
 }
