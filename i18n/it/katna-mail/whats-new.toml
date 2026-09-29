@@ -1581,3 +1581,80 @@ corsivo e sottolineato, come in Keep. Anche la bacheca la mostra, e
 viaggia con la nota fino alla cartella Note del tuo account di posta,
 dove ora la formattazione arrivata da un iPhone torna com'era.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Mostra solo alcuni giorni"
+text = """
+Calendario ha una Vista personalizzata accanto ad Agenda: 4 giorni a
+partire dal giorno che scegli, oppure da 2 a 7. Premi X e scegli quanti
+in Opzioni.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Trova gli eventi dal desktop"
+text = """
+Digita il nome di un evento in KRunner o nella ricerca di GNOME per
+vedere quando sarà la prossima volta, e premi Enter per aprire quel
+giorno in Calendario.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Calendario, Contatti, Attività e Note sul telefono"
+text = """
+In una finestra stretta queste pagine ora si adattano allo schermo come
+fa Posta: il loro elenco laterale si apre dal pulsante del menu,
+Contatti mostra ogni nome con l'indirizzo sotto, e Note dispone due
+schede per riga.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "L'agenda del giorno, dalla barra in alto"
+text = """
+Il pulsante che mostra l'agenda del giorno accanto alla posta ora è
+nella barra in alto, vicino al pulsante della lingua, e la posta ottiene
+lo spazio che occupava la striscia laterale.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Nascondi il pannello laterale in ogni pagina"
+text = """
+Il pulsante del menu in alto a sinistra ora ripiega il pannello laterale
+anche in Calendario, Contatti, Attività e Note, facendolo scorrere via
+come fa con le cartelle di Posta. Ogni pagina ricorda se l'avevi
+lasciato aperto.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Il menu principale sul telefono"
+text = """
+Sul telefono il menu principale dietro l'immagine dell'account apre
+File, Modifica, Visualizza e il resto sul posto, con una riga Indietro
+in alto, invece che fuori dal bordo dello schermo.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Tutti gli account nel Calendario"
+text = """
+L'elenco laterale del Calendario ora mostra tutti i tuoi account. Quando
+i calendari di uno non si caricano, una riga sotto spiega perché, con il
+clic che risolve, come «Accedi di nuovo per mostrare i calendari».
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Cambia account senza lasciare la pagina"
+text = """
+Scegliere un altro account dalla tua immagine in alto a destra, o girare
+la rotellina sopra di essa, ora ti lascia su Calendario, Attività,
+Contatti o Note. I nuovi elementi vanno a quell'account, e Posta lo
+mostra quando torni indietro.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Tutti gli account in Contatti"
+text = """
+Contatti ora elenca tutti i tuoi account sotto Account, con quante
+persone contiene ciascuno; fai clic su uno per vedere solo le sue
+persone. Quando i contatti di un account non si caricano, una riga sotto
+spiega perché, con il clic che risolve, come «Accedi di nuovo per
+mostrare i contatti» o «Riprova».
+"""

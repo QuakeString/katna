@@ -1458,3 +1458,79 @@ Yan Ìgúnrege nínú àkọsílẹ̀ kan fún Àkọlé 1, Àkọlé 2, nípọ
 lọ sí fóldà Àkọsílẹ̀ nínú àkọọ́lẹ̀ ímeèlì rẹ, níbi tí ìgúnrege láti iPhone
 ti ń padà wá báyìí bí ó ṣe wà tẹ́lẹ̀.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Fi ọjọ́ díẹ̀ péré hàn"
+text = """
+Kàlẹ́ńdà ní Ìwòye àdáni lẹ́gbẹ̀ẹ́ Àtòjọ àkókò: ọjọ́ 4 láti ọjọ́ tí o
+yàn, tàbí láti 2 sí 7. Tẹ X, kí o sì yan iye rẹ̀ nínú Àwọn àṣàyàn.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Wá àwọn ìṣẹ̀lẹ̀ láti orí tábìlì"
+text = """
+Tẹ orúkọ ìṣẹ̀lẹ̀ kan sínú KRunner tàbí ìwádìí GNOME láti rí ìgbà tí yóò
+wáyé tókàn, kí o sì tẹ Enter láti ṣí ọjọ́ náà nínú Kàlẹ́ńdà.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́ àti Àkọsílẹ̀ lórí fóònù"
+text = """
+Nínú fèrèsé tóóró, àwọn ojú ewé wọ̀nyí ti bá ìbòjú mu báyìí bí Lẹ́tà ṣe
+ń ṣe: àtòjọ ẹ̀gbẹ́ wọn ń ṣí láti bọ́tìnnì àkójọ, Olùbásọ̀rọ̀ ń fi orúkọ
+kọ̀ọ̀kan hàn pẹ̀lú àdírẹ́sì rẹ̀ nísàlẹ̀, Àkọsílẹ̀ sì ń to káàdì méjì sí
+ẹ̀gbẹ́ ara wọn.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Ètò ọjọ́ náà, láti ọ̀pá òkè"
+text = """
+Bọ́tìnnì tí ń fi ètò ọjọ́ náà hàn lẹ́gbẹ̀ẹ́ lẹ́tà rẹ ti wà lórí ọ̀pá òkè
+báyìí, nítòsí bọ́tìnnì èdè, lẹ́tà rẹ sì ń gba àyè tí ìlà ẹ̀gbẹ́ ti ń gbà
+tẹ́lẹ̀.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Fi pánẹ́lì ẹ̀gbẹ́ pamọ́ ní gbogbo ojú ewé"
+text = """
+Bọ́tìnnì àkójọ lókè lápá òsì ti ń ká pánẹ́lì ẹ̀gbẹ́ jọ báyìí ní
+Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́ àti Àkọsílẹ̀ pẹ̀lú, ó ń yọ̀ ọ́ kúrò bí ó ṣe
+ń ṣe fún àwọn fóldà Lẹ́tà. Ojú ewé kọ̀ọ̀kan ń rántí bóyá o fi í sílẹ̀ ní
+ṣíṣí.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Àkójọ àkọ́kọ́ lórí fóònù"
+text = """
+Lórí fóònù, àkójọ àkọ́kọ́ lẹ́yìn àwòrán àkọọ́lẹ̀ ń ṣí Fáìlì, Ṣàtúnṣe,
+Ìwò àti àwọn yòókù níbẹ̀ gan-an, pẹ̀lú ìlà Padà lókè, dípò kí ó jáde sí
+ẹ̀gbẹ́ ìbòjú.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Gbogbo àkọọ́lẹ̀ lórí Kàlẹ́ńdà"
+text = """
+Àtòjọ ẹ̀gbẹ́ Kàlẹ́ńdà ti ń fi gbogbo àkọọ́lẹ̀ rẹ hàn báyìí. Nígbà tí
+àwọn kàlẹ́ńdà àkọọ́lẹ̀ kan kò bá lè ṣí, ìlà kan nísàlẹ̀ rẹ̀ ń sọ ìdí,
+pẹ̀lú títẹ̀ kan ṣoṣo tí ó ń yanjú rẹ̀, bí “Wọlé lẹ́ẹ̀kan sí i láti fi
+àwọn kàlẹ́ńdà hàn”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Yí àkọọ́lẹ̀ padà láì kúrò lójú ewé"
+text = """
+Yíyan àkọọ́lẹ̀ míràn láti inú àwòrán rẹ lókè lápá ọ̀tún, tàbí yíyí
+kẹ̀kẹ́ lórí rẹ̀, ti ń jẹ́ kí o dúró sí Kàlẹ́ńdà, Iṣẹ́, Olùbásọ̀rọ̀ tàbí
+Àkọsílẹ̀ báyìí. Àwọn nǹkan tuntun ń lọ sí àkọọ́lẹ̀ yẹn, Lẹ́tà sì ń fi í
+hàn nígbà tí o bá padà.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Gbogbo àkáǹtì nínú Olùbásọ̀rọ̀"
+text = """
+Olùbásọ̀rọ̀ ti ń to gbogbo àkáǹtì rẹ sábẹ́ Àwọn àkáǹtì báyìí, pẹ̀lú iye
+ènìyàn tí ọ̀kọ̀ọ̀kan ní; tẹ ọ̀kan láti rí àwọn ènìyàn rẹ̀ nìkan. Nígbà
+tí àwọn olùbásọ̀rọ̀ àkáǹtì kan kò bá lè ṣí, ìlà kan nísàlẹ̀ rẹ̀ ń sọ
+ìdí, pẹ̀lú títẹ̀ kan ṣoṣo tí ó ń yanjú rẹ̀, bí “Wọlé lẹ́ẹ̀kan sí i láti
+fi àwọn olùbásọ̀rọ̀ hàn” tàbí “Gbìyànjú lẹ́ẹ̀kan sí i”.
+"""

@@ -25,6 +25,24 @@ contacts-label-removed = Wepụrụ na { $name }
 contacts-label-renamed = Agbanwela aha leebụl ka ọ bụrụ { $name }
 contacts-label-deleted = Ehichapụla leebụl { $name }
 contacts-label-no-email = Ọ dịghị onye nọ na leebụl a nwere adreesị ozi
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Akaụntụ
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Banye ọzọ iji gosi kọntaktị
+contacts-account-signed-in = Abanyela ọzọ na { $address }. Na-enweta kọntaktị gị…
+contacts-account-sign-in-refused = { $provider } ekweghị ka Katna banye. Nwaa ọzọ, ma kwe ka ọ nweta kọntaktị gị.
+contacts-account-password = Sava ahụ anabataghị okwuntughe ahụ. Yahoo, iCloud, Zoho na ndị ọzọ chọrọ okwuntughe ngwa.
+contacts-account-change-password = Gbanwee okwuntughe
+contacts-account-change-password-tooltip = Mepee Ntọala > Akaụntụ
+contacts-account-failed = Enweghị ike ịgụ kọntaktị.
+# $reason is the server's own words, in English.
+contacts-account-error = Enweghị ike ịgụ kọntaktị: { $reason }
+contacts-account-none = Ahụghị akwụkwọ adreesị ọ bụla
+contacts-account-looking = Na-achọ kọntaktị…
+contacts-account-try-again = Nwaa ọzọ
+contacts-account-try-again-tooltip = Lelee kọntaktị akaụntụ a ọzọ ugbu a
+contacts-account-fixing = Na-arụ ọrụ na ya…
 contacts-manage = Dozie ma jikwaa
 contacts-merge = Jikọta ma dozie
 contacts-merge-about = { $count ->

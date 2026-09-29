@@ -25,6 +25,24 @@ contacts-label-removed = { $name }ରୁ ହଟାଗଲା
 contacts-label-renamed = ଲେବଲର ନାମ ବଦଳାଇ { $name } କରାଗଲା
 contacts-label-deleted = ଲେବଲ { $name } ଡିଲିଟ ହେଲା
 contacts-label-no-email = ଏହି ଲେବଲରେ କାହାରି ଇମେଲ ଠିକଣା ନାହିଁ
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = ଆକାଉଣ୍ଟ
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = ଯୋଗାଯୋଗ ଦେଖାଇବାକୁ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ
+contacts-account-signed-in = { $address }ରେ ପୁଣି ସାଇନ ଇନ ହୋଇଛି। ଆପଣଙ୍କ ଯୋଗାଯୋଗ ଅଣାଯାଉଛି…
+contacts-account-sign-in-refused = { $provider } Katnaକୁ ଭିତରକୁ ଆସିବାକୁ ଦେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ, ଏବଂ ଆପଣଙ୍କ ଯୋଗାଯୋଗକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ।
+contacts-account-password = ସର୍ଭର ପାସୱାର୍ଡ ଗ୍ରହଣ କଲା ନାହିଁ। Yahoo, iCloud, Zoho ଓ ଅନ୍ୟମାନଙ୍କୁ ଏକ ଆପ ପାସୱାର୍ଡ ଦରକାର।
+contacts-account-change-password = ପାସୱାର୍ଡ ବଦଳାନ୍ତୁ
+contacts-account-change-password-tooltip = ସେଟିଂସ > ଆକାଉଣ୍ଟ ଖୋଲନ୍ତୁ
+contacts-account-failed = ଯୋଗାଯୋଗ ପଢ଼ାଯାଇପାରିଲା ନାହିଁ।
+# $reason is the server's own words, in English.
+contacts-account-error = ଯୋଗାଯୋଗ ପଢ଼ାଯାଇପାରିଲା ନାହିଁ: { $reason }
+contacts-account-none = କୌଣସି ଠିକଣା ବହି ମିଳିଲା ନାହିଁ
+contacts-account-looking = ଯୋଗାଯୋଗ ଖୋଜାଯାଉଛି…
+contacts-account-try-again = ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ
+contacts-account-try-again-tooltip = ଏହି ଆକାଉଣ୍ଟର ଯୋଗାଯୋଗ ଏବେ ପୁଣି ଯାଞ୍ଚ କରନ୍ତୁ
+contacts-account-fixing = କାମ ଚାଲିଛି…
 contacts-manage = ଠିକ୍ କରନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ
 contacts-merge = ମିଶାନ୍ତୁ ଏବଂ ଠିକ୍ କରନ୍ତୁ
 contacts-merge-about = { $count ->

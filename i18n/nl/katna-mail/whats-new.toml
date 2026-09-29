@@ -1567,3 +1567,78 @@ onderstrepen, zoals in Keep. Het bord toont het ook, en de opmaak gaat
 met de notitie mee naar de map Notities van je e-mailaccount, waar opmaak
 van een iPhone nu terugkomt zoals hij was.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Toon maar een paar dagen"
+text = """
+Agenda heeft naast de weergave Agenda nu een Aangepaste weergave: 4
+dagen vanaf de dag die je kiest, of iets tussen 2 en 7. Druk op X en
+kies in Opties hoeveel.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Vind afspraken vanaf het bureaublad"
+text = """
+Typ de naam van een afspraak in KRunner of de zoekfunctie van GNOME om
+te zien wanneer die weer is, en druk op Enter om die dag in Agenda te
+openen.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Agenda, Contacten, Taken en Notities op een telefoon"
+text = """
+In een smal venster passen deze pagina’s nu op het scherm zoals E-mail:
+hun zijlijst opent via de menuknop, Contacten toont elke naam met het
+adres eronder, en Notities zet twee kaarten naast elkaar.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Het dagprogramma, vanuit de bovenbalk"
+text = """
+De knop die het dagprogramma naast je e-mail toont, staat nu in de
+bovenbalk, naast de taalknop, en je e-mail krijgt de ruimte die de
+zijstrook innam.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Verberg het zijpaneel op elke pagina"
+text = """
+De menuknop linksboven klapt nu ook het zijpaneel in op Agenda,
+Contacten, Taken en Notities, en schuift het weg zoals bij de mappen van
+E-mail. Elke pagina onthoudt of je het open liet.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Het hoofdmenu op een telefoon"
+text = """
+Op een telefoon opent het hoofdmenu achter de accountfoto Bestand,
+Bewerken, Beeld en de rest op dezelfde plek, met bovenaan een rij Terug,
+in plaats van naast het scherm.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Elk account in Agenda"
+text = """
+De zijlijst van Agenda toont nu al je accounts. Als de agenda’s van een
+account niet laden, zegt een regel eronder waarom, met de ene klik die
+het oplost, zoals “Meld je opnieuw aan om agenda’s te tonen”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Wissel van account zonder de pagina te verlaten"
+text = """
+Kies je een ander account via je foto rechtsboven, of draai je het
+wieltje erboven, dan blijf je nu op Agenda, Taken, Contacten of
+Notities. Nieuwe items gaan naar dat account, en E-mail toont het als je
+teruggaat.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Elk account in Contacten"
+text = """
+Contacten toont nu al je accounts onder Accounts, met hoeveel mensen elk
+bevat; klik op een account om alleen die mensen te zien. Als de
+contacten van een account niet laden, zegt een regel eronder waarom, met
+de ene klik die het oplost, zoals “Meld je opnieuw aan om contacten te
+tonen” of “Opnieuw proberen”.
+"""

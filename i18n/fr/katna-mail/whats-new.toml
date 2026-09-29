@@ -1621,3 +1621,81 @@ italique et souligné, comme dans Keep. Le tableau l’affiche aussi, et
 elle suit la note jusqu’au dossier Notes de votre compte de messagerie,
 où la mise en forme venue d’un iPhone revient désormais telle quelle.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "N’afficher que quelques jours"
+text = """
+Calendrier a une Vue personnalisée à côté de Planning : 4 jours à partir
+du jour choisi, ou n’importe quel nombre de 2 à 7. Appuyez sur X, et
+choisissez combien dans Options.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Trouver des événements depuis le bureau"
+text = """
+Tapez le nom d’un événement dans KRunner ou dans la recherche de GNOME
+pour voir quand il a lieu la prochaine fois, et appuyez sur Enter pour
+ouvrir ce jour dans Calendrier.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Calendrier, Contacts, Tâches et Notes sur un téléphone"
+text = """
+Dans une fenêtre étroite, ces pages tiennent désormais à l’écran comme
+Courrier : leur liste latérale s’ouvre depuis le bouton de menu,
+Contacts affiche chaque nom avec l’adresse en dessous, et Notes dispose
+deux cartes côte à côte.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "L’agenda du jour, depuis la barre du haut"
+text = """
+Le bouton qui affiche l’agenda du jour à côté de votre courrier est
+maintenant dans la barre du haut, près du bouton de langue, et le
+courrier récupère la place qu’occupait la bande latérale.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Masquer le panneau latéral sur chaque page"
+text = """
+Le bouton de menu en haut à gauche replie maintenant aussi le panneau
+latéral dans Calendrier, Contacts, Tâches et Notes, en le faisant
+glisser comme les dossiers de Courrier. Chaque page se souvient si vous
+l’avez laissé ouvert.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Le menu principal sur un téléphone"
+text = """
+Sur un téléphone, le menu principal derrière la photo du compte ouvre
+Fichier, Édition, Affichage et le reste sur place, avec une ligne Retour
+en haut, au lieu de déborder sur le côté de l’écran.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Tous les comptes dans Calendrier"
+text = """
+La liste latérale de Calendrier affiche maintenant tous vos comptes.
+Quand les calendriers de l’un d’eux ne se chargent pas, une ligne en
+dessous dit pourquoi, avec le clic qui règle le problème, comme
+« Reconnectez-vous pour afficher les calendriers ».
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Changer de compte sans quitter la page"
+text = """
+Choisir un autre compte depuis votre photo en haut à droite, ou tourner
+la molette dessus, vous laisse maintenant sur Calendrier, Tâches,
+Contacts ou Notes. Les nouveaux éléments vont dans ce compte, et
+Courrier l’affiche quand vous y revenez.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Tous les comptes dans Contacts"
+text = """
+Contacts liste maintenant tous vos comptes sous Comptes, avec le nombre
+de personnes de chacun ; cliquez sur l’un d’eux pour ne voir que ses
+personnes. Quand les contacts d’un compte ne se chargent pas, une ligne
+en dessous dit pourquoi, avec le clic qui règle le problème, comme
+« Reconnectez-vous pour afficher les contacts » ou « Réessayer ».
+"""

@@ -25,6 +25,24 @@ contacts-label-removed = { $name } ལས་བསུབས་ཡི།
 contacts-label-renamed = ཁ་ཡིག་གི་མིང་ { $name } ལུ་སྒྱུར་ཡི།
 contacts-label-deleted = ཁ་ཡིག་ { $name } བཏོན་གཏང་ཡི།
 contacts-label-no-email = ཁ་ཡིག་འདི་ལུ་ཡོད་མི་སུ་ལུ་ཡང་གློག་འཕྲིན་ཁ་བྱང་མིན་འདུག
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = རྩིས་ཐོ་ཚུ
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = འབྲེལ་བ་ཚུ་སྟོན་ནི་ལུ་ ལོག་ནང་བསྐྱོད་འབད།
+contacts-account-signed-in = { $address } ནང་ ལོག་ནང་བསྐྱོད་འབད་ཡི། ཁྱོད་ཀྱི་འབྲེལ་བ་ཚུ་ལེན་དོ…
+contacts-account-sign-in-refused = { $provider } གིས་ Katna ནང་ན་ འཛུལ་མ་བཅུག ལོག་འབད་རྩོལ་བསྐྱེད་ཞིནམ་ལས་ ཁྱོད་ཀྱི་འབྲེལ་བ་ཚུ་ལུ་ འཛུལ་སྤྱོད་ཀྱི་གནང་བ་བྱིན།
+contacts-account-password = སར་བར་གྱིས་ ཆོག་ཡིག་ངོས་ལེན་མ་འབད། Yahoo དང་ iCloud Zoho དེ་ལས་ གཞན་ཚུ་ལུ་ གློག་རིམ་ཆོག་ཡིག་དགོཔ་ཨིན།
+contacts-account-change-password = ཆོག་ཡིག་བསྒྱུར།
+contacts-account-change-password-tooltip = སྒྲིག་སྟངས་ > རྩིས་ཐོ་ཚུ་ ཁ་ཕྱེ།
+contacts-account-failed = འབྲེལ་བ་ཚུ་ལྷག་མ་ཚུགས།
+# $reason is the server's own words, in English.
+contacts-account-error = འབྲེལ་བ་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
+contacts-account-none = ཁ་བྱང་དེབ་ག་ནི་ཡང་ མ་ཐོབ།
+contacts-account-looking = འབྲེལ་བ་ཚུ་འཚོལ་དོ…
+contacts-account-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
+contacts-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་འབྲེལ་བ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།
+contacts-account-fixing = ལཱ་འབད་དོ…
 contacts-manage = ཐད་བསྒྲིགས་དང་འཛིན་སྐྱོང་
 contacts-merge = གཅིག་བསྡོམས་དང་ཐད་བསྒྲིགས་
 contacts-merge-about = { $count ->

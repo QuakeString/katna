@@ -25,6 +25,24 @@ contacts-label-removed = Удалено из ярлыка «{ $name }»
 contacts-label-renamed = Ярлык переименован в «{ $name }»
 contacts-label-deleted = Ярлык «{ $name }» удалён
 contacts-label-no-email = Ни у кого с этим ярлыком нет адреса электронной почты
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Аккаунты
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Войдите снова, чтобы показать контакты
+contacts-account-signed-in = Вход в { $address } выполнен снова. Загрузка контактов…
+contacts-account-sign-in-refused = { $provider } не впустил Katna. Попробуйте снова и разрешите доступ к контактам.
+contacts-account-password = Сервер не принял пароль. Для Yahoo, iCloud, Zoho и других нужен пароль приложения.
+contacts-account-change-password = Сменить пароль
+contacts-account-change-password-tooltip = Открыть Настройки > Аккаунты
+contacts-account-failed = Не удалось прочитать контакты.
+# $reason is the server's own words, in English.
+contacts-account-error = Не удалось прочитать контакты: { $reason }
+contacts-account-none = Адресная книга не найдена
+contacts-account-looking = Поиск контактов…
+contacts-account-try-again = Повторить попытку
+contacts-account-try-again-tooltip = Сейчас снова проверить контакты этого аккаунта
+contacts-account-fixing = Исправляем…
 contacts-manage = Исправление и управление
 contacts-merge = Объединение и исправление
 contacts-merge-about = { $count ->

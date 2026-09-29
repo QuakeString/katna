@@ -1533,3 +1533,80 @@ understruken text, som i Keep. Tavlan visar den också, och den följer
 med anteckningen till mappen Anteckningar i ditt e-postkonto, där
 formatering från en iPhone nu kommer tillbaka som den var.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Visa bara några dagar"
+text = """
+Kalender har en Anpassad vy bredvid Schema: 4 dagar från dagen du
+väljer, eller allt från 2 till 7. Tryck på X och välj hur många i
+Alternativ.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Hitta händelser från skrivbordet"
+text = """
+Skriv en händelses namn i KRunner eller GNOME:s sökning för att se när
+den inträffar nästa gång, och tryck på Enter för att öppna den dagen i
+Kalender.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalender, Kontakter, Uppgifter och Anteckningar på en telefon"
+text = """
+I ett smalt fönster får de här sidorna nu plats på skärmen som E-post:
+sidolistan öppnas från menyknappen, Kontakter visar varje namn med
+adressen under, och Anteckningar lägger två kort bredvid varandra.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Dagens agenda från det övre fältet"
+text = """
+Knappen som visar dagens agenda bredvid din e-post finns nu i det övre
+fältet, bredvid språkknappen, och e-posten får utrymmet som sidoremsan
+tog.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Dölj sidopanelen på varje sida"
+text = """
+Menyknappen uppe till vänster fäller nu ihop sidopanelen även i
+Kalender, Kontakter, Uppgifter och Anteckningar och skjuter undan den
+som den gör med mapparna i E-post. Varje sida kommer ihåg om du lämnade
+den öppen.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Huvudmenyn på en telefon"
+text = """
+På en telefon öppnar huvudmenyn bakom kontobilden Arkiv, Redigera, Visa
+och resten på plats, med en Tillbaka-rad överst, i stället för utanför
+skärmens kant.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Alla konton i Kalender"
+text = """
+Sidolistan i Kalender visar nu alla dina konton. När ett kontos
+kalendrar inte kan läsas in säger en rad under det varför, med det enda
+klick som löser det, till exempel ”Logga in igen för att visa
+kalendrar”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Byt konto utan att lämna sidan"
+text = """
+Om du väljer ett annat konto från din bild uppe till höger, eller vrider
+på hjulet över den, stannar du nu kvar i Kalender, Uppgifter, Kontakter
+eller Anteckningar. Nya objekt hamnar i det kontot, och E-post visar det
+när du går tillbaka.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Alla konton i Kontakter"
+text = """
+Kontakter visar nu alla dina konton under Konton, med hur många personer
+varje konto har; klicka på ett för att bara se dess personer. När ett
+kontos kontakter inte kan läsas in säger en rad under det varför, med
+det enda klick som löser det, till exempel ”Logga in igen för att visa
+kontakter” eller ”Försök igen”.
+"""

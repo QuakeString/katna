@@ -1621,3 +1621,82 @@ sumasama ito sa tala papunta sa folder ng Mga Tala ng iyong mail
 account, kung saan bumabalik na ngayon gaya ng dati ang pag-format mula
 sa iPhone.
 """
+
+["2026-09-29-0934-custom-days-view"]
+title = "Ipakita lang ang ilang araw"
+text = """
+May Custom na view ang Kalendaryo sa tabi ng Iskedyul: 4 na araw mula sa
+araw na pipiliin mo, o kahit ilan mula 2 hanggang 7. Pindutin ang X, at
+piliin kung ilan sa Mga opsyon.
+"""
+
+["2026-09-29-0939-events-in-desktop-search"]
+title = "Hanapin ang mga event mula sa desktop"
+text = """
+I-type ang pangalan ng isang event sa KRunner o sa search ng GNOME para
+makita kung kailan ang susunod, at pindutin ang Enter para buksan ang
+araw na iyon sa Kalendaryo.
+"""
+
+["2026-09-29-1102-apps-on-a-phone"]
+title = "Kalendaryo, Mga Contact, Mga Gawain at Mga Tala sa phone"
+text = """
+Sa makitid na window, kasya na ngayon sa screen ang mga page na ito gaya
+ng Mail: bumubukas ang side list nila mula sa menu button, ipinapakita
+ng Mga Contact ang bawat pangalan na may address sa ilalim, at
+naglalatag ang Mga Tala ng dalawang card nang magkatabi.
+"""
+
+["2026-09-29-1236-agenda-button-top-bar"]
+title = "Ang agenda ng araw, mula sa top bar"
+text = """
+Ang button na nagpapakita ng agenda ng araw sa tabi ng iyong mail ay
+nasa top bar na, katabi ng button ng wika, at napupunta sa mail ang
+espasyong dating kinukuha ng side strip.
+"""
+
+["2026-09-29-1243-hide-side-panel-on-every-page"]
+title = "Itago ang side panel sa bawat page"
+text = """
+Tinitiklop na rin ng menu button sa kaliwang itaas ang side panel sa
+Kalendaryo, Mga Contact, Mga Gawain at Mga Tala, at itinatabi ito gaya
+ng ginagawa nito sa mga folder ng Mail. Tinatandaan ng bawat page kung
+iniwan mo itong bukas.
+"""
+
+["2026-09-29-1251-app-menu-on-a-phone"]
+title = "Ang pangunahing menu sa phone"
+text = """
+Sa phone, binubuksan na ng pangunahing menu sa likod ng larawan ng
+account ang File, I-edit, Tingnan at iba pa sa mismong lugar, may
+Bumalik na row sa itaas, sa halip na lumabas sa gilid ng screen.
+"""
+
+["2026-09-29-1256-calendar-every-account"]
+title = "Lahat ng account sa Kalendaryo"
+text = """
+Ipinapakita na ngayon ng side list ng Kalendaryo ang lahat ng iyong
+account. Kapag hindi ma-load ang mga kalendaryo ng isa, may linya sa
+ilalim nito na nagsasabi kung bakit, kasama ang isang click na aayos
+dito, gaya ng “Mag-sign in muli para ipakita ang mga kalendaryo”.
+"""
+
+["2026-09-29-1300-switch-account-stay-on-page"]
+title = "Magpalit ng account nang hindi umaalis sa page"
+text = """
+Ang pagpili ng ibang account mula sa iyong larawan sa kanang itaas, o
+ang pag-ikot ng wheel sa ibabaw nito, ay nagpapanatili na sa iyo sa
+Kalendaryo, Mga Gawain, Mga Contact o Mga Tala. Napupunta sa account na
+iyon ang mga bagong item, at ipinapakita ito ng Mail pagbalik mo.
+"""
+
+["2026-09-29-1317-contacts-every-account"]
+title = "Lahat ng account sa Mga Contact"
+text = """
+Inililista na ngayon ng Mga Contact ang lahat ng iyong account sa ilalim
+ng Mga Account, kasama kung ilang tao ang nasa bawat isa; i-click ang
+isa para makita lang ang mga tao nito. Kapag hindi ma-load ang mga
+contact ng isang account, may linya sa ilalim nito na nagsasabi kung
+bakit, kasama ang isang click na aayos dito, gaya ng “Mag-sign in muli
+para ipakita ang mga contact” o “Subukang muli”.
+"""

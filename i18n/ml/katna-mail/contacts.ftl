@@ -25,6 +25,24 @@ contacts-label-removed = { $name }-ൽ നിന്ന് നീക്കി
 contacts-label-renamed = ലേബലിന്റെ പേര് { $name } എന്നാക്കി മാറ്റി
 contacts-label-deleted = ലേബൽ { $name } ഇല്ലാതാക്കി
 contacts-label-no-email = ഈ ലേബലിലുള്ള ആർക്കും ഇമെയിൽ വിലാസമില്ല
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = അക്കൗണ്ടുകൾ
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = കോൺടാക്റ്റുകൾ കാണിക്കാൻ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക
+contacts-account-signed-in = { $address }-ൽ വീണ്ടും സൈൻ ഇൻ ചെയ്തു. നിങ്ങളുടെ കോൺടാക്റ്റുകൾ ലഭ്യമാക്കുന്നു…
+contacts-account-sign-in-refused = { $provider } Katna-യെ അകത്ത് കയറ്റിയില്ല. വീണ്ടും ശ്രമിക്കുക, നിങ്ങളുടെ കോൺടാക്റ്റുകളിലേക്ക് ആക്‌സസ് അനുവദിക്കുക.
+contacts-account-password = സെർവർ പാസ്‌വേഡ് സ്വീകരിച്ചില്ല. Yahoo, iCloud, Zoho എന്നിവയ്ക്കും മറ്റുള്ളവയ്ക്കും ഒരു ആപ്പ് പാസ്‌വേഡ് വേണം.
+contacts-account-change-password = പാസ്‌വേഡ് മാറ്റുക
+contacts-account-change-password-tooltip = ക്രമീകരണം > അക്കൗണ്ടുകൾ തുറക്കുക
+contacts-account-failed = കോൺടാക്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല.
+# $reason is the server's own words, in English.
+contacts-account-error = കോൺടാക്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല: { $reason }
+contacts-account-none = വിലാസ പുസ്തകമൊന്നും കണ്ടെത്തിയില്ല
+contacts-account-looking = കോൺടാക്റ്റുകൾ തിരയുന്നു…
+contacts-account-try-again = വീണ്ടും ശ്രമിക്കുക
+contacts-account-try-again-tooltip = ഈ അക്കൗണ്ടിന്റെ കോൺടാക്റ്റുകൾ ഇപ്പോൾ വീണ്ടും പരിശോധിക്കുക
+contacts-account-fixing = പരിഹരിക്കുന്നു…
 contacts-manage = പരിഹരിക്കുക & മാനേജ് ചെയ്യുക
 contacts-merge = ലയിപ്പിച്ച് പരിഹരിക്കുക
 contacts-merge-about = { $count ->

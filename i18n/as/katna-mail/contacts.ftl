@@ -25,6 +25,24 @@ contacts-label-removed = { $name }ৰ পৰা আঁতৰোৱা হ'ল
 contacts-label-renamed = লেবেলৰ নাম সলনি কৰি { $name } কৰা হ'ল
 contacts-label-deleted = লেবেল { $name } মচা হ'ল
 contacts-label-no-email = এই লেবেলত কাৰো ইমেইল ঠিকনা নাই
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = একাউণ্টসমূহ
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = সম্পৰ্কসমূহ দেখুৱাবলৈ পুনৰ ছাইন ইন কৰক
+contacts-account-signed-in = { $address }ত পুনৰ ছাইন ইন কৰা হ'ল। আপোনাৰ সম্পৰ্কসমূহ অনা হৈছে…
+contacts-account-sign-in-refused = { $provider }এ Katnaক সোমাবলৈ নিদিলে। পুনৰ চেষ্টা কৰক, আৰু আপোনাৰ সম্পৰ্কসমূহলৈ প্ৰৱেশৰ অনুমতি দিয়ক।
+contacts-account-password = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। Yahoo, iCloud, Zoho আৰু আনবোৰক এটা এপ পাছৱৰ্ড লাগে।
+contacts-account-change-password = পাছৱৰ্ড সলনি কৰক
+contacts-account-change-password-tooltip = ছেটিংছ > একাউণ্টসমূহ খোলক
+contacts-account-failed = সম্পৰ্কসমূহ পঢ়িব পৰা নগ'ল।
+# $reason is the server's own words, in English.
+contacts-account-error = সম্পৰ্কসমূহ পঢ়িব পৰা নগ'ল: { $reason }
+contacts-account-none = কোনো ঠিকনা বহী পোৱা নগ'ল
+contacts-account-looking = সম্পৰ্ক বিচৰা হৈছে…
+contacts-account-try-again = পুনৰ চেষ্টা কৰক
+contacts-account-try-again-tooltip = এই একাউণ্টৰ সম্পৰ্কসমূহ এতিয়াই পুনৰ পৰীক্ষা কৰক
+contacts-account-fixing = কাম চলি আছে…
 contacts-manage = ঠিক কৰক আৰু পৰিচালনা কৰক
 contacts-merge = মাৰ্জ কৰক আৰু ঠিক কৰক
 contacts-merge-about = { $count ->

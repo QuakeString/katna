@@ -25,6 +25,24 @@ contacts-label-removed = A yọ kúrò nínú { $name }
 contacts-label-renamed = A tún àmì náà sọ orúkọ { $name }
 contacts-label-deleted = A pa àmì { $name } rẹ́
 contacts-label-no-email = Kò sí ẹni tó ní àdírẹ́sì ìmeèlì nínú àmì yìí
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Àwọn àkáǹtì
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Wọlé lẹ́ẹ̀kan sí i láti fi àwọn olùbásọ̀rọ̀ hàn
+contacts-account-signed-in = O ti wọlé sí { $address } lẹ́ẹ̀kan sí i. À ń mú àwọn olùbásọ̀rọ̀ rẹ wá…
+contacts-account-sign-in-refused = { $provider } kò jẹ́ kí Katna wọlé. Gbìyànjú lẹ́ẹ̀kan sí i, kí o sì gba ààyè sí àwọn olùbásọ̀rọ̀ rẹ láàyè.
+contacts-account-password = Sáfà kò gba ọ̀rọ̀ aṣínà náà. Yahoo, iCloud, Zoho àti àwọn mìíràn nílò ọ̀rọ̀ aṣínà áàpù.
+contacts-account-change-password = Yí ọ̀rọ̀ aṣínà padà
+contacts-account-change-password-tooltip = Ṣí Ètò > Àwọn àkáǹtì
+contacts-account-failed = A kò lè ka àwọn olùbásọ̀rọ̀.
+# $reason is the server's own words, in English.
+contacts-account-error = A kò lè ka àwọn olùbásọ̀rọ̀: { $reason }
+contacts-account-none = A kò rí ìwé àdírẹ́sì kankan
+contacts-account-looking = À ń wá àwọn olùbásọ̀rọ̀…
+contacts-account-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
+contacts-account-try-again-tooltip = Ṣàyẹ̀wò àwọn olùbásọ̀rọ̀ àkáǹtì yìí lẹ́ẹ̀kan sí i báyìí
+contacts-account-fixing = À ń ṣiṣẹ́ lé e lórí…
 contacts-manage = Àtúnṣe àti ìṣàkóso
 contacts-merge = Dàpọ̀ àti àtúnṣe
 contacts-merge-about = { $count ->

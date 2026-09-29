@@ -25,6 +25,24 @@ contacts-label-removed = Removido de { $name }
 contacts-label-renamed = Marcador renomeado para { $name }
 contacts-label-deleted = Marcador excluído: { $name }
 contacts-label-no-email = Ninguém neste marcador tem endereço de e-mail
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Contas
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Fazer login de novo para mostrar os contatos
+contacts-account-signed-in = Login feito de novo em { $address }. Buscando seus contatos…
+contacts-account-sign-in-refused = O { $provider } não deixou o Katna entrar. Tente de novo e permita o acesso aos seus contatos.
+contacts-account-password = O servidor não aceitou a senha. Yahoo, iCloud, Zoho e outros precisam de uma senha de app.
+contacts-account-change-password = Alterar senha
+contacts-account-change-password-tooltip = Abrir Configurações > Contas
+contacts-account-failed = Não foi possível ler os contatos.
+# $reason is the server's own words, in English.
+contacts-account-error = Não foi possível ler os contatos: { $reason }
+contacts-account-none = Nenhum catálogo de endereços encontrado
+contacts-account-looking = Procurando contatos…
+contacts-account-try-again = Tentar de novo
+contacts-account-try-again-tooltip = Verificar agora os contatos desta conta de novo
+contacts-account-fixing = Resolvendo…
 contacts-manage = Corrigir e gerenciar
 contacts-merge = Mesclar e corrigir
 contacts-merge-about = { $count ->
