@@ -1145,6 +1145,73 @@ fn adds_syncs_restarts_and_removes_dev_accounts() {
     }
 }
 
+/// An account whose database calls wait on a lock (a big first sync, a slow
+/// disk, SQLite's busy timeout) holds up only its own worker: signals and
+/// the rest of the daemon go on.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn a_blocked_account_does_not_hold_up_the_daemon() {
+    use katna_core::{Config, config::Metered};
+
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let imap_port = port("KATNA_DOVECOT_IMAP_PORT", 20143);
+        let account = imap("127.0.0.1", imap_port, "starttls");
+        let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+        wait_until_online(&pim, id).await;
+
+        // Something else holds mail.db's write lock for 4 s.
+        let (locked_tx, locked) = async_channel::bounded(1);
+        let lock_paths = paths.clone();
+        let holder = std::thread::spawn(move || {
+            let mut store = Store::open(&lock_paths, Mode::ReadWrite).unwrap();
+            let batch = store.mail_batch().unwrap();
+            let _ = locked_tx.send_blocking(());
+            std::thread::sleep(Duration::from_secs(4));
+            drop(batch);
+        });
+        locked.recv().await.unwrap();
+
+        // New mail: the account's worker syncs and waits on the lock.
+        let mut other = ImapBackend::connect(
+            &Endpoint::new("127.0.0.1", imap_port, Security::StartTls),
+            &Credentials::new("alice@katna.test", "katna-dev"),
+            Tls::insecure_for_local_tests(),
+        )
+        .await
+        .unwrap();
+        let subject = unique("blocked");
+        let message = format!(
+            "From: <alice@katna.test>\r\nTo: <alice@katna.test>\r\nSubject: {subject}\r\n\r\nHi.\r\n"
+        );
+        other.append("INBOX", message.into_bytes()).await.unwrap();
+        other.logout().await.unwrap();
+        Timer::after(Duration::from_millis(500)).await;
+
+        // Meanwhile a setting changes: its signal comes at once.
+        let mut changes = pim.receive_metered_changed().await.unwrap();
+        let mut config = Config::default();
+        config.sync.metered = Metered::Always;
+        config.save(&paths.config_file()).unwrap();
+        let asked = std::time::Instant::now();
+        pim.reload_config().await.unwrap();
+        within("MeteredChanged", 10, changes.next()).await.unwrap();
+        let waited = asked.elapsed();
+        assert!(
+            waited < Duration::from_secs(1),
+            "the signal waited {waited:?}"
+        );
+
+        holder.join().unwrap();
+        instance.shutdown().await;
+    });
+}
+
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn pop3_accounts_on_dev_servers() {
