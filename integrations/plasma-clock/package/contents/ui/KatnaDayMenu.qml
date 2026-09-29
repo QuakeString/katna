@@ -6,16 +6,16 @@ import QtQuick
 
 import org.kde.plasma.workspace.calendar as PlasmaCalendar
 import org.kde.plasma.components as PlasmaComponents
-import org.kde.plasma.private.digitalclock
 
 // Right-click a day in the month for a menu: add a task for that day, or
-// an event in the desktop's calendar app. Only right clicks stop here; left
+// an event in Katna's Calendar. Only right clicks stop here; left
 // clicks reach the month as before.
 MouseArea {
     id: area
 
     required property Item monthView
     required property KatnaTasks tasks
+    required property KatnaAgenda agenda
 
     acceptedButtons: Qt.RightButton
 
@@ -70,11 +70,9 @@ MouseArea {
         }
 
         PlasmaComponents.MenuItem {
-            visible: ApplicationIntegration.calendarInstalled
-            height: visible ? implicitHeight : 0 // a hidden item keeps its space
             icon.name: "appointment-new"
             text: i18ndc("katna-clock", "@action:inmenu", "Add an Event")
-            onClicked: ApplicationIntegration.launchCalendar()
+            onClicked: area.agenda.newEvent(menu.day)
         }
     }
 }

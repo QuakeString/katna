@@ -274,10 +274,23 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
-            Request::Page(page) => match RailApp::from_key(&page) {
-                Some(app) => self.show_page(app, window, cx),
-                None => tracing::warn!(page, "unknown page"),
-            },
+            Request::Page(page) => {
+                let (name, day, new_event) = app_action::page_parts(&page);
+                let Some(app) = RailApp::from_key(name) else {
+                    tracing::warn!(page, "unknown page");
+                    return;
+                };
+                self.show_page(app, window, cx);
+                // The Calendar on a day, from the desktop's clock.
+                if app == RailApp::Calendar
+                    && let Some(day) = day.and_then(|day| day.parse::<jiff::civil::Date>().ok())
+                {
+                    self.open_calendar_on(day, cx);
+                    if new_event {
+                        self.create_event_key(window, cx);
+                    }
+                }
+            }
             Request::Action { name, message } => match name.as_str() {
                 app_action::OPEN_INBOX => {
                     if !self.run_action("katna_mail::GoToInbox", window, cx) {

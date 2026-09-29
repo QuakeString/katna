@@ -21,7 +21,7 @@ files against them.
 Both read `in.invenia.katna.Agenda1` from the daemon
 (`crates/katna-dbus/src/agenda.rs`): events for a range of days, and
 tasks, which they add and tick off. A call starts the daemon (D-Bus
-activation). Until Katna syncs calendars there are no Katna events; the
+activation). The events are those of the calendars Katna syncs; the
 tasks are those of every task list, synced with each account's Google
 Tasks or Microsoft To Do (`docs/ARCHITECTURE.md` §18.1), and a task added
 in the clock goes to the first account's default list.
@@ -34,9 +34,10 @@ know, with Katna's additions:
 
 - a Tasks list under the day's events: add a task (due on the day picked
   in the month, when that isn't today), tick one off;
-- right-click a day in the month to add a task for it, or an event in the
-  desktop's calendar app;
-- Katna's events open in Katna, and a meeting gets a Join button.
+- right-click a day in the month to add a task for it, or an event in
+  Katna's Calendar (so does "Add…" beside Events);
+- Katna's events open Katna's Calendar on their day, and a meeting gets
+  a Join button.
 
 It declares the same `X-Plasma-Provides` as Plasma's clock, so right-click
 the clock > Show Alternatives swaps it in.

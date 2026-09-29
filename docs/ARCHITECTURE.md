@@ -2925,10 +2925,12 @@ date. Events in its agenda have no click or right-click actions.
 Katna integrates in three layers. All of them read the daemon's
 `in.invenia.katna.Agenda1` (`crates/katna-dbus/src/agenda.rs`): events for
 a range of days and tasks, which they add and tick off; `Changed` says to
-read again. Until Katna syncs calendars it lists no events; tasks are
+read again. Events are those of the calendars Katna syncs; tasks are
 those of every task list, synced with each account's own service
 (§18.1), and a task added in the clock goes to the first account's
-default list.
+default list. `Open` shows an event (the Calendar on its day) or a task
+(the Tasks page) in Katna Mail, and `NewEvent` starts an event on a day
+there, both through `katna-mail --page` (`calendar:YYYY-MM-DD[:new]`).
 `integrations/README.md` has the details.
 
 **A. Calendar-events plugin (planned, `integrations/plasma-calendar-plugin`)**
@@ -2961,10 +2963,14 @@ default list.
   `KatnaJoinButton.qml`), with minimal edits to upstream files:
   - a Tasks list under the day's events: add a task (due on the day
     picked, when that isn't today), tick one off;
-  - click a Katna event to open it in Katna; a Join button for its video
-    call;
-  - later: quick-add events, right-click edit, delete, drag to reschedule,
-    organization badges and related emails.
+  - click a Katna event to open Katna's Calendar on its day; a Join
+    button for its video call;
+  - **"Add…"** starts a new event in Katna's Calendar on the day picked,
+    without needing a `text/calendar` app;
+  - right-click a day in the month (`KatnaDayMenu.qml`): Add a Task for
+    that day, Add an Event on it;
+  - later: right-click edit, delete, drag to reschedule, organization
+    badges and related emails.
 - Still reads events through the plugin system (A), so holidays and other
   plugins keep working. The plugins' event data carries no ID in Plasma
   6.7, so a Katna event is matched by title and start.

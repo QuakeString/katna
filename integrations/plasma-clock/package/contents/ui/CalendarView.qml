@@ -162,7 +162,9 @@ PlasmaExtras.Representation {
                     PlasmaComponents.ToolButton {
                         id: addEventButton
 
-                        visible: agenda.visible && ApplicationIntegration.calendarInstalled
+                        // Katna: new events go to Katna's Calendar, so it shows
+                        // without a calendar app (was `&& ApplicationIntegration.calendarInstalled`).
+                        visible: agenda.visible
                         text: i18ndc("plasma_applet_org.kde.plasma.digitalclock", "@action:button Add event", "Add…")
                         Layout.rightMargin: Kirigami.Units.smallSpacing
                         icon.name: "list-add"
@@ -171,7 +173,8 @@ PlasmaExtras.Representation {
                         KeyNavigation.down: KeyNavigation.tab
                         KeyNavigation.right: monthView.viewHeader.tabBar
 
-                        onClicked: ApplicationIntegration.launchCalendar()
+                        // Katna: was ApplicationIntegration.launchCalendar().
+                        onClicked: calendar.appletInterface.katna.newEvent(monthView.currentDate)
                         KeyNavigation.tab: calendar.showAgenda && eventsList.count ? eventsList : eventsList.KeyNavigation.down
                     }
                 }
@@ -704,6 +707,7 @@ PlasmaExtras.Representation {
                 anchors.fill: parent
                 monthView: monthView
                 tasks: katnaTasks
+                agenda: calendar.appletInterface.katna
             }
         }
     }
