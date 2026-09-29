@@ -1217,3 +1217,13 @@ kliknięciu wiadomości prawym przyciskiem myszy. Zadanie przejmuje temat
 wiadomości, a jego znacznik Poczta w Zadaniach ponownie otwiera
 wiadomość.
 """
+
+["2026-09-29-0412-calendar"]
+title = "Twój kalendarz obok poczty"
+text = """
+Kalendarz pokazuje Twoje kalendarze Google, Microsoft i inne w widoku
+dnia, tygodnia, miesiąca lub jako harmonogram, ze skrótami klawiszowymi
+Kalendarza Google. Przycisk kalendarza po prawej stronie poczty otwiera
+plan dnia z przyciskiem Dołącz do rozmów. Zaloguj się ponownie na konto,
+aby Katna mogła odczytać jego kalendarz.
+"""
