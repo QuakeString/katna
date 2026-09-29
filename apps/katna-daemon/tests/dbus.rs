@@ -1673,6 +1673,98 @@ impl FakeNotifications {
     ) -> zbus::Result<()>;
 }
 
+/// An event's reminder becomes a notification with Join and Snooze;
+/// Snooze closes it.
+#[test]
+fn reminds_of_events() {
+    use katna_store::calendar::{CalendarAccess, CalendarSource, EventData, NewCalendar, Pending};
+    use zbus::object_server::SignalEmitter;
+
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+    {
+        let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        let calendar = store
+            .upsert_calendar(
+                None,
+                CalendarSource::Local,
+                &NewCalendar {
+                    remote_id: "local".into(),
+                    name: "Calendar".into(),
+                    color: String::new(),
+                    access: CalendarAccess::Owner,
+                    is_primary: true,
+                    time_zone: String::new(),
+                },
+                0,
+            )
+            .unwrap();
+        // Its 10-minute reminder is due in two seconds.
+        let start = now + 10 * 60 + 2;
+        let event = EventData {
+            title: "Design review".into(),
+            location: "Room 4B".into(),
+            start,
+            end: start + 3600,
+            reminders: vec![10],
+            join_url: "https://meet.katna.test/abc".into(),
+            ..EventData::default()
+        };
+        store.add_event(calendar, &event, Pending::None).unwrap();
+    }
+    smol::block_on(async {
+        let (asked_tx, asked) = async_channel::unbounded();
+        let desktop = bus.connect().await;
+        desktop
+            .object_server()
+            .at(
+                "/org/freedesktop/Notifications",
+                FakeNotifications {
+                    asked: asked_tx,
+                    next: 0,
+                },
+            )
+            .await
+            .unwrap();
+        desktop
+            .request_name("org.freedesktop.Notifications")
+            .await
+            .unwrap();
+
+        let _instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let shown = within("Notify", 15, asked.recv()).await.unwrap();
+        assert_eq!(
+            shown,
+            Asked::Notify {
+                summary: "Design review".into(),
+                body: "In 10 minutes\nRoom 4B".into(),
+                actions: ["default", "Open", "join", "Join", "snooze", "Snooze 5 min"]
+                    .map(String::from)
+                    .to_vec(),
+                origin: String::new(),
+            }
+        );
+
+        Timer::after(Duration::from_millis(300)).await;
+        let emitter = SignalEmitter::new(&desktop, "/org/freedesktop/Notifications").unwrap();
+        FakeNotifications::action_invoked(&emitter, 1, "snooze")
+            .await
+            .unwrap();
+        assert_eq!(
+            within("CloseNotification", 5, asked.recv()).await.unwrap(),
+            Asked::Close(1)
+        );
+        // Shown once: not again at the next look.
+        Timer::after(Duration::from_secs(3)).await;
+        assert!(asked.is_empty());
+    });
+}
+
 /// New mail in the inbox becomes a desktop notification; its Mark as read
 /// button marks it read; `notifications.new_mail = false` turns them off.
 #[test]
