@@ -4,8 +4,9 @@
 //! or document shown over the mail, like webmail's preview. A dark bar on
 //! top names the file and offers Save and "Open with" (the desktop's list
 //! of apps); arrows at the sides go through
-//! the message's other attachments; a pill at the foot zooms (and counts
-//! PDF pages). Escape closes it.
+//! the message's other attachments; a pill at the foot zooms (and shows
+//! the PDF page, in a box that takes a page number to go to, Ctrl+G).
+//! Escape closes it.
 //!
 //! Decoding happens off the UI thread (`katna_preview`). PDF pages are
 //! drawn only while on screen (and one either side), at the zoom and the
@@ -25,16 +26,18 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, EventEmitter, FocusHandle, FontWeight,
-    ImageSource, KeyDownEvent, ObjectFit, RenderImage, ScrollHandle, SharedString, Task, Window,
-    div, ease_out_quint, img, prelude::*, rgba, uniform_list,
+    Animation, AnimationExt, AnyElement, Context, Entity, EventEmitter, FocusHandle, Focusable,
+    FontWeight, ImageSource, KeyDownEvent, MouseButton, ObjectFit, RenderImage, ScrollHandle,
+    SharedString, Subscription, Task, Window, div, ease_out_quint, img, prelude::*, rgba,
+    uniform_list,
 };
+use katna_i18n::tr;
 use katna_preview::pdf::{self, Document, TextLine};
 use katna_preview::{Kind, Picture, document, picture, sheet, slides, text};
 use katna_render::AttachmentFile;
-use katna_ui::Ripple;
 use katna_ui::px;
 use katna_ui::unpx;
+use katna_ui::{InputEvent, Ripple, TextInput};
 
 use self::office::{DocumentView, SheetView};
 use super::attachments::{Item, bitmap, kind_badge};
@@ -97,6 +100,15 @@ pub(super) struct Viewer {
     seq: usize,
     /// Selected text of a text file, document or PDF.
     text: TextSelection,
+    /// The PDF page number in the foot pill, typed to go to a page.
+    goto: Entity<TextInput>,
+    _goto: Subscription,
+    /// The page box was clicked while not focused: its number is selected
+    /// when the button comes up, so typing replaces it.
+    goto_click: bool,
+    /// The page last gone to and the scroll offset that shows it: the page
+    /// counts as on show until the PDF scrolls.
+    went: Option<(usize, f32)>,
     pub(super) th: Theme,
 }
 
@@ -135,6 +147,8 @@ struct PdfView {
     pages: HashMap<usize, (f32, Arc<RenderImage>)>,
     /// Each page's text, as far as it has been read.
     text: Vec<Rc<Vec<TextLine>>>,
+    /// Logical pixels per point at the last frame, to find a page's place.
+    z: f32,
     _reading: Option<Task<()>>,
 }
 
@@ -167,6 +181,22 @@ impl Viewer {
     ) -> Self {
         let focus = cx.focus_handle();
         focus.focus(window, cx);
+        let goto = cx.new(|cx| {
+            let mut input = TextInput::new("", cx);
+            input.set_accent(rgba(th.accent).into());
+            input
+        });
+        let _goto = cx.subscribe_in(&goto, window, |this, _, event, window, cx| match event {
+            InputEvent::Submit => {
+                let typed = this.goto.read(cx).text().trim().parse::<usize>().ok();
+                if let Some(page) = typed {
+                    this.go_to_page(page.saturating_sub(1), cx);
+                }
+                this.focus.focus(window, cx);
+            }
+            InputEvent::Cancel => this.focus.focus(window, cx),
+            InputEvent::Changed => {}
+        });
         let mut this = Self {
             focus,
             raw,
@@ -181,6 +211,10 @@ impl Viewer {
             drawing: None,
             seq: 0,
             text: TextSelection::new(cx),
+            goto,
+            _goto,
+            goto_click: false,
+            went: None,
             th,
         };
         this.show(current, cx);
@@ -216,6 +250,7 @@ impl Viewer {
         self.seq += 1;
         self.text.begin(self.seq);
         self.zoom = fit_step();
+        self.went = None;
         self.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
         self.file = None;
         self.drawing = None;
@@ -249,6 +284,7 @@ impl Viewer {
                             doc,
                             pages: HashMap::new(),
                             text: Vec::new(),
+                            z: 1.0,
                         })
                     }
                     Loaded::Bitmap(image, size) => Content::Bitmap(image, size),
@@ -371,6 +407,27 @@ impl Viewer {
         }
     }
 
+    /// Scrolls the PDF so `page` (from 0) starts just below the top bar.
+    fn go_to_page(&mut self, page: usize, cx: &mut Context<Self>) {
+        let Content::Pdf(pdf) = &self.content else {
+            return;
+        };
+        let count = pdf.doc.pages();
+        if count == 0 {
+            return;
+        }
+        let page = page.min(count - 1);
+        let top: f32 = (0..page)
+            .map(|p| pdf.doc.page_size(p).1 * pdf.z + PAGE_GAP)
+            .sum();
+        let offset = self.scroll.offset();
+        let max = self.scroll.max_offset();
+        let y = (-top).clamp(-unpx(max.y), 0.0);
+        self.scroll.set_offset(gpui::point(offset.x, px(y)));
+        self.went = Some((page, y));
+        cx.notify();
+    }
+
     fn scroll_by(&mut self, dy: f32, cx: &mut Context<Self>) {
         match &self.content {
             Content::Document(view) => {
@@ -396,7 +453,11 @@ impl Viewer {
         cx.notify();
     }
 
-    fn on_key(&mut self, event: &KeyDownEvent, _: &mut Window, cx: &mut Context<Self>) {
+    fn on_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
+        // Typing a page number: the keys are the box's.
+        if self.goto.focus_handle(cx).is_focused(window) {
+            return;
+        }
         let keystroke = &event.keystroke;
         let ctrl = keystroke.modifiers.control;
         let view = match &self.content {
@@ -415,6 +476,10 @@ impl Viewer {
             "s" if ctrl => self.save(cx),
             "c" if ctrl => self.copy(cx),
             "a" if ctrl => self.select_all(cx),
+            "g" if ctrl && matches!(self.content, Content::Pdf(_)) => {
+                window.focus(&self.goto.focus_handle(cx), cx);
+                self.goto.update(cx, |input, cx| input.select_all_text(cx));
+            }
             "up" => self.scroll_by(-LINE_SCROLL, cx),
             "down" => self.scroll_by(LINE_SCROLL, cx),
             "pageup" => self.scroll_by(-page, cx),
@@ -611,7 +676,9 @@ impl Render for Viewer {
         let name = item.as_ref().map(|i| i.name.clone()).unwrap_or_default();
         let many = self.items.len() > 1;
 
-        let mut pages_label = None;
+        // The PDF's page at the middle of the screen and its page count.
+        let mut pages = None;
+        let mut pdf_z = None;
         let body: AnyElement = if matches!(self.content, Content::Document(_)) {
             self.document_body(zoom, vw, cx)
         } else {
@@ -742,8 +809,15 @@ impl Render for Viewer {
                     let fit = ((vw - 176.0).min(PAGE_WIDTH) / widest).clamp(0.2, 4.0);
                     let z = fit * zoom;
                     let scale = z * window.scale_factor();
-                    let current = self.current_page(count);
-                    pages_label = Some(format!("Page {} of {}", current + 1, count));
+                    let went = self
+                        .went
+                        .filter(|&(_, y)| (unpx(self.scroll.offset().y) - y).abs() < 0.5);
+                    let current = match went {
+                        Some((page, _)) => page,
+                        None => self.current_page(count),
+                    };
+                    pages = Some((current.min(count.saturating_sub(1)), count));
+                    pdf_z = Some(z);
                     let wide = widest * z > vw - 32.0;
                     let marker = self.text.marker(&th);
                     let pages: Vec<AnyElement> = (0..count)
@@ -806,6 +880,19 @@ impl Render for Viewer {
                 }
             }
         };
+
+        if let (Some(z), Content::Pdf(pdf)) = (pdf_z, &mut self.content) {
+            pdf.z = z;
+        }
+        let goto_focused = self.goto.focus_handle(cx).is_focused(window);
+        if let Some((current, _)) = pages
+            && !goto_focused
+        {
+            let number = (current + 1).to_string();
+            if self.goto.read(cx).text() != number {
+                self.goto.update(cx, |input, cx| input.set_text(number, cx));
+            }
+        }
 
         let top_bar = div()
             .absolute()
@@ -899,9 +986,55 @@ impl Render for Viewer {
                         .bg(rgba(PILL))
                         .text_size(px(13.0))
                         .text_color(rgba(INK))
-                        .when_some(pages_label, |d, label| {
-                            d.child(div().px(px(12.0)).child(label))
-                                .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff33)))
+                        .when_some(pages, |d, (_, count)| {
+                            d.child(
+                                div()
+                                    .id("viewer-page")
+                                    .pl(px(12.0))
+                                    .pr(px(10.0))
+                                    .flex()
+                                    .items_center()
+                                    .gap(px(6.0))
+                                    .tooltip(tip(tr!("viewer-go-to-page-tip"), &th))
+                                    .child(tr!("viewer-page"))
+                                    .child(
+                                        div()
+                                            .w(px(46.0))
+                                            .h(px(28.0))
+                                            .px(px(7.0))
+                                            .flex()
+                                            .items_center()
+                                            .rounded(px(6.0))
+                                            .border_1()
+                                            .border_color(if goto_focused {
+                                                rgba(th.accent)
+                                            } else {
+                                                rgba(0x00000000)
+                                            })
+                                            .bg(rgba(0xffffff1f))
+                                            .capture_any_mouse_down(cx.listener(
+                                                |this, _, window, cx| {
+                                                    this.goto_click = !this
+                                                        .goto
+                                                        .focus_handle(cx)
+                                                        .is_focused(window);
+                                                },
+                                            ))
+                                            .on_mouse_up(
+                                                MouseButton::Left,
+                                                cx.listener(|this, _, _, cx| {
+                                                    if std::mem::take(&mut this.goto_click) {
+                                                        this.goto.update(cx, |input, cx| {
+                                                            input.select_all_text(cx)
+                                                        });
+                                                    }
+                                                }),
+                                            )
+                                            .child(self.goto.clone()),
+                                    )
+                                    .child(tr!("viewer-page-count", count = count)),
+                            )
+                            .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff33)))
                         })
                         .child(
                             bar_button("viewer-zoom-out", "zoom-out", &th)

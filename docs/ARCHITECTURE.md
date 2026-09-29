@@ -2158,8 +2158,9 @@ desktop's own app stays one click away.
   top bar (the window's own controls stay usable): a dark page with a bar
   naming the file, "Open with another app" and Save; arrows (and ←/→) go
   through the message's other attachments; a pill at the foot zooms
-  (−/+/0, 25 %–400 %, 100 % fits the window) and counts PDF pages.
-  Escape closes it. It is dark in light and dark themes alike.
+  (−/+/0, 25 %–400 %, 100 % fits the window) and shows a PDF's page as
+  "Page [n] of N": typing a number in the box (click it or Ctrl+G) and
+  Enter goes to that page, Escape leaves the box. Escape closes the viewer. It is dark in light and dark themes alike.
   - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
     Only pages on screen (and one either side) are drawn, at the zoom and
     the screen's scale, one at a time on a background thread; pages far
