@@ -18,6 +18,16 @@
 //! - `SetTaskDone(s id, b done)`, `DeleteTask(s id)`.
 //! - `Open(s id) -> b`: shows the event or task in Katna; false when
 //!   Katna has nothing to show it in yet.
+//!
+//! For Katna's Tasks page (lists are row IDs; `0` means none):
+//!
+//! - `AddTaskTo(x list, s parent, s title) -> s id`: a task on top of
+//!   `list` (`0`: the default list), as a step of task `parent` if not
+//!   empty.
+//! - `EditTask(s id, a{sv} fields)`: sets the keys of [`edit`] present.
+//! - `MoveTask(s id, x list)`: to another list, on top, with its steps.
+//! - `AddTaskList(x account, s title) -> x list`: `account` `0` is this
+//!   computer. `RenameTaskList(x list, s title)`, `DeleteTaskList(x list)`.
 //! - signal `Changed()`: read again.
 
 use std::collections::HashMap;
@@ -65,6 +75,26 @@ pub mod task {
     pub const LIST: &str = "list";
 }
 
+/// Keys of `EditTask`'s fields; each is optional.
+pub mod edit {
+    /// `s`
+    pub const TITLE: &str = "title";
+    /// `s`
+    pub const NOTES: &str = "notes";
+    /// `s`: `YYYY-MM-DD`, or empty.
+    pub const DUE: &str = "due";
+    /// `i`: minutes after local midnight on the due day; `-1` for none.
+    pub const DUE_TIME: &str = "due_time";
+    /// `x`: Unix seconds; `0` for none.
+    pub const REMIND_AT: &str = "remind_at";
+    /// `s`: an RFC 5545 `RRULE` value, or empty.
+    pub const REPEAT: &str = "repeat";
+    /// `b`
+    pub const STARRED: &str = "starred";
+    /// `s`: the Message-ID of the mail it was made from, or empty.
+    pub const MAIL: &str = "mail";
+}
+
 macro_rules! agenda_proxy {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         /// Client side of `in.invenia.katna.Agenda1`.
@@ -84,6 +114,23 @@ macro_rules! agenda_proxy {
 
             /// Deletes a task.
             fn delete_task(&self, id: &str) -> zbus::Result<()>;
+
+            /// Adds a task on top of `list` (`0`: the default list), as a
+            /// step of `parent` if not empty. Returns its ID.
+            fn add_task_to(&self, list: i64, parent: &str, title: &str) -> zbus::Result<String>;
+
+            /// Sets the fields of task `id` given ([`edit`]).
+            fn edit_task(&self, id: &str, fields: Item) -> zbus::Result<()>;
+
+            /// Moves task `id`, with its steps, to `list`.
+            fn move_task(&self, id: &str, list: i64) -> zbus::Result<()>;
+
+            /// Adds a list to `account` (`0`: this computer). Returns it.
+            fn add_task_list(&self, account: i64, title: &str) -> zbus::Result<i64>;
+
+            fn rename_task_list(&self, list: i64, title: &str) -> zbus::Result<()>;
+
+            fn delete_task_list(&self, list: i64) -> zbus::Result<()>;
 
             /// Shows an event or task in Katna. False when there is
             /// nothing to show it in yet.

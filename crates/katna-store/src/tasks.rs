@@ -286,7 +286,8 @@ impl Store {
     }
 
     /// Every task of list `list`, done ones too, in the service's order
-    /// (new ones on top), steps after their task.
+    /// (new ones on top), steps after their task (new ones at the end, as
+    /// in Google Tasks).
     pub fn tasks_in(&self, list: i64) -> Result<Vec<Task>> {
         let mut stmt = self.pim.prepare_cached(&format!(
             "SELECT {TASK_COLUMNS} FROM task WHERE list_id = ?1 AND deleted = 0
@@ -305,6 +306,14 @@ impl Store {
             }
         }
         let mut ordered = Vec::with_capacity(top.len());
+        for list in steps.values_mut() {
+            // Not yet placed by the service: oldest first, after the rest.
+            let (mut unplaced, placed): (Vec<Task>, Vec<Task>) =
+                list.drain(..).partition(|t| t.position.is_empty());
+            unplaced.reverse();
+            list.extend(placed);
+            list.extend(unplaced);
+        }
         for task in top {
             let id = task.id;
             ordered.push(task);

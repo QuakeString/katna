@@ -318,3 +318,23 @@ fn lists_follow_the_service() {
     store.forget_task_list(home).unwrap();
     assert!(store.pending_task_lists(work).unwrap().is_empty());
 }
+
+#[test]
+fn new_tasks_go_on_top_and_new_steps_at_the_end() {
+    let (_dir, mut store) = store();
+    let add = |store: &mut Store, parent: Option<i64>, title: &str| {
+        let fields = TaskFields {
+            title: title.into(),
+            ..TaskFields::default()
+        };
+        store.add_task_to(1, parent, &fields).unwrap()
+    };
+    let trip = add(&mut store, None, "trip");
+    add(&mut store, Some(trip), "trains");
+    add(&mut store, Some(trip), "hotel");
+    add(&mut store, None, "passport");
+    assert_eq!(
+        titles(&store.tasks_in(1).unwrap()),
+        ["passport", "trip", "trains", "hotel"]
+    );
+}

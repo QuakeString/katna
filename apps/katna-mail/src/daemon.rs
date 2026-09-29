@@ -39,6 +39,8 @@ pub enum Command {
     /// These, one after the other: an undo that moves mail back to
     /// several folders.
     Several(Vec<Command>),
+    /// A change on the Tasks page.
+    Task(Box<crate::tasks::TaskCommand>),
 }
 
 /// Most messages one call to the daemon changes. A large selection ("all
@@ -102,7 +104,8 @@ impl Command {
             | Self::ReopenDraft
             | Self::RestoreQuote
             | Self::ReloadConfig
-            | Self::Several(_) => {
+            | Self::Several(_)
+            | Self::Task(_) => {
                 return None;
             }
         })
@@ -186,6 +189,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             Err(err) => Err(err),
         },
         Command::ReopenDraft | Command::RestoreQuote => return Ok(()),
+        Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
