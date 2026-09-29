@@ -10,8 +10,8 @@ use katna_core::config::{ShortcutSet, Shortcuts};
 use katna_i18n::tr;
 
 use super::{
-    Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious, FocusSearch,
-    Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
+    AddToTasks, Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious,
+    FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
     MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane, OpenContextMenu,
     OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply,
     ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp,
@@ -161,6 +161,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("mark_read", Actions, Mail, ["shift-i"], MarkRead),
     shortcut!("mark_unread", Actions, Mail, ["shift-u"], MarkUnread),
     shortcut!("star", Actions, Mail, ["s"], ToggleStar),
+    shortcut!("add_to_tasks", Actions, Mail, ["shift-t"], AddToTasks),
     shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
     shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
     shortcut!("check", Actions, List, ["x"], ToggleCheck),

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add a mail to Tasks"
+text = """
+Press Shift+T, as in Gmail, or pick Add to Tasks when you right-click a
+mail. The task takes the mail's subject, and its Mail chip in Tasks opens
+the mail again.
+"""

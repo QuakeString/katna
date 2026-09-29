@@ -27,6 +27,7 @@ mod details;
 
 use super::MailWindow;
 use crate::daemon::{self, Command};
+use crate::data::EntryKey;
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
 use crate::theme::{Theme, fade};
 use crate::widgets::{icon, placeholder, raised, tip};
@@ -434,6 +435,7 @@ impl MailWindow {
             list: adding.list,
             parent: adding.parent,
             title,
+            mail: String::new(),
         };
         adding.input.update(cx, |input, cx| input.set_text("", cx));
         self.send_task(command, None, None, cx);
@@ -601,6 +603,66 @@ impl MailWindow {
             cx,
         );
         cx.notify();
+    }
+
+    // --- From mail -----------------------------------------------------------
+
+    /// Add to Tasks (Shift+T, as in Gmail): a task for each picked line in
+    /// the default list, titled with its subject, leading back to the mail.
+    pub(super) fn add_to_tasks(
+        &mut self,
+        _: &super::AddToTasks,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let keys = self.target_keys();
+        self.add_to_tasks_from(keys, cx);
+    }
+
+    pub(super) fn add_to_tasks_from(&mut self, keys: Vec<EntryKey>, cx: &mut Context<Self>) {
+        let Ok(mail) = self.mail.as_ref() else {
+            return;
+        };
+        let sources: Vec<(String, String)> =
+            keys.iter().filter_map(|k| mail.task_source(*k)).collect();
+        let count = sources.len();
+        let mails: Vec<String> = sources.iter().map(|(_, m)| m.clone()).collect();
+        for (ix, (subject, header)) in sources.into_iter().enumerate() {
+            let title = if subject.is_empty() {
+                tr!("tasks-no-subject")
+            } else {
+                subject
+            };
+            // One note and one Undo for them all, with the last.
+            let last = ix + 1 == count;
+            self.send_task(
+                TaskCommand::Add {
+                    list: 0,
+                    parent: None,
+                    title,
+                    mail: header,
+                },
+                last.then(|| tr!("tasks-toast-added", count = count as u64)),
+                last.then(|| TaskCommand::RemoveFromMail(mails.clone())),
+                cx,
+            );
+        }
+    }
+
+    /// Opens the mail a task was made from.
+    fn open_task_mail(&mut self, header: &str, window: &mut Window, cx: &mut Context<Self>) {
+        let found = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|m| m.message_with_header(header));
+        match found {
+            Some(message) => {
+                self.open_app(super::apps::App::Mail, cx);
+                self.show_message(message, window, cx);
+            }
+            None => self.show_snackbar(tr!("tasks-mail-gone"), None, cx),
+        }
     }
 
     // --- Keys ----------------------------------------------------------------
@@ -1285,8 +1347,17 @@ impl MailWindow {
             }
             if !task.mail.is_empty() {
                 any = true;
+                let header = task.mail.clone();
                 chips = chips.child(
                     div()
+                        .id(("task-mail", id as usize))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .tooltip(tip(tr!("tasks-open-mail"), th))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.open_task_mail(&header, window, cx)
+                        }))
                         .h(px(24.0))
                         .px(px(8.0))
                         .flex()
