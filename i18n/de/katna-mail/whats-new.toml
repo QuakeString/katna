@@ -1682,3 +1682,11 @@ zu sehen. Wenn die Kontakte eines Kontos nicht laden, sagt eine Zeile
 darunter, warum, mit dem einen Klick, der es behebt, etwa „Erneut
 anmelden, um Kontakte anzuzeigen“ oder „Erneut versuchen“.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Jedes Konto auf der Seite Aufgaben"
+text = """
+Jedes Konto erscheint jetzt in der Seitenleiste von Aufgaben. Wenn die
+Aufgaben eines Kontos nicht laden, sagt eine Zeile darunter, warum, mit
+einem Klick, der es behebt: erneut anmelden oder erneut versuchen.
+"""

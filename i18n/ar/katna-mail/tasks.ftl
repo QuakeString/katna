@@ -11,6 +11,23 @@ tasks-starred = المميّزة بنجمة
 tasks-new-list = إنشاء قائمة جديدة
 tasks-on-this-computer = على هذا الكمبيوتر
 tasks-my-tasks = مهامي
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = سجّل الدخول مجددًا لإظهار المهام
+tasks-account-signed-in = تم تسجيل الدخول إلى { $address } مجددًا. جارٍ جلب مهامك…
+tasks-account-sign-in-refused = لم يسمح { $provider } لـ Katna بالدخول. حاول مجددًا، واسمح بالوصول إلى مهامك.
+tasks-account-refused = لم يقبل الخادم كلمة المرور. تحتاج Yahoo وiCloud وZoho وغيرها إلى كلمة مرور للتطبيقات.
+tasks-account-change-password = تغيير كلمة المرور
+tasks-account-change-password-tooltip = فتح الإعدادات > الحسابات
+tasks-account-not-enabled = لم يُفعَّل الوصول إلى المهام لـ Katna بعد.
+tasks-account-failed = تعذّرت قراءة قوائم المهام.
+# $reason is the server's own words, in English.
+tasks-account-error = تعذّرت قراءة قوائم المهام: { $reason }
+tasks-account-none = لم يُعثر على أي قائمة مهام
+tasks-account-looking = جارٍ البحث عن قوائم المهام…
+tasks-account-try-again = إعادة المحاولة
+tasks-account-try-again-tooltip = التحقق من مهام هذا الحساب مجددًا الآن
+tasks-account-fixing = جارٍ العمل على ذلك…
 tasks-list-name-placeholder = اسم القائمة
 
 ## Lists and tasks

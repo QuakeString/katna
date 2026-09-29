@@ -11,6 +11,23 @@ tasks-starred = ကြယ်ပွင့်ပေးထားသည်
 tasks-new-list = စာရင်းအသစ် ဖန်တီးရန်
 tasks-on-this-computer = ဤကွန်ပျူတာတွင်
 tasks-my-tasks = ကျွန်ုပ်၏ လုပ်ဆောင်စရာများ
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = လုပ်ဆောင်စရာများ ပြရန် ထပ်မံ ဝင်ရောက်ပါ
+tasks-account-signed-in = { $address } သို့ ထပ်မံ ဝင်ရောက်ပြီးပါပြီ။ သင့်လုပ်ဆောင်စရာများကို ရယူနေသည်…
+tasks-account-sign-in-refused = { $provider } က Katna ကို ဝင်ခွင့်မပေးပါ။ ထပ်စမ်းကြည့်ပြီး သင့်လုပ်ဆောင်စရာများကို အသုံးပြုခွင့် ပေးပါ။
+tasks-account-refused = ဆာဗာက စကားဝှက်ကို လက်မခံပါ။ Yahoo၊ iCloud၊ Zoho နှင့် အခြားများသည် အက်ပ်စကားဝှက် လိုအပ်သည်။
+tasks-account-change-password = စကားဝှက် ပြောင်းရန်
+tasks-account-change-password-tooltip = ဆက်တင်များ > အကောင့်များ ကို ဖွင့်ရန်
+tasks-account-not-enabled = Katna အတွက် လုပ်ဆောင်စရာ အသုံးပြုခွင့်ကို မဖွင့်ရသေးပါ။
+tasks-account-failed = လုပ်ဆောင်စရာ စာရင်းများကို ဖတ်၍မရပါ။
+# $reason is the server's own words, in English.
+tasks-account-error = လုပ်ဆောင်စရာ စာရင်းများကို ဖတ်၍မရပါ- { $reason }
+tasks-account-none = လုပ်ဆောင်စရာ စာရင်း မတွေ့ပါ
+tasks-account-looking = လုပ်ဆောင်စရာ စာရင်းများကို ရှာနေသည်…
+tasks-account-try-again = ထပ်စမ်းကြည့်ရန်
+tasks-account-try-again-tooltip = ဤအကောင့်၏ လုပ်ဆောင်စရာများကို ယခု ထပ်စစ်ရန်
+tasks-account-fixing = ဆောင်ရွက်နေသည်…
 tasks-list-name-placeholder = စာရင်းအမည်
 
 ## Lists and tasks

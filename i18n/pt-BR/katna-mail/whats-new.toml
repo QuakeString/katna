@@ -1641,3 +1641,11 @@ contatos de uma conta não carregam, uma linha abaixo dela diz o motivo,
 com o clique que resolve, como “Fazer login de novo para mostrar os
 contatos” ou “Tentar de novo”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Todas as contas na página Tarefas"
+text = """
+Todas as contas agora aparecem no painel lateral de Tarefas. Quando as
+tarefas de uma conta não carregam, uma linha abaixo dela diz o motivo,
+com um clique para resolver: fazer login de novo ou tentar de novo.
+"""

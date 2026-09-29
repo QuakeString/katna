@@ -1645,3 +1645,11 @@ saja. Jika kontak sebuah akun tidak bisa dimuat, baris di bawahnya
 menjelaskan alasannya, dengan satu klik yang memperbaikinya, seperti
 “Masuk lagi untuk menampilkan kontak” atau “Coba lagi”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Semua akun di halaman Tugas"
+text = """
+Setiap akun kini tampil di panel samping Tugas. Jika tugas sebuah akun
+tidak bisa dimuat, baris di bawahnya menjelaskan alasannya, dengan satu
+klik untuk memperbaikinya: masuk lagi, atau coba lagi.
+"""

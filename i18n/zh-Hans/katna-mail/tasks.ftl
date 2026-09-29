@@ -11,6 +11,23 @@ tasks-starred = 已加星标
 tasks-new-list = 创建新列表
 tasks-on-this-computer = 此电脑
 tasks-my-tasks = 我的任务
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = 重新登录以显示任务
+tasks-account-signed-in = 已重新登录 { $address }。正在获取您的任务…
+tasks-account-sign-in-refused = { $provider } 未允许 Katna 访问。请重试，并允许访问您的任务。
+tasks-account-refused = 服务器未接受该密码。Yahoo、iCloud、Zoho 等需要应用专用密码。
+tasks-account-change-password = 更改密码
+tasks-account-change-password-tooltip = 打开“设置 > 账号”
+tasks-account-not-enabled = Katna 的任务访问权限尚未开启。
+tasks-account-failed = 无法读取任务列表。
+# $reason is the server's own words, in English.
+tasks-account-error = 无法读取任务列表：{ $reason }
+tasks-account-none = 未找到任务列表
+tasks-account-looking = 正在查找任务列表…
+tasks-account-try-again = 重试
+tasks-account-try-again-tooltip = 立即重新检查此账号的任务
+tasks-account-fixing = 正在处理…
 tasks-list-name-placeholder = 列表名称
 
 ## Lists and tasks

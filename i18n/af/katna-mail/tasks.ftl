@@ -11,6 +11,23 @@ tasks-starred = Gester
 tasks-new-list = Skep nuwe lys
 tasks-on-this-computer = Op hierdie rekenaar
 tasks-my-tasks = My take
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Meld weer aan om take te wys
+tasks-account-signed-in = Weer aangemeld by { $address }. Haal tans jou take…
+tasks-account-sign-in-refused = { $provider } het Katna nie ingelaat nie. Probeer weer, en gee toegang tot jou take.
+tasks-account-refused = Die bediener het die wagwoord nie aanvaar nie. Yahoo, iCloud, Zoho en ander het 'n programwagwoord nodig.
+tasks-account-change-password = Verander wagwoord
+tasks-account-change-password-tooltip = Maak Instellings > Rekeninge oop
+tasks-account-not-enabled = Taaktoegang vir Katna is nog nie aangeskakel nie.
+tasks-account-failed = Die takelyste kon nie gelees word nie.
+# $reason is the server's own words, in English.
+tasks-account-error = Die takelyste kon nie gelees word nie: { $reason }
+tasks-account-none = Geen takelyste gevind nie
+tasks-account-looking = Soek tans takelyste…
+tasks-account-try-again = Probeer weer
+tasks-account-try-again-tooltip = Kyk nou weer na hierdie rekening se take
+tasks-account-fixing = Besig daarmee…
 tasks-list-name-placeholder = Lysnaam
 
 ## Lists and tasks

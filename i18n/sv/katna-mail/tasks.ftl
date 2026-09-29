@@ -11,6 +11,23 @@ tasks-starred = Stjärnmärkta
 tasks-new-list = Skapa ny lista
 tasks-on-this-computer = På den här datorn
 tasks-my-tasks = Mina uppgifter
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Logga in igen för att visa uppgifter
+tasks-account-signed-in = Inloggad på { $address } igen. Hämtar dina uppgifter…
+tasks-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till dina uppgifter.
+tasks-account-refused = Servern godtog inte lösenordet. Yahoo, iCloud, Zoho och andra kräver ett applösenord.
+tasks-account-change-password = Ändra lösenord
+tasks-account-change-password-tooltip = Öppna Inställningar > Konton
+tasks-account-not-enabled = Uppgiftsåtkomst för Katna är inte påslagen än.
+tasks-account-failed = Det gick inte att läsa uppgiftslistorna.
+# $reason is the server's own words, in English.
+tasks-account-error = Det gick inte att läsa uppgiftslistorna: { $reason }
+tasks-account-none = Inga uppgiftslistor hittades
+tasks-account-looking = Letar efter uppgiftslistor…
+tasks-account-try-again = Försök igen
+tasks-account-try-again-tooltip = Kontrollera det här kontots uppgifter igen nu
+tasks-account-fixing = Arbetar på det…
 tasks-list-name-placeholder = Listnamn
 
 ## Lists and tasks

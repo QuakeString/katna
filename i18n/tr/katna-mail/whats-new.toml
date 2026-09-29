@@ -1627,3 +1627,11 @@ birine tıklayın. Bir hesabın kişileri yüklenemediğinde, altındaki bir
 satır nedenini ve sorunu çözen tek tıklamayı gösteriyor, örneğin
 “Kişileri göstermek için yeniden oturum aç” veya “Tekrar dene”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Görevler sayfasında her hesap"
+text = """
+Her hesap artık Görevler'in kenar panelinde görünüyor. Bir hesabın
+görevleri yüklenemediğinde, altındaki bir satır nedenini söylüyor ve tek
+tıklamayla düzeltmeyi sunuyor: yeniden oturum açın ya da tekrar deneyin.
+"""

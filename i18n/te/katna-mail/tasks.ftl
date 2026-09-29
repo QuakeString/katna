@@ -11,6 +11,23 @@ tasks-starred = నక్షత్రం ఉంచినవి
 tasks-new-list = కొత్త జాబితాను సృష్టించండి
 tasks-on-this-computer = ఈ కంప్యూటర్‌లో
 tasks-my-tasks = నా టాస్క్‌లు
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = టాస్క్‌లను చూపడానికి మళ్లీ సైన్ ఇన్ చేయండి
+tasks-account-signed-in = { $address }కు మళ్లీ సైన్ ఇన్ అయింది. మీ టాస్క్‌లను తెస్తోంది…
+tasks-account-sign-in-refused = { $provider } Katnaను లోపలికి అనుమతించలేదు. మళ్లీ ట్రై చేసి, మీ టాస్క్‌లకు యాక్సెస్ అనుమతించండి.
+tasks-account-refused = సర్వర్ పాస్‌వర్డ్‌ను అంగీకరించలేదు. Yahoo, iCloud, Zoho మరియు ఇతరాలకు యాప్ పాస్‌వర్డ్ అవసరం.
+tasks-account-change-password = పాస్‌వర్డ్ మార్చండి
+tasks-account-change-password-tooltip = సెట్టింగ్‌లు > ఖాతాలు తెరవండి
+tasks-account-not-enabled = Katna కోసం టాస్క్ యాక్సెస్ ఇంకా ఆన్ చేయబడలేదు.
+tasks-account-failed = టాస్క్ జాబితాలను చదవలేకపోయాము.
+# $reason is the server's own words, in English.
+tasks-account-error = టాస్క్ జాబితాలను చదవలేకపోయాము: { $reason }
+tasks-account-none = టాస్క్ జాబితాలు ఏవీ కనుగొనబడలేదు
+tasks-account-looking = టాస్క్ జాబితాల కోసం వెతుకుతోంది…
+tasks-account-try-again = మళ్లీ ట్రై చేయండి
+tasks-account-try-again-tooltip = ఈ ఖాతా టాస్క్‌లను ఇప్పుడు మళ్లీ తనిఖీ చేయండి
+tasks-account-fixing = సరిచేస్తోంది…
 tasks-list-name-placeholder = జాబితా పేరు
 
 ## Lists and tasks

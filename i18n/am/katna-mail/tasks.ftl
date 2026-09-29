@@ -11,6 +11,23 @@ tasks-starred = ኮከብ የተደረገባቸው
 tasks-new-list = አዲስ ዝርዝር ፍጠር
 tasks-on-this-computer = በዚህ ኮምፒዩተር ላይ
 tasks-my-tasks = የእኔ ተግባራት
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = ተግባራትን ለማሳየት እንደገና ይግቡ
+tasks-account-signed-in = እንደገና ወደ { $address } ገብተዋል። ተግባራትዎን በማምጣት ላይ…
+tasks-account-sign-in-refused = { $provider } Katnaን አላስገባም። እንደገና ይሞክሩ፣ እና ተግባራትዎን እንዲደርስባቸው ይፍቀዱ።
+tasks-account-refused = አገልጋዩ የይለፍ ቃሉን አልተቀበለም። Yahoo፣ iCloud፣ Zoho እና ሌሎችም የመተግበሪያ የይለፍ ቃል ያስፈልጋቸዋል።
+tasks-account-change-password = የይለፍ ቃል ቀይር
+tasks-account-change-password-tooltip = ቅንብሮች > መለያዎች ክፈት
+tasks-account-not-enabled = ለKatna የተግባራት መዳረሻ ገና አልበራም።
+tasks-account-failed = የተግባር ዝርዝሮቹን ማንበብ አልተቻለም።
+# $reason is the server's own words, in English.
+tasks-account-error = የተግባር ዝርዝሮቹን ማንበብ አልተቻለም፦ { $reason }
+tasks-account-none = ምንም የተግባር ዝርዝር አልተገኘም
+tasks-account-looking = የተግባር ዝርዝሮችን በመፈለግ ላይ…
+tasks-account-try-again = እንደገና ሞክር
+tasks-account-try-again-tooltip = የዚህን መለያ ተግባራት አሁን እንደገና ፈትሽ
+tasks-account-fixing = በሂደት ላይ…
 tasks-list-name-placeholder = የዝርዝር ስም
 
 ## Lists and tasks

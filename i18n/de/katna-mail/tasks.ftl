@@ -11,6 +11,23 @@ tasks-starred = Markiert
 tasks-new-list = Neue Liste erstellen
 tasks-on-this-computer = Auf diesem Computer
 tasks-my-tasks = Meine Aufgaben
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Erneut anmelden, um Aufgaben anzuzeigen
+tasks-account-signed-in = Wieder bei { $address } angemeldet. Ihre Aufgaben werden abgerufen…
+tasks-account-sign-in-refused = { $provider } hat Katna keinen Zugang gewährt. Versuchen Sie es erneut und erlauben Sie den Zugriff auf Ihre Aufgaben.
+tasks-account-refused = Der Server hat das Passwort nicht akzeptiert. Yahoo, iCloud, Zoho und andere brauchen ein App-Passwort.
+tasks-account-change-password = Passwort ändern
+tasks-account-change-password-tooltip = Einstellungen > Konten öffnen
+tasks-account-not-enabled = Der Aufgabenzugriff für Katna ist noch nicht eingeschaltet.
+tasks-account-failed = Die Aufgabenlisten konnten nicht gelesen werden.
+# $reason is the server's own words, in English.
+tasks-account-error = Die Aufgabenlisten konnten nicht gelesen werden: { $reason }
+tasks-account-none = Keine Aufgabenlisten gefunden
+tasks-account-looking = Aufgabenlisten werden gesucht…
+tasks-account-try-again = Erneut versuchen
+tasks-account-try-again-tooltip = Die Aufgaben dieses Kontos jetzt erneut prüfen
+tasks-account-fixing = Wird bearbeitet…
 tasks-list-name-placeholder = Listenname
 
 ## Lists and tasks
