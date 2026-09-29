@@ -1255,6 +1255,14 @@ provar först varje kontos bästa sätt och ett annat när det inte är
 tillgängligt.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "I dag i Uppgifter"
+text = """
+I dag, under Alla uppgifter, samlar det som förfaller i dag och allt som
+är försenat från alla listor, med listan som varje uppgift finns i. En
+uppgift som läggs till där förfaller i dag.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Inbjudningar i din e-post"
 text = """

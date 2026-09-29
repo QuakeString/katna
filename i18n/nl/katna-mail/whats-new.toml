@@ -1285,6 +1285,14 @@ Het probeert eerst de beste manier van elk account en een andere als die
 niet beschikbaar is.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Vandaag in Taken"
+text = """
+Vandaag, onder Alle taken, bundelt wat vandaag moet gebeuren en alles
+wat achterstallig is uit alle lijsten, met de lijst waarin elke taak
+staat. Een taak die je daar toevoegt, moet vandaag klaar zijn.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Uitnodigingen in je mail"
 text = """

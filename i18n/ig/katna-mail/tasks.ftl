@@ -6,6 +6,7 @@
 
 tasks-create = Mepụta
 tasks-all = Ọrụ niile
+tasks-today = Taa
 tasks-starred = Nwere kpakpando
 tasks-new-list = Mepụta ndepụta ọhụrụ
 tasks-on-this-computer = Na kọmputa a
@@ -21,6 +22,9 @@ tasks-title-placeholder = Isiokwu
 tasks-add-step = Tinye obere ọrụ
 tasks-empty = Enweghị ọrụ ọ bụla ugbu a. Tinye otu n'elu.
 tasks-starred-empty = Tinye kpakpando na ọrụ ka ọ pụta ebe a.
+tasks-today-empty = Enweghị ihe ga-emecha taa.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Gafere oge
 tasks-completed = { $count ->
    *[other] Emechara ({ $count })
 }

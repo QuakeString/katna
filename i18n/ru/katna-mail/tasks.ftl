@@ -6,6 +6,7 @@
 
 tasks-create = Создать
 tasks-all = Все задачи
+tasks-today = Сегодня
 tasks-starred = Помеченные
 tasks-new-list = Создать новый список
 tasks-on-this-computer = На этом компьютере
@@ -21,6 +22,9 @@ tasks-title-placeholder = Название
 tasks-add-step = Добавить подзадачу
 tasks-empty = Задач пока нет. Добавьте одну выше.
 tasks-starred-empty = Пометьте задачу, чтобы увидеть её здесь.
+tasks-today-empty = Сегодня нет задач со сроком.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Просроченные
 tasks-completed = { $count ->
     [one] Выполненные ({ $count })
     [few] Выполненные ({ $count })

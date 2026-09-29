@@ -6,6 +6,7 @@
 
 tasks-create = സൃഷ്ടിക്കുക
 tasks-all = എല്ലാ ടാസ്‌ക്കുകളും
+tasks-today = ഇന്ന്
 tasks-starred = നക്ഷത്രമിട്ടവ
 tasks-new-list = പുതിയ ലിസ്റ്റ് സൃഷ്ടിക്കുക
 tasks-on-this-computer = ഈ കമ്പ്യൂട്ടറിൽ
@@ -21,6 +22,9 @@ tasks-title-placeholder = ശീർഷകം
 tasks-add-step = ഉപടാസ്‌ക് ചേർക്കുക
 tasks-empty = ടാസ്‌ക്കുകളൊന്നുമില്ല. മുകളിൽ ഒന്ന് ചേർക്കുക.
 tasks-starred-empty = ഇവിടെ കാണാൻ ഒരു ടാസ്‌ക്കിന് നക്ഷത്രമിടുക.
+tasks-today-empty = ഇന്നത്തേക്ക് ഒന്നുമില്ല.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = കാലഹരണപ്പെട്ടത്
 tasks-completed = { $count ->
     [one] പൂർത്തിയായവ ({ $count })
    *[other] പൂർത്തിയായവ ({ $count })

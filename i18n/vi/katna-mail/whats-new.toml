@@ -1243,6 +1243,14 @@ Katna thử cách tốt nhất của từng tài khoản trước và một các
 cách đó không dùng được.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Hôm nay trong Việc cần làm"
+text = """
+Hôm nay, trong Tất cả việc cần làm, tập hợp những việc đến hạn hôm nay
+và mọi việc quá hạn từ tất cả danh sách, kèm danh sách chứa từng việc.
+Việc được thêm ở đó sẽ đến hạn hôm nay.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Lời mời trong thư của bạn"
 text = """

@@ -6,6 +6,7 @@
 
 tasks-create = సృష్టించండి
 tasks-all = అన్ని టాస్క్‌లు
+tasks-today = ఈరోజు
 tasks-starred = నక్షత్రం ఉంచినవి
 tasks-new-list = కొత్త జాబితాను సృష్టించండి
 tasks-on-this-computer = ఈ కంప్యూటర్‌లో
@@ -21,6 +22,9 @@ tasks-title-placeholder = శీర్షిక
 tasks-add-step = సబ్‌టాస్క్‌ను జోడించండి
 tasks-empty = ఇంకా టాస్క్‌లు లేవు. పైన ఒకదాన్ని జోడించండి.
 tasks-starred-empty = ఇక్కడ చూడటానికి ఒక టాస్క్‌కు నక్షత్రం ఉంచండి.
+tasks-today-empty = ఈరోజుకు ఏమీ లేదు.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = గడువు దాటినవి
 tasks-completed = { $count ->
     [one] పూర్తయినవి ({ $count })
    *[other] పూర్తయినవి ({ $count })

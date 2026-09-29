@@ -6,6 +6,7 @@
 
 tasks-create = Utwórz
 tasks-all = Wszystkie zadania
+tasks-today = Dziś
 tasks-starred = Oznaczone gwiazdką
 tasks-new-list = Utwórz nową listę
 tasks-on-this-computer = Na tym komputerze
@@ -21,6 +22,9 @@ tasks-title-placeholder = Tytuł
 tasks-add-step = Dodaj podzadanie
 tasks-empty = Nie ma jeszcze zadań. Dodaj jedno powyżej.
 tasks-starred-empty = Oznacz zadanie gwiazdką, aby zobaczyć je tutaj.
+tasks-today-empty = Nic do zrobienia na dziś.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Zaległe
 tasks-completed = { $count ->
     [one] Ukończone ({ $count })
     [few] Ukończone ({ $count })

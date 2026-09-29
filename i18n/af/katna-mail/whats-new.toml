@@ -1246,6 +1246,14 @@ is. Dit probeer eers elke rekening se beste manier en ’n ander wanneer
 daardie een af is.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Vandag in Take"
+text = """
+Vandag, onder Alle take, bring saam wat vandag verskuldig is en alles
+wat agterstallig is uit alle lyste, saam met die lys waarin elkeen is.
+’n Taak wat daar bygevoeg word, is vandag verskuldig.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Uitnodigings in jou e-pos"
 text = """

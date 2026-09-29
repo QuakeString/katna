@@ -6,6 +6,7 @@
 
 tasks-create = Gumawa
 tasks-all = Lahat ng gawain
+tasks-today = Ngayon
 tasks-starred = Naka-star
 tasks-new-list = Gumawa ng bagong listahan
 tasks-on-this-computer = Sa computer na ito
@@ -21,6 +22,9 @@ tasks-title-placeholder = Pamagat
 tasks-add-step = Magdagdag ng subtask
 tasks-empty = Wala pang gawain. Magdagdag ng isa sa itaas.
 tasks-starred-empty = Lagyan ng star ang isang gawain para makita ito rito.
+tasks-today-empty = Walang due ngayon.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Lampas na sa takda
 tasks-completed = { $count ->
     [one] Tapos na ({ $count })
    *[other] Tapos na ({ $count })

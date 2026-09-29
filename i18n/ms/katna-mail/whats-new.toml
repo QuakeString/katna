@@ -1295,6 +1295,15 @@ cara terbaik setiap akaun dahulu dan cara lain apabila cara itu tidak
 tersedia.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Hari ini dalam Tugas"
+text = """
+Hari ini, di bawah Semua tugasan, mengumpulkan apa yang perlu disiapkan
+hari ini dan yang tertunggak daripada semua senarai, beserta senarai
+tempat setiap tugasan berada. Tugasan yang ditambah di situ perlu
+disiapkan hari ini.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Jemputan dalam mel anda"
 text = """

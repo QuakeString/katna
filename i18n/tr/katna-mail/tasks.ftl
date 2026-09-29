@@ -6,6 +6,7 @@
 
 tasks-create = Oluştur
 tasks-all = Tüm görevler
+tasks-today = Bugün
 tasks-starred = Yıldızlı
 tasks-new-list = Yeni liste oluştur
 tasks-on-this-computer = Bu bilgisayarda
@@ -21,6 +22,9 @@ tasks-title-placeholder = Başlık
 tasks-add-step = Alt görev ekle
 tasks-empty = Henüz görev yok. Yukarıdan bir tane ekleyin.
 tasks-starred-empty = Burada görmek için bir göreve yıldız ekleyin.
+tasks-today-empty = Bugün son tarihi gelen bir şey yok.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Gecikmiş
 tasks-completed = { $count ->
     [one] Tamamlananlar ({ $count })
    *[other] Tamamlananlar ({ $count })

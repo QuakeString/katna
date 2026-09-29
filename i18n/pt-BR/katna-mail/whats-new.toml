@@ -1285,6 +1285,14 @@ do e-mail. Ele tenta primeiro o melhor método de cada conta e outro
 quando esse não está disponível.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Hoje em Tarefas"
+text = """
+Hoje, em Todas as tarefas, reúne o que vence hoje e tudo o que está
+atrasado em todas as listas, com a lista em que cada uma está. Uma
+tarefa adicionada ali vence hoje.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Convites no seu e-mail"
 text = """

@@ -1273,6 +1273,14 @@ takvimlerini, postadan farklı bir sunucuda olsalar bile buluyor. Önce
 her hesabın en iyi yolunu, o kullanılamıyorsa bir başkasını dener.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Görevler’de Bugün"
+text = """
+Bugün, Tüm görevler altında, tüm listelerden bugün yapılması gerekenleri
+ve gecikmiş olanları, her birinin bulunduğu listeyle birlikte toplar.
+Oraya eklenen bir görevin son tarihi bugündür.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Postanızdaki davetler"
 text = """

@@ -6,6 +6,7 @@
 
 tasks-create = සාදන්න
 tasks-all = සියලු කාර්යයන්
+tasks-today = අද
 tasks-starred = තරු යෙදූ
 tasks-new-list = නව ලැයිස්තුවක් සාදන්න
 tasks-on-this-computer = මෙම පරිගණකයේ
@@ -21,6 +22,9 @@ tasks-title-placeholder = මාතෘකාව
 tasks-add-step = උප කාර්යයක් එක් කරන්න
 tasks-empty = තවම කාර්යයන් නැත. ඉහළින් එකක් එක් කරන්න.
 tasks-starred-empty = මෙහි බැලීමට කාර්යයකට තරුවක් යොදන්න.
+tasks-today-empty = අදට කිසිවක් නැත.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = කල් ඉකුත් වූ
 tasks-completed = { $count ->
     [one] සම්පූර්ණ කළ ({ $count })
    *[other] සම්පූර්ණ කළ ({ $count })

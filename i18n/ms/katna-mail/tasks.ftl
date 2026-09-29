@@ -6,6 +6,7 @@
 
 tasks-create = Buat
 tasks-all = Semua tugasan
+tasks-today = Hari ini
 tasks-starred = Dibintangi
 tasks-new-list = Buat senarai baharu
 tasks-on-this-computer = Pada komputer ini
@@ -21,6 +22,9 @@ tasks-title-placeholder = Tajuk
 tasks-add-step = Tambah subtugasan
 tasks-empty = Belum ada tugasan. Tambah satu di atas.
 tasks-starred-empty = Bintangkan tugasan untuk melihatnya di sini.
+tasks-today-empty = Tiada apa-apa yang perlu disiapkan hari ini.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Tertunggak
 tasks-completed = { $count ->
    *[other] Selesai ({ $count })
 }

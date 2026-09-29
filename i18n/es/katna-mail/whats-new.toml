@@ -1294,6 +1294,14 @@ del correo. Prueba primero el mejor método de cada cuenta y otro cuando
 ese no está disponible.
 """
 
+["2026-09-29-0625-tasks-today"]
+title = "Hoy en Tareas"
+text = """
+Hoy, dentro de Todas las tareas, reúne lo que vence hoy y todo lo
+vencido de todas las listas, con la lista en la que está cada una. Una
+tarea añadida ahí vence hoy.
+"""
+
 ["2026-09-29-0631-invitation-card"]
 title = "Invitaciones en tu correo"
 text = """

@@ -6,6 +6,7 @@
 
 tasks-create = བཟོ།
 tasks-all = ལཱ་ཆ་མཉམ།
+tasks-today = ད་རིས
 tasks-starred = སྐར་མ་བཀལ་ཡོདཔ
 tasks-new-list = ཐོ་ཡིག་གསརཔ་བཟོ།
 tasks-on-this-computer = གློག་ཀླད་འདི་གུ།
@@ -21,6 +22,9 @@ tasks-title-placeholder = མགོ་མིང་།
 tasks-add-step = ལཱ་ཆུང་ཅིག་ཁ་སྣོན་འབད།
 tasks-empty = ལཱ་ཅིག་ཡང་མིན་འདུག ཡར་ལུ་ཅིག་ཁ་སྣོན་འབད།
 tasks-starred-empty = འདི་ལུ་མཐོང་ནི་ལུ་ ལཱ་ཅིག་ལུ་སྐར་མ་བཀལ།
+tasks-today-empty = ད་རིས་ཀྱི་ཆེ་ལུ་ ཅི་མི་འདུག།
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = ཚེས་ཐིག་ལས་ལྷག་པ།
 tasks-completed = { $count ->
    *[other] མཇུག་བསྡུ་ཡོད་མི་ ({ $count })
 }

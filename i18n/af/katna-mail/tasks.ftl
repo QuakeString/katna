@@ -6,6 +6,7 @@
 
 tasks-create = Skep
 tasks-all = Alle take
+tasks-today = Vandag
 tasks-starred = Gester
 tasks-new-list = Skep nuwe lys
 tasks-on-this-computer = Op hierdie rekenaar
@@ -21,6 +22,9 @@ tasks-title-placeholder = Titel
 tasks-add-step = Voeg ’n subtaak by
 tasks-empty = Nog geen take nie. Voeg een hierbo by.
 tasks-starred-empty = Ster ’n taak om dit hier te sien.
+tasks-today-empty = Niks is vandag verskuldig.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Agterstallig
 tasks-completed = { $count ->
     [one] Voltooi ({ $count })
    *[other] Voltooi ({ $count })

@@ -6,6 +6,7 @@
 
 tasks-create = Maken
 tasks-all = Alle taken
+tasks-today = Vandaag
 tasks-starred = Met ster
 tasks-new-list = Nieuwe lijst maken
 tasks-on-this-computer = Op deze computer
@@ -21,6 +22,9 @@ tasks-title-placeholder = Titel
 tasks-add-step = Een subtaak toevoegen
 tasks-empty = Nog geen taken. Voeg er hierboven een toe.
 tasks-starred-empty = Geef een taak een ster om die hier te zien.
+tasks-today-empty = Niets met deadline vandaag.
+tasks-today-date = { $weekday }, { $day }
+tasks-overdue = Achterstallig
 tasks-completed = { $count ->
     [one] Voltooid ({ $count })
    *[other] Voltooid ({ $count })

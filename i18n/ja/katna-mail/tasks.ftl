@@ -6,6 +6,7 @@
 
 tasks-create = 作成
 tasks-all = すべてのタスク
+tasks-today = 今日
 tasks-starred = スター付き
 tasks-new-list = 新しいリストを作成
 tasks-on-this-computer = このパソコン
@@ -21,6 +22,9 @@ tasks-title-placeholder = タイトル
 tasks-add-step = サブタスクを追加
 tasks-empty = タスクはまだありません。上から追加してください。
 tasks-starred-empty = タスクにスターを付けると、ここに表示されます。
+tasks-today-empty = 今日が期限のタスクはありません。
+tasks-today-date = { $weekday }、{ $day }
+tasks-overdue = 期限切れ
 tasks-completed = { $count ->
    *[other] 完了 ({ $count })
 }
