@@ -87,6 +87,8 @@ pub(super) enum ViewerEvent {
     /// The file the viewer was opened on has no preview after all (a
     /// damaged, protected or unsupported file): open it elsewhere.
     Unreadable(Arc<AttachmentFile>),
+    /// Reply to the message with this file (a marked copy) attached.
+    Reply(Arc<AttachmentFile>),
 }
 
 pub(super) struct Viewer {
@@ -131,6 +133,9 @@ pub(super) struct Viewer {
     went: Option<(usize, f32)>,
     /// Marks made on a PDF, and the tools for them.
     markup: Markup,
+    /// The viewer shows the open conversation's message, so a marked copy
+    /// can go in a reply to it.
+    can_reply: bool,
     pub(super) th: Theme,
 }
 
@@ -202,6 +207,7 @@ impl Viewer {
         raw: Arc<Vec<u8>>,
         items: Vec<Item>,
         current: usize,
+        can_reply: bool,
         th: Theme,
         window: &mut Window,
         cx: &mut Context<Self>,
@@ -247,6 +253,7 @@ impl Viewer {
             goto_click: false,
             went: None,
             markup: Markup::new(),
+            can_reply,
             th,
         };
         this.show(current, cx);
@@ -539,8 +546,8 @@ impl Viewer {
     }
 
     fn on_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
-        // Typing a page number: the keys are the box's.
-        if self.goto.focus_handle(cx).is_focused(window) {
+        // Typing a page number, a note or a text box: the keys are theirs.
+        if self.goto.focus_handle(cx).is_focused(window) || self.markup.typing() {
             return;
         }
         let keystroke = &event.keystroke;
@@ -785,6 +792,9 @@ impl Render for Viewer {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
+        if self.markup.take_refocus() {
+            self.focus.focus(window, cx);
+        }
         // A new frame: text scrolled out of sight is no longer selectable
         // where it was.
         self.text.begin(self.seq);
@@ -983,14 +993,17 @@ impl Render for Viewer {
                                         marker.clone(),
                                     ))
                                 })
+                                .children(self.page_typed(p, z, cx))
                                 .when(drawing, |d| {
                                     d.cursor(markup::drawing_cursor()).on_mouse_down(
                                         MouseButton::Left,
-                                        cx.listener(move |this, event: &MouseDownEvent, _, cx| {
-                                            if this.press_page(p, event.position, cx) {
-                                                cx.stop_propagation();
-                                            }
-                                        }),
+                                        cx.listener(
+                                            move |this, event: &MouseDownEvent, window, cx| {
+                                                if this.press_page(p, event.position, window, cx) {
+                                                    cx.stop_propagation();
+                                                }
+                                            },
+                                        ),
                                     )
                                 })
                                 .into_any_element()
@@ -1098,7 +1111,18 @@ impl Render for Viewer {
                 } else {
                     bar_button("viewer-save", "download", &th)
                 };
-                d.child(
+                d.when(self.can_reply && self.saves_marks(), |d| {
+                    d.child(
+                        bar_button_tip(
+                            "viewer-reply-marked",
+                            "reply",
+                            tr!("viewer-reply-marked-tip").into(),
+                            &th,
+                        )
+                        .on_click(cx.listener(|this, _, _, cx| this.reply_marked(cx))),
+                    )
+                })
+                .child(
                     bar_button("viewer-open", "open-external", &th)
                         .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
                 )

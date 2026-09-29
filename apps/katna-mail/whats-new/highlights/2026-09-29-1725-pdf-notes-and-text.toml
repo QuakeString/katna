@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes and text on PDFs"
+text = """
+Marking up a PDF now has sticky notes and text boxes: click the page, type,
+and press Ctrl+Enter. Hover a note to read it, or click it to change it.
+Reply sends your marked copy straight back in a reply to the message.
+"""
