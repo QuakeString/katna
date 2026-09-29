@@ -12,11 +12,11 @@ use katna_i18n::tr;
 use super::{
     Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious, FocusSearch,
     Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
-    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, OpenMessage, OpenSettings,
-    PageDown, PageUp, Quit, READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
-    ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
-    SelectNext, SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck, ToggleNavigation,
-    ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane, OpenMessage,
+    OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply, ReplyAll,
+    ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll,
+    SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, ShowShortcuts, ToggleCheck,
+    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -129,7 +129,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!(
         "back",
         Moving,
-        Reader,
+        Mail,
         ["u", "escape", "backspace"],
         CloseMessage
     ),
@@ -400,6 +400,13 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
     bindings.push(KeyBinding::new(
         "shift-tab",
         FocusPrevious,
+        Some(WINDOW_CONTEXT),
+    ));
+    // F6 and Shift+F6 go round the panes from anywhere, fields included.
+    bindings.push(KeyBinding::new("f6", NextPane, Some(WINDOW_CONTEXT)));
+    bindings.push(KeyBinding::new(
+        "shift-f6",
+        PreviousPane,
         Some(WINDOW_CONTEXT),
     ));
     // Typing in a field inside the reader (the inline reply) types: keys
