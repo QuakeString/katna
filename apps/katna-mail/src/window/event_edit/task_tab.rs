@@ -56,7 +56,12 @@ impl MailWindow {
     }
 
     /// Turns the card into a new task (`on`) or back into an event.
-    pub(super) fn set_draft_task(&mut self, on: bool, window: &mut Window, cx: &mut Context<Self>) {
+    pub(in crate::window) fn set_draft_task(
+        &mut self,
+        on: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         let list = match &self.calendar.draft {
             Some(draft) if draft.task != on && draft.editing.is_none() => {
                 (on && draft.task_list == 0).then(|| self.default_task_list(draft.calendar))
