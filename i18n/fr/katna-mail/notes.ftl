@@ -79,6 +79,17 @@ notes-meeting-actions = Actions à mener
 notes-event = Événement
 notes-open-event = Ouvrir l’événement
 
+## Formatting
+
+notes-format = Mise en forme
+notes-format-heading-1 = Titre 1
+notes-format-heading-2 = Titre 2
+notes-format-normal = Texte normal
+notes-format-bold = Gras
+notes-format-italic = Italique
+notes-format-underline = Souligné
+notes-format-clear = Effacer la mise en forme
+
 ## Tasks
 
 notes-make-task = En faire une tâche

@@ -78,6 +78,17 @@ notes-meeting-actions = କାର୍ଯ୍ୟ ତାଲିକା
 notes-event = ଇଭେଣ୍ଟ
 notes-open-event = ଇଭେଣ୍ଟ ଖୋଲନ୍ତୁ
 
+## Formatting
+
+notes-format = ଫର୍ମାଟିଂ
+notes-format-heading-1 = ଶୀର୍ଷକ 1
+notes-format-heading-2 = ଶୀର୍ଷକ 2
+notes-format-normal = ସାଧାରଣ ଟେକ୍ସଟ
+notes-format-bold = ବୋଲ୍ଡ
+notes-format-italic = ଇଟାଲିକ୍
+notes-format-underline = ଅଣ୍ଡରଲାଇନ୍
+notes-format-clear = ଫର୍ମାଟିଂ ସଫା କରନ୍ତୁ
+
 ## Tasks
 
 notes-make-task = କାର୍ଯ୍ୟ ବନାନ୍ତୁ

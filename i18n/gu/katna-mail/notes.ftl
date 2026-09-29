@@ -78,6 +78,17 @@ notes-meeting-actions = કાર્ય આઇટમ
 notes-event = ઇવેન્ટ
 notes-open-event = ઇવેન્ટ ખોલો
 
+## Formatting
+
+notes-format = ફોર્મેટિંગ
+notes-format-heading-1 = મથાળું 1
+notes-format-heading-2 = મથાળું 2
+notes-format-normal = સામાન્ય ટેક્સ્ટ
+notes-format-bold = બોલ્ડ
+notes-format-italic = ઇટાલિક
+notes-format-underline = અન્ડરલાઇન
+notes-format-clear = ફોર્મેટિંગ સાફ કરો
+
 ## Tasks
 
 notes-make-task = કાર્ય બનાવો

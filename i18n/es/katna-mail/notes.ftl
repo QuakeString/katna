@@ -79,6 +79,17 @@ notes-meeting-actions = Tareas pendientes
 notes-event = Evento
 notes-open-event = Abrir el evento
 
+## Formatting
+
+notes-format = Formato
+notes-format-heading-1 = Título 1
+notes-format-heading-2 = Título 2
+notes-format-normal = Texto normal
+notes-format-bold = Negrita
+notes-format-italic = Cursiva
+notes-format-underline = Subrayado
+notes-format-clear = Borrar formato
+
 ## Tasks
 
 notes-make-task = Convertir en tarea

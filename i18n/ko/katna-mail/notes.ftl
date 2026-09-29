@@ -77,6 +77,17 @@ notes-meeting-actions = 실행 항목
 notes-event = 일정
 notes-open-event = 일정 열기
 
+## Formatting
+
+notes-format = 서식
+notes-format-heading-1 = 제목 1
+notes-format-heading-2 = 제목 2
+notes-format-normal = 일반 텍스트
+notes-format-bold = 굵게
+notes-format-italic = 기울임꼴
+notes-format-underline = 밑줄
+notes-format-clear = 서식 지우기
+
 ## Tasks
 
 notes-make-task = 할 일로 만들기

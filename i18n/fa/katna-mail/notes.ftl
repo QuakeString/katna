@@ -78,6 +78,17 @@ notes-meeting-actions = اقدام‌ها
 notes-event = رویداد
 notes-open-event = باز کردن رویداد
 
+## Formatting
+
+notes-format = قالب‌بندی
+notes-format-heading-1 = عنوان 1
+notes-format-heading-2 = عنوان 2
+notes-format-normal = متن عادی
+notes-format-bold = پررنگ
+notes-format-italic = مورب
+notes-format-underline = زیرخط
+notes-format-clear = پاک کردن قالب‌بندی
+
 ## Tasks
 
 notes-make-task = تبدیل به کار

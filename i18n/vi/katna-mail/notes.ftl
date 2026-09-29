@@ -77,6 +77,17 @@ notes-meeting-actions = Việc cần làm
 notes-event = Sự kiện
 notes-open-event = Mở sự kiện
 
+## Formatting
+
+notes-format = Định dạng
+notes-format-heading-1 = Tiêu đề 1
+notes-format-heading-2 = Tiêu đề 2
+notes-format-normal = Văn bản thường
+notes-format-bold = In đậm
+notes-format-italic = In nghiêng
+notes-format-underline = Gạch chân
+notes-format-clear = Xóa định dạng
+
 ## Tasks
 
 notes-make-task = Biến thành việc cần làm

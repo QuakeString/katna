@@ -1558,3 +1558,12 @@ Op de pagina Agenda vindt het zoekvak bovenaan nu afspraken op titel,
 plaats, notities of gasten, op datum gesorteerd. Klik op een afspraak om
 hem op zijn dag te openen; met Esc ga je terug naar de resultaten.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Opmaak in notities"
+text = """
+Kies Opmaak in een notitie voor Kop 1, Kop 2, vet, cursief en
+onderstrepen, zoals in Keep. Het bord toont het ook, en de opmaak gaat
+met de notitie mee naar de map Notities van je e-mailaccount, waar opmaak
+van een iPhone nu terugkomt zoals hij was.
+"""

@@ -1524,3 +1524,12 @@ På sidan Kalender hittar sökrutan högst upp nu händelser efter rubrik,
 plats, anteckningar eller gäster, listade efter datum. Klicka på en för
 att öppna den på dess dag; Esc tar dig tillbaka till resultaten.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formatering i anteckningar"
+text = """
+Välj Formatering i en anteckning för Rubrik 1, Rubrik 2, fet, kursiv och
+understruken text, som i Keep. Tavlan visar den också, och den följer
+med anteckningen till mappen Anteckningar i ditt e-postkonto, där
+formatering från en iPhone nu kommer tillbaka som den var.
+"""

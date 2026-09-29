@@ -78,6 +78,17 @@ notes-meeting-actions = Aufgaben
 notes-event = Event
 notes-open-event = Das Event öffnen
 
+## Formatting
+
+notes-format = Formatierung
+notes-format-heading-1 = Überschrift 1
+notes-format-heading-2 = Überschrift 2
+notes-format-normal = Normaler Text
+notes-format-bold = Fett
+notes-format-italic = Kursiv
+notes-format-underline = Unterstrichen
+notes-format-clear = Formatierung löschen
+
 ## Tasks
 
 notes-make-task = Zur Aufgabe machen

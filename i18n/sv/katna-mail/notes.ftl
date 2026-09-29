@@ -78,6 +78,17 @@ notes-meeting-actions = Åtgärder
 notes-event = Händelse
 notes-open-event = Öppna händelsen
 
+## Formatting
+
+notes-format = Formatering
+notes-format-heading-1 = Rubrik 1
+notes-format-heading-2 = Rubrik 2
+notes-format-normal = Normal text
+notes-format-bold = Fet
+notes-format-italic = Kursiv
+notes-format-underline = Understruken
+notes-format-clear = Rensa formatering
+
 ## Tasks
 
 notes-make-task = Gör till uppgift
