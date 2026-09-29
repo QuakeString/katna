@@ -3401,6 +3401,7 @@ impl Render for MailWindow {
             self.render_phone_fab(&th, cx)
         };
         let compose = self.render_compose(&th, window, reduce, cx);
+        let compose_dialog = self.render_docked_compose_dialog(&th, window, cx);
         let scheduled = self.render_scheduled(&th, window, cx);
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
@@ -3451,6 +3452,7 @@ impl Render for MailWindow {
             .children(self.files.viewer.clone())
             .children(search_panel)
             .children(compose)
+            .children(compose_dialog)
             .children(scheduled)
             .children(activity)
             .children(activity_menu)

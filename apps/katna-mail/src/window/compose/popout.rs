@@ -220,7 +220,7 @@ impl MailWindow {
             .children(self.render_floating_format_bar(th, width - 24.0, cx))
             .child(self.render_compose_actions(th, width, cx))
             .child(self.render_drop_target(th))
-            .children(self.render_compose_dialog(th, cx));
+            .children(self.render_compose_dialog(th, window, cx));
         Some(panel.into_any_element())
     }
 }

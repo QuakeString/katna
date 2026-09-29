@@ -1247,6 +1247,28 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// Opens the field with the bad address and puts the keys in it.
+    pub(super) fn fix_bad_address(
+        &mut self,
+        field: Field,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if let Some(c) = &mut self.compose {
+            c.popup = None;
+            c.header_open = true;
+            match field {
+                Field::Cc => c.show_cc = true,
+                Field::Bcc => c.show_bcc = true,
+                Field::To => {}
+            }
+        }
+        if let Some(input) = self.recipient_input(field).cloned() {
+            window.focus(&input.focus_handle(cx), cx);
+        }
+        cx.notify();
+    }
+
     /// Asked when Send finds a recipient that is not an address.
     pub(super) fn render_bad_address(
         &self,
@@ -1265,21 +1287,7 @@ impl MailWindow {
             )
             .child(div().mt(px(20.0)).flex().flex_row().justify_end().child(
                 filled_button("recipient-bad-fix", tr!("recipient-bad-fix"), th).on_click(
-                    cx.listener(move |this, _, window, cx| {
-                        if let Some(c) = &mut this.compose {
-                            c.popup = None;
-                            c.header_open = true;
-                            match field {
-                                Field::Cc => c.show_cc = true,
-                                Field::Bcc => c.show_bcc = true,
-                                Field::To => {}
-                            }
-                        }
-                        if let Some(input) = this.recipient_input(field).cloned() {
-                            window.focus(&input.focus_handle(cx), cx);
-                        }
-                        cx.notify();
-                    }),
+                    cx.listener(move |this, _, window, cx| this.fix_bad_address(field, window, cx)),
                 ),
             ))
             .into_any_element()
