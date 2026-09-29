@@ -539,6 +539,80 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// The open event's guests other than the user, as addresses.
+    pub(super) fn other_guests(&self, occurrence: &Occurrence) -> Vec<String> {
+        occurrence
+            .event
+            .data
+            .attendees
+            .iter()
+            .filter(|a| {
+                !a.is_self
+                    && a.email.contains('@')
+                    && !self
+                        .accounts
+                        .iter()
+                        .any(|me| me.address.eq_ignore_ascii_case(&a.email))
+            })
+            .map(|a| {
+                if a.name.is_empty() {
+                    a.email.clone()
+                } else {
+                    format!("{} <{}>", a.name.replace(['<', '>', ','], ""), a.email)
+                }
+            })
+            .collect()
+    }
+
+    /// A new mail to the open event's guests, from the calendar's account:
+    /// titled with the event, or, when `late`, saying the user is running
+    /// late, as Google Calendar's Email guests and Running late.
+    pub(super) fn email_guests(&mut self, late: bool, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(open) = &self.calendar.open else {
+            return;
+        };
+        let occurrence = open.occurrence.clone();
+        let to = self.other_guests(&occurrence);
+        if to.is_empty() {
+            return;
+        }
+        let data = &occurrence.event.data;
+        let title = if data.title.is_empty() {
+            tr!("calendar-no-title")
+        } else {
+            data.title.clone()
+        };
+        let account = self
+            .calendar
+            .calendars
+            .iter()
+            .find(|c| c.id == occurrence.event.calendar_id)
+            .and_then(|c| c.account);
+        let (subject, body) = if late {
+            (
+                tr!("calendar-late-subject", title = title.clone()),
+                tr!("calendar-late-body", title = title),
+            )
+        } else {
+            (title, String::new())
+        };
+        self.calendar.open = None;
+        self.open_mailto(
+            crate::mailto::Mailto {
+                to,
+                subject,
+                body,
+                ..Default::default()
+            },
+            window,
+            cx,
+        );
+        if let Some(account) = account {
+            self.send_compose_from(account);
+        }
+        cx.notify();
+    }
+
     /// Opens the whole editor on the open event.
     pub(super) fn edit_open_event(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(open) = self.calendar.open.take() else {

@@ -1911,6 +1911,14 @@ impl MailWindow {
         let join = data.join_url.clone();
         let web = data.web_link.clone();
         let editable = self.can_edit(occurrence);
+        let emails = !self.other_guests(occurrence).is_empty();
+        // Running late, from an hour before the start to the end.
+        let now = jiff::Timestamp::now().as_second();
+        let late = emails
+            && !occurrence.all_day()
+            && data.status != EventStatus::Cancelled
+            && now >= occurrence.start - 3600
+            && now < occurrence.end;
         let title = if data.title.is_empty() {
             tr!("calendar-no-title")
         } else {
@@ -1950,6 +1958,15 @@ impl MailWindow {
                         icon_button("event-delete", "trash", 20.0, th)
                             .tooltip(tip(tr!("calendar-delete"), th))
                             .on_click(cx.listener(|this, _, _, cx| this.delete_open_event(cx))),
+                    )
+                })
+                .when(emails, |d| {
+                    d.child(
+                        icon_button("event-email", "mail", 20.0, th)
+                            .tooltip(tip(tr!("calendar-email-guests"), th))
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.email_guests(false, window, cx)
+                            })),
                     )
                 })
                 .when(!web.is_empty(), |d| {
@@ -2034,6 +2051,22 @@ impl MailWindow {
                         .child(
                             crate::widgets::filled_button("event-join", tr!("calendar-join"), th)
                                 .on_click(move |_, _, cx| cx.open_url(&url)),
+                        ),
+                )
+            })
+            .when(late, |d| {
+                d.child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .gap(px(16.0))
+                        .items_center()
+                        .child(icon("schedule", th.text_dim, 20.0))
+                        .child(
+                            outlined_button("event-late", tr!("calendar-running-late"), th)
+                                .on_click(cx.listener(|this, _, window, cx| {
+                                    this.email_guests(true, window, cx)
+                                })),
                         ),
                 )
             })
