@@ -121,6 +121,29 @@ calendar-discard = ለውጦችን አስወግድ
 calendar-edit = ክስተት አርትዕ
 calendar-delete = ክስተት ሰርዝ
 calendar-event-details = የክስተት ዝርዝሮች
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = አዲስ ክስተት
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ቀኑን ክፈት
+calendar-menu-duplicate = አባዛ
+calendar-menu-color = ቀለም
+# The event takes its calendar's color.
+calendar-menu-color-calendar = የቀን መቁጠሪያ ቀለም
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = በአንድ ሳምንት ውስጥ
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ቲማቲም
+calendar-color-flamingo = ፍላሚንጎ
+calendar-color-tangerine = መንደሪን
+calendar-color-banana = ሙዝ
+calendar-color-sage = ጠቢብ
+calendar-color-basil = በሶብላ
+calendar-color-peacock = ጣዎስ
+calendar-color-blueberry = ብሉቤሪ
+calendar-color-lavender = ላቬንደር
+calendar-color-grape = ወይን
+calendar-color-graphite = ግራፋይት
 calendar-kind-event = ክስተት
 calendar-kind-focus = የትኩረት ጊዜ
 calendar-kind-out-of-office = ከቢሮ ውጭ

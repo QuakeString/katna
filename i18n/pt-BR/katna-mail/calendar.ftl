@@ -123,6 +123,29 @@ calendar-discard = Descartar alterações
 calendar-edit = Editar evento
 calendar-delete = Excluir evento
 calendar-event-details = Detalhes do evento
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Novo evento
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Abrir dia
+calendar-menu-duplicate = Duplicar
+calendar-menu-color = Cor
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Cor da agenda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Em uma semana
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomate
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Tangerina
+calendar-color-banana = Banana
+calendar-color-sage = Sálvia
+calendar-color-basil = Manjericão
+calendar-color-peacock = Pavão
+calendar-color-blueberry = Mirtilo
+calendar-color-lavender = Lavanda
+calendar-color-grape = Uva
+calendar-color-graphite = Grafite
 calendar-kind-event = Evento
 calendar-kind-focus = Tempo de foco
 calendar-kind-out-of-office = Ausente

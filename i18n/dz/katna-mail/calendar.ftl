@@ -116,6 +116,29 @@ calendar-discard = བསྒྱུར་བཅོས་བཏོན་གཏང�
 calendar-edit = བྱུང་རིམ་ཞུན་དག་འབད།
 calendar-delete = བྱུང་རིམ་བཏོན་གཏང་།
 calendar-event-details = བྱུང་རིམ་གྱི་ཁ་གསལ།
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = བྱུང་རིམ་གསརཔ
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ཉིནམ་ཁ་ཕྱེ
+calendar-menu-duplicate = འདྲ་བཤུས་འབད
+calendar-menu-color = ཚོས་གཞི
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ཟླ་ཐོའི་ཚོས་གཞི
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = བདུན་ཕྲག་གཅིག་ནང་
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ཊོ་མ་ཊོ
+calendar-color-flamingo = ཕེ་ལ་མིང་གོ
+calendar-color-tangerine = ཚལ་ལུ་མ
+calendar-color-banana = ལ་ཧུ་ལ
+calendar-color-sage = སེཇ
+calendar-color-basil = བེ་སིལ
+calendar-color-peacock = རྨ་བྱ
+calendar-color-blueberry = བླུ་བེ་རི
+calendar-color-lavender = ལེ་ཝེན་ཌར
+calendar-color-grape = རྒུན་འབྲུམ
+calendar-color-graphite = ཞ་ཉེ
 calendar-kind-event = བྱུང་རིམ
 calendar-kind-focus = དོ་སྣང་དུས་ཚོད
 calendar-kind-out-of-office = ཡིག་ཚང་ལས་ཕྱི

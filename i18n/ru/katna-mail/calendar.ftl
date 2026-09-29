@@ -125,6 +125,29 @@ calendar-discard = Не сохранять изменения
 calendar-edit = Изменить мероприятие
 calendar-delete = Удалить мероприятие
 calendar-event-details = Сведения о мероприятии
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Новое мероприятие
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Открыть день
+calendar-menu-duplicate = Дублировать
+calendar-menu-color = Цвет
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Цвет календаря
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Через неделю
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Томат
+calendar-color-flamingo = Фламинго
+calendar-color-tangerine = Мандарин
+calendar-color-banana = Банан
+calendar-color-sage = Шалфей
+calendar-color-basil = Базилик
+calendar-color-peacock = Павлин
+calendar-color-blueberry = Черника
+calendar-color-lavender = Лаванда
+calendar-color-grape = Виноград
+calendar-color-graphite = Графит
 calendar-kind-event = Мероприятие
 calendar-kind-focus = Фокусировка
 calendar-kind-out-of-office = Нет на месте

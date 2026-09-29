@@ -1756,3 +1756,14 @@ altre note scivolano di lato per farle spazio, e resta dove la lasci.
 Ctrl+Z la rimette a posto. Le schede ora stanno compatte nelle loro
 colonne, senza spazi vuoti sotto le note corte.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clic destro nel Calendario"
+text = """
+Fai clic destro su un orario o un giorno libero per aggiungere lì un evento,
+un tempo di concentrazione o un'assenza. Fai clic destro su un evento per
+modificarlo, duplicarlo, eliminarlo, rispondere, partecipare, inviare
+un'e-mail agli ospiti, colorarlo o spostarlo in un altro calendario, e su
+un'attività per completarla, aggiungerla a Speciali, darle un altro giorno o
+eliminarla. Annulla riporta indietro una modifica.
+"""

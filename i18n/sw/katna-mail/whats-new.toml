@@ -1663,3 +1663,14 @@ Madokezo mengine huteleza kando kutoa nafasi, nalo hubaki pale
 unapoliachilia. Ctrl+Z hulirudisha. Kadi sasa hukaa vizuri kwenye safu
 zake, bila mapengo chini ya madokezo mafupi.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Bofya kulia kwenye Kalenda"
+text = """
+Bofya kulia muda au siku iliyo wazi ili kuongeza tukio, muda wa
+kuzingatia au muda wa kuwa nje ya ofisi hapo. Bofya kulia tukio ili
+kulihariri, kulinakili, kulifuta, kujibu, kujiunga, kutuma barua pepe
+kwa wageni, kulipa rangi au kulihamishia kalenda nyingine, na kazi ili
+kuiwekea alama ya kukamilika, kuiwekea nyota, kuipa siku nyingine au
+kuifuta. Tendua hurudisha badiliko.
+"""

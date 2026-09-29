@@ -119,6 +119,29 @@ calendar-discard = Tụfuo mgbanwe
 calendar-edit = Dezie ihe omume
 calendar-delete = Hichapụ ihe omume
 calendar-event-details = Nkọwa ihe omume
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Ihe omume ọhụrụ
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Mepee ụbọchị
+calendar-menu-duplicate = Mepụta oyiri
+calendar-menu-color = Agba
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Agba kalịnda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = N'otu izu
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomato
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Tanjirin
+calendar-color-banana = Unere
+calendar-color-sage = Sage
+calendar-color-basil = Nchuanwụ
+calendar-color-peacock = Pikọk
+calendar-color-blueberry = Bluberi
+calendar-color-lavender = Lavenda
+calendar-color-grape = Mkpụrụ vaịn
+calendar-color-graphite = Graịt
 calendar-kind-event = Ihe omume
 calendar-kind-focus = Oge nlekwasị anya
 calendar-kind-out-of-office = N'èzí ọfịs

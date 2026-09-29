@@ -1642,3 +1642,9 @@ title = "Dọrọ ndetu ka ị hazie ha"
 text = """
 Dọrọ ndetu na bọọdụ Ndetu iji bugharịa ya, dị ka na Keep. Ndetu ndị ọzọ na-amịfe n'akụkụ iji nye ohere, ọ na-anọkwa ebe ị tụbara ya. Ctrl+Z na-eweghachi ya. Kaadị na-anọ ugbu a nke ọma n'ogidi ha, na-enweghị oghere n'okpuru ndetu dị mkpụmkpụ.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Pịa aka nri na Kalịnda"
+text = """
+Pịa aka nri n'oge efu ma ọ bụ ụbọchị iji tinye ihe omume, oge nlekwasị anya ma ọ bụ n'èzí ọfịs n'ebe ahụ. Pịa aka nri n'ihe omume iji dezie, mepụta oyiri, hichapụ, zaa, sonye, zipụ ndị ọbịa email, nye ya agba ma ọ bụ bugara ya na kalịnda ọzọ, na n'ọrụ iji kaa ya dị ka emechara, tinye ya kpakpando, nye ya ụbọchị ọzọ ma ọ bụ hichapụ ya. Mwepu na-eweghachi mgbanwe.
+"""

@@ -1588,3 +1588,13 @@ title = "Ja bayanai don tsara su"
 text = """
 Ja bayani a kan allon Bayanai don matsar da shi, kamar a Keep. Sauran bayanai suna zamewa gefe don ba da wuri, kuma yana zama inda ka sake shi. Ctrl+Z yana mayar da shi. Katuna yanzu suna zaune daidai a cikin ginshiƙansu, ba tare da gibi a ƙarƙashin gajerun bayanai ba.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Danna dama a Kalanda"
+text = """
+Danna dama a kan lokaci ko rana mara komai don ƙara taro, lokacin mai da
+hankali ko ba a ofis a wurin. Danna dama a kan taro don gyara shi, kwafa
+shi, share shi, amsa, shiga, aika wa baƙi imel, ba shi launi ko matsar
+da shi zuwa wata kalanda, kuma a kan aiki don kammala shi, sa masa
+tauraro, ba shi wata rana ko share shi. Janyewa na mayar da canji.
+"""

@@ -1799,3 +1799,15 @@ Amanothi amanye ashelela eceleni ukuze enze isikhala, futhi lihlala
 lapho ulibeka khona. I-Ctrl+Z iyalibuyisela. Amakhadi manje ahlala kahle
 emakholamu awo, engenazo izikhala ngaphansi kwamanothi amafushane.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Chofoza kwesokudla kuKhalenda"
+text = """
+Chofoza kwesokudla isikhathi noma usuku olungenalutho ukuze wengeze
+lapho umcimbi, isikhathi sokugxila noma isikhathi sokungabi sehhovisi.
+Chofoza kwesokudla umcimbi ukuze uwuhlele, wenze ikhophi, uwususe,
+uphendule, ujoyine, uthumele izihambeli i-imeyili, uwunike umbala noma
+uwuhambise kwenye ikhalenda, bese uchofoza umsebenzi ukuze uwumake
+njengoqediwe, uwunike inkanyezi, uwunike olunye usuku noma uwususe.
+Hlehlisa ibuyisela emuva ushintsho.
+"""

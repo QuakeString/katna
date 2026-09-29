@@ -121,6 +121,29 @@ calendar-discard = Itapon ang mga pagbabago
 calendar-edit = I-edit ang event
 calendar-delete = I-delete ang event
 calendar-event-details = Mga detalye ng event
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Bagong event
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Buksan ang araw
+calendar-menu-duplicate = I-duplicate
+calendar-menu-color = Kulay
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Kulay ng kalendaryo
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Makalipas ang isang linggo
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Kamatis
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Dalanghita
+calendar-color-banana = Saging
+calendar-color-sage = Sage
+calendar-color-basil = Basil
+calendar-color-peacock = Paboreal
+calendar-color-blueberry = Blueberry
+calendar-color-lavender = Lavender
+calendar-color-grape = Ubas
+calendar-color-graphite = Graphite
 calendar-kind-event = Event
 calendar-kind-focus = Focus time
 calendar-kind-out-of-office = Wala sa opisina

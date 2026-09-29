@@ -121,6 +121,29 @@ calendar-discard = Änderungen verwerfen
 calendar-edit = Termin bearbeiten
 calendar-delete = Termin löschen
 calendar-event-details = Termindetails
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Neuer Termin
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Tag öffnen
+calendar-menu-duplicate = Duplizieren
+calendar-menu-color = Farbe
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Kalenderfarbe
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = In einer Woche
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomate
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandarine
+calendar-color-banana = Banane
+calendar-color-sage = Salbei
+calendar-color-basil = Basilikum
+calendar-color-peacock = Pfau
+calendar-color-blueberry = Heidelbeere
+calendar-color-lavender = Lavendel
+calendar-color-grape = Weintraube
+calendar-color-graphite = Graphit
 calendar-kind-event = Event
 calendar-kind-focus = Fokuszeit
 calendar-kind-out-of-office = Abwesend

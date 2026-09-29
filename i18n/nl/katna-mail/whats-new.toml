@@ -1741,3 +1741,15 @@ in Keep. De andere notities schuiven opzij om plaats te maken, en hij
 blijft waar je hem loslaat. Ctrl+Z zet hem terug. Kaarten sluiten nu
 netjes aan in hun kolommen, zonder gaten onder korte notities.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Rechtsklikken in de Agenda"
+text = """
+Klik met rechts op een vrij tijdstip of een vrije dag om daar een afspraak,
+focustijd of niet op kantoor toe te voegen. Klik met rechts op een afspraak
+om hem te bewerken, dupliceren, verwijderen, beantwoorden, deel te nemen,
+de gasten te e-mailen, een kleur te geven of naar een andere agenda te
+verplaatsen, en op een taak om hem af te vinken, een ster te geven, een
+andere dag te geven of te verwijderen. Ongedaan maken draait een wijziging
+terug.
+"""

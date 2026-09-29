@@ -1691,3 +1691,14 @@ notas gly opsy om plek te maak, en dit bly waar jy dit los. Ctrl+Z sit
 dit terug. Kaarte sit nou styf in hul kolomme, sonder gapings onder kort
 notas.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Regsklik op die Kalender"
+text = """
+Regsklik op 'n vrye tyd of dag om daar 'n geleentheid, fokustyd of uit
+die kantoor by te voeg. Regsklik op 'n geleentheid om dit te wysig, te
+dupliseer, uit te vee, te beantwoord, aan te sluit, die gaste te e-pos,
+dit 'n kleur te gee of na 'n ander kalender te skuif, en op 'n taak om
+dit af te merk, 'n ster te gee, 'n ander dag te gee of uit te vee.
+Ontdoen neem 'n verandering terug.
+"""

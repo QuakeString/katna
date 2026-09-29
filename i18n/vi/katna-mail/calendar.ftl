@@ -119,6 +119,29 @@ calendar-discard = Bỏ thay đổi
 calendar-edit = Chỉnh sửa sự kiện
 calendar-delete = Xóa sự kiện
 calendar-event-details = Chi tiết sự kiện
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Sự kiện mới
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Mở ngày
+calendar-menu-duplicate = Tạo bản sao
+calendar-menu-color = Màu
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Màu của lịch
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Sau một tuần
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Cà chua
+calendar-color-flamingo = Hồng hạc
+calendar-color-tangerine = Quýt
+calendar-color-banana = Chuối
+calendar-color-sage = Xô thơm
+calendar-color-basil = Húng quế
+calendar-color-peacock = Chim công
+calendar-color-blueberry = Việt quất
+calendar-color-lavender = Oải hương
+calendar-color-grape = Nho
+calendar-color-graphite = Than chì
 calendar-kind-event = Sự kiện
 calendar-kind-focus = Thời gian tập trung
 calendar-kind-out-of-office = Vắng mặt

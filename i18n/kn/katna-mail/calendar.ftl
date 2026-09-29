@@ -121,6 +121,29 @@ calendar-discard = ಬದಲಾವಣೆಗಳನ್ನು ತ್ಯಜಿಸಿ
 calendar-edit = ಈವೆಂಟ್ ಎಡಿಟ್ ಮಾಡಿ
 calendar-delete = ಈವೆಂಟ್ ಅಳಿಸಿ
 calendar-event-details = ಈವೆಂಟ್ ವಿವರಗಳು
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = ಹೊಸ ಈವೆಂಟ್
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ದಿನವನ್ನು ತೆರೆಯಿರಿ
+calendar-menu-duplicate = ನಕಲಿಸಿ
+calendar-menu-color = ಬಣ್ಣ
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ಕ್ಯಾಲೆಂಡರ್ ಬಣ್ಣ
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = ಒಂದು ವಾರದಲ್ಲಿ
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ಟೊಮೆಟೊ
+calendar-color-flamingo = ಫ್ಲೆಮಿಂಗೊ
+calendar-color-tangerine = ಕಿತ್ತಳೆ
+calendar-color-banana = ಬಾಳೆಹಣ್ಣು
+calendar-color-sage = ಸೇಜ್
+calendar-color-basil = ತುಳಸಿ
+calendar-color-peacock = ನವಿಲು
+calendar-color-blueberry = ಬ್ಲೂಬೆರಿ
+calendar-color-lavender = ಲ್ಯಾವೆಂಡರ್
+calendar-color-grape = ದ್ರಾಕ್ಷಿ
+calendar-color-graphite = ಗ್ರ್ಯಾಫೈಟ್
 calendar-kind-event = ಈವೆಂಟ್
 calendar-kind-focus = ಫೋಕಸ್ ಸಮಯ
 calendar-kind-out-of-office = ಕಚೇರಿಯಿಂದ ಹೊರಗೆ

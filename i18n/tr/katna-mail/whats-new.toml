@@ -1723,3 +1723,15 @@ notlar yer açmak için kayarak kenara çekiliyor ve not bıraktığınız yerde
 kalıyor. Ctrl+Z onu geri koyar. Kartlar artık sütunlarına sıkıca
 oturuyor; kısa notların altında boşluk kalmıyor.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Takvim'de sağ tıklama"
+text = """
+Oraya etkinlik, odaklanma zamanı veya ofis dışında zamanı eklemek için
+boş bir saate ya da güne sağ tıklayın. Bir etkinliği düzenlemek,
+çoğaltmak, silmek, yanıtlamak, katılmak, konuklara posta göndermek,
+rengini değiştirmek veya başka bir takvime taşımak için etkinliğe; bir
+görevi tamamlandı olarak işaretlemek, yıldızlamak, başka bir güne almak
+veya silmek için göreve sağ tıklayın. Geri al, bir değişikliği geri
+alır.
+"""
