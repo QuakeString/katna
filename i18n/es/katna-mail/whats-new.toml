@@ -1293,3 +1293,12 @@ GMX y otras cuentas, incluso cuando están en otro servidor distinto al
 del correo. Prueba primero el mejor método de cada cuenta y otro cuando
 ese no está disponible.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Invitaciones en tu correo"
+text = """
+Una invitación ahora se muestra como una tarjeta en la parte superior
+del correo: cuándo y dónde, quién la organizó, tu día alrededor con los
+solapamientos marcados, Unirse y ¿Asistirás? Sí, No o Quizás, con
+respuesta allí mismo.
+"""

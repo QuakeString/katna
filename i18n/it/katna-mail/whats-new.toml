@@ -1296,3 +1296,12 @@ altri account, anche quando si trovano su un server diverso da quello
 della posta. Prova prima il metodo migliore di ciascun account e un
 altro quando quello non è disponibile.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Inviti nella tua posta"
+text = """
+Un invito ora appare come una scheda in cima alla mail: quando e dove,
+chi lo ha organizzato, la tua giornata intorno con le sovrapposizioni
+segnalate, Partecipa e Partecipi? Sì, No o Forse, con risposta
+direttamente lì.
+"""

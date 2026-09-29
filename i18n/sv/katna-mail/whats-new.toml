@@ -1254,3 +1254,12 @@ andra konton, även när de ligger på en annan server än e-posten. Den
 provar först varje kontos bästa sätt och ett annat när det inte är
 tillgängligt.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Inbjudningar i din e-post"
+text = """
+En inbjudan visas nu som ett kort överst i e-postmeddelandet: när och
+var, vem som arrangerar den, din dag runt omkring med krockar markerade,
+Anslut och Kommer du? Ja, Nej eller Kanske, som du kan besvara direkt
+där.
+"""

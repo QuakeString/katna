@@ -1245,3 +1245,11 @@ ander rekeninge, selfs wanneer hulle op ’n ander bediener as die e-pos
 is. Dit probeer eers elke rekening se beste manier en ’n ander wanneer
 daardie een af is.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Uitnodigings in jou e-pos"
+text = """
+’n Uitnodiging verskyn nou as ’n kaart boaan die e-pos: wanneer en waar,
+wie dit georganiseer het, jou dag daaromheen met botsings gemerk, Sluit
+aan en Gaan jy? Ja, Nee of Miskien, wat jy dadelik daar beantwoord.
+"""

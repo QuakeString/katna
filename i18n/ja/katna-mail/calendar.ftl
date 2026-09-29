@@ -113,6 +113,23 @@ calendar-answered-yes = 参加します
 calendar-answered-no = 参加しません
 calendar-answered-maybe = 参加未定です
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = 招待
+calendar-invite-cancelled = 予定はキャンセルされました
+calendar-invite-reply = { $name } さんが返信しました
+calendar-invite-reply-yes = { $name } さん: 承諾
+calendar-invite-reply-no = { $name } さん: 辞退
+calendar-invite-reply-maybe = { $name } さん: 未定
+calendar-invite-organizer = 主催者: { $name }
+calendar-invite-open = カレンダーで開く
+calendar-invite-not-yet = まだカレンダーにありません。同期されると返信できます。
+calendar-invite-your-day = あなたの一日
+calendar-invite-clashes =
+    { $count ->
+       *[other] { $count } 件の予定と重複しています
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = 今日の予定を表示

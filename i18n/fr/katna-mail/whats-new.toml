@@ -1326,3 +1326,12 @@ GMX et d’autres comptes, même lorsqu’ils sont sur un autre serveur que
 le courrier. Il essaie d’abord la meilleure méthode de chaque compte,
 puis une autre si celle-ci est indisponible.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Les invitations dans votre courrier"
+text = """
+Une invitation s’affiche désormais sous forme de carte en haut du
+message : quand et où, qui l’a organisée, votre journée autour avec les
+chevauchements signalés, Participer, et Participez-vous ? Oui, Non ou
+Peut-être, avec une réponse directement sur place.
+"""

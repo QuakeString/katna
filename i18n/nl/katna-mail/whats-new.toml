@@ -1284,3 +1284,12 @@ andere accounts, ook als ze op een andere server staan dan de e-mail.
 Het probeert eerst de beste manier van elk account en een andere als die
 niet beschikbaar is.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Uitnodigingen in je mail"
+text = """
+Een uitnodiging verschijnt nu als kaart bovenaan de mail: wanneer en
+waar, wie hem organiseert, jouw dag eromheen met overlappingen
+gemarkeerd, Deelnemen en Ga je? Ja, Nee of Misschien, direct daar te
+beantwoorden.
+"""

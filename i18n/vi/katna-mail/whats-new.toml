@@ -1242,3 +1242,11 @@ các tài khoản khác, ngay cả khi chúng nằm trên máy chủ khác với
 Katna thử cách tốt nhất của từng tài khoản trước và một cách khác khi
 cách đó không dùng được.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Lời mời trong thư của bạn"
+text = """
+Lời mời giờ đây hiển thị dưới dạng thẻ ở đầu thư: khi nào và ở đâu, ai
+tổ chức, ngày của bạn xung quanh với các xung đột được đánh dấu, Tham
+gia và Bạn có tham dự không? Có, Không hoặc Có thể, trả lời ngay tại đó.
+"""

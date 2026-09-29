@@ -113,6 +113,23 @@ calendar-answered-yes = Ị na-aga
 calendar-answered-no = Ị naghị aga
 calendar-answered-maybe = Ị nwere ike ịga
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Oku
+calendar-invite-cancelled = Akagburu ihe omume
+calendar-invite-reply = { $name } zara
+calendar-invite-reply-yes = { $name } kwetara
+calendar-invite-reply-no = { $name } jụrụ
+calendar-invite-reply-maybe = { $name } nwere ike ịga
+calendar-invite-organizer = Onye nhazi: { $name }
+calendar-invite-open = Mepe na Kalịnda
+calendar-invite-not-yet = Ọ nọghị na kalịnda gị ka. Ị ga-azaghachi ozugbo ọ kwekọrọ.
+calendar-invite-your-day = Ụbọchị gị
+calendar-invite-clashes =
+    { $count ->
+       *[other] Ọ na-ekwekọghị na ihe omume { $count }
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Gosi atụmatụ ụbọchị

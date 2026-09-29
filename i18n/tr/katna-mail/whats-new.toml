@@ -1272,3 +1272,12 @@ Katna artık Yahoo, Zoho, iCloud, Fastmail, GMX ve diğer hesapların
 takvimlerini, postadan farklı bir sunucuda olsalar bile buluyor. Önce
 her hesabın en iyi yolunu, o kullanılamıyorsa bir başkasını dener.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Postanızdaki davetler"
+text = """
+Bir davet artık postanın en üstünde bir kart olarak görünüyor: ne zaman
+ve nerede, kimin düzenlediği, çevresindeki gününüz ve işaretli
+çakışmalar, Katıl ve Katılıyor musunuz? Evet, Hayır veya Belki, orada
+yanıtlanıyor.
+"""

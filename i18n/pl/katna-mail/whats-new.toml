@@ -1274,3 +1274,12 @@ innych kont, nawet gdy znajdują się na innym serwerze niż poczta.
 Najpierw próbuje najlepszego sposobu dla każdego konta, a gdy jest
 niedostępny, innego.
 """
+
+["2026-09-29-0631-invitation-card"]
+title = "Zaproszenia w Twojej poczcie"
+text = """
+Zaproszenie wyświetla się teraz jako karta na górze wiadomości: kiedy i
+gdzie, kto je zorganizował, Twój dzień wokół niego z zaznaczonymi
+kolizjami, Dołącz oraz Bierzesz udział? Tak, Nie lub Może, z odpowiedzią
+prosto tam.
+"""

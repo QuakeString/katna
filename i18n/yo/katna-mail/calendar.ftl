@@ -113,6 +113,23 @@ calendar-answered-yes = O ń lọ
 calendar-answered-no = O kò lọ
 calendar-answered-maybe = O lè lọ
 
+## The card at the top of a mail with an invitation.
+
+calendar-invite = Ìkésíni
+calendar-invite-cancelled = A ti fagilé ìṣẹ̀lẹ̀ náà
+calendar-invite-reply = { $name } fèsì
+calendar-invite-reply-yes = { $name } gbà
+calendar-invite-reply-no = { $name } kọ̀
+calendar-invite-reply-maybe = { $name } lè lọ
+calendar-invite-organizer = Olùṣètò: { $name }
+calendar-invite-open = Ṣí i nínú Kàlẹ́ńdà
+calendar-invite-not-yet = Kò tíì sí nínú kàlẹ́ńdà rẹ. O lè fèsì nígbà tó bá ti ṣe àmúṣiṣẹ́pọ̀.
+calendar-invite-your-day = Ọjọ́ rẹ
+calendar-invite-clashes =
+    { $count ->
+       *[other] Ó kọlu ìṣẹ̀lẹ̀ { $count }
+    }
+
 ## The day's agenda beside the mail.
 
 agenda-show = Fi àtòjọ ọjọ́ náà hàn
