@@ -40,10 +40,7 @@ fn split(url: &str) -> Option<(String, &str)> {
 }
 
 fn under(host: &str, domain: &str) -> bool {
-    host == domain
-        || host
-            .strip_suffix(domain)
-            .is_some_and(|h| h.ends_with('.'))
+    host == domain || host.strip_suffix(domain).is_some_and(|h| h.ends_with('.'))
 }
 
 /// The first segment of `path` (`/abc-defg-hij?x` gives `abc-defg-hij`).
@@ -102,8 +99,8 @@ pub fn service(url: &str, jitsi_host: Option<&str>) -> Option<Service> {
         || host == "8x8.vc"
         || jitsi_host.is_some_and(|j| j.eq_ignore_ascii_case(&host));
     // A room, not the server's own pages.
-    let page = matches!(room, "" | "static" | "libs" | "css" | "images" | "sounds")
-        || room.contains('.');
+    let page =
+        matches!(room, "" | "static" | "libs" | "css" | "images" | "sounds") || room.contains('.');
     (jitsi && !page).then_some(Service::Jitsi)
 }
 
@@ -148,7 +145,13 @@ pub fn find<'a>(
 /// Two links to one call: the same address, whatever the case of the
 /// host or the query after it.
 fn same_call(a: &str, b: &str) -> bool {
-    let base = |l: &str| l.split(['?', '#']).next().unwrap_or(l).trim_end_matches('/').to_ascii_lowercase();
+    let base = |l: &str| {
+        l.split(['?', '#'])
+            .next()
+            .unwrap_or(l)
+            .trim_end_matches('/')
+            .to_ascii_lowercase()
+    };
     base(a) == base(b)
 }
 
@@ -207,18 +210,27 @@ mod tests {
     fn recognises_each_service() {
         let cases = [
             ("https://meet.google.com/abc-defg-hij", Service::GoogleMeet),
-            ("https://meet.google.com/abc-defg-hij?authuser=1", Service::GoogleMeet),
+            (
+                "https://meet.google.com/abc-defg-hij?authuser=1",
+                Service::GoogleMeet,
+            ),
             (
                 "https://teams.microsoft.com/l/meetup-join/19%3ameeting_x%40thread.v2/0",
                 Service::Teams,
             ),
             ("https://teams.live.com/meet/9876543210", Service::Teams),
-            ("https://us02web.zoom.us/j/81234567890?pwd=abc", Service::Zoom),
+            (
+                "https://us02web.zoom.us/j/81234567890?pwd=abc",
+                Service::Zoom,
+            ),
             ("https://acme.webex.com/meet/pat", Service::Webex),
             ("https://acme.webex.com/acme/j.php?MTID=m1", Service::Webex),
             ("https://meet.jit.si/SomeRoom", Service::Jitsi),
             ("https://8x8.vc/vpaas-magic-cookie-1/room", Service::Jitsi),
-            ("https://call.whatsapp.com/video/zl6IuTVabc", Service::WhatsApp),
+            (
+                "https://call.whatsapp.com/video/zl6IuTVabc",
+                Service::WhatsApp,
+            ),
             ("https://call.whatsapp.com/voice/abc", Service::WhatsApp),
             ("https://t.me/call/AbCdEf", Service::Telegram),
             ("https://t.me/somegroup?videochat", Service::Telegram),
@@ -267,11 +279,7 @@ mod tests {
         let text = "Join here: https://meet.google.com/abc-defg-hij.\n\
                     Or (https://meet.google.com/abc-defg-hij?authuser=0) \
                     and https://example.com/x, then <https://call.whatsapp.com/video/Tok>";
-        let found = find(
-            ["https://us02web.zoom.us/j/1"],
-            [text],
-            None,
-        );
+        let found = find(["https://us02web.zoom.us/j/1"], [text], None);
         assert_eq!(
             found,
             vec![
@@ -300,7 +308,10 @@ mod tests {
     fn jitsi_server_setting_is_tidied() {
         assert_eq!(jitsi_server(""), JITSI_DEFAULT);
         assert_eq!(jitsi_server("  "), JITSI_DEFAULT);
-        assert_eq!(jitsi_server("jitsi.example.org/"), "https://jitsi.example.org");
+        assert_eq!(
+            jitsi_server("jitsi.example.org/"),
+            "https://jitsi.example.org"
+        );
         assert_eq!(
             jitsi_server("https://Example.org/jitsi/"),
             "https://example.org/jitsi"
@@ -311,7 +322,10 @@ mod tests {
 
     #[test]
     fn new_jitsi_rooms_are_hard_to_guess() {
-        let link = jitsi_link(JITSI_DEFAULT, &[0, 1, 2, 3, 31, 32, 33, 255, 7, 8, 9, 10, 11, 12, 13, 14]);
+        let link = jitsi_link(
+            JITSI_DEFAULT,
+            &[0, 1, 2, 3, 31, 32, 33, 255, 7, 8, 9, 10, 11, 12, 13, 14],
+        );
         assert_eq!(link, "https://meet.jit.si/katna-abcd-9ab9-hijk-mnpq");
         assert_eq!(service(&link, None), Some(Service::Jitsi));
     }

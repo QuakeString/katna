@@ -2202,8 +2202,13 @@ impl MailWindow {
                 })),
             )
             .child(
-                tool_item("more-video-call", "video", &tr!("compose-tool-video-call"), th)
-                    .on_click(cx.listener(|this, _, window, cx| this.add_video_call(window, cx))),
+                tool_item(
+                    "more-video-call",
+                    "video",
+                    &tr!("compose-tool-video-call"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| this.add_video_call(window, cx))),
             )
             .child(menu_divider(th))
             .child(label_item)
@@ -2244,9 +2249,7 @@ impl MailWindow {
         };
         c.popup = None;
         let kind = c.kind;
-        let account = c
-            .from
-            .or_else(|| self.compose_account(kind).map(|a| a.id));
+        let account = c.from.or_else(|| self.compose_account(kind).map(|a| a.id));
         let link = self.new_call_link(account);
         cx.notify();
         cx.spawn_in(window, async move |this, cx| {

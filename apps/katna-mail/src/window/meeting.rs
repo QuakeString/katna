@@ -175,8 +175,8 @@ impl MailWindow {
                             )
                             .on_click(move |_, _, cx| cx.open_url(&url)),
                         )
-                })),
+                }))
+                .into_any_element(),
         )
-        .map(IntoElement::into_any_element)
     }
 }

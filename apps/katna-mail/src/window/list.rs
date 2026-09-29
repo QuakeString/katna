@@ -863,19 +863,12 @@ impl MailWindow {
                             )),
                         )
                         .child(
-                            menu_item_icon(
-                                "more-start-call",
-                                "video",
-                                &tr!("menu-start-call"),
-                                th,
-                            )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| {
+                            menu_item_icon("more-start-call", "video", &tr!("menu-start-call"), th)
+                                .on_click(cx.listener(|this, _, window, cx| {
                                     this.menu = None;
                                     let key = this.target_keys().first().copied();
                                     this.start_call_from(key, window, cx);
-                                },
-                            )),
+                                })),
                         )
                         .child(
                             menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
