@@ -6,6 +6,7 @@
 pub mod ical;
 pub mod occurrences;
 pub mod recurrence;
+pub mod todo;
 pub mod vcard;
 
 pub use occurrences::{Occurrence, occurrences};
