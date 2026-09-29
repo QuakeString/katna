@@ -262,13 +262,15 @@ impl CardDav {
     }
 
     /// The address books reachable from the first of `starts` that leads
-    /// to any. A wrong password is [`Error::Auth`].
+    /// to any. A wrong password is [`Error::Auth`]; when no start answered
+    /// as CardDAV at all, the last one's error says why.
     pub async fn discover(&self, starts: &[String]) -> Result<Vec<Collection>> {
         let mut last = None;
+        let mut answered = false;
         for start in starts {
             match self.discover_from(start).await {
                 Ok(found) if !found.is_empty() => return Ok(found),
-                Ok(_) => {}
+                Ok(_) => answered = true,
                 Err(e @ Error::Auth(_)) => return Err(e),
                 Err(e) => {
                     tracing::debug!(%start, error = %e, "contacts: no CardDAV here");
@@ -277,7 +279,7 @@ impl CardDav {
             }
         }
         match last {
-            Some(e) if starts.len() == 1 => Err(e),
+            Some(e) if !answered => Err(e),
             _ => Ok(Vec::new()),
         }
     }

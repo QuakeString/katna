@@ -1021,12 +1021,15 @@ dropped when it would not fit), which a phone's camera saves.
 The column also lists every mail account under Accounts, with how many
 people are saved in it (a click lists only those). The daemon keeps where
 each account's contacts sync stands (`Pim1.ContactsStatus()`, a
-`contacts_state`: ok, needs-sign-in, error or none, sending
+`contacts_state`: ok, needs-sign-in, use-sign-in, error or none, sending
 `ContactsChanged` when one changes); an account whose contacts did not
-come shows one line under it with why and its fix: "Sign in again to show
-contacts" (OAuth2 without the contacts scopes), Change password (a server
-that refused the password; many need an app password), or Try again
-(`SyncNow`), as the Calendar does.
+come shows one line under it (`window/account_status.rs`, shared with
+Calendar and Tasks) with why and its fix: "Sign in again to show
+contacts" (OAuth2 without the contacts scopes), "Sign in with Google" (a
+Gmail or Outlook account added with a password, which their contacts
+need), Change password (a server that refused the password; many need an
+app password), or Try again (`SyncNow`, which looks for the address books
+from scratch); "none" carries what the server answered.
 
 Saved people's birthdays show on the Calendar and the agenda as a
 Birthdays calendar made on this computer (id -1, read-only, never stored):
