@@ -231,6 +231,48 @@ impl Store {
         Ok(changed)
     }
 
+    /// Puts notes `ids` in this order, the first on top, in the places
+    /// they had among themselves, so the notes between them stay where
+    /// they are: dragging a card on the board. The order stays on this
+    /// computer. Returns how many moved.
+    pub fn order_notes(&mut self, ids: &[i64]) -> Result<usize> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let mut found = Vec::with_capacity(ids.len());
+        let mut places = Vec::with_capacity(ids.len());
+        for &id in ids {
+            let place: Option<i64> = tx
+                .query_row("SELECT position FROM note WHERE id = ?1", [id], |r| {
+                    r.get(0)
+                })
+                .optional()?;
+            if let Some(place) = place {
+                found.push(id);
+                places.push(place);
+            }
+        }
+        places.sort_unstable_by(|a, b| b.cmp(a));
+        // Two notes in one place would tie; the lower goes one down.
+        for ix in 1..places.len() {
+            places[ix] = places[ix].min(places[ix - 1] - 1);
+        }
+        let mut moved = 0;
+        for (id, place) in found.into_iter().zip(places) {
+            let n = tx.execute(
+                "UPDATE note SET position = ?2 WHERE id = ?1 AND position != ?2",
+                params![id, place],
+            )?;
+            if n > 0 {
+                journal::record(&tx, ObjectKind::Note, id, ChangeOp::Update)?;
+                moved += 1;
+            }
+        }
+        tx.commit()?;
+        Ok(moved)
+    }
+
     /// Deletes `ids` for good, here and in their Notes folders. Returns
     /// how many existed.
     /// Takes label `old` off notes `ids` and puts `new` on them (an empty
@@ -627,6 +669,30 @@ mod tests {
         assert_eq!(notes[0].id, a);
         assert_eq!(notes[0].uuid, uuid);
         assert_eq!(notes[0].body, "changed");
+    }
+
+    #[test]
+    fn order_notes_moves_notes_among_their_own_places() {
+        let (_dir, mut store) = store();
+        let ids: Vec<i64> = ["a", "b", "c", "d"]
+            .iter()
+            .map(|t| store.save_note(&note(t)).unwrap())
+            .collect();
+        let titles = |store: &Store| -> Vec<String> {
+            store
+                .notes()
+                .unwrap()
+                .into_iter()
+                .map(|n| n.title)
+                .collect()
+        };
+        assert_eq!(titles(&store), ["d", "c", "b", "a"]);
+        // "b" goes above "c"; "d" and "a" stay where they are.
+        assert_eq!(store.order_notes(&[ids[1], ids[2]]).unwrap(), 2);
+        assert_eq!(titles(&store), ["d", "b", "c", "a"]);
+        assert_eq!(store.order_notes(&[ids[1], ids[2]]).unwrap(), 0);
+        assert_eq!(store.order_notes(&[ids[2], ids[1]]).unwrap(), 2);
+        assert_eq!(titles(&store), ["d", "c", "b", "a"]);
     }
 
     #[test]
