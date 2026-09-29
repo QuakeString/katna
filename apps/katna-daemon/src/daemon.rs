@@ -236,6 +236,9 @@ pub struct Daemon {
     /// Tells the tracking event stream to look again (a tracked message
     /// went out, or settings changed).
     tracking_wake: (Sender<()>, Receiver<()>),
+    /// Accounts whose notes changed here, for the notes sync
+    /// ([`notes::run`]).
+    notes_wake: (Sender<AccountId>, Receiver<AccountId>),
     /// The languages Katna Server translates between, once asked.
     translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
@@ -293,6 +296,7 @@ impl Daemon {
             signing_in: Mutex::default(),
             uploads: drive::Uploads::default(),
             tracking_wake: async_channel::bounded(1),
+            notes_wake: async_channel::unbounded(),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
             updates: crate::updates::Updates::default(),
@@ -365,6 +369,7 @@ impl Daemon {
         ))
         .detach();
         smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
+        smol::spawn(notes::run(Arc::downgrade(self), self.notes_wake.1.clone())).detach();
         Ok(())
     }
 

@@ -260,6 +260,191 @@ impl Store {
     }
 }
 
+/// A note as its account's Notes folder has it.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct RemoteNote {
+    pub uuid: String,
+    pub title: String,
+    pub body: String,
+    pub color: i64,
+    pub pinned: bool,
+    pub archived: bool,
+    pub labels: Vec<String>,
+    pub link: Option<String>,
+    /// Unix seconds, from the message's `Date`.
+    pub updated_at: i64,
+}
+
+impl Store {
+    /// Every note of `account`, Trash too.
+    pub fn account_notes(&self, account: i64) -> Result<Vec<Note>> {
+        let mut stmt = self.pim.prepare_cached(&format!(
+            "SELECT {COLUMNS} FROM note WHERE account_id = ?1 ORDER BY id"
+        ))?;
+        let rows = stmt.query_map([account], note_row)?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The UIDs in `account`'s Notes folder of notes deleted here.
+    pub fn notes_gone(&self, account: i64) -> Result<Vec<i64>> {
+        let mut stmt = self
+            .pim
+            .prepare_cached("SELECT server_uid FROM note_gone WHERE account_id = ?1")?;
+        let rows = stmt.query_map([account], |row| row.get(0))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Forgets `uids` of [`Store::notes_gone`]: deleted on the server.
+    pub fn clear_notes_gone(&mut self, account: i64, uids: &[i64]) -> Result<()> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        for uid in uids {
+            tx.execute(
+                "DELETE FROM note_gone WHERE account_id = ?1 AND server_uid = ?2",
+                params![account, uid],
+            )?;
+        }
+        tx.commit()?;
+        Ok(())
+    }
+
+    /// Note `id` was written to its Notes folder as it was at `updated_at`
+    /// (its old copy deleted): clean unless it changed since. Its new UID
+    /// comes with the next look at the folder.
+    pub fn note_uploaded(&mut self, id: i64, updated_at: i64) -> Result<()> {
+        self.check_writable()?;
+        self.pim.execute(
+            "UPDATE note SET server_uid = NULL,
+                    dirty = CASE WHEN updated_at = ?2 THEN 0 ELSE dirty END
+             WHERE id = ?1",
+            params![id, updated_at],
+        )?;
+        Ok(())
+    }
+
+    /// `remote`, found at `uid` in `account`'s Notes folder: a new note,
+    /// or news of one kept here. A note changed here keeps its changes (it
+    /// goes up again in place of that copy).
+    pub fn apply_remote_note(&mut self, account: i64, uid: i64, remote: &RemoteNote) -> Result<()> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let labels = serde_json::to_string(&remote.labels).unwrap_or_else(|_| "[]".to_owned());
+        let found: Option<(i64, bool, Option<i64>)> = tx
+            .query_row(
+                "SELECT id, dirty, server_uid FROM note WHERE uuid = ?1",
+                [&remote.uuid],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )
+            .optional()?;
+        match found {
+            Some((id, dirty, old_uid)) => {
+                if dirty {
+                    // Ours wins; this copy goes when ours goes up.
+                    if let Some(old) = old_uid.filter(|old| *old != uid) {
+                        tx.execute(
+                            "INSERT OR IGNORE INTO note_gone (account_id, server_uid)
+                             VALUES (?1, ?2)",
+                            params![account, old],
+                        )?;
+                    }
+                    tx.execute(
+                        "UPDATE note SET server_uid = ?2 WHERE id = ?1",
+                        params![id, uid],
+                    )?;
+                } else {
+                    tx.execute(
+                        "UPDATE note SET account_id = ?2, server_uid = ?3, title = ?4,
+                                body = ?5, color = ?6, pinned = ?7, archived = ?8,
+                                labels = ?9, link = ?10,
+                                updated_at = max(updated_at, ?11)
+                         WHERE id = ?1",
+                        params![
+                            id,
+                            account,
+                            uid,
+                            remote.title,
+                            remote.body,
+                            remote.color,
+                            remote.pinned,
+                            remote.archived,
+                            labels,
+                            remote.link,
+                            remote.updated_at
+                        ],
+                    )?;
+                    journal::record(&tx, ObjectKind::Note, id, ChangeOp::Update)?;
+                }
+            }
+            None => {
+                tx.execute(
+                    "INSERT INTO note (account_id, uuid, title, body, color, pinned, archived,
+                                       labels, link, position, created_at, updated_at,
+                                       server_uid, dirty)
+                     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,
+                             (SELECT coalesce(max(position), 0) + 1 FROM note), ?10, ?10,
+                             ?11, 0)",
+                    params![
+                        account,
+                        remote.uuid,
+                        remote.title,
+                        remote.body,
+                        remote.color,
+                        remote.pinned,
+                        remote.archived,
+                        labels,
+                        remote.link,
+                        remote.updated_at,
+                        uid
+                    ],
+                )?;
+                let id = tx.last_insert_rowid();
+                journal::record(&tx, ObjectKind::Note, id, ChangeOp::Insert)?;
+            }
+        }
+        tx.commit()?;
+        Ok(())
+    }
+
+    /// `account`'s Notes folder holds only `uids` of the copies known
+    /// here: the notes whose copy is gone were deleted elsewhere, unless
+    /// changed here (then they go up again). Returns how many went.
+    pub fn forget_remote_notes(&mut self, account: i64, uids: &[i64]) -> Result<usize> {
+        self.check_writable()?;
+        let present: std::collections::HashSet<i64> = uids.iter().copied().collect();
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let known: Vec<(i64, i64, bool)> = {
+            let mut stmt = tx.prepare(
+                "SELECT id, server_uid, dirty FROM note
+                 WHERE account_id = ?1 AND server_uid IS NOT NULL",
+            )?;
+            let rows =
+                stmt.query_map([account], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))?;
+            rows.collect::<rusqlite::Result<_>>()?
+        };
+        let mut gone = 0;
+        for (id, uid, dirty) in known {
+            if present.contains(&uid) {
+                continue;
+            }
+            if dirty {
+                tx.execute("UPDATE note SET server_uid = NULL WHERE id = ?1", [id])?;
+            } else {
+                tx.execute("DELETE FROM note WHERE id = ?1", [id])?;
+                journal::record(&tx, ObjectKind::Note, id, ChangeOp::Delete)?;
+                gone += 1;
+            }
+        }
+        tx.commit()?;
+        Ok(gone)
+    }
+}
+
 /// Queues note `id`'s server copy, if any, for deletion and forgets it.
 fn forget_server_copy(tx: &rusqlite::Transaction<'_>, id: i64) -> Result<()> {
     tx.execute(
@@ -383,6 +568,61 @@ mod tests {
                 .collect::<Vec<_>>(),
             [keep]
         );
+    }
+
+    fn remote(uuid: &str, title: &str) -> RemoteNote {
+        RemoteNote {
+            uuid: uuid.to_owned(),
+            title: title.to_owned(),
+            body: "text".to_owned(),
+            updated_at: 1_000,
+            ..RemoteNote::default()
+        }
+    }
+
+    #[test]
+    fn a_note_from_the_server_comes_in_and_goes_when_deleted_there() {
+        let (_dir, mut store) = store();
+        store
+            .apply_remote_note(2, 7, &remote("U1", "phone note"))
+            .unwrap();
+        let notes = store.account_notes(2).unwrap();
+        assert_eq!(notes.len(), 1);
+        assert_eq!(notes[0].server_uid, Some(7));
+        assert!(!notes[0].dirty);
+        // Edited on the phone: a new copy in place of the old.
+        store
+            .apply_remote_note(2, 8, &remote("U1", "edited"))
+            .unwrap();
+        let notes = store.account_notes(2).unwrap();
+        assert_eq!((notes.len(), notes[0].title.as_str()), (1, "edited"));
+        assert_eq!(store.forget_remote_notes(2, &[8]).unwrap(), 0);
+        assert_eq!(store.forget_remote_notes(2, &[]).unwrap(), 1);
+        assert!(store.account_notes(2).unwrap().is_empty());
+    }
+
+    #[test]
+    fn a_note_changed_here_keeps_its_changes() {
+        let (_dir, mut store) = store();
+        store
+            .apply_remote_note(2, 7, &remote("U1", "phone note"))
+            .unwrap();
+        let mut note = store.account_notes(2).unwrap().remove(0);
+        note.title = "mine".to_owned();
+        store.save_note(&note).unwrap();
+        store
+            .apply_remote_note(2, 9, &remote("U1", "theirs"))
+            .unwrap();
+        let note = store.note(note.id).unwrap().unwrap();
+        assert_eq!(note.title, "mine");
+        assert_eq!(note.server_uid, Some(9));
+        assert!(note.dirty);
+        // The copy it had goes when it goes up again.
+        assert_eq!(store.notes_gone(2).unwrap(), [7]);
+        store.note_uploaded(note.id, note.updated_at).unwrap();
+        let note = store.note(note.id).unwrap().unwrap();
+        assert!(!note.dirty);
+        assert_eq!(note.server_uid, None);
     }
 
     #[test]

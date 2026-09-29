@@ -51,8 +51,10 @@ notes-title = Title
 # At the foot of an open note. $date: when it was last changed, such as
 # "10:42" or "Sep 28".
 notes-edited = Edited { $date }
-# Where the note is kept.
+# Where the note is kept: a mail account's name, or this.
 notes-on-this-computer = On this computer
+# Tooltip of where the note is kept, which opens the choice of accounts.
+notes-where = Where this note is kept
 
 ## Colors (tooltips)
 

@@ -1116,6 +1116,10 @@ impl MailWindow {
                 while let Some(Some(())) = futures_lite::future::poll_once(changes.next()).await {}
                 let refreshed = this.update(cx, |this, cx| {
                     this.refresh(false, cx);
+                    // Notes written on another device came in.
+                    if this.notes.is_some() {
+                        this.load_notes(cx);
+                    }
                     if !this.detached {
                         this.check_first_sync(cx);
                         this.check_signed_out(cx);

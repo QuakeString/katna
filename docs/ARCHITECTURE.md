@@ -2546,16 +2546,30 @@ away; he can still change them.
 - **D-Bus.** `SaveNote(NoteItem)` (ID 0 makes a new one on top) returns
   the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`. Apps read notes
   from the store.
-- **Sync (next).** A note of a mail account is kept in that account's
-  Notes folder in Apple's format: one message per note with
-  `X-Uniform-Type-Identifier: com.apple.mail-note`,
+- **Sync.** A note of a mail account is kept in that account's `Notes`
+  folder in Apple's format (`katna_sync::notes`): one message per note
+  with `X-Uniform-Type-Identifier: com.apple.mail-note`,
   `X-Universally-Unique-Identifier`, the title as Subject and the text as
-  simple HTML; editing replaces the message. Katna's extras travel in
-  `X-Katna-Color`, `X-Katna-Pinned`, `X-Katna-Archived`,
-  `X-Katna-Labels` and `X-Katna-Link`, which other apps ignore. Google
-  Keep (Workspace only) and OneNote (work and school accounts only) have
-  no API for personal accounts, so this is the mail service's own feature
-  that every account has.
+  simple HTML, one `<div>` per line with the title first, stored as
+  \Seen so the folder shows no unread count. Katna's extras travel in
+  `X-Katna-Title`, `X-Katna-Color`, `X-Katna-Pinned`,
+  `X-Katna-Archived`, `X-Katna-Labels` (base64 JSON) and `X-Katna-Link`,
+  which other apps ignore. Editing appends the new copy and deletes the
+  old one; trashing, deleting or moving a note to another place deletes
+  the server copy (`note_gone`). Coming in, an unknown message becomes a
+  note (by its UUID), and a note whose message is gone from the folder is
+  deleted here, unless it was changed here since, which wins. The daemon
+  syncs an account 3 s after a note of it changes and looks at every
+  IMAP account every 10 minutes; the folder is made only when there is a
+  note to put in it. The daemon sends `MailChanged` when notes came in,
+  and the Notes page reloads.
+- **Where a note is kept.** A new note goes to the account whose mail
+  was open (else the first IMAP account); POP and Graph-only accounts
+  have no folders. The note's footer ("Edited … · Dev Dovecot") opens a
+  row of accounts plus "On this computer" to move it. Google Keep
+  (Workspace only) and OneNote (work and school accounts only) have no
+  API for personal accounts, so the Notes folder is the mail service's
+  own feature that every IMAP account has.
 - **Later.** Notes on a conversation ("Add a note", §13.7), meeting notes
   from an event, a checklist line made a task, labels, formatting,
   pictures.

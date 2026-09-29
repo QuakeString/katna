@@ -130,6 +130,8 @@ struct Editor {
     changed: bool,
     /// The color row is open.
     palette: bool,
+    /// The account row is open.
+    places: bool,
     /// A save is on its way; another waits for it.
     saving: bool,
     _save: Option<Task<()>>,
@@ -368,10 +370,16 @@ impl MailWindow {
             archived: note.map_or(view == NotesView::Archive, |n| n.archived),
             labels: note.map(|n| n.labels.clone()).unwrap_or_default(),
             link: note.and_then(|n| n.link.clone()),
-            account: note.and_then(|n| n.account_id),
+            // A new note goes to the account whose mail was open, as a new
+            // message comes from it; the picker on the note changes it.
+            account: match note {
+                Some(n) => n.account_id,
+                None => self.notes_account(),
+            },
             updated_at: note.map_or(0, |n| n.updated_at),
             changed: false,
             palette: false,
+            places: false,
             saving: false,
             _save: None,
             _subscriptions: vec![on_title, on_body],
@@ -503,6 +511,7 @@ impl MailWindow {
             && item.id != 0
         {
             editor.color = item.color;
+            editor.account = (item.account != 0).then_some(item.account);
             editor.pinned = item.pinned;
             editor.archived = item.archived;
         }
@@ -581,6 +590,32 @@ impl MailWindow {
         if open {
             self.close_note(cx);
         }
+    }
+
+    /// Where a new note goes: the account whose mail is open, if its
+    /// server keeps folders, else the first that does.
+    fn notes_account(&self) -> Option<i64> {
+        let imap = |id: katna_core::AccountId| {
+            self.accounts
+                .iter()
+                .any(|a| a.id == id && a.kind == katna_core::AccountKind::Imap)
+        };
+        self.account()
+            .filter(|id| imap(*id))
+            .or_else(|| {
+                self.accounts
+                    .iter()
+                    .find(|a| a.kind == katna_core::AccountKind::Imap)
+                    .map(|a| a.id)
+            })
+            .map(|id| id.0)
+    }
+
+    /// The name of where a note is kept.
+    fn note_place(&self, account: Option<i64>) -> String {
+        account
+            .and_then(|id| self.accounts.iter().find(|a| a.id.0 == id))
+            .map_or_else(|| tr!("notes-on-this-computer"), |a| a.display_name.clone())
     }
 
     /// The top bar's search box searches notes while the Notes page is
@@ -1192,7 +1227,67 @@ impl MailWindow {
                     .map(|(d, now)| tr!("notes-edited", date = crate::format::list_date(d, now)))
             })
             .flatten();
-        let where_ = tr!("notes-on-this-computer");
+        let where_ = self.note_place(editor.account);
+        let places = editor.places.then(|| {
+            let current = editor.account;
+            let mut options: Vec<(Option<i64>, String)> = self
+                .accounts
+                .iter()
+                .filter(|a| a.kind == katna_core::AccountKind::Imap)
+                .map(|a| (Some(a.id.0), a.display_name.clone()))
+                .collect();
+            options.push((None, tr!("notes-on-this-computer")));
+            div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .justify_end()
+                .gap(px(6.0))
+                .px(px(12.0))
+                .pb(px(8.0))
+                .children(
+                    options
+                        .into_iter()
+                        .enumerate()
+                        .map(|(ix, (account, name))| {
+                            let on = account == current;
+                            let mut item = item.clone();
+                            item.account = account.unwrap_or(0);
+                            div()
+                                .id(("note-place", ix))
+                                .h(px(28.0))
+                                .px(px(12.0))
+                                .flex()
+                                .items_center()
+                                .rounded_full()
+                                .border_1()
+                                .border_color(rgba(if on { th.accent } else { th.divider }))
+                                .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
+                                .text_size(px(12.0))
+                                .text_color(rgba(if on { th.accent } else { th.text_dim }))
+                                .cursor_pointer()
+                                .hover(|s| s.bg(rgba(th.hover)))
+                                .on_click(cx.listener(move |this, _, _, cx| {
+                                    if let Some(editor) =
+                                        this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                    {
+                                        editor.places = false;
+                                    }
+                                    if item.id == 0 {
+                                        if let Some(editor) =
+                                            this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                        {
+                                            editor.account = account;
+                                        }
+                                        this.note_typed(cx);
+                                    } else {
+                                        this.change_note(item.clone(), cx);
+                                    }
+                                }))
+                                .child(name)
+                        }),
+                )
+        });
         let tool = |name: &'static str, tip_text: String| {
             icon_button(
                 ("note-tool", name.len() * 31 + name.as_bytes()[0] as usize),
@@ -1347,13 +1442,38 @@ impl MailWindow {
                     .flex()
                     .flex_row()
                     .justify_end()
+                    .items_center()
+                    .gap(px(4.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_dim))
-                    .child(match edited {
-                        Some(edited) => format!("{edited} · {where_}"),
-                        None => where_,
-                    }),
+                    .children(edited.map(|edited| format!("{edited} ·")))
+                    .child(
+                        div()
+                            .id("note-place")
+                            .px(px(6.0))
+                            .h(px(22.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(2.0))
+                            .rounded(px(6.0))
+                            .cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .tooltip(tip(tr!("notes-where"), th))
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                if let Some(editor) =
+                                    this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                {
+                                    editor.places = !editor.places;
+                                    editor.palette = false;
+                                }
+                                cx.notify();
+                            }))
+                            .child(where_)
+                            .child(icon("drop-down", th.text_dim, 16.0)),
+                    ),
             )
+            .children(places)
             .children(palette)
             .child(
                 div()

@@ -44,6 +44,7 @@ pub mod engine;
 mod error;
 pub mod imap;
 pub mod net;
+pub mod notes;
 pub mod oauth;
 pub mod onedrive;
 pub mod ops;
