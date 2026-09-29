@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } mục khác
 calendar-repeats = Lặp lại
 calendar-join = Tham gia
+calendar-email-guests = Gửi thư cho khách
+calendar-running-late = Tôi đến muộn
+calendar-late-subject = Đến muộn: { $title }
+calendar-late-body = Xin lỗi, tôi sẽ đến muộn vài phút cho { $title }. Tôi sẽ có mặt sớm.
 calendar-guests =
     { $count ->
        *[other] { $count } khách

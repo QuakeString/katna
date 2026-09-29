@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } נוספים
 calendar-repeats = חוזר
 calendar-join = הצטרפות
+calendar-email-guests = שליחת מייל לאורחים
+calendar-running-late = יש עיכוב
+calendar-late-subject = יש עיכוב: { $title }
+calendar-late-body = סליחה, יש לי עיכוב של כמה דקות ל-{ $title }. אגיע בקרוב.
 calendar-guests =
     { $count ->
         [one] { $count } אורח

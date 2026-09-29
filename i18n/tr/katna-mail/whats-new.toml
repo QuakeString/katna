@@ -1307,3 +1307,19 @@ e-postalarından farklı bir sunucuda bulunan diğer hesaplarla da
 eşitleniyor. Katna her hesap için önce en iyi yolu dener ve işe yarayanı
 hatırlar.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Bir postadan toplantı planlayın"
+text = """
+Bir görüşmeye sağ tıklayın veya ⋮ menüsünü açıp Toplantı planla
+seçeneğini seçin: Takvim sayfasında konusu başlık, görüşmedeki herkes
+konuk olacak şekilde yeni bir etkinlik açılır.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Geç mi kalıyorsunuz? Herkese tek tıkla haber verin"
+text = """
+Konuklu bir etkinlikte artık Konuklara posta gönder, başlamasına bir
+saat kala da Geç kalıyorum düğmesi var: bu takvimin hesabından herkese
+gönderilmeye hazır bir posta.
+"""
