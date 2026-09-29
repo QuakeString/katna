@@ -499,7 +499,7 @@ pub async fn exchange(
 }
 
 /// Like [`exchange`], reading answers of up to `max_body` bytes: for
-/// address books, whose listings grow with the contacts.
+/// calendar sync and address books, whose listings can be large.
 #[allow(clippy::too_many_arguments)]
 pub async fn exchange_limited(
     method: &str,

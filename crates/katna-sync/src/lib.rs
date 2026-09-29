@@ -38,6 +38,7 @@ pub mod auth_results;
 pub mod autoconfig;
 mod backend;
 pub mod bodies;
+pub mod calendar;
 pub mod carddav;
 pub mod connection;
 pub mod contacts;

@@ -2648,10 +2648,12 @@ message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
 → x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
 templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
-`SenderPicture(address) → ay` (images for the reading pane, §12), and the
+`SenderPicture(address) → ay` (images for the reading pane, §12),
+`SetCalendarHidden(x id, b hidden)` and `CalendarStatus() → a(xss)`
+(account, state, detail; §18), and the
 signals
-`AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)` and
-`OutboxChanged(id)`. `MailChanged` carries the
+`AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)`,
+`OutboxChanged(id)` and `CalendarChanged()`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the
 standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
 `UnknownObject` and `Failed`. zbus needs the interface name as a literal, so
@@ -3212,6 +3214,39 @@ CalDAV endpoint can't make Meet links or event types, so it is not used.
 
 - Calendars and events live in `pim.db`, synced by the daemon; apps read
   them read-only, as with mail.
+- How the daemon syncs (`katna_sync::calendar`, driven by
+  `apps/katna-daemon/src/daemon/calendar.rs`): one task goes through the
+  accounts at start (after 10 s), every 5 minutes and on `SyncNow`, with
+  its own store connection so mail sync never waits. **Google**: Calendar
+  API v3, `calendarList` then each calendar's `events` with
+  `singleEvents=false&showDeleted=true` (series once, with their
+  `recurrence` lines; changed and cancelled occurrences as rows with
+  `recurrence_id`), incremental through the `nextSyncToken` kept in
+  `calendar.sync_token`; `410 Gone` lists everything again. Scope
+  `https://www.googleapis.com/auth/calendar`, asked at sign-in with
+  mail's; accounts signed in before show "sign in again", and
+  `403 accessNotConfigured` shows that the Calendar API is not enabled in
+  Katna's Google Cloud project. **Microsoft**: Graph `/me/calendars` and
+  each calendar's `/events` (paged, `Prefer: outlook.timezone="UTC"`),
+  read in full each time (Graph has no delta for stored events) and
+  written only where an etag changed; a series' `recurrence` pattern and
+  range become an `RRULE` in the zone its Windows name maps to; changed
+  occurrences come through `$expand=exceptionOccurrences` and cancelled
+  ones from `cancelledOccurrences` where Graph gives them (a calendar
+  that refuses the expansion shows its series without changed
+  occurrences). Scope `https://graph.microsoft.com/Calendars.ReadWrite`,
+  consented at sign-in beside `Files.ReadWrite`, its tokens separate.
+  **Other IMAP accounts**: CalDAV found through `/.well-known/caldav` (or
+  `/`) on the IMAP host, with the IMAP password over TLS, only to that
+  host's domain; a calendar whose `getctag`/`sync-token` didn't change is
+  skipped, otherwise the etags of its `VEVENT`s are compared with the
+  store and only changed ones fetched by `calendar-multiget`
+  (`katna_dav::ical` reads them). A server without CalDAV is asked again
+  after 6 hours. Each account's state (`ok`, `needs-sign-in`,
+  `not-enabled`, `error`, `none`) is `CalendarStatus()` on `Pim1`;
+  `CalendarChanged()` (and the clock's `Agenda1.Changed()`) says when to
+  read again; `SetCalendarHidden(id, hidden)` ticks calendars on and off.
+  Only reading so far: events are not yet created or changed from Katna.
 - `jiff` for time zones; recurrence is expanded when read, with
   exceptions (`RECURRENCE-ID`, `EXDATE`).
 - Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail,

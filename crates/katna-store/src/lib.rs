@@ -9,6 +9,7 @@ mod attachments;
 mod backfill;
 pub mod blob;
 mod cache;
+pub mod calendar;
 mod contact;
 pub mod contacts;
 mod db;

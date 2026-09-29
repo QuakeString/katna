@@ -46,6 +46,7 @@ use katna_sync::{
 use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+mod calendar;
 mod contacts;
 mod drive;
 mod notes;
@@ -100,6 +101,8 @@ pub enum Notice {
     UpdateChanged,
     /// A Google Drive upload moved on.
     DriveChanged(i64),
+    /// Calendars, their events or the calendar sync's state changed.
+    CalendarChanged,
     /// Saved contacts changed.
     ContactsChanged,
     /// Task sync brought changes from a task service.
@@ -239,6 +242,8 @@ pub struct Daemon {
     signing_in: Mutex<Option<Sender<()>>>,
     /// Files going up to Google Drive for messages.
     uploads: drive::Uploads,
+    /// The calendar sync.
+    calendars: calendar::Calendars,
     /// Tells the tracking event stream to look again (a tracked message
     /// went out, or settings changed).
     tracking_wake: (Sender<()>, Receiver<()>),
@@ -305,6 +310,7 @@ impl Daemon {
             rotated: async_channel::unbounded(),
             signing_in: Mutex::default(),
             uploads: drive::Uploads::default(),
+            calendars: calendar::Calendars::default(),
             tracking_wake: async_channel::bounded(1),
             notes_wake: async_channel::unbounded(),
             contacts_wake: async_channel::bounded(1),
@@ -364,6 +370,7 @@ impl Daemon {
             self.start_account(&account).await;
         }
         self.start_outbox()?;
+        self.start_calendars();
         smol::spawn(sign_in::save_rotated(
             Arc::downgrade(self),
             self.rotated.1.clone(),
@@ -631,6 +638,7 @@ impl Daemon {
         }
         let _ = self.notices.try_send(Notice::AccountsChanged);
         self.start_account(&account).await;
+        self.wake_calendars();
         Ok(account.id)
     }
 
@@ -868,6 +876,7 @@ impl Daemon {
             tracing::warn!(account = %id, %err, "could not delete the password");
         }
         self.tokens.lock().unwrap().remove(&id);
+        self.forget_calendars(id);
         let _ = std::fs::remove_file(sign_in::provider_picture(&self.paths, id));
         self.status.lock().unwrap().remove(&id);
         if let Some(notices) = self.new_mail_notices() {
@@ -980,6 +989,7 @@ impl Daemon {
                 self.start_account(&account).await;
             }
         }
+        self.wake_calendars();
         self.wake_contacts();
         Ok(())
     }

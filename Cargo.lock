@@ -5733,6 +5733,7 @@ dependencies = [
  "defmt",
  "jiff-core",
  "jiff-static",
+ "jiff-tzdb",
  "log",
  "portable-atomic",
  "portable-atomic-util",
@@ -5761,6 +5762,12 @@ dependencies = [
  "quote",
  "syn 2.0.119",
 ]
+
+[[package]]
+name = "jiff-tzdb"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "142bd39932ad231f10513df9ab62661fead8719872150b7ad02a2df79f4e141e"
 
 [[package]]
 name = "jni"
@@ -5908,6 +5915,7 @@ dependencies = [
  "async-io",
  "async-signal",
  "futures-lite",
+ "jiff",
  "katna-core",
  "katna-dav",
  "katna-dbus",
@@ -5938,6 +5946,7 @@ name = "katna-dav"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "jiff",
  "katna-core",
  "katna-store",
 ]
@@ -6000,6 +6009,7 @@ dependencies = [
  "katna-chrome",
  "katna-core",
  "katna-crypto",
+ "katna-dav",
  "katna-dbus",
  "katna-i18n",
  "katna-meta",
@@ -6176,6 +6186,7 @@ dependencies = [
  "blake3",
  "katna-core",
  "rusqlite",
+ "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
