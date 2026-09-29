@@ -305,9 +305,14 @@ impl MailWindow {
     }
 
     /// The page of an app other than Mail.
-    pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_app_page(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let body = match self.app {
-            App::Contacts => self.render_contacts_page(th, cx),
+            App::Contacts => self.render_contacts_page(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
             App::Mail | App::Calendar | App::Notes | App::Feeds => self.render_coming_soon(th),
         };

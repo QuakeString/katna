@@ -211,3 +211,101 @@ fn start_urls_know_providers_and_domains() {
     assert_eq!(absolute("https://h/a/b/", "c.vcf"), "https://h/a/b/c.vcf");
     assert_eq!(absolute("https://h/a/b/", "/x/"), "https://h/x/");
 }
+
+#[test]
+fn saves_new_and_changed_cards_and_deletes() {
+    let stored: Arc<Mutex<String>> = Arc::default();
+    let keep = stored.clone();
+    let (base, seen) = serve(move |req, _| match req.method.as_str() {
+        "PUT" if req.header("If-Match") == Some("\"stale\"") => (412, vec![], String::new()),
+        "PUT" => {
+            *keep.lock().unwrap() = req.text();
+            (201, vec![], String::new())
+        }
+        "REPORT" => {
+            let text = keep.lock().unwrap().clone();
+            let href = req
+                .text()
+                .split("<d:href>")
+                .nth(1)
+                .and_then(|h| h.split('<').next())
+                .unwrap_or_default()
+                .to_owned();
+            ms(
+                &ok(
+                    &href,
+                    &format!(
+                        "<d:getetag>\"e2\"</d:getetag><card:address-data>{}</card:address-data>",
+                        escape_xml(&text)
+                    ),
+                ),
+                None,
+            )
+        }
+        "DELETE" if req.path.contains("gone") => (404, vec![], String::new()),
+        "DELETE" => (204, vec![], String::new()),
+        _ => (400, vec![], String::new()),
+    });
+    let dav = CardDav::new("alice", "pw", Tls::insecure_for_local_tests());
+    let book = format!("{base}/dav/card/alice/contacts/");
+    let card = Card {
+        name: katna_core::contact::Name {
+            given: "Asha".into(),
+            family: "Rao".into(),
+            ..Default::default()
+        },
+        emails: vec![katna_core::contact::Typed::new("asha@rao.in", "home")],
+        ..Card::default()
+    };
+
+    let made = smol::block_on(dav.save(&book, None, None, None, &[], &card)).unwrap();
+    assert!(made.remote_id.starts_with("/dav/card/alice/contacts/"));
+    assert!(made.remote_id.ends_with(".vcf"));
+    assert_eq!(made.etag.as_deref(), Some("\"e2\""));
+    assert_eq!(made.card.display_name(), "Asha Rao");
+    let first = seen.lock().unwrap()[0].clone();
+    assert_eq!(first.header("If-None-Match"), Some("*"));
+    assert!(
+        first.text().contains("EMAIL;TYPE=HOME:asha@rao.in")
+            || first.text().contains("asha@rao.in")
+    );
+
+    // A change keeps the UID and properties Katna does not show.
+    let old = "BEGIN:VCARD\r\nVERSION:3.0\r\nUID:u-1\r\nFN:Asha\r\nX-PET:cat\r\nEND:VCARD\r\n";
+    let changed = smol::block_on(dav.save(
+        &book,
+        Some("/dav/card/alice/contacts/u-1.vcf"),
+        Some("\"e1\""),
+        Some(old),
+        &["Friends".into()],
+        &card,
+    ))
+    .unwrap();
+    assert_eq!(changed.remote_id, "/dav/card/alice/contacts/u-1.vcf");
+    let put = stored.lock().unwrap().clone();
+    assert!(put.contains("UID:u-1"));
+    assert!(put.contains("X-PET:cat"));
+    assert!(put.contains("CATEGORIES:Friends"));
+
+    // A card changed elsewhere is not overwritten.
+    let stale = smol::block_on(dav.save(
+        &book,
+        Some("/dav/card/alice/contacts/u-1.vcf"),
+        Some("\"stale\""),
+        Some(old),
+        &[],
+        &card,
+    ));
+    assert!(matches!(stale, Err(Error::Rejected(_))));
+
+    smol::block_on(dav.delete(&book, "/dav/card/alice/contacts/u-1.vcf", Some("\"e2\""))).unwrap();
+    smol::block_on(dav.delete(&book, "/dav/card/alice/contacts/gone.vcf", None)).unwrap();
+    let deletes: Vec<_> = seen
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|r| r.method == "DELETE")
+        .map(|r| r.header("If-Match").map(str::to_owned))
+        .collect();
+    assert_eq!(deletes, [Some("\"e2\"".to_owned()), None]);
+}

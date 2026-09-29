@@ -6,6 +6,7 @@
 contacts-all = Contacts
 contacts-frequent = Frequent
 contacts-labels = Labels
+contacts-create = Create contact
 
 ## Search and the list
 
@@ -41,6 +42,10 @@ contacts-allow-button = Allow
 ## A contact's page
 
 contacts-back = Back to contacts
+contacts-edit = Edit
+contacts-delete = Delete
+# $name: the person's name.
+contacts-deleted = Deleted { $name }
 contacts-find-mail = Mail
 contacts-details = Contact details
 contacts-saved-in = Saved in
@@ -55,3 +60,32 @@ contacts-kind-other = Other
 contacts-source-google = Google Contacts
 contacts-source-microsoft = Outlook contacts
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Create contact
+contacts-edit-title = Edit contact
+contacts-edit-save = Save
+contacts-edit-saving = Saving…
+contacts-edit-cancel = Cancel
+contacts-saved = Contact saved
+contacts-edit-save-to = Save to
+# $place: the account address, or "This computer".
+contacts-edit-changes-go-to = Changes are saved to { $place }.
+contacts-edit-given = First name
+contacts-edit-family = Last name
+contacts-edit-company = Company
+contacts-edit-job = Job title
+contacts-edit-email = Email
+contacts-edit-phone = Phone
+# A field with its kind, e.g. "Email (Work)".
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Add email
+contacts-edit-add-phone = Add phone
+contacts-edit-street = Street address
+contacts-edit-city = City
+contacts-edit-postcode = Postal code
+contacts-edit-country = Country
+# How the date is typed: YYYY-MM-DD, or MM-DD without a year. Keep the letters as they are.
+contacts-edit-birthday = Birthday (YYYY-MM-DD)
+contacts-edit-empty = Add a name, an email or a phone number first.

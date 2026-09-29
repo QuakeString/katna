@@ -954,8 +954,20 @@ laid out like Google Contacts: Contacts, Frequent (the people from the
 mail) and the labels at the left, a list with Name, Email, Phone, Job
 title & company and Labels, and a contact's page with tinted cards
 (details, the accounts that keep it, notes) and Email, Mail and Call
-buttons. Creating, editing and deleting contacts, Other contacts, merge
-and import/export follow in the next phases of the study.
+buttons.
+
+Changes go to the account first (`SaveContact`, `DeleteContacts` on
+D-Bus): People API `createContact` / `updateContact` (with the card's
+etag; labels and the star left alone) / `deleteContact`, Graph `POST` /
+`PATCH` / `DELETE /me/contacts`, and CardDAV `PUT` (`If-None-Match: *` for
+a new card, `If-Match` with the ETag for a change, so a change made
+elsewhere is not overwritten; the old vCard's other properties are kept)
+and `DELETE`. What the service answers is saved in `pim.db`. A new contact
+goes to the book picked under "Save to" (an account, or this computer); a
+person kept in several accounts is changed in the first one. Delete hides
+the person and waits for its Undo to go before it is sent; Google and
+Outlook keep deleted contacts in their trash. Other contacts, merge and
+import/export follow in the next phases of the study.
 
 ## 9. Background service (`katna-daemon`)
 

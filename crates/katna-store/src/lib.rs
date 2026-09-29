@@ -42,8 +42,8 @@ pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
 pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use contacts::{
-    AddressBook, BookSource, BookState, BookSync, ContactLabel, SavedContact, StoredCard,
-    SyncedContact, SyncedGroup,
+    AddressBook, BookSource, BookState, BookSync, ContactLabel, ContactRef, SavedContact,
+    StoredCard, SyncedContact, SyncedGroup,
 };
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};

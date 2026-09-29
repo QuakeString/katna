@@ -27,6 +27,7 @@ mod attachments;
 mod colors;
 mod compose;
 mod contact;
+mod contacts_edit;
 mod contacts_page;
 mod context_menu;
 mod crash_notice;
@@ -2609,6 +2610,10 @@ impl MailWindow {
             self.restore_quote(window, cx);
             return;
         }
+        if let Command::RestoreContacts(keys) = &undo {
+            self.restore_contacts(keys, cx);
+            return;
+        }
         if let Command::UndoSend(id) = undo {
             self.send_undone(id, cx);
             // Taken back from the outbox: the message opens again.
@@ -3150,7 +3155,7 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(self.render_app_page(&th, cx))
+                .child(self.render_app_page(&th, window, cx))
                 .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };

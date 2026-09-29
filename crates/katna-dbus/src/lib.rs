@@ -529,6 +529,15 @@ macro_rules! pim_proxy {
             /// already being sent.
             fn undo_send(&self, id: i64) -> zbus::Result<bool>;
 
+            /// Saves a contact card (`katna_core::contact::Card` as JSON)
+            /// over saved card `contact`, or as a new card in address book
+            /// `book` (0: this computer) when `contact` is 0, writing the
+            /// account's service first. Returns the card's id.
+            fn save_contact(&self, contact: i64, book: i64, card: &str) -> zbus::Result<i64>;
+
+            /// Deletes saved cards, from their accounts' services too.
+            fn delete_contacts(&self, ids: &[i64]) -> zbus::Result<()>;
+
             /// Forgets a cancelled or failed message. Returns whether it
             /// was one.
             fn discard_send(&self, id: i64) -> zbus::Result<bool>;

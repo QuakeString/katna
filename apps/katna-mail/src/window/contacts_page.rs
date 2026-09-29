@@ -30,6 +30,7 @@ use zbus::Connection;
 
 use super::MailWindow;
 use super::apps::App;
+use super::contacts_edit::{Deleted, Editor, PendingDelete, visible};
 use crate::daemon;
 use crate::data::SavedBook;
 use crate::theme::{Theme, mix};
@@ -78,16 +79,25 @@ pub(super) struct ContactsPage {
     query: String,
     mail_query: Option<String>,
     /// The person whose page is open, with their cards once read.
-    open: Option<Open>,
+    pub(super) open: Option<Open>,
     /// Pictures of saved people by their first card, `None` while loading
     /// or when there is none; and by lower-case address, the key to use.
     photos: HashMap<i64, Option<Arc<RenderImage>>>,
     by_email: HashMap<String, i64>,
     has_photo: BTreeSet<i64>,
     wanted: RefCell<BTreeSet<i64>>,
+    /// The form of a contact being made or changed.
+    pub(super) edit: Option<Editor>,
+    /// People deleted whose Undo is still on screen, by first card.
+    pub(super) hidden: BTreeSet<i64>,
+    pub(super) pending_delete: Option<PendingDelete>,
+    /// The last people deleted, for a late Undo.
+    pub(super) deleted: Vec<Deleted>,
+    /// The card just saved: its person opens once read.
+    pub(super) open_after_load: Option<i64>,
 }
 
-struct Open {
+pub(super) struct Open {
     person: SavedContact,
     cards: Option<Result<Vec<StoredCard>, String>>,
     _task: Task<()>,
@@ -147,8 +157,13 @@ impl MailWindow {
                             .filter(|p| p.ids.iter().any(|id| with_photos.contains(id)))
                             .filter_map(|p| p.ids.first().copied())
                             .collect();
-                        // The open person's page follows the new data.
-                        if let Some(open) = &page.open {
+                        // A contact just saved opens.
+                        if let Some(id) = page.open_after_load.take()
+                            && let Some(person) =
+                                book.people.iter().find(|p| p.ids.contains(&id)).cloned()
+                        {
+                            this.open_contact(person, cx);
+                        } else if let Some(open) = &this.contacts.open {
                             let first = open.person.ids.first().copied();
                             let found = book
                                 .people
@@ -275,12 +290,14 @@ impl MailWindow {
 
     fn close_contact(&mut self, cx: &mut Context<Self>) {
         self.contacts.open = None;
+        self.contacts.edit = None;
         cx.notify();
     }
 
     fn set_contacts_view(&mut self, view: View, cx: &mut Context<Self>) {
         self.contacts.view = view;
         self.contacts.open = None;
+        self.contacts.edit = None;
         if self.contacts.view == View::Frequent
             && !matches!(self.people, Some(super::apps::People::Loaded(_)))
         {
@@ -358,14 +375,21 @@ impl MailWindow {
     }
 
     /// The Contacts page.
-    pub(super) fn render_contacts_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_contacts_page(
+        &self,
+        th: &Theme,
+        window: &gpui::Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let query = self.contacts.query.trim().to_lowercase();
         let book = match &self.contacts.book {
             Some(Ok(book)) => Some(book.clone()),
             _ => None,
         };
         let nav = self.contacts_nav(book.as_deref(), th, cx);
-        let body = if self.contacts.view == View::Frequent && query.is_empty() {
+        let body = if let Some(editor) = self.render_contact_editor(th, window, cx) {
+            editor
+        } else if self.contacts.view == View::Frequent && query.is_empty() {
             self.render_contacts(th, cx)
         } else if let Some(open) = &self.contacts.open {
             let person = open.person.clone();
@@ -407,7 +431,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let count = book.map_or(0, |b| b.people.len());
+        let count = book.map_or(0, |b| visible(&b.people, &self.contacts.hidden).len());
         let item = |id: (&'static str, usize),
                     glyph: &str,
                     label: String,
@@ -472,7 +496,9 @@ impl MailWindow {
                 b.labels
                     .iter()
                     .map(|l| {
-                        let people = b.people.iter().filter(|p| p.labels.contains(&l.name));
+                        let people = visible(&b.people, &self.contacts.hidden)
+                            .into_iter()
+                            .filter(|&ix| b.people[ix].labels.contains(&l.name));
                         (l.name.clone(), people.count())
                     })
                     .collect()
@@ -482,10 +508,11 @@ impl MailWindow {
             .flex_none()
             .w(px(NAV_WIDTH))
             .h_full()
-            .pt(px(16.0))
+            .pt(px(8.0))
             .flex()
             .flex_col()
             .gap(px(2.0))
+            .child(self.create_contact_button(th, cx))
             .child(item(
                 ("contacts-nav", 0),
                 "contacts",
@@ -524,6 +551,47 @@ impl MailWindow {
                     cx,
                 )
             }))
+            .into_any_element()
+    }
+
+    /// "Create contact", at the top of the column like Compose in Mail.
+    fn create_contact_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .pl(px(8.0))
+            .pb(px(12.0))
+            .flex()
+            .flex_row()
+            .child(
+                div()
+                    .id("contact-create")
+                    .relative()
+                    .overflow_hidden()
+                    .h(px(48.0))
+                    .pl(px(16.0))
+                    .pr(px(20.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(12.0))
+                    .rounded(px(16.0))
+                    .cursor_pointer()
+                    .bg(rgba(mix(
+                        th.surface,
+                        th.accent | 0xff,
+                        if th.dark { 0.22 } else { 0.18 },
+                    )))
+                    .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
+                    .text_size(px(14.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.text))
+                    .child(Ripple::new(("contact-create", 0usize), rgba(th.ripple)))
+                    .child(icon("person-add", th.text, 22.0))
+                    .child(tr!("contacts-create"))
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.contacts.open = None;
+                        this.start_contact_edit(None, window, cx)
+                    })),
+            )
             .into_any_element()
     }
 
@@ -619,13 +687,13 @@ impl MailWindow {
             View::Label(name) => Some(name.clone()),
             _ => None,
         };
-        let shown: Vec<usize> = book
-            .people
-            .iter()
-            .enumerate()
-            .filter(|(_, p)| label.as_ref().is_none_or(|l| p.labels.contains(l)))
-            .filter(|(_, p)| query.is_empty() || matches(p, query))
-            .map(|(ix, _)| ix)
+        let shown: Vec<usize> = visible(&book.people, &self.contacts.hidden)
+            .into_iter()
+            .filter(|&ix| {
+                let p = &book.people[ix];
+                label.as_ref().is_none_or(|l| p.labels.contains(l))
+                    && (query.is_empty() || matches(p, query))
+            })
             .collect();
         if shown.is_empty() {
             let text = if !query.is_empty() {
@@ -898,7 +966,34 @@ impl MailWindow {
             .overflow_y_scroll()
             .px(px(24.0))
             .pb(px(24.0))
-            .child(div().pb(px(8.0)).child(back))
+            .child(
+                div()
+                    .pb(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .child(back)
+                    .child(div().flex_1())
+                    .child(
+                        crate::widgets::icon_button("contact-delete", "trash", 20.0, th)
+                            .tooltip(tip(tr!("contacts-delete"), th))
+                            .on_click(cx.listener({
+                                let person = person.clone();
+                                let cards = cards.clone();
+                                move |this, _, _, cx| this.delete_contact(&person, &cards, cx)
+                            })),
+                    )
+                    .child(
+                        crate::widgets::outlined_button("contact-edit", tr!("contacts-edit"), th)
+                            .on_click(cx.listener({
+                                let card = cards.first().cloned();
+                                move |this, _, window, cx| {
+                                    this.start_contact_edit(card.clone(), window, cx)
+                                }
+                            })),
+                    ),
+            )
             .child(head)
             .child(
                 div()
@@ -1187,7 +1282,7 @@ fn merge(cards: &[StoredCard]) -> Card {
     out
 }
 
-fn kind_label(kind: &str) -> String {
+pub(super) fn kind_label(kind: &str) -> String {
     match kind {
         "home" => tr!("contacts-kind-home"),
         "work" => tr!("contacts-kind-work"),
