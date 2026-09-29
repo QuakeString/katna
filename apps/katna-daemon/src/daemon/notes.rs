@@ -30,6 +30,8 @@ const MAX_NOTE_TITLE: usize = 1_000;
 const MAX_NOTE_BODY: usize = 1_000_000;
 /// The most labels on one note.
 const MAX_NOTE_LABELS: usize = 50;
+/// The longest label, in characters (Keep's limit).
+const MAX_LABEL: usize = 50;
 
 impl Daemon {
     /// Saves a note (a new one for ID 0). Returns its ID.
@@ -113,6 +115,27 @@ impl Daemon {
             self.notes_changed(Some(account));
         }
         Ok(u32::try_from(deleted).unwrap_or(u32::MAX))
+    }
+
+    /// Renames, deletes or adds a label on notes `ids` (see
+    /// `RelabelNotes`). Returns how many changed.
+    pub fn relabel_notes(&self, ids: &[i64], old: &str, new: &str) -> Result<u32, CommandError> {
+        let (old, new) = (old.trim(), new.trim());
+        if new.chars().count() > MAX_LABEL {
+            return Err(CommandError::InvalidArgs(format!(
+                "a label is at most {MAX_LABEL} characters"
+            )));
+        }
+        if old.is_empty() && new.is_empty() {
+            return Ok(0);
+        }
+        let accounts = self.note_accounts(ids)?;
+        let changed = self.store().relabel_notes(ids, old, new)?;
+        tracing::info!(changed, "notes relabeled");
+        for account in accounts {
+            self.notes_changed(Some(account));
+        }
+        Ok(u32::try_from(changed).unwrap_or(u32::MAX))
     }
 
     /// The accounts of notes `ids`.
