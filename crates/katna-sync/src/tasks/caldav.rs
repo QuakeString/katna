@@ -117,6 +117,11 @@ impl DavTasks {
             .ok_or_else(|| Error::Protocol(format!("CalDAV led elsewhere: {href}")))
     }
 
+    /// Why no CalDAV was found, for people; empty when it was.
+    pub fn missing_why(&self) -> String {
+        self.dav.missing_why()
+    }
+
     /// Whether the server offers CalDAV at all.
     pub async fn allowed(&self) -> Result<bool> {
         match self.dav.home().await {

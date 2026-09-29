@@ -1021,12 +1021,15 @@ dropped when it would not fit), which a phone's camera saves.
 The column also lists every mail account under Accounts, with how many
 people are saved in it (a click lists only those). The daemon keeps where
 each account's contacts sync stands (`Pim1.ContactsStatus()`, a
-`contacts_state`: ok, needs-sign-in, error or none, sending
+`contacts_state`: ok, needs-sign-in, use-sign-in, error or none, sending
 `ContactsChanged` when one changes); an account whose contacts did not
-come shows one line under it with why and its fix: "Sign in again to show
-contacts" (OAuth2 without the contacts scopes), Change password (a server
-that refused the password; many need an app password), or Try again
-(`SyncNow`), as the Calendar does.
+come shows one line under it (`window/account_status.rs`, shared with
+Calendar and Tasks) with why and its fix: "Sign in again to show
+contacts" (OAuth2 without the contacts scopes), "Sign in with Google" (a
+Gmail or Outlook account added with a password, which their contacts
+need), Change password (a server that refused the password; many need an
+app password), or Try again (`SyncNow`, which looks for the address books
+from scratch); "none" carries what the server answered.
 
 Saved people's birthdays show on the Calendar and the agenda as a
 Birthdays calendar made on this computer (id -1, read-only, never stored):
@@ -3683,6 +3686,9 @@ server error is not.
   Starred, Today (as in To Do's My Day and TickTick) gathers the open
   tasks due today or before from every list: Overdue first, then Today,
   by day and time. A task added there goes to the default list, due today.
+  All tasks puts as many lists side by side as the window fits, then
+  more rows below that scroll down (one list per row on a phone), so no
+  list is out of reach; a list just made is scrolled into view.
 - **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
   right-click and ⋮ menus) makes a task in the default list titled with the
   conversation's subject, keeping the newest message's `Message-ID` in
