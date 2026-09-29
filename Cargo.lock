@@ -5937,6 +5937,7 @@ dependencies = [
 name = "katna-dav"
 version = "0.0.0"
 dependencies = [
+ "base64 0.22.1",
  "katna-core",
  "katna-store",
 ]
@@ -6201,6 +6202,7 @@ dependencies = [
  "jiff",
  "katna-core",
  "katna-crypto",
+ "katna-dav",
  "katna-import",
  "katna-meta",
  "katna-store",

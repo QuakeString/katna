@@ -46,6 +46,7 @@ use katna_sync::{
 use crate::translate::{self, KatnaServer, TranslateError};
 use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secrets};
 
+mod contacts;
 mod drive;
 mod reminders;
 
@@ -98,6 +99,8 @@ pub enum Notice {
     UpdateChanged,
     /// A Google Drive upload moved on.
     DriveChanged(i64),
+    /// Saved contacts changed.
+    ContactsChanged,
     /// Task sync brought changes from a task service.
     TasksChanged,
 }
@@ -238,6 +241,8 @@ pub struct Daemon {
     /// Tells the tracking event stream to look again (a tracked message
     /// went out, or settings changed).
     tracking_wake: (Sender<()>, Receiver<()>),
+    /// Wakes the contacts sync.
+    contacts_wake: (Sender<()>, Receiver<()>),
     /// The languages Katna Server translates between, once asked.
     translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
@@ -297,6 +302,7 @@ impl Daemon {
             signing_in: Mutex::default(),
             uploads: drive::Uploads::default(),
             tracking_wake: async_channel::bounded(1),
+            contacts_wake: async_channel::bounded(1),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
             updates: crate::updates::Updates::default(),
@@ -370,6 +376,11 @@ impl Daemon {
         ))
         .detach();
         smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
+        smol::spawn(contacts::run(
+            Arc::downgrade(self),
+            self.contacts_wake.1.clone(),
+        ))
+        .detach();
         smol::spawn(tasks::run(
             Arc::downgrade(self),
             self.task_sync_wake.1.clone(),
@@ -381,6 +392,11 @@ impl Daemon {
     /// Has the tracking event stream look again.
     pub(crate) fn wake_tracking(&self) {
         let _ = self.tracking_wake.0.try_send(());
+    }
+
+    /// Syncs contacts now rather than at the next pass.
+    pub(crate) fn wake_contacts(&self) {
+        let _ = self.contacts_wake.0.try_send(());
     }
 
     /// Katna Server, for tracking ([`crate::katna_account::server_url`]).
@@ -958,6 +974,7 @@ impl Daemon {
                 self.start_account(&account).await;
             }
         }
+        self.wake_contacts();
         Ok(())
     }
 

@@ -275,8 +275,14 @@ account          (id, kind, display_name, address, settings_json)  -- kind: imap
 organization     (id, name, kind, color, notes, notify_policy)  -- kind: customer|vendor|partner|other
 org_alias        (org_id, alias)
 org_rule         (org_id, rule_kind, value)               -- domain | subdomain | address
-contact          (id, display_name, vcard_uid, notes)
-contact_address  (contact_id, email_norm)
+address_book     (id, account_id NULL, source, remote_id, name, sync_token,
+                  synced_at, state)                       -- source: google|microsoft|carddav|local (v6)
+contact          (id, book_id, remote_id, etag, display_name, sort_key, job,
+                  phone, starred, card_json, raw, updated_at)   -- §8.6 (v5)
+contact_address  (contact_id, email_norm, position)
+contact_group    (id, book_id, remote_id, name)           -- labels
+contact_group_member (group_id, contact_id)
+contact_photo    (contact_id, source, data)
 org_member       (org_id, contact_id)
 suggestion       (id, kind, payload_json, state)          -- pending | accepted | dismissed
 template         (id, name, subject, html, text, updated_at)   -- mail templates (v2)
@@ -923,6 +929,33 @@ query: "messages where any `participant` matches the organization's rules".
 Organizations and contacts are stored as vCards (`KIND:org`, `ORG`,
 `MEMBER`) and can sync via CardDAV. Katna Calendar and the Plasma clock use
 the same matching on event attendees ("Meeting with Acme").
+
+**Saved contacts** (study: `research/contacts/katna-contacts-study.html`
+in the project files, 2026-09-29). Each account's own address book is
+synced, following the feature rule: Google's People API for Gmail (labels
+are contact groups, starred is Google's `starred` group, pictures are
+fetched once per URL), Microsoft Graph for Outlook (the main contacts
+folder, categories as labels), and CardDAV (RFC 6352) for the rest, found
+from the provider's known server or the `.well-known/carddav` of the mail
+and IMAP domains, read with `sync-collection` and `addressbook-multiget`
+(`katna_sync::{contacts, carddav}`; vCard 3.0/4.0 in `katna_dav::vcard`).
+The daemon syncs 20 s after start, every 15 minutes, on Sync now and after
+a sign-in, and signals `ContactsChanged`. Every source is read into one
+`katna_core::contact::Card`, kept as JSON beside the source's own form
+(`contact.raw`), which is what writing back will edit. Google and Microsoft
+accounts signed in before Katna asked for contacts get an "Allow" banner on
+the Contacts page (sign in again with the added scope).
+
+The same person saved in several accounts is one entry, linked by a shared
+email address (`Store::saved_contacts`). Saved names win in the address
+suggestions and saved addresses are suggested even without mail; saved
+pictures show beside the person's mail. The Contacts page (app rail) is
+laid out like Google Contacts: Contacts, Frequent (the people from the
+mail) and the labels at the left, a list with Name, Email, Phone, Job
+title & company and Labels, and a contact's page with tinted cards
+(details, the accounts that keep it, notes) and Email, Mail and Call
+buttons. Creating, editing and deleting contacts, Other contacts, merge
+and import/export follow in the next phases of the study.
 
 ## 9. Background service (`katna-daemon`)
 

@@ -249,6 +249,7 @@ impl Daemon {
                 account.id
             }
         };
+        self.wake_contacts();
         if !identity.picture.is_empty() {
             smol::spawn(save_picture(
                 Arc::downgrade(self),

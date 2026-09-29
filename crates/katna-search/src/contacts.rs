@@ -192,6 +192,34 @@ impl ContactBook {
         Self::from_contacts(contacts)
     }
 
+    /// Like [`ContactBook::new`], with the user's saved contacts as
+    /// `(address, name)`: a saved name wins over the one the mail used,
+    /// and a saved address never written with is suggested too.
+    pub fn with_saved(rows: Vec<Correspondent>, saved: Vec<(String, String)>) -> Self {
+        let mut names: HashMap<String, String> = HashMap::new();
+        for (email, name) in saved {
+            let email = email.trim().to_lowercase();
+            if email.is_empty() || name.trim().is_empty() || name.trim() == email {
+                continue;
+            }
+            names.entry(email).or_insert(name);
+        }
+        let mut contacts = Self::new(rows).contacts;
+        for contact in &mut contacts {
+            if let Some(name) = names.remove(&contact.email) {
+                contact.name = clean_name(&name).or(contact.name.take());
+            }
+        }
+        let mut rest: Vec<(String, String)> = names.into_iter().collect();
+        rest.sort();
+        contacts.extend(rest.into_iter().map(|(email, name)| Contact {
+            email,
+            name: clean_name(&name),
+            exchanges: Vec::new(),
+        }));
+        Self::from_contacts(contacts)
+    }
+
     /// A book of contacts saved with [`ContactBook::contacts`].
     pub fn from_contacts(contacts: Vec<Contact>) -> Self {
         let mut book = Self::default();
@@ -617,6 +645,23 @@ mod tests {
 
     fn emails(found: &[Suggestion]) -> Vec<&str> {
         found.iter().map(|s| s.email.as_str()).collect()
+    }
+
+    #[test]
+    fn saved_contacts_name_and_add_addresses() {
+        let book = ContactBook::with_saved(
+            vec![row("arjun@acme.co", Some("arjun"), 3, 1)],
+            vec![
+                ("ARJUN@acme.co".into(), "Arjun Mehta".into()),
+                ("chen@lotus.cn".into(), "Chen Wei".into()),
+                ("nobody@x.in".into(), "nobody@x.in".into()),
+            ],
+        );
+        let found = book.suggest("mehta", Some(1), NOW, &[], 8);
+        assert_eq!(emails(&found), ["arjun@acme.co"]);
+        let found = book.suggest("chen", Some(1), NOW, &[], 8);
+        assert_eq!(emails(&found), ["chen@lotus.cn"]);
+        assert_eq!(book.contacts().len(), 2);
     }
 
     #[test]

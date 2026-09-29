@@ -495,6 +495,22 @@ pub async fn exchange(
     tls: &Tls,
     timeout: Duration,
 ) -> Result<Reply> {
+    exchange_limited(method, url, headers, body, sent, tls, timeout, MAX_BODY).await
+}
+
+/// Like [`exchange`], reading answers of up to `max_body` bytes: for
+/// address books, whose listings grow with the contacts.
+#[allow(clippy::too_many_arguments)]
+pub async fn exchange_limited(
+    method: &str,
+    url: &str,
+    headers: &[(&str, &str)],
+    body: Option<(&str, &[u8])>,
+    sent: Option<Progress<'_>>,
+    tls: &Tls,
+    timeout: Duration,
+    max_body: usize,
+) -> Result<Reply> {
     let exchange = async {
         let (parts, plain) = match url.strip_prefix("http://") {
             Some(rest) => {
@@ -557,13 +573,13 @@ pub async fn exchange(
                 break;
             }
             response.extend_from_slice(chunk);
-            if response.len() > MAX_BODY + 64 * 1024 {
+            if response.len() > max_body + 64 * 1024 {
                 return Err(Error::Protocol(format!("{url}: answer too large")));
             }
         }
         let _ = conn.close().await;
         let head = parse_head(&response)?;
-        let body = parse_body(&head, MAX_BODY, false)?;
+        let body = parse_body(&head, max_body, false)?;
         Ok(Reply {
             status: head.status,
             location: head.location,
