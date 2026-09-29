@@ -2220,7 +2220,10 @@ desktop's own app stays one click away.
 - **Viewer.** Clicking a card opens the viewer over the window below the
   top bar (the window's own controls stay usable): a dark page with a bar
   naming the file, "Open with another app" and Save; arrows (and ←/→) go
-  through the message's other attachments; a pill at the foot zooms
+  through the message's other attachments, the viewer staying open: the
+  file on show stays until the next one is ready (a PDF with its first
+  page drawn) and they swap in one frame, or "Opening…" shows after
+  300 ms if it takes longer; the viewer fades in only when it opens; a pill at the foot zooms
   (−/+/0, 25 %–400 %, 100 % fits the window) and shows a PDF's page as
   "Page [n] of N": typing a number in the box (click it or Ctrl+G) and
   Enter goes to that page, Escape leaves the box. Escape closes the viewer. It is dark in light and dark themes alike.
