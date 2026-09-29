@@ -6,7 +6,6 @@ import QtQuick
 import QtQuick.Layouts
 
 import org.kde.plasma.components as PlasmaComponents
-import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 
 // The Tasks list under the day's events: add a task (due on the day picked
@@ -49,6 +48,11 @@ ColumnLayout {
         ticked[id] = true;
         tickedNow = ticked;
         agenda.setDone(id, done);
+    }
+
+    // Puts the cursor in the Add field (the day menu's Add a Task).
+    function focusAdd(): void {
+        addField.forceActiveFocus(Qt.MouseFocusReason);
     }
 
     function sameDay(a: date, b: date): bool {
@@ -150,7 +154,7 @@ ColumnLayout {
         Layout.fillHeight: true
         Layout.preferredHeight: contentHeight
         Layout.maximumHeight: section.compact ? Kirigami.Units.gridUnit * 12 : -1
-        Layout.minimumHeight: count === 0 ? Kirigami.Units.gridUnit * 3 : 0
+        visible: count > 0
         clip: true
         interactive: contentHeight > height
         boundsBehavior: Flickable.StopAtBounds
@@ -222,15 +226,25 @@ ColumnLayout {
                 }
             }
         }
+    }
 
-        PlasmaExtras.PlaceholderMessage {
-            anchors.centerIn: parent
-            width: parent.width - Kirigami.Units.gridUnit * 4
-            visible: taskList.count === 0
-            iconName: section.agenda.reachable ? "checkmark" : "network-disconnect"
-            text: section.agenda.reachable
-                ? i18ndc(section.domain, "@info", "No tasks")
-                : i18ndc(section.domain, "@info", "Katna isn't answering")
-        }
+    // A quiet line rather than Plasma's big placeholder, which in the short
+    // space under the day's events spilled over the Add field.
+    PlasmaComponents.Label {
+        Layout.fillWidth: true
+        Layout.fillHeight: !section.compact
+        Layout.leftMargin: section.paddings
+        Layout.rightMargin: section.paddings
+        Layout.topMargin: Kirigami.Units.smallSpacing
+        Layout.bottomMargin: Kirigami.Units.smallSpacing
+        visible: taskList.count === 0
+        verticalAlignment: section.compact ? Text.AlignTop : Text.AlignVCenter
+        horizontalAlignment: section.compact ? Text.AlignLeft : Text.AlignHCenter
+        opacity: 0.7
+        wrapMode: Text.Wrap
+        textFormat: Text.PlainText
+        text: section.agenda.reachable
+            ? i18ndc(section.domain, "@info", "No tasks")
+            : i18ndc(section.domain, "@info", "Katna isn't answering")
     }
 }

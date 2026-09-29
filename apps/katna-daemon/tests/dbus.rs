@@ -5,13 +5,14 @@
 //! Needs `dbus-daemon` (package `dbus` on Arch, `dbus-daemon` on Debian and
 //! Ubuntu). The `#[ignore]`d tests also need the dev servers:
 //! `docker compose -f dev/compose.yaml up -d`, then
-//! `cargo test -p katna-daemon --test dbus -- --ignored --test-threads 1`.
+//! `cargo test -p katna-daemon --test dbus -- --ignored`.
 //! Windows runs the bus end to end in `katna-dbus`'s `windows_bus` test.
 #![cfg(unix)]
 
 use std::{
     io::{BufRead, BufReader},
     process::{Child, Command, Stdio},
+    sync::{Mutex, MutexGuard, PoisonError},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -982,6 +983,14 @@ fn port(var: &str, default: u16) -> u16 {
         .unwrap_or(default)
 }
 
+/// Holds alice's mailbox on the dev servers for one test at a time: the
+/// tests add mail there and count it or wait for their own, so two at once
+/// see each other's.
+fn dev_mailbox() -> MutexGuard<'static, ()> {
+    static MAILBOX: Mutex<()> = Mutex::new(());
+    MAILBOX.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
 fn unique(prefix: &str) -> String {
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -1010,6 +1019,7 @@ async fn wait_until_online(pim: &PimProxy<'_>, id: i64) {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn adds_syncs_restarts_and_removes_dev_accounts() {
+    let _mailbox = dev_mailbox();
     let servers = [
         ("stalwart", port("KATNA_STALWART_IMAPS_PORT", 10993), "tls"),
         (
@@ -1138,6 +1148,7 @@ fn adds_syncs_restarts_and_removes_dev_accounts() {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn pop3_accounts_on_dev_servers() {
+    let _mailbox = dev_mailbox();
     let servers = [
         (
             "stalwart",
@@ -1244,6 +1255,7 @@ fn pop3_accounts_on_dev_servers() {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn sends_through_dev_servers() {
+    let _mailbox = dev_mailbox();
     let servers = [
         (
             "stalwart",
@@ -1770,6 +1782,7 @@ fn reminds_of_events() {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn notifies_about_new_mail_on_dev_servers() {
+    let _mailbox = dev_mailbox();
     use katna_core::Config;
     use zbus::object_server::SignalEmitter;
 
@@ -2140,6 +2153,7 @@ fn shows_the_unread_count_on_the_taskbar_and_in_the_tray() {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn creates_folders_on_dev_servers() {
+    let _mailbox = dev_mailbox();
     let servers = [
         ("stalwart", port("KATNA_STALWART_IMAPS_PORT", 10993), "tls"),
         (
@@ -2241,6 +2255,7 @@ fn creates_folders_on_dev_servers() {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn downloads_old_mail_when_opened() {
+    let _mailbox = dev_mailbox();
     let imap_port = port("KATNA_STALWART_IMAPS_PORT", 10993);
     let bus = Bus::start();
     let tmp = tempfile::tempdir().unwrap();
@@ -2321,6 +2336,7 @@ fn downloads_old_mail_when_opened() {
 #[test]
 #[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
 fn resets_the_cache_on_dev_servers() {
+    let _mailbox = dev_mailbox();
     let imap_port = port("KATNA_STALWART_IMAPS_PORT", 10993);
     let bus = Bus::start();
     let tmp = tempfile::tempdir().unwrap();

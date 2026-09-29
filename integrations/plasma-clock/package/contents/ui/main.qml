@@ -33,6 +33,7 @@ PlasmoidItem {
     // Katna: its events and tasks, read while the popup is open.
     readonly property KatnaAgenda katna: KatnaAgenda {
         active: root.expanded
+        onShownInKatna: root.expanded = false
     }
 
     Clock {

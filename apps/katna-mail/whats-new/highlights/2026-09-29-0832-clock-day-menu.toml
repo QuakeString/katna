@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add events and tasks from the desktop clock"
+text = """
+In Katna Digital Clock, right-click a day in the month to add a task or
+an event for that day; the event opens in Katna's Calendar. Clicking one
+of your events opens the Calendar on its day.
+"""
