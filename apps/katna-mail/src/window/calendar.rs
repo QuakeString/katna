@@ -214,12 +214,12 @@ impl CalendarPage {
     }
 }
 
-fn midnight(day: Date, tz: &TimeZone) -> i64 {
+pub(super) fn midnight(day: Date, tz: &TimeZone) -> i64 {
     day.to_zoned(tz.clone())
         .map_or(0, |z| z.timestamp().as_second())
 }
 
-fn civil(seconds: i64, tz: &TimeZone) -> DateTime {
+pub(super) fn civil(seconds: i64, tz: &TimeZone) -> DateTime {
     jiff::Timestamp::from_second(seconds)
         .unwrap_or(jiff::Timestamp::UNIX_EPOCH)
         .to_zoned(tz.clone())
@@ -235,11 +235,23 @@ fn parse_color(text: &str) -> Option<u32> {
         .map(|rgb| (rgb << 8) | 0xff)
 }
 
+/// The color of an event: its own, else its calendar's.
+pub(super) fn event_color(calendars: &[Calendar], occurrence: &Occurrence) -> u32 {
+    parse_color(&occurrence.event.data.color)
+        .or_else(|| {
+            calendars
+                .iter()
+                .find(|c| c.id == occurrence.event.calendar_id)
+                .and_then(|c| parse_color(&c.color))
+        })
+        .unwrap_or(DEFAULT_COLOR)
+}
+
 /// Google's blue, for calendars without a color.
 const DEFAULT_COLOR: u32 = 0x039b_e5ff;
 
 /// Reads the calendars and the occurrences in `from..to`.
-fn read(
+pub(super) fn read(
     paths: &Paths,
     from: i64,
     to: i64,
@@ -391,15 +403,12 @@ impl MailWindow {
 
     /// The color of an event: its own, else its calendar's.
     fn event_color(&self, occurrence: &Occurrence) -> u32 {
-        parse_color(&occurrence.event.data.color)
-            .or_else(|| {
-                self.calendar
-                    .calendars
-                    .iter()
-                    .find(|c| c.id == occurrence.event.calendar_id)
-                    .and_then(|c| parse_color(&c.color))
-            })
-            .unwrap_or(DEFAULT_COLOR)
+        event_color(&self.calendar.calendars, occurrence)
+    }
+
+    /// Shows the Calendar page's Day view on `day`.
+    pub(super) fn open_calendar_on(&mut self, day: Date, cx: &mut Context<Self>) {
+        self.open_calendar_day(day, Some(CalView::Day), cx);
     }
 
     /// The occurrences on show, without those of calendars just unticked.

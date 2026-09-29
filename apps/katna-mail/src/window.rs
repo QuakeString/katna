@@ -21,6 +21,7 @@ mod account_view;
 mod accounts;
 mod activity;
 mod add_account;
+mod agenda;
 mod app_menu;
 mod apps;
 mod attachments;
@@ -418,6 +419,8 @@ pub struct MailWindow {
     app: RailApp,
     /// The Calendar page.
     calendar: calendar::CalendarPage,
+    /// The day's agenda beside the mail.
+    agenda: agenda::AgendaPanel,
     /// Undo steps that bring back the conversation that was open, with
     /// its key, so undoing opens it again.
     undo_reopens: Vec<(Command, EntryKey)>,
@@ -770,6 +773,7 @@ impl MailWindow {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
             calendar: calendar::CalendarPage::new(cx),
+            agenda: agenda::AgendaPanel::new(),
             undo_reopens: Vec::new(),
             reopen_after_undo: None,
             title_from: RailApp::Mail,
@@ -1937,6 +1941,7 @@ impl MailWindow {
         if self.app == RailApp::Calendar && !self.detached {
             self.load_calendar(cx);
         }
+        self.load_agenda(cx);
         if self.mail.is_err() {
             // The daemon may have made the store since.
             self.reopen(cx);
@@ -2928,6 +2933,7 @@ impl MailWindow {
             .flex_row()
             .child(div().flex_1().min_w_0().h_full().child(row))
             .children(self.render_contact_panel(th, cx))
+            .children(self.render_agenda_panel(th, cx))
             .into_any_element()
     }
 }
@@ -3070,7 +3076,8 @@ impl Render for MailWindow {
             (width - shape.rail() - nav_width - shape.card_margin() - settings_width).max(200.0);
         // The contact panel takes its room from the list and the reader.
         let (contact_room, contact_target) = self.tick_contact(available, window, reduce);
-        let available = (available - contact_room).max(200.0);
+        let (agenda_room, agenda_target) = self.tick_agenda(available, window, reduce);
+        let available = (available - contact_room - agenda_room).max(200.0);
         self.cards_width = available;
         let reader_width = if self.split() {
             ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
@@ -3089,7 +3096,8 @@ impl Render for MailWindow {
         } else {
             0.0
         };
-        self.cards_target = (width - rail - nav - margin - settings - contact_target).max(200.0);
+        self.cards_target =
+            (width - rail - nav - margin - settings - contact_target - agenda_target).max(200.0);
 
         let settings = (settings_t > 0.001).then(|| self.render_settings(&th, settings_t, cx));
         let (docked_settings, floating_settings) = if settings_floats {

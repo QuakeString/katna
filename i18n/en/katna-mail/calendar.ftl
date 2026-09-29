@@ -49,3 +49,13 @@ calendar-guest-answers = { $yes } yes, { $maybe } maybe, { $no } no, { $waiting 
 calendar-organizer-name = { $name } (organizer)
 calendar-open-web = Open in the browser
 calendar-close = Close
+
+## The day's agenda beside the mail.
+
+agenda-show = Show the day's agenda
+agenda-hide = Hide the agenda
+# The agenda's title on today: "Today, 29 Sept".
+agenda-today = Today, { $date }
+# The agenda's title on another day: "Wed, 30 Sept".
+agenda-day = { $weekday }, { $date }
+agenda-empty = Nothing planned on this day.
