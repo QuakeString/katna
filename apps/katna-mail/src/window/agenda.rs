@@ -355,12 +355,13 @@ impl MailWindow {
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
+        let (shadow, edge) = self.card_edges(0.0, outline);
         div()
             .relative()
             .size_full()
             .rounded(px(radius))
             .bg(rgba(th.surface))
-            .shadow(card_shadow(th, outline))
+            .shadow(card_shadow(th, shadow))
             .flex()
             .flex_col()
             .child(
@@ -393,7 +394,7 @@ impl MailWindow {
                     ),
             )
             .child(body)
-            .children(card_outline(th, radius, outline))
+            .children(card_outline(th, radius, edge))
             .into_any_element()
     }
 }

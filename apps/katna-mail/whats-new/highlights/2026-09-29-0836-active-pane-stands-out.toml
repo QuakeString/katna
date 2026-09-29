@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The pane you are in stands out"
+text = """
+Beside the list, only the pane that has the keys keeps its shadow; the
+list, the conversation or the contact panel you are not using sinks back
+with a fainter edge, and the change follows you softly as you click.
+"""
