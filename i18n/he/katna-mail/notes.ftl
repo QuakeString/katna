@@ -79,6 +79,17 @@ notes-meeting-actions = פריטי פעולה
 notes-event = אירוע
 notes-open-event = פתיחת האירוע
 
+## Formatting
+
+notes-format = עיצוב
+notes-format-heading-1 = כותרת 1
+notes-format-heading-2 = כותרת 2
+notes-format-normal = טקסט רגיל
+notes-format-bold = מודגש
+notes-format-italic = נטוי
+notes-format-underline = קו תחתון
+notes-format-clear = ניקוי העיצוב
+
 ## Tasks
 
 notes-make-task = הפיכה למשימה

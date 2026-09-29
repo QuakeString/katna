@@ -78,6 +78,17 @@ notes-meeting-actions = ಕ್ರಿಯಾ ಐಟಂಗಳು
 notes-event = ಈವೆಂಟ್
 notes-open-event = ಈವೆಂಟ್ ತೆರೆಯಿರಿ
 
+## Formatting
+
+notes-format = ಫಾರ್ಮ್ಯಾಟಿಂಗ್
+notes-format-heading-1 = ಶೀರ್ಷಿಕೆ 1
+notes-format-heading-2 = ಶೀರ್ಷಿಕೆ 2
+notes-format-normal = ಸಾಮಾನ್ಯ ಪಠ್ಯ
+notes-format-bold = ದಪ್ಪ
+notes-format-italic = ಇಟಾಲಿಕ್
+notes-format-underline = ಅಡಿಗೆರೆ
+notes-format-clear = ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ತೆರವುಗೊಳಿಸಿ
+
 ## Tasks
 
 notes-make-task = ಕಾರ್ಯವನ್ನಾಗಿ ಮಾಡಿ

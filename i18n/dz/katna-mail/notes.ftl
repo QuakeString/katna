@@ -77,6 +77,17 @@ notes-meeting-actions = ལས་འགན་ཚུ
 notes-event = བྱུང་རིམ
 notes-open-event = བྱུང་རིམ་ཁ་ཕྱེ
 
+## Formatting
+
+notes-format = རྣམ་སྒྲིག
+notes-format-heading-1 = མགོ་ཡིག 1
+notes-format-heading-2 = མགོ་ཡིག 2
+notes-format-normal = ཡིག་ཆ་སྤྱིར་བཏང་
+notes-format-bold = ཡིག་གཟུགས་རྒྱགས་པ
+notes-format-italic = ཡིག་གཟུགས་གསེག་མ
+notes-format-underline = འོག་ཐིག
+notes-format-clear = རྣམ་སྒྲིག་བསལ
+
 ## Tasks
 
 notes-make-task = ལཱ་བཟོ།

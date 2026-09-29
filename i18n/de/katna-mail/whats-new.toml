@@ -1595,3 +1595,13 @@ Titel, Ort, Notizen oder Gästen, nach Datum sortiert. Klicken Sie auf
 einen, um ihn an seinem Tag zu öffnen; Esc bringt Sie zurück zu den
 Ergebnissen.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formatierung in Notizen"
+text = """
+Wählen Sie in einer Notiz Formatierung für Überschrift 1, Überschrift 2,
+fett, kursiv und unterstrichen, wie in Keep. Die Pinnwand zeigt sie
+auch, und sie wandert mit der Notiz in den Ordner Notizen Ihres
+E-Mail-Kontos, wo Formatierung von einem iPhone jetzt so zurückkommt,
+wie sie war.
+"""

@@ -1608,3 +1608,13 @@ title = "Sesha imicimbi yakho"
 text = """
 Ekhasini le-Khalenda, ibhokisi lokusesha phezulu manje lithola imicimbi ngesihloko, indawo, amanothi noma izivakashi, ibalwe ngosuku. Chofoza owodwa ukuze uwuvule osukwini lwawo; i-Esc ikubuyisela emiphumeleni.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Ukufometha kumanothi"
+text = """
+Khetha u-Ukufometha kunothi ukuze uthole Isihloko 1, Isihloko 2,
+okugqamile, okutshekile nokudwebela, njengaku-Keep. Ibhodi
+liyakukhombisa nalo, futhi kuhamba nenothi kuye kufolda ethi Amanothi
+ye-akhawunti yakho yeposi, lapho ukufometha okuvela ku-iPhone manje
+kubuya njengoba bekunjalo.
+"""

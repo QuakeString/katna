@@ -77,6 +77,17 @@ notes-meeting-actions = Àwọn ohun tí a máa ṣe
 notes-event = Ìṣẹ̀lẹ̀
 notes-open-event = Ṣí ìṣẹ̀lẹ̀ náà
 
+## Formatting
+
+notes-format = Ìgúnrege
+notes-format-heading-1 = Àkọlé 1
+notes-format-heading-2 = Àkọlé 2
+notes-format-normal = Ọ̀rọ̀ déédéé
+notes-format-bold = Nípọn
+notes-format-italic = Dagun
+notes-format-underline = Fa ìlà sábẹ́
+notes-format-clear = Pa ìgúnrege rẹ́
+
 ## Tasks
 
 notes-make-task = Ṣe é ní iṣẹ́

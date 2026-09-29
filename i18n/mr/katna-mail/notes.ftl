@@ -78,6 +78,17 @@ notes-meeting-actions = कृती आयटम
 notes-event = इव्हेंट
 notes-open-event = इव्हेंट उघडा
 
+## Formatting
+
+notes-format = फॉरमॅटिंग
+notes-format-heading-1 = शीर्षक 1
+notes-format-heading-2 = शीर्षक 2
+notes-format-normal = सामान्य मजकूर
+notes-format-bold = ठळक
+notes-format-italic = तिरपे
+notes-format-underline = अधोरेखित
+notes-format-clear = फॉरमॅटिंग साफ करा
+
 ## Tasks
 
 notes-make-task = कार्य बनवा

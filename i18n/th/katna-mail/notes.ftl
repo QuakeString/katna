@@ -77,6 +77,17 @@ notes-meeting-actions = รายการที่ต้องดำเนิ�
 notes-event = กิจกรรม
 notes-open-event = เปิดกิจกรรม
 
+## Formatting
+
+notes-format = การจัดรูปแบบ
+notes-format-heading-1 = หัวเรื่อง 1
+notes-format-heading-2 = หัวเรื่อง 2
+notes-format-normal = ข้อความปกติ
+notes-format-bold = ตัวหนา
+notes-format-italic = ตัวเอียง
+notes-format-underline = ขีดเส้นใต้
+notes-format-clear = ล้างการจัดรูปแบบ
+
 ## Tasks
 
 notes-make-task = ทำเป็นงาน

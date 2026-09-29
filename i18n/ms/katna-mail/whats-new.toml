@@ -1573,3 +1573,12 @@ mengikut tajuk, tempat, nota atau tetamu, disenaraikan mengikut tarikh.
 Klik satu untuk membukanya pada harinya; Esc membawa anda kembali ke
 hasil carian.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Pemformatan dalam nota"
+text = """
+Pilih Pemformatan dalam nota untuk Tajuk 1, Tajuk 2, tebal, condong dan
+garis bawah, seperti dalam Keep. Papan turut menunjukkannya, dan ia
+mengikut nota ke folder Nota akaun mel anda, tempat pemformatan dari
+iPhone kini kembali seperti asalnya.
+"""

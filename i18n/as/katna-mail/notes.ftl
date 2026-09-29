@@ -78,6 +78,17 @@ notes-meeting-actions = কাৰ্য তালিকা
 notes-event = ইভেণ্ট
 notes-open-event = ইভেণ্ট খোলক
 
+## Formatting
+
+notes-format = ফৰ্মেটিং
+notes-format-heading-1 = শিৰোনাম 1
+notes-format-heading-2 = শিৰোনাম 2
+notes-format-normal = সাধাৰণ পাঠ
+notes-format-bold = গাঢ়
+notes-format-italic = তিৰ্যক
+notes-format-underline = আণ্ডাৰলাইন
+notes-format-clear = ফৰ্মেটিং আঁতৰাওক
+
 ## Tasks
 
 notes-make-task = কাৰ্য বনাওক

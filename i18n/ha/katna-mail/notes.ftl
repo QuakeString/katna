@@ -78,6 +78,17 @@ notes-meeting-actions = Abubuwan da za a yi
 notes-event = Taron
 notes-open-event = Buɗe taron
 
+## Formatting
+
+notes-format = Tsarawa
+notes-format-heading-1 = Kanu 1
+notes-format-heading-2 = Kanu 2
+notes-format-normal = Rubutu na yau da kullum
+notes-format-bold = Mai kauri
+notes-format-italic = Mai karkata
+notes-format-underline = Ja layi a ƙasa
+notes-format-clear = Share tsarawa
+
 ## Tasks
 
 notes-make-task = Mai da shi aiki

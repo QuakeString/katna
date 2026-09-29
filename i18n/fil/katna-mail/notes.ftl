@@ -78,6 +78,17 @@ notes-meeting-actions = Mga aksyon
 notes-event = Event
 notes-open-event = Buksan ang event
 
+## Formatting
+
+notes-format = Pag-format
+notes-format-heading-1 = Heading 1
+notes-format-heading-2 = Heading 2
+notes-format-normal = Normal na text
+notes-format-bold = Bold
+notes-format-italic = Italic
+notes-format-underline = Salungguhitan
+notes-format-clear = I-clear ang pag-format
+
 ## Tasks
 
 notes-make-task = Gawing gawain

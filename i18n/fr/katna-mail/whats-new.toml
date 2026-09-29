@@ -1612,3 +1612,12 @@ les événements par titre, lieu, notes ou invités, classés par date.
 Cliquez sur l’un d’eux pour l’ouvrir à son jour. Esc vous ramène aux
 résultats.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Mise en forme dans les notes"
+text = """
+Choisissez Mise en forme dans une note pour Titre 1, Titre 2, gras,
+italique et souligné, comme dans Keep. Le tableau l’affiche aussi, et
+elle suit la note jusqu’au dossier Notes de votre compte de messagerie,
+où la mise en forme venue d’un iPhone revient désormais telle quelle.
+"""

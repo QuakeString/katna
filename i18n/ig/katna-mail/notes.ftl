@@ -77,6 +77,17 @@ notes-meeting-actions = Ihe a ga-eme
 notes-event = Ihe omume
 notes-open-event = Mepee ihe omume
 
+## Formatting
+
+notes-format = Nhazi
+notes-format-heading-1 = Isiokwu 1
+notes-format-heading-2 = Isiokwu 2
+notes-format-normal = Ederede nkịtị
+notes-format-bold = Ọkpụrụkpụ
+notes-format-italic = Mkpọda
+notes-format-underline = Akara n'okpuru
+notes-format-clear = Kpochapụ nhazi
+
 ## Tasks
 
 notes-make-task = Mee ya ọrụ

@@ -1513,3 +1513,12 @@ Op die Kalender-bladsy vind die soekkassie bo nou geleenthede volgens
 titel, plek, notas of gaste, gelys volgens datum. Klik op een om dit op
 sy dag oop te maak; Esc neem jou terug na die resultate.
 """
+
+["2026-09-29-1045-note-formatting"]
+title = "Formatering in notas"
+text = """
+Kies Formatering in 'n nota vir Opskrif 1, Opskrif 2, vetdruk, kursief
+en onderstreep, soos in Keep. Die bord wys dit ook, en dit reis saam met
+die nota na jou e-posrekening se Notas-vouer, waar formatering van 'n
+iPhone nou terugkom soos dit was.
+"""
