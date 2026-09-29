@@ -1197,3 +1197,12 @@ Tryck på Skift+T, som i Gmail, eller välj Lägg till i Uppgifter när du
 högerklickar på ett e-postmeddelande. Uppgiften får meddelandets ämne,
 och dess E-post-chip i Uppgifter öppnar meddelandet igen.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Skapa och ändra kontakter"
+text = """
+Skapa kontakt på sidan Kontakter lägger till någon i det konto du
+väljer, och Redigera på en kontakts sida ändrar kontakten där också.
+Radera har en Ångra, och Google och Outlook sparar raderade kontakter i
+sin papperskorg en tid.
+"""

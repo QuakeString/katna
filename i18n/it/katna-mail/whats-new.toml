@@ -1240,3 +1240,12 @@ Premi Maiusc+T, come in Gmail, oppure scegli Aggiungi ad Attività
 facendo clic con il pulsante destro su un’email. L’attività prende
 l’oggetto dell’email e il suo chip Posta in Attività la riapre.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Creare e modificare i contatti"
+text = """
+Crea contatto, nella pagina Contatti, aggiunge una persona all’account
+che scegli, e Modifica, nella pagina di un contatto, la modifica lì.
+Elimina ha un Annulla, e Google e Outlook conservano per un po’ i
+contatti eliminati nel loro cestino.
+"""

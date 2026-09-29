@@ -1270,3 +1270,13 @@ Pindutin ang Shift+T, tulad sa Gmail, o piliin ang Idagdag sa Mga Gawain
 kapag nag-right-click ka sa isang mail. Kinukuha ng gawain ang paksa ng
 mail, at muling binubuksan ng chip nitong Mail sa Mga Gawain ang mail.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Gumawa at magbago ng mga contact"
+text = """
+Ang Gumawa ng contact sa page na Mga Contact ay nagdaragdag ng tao sa
+account na pipiliin mo, at ang I-edit sa page ng isang contact ay
+nagbabago rin sa kanila roon. May I-undo ang I-delete, at pansamantalang
+itinatago ng Google at Outlook ang mga na-delete na contact sa kanilang
+trash.
+"""

@@ -7,6 +7,7 @@
 contacts-all = ទំនាក់ទំនង
 contacts-frequent = ញឹកញាប់
 contacts-labels = ស្លាក
+contacts-create = បង្កើតទំនាក់ទំនង
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = អនុញ្ញាត
 ## A contact's page
 
 contacts-back = ត្រឡប់ទៅទំនាក់ទំនង
+contacts-edit = កែសម្រួល
+contacts-delete = លុប
+contacts-deleted = បានលុប { $name }
 contacts-find-mail = សំបុត្រ
 contacts-details = ព័ត៌មានលម្អិតទំនាក់ទំនង
 contacts-saved-in = បានរក្សាទុកក្នុង
@@ -50,3 +54,29 @@ contacts-kind-other = ផ្សេងៗ
 contacts-source-google = ទំនាក់ទំនង Google
 contacts-source-microsoft = ទំនាក់ទំនង Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = បង្កើតទំនាក់ទំនង
+contacts-edit-title = កែសម្រួលទំនាក់ទំនង
+contacts-edit-save = រក្សាទុក
+contacts-edit-saving = កំពុងរក្សាទុក…
+contacts-edit-cancel = បោះបង់
+contacts-saved = បានរក្សាទុកទំនាក់ទំនង
+contacts-edit-save-to = រក្សាទុកក្នុង
+contacts-edit-changes-go-to = ការផ្លាស់ប្ដូរត្រូវបានរក្សាទុកក្នុង { $place }។
+contacts-edit-given = នាមខ្លួន
+contacts-edit-family = នាមត្រកូល
+contacts-edit-company = ក្រុមហ៊ុន
+contacts-edit-job = មុខតំណែង
+contacts-edit-email = អ៊ីមែល
+contacts-edit-phone = ទូរសព្ទ
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = បន្ថែមអ៊ីមែល
+contacts-edit-add-phone = បន្ថែមទូរសព្ទ
+contacts-edit-street = អាសយដ្ឋានផ្លូវ
+contacts-edit-city = ទីក្រុង
+contacts-edit-postcode = លេខកូដប្រៃសណីយ៍
+contacts-edit-country = ប្រទេស
+contacts-edit-birthday = ថ្ងៃកំណើត (YYYY-MM-DD)
+contacts-edit-empty = សូមបន្ថែមឈ្មោះ អ៊ីមែល ឬលេខទូរសព្ទជាមុនសិន។

@@ -1227,3 +1227,13 @@ Druk op Shift+T, zoals in Gmail, of kies Toevoegen aan Taken als je met
 de rechtermuisknop op een e-mail klikt. De taak neemt het onderwerp van
 de e-mail over en de chip E-mail in Taken opent de e-mail weer.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Contacten maken en bewerken"
+text = """
+Met Contact maken op de pagina Contacten voeg je iemand toe aan het
+account dat je kiest, en met Bewerken op de pagina van een contact
+wijzig je diegene ook daar. Verwijderen heeft een Ongedaan maken, en
+Google en Outlook bewaren verwijderde contacten nog een tijdje in hun
+prullenbak.
+"""

@@ -1236,3 +1236,12 @@ Pulsa Mayús+T, como en Gmail, o elige Añadir a Tareas al hacer clic con
 el botón derecho en un correo. La tarea toma el asunto del correo, y su
 etiqueta Correo en Tareas vuelve a abrirlo.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Crear y editar contactos"
+text = """
+Crear contacto, en la página Contactos, añade a alguien a la cuenta que
+elijas, y Editar, en la página de un contacto, lo modifica también allí.
+Eliminar tiene un Deshacer, y Google y Outlook conservan los contactos
+eliminados en su papelera durante un tiempo.
+"""

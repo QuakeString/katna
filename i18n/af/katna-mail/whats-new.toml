@@ -1190,3 +1190,12 @@ Druk Shift+T, soos in Gmail, of kies Voeg by Take wanneer jy met die
 regterknoppie op ’n e-pos klik. Die taak neem die e-pos se onderwerp, en
 sy E-pos-skildjie in Take maak die e-pos weer oop.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Skep en wysig kontakte"
+text = """
+Skep kontak op die Kontakte-bladsy voeg iemand by die rekening wat jy
+kies, en Wysig op 'n kontak se bladsy verander hulle ook daar. Vee uit
+het 'n Ontdoen, en Google en Outlook hou uitgeveede kontakte 'n rukkie
+in hul asblik.
+"""

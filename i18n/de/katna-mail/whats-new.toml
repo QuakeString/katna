@@ -1256,3 +1256,13 @@ hinzufügen, wenn Sie mit der rechten Maustaste auf eine E-Mail klicken.
 Die Aufgabe übernimmt den Betreff der E-Mail, und ihr E-Mail-Chip in
 Aufgaben öffnet die E-Mail wieder.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Kontakte erstellen und ändern"
+text = """
+Mit Kontakt erstellen auf der Kontakte-Seite legen Sie jemanden in dem
+Konto an, das Sie auswählen, und mit Bearbeiten auf der Seite eines
+Kontakts ändern Sie ihn ebenfalls dort. Löschen lässt sich mit
+Rückgängig zurücknehmen, und Google und Outlook bewahren gelöschte
+Kontakte noch eine Zeit lang in ihrem Papierkorb auf.
+"""

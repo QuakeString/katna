@@ -1187,3 +1187,12 @@ Nhấn Shift+T, như trong Gmail, hoặc chọn Thêm vào Việc cần làm khi
 chuột phải vào một thư. Việc cần làm lấy tiêu đề của thư, và thẻ Thư của
 nó trong Việc cần làm sẽ mở lại thư.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Tạo và sửa liên hệ"
+text = """
+Tạo người liên hệ trên trang Danh bạ sẽ thêm một người vào tài khoản bạn
+chọn, còn Sửa trên trang của một liên hệ cũng thay đổi họ ngay tại đó.
+Xóa có Hoàn tác, và Google cùng Outlook giữ các liên hệ đã xóa trong
+thùng rác của họ một thời gian.
+"""

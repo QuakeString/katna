@@ -7,6 +7,7 @@
 contacts-all = Mga Contact
 contacts-frequent = Madalas
 contacts-labels = Mga Label
+contacts-create = Gumawa ng contact
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Payagan
 ## A contact's page
 
 contacts-back = Bumalik sa mga contact
+contacts-edit = I-edit
+contacts-delete = I-delete
+contacts-deleted = Na-delete: { $name }
 contacts-find-mail = Mail
 contacts-details = Mga detalye ng contact
 contacts-saved-in = Naka-save sa
@@ -52,3 +56,29 @@ contacts-kind-other = Iba pa
 contacts-source-google = Google Contacts
 contacts-source-microsoft = Mga contact sa Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Gumawa ng contact
+contacts-edit-title = I-edit ang contact
+contacts-edit-save = I-save
+contacts-edit-saving = Sine-save…
+contacts-edit-cancel = Kanselahin
+contacts-saved = Na-save ang contact
+contacts-edit-save-to = I-save sa
+contacts-edit-changes-go-to = Sine-save ang mga pagbabago sa { $place }.
+contacts-edit-given = Unang pangalan
+contacts-edit-family = Apelyido
+contacts-edit-company = Kumpanya
+contacts-edit-job = Titulo ng trabaho
+contacts-edit-email = Email
+contacts-edit-phone = Telepono
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Magdagdag ng email
+contacts-edit-add-phone = Magdagdag ng telepono
+contacts-edit-street = Address ng kalye
+contacts-edit-city = Lungsod
+contacts-edit-postcode = Postal code
+contacts-edit-country = Bansa
+contacts-edit-birthday = Kaarawan (YYYY-MM-DD)
+contacts-edit-empty = Magdagdag muna ng pangalan, email, o numero ng telepono.

@@ -1200,3 +1200,10 @@ text = """
 Bonyeza Shift+T, kama kwenye Gmail, au bofya kulia barua na uchague Ongeza kwenye Majukumu.
 Jukumu huchukua mada ya barua, na chipu yake ya Barua kwenye Majukumu hufungua barua hiyo tena.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Kuunda na kubadilisha anwani"
+text = """
+Unda anwani kwenye ukurasa wa Anwani huongeza mtu kwenye akaunti unayochagua, na Hariri kwenye ukurasa wa anwani huibadilisha huko pia.
+Futa ina Tendua, na Google na Outlook huweka anwani zilizofutwa kwenye tupio kwa muda.
+"""

@@ -7,6 +7,7 @@
 contacts-all = 연락처
 contacts-frequent = 자주 연락하는 사람
 contacts-labels = 라벨
+contacts-create = 연락처 만들기
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = 허용
 ## A contact's page
 
 contacts-back = 연락처로 돌아가기
+contacts-edit = 수정
+contacts-delete = 삭제
+contacts-deleted = { $name } 삭제됨
 contacts-find-mail = 메일
 contacts-details = 연락처 세부정보
 contacts-saved-in = 저장 위치
@@ -50,3 +54,29 @@ contacts-kind-other = 기타
 contacts-source-google = Google 연락처
 contacts-source-microsoft = Outlook 연락처
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = 연락처 만들기
+contacts-edit-title = 연락처 수정
+contacts-edit-save = 저장
+contacts-edit-saving = 저장 중…
+contacts-edit-cancel = 취소
+contacts-saved = 연락처를 저장했습니다
+contacts-edit-save-to = 저장할 위치
+contacts-edit-changes-go-to = 변경사항 저장 위치: { $place }
+contacts-edit-given = 이름
+contacts-edit-family = 성
+contacts-edit-company = 회사
+contacts-edit-job = 직함
+contacts-edit-email = 이메일
+contacts-edit-phone = 전화
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = 이메일 추가
+contacts-edit-add-phone = 전화번호 추가
+contacts-edit-street = 도로명 주소
+contacts-edit-city = 시
+contacts-edit-postcode = 우편번호
+contacts-edit-country = 국가
+contacts-edit-birthday = 생일 (YYYY-MM-DD)
+contacts-edit-empty = 이름, 이메일 또는 전화번호를 먼저 추가하세요.

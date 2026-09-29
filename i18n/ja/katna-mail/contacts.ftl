@@ -7,6 +7,7 @@
 contacts-all = 連絡先
 contacts-frequent = よく使う連絡先
 contacts-labels = ラベル
+contacts-create = 連絡先を作成
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = 許可
 ## A contact's page
 
 contacts-back = 連絡先に戻る
+contacts-edit = 編集
+contacts-delete = 削除
+contacts-deleted = { $name } を削除しました
 contacts-find-mail = メール
 contacts-details = 連絡先の詳細
 contacts-saved-in = 保存先
@@ -50,3 +54,29 @@ contacts-kind-other = その他
 contacts-source-google = Google コンタクト
 contacts-source-microsoft = Outlook の連絡先
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = 連絡先を作成
+contacts-edit-title = 連絡先を編集
+contacts-edit-save = 保存
+contacts-edit-saving = 保存中…
+contacts-edit-cancel = キャンセル
+contacts-saved = 連絡先を保存しました
+contacts-edit-save-to = 保存先
+contacts-edit-changes-go-to = 変更は { $place } に保存されます。
+contacts-edit-given = 名
+contacts-edit-family = 姓
+contacts-edit-company = 会社
+contacts-edit-job = 役職
+contacts-edit-email = メール
+contacts-edit-phone = 電話
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = メールを追加
+contacts-edit-add-phone = 電話番号を追加
+contacts-edit-street = 番地・町名
+contacts-edit-city = 市区町村
+contacts-edit-postcode = 郵便番号
+contacts-edit-country = 国
+contacts-edit-birthday = 誕生日 (YYYY-MM-DD)
+contacts-edit-empty = 名前、メールアドレス、電話番号のいずれかを先に追加してください。

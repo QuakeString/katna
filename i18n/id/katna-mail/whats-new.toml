@@ -1228,3 +1228,12 @@ Tekan Shift+T, seperti di Gmail, atau pilih Tambahkan ke Tugas saat Anda
 mengeklik kanan email. Tugas memakai subjek email, dan chip Email di
 Tugas membuka kembali email tersebut.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Buat dan ubah kontak"
+text = """
+Buat kontak di halaman Kontak menambahkan seseorang ke akun yang Anda
+pilih, dan Edit di halaman kontak mengubahnya di sana juga. Hapus punya
+Urungkan, dan Google serta Outlook menyimpan kontak yang dihapus di
+tempat sampahnya untuk sementara waktu.
+"""

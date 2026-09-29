@@ -7,6 +7,7 @@
 contacts-all = ລາຍຊື່ຜູ້ຕິດຕໍ່
 contacts-frequent = ຕິດຕໍ່ເລື້ອຍໆ
 contacts-labels = ປ້າຍກຳກັບ
+contacts-create = ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = ອະນຸຍາດ
 ## A contact's page
 
 contacts-back = ກັບໄປລາຍຊື່ຜູ້ຕິດຕໍ່
+contacts-edit = ແກ້ໄຂ
+contacts-delete = ລຶບ
+contacts-deleted = ລຶບ { $name } ແລ້ວ
 contacts-find-mail = ອີເມວ
 contacts-details = ລາຍລະອຽດຜູ້ຕິດຕໍ່
 contacts-saved-in = ບັນທຶກໄວ້ໃນ
@@ -50,3 +54,29 @@ contacts-kind-other = ອື່ນໆ
 contacts-source-google = Google ລາຍຊື່ຜູ້ຕິດຕໍ່
 contacts-source-microsoft = ລາຍຊື່ຜູ້ຕິດຕໍ່ Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່
+contacts-edit-title = ແກ້ໄຂລາຍຊື່ຜູ້ຕິດຕໍ່
+contacts-edit-save = ບັນທຶກ
+contacts-edit-saving = ກຳລັງບັນທຶກ…
+contacts-edit-cancel = ຍົກເລີກ
+contacts-saved = ບັນທຶກລາຍຊື່ຜູ້ຕິດຕໍ່ແລ້ວ
+contacts-edit-save-to = ບັນທຶກໄປຫາ
+contacts-edit-changes-go-to = ການປ່ຽນແປງຈະຖືກບັນທຶກໄປຫາ { $place }.
+contacts-edit-given = ຊື່
+contacts-edit-family = ນາມສະກຸນ
+contacts-edit-company = ບໍລິສັດ
+contacts-edit-job = ຕຳແໜ່ງວຽກ
+contacts-edit-email = ອີເມວ
+contacts-edit-phone = ໂທລະສັບ
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ເພີ່ມອີເມວ
+contacts-edit-add-phone = ເພີ່ມເບີໂທລະສັບ
+contacts-edit-street = ທີ່ຢູ່ຖະໜົນ
+contacts-edit-city = ເມືອງ
+contacts-edit-postcode = ລະຫັດໄປສະນີ
+contacts-edit-country = ປະເທດ
+contacts-edit-birthday = ວັນເກີດ (YYYY-MM-DD)
+contacts-edit-empty = ເພີ່ມຊື່, ອີເມວ ຫຼື ເບີໂທລະສັບກ່ອນ.

@@ -1217,3 +1217,12 @@ kliknięciu wiadomości prawym przyciskiem myszy. Zadanie przejmuje temat
 wiadomości, a jego znacznik Poczta w Zadaniach ponownie otwiera
 wiadomość.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Tworzenie i edytowanie kontaktów"
+text = """
+Utwórz kontakt na stronie Kontakty dodaje osobę do wybranego konta, a
+Edytuj na stronie kontaktu zmienia ją także tam. Usuń ma opcję Cofnij, a
+Google i Outlook przez pewien czas przechowują usunięte kontakty w
+koszu.
+"""

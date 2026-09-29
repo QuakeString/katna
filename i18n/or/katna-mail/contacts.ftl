@@ -7,6 +7,7 @@
 contacts-all = ଯୋଗାଯୋଗ
 contacts-frequent = ବାରମ୍ବାର
 contacts-labels = ଲେବଲ
+contacts-create = ଯୋଗାଯୋଗ ତିଆରି କରନ୍ତୁ
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = ଅନୁମତି ଦିଅନ୍ତୁ
 ## A contact's page
 
 contacts-back = ଯୋଗାଯୋଗକୁ ଫେରନ୍ତୁ
+contacts-edit = ଏଡିଟ କରନ୍ତୁ
+contacts-delete = ଡିଲିଟ କରନ୍ତୁ
+contacts-deleted = { $name } ଡିଲିଟ ହୋଇଗଲା
 contacts-find-mail = ମେଲ
 contacts-details = ଯୋଗାଯୋଗ ବିବରଣୀ
 contacts-saved-in = ଏଥିରେ ସେଭ ହୋଇଛି
@@ -52,3 +56,29 @@ contacts-kind-other = ଅନ୍ୟ
 contacts-source-google = Google ଯୋଗାଯୋଗ
 contacts-source-microsoft = Outlook ଯୋଗାଯୋଗ
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = ଯୋଗାଯୋଗ ତିଆରି କରନ୍ତୁ
+contacts-edit-title = ଯୋଗାଯୋଗ ଏଡିଟ କରନ୍ତୁ
+contacts-edit-save = ସେଭ କରନ୍ତୁ
+contacts-edit-saving = ସେଭ ହେଉଛି…
+contacts-edit-cancel = ବାତିଲ କରନ୍ତୁ
+contacts-saved = ଯୋଗାଯୋଗ ସେଭ ହେଲା
+contacts-edit-save-to = ଏଥିରେ ସେଭ କରନ୍ତୁ
+contacts-edit-changes-go-to = ପରିବର୍ତ୍ତନଗୁଡ଼ିକ { $place } ରେ ସେଭ ହୁଏ।
+contacts-edit-given = ପ୍ରଥମ ନାମ
+contacts-edit-family = ଶେଷ ନାମ
+contacts-edit-company = କମ୍ପାନୀ
+contacts-edit-job = ପଦବୀ
+contacts-edit-email = ଇମେଲ
+contacts-edit-phone = ଫୋନ
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ଇମେଲ ଯୋଗ କରନ୍ତୁ
+contacts-edit-add-phone = ଫୋନ ଯୋଗ କରନ୍ତୁ
+contacts-edit-street = ରାସ୍ତା ଠିକଣା
+contacts-edit-city = ସହର
+contacts-edit-postcode = ପୋଷ୍ଟାଲ କୋଡ
+contacts-edit-country = ଦେଶ
+contacts-edit-birthday = ଜନ୍ମଦିନ (YYYY-MM-DD)
+contacts-edit-empty = ପ୍ରଥମେ ଗୋଟିଏ ନାମ, ଇମେଲ କିମ୍ବା ଫୋନ ନମ୍ବର ଯୋଗ କରନ୍ତୁ।

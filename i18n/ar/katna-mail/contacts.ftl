@@ -7,6 +7,7 @@
 contacts-all = جهات الاتصال
 contacts-frequent = الأكثر تواصلاً
 contacts-labels = التصنيفات
+contacts-create = إنشاء جهة اتصال
 
 ## Search and the list
 
@@ -46,6 +47,9 @@ contacts-allow-button = السماح
 ## A contact's page
 
 contacts-back = العودة إلى جهات الاتصال
+contacts-edit = تعديل
+contacts-delete = حذف
+contacts-deleted = تم حذف { $name }
 contacts-find-mail = البريد
 contacts-details = تفاصيل جهة الاتصال
 contacts-saved-in = محفوظة في
@@ -60,3 +64,29 @@ contacts-kind-other = أخرى
 contacts-source-google = جهات اتصال Google
 contacts-source-microsoft = جهات اتصال Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = إنشاء جهة اتصال
+contacts-edit-title = تعديل جهة الاتصال
+contacts-edit-save = حفظ
+contacts-edit-saving = جارٍ الحفظ…
+contacts-edit-cancel = إلغاء
+contacts-saved = تم حفظ جهة الاتصال
+contacts-edit-save-to = الحفظ في
+contacts-edit-changes-go-to = يتم حفظ التغييرات في { $place }.
+contacts-edit-given = الاسم الأول
+contacts-edit-family = اسم العائلة
+contacts-edit-company = الشركة
+contacts-edit-job = المسمى الوظيفي
+contacts-edit-email = البريد الإلكتروني
+contacts-edit-phone = الهاتف
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = إضافة بريد إلكتروني
+contacts-edit-add-phone = إضافة هاتف
+contacts-edit-street = عنوان الشارع
+contacts-edit-city = المدينة
+contacts-edit-postcode = الرمز البريدي
+contacts-edit-country = البلد
+contacts-edit-birthday = تاريخ الميلاد (YYYY-MM-DD)
+contacts-edit-empty = أضف اسمًا أو بريدًا إلكترونيًا أو رقم هاتف أولًا.

@@ -1228,3 +1228,12 @@ Pressione Shift+T, como no Gmail, ou escolha Adicionar às Tarefas ao
 clicar com o botão direito em um e-mail. A tarefa usa o assunto do
 e-mail, e o chip E-mail em Tarefas abre o e-mail de novo.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Criar e editar contatos"
+text = """
+Criar contato, na página Contatos, adiciona alguém à conta que você
+escolher, e Editar, na página de um contato, altera a pessoa também lá.
+Excluir tem um Desfazer, e o Google e o Outlook guardam os contatos
+excluídos na lixeira por algum tempo.
+"""

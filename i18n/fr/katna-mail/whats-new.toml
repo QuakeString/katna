@@ -1268,3 +1268,12 @@ Appuyez sur Maj+T, comme dans Gmail, ou choisissez Ajouter aux tâches en
 faisant un clic droit sur un message. La tâche reprend l’objet du
 message, et sa pastille Courrier dans Tâches rouvre le message.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Créer et modifier des contacts"
+text = """
+Créer un contact, sur la page Contacts, ajoute quelqu’un au compte que
+vous choisissez, et Modifier, sur la page d’un contact, le change là
+aussi. Supprimer propose Annuler, et Google et Outlook conservent
+quelque temps les contacts supprimés dans leur corbeille.
+"""

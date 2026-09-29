@@ -7,6 +7,7 @@
 contacts-all = தொடர்புகள்
 contacts-frequent = அடிக்கடி
 contacts-labels = லேபிள்கள்
+contacts-create = தொடர்பை உருவாக்கு
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = அனுமதி
 ## A contact's page
 
 contacts-back = தொடர்புகளுக்குத் திரும்பு
+contacts-edit = திருத்து
+contacts-delete = நீக்கு
+contacts-deleted = { $name } நீக்கப்பட்டது
 contacts-find-mail = அஞ்சல்
 contacts-details = தொடர்பு விவரங்கள்
 contacts-saved-in = சேமித்த இடம்
@@ -52,3 +56,29 @@ contacts-kind-other = மற்றவை
 contacts-source-google = Google தொடர்புகள்
 contacts-source-microsoft = Outlook தொடர்புகள்
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = தொடர்பை உருவாக்கு
+contacts-edit-title = தொடர்பைத் திருத்து
+contacts-edit-save = சேமி
+contacts-edit-saving = சேமிக்கிறது…
+contacts-edit-cancel = ரத்துசெய்
+contacts-saved = தொடர்பு சேமிக்கப்பட்டது
+contacts-edit-save-to = இதில் சேமி
+contacts-edit-changes-go-to = மாற்றங்கள் { $place } இல் சேமிக்கப்படும்.
+contacts-edit-given = முதல் பெயர்
+contacts-edit-family = கடைசி பெயர்
+contacts-edit-company = நிறுவனம்
+contacts-edit-job = பணிப் பெயர்
+contacts-edit-email = மின்னஞ்சல்
+contacts-edit-phone = தொலைபேசி
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = மின்னஞ்சலைச் சேர்
+contacts-edit-add-phone = தொலைபேசியைச் சேர்
+contacts-edit-street = தெரு முகவரி
+contacts-edit-city = நகரம்
+contacts-edit-postcode = அஞ்சல் குறியீடு
+contacts-edit-country = நாடு
+contacts-edit-birthday = பிறந்தநாள் (YYYY-MM-DD)
+contacts-edit-empty = முதலில் பெயர், மின்னஞ்சல் அல்லது தொலைபேசி எண்ணைச் சேர்க்கவும்.

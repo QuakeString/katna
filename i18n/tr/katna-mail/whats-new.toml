@@ -1217,3 +1217,12 @@ Gmail’deki gibi Shift+T tuşlarına basın ya da bir e-postaya sağ tıklayıp
 Görevlere ekle’yi seçin. Görev e-postanın konusunu alır ve Görevler’deki
 Posta etiketi e-postayı yeniden açar.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Kişileri oluşturma ve düzenleme"
+text = """
+Kişiler sayfasındaki Kişi oluştur, birini seçtiğiniz hesaba ekler; bir
+kişinin sayfasındaki Düzenle ise onu orada da değiştirir. Sil işleminin
+bir Geri al seçeneği vardır ve Google ile Outlook silinen kişileri bir
+süre çöp kutularında tutar.
+"""
