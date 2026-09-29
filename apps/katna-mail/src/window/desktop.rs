@@ -355,7 +355,7 @@ impl MailWindow {
     /// Opens the conversation of `message` from the Inbox list, looking in
     /// every inbox tab; when it is not listed there, shows the Inbox with
     /// the conversation open by itself and returns `false`.
-    fn show_message(
+    pub(super) fn show_message(
         &mut self,
         message: MessageId,
         window: &mut Window,

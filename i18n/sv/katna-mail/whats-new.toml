@@ -1151,6 +1151,16 @@ Högerklicka på Katna Mail i aktivitetsfältet för att öppna Kalender
 eller Kontakter direkt.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Uppgifter"
+text = """
+Tryck på Ctrl+4 eller välj Uppgifter till vänster: alla listor sida vid
+sida som i Google Tasks, med deluppgifter, stjärnor, förfallodagar,
+upprepningar och information. Listorna synkroniseras med Google Tasks
+och Microsoft To Do, och uppgifter från skrivbordsklockan visas också
+här.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Dina kontakter, från alla konton"
 text = """

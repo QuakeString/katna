@@ -1181,6 +1181,16 @@ direito em Katna Mail na barra de tarefas para abrir Agenda ou Contatos
 diretamente.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Tarefas"
+text = """
+Pressione Ctrl+4 ou escolha Tarefas à esquerda: todas as listas lado a
+lado como no Google Tasks, com subtarefas, estrelas, dias de vencimento,
+repetições e detalhes. As listas sincronizam com o Google Tasks e o
+Microsoft To Do, e as tarefas do relógio da área de trabalho também
+aparecem aqui.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Seus contatos, de todas as contas"
 text = """

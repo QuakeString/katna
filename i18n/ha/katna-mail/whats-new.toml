@@ -1147,6 +1147,14 @@ kamar a Outlook, kuma menu na Je zuwa ma yana jera su. Danna Katna Mail dama a k
 ayyuka don buɗe Kalanda ko Lambobin sadarwa nan take.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Ayyuka"
+text = """
+Danna Ctrl+4 ko zaɓi Ayyuka a hagu: dukkan jerin a gefe da gefe kamar a Google Tasks,
+tare da ƙananan ayyuka, taurari, ranakun ƙarshe, maimaitawa da bayanai. Jerin suna aiki tare da Google Tasks
+da Microsoft To Do, kuma ayyuka daga agogon kwamfuta suna bayyana a nan ma.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Lambobin sadarwarka, daga kowane asusu"
 text = """

@@ -743,6 +743,27 @@ impl Mail {
             .map(|m| m.account)
     }
 
+    /// What a task made from line `key` holds: the conversation's subject
+    /// (its first message's) and the newest message's Message-ID.
+    pub fn task_source(&self, key: EntryKey) -> Option<(String, String)> {
+        let messages = self.entry_messages(key);
+        let (first, newest) = (*messages.first()?, *messages.last()?);
+        let subject = self
+            .store
+            .messages_by_id(&[first])
+            .ok()?
+            .first()
+            .map(|m| m.subject.trim().to_owned())
+            .unwrap_or_default();
+        let header = self.message_id_header(newest).unwrap_or_default();
+        Some((subject, header))
+    }
+
+    /// The newest stored message with `Message-ID` `header`.
+    pub fn message_with_header(&self, header: &str) -> Option<MessageId> {
+        self.store.message_with_header(header).ok().flatten()
+    }
+
     /// The conversation of message `id`, if it has one.
     pub fn message_thread(&self, id: MessageId) -> Option<ThreadId> {
         self.store

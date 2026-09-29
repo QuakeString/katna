@@ -1143,6 +1143,15 @@ chú, như trong Outlook, và menu Đi tới cũng liệt kê chúng. Bấm chu�
 phải vào Katna Mail trên thanh tác vụ để mở ngay Lịch hoặc Danh bạ.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Việc cần làm"
+text = """
+Nhấn Ctrl+4 hoặc chọn Việc cần làm ở bên trái: mọi danh sách nằm cạnh
+nhau như trong Google Tasks, với việc phụ, dấu sao, ngày đến hạn, lặp
+lại và chi tiết. Các danh sách đồng bộ với Google Tasks và Microsoft To
+Do, và việc cần làm từ đồng hồ trên máy tính cũng hiện ở đây.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Danh bạ của bạn, từ mọi tài khoản"
 text = """

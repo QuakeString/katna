@@ -1011,6 +1011,14 @@ Ctrl+1 到 Ctrl+5 可在邮件、日历、联系人、任务和笔记之间切�
 在任务栏上右键点击 Katna Mail，可直接打开日历或联系人。
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna 任务"
+text = """
+按 Ctrl+4 或在左侧选择任务：与 Google Tasks 一样，所有列表并排显示，支持子任务、星标、\
+到期日、重复和详细信息。列表会与 Google Tasks 和 Microsoft To Do 同步，桌面时钟里的\
+任务也会显示在这里。
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "来自所有账号的联系人"
 text = """

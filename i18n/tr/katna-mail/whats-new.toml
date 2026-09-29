@@ -1171,6 +1171,15 @@ Notlar arasında geçiş yapar; Git menüsü de bunları listeler. Takvim'i ya
 da Kişiler'i hemen açmak için görev çubuğunda Katna Mail'e sağ tıklayın.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Görevler"
+text = """
+Ctrl+4 tuşuna basın veya solda “Görevler” bölümünü seçin: Google
+Tasks’taki gibi tüm listeler yan yana; alt görevler, yıldızlar, bitiş
+günleri, tekrarlar ve ayrıntılarla. Listeler Google Tasks ve Microsoft
+To Do ile eşitlenir, masaüstü saatindeki görevler de burada görünür.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Tüm hesaplarınızdaki kişiler"
 text = """

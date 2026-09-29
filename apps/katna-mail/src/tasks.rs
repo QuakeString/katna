@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use futures_lite::{Stream, StreamExt};
 use katna_core::{AccountId, Paths};
-use katna_dbus::agenda::{AgendaProxy, Item, edit};
+use katna_dbus::agenda::{AgendaProxy, Item, edit, task};
 use katna_dbus::zbus::Connection;
 use katna_dbus::zbus::zvariant::{OwnedValue, Value};
 use katna_store::tasks::{Task, TaskList};
@@ -147,12 +147,17 @@ impl TaskEdit {
 /// A change the Tasks page sends to the daemon.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TaskCommand {
-    /// Adds a task on top of list `list`, as a step of `parent`.
+    /// Adds a task on top of list `list` (0: the default list), as a step
+    /// of `parent`, made from the mail with Message-ID `mail` if not empty.
     Add {
         list: i64,
         parent: Option<i64>,
         title: String,
+        mail: String,
     },
+    /// Takes back the newest open task made from each of these mails (Undo
+    /// of Add to Tasks).
+    RemoveFromMail(Vec<String>),
     SetDone(i64, bool),
     Edit(i64, TaskEdit),
     /// Deletes a task with its steps.
@@ -180,13 +185,50 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
             list,
             parent,
             title,
+            mail,
         } => {
             let parent = parent.map(wire_id).unwrap_or_default();
-            return agenda
-                .add_task_to(*list, &parent, title)
-                .await
-                .map(row)
-                .map_err(|err| describe(&err));
+            let added = async {
+                let id = agenda.add_task_to(*list, &parent, title).await?;
+                if !mail.is_empty() {
+                    let fields = Item::from([(
+                        edit::MAIL.to_owned(),
+                        OwnedValue::try_from(Value::from(mail.as_str()))
+                            .map_err(katna_dbus::zbus::Error::Variant)?,
+                    )]);
+                    agenda.edit_task(&id, fields).await?;
+                }
+                Ok::<_, katna_dbus::zbus::Error>(id)
+            }
+            .await;
+            return added.map(row).map_err(|err| describe(&err));
+        }
+        TaskCommand::RemoveFromMail(mails) => {
+            let tasks = agenda.tasks().await.map_err(|err| describe(&err))?;
+            let text = |item: &Item, key: &str| {
+                item.get(key)
+                    .and_then(|v| String::try_from(v.try_clone().ok()?).ok())
+                    .unwrap_or_default()
+            };
+            let open = |item: &Item| {
+                !item
+                    .get(task::DONE)
+                    .is_some_and(|v| bool::try_from(v).unwrap_or(false))
+            };
+            for mail in mails {
+                let newest = tasks
+                    .iter()
+                    .filter(|item| open(item) && text(item, task::MAIL) == *mail)
+                    .filter_map(|item| row(text(item, task::ID)))
+                    .max();
+                if let Some(id) = newest {
+                    agenda
+                        .delete_task(&wire_id(id))
+                        .await
+                        .map_err(|err| describe(&err))?;
+                }
+            }
+            Ok(())
         }
         TaskCommand::SetDone(id, done) => agenda.set_task_done(&wire_id(*id), *done).await,
         TaskCommand::Edit(id, fields) => agenda.edit_task(&wire_id(*id), fields.item()).await,

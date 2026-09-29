@@ -1220,6 +1220,16 @@ aussi. Faites un clic droit sur Katna Mail dans la barre des tâches pour
 ouvrir directement Calendrier ou Contacts.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Tâches"
+text = """
+Appuyez sur Ctrl+4 ou choisissez Tâches à gauche : toutes les listes
+côte à côte comme dans Google Tasks, avec sous-tâches, suivis, jours
+d’échéance, répétitions et détails. Les listes se synchronisent avec
+Google Tasks et Microsoft To Do, et les tâches de l’horloge du bureau
+s’affichent aussi ici.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Vos contacts, de tous vos comptes"
 text = """

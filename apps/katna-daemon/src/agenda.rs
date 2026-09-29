@@ -233,6 +233,7 @@ fn wire(task: Task, lists: &HashMap<i64, String>) -> Item {
         (task::DUE.to_owned(), value(task.due.into())),
         (task::DONE.to_owned(), value(task.done_at.is_some().into())),
         (task::LIST.to_owned(), value(list.into())),
+        (task::MAIL.to_owned(), value(task.mail.into())),
     ])
 }
 

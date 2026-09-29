@@ -1223,6 +1223,16 @@ ang mga ito sa menu na Pumunta. I-right-click ang Katna Mail sa taskbar
 para direktang buksan ang Kalendaryo o Mga Contact.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Mga Gawain"
+text = """
+Pindutin ang Ctrl+4 o piliin ang Mga Gawain sa kaliwa: lahat ng listahan
+nang magkakatabi tulad ng sa Google Tasks, may mga subtask, star, due
+date, pag-uulit at mga detalye. Nagsi-sync ang mga listahan sa Google
+Tasks at Microsoft To Do, at lumalabas din dito ang mga gawain mula sa
+orasan ng desktop.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Ang iyong mga contact, mula sa bawat account"
 text = """

@@ -1194,6 +1194,15 @@ tasto destro su Katna Mail nella barra delle applicazioni per aprire
 subito Calendario o Contatti.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Attività"
+text = """
+Premi Ctrl+4 o scegli Attività a sinistra: tutti gli elenchi affiancati
+come in Google Tasks, con sottoattività, speciali, scadenze, ripetizioni
+e dettagli. Gli elenchi si sincronizzano con Google Tasks e Microsoft To
+Do, e anche le attività dell’orologio del desktop compaiono qui.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "I tuoi contatti, da ogni account"
 text = """

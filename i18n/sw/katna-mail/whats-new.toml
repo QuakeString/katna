@@ -1164,6 +1164,14 @@ Outlook, na menyu ya Nenda huorodhesha kurasa hizo pia. Bofya kulia Katna Mail k
 kazi ili kufungua Kalenda au Anwani mara moja.
 """
 
+["2026-09-29-0412-tasks-page"]
+title = "Katna Majukumu"
+text = """
+Bonyeza Ctrl+4 au chagua Majukumu upande wa kushoto: orodha zote kando kwa kando kama katika Google Tasks,
+zikiwa na majukumu madogo, nyota, siku za kukamilisha, marudio na maelezo. Orodha husawazishwa na Google Tasks
+na Microsoft To Do, na majukumu kutoka saa ya eneo-kazi pia yanaonekana hapa.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Anwani zako, kutoka kwa kila akaunti"
 text = """
