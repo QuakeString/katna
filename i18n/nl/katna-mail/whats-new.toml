@@ -1199,3 +1199,31 @@ Gmail- en Outlook-accounts en op CardDAV-servers, elk één keer, ook als
 meerdere accounts ze bewaren, met labels, foto’s en hun gegevens. Hun
 namen en foto’s verschijnen ook in je e-mail en in de adressuggesties.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notities"
+text = """
+Notities in de zijbalk opent nu Katna Notities, ingedeeld zoals Google
+Keep. Maak een notitie of een checklist, geef hem een kleur, maak hem
+bovenaan vast en vink items direct op het bord af. Notities worden
+opgeslagen terwijl je typt; het zoekvak vindt ze; Archief en Prullenbak
+houden ze uit de weg, met Ongedaan maken.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Notities op elk apparaat"
+text = """
+Notities staan nu in de map Notities van je e-mailaccount, waar ook
+Notities op iPhone en Mac ze bewaren, zodat ze met je meegaan naar je
+andere apparaten en er weer vandaan komen. De accountnaam onder een
+notitie laat zien waar hij wordt bewaard; klik erop om de notitie te
+verplaatsen, of bewaar hem alleen op deze computer.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Een e-mail toevoegen aan Taken"
+text = """
+Druk op Shift+T, zoals in Gmail, of kies Toevoegen aan Taken als je met
+de rechtermuisknop op een e-mail klikt. De taak neemt het onderwerp van
+de e-mail over en de chip E-mail in Taken opent de e-mail weer.
+"""

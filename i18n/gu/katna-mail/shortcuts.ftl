@@ -36,6 +36,7 @@ shortcut-move-to = આમાં ખસેડો
 shortcut-mark-read = વાંચેલા તરીકે ચિહ્નિત કરો
 shortcut-mark-unread = નહીં વાંચેલા તરીકે ચિહ્નિત કરો
 shortcut-star = તારો ઉમેરો કે કાઢી નાખો
+shortcut-add-to-tasks = કાર્યોમાં ઉમેરો
 shortcut-important = મહત્ત્વપૂર્ણ તરીકે ચિહ્નિત કરો
 shortcut-not-important = મહત્ત્વપૂર્ણ નથી તરીકે ચિહ્નિત કરો
 shortcut-check = વાર્તાલાપ પસંદ કરો

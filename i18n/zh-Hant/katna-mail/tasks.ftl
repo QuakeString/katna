@@ -36,6 +36,8 @@ tasks-details = 詳細資料
 tasks-delete = 刪除
 tasks-move-to = 移至 { $list }
 tasks-from-mail = 郵件
+tasks-open-mail = 開啟郵件
+tasks-no-subject = （無主旨）
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day } { $time }
 
 tasks-toast-done = 工作已完成
 tasks-toast-deleted = 工作已刪除
+tasks-toast-added = { $count ->
+   *[other] 已新增 { $count } 項工作
+}
+tasks-mail-gone = 這封郵件已不存在。
 tasks-toast-list-deleted = 清單已刪除
 tasks-toast-moved = 已移至 { $list }

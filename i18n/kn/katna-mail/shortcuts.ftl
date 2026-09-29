@@ -36,6 +36,7 @@ shortcut-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
 shortcut-mark-read = ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ
 shortcut-mark-unread = ಓದಿಲ್ಲ ಎಂದು ಗುರುತಿಸಿ
 shortcut-star = ನಕ್ಷತ್ರ ಸೇರಿಸಿ ಅಥವಾ ತೆಗೆದುಹಾಕಿ
+shortcut-add-to-tasks = ಕಾರ್ಯಗಳಿಗೆ ಸೇರಿಸಿ
 shortcut-important = ಪ್ರಮುಖ ಎಂದು ಗುರುತಿಸಿ
 shortcut-not-important = ಪ್ರಮುಖವಲ್ಲ ಎಂದು ಗುರುತಿಸಿ
 shortcut-check = ಸಂವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ

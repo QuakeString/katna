@@ -36,6 +36,7 @@ shortcut-move-to = Di chuyển tới
 shortcut-mark-read = Đánh dấu là đã đọc
 shortcut-mark-unread = Đánh dấu là chưa đọc
 shortcut-star = Gắn hoặc xóa dấu sao
+shortcut-add-to-tasks = Thêm vào Việc cần làm
 shortcut-important = Đánh dấu là quan trọng
 shortcut-not-important = Đánh dấu là không quan trọng
 shortcut-check = Chọn cuộc hội thoại

@@ -37,6 +37,8 @@ tasks-details = ዝርዝሮች
 tasks-delete = ሰርዝ
 tasks-move-to = ወደ { $list } ውሰድ
 tasks-from-mail = ደብዳቤ
+tasks-open-mail = ደብዳቤውን ክፈት
+tasks-no-subject = (ርዕሰ ጉዳይ የለም)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }፣ { $time }
 
 tasks-toast-done = ተግባሩ ተጠናቅቋል
 tasks-toast-deleted = ተግባሩ ተሰርዟል
+tasks-toast-added = { $count ->
+    [one] ወደ ተግባራት ታክሏል
+   *[other] { $count } ተግባራት ታክለዋል
+}
+tasks-mail-gone = ያ ደብዳቤ ከእንግዲህ እዚህ የለም።
 tasks-toast-list-deleted = ዝርዝሩ ተሰርዟል
 tasks-toast-moved = ወደ { $list } ተወስዷል

@@ -1159,3 +1159,31 @@ Gmail na Outlook gị na n'sava CardDAV, otu ugboro ọ bụla ọbụlagodi mgb
 akaụntụ ole na ole nwere ha, yana leebụl, foto na nkọwa ha. Aha na foto
 ha na-apụtakwa n'ozi gị na n'echiche adreesị.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Ndetu Katna"
+text = """
+Ndetu dị n'akụkụ ugbu a na-emepe Ndetu Katna, nke a haziri dị ka Google
+Keep. Dee ndetu ma ọ bụ ndepụta nyocha, nye ya agba, kwụnye ya n'elu, ma
+kaa akara na ihe ndị dị na bọọdụ ozugbo. A na-echekwa ndetu ka ị na-ede;
+igbe ọchụchọ na-achọta ha; Ebe nchekwa na Ihe mkpofu na-edowe ha n'akụkụ,
+yana ohere ịkagbu ya.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Ndetu na ngwaọrụ ọ bụla"
+text = """
+Ndetu na-anọ ugbu a n'ime folda Notes nke akaụntụ ozi gị, ebe Notes nke
+iPhone na Mac na-edowe nke ha, ya mere ha na-eso gị gaa ngwaọrụ gị ndị
+ọzọ ma laghachikwute gị site na ha. Aha akaụntụ dị n'okpuru ndetu na-egosi
+ebe echekwara ya; pịa ya ka ị bugharịa ndetu, ma ọ bụ debe ya naanị na
+kọmputa a.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Tinye ozi na Ọrụ"
+text = """
+Pịa Shift+T, dị ka ọ dị na Gmail, ma ọ bụ họrọ Tinye na Ọrụ mgbe ị pịrị
+ozi aka nri. Ọrụ ahụ na-were isiokwu ozi ahụ, ma akara Ozi ya dị na Ọrụ na-emepe
+ozi ahụ ọzọ.
+"""

@@ -36,6 +36,7 @@ shortcut-move-to = 이동
 shortcut-mark-read = 읽음으로 표시
 shortcut-mark-unread = 읽지 않음으로 표시
 shortcut-star = 별표 추가/삭제
+shortcut-add-to-tasks = 할 일에 추가
 shortcut-important = 중요 표시
 shortcut-not-important = 중요하지 않음으로 표시
 shortcut-check = 대화 선택

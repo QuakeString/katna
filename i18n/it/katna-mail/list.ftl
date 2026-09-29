@@ -432,6 +432,7 @@ menu-pin = Fissa in alto
 menu-unpin = Sblocca
 menu-snooze = Posticipa
 menu-unsnooze = Annulla posticipo
+menu-add-to-tasks = Aggiungi ad Attività
 menu-print-all = Stampa tutto
 menu-new-window = Apri in una nuova finestra
 menu-move-to = Sposta in

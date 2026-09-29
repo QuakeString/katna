@@ -37,6 +37,8 @@ tasks-details = Besonderhede
 tasks-delete = Vee uit
 tasks-move-to = Skuif na { $list }
 tasks-from-mail = E-pos
+tasks-open-mail = Maak die e-pos oop
+tasks-no-subject = (geen onderwerp)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Taak voltooi
 tasks-toast-deleted = Taak uitgevee
+tasks-toast-added = { $count ->
+    [one] By Take gevoeg
+   *[other] { $count } take bygevoeg
+}
+tasks-mail-gone = Daardie e-pos is nie meer hier nie.
 tasks-toast-list-deleted = Lys uitgevee
 tasks-toast-moved = Geskuif na { $list }

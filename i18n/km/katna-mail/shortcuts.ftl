@@ -36,6 +36,7 @@ shortcut-move-to = ផ្លាស់ទីទៅ
 shortcut-mark-read = សម្គាល់ថាបានអាន
 shortcut-mark-unread = សម្គាល់ថាមិនទាន់អាន
 shortcut-star = ដាក់ ឬដកផ្កាយ
+shortcut-add-to-tasks = បន្ថែមទៅកិច្ចការ
 shortcut-important = សម្គាល់ថាសំខាន់
 shortcut-not-important = សម្គាល់ថាមិនសំខាន់
 shortcut-check = ធីកការសន្ទនា

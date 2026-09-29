@@ -38,6 +38,8 @@ tasks-details = פרטים
 tasks-delete = מחיקה
 tasks-move-to = העברה אל { $list }
 tasks-from-mail = אימייל
+tasks-open-mail = פתיחת האימייל
+tasks-no-subject = (ללא נושא)
 
 ## The details dialog
 
@@ -67,5 +69,11 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = המשימה הושלמה
 tasks-toast-deleted = המשימה נמחקה
+tasks-toast-added = { $count ->
+    [one] נוספה למשימות
+    [two] נוספו { $count } משימות
+   *[other] נוספו { $count } משימות
+}
+tasks-mail-gone = האימייל הזה כבר לא כאן.
 tasks-toast-list-deleted = הרשימה נמחקה
 tasks-toast-moved = הועברה אל { $list }

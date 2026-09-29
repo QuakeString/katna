@@ -36,6 +36,7 @@ shortcut-move-to = Przenieś do
 shortcut-mark-read = Oznacz jako przeczytane
 shortcut-mark-unread = Oznacz jako nieprzeczytane
 shortcut-star = Dodaj lub usuń gwiazdkę
+shortcut-add-to-tasks = Dodaj do Zadań
 shortcut-important = Oznacz jako ważne
 shortcut-not-important = Oznacz jako nieważne
 shortcut-check = Zaznacz wątek

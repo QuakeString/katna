@@ -1162,3 +1162,31 @@ wanneer verskeie rekeninge hulle hou, met etikette, foto’s en hul
 besonderhede. Hul name en foto’s verskyn ook in jou e-pos en in die
 adresvoorstelle.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notas"
+text = """
+Notas op die kantbalk maak nou Katna Notas oop, uitgelê soos Google
+Keep. Neem ’n nota of ’n kontrolelys, gee dit ’n kleur, speld dit bo vas
+en merk items reg op die bord af. Notas stoor terwyl jy tik; die
+soekkassie vind hulle; Argief en Asblik hou hulle uit die pad, met
+Ontdoen.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Notas op elke toestel"
+text = """
+Notas woon nou in jou e-posrekening se Notas-vouer, waar Notas op iPhone
+en Mac hulle s’n hou, sodat hulle saam met jou na jou ander toestelle
+gaan en daarvandaan terugkom. Die rekening se naam onder ’n nota wys
+waar dit gehou word; klik daarop om die nota te skuif, of hou dit net op
+hierdie rekenaar.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Voeg ’n e-pos by Take"
+text = """
+Druk Shift+T, soos in Gmail, of kies Voeg by Take wanneer jy met die
+regterknoppie op ’n e-pos klik. Die taak neem die e-pos se onderwerp, en
+sy E-pos-skildjie in Take maak die e-pos weer oop.
+"""

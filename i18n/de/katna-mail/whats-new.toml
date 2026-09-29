@@ -1226,3 +1226,33 @@ nur einmal, auch wenn mehrere Konten sie enthalten, mit Labels, Bildern
 und ihren Details. Ihre Namen und Bilder erscheinen auch in Ihren
 E-Mails und in den Adressvorschlägen.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notizen"
+text = """
+Notizen in der linken Leiste öffnet jetzt Katna Notizen, aufgebaut wie
+Google Keep. Schreiben Sie eine Notiz oder eine Checkliste, geben Sie
+ihr eine Farbe, heften Sie sie oben an und haken Sie Einträge direkt auf
+der Pinnwand ab. Notizen werden beim Tippen gespeichert; das Suchfeld
+findet sie; Archiv und Papierkorb halten sie aus dem Weg, mit
+Rückgängig.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Notizen auf jedem Gerät"
+text = """
+Notizen liegen jetzt im Ordner Notizen Ihres E-Mail-Kontos, wo auch die
+Notizen von iPhone und Mac liegen. So folgen sie Ihnen auf Ihre anderen
+Geräte und kommen von dort zurück. Der Kontoname unter einer Notiz
+zeigt, wo sie gespeichert ist; klicken Sie darauf, um die Notiz zu
+verschieben, oder behalten Sie sie nur auf diesem Computer.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "E-Mail zu Aufgaben hinzufügen"
+text = """
+Drücken Sie Umschalt+T wie in Gmail oder wählen Sie Zu Aufgaben
+hinzufügen, wenn Sie mit der rechten Maustaste auf eine E-Mail klicken.
+Die Aufgabe übernimmt den Betreff der E-Mail, und ihr E-Mail-Chip in
+Aufgaben öffnet die E-Mail wieder.
+"""

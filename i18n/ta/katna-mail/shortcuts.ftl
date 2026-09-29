@@ -36,6 +36,7 @@ shortcut-move-to = இதற்கு நகர்த்து
 shortcut-mark-read = படித்ததாகக் குறி
 shortcut-mark-unread = படிக்காததாகக் குறி
 shortcut-star = நட்சத்திரமிடு அல்லது அகற்று
+shortcut-add-to-tasks = பணிகளில் சேர்
 shortcut-important = முக்கியமானது எனக் குறி
 shortcut-not-important = முக்கியமில்லாதது எனக் குறி
 shortcut-check = உரையாடலைத் தேர்வுசெய்

@@ -37,6 +37,8 @@ tasks-details = विवरण
 tasks-delete = मेटाउनुहोस्
 tasks-move-to = { $list } मा सार्नुहोस्
 tasks-from-mail = मेल
+tasks-open-mail = मेल खोल्नुहोस्
+tasks-no-subject = (विषय छैन)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = कार्य सम्पन्न भयो
 tasks-toast-deleted = कार्य मेटियो
+tasks-toast-added = { $count ->
+    [one] कार्यमा थपियो
+   *[other] { $count } कार्य थपिए
+}
+tasks-mail-gone = त्यो मेल अब यहाँ छैन।
 tasks-toast-list-deleted = सूची मेटियो
 tasks-toast-moved = { $list } मा सारियो

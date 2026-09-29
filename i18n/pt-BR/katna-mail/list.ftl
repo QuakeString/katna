@@ -432,6 +432,7 @@ menu-pin = Fixar no topo
 menu-unpin = Desafixar
 menu-snooze = Adiar
 menu-unsnooze = Cancelar adiamento
+menu-add-to-tasks = Adicionar às Tarefas
 menu-print-all = Imprimir tudo
 menu-new-window = Abrir em nova janela
 menu-move-to = Mover para

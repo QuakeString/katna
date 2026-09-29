@@ -378,6 +378,7 @@ menu-pin = سنجاق کردن به بالا
 menu-unpin = برداشتن سنجاق
 menu-snooze = به تعویق انداختن
 menu-unsnooze = لغو تعویق
+menu-add-to-tasks = افزودن به کارها
 menu-print-all = چاپ همه
 menu-new-window = باز کردن در پنجرهٔ جدید
 menu-move-to = انتقال به

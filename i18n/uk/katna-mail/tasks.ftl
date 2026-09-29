@@ -39,6 +39,8 @@ tasks-details = Подробиці
 tasks-delete = Видалити
 tasks-move-to = Перемістити до { $list }
 tasks-from-mail = Пошта
+tasks-open-mail = Відкрити лист
+tasks-no-subject = (без теми)
 
 ## The details dialog
 
@@ -68,5 +70,12 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Завдання виконано
 tasks-toast-deleted = Завдання видалено
+tasks-toast-added = { $count ->
+    [one] { $count } завдання додано
+    [few] { $count } завдання додано
+    [many] { $count } завдань додано
+   *[other] { $count } завдання додано
+}
+tasks-mail-gone = Цього листа тут більше немає.
 tasks-toast-list-deleted = Список видалено
 tasks-toast-moved = Переміщено до { $list }

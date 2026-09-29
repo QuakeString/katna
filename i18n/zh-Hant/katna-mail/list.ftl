@@ -228,6 +228,7 @@ menu-pin = 置頂
 menu-unpin = 取消置頂
 menu-snooze = 延後
 menu-unsnooze = 取消延後
+menu-add-to-tasks = 新增至工作
 menu-print-all = 全部列印
 menu-new-window = 在新視窗中開啟
 menu-move-to = 移至

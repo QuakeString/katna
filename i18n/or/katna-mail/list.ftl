@@ -378,6 +378,7 @@ menu-pin = ଉପରେ ପିନ କରନ୍ତୁ
 menu-unpin = ଅନପିନ କରନ୍ତୁ
 menu-snooze = ସ୍ନୁଜ କରନ୍ତୁ
 menu-unsnooze = ସ୍ନୁଜ ହଟାନ୍ତୁ
+menu-add-to-tasks = କାର୍ଯ୍ୟରେ ଯୋଗ କରନ୍ତୁ
 menu-print-all = ସବୁ ପ୍ରିଣ୍ଟ କରନ୍ତୁ
 menu-new-window = ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ
 menu-move-to = ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ

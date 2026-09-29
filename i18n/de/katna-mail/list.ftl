@@ -378,6 +378,7 @@ menu-pin = Oben anheften
 menu-unpin = Nicht mehr anheften
 menu-snooze = Zurückstellen
 menu-unsnooze = Nicht mehr zurückstellen
+menu-add-to-tasks = Zu Aufgaben hinzufügen
 menu-print-all = Alle drucken
 menu-new-window = In neuem Fenster öffnen
 menu-move-to = Verschieben nach

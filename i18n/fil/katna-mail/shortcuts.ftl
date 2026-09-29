@@ -36,6 +36,7 @@ shortcut-move-to = Ilipat sa
 shortcut-mark-read = Markahan bilang nabasa na
 shortcut-mark-unread = Markahan bilang hindi pa nabasa
 shortcut-star = Lagyan o alisan ng star
+shortcut-add-to-tasks = Idagdag sa Mga Gawain
 shortcut-important = Markahan bilang mahalaga
 shortcut-not-important = Markahan bilang hindi mahalaga
 shortcut-check = Lagyan ng tsek ang pag-uusap

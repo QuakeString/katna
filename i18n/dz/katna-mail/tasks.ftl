@@ -36,6 +36,8 @@ tasks-details = ཁ་གསལ།
 tasks-delete = བཏོན་གཏང་།
 tasks-move-to = { $list } ནང་སྤོ།
 tasks-from-mail = གློག་འཕྲིན
+tasks-open-mail = གློག་འཕྲིན་ཁ་ཕྱེ།
+tasks-no-subject = (དོན་ཚན་མེད)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = ལཱ་མཇུག་བསྡུཝ་ཨིན།
 tasks-toast-deleted = ལཱ་བཏོན་གཏང་ཡི།
+tasks-toast-added = { $count ->
+   *[other] ལཱ་ { $count } ཁ་སྣོན་འབད་ཡི།
+}
+tasks-mail-gone = གློག་འཕྲིན་དེ་ད་ལུ་འདི་ལུ་མིན་འདུག
 tasks-toast-list-deleted = ཐོ་ཡིག་བཏོན་གཏང་ཡི།
 tasks-toast-moved = { $list } ནང་སྤོ་ཡི།
