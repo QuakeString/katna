@@ -44,6 +44,9 @@ pub enum Command {
     RenameContactLabel(String, String),
     /// Deletes saved cards: the Undo of Add to contacts.
     DeleteContacts(Vec<i64>),
+    /// Writes saved cards, each over its card or as a new card in its
+    /// book, with exactly these labels: a merge, and its Undo.
+    WriteCards(Vec<WriteCard>),
     /// Has the daemon read the settings file again.
     ReloadConfig,
     /// These, one after the other: an undo that moves mail back to
@@ -61,6 +64,16 @@ pub enum Command {
     RelabelNotes(Vec<i64>, String, String),
     /// A change on the Tasks page.
     Task(Box<crate::tasks::TaskCommand>),
+}
+
+/// A saved card to write, for [`Command::WriteCards`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WriteCard {
+    /// The card to write over, or 0 for a new card in `book`.
+    pub id: i64,
+    pub book: i64,
+    pub card: katna_core::contact::Card,
+    pub labels: Vec<String>,
 }
 
 /// Most messages one call to the daemon changes. A large selection ("all
@@ -139,6 +152,7 @@ impl Command {
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
+            | Self::WriteCards(_)
             | Self::ReloadConfig
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
@@ -242,6 +256,19 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::RenameContactLabel(old, new) => pim.rename_contact_label(old, new).await,
         Command::DeleteContacts(ids) => pim.delete_contacts(ids).await,
+        Command::WriteCards(cards) => {
+            for c in cards {
+                let json = serde_json::to_string(&c.card).map_err(|err| err.to_string())?;
+                let id = pim
+                    .save_contact(c.id, c.book, &json)
+                    .await
+                    .map_err(|err| describe(&err))?;
+                pim.set_contact_labels(id, &c.labels)
+                    .await
+                    .map_err(|err| describe(&err))?;
+            }
+            return Ok(());
+        }
         Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
         Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
             return Ok(());
@@ -295,6 +322,28 @@ pub async fn save_other_contact(connection: &Connection, id: i64) -> Result<i64,
         .await
         .map_err(|err| describe(&err))?;
     pim.save_other_contact(id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Saves cards read from a file, with their labels, as new contacts in
+/// address book `book`; returns their ids.
+pub async fn import_contacts(
+    connection: &Connection,
+    book: i64,
+    cards: &[(katna_core::contact::Card, Vec<String>)],
+) -> Result<Vec<i64>, String> {
+    let json = serde_json::Value::Array(
+        cards
+            .iter()
+            .map(|(card, labels)| serde_json::json!({ "card": card, "labels": labels }))
+            .collect(),
+    )
+    .to_string();
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.import_contacts(book, &json)
         .await
         .map_err(|err| describe(&err))
 }

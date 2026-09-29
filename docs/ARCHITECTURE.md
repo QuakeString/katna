@@ -992,8 +992,20 @@ They live apart from saved cards (`other_contact`, pim.db v10), so they
 never merge into people or labels. The page lists them under Other
 contacts, leaving out anyone saved since; Add to contacts copies one with
 `copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
-Outlook and CardDAV have no such list. Merge and import/export follow in
-the next phases of the study.
+Outlook and CardDAV have no such list.
+
+"Fix and manage" at the foot of the column has Merge and fix, Import and
+Export. Merge and fix suggests people who look like the same person (the
+same name, or a phone number ending in the same ten digits; people who
+share an address are one person already). Merging combines their cards
+(the first card's name, then every address, number, link and label the
+others add) and keeps one card per address book, deleting the rest there;
+the Undo writes the old cards back. Dismissed suggestions are kept in the
+settings file (`[contacts] dismissed_duplicates`). Import reads vCard files
+in the app and saves the new people with their categories as labels in
+the account in view (`ImportContacts`, with an Undo), leaving out anyone
+already saved; Export writes the people on screen (everyone or a label) as
+one vCard 3.0 file.
 
 ## 9. Background service (`katna-daemon`)
 
