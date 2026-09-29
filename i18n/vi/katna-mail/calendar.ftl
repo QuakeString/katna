@@ -21,6 +21,8 @@ calendar-loading = Đang tải…
 calendar-read-failed = Không thể đọc lịch: { $error }
 calendar-local = Trên máy tính này
 calendar-account-gone = Tài khoản đã xóa
+calendar-birthdays = Sinh nhật
+calendar-birthday-of = Sinh nhật của { $name }
 calendar-empty-title = Chưa có lịch nào
 calendar-empty-text = Katna hiển thị tại đây lịch của các tài khoản Google và Microsoft của bạn sau khi đồng bộ, cùng lịch của các máy chủ khác hỗ trợ CalDAV.
 calendar-schedule-empty = Không có kế hoạch nào trong hai tháng tới.
@@ -45,6 +47,7 @@ calendar-guest-answers = { $yes } có, { $maybe } có thể, { $no } không, { $
 calendar-organizer = Người tổ chức
 calendar-optional = Không bắt buộc
 calendar-open-web = Mở trong trình duyệt
+calendar-open-contact = Mở người liên hệ
 calendar-close = Đóng
 
 ## Adding, changing and deleting events.

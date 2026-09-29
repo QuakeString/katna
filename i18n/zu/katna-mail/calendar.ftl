@@ -21,6 +21,8 @@ calendar-loading = Iyalayisha…
 calendar-read-failed = Ikhalenda alikwazanga ukufundwa: { $error }
 calendar-local = Kule khompyutha
 calendar-account-gone = I-akhawunti isusiwe
+calendar-birthdays = Osuku lokuzalwa
+calendar-birthday-of = Usuku lokuzalwa luka-{ $name }
 calendar-empty-title = Awukho amakhalenda okwamanje
 calendar-empty-text = I-Katna ibonisa amakhalenda ama-akhawunti akho e-Google ne-Microsoft lapha ngemva kokuvumelanisa, kanye nawamanye amaseva anikeza i-CalDAV.
 calendar-schedule-empty = Akukho okuhleliwe ezinyangeni ezimbili ezizayo.
@@ -46,6 +48,7 @@ calendar-guest-answers = { $yes } yebo, { $maybe } mhlawumbe, { $no } cha, { $wa
 calendar-organizer = Umhleli
 calendar-optional = Okungakhethwa
 calendar-open-web = Vula esiphequluli
+calendar-open-contact = Vula oxhumana naye
 calendar-close = Vala
 
 ## Adding, changing and deleting events.

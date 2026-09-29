@@ -21,6 +21,8 @@ calendar-loading = Yükleniyor…
 calendar-read-failed = Takvim okunamadı: { $error }
 calendar-local = Bu bilgisayar
 calendar-account-gone = Kaldırılan hesap
+calendar-birthdays = Doğum günleri
+calendar-birthday-of = { $name } doğum günü
 calendar-empty-title = Henüz takvim yok
 calendar-empty-text = Katna, Google ve Microsoft hesaplarınızın takvimlerini eşitlendikten sonra, ayrıca CalDAV sunan diğer sunucuların takvimlerini burada gösterir.
 calendar-schedule-empty = Önümüzdeki iki ay için planlanmış bir şey yok.
@@ -46,6 +48,7 @@ calendar-guest-answers = { $yes } evet, { $maybe } belki, { $no } hayır, { $wai
 calendar-organizer = Organizatör
 calendar-optional = İsteğe bağlı
 calendar-open-web = Tarayıcıda aç
+calendar-open-contact = Kişiyi aç
 calendar-close = Kapat
 
 ## Adding, changing and deleting events.

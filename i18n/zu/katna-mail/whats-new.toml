@@ -1474,3 +1474,15 @@ Ngenisa ilethe abantu kufayela le-vCard ishiye noma ubani osegciniwe
 kakade, futhi Thumela igcina wonke umuntu, noma ilebula, njengefayela
 le-vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Osuku lokuzalwa ku-Khalenda, oxhumana nabo njengekhodi ye-QR"
+text = """
+Osuku lokuzalwa lwabo oxhumana nabo manje luyavela ku-Khalenda, ku-
+khalenda elithi Osuku lokuzalwa ongalisusela uphawu. Ikhasi loxhumana
+naye lingamboniswa njengekhodi ye-QR ekhamera yefoni ewugcinayo, futhi
+lingamphrinta; Phrinta ngaphansi kwe-Lungisa futhi uphathe iphrinta
+wonke umuntu ovelayo. Ngenisa manje ifunda namafayela e-CSV avela ku-
+Google Contacts nase-Outlook, futhi i-KRunner nosesho lwe-GNOME bathola
+oxhumana nabo obagcinile.
+"""

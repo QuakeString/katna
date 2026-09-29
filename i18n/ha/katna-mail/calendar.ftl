@@ -21,6 +21,8 @@ calendar-loading = Ana lodawa…
 calendar-read-failed = Ba a iya karanta kalanda ba: { $error }
 calendar-local = Wannan kwamfutar
 calendar-account-gone = Asusun da aka cire
+calendar-birthdays = Ranakun haihuwa
+calendar-birthday-of = Ranar haihuwar { $name }
 calendar-empty-title = Babu kalanda tukuna
 calendar-empty-text = Katna yana nuna kalandar asusun Google da Microsoft naka a nan da zarar an daidaita su, tare da na sauran sabar da ke goyon bayan CalDAV.
 calendar-schedule-empty = Babu abin da aka tsara a cikin watanni biyu masu zuwa.
@@ -46,6 +48,7 @@ calendar-guest-answers = eh { $yes }, wataƙila { $maybe }, a'a { $no }, ana jir
 calendar-organizer = Mai shiryawa
 calendar-optional = Na zaɓi
 calendar-open-web = Buɗe a burauza
+calendar-open-contact = Buɗe lambar sadarwa
 calendar-close = Rufe
 
 ## Adding, changing and deleting events.

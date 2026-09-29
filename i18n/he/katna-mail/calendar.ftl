@@ -21,6 +21,8 @@ calendar-loading = טוען…
 calendar-read-failed = לא ניתן היה לקרוא את היומן: { $error }
 calendar-local = המחשב הזה
 calendar-account-gone = חשבון שהוסר
+calendar-birthdays = ימי הולדת
+calendar-birthday-of = יום ההולדת של { $name }
 calendar-empty-title = עדיין אין יומנים
 calendar-empty-text = היומנים של חשבונות Google ו-Microsoft שלך יוצגו כאן לאחר הסנכרון, וגם יומנים משרתים אחרים שתומכים ב-CalDAV.
 calendar-schedule-empty = אין שום דבר מתוכנן בחודשיים הקרובים.
@@ -47,6 +49,7 @@ calendar-guest-answers = { $yes } כן, { $maybe } אולי, { $no } לא, { $wa
 calendar-organizer = מארגן
 calendar-optional = אופציונלי
 calendar-open-web = פתיחה בדפדפן
+calendar-open-contact = פתיחת איש הקשר
 calendar-close = סגירה
 
 ## Adding, changing and deleting events.

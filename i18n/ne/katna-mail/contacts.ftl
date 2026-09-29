@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = आयात गर्नुहोस्
 contacts-export = निर्यात गर्नुहोस्
-contacts-import-title = vCard फाइलबाट सम्पर्कहरू आयात गर्नुहोस्
+contacts-import-file = vCard वा CSV फाइलबाट सम्पर्कहरू आयात गर्नुहोस्
 contacts-imported = { $count ->
     [one] { $place } मा { $count } सम्पर्कहरू आयात गरियो
    *[other] { $place } मा { $count } सम्पर्कहरू आयात गरियो
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = निर्यात गर्ने सम्पर्क छैन
 contacts-export-failed = सम्पर्कहरू निर्यात गर्न सकिएन: { $error }
+contacts-print = प्रिन्ट गर्नुहोस्
+contacts-print-title = सम्पर्कहरू
+contacts-print-none = प्रिन्ट गर्न कुनै सम्पर्क छैन
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = जन्मदिन: { $day }
+contacts-print-nickname = उपनाम: { $name }
 contacts-create = सम्पर्क सिर्जना गर्नुहोस्
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = अनुमति दिनुहोस्
 contacts-back = सम्पर्कहरूमा फर्कनुहोस्
 contacts-edit = सम्पादन गर्नुहोस्
 contacts-delete = मेटाउनुहोस्
+contacts-qr = QR कोडको रूपमा सेयर गर्नुहोस्
+contacts-qr-about = सम्पर्क सुरक्षित गर्न फोनको क्यामेराले यसलाई स्क्यान गर्नुहोस्।
+contacts-qr-too-long = यो सम्पर्कमा QR कोडमा अट्नका लागि धेरै विवरण छन्।
+contacts-qr-done = भयो
 contacts-deleted = { $name } मेटाइयो
 contacts-added = { $name } लाई सम्पर्कमा थपियो
 contacts-find-mail = मेल

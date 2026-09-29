@@ -1430,3 +1430,9 @@ title = "Combina duplicados, importa y exporta contactos"
 text = """
 Contactos incluye «Corregir y administrar»: «Combinar y corregir» encuentra a las personas guardadas dos veces (con el mismo nombre o número de teléfono) y las combina con un clic, con la opción de deshacer. «Importar» añade personas desde un archivo vCard sin repetir las que ya tienes, y «Exportar» guarda a todos, o una etiqueta, en un archivo vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Cumpleaños en el calendario, contactos como códigos QR"
+text = """
+Los cumpleaños de tus contactos ahora aparecen en el Calendario, en un calendario «Cumpleaños» que puedes desmarcar. La página de un contacto puede mostrarlo como un código QR que la cámara de un teléfono guarda, e imprimirlo; «Imprimir» en «Corregir y administrar» imprime a todas las personas que se ven. Además, la importación ahora lee también archivos CSV de Google Contactos y Outlook, y KRunner y la búsqueda de GNOME encuentran tus contactos guardados.
+"""

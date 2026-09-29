@@ -21,6 +21,8 @@ calendar-loading = ল'ড হৈ আছে…
 calendar-read-failed = কেলেণ্ডাৰ পঢ়িব পৰা নগ'ল: { $error }
 calendar-local = এই কমপিউটাৰত
 calendar-account-gone = আঁতৰোৱা একাউণ্ট
+calendar-birthdays = জন্মদিন
+calendar-birthday-of = { $name }ৰ জন্মদিন
 calendar-empty-title = এতিয়াও কোনো কেলেণ্ডাৰ নাই
 calendar-empty-text = Katna-এ আপোনাৰ Google আৰু Microsoft একাউণ্টৰ কেলেণ্ডাৰ, আৰু CalDAV দিয়া আন ছাৰ্ভাৰৰ কেলেণ্ডাৰ ছিংক হ'লে ইয়াত দেখুৱায়।
 calendar-schedule-empty = পৰৱৰ্তী দুমাহত একো পৰিকল্পনা কৰা হোৱা নাই।
@@ -46,6 +48,7 @@ calendar-guest-answers = { $yes } হয়, { $maybe } হয়তো, { $no }
 calendar-organizer = আয়োজক
 calendar-optional = ঐচ্ছিক
 calendar-open-web = ব্ৰাউজাৰত খোলক
+calendar-open-contact = সম্পৰ্ক খোলক
 calendar-close = বন্ধ কৰক
 
 ## Adding, changing and deleting events.

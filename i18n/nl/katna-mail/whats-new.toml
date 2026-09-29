@@ -1422,3 +1422,9 @@ title = "Dubbele contacten samenvoegen, contacten importeren en exporteren"
 text = """
 Contacten heeft ‘Herstellen en beheren’: ‘Samenvoegen en herstellen’ vindt mensen die twee keer zijn opgeslagen (met dezelfde naam of hetzelfde telefoonnummer) en voegt ze met één klik samen, met ‘Ongedaan maken’. ‘Importeren’ haalt mensen uit een vCard-bestand en slaat wie al is opgeslagen over, en ‘Exporteren’ bewaart iedereen, of één label, als vCard-bestand.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Verjaardagen in de agenda, contacten als QR-codes"
+text = """
+De verjaardagen van je contacten verschijnen nu in de Agenda, in een agenda ‘Verjaardagen’ die je kunt uitvinken. De pagina van een contact kan het tonen als QR-code die de camera van een telefoon opslaat, en het afdrukken; ‘Afdrukken’ onder ‘Herstellen en beheren’ drukt iedereen af die je ziet. Importeren leest nu ook CSV-bestanden uit Google Contacten en Outlook, en KRunner en GNOME-zoeken vinden je opgeslagen contacten.
+"""

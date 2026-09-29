@@ -21,6 +21,8 @@ calendar-loading = लोड हुँदैछ…
 calendar-read-failed = पात्रो पढ्न सकिएन: { $error }
 calendar-local = यो कम्प्युटरमा
 calendar-account-gone = हटाइएको खाता
+calendar-birthdays = जन्मदिन
+calendar-birthday-of = { $name } को जन्मदिन
 calendar-empty-title = अझै कुनै पात्रो छैन
 calendar-empty-text = Katna ले तपाईंका Google र Microsoft खाताका पात्रो, र CalDAV दिने अन्य सर्भरका पात्रो सिङ्क भएपछि यहाँ देखाउँछ।
 calendar-schedule-empty = अर्को दुई महिनामा केही तय गरिएको छैन।
@@ -46,6 +48,7 @@ calendar-guest-answers = { $yes } हो, { $maybe } सायद, { $no } ह�
 calendar-organizer = आयोजक
 calendar-optional = ऐच्छिक
 calendar-open-web = ब्राउजरमा खोल्नुहोस्
+calendar-open-contact = सम्पर्क खोल्नुहोस्
 calendar-close = बन्द गर्नुहोस्
 
 ## Adding, changing and deleting events.

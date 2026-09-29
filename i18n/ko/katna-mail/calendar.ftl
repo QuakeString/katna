@@ -21,6 +21,8 @@ calendar-loading = 로드 중…
 calendar-read-failed = 캘린더를 읽을 수 없습니다: { $error }
 calendar-local = 이 컴퓨터
 calendar-account-gone = 삭제된 계정
+calendar-birthdays = 생일
+calendar-birthday-of = { $name }님의 생일
 calendar-empty-title = 아직 캘린더가 없습니다
 calendar-empty-text = Google 및 Microsoft 계정의 캘린더는 동기화되면 여기에 표시됩니다. CalDAV를 지원하는 다른 서버의 캘린더도 표시됩니다.
 calendar-schedule-empty = 향후 2개월 동안 예정된 일정이 없습니다.
@@ -45,6 +47,7 @@ calendar-guest-answers = 예 { $yes }, 미정 { $maybe }, 아니요 { $no }, 응
 calendar-organizer = 주최자
 calendar-optional = 선택사항
 calendar-open-web = 브라우저에서 열기
+calendar-open-contact = 연락처 열기
 calendar-close = 닫기
 
 ## Adding, changing and deleting events.

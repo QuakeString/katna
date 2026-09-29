@@ -21,6 +21,8 @@ calendar-loading = ກຳລັງໂຫຼດ…
 calendar-read-failed = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້: { $error }
 calendar-local = ຄອມພິວເຕີເຄື່ອງນີ້
 calendar-account-gone = ບັນຊີທີ່ຖືກລຶບອອກແລ້ວ
+calendar-birthdays = ວັນເກີດ
+calendar-birthday-of = ວັນເກີດຂອງ { $name }
 calendar-empty-title = ຍັງບໍ່ມີປະຕິທິນ
 calendar-empty-text = ປະຕິທິນຂອງບັນຊີ Google ແລະ Microsoft ຂອງທ່ານຈະສະແດງຢູ່ບ່ອນນີ້ເມື່ອຊິງຄ໌ແລ້ວ ພ້ອມທັງປະຕິທິນຈາກເຊີບເວີອື່ນທີ່ຮອງຮັບ CalDAV.
 calendar-schedule-empty = ບໍ່ມີແຜນໃນ 2 ເດືອນຂ້າງໜ້າ.
@@ -45,6 +47,7 @@ calendar-guest-answers = ຕອບຮັບ { $yes }, ອາດຈະ { $maybe }
 calendar-organizer = ຜູ້ຈັດ
 calendar-optional = ທາງເລືອກ
 calendar-open-web = ເປີດໃນບຣາວເຊີ
+calendar-open-contact = ເປີດລາຍຊື່ຜູ້ຕິດຕໍ່
 calendar-close = ປິດ
 
 ## Adding, changing and deleting events.

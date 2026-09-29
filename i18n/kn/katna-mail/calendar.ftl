@@ -21,6 +21,8 @@ calendar-loading = ಲೋಡ್ ಆಗುತ್ತಿದೆ…
 calendar-read-failed = ಕ್ಯಾಲೆಂಡರ್ ಅನ್ನು ಓದಲಾಗಲಿಲ್ಲ: { $error }
 calendar-local = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ
 calendar-account-gone = ತೆಗೆದುಹಾಕಿದ ಖಾತೆ
+calendar-birthdays = ಜನ್ಮದಿನಗಳು
+calendar-birthday-of = { $name } ಅವರ ಜನ್ಮದಿನ
 calendar-empty-title = ಇನ್ನೂ ಕ್ಯಾಲೆಂಡರ್‌ಗಳಿಲ್ಲ
 calendar-empty-text = ನಿಮ್ಮ Google ಮತ್ತು Microsoft ಖಾತೆಗಳ ಕ್ಯಾಲೆಂಡರ್‌ಗಳು ಹಾಗೂ CalDAV ನೀಡುವ ಇತರ ಸರ್ವರ್‌ಗಳ ಕ್ಯಾಲೆಂಡರ್‌ಗಳು ಸಿಂಕ್ ಆದ ನಂತರ Katna ಅವುಗಳನ್ನು ಇಲ್ಲಿ ತೋರಿಸುತ್ತದೆ.
 calendar-schedule-empty = ಮುಂದಿನ ಎರಡು ತಿಂಗಳಲ್ಲಿ ಏನನ್ನೂ ಯೋಜಿಸಿಲ್ಲ.
@@ -46,6 +48,7 @@ calendar-guest-answers = { $yes } ಹೌದು, { $maybe } ಇರಬಹುದು
 calendar-organizer = ಸಂಘಟಕ
 calendar-optional = ಐಚ್ಛಿಕ
 calendar-open-web = ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ
+calendar-open-contact = ಸಂಪರ್ಕ ತೆರೆಯಿರಿ
 calendar-close = ಮುಚ್ಚಿ
 
 ## Adding, changing and deleting events.

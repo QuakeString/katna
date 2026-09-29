@@ -1377,3 +1377,9 @@ title = "Voeg duplikate saam, voer kontakte in en uit"
 text = """
 Kontakte het nou Regstel en bestuur: Voeg saam en regstel vind mense wat twee keer gestoor is (dieselfde naam of foonnommer) en voeg hulle met een klik saam, met Ontdoen. Voer in bring mense in vanaf ’n vCard-lêer en laat diegene weg wat reeds gestoor is, en Voer uit stoor almal, of een etiket, as ’n vCard-lêer.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Verjaardae in die kalender, kontakte as QR-kodes"
+text = """
+Jou kontakte se verjaardae verskyn nou in die Kalender, in ’n Verjaardae-kalender wat jy kan afmerk. ’n Kontak se bladsy kan hulle as ’n QR-kode wys wat ’n foon se kamera stoor, en hulle druk; Druk onder Regstel en bestuur druk almal wat gewys word. Invoer lees nou ook CSV-lêers van Google Kontakte en Outlook, en KRunner en GNOME-soektog vind jou gestoorde kontakte.
+"""

@@ -1469,3 +1469,9 @@ title = "Fusionner les doublons, importer et exporter des contacts"
 text = """
 Contacts propose « Corriger et gérer » : « Fusionner et corriger » repère les personnes enregistrées deux fois (même nom ou même numéro de téléphone) et les fusionne en un clic, avec « Annuler ». « Importer » ajoute des personnes depuis un fichier vCard sans reprendre celles déjà enregistrées, et « Exporter » enregistre tout le monde, ou un libellé, dans un fichier vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Anniversaires dans le calendrier, contacts en codes QR"
+text = """
+Les anniversaires de vos contacts apparaissent désormais dans l’agenda, dans un agenda « Anniversaires » que vous pouvez décocher. La page d’un contact peut l’afficher sous forme de code QR que l’appareil photo d’un téléphone enregistre, et l’imprimer ; « Imprimer » sous « Corriger et gérer » imprime toutes les personnes affichées. L’importation lit maintenant aussi les fichiers CSV de Google Contacts et d’Outlook, et KRunner et la recherche GNOME trouvent vos contacts enregistrés.
+"""

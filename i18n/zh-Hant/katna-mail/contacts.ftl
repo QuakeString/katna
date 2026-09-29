@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = 匯入
 contacts-export = 匯出
-contacts-import-title = 從 vCard 檔案匯入聯絡人
+contacts-import-file = 從 vCard 或 CSV 檔案匯入聯絡人
 contacts-imported = { $count ->
    *[other] 已將 { $count } 位聯絡人匯入「{ $place }」
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = 沒有可匯出的聯絡人
 contacts-export-failed = 無法匯出聯絡人：{ $error }
+contacts-print = 列印
+contacts-print-title = 聯絡人
+contacts-print-none = 沒有可列印的聯絡人
+contacts-print-typed = { $value }（{ $kind }）
+contacts-print-birthday = 生日：{ $day }
+contacts-print-nickname = 暱稱：{ $name }
 contacts-create = 建立聯絡人
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = 允許
 contacts-back = 返回聯絡人
 contacts-edit = 編輯
 contacts-delete = 刪除
+contacts-qr = 以 QR 碼分享
+contacts-qr-about = 用手機相機掃描即可儲存這位聯絡人。
+contacts-qr-too-long = 這位聯絡人的詳細資料過多，無法放入 QR 碼。
+contacts-qr-done = 完成
 contacts-deleted = 已刪除 { $name }
 contacts-added = 已將 { $name } 新增至聯絡人
 contacts-find-mail = 郵件

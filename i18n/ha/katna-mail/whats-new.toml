@@ -1346,3 +1346,11 @@ text = """
 Lambobin sadarwa yanzu suna da Gyara da sarrafa: Haɗa da gyara yana gano mutanen da aka ajiye sau biyu (suna ko lambar waya iri ɗaya) ya haɗa su da danna sau ɗaya, tare da Janye.
 Shigo da yana kawo mutane daga fayil na vCard, yana barin waɗanda aka riga aka ajiye, kuma Fitar da yana ajiye kowa, ko lakabi guda, a matsayin fayil na vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Ranakun haihuwa a kalanda, lambobin sadarwa a matsayin lambar QR"
+text = """
+Ranakun haihuwar lambobin sadarwarka yanzu suna bayyana a Kalanda, a cikin kalandar Ranakun haihuwa da za ka iya cire alamarta.
+Shafin lambar sadarwa zai iya nuna su a matsayin lambar QR da kyamarar waya ke ajiyewa, da kuma buga su; Buga a ƙarƙashin Gyara da sarrafa yana buga duk wanda ake nunawa.
+Shigo da yanzu yana karanta fayilolin CSV daga Lambobin sadarwa na Google da Outlook ma, kuma KRunner da binciken GNOME suna samun lambobin sadarwarka da aka ajiye.
+"""
