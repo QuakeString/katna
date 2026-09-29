@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add a task from the Calendar"
+text = """
+The new-event card has a Task tab, as in Google Calendar. Click a time,
+pick Task, and the title, day and time become a task in the list you
+choose, with a description if you like.
+"""
