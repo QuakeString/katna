@@ -1202,3 +1202,13 @@ come in Google Tasks, con sottoattività, speciali, scadenze, ripetizioni
 e dettagli. Gli elenchi si sincronizzano con Google Tasks e Microsoft To
 Do, e anche le attività dell’orologio del desktop compaiono qui.
 """
+
+["2026-09-29-0352-contacts"]
+title = "I tuoi contatti, da ogni account"
+text = """
+Contatti, nella barra a sinistra, ora elenca le persone salvate nei tuoi
+account Gmail e Outlook e sui server CardDAV, una sola volta anche
+quando più account le conservano, con etichette, foto e dettagli. Anche
+i loro nomi e le loro foto compaiono nella posta e nei suggerimenti
+degli indirizzi.
+"""

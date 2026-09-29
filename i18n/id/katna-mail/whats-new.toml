@@ -1191,3 +1191,12 @@ seperti di Google Tasks, lengkap dengan subtugas, bintang, hari jatuh
 tempo, pengulangan, dan detail. Daftar disinkronkan dengan Google Tasks
 dan Microsoft To Do, dan tugas dari jam desktop juga muncul di sini.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Kontak Anda, dari setiap akun"
+text = """
+Kontak di bilah kiri kini menampilkan orang-orang yang tersimpan di akun
+Gmail dan Outlook Anda serta di server CardDAV, sekali saja meski
+beberapa akun menyimpannya, lengkap dengan label, foto, dan detailnya.
+Nama dan foto mereka juga muncul di email Anda dan di saran alamat.
+"""
