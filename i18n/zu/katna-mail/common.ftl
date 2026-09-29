@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Fihla amafolda
 folders-show = Bonisa amafolda
+side-pane-hide = Fihla iphaneli yaseceleni
+side-pane-show = Bonisa iphaneli yaseceleni
 compose = Bhala
 search = Sesha
 search-mail = Sesha imeyili

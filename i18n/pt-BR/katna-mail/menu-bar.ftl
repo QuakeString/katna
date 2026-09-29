@@ -14,6 +14,7 @@ desktop-menu-select-none = Selecionar _nenhuma
 desktop-menu-find = _Localizar…
 desktop-menu-view = E_xibir
 desktop-menu-folder-list = Mostrar lista de _pastas
+desktop-menu-side-panel = Mostrar _painel lateral
 desktop-menu-refresh = _Atualizar
 desktop-menu-go = _Ir
 desktop-menu-inbox = _Caixa de entrada

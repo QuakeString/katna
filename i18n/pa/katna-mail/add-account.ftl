@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਹੋ ਗ�
 add-account-menu-another = ਇੱਕ ਹੋਰ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ
 add-account-menu-manage = ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ
 app-menu = ਮੁੱਖ ਮੀਨੂ
+app-menu-back = ਪਿੱਛੇ

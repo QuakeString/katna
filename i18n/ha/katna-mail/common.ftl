@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Ɓoye folda
 folders-show = Nuna folda
+side-pane-hide = Ɓoye fanel na gefe
+side-pane-show = Nuna fanel na gefe
 compose = Rubuta
 search = Bincika
 search-mail = Bincika wasiƙu

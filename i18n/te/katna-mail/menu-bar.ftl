@@ -14,6 +14,7 @@ desktop-menu-select-none = _ఏదీ ఎంచుకోవద్దు
 desktop-menu-find = _కనుగొనండి…
 desktop-menu-view = _వీక్షణ
 desktop-menu-folder-list = _ఫోల్డర్ లిస్ట్‌ను చూపండి
+desktop-menu-side-panel = _సైడ్ ప్యానెల్‌ను చూపండి
 desktop-menu-refresh = _రిఫ్రెష్ చేయండి
 desktop-menu-go = _వెళ్లండి
 desktop-menu-inbox = _ఇన్‌బాక్స్

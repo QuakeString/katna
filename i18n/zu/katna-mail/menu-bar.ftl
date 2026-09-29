@@ -14,6 +14,7 @@ desktop-menu-select-none = Ungakhethi _Lutho
 desktop-menu-find = _Thola…
 desktop-menu-view = _Buka
 desktop-menu-folder-list = Bonisa Uhlu _Lwamafolda
+desktop-menu-side-panel = Bonisa _Iphaneli Yaseceleni
 desktop-menu-refresh = _Vuselela
 desktop-menu-go = _Hamba
 desktop-menu-inbox = _Ibhokisi Lokungenayo

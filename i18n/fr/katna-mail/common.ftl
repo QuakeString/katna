@@ -46,6 +46,8 @@ size-tb = { $size } To
 
 folders-hide = Masquer les dossiers
 folders-show = Afficher les dossiers
+side-pane-hide = Masquer le panneau latéral
+side-pane-show = Afficher le panneau latéral
 compose = Nouveau message
 search = Rechercher
 search-mail = Rechercher dans les messages

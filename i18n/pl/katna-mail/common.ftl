@@ -50,6 +50,8 @@ size-tb = { $size } TB
 
 folders-hide = Ukryj foldery
 folders-show = Pokaż foldery
+side-pane-hide = Ukryj panel boczny
+side-pane-show = Pokaż panel boczny
 compose = Utwórz
 search = Szukaj
 search-mail = Przeszukaj pocztę

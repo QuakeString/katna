@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Itago ang mga folder
 folders-show = Ipakita ang mga folder
+side-pane-hide = Itago ang side panel
+side-pane-show = Ipakita ang side panel
 compose = Mag-compose
 search = Maghanap
 search-mail = Maghanap sa mail

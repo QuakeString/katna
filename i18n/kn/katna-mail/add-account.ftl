@@ -86,3 +86,4 @@ add-account-signed-in = { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಆಗ
 add-account-menu-another = ಇನ್ನೊಂದು ಖಾತೆ ಸೇರಿಸಿ
 add-account-menu-manage = ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ
 app-menu = ಮುಖ್ಯ ಮೆನು
+app-menu-back = ಹಿಂದೆ

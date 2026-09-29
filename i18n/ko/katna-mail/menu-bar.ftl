@@ -14,6 +14,7 @@ desktop-menu-select-none = 선택 해제(_N)
 desktop-menu-find = 찾기(_F)…
 desktop-menu-view = 보기(_V)
 desktop-menu-folder-list = 폴더 목록 표시(_F)
+desktop-menu-side-panel = 사이드 패널 표시(_S)
 desktop-menu-refresh = 새로고침(_R)
 desktop-menu-go = 이동(_G)
 desktop-menu-inbox = 받은편지함(_I)

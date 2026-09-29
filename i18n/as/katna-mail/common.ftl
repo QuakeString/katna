@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = ফ'ল্ডাৰ লুকুৱাওক
 folders-show = ফ'ল্ডাৰ দেখুৱাওক
+side-pane-hide = কাষৰ পেনেল লুকুৱাওক
+side-pane-show = কাষৰ পেনেল দেখুৱাওক
 compose = লিখক
 search = সন্ধান কৰক
 search-mail = মেইল সন্ধান কৰক

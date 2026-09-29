@@ -86,3 +86,4 @@ add-account-signed-in = ເຂົ້າສູ່ລະບົບດ້ວຍ { $p
 add-account-menu-another = ເພີ່ມບັນຊີອື່ນ
 add-account-menu-manage = ຈັດການບັນຊີ
 app-menu = ເມນູຫຼັກ
+app-menu-back = ກັບຄືນ

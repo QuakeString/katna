@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = Versteek vouers
 folders-show = Wys vouers
+side-pane-hide = Versteek sypaneel
+side-pane-show = Wys sypaneel
 compose = Skryf
 search = Soek
 search-mail = Soek e-pos

@@ -14,6 +14,7 @@ desktop-menu-select-none = _ಯಾವುದನ್ನೂ ಆಯ್ಕೆಮಾಡ
 desktop-menu-find = _ಹುಡುಕಿ…
 desktop-menu-view = _ವೀಕ್ಷಣೆ
 desktop-menu-folder-list = _ಫೋಲ್ಡರ್ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ
+desktop-menu-side-panel = _ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ತೋರಿಸಿ
 desktop-menu-refresh = _ರಿಫ್ರೆಶ್ ಮಾಡಿ
 desktop-menu-go = _ಹೋಗಿ
 desktop-menu-inbox = _ಇನ್‌ಬಾಕ್ಸ್

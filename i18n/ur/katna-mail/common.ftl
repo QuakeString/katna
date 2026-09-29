@@ -42,6 +42,8 @@ size-tb = { $size } TB
 
 folders-hide = فولڈرز چھپائیں
 folders-show = فولڈرز دکھائیں
+side-pane-hide = سائیڈ پینل چھپائیں
+side-pane-show = سائیڈ پینل دکھائیں
 compose = تحریر کریں
 search = تلاش کریں
 search-mail = میل تلاش کریں

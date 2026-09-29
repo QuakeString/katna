@@ -14,6 +14,7 @@ desktop-menu-select-none = 選択を解除(_N)
 desktop-menu-find = 検索(_F)…
 desktop-menu-view = 表示(_V)
 desktop-menu-folder-list = フォルダ一覧を表示(_F)
+desktop-menu-side-panel = サイドパネルを表示(_S)
 desktop-menu-refresh = 更新(_R)
 desktop-menu-go = 移動(_G)
 desktop-menu-inbox = 受信トレイ(_I)

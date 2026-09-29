@@ -86,3 +86,4 @@ add-account-signed-in = Sudah masuk dengan { $provider }. Mengambil email Andaâ€
 add-account-menu-another = Tambahkan akun lain
 add-account-menu-manage = Kelola akun
 app-menu = Menu utama
+app-menu-back = Kembali

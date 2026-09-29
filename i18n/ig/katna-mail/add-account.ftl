@@ -86,3 +86,4 @@ add-account-signed-in = Abanyela na { $provider }. Na-enweta ozi gị…
 add-account-menu-another = Tinye akaụntụ ọzọ
 add-account-menu-manage = Jikwaa akaụntụ
 app-menu = Menu isi
+app-menu-back = Laghachi
