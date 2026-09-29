@@ -24,6 +24,7 @@ use katna_sync::{
     contacts::{GoogleContacts, MicrosoftContacts},
     methods::{self, Data, Dav, Method},
     net::Tls,
+    oauth::Provider,
 };
 
 use super::{CommandError, Daemon, Notice};
@@ -56,6 +57,10 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
         };
         if daemon.closing() {
             return;
+        }
+        // "Try again" looks for the address books from scratch.
+        for id in std::mem::take(&mut *daemon.contacts_recheck.lock().unwrap()) {
+            looked.remove(&id);
         }
         let accounts = match daemon.store().accounts() {
             Ok(accounts) => accounts,
@@ -122,8 +127,22 @@ async fn sync_account(
         .account_settings(account.id)
         .map_err(|e| e.to_string())?
         .unwrap_or_default();
-    let tls = Tls::system().map_err(|e| e.to_string())?;
     let provider = settings.oauth;
+    // Google and Microsoft let Katna into contacts only through their own
+    // sign-in, not with a mail password.
+    if account.kind == AccountKind::Imap
+        && provider.is_none()
+        && let Some(own) = settings
+            .imap
+            .as_ref()
+            .and_then(|imap| Provider::for_imap_host(&imap.host))
+    {
+        return Ok((
+            false,
+            (contacts_state::USE_SIGN_IN, own.as_str().to_owned()),
+        ));
+    }
+    let tls = Tls::system().map_err(|e| e.to_string())?;
     let now = unix_now();
     let order = methods::order(&daemon.store(), account.id, Data::Contacts, provider, now);
     // Other contacts only come from Google's API, whatever way the
@@ -140,6 +159,8 @@ async fn sync_account(
     let mut refused: Option<(BookSource, String)> = None;
     // Why a CardDAV server refused the sign-in or password.
     let mut dav_refused: Option<String> = None;
+    // What the server answered when no address book was found.
+    let mut missing = String::new();
     for method in order {
         let changed = match (method, provider) {
             (Method::Api, Some(provider)) => {
@@ -159,7 +180,16 @@ async fn sync_account(
             }
             (Method::Dav, Some(OAuthProvider::Google)) => {
                 let starts = [methods::google_dav_start(Dav::Card, &account.address)];
-                sync_card_dav(daemon, account, &tls, &starts, due, &mut dav_refused).await?
+                sync_card_dav(
+                    daemon,
+                    account,
+                    &tls,
+                    &starts,
+                    due,
+                    &mut dav_refused,
+                    &mut missing,
+                )
+                .await?
             }
             (Method::Dav, None) => {
                 let starts = carddav::start_urls(
@@ -167,7 +197,16 @@ async fn sync_account(
                     &account.address,
                     settings.imap.as_ref().map(|s| s.host.as_str()),
                 );
-                sync_card_dav(daemon, account, &tls, &starts, due, &mut dav_refused).await?
+                sync_card_dav(
+                    daemon,
+                    account,
+                    &tls,
+                    &starts,
+                    due,
+                    &mut dav_refused,
+                    &mut missing,
+                )
+                .await?
             }
             _ => None,
         };
@@ -200,7 +239,7 @@ async fn sync_account(
             Ok((changed, (contacts_state::NEEDS_SIGN_IN, why)))
         }
         (None, Some(why)) => Ok((others, (contacts_state::NEEDS_SIGN_IN, why))),
-        (None, None) => Ok((others, (contacts_state::NONE, String::new()))),
+        (None, None) => Ok((others, (contacts_state::NONE, missing))),
     }
 }
 
@@ -282,7 +321,8 @@ fn dav_books(daemon: &Daemon, account: AccountId) -> Result<Vec<(i64, String)>, 
 /// Syncs the account's CardDAV address books, looking for them from
 /// `starts` when `due` or none are known. `None` when the account has no
 /// way in or no address book there (a server that refused the password
-/// says why in `refused`); otherwise whether anything changed. The
+/// says why in `refused`, one without CardDAV in `missing`); otherwise
+/// whether anything changed. The
 /// account's books from any other way go.
 async fn sync_card_dav(
     daemon: &Arc<Daemon>,
@@ -291,6 +331,7 @@ async fn sync_card_dav(
     starts: &[String],
     due: bool,
     refused: &mut Option<String>,
+    missing: &mut String,
 ) -> Result<Option<bool>, String> {
     let Some(dav) = card_dav(daemon, account.id, tls.clone()).await? else {
         return Ok(None);
@@ -324,6 +365,7 @@ async fn sync_card_dav(
             // Keeps the books it had: the server may be down.
             Err(err) => {
                 tracing::debug!(account = %account.id, %err, "contacts: no CardDAV");
+                *missing = err.to_string();
             }
         }
     }
