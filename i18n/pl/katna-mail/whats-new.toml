@@ -1152,3 +1152,30 @@ Enter odpowiada, Esc anuluje, a Tab zostaje w ich wnętrzu. W nowej
 wiadomości Ctrl+Enter wysyła z dowolnego pola, a Esc ją zamyka,
 zachowując wersję roboczą.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Zadania w zegarze na pulpicie"
+text = """
+Kliknij zegar, aby dodać zadanie i odhaczać zadania. W Plasmie kliknij
+zegar prawym przyciskiem myszy i wybierz Pokaż alternatywy, aby wybrać
+Zegar cyfrowy Katna. W GNOME od następnego logowania pod kalendarzem
+zegara pojawia się karta Zadania.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Strony z klawiatury i z paska zadań"
+text = """
+Ctrl+1 do Ctrl+5 przełączają między Pocztą, Kalendarzem, Kontaktami,
+Zadaniami i Notatkami, tak jak w Outlooku, a menu Przejdź też je
+wyświetla. Kliknij prawym przyciskiem myszy Katna Mail na pasku zadań,
+aby od razu otworzyć Kalendarz lub Kontakty.
+"""
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Zadania"
+text = """
+Naciśnij Ctrl+4 lub wybierz Zadania po lewej: wszystkie listy obok
+siebie jak w Google Tasks, z podzadaniami, gwiazdkami, terminami,
+powtarzaniem i szczegółami. Listy synchronizują się z Google Tasks i
+Microsoft To Do, a zadania z zegara na pulpicie też pojawiają się tutaj.
+"""

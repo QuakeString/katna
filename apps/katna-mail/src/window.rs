@@ -147,6 +147,7 @@ actions!(
         MarkRead,
         MarkUnread,
         ToggleStar,
+        AddToTasks,
         MarkImportant,
         MarkNotImportant,
         ToggleCheck,

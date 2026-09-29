@@ -422,6 +422,8 @@ menu-unpin = Unpin
 menu-snooze = Snooze
 # In the Snoozed folder: brings the mail back to the inbox now.
 menu-unsnooze = Unsnooze
+# Makes a task from the mail, as Gmail's "Add to Tasks".
+menu-add-to-tasks = Add to Tasks
 # Prints every message of the open conversation.
 menu-print-all = Print all
 menu-new-window = Open in new window

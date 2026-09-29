@@ -1187,3 +1187,32 @@ Eingabetaste antwortet, Esc bricht ab, und Tab bleibt in ihnen. In einer
 neuen Nachricht sendet Strg+Eingabetaste aus jedem Feld, und Esc
 schließt sie und behält einen Entwurf.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Aufgaben in Ihrer Desktop-Uhr"
+text = """
+Klicken Sie auf die Uhr, um eine Aufgabe hinzuzufügen und Aufgaben
+abzuhaken. Unter Plasma klicken Sie mit der rechten Maustaste auf die
+Uhr und wählen Alternativen anzeigen, um Katna Digitaluhr auszuwählen.
+Unter GNOME erscheint ab Ihrer nächsten Anmeldung eine Aufgabenkarte
+unter dem Kalender der Uhr.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Seiten per Tastatur und aus der Taskleiste"
+text = """
+Mit Strg+1 bis Strg+5 wechseln Sie zwischen E-Mail, Kalender, Kontakten,
+Aufgaben und Notizen, wie in Outlook, und das Menü Gehe zu listet sie
+ebenfalls auf. Klicken Sie in der Taskleiste mit der rechten Maustaste
+auf Katna Mail, um direkt den Kalender oder die Kontakte zu öffnen.
+"""
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Aufgaben"
+text = """
+Drücken Sie Strg+4 oder wählen Sie links Aufgaben: alle Listen
+nebeneinander wie in Google Tasks, mit Unteraufgaben, Markierungen,
+Fälligkeitstagen, Wiederholungen und Details. Die Listen werden mit
+Google Tasks und Microsoft To Do synchronisiert, und Aufgaben von der
+Desktop-Uhr erscheinen hier ebenfalls.
+"""

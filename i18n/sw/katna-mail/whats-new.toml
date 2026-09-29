@@ -1147,3 +1147,27 @@ menyu hufungua menyu ya kubofya kulia ya barua iliyochaguliwa. Madirisha ya mazu
 vitufe yanapofunguka: Enter hujibu, Esc hughairi, na Tab hubaki ndani yake. Kwenye ujumbe mpya,
 Ctrl+Enter hutuma kutoka sehemu yoyote na Esc huufunga, ukihifadhi rasimu.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Majukumu kwenye saa ya eneo-kazi lako"
+text = """
+Bofya saa ili kuongeza jukumu na kutia alama kwenye majukumu yaliyokamilika. Kwenye Plasma,
+bofya kulia saa kisha uchague Onyesha Mbadala ili kuchagua Saa ya Kidijitali ya Katna. Kwenye
+GNOME, kadi ya Majukumu huonekana chini ya kalenda ya saa kuanzia utakapoingia tena.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Kurasa kwa kibodi na kutoka kwenye upau wa kazi"
+text = """
+Ctrl+1 hadi Ctrl+5 hubadilisha kati ya Barua, Kalenda, Anwani, Majukumu na Madokezo, kama kwenye
+Outlook, na menyu ya Nenda huorodhesha kurasa hizo pia. Bofya kulia Katna Mail kwenye upau wa
+kazi ili kufungua Kalenda au Anwani mara moja.
+"""
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Majukumu"
+text = """
+Bonyeza Ctrl+4 au chagua Majukumu upande wa kushoto: orodha zote kando kwa kando kama katika Google Tasks,
+zikiwa na majukumu madogo, nyota, siku za kukamilisha, marudio na maelezo. Orodha husawazishwa na Google Tasks
+na Microsoft To Do, na majukumu kutoka saa ya eneo-kazi pia yanaonekana hapa.
+"""

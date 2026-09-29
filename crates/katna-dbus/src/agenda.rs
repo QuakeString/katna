@@ -74,6 +74,8 @@ pub mod task {
     pub const DONE: &str = "done";
     /// `s`: the task list's name.
     pub const LIST: &str = "list";
+    /// `s`: the Message-ID of the mail it was made from, or empty.
+    pub const MAIL: &str = "mail";
 }
 
 /// Keys of `EditTask`'s fields; each is optional.

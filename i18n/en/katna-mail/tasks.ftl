@@ -45,6 +45,9 @@ tasks-delete = Delete
 tasks-move-to = Move to { $list }
 # A chip on a task made from a mail.
 tasks-from-mail = Mail
+tasks-open-mail = Open the mail
+# The title of a task made from a mail with no subject.
+tasks-no-subject = (no subject)
 
 ## The details dialog
 
@@ -77,6 +80,12 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Task completed
 tasks-toast-deleted = Task deleted
+tasks-toast-added = { $count ->
+    [one] Added to Tasks
+   *[other] { $count } tasks added
+}
+# The mail a task was made from is no longer here (deleted, or not synced).
+tasks-mail-gone = That mail isn't here any more.
 tasks-toast-list-deleted = List deleted
 # $list: the list's name.
 tasks-toast-moved = Moved to { $list }
