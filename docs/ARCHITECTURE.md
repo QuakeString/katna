@@ -2277,6 +2277,19 @@ desktop's own app stays one click away.
     range, a column letter or row number for all of it; Ctrl+C copies
     them tab-separated (cells with tabs, line breaks or quotes quoted), so
     they paste as cells into other spreadsheets.
+  - **Marking up a PDF.** The pen in the viewer's top bar shows a pill of
+    tools: Select, Highlight, Underline, Squiggle, Strike, Pen and Eraser,
+    five colours each for the markers and the pen, and Undo and Redo
+    (Ctrl+Z, Ctrl+Shift+Z). Text marks are made by selecting text; the
+    pen draws freehand; the eraser removes the mark under it. Marks are
+    kept in points as the page is drawn (`katna_preview::markup`) and Save
+    writes a copy, "<name> (marked).pdf", with them as standard
+    annotations (Highlight, Underline, Squiggly, StrikeOut, Ink), each
+    with its own appearance, added to the end of the original file as an
+    incremental update with `lopdf` (`katna_preview::pdf_marks`), so
+    signatures stay valid. Encrypted or certified PDFs can't be marked.
+    Closing or paging away with unsaved marks asks: Discard, Keep marking,
+    or Save a copy. No redaction.
   - Anything else opens straight in the desktop's default app, and so
     does a file of a previewable type that turns out unreadable (damaged,
     encrypted, Word 6/95; the viewer closes and hands it over, or asks
