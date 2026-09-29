@@ -28,14 +28,14 @@ impl MailWindow {
     pub(super) fn toggle_account(&mut self, account: AccountId, cx: &mut Context<Self>) {
         let open = !self.account_open(account);
         self.open_accounts.insert(account, open);
-        self.rebuild_nav();
+        self.fold_nav();
         cx.notify();
     }
 
     /// The arrow beside "All Accounts".
     pub(super) fn toggle_all_accounts(&mut self, cx: &mut Context<Self>) {
         self.all_accounts_open = !self.all_accounts_open;
-        self.rebuild_nav();
+        self.fold_nav();
         cx.notify();
     }
 
