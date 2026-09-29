@@ -1331,3 +1331,22 @@ e altri account le cui attività si trovano su un server diverso da
 quello della posta. Katna prova prima il metodo migliore di ogni account
 e ricorda quello che funziona.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Etichette dei contatti"
+text = """
+Il pulsante Etichetta nella pagina di un contatto attiva e disattiva le
+etichette o ne crea una nuova, e il ⋮ accanto a un'etichetta la
+rinomina, la elimina o scrive a tutti quelli che ne fanno parte. Le
+etichette restano allineate con Google Contacts e Outlook, e ogni
+modifica ha un Annulla.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Aggiungi ai contatti dalla posta"
+text = """
+Il riquadro del contatto accanto a una conversazione ha Aggiungi ai
+contatti per chi non hai salvato: un clic salva nome, indirizzo e
+telefono, qualifica e azienda della firma, con Annulla. Per chi è già
+salvato, lo stesso pulsante lo apre nella pagina Contatti.
+"""

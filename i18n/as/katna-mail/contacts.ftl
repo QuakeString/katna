@@ -7,6 +7,19 @@
 contacts-all = সম্পৰ্কসমূহ
 contacts-frequent = ঘনঘন
 contacts-labels = লেবেলসমূহ
+contacts-label-options = লেবেলৰ বিকল্প
+contacts-label-rename = লেবেলৰ নাম সলনি কৰক
+contacts-label-email = সকলোকে মেইল পঠিয়াওক
+contacts-label-delete = লেবেল মচক
+contacts-label-new = নতুন লেবেল
+contacts-label-name = লেবেলৰ নাম
+contacts-label-button = লেবেল
+contacts-label-menu = এইদৰে লেবেল কৰক:
+contacts-label-added = { $name }ত যোগ কৰা হ'ল
+contacts-label-removed = { $name }ৰ পৰা আঁতৰোৱা হ'ল
+contacts-label-renamed = লেবেলৰ নাম সলনি কৰি { $name } কৰা হ'ল
+contacts-label-deleted = লেবেল { $name } মচা হ'ল
+contacts-label-no-email = এই লেবেলত কাৰো ইমেইল ঠিকনা নাই
 contacts-create = সম্পৰ্ক সৃষ্টি কৰক
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = সম্পৰ্কসমূহলৈ উভতি যাও�
 contacts-edit = সম্পাদনা কৰক
 contacts-delete = মচক
 contacts-deleted = { $name } মচা হ'ল
+contacts-added = { $name }ক সম্পৰ্কত যোগ কৰা হ'ল
 contacts-find-mail = মেইল
 contacts-details = সম্পৰ্কৰ বিৱৰণ
 contacts-saved-in = ইয়াত সংৰক্ষণ কৰা হৈছে

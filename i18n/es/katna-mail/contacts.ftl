@@ -7,6 +7,19 @@
 contacts-all = Contactos
 contacts-frequent = Frecuentes
 contacts-labels = Etiquetas
+contacts-label-options = Opciones de etiqueta
+contacts-label-rename = Cambiar nombre de la etiqueta
+contacts-label-email = Enviar correo a todos
+contacts-label-delete = Eliminar etiqueta
+contacts-label-new = Nueva etiqueta
+contacts-label-name = Nombre de la etiqueta
+contacts-label-button = Etiqueta
+contacts-label-menu = Etiquetar como:
+contacts-label-added = Añadido a { $name }
+contacts-label-removed = Eliminado de { $name }
+contacts-label-renamed = Etiqueta renombrada como { $name }
+contacts-label-deleted = Se ha eliminado la etiqueta { $name }
+contacts-label-no-email = Nadie con esta etiqueta tiene una dirección de correo
 contacts-create = Crear contacto
 
 ## Search and the list
@@ -44,6 +57,7 @@ contacts-back = Volver a los contactos
 contacts-edit = Editar
 contacts-delete = Eliminar
 contacts-deleted = Se ha eliminado a { $name }
+contacts-added = Se ha añadido a { $name } a los contactos
 contacts-find-mail = Correo
 contacts-details = Datos de contacto
 contacts-saved-in = Guardado en

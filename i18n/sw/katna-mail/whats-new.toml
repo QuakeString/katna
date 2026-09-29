@@ -1272,3 +1272,17 @@ text = """
 Majukumu sasa yanasawazishwa pia na Yahoo, Zoho, iCloud, Fastmail na akaunti nyingine ambazo majukumu yake yako kwenye seva tofauti na ya barua.
 Katna hujaribu njia bora ya kila akaunti kwanza na hukumbuka ile inayofanya kazi.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Lebo za anwani"
+text = """
+Weka lebo kwenye ukurasa wa anwani huwasha na kuzima lebo au kuunda mpya, na ⋮ kando ya lebo hubadilisha jina lake, kuifuta au kuandikia kila mtu aliye ndani yake.
+Lebo huendana na Google Contacts na Outlook, na kila mabadiliko yana Tendua.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Ongeza kwenye anwani kutoka Barua"
+text = """
+Paneli ya anwani kando ya mazungumzo ina Ongeza kwenye anwani kwa mtu ambaye hujamhifadhi: mbofyo mmoja huhifadhi jina lake, anwani yake na simu, cheo na kampuni kutoka kwenye sahihi yake, pamoja na Tendua.
+Kwa mtu aliyehifadhiwa, kitufe hicho hicho humfungua kwenye ukurasa wa Anwani.
+"""

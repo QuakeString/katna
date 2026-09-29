@@ -7,6 +7,19 @@
 contacts-all = સંપર્કો
 contacts-frequent = વારંવારના
 contacts-labels = લેબલ
+contacts-label-options = લેબલ વિકલ્પો
+contacts-label-rename = લેબલનું નામ બદલો
+contacts-label-email = બધાને મેઇલ મોકલો
+contacts-label-delete = લેબલ ડિલીટ કરો
+contacts-label-new = નવું લેબલ
+contacts-label-name = લેબલનું નામ
+contacts-label-button = લેબલ
+contacts-label-menu = આ રીતે લેબલ કરો:
+contacts-label-added = { $name } માં ઉમેર્યું
+contacts-label-removed = { $name } માંથી કાઢી નાખ્યું
+contacts-label-renamed = લેબલનું નામ બદલીને { $name } કર્યું
+contacts-label-deleted = લેબલ { $name } ડિલીટ કર્યું
+contacts-label-no-email = આ લેબલ પર કોઈનું ઇમેઇલ સરનામું નથી
 contacts-create = સંપર્ક બનાવો
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = સંપર્કો પર પાછા જાઓ
 contacts-edit = ફેરફાર કરો
 contacts-delete = ડિલીટ કરો
 contacts-deleted = { $name } ડિલીટ કર્યો
+contacts-added = { $name } ને સંપર્કોમાં ઉમેર્યા
 contacts-find-mail = મેઇલ
 contacts-details = સંપર્ક વિગતો
 contacts-saved-in = આમાં સાચવ્યો

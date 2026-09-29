@@ -1364,3 +1364,23 @@ at iba pang account na nasa ibang server ang mga gawain kaysa sa
 kanilang mail. Sinusubukan muna ng Katna ang pinakamahusay na paraan ng
 bawat account at naaalala ang gumagana.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Mga label ng contact"
+text = """
+Ang Label sa pahina ng isang contact ay nagmamarka at nag-aalis ng mga
+label o gumagawa ng bago, at ang ⋮ sa tabi ng isang label ay nagpapalit
+ng pangalan nito, nagde-delete nito o nagsusulat sa lahat ng nasa loob
+nito. Nananatiling naka-sync ang mga label sa Google Contacts at
+Outlook, at may I-undo ang bawat pagbabago.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Idagdag sa mga contact mula sa mail"
+text = """
+Ang panel ng contact sa tabi ng isang usapan ay may Idagdag sa mga
+contact para sa taong hindi mo pa nase-save: isang click ang magse-save
+ng pangalan, address, at telepono, titulo at kumpanya mula sa lagda
+nila, kasama ang I-undo. Para sa taong naka-save na, binubuksan sila ng
+parehong button sa pahina ng Mga Contact.
+"""

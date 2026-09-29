@@ -7,6 +7,19 @@
 contacts-all = కాంటాక్ట్‌లు
 contacts-frequent = తరచుగా
 contacts-labels = లేబుల్‌లు
+contacts-label-options = లేబుల్ ఎంపికలు
+contacts-label-rename = లేబుల్ పేరు మార్చండి
+contacts-label-email = అందరికీ మెయిల్ పంపండి
+contacts-label-delete = లేబుల్‌ను తొలగించండి
+contacts-label-new = కొత్త లేబుల్
+contacts-label-name = లేబుల్ పేరు
+contacts-label-button = లేబుల్
+contacts-label-menu = ఇలా లేబుల్ చేయండి:
+contacts-label-added = { $name }కు జోడించబడింది
+contacts-label-removed = { $name } నుండి తీసివేయబడింది
+contacts-label-renamed = లేబుల్ పేరు { $name }గా మార్చబడింది
+contacts-label-deleted = లేబుల్ { $name } తొలగించబడింది
+contacts-label-no-email = ఈ లేబుల్‌లో ఎవరికీ ఇమెయిల్ చిరునామా లేదు
 contacts-create = కాంటాక్ట్‌ను సృష్టించండి
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = కాంటాక్ట్‌లకు తిరిగి వ�
 contacts-edit = ఎడిట్ చేయండి
 contacts-delete = తొలగించండి
 contacts-deleted = { $name } తొలగించబడింది
+contacts-added = { $name }ను కాంటాక్ట్‌లకు జోడించారు
 contacts-find-mail = మెయిల్
 contacts-details = కాంటాక్ట్ వివరాలు
 contacts-saved-in = సేవ్ చేసిన చోటు

@@ -7,6 +7,19 @@
 contacts-all = পরিচিতি
 contacts-frequent = ঘন ঘন
 contacts-labels = লেবেল
+contacts-label-options = লেবেল বিকল্প
+contacts-label-rename = লেবেলের নাম পরিবর্তন করুন
+contacts-label-email = সবাইকে মেল পাঠান
+contacts-label-delete = লেবেল মুছুন
+contacts-label-new = নতুন লেবেল
+contacts-label-name = লেবেলের নাম
+contacts-label-button = লেবেল
+contacts-label-menu = এইভাবে লেবেল দিন:
+contacts-label-added = { $name }-এ যোগ করা হয়েছে
+contacts-label-removed = { $name } থেকে সরানো হয়েছে
+contacts-label-renamed = লেবেলের নাম পাল্টে { $name } করা হয়েছে
+contacts-label-deleted = লেবেল { $name } মুছে ফেলা হয়েছে
+contacts-label-no-email = এই লেবেলে কারও ইমেল ঠিকানা নেই
 contacts-create = পরিচিতি তৈরি করুন
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = পরিচিতিতে ফিরে যান
 contacts-edit = সম্পাদনা করুন
 contacts-delete = মুছুন
 contacts-deleted = { $name } মুছে ফেলা হয়েছে
+contacts-added = { $name }-কে পরিচিতিতে যোগ করা হয়েছে
 contacts-find-mail = মেল
 contacts-details = যোগাযোগের বিবরণ
 contacts-saved-in = যেখানে সেভ করা

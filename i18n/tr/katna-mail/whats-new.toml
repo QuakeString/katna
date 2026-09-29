@@ -1307,3 +1307,21 @@ e-postalarından farklı bir sunucuda bulunan diğer hesaplarla da
 eşitleniyor. Katna her hesap için önce en iyi yolu dener ve işe yarayanı
 hatırlar.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Kişi etiketleri"
+text = """
+Bir kişinin sayfasındaki Etiket düğmesi etiketleri açıp kapatır veya
+yenisini oluşturur; bir etiketin yanındaki ⋮ ise onu yeniden adlandırır,
+siler ya da üzerindeki herkese yazar. Etiketler Google Contacts ve
+Outlook ile uyumlu kalır ve her değişiklik Geri al ile geri alınabilir.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Postadan kişilere ekleme"
+text = """
+Bir yazışmanın yanındaki kişi paneli, kaydetmediğiniz biri için Kişilere
+ekle düğmesi sunar: tek tıklama adını, adresini ve imzasındaki telefon,
+unvan ve şirketi kaydeder, Geri al ile. Kayıtlı biri için aynı düğme onu
+Kişiler sayfasında açar.
+"""

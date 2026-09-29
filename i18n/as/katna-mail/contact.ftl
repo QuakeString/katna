@@ -5,6 +5,8 @@ contact-panel-show = সম্পৰ্কৰ সবিশেষ দেখুৱ
 contact-panel-hide = সম্পৰ্কৰ সবিশেষ লুকুৱাওক
 contact-email = মেইল পঠিয়াওক
 contact-search = তেওঁৰ মেইল সন্ধান কৰক
+contact-add-to-contacts = সম্পৰ্কত যোগ কৰক
+contact-open-contact = সম্পৰ্ক খোলক
 contact-messages = { $count ->
     [one] { $count }টা বাৰ্তা
    *[other] { $count }টা বাৰ্তা

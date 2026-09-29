@@ -7,6 +7,19 @@
 contacts-all = 联系人
 contacts-frequent = 常用联系人
 contacts-labels = 标签
+contacts-label-options = 标签选项
+contacts-label-rename = 重命名标签
+contacts-label-email = 给所有人发邮件
+contacts-label-delete = 删除标签
+contacts-label-new = 新建标签
+contacts-label-name = 标签名称
+contacts-label-button = 标签
+contacts-label-menu = 标签为：
+contacts-label-added = 已添加到“{ $name }”
+contacts-label-removed = 已从“{ $name }”中移除
+contacts-label-renamed = 标签已重命名为“{ $name }”
+contacts-label-deleted = 已删除标签“{ $name }”
+contacts-label-no-email = 此标签下没有人有电子邮件地址
 contacts-create = 创建联系人
 
 ## Search and the list
@@ -40,6 +53,7 @@ contacts-back = 返回联系人
 contacts-edit = 修改
 contacts-delete = 删除
 contacts-deleted = 已删除 { $name }
+contacts-added = 已将 { $name } 添加到联系人
 contacts-find-mail = 邮件
 contacts-details = 联系人详情
 contacts-saved-in = 保存位置

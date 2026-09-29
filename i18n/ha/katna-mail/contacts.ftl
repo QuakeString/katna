@@ -7,6 +7,19 @@
 contacts-all = Lambobin sadarwa
 contacts-frequent = Masu yawa
 contacts-labels = Lakabobi
+contacts-label-options = Zaɓuɓɓukan lakabi
+contacts-label-rename = Sake sunan lakabi
+contacts-label-email = Aika imel ga kowa
+contacts-label-delete = Share lakabi
+contacts-label-new = Sabon lakabi
+contacts-label-name = Sunan lakabi
+contacts-label-button = Lakabi
+contacts-label-menu = Sanya lakabi:
+contacts-label-added = An ƙara zuwa { $name }
+contacts-label-removed = An cire daga { $name }
+contacts-label-renamed = An sake wa lakabin suna: { $name }
+contacts-label-deleted = An share lakabin { $name }
+contacts-label-no-email = Babu wanda ke da adireshin imel a wannan lakabin
 contacts-create = Ƙirƙiri lambar sadarwa
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = Koma zuwa lambobin sadarwa
 contacts-edit = Gyara
 contacts-delete = Share
 contacts-deleted = An share { $name }
+contacts-added = An ƙara { $name } cikin lambobin sadarwa
 contacts-find-mail = Wasiƙu
 contacts-details = Bayanan lamba
 contacts-saved-in = An adana a

@@ -5,6 +5,8 @@ contact-panel-show = Pokaż dane kontaktu
 contact-panel-hide = Ukryj dane kontaktu
 contact-email = Wyślij e-mail
 contact-search = Szukaj w poczcie
+contact-add-to-contacts = Dodaj do kontaktów
+contact-open-contact = Otwórz kontakt
 contact-messages = { $count ->
     [one] { $count } wiadomość
     [few] { $count } wiadomości

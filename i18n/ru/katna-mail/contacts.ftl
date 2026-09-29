@@ -7,6 +7,19 @@
 contacts-all = Контакты
 contacts-frequent = Часто используемые
 contacts-labels = Ярлыки
+contacts-label-options = Параметры ярлыка
+contacts-label-rename = Переименовать ярлык
+contacts-label-email = Написать всем
+contacts-label-delete = Удалить ярлык
+contacts-label-new = Новый ярлык
+contacts-label-name = Название ярлыка
+contacts-label-button = Ярлык
+contacts-label-menu = Назначить ярлык:
+contacts-label-added = Добавлено в ярлык «{ $name }»
+contacts-label-removed = Удалено из ярлыка «{ $name }»
+contacts-label-renamed = Ярлык переименован в «{ $name }»
+contacts-label-deleted = Ярлык «{ $name }» удалён
+contacts-label-no-email = Ни у кого с этим ярлыком нет адреса электронной почты
 contacts-create = Создать контакт
 
 ## Search and the list
@@ -46,6 +59,7 @@ contacts-back = Назад к контактам
 contacts-edit = Изменить
 contacts-delete = Удалить
 contacts-deleted = Удалено: { $name }
+contacts-added = Контакт { $name } добавлен
 contacts-find-mail = Почта
 contacts-details = Контактная информация
 contacts-saved-in = Сохранён в

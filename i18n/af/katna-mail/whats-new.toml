@@ -1277,3 +1277,21 @@ Take sinkroniseer nou ook met Yahoo, Zoho, iCloud, Fastmail en ander
 rekeninge wie se take op ’n ander bediener as hul e-pos is. Katna
 probeer eers elke rekening se beste manier en onthou die een wat werk.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Kontaketikette"
+text = """
+Etiket op ’n kontak se bladsy skakel etikette aan en af of maak ’n nuwe
+een, en die ⋮ langs ’n etiket hernoem dit, vee dit uit of skryf aan
+almal daarop. Etikette bly in pas met Google Contacts en Outlook, en
+elke verandering het ’n Ontdoen.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Voeg by kontakte vanuit e-pos"
+text = """
+Die kontakpaneel langs ’n gesprek het Voeg by kontakte vir iemand wat jy
+nie gestoor het nie: een klik stoor hul naam, adres en die foon, titel
+en maatskappy uit hul handtekening, met Ontdoen. Vir iemand wat gestoor
+is, maak dieselfde knoppie hulle oop op die Kontakte-bladsy.
+"""

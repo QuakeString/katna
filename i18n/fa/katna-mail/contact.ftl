@@ -5,6 +5,8 @@ contact-panel-show = نمایش جزئیات مخاطب
 contact-panel-hide = پنهان کردن جزئیات مخاطب
 contact-email = ارسال ایمیل
 contact-search = جستجوی ایمیل با او
+contact-add-to-contacts = افزودن به مخاطبین
+contact-open-contact = باز کردن مخاطب
 contact-messages = { $count ->
     [one] { $count } پیام
    *[other] { $count } پیام

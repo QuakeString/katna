@@ -7,6 +7,19 @@
 contacts-all = Anwani
 contacts-frequent = Zinazotumika mara kwa mara
 contacts-labels = Lebo
+contacts-label-options = Chaguo za lebo
+contacts-label-rename = Badilisha jina la lebo
+contacts-label-email = Tuma barua pepe kwa wote
+contacts-label-delete = Futa lebo
+contacts-label-new = Lebo mpya
+contacts-label-name = Jina la lebo
+contacts-label-button = Weka lebo
+contacts-label-menu = Weka kwenye lebo:
+contacts-label-added = Imeongezwa kwenye { $name }
+contacts-label-removed = Imeondolewa kutoka { $name }
+contacts-label-renamed = Lebo imepewa jina jipya: { $name }
+contacts-label-deleted = Lebo { $name } imefutwa
+contacts-label-no-email = Hakuna mtu kwenye lebo hii mwenye anwani ya barua pepe
 contacts-create = Unda anwani
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = Rudi kwenye anwani
 contacts-edit = Hariri
 contacts-delete = Futa
 contacts-deleted = Imefutwa: { $name }
+contacts-added = Imeongezwa kwenye anwani: { $name }
 contacts-find-mail = Barua
 contacts-details = Maelezo ya anwani
 contacts-saved-in = Imehifadhiwa katika

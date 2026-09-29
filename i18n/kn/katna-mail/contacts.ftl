@@ -7,6 +7,19 @@
 contacts-all = ಸಂಪರ್ಕಗಳು
 contacts-frequent = ಆಗಾಗ್ಗೆ
 contacts-labels = ಲೇಬಲ್‌ಗಳು
+contacts-label-options = ಲೇಬಲ್ ಆಯ್ಕೆಗಳು
+contacts-label-rename = ಲೇಬಲ್ ಮರುಹೆಸರಿಸಿ
+contacts-label-email = ಎಲ್ಲರಿಗೂ ಮೇಲ್ ಕಳುಹಿಸಿ
+contacts-label-delete = ಲೇಬಲ್ ಅಳಿಸಿ
+contacts-label-new = ಹೊಸ ಲೇಬಲ್
+contacts-label-name = ಲೇಬಲ್ ಹೆಸರು
+contacts-label-button = ಲೇಬಲ್
+contacts-label-menu = ಹೀಗೆ ಲೇಬಲ್ ಮಾಡಿ:
+contacts-label-added = { $name } ಗೆ ಸೇರಿಸಲಾಗಿದೆ
+contacts-label-removed = { $name } ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ
+contacts-label-renamed = ಲೇಬಲ್ ಹೆಸರನ್ನು { $name } ಎಂದು ಬದಲಾಯಿಸಲಾಗಿದೆ
+contacts-label-deleted = ಲೇಬಲ್ { $name } ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ
+contacts-label-no-email = ಈ ಲೇಬಲ್‌ನಲ್ಲಿರುವ ಯಾರಿಗೂ ಇಮೇಲ್ ವಿಳಾಸವಿಲ್ಲ
 contacts-create = ಸಂಪರ್ಕವನ್ನು ರಚಿಸಿ
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = ಸಂಪರ್ಕಗಳಿಗೆ ಹಿಂತಿರುಗಿ
 contacts-edit = ಎಡಿಟ್ ಮಾಡಿ
 contacts-delete = ಅಳಿಸಿ
 contacts-deleted = { $name } ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ
+contacts-added = { $name } ಅನ್ನು ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಲಾಗಿದೆ
 contacts-find-mail = ಮೇಲ್
 contacts-details = ಸಂಪರ್ಕ ವಿವರಗಳು
 contacts-saved-in = ಉಳಿಸಿದ ಸ್ಥಳ

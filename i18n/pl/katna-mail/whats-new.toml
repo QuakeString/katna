@@ -1309,3 +1309,22 @@ innymi kontami, których zadania znajdują się na innym serwerze niż
 poczta. Katna najpierw próbuje najlepszej metody dla każdego konta i
 zapamiętuje tę, która działa.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Etykiety kontaktów"
+text = """
+Przycisk Etykieta na stronie kontaktu włącza i wyłącza etykiety albo
+tworzy nową, a ⋮ obok etykiety pozwala zmienić jej nazwę, usunąć ją lub
+napisać do wszystkich, którzy ją mają. Etykiety pozostają
+zsynchronizowane z Google Contacts i Outlookiem, a każda zmiana ma opcję
+Cofnij.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Dodawanie do kontaktów z poczty"
+text = """
+Panel kontaktu obok rozmowy ma przycisk Dodaj do kontaktów dla osoby,
+której nie zapisano: jedno kliknięcie zapisuje imię i nazwisko, adres
+oraz telefon, stanowisko i firmę z podpisu, z opcją Cofnij. Przy
+zapisanej osobie ten sam przycisk otwiera ją na stronie Kontakty.
+"""

@@ -1255,3 +1255,17 @@ text = """
 Yanzu ayyuka suna daidaita da Yahoo, Zoho, iCloud, Fastmail da sauran asusu waɗanda ayyukansu suke a wani sabar dabam da na wasiƙarsu.
 Katna tana fara gwada mafi kyawun hanyar kowane asusu, sannan ta tuna wadda ta yi aiki.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Lakabobi na lambobin sadarwa"
+text = """
+Lakabi a shafin lambar sadarwa yana kunna ko kashe lakabobi ko ƙirƙirar sabo, kuma ⋮ da ke kusa da lakabi yana sake masa suna, share shi ko rubuta wa kowa da ke ciki.
+Lakabobi suna daidaita da Google Contacts da Outlook, kuma kowane canji yana da Warware.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Ƙara cikin lambobin sadarwa daga Wasiƙa"
+text = """
+Allon lambar sadarwa kusa da tattaunawa yana da Ƙara cikin lambobin sadarwa ga wanda ba ka adana ba tukuna: danna sau ɗaya yana adana sunansa, adireshinsa, da wayar, matsayi da kamfani daga sa hannunsa, tare da Warware.
+Ga wanda aka adana, maɓallin ɗaya yana buɗe shi a shafin Lambobin sadarwa.
+"""

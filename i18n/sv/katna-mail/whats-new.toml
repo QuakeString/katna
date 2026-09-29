@@ -1288,3 +1288,21 @@ Uppgifter synkroniseras nu även med Yahoo, Zoho, iCloud, Fastmail och
 andra konton vars uppgifter finns på en annan server än e-posten. Katna
 prövar varje kontos bästa metod först och kommer ihåg den som fungerar.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Kontaktetiketter"
+text = """
+Etikett på en kontakts sida bockar etiketter av och på eller skapar en
+ny, och ⋮ bredvid en etikett byter namn på den, raderar den eller
+skriver till alla på den. Etiketterna hålls i takt med Google Contacts
+och Outlook, och varje ändring har en Ångra.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Lägg till i kontakter från e-posten"
+text = """
+Kontaktpanelen bredvid en konversation har Lägg till i kontakter för
+någon du inte har sparat: ett klick sparar namn, adress och telefon,
+titel och företag från signaturen, med Ångra. För någon som redan är
+sparad öppnar samma knapp personen på sidan Kontakter.
+"""

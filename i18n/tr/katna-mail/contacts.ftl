@@ -7,6 +7,19 @@
 contacts-all = Kişiler
 contacts-frequent = Sık kullanılanlar
 contacts-labels = Etiketler
+contacts-label-options = Etiket seçenekleri
+contacts-label-rename = Etiketi yeniden adlandır
+contacts-label-email = Herkese e-posta gönder
+contacts-label-delete = Etiketi sil
+contacts-label-new = Yeni etiket
+contacts-label-name = Etiket adı
+contacts-label-button = Etiket
+contacts-label-menu = Şu etiketle:
+contacts-label-added = { $name } etiketine eklendi
+contacts-label-removed = { $name } etiketinden kaldırıldı
+contacts-label-renamed = Etiket adı { $name } olarak değiştirildi
+contacts-label-deleted = { $name } etiketi silindi
+contacts-label-no-email = Bu etiketteki hiç kimsenin e-posta adresi yok
 contacts-create = Kişi oluştur
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = Kişilere geri dön
 contacts-edit = Düzenle
 contacts-delete = Sil
 contacts-deleted = { $name } silindi
+contacts-added = { $name } kişilere eklendi
 contacts-find-mail = Posta
 contacts-details = Kişi bilgileri
 contacts-saved-in = Kaydedildiği yer

@@ -5,6 +5,8 @@ contact-panel-show = સંપર્કની વિગતો બતાવો
 contact-panel-hide = સંપર્કની વિગતો છુપાવો
 contact-email = મેઇલ મોકલો
 contact-search = તેમનો મેઇલ શોધો
+contact-add-to-contacts = સંપર્કોમાં ઉમેરો
+contact-open-contact = સંપર્ક ખોલો
 contact-messages = { $count ->
     [one] { $count } મેસેજ
    *[other] { $count } મેસેજ

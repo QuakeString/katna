@@ -1318,3 +1318,22 @@ akun lain yang tugasnya berada di server berbeda dari suratnya. Katna
 mencoba cara terbaik tiap akun lebih dulu dan mengingat cara yang
 berhasil.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Label kontak"
+text = """
+Label di halaman kontak mencentang dan membatalkan label atau membuat
+yang baru, dan ⋮ di samping label mengganti namanya, menghapusnya, atau
+menulis ke semua orang di dalamnya. Label tetap selaras dengan Google
+Contacts dan Outlook, dan setiap perubahan bisa di-Urungkan.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Tambahkan ke kontak dari email"
+text = """
+Panel kontak di samping percakapan memiliki Tambahkan ke kontak untuk
+orang yang belum Anda simpan: satu klik menyimpan nama, alamat, serta
+telepon, jabatan, dan perusahaan dari tanda tangannya, dengan Urungkan.
+Untuk orang yang sudah tersimpan, tombol yang sama membukanya di halaman
+Kontak.
+"""

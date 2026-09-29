@@ -1318,3 +1318,22 @@ accounts waarvan de taken op een andere server staan dan hun e-mail.
 Katna probeert eerst de beste manier van elk account en onthoudt de
 manier die werkt.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Labels voor contacten"
+text = """
+Met Label op de pagina van een contact zet je labels aan of uit of maak
+je een nieuw label, en met ⋮ naast een label hernoem of verwijder je
+het, of mail je iedereen erin. Labels blijven gelijklopen met Google
+Contacts en Outlook, en elke wijziging heeft een Ongedaan maken.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Toevoegen aan contacten vanuit mail"
+text = """
+Het contactpaneel naast een gesprek heeft Toevoegen aan contacten voor
+iemand die je nog niet hebt opgeslagen: met één klik sla je naam, adres
+en het telefoonnummer, de functie en het bedrijf uit de handtekening op,
+met Ongedaan maken. Bij iemand die al is opgeslagen opent dezelfde knop
+het contact op de pagina Contacten.
+"""

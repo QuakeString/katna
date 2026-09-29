@@ -1361,3 +1361,23 @@ Fastmail et d’autres comptes dont les tâches se trouvent sur un autre
 serveur que leur messagerie. Katna essaie d’abord la meilleure méthode
 de chaque compte et retient celle qui fonctionne.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Libellés de contacts"
+text = """
+Le bouton Libellé sur la page d’un contact coche ou décoche des
+libellés, ou en crée un nouveau, et le ⋮ à côté d’un libellé permet de
+le renommer, de le supprimer ou d’écrire à tous ses membres. Les
+libellés restent synchronisés avec Google Contacts et Outlook, et chaque
+modification peut être annulée avec Annuler.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Ajouter aux contacts depuis le courrier"
+text = """
+Le panneau de contact à côté d’une conversation propose Ajouter aux
+contacts pour quelqu’un que vous n’avez pas enregistré : un clic
+enregistre son nom, son adresse, ainsi que le téléphone, le titre et
+l’entreprise de sa signature, avec Annuler. Pour une personne déjà
+enregistrée, le même bouton l’ouvre sur la page Contacts.
+"""

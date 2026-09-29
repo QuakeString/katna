@@ -7,6 +7,19 @@
 contacts-all = Oxhumana nabo
 contacts-frequent = Ababuthakathaka
 contacts-labels = Amalebula
+contacts-label-options = Izinketho zelebula
+contacts-label-rename = Qamba kabusha ilebula
+contacts-label-email = Thumela imeyili kubo bonke
+contacts-label-delete = Susa ilebula
+contacts-label-new = Ilebula elisha
+contacts-label-name = Igama lelebula
+contacts-label-button = Ilebula
+contacts-label-menu = Faka ilebula njengo:
+contacts-label-added = Kwengezwe ku-{ $name }
+contacts-label-removed = Kususwe ku-{ $name }
+contacts-label-renamed = Ilebula lifakwe igama elisha elithi { $name }
+contacts-label-deleted = Kususiwe ilebula { $name }
+contacts-label-no-email = Akekho kule lebula onekheli le-imeyili
 contacts-create = Dala oxhumana naye
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = Buyela koxhumana nabo
 contacts-edit = Hlela
 contacts-delete = Susa
 contacts-deleted = Kususiwe { $name }
+contacts-added = Kwengezwe { $name } koxhumana nabo
 contacts-find-mail = Imeyili
 contacts-details = Imininingwane yoxhumana naye
 contacts-saved-in = Kugcinwe ku-

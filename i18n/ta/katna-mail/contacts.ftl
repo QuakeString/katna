@@ -7,6 +7,19 @@
 contacts-all = தொடர்புகள்
 contacts-frequent = அடிக்கடி
 contacts-labels = லேபிள்கள்
+contacts-label-options = லேபிள் விருப்பங்கள்
+contacts-label-rename = லேபிள் பெயரை மாற்று
+contacts-label-email = அனைவருக்கும் மெயில் அனுப்பு
+contacts-label-delete = லேபிளை நீக்கு
+contacts-label-new = புதிய லேபிள்
+contacts-label-name = லேபிள் பெயர்
+contacts-label-button = லேபிள்
+contacts-label-menu = இவ்வாறு லேபிளிடு:
+contacts-label-added = { $name } இல் சேர்க்கப்பட்டது
+contacts-label-removed = { $name } இலிருந்து நீக்கப்பட்டது
+contacts-label-renamed = லேபிள் பெயர் { $name } என மாற்றப்பட்டது
+contacts-label-deleted = லேபிள் { $name } நீக்கப்பட்டது
+contacts-label-no-email = இந்த லேபிளில் உள்ள யாருக்கும் மின்னஞ்சல் முகவரி இல்லை
 contacts-create = தொடர்பை உருவாக்கு
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = தொடர்புகளுக்குத் திரும
 contacts-edit = திருத்து
 contacts-delete = நீக்கு
 contacts-deleted = { $name } நீக்கப்பட்டது
+contacts-added = { $name } தொடர்புகளில் சேர்க்கப்பட்டது
 contacts-find-mail = அஞ்சல்
 contacts-details = தொடர்பு விவரங்கள்
 contacts-saved-in = சேமித்த இடம்

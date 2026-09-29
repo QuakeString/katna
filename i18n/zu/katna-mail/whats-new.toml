@@ -1359,3 +1359,22 @@ nakwamanye ama-akhawunti anemisebenzi kuseva engeyona eyeyimeyili yawo.
 I-Katna izama indlela engcono kakhulu ye-akhawunti ngayinye kuqala, bese
 ikhumbula leyo esebenzayo.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Amalebula oxhumana nabo"
+text = """
+Ilebula ekhasini loxhumana naye livula futhi livale amalebula noma lenze
+elisha, futhi u-⋮ eduze kwelebula ulinika igama elisha, uyalisusa noma
+abhalele bonke abakulo imeyili. Amalebula ahambisana ne-Google Contacts
+ne-Outlook, futhi ushintsho ngalunye lunenkinobho ethi Hlehlisa.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Engeza koxhumana nabo ku-Imeyili"
+text = """
+Iphaneli yoxhumana naye eceleni kwengxoxo inenkinobho ethi Engeza
+koxhumana nabo yomuntu ongamgcinanga: ngokuchofoza okukodwa igama lakhe,
+ikheli, nocingo, isihloko nenkampani esesignesha yakhe kuyagcinwa,
+kunenkinobho ethi Hlehlisa. Kumuntu osegciniwe, inkinobho efanayo imvula
+ekhasini elithi Oxhumana nabo.
+"""

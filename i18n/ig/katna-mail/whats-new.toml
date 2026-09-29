@@ -1275,3 +1275,21 @@ text = """
 ndị ọzọ nke ọrụ ha dị na sava ọzọ karịa ozi ha. Katna na-anwale ụzọ
 kacha mma nke akaụntụ ọ bụla ka ọ malite, ma na-echeta nke na-arụ ọrụ.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Leebụl kọntaktị"
+text = """
+Bọtịnụ leebụl dị na peeji kọntaktị na-emeghe ma na-emechi leebụl ma ọ bụ
+na-emepụta nke ọhụrụ, ⋮ dị n'akụkụ leebụl na-agbanwe aha ya, na-ehichapụ
+ya ma ọ bụ na-eziga ndị niile nọ na ya ozi. Leebụl na-adịgide n'otu
+n'otu na Google Contacts na Outlook, mgbanwe ọ bụla nwekwara Megharịa.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Tinye na kọntaktị site na Ozi"
+text = """
+Ogwe kọntaktị dị n'akụkụ mkparịta ụka nwere Tinye na kọntaktị maka onye
+ị chekwabeghị: otu ogbugba na-echekwa aha ya, adreesị, na ekwentị, ọkwa
+na ụlọ ọrụ sitere na mbinye aka ya, yana Megharịa. Maka onye echekwara,
+otu bọtịnụ ahụ na-emeghe ya na peeji Kọntaktị.
+"""

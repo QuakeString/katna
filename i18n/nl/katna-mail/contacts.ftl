@@ -7,6 +7,19 @@
 contacts-all = Contacten
 contacts-frequent = Vaak gebruikt
 contacts-labels = Labels
+contacts-label-options = Labelopties
+contacts-label-rename = Label hernoemen
+contacts-label-email = Iedereen mailen
+contacts-label-delete = Label verwijderen
+contacts-label-new = Nieuw label
+contacts-label-name = Labelnaam
+contacts-label-button = Label
+contacts-label-menu = Labelen als:
+contacts-label-added = Toegevoegd aan { $name }
+contacts-label-removed = Verwijderd uit { $name }
+contacts-label-renamed = Label hernoemd naar { $name }
+contacts-label-deleted = Label { $name } verwijderd
+contacts-label-no-email = Niemand met dit label heeft een e-mailadres
 contacts-create = Contact maken
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = Terug naar contacten
 contacts-edit = Bewerken
 contacts-delete = Verwijderen
 contacts-deleted = { $name } verwijderd
+contacts-added = { $name } toegevoegd aan contacten
 contacts-find-mail = E-mail
 contacts-details = Contactgegevens
 contacts-saved-in = Opgeslagen in

@@ -7,6 +7,19 @@
 contacts-all = संपर्क
 contacts-frequent = वारंवार
 contacts-labels = लेबल
+contacts-label-options = लेबल पर्याय
+contacts-label-rename = लेबलचे नाव बदला
+contacts-label-email = सर्वांना मेल पाठवा
+contacts-label-delete = लेबल हटवा
+contacts-label-new = नवीन लेबल
+contacts-label-name = लेबलचे नाव
+contacts-label-button = लेबल
+contacts-label-menu = असे लेबल लावा:
+contacts-label-added = { $name } मध्ये जोडले
+contacts-label-removed = { $name } मधून काढले
+contacts-label-renamed = लेबलचे नाव बदलून { $name } केले
+contacts-label-deleted = लेबल { $name } हटवले
+contacts-label-no-email = या लेबलवरील कोणाकडेही ईमेल पत्ता नाही
 contacts-create = संपर्क तयार करा
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = संपर्कांकडे परत जा
 contacts-edit = संपादित करा
 contacts-delete = हटवा
 contacts-deleted = { $name } हटवले
+contacts-added = { $name } संपर्कांमध्ये जोडले
 contacts-find-mail = मेल
 contacts-details = संपर्क तपशील
 contacts-saved-in = येथे सेव्ह केले

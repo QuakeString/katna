@@ -5,6 +5,8 @@ contact-panel-show = Ipakita ang detalye ng contact
 contact-panel-hide = Itago ang detalye ng contact
 contact-email = Magpadala ng email
 contact-search = Hanapin ang mail kasama nila
+contact-add-to-contacts = Idagdag sa mga contact
+contact-open-contact = Buksan ang contact
 contact-messages = { $count ->
     [one] { $count } mensahe
    *[other] { $count } mensahe

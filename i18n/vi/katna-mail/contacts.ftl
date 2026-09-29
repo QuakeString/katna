@@ -7,6 +7,19 @@
 contacts-all = Danh bạ
 contacts-frequent = Thường xuyên
 contacts-labels = Nhãn
+contacts-label-options = Tùy chọn nhãn
+contacts-label-rename = Đổi tên nhãn
+contacts-label-email = Gửi email cho tất cả
+contacts-label-delete = Xóa nhãn
+contacts-label-new = Nhãn mới
+contacts-label-name = Tên nhãn
+contacts-label-button = Gắn nhãn
+contacts-label-menu = Gắn nhãn là:
+contacts-label-added = Đã thêm vào { $name }
+contacts-label-removed = Đã xóa khỏi { $name }
+contacts-label-renamed = Đã đổi tên nhãn thành { $name }
+contacts-label-deleted = Đã xóa nhãn { $name }
+contacts-label-no-email = Không ai trong nhãn này có địa chỉ email
 contacts-create = Tạo người liên hệ
 
 ## Search and the list
@@ -40,6 +53,7 @@ contacts-back = Quay lại danh bạ
 contacts-edit = Sửa
 contacts-delete = Xóa
 contacts-deleted = Đã xóa { $name }
+contacts-added = Đã thêm { $name } vào danh bạ
 contacts-find-mail = Thư
 contacts-details = Thông tin liên hệ
 contacts-saved-in = Đã lưu trong

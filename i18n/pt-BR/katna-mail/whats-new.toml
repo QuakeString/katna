@@ -1317,3 +1317,21 @@ outras contas cujas tarefas ficam em outro servidor que não o do e-mail.
 O Katna tenta primeiro o melhor método de cada conta e lembra qual
 funciona.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Marcadores de contatos"
+text = """
+Marcador na página de um contato ativa e desativa marcadores ou cria um
+novo, e o ⋮ ao lado de um marcador o renomeia, o exclui ou escreve para
+todos que o têm. Os marcadores ficam sincronizados com o Google Contacts
+e o Outlook, e toda alteração tem um Desfazer.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Adicionar aos contatos pelo e-mail"
+text = """
+O painel do contato ao lado de uma conversa tem Adicionar aos contatos
+para quem você ainda não salvou: um clique salva o nome, o endereço e o
+telefone, o cargo e a empresa da assinatura, com Desfazer. Para quem já
+está salvo, o mesmo botão o abre na página Contatos.
+"""

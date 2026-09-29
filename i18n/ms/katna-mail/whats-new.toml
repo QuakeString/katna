@@ -1330,3 +1330,23 @@ akaun lain yang tugasnya berada di pelayan lain daripada e-melnya. Katna
 mencuba cara terbaik setiap akaun dahulu dan mengingati cara yang
 berfungsi.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Label kenalan"
+text = """
+Label pada halaman kenalan menanda dan membuang tanda label atau
+mencipta yang baharu, dan ⋮ di sebelah label menamakannya semula,
+memadamkannya atau menulis kepada semua orang padanya. Label kekal
+selaras dengan Google Contacts dan Outlook, dan setiap perubahan ada
+Buat asal.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Tambah pada kenalan daripada mel"
+text = """
+Panel kenalan di sebelah perbualan mempunyai Tambah pada kenalan untuk
+seseorang yang belum anda simpan: satu klik menyimpan nama, alamat serta
+telefon, jawatan dan syarikat daripada tandatangannya, dengan Buat asal.
+Bagi seseorang yang telah disimpan, butang yang sama membukanya pada
+halaman Kenalan.
+"""

@@ -7,6 +7,19 @@
 contacts-all = جهات الاتصال
 contacts-frequent = الأكثر تواصلاً
 contacts-labels = التصنيفات
+contacts-label-options = خيارات التصنيف
+contacts-label-rename = إعادة تسمية التصنيف
+contacts-label-email = إرسال بريد إلى الجميع
+contacts-label-delete = حذف التصنيف
+contacts-label-new = تصنيف جديد
+contacts-label-name = اسم التصنيف
+contacts-label-button = تصنيف
+contacts-label-menu = تصنيف باسم:
+contacts-label-added = تمت الإضافة إلى { $name }
+contacts-label-removed = تمت الإزالة من { $name }
+contacts-label-renamed = تمت إعادة تسمية التصنيف إلى { $name }
+contacts-label-deleted = تم حذف التصنيف { $name }
+contacts-label-no-email = لا أحد في هذا التصنيف لديه عنوان بريد إلكتروني
 contacts-create = إنشاء جهة اتصال
 
 ## Search and the list
@@ -50,6 +63,7 @@ contacts-back = العودة إلى جهات الاتصال
 contacts-edit = تعديل
 contacts-delete = حذف
 contacts-deleted = تم حذف { $name }
+contacts-added = تمت إضافة { $name } إلى جهات الاتصال
 contacts-find-mail = البريد
 contacts-details = تفاصيل جهة الاتصال
 contacts-saved-in = محفوظة في

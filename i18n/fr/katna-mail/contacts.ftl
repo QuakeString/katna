@@ -7,6 +7,19 @@
 contacts-all = Contacts
 contacts-frequent = Fréquents
 contacts-labels = Libellés
+contacts-label-options = Options du libellé
+contacts-label-rename = Renommer le libellé
+contacts-label-email = Envoyer un e-mail à tous
+contacts-label-delete = Supprimer le libellé
+contacts-label-new = Nouveau libellé
+contacts-label-name = Nom du libellé
+contacts-label-button = Libellé
+contacts-label-menu = Attribuer le libellé :
+contacts-label-added = Ajouté à { $name }
+contacts-label-removed = Retiré de { $name }
+contacts-label-renamed = Libellé renommé en { $name }
+contacts-label-deleted = Libellé supprimé : { $name }
+contacts-label-no-email = Personne dans ce libellé n’a d’adresse e-mail
 contacts-create = Créer un contact
 
 ## Search and the list
@@ -44,6 +57,7 @@ contacts-back = Retour aux contacts
 contacts-edit = Modifier
 contacts-delete = Supprimer
 contacts-deleted = Contact supprimé : { $name }
+contacts-added = { $name } ajouté aux contacts
 contacts-find-mail = Courrier
 contacts-details = Coordonnées
 contacts-saved-in = Enregistré dans

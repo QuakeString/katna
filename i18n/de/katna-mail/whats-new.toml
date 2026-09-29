@@ -1349,3 +1349,22 @@ Konten synchronisiert, deren Aufgaben auf einem anderen Server liegen
 als ihre E-Mails. Katna probiert zuerst den besten Weg jedes Kontos aus
 und merkt sich den, der funktioniert.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Labels für Kontakte"
+text = """
+Label auf der Seite eines Kontakts setzt Labels oder erstellt ein neues,
+und über ⋮ neben einem Label benennen Sie es um, löschen es oder
+schreiben allen darin. Labels bleiben mit Google Contacts und Outlook
+abgeglichen, und jede Änderung lässt sich mit Rückgängig zurücknehmen.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Aus der E-Mail zu Kontakten hinzufügen"
+text = """
+Das Kontaktfeld neben einer Unterhaltung bietet Zu Kontakten hinzufügen
+für jemanden, den Sie nicht gespeichert haben: Ein Klick speichert Name,
+Adresse sowie Telefon, Position und Firma aus der Signatur, mit
+Rückgängig. Bei einem gespeicherten Kontakt öffnet dieselbe Schaltfläche
+ihn auf der Seite Kontakte.
+"""

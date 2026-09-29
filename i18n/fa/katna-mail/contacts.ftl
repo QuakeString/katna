@@ -7,6 +7,19 @@
 contacts-all = مخاطبین
 contacts-frequent = پرتماس‌ها
 contacts-labels = برچسب‌ها
+contacts-label-options = گزینه‌های برچسب
+contacts-label-rename = تغییر نام برچسب
+contacts-label-email = ایمیل به همه
+contacts-label-delete = حذف برچسب
+contacts-label-new = برچسب جدید
+contacts-label-name = نام برچسب
+contacts-label-button = برچسب
+contacts-label-menu = برچسب‌گذاری به‌عنوان:
+contacts-label-added = به { $name } اضافه شد
+contacts-label-removed = از { $name } حذف شد
+contacts-label-renamed = نام برچسب به { $name } تغییر کرد
+contacts-label-deleted = برچسب { $name } حذف شد
+contacts-label-no-email = هیچ‌کس در این برچسب نشانی ایمیل ندارد
 contacts-create = ایجاد مخاطب
 
 ## Search and the list
@@ -42,6 +55,7 @@ contacts-back = بازگشت به مخاطبین
 contacts-edit = ویرایش
 contacts-delete = حذف
 contacts-deleted = { $name } حذف شد
+contacts-added = { $name } به مخاطبین اضافه شد
 contacts-find-mail = ایمیل
 contacts-details = جزئیات مخاطب
 contacts-saved-in = ذخیره‌شده در

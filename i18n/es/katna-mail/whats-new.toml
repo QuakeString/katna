@@ -1328,3 +1328,21 @@ Fastmail y otras cuentas cuyas tareas están en un servidor distinto al
 de su correo. Katna prueba primero el mejor método de cada cuenta y
 recuerda el que funciona.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Etiquetas de contactos"
+text = """
+Etiqueta en la página de un contacto activa o desactiva etiquetas o crea
+una nueva, y el ⋮ junto a una etiqueta la renombra, la elimina o escribe
+a todos los que la tienen. Las etiquetas se mantienen sincronizadas con
+Google Contacts y Outlook, y cada cambio tiene un Deshacer.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Añadir a contactos desde el correo"
+text = """
+El panel de contacto junto a una conversación tiene Añadir a contactos
+para alguien que no has guardado: un clic guarda su nombre, su dirección
+y el teléfono, el cargo y la empresa de su firma, con Deshacer. Si ya
+está guardado, el mismo botón lo abre en la página Contactos.
+"""

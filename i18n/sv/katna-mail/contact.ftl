@@ -5,6 +5,8 @@ contact-panel-show = Visa kontaktuppgifter
 contact-panel-hide = Dölj kontaktuppgifter
 contact-email = Skicka e-post
 contact-search = Sök e-post
+contact-add-to-contacts = Lägg till i kontakter
+contact-open-contact = Öppna kontakt
 contact-messages = { $count ->
     [one] { $count } meddelande
    *[other] { $count } meddelanden

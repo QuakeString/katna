@@ -1242,3 +1242,17 @@ text = """
 Iṣẹ́ ti ń bá Yahoo, Zoho, iCloud, Fastmail àti àwọn àkọọ́lẹ̀ mìíràn tí iṣẹ́ wọn wà lórí olupin tó yàtọ̀ sí ti ìmẹ́ẹ̀lì wọn sọ̀rọ̀ báyìí.
 Katna kọ́kọ́ máa ń gbìyànjú ọ̀nà tó dára jù fún àkọọ́lẹ̀ kọ̀ọ̀kan, á sì rántí èyí tó ṣiṣẹ́.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Àwọn àmì olùbásọ̀rọ̀"
+text = """
+Àmì lórí ojú-ìwé olùbásọ̀rọ̀ ń tan àmì tàbí pa á, tàbí ṣẹ̀dá tuntun, ⋮ tó wà ní ẹ̀gbẹ́ àmì sì ń tún orúkọ rẹ̀ ṣe, pa á rẹ́ tàbí kọ̀wé sí gbogbo ẹni tó wà nínú rẹ̀.
+Àwọn àmì ń bá Google Contacts àti Outlook rìn pọ̀, gbogbo àyípadà sì ní Undo.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Fi kún àwọn olùbásọ̀rọ̀ láti Mail"
+text = """
+Pánẹ́ẹ̀lì olùbásọ̀rọ̀ tó wà ní ẹ̀gbẹ́ ìjíròrò ní Fi kún àwọn olùbásọ̀rọ̀ fún ẹni tí o kò tíì fipamọ́: ìkọlù kan ń fi orúkọ àti àdírẹ́sì rẹ̀ pamọ́, pẹ̀lú fóònù, akọlé iṣẹ́ àti ilé-iṣẹ́ láti ibuwọ́lù rẹ̀, pẹ̀lú Undo.
+Fún ẹni tí a ti fipamọ́, bọ́tìnì kan náà ń ṣí i ní ojú-ìwé Àwọn olùbásọ̀rọ̀.
+"""

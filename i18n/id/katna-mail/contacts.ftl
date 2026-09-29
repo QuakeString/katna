@@ -7,6 +7,19 @@
 contacts-all = Kontak
 contacts-frequent = Sering
 contacts-labels = Label
+contacts-label-options = Opsi label
+contacts-label-rename = Ganti nama label
+contacts-label-email = Kirim email ke semua
+contacts-label-delete = Hapus label
+contacts-label-new = Label baru
+contacts-label-name = Nama label
+contacts-label-button = Label
+contacts-label-menu = Beri label:
+contacts-label-added = Ditambahkan ke { $name }
+contacts-label-removed = Dihapus dari { $name }
+contacts-label-renamed = Label diganti namanya menjadi { $name }
+contacts-label-deleted = Label { $name } dihapus
+contacts-label-no-email = Tidak ada orang di label ini yang memiliki alamat email
 contacts-create = Buat kontak
 
 ## Search and the list
@@ -40,6 +53,7 @@ contacts-back = Kembali ke kontak
 contacts-edit = Edit
 contacts-delete = Hapus
 contacts-deleted = { $name } dihapus
+contacts-added = { $name } ditambahkan ke kontak
 contacts-find-mail = Email
 contacts-details = Detail kontak
 contacts-saved-in = Disimpan di
