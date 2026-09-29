@@ -18,6 +18,7 @@ use katna_ui::px;
 
 use super::super::MailWindow;
 use super::super::event_edit::time_at;
+use super::menu::CalTarget;
 use super::{ALL_DAY_LINE, MONTH_LINE};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::icon;
@@ -140,6 +141,10 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .cursor_pointer()
             .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
+            .on_mouse_down(
+                MouseButton::Right,
+                self.calendar_menu_on(CalTarget::Task(task_id), cx),
+            )
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
@@ -331,6 +336,10 @@ impl MailWindow {
                     .rounded(px(8.0))
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Task(id), cx),
+                    )
                     .on_click(cx.listener(move |this, _: &ClickEvent, window, cx| {
                         this.task_open_details(id, window, cx);
                     }))
@@ -379,7 +388,7 @@ impl MailWindow {
     /// Where the pointer is on the day grid: the day under it, and the
     /// minutes after midnight, or `None` above the hours (the whole-day
     /// row).
-    fn grid_point(&self, at: Point<Pixels>) -> Option<(Date, Option<i64>)> {
+    pub(super) fn grid_point(&self, at: Point<Pixels>) -> Option<(Date, Option<i64>)> {
         let (first, end) = self.calendar.days();
         let count = i64::from((end - first).get_days().max(1));
         let scroll = &self.calendar.grid_scroll;
