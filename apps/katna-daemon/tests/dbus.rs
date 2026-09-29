@@ -2306,3 +2306,43 @@ fn resets_the_cache_on_dev_servers() {
         instance.shutdown().await;
     });
 }
+
+#[test]
+fn labels_contacts_on_this_computer() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        let card = katna_core::contact::Card {
+            name: katna_core::contact::Name {
+                given: "Asha".into(),
+                ..Default::default()
+            },
+            emails: vec![katna_core::contact::Typed::new("asha@rao.in", "home")],
+            ..Default::default()
+        };
+        let card = serde_json::to_string(&card).unwrap();
+        let id = pim.save_contact(0, 0, &card).await.unwrap();
+        let labels = |paths: &Paths| {
+            let store = Store::open(paths, Mode::ReadOnly).unwrap();
+            store.saved_contacts().unwrap()[0].labels.clone()
+        };
+
+        pim.set_contact_labels(id, &["Family".into(), " family ".into(), "Work".into()])
+            .await
+            .unwrap();
+        assert_eq!(labels(&paths), ["Family", "Work"]);
+        pim.set_contact_labels(id, &["Work".into()]).await.unwrap();
+        assert_eq!(labels(&paths), ["Work"]);
+
+        pim.rename_contact_label("work", "Office").await.unwrap();
+        assert_eq!(labels(&paths), ["Office"]);
+        pim.rename_contact_label("Office", "").await.unwrap();
+        assert!(labels(&paths).is_empty());
+        let store = Store::open(&paths, Mode::ReadOnly).unwrap();
+        assert!(store.contact_labels().unwrap().is_empty());
+        instance.shutdown().await;
+    });
+}

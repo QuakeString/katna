@@ -7,6 +7,7 @@
 notes-view-notes = ບັນທຶກ
 notes-view-archive = ເກັບຖາວອນ
 notes-view-trash = ຖັງຂີ້ເຫຍື້ອ
+notes-edit-labels = ແກ້ໄຂປ້າຍກຳກັບ
 notes-search = ຊອກຫາບັນທຶກ
 notes-loading = ກຳລັງເປີດບັນທຶກຂອງທ່ານ…
 
@@ -20,6 +21,7 @@ notes-empty = ບັນທຶກທີ່ທ່ານເພີ່ມຈະສະ
 notes-archive-empty = ບັນທຶກທີ່ເກັບຖາວອນຈະສະແດງຢູ່ບ່ອນນີ້
 notes-trash-empty = ບໍ່ມີບັນທຶກໃນຖັງຂີ້ເຫຍື້ອ
 notes-none-found = ບໍ່ພົບບັນທຶກທີ່ກົງກັນ
+notes-label-empty = ຍັງບໍ່ມີບັນທຶກທີ່ມີປ້າຍກຳກັບນີ້
 notes-trash-note = ບັນທຶກໃນຖັງຂີ້ເຫຍື້ອຈະຖືກລຶບຫຼັງຈາກ 7 ວັນ.
 notes-empty-trash = ລ້າງຖັງຂີ້ເຫຍື້ອ
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = ກູ້ຄືນ
 notes-delete-forever = ລຶບຖາວອນ
 notes-color = ຕົວເລືອກພື້ນຫຼັງ
 notes-checkboxes = ສະແດງ/ເຊື່ອງຊ່ອງໝາຍ
+notes-labels = ປ້າຍກຳກັບ
 notes-close = ປິດ
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = ຫົວຂໍ້
 notes-edited = ແກ້ໄຂເມື່ອ { $date }
 notes-on-this-computer = ໃນຄອມພິວເຕີເຄື່ອງນີ້
 notes-where = ບ່ອນເກັບບັນທຶກນີ້
+
+## Labels
+
+notes-label-note = ໃສ່ປ້າຍກຳກັບໃຫ້ບັນທຶກ
+notes-label-name = ໃສ່ຊື່ປ້າຍກຳກັບ
+notes-label-create = ສ້າງ “{ $name }”
+notes-label-remove = ເອົາປ້າຍກຳກັບອອກ
+notes-label-delete = ລຶບປ້າຍກຳກັບ
+notes-labels-none = ຍັງບໍ່ມີປ້າຍກຳກັບ. ເພີ່ມໄດ້ຈາກປຸ່ມປ້າຍກຳກັບຂອງບັນທຶກ.
+notes-labels-done = ສຳເລັດ
+notes-label-renamed = ປ່ຽນຊື່ປ້າຍກຳກັບເປັນ “{ $name }” ແລ້ວ
+notes-label-deleted = ລຶບປ້າຍກຳກັບ “{ $name }” ແລ້ວ
 
 ## A note about a mail
 

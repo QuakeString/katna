@@ -1259,6 +1259,20 @@ Mwaliko sasa unaonekana kama kadi juu ya barua: lini na wapi, nani aliyeuandaa, 
 na Utaenda? Ndiyo, Hapana au Labda, vyote vikijibiwa papo hapo.
 """
 
+["2026-09-29-0616-note-labels"]
+title = "Lebo kwenye madokezo"
+text = """
+Kitufe cha lebo kwenye dokezo huliwekea lebo, kama kwenye Keep. Lebo zako zimeorodheshwa kando ya “Madokezo”, kila moja ikionyesha madokezo yake tu.
+“Hariri lebo” hubadilisha majina au kuzifuta, pamoja na Tendua.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Majukumu kutoka akaunti zaidi"
+text = """
+Majukumu sasa yanasawazishwa pia na Yahoo, Zoho, iCloud, Fastmail na akaunti nyingine ambazo majukumu yake yako kwenye seva tofauti na ya barua.
+Katna hujaribu njia bora ya kila akaunti kwanza na hukumbuka ile inayofanya kazi.
+"""
+
 ["2026-09-29-0651-schedule-meeting"]
 title = "Panga mkutano kutoka kwa barua"
 text = """

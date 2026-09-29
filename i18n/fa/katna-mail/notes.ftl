@@ -7,6 +7,7 @@
 notes-view-notes = یادداشت‌ها
 notes-view-archive = بایگانی
 notes-view-trash = سطل زباله
+notes-edit-labels = ویرایش برچسب‌ها
 notes-search = جستجوی یادداشت‌ها
 notes-loading = در حال باز کردن یادداشت‌های شما…
 
@@ -20,6 +21,7 @@ notes-empty = یادداشت‌هایی که اضافه می‌کنید اینج
 notes-archive-empty = یادداشت‌های بایگانی‌شده اینجا نشان داده می‌شوند
 notes-trash-empty = یادداشتی در سطل زباله نیست
 notes-none-found = یادداشت منطبقی پیدا نشد
+notes-label-empty = هنوز یادداشتی با این برچسب نیست
 notes-trash-note = یادداشت‌های سطل زباله بعد از 7 روز حذف می‌شوند.
 notes-empty-trash = خالی کردن سطل زباله
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = بازیابی
 notes-delete-forever = حذف دائمی
 notes-color = گزینه‌های پس‌زمینه
 notes-checkboxes = نمایش یا پنهان کردن کادرهای تیک
+notes-labels = برچسب‌ها
 notes-close = بستن
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = عنوان
 notes-edited = آخرین ویرایش: { $date }
 notes-on-this-computer = روی این رایانه
 notes-where = جای نگهداری این یادداشت
+
+## Labels
+
+notes-label-note = برچسب‌گذاری یادداشت
+notes-label-name = نام برچسب را وارد کنید
+notes-label-create = ایجاد «{ $name }»
+notes-label-remove = برداشتن برچسب
+notes-label-delete = حذف برچسب
+notes-labels-none = هنوز برچسبی وجود ندارد. از دکمهٔ برچسب یادداشت یکی اضافه کنید.
+notes-labels-done = تمام
+notes-label-renamed = نام برچسب به «{ $name }» تغییر کرد
+notes-label-deleted = برچسب «{ $name }» حذف شد
 
 ## A note about a mail
 

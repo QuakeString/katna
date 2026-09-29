@@ -1344,6 +1344,24 @@ chevauchements signalés, Participer, et Participez-vous ? Oui, Non ou
 Peut-être, avec une réponse directement sur place.
 """
 
+["2026-09-29-0616-note-labels"]
+title = "Libellés sur les notes"
+text = """
+Le bouton de libellé d’une note permet de lui attribuer des libellés,
+comme dans Keep. Vos libellés apparaissent à côté de Notes, chacun
+n’affichant que ses notes, et Modifier les libellés permet de les
+renommer ou de les supprimer, avec Annuler.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Tâches de plus de comptes"
+text = """
+Les tâches se synchronisent désormais aussi avec Yahoo, Zoho, iCloud,
+Fastmail et d’autres comptes dont les tâches se trouvent sur un autre
+serveur que leur messagerie. Katna essaie d’abord la meilleure méthode
+de chaque compte et retient celle qui fonctionne.
+"""
+
 ["2026-09-29-0651-schedule-meeting"]
 title = "Planifier une réunion depuis un e-mail"
 text = """

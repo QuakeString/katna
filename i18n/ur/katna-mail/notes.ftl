@@ -7,6 +7,7 @@
 notes-view-notes = نوٹس
 notes-view-archive = آرکائیو
 notes-view-trash = کوڑے دان
+notes-edit-labels = لیبلز میں ترمیم کریں
 notes-search = نوٹس تلاش کریں
 notes-loading = آپ کے نوٹس کھولے جا رہے ہیں…
 
@@ -20,6 +21,7 @@ notes-empty = آپ کے شامل کردہ نوٹس یہاں ظاہر ہوں گے
 notes-archive-empty = آپ کے آرکائیو کردہ نوٹس یہاں ظاہر ہوں گے
 notes-trash-empty = کوڑے دان میں کوئی نوٹ نہیں
 notes-none-found = کوئی مماثل نوٹ نہیں ملا
+notes-label-empty = ابھی اس لیبل والا کوئی نوٹ نہیں
 notes-trash-note = کوڑے دان میں موجود نوٹس 7 دن بعد حذف ہو جاتے ہیں۔
 notes-empty-trash = کوڑے دان خالی کریں
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = بحال کریں
 notes-delete-forever = ہمیشہ کے لیے حذف کریں
 notes-color = پس منظر کے اختیارات
 notes-checkboxes = چیک باکس دکھائیں یا چھپائیں
+notes-labels = لیبلز
 notes-close = بند کریں
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = عنوان
 notes-edited = آخری ترمیم: { $date }
 notes-on-this-computer = اس کمپیوٹر پر
 notes-where = اس نوٹ کے محفوظ ہونے کی جگہ
+
+## Labels
+
+notes-label-note = نوٹ پر لیبل لگائیں
+notes-label-name = لیبل کا نام درج کریں
+notes-label-create = “{ $name }” بنائیں
+notes-label-remove = لیبل ہٹائیں
+notes-label-delete = لیبل حذف کریں
+notes-labels-none = ابھی کوئی لیبل نہیں۔ نوٹ کے لیبل بٹن سے شامل کریں۔
+notes-labels-done = ہو گیا
+notes-label-renamed = لیبل کا نام بدل کر “{ $name }” کر دیا گیا
+notes-label-deleted = لیبل “{ $name }” حذف ہو گیا
 
 ## A note about a mail
 

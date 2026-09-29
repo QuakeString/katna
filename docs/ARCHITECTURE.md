@@ -966,8 +966,20 @@ and `DELETE`. What the service answers is saved in `pim.db`. A new contact
 goes to the book picked under "Save to" (an account, or this computer); a
 person kept in several accounts is changed in the first one. Delete hides
 the person and waits for its Undo to go before it is sent; Google and
-Outlook keep deleted contacts in their trash. Other contacts, merge and
-import/export follow in the next phases of the study.
+Outlook keep deleted contacts in their trash.
+
+Labels (`SetContactLabels`, `RenameContactLabel`) are written the way each
+service keeps them: Google contact groups (`contactGroups` create, rename
+with the group's etag, `members:modify`, delete with `deleteContacts=false`;
+Google's own groups such as My Contacts are not shown as labels), Graph
+`categories` on each contact, CardDAV `CATEGORIES` on each card (Apple-style
+group cards are read, not changed), and a card on this computer by name. A
+label ticked on a person goes on each of their cards; renaming or deleting
+a label changes it in every account, and its people stay. A label nobody
+has is forgotten except at Google, which keeps empty labels. Each change
+has an Undo; "Email everyone" on a label starts a message to all of them.
+Other contacts, merge and import/export follow in the next phases of the
+study.
 
 ## 9. Background service (`katna-daemon`)
 

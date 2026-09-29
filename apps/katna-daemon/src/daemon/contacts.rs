@@ -200,7 +200,7 @@ async fn sync_account(
 }
 
 /// The account's CardDAV login: its password with its IMAP user name.
-async fn card_dav(
+pub(super) async fn card_dav(
     daemon: &Daemon,
     account: AccountId,
     tls: Tls,
@@ -295,7 +295,7 @@ async fn fetch_pictures(daemon: &Daemon, book: i64, tls: &Tls) -> bool {
 }
 
 /// A change made on the Contacts page failed.
-fn failed(err: SyncError) -> CommandError {
+pub(super) fn failed(err: SyncError) -> CommandError {
     match err {
         SyncError::Auth(why) => CommandError::AuthFailed(why),
         other => CommandError::Failed(other.to_string()),

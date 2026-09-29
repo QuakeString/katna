@@ -6,6 +6,21 @@
 contacts-all = Contacts
 contacts-frequent = Frequent
 contacts-labels = Labels
+# The ⋮ beside a label in the column, and on a label's own page.
+contacts-label-options = Label options
+contacts-label-rename = Rename label
+contacts-label-email = Email everyone
+contacts-label-delete = Delete label
+contacts-label-new = New label
+contacts-label-name = Label name
+# After a person's labels on their page: opens the menu that ticks labels.
+contacts-label-button = Label
+contacts-label-menu = Label as:
+contacts-label-added = Added to { $name }
+contacts-label-removed = Removed from { $name }
+contacts-label-renamed = Label renamed to { $name }
+contacts-label-deleted = Deleted label { $name }
+contacts-label-no-email = Nobody on this label has an email address
 contacts-create = Create contact
 
 ## Search and the list
@@ -46,6 +61,7 @@ contacts-edit = Edit
 contacts-delete = Delete
 # $name: the person's name.
 contacts-deleted = Deleted { $name }
+contacts-added = Added { $name } to contacts
 contacts-find-mail = Mail
 contacts-details = Contact details
 contacts-saved-in = Saved in

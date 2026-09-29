@@ -15,6 +15,10 @@ contact-panel-hide = Hide contact details
 # them (from them or to them). The call button uses contact-call.
 contact-email = Send email
 contact-search = Search mail with them
+# Saves the person on the panel to the address book in one click.
+contact-add-to-contacts = Add to contacts
+# Opens the saved person on the Contacts page.
+contact-open-contact = Open contact
 
 # Mail exchanged with the person, over all accounts.
 contact-messages = { $count ->

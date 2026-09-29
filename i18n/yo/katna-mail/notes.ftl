@@ -7,6 +7,7 @@
 notes-view-notes = Àkọsílẹ̀
 notes-view-archive = Ibi ìpamọ́
 notes-view-trash = Àpótí ìdọ̀tí
+notes-edit-labels = Ṣàtúnṣe àwọn àmì
 notes-search = Wá àkọsílẹ̀
 notes-loading = Ń ṣí àwọn àkọsílẹ̀ rẹ…
 
@@ -20,6 +21,7 @@ notes-empty = Àwọn àkọsílẹ̀ tí o bá fi kún yóò hàn níbí
 notes-archive-empty = Àwọn àkọsílẹ̀ tí o pamọ́ yóò hàn níbí
 notes-trash-empty = Kò sí àkọsílẹ̀ nínú Àpótí ìdọ̀tí
 notes-none-found = Kò sí àkọsílẹ̀ tó bá a mu
+notes-label-empty = Kòì tíì sí àkọsílẹ̀ tó ní àmì yìí
 notes-trash-note = A máa pa àwọn àkọsílẹ̀ inú Àpótí ìdọ̀tí rẹ́ lẹ́yìn ọjọ́ 7.
 notes-empty-trash = Sọ Àpótí ìdọ̀tí di òfo
 notes-ticked = { $count ->
@@ -37,6 +39,7 @@ notes-restore = Dá padà
 notes-delete-forever = Pa rẹ́ títí láé
 notes-color = Àwọn àṣàyàn ẹ̀yìn
 notes-checkboxes = Fi hàn tàbí fi pamọ́ àwọn àpótí àmì
+notes-labels = Àwọn àmì
 notes-close = Pa á
 
 ## The open note
@@ -45,6 +48,18 @@ notes-title = Àkọlé
 notes-edited = Àtúnṣe { $date }
 notes-on-this-computer = Lórí kọ̀ǹpútà yìí
 notes-where = Ibi tí a tọ́jú àkọsílẹ̀ yìí sí
+
+## Labels
+
+notes-label-note = Fi àmì sí àkọsílẹ̀
+notes-label-name = Tẹ orúkọ àmì sí
+notes-label-create = Ṣẹ̀dá “{ $name }”
+notes-label-remove = Yọ àmì kúrò
+notes-label-delete = Pa àmì rẹ́
+notes-labels-none = Kòì tíì sí àmì kankan. Fi kún un láti bọ́tìnì àmì àkọsílẹ̀.
+notes-labels-done = Ó parí
+notes-label-renamed = A ti yí orúkọ àmì padà sí “{ $name }”
+notes-label-deleted = A ti pa àmì “{ $name }” rẹ́
 
 ## A note about a mail
 

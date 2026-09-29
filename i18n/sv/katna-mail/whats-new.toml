@@ -1272,6 +1272,23 @@ Anslut och Kommer du? Ja, Nej eller Kanske, som du kan besvara direkt
 där.
 """
 
+["2026-09-29-0616-note-labels"]
+title = "Etiketter på anteckningar"
+text = """
+Etikettknappen på en anteckning sätter etiketter på den, som i Keep.
+Dina etiketter listas bredvid Anteckningar och visar var och en bara
+sina anteckningar, och Redigera etiketter byter namn på eller raderar
+dem, med Ångra.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Uppgifter från fler konton"
+text = """
+Uppgifter synkroniseras nu även med Yahoo, Zoho, iCloud, Fastmail och
+andra konton vars uppgifter finns på en annan server än e-posten. Katna
+prövar varje kontos bästa metod först och kommer ihåg den som fungerar.
+"""
+
 ["2026-09-29-0651-schedule-meeting"]
 title = "Boka ett möte från ett mejl"
 text = """

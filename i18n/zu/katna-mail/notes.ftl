@@ -7,6 +7,7 @@
 notes-view-notes = Amanothi
 notes-view-archive = Ingobo yomlando
 notes-view-trash = Udoti
+notes-edit-labels = Hlela amalebula
 notes-search = Sesha amanothi
 notes-loading = Kuvulwa amanothi akho…
 
@@ -20,6 +21,7 @@ notes-empty = Amanothi owengezayo avela lapha
 notes-archive-empty = Amanothi akho agcinwe kungobo yomlando avela lapha
 notes-trash-empty = Awekho amanothi kudoti
 notes-none-found = Awekho amanothi ahambisanayo
+notes-label-empty = Awekho amanothi analo ilebula okwamanje
 notes-trash-note = Amanothi asudotini asuswa ngemva kwezinsuku ezingu-7.
 notes-empty-trash = Khipha udoti
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = Buyisela
 notes-delete-forever = Susa unomphela
 notes-color = Umbala wangemuva
 notes-checkboxes = Bonisa noma fihla amabhokisi okuphawula
+notes-labels = Amalebula
 notes-close = Vala
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = Isihloko
 notes-edited = Kuhlelwe: { $date }
 notes-on-this-computer = Kule khompyutha
 notes-where = Lapho leli nothi ligcinwe khona
+
+## Labels
+
+notes-label-note = Faka ilebula kunothi
+notes-label-name = Faka igama lelebula
+notes-label-create = Dala “{ $name }”
+notes-label-remove = Susa ilebula
+notes-label-delete = Sula ilebula
+notes-labels-none = Awekho amalebula okwamanje. Engeza elilodwa ngenkinobho yelebula yenothi.
+notes-labels-done = Kwenziwe
+notes-label-renamed = Ilebula iqanjwe kabusha ngokuthi “{ $name }”
+notes-label-deleted = Ilebula ethi “{ $name }” isuliwe
 
 ## A note about a mail
 

@@ -1314,6 +1314,24 @@ segnalate, Partecipa e Partecipi? Sì, No o Forse, con risposta
 direttamente lì.
 """
 
+["2026-09-29-0616-note-labels"]
+title = "Etichette sulle note"
+text = """
+Il pulsante etichetta di una nota le assegna delle etichette, come in
+Keep. Le tue etichette compaiono accanto a Note, ciascuna con le sole
+note che la riguardano, e Modifica etichette permette di rinominarle o
+eliminarle, con Annulla.
+"""
+
+["2026-09-29-0630-tasks-more-accounts"]
+title = "Attività da più account"
+text = """
+Le attività ora si sincronizzano anche con Yahoo, Zoho, iCloud, Fastmail
+e altri account le cui attività si trovano su un server diverso da
+quello della posta. Katna prova prima il metodo migliore di ogni account
+e ricorda quello che funziona.
+"""
+
 ["2026-09-29-0651-schedule-meeting"]
 title = "Pianifica una riunione da una e-mail"
 text = """

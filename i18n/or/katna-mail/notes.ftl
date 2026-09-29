@@ -7,6 +7,7 @@
 notes-view-notes = ନୋଟ
 notes-view-archive = ଆର୍କାଇଭ
 notes-view-trash = ଟ୍ରାଶ
+notes-edit-labels = ଲେବଲ ସମ୍ପାଦନା କରନ୍ତୁ
 notes-search = ନୋଟ ଖୋଜନ୍ତୁ
 notes-loading = ଆପଣଙ୍କ ନୋଟ ଖୋଲୁଛି…
 
@@ -20,6 +21,7 @@ notes-empty = ଆପଣ ଯୋଗ କରିଥିବା ନୋଟ ଏଠାର�
 notes-archive-empty = ଆପଣଙ୍କ ଆର୍କାଇଭ କରାଯାଇଥିବା ନୋଟ ଏଠାରେ ଦେଖାଯିବ
 notes-trash-empty = ଟ୍ରାଶରେ କୌଣସି ନୋଟ ନାହିଁ
 notes-none-found = ମେଳ ଖାଉଥିବା କୌଣସି ନୋଟ ନାହିଁ
+notes-label-empty = ଏହି ଲେବଲର କୌଣସି ନୋଟ ଏପର୍ଯ୍ୟନ୍ତ ନାହିଁ
 notes-trash-note = ଟ୍ରାଶରେ ଥିବା ନୋଟ 7 ଦିନ ପରେ ଡିଲିଟ ହୋଇଯାଏ।
 notes-empty-trash = ଟ୍ରାଶ ଖାଲି କରନ୍ତୁ
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = ପୁନରୁଦ୍ଧାର କରନ୍ତୁ
 notes-delete-forever = ସବୁଦିନ ପାଇଁ ଡିଲିଟ କରନ୍ତୁ
 notes-color = ପୃଷ୍ଠଭୂମିର ରଙ୍ଗ
 notes-checkboxes = ଚେକବକ୍ସ ଦେଖାନ୍ତୁ କିମ୍ବା ଲୁଚାନ୍ତୁ
+notes-labels = ଲେବଲ
 notes-close = ବନ୍ଦ କରନ୍ତୁ
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = ଶୀର୍ଷକ
 notes-edited = ସମ୍ପାଦିତ: { $date }
 notes-on-this-computer = ଏହି କମ୍ପ୍ୟୁଟରରେ
 notes-where = ଏହି ନୋଟ କେଉଁଠାରେ ରଖାଯାଇଛି
+
+## Labels
+
+notes-label-note = ନୋଟକୁ ଲେବଲ କରନ୍ତୁ
+notes-label-name = ଲେବଲ ନାମ ଲେଖନ୍ତୁ
+notes-label-create = “{ $name }” ତିଆରି କରନ୍ତୁ
+notes-label-remove = ଲେବଲ ହଟାନ୍ତୁ
+notes-label-delete = ଲେବଲ ଡିଲିଟ କରନ୍ତୁ
+notes-labels-none = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଲେବଲ ନାହିଁ। ନୋଟର ଲେବଲ ବଟନରୁ ଗୋଟିଏ ଯୋଗ କରନ୍ତୁ।
+notes-labels-done = ହୋଇଗଲା
+notes-label-renamed = ଲେବଲର ନାମ ବଦଳାଇ “{ $name }” କରାଗଲା
+notes-label-deleted = ଲେବଲ “{ $name }” ଡିଲିଟ ହେଲା
 
 ## A note about a mail
 

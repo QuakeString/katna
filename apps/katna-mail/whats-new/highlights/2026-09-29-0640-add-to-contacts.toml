@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add to contacts from Mail"
+text = """
+The contact panel beside a conversation has Add to contacts for someone
+you haven't saved: one click saves their name, address and the phone,
+title and company from their signature, with an Undo. For someone saved,
+the same button opens them on the Contacts page.
+"""

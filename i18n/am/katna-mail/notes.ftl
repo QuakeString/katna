@@ -7,6 +7,7 @@
 notes-view-notes = ማስታወሻዎች
 notes-view-archive = ማህደር
 notes-view-trash = መጣያ
+notes-edit-labels = መሰየሚያዎችን አርትዕ
 notes-search = ማስታወሻዎችን ፈልግ
 notes-loading = ማስታወሻዎችዎን በመክፈት ላይ…
 
@@ -20,6 +21,7 @@ notes-empty = የሚያክሏቸው ማስታወሻዎች እዚህ ይታያሉ
 notes-archive-empty = በማህደር የተቀመጡ ማስታወሻዎችዎ እዚህ ይታያሉ
 notes-trash-empty = በመጣያ ውስጥ ምንም ማስታወሻ የለም
 notes-none-found = ተዛማጅ ማስታወሻ አልተገኘም
+notes-label-empty = ይህ መሰየሚያ ያላቸው ማስታወሻዎች እስካሁን የሉም
 notes-trash-note = በመጣያ ውስጥ ያሉ ማስታወሻዎች ከ7 ቀናት በኋላ ይሰረዛሉ።
 notes-empty-trash = መጣያውን ባዶ አድርግ
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = እነበረበት መልስ
 notes-delete-forever = ለዘለቄታው ሰርዝ
 notes-color = የጀርባ አማራጮች
 notes-checkboxes = አመልካች ሳጥኖችን አሳይ ወይም ደብቅ
+notes-labels = መሰየሚያዎች
 notes-close = ዝጋ
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = ርዕስ
 notes-edited = የተስተካከለው { $date }
 notes-on-this-computer = በዚህ ኮምፒውተር ላይ
 notes-where = ይህ ማስታወሻ የሚቀመጥበት
+
+## Labels
+
+notes-label-note = ማስታወሻ ሰይም
+notes-label-name = የመሰየሚያ ስም ያስገቡ
+notes-label-create = “{ $name }” ፍጠር
+notes-label-remove = መሰየሚያ አስወግድ
+notes-label-delete = መሰየሚያ ሰርዝ
+notes-labels-none = እስካሁን መሰየሚያዎች የሉም። ከማስታወሻ የመሰየሚያ አዝራር ያክሉ።
+notes-labels-done = ተጠናቋል
+notes-label-renamed = መሰየሚያ ወደ “{ $name }” ተቀይሯል
+notes-label-deleted = መሰየሚያ “{ $name }” ተሰርዟል
 
 ## A note about a mail
 

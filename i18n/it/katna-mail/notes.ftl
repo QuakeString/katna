@@ -7,6 +7,7 @@
 notes-view-notes = Note
 notes-view-archive = Archivio
 notes-view-trash = Cestino
+notes-edit-labels = Modifica etichette
 notes-search = Cerca nelle note
 notes-loading = Apertura delle note in corso…
 
@@ -20,6 +21,7 @@ notes-empty = Le note che aggiungi vengono visualizzate qui
 notes-archive-empty = Le note archiviate vengono visualizzate qui
 notes-trash-empty = Nessuna nota nel cestino
 notes-none-found = Nessuna nota corrispondente
+notes-label-empty = Ancora nessuna nota con questa etichetta
 notes-trash-note = Le note nel cestino vengono eliminate dopo 7 giorni.
 notes-empty-trash = Svuota cestino
 notes-ticked = { $count ->
@@ -39,6 +41,7 @@ notes-restore = Ripristina
 notes-delete-forever = Elimina definitivamente
 notes-color = Colore di sfondo
 notes-checkboxes = Mostra o nascondi le caselle di controllo
+notes-labels = Etichette
 notes-close = Chiudi
 
 ## The open note
@@ -47,6 +50,18 @@ notes-title = Titolo
 notes-edited = Modificata: { $date }
 notes-on-this-computer = Su questo computer
 notes-where = Dove è salvata questa nota
+
+## Labels
+
+notes-label-note = Etichetta nota
+notes-label-name = Inserisci il nome dell'etichetta
+notes-label-create = Crea “{ $name }”
+notes-label-remove = Rimuovi etichetta
+notes-label-delete = Elimina etichetta
+notes-labels-none = Ancora nessuna etichetta. Aggiungine una dal pulsante etichetta di una nota.
+notes-labels-done = Fine
+notes-label-renamed = Etichetta rinominata in “{ $name }”
+notes-label-deleted = Etichetta “{ $name }” eliminata
 
 ## A note about a mail
 

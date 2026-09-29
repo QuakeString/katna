@@ -7,6 +7,7 @@
 notes-view-notes = ಟಿಪ್ಪಣಿಗಳು
 notes-view-archive = ಆರ್ಕೈವ್
 notes-view-trash = ಅನುಪಯುಕ್ತ
+notes-edit-labels = ಲೇಬಲ್‌ಗಳನ್ನು ಸಂಪಾದಿಸಿ
 notes-search = ಟಿಪ್ಪಣಿಗಳನ್ನು ಹುಡುಕಿ
 notes-loading = ನಿಮ್ಮ ಟಿಪ್ಪಣಿಗಳನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ…
 
@@ -20,6 +21,7 @@ notes-empty = ನೀವು ಸೇರಿಸುವ ಟಿಪ್ಪಣಿಗಳು 
 notes-archive-empty = ನೀವು ಆರ್ಕೈವ್ ಮಾಡಿದ ಟಿಪ್ಪಣಿಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ
 notes-trash-empty = ಅನುಪಯುಕ್ತದಲ್ಲಿ ಯಾವುದೇ ಟಿಪ್ಪಣಿಗಳಿಲ್ಲ
 notes-none-found = ಹೊಂದುವ ಟಿಪ್ಪಣಿಗಳಿಲ್ಲ
+notes-label-empty = ಈ ಲೇಬಲ್ ಇರುವ ಟಿಪ್ಪಣಿಗಳು ಇನ್ನೂ ಇಲ್ಲ
 notes-trash-note = ಅನುಪಯುಕ್ತದಲ್ಲಿರುವ ಟಿಪ್ಪಣಿಗಳನ್ನು 7 ದಿನಗಳ ನಂತರ ಅಳಿಸಲಾಗುತ್ತದೆ.
 notes-empty-trash = ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಿ
 notes-ticked = { $count ->
@@ -38,6 +40,7 @@ notes-restore = ಮರುಸ್ಥಾಪಿಸಿ
 notes-delete-forever = ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ
 notes-color = ಹಿನ್ನೆಲೆ ಬಣ್ಣ
 notes-checkboxes = ಚೆಕ್‌ಬಾಕ್ಸ್‌ಗಳನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ
+notes-labels = ಲೇಬಲ್‌ಗಳು
 notes-close = ಮುಚ್ಚಿ
 
 ## The open note
@@ -46,6 +49,18 @@ notes-title = ಶೀರ್ಷಿಕೆ
 notes-edited = ಸಂಪಾದಿಸಲಾಗಿದೆ: { $date }
 notes-on-this-computer = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ
 notes-where = ಈ ಟಿಪ್ಪಣಿಯನ್ನು ಎಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ
+
+## Labels
+
+notes-label-note = ಟಿಪ್ಪಣಿಗೆ ಲೇಬಲ್ ಹಾಕಿ
+notes-label-name = ಲೇಬಲ್ ಹೆಸರನ್ನು ನಮೂದಿಸಿ
+notes-label-create = “{ $name }” ರಚಿಸಿ
+notes-label-remove = ಲೇಬಲ್ ತೆಗೆದುಹಾಕಿ
+notes-label-delete = ಲೇಬಲ್ ಅಳಿಸಿ
+notes-labels-none = ಇನ್ನೂ ಲೇಬಲ್‌ಗಳಿಲ್ಲ. ಟಿಪ್ಪಣಿಯ ಲೇಬಲ್ ಬಟನ್‌ನಿಂದ ಒಂದನ್ನು ಸೇರಿಸಿ.
+notes-labels-done = ಮುಗಿದಿದೆ
+notes-label-renamed = ಲೇಬಲ್ ಹೆಸರನ್ನು “{ $name }” ಎಂದು ಬದಲಾಯಿಸಲಾಗಿದೆ
+notes-label-deleted = ಲೇಬಲ್ “{ $name }” ಅಳಿಸಲಾಗಿದೆ
 
 ## A note about a mail
 
