@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Type a task in one line"
+text = """
+Add a task like "Call the bank tomorrow 3pm" or "Water the plants every
+Monday 8am", and Tasks sets the day, the time and the repeat for you,
+showing what it understood as you type.
+"""
