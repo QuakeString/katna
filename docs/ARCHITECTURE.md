@@ -2661,8 +2661,15 @@ away; he can still change them.
   a label lives only on its notes, so there is no empty label, and a
   label's board goes back to Notes once no note has it. Labels travel in
   `X-Katna-Labels`; there is no schema change.
-- **Later.** Meeting notes from an event, a checklist line made a task,
-  formatting, pictures.
+- **Meeting notes.** As Google Calendar's "Take meeting notes": an
+  event's card on the Calendar page lists the notes about it and has
+  Take meeting notes, which opens a new note over the Calendar titled
+  "<event> · <day>" and started with "Attendees: …", "Notes" and
+  "Action items" with a checklist line; left as it is, it is not kept.
+  Its `link` is `event:<start>:<UID>`, so each occurrence of a repeating
+  event has its own notes. Such a note has an Event chip that opens the
+  Calendar's Day view on that day.
+- **Later.** A checklist line made a task, formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 

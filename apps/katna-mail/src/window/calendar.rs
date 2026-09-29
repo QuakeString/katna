@@ -1859,6 +1859,8 @@ impl MailWindow {
     ) {
         cx.stop_propagation();
         self.calendar.open = Some(OpenEvent { occurrence, at });
+        // Its card lists the event's meeting notes.
+        self.notes_page(cx);
         cx.notify();
     }
 
@@ -2170,6 +2172,7 @@ impl MailWindow {
                 let text: String = data.description.chars().take(1200).collect();
                 d.child(line("notes", text))
             })
+            .child(self.render_event_notes(occurrence, th, cx))
             .when_some(calendar, |d, calendar| {
                 d.child(line("calendar", calendar_name(calendar)))
             });

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Meeting notes"
+text = """
+Open an event on the Calendar and pick Take meeting notes: a note titled with
+the event opens, ready with who comes and a place for action items. The
+event's card lists its notes, and a note's Event chip takes you back to the
+day.
+"""

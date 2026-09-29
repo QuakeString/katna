@@ -85,6 +85,20 @@ notes-open-mail = Open the mail
 # Tooltip of a note shown under a mail's subject.
 notes-open-note = Open the note
 
+## Meeting notes
+
+# On an event's card: a new note about the event.
+notes-meeting-take = Take meeting notes
+# A meeting note's title. $title: the event's; $date: its day, such as "Sep 29".
+notes-meeting-title = { $title } · { $date }
+# The lines a meeting note starts with. $names: who comes, with commas.
+notes-meeting-attendees = Attendees: { $names }
+notes-meeting-notes = Notes
+notes-meeting-actions = Action items
+# The chip on a meeting note, which opens the Calendar on its day.
+notes-event = Event
+notes-open-event = Open the event
+
 ## Colors (tooltips)
 
 notes-color-none = No color

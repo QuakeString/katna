@@ -8,6 +8,7 @@
 //! list at the left; Trash empties itself after seven days.
 
 mod labels;
+mod meetings;
 
 use std::rc::Rc;
 use std::time::Duration;
@@ -330,6 +331,8 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         self.close_note(cx);
+        // An event's card would sit over the note.
+        self.calendar.open = None;
         let accent = rgba(self.theme(window).accent).into();
         let (about_title, about_link) = about.unzip();
         let (title_text, body_text) = note
@@ -662,7 +665,8 @@ impl MailWindow {
         }
     }
 
-    /// The "Mail" chip of a note about a mail, which opens it.
+    /// The chip of a note about a mail ("Mail") or an event ("Event"),
+    /// which opens it.
     fn mail_chip(
         &self,
         id: impl Into<ElementId>,
@@ -670,6 +674,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<Div> {
+        let event = meetings::event_start(&link);
         div()
             .id(id)
             .mt(px(8.0))
@@ -686,13 +691,31 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(fade(th.text, 0.14))))
-            .tooltip(tip(tr!("notes-open-mail"), th))
+            .tooltip(tip(
+                if event.is_some() {
+                    tr!("notes-open-event")
+                } else {
+                    tr!("notes-open-mail")
+                },
+                th,
+            ))
             .on_click(cx.listener(move |this, _, window, cx| {
                 cx.stop_propagation();
-                this.open_note_mail(&link, window, cx);
+                match event {
+                    Some(start) => this.open_note_event(start, cx),
+                    None => this.open_note_mail(&link, window, cx),
+                }
             }))
-            .child(icon("mail", th.text_dim, 16.0))
-            .child(tr!("notes-mail"))
+            .child(icon(
+                if event.is_some() { "event" } else { "mail" },
+                th.text_dim,
+                16.0,
+            ))
+            .child(if event.is_some() {
+                tr!("notes-event")
+            } else {
+                tr!("notes-mail")
+            })
     }
 
     /// The notes about an open conversation (its messages' `Message-ID`s
@@ -725,59 +748,7 @@ impl MailWindow {
                 .flex_row()
                 .flex_wrap()
                 .gap(px(8.0))
-                .children(about.into_iter().map(|note| {
-                    let open = Rc::new(note.clone());
-                    let bg = note_color(note.color, th);
-                    let first = note.body.lines().find(|l| !l.trim().is_empty());
-                    let heading = if note.title.is_empty() {
-                        first.unwrap_or_default().to_owned()
-                    } else {
-                        note.title.clone()
-                    };
-                    let text =
-                        (!note.title.is_empty()).then(|| first.unwrap_or_default().to_owned());
-                    div()
-                        .id(("mail-note", note.id as usize))
-                        .w(px(220.0))
-                        .px(px(12.0))
-                        .py(px(8.0))
-                        .flex()
-                        .flex_row()
-                        .gap(px(8.0))
-                        .rounded(px(8.0))
-                        .border_1()
-                        .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
-                        .bg(rgba(bg.unwrap_or(th.surface)))
-                        .cursor_pointer()
-                        .hover(|s| s.shadow(elevation(th, 1.0)))
-                        .tooltip(tip(tr!("notes-open-note"), th))
-                        .on_click(cx.listener(move |this, _, window, cx| {
-                            this.open_note(Some(&open), false, None, window, cx)
-                        }))
-                        .child(div().pt(px(2.0)).child(icon("notes", th.text_dim, 16.0)))
-                        .child(
-                            div()
-                                .flex_1()
-                                .min_w_0()
-                                .flex()
-                                .flex_col()
-                                .child(
-                                    div()
-                                        .truncate()
-                                        .text_size(px(13.0))
-                                        .font_weight(FontWeight::MEDIUM)
-                                        .text_color(rgba(th.text))
-                                        .child(heading),
-                                )
-                                .children(text.filter(|t| !t.is_empty()).map(|t| {
-                                    div()
-                                        .truncate()
-                                        .text_size(px(12.0))
-                                        .text_color(rgba(th.text_dim))
-                                        .child(t)
-                                })),
-                        )
-                }))
+                .children(about.into_iter().map(|note| self.linked_note(note, th, cx)))
                 .child(
                     div()
                         .id("mail-note-add")
@@ -805,6 +776,66 @@ impl MailWindow {
                 )
                 .into_any_element(),
         )
+    }
+
+    /// A small card of a note about a mail or an event, shown there; it
+    /// opens over it.
+    pub(super) fn linked_note(
+        &self,
+        note: &Note,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<Div> {
+        let open = Rc::new(note.clone());
+        let bg = note_color(note.color, th);
+        let first = note.body.lines().find(|l| !l.trim().is_empty());
+        let heading = if note.title.is_empty() {
+            first.unwrap_or_default().to_owned()
+        } else {
+            note.title.clone()
+        };
+        let text = (!note.title.is_empty()).then(|| first.unwrap_or_default().to_owned());
+        div()
+            .id(("mail-note", note.id as usize))
+            .w(px(220.0))
+            .px(px(12.0))
+            .py(px(8.0))
+            .flex()
+            .flex_row()
+            .gap(px(8.0))
+            .rounded(px(8.0))
+            .border_1()
+            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
+            .bg(rgba(bg.unwrap_or(th.surface)))
+            .cursor_pointer()
+            .hover(|s| s.shadow(elevation(th, 1.0)))
+            .tooltip(tip(tr!("notes-open-note"), th))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                this.open_note(Some(&open), false, None, window, cx)
+            }))
+            .child(div().pt(px(2.0)).child(icon("notes", th.text_dim, 16.0)))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(13.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.text))
+                            .child(heading),
+                    )
+                    .children(text.filter(|t| !t.is_empty()).map(|t| {
+                        div()
+                            .truncate()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(t)
+                    })),
+            )
     }
 
     /// Where a new note goes: the account whose mail is open, if its
