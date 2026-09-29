@@ -1657,3 +1657,12 @@ sahaja. Apabila kenalan sesuatu akaun tidak dapat dimuatkan, satu baris
 di bawahnya menerangkan sebabnya, dengan satu klik yang membetulkannya,
 seperti “Log masuk semula untuk menunjukkan kenalan” atau “Cuba lagi”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Setiap akaun pada halaman Tugas"
+text = """
+Setiap akaun kini dipaparkan dalam panel sisi Tugas. Apabila tugas
+sesuatu akaun tidak dapat dimuatkan, satu baris di bawahnya menerangkan
+sebabnya, dengan satu klik untuk membetulkannya: log masuk semula, atau
+cuba lagi.
+"""

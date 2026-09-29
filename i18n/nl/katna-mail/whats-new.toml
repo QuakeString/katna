@@ -1642,3 +1642,11 @@ contacten van een account niet laden, zegt een regel eronder waarom, met
 de ene klik die het oplost, zoals “Meld je opnieuw aan om contacten te
 tonen” of “Opnieuw proberen”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Elk account op de pagina Taken"
+text = """
+Elk account staat nu in het zijpaneel van Taken. Als de taken van een
+account niet laden, zegt een regel eronder waarom, met één klik om het
+op te lossen: opnieuw aanmelden of opnieuw proberen.
+"""

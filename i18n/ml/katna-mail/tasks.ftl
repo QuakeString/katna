@@ -11,6 +11,23 @@ tasks-starred = നക്ഷത്രമിട്ടവ
 tasks-new-list = പുതിയ ലിസ്റ്റ് സൃഷ്ടിക്കുക
 tasks-on-this-computer = ഈ കമ്പ്യൂട്ടറിൽ
 tasks-my-tasks = എന്റെ ടാസ്‌ക്കുകൾ
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = ടാസ്‌ക്കുകൾ കാണിക്കാൻ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക
+tasks-account-signed-in = { $address }-ൽ വീണ്ടും സൈൻ ഇൻ ചെയ്തു. നിങ്ങളുടെ ടാസ്‌ക്കുകൾ ലഭ്യമാക്കുന്നു…
+tasks-account-sign-in-refused = { $provider } Katna-യെ അകത്ത് കയറ്റിയില്ല. വീണ്ടും ശ്രമിക്കുക, നിങ്ങളുടെ ടാസ്‌ക്കുകളിലേക്ക് ആക്‌സസ് അനുവദിക്കുക.
+tasks-account-refused = സെർവർ പാസ്‌വേഡ് സ്വീകരിച്ചില്ല. Yahoo, iCloud, Zoho എന്നിവയ്ക്കും മറ്റുള്ളവയ്ക്കും ഒരു ആപ്പ് പാസ്‌വേഡ് വേണം.
+tasks-account-change-password = പാസ്‌വേഡ് മാറ്റുക
+tasks-account-change-password-tooltip = ക്രമീകരണം > അക്കൗണ്ടുകൾ തുറക്കുക
+tasks-account-not-enabled = Katna-യ്ക്കുള്ള ടാസ്‌ക് ആക്‌സസ് ഇതുവരെ ഓണാക്കിയിട്ടില്ല.
+tasks-account-failed = ടാസ്‌ക് ലിസ്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല.
+# $reason is the server's own words, in English.
+tasks-account-error = ടാസ്‌ക് ലിസ്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല: { $reason }
+tasks-account-none = ടാസ്‌ക് ലിസ്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല
+tasks-account-looking = ടാസ്‌ക് ലിസ്റ്റുകൾ തിരയുന്നു…
+tasks-account-try-again = വീണ്ടും ശ്രമിക്കുക
+tasks-account-try-again-tooltip = ഈ അക്കൗണ്ടിന്റെ ടാസ്‌ക്കുകൾ ഇപ്പോൾ വീണ്ടും പരിശോധിക്കുക
+tasks-account-fixing = പരിഹരിക്കുന്നു…
 tasks-list-name-placeholder = ലിസ്റ്റിന്റെ പേര്
 
 ## Lists and tasks

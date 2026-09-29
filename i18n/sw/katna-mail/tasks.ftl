@@ -11,6 +11,23 @@ tasks-starred = Yenye nyota
 tasks-new-list = Unda orodha mpya
 tasks-on-this-computer = Kwenye kompyuta hii
 tasks-my-tasks = Majukumu Yangu
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Ingia tena ili kuonyesha majukumu
+tasks-account-signed-in = Umeingia tena kwenye { $address }. Inapata majukumu yako…
+tasks-account-sign-in-refused = { $provider } haikuruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa majukumu yako.
+tasks-account-refused = Seva haikukubali nenosiri. Yahoo, iCloud, Zoho na nyinginezo zinahitaji nenosiri la programu.
+tasks-account-change-password = Badilisha nenosiri
+tasks-account-change-password-tooltip = Fungua Mipangilio > Akaunti
+tasks-account-not-enabled = Ufikiaji wa majukumu kwa Katna bado haujawashwa.
+tasks-account-failed = Orodha za majukumu hazikuweza kusomwa.
+# $reason is the server's own words, in English.
+tasks-account-error = Orodha za majukumu hazikuweza kusomwa: { $reason }
+tasks-account-none = Hakuna orodha za majukumu zilizopatikana
+tasks-account-looking = Inatafuta orodha za majukumu…
+tasks-account-try-again = Jaribu tena
+tasks-account-try-again-tooltip = Kagua majukumu ya akaunti hii tena sasa
+tasks-account-fixing = Inashughulikia…
 tasks-list-name-placeholder = Jina la orodha
 
 ## Lists and tasks

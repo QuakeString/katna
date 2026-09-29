@@ -11,6 +11,23 @@ tasks-starred = 已加星號
 tasks-new-list = 建立新清單
 tasks-on-this-computer = 這部電腦
 tasks-my-tasks = 我的工作
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = 重新登入以顯示工作
+tasks-account-signed-in = 已重新登入 { $address }。正在取得你的工作…
+tasks-account-sign-in-refused = { $provider } 未允許 Katna 存取。請再試一次，並允許存取你的工作。
+tasks-account-refused = 伺服器未接受這組密碼。Yahoo、iCloud、Zoho 等需要應用程式密碼。
+tasks-account-change-password = 變更密碼
+tasks-account-change-password-tooltip = 開啟「設定 > 帳戶」
+tasks-account-not-enabled = Katna 的工作存取權限尚未開啟。
+tasks-account-failed = 無法讀取工作清單。
+# $reason is the server's own words, in English.
+tasks-account-error = 無法讀取工作清單：{ $reason }
+tasks-account-none = 找不到工作清單
+tasks-account-looking = 正在尋找工作清單…
+tasks-account-try-again = 再試一次
+tasks-account-try-again-tooltip = 立即重新檢查此帳號的工作
+tasks-account-fixing = 正在處理…
 tasks-list-name-placeholder = 清單名稱
 
 ## Lists and tasks

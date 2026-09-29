@@ -11,6 +11,23 @@ tasks-starred = Masu tauraro
 tasks-new-list = Ƙirƙiri sabon jeri
 tasks-on-this-computer = A kan wannan kwamfuta
 tasks-my-tasks = Ayyukana
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Sake shiga don nuna ayyuka
+tasks-account-signed-in = An sake shiga { $address }. Ana samo ayyukanku…
+tasks-account-sign-in-refused = { $provider } bai bar Katna ya shiga ba. Ku sake gwadawa, kuma ku ba da izinin shiga ayyukanku.
+tasks-account-refused = Sabar ba ta karɓi kalmar sirrin ba. Yahoo, iCloud, Zoho da wasu suna buƙatar kalmar sirrin manhaja.
+tasks-account-change-password = Canza kalmar sirri
+tasks-account-change-password-tooltip = Buɗe Saituna > Asusu
+tasks-account-not-enabled = Ba a kunna damar shiga ayyuka don Katna ba tukuna.
+tasks-account-failed = Ba a iya karanta jerin ayyukan ba.
+# $reason is the server's own words, in English.
+tasks-account-error = Ba a iya karanta jerin ayyukan ba: { $reason }
+tasks-account-none = Ba a sami jerin ayyuka ba
+tasks-account-looking = Ana neman jerin ayyuka…
+tasks-account-try-again = Sake gwadawa
+tasks-account-try-again-tooltip = Sake duba ayyukan wannan asusun yanzu
+tasks-account-fixing = Ana aiki a kai…
 tasks-list-name-placeholder = Sunan jeri
 
 ## Lists and tasks

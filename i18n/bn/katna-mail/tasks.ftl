@@ -11,6 +11,23 @@ tasks-starred = তারকাচিহ্নিত
 tasks-new-list = নতুন তালিকা তৈরি করুন
 tasks-on-this-computer = এই কম্পিউটারে
 tasks-my-tasks = আমার টাস্ক
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = টাস্ক দেখাতে আবার সাইন ইন করুন
+tasks-account-signed-in = { $address }-এ আবার সাইন ইন করা হয়েছে। আপনার টাস্ক আনা হচ্ছে…
+tasks-account-sign-in-refused = { $provider } Katna-কে ঢুকতে দেয়নি। আবার চেষ্টা করুন, এবং আপনার টাস্কে অ্যাক্সেসের অনুমতি দিন।
+tasks-account-refused = সার্ভার পাসওয়ার্ডটি গ্রহণ করেনি। Yahoo, iCloud, Zoho ও অন্যদের জন্য একটি অ্যাপ পাসওয়ার্ড লাগে।
+tasks-account-change-password = পাসওয়ার্ড বদলান
+tasks-account-change-password-tooltip = সেটিংস > অ্যাকাউন্ট খুলুন
+tasks-account-not-enabled = Katna-র জন্য টাস্ক অ্যাক্সেস এখনও চালু করা হয়নি।
+tasks-account-failed = টাস্ক তালিকাগুলি পড়া যায়নি।
+# $reason is the server's own words, in English.
+tasks-account-error = টাস্ক তালিকাগুলি পড়া যায়নি: { $reason }
+tasks-account-none = কোনো টাস্ক তালিকা পাওয়া যায়নি
+tasks-account-looking = টাস্ক তালিকা খোঁজা হচ্ছে…
+tasks-account-try-again = আবার চেষ্টা করুন
+tasks-account-try-again-tooltip = এই অ্যাকাউন্টের টাস্কগুলো এখনই আবার দেখুন
+tasks-account-fixing = কাজ চলছে…
 tasks-list-name-placeholder = তালিকার নাম
 
 ## Lists and tasks

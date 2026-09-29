@@ -1595,3 +1595,11 @@ kontakte nie kan laai nie, sê 'n reël daaronder hoekom, met die een klik
 wat dit regmaak, soos “Meld weer aan om kontakte te wys” of “Probeer
 weer”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Elke rekening op die Take-bladsy"
+text = """
+Elke rekening wys nou in die Take-sypaneel. As 'n rekening se take nie
+kan laai nie, sê 'n reël daaronder hoekom, met een klik om dit reg te
+maak: meld weer aan, of probeer weer.
+"""

@@ -11,6 +11,23 @@ tasks-starred = មានផ្កាយ
 tasks-new-list = បង្កើតបញ្ជីថ្មី
 tasks-on-this-computer = នៅលើកុំព្យូទ័រនេះ
 tasks-my-tasks = កិច្ចការរបស់ខ្ញុំ
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = ចូលម្ដងទៀត ដើម្បីបង្ហាញកិច្ចការ
+tasks-account-signed-in = បានចូល { $address } ម្ដងទៀត។ កំពុងទទួលកិច្ចការរបស់អ្នក…
+tasks-account-sign-in-refused = { $provider } មិនបានអនុញ្ញាតឱ្យ Katna ចូលទេ។ សូមព្យាយាមម្ដងទៀត ហើយអនុញ្ញាតឱ្យចូលប្រើកិច្ចការរបស់អ្នក។
+tasks-account-refused = ម៉ាស៊ីនមេមិនបានទទួលយកពាក្យសម្ងាត់ទេ។ Yahoo, iCloud, Zoho និងផ្សេងទៀតត្រូវការពាក្យសម្ងាត់កម្មវិធី។
+tasks-account-change-password = ប្ដូរពាក្យសម្ងាត់
+tasks-account-change-password-tooltip = បើក ការកំណត់ > គណនី
+tasks-account-not-enabled = ការចូលប្រើកិច្ចការសម្រាប់ Katna មិនទាន់បានបើកនៅឡើយទេ។
+tasks-account-failed = មិនអាចអានបញ្ជីកិច្ចការបានទេ។
+# $reason is the server's own words, in English.
+tasks-account-error = មិនអាចអានបញ្ជីកិច្ចការបានទេ៖ { $reason }
+tasks-account-none = រកមិនឃើញបញ្ជីកិច្ចការទេ
+tasks-account-looking = កំពុងស្វែងរកបញ្ជីកិច្ចការ…
+tasks-account-try-again = ព្យាយាមម្ដងទៀត
+tasks-account-try-again-tooltip = ពិនិត្យកិច្ចការរបស់គណនីនេះម្ដងទៀតឥឡូវនេះ
+tasks-account-fixing = កំពុងដោះស្រាយ…
 tasks-list-name-placeholder = ឈ្មោះបញ្ជី
 
 ## Lists and tasks

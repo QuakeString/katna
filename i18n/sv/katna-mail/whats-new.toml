@@ -1610,3 +1610,11 @@ kontos kontakter inte kan läsas in säger en rad under det varför, med
 det enda klick som löser det, till exempel ”Logga in igen för att visa
 kontakter” eller ”Försök igen”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Alla konton på sidan Uppgifter"
+text = """
+Alla konton visas nu i sidopanelen i Uppgifter. När ett kontos uppgifter
+inte kan läsas in säger en rad under det varför, med ett klick som löser
+det: logga in igen eller försök igen.
+"""

@@ -11,6 +11,23 @@ tasks-starred = Berbintang
 tasks-new-list = Buat daftar baru
 tasks-on-this-computer = Di komputer ini
 tasks-my-tasks = Tugas Saya
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Masuk lagi untuk menampilkan tugas
+tasks-account-signed-in = Sudah masuk lagi ke { $address }. Mengambil tugas Anda…
+tasks-account-sign-in-refused = { $provider } tidak mengizinkan Katna masuk. Coba lagi, dan izinkan akses ke tugas Anda.
+tasks-account-refused = Server tidak menerima sandi. Yahoo, iCloud, Zoho, dan lainnya memerlukan sandi aplikasi.
+tasks-account-change-password = Ubah sandi
+tasks-account-change-password-tooltip = Buka Setelan > Akun
+tasks-account-not-enabled = Akses tugas untuk Katna belum diaktifkan.
+tasks-account-failed = Daftar tugas tidak dapat dibaca.
+# $reason is the server's own words, in English.
+tasks-account-error = Daftar tugas tidak dapat dibaca: { $reason }
+tasks-account-none = Tidak ada daftar tugas yang ditemukan
+tasks-account-looking = Mencari daftar tugas…
+tasks-account-try-again = Coba lagi
+tasks-account-try-again-tooltip = Periksa lagi tugas akun ini sekarang
+tasks-account-fixing = Sedang dikerjakan…
 tasks-list-name-placeholder = Nama daftar
 
 ## Lists and tasks

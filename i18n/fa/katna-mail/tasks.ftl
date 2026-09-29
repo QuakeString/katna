@@ -11,6 +11,23 @@ tasks-starred = ستاره‌دار
 tasks-new-list = ایجاد فهرست جدید
 tasks-on-this-computer = روی این رایانه
 tasks-my-tasks = کارهای من
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = برای نمایش کارها دوباره وارد شوید
+tasks-account-signed-in = دوباره به { $address } وارد شدید. در حال دریافت کارهایتان…
+tasks-account-sign-in-refused = { $provider } به Katna اجازهٔ ورود نداد. دوباره امتحان کنید و اجازهٔ دسترسی به کارهایتان را بدهید.
+tasks-account-refused = سرور گذرواژه را نپذیرفت. Yahoo، iCloud، Zoho و دیگران به گذرواژهٔ برنامه نیاز دارند.
+tasks-account-change-password = تغییر گذرواژه
+tasks-account-change-password-tooltip = باز کردن تنظیمات > حساب‌ها
+tasks-account-not-enabled = دسترسی Katna به کارها هنوز روشن نشده است.
+tasks-account-failed = خواندن فهرست‌های کارها ممکن نشد.
+# $reason is the server's own words, in English.
+tasks-account-error = خواندن فهرست‌های کارها ممکن نشد: { $reason }
+tasks-account-none = هیچ فهرست کاری پیدا نشد
+tasks-account-looking = در حال جست‌وجوی فهرست‌های کارها…
+tasks-account-try-again = امتحان مجدد
+tasks-account-try-again-tooltip = همین حالا کارهای این حساب را دوباره بررسی کنید
+tasks-account-fixing = در حال انجام…
 tasks-list-name-placeholder = نام فهرست
 
 ## Lists and tasks

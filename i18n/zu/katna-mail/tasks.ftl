@@ -11,6 +11,23 @@ tasks-starred = Okunenkanyezi
 tasks-new-list = Dala uhlu olusha
 tasks-on-this-computer = Kule khompyutha
 tasks-my-tasks = Imisebenzi yami
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Ngena futhi ukuze ubonise imisebenzi
+tasks-account-signed-in = Ungene futhi ku-{ $address }. Kutholwa imisebenzi yakho…
+tasks-account-sign-in-refused = I-{ $provider } ayizange ivumele i-Katna ingene. Zama futhi, bese uvumela ukufinyelela emisebenzini yakho.
+tasks-account-refused = Iseva ayizange yamukele iphasiwedi. I-Yahoo, i-iCloud, i-Zoho nabanye badinga iphasiwedi yohlelo lokusebenza.
+tasks-account-change-password = Shintsha iphasiwedi
+tasks-account-change-password-tooltip = Vula Izilungiselelo > Ama-akhawunti
+tasks-account-not-enabled = Ukufinyelela kwemisebenzi kwe-Katna akukavulwa.
+tasks-account-failed = Izinhlu zemisebenzi azikwazanga ukufundwa.
+# $reason is the server's own words, in English.
+tasks-account-error = Izinhlu zemisebenzi azikwazanga ukufundwa: { $reason }
+tasks-account-none = Azikho izinhlu zemisebenzi ezitholakele
+tasks-account-looking = Kufunwa izinhlu zemisebenzi…
+tasks-account-try-again = Zama futhi
+tasks-account-try-again-tooltip = Hlola imisebenzi yale akhawunti futhi manje
+tasks-account-fixing = Kuyasebenzwa kukho…
 tasks-list-name-placeholder = Igama loluhlu
 
 ## Lists and tasks
