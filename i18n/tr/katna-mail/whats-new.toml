@@ -1100,3 +1100,11 @@ gösterdiğiniz bir gönderenin resimleri artık yalnızca e-posta
 sağlayıcınız iletinin gerçekten o gönderenden geldiğini doğruladığında
 yüklenir.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Sürümünüz hakkında daha fazlası"
+text = """
+Güncellemeler penceresi artık her sürümün son değişikliğini, kopyanızın
+nereden geldiğini ve Katna'nın güncellemeleri en son ne zaman
+denetlediğini gösteriyor.
+"""
