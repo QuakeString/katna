@@ -123,6 +123,34 @@ pub(super) struct TasksPage {
     pub(super) open_mails: Vec<String>,
 }
 
+/// A task being dragged onto another list: it follows the pointer as a
+/// lifted card, as in Google Tasks.
+#[derive(Clone)]
+struct TaskDragged {
+    id: i64,
+    list: i64,
+    title: String,
+    th: Theme,
+}
+
+impl Render for TaskDragged {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let th = &self.th;
+        div()
+            .w(px(CARD_WIDTH - 32.0))
+            .py(px(10.0))
+            .px(px(16.0))
+            .rounded(px(8.0))
+            .bg(rgba(th.surface))
+            .shadow(crate::widgets::elevation(th, 3.0))
+            .text_size(px(14.0))
+            .line_height(px(20.0))
+            .text_color(rgba(th.text))
+            .truncate()
+            .child(self.title.clone())
+    }
+}
+
 impl TasksPage {
     fn done(&self, task: &TaskItem) -> bool {
         self.pending
@@ -1424,6 +1452,7 @@ impl MailWindow {
                 .size_full()
                 .p(px(16.0))
                 .flex()
+                .items_start()
                 .justify_center()
                 .children(
                     columns
@@ -1436,20 +1465,27 @@ impl MailWindow {
         }
     }
 
-    fn card_frame(&self, id: SharedString, width: f32, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    /// A card of tasks, `width` wide, that scrolls once taller than the
+    /// page. `rows` keep their heights: in a column that scrolls, a flex
+    /// column would squeeze them first.
+    fn card_frame(
+        &self,
+        id: SharedString,
+        width: f32,
+        th: &Theme,
+        rows: gpui::Div,
+    ) -> gpui::Stateful<gpui::Div> {
         div()
             .id(id)
             .flex_none()
             .w(px(width))
             .max_h_full()
             .overflow_y_scroll()
-            .pb(px(8.0))
-            .flex()
-            .flex_col()
             .rounded(px(16.0))
             .bg(rgba(if th.dark { th.read_row } else { th.surface }))
             .border_1()
             .border_color(rgba(th.divider))
+            .child(rows.flex_none().pb(px(8.0)).flex().flex_col())
     }
 
     fn render_starred(
@@ -1471,22 +1507,28 @@ impl MailWindow {
             .size_full()
             .p(px(16.0))
             .flex()
+            .items_start()
             .justify_center()
             .child(
-                self.card_frame("tasks-starred-card".into(), SINGLE_WIDTH, th)
-                    .child(card_heading(tr!("tasks-starred"), th))
-                    .when(empty, |d| {
-                        d.child(
-                            div()
-                                .py(px(32.0))
-                                .px(px(24.0))
-                                .text_center()
-                                .text_size(px(14.0))
-                                .text_color(rgba(th.text_faint))
-                                .child(tr!("tasks-starred-empty")),
-                        )
-                    })
-                    .children(rows),
+                self.card_frame(
+                    "tasks-starred-card".into(),
+                    SINGLE_WIDTH,
+                    th,
+                    div()
+                        .child(card_heading(tr!("tasks-starred"), th))
+                        .when(empty, |d| {
+                            d.child(
+                                div()
+                                    .py(px(32.0))
+                                    .px(px(24.0))
+                                    .text_center()
+                                    .text_size(px(14.0))
+                                    .text_color(rgba(th.text_faint))
+                                    .child(tr!("tasks-starred-empty")),
+                            )
+                        })
+                        .children(rows),
+                ),
             )
             .into_any_element()
     }
@@ -1544,47 +1586,53 @@ impl MailWindow {
             .size_full()
             .p(px(16.0))
             .flex()
+            .items_start()
             .justify_center()
             .child(
-                self.card_frame("tasks-today-card".into(), SINGLE_WIDTH, th)
-                    .child(card_heading(tr!("tasks-today"), th))
-                    .child(
-                        div()
-                            .px(px(20.0))
-                            .mt(px(-8.0))
-                            .mb(px(4.0))
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(date),
-                    )
-                    .child(add)
-                    .when(empty, |d| {
-                        d.child(
+                self.card_frame(
+                    "tasks-today-card".into(),
+                    SINGLE_WIDTH,
+                    th,
+                    div()
+                        .child(card_heading(tr!("tasks-today"), th))
+                        .child(
                             div()
-                                .py(px(24.0))
-                                .px(px(24.0))
-                                .flex()
-                                .flex_col()
-                                .items_center()
-                                .gap(px(8.0))
-                                .text_center()
-                                .child(icon("check-circle", th.text_faint, 40.0))
-                                .child(
-                                    div()
-                                        .text_size(px(14.0))
-                                        .text_color(rgba(th.text_dim))
-                                        .child(tr!("tasks-today-empty")),
-                                ),
+                                .px(px(20.0))
+                                .mt(px(-8.0))
+                                .mb(px(4.0))
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(date),
                         )
-                    })
-                    .when(has_overdue, |d| {
-                        d.child(section(tr!("tasks-overdue"), th.error))
-                            .children(overdue_rows)
-                            .when(!due_rows.is_empty(), |d| {
-                                d.child(section(tr!("tasks-due-today"), th.text_dim))
-                            })
-                    })
-                    .children(due_rows),
+                        .child(add)
+                        .when(empty, |d| {
+                            d.child(
+                                div()
+                                    .py(px(24.0))
+                                    .px(px(24.0))
+                                    .flex()
+                                    .flex_col()
+                                    .items_center()
+                                    .gap(px(8.0))
+                                    .text_center()
+                                    .child(icon("check-circle", th.text_faint, 40.0))
+                                    .child(
+                                        div()
+                                            .text_size(px(14.0))
+                                            .text_color(rgba(th.text_dim))
+                                            .child(tr!("tasks-today-empty")),
+                                    ),
+                            )
+                        })
+                        .when(has_overdue, |d| {
+                            d.child(section(tr!("tasks-overdue"), th.error))
+                                .children(overdue_rows)
+                                .when(!due_rows.is_empty(), |d| {
+                                    d.child(section(tr!("tasks-due-today"), th.text_dim))
+                                })
+                        })
+                        .children(due_rows),
+                ),
             )
             .into_any_element()
     }
@@ -1687,78 +1735,99 @@ impl MailWindow {
                 }))
                 .into_any_element(),
         };
-        self.card_frame(format!("tasks-card-{id}").into(), width, th)
-            .child(heading)
-            .when(!column.account.is_empty() && page.view != View::All, |d| {
-                d.child(
-                    div()
-                        .px(px(20.0))
-                        .mt(px(-8.0))
-                        .mb(px(4.0))
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(column.account.clone()),
-                )
-            })
-            .child(add)
-            .when(empty, |d| {
-                d.child(
-                    div()
-                        .py(px(24.0))
-                        .px(px(24.0))
-                        .flex()
-                        .flex_col()
-                        .items_center()
-                        .gap(px(8.0))
-                        .text_center()
-                        .child(icon("check-circle", th.text_faint, 40.0))
-                        .child(
-                            div()
-                                .text_size(px(14.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(tr!("tasks-empty")),
-                        ),
-                )
-            })
-            .children(open_rows)
-            .when(done_count > 0, |d| {
-                d.child(
-                    div()
-                        .id(("tasks-done-fold", id as usize))
-                        .mt(px(4.0))
-                        .h(px(40.0))
-                        .px(px(16.0))
-                        .flex()
-                        .flex_row()
-                        .items_center()
-                        .gap(px(12.0))
-                        .border_t_1()
-                        .border_color(rgba(th.divider))
-                        .cursor_pointer()
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .hover(|s| s.bg(rgba(th.hover)))
-                        .child(icon(
-                            if done_open {
-                                "chevron-down"
-                            } else {
-                                "chevron-right"
-                            },
-                            th.text_dim,
-                            20.0,
-                        ))
-                        .child(tr!("tasks-completed", count = done_count as u64))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            if !this.tasks.open_done.remove(&id) {
-                                this.tasks.open_done.insert(id);
-                            }
-                            cx.notify();
-                        })),
-                )
-            })
-            .children(done_rows)
-            .into_any_element()
+        self.card_frame(
+            format!("tasks-card-{id}").into(),
+            width,
+            th,
+            div()
+                .child(heading)
+                .when(!column.account.is_empty() && page.view != View::All, |d| {
+                    d.child(
+                        div()
+                            .px(px(20.0))
+                            .mt(px(-8.0))
+                            .mb(px(4.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(column.account.clone()),
+                    )
+                })
+                .child(add)
+                .when(empty, |d| {
+                    d.child(
+                        div()
+                            .py(px(24.0))
+                            .px(px(24.0))
+                            .flex()
+                            .flex_col()
+                            .items_center()
+                            .gap(px(8.0))
+                            .text_center()
+                            .child(icon("check-circle", th.text_faint, 40.0))
+                            .child(
+                                div()
+                                    .text_size(px(14.0))
+                                    .text_color(rgba(th.text_dim))
+                                    .child(tr!("tasks-empty")),
+                            ),
+                    )
+                })
+                .children(open_rows)
+                .when(done_count > 0, |d| {
+                    d.child(
+                        div()
+                            .id(("tasks-done-fold", id as usize))
+                            .mt(px(4.0))
+                            .h(px(40.0))
+                            .px(px(16.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(12.0))
+                            .border_t_1()
+                            .border_color(rgba(th.divider))
+                            .cursor_pointer()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.text_dim))
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .child(icon(
+                                if done_open {
+                                    "chevron-down"
+                                } else {
+                                    "chevron-right"
+                                },
+                                th.text_dim,
+                                20.0,
+                            ))
+                            .child(tr!("tasks-completed", count = done_count as u64))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if !this.tasks.open_done.remove(&id) {
+                                    this.tasks.open_done.insert(id);
+                                }
+                                cx.notify();
+                            })),
+                    )
+                })
+                .children(done_rows),
+        )
+        // Another list's task dropped here moves to this list.
+        .drag_over::<TaskDragged>({
+            let accent = th.accent;
+            move |style, dragged, _, _| {
+                if dragged.list == id {
+                    style
+                } else {
+                    style.border_color(rgba(accent))
+                }
+            }
+        })
+        .on_drop(cx.listener(move |this, dragged: &TaskDragged, _, cx| {
+            if dragged.list != id {
+                this.move_task_to(dragged.id, id, cx);
+            }
+        }))
+        .into_any_element()
     }
 
     fn adding_row(
@@ -2039,6 +2108,18 @@ impl MailWindow {
                     .children(chips),
             )
             .when(!done, |d| d.child(star))
+            // An open task, not a step, drags onto another list.
+            .when(!done && task.parent.is_none() && editing.is_none(), |d| {
+                d.on_drag(
+                    TaskDragged {
+                        id,
+                        list: task.list,
+                        title: task.title.clone(),
+                        th: *th,
+                    },
+                    |drag, _, _, cx| cx.new(|_| drag.clone()),
+                )
+            })
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
                     if event.click_count() >= 2 {

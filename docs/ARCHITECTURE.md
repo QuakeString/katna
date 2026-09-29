@@ -3615,6 +3615,10 @@ server error is not.
   plants every Monday 8am"); a repeat without a day starts on its first
   day from today. Tasks have no place, so "at …" stays in the title, and
   a title that is only such words ("tomorrow") stays as typed.
+- **Drag to another list**: an open task (not a step) drags onto another
+  list's card, which outlines itself while the task is over it; the drop
+  is the same move as "Move to", with its toast and Undo. Order within a
+  list is the service's and does not change by drag yet.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the
