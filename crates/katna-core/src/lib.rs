@@ -14,6 +14,7 @@ pub mod image;
 pub mod logging;
 pub mod meeting;
 pub mod paths;
+pub mod quick_add;
 pub mod sentry;
 pub mod subject;
 pub mod update;

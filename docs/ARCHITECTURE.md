@@ -3463,8 +3463,9 @@ most useful reason is shown. Changes go back the way their calendar came
   `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
   Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
 - Alarms fire from the daemon as notifications (§15.1).
-- Views: Day, Week (the default), Month and Schedule, like Google
-  Calendar, with calendars grouped by account; the week starts as the
+- Views: Day, Week (the default), Month, Year (Y or 5: twelve small
+  months with a dot under days with events; a day opens Day, a month's
+  name opens Month) and Schedule, like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
 - The bar's options button (⚙ in Google, a tune icon here, beside the
   app's own gear) has Density and Second time zone (`[calendar]` in
@@ -3474,9 +3475,26 @@ most useful reason is shown. Changes go back the way their calendar came
   second time zone adds a column of its hours at the left of Day and
   Week, each column headed by its offset ("GMT-4"); the menu offers
   sixteen common zones, and any IANA name typed into the file works.
+- Typed quick add, as in Fantastical and Todoist: one parser for events
+  and tasks, `katna_core::quick_add::parse(text, today, words)`. The new
+  event's title "Lunch with Anita Friday 1pm at Cafe Mocha" or "Standup
+  every weekday 9:30 for 15 min" fills the day, times ("1-2pm", "11am to
+  1pm"), length ("for 30 min"), repeat (an RRULE: "daily", "every 2
+  weeks", "every Mon and Thu", "every weekday") and place ("at …") as it
+  is typed; the card shows the place and repeat, and the rest is saved as
+  the title. Deleting the words puts the fields back. Days: today,
+  tonight, tomorrow, weekdays ("next Friday"), "Oct 5", "5th of
+  October". The words come from a `Words` table per language; only
+  English has one so far, and other languages use it. Bare numbers
+  ("Buy 3 books") stay in the title.
 - Desktop: Katna Digital Clock (§15.4) through the daemon's
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
-- No booking pages: free times are shared as text in a mail.
+- No booking pages: free times are shared as text in a mail. The options
+  menu's Share free times (`window/calendar/free.rs`) opens a new
+  message listing the gaps of at least 30 minutes between busy events
+  (shown calendars, not cancelled or declined) from 9:00 to 17:00 on the
+  next five weekdays, from the next half hour today, with the UTC
+  offset.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks

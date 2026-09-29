@@ -33,6 +33,7 @@ use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised, tip};
+use katna_core::quick_add::{self, Typed};
 
 /// How long a new event lasts.
 const NEW_EVENT_MINUTES: i64 = 60;
@@ -192,7 +193,31 @@ pub(super) struct Draft {
     /// The month a date list shows.
     pick_month: Date,
     list_scroll: ScrollHandle,
+    /// Typed quick add: the fields as they were before the new event's
+    /// title named a day, time or place.
+    quick: Option<QuickBase>,
     _events: Vec<Subscription>,
+}
+
+/// Reads a typed title (`katna_core::quick_add`) in the language in use.
+pub(super) fn read_typed(text: &str, today: Date) -> Typed {
+    let language = katna_i18n::current().language.tag.clone();
+    quick_add::parse(text, today, quick_add::Words::for_language(&language))
+}
+
+/// [`Draft::quick`].
+struct QuickBase {
+    start_day: Date,
+    end_day: Date,
+    start_time: Time,
+    end_time: Time,
+    all_day: bool,
+    repeat: Repeat,
+    location: String,
+    /// The place field holds the title's place.
+    placed: bool,
+    /// The repeat is the title's.
+    repeated: bool,
 }
 
 impl Draft {
@@ -214,6 +239,12 @@ impl Draft {
             24.0 * 60.0
         };
         let title = self.title.read(cx).text().trim().to_owned();
+        // Without the day, time and place typed into it.
+        let title = if self.quick.is_some() {
+            read_typed(&title, Zoned::now().date()).title
+        } else {
+            title
+        };
         let title = if title.is_empty() {
             tr!("calendar-no-title")
         } else {
@@ -356,7 +387,12 @@ impl MailWindow {
             cx.subscribe_in(
                 &title,
                 window,
-                move |this, _, event: &InputEvent, window, cx| on_input(this, event, window, cx),
+                move |this, _, event: &InputEvent, window, cx| {
+                    if let InputEvent::Changed = event {
+                        this.read_typed_title(cx);
+                    }
+                    on_input(this, event, window, cx)
+                },
             ),
             cx.subscribe_in(
                 &location,
@@ -449,6 +485,7 @@ impl MailWindow {
             pick: None,
             pick_month: start_day,
             list_scroll: ScrollHandle::new(),
+            quick: None,
             _events: events,
         })
     }
@@ -661,6 +698,94 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// The new event's title without the day, time and place typed into
+    /// it.
+    fn draft_title(&self, draft: &Draft, cx: &Context<Self>) -> String {
+        let text = draft.title.read(cx).text().trim().to_owned();
+        if draft.quick.is_none() {
+            return text;
+        }
+        let today = Zoned::now().with_time_zone(self.tz.clone()).date();
+        read_typed(&text, today).title
+    }
+
+    /// Typed quick add: fills a new event's day, times and place from what
+    /// its title says, and puts them back when the words go.
+    fn read_typed_title(&mut self, cx: &mut Context<Self>) {
+        let today = Zoned::now().with_time_zone(self.tz.clone()).date();
+        let Some(draft) = &mut self.calendar.draft else {
+            return;
+        };
+        if draft.editing.is_some() || draft.kind != EventKind::Default {
+            return;
+        }
+        let typed = read_typed(draft.title.read(cx).text(), today);
+        if draft.quick.is_none() && !typed.found() {
+            return;
+        }
+        let base = draft.quick.get_or_insert_with(|| QuickBase {
+            start_day: draft.start_day,
+            end_day: draft.end_day,
+            start_time: draft.start_time,
+            end_time: draft.end_time,
+            all_day: draft.all_day,
+            repeat: draft.repeat.clone(),
+            location: draft.location.read(cx).text().to_owned(),
+            placed: false,
+            repeated: false,
+        });
+        let length = base
+            .start_day
+            .to_datetime(base.start_time)
+            .duration_until(base.end_day.to_datetime(base.end_time))
+            .as_secs()
+            / 60;
+        let length = typed.minutes.unwrap_or(length.max(15));
+        let start_day = typed.day.unwrap_or(base.start_day);
+        let (mut start_time, mut end_time, mut end_day) = (
+            base.start_time,
+            base.end_time,
+            start_day
+                .checked_add((base.end_day - base.start_day).get_days().days())
+                .unwrap_or(start_day),
+        );
+        if let Some(start) = typed.start {
+            start_time = start;
+        }
+        if typed.start.is_some() || typed.minutes.is_some() {
+            let (end, over) = match typed.end {
+                Some(end) => (end, i64::from(end <= start_time)),
+                None => add_minutes(start_time, length),
+            };
+            end_time = end;
+            end_day = start_day.checked_add(over.days()).unwrap_or(start_day);
+        }
+        draft.start_day = start_day;
+        draft.end_day = end_day;
+        draft.start_time = start_time;
+        draft.end_time = end_time;
+        draft.all_day = base.all_day && typed.start.is_none();
+        base.repeated = typed.repeat.is_some();
+        draft.repeat = match &typed.repeat {
+            Some(rule) => Repeat::of(rule, start_day),
+            None => base.repeat.clone(),
+        };
+        draft.pick_month = start_day;
+        let place = match (&typed.location, base.placed) {
+            (Some(place), _) => Some(place.clone()),
+            (None, true) => Some(base.location.clone()),
+            (None, false) => None,
+        };
+        base.placed = typed.location.is_some();
+        if let Some(place) = place
+            && draft.location.read(cx).text() != place
+        {
+            draft
+                .location
+                .update(cx, |input, cx| input.set_text(place, cx));
+        }
+    }
+
     /// The draft's fields as the daemon takes them.
     fn draft_edit(&self, draft: &Draft, cx: &Context<Self>) -> Option<EventEdit> {
         let tz = &self.tz;
@@ -678,7 +803,7 @@ impl MailWindow {
         };
         let old = draft.editing.as_ref().map(|o| &o.event.data);
         Some(EventEdit {
-            title: draft.title.read(cx).text().trim().to_owned(),
+            title: self.draft_title(draft, cx),
             location: draft.location.read(cx).text().trim().to_owned(),
             description: draft.notes.read(cx).text().to_owned(),
             start,
@@ -1422,6 +1547,34 @@ impl MailWindow {
                 .flex_col()
                 .gap(px(8.0))
                 .child(row("schedule").child(self.render_when(draft, th, cx)))
+                // The place the title named (typed quick add).
+                .when(draft.quick.as_ref().is_some_and(|q| q.placed), |d| {
+                    d.child(
+                        row("location").child(
+                            div()
+                                .h(px(36.0))
+                                .px(px(10.0))
+                                .flex()
+                                .items_center()
+                                .text_size(px(14.0))
+                                .child(draft.location.read(cx).text().to_owned()),
+                        ),
+                    )
+                })
+                // The repeat the title named.
+                .when(draft.quick.as_ref().is_some_and(|q| q.repeated), |d| {
+                    d.child(
+                        row("repeat").child(
+                            div()
+                                .h(px(36.0))
+                                .px(px(10.0))
+                                .flex()
+                                .items_center()
+                                .text_size(px(14.0))
+                                .child(draft.repeat.label(draft.start_day)),
+                        ),
+                    )
+                })
                 .child(row("calendar").child(self.calendar_chip(draft, th, cx))),
         )
         .child(

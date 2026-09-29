@@ -7,6 +7,7 @@ calendar-today-tip = Go to today
 calendar-view-day = Day
 calendar-view-week = Week
 calendar-view-month = Month
+calendar-view-year = Year
 calendar-view-schedule = Schedule
 # The gear at the right of the calendar bar, and its menu.
 calendar-options = Options
@@ -18,12 +19,23 @@ calendar-second-zone = Second time zone
 calendar-zone-none = None
 # A time zone to choose. $zone: its city ("New York"), $offset: "GMT+5:30".
 calendar-zone = { $zone } ({ $offset })
+# Opens a new message listing the free times of the next working days.
+calendar-share-free = Share free times
+calendar-free-subject = Times I'm free
+# $zone: "GMT+5:30".
+calendar-free-intro = Here are some times I'm free ({ $zone }):
+# $weekday: "Wednesday", $date: "30 Sep", $times: ranges, separated by commas.
+calendar-free-day = { $weekday } { $date }: { $times }
+calendar-free-range = { $start } – { $end }
+calendar-free-none = I have no free time in the next few working days.
 calendar-previous-day = Previous day
 calendar-next-day = Next day
 calendar-previous-week = Previous week
 calendar-next-week = Next week
 calendar-previous-month = Previous month
 calendar-next-month = Next month
+calendar-previous-year = Previous year
+calendar-next-year = Next year
 calendar-previous-period = Earlier
 calendar-next-period = Later
 # The title when the days shown cross two months: "September – October 2026".
