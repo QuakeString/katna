@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks on your own mail server"
+text = """
+Accounts that sign in with a password now keep their tasks on their
+mail server when it offers CalDAV, so the tasks also show in the
+server's own apps and on the phone.
+"""
