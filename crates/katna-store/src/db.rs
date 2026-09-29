@@ -63,6 +63,7 @@ impl DbKind {
                 include_str!("schema/pim_v7.sql"),
                 include_str!("schema/pim_v8.sql"),
                 include_str!("schema/pim_v9.sql"),
+                include_str!("schema/pim_v10.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -264,6 +265,8 @@ mod tests {
                 "org_member",
                 "org_rule",
                 "organization",
+                "other_contact",
+                "other_contact_sync",
                 "suggestion",
                 "task",
                 "task_list",

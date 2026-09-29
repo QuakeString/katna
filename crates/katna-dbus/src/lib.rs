@@ -573,6 +573,11 @@ macro_rules! pim_proxy {
             /// Deletes saved cards, from their accounts' services too.
             fn delete_contacts(&self, ids: &[i64]) -> zbus::Result<()>;
 
+            /// Saves one of Google's other contacts in its account's
+            /// contacts; returns the new card, or 0 when it comes with the
+            /// next sync.
+            fn save_other_contact(&self, id: i64) -> zbus::Result<i64>;
+
             /// Gives a saved card exactly these labels, by name.
             fn set_contact_labels(&self, contact: i64, labels: &[String]) -> zbus::Result<()>;
 

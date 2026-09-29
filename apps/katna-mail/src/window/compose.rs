@@ -1574,6 +1574,7 @@ impl MailWindow {
             attachments: attachments.iter().map(Attachment::part).collect(),
             date: at.map(|at| schedule::rfc2822(at, &self.tz)),
             message_id: Some(message_id.clone()),
+            calendar: None,
         });
         let from = Some(account.id);
         let account = account.id.0;

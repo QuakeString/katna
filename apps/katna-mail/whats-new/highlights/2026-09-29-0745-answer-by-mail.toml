@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Answer invitations from any account"
+text = """
+An invitation that came to an account without a calendar now has Yes, No
+and Maybe too: your answer goes to the organizer by mail, and their
+calendar marks it.
+"""

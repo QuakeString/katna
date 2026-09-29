@@ -160,7 +160,13 @@ impl Sending {
 impl MailWindow {
     /// Outbox entry `id` was queued to go out after `delay` seconds; with
     /// `archived`, its conversation was archived with it.
-    pub(super) fn queued(&mut self, id: i64, delay: u32, archived: bool, cx: &mut Context<Self>) {
+    pub(in crate::window) fn queued(
+        &mut self,
+        id: i64,
+        delay: u32,
+        archived: bool,
+        cx: &mut Context<Self>,
+    ) {
         if delay > 0 {
             let until = Instant::now() + Duration::from_secs(u64::from(delay));
             self.show_countdown(

@@ -71,6 +71,7 @@ fn draft_raw(unsent: &Unsent, from: Mailbox, message_id: &str) -> Vec<u8> {
         attachments: unsent.attachments.iter().map(Attachment::part).collect(),
         date: None,
         message_id: Some(message_id.to_owned()),
+        calendar: None,
     })
 }
 
