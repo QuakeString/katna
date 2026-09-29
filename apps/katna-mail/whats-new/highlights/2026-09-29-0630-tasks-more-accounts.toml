@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks from more accounts"
+text = """
+Tasks now also sync with Yahoo, Zoho, iCloud, Fastmail and other
+accounts whose tasks live on another server than their mail. Katna tries
+each account's best way first and remembers the one that works.
+"""
