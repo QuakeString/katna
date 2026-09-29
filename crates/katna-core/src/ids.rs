@@ -53,6 +53,22 @@ pub const RUNNER_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/Runner";
 /// `gnome-shell/search-providers` file.
 pub const SEARCH_PROVIDER_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/SearchProvider";
 
+/// D-Bus interface of the daemon's events and tasks for the desktop's
+/// clock (Katna Digital Clock on Plasma, the GNOME Shell extension).
+pub const AGENDA_INTERFACE: &str = concat!(prefix!(), ".Agenda1");
+
+/// Object path of [`AGENDA_INTERFACE`], served under [`DAEMON_BUS_NAME`].
+pub const AGENDA_OBJECT_PATH: &str = "/in/invenia/katna/Daemon/Agenda";
+
+/// Plugin ID of Katna Digital Clock, the Plasma widget
+/// (`integrations/plasma-clock/package/metadata.json`).
+pub const CLOCK_APPLET_ID: &str = concat!(prefix!(), ".digitalclock");
+
+/// UUID of Katna's GNOME Shell extension, which adds Katna's events and
+/// tasks to the clock's menu (`integrations/gnome-shell-extension/`).
+/// GNOME wants an e-mail-like UUID, so it is the project domain.
+pub const CLOCK_EXTENSION_UUID: &str = "clock@katna.invenia.in";
+
 /// The polkit action that lets Katna Mail install an update of Katna
 /// after the system's password prompt (`packaging/polkit/`).
 pub const UPDATE_ACTION: &str = concat!(prefix!(), ".update");
@@ -132,6 +148,20 @@ macro_rules! with_dbus_names {
     };
 }
 
+/// Calls `$callback!(interface, bus name, object path)` with the D-Bus names
+/// of the daemon's events and tasks ([`AGENDA_INTERFACE`]) as literals, as
+/// [`with_dbus_names!`] does for the main API.
+#[macro_export]
+macro_rules! with_agenda_names {
+    ($callback:ident) => {
+        $callback!(
+            "in.invenia.katna.Agenda1",
+            "in.invenia.katna.Daemon",
+            "/in/invenia/katna/Daemon/Agenda"
+        );
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -149,9 +179,35 @@ mod tests {
         with_dbus_names!(names);
     }
 
+    macro_rules! agenda_names {
+        ($interface:tt, $bus_name:tt, $path:tt) => {
+            assert_eq!($interface, AGENDA_INTERFACE);
+            assert_eq!($bus_name, DAEMON_BUS_NAME);
+            assert_eq!($path, AGENDA_OBJECT_PATH);
+        };
+    }
+
+    #[test]
+    fn literal_agenda_names_match() {
+        with_agenda_names!(agenda_names);
+    }
+
+    #[test]
+    fn clock_extension_uuid_is_the_project_domain() {
+        let domain: Vec<&str> = PREFIX.split('.').rev().collect();
+        assert_eq!(CLOCK_EXTENSION_UUID, format!("clock@{}", domain.join(".")));
+    }
+
     #[test]
     fn all_identifiers_are_valid() {
-        for id in [MAIL_APP_ID, CALENDAR_APP_ID, DAEMON_BUS_NAME, PIM_INTERFACE] {
+        for id in [
+            MAIL_APP_ID,
+            CALENDAR_APP_ID,
+            DAEMON_BUS_NAME,
+            PIM_INTERFACE,
+            AGENDA_INTERFACE,
+            CLOCK_APPLET_ID,
+        ] {
             assert!(is_valid_app_id(id), "invalid identifier: {id}");
         }
     }
@@ -165,6 +221,7 @@ mod tests {
             LAUNCHER_ENTRY_PATH,
             RUNNER_OBJECT_PATH,
             SEARCH_PROVIDER_OBJECT_PATH,
+            AGENDA_OBJECT_PATH,
         ] {
             assert!(daemon_path.starts_with(&path(DAEMON_BUS_NAME)));
         }

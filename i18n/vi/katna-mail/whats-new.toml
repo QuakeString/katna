@@ -1074,3 +1074,10 @@ văn bản của liên kết ghi gì. Hình ảnh từ người gửi mà bạn 
 hình ảnh nay chỉ được tải khi nhà cung cấp thư của bạn xác nhận thư thực
 sự đến từ họ.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Thêm về bản dựng của bạn"
+text = """
+Cửa sổ Cập nhật giờ cho biết thay đổi mới nhất của từng phiên bản, bản
+của bạn đến từ đâu và lần gần nhất Katna kiểm tra cập nhật là khi nào.
+"""

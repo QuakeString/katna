@@ -1080,3 +1080,10 @@ oavsett vad länkens text säger. Bilder från en avsändare du alltid visar
 bilder från läses nu bara in när din e-postleverantör bekräftar att
 meddelandet verkligen kommer från den avsändaren.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Mer om ditt bygge"
+text = """
+Fönstret Uppdateringar visar nu senaste ändringen i varje version, var
+din kopia kommer ifrån och när Katna senast sökte efter uppdateringar.
+"""

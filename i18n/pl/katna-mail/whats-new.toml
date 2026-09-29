@@ -1098,3 +1098,11 @@ niezależnie od tekstu linku. Obrazy od nadawcy, od którego zawsze
 pokazujesz obrazy, są teraz wczytywane tylko wtedy, gdy dostawca poczty
 potwierdzi, że wiadomość rzeczywiście od niego pochodzi.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Więcej o Twojej wersji"
+text = """
+Okno Aktualizacje pokazuje teraz ostatnią zmianę w każdej wersji, skąd
+pochodzi Twoja kopia i kiedy Katna ostatnio sprawdzała dostępność
+aktualizacji.
+"""

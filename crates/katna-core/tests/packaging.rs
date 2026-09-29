@@ -9,8 +9,8 @@ use std::{
 };
 
 use katna_core::ids::{
-    DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX, RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH,
-    UPDATE_ACTION,
+    CLOCK_APPLET_ID, CLOCK_EXTENSION_UUID, DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX,
+    RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH, UPDATE_ACTION,
 };
 use katna_core::update::ARCH_HELPER;
 
@@ -249,5 +249,33 @@ fn update_action_runs_the_update_helper() {
             "packaging/arch/katna-update-helper \"$pkgdir{ARCH_HELPER}\""
         )),
         "the PKGBUILD installs the helper at {ARCH_HELPER}"
+    );
+}
+
+/// Katna Digital Clock's plugin ID and the GNOME extension's UUID, which
+/// is also its folder's name (`integrations/`).
+#[test]
+fn desktop_clock_ids_match() {
+    let integrations = packaging().join("../integrations");
+    let applet =
+        fs::read_to_string(integrations.join("plasma-clock/package/metadata.json")).unwrap();
+    assert!(
+        applet.contains(&format!("\"Id\": \"{CLOCK_APPLET_ID}\"")),
+        "Katna Digital Clock's metadata.json has no Id {CLOCK_APPLET_ID}"
+    );
+    let extension = integrations
+        .join("gnome-shell-extension")
+        .join(CLOCK_EXTENSION_UUID);
+    let metadata = fs::read_to_string(extension.join("metadata.json")).unwrap();
+    assert!(
+        metadata.contains(&format!("\"uuid\": \"{CLOCK_EXTENSION_UUID}\"")),
+        "the GNOME extension's metadata.json has no uuid {CLOCK_EXTENSION_UUID}"
+    );
+    let folders = fs::read_dir(integrations.join("gnome-shell-extension"))
+        .unwrap()
+        .count();
+    assert_eq!(
+        folders, 1,
+        "one GNOME extension, in a folder named by its UUID"
     );
 }
