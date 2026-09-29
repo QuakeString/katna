@@ -24,6 +24,7 @@ mod add_account;
 mod app_menu;
 mod apps;
 mod attachments;
+mod calendar;
 mod colors;
 mod compose;
 mod contact;
@@ -415,6 +416,8 @@ pub struct MailWindow {
     chrome: WindowChrome,
     /// The app of the rail on show.
     app: RailApp,
+    /// The Calendar page.
+    calendar: calendar::CalendarPage,
     /// Undo steps that bring back the conversation that was open, with
     /// its key, so undoing opens it again.
     undo_reopens: Vec<(Command, EntryKey)>,
@@ -766,6 +769,7 @@ impl MailWindow {
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
+            calendar: calendar::CalendarPage::new(cx),
             undo_reopens: Vec::new(),
             reopen_after_undo: None,
             title_from: RailApp::Mail,
@@ -1930,6 +1934,9 @@ impl MailWindow {
 
     /// Reads the store again, keeping the cursor and the open conversation.
     fn refresh(&mut self, animate: bool, cx: &mut Context<Self>) {
+        if self.app == RailApp::Calendar && !self.detached {
+            self.load_calendar(cx);
+        }
         if self.mail.is_err() {
             // The daemon may have made the store since.
             self.reopen(cx);

@@ -8,8 +8,8 @@
 //! all switch pages through [`MailWindow::show_page`].
 //!
 //! Adding a page: give it a module of its own under `window/` with a
-//! `render_<name>_page` method, call it from its arm in
-//! [`MailWindow::render_app_page`], and load what it needs in
+//! `render_<name>_page` method (as `calendar.rs` has), call it from its arm
+//! in [`MailWindow::render_app_page`], and load what it needs in
 //! [`MailWindow::open_app`]'s arm. Pages without one show "coming soon".
 
 use std::ops::Range;
@@ -112,6 +112,9 @@ impl MailWindow {
             self.close_settings_page(window, cx);
         }
         self.open_app(app, cx);
+        if app == App::Calendar {
+            window.focus(&self.calendar.focus, cx);
+        }
     }
 
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
@@ -125,8 +128,12 @@ impl MailWindow {
         self.app = app;
         self.menu = None;
         self.search_panel = None;
-        if app == App::Contacts && !matches!(self.people, Some(People::Loaded(_))) {
-            self.load_people(cx);
+        match app {
+            App::Contacts if !matches!(self.people, Some(People::Loaded(_))) => {
+                self.load_people(cx);
+            }
+            App::Calendar => self.load_calendar(cx),
+            _ => {}
         }
         cx.notify();
     }
@@ -298,12 +305,11 @@ impl MailWindow {
     }
 
     /// The page of an app other than Mail.
-    pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_app_page(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts(th, cx),
-            App::Mail | App::Calendar | App::Tasks | App::Notes | App::Feeds => {
-                self.render_coming_soon(th)
-            }
+            App::Calendar => self.render_calendar_page(th, cx),
+            App::Mail | App::Tasks | App::Notes | App::Feeds => self.render_coming_soon(th),
         };
         div()
             .flex_1()

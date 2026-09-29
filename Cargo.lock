@@ -6001,6 +6001,7 @@ dependencies = [
  "katna-chrome",
  "katna-core",
  "katna-crypto",
+ "katna-dav",
  "katna-dbus",
  "katna-i18n",
  "katna-meta",

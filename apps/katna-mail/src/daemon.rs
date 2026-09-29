@@ -220,6 +220,25 @@ pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), Str
         .map_err(|err| describe(&err))
 }
 
+/// Shows or hides calendar `id`'s events (`SetCalendarHidden`).
+pub async fn set_calendar_hidden(
+    connection: &Connection,
+    id: i64,
+    hidden: bool,
+) -> Result<(), String> {
+    connection
+        .call_method(
+            Some(katna_core::ids::DAEMON_BUS_NAME),
+            katna_core::ids::PIM_OBJECT_PATH,
+            Some(katna_core::ids::PIM_INTERFACE),
+            "SetCalendarHidden",
+            &(id, hidden),
+        )
+        .await
+        .map(|_| ())
+        .map_err(|err| describe(&err))
+}
+
 /// Queues an RFC 5322 message from `account` to go out in `delay` seconds.
 /// Returns its outbox ID, for [`Command::UndoSend`].
 pub async fn queue_send(

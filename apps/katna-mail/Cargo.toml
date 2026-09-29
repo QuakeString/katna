@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 katna-store.workspace = true
+katna-dav.workspace = true
 katna-meta.workspace = true
 katna-search.workspace = true
 katna-org.workspace = true

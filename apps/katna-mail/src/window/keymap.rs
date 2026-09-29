@@ -400,6 +400,8 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         super::select::SelectAllText,
         Some(super::select::TEXT_CONTEXT),
     ));
+    // Google Calendar's keys on the Calendar page.
+    bindings.extend(super::calendar::bindings());
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
     // Tab and Shift+Tab move between fields and buttons, as in any desktop
