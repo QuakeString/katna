@@ -29,11 +29,11 @@ use super::MailWindow;
 use super::apps::App;
 use super::calendar::civil;
 use super::compose::schedule;
-use super::quick_add;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised, tip};
+use katna_core::quick_add::{self, Typed};
 
 /// How long a new event lasts.
 const NEW_EVENT_MINUTES: i64 = 60;
@@ -199,6 +199,12 @@ pub(super) struct Draft {
     _events: Vec<Subscription>,
 }
 
+/// Reads a typed title (`katna_core::quick_add`) in the language in use.
+pub(super) fn read_typed(text: &str, today: Date) -> Typed {
+    let language = katna_i18n::current().language.tag.clone();
+    quick_add::parse(text, today, quick_add::Words::for_language(&language))
+}
+
 /// [`Draft::quick`].
 struct QuickBase {
     start_day: Date,
@@ -206,9 +212,12 @@ struct QuickBase {
     start_time: Time,
     end_time: Time,
     all_day: bool,
+    repeat: Repeat,
     location: String,
     /// The place field holds the title's place.
     placed: bool,
+    /// The repeat is the title's.
+    repeated: bool,
 }
 
 impl Draft {
@@ -232,7 +241,7 @@ impl Draft {
         let title = self.title.read(cx).text().trim().to_owned();
         // Without the day, time and place typed into it.
         let title = if self.quick.is_some() {
-            quick_add::parse(&title, Zoned::now().date()).title
+            read_typed(&title, Zoned::now().date()).title
         } else {
             title
         };
@@ -697,7 +706,7 @@ impl MailWindow {
             return text;
         }
         let today = Zoned::now().with_time_zone(self.tz.clone()).date();
-        quick_add::parse(&text, today).title
+        read_typed(&text, today).title
     }
 
     /// Typed quick add: fills a new event's day, times and place from what
@@ -710,8 +719,8 @@ impl MailWindow {
         if draft.editing.is_some() || draft.kind != EventKind::Default {
             return;
         }
-        let typed = quick_add::parse(draft.title.read(cx).text(), today);
-        if draft.quick.is_none() && !typed.found() && typed.minutes.is_none() {
+        let typed = read_typed(draft.title.read(cx).text(), today);
+        if draft.quick.is_none() && !typed.found() {
             return;
         }
         let base = draft.quick.get_or_insert_with(|| QuickBase {
@@ -720,8 +729,10 @@ impl MailWindow {
             start_time: draft.start_time,
             end_time: draft.end_time,
             all_day: draft.all_day,
+            repeat: draft.repeat.clone(),
             location: draft.location.read(cx).text().to_owned(),
             placed: false,
+            repeated: false,
         });
         let length = base
             .start_day
@@ -754,6 +765,11 @@ impl MailWindow {
         draft.start_time = start_time;
         draft.end_time = end_time;
         draft.all_day = base.all_day && typed.start.is_none();
+        base.repeated = typed.repeat.is_some();
+        draft.repeat = match &typed.repeat {
+            Some(rule) => Repeat::of(rule, start_day),
+            None => base.repeat.clone(),
+        };
         draft.pick_month = start_day;
         let place = match (&typed.location, base.placed) {
             (Some(place), _) => Some(place.clone()),
@@ -1542,6 +1558,20 @@ impl MailWindow {
                                 .items_center()
                                 .text_size(px(14.0))
                                 .child(draft.location.read(cx).text().to_owned()),
+                        ),
+                    )
+                })
+                // The repeat the title named.
+                .when(draft.quick.as_ref().is_some_and(|q| q.repeated), |d| {
+                    d.child(
+                        row("repeat").child(
+                            div()
+                                .h(px(36.0))
+                                .px(px(10.0))
+                                .flex()
+                                .items_center()
+                                .text_size(px(14.0))
+                                .child(draft.repeat.label(draft.start_day)),
                         ),
                     )
                 })

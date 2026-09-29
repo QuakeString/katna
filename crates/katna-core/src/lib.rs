@@ -13,6 +13,7 @@ pub mod ids;
 pub mod image;
 pub mod logging;
 pub mod paths;
+pub mod quick_add;
 pub mod sentry;
 pub mod subject;
 pub mod update;

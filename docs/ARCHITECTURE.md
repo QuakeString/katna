@@ -3442,14 +3442,18 @@ most useful reason is shown. Changes go back the way their calendar came
   second time zone adds a column of its hours at the left of Day and
   Week, each column headed by its offset ("GMT-4"); the menu offers
   sixteen common zones, and any IANA name typed into the file works.
-- Typed quick add, as in Fantastical (`window/quick_add.rs`): the new
-  event's title "Lunch with Anita Friday 1pm at Cafe Mocha" fills the
-  day, times ("1-2pm", "11am to 1pm", "for 30 min") and place ("at …")
-  as it is typed, the card shows the place, and "Lunch with Anita" is
-  saved as the title. Deleting the words puts the fields back. Days:
-  today, tonight, tomorrow, weekdays ("next Friday"), "Oct 5",
-  "5th of October". English words only so far; bare numbers ("Buy 3
-  books") stay in the title.
+- Typed quick add, as in Fantastical and Todoist: one parser for events
+  and tasks, `katna_core::quick_add::parse(text, today, words)`. The new
+  event's title "Lunch with Anita Friday 1pm at Cafe Mocha" or "Standup
+  every weekday 9:30 for 15 min" fills the day, times ("1-2pm", "11am to
+  1pm"), length ("for 30 min"), repeat (an RRULE: "daily", "every 2
+  weeks", "every Mon and Thu", "every weekday") and place ("at …") as it
+  is typed; the card shows the place and repeat, and the rest is saved as
+  the title. Deleting the words puts the fields back. Days: today,
+  tonight, tomorrow, weekdays ("next Friday"), "Oct 5", "5th of
+  October". The words come from a `Words` table per language; only
+  English has one so far, and other languages use it. Bare numbers
+  ("Buy 3 books") stay in the title.
 - Desktop: Katna Digital Clock (§15.4) through the daemon's
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
 - No booking pages: free times are shared as text in a mail. The options
