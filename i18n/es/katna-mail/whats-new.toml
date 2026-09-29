@@ -1114,3 +1114,49 @@ imágenes de un remitente del que siempre muestras las imágenes ahora
 solo se cargan cuando tu proveedor de correo confirma que el mensaje
 procede realmente de él.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Una pequeña función en «Invítame a un café»"
+text = """
+Deja el puntero sobre «Invítame a un café» en «Acerca de Katna»: pide
+café, té, pizza, luego nada de nada, se conforma con agua y da las
+gracias con unas chispas. Se reproduce una vez cada vez y se queda
+quieto si has reducido el movimiento.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Una ventana de actualizaciones más clara"
+text = """
+Aparece una barra en marcha mientras Katna busca actualizaciones, y la
+versión nueva destaca con su propio color junto a la que tienes.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Teclas que siguen al panel en el que estás"
+text = """
+Con la conversación junto a la lista, Arriba y Abajo ahora se mueven por
+la lista y muestran cada conversación. Tab o Intro entra en la
+conversación, donde Arriba y Abajo la desplazan; Esc o Mayús+Tab vuelve
+a la lista. F6 salta entre paneles, como en otras aplicaciones de
+correo.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Las carpetas se despliegan y se pliegan deslizándose"
+text = """
+Al hacer clic en la flecha junto a una cuenta o una carpeta del panel de
+carpetas, lo que contiene se despliega o se pliega ahora deslizándose, y
+las carpetas de debajo se mueven con ello, en lugar de saltar.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Carpetas, menús y diálogos con el teclado"
+text = """
+Mayús+Tab o F6 llega al panel de carpetas, donde Arriba y Abajo abren
+cada carpeta e Intro pasa a su correo. Arriba y Abajo recorren cualquier
+menú, e Intro elige. Mayús+F10 o la tecla de menú abre el menú
+contextual del correo seleccionado. Los diálogos toman las teclas al
+abrirse: Intro responde, Esc cancela y Tab se queda dentro. En un
+mensaje nuevo, Ctrl+Intro envía desde cualquier campo y Esc lo cierra
+conservando un borrador.
+"""

@@ -1119,3 +1119,49 @@ yang imejnya sentiasa anda tunjukkan kini dimuatkan hanya apabila
 penyedia e-mel anda mengesahkan bahawa mesej itu benar-benar datang
 daripadanya.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Sedikit lakonan pada Belanja saya kopi"
+text = """
+Letakkan penuding pada Belanja saya kopi dalam Perihal Katna: butang itu
+meminta kopi, teh, piza, kemudian tiada apa-apa langsung, berpuas hati
+dengan air dan mengucapkan terima kasih dengan beberapa percikan. Ia
+dimainkan sekali setiap kali dan kekal diam apabila gerakan dikurangkan.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Tetingkap Kemas kini yang lebih jelas"
+text = """
+Bar bergerak dipaparkan semasa Katna menyemak kemas kini, dan versi
+baharu menonjol dengan warnanya sendiri di sebelah versi yang anda ada.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Kekunci yang mengikut anak tetingkap tempat anda berada"
+text = """
+Dengan perbualan di sebelah senarai, Atas dan Bawah kini bergerak dalam
+senarai dan menunjukkan setiap perbualan. Tab atau Enter masuk ke
+perbualan, tempat Atas dan Bawah menatalnya; Esc atau Shift+Tab kembali
+ke senarai. F6 bertukar antara anak tetingkap, seperti dalam aplikasi
+mel lain.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Folder meluncur terbuka dan tertutup"
+text = """
+Mengklik anak panah di sebelah akaun atau folder dalam anak tetingkap
+folder kini membuka atau menutup kandungannya dengan meluncur, dan
+folder di bawahnya turut bergerak, bukannya melompat.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Folder, menu dan dialog melalui papan kekunci"
+text = """
+Shift+Tab atau F6 menuju ke anak tetingkap folder, tempat Atas dan Bawah
+membuka setiap folder dan Enter pergi ke melnya. Atas dan Bawah bergerak
+melalui mana-mana menu, dan Enter memilih. Shift+F10 atau kekunci Menu
+membuka menu klik kanan mel yang dipilih. Dialog mengambil alih kekunci
+apabila dibuka: Enter menjawab, Esc membatalkan dan Tab kekal di
+dalamnya. Dalam mesej baharu, Ctrl+Enter menghantar dari mana-mana medan
+dan Esc menutupnya sambil menyimpan draf.
+"""

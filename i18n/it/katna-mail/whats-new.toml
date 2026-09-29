@@ -1119,3 +1119,50 @@ evidenza, qualunque sia il testo del link. Le immagini di un mittente da
 cui mostri sempre le immagini ora vengono caricate solo se il tuo
 provider di posta conferma che il messaggio proviene davvero da lui.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Una piccola scenetta su «Offrimi un caffè»"
+text = """
+Lascia il puntatore su «Offrimi un caffè» in «Informazioni su Katna»:
+chiede un caffè, un tè, una pizza, poi proprio niente, si accontenta
+dell’acqua e ringrazia con qualche scintilla. Si ripete una volta ogni
+volta e resta fermo se hai ridotto il movimento.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Una finestra degli aggiornamenti più chiara"
+text = """
+Mentre Katna cerca aggiornamenti compare una barra in movimento, e la
+nuova versione risalta con un colore tutto suo accanto a quella che hai.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Tasti che seguono il riquadro in cui ti trovi"
+text = """
+Con la conversazione accanto all’elenco, Su e Giù ora si spostano
+nell’elenco e mostrano ogni conversazione. Tab o Invio entra nella
+conversazione, dove Su e Giù la scorrono; Esc o Maiusc+Tab torna
+all’elenco. F6 passa da un riquadro all’altro, come in altre app di
+posta.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Le cartelle si aprono e si chiudono scorrendo"
+text = """
+Facendo clic sulla freccia accanto a un account o a una cartella nel
+riquadro delle cartelle, ciò che contiene ora si apre o si chiude
+scorrendo, con le cartelle sotto che scivolano insieme, invece di
+scattare.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Cartelle, menu e finestre di dialogo da tastiera"
+text = """
+Maiusc+Tab o F6 porta al riquadro delle cartelle, dove Su e Giù aprono
+ogni cartella e Invio passa alla sua posta. Su e Giù scorrono qualsiasi
+menu e Invio sceglie. Maiusc+F10 o il tasto Menu apre il menu del tasto
+destro della posta selezionata. Le finestre di dialogo prendono i tasti
+quando si aprono: Invio risponde, Esc annulla e Tab resta al loro
+interno. In un nuovo messaggio, Ctrl+Invio invia da qualsiasi campo ed
+Esc lo chiude, conservando una bozza.
+"""

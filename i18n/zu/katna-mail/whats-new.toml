@@ -1143,3 +1143,50 @@ Izithombe ezivela kumthumeli obonisa kuye njalo izithombe manje
 zilayishwa kuphela uma umhlinzeki wakho wemeyili eqinisekisa
 ukuthi umlayezo uvela kuye ngempela.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Umdlalo omncane ku-Ngithengele ikhofi"
+text = """
+Beka isikhombi phezu kwe-Ngithengele ikhofi ku-Mayelana ne-Katna: icela
+ikhofi, bese itiye, i-pizza, bese lutho nhlobo, iyanelisa ngamanzi bese
+ibonga ngezinhlansi ezimbalwa. Idlala kanye ngesikhathi ngasinye futhi
+ihlala imile lapho ukunyakaza kunciphisiwe.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Iwindi Lokubuyekeza elicace kakhudlwana"
+text = """
+Ibha ehambayo iyabonakala ngenkathi i-Katna ihlola izibuyekezo, futhi
+inguqulo entsha ivelela ngombala wayo eduze kwaleyo onayo.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Okhiye abalandela iphaneli osuyo"
+text = """
+Lapho ingxoxo ivulwe eduze kohlu, imicibisholo ewuphezulu nophansi manje
+ihamba ohlwini futhi ibonise ingxoxo ngayinye. U-Tab noma u-Enter ungena
+engxoxweni, lapho imicibisholo ewuphezulu nophansi iyiskrola; u-Esc noma
+u-Shift+Tab ubuyela ohlwini. U-F6 uhamba phakathi kwamaphaneli,
+njengakwezinye izinhlelo zemeyili.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Amafolda ashelela avuleke avaleke"
+text = """
+Ukuchofoza umcibisholo eduze kwe-akhawunti noma kwefolda kuphaneli
+yamafolda manje kushelelisa okuphakathi kwayo ukuze kuvuleke noma
+kuvaleke, amafolda angezansi ahambe nayo, esikhundleni sokweqa.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Amafolda, amamenyu namadayalogi ngekhibhodi"
+text = """
+U-Shift+Tab noma u-F6 ufinyelela ephaneli yamafolda, lapho imicibisholo
+ewuphezulu nophansi ivula ifolda ngayinye futhi u-Enter uyaya kumeyili
+yayo. Imicibisholo ewuphezulu nophansi ihamba kunoma iyiphi imenyu,
+futhi u-Enter uyakhetha. U-Shift+F10 noma ukhiye wemenyu uvula imenyu
+yokuchofoza ngakwesokudla yemeyili ekhethiwe. Amadayalogi athatha okhiye
+lapho evulwa: u-Enter uyaphendula, u-Esc uyakhansela, futhi u-Tab uhlala
+ngaphakathi kuwo. Emlayezweni omusha, u-Ctrl+Enter uthumela kunoma
+iyiphi inkambu futhi u-Esc uyawuvala, ugcine okusalungiswa.
+"""

@@ -1108,3 +1108,48 @@ um remetente de quem você sempre exibe imagens agora só são carregadas
 quando seu provedor de e-mail confirma que a mensagem realmente veio
 dele.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Uma pequena peça em Me pague um café"
+text = """
+Deixe o ponteiro sobre Me pague um café em Sobre o Katna: ele pede café,
+chá, pizza, depois nada de nada, se contenta com água e agradece com
+algumas faíscas. Toca uma vez a cada vez e fica parado quando o
+movimento está reduzido.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Uma janela de atualizações mais clara"
+text = """
+Uma barra em movimento aparece enquanto o Katna procura atualizações, e
+a versão nova se destaca com uma cor própria ao lado da que você tem.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Teclas que acompanham o painel em que você está"
+text = """
+Com a conversa ao lado da lista, Para cima e Para baixo agora se movem
+na lista e mostram cada conversa. Tab ou Enter entra na conversa, onde
+Para cima e Para baixo a rolam; Esc ou Shift+Tab volta para a lista. F6
+alterna entre os painéis, como em outros apps de e-mail.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Pastas se abrem e se fecham deslizando"
+text = """
+Clicar na seta ao lado de uma conta ou de uma pasta no painel de pastas
+agora abre ou fecha o que ela contém deslizando, com as pastas abaixo
+acompanhando o movimento, em vez de pular.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Pastas, menus e diálogos pelo teclado"
+text = """
+Shift+Tab ou F6 leva ao painel de pastas, onde Para cima e Para baixo
+abrem cada pasta e Enter vai para os e-mails dela. Para cima e Para
+baixo percorrem qualquer menu, e Enter escolhe. Shift+F10 ou a tecla
+Menu abre o menu do botão direito do e-mail selecionado. Os diálogos
+assumem as teclas ao abrir: Enter responde, Esc cancela e Tab fica
+dentro deles. Em uma nova mensagem, Ctrl+Enter envia de qualquer campo e
+Esc a fecha, mantendo um rascunho.
+"""

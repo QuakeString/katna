@@ -1110,3 +1110,50 @@ selalu Anda tampilkan kini hanya dimuat jika penyedia email Anda
 mengonfirmasi bahwa pesan itu benar-benar berasal dari pengirim
 tersebut.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Sandiwara kecil di Traktir saya kopi"
+text = """
+Arahkan penunjuk ke Traktir saya kopi di Tentang Katna: tombol ini
+meminta kopi, teh, pizza, lalu tidak minta apa-apa, puas dengan air
+putih dan mengucapkan terima kasih dengan beberapa percikan. Sandiwara
+ini dimainkan sekali setiap kali dan diam saja jika gerakan dikurangi.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Jendela Pembaruan yang lebih jelas"
+text = """
+Bilah berjalan muncul saat Katna memeriksa pembaruan, dan versi baru
+tampil menonjol dengan warnanya sendiri di samping versi yang Anda
+pakai.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Tombol yang mengikuti panel tempat Anda berada"
+text = """
+Dengan percakapan di samping daftar, Atas dan Bawah kini bergerak di
+daftar dan menampilkan setiap percakapan. Tab atau Enter masuk ke
+percakapan, tempat Atas dan Bawah menggulirnya; Esc atau Shift+Tab
+kembali ke daftar. F6 berpindah antarpanel, seperti di aplikasi email
+lain.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Folder terbuka dan tertutup dengan meluncur"
+text = """
+Mengeklik panah di samping akun atau folder di panel folder kini membuka
+atau menutup isinya dengan meluncur, dan folder di bawahnya ikut
+bergeser, tidak lagi melompat.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Folder, menu, dan dialog lewat keyboard"
+text = """
+Shift+Tab atau F6 menuju panel folder, tempat Atas dan Bawah membuka
+setiap folder dan Enter pindah ke email di dalamnya. Atas dan Bawah
+bergerak di menu mana pun, dan Enter memilih. Shift+F10 atau tombol Menu
+membuka menu klik kanan email yang dipilih. Dialog mengambil alih tombol
+saat terbuka: Enter menjawab, Esc membatalkan, dan Tab tetap di
+dalamnya. Di pesan baru, Ctrl+Enter mengirim dari kolom mana pun dan Esc
+menutupnya sambil menyimpan draf.
+"""

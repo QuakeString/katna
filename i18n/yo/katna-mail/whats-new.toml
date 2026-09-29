@@ -1070,3 +1070,43 @@ Gbé atọ́ka lé ìjápọ̀ kan nínú ìfiránṣẹ́, àdírẹ́sì tí �
 pẹ̀lú orúkọ ojú-òpó náà tí ó hàn gbangba, bí ọ̀rọ̀ ìjápọ̀ náà ti wù kí ó sọ. Àwọn àwòrán láti ọ̀dọ̀ olùfiránṣẹ́ tí o máa ń fi àwòrán rẹ̀ hàn nígbà gbogbo
 yóò wá máa gbé nígbà tí olùpèsè ìmeèlì rẹ bá jẹ́rìí pé ìfiránṣẹ́ náà wá láti ọ̀dọ̀ rẹ̀ lóòótọ́ nìkan.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Eré kékeré nínú Ra kọfí kan fún mi"
+text = """
+Gbé atọ́ka lé Ra kọfí kan fún mi nínú Nípa Katna: ó ń béèrè kọfí, tii, píìsà, lẹ́yìn náà kò fẹ́
+nǹkan kan rárá, ó yọ̀ǹda fún omi, ó sì dúpẹ́ pẹ̀lú ìtànṣán díẹ̀. Ó ń ṣeré lẹ́ẹ̀kan ṣoṣo ní ìgbà
+kọ̀ọ̀kan, ó sì dúró jẹ́ẹ́ nígbà tí a bá dín ìṣípòpadà kù.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Fèrèsé ìmúdójúìwọ̀n tí ó túbọ̀ hàn kedere"
+text = """
+Ọ̀pá tí ń sáré yóò hàn nígbà tí Katna ń ṣàyẹ̀wò àwọn ìmúdójúìwọ̀n, ẹ̀yà tuntun yóò sì hàn gbangba
+pẹ̀lú àwọ̀ tirẹ̀ lẹ́gbẹ̀ẹ́ èyí tí o ní.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Àwọn kọ́kọ́rọ́ tó ń tẹ̀lé pánẹ́ẹ̀lì tí o wà"
+text = """
+Nígbà tí ìjíròrò bá wà lẹ́gbẹ̀ẹ́ àkójọ, ↑ àti ↓ ń rìn nínú àkójọ, wọ́n sì ń fi ìjíròrò kọ̀ọ̀kan hàn.
+Tab tàbí Enter ń wọ inú ìjíròrò, níbi tí ↑ àti ↓ ti ń yí i; Esc tàbí Shift+Tab ń padà sí àkójọ. F6 ń
+lọ láàrín àwọn pánẹ́ẹ̀lì, bí i nínú àwọn ohun èlò meeli mìíràn.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Àwọn fódà ń yọ́ ṣí, wọ́n sì ń yọ́ tì"
+text = """
+Títẹ ọfà tó wà lẹ́gbẹ̀ẹ́ àkáǹtì tàbí fódà nínú pánẹ́ẹ̀lì fódà ń yọ́ ṣí tàbí tì ohun tó wà nínú rẹ̀
+nísinsin yìí, àwọn fódà tó wà nísàlẹ̀ sì ń yọ́ lọ pẹ̀lú rẹ̀, dípò kí wọ́n fò.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Àwọn fódà, mẹ́nù àti àpótí ọ̀rọ̀ lórí kíbọ́ọ̀dù"
+text = """
+Shift+Tab tàbí F6 ń dé pánẹ́ẹ̀lì fódà, níbi tí ↑ àti ↓ ti ń ṣí fódà kọ̀ọ̀kan, Enter sì ń lọ sí meeli
+rẹ̀. ↑ àti ↓ ń rìn nínú mẹ́nù kankan, Enter sì ń yàn. Shift+F10 tàbí kọ́kọ́rọ́ mẹ́nù ń ṣí mẹ́nù
+ìtẹ̀ọ̀tún ti meeli tí a yàn. Àwọn àpótí ọ̀rọ̀ ń gba àwọn kọ́kọ́rọ́ nígbà tí wọ́n bá ṣí: Enter ń
+dáhùn, Esc ń fagilé, Tab sì ń dúró nínú wọn. Nínú ìfiránṣẹ́ tuntun, Ctrl+Enter ń fi ránṣẹ́ láti pápá
+kankan, Esc sì ń pa á, ó ń pa àkọ̀pamọ́ kan mọ́.
+"""
