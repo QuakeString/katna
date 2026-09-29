@@ -103,6 +103,7 @@ compose-tool-remove-link = ລຶບລິ້ງ
 ## More options
 
 compose-tool-full-screen = ເປີດແບບເຕັມຈໍເປັນຄ່າເລີ່ມຕົ້ນ
+compose-tool-video-call = ເພີ່ມການປະຊຸມທາງວິດີໂອ
 compose-tool-label = ປ້າຍກຳກັບ
 compose-tool-label-coming = ປ້າຍກຳກັບໃນອີເມວທີ່ສົ່ງແລ້ວຈະມາໃນໄວໆນີ້. ຕິດປ້າຍກຳກັບໃຫ້ຂໍ້ຄວາມໃນ “ສົ່ງແລ້ວ” ຫຼັງຈາກມັນຖືກສົ່ງອອກໄປ.
 compose-tool-plain-mode = ໂໝດຂໍ້ຄວາມທຳມະດາ

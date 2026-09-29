@@ -1363,3 +1363,41 @@ text = """
 Anwani sasa zina Rekebisha na udhibiti: Unganisha na urekebishe hutafuta watu waliohifadhiwa mara mbili (jina au nambari ya simu sawa) na kuwaunganisha kwa mbofyo mmoja, pamoja na Tendua.
 Leta huingiza watu kutoka faili ya vCard, ikiwaacha wale waliohifadhiwa tayari, na Hamisha huhifadhi kila mtu, au lebo moja, kama faili ya vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Siku za kuzaliwa kwenye kalenda, anwani kama misimbo ya QR"
+text = """
+Siku za kuzaliwa za anwani zako sasa zinaonekana kwenye Kalenda, katika kalenda ya Siku za kuzaliwa unayoweza kuiondolea tiki.
+Ukurasa wa anwani unaweza kuzionyesha kama msimbo wa QR ambao kamera ya simu huhifadhi, na kuzichapisha; Chapisha chini ya Rekebisha na udhibiti huchapisha kila mtu anayeonyeshwa.
+Leta sasa husoma pia faili za CSV kutoka Anwani za Google na Outlook, na KRunner na utafutaji wa GNOME hupata anwani zako zilizohifadhiwa.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Msongamano wa Kalenda na saa za eneo la pili"
+text = """
+Kitufe cha Chaguo katika Kalenda huweka urefu wa saa (Hujirekebisha kulingana na skrini yako, Starehe au Fupi) na huongeza saa za eneo la pili kando ya zako, kwa watu unaokutana nao ughaibuni.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Anzisha simu ya video kutoka barua pepe"
+text = """
+Bofya kulia mazungumzo, au fungua ⋮, kisha uchague Anzisha simu ya video: simu hufunguka, pamoja na barua pepe mpya kwa kila mtu katika mazungumzo yenye kiungo chake. Akaunti za Gmail hutumia Google Meet; nyingine hupata chumba cha Jitsi Meet. Barua pepe zenye kiungo cha simu ya Meet, Teams, Zoom, Webex, Jitsi, WhatsApp au Telegram sasa zinaonyesha kitufe cha Jiunge.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Fanya mstari wa orodha hakiki kuwa jukumu"
+text = """
+Weka kielekezi kwenye mstari wa orodha hakiki katika dokezo, kisha uchague Ifanye jukumu: mstari huo huenda kwenye majukumu yako. Chipu yake ya Dokezo kwenye ukurasa wa Majukumu hufungua dokezo tena.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Kidirisha ulichomo kinajitokeza"
+text = """
+Kando ya orodha, ni kidirisha kinachopokea vitufe tu kinachobaki na kivuli chake; orodha, mazungumzo au paneli ya mwasiliani usiyoitumia hurudi nyuma ikiwa na ukingo hafifu zaidi, na mabadiliko hukufuata taratibu unapobofya.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Vikumbusho na marudio ya majukumu"
+text = """
+Fungua jukumu na uchague Nikumbushe: wakati huo, saa moja au siku moja kabla. Kikumbusho huonekana hata Katna ikiwa imefungwa, chenye vitufe vya Weka alama kuwa imekamilika na Ahirisha. Ukiweka alama kuwa jukumu linalojirudia limekamilika, sasa hurudi siku yake inayofuata.
+"""

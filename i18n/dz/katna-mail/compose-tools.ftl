@@ -103,6 +103,7 @@ compose-tool-remove-link = འབྲེལ་མཐུད་རྩ་བསྐ�
 ## More options
 
 compose-tool-full-screen = སྔོན་སྒྲིག་སྦེ་ གསལ་གཞི་གངམ
+compose-tool-video-call = བརྙན་ཁ་པར་ཁ་སྣོན་འབད།
 compose-tool-label = ཁ་ཡིག
 compose-tool-label-coming = བཏང་ཡོད་པའི་གློག་འཕྲིན་གུ་ ཁ་ཡིག་ཚུ་ མགྱོགས་པར་འོང་འོང་། འཕྲིན་དོན་འདི་ཐོན་ཞིནམ་ལས་ བཏང་ཡོདཔ་ ནང་ ཁ་ཡིག་སྦྱར།
 compose-tool-plain-mode = ཚིག་ཡིག་རྐྱང་པའི་ཐབས་ལམ

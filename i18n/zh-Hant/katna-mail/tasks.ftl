@@ -41,6 +41,9 @@ tasks-delete = 刪除
 tasks-move-to = 移至 { $list }
 tasks-from-mail = 郵件
 tasks-open-mail = 開啟郵件
+tasks-from-note = 記事
+tasks-open-note = 開啟記事
+tasks-note-gone = 這則記事已不存在。
 tasks-no-subject = （無主旨）
 
 ## The details dialog
@@ -56,6 +59,12 @@ tasks-repeat-weekly = 每週
 tasks-repeat-monthly = 每月
 tasks-repeat-yearly = 每年
 tasks-repeat-other = 自訂
+tasks-remind = 提醒我
+tasks-remind-off = 不提醒
+tasks-remind-on-time = 準時
+tasks-remind-morning = 當天 { $time }
+tasks-remind-hour-before = 提前 1 小時
+tasks-remind-day-before = 提前 1 天
 tasks-cancel = 取消
 tasks-save = 儲存
 tasks-not-a-time = 「{ $text }」不是有效的時間，例如 { $example }。
@@ -70,6 +79,7 @@ tasks-due-at = { $day } { $time }
 ## Notes at the bottom
 
 tasks-toast-done = 工作已完成
+tasks-toast-next = 已完成。下一次在 { $date }
 tasks-toast-deleted = 工作已刪除
 tasks-toast-added = { $count ->
    *[other] 已新增 { $count } 項工作

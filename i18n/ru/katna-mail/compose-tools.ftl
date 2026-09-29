@@ -103,6 +103,7 @@ compose-tool-remove-link = Удалить ссылку
 ## More options
 
 compose-tool-full-screen = Открывать во весь экран
+compose-tool-video-call = Добавить видеозвонок
 compose-tool-label = Ярлык
 compose-tool-label-coming = Ярлыки для отправляемых писем скоро появятся. Когда письмо уйдёт, присвойте ему ярлык в папке «Отправленные».
 compose-tool-plain-mode = Режим обычного текста

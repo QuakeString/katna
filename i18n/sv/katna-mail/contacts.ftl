@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Importera
 contacts-export = Exportera
-contacts-import-title = Importera kontakter från en vCard-fil
+contacts-import-file = Importera kontakter från en vCard- eller CSV-fil
 contacts-imported = { $count ->
     [one] { $count } kontakt importerades till { $place }
    *[other] { $count } kontakter importerades till { $place }
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Inga kontakter att exportera
 contacts-export-failed = Det gick inte att exportera kontakterna: { $error }
+contacts-print = Skriv ut
+contacts-print-title = Kontakter
+contacts-print-none = Inga kontakter att skriva ut
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Födelsedag: { $day }
+contacts-print-nickname = Smeknamn: { $name }
 contacts-create = Skapa kontakt
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = Tillåt
 contacts-back = Tillbaka till kontakter
 contacts-edit = Redigera
 contacts-delete = Radera
+contacts-qr = Dela som QR-kod
+contacts-qr-about = Skanna med en telefons kamera för att spara kontakten.
+contacts-qr-too-long = Kontakten har för många uppgifter för att rymmas i en QR-kod.
+contacts-qr-done = Klar
 contacts-deleted = { $name } raderades
 contacts-added = { $name } lades till i kontakter
 contacts-find-mail = E-post

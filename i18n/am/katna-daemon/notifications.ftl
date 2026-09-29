@@ -37,6 +37,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = ቀኑን ሙሉ
 notify-event-join = ተቀላቀል
 notify-event-snooze = ለ5 ደቂቃ አሸልብ
+notify-task-done = እንደተጠናቀቀ ምልክት አድርግ
 
 ## Its buttons
 

@@ -44,7 +44,7 @@ contacts-merged = { $count ->
 }
 contacts-import = وارد کردن
 contacts-export = صادر کردن
-contacts-import-title = وارد کردن مخاطبین از فایل vCard
+contacts-import-file = وارد کردن مخاطبین از فایل vCard یا CSV
 contacts-imported = { $count ->
    *[other] { $count } مخاطب در { $place } وارد شد
 }
@@ -59,6 +59,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = مخاطبی برای صادر کردن وجود ندارد
 contacts-export-failed = صادر کردن مخاطبین ممکن نشد: { $error }
+contacts-print = چاپ
+contacts-print-title = مخاطبین
+contacts-print-none = مخاطبی برای چاپ وجود ندارد
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = تولد: { $day }
+contacts-print-nickname = نام مستعار: { $name }
 contacts-create = ایجاد مخاطب
 
 ## Search and the list
@@ -93,6 +99,10 @@ contacts-allow-button = اجازه دادن
 contacts-back = بازگشت به مخاطبین
 contacts-edit = ویرایش
 contacts-delete = حذف
+contacts-qr = هم‌رسانی به‌صورت کد QR
+contacts-qr-about = با دوربین تلفن همراه اسکن کنید تا مخاطب ذخیره شود.
+contacts-qr-too-long = این مخاطب جزئیات بیش‌ازحدی دارد و در کد QR جا نمی‌شود.
+contacts-qr-done = تمام
 contacts-deleted = { $name } حذف شد
 contacts-added = { $name } به مخاطبین اضافه شد
 contacts-find-mail = ایمیل

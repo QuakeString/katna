@@ -77,6 +77,10 @@ notes-meeting-actions = Việc cần làm
 notes-event = Sự kiện
 notes-open-event = Mở sự kiện
 
+## Tasks
+
+notes-make-task = Biến thành việc cần làm
+
 ## Colors (tooltips)
 
 notes-color-none = Không có màu

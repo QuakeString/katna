@@ -43,6 +43,9 @@ tasks-delete = Supprimer
 tasks-move-to = Déplacer vers { $list }
 tasks-from-mail = Courrier
 tasks-open-mail = Ouvrir le message
+tasks-from-note = Note
+tasks-open-note = Ouvrir la note
+tasks-note-gone = Cette note n’existe plus.
 tasks-no-subject = (aucun objet)
 
 ## The details dialog
@@ -58,6 +61,12 @@ tasks-repeat-weekly = Toutes les semaines
 tasks-repeat-monthly = Tous les mois
 tasks-repeat-yearly = Tous les ans
 tasks-repeat-other = Personnalisée
+tasks-remind = Me le rappeler
+tasks-remind-off = Ne pas rappeler
+tasks-remind-on-time = À l'heure prévue
+tasks-remind-morning = Le jour même, { $time }
+tasks-remind-hour-before = Une heure avant
+tasks-remind-day-before = La veille
 tasks-cancel = Annuler
 tasks-save = Enregistrer
 tasks-not-a-time = « { $text } » n’est pas une heure, par exemple { $example }.
@@ -72,6 +81,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Tâche terminée
+tasks-toast-next = Terminée. Prochaine le { $date }
 tasks-toast-deleted = Tâche supprimée
 tasks-toast-added = { $count ->
     [one] Ajoutée aux tâches

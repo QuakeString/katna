@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = ସାରା ଦିନ
 notify-event-join = ଯୋଗ ଦିଅନ୍ତୁ
 notify-event-snooze = 5 ମିନିଟ୍ ସ୍ନୁଜ କରନ୍ତୁ
+notify-task-done = ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଚିହ୍ନିତ କରନ୍ତୁ
 
 ## Its buttons
 

@@ -432,6 +432,7 @@ menu-snooze = השהיה
 menu-unsnooze = ביטול ההשהיה
 menu-add-to-tasks = הוספה למשימות
 menu-schedule-meeting = תזמון פגישה
+menu-start-call = התחלת שיחת וידאו
 menu-add-note = הוספת הערה
 menu-print-all = הדפסת הכול
 menu-new-window = פתיחה בחלון חדש

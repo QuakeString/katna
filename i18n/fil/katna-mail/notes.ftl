@@ -78,6 +78,10 @@ notes-meeting-actions = Mga aksyon
 notes-event = Event
 notes-open-event = Buksan ang event
 
+## Tasks
+
+notes-make-task = Gawing gawain
+
 ## Colors (tooltips)
 
 notes-color-none = Walang kulay

@@ -1474,3 +1474,58 @@ Ngenisa ilethe abantu kufayela le-vCard ishiye noma ubani osegciniwe
 kakade, futhi Thumela igcina wonke umuntu, noma ilebula, njengefayela
 le-vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Osuku lokuzalwa ku-Khalenda, oxhumana nabo njengekhodi ye-QR"
+text = """
+Osuku lokuzalwa lwabo oxhumana nabo manje luyavela ku-Khalenda, ku-
+khalenda elithi Osuku lokuzalwa ongalisusela uphawu. Ikhasi loxhumana
+naye lingamboniswa njengekhodi ye-QR ekhamera yefoni ewugcinayo, futhi
+lingamphrinta; Phrinta ngaphansi kwe-Lungisa futhi uphathe iphrinta
+wonke umuntu ovelayo. Ngenisa manje ifunda namafayela e-CSV avela ku-
+Google Contacts nase-Outlook, futhi i-KRunner nosesho lwe-GNOME bathola
+oxhumana nabo obagcinile.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Ukuminyana kwekhalenda nendawo yesikhathi yesibili"
+text = """
+Inkinobho yezinketho ku-Ikhalenda ibeka ukuthi amahora aphakeme kangakanani (Iyavumelana nesikrini sakho,
+Kunethezekile noma Kuminyene) futhi yengeza indawo yesikhathi yesibili eduze kweyakho,
+kubantu obahlangana nabo phesheya.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Qala ikholi yevidiyo ukusuka kuleli meyili"
+text = """
+Chofoza kwesokudla kwingxoxo, noma uvule ⋮ bese ukhetha Qala ikholi yevidiyo: ikholi
+iyavuleka, kanti imeyili entsha enelinki yayo iya kuwo wonke umuntu osengxoxweni.
+Ama-akhawunti e-Gmail asebenzisa i-Google Meet; amanye athola ikamelo le-Jitsi Meet.
+Imeyili enelinki yekholi ye-Meet, Teams, Zoom, Webex, Jitsi, WhatsApp noma Telegram
+manje ibonisa inkinobho ethi Joyina.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Yenza umugqa wohlu lokuhlola ube umsebenzi"
+text = """
+Beka isikhombi emugqeni wohlu lokuhlola enothini bese ukhetha Yenze umsebenzi:
+umugqa uya kumisebenzi yakho. Ishipi lalo lethi Inothi ekhasini Lemisebenzi livula
+inothi futhi.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Ipeni okulo liyabonakala"
+text = """
+Eduze kohlu, yipeni kuphela elinamakhi eligcina umthunzi walo; uhlu, ingxoxo noma
+iphaneli yokuxhumana ongayisebenzisi ibuyela emuva ngonqenqema olumpofu, futhi
+ushintsho lukulandela kahle ngenkathi ucofa.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Izikhumbuzo zemisebenzi nokuphindaphinda"
+text = """
+Vula umsebenzi bese ukhetha Ngikhumbuze: ngesikhathi, ihora elilodwa noma usuku
+olulodwa ngaphambili. Isikhumbuzo siyavela nakuba iKatna ivaliwe, nge-Maka
+njengokwenziwe kanye ne-Libazisa. Uma umaka umsebenzi ophindaphindwayo
+njengokwenziwe, ubuya ngosuku lwawo olulandelayo.
+"""

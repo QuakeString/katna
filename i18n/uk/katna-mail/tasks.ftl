@@ -44,6 +44,9 @@ tasks-delete = Видалити
 tasks-move-to = Перемістити до { $list }
 tasks-from-mail = Пошта
 tasks-open-mail = Відкрити лист
+tasks-from-note = Нотатка
+tasks-open-note = Відкрити нотатку
+tasks-note-gone = Цієї нотатки тут більше немає.
 tasks-no-subject = (без теми)
 
 ## The details dialog
@@ -59,6 +62,12 @@ tasks-repeat-weekly = Щотижня
 tasks-repeat-monthly = Щомісяця
 tasks-repeat-yearly = Щороку
 tasks-repeat-other = Інше
+tasks-remind = Нагадати
+tasks-remind-off = Не нагадувати
+tasks-remind-on-time = У момент завдання
+tasks-remind-morning = Цього дня, { $time }
+tasks-remind-hour-before = За годину
+tasks-remind-day-before = За день
 tasks-cancel = Скасувати
 tasks-save = Зберегти
 tasks-not-a-time = «{ $text }» – це не час, наприклад { $example }.
@@ -73,6 +82,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Завдання виконано
+tasks-toast-next = Готово. Наступне: { $date }
 tasks-toast-deleted = Завдання видалено
 tasks-toast-added = { $count ->
     [one] { $count } завдання додано

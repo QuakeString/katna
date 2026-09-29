@@ -103,6 +103,7 @@ compose-tool-remove-link = Cire mahaɗi
 ## More options
 
 compose-tool-full-screen = Buɗe a cikakken allo koyaushe
+compose-tool-video-call = Ƙara kiran bidiyo
 compose-tool-label = Lakabi
 compose-tool-label-coming = Lakabai a kan wasiƙun da aka aika suna zuwa nan ba da daɗewa ba. Ku sa wa saƙon lakabi a Waɗanda aka aika bayan an aika shi.
 compose-tool-plain-mode = Yanayin rubutu mara ado

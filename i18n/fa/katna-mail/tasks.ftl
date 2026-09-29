@@ -42,6 +42,9 @@ tasks-delete = حذف
 tasks-move-to = انتقال به { $list }
 tasks-from-mail = ایمیل
 tasks-open-mail = باز کردن ایمیل
+tasks-from-note = یادداشت
+tasks-open-note = باز کردن یادداشت
+tasks-note-gone = آن یادداشت دیگر اینجا نیست.
 tasks-no-subject = (بدون موضوع)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = هفتگی
 tasks-repeat-monthly = ماهانه
 tasks-repeat-yearly = سالانه
 tasks-repeat-other = سفارشی
+tasks-remind = یادآوری
+tasks-remind-off = یادآوری نشود
+tasks-remind-on-time = سر وقت
+tasks-remind-morning = در همان روز، { $time }
+tasks-remind-hour-before = یک ساعت قبل
+tasks-remind-day-before = یک روز قبل
 tasks-cancel = لغو
 tasks-save = ذخیره
 tasks-not-a-time = «{ $text }» زمان نیست، مثلاً { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }، { $time }
 ## Notes at the bottom
 
 tasks-toast-done = کار انجام شد
+tasks-toast-next = انجام شد. نوبت بعدی در { $date }
 tasks-toast-deleted = کار حذف شد
 tasks-toast-added = { $count ->
     [one] به کارها افزوده شد

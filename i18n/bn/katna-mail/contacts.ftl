@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ইমপোর্ট করুন
 contacts-export = এক্সপোর্ট করুন
-contacts-import-title = vCard ফাইল থেকে পরিচিতি ইমপোর্ট করুন
+contacts-import-file = vCard বা CSV ফাইল থেকে পরিচিতি ইমপোর্ট করুন
 contacts-imported = { $count ->
     [one] { $place }-এ { $count }টি পরিচিতি ইমপোর্ট করা হয়েছে
    *[other] { $place }-এ { $count }টি পরিচিতি ইমপোর্ট করা হয়েছে
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = এক্সপোর্ট করার মতো কোনো পরিচিতি নেই
 contacts-export-failed = পরিচিতি এক্সপোর্ট করা যায়নি: { $error }
+contacts-print = প্রিন্ট করুন
+contacts-print-title = পরিচিতি
+contacts-print-none = প্রিন্ট করার মতো কোনো পরিচিতি নেই
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = জন্মদিন: { $day }
+contacts-print-nickname = ডাকনাম: { $name }
 contacts-create = পরিচিতি তৈরি করুন
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = অনুমতি দিন
 contacts-back = পরিচিতিতে ফিরে যান
 contacts-edit = সম্পাদনা করুন
 contacts-delete = মুছুন
+contacts-qr = QR কোড হিসেবে শেয়ার করুন
+contacts-qr-about = পরিচিতিটি সংরক্ষণ করতে ফোনের ক্যামেরা দিয়ে এটি স্ক্যান করুন।
+contacts-qr-too-long = QR কোডে ধরানোর জন্য এই পরিচিতিতে খুব বেশি তথ্য আছে।
+contacts-qr-done = হয়েছে
 contacts-deleted = { $name } মুছে ফেলা হয়েছে
 contacts-added = { $name }-কে পরিচিতিতে যোগ করা হয়েছে
 contacts-find-mail = মেল

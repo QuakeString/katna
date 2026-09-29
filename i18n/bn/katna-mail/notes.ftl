@@ -78,6 +78,10 @@ notes-meeting-actions = করণীয়
 notes-event = ইভেন্ট
 notes-open-event = ইভেন্ট খুলুন
 
+## Tasks
+
+notes-make-task = টাস্ক বানান
+
 ## Colors (tooltips)
 
 notes-color-none = কোনো রঙ নেই

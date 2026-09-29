@@ -382,6 +382,7 @@ menu-snooze = Libazisa
 menu-unsnooze = Yeka ukulibazisa
 menu-add-to-tasks = Engeza Kumisebenzi
 menu-schedule-meeting = Hlela umhlangano
+menu-start-call = Qala ikholi yevidiyo
 menu-add-note = Engeza inothi
 menu-print-all = Phrinta konke
 menu-new-window = Vula ewindini elisha

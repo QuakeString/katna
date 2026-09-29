@@ -78,6 +78,10 @@ notes-meeting-actions = कृती आयटम
 notes-event = इव्हेंट
 notes-open-event = इव्हेंट उघडा
 
+## Tasks
+
+notes-make-task = कार्य बनवा
+
 ## Colors (tooltips)
 
 notes-color-none = रंग नाही

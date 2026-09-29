@@ -103,6 +103,7 @@ compose-tool-remove-link = Supprimer le lien
 ## More options
 
 compose-tool-full-screen = Plein écran par défaut
+compose-tool-video-call = Ajouter un appel vidéo
 compose-tool-label = Libellé
 compose-tool-label-coming = Les libellés sur les messages envoyés arrivent bientôt. Ajoutez un libellé au message dans Messages envoyés une fois qu’il est parti.
 compose-tool-plain-mode = Mode texte brut

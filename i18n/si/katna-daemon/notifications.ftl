@@ -36,6 +36,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = දවස පුරා
 notify-event-join = සම්බන්ධ වන්න
 notify-event-snooze = විනාඩි 5ක් කල් දමන්න
+notify-task-done = සම්පූර්ණ ලෙස සලකුණු කරන්න
 
 ## Its buttons
 
