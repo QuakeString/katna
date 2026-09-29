@@ -76,6 +76,16 @@ pub fn normalize_subject(subject: &str) -> NormalizedSubject {
     NormalizedSubject { text, is_reply }
 }
 
+/// `subject` without its reply and forward prefixes, case kept:
+/// `Re: Fwd: Budget review` → `Budget review`.
+pub fn without_reply_prefixes(subject: &str) -> &str {
+    let mut rest = subject.trim();
+    while let Some(after) = strip_prefix(rest) {
+        rest = after.trim_start();
+    }
+    rest
+}
+
 /// `[list-name] rest` → `rest`. Tags longer than 64 bytes are subject text.
 fn strip_list_tag(text: &str) -> Option<&str> {
     let inner = text.strip_prefix('[')?;
@@ -124,6 +134,16 @@ mod tests {
         assert_eq!(norm("SV: Budget"), ("budget".into(), true));
         assert_eq!(norm("Fw: Budget"), ("budget".into(), true));
         assert_eq!(norm("回复：预算"), ("预算".into(), true));
+    }
+
+    #[test]
+    fn drops_prefixes_but_keeps_case() {
+        assert_eq!(
+            without_reply_prefixes("Re: Fwd: Budget Review"),
+            "Budget Review"
+        );
+        assert_eq!(without_reply_prefixes("  Budget: Q3 "), "Budget: Q3");
+        assert_eq!(without_reply_prefixes("AW: [team] Plan"), "[team] Plan");
     }
 
     #[test]

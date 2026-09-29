@@ -839,6 +839,15 @@ impl MailWindow {
         self.chips_changed(Field::To, cx);
     }
 
+    /// Sends the open new message from `account`, as picking it in From.
+    pub(super) fn send_compose_from(&mut self, account: AccountId) {
+        if let Some(compose) = &mut self.compose
+            && self.accounts.iter().any(|a| a.id == account)
+        {
+            compose.from = Some(account);
+        }
+    }
+
     /// Scrolls the conversation smoothly to the reply that just opened at
     /// its end, as Gmail does: to the end when the whole card fits, else
     /// just far enough that its first line, with the cursor, sits near the

@@ -9,6 +9,8 @@
 //! `pim.db` at once and then to the calendar's service; the snackbar
 //! offers Undo, and Ctrl+Z works too.
 
+use std::rc::Rc;
+
 use gpui::{
     AnyElement, ClickEvent, Context, Entity, Focusable, FontWeight, MouseButton, Pixels, Point,
     ScrollHandle, SharedString, Subscription, Window, anchored, deferred, div, prelude::*, rgba,
@@ -24,9 +26,11 @@ use katna_ui::text_area::TextArea;
 use katna_ui::text_input::{InputEvent, TextInput};
 
 use super::MailWindow;
+use super::apps::App;
 use super::calendar::civil;
 use super::compose::schedule;
 use crate::daemon::{self, Command};
+use crate::data::EntryKey;
 use crate::theme::Theme;
 use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised, tip};
 
@@ -491,6 +495,122 @@ impl MailWindow {
         self.start_new_event(day, None, false, at, window, cx);
         // Google's C opens the whole editor.
         self.more_options(window, cx);
+    }
+
+    /// Schedule a meeting from the conversation on line `key`: the whole
+    /// editor on the Calendar page, titled with its subject and with its
+    /// people as guests, at the next hour.
+    pub(super) fn schedule_meeting_from(
+        &mut self,
+        key: Option<EntryKey>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((subject, people)) = key.and_then(|key| {
+            self.mail
+                .as_ref()
+                .ok()
+                .and_then(|mail| mail.meeting_source(key))
+        }) else {
+            return;
+        };
+        self.show_page(App::Calendar, window, cx);
+        // The page reads its calendars in the background; the new event
+        // needs them now.
+        if self.calendar.calendars.is_empty() {
+            self.calendar.calendars = Rc::new(super::calendar::read_calendars(&self.paths));
+        }
+        self.create_event_key(window, cx);
+        let Some(draft) = &mut self.calendar.draft else {
+            return;
+        };
+        draft
+            .title
+            .update(cx, |input, cx| input.set_text(subject, cx));
+        draft.guests = people
+            .into_iter()
+            .map(|(name, email)| Attendee {
+                email,
+                name,
+                status: "needs_action".to_owned(),
+                ..Attendee::default()
+            })
+            .collect();
+        cx.notify();
+    }
+
+    /// The open event's guests other than the user, as addresses.
+    pub(super) fn other_guests(&self, occurrence: &Occurrence) -> Vec<String> {
+        occurrence
+            .event
+            .data
+            .attendees
+            .iter()
+            .filter(|a| {
+                !a.is_self
+                    && a.email.contains('@')
+                    && !self
+                        .accounts
+                        .iter()
+                        .any(|me| me.address.eq_ignore_ascii_case(&a.email))
+            })
+            .map(|a| {
+                if a.name.is_empty() {
+                    a.email.clone()
+                } else {
+                    format!("{} <{}>", a.name.replace(['<', '>', ','], ""), a.email)
+                }
+            })
+            .collect()
+    }
+
+    /// A new mail to the open event's guests, from the calendar's account:
+    /// titled with the event, or, when `late`, saying the user is running
+    /// late, as Google Calendar's Email guests and Running late.
+    pub(super) fn email_guests(&mut self, late: bool, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(open) = &self.calendar.open else {
+            return;
+        };
+        let occurrence = open.occurrence.clone();
+        let to = self.other_guests(&occurrence);
+        if to.is_empty() {
+            return;
+        }
+        let data = &occurrence.event.data;
+        let title = if data.title.is_empty() {
+            tr!("calendar-no-title")
+        } else {
+            data.title.clone()
+        };
+        let account = self
+            .calendar
+            .calendars
+            .iter()
+            .find(|c| c.id == occurrence.event.calendar_id)
+            .and_then(|c| c.account);
+        let (subject, body) = if late {
+            (
+                tr!("calendar-late-subject", title = title.clone()),
+                tr!("calendar-late-body", title = title),
+            )
+        } else {
+            (title, String::new())
+        };
+        self.calendar.open = None;
+        self.open_mailto(
+            crate::mailto::Mailto {
+                to,
+                subject,
+                body,
+                ..Default::default()
+            },
+            window,
+            cx,
+        );
+        if let Some(account) = account {
+            self.send_compose_from(account);
+        }
+        cx.notify();
     }
 
     /// Opens the whole editor on the open event.
