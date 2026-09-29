@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Contact labels"
+text = """
+Label on a contact's page ticks labels on and off or makes a new one, and
+the ⋮ beside a label renames it, deletes it or writes to everyone on it.
+Labels stay in step with Google Contacts and Outlook, and every change has
+an Undo.
+"""
