@@ -7,6 +7,8 @@
 //! the way Apple's Notes folder keeps them. Archive and Trash sit in the
 //! list at the left; Trash empties itself after seven days.
 
+mod labels;
+
 use std::rc::Rc;
 use std::time::Duration;
 
@@ -110,6 +112,9 @@ pub(super) struct NotesPage {
     /// The top bar's search box searches notes; this is the mail search
     /// it had, while the page is open.
     mail_query: Option<String>,
+    /// The label the board is showing notes of, over Notes.
+    label: Option<String>,
+    labels_dialog: Option<labels::LabelsDialog>,
     editor: Option<Editor>,
     _load: Option<Task<()>>,
 }
@@ -133,6 +138,8 @@ struct Editor {
     palette: bool,
     /// The account row is open.
     places: bool,
+    /// The label picker, when open.
+    picker: Option<labels::Picker>,
     /// A save is on its way; another waits for it.
     saving: bool,
     _save: Option<Task<()>>,
@@ -243,7 +250,8 @@ fn card_height(note: &Note) -> f32 {
         .min(CARD_LINES);
     let title = if note.title.is_empty() { 0.0 } else { 28.0 };
     let mail = if note.link.is_some() { 32.0 } else { 0.0 };
-    32.0 + title + mail + 20.0 * lines as f32
+    let labels = if note.labels.is_empty() { 0.0 } else { 32.0 };
+    32.0 + title + mail + labels + 20.0 * lines as f32
 }
 
 /// Cards laid out in `columns` columns, each going to the shortest one,
@@ -274,6 +282,8 @@ impl MailWindow {
             notes: None,
             view: NotesView::Notes,
             mail_query: None,
+            label: None,
+            labels_dialog: None,
             editor: None,
             _load: None,
         });
@@ -293,6 +303,13 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| {
                 if let Some(page) = &mut this.notes {
+                    // A label no note has any more (renamed, deleted or
+                    // undone) leaves its board for Notes.
+                    if let (Some(label), Ok(notes)) = (&page.label, &notes)
+                        && !notes.iter().any(|n| n.labels.contains(label))
+                    {
+                        page.label = None;
+                    }
                     page.notes = Some(notes.map(Rc::new));
                 }
                 cx.notify();
@@ -373,7 +390,16 @@ impl MailWindow {
             color: note.map_or(0, |n| n.color),
             pinned: note.is_some_and(|n| n.pinned),
             archived: note.map_or(view == NotesView::Archive, |n| n.archived),
-            labels: note.map(|n| n.labels.clone()).unwrap_or_default(),
+            // A new note in a label's board has that label, as in Keep.
+            labels: match note {
+                Some(n) => n.labels.clone(),
+                None => self
+                    .notes
+                    .as_ref()
+                    .and_then(|p| p.label.clone())
+                    .into_iter()
+                    .collect(),
+            },
             link: note.and_then(|n| n.link.clone()).or(about_link),
             // A new note goes to the account whose mail was open, as a new
             // message comes from it; the picker on the note changes it.
@@ -385,6 +411,7 @@ impl MailWindow {
             changed: false,
             palette: false,
             places: false,
+            picker: None,
             saving: false,
             _save: None,
             _subscriptions: vec![on_title, on_body],
@@ -519,6 +546,7 @@ impl MailWindow {
             editor.account = (item.account != 0).then_some(item.account);
             editor.pinned = item.pinned;
             editor.archived = item.archived;
+            editor.labels = item.labels.clone();
         }
         // Shown at once; the store catches up.
         if let Some(Ok(notes)) = self.notes.as_mut().and_then(|p| p.notes.as_mut())
@@ -528,6 +556,7 @@ impl MailWindow {
             note.pinned = item.pinned;
             note.archived = item.archived;
             note.body = item.body.clone();
+            note.labels = item.labels.clone();
         }
         self.send(Command::SaveNote(Box::new(item)), None, None, false, cx);
         cx.notify();
@@ -866,8 +895,15 @@ impl MailWindow {
             return placeholder(&tr!("notes-loading"), th);
         };
         let view = page.view;
-        // Keys (Ctrl+Z) keep working when the open note closes.
-        if page.editor.is_none() && window.focused(cx).is_none() {
+        let label = page.label.clone();
+        let mut side_labels = self.render_side_labels(th, cx);
+        // Keys (Ctrl+Z) keep working when the open note closes, and find
+        // nothing on a focused mail pane the page hides.
+        let hidden = [&self.list_focus, &self.reader_focus, &self.nav_focus];
+        let lost = window
+            .focused(cx)
+            .is_none_or(|focused| hidden.contains(&&focused));
+        if page.editor.is_none() && page.labels_dialog.is_none() && lost {
             window.focus(&self.window_focus, cx);
         }
         let side = div()
@@ -878,9 +914,9 @@ impl MailWindow {
             .pr(px(12.0))
             .flex()
             .flex_col()
-            .children(NotesView::ALL.into_iter().map(|v| {
-                let on = v == view;
-                div()
+            .children(NotesView::ALL.into_iter().flat_map(|v| {
+                let on = v == view && label.is_none();
+                let entry = div()
                     .id(("notes-view", v as usize))
                     .h(px(48.0))
                     .pl(px(24.0))
@@ -903,6 +939,7 @@ impl MailWindow {
                         this.close_note(cx);
                         if let Some(page) = &mut this.notes {
                             page.view = v;
+                            page.label = None;
                         }
                         cx.notify();
                     }))
@@ -916,11 +953,19 @@ impl MailWindow {
                         22.0,
                     ))
                     .child(v.label())
+                    .into_any_element();
+                let labels = if v == NotesView::Notes {
+                    std::mem::take(&mut side_labels)
+                } else {
+                    Vec::new()
+                };
+                std::iter::once(entry).chain(labels)
             }));
 
         let query = self.search.read(cx).text().trim().to_lowercase();
         let board = self.render_board(th, &query, window, cx);
         let editor = self.render_editor(th, window, cx);
+        let dialog = self.render_labels_dialog(th, window, cx);
         div()
             .relative()
             .size_full()
@@ -929,6 +974,7 @@ impl MailWindow {
             .child(side)
             .child(board)
             .children(editor)
+            .children(dialog)
             .into_any_element()
     }
 
@@ -943,6 +989,7 @@ impl MailWindow {
             return div().into_any_element();
         };
         let view = page.view;
+        let label = page.label.clone();
         let notes = match &page.notes {
             None => return placeholder(&tr!("notes-loading"), th),
             Some(Err(err)) => return placeholder(err, th),
@@ -950,7 +997,11 @@ impl MailWindow {
         };
         let shown: Vec<&Note> = notes
             .iter()
-            .filter(|n| view.shows(n) && matches(n, query))
+            .filter(|n| {
+                view.shows(n)
+                    && matches(n, query)
+                    && label.as_ref().is_none_or(|l| n.labels.contains(l))
+            })
             .collect();
         // The board's width: the window less the rail, the side list and
         // the page's margins.
@@ -1022,6 +1073,7 @@ impl MailWindow {
         if shown.is_empty() {
             let (name, text) = match view {
                 _ if !query.is_empty() => ("search", tr!("notes-none-found")),
+                _ if label.is_some() => ("label", tr!("notes-label-empty")),
                 NotesView::Notes => ("notes", tr!("notes-empty")),
                 NotesView::Archive => ("archive", tr!("notes-archive-empty")),
                 NotesView::Trash => ("trash", tr!("notes-trash-empty")),
@@ -1353,8 +1405,16 @@ impl MailWindow {
                                 .flex_row()
                                 .flex_wrap()
                                 .gap(px(6.0))
-                                .children(note.labels.iter().map(|label| {
+                                .children(note.labels.iter().enumerate().map(|(ix, label)| {
+                                    let show = label.clone();
                                     div()
+                                        .id(("note-card-label", id as usize * 64 + ix))
+                                        .cursor_pointer()
+                                        .hover(|s| s.bg(rgba(fade(th.text, 0.14))))
+                                        .on_click(cx.listener(move |this, _, _, cx| {
+                                            cx.stop_propagation();
+                                            this.show_label(show.clone(), cx)
+                                        }))
                                         .px(px(10.0))
                                         .h(px(24.0))
                                         .flex()
@@ -1622,6 +1682,7 @@ impl MailWindow {
                     .line_height(px(22.0))
                     .child(editor.body.clone()),
             )
+            .children(self.render_note_label_chips(th, cx))
             .child(
                 div()
                     .flex_none()
@@ -1661,6 +1722,7 @@ impl MailWindow {
                                 {
                                     editor.places = !editor.places;
                                     editor.palette = false;
+                                    editor.picker = None;
                                 }
                                 cx.notify();
                             }))
@@ -1670,6 +1732,7 @@ impl MailWindow {
             )
             .children(places)
             .children(palette)
+            .children(self.render_label_picker(th, cx))
             .child(
                 div()
                     .flex_none()
@@ -1685,10 +1748,15 @@ impl MailWindow {
                                 this.notes.as_mut().and_then(|p| p.editor.as_mut())
                             {
                                 editor.palette = !editor.palette;
+                                editor.places = false;
+                                editor.picker = None;
                             }
                             cx.notify();
                         },
                     )))
+                    .child(tool("label", tr!("notes-labels")).on_click(
+                        cx.listener(|this, _, window, cx| this.toggle_label_picker(window, cx)),
+                    ))
                     .child(
                         tool("checkbox-checked", tr!("notes-checkboxes")).on_click(cx.listener(
                             |this, _, window, cx| {
