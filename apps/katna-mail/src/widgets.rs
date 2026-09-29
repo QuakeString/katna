@@ -587,8 +587,8 @@ impl Check {
 /// The box of a checkbox: 18 px with a 2 px edge, which sits with a 20 px
 /// [`radio`] ring at the same weight, as Material draws the pair.
 const CHECK_BOX: f32 = 18.0;
-/// The square of a partly checked box: 2 px clear of the edge all round.
-const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 4.0;
+/// The square of a partly checked box: 1 px clear of the edge all round.
+const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 2.0;
 
 /// A checkbox in the accent colour. Its tick draws itself in when checked
 /// and wipes back out when cleared; `id` keys that motion, so give each box
