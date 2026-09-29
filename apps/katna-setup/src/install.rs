@@ -248,13 +248,24 @@ fn install_location(_scope: Scope) -> Option<PathBuf> {
 }
 
 /// The registry Katna's entries go in for `scope`.
-#[cfg(windows)]
+#[cfg(all(windows, not(test)))]
 fn root(scope: Scope) -> winreg::RegKey {
     use winreg::enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE};
     winreg::RegKey::predef(match scope {
         Scope::User => HKEY_CURRENT_USER,
         Scope::Machine => HKEY_LOCAL_MACHINE,
     })
+}
+
+/// In tests, a key of each test's own under the user's, for both scopes:
+/// tests never touch the real entries (a developer's own Katna), and
+/// tests running at once never delete keys another is writing.
+#[cfg(all(windows, test))]
+fn root(scope: Scope) -> winreg::RegKey {
+    let (key, _) = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER)
+        .create_subkey(format!(r"{}\{scope:?}", tests::registry()))
+        .expect("test registry key");
+    key
 }
 
 /// Where Windows starts programs at sign-in.
@@ -824,6 +835,30 @@ mod tests {
 
     use super::*;
 
+    /// Where this test's registry entries go: one key per test, as each
+    /// runs on its own thread.
+    #[cfg_attr(not(windows), allow(dead_code))]
+    pub(super) fn registry() -> String {
+        format!(
+            r"Software\Katna\Tests\{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        )
+    }
+
+    /// Deletes this test's registry entries when the test ends.
+    struct Registry;
+
+    impl Drop for Registry {
+        fn drop(&mut self) {
+            #[cfg(windows)]
+            {
+                let user = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER);
+                let _ = user.delete_subkey_all(registry());
+            }
+        }
+    }
+
     /// An absolute path on this system: Windows needs a drive.
     fn at(path: &str) -> PathBuf {
         Path::new(if cfg!(windows) { "C:\\" } else { "/" }).join(path)
@@ -890,6 +925,7 @@ mod tests {
 
     #[test]
     fn shortcuts_follow_the_choices() {
+        let _registry = Registry;
         let root = tempfile::tempdir().unwrap();
         let source = tempfile::tempdir().unwrap();
         std::fs::write(source.path().join(MAIL_EXE), b"mail").unwrap();
@@ -939,6 +975,7 @@ mod tests {
 
     #[test]
     fn uninstall_removes_the_programs() {
+        let _registry = Registry;
         let root = tempfile::tempdir().unwrap();
         let layout = Layout {
             scope: Scope::User,

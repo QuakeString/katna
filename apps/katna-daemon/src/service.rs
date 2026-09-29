@@ -523,9 +523,13 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             return;
         }
     };
-    let agenda = SignalEmitter::new(&connection, ids::AGENDA_OBJECT_PATH)
-        .map_err(|err| tracing::warn!(%err, "no agenda signal emitter"))
-        .ok();
+    let agenda = match SignalEmitter::new(&connection, ids::AGENDA_OBJECT_PATH) {
+        Ok(emitter) => emitter,
+        Err(err) => {
+            tracing::error!(%err, "no signal emitter");
+            return;
+        }
+    };
     while let Ok(notice) = notices.recv().await {
         let sent = match notice {
             Notice::AccountsChanged => PimService::accounts_changed(&emitter).await,
@@ -539,13 +543,12 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
             Notice::CalendarChanged => {
                 // The clock shows the events too.
-                if let Some(agenda) = &agenda
-                    && let Err(err) = crate::agenda::changed(agenda).await
-                {
+                if let Err(err) = crate::agenda::changed(&agenda).await {
                     tracing::warn!(%err, "could not tell the clock");
                 }
                 PimService::calendar_changed(&emitter).await
             }
+            Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

@@ -2738,8 +2738,9 @@ Katna integrates in three layers. All of them read the daemon's
 `in.invenia.katna.Agenda1` (`crates/katna-dbus/src/agenda.rs`): events for
 a range of days and tasks, which they add and tick off; `Changed` says to
 read again. Until Katna syncs calendars it lists no events; tasks are
-Katna's own, kept in `pim.db` (`task`, schema v4), until tasks sync with
-the mail service's list (owner, 29 September 2026: "local now").
+those of every task list, synced with each account's own service
+(§18.1), and a task added in the clock goes to the first account's
+default list.
 `integrations/README.md` has the details.
 
 **A. Calendar-events plugin (planned, `integrations/plasma-calendar-plugin`)**
@@ -3163,6 +3164,41 @@ CalDAV endpoint can't make Meet links or event types, so it is not used.
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
 - No booking pages: free times are shared as text in a mail.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
+
+### 18.1 Katna Tasks
+
+Tasks live in each account's own task service, so they show on the
+phone and in the web apps: Google Tasks for Google accounts, Microsoft
+To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
+(not built yet), and lists kept on this computer.
+
+- **Store** (`pim.db` v5, `katna_store::tasks`): `task_list` (an
+  account's list, or one on this computer) and `task`. A change made in
+  Katna marks the row dirty; a deleted row stays as a tombstone until the
+  service deleted it too. Moving a task to another list is a delete there
+  and an insert here, as Google's own apps do.
+- **What the service can't keep stays here.** Google Tasks keeps title,
+  notes, a due day (never a time), done, its place in the list and one
+  level of subtasks. A due time, reminders, repeat and the star are kept
+  in `pim.db` only. To Do keeps reminders, repeat (mapped to and from an
+  RFC 5545 `RRULE`) and importance (the star); its due is a day too, so the
+  time stays in Katna there as well. To Do's steps (checklist items) are
+  not synced yet: steps made in Katna stay in Katna.
+- **Sync** (`katna_sync::tasks`, run by the daemon's `daemon/tasks.rs`):
+  every 5 minutes, and 2 seconds after a change in Katna. Each round sends
+  list changes, takes the service's lists, then per list sends task
+  changes and pulls: Google by `updatedMin` (everything once a day), To Do
+  by its delta link. A change made in Katna and not yet sent wins over the
+  service's. Busy or failing services (429, 5xx) wait for the next round;
+  a refused change is logged and left dirty.
+- **Sign-in**: the scopes are `https://www.googleapis.com/auth/tasks` for
+  Google and `Tasks.ReadWrite` (Graph, asked at sign-in beside OneDrive's)
+  for Microsoft. Accounts signed in before Katna asked for them are
+  skipped until they sign in again.
+- **Default list**: new tasks without a list (the desktop clock's) go to
+  the first account's default list once it has synced, else to the list
+  on this computer. Tasks the clock kept on this computer before any
+  account's list synced move to that list once.
 
 ## 19. Security and privacy
 

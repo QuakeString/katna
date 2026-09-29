@@ -1,57 +1,403 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Tasks Katna keeps on this computer (`task` in `pim.db`), for the
-//! desktop clock's Tasks list.
+//! Task lists and tasks (`task_list` and `task` in `pim.db`): each
+//! account's own lists, synced with its task service (Google Tasks,
+//! Microsoft To Do), and a list kept on this computer
+//! (`docs/ARCHITECTURE.md` §18.1).
+//!
+//! A change made here marks the row dirty; the daemon's task sync sends
+//! it to the service and clears the mark. A deleted row stays as a
+//! tombstone until the service has deleted it too. What the service
+//! can't keep (Google Tasks: a due time, reminders, repeat, the star)
+//! is kept here only.
 
-use rusqlite::{OptionalExtension, params};
+use std::collections::HashMap;
+
+use katna_core::AccountId;
+use rusqlite::{OptionalExtension, Row, Transaction, TransactionBehavior, params};
 
 use crate::Store;
 use crate::db::unix_now;
 use crate::error::Result;
 
 /// One task.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Task {
     pub id: i64,
+    /// Its [`TaskList`].
+    pub list: i64,
+    /// The task it is a step (subtask) of.
+    pub parent: Option<i64>,
     pub title: String,
     pub notes: String,
     /// `YYYY-MM-DD`, or empty.
     pub due: String,
+    /// A time on the due day: minutes after local midnight.
+    pub due_time: Option<u32>,
+    /// When to remind (Unix seconds).
+    pub remind_at: Option<i64>,
+    /// An RFC 5545 `RRULE` value (`FREQ=WEEKLY;BYDAY=MO`), or empty.
+    pub repeat: String,
+    pub starred: bool,
     /// When it was ticked off (Unix seconds); `None` while open.
     pub done_at: Option<i64>,
+    /// The service's order within the list: compared as text.
+    pub position: String,
+    /// The Message-ID (no angle brackets) of the mail it was made from.
+    pub mail: String,
+}
+
+/// What a person sets on a task; [`Store::edit_task`] writes all of it.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TaskFields {
+    pub title: String,
+    pub notes: String,
+    pub due: String,
+    pub due_time: Option<u32>,
+    pub remind_at: Option<i64>,
+    pub repeat: String,
+    pub starred: bool,
+    pub mail: String,
+}
+
+/// A task list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TaskList {
+    pub id: i64,
+    /// `None`: kept on this computer.
+    pub account: Option<AccountId>,
+    pub title: String,
+    /// The account's own default list (Google's and To Do's "Tasks").
+    pub is_default: bool,
+}
+
+/// A list as the service has it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteTaskList {
+    pub remote_id: String,
+    pub title: String,
+    pub is_default: bool,
+}
+
+/// What the service keeps beyond Google Tasks' fields; `None` in
+/// [`RemoteTask::extras`] leaves Katna's own values alone. The time on the
+/// due day is Katna's own everywhere: To Do keeps only the day too.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TaskExtras {
+    pub remind_at: Option<i64>,
+    pub repeat: String,
+    pub starred: bool,
+}
+
+/// A task as the service has it.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct RemoteTask {
+    pub remote_id: String,
+    /// The service's ID of its parent task.
+    pub parent: Option<String>,
+    /// Deleted on the service.
+    pub deleted: bool,
+    pub title: String,
+    pub notes: String,
+    /// `YYYY-MM-DD`, or empty.
+    pub due: String,
+    pub done_at: Option<i64>,
+    pub position: String,
+    pub etag: String,
+    pub extras: Option<TaskExtras>,
+}
+
+/// A list change waiting to go to the service.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PendingTaskList {
+    pub id: i64,
+    pub remote_id: Option<String>,
+    pub title: String,
+    pub deleted: bool,
+}
+
+/// A task change waiting to go to the service.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PendingTask {
+    pub task: Task,
+    pub remote_id: Option<String>,
+    /// The service's ID of its parent, once the parent is there.
+    pub parent_remote: Option<String>,
+    pub etag: Option<String>,
+    pub deleted: bool,
+    /// `updated_at` when read: [`Store::task_pushed`] keeps the row dirty
+    /// if it changed again meanwhile.
+    pub stamp: i64,
+}
+
+const TASK_COLUMNS: &str = "id, list_id, parent_id, title, notes, due, due_time, remind_at, \
+                            repeat, starred, done_at, position, mail";
+
+fn task_row(row: &Row<'_>) -> rusqlite::Result<Task> {
+    Ok(Task {
+        id: row.get(0)?,
+        list: row.get(1)?,
+        parent: row.get(2)?,
+        title: row.get(3)?,
+        notes: row.get(4)?,
+        due: row.get::<_, Option<String>>(5)?.unwrap_or_default(),
+        due_time: row.get(6)?,
+        remind_at: row.get(7)?,
+        repeat: row.get(8)?,
+        starred: row.get(9)?,
+        done_at: row.get(10)?,
+        position: row.get(11)?,
+        mail: row.get(12)?,
+    })
+}
+
+fn list_row(row: &Row<'_>) -> rusqlite::Result<TaskList> {
+    Ok(TaskList {
+        id: row.get(0)?,
+        account: row.get::<_, Option<i64>>(1)?.map(AccountId),
+        title: row.get(2)?,
+        is_default: row.get(3)?,
+    })
+}
+
+/// Whether list `list` belongs to an account, so changes go to a service.
+fn synced(tx: &Transaction<'_>, list: i64) -> rusqlite::Result<bool> {
+    Ok(tx
+        .query_row(
+            "SELECT account_id IS NOT NULL FROM task_list WHERE id = ?1",
+            [list],
+            |row| row.get(0),
+        )
+        .optional()?
+        .unwrap_or(false))
+}
+
+fn due_or_null(due: &str) -> Option<&str> {
+    (!due.is_empty()).then_some(due)
 }
 
 impl Store {
-    /// Open tasks, and those ticked off at or after `done_since` (Unix
-    /// seconds): those with a due day first, earliest first, then the rest
-    /// newest first.
-    pub fn tasks(&self, done_since: i64) -> Result<Vec<Task>> {
+    // --- Lists -----------------------------------------------------------
+
+    /// Every list: the accounts' in account order, each account's default
+    /// list first, then the ones on this computer.
+    pub fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut stmt = self.pim.prepare_cached(
-            "SELECT id, title, notes, due, done_at FROM task
-             WHERE done_at IS NULL OR done_at >= ?1
-             ORDER BY due IS NULL, due, created_at DESC, id DESC",
+            "SELECT id, account_id, title, is_default FROM task_list WHERE deleted = 0
+             ORDER BY account_id IS NULL, account_id, is_default DESC, title COLLATE NOCASE, id",
         )?;
-        let rows = stmt.query_map([done_since], |row| {
-            Ok(Task {
-                id: row.get(0)?,
-                title: row.get(1)?,
-                notes: row.get(2)?,
-                due: row.get::<_, Option<String>>(3)?.unwrap_or_default(),
-                done_at: row.get(4)?,
-            })
-        })?;
+        let rows = stmt.query_map([], list_row)?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
-    /// Adds an open task. `due` is `YYYY-MM-DD` or empty. Returns its ID.
-    pub fn add_task(&mut self, title: &str, due: &str) -> Result<i64> {
-        let now = unix_now();
-        let due = (!due.is_empty()).then_some(due);
+    /// The list new tasks go to when none is named: the first account's
+    /// default list once it has synced, else the one on this computer.
+    pub fn default_task_list(&mut self) -> Result<i64> {
+        let synced = self
+            .pim
+            .query_row(
+                "SELECT id FROM task_list
+                 WHERE account_id IS NOT NULL AND is_default = 1 AND deleted = 0
+                   AND remote_id IS NOT NULL
+                 ORDER BY account_id LIMIT 1",
+                [],
+                |row| row.get(0),
+            )
+            .optional()?;
+        if let Some(id) = synced {
+            return Ok(id);
+        }
+        let local = self
+            .pim
+            .query_row(
+                "SELECT id FROM task_list WHERE account_id IS NULL AND deleted = 0
+                 ORDER BY is_default DESC, id LIMIT 1",
+                [],
+                |row| row.get(0),
+            )
+            .optional()?;
+        match local {
+            Some(id) => Ok(id),
+            None => self.add_task_list(None, "My Tasks"),
+        }
+    }
+
+    /// Adds a list to `account`, or to this computer. Returns its ID.
+    pub fn add_task_list(&mut self, account: Option<AccountId>, title: &str) -> Result<i64> {
         self.pim.execute(
-            "INSERT INTO task (title, due, created_at, updated_at) VALUES (?1, ?2, ?3, ?3)",
-            params![title, due, now],
+            "INSERT INTO task_list (account_id, title, dirty) VALUES (?1, ?2, ?3)",
+            params![account.map(|a| a.0), title, account.is_some()],
         )?;
         Ok(self.pim.last_insert_rowid())
+    }
+
+    /// Renames list `id`. Returns whether it exists.
+    pub fn rename_task_list(&mut self, id: i64, title: &str) -> Result<bool> {
+        let changed = self.pim.execute(
+            "UPDATE task_list SET title = ?2, dirty = (account_id IS NOT NULL)
+             WHERE id = ?1 AND deleted = 0",
+            params![id, title],
+        )?;
+        Ok(changed > 0)
+    }
+
+    /// Deletes list `id` and its tasks. A list on the service stays
+    /// hidden until the service has deleted it. Returns whether it existed.
+    pub fn delete_task_list(&mut self, id: i64) -> Result<bool> {
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let remote: Option<Option<String>> = tx
+            .query_row(
+                "SELECT remote_id FROM task_list WHERE id = ?1 AND deleted = 0",
+                [id],
+                |row| row.get(0),
+            )
+            .optional()?;
+        let Some(remote) = remote else {
+            return Ok(false);
+        };
+        if remote.is_some() {
+            tx.execute(
+                "UPDATE task_list SET deleted = 1, dirty = 1 WHERE id = ?1",
+                [id],
+            )?;
+        } else {
+            tx.execute("DELETE FROM task_list WHERE id = ?1", [id])?;
+        }
+        tx.commit()?;
+        Ok(true)
+    }
+
+    // --- Tasks -----------------------------------------------------------
+
+    /// Open tasks, and those ticked off at or after `done_since` (Unix
+    /// seconds), of every list: those with a due day first, earliest
+    /// first, then the rest in the service's order, newest first.
+    pub fn tasks(&self, done_since: i64) -> Result<Vec<Task>> {
+        let mut stmt = self.pim.prepare_cached(&format!(
+            "SELECT {TASK_COLUMNS} FROM task
+             WHERE deleted = 0 AND (done_at IS NULL OR done_at >= ?1)
+             ORDER BY due IS NULL, due, due_time IS NULL, due_time,
+                      position = '', position, created_at DESC, id DESC"
+        ))?;
+        let rows = stmt.query_map([done_since], task_row)?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Every task of list `list`, done ones too, in the service's order
+    /// (new ones on top), steps after their task.
+    pub fn tasks_in(&self, list: i64) -> Result<Vec<Task>> {
+        let mut stmt = self.pim.prepare_cached(&format!(
+            "SELECT {TASK_COLUMNS} FROM task WHERE list_id = ?1 AND deleted = 0
+             ORDER BY position = '' DESC, position, created_at DESC, id DESC"
+        ))?;
+        let all: Vec<Task> = stmt
+            .query_map([list], task_row)?
+            .collect::<rusqlite::Result<_>>()?;
+        // Each top-level task, then its steps.
+        let mut steps: HashMap<i64, Vec<Task>> = HashMap::new();
+        let mut top = Vec::new();
+        for task in all {
+            match task.parent {
+                Some(parent) => steps.entry(parent).or_default().push(task),
+                None => top.push(task),
+            }
+        }
+        let mut ordered = Vec::with_capacity(top.len());
+        for task in top {
+            let id = task.id;
+            ordered.push(task);
+            ordered.extend(steps.remove(&id).unwrap_or_default());
+        }
+        // Steps whose task is gone show at the end rather than not at all.
+        ordered.extend(steps.into_values().flatten());
+        Ok(ordered)
+    }
+
+    /// Task `id`, unless deleted.
+    pub fn task(&self, id: i64) -> Result<Option<Task>> {
+        Ok(self
+            .pim
+            .prepare_cached(&format!(
+                "SELECT {TASK_COLUMNS} FROM task WHERE id = ?1 AND deleted = 0"
+            ))?
+            .query_row([id], task_row)
+            .optional()?)
+    }
+
+    /// Adds an open task to the default list ([`Self::default_task_list`]).
+    /// `due` is `YYYY-MM-DD` or empty. Returns its ID.
+    pub fn add_task(&mut self, title: &str, due: &str) -> Result<i64> {
+        let list = self.default_task_list()?;
+        let fields = TaskFields {
+            title: title.to_owned(),
+            due: due.to_owned(),
+            ..TaskFields::default()
+        };
+        self.add_task_to(list, None, &fields)
+    }
+
+    /// Adds an open task to `list`, as a step of `parent` if given.
+    /// Returns its ID.
+    pub fn add_task_to(
+        &mut self,
+        list: i64,
+        parent: Option<i64>,
+        fields: &TaskFields,
+    ) -> Result<i64> {
+        let now = unix_now();
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let dirty = synced(&tx, list)?;
+        tx.execute(
+            "INSERT INTO task (list_id, parent_id, title, notes, due, due_time, remind_at,
+                               repeat, starred, mail, dirty, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12)",
+            params![
+                list,
+                parent,
+                fields.title,
+                fields.notes,
+                due_or_null(&fields.due),
+                fields.due_time,
+                fields.remind_at,
+                fields.repeat,
+                fields.starred,
+                fields.mail,
+                dirty,
+                now
+            ],
+        )?;
+        let id = tx.last_insert_rowid();
+        tx.commit()?;
+        Ok(id)
+    }
+
+    /// Sets everything a person sets on task `id`. Returns whether it
+    /// exists.
+    pub fn edit_task(&mut self, id: i64, fields: &TaskFields) -> Result<bool> {
+        let changed = self.pim.execute(
+            "UPDATE task SET title = ?2, notes = ?3, due = ?4, due_time = ?5, remind_at = ?6,
+                             repeat = ?7, starred = ?8, mail = ?9, updated_at = ?10,
+                             dirty = (SELECT account_id IS NOT NULL FROM task_list
+                                      WHERE task_list.id = task.list_id)
+             WHERE id = ?1 AND deleted = 0",
+            params![
+                id,
+                fields.title,
+                fields.notes,
+                due_or_null(&fields.due),
+                fields.due_time,
+                fields.remind_at,
+                fields.repeat,
+                fields.starred,
+                fields.mail,
+                unix_now()
+            ],
+        )?;
+        Ok(changed > 0)
     }
 
     /// Ticks task `id` off, or opens it again. Returns whether it exists.
@@ -61,87 +407,382 @@ impl Store {
         // Ticking a done task again keeps when it was first done.
         let changed = self.pim.execute(
             "UPDATE task SET done_at = CASE WHEN ?2 IS NULL THEN NULL ELSE COALESCE(done_at, ?2) END,
-                             updated_at = ?3
-             WHERE id = ?1",
+                             updated_at = ?3,
+                             dirty = (SELECT account_id IS NOT NULL FROM task_list
+                                      WHERE task_list.id = task.list_id)
+             WHERE id = ?1 AND deleted = 0",
             params![id, done_at, now],
         )?;
         Ok(changed > 0)
     }
 
-    /// Deletes task `id`. Returns it, so it can be put back.
-    pub fn delete_task(&mut self, id: i64) -> Result<Option<Task>> {
-        let task = self
+    /// Moves task `id` (with its steps) to list `list`, on top. On the
+    /// service that is a delete from the old list and an insert into the
+    /// new one, as Google's own apps do it. Returns whether it exists.
+    pub fn move_task(&mut self, id: i64, list: i64) -> Result<bool> {
+        let tx = self
             .pim
-            .prepare_cached("SELECT title, notes, due, done_at FROM task WHERE id = ?1")?
-            .query_row([id], |row| {
-                Ok(Task {
-                    id,
-                    title: row.get(0)?,
-                    notes: row.get(1)?,
-                    due: row.get::<_, Option<String>>(2)?.unwrap_or_default(),
-                    done_at: row.get(3)?,
-                })
-            })
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let Some(task) = tx
+            .prepare_cached(&format!(
+                "SELECT {TASK_COLUMNS} FROM task WHERE id = ?1 AND deleted = 0"
+            ))?
+            .query_row([id], task_row)
+            .optional()?
+        else {
+            return Ok(false);
+        };
+        if task.list == list {
+            return Ok(true);
+        }
+        let now = unix_now();
+        let dirty = synced(&tx, list)?;
+        let mut ids = vec![id];
+        ids.extend(
+            tx.prepare_cached("SELECT id FROM task WHERE parent_id = ?1 AND deleted = 0")?
+                .query_map([id], |row| row.get::<_, i64>(0))?
+                .collect::<rusqlite::Result<Vec<_>>>()?,
+        );
+        for each in ids {
+            // What was on the old list's service goes as a tombstone; the
+            // task itself moves and is sent to the new list's service.
+            let (old_list, remote, etag): (i64, Option<String>, Option<String>) = tx.query_row(
+                "SELECT list_id, remote_id, etag FROM task WHERE id = ?1",
+                [each],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )?;
+            tx.execute(
+                "UPDATE task SET list_id = ?2, remote_id = NULL, etag = NULL, position = '',
+                                 dirty = ?3, updated_at = ?4
+                 WHERE id = ?1",
+                params![each, list, dirty, now],
+            )?;
+            if remote.is_some() {
+                tx.execute(
+                    "INSERT INTO task (list_id, title, remote_id, etag, deleted, dirty,
+                                       created_at, updated_at)
+                     VALUES (?1, '', ?2, ?3, 1, 1, ?4, ?4)",
+                    params![old_list, remote, etag, now],
+                )?;
+            }
+        }
+        tx.commit()?;
+        Ok(true)
+    }
+
+    /// Deletes task `id` and its steps. Returns it, so it can be put back
+    /// ([`Self::add_task_to`]).
+    pub fn delete_task(&mut self, id: i64) -> Result<Option<Task>> {
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let task = tx
+            .prepare_cached(&format!(
+                "SELECT {TASK_COLUMNS} FROM task WHERE id = ?1 AND deleted = 0"
+            ))?
+            .query_row([id], task_row)
             .optional()?;
         if task.is_some() {
-            self.pim.execute("DELETE FROM task WHERE id = ?1", [id])?;
+            let now = unix_now();
+            // Those the service has become tombstones until it deleted them
+            // too; steps go with their task.
+            tx.execute(
+                "UPDATE task SET deleted = 1, dirty = 1, updated_at = ?2
+                 WHERE (id = ?1 OR parent_id = ?1) AND remote_id IS NOT NULL",
+                params![id, now],
+            )?;
+            for sql in [
+                "DELETE FROM task WHERE parent_id = ?1 AND remote_id IS NULL",
+                "DELETE FROM task WHERE id = ?1 AND remote_id IS NULL",
+            ] {
+                tx.execute(sql, [id])?;
+            }
         }
+        tx.commit()?;
         Ok(task)
+    }
+
+    // --- Sync --------------------------------------------------------------
+
+    /// The lists of `account` on the service, as last synced.
+    pub fn account_task_lists(&self, account: AccountId) -> Result<Vec<(i64, Option<String>)>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT id, remote_id FROM task_list WHERE account_id = ?1 AND deleted = 0 ORDER BY id",
+        )?;
+        let rows = stmt.query_map([account.0], |row| Ok((row.get(0)?, row.get(1)?)))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Takes the service's lists of `account`: adds new ones, renames, and
+    /// drops those gone from the service (with their tasks) unless renamed
+    /// here meanwhile. Returns whether anything changed.
+    pub fn sync_task_lists(
+        &mut self,
+        account: AccountId,
+        lists: &[RemoteTaskList],
+    ) -> Result<bool> {
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let mut changed = 0;
+        for list in lists {
+            changed += tx.execute(
+                "INSERT INTO task_list (account_id, remote_id, title, is_default)
+                 VALUES (?1, ?2, ?3, ?4)
+                 ON CONFLICT (account_id, remote_id) DO UPDATE SET
+                     title = CASE WHEN dirty THEN title ELSE excluded.title END,
+                     is_default = excluded.is_default
+                 WHERE (title != excluded.title AND NOT dirty) OR is_default != excluded.is_default",
+                params![account.0, list.remote_id, list.title, list.is_default],
+            )?;
+        }
+        let known: Vec<(i64, String)> = tx
+            .prepare_cached(
+                "SELECT id, remote_id FROM task_list
+                 WHERE account_id = ?1 AND remote_id IS NOT NULL AND dirty = 0",
+            )?
+            .query_map([account.0], |row| Ok((row.get(0)?, row.get(1)?)))?
+            .collect::<rusqlite::Result<_>>()?;
+        for (id, remote) in known {
+            if !lists.iter().any(|list| list.remote_id == remote) {
+                changed += tx.execute("DELETE FROM task_list WHERE id = ?1", [id])?;
+            }
+        }
+        tx.commit()?;
+        Ok(changed > 0)
+    }
+
+    /// The list changes of `account` waiting to go to the service.
+    pub fn pending_task_lists(&self, account: AccountId) -> Result<Vec<PendingTaskList>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT id, remote_id, title, deleted FROM task_list
+             WHERE account_id = ?1 AND (dirty = 1 OR remote_id IS NULL) ORDER BY id",
+        )?;
+        let rows = stmt.query_map([account.0], |row| {
+            Ok(PendingTaskList {
+                id: row.get(0)?,
+                remote_id: row.get(1)?,
+                title: row.get(2)?,
+                deleted: row.get(3)?,
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// List `id` is on the service as `remote_id`, as it is here.
+    pub fn task_list_pushed(&mut self, id: i64, remote_id: &str) -> Result<()> {
+        self.pim.execute(
+            "UPDATE task_list SET remote_id = ?2, dirty = 0 WHERE id = ?1",
+            params![id, remote_id],
+        )?;
+        Ok(())
+    }
+
+    /// Forgets list `id` and its tasks: the service deleted it.
+    pub fn forget_task_list(&mut self, id: i64) -> Result<()> {
+        self.pim
+            .execute("DELETE FROM task_list WHERE id = ?1", [id])?;
+        Ok(())
+    }
+
+    /// Where the last pull of list `id` ended.
+    pub fn task_list_sync_state(&self, id: i64) -> Result<Option<String>> {
+        Ok(self
+            .pim
+            .query_row(
+                "SELECT sync_state FROM task_list WHERE id = ?1",
+                [id],
+                |row| row.get(0),
+            )
+            .optional()?
+            .flatten())
+    }
+
+    pub fn set_task_list_sync_state(&mut self, id: i64, state: Option<&str>) -> Result<()> {
+        self.pim.execute(
+            "UPDATE task_list SET sync_state = ?2 WHERE id = ?1",
+            params![id, state],
+        )?;
+        Ok(())
+    }
+
+    /// The task changes of list `list` waiting to go to the service:
+    /// tasks before their steps, so a step's parent is there first.
+    pub fn pending_tasks(&self, list: i64) -> Result<Vec<PendingTask>> {
+        let mut stmt = self.pim.prepare_cached(&format!(
+            "SELECT {TASK_COLUMNS}, remote_id, etag, deleted, updated_at,
+                    (SELECT p.remote_id FROM task p WHERE p.id = task.parent_id)
+             FROM task WHERE list_id = ?1 AND dirty = 1
+             ORDER BY parent_id IS NOT NULL, created_at, id"
+        ))?;
+        let rows = stmt.query_map([list], |row| {
+            Ok(PendingTask {
+                task: task_row(row)?,
+                remote_id: row.get(13)?,
+                etag: row.get(14)?,
+                deleted: row.get(15)?,
+                stamp: row.get(16)?,
+                parent_remote: row.get(17)?,
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Task `id` is on the service as `remote`, as it was at `stamp`; it
+    /// stays dirty if it changed again since.
+    pub fn task_pushed(&mut self, id: i64, stamp: i64, remote: &RemoteTask) -> Result<()> {
+        self.pim.execute(
+            "UPDATE task SET remote_id = ?3, etag = ?4, position = ?5,
+                             dirty = (updated_at != ?2)
+             WHERE id = ?1",
+            params![id, stamp, remote.remote_id, remote.etag, remote.position],
+        )?;
+        Ok(())
+    }
+
+    /// Task `id`, as it was at `stamp`, stays on this computer only: the
+    /// service has no place for it (a step of a To Do task).
+    pub fn task_kept_here(&mut self, id: i64, stamp: i64) -> Result<()> {
+        self.pim.execute(
+            "UPDATE task SET dirty = (updated_at != ?2) WHERE id = ?1",
+            params![id, stamp],
+        )?;
+        Ok(())
+    }
+
+    /// Forgets task `id` for good: its deletion reached the service, or
+    /// the service had it deleted already.
+    pub fn forget_task(&mut self, id: i64) -> Result<()> {
+        self.pim.execute("DELETE FROM task WHERE id = ?1", [id])?;
+        Ok(())
+    }
+
+    /// Takes the service's tasks of list `list`: `all` is every task the
+    /// service has, else only those that changed. Rows changed here and
+    /// not yet sent keep their values. Returns whether anything changed.
+    pub fn sync_tasks(&mut self, list: i64, tasks: &[RemoteTask], all: bool) -> Result<bool> {
+        let now = unix_now();
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let mut changed = 0;
+        for task in tasks {
+            let local: Option<(i64, bool, Option<String>)> = tx
+                .query_row(
+                    "SELECT id, dirty, etag FROM task WHERE list_id = ?1 AND remote_id = ?2",
+                    params![list, task.remote_id],
+                    |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+                )
+                .optional()?;
+            match local {
+                Some((_, true, _)) => {}
+                Some((id, false, _)) if task.deleted => {
+                    changed += tx.execute("DELETE FROM task WHERE id = ?1", [id])?;
+                }
+                None if task.deleted => {}
+                Some((_, false, etag))
+                    if !task.etag.is_empty() && etag.as_deref() == Some(&task.etag) => {}
+                Some((id, false, _)) => {
+                    changed += tx.execute(
+                        "UPDATE task SET title = ?2, notes = ?3, due = ?4, done_at = ?5,
+                                         position = ?6, etag = ?7, updated_at = ?8
+                         WHERE id = ?1",
+                        params![
+                            id,
+                            task.title,
+                            task.notes,
+                            due_or_null(&task.due),
+                            task.done_at,
+                            task.position,
+                            task.etag,
+                            now
+                        ],
+                    )?;
+                    if let Some(extras) = &task.extras {
+                        tx.execute(
+                            "UPDATE task SET remind_at = ?2, repeat = ?3, starred = ?4
+                             WHERE id = ?1",
+                            params![id, extras.remind_at, extras.repeat, extras.starred],
+                        )?;
+                    }
+                }
+                None => {
+                    let extras = task.extras.clone().unwrap_or_default();
+                    changed += tx.execute(
+                        "INSERT INTO task (list_id, remote_id, title, notes, due, done_at,
+                                           position, etag, remind_at, repeat, starred,
+                                           created_at, updated_at)
+                         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12)",
+                        params![
+                            list,
+                            task.remote_id,
+                            task.title,
+                            task.notes,
+                            due_or_null(&task.due),
+                            task.done_at,
+                            task.position,
+                            task.etag,
+                            extras.remind_at,
+                            extras.repeat,
+                            extras.starred,
+                            now
+                        ],
+                    )?;
+                }
+            }
+        }
+        // Parents, once every task is there.
+        for task in tasks.iter().filter(|task| !task.deleted) {
+            changed += tx.execute(
+                "UPDATE task SET parent_id =
+                     (SELECT p.id FROM task p WHERE p.list_id = ?1 AND p.remote_id = ?3)
+                 WHERE list_id = ?1 AND remote_id = ?2 AND dirty = 0
+                   AND parent_id IS NOT (SELECT p.id FROM task p
+                                         WHERE p.list_id = ?1 AND p.remote_id = ?3)",
+                params![list, task.remote_id, task.parent],
+            )?;
+        }
+        if all {
+            let known: Vec<(i64, String)> = tx
+                .prepare_cached(
+                    "SELECT id, remote_id FROM task
+                     WHERE list_id = ?1 AND remote_id IS NOT NULL AND dirty = 0",
+                )?
+                .query_map([list], |row| Ok((row.get(0)?, row.get(1)?)))?
+                .collect::<rusqlite::Result<_>>()?;
+            for (id, remote) in known {
+                if !tasks.iter().any(|t| t.remote_id == remote && !t.deleted) {
+                    changed += tx.execute("DELETE FROM task WHERE id = ?1", [id])?;
+                }
+            }
+        }
+        tx.commit()?;
+        Ok(changed > 0)
+    }
+
+    /// Moves the tasks of lists marked to move out (those added in the
+    /// desktop clock before any account's list had synced) into the
+    /// default list, once one on a service exists. Returns how many moved.
+    pub fn move_out_local_tasks(&mut self) -> Result<usize> {
+        let target = self.default_task_list()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        if !synced(&tx, target)? {
+            return Ok(0);
+        }
+        let moved = tx.execute(
+            "UPDATE task SET list_id = ?1, dirty = 1, updated_at = ?2
+             WHERE list_id IN (SELECT id FROM task_list WHERE move_out = 1)",
+            params![target, unix_now()],
+        )?;
+        // The emptied list goes; a person can make one on this computer
+        // again whenever they like.
+        tx.execute("DELETE FROM task_list WHERE move_out = 1", [])?;
+        tx.commit()?;
+        Ok(moved)
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::Mode;
-    use katna_core::Paths;
-
-    fn store() -> (tempfile::TempDir, Store) {
-        let dir = tempfile::tempdir().unwrap();
-        let paths = Paths::with_root(dir.path());
-        let store = Store::open(&paths, Mode::ReadWrite).unwrap();
-        (dir, store)
-    }
-
-    fn titles(tasks: &[Task]) -> Vec<&str> {
-        tasks.iter().map(|task| task.title.as_str()).collect()
-    }
-
-    #[test]
-    fn lists_due_tasks_first_by_day() {
-        let (_dir, mut store) = store();
-        store.add_task("someday", "").unwrap();
-        store.add_task("friday", "2026-10-02").unwrap();
-        store.add_task("today", "2026-09-29").unwrap();
-        let tasks = store.tasks(0).unwrap();
-        assert_eq!(titles(&tasks), ["today", "friday", "someday"]);
-        assert_eq!(tasks[0].due, "2026-09-29");
-        assert_eq!(tasks[2].due, "");
-    }
-
-    #[test]
-    fn done_tasks_leave_the_list_after_a_while() {
-        let (_dir, mut store) = store();
-        let id = store.add_task("renew domain", "").unwrap();
-        assert!(store.set_task_done(id, true).unwrap());
-        let done = store.tasks(0).unwrap();
-        let done_at = done[0].done_at.expect("ticked off");
-        assert_eq!(titles(&store.tasks(done_at).unwrap()), ["renew domain"]);
-        assert!(store.tasks(done_at + 1).unwrap().is_empty());
-
-        assert!(store.set_task_done(id, false).unwrap());
-        assert_eq!(store.tasks(i64::MAX).unwrap()[0].done_at, None);
-        assert!(!store.set_task_done(id + 1, true).unwrap());
-    }
-
-    #[test]
-    fn deleting_returns_the_task() {
-        let (_dir, mut store) = store();
-        let id = store.add_task("call the bank", "2026-09-30").unwrap();
-        let task = store.delete_task(id).unwrap().expect("existed");
-        assert_eq!(task.title, "call the bank");
-        assert_eq!(task.due, "2026-09-30");
-        assert!(store.tasks(0).unwrap().is_empty());
-        assert_eq!(store.delete_task(id).unwrap(), None);
-    }
-}
+mod tests;
