@@ -1363,3 +1363,9 @@ text = """
 Anwani sasa zina Rekebisha na udhibiti: Unganisha na urekebishe hutafuta watu waliohifadhiwa mara mbili (jina au nambari ya simu sawa) na kuwaunganisha kwa mbofyo mmoja, pamoja na Tendua.
 Leta huingiza watu kutoka faili ya vCard, ikiwaacha wale waliohifadhiwa tayari, na Hamisha huhifadhi kila mtu, au lebo moja, kama faili ya vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Msongamano wa Kalenda na saa za eneo la pili"
+text = """
+Kitufe cha Chaguo katika Kalenda huweka urefu wa saa (Hujirekebisha kulingana na skrini yako, Starehe au Fupi) na huongeza saa za eneo la pili kando ya zako, kwa watu unaokutana nao ughaibuni.
+"""

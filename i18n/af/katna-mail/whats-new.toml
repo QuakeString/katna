@@ -1377,3 +1377,9 @@ title = "Voeg duplikate saam, voer kontakte in en uit"
 text = """
 Kontakte het nou Regstel en bestuur: Voeg saam en regstel vind mense wat twee keer gestoor is (dieselfde naam of foonnommer) en voeg hulle met een klik saam, met Ontdoen. Voer in bring mense in vanaf ’n vCard-lêer en laat diegene weg wat reeds gestoor is, en Voer uit stoor almal, of een etiket, as ’n vCard-lêer.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kalenderdigtheid en 'n tweede tydsone"
+text = """
+Die Opsies-knoppie in Kalender bepaal hoe hoog die ure is (Reageer op jou skerm, Gemaklik of Kompak) en voeg 'n tweede tydsone langs joune by, vir die mense wat jy oorsee ontmoet.
+"""

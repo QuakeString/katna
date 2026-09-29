@@ -1474,3 +1474,11 @@ Ngenisa ilethe abantu kufayela le-vCard ishiye noma ubani osegciniwe
 kakade, futhi Thumela igcina wonke umuntu, noma ilebula, njengefayela
 le-vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Ukuminyana kwekhalenda nendawo yesikhathi yesibili"
+text = """
+Inkinobho yezinketho ku-Ikhalenda ibeka ukuthi amahora aphakeme kangakanani (Iyavumelana nesikrini sakho,
+Kunethezekile noma Kuminyene) futhi yengeza indawo yesikhathi yesibili eduze kweyakho,
+kubantu obahlangana nabo phesheya.
+"""

@@ -1412,3 +1412,9 @@ title = "Scalanie duplikatów oraz import i eksport kontaktów"
 text = """
 W Kontaktach jest teraz „Napraw i zarządzaj”: „Scal i napraw” znajduje osoby zapisane dwukrotnie (o tej samej nazwie lub tym samym numerze telefonu) i scala je jednym kliknięciem, z opcją „Cofnij”. „Importuj” wczytuje osoby z pliku vCard, pomijając te już zapisane, a „Eksportuj” zapisuje wszystkich lub jedną etykietę do pliku vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Gęstość Kalendarza i druga strefa czasowa"
+text = """
+Przycisk Opcje w Kalendarzu ustawia wysokość godzin (Dopasowana do ekranu, Wygodna lub Kompaktowa) i dodaje drugą strefę czasową obok Twojej, dla osób, które spotykasz za granicą.
+"""

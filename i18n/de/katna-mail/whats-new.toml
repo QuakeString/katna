@@ -1455,3 +1455,9 @@ title = "Duplikate zusammenführen sowie Kontakte importieren und exportieren"
 text = """
 Unter „Korrigieren und verwalten“ in Kontakte findet „Zusammenführen und korrigieren“ doppelt gespeicherte Personen (mit demselben Namen oder derselben Telefonnummer) und führt sie mit einem Klick zusammen, mit „Rückgängig“. „Importieren“ holt Personen aus einer vCard-Datei und lässt bereits gespeicherte aus, und „Exportieren“ speichert alle oder ein Label als vCard-Datei.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kalender: Zeitzonen und Dichte"
+text = """
+Mit der Optionen-Schaltfläche im Kalender legen Sie fest, wie hoch die Stunden sind (An Bildschirm anpassen, Komfortabel oder Kompakt), und fügen neben Ihrer eigenen eine zweite Zeitzone hinzu, für Menschen, die Sie im Ausland treffen.
+"""

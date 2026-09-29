@@ -1408,3 +1408,9 @@ title = "Yinelenenleri birleştirin, kişileri içe ve dışa aktarın"
 text = """
 Kişiler artık Düzelt ve yönet aracına sahip: Birleştir ve düzelt, iki kez kaydedilmiş kişileri (aynı ad veya telefon numarası) bulur ve tek tıkla birleştirir, Geri al ile de işlemi geri alabilirsiniz. İçe aktar, kişileri bir vCard dosyasından getirir ve zaten kayıtlı olanları atlar, Dışa aktar ise herkesi ya da bir etiketi vCard dosyası olarak kaydeder.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Takvim yoğunluğu ve ikinci saat dilimi"
+text = """
+Takvim'deki Seçenekler düğmesi saatlerin ne kadar yüksek olacağını (Ekranınıza duyarlı, Rahat veya Kompakt) ayarlar ve yurt dışında görüştüğünüz kişiler için sizinkinin yanına ikinci bir saat dilimi ekler.
+"""

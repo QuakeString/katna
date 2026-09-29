@@ -1434,3 +1434,9 @@ title = "Unisci i duplicati, importa ed esporta i contatti"
 text = """
 Contatti ha “Correggi e gestisci”: “Unisci e correggi” trova le persone salvate due volte (stesso nome o numero di telefono) e le unisce con un clic, con la possibilità di annullare. “Importa” aggiunge persone da un file vCard escludendo quelle già salvate, ed “Esporta” salva tutti, o un’etichetta, in un file vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densità del Calendario e secondo fuso orario"
+text = """
+Il pulsante Opzioni del Calendario imposta l'altezza delle ore (Adattiva allo schermo, Comoda o Compatta) e aggiunge un secondo fuso orario accanto al tuo, per le persone che incontri all'estero.
+"""

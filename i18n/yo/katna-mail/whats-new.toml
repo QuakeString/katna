@@ -1333,3 +1333,9 @@ text = """
 Àwọn olùbásọ̀rọ̀ ní Àtúnṣe àti ìṣàkóso báyìí: Dàpọ̀ àti àtúnṣe ń wá àwọn ènìyàn tí a fipamọ́ lẹ́ẹ̀mejì (orúkọ tàbí nọ́ńbà fóònù kan náà) ó sì ń dà wọ́n pọ̀ pẹ̀lú títẹ̀ ẹ̀ẹ̀kan, pẹ̀lú Dá padà.
 Gbé wọlé ń mú àwọn ènìyàn wá láti fáìlì vCard, ó ń fi àwọn tí a ti fipamọ́ sílẹ̀, Gbé jáde sì ń fi gbogbo wọn, tàbí àmì kan, pamọ́ bí fáìlì vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Ìwọ̀n ìkọ̀pọ̀ Kàlẹ́ńdà àti agbègbè àkókò kejì"
+text = """
+Bọ́tìnì Àwọn àṣàyàn nínú Kàlẹ́ńdà ń ṣètò gíga àwọn wákàtí (Ó ń bá ojú-ìwé rẹ mu, Ìtura tàbí Kékeré ṣinṣin) ó sì ń fi agbègbè àkókò kejì kún èyí tìrẹ, fún àwọn ènìyàn tí o ń pàdé ní ilẹ̀ òkèèrè.
+"""

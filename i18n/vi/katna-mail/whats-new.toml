@@ -1375,3 +1375,9 @@ title = "Hợp nhất liên hệ trùng lặp, nhập và xuất liên hệ"
 text = """
 Danh bạ giờ có Sửa và quản lý: Hợp nhất và sửa tìm những người được lưu hai lần (cùng tên hoặc số điện thoại) và hợp nhất họ chỉ bằng một cú nhấp, kèm Hoàn tác. Nhập đưa người từ tệp vCard vào và bỏ qua những ai đã được lưu, còn Xuất lưu tất cả mọi người, hoặc một nhãn, thành tệp vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Mật độ Lịch và múi giờ thứ hai"
+text = """
+Nút Tùy chọn trong Lịch đặt độ cao của các giờ (Tự điều chỉnh theo màn hình của bạn, Thoải mái hoặc Gọn) và thêm múi giờ thứ hai bên cạnh múi giờ của bạn, dành cho những người bạn gặp ở nước ngoài.
+"""

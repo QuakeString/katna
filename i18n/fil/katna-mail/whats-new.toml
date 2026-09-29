@@ -1470,3 +1470,9 @@ title = "Pagsamahin ang mga duplicate, mag-import at mag-export ng mga contact"
 text = """
 May Ayusin at pamahalaan na ang Mga Contact: hinahanap ng Pagsamahin at ayusin ang mga taong dalawang beses na-save (parehong pangalan o numero ng telepono) at pinagsasama sila sa isang click, may I-undo. Nagdadala ang I-import ng mga tao mula sa vCard file at hindi isinasama ang mga naka-save na, at sine-save ng I-export ang lahat, o isang label, bilang vCard file.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densidad ng Kalendaryo at pangalawang time zone"
+text = """
+Itinatakda ng button na Mga opsyon sa Kalendaryo kung gaano kataas ang mga oras (Tumutugon sa iyong screen, Kumportable, o Compact) at nagdaragdag ng pangalawang time zone sa tabi ng sa iyo, para sa mga taong nakikilala mo sa ibang bansa.
+"""

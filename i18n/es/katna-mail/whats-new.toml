@@ -1430,3 +1430,9 @@ title = "Combina duplicados, importa y exporta contactos"
 text = """
 Contactos incluye «Corregir y administrar»: «Combinar y corregir» encuentra a las personas guardadas dos veces (con el mismo nombre o número de teléfono) y las combina con un clic, con la opción de deshacer. «Importar» añade personas desde un archivo vCard sin repetir las que ya tienes, y «Exportar» guarda a todos, o una etiqueta, en un archivo vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densidad del Calendario y segunda zona horaria"
+text = """
+El botón Opciones del Calendario define la altura de las horas (Adaptable a tu pantalla, Cómoda o Compacta) y añade una segunda zona horaria junto a la tuya, para las personas con las que te reúnes en el extranjero.
+"""

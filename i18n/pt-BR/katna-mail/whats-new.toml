@@ -1419,3 +1419,9 @@ title = "Mescle duplicatas, importe e exporte contatos"
 text = """
 Contatos tem “Corrigir e gerenciar”: “Mesclar e corrigir” encontra pessoas salvas duas vezes (com o mesmo nome ou número de telefone) e as mescla com um clique, com a opção de desfazer. “Importar” traz pessoas de um arquivo vCard, ignorando quem já está salvo, e “Exportar” salva todo mundo, ou um marcador, em um arquivo vCard.
 """
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densidade da Agenda e segundo fuso horário"
+text = """
+O botão Opções da Agenda define a altura das horas (Responsivo à tela, Confortável ou Compacto) e adiciona um segundo fuso horário ao lado do seu, para as pessoas que você encontra no exterior.
+"""
