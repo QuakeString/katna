@@ -3264,8 +3264,10 @@ CalDAV endpoint can't make Meet links or event types, so it is not used.
 
 Tasks live in each account's own task service, so they show on the
 phone and in the web apps: Google Tasks for Google accounts, Microsoft
-To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
-(not built yet), and lists kept on this computer.
+To Do (Graph) for Microsoft accounts, to-dos (`VTODO`) on the CalDAV
+server of an account with a password, and lists kept on this computer.
+Google's and Microsoft's CalDAV servers keep no to-dos, so their accounts
+use their own APIs only.
 
 - **Store** (`pim.db` v5, `katna_store::tasks`): `task_list` (an
   account's list, or one on this computer) and `task`. A change made in
@@ -3281,11 +3283,20 @@ To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
   checklist items (ID `task|item` in `pim.db`), which keep only a title
   and a tick. The delta holds no steps, so each task it brings has its
   steps read again, and steps of that task not among them are dropped.
+  CalDAV keeps it all, the due time too (written in UTC); a step is a
+  to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
+  server's own text of the to-do (`katna_dav::todo`), so categories,
+  attachments, other alarms and a client's own fields stay.
 - **Sync** (`katna_sync::tasks`, run by the daemon's `daemon/tasks.rs`):
   every 5 minutes, and 2 seconds after a change in Katna. Each round sends
   list changes, takes the service's lists, then per list sends task
   changes and pulls: Google by `updatedMin` (everything once a day), To Do
-  by its delta link. A change made in Katna and not yet sent wins over the
+  by its delta link, CalDAV by the list's `getctag` and then the etags of
+  its to-dos (only changed ones are downloaded; the list's sync state
+  keeps each to-do's etag and `UID`, so a missing one is a deletion). The
+  CalDAV server is found the way its calendars are (§18) and kept between
+  rounds; a collection that holds to-dos is a list, the first holding
+  only to-dos the default. A change made in Katna and not yet sent wins over the
   service's. Busy or failing services (429, 5xx) wait for the next round;
   a refused change is logged and left dirty.
 - **Sign-in**: the scopes are `https://www.googleapis.com/auth/tasks` for
