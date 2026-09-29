@@ -2,3 +2,8 @@
 
 //! CalDAV and CardDAV sync, iCalendar and vCard handling, recurrence.
 //! See `docs/ARCHITECTURE.md` §18.
+
+pub mod occurrences;
+pub mod recurrence;
+
+pub use occurrences::{Occurrence, occurrences};

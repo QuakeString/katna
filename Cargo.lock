@@ -5937,6 +5937,7 @@ dependencies = [
 name = "katna-dav"
 version = "0.0.0"
 dependencies = [
+ "jiff",
  "katna-core",
  "katna-store",
 ]
@@ -6175,6 +6176,7 @@ dependencies = [
  "blake3",
  "katna-core",
  "rusqlite",
+ "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
