@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Why an account has no calendars"
+text = """
+When an account's calendars don't show, the Calendar now says what the
+server answered, and Try again looks for them again at once. A Gmail or
+Outlook account added with a password offers to sign in with Google or
+Microsoft, which their calendars need.
+"""

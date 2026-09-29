@@ -16,3 +16,37 @@ viewer-slide = Slayt { $number }
 viewer-page = Sayfa
 viewer-page-count = / { $count }
 viewer-go-to-page-tip = Bir sayfa numarası yazıp Enter’a basın (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = İşaretle
+viewer-tool-select = Metin seç
+viewer-tool-highlight = Vurgula
+viewer-tool-underline = Altını çiz
+viewer-tool-squiggly = Dalgalı çizgi
+viewer-tool-strike = Üstünü çiz
+viewer-tool-pen = Kalem
+viewer-tool-eraser = Silgi
+viewer-color-yellow = Sarı
+viewer-color-green = Yeşil
+viewer-color-blue = Mavi
+viewer-color-pink = Pembe
+viewer-color-orange = Turuncu
+viewer-color-red = Kırmızı
+viewer-color-black = Siyah
+viewer-color-purple = Mor
+viewer-marks-undo-tip = Geri al (Ctrl+Z)
+viewer-marks-redo-tip = Yinele (Ctrl+Shift+Z)
+viewer-save-marked-tip = İşaretlerinizle bir kopya kaydedin (Ctrl+S)
+viewer-markup-protected = Bu PDF değişikliklere karşı korumalı, bu yüzden işaretlenemiyor.
+viewer-marks-save-failed = İşaretli kopya kaydedilemedi.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = İşaretleriniz kaydedilsin mi?
+viewer-marks-unsaved-text = Bu PDF'teki işaretleriniz henüz kaydedilmedi. Bir kopyaya kaydedilirler; ekin kendisi olduğu gibi kalır.
+viewer-marks-discard = At
+viewer-marks-keep = İşaretlemeye devam et
+viewer-marks-save = Kopya kaydet
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (işaretli)

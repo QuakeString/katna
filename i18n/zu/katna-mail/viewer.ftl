@@ -16,3 +16,37 @@ viewer-slide = Islayidi { $number }
 viewer-page = Ikhasi
 viewer-page-count = kwangu-{ $count }
 viewer-go-to-page-tip = Thayipha inombolo yekhasi bese ucindezela u-Enter (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = Maka
+viewer-tool-select = Khetha umbhalo
+viewer-tool-highlight = Gqamisa
+viewer-tool-underline = Dwebela
+viewer-tool-squiggly = Umugqa ogobile
+viewer-tool-strike = Dweba phakathi
+viewer-tool-pen = Usiba
+viewer-tool-eraser = Isesula
+viewer-color-yellow = Phuzi
+viewer-color-green = Luhlaza
+viewer-color-blue = Luhlaza okwesibhakabhaka
+viewer-color-pink = Pinki
+viewer-color-orange = Olintshi
+viewer-color-red = Bomvu
+viewer-color-black = Mnyama
+viewer-color-purple = Phephuli
+viewer-marks-undo-tip = Hlehlisa (Ctrl+Z)
+viewer-marks-redo-tip = Phinda wenze (Ctrl+Shift+Z)
+viewer-save-marked-tip = Londoloza ikhophi enamamaki akho (Ctrl+S)
+viewer-markup-protected = Le PDF ivikelwe ezinguqukweni, ngakho ayikwazi ukumakwa.
+viewer-marks-save-failed = Ikhophi emakiwe ayikwazanga ukulondolozwa.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = Londoloza amamaki akho?
+viewer-marks-unsaved-text = Amamaki akho kule PDF awakalondolozwa. Aya kukhophi; okunamathiselwe uqobo kuhlala kunjengoba kwakunjalo.
+viewer-marks-discard = Lahla
+viewer-marks-keep = Qhubeka umaka
+viewer-marks-save = Londoloza ikhophi
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (emakiwe)

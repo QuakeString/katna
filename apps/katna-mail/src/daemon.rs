@@ -198,6 +198,18 @@ pub struct AccountState {
     pub sign_in: Option<OAuthProvider>,
 }
 
+impl AccountState {
+    /// The provider to sign in with to fix it: the account's own, or the
+    /// one a password account has to switch to (`USE_SIGN_IN`).
+    pub fn provider(&self) -> Option<OAuthProvider> {
+        self.sign_in.or_else(|| {
+            (self.state == katna_dbus::calendar_state::USE_SIGN_IN)
+                .then(|| self.detail.parse().ok())
+                .flatten()
+        })
+    }
+}
+
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
     katna_dbus::session()
