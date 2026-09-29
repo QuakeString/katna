@@ -259,6 +259,9 @@ pub struct Daemon {
     notes_wake: (Sender<AccountId>, Receiver<AccountId>),
     /// Wakes the contacts sync.
     contacts_wake: (Sender<()>, Receiver<()>),
+    /// Where each account's contacts sync stands: a
+    /// `katna_dbus::contacts_state` and a detail.
+    contacts_status: Mutex<HashMap<AccountId, (&'static str, String)>>,
     /// The languages Katna Server translates between, once asked.
     translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
@@ -321,6 +324,7 @@ impl Daemon {
             tracking_wake: async_channel::bounded(1),
             notes_wake: async_channel::unbounded(),
             contacts_wake: async_channel::bounded(1),
+            contacts_status: Mutex::default(),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
             updates: crate::updates::Updates::default(),

@@ -29,6 +29,7 @@ mod calendar;
 mod colors;
 mod compose;
 mod contact;
+mod contacts_accounts;
 mod contacts_csv;
 mod contacts_edit;
 mod contacts_io;

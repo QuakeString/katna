@@ -183,6 +183,19 @@ pub mod calendar_state {
     pub const NONE: &str = "none";
 }
 
+/// Where an account's contacts sync stands, as `ContactsStatus` reports it.
+pub mod contacts_state {
+    /// Synced, or about to be.
+    pub const OK: &str = "ok";
+    /// The account's sign-in or password did not let Katna into its
+    /// contacts: sign in again (OAuth2), or check the password.
+    pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
+    /// The last sync failed; the detail says why. It is tried again.
+    pub const ERROR: &str = "error";
+    /// The account has no address book Katna can reach.
+    pub const NONE: &str = "none";
+}
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -671,6 +684,11 @@ macro_rules! pim_proxy {
             /// Where each account's calendar sync stands: its ID, a
             /// [`calendar_state`] and a detail for people (may be empty).
             fn calendar_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
+
+            /// Where each account's contacts sync stands: its ID, a
+            /// [`contacts_state`] and a detail for people (may be empty).
+            /// `ContactsChanged` is sent when one changes.
+            fn contacts_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
 
             /// Adds, changes, deletes or restores events, or answers an
             /// invitation: `json` is a `katna_store::calendar::EventChange`

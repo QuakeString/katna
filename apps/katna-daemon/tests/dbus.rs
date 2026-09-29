@@ -2554,3 +2554,31 @@ fn imports_contacts_with_their_labels() {
         instance.shutdown().await;
     });
 }
+
+#[test]
+fn every_mail_account_has_a_contacts_status() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let local = store
+        .add_account(AccountKind::Local, "enron", "enron@local")
+        .unwrap()
+        .id;
+    let alice = store
+        .add_account(AccountKind::Imap, "Alice", "alice@katna.test")
+        .unwrap()
+        .id;
+    drop(store);
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let pim = PimProxy::new(&bus.connect().await).await.unwrap();
+        let status = pim.contacts_status().await.unwrap();
+        let of =
+            |id: katna_core::AccountId| status.iter().find(|s| s.0 == id.0).map(|s| s.1.as_str());
+        // Not synced yet: about to be, and nothing for a mail archive.
+        assert_eq!(of(alice), Some(katna_dbus::contacts_state::OK));
+        assert_eq!(of(local), Some(katna_dbus::contacts_state::NONE));
+        instance.shutdown().await;
+    });
+}
