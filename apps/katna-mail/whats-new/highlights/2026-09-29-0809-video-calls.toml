@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Start a video call from a mail"
+text = """
+Right-click a conversation, or open ⋮, and pick Start a video call: the
+call opens, with a new mail to everyone in the conversation carrying its
+link. Gmail accounts use Google Meet; others get a Jitsi Meet room.
+Mail with a Meet, Teams, Zoom, Webex, Jitsi, WhatsApp or Telegram call
+link now shows a Join button.
+"""

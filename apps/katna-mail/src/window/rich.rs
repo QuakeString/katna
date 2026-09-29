@@ -674,6 +674,34 @@ pub(super) fn remote_urls(doc: &Document) -> Vec<String> {
     out
 }
 
+/// The links of `doc` (of text and of pictures), in order, at most
+/// [`MAX_LINKS`]: where its call links are looked for.
+pub(super) fn links(doc: &Document) -> Vec<&str> {
+    fn walk<'a>(blocks: &'a [Block], out: &mut Vec<&'a str>) {
+        for block in blocks {
+            if out.len() >= MAX_LINKS {
+                return;
+            }
+            match block {
+                Block::Box(b) => walk(&b.children, out),
+                Block::Text(t) => out.extend(t.inlines.iter().filter_map(|inline| match inline {
+                    Inline::Text(run) => run.style.link.as_deref(),
+                    Inline::Image(image) => image.link.as_deref(),
+                })),
+                Block::Rule => {}
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(&doc.blocks, &mut out);
+    out.dedup();
+    out.truncate(MAX_LINKS);
+    out
+}
+
+/// At most this many links of a mail are looked at for call links.
+const MAX_LINKS: usize = 500;
+
 /// The SVG pictures `doc` carries, each once, at most [`MAX_DRAWN_SVGS`].
 pub(super) fn carried_svgs(doc: &Document) -> Vec<Arc<[u8]>> {
     let mut out: Vec<Arc<[u8]>> = Vec::new();

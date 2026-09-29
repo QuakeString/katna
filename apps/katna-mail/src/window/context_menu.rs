@@ -393,6 +393,16 @@ impl MailWindow {
                     })),
                 )
                 .child(
+                    plain("context-start-call", "video", &tr!("menu-start-call")).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            let Some(menu) = this.context_menu.take() else {
+                                return;
+                            };
+                            this.start_call_from(Some(menu.key), window, cx);
+                        }),
+                    ),
+                )
+                .child(
                     plain("context-add-note", "notes", &tr!("menu-add-note")).on_click(
                         cx.listener(|this, _, window, cx| {
                             let Some(menu) = this.context_menu.take() else {
