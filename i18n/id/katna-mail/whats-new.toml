@@ -1164,3 +1164,21 @@ saat terbuka: Enter menjawab, Esc membatalkan, dan Tab tetap di
 dalamnya. Di pesan baru, Ctrl+Enter mengirim dari kolom mana pun dan Esc
 menutupnya sambil menyimpan draf.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Tugas di jam desktop Anda"
+text = """
+Klik jam untuk menambahkan tugas dan mencentang tugas yang selesai. Di
+Plasma, klik kanan jam dan pilih Tampilkan Alternatif untuk memilih Jam
+Digital Katna. Di GNOME, kartu Tugas muncul di bawah kalender jam mulai
+login Anda berikutnya.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Halaman lewat keyboard dan dari bilah tugas"
+text = """
+Ctrl+1 hingga Ctrl+5 berpindah antara Email, Kalender, Kontak, Tugas,
+dan Catatan, seperti di Outlook, dan menu Pergi juga mencantumkannya.
+Klik kanan Katna Mail di bilah tugas untuk langsung membuka Kalender
+atau Kontak.
+"""
