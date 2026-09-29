@@ -39,6 +39,12 @@ contacts-account-failed = לא ניתן היה לקרוא את אנשי הקשר
 # $reason is the server's own words, in English.
 contacts-account-error = לא ניתן היה לקרוא את אנשי הקשר: { $reason }
 contacts-account-none = לא נמצא פנקס כתובות
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = לא נמצא פנקס כתובות: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } מציג אנשי קשר רק ל-Katna שמחובר עם { $provider }.
+contacts-account-sign-in-with = התחברות עם { $provider }
 contacts-account-looking = מתבצע חיפוש אנשי קשר…
 contacts-account-try-again = ניסיון נוסף
 contacts-account-try-again-tooltip = בדיקה חוזרת של אנשי הקשר בחשבון הזה עכשיו

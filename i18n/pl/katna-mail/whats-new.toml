@@ -1669,3 +1669,64 @@ odpowiedział serwer, a „Spróbuj ponownie” od razu szuka ich jeszcze raz.
 Konto Gmail lub Outlook dodane z hasłem proponuje zalogowanie się przez
 Google lub Microsoft, czego wymagają ich kalendarze.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Pola wyboru z animowanym zaznaczeniem"
+text = """
+Każde pole wyboru w Katna Mail ma teraz ten sam rozmiar co okrągłe
+przyciski obok. Znacznik rysuje się, gdy je zaznaczasz, i znika, gdy je
+odznaczasz, tak samo w Ustawieniach, na liście poczty, w Kalendarzu,
+Kontaktach, Notatkach i oknach dialogowych.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Krótsze menu prawego przycisku, które zawsze się mieści"
+text = """
+Menu prawego przycisku na liście poczty trzyma codzienne działania na
+górze, a resztę umieszcza w „Dalsze działania” (zadania, notatki,
+spotkania, rozmowy) i „Więcej” (spam, ważność, przypięcie). Otwiera się
+tam, gdzie klikniesz, i nie wychodzi poza okno; w niskim lub wąskim
+oknie podmenu otwiera się w miejscu menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Dlaczego konto nie ma kontaktów"
+text = """
+Gdy kontakty konta się nie pokazują, Kontakty podają teraz, co
+odpowiedział serwer, a „Spróbuj ponownie” od razu szuka ich jeszcze raz.
+Konto Gmail lub Outlook dodane z hasłem proponuje zalogowanie się przez
+Google lub Microsoft, czego wymagają ich kontakty.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Pole wyszukiwania pokazuje, kiedy jest aktywne"
+text = """
+Pole wyszukiwania u góry dostaje obramowanie w kolorze akcentu, gdy w
+nim piszesz, tak jak każde inne pole, a podpowiedź Ctrl+F usuwa się na
+bok, dopóki nie zostawisz go pustego.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Każda lista zadań w zasięgu wzroku"
+text = """
+„Wszystkie zadania” pokazuje teraz obok siebie tyle list, ile mieści się
+w oknie, z kolejnymi rzędami poniżej, więc do każdej listy da się
+dotrzeć. Nowa lista przewija się do widoku, gdy tylko ją utworzysz.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Płynne przechodzenie między załącznikami"
+text = """
+Przechodzenie strzałkami do następnego lub poprzedniego załącznika w
+przeglądarce już nie migocze. Przeglądarka pozostaje otwarta, a następny
+plik zajmuje miejsce poprzedniego, gdy tylko jest gotowy.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Przeciągaj notatki, aby ułożyć je po swojemu"
+text = """
+Przeciągnij notatkę na tablicy Notatek, aby ją przenieść, jak w Keep.
+Pozostałe notatki płynnie odsuwają się, robiąc miejsce, a ona zostaje
+tam, gdzie ją upuścisz. Ctrl+Z przywraca ją na miejsce. Karty układają
+się teraz ciasno w kolumnach, bez przerw pod krótkimi notatkami.
+"""

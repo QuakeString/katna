@@ -39,6 +39,12 @@ contacts-account-failed = 연락처를 읽을 수 없습니다.
 # $reason is the server's own words, in English.
 contacts-account-error = 연락처를 읽을 수 없습니다: { $reason }
 contacts-account-none = 주소록을 찾을 수 없음
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = 주소록을 찾을 수 없음: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider }에서는 { $provider }로 로그인한 Katna에만 연락처를 보여 줍니다.
+contacts-account-sign-in-with = { $provider }로 로그인
 contacts-account-looking = 연락처를 찾는 중…
 contacts-account-try-again = 다시 시도
 contacts-account-try-again-tooltip = 지금 이 계정의 연락처를 다시 확인

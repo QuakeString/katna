@@ -39,6 +39,12 @@ contacts-account-failed = ບໍ່ສາມາດອ່ານລາຍຊື່
 # $reason is the server's own words, in English.
 contacts-account-error = ບໍ່ສາມາດອ່ານລາຍຊື່ຜູ້ຕິດຕໍ່ໄດ້: { $reason }
 contacts-account-none = ບໍ່ພົບສະໝຸດທີ່ຢູ່
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = ບໍ່ພົບສະໝຸດທີ່ຢູ່: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } ສະແດງລາຍຊື່ຜູ້ຕິດຕໍ່ສະເພາະໃຫ້ Katna ທີ່ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ເທົ່ານັ້ນ.
+contacts-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 contacts-account-looking = ກຳລັງຊອກຫາລາຍຊື່ຜູ້ຕິດຕໍ່…
 contacts-account-try-again = ລອງໃໝ່
 contacts-account-try-again-tooltip = ກວດເບິ່ງລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງບັນຊີນີ້ອີກຄັ້ງດຽວນີ້

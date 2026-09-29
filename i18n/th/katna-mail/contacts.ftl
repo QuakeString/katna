@@ -39,6 +39,12 @@ contacts-account-failed = อ่านรายชื่อติดต่อไ
 # $reason is the server's own words, in English.
 contacts-account-error = อ่านรายชื่อติดต่อไม่ได้: { $reason }
 contacts-account-none = ไม่พบสมุดที่อยู่
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = ไม่พบสมุดที่อยู่: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } จะแสดงรายชื่อติดต่อให้เฉพาะ Katna ที่ลงชื่อเข้าใช้ด้วย { $provider } เท่านั้น
+contacts-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
 contacts-account-looking = กำลังค้นหารายชื่อติดต่อ…
 contacts-account-try-again = ลองอีกครั้ง
 contacts-account-try-again-tooltip = ตรวจสอบรายชื่อติดต่อของบัญชีนี้อีกครั้งตอนนี้

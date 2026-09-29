@@ -39,6 +39,12 @@ contacts-account-failed = Hindi mabasa ang mga contact.
 # $reason is the server's own words, in English.
 contacts-account-error = Hindi mabasa ang mga contact: { $reason }
 contacts-account-none = Walang nakitang address book
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Walang nakitang address book: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = Ipinapakita lang ng { $provider } ang mga contact sa Katna kapag naka-sign in gamit ang { $provider }.
+contacts-account-sign-in-with = Mag-sign in gamit ang { $provider }
 contacts-account-looking = Naghahanap ng mga contact…
 contacts-account-try-again = Subukang muli
 contacts-account-try-again-tooltip = Suriin muli ngayon ang mga contact ng account na ito

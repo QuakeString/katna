@@ -39,6 +39,12 @@ contacts-account-failed = ਸੰਪਰਕ ਪੜ੍ਹੇ ਨਹੀਂ ਜਾ �
 # $reason is the server's own words, in English.
 contacts-account-error = ਸੰਪਰਕ ਪੜ੍ਹੇ ਨਹੀਂ ਜਾ ਸਕੇ: { $reason }
 contacts-account-none = ਕੋਈ ਪਤਾ ਕਿਤਾਬ ਨਹੀਂ ਮਿਲੀ
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = ਕੋਈ ਪਤਾ ਕਿਤਾਬ ਨਹੀਂ ਮਿਲੀ: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } ਸਿਰਫ਼ { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਕੀਤੇ Katna ਨੂੰ ਹੀ ਸੰਪਰਕ ਦਿਖਾਉਂਦਾ ਹੈ।
+contacts-account-sign-in-with = { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ
 contacts-account-looking = ਸੰਪਰਕ ਲੱਭ ਰਿਹਾ ਹੈ…
 contacts-account-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
 contacts-account-try-again-tooltip = ਇਸ ਖਾਤੇ ਦੇ ਸੰਪਰਕ ਹੁਣੇ ਦੁਬਾਰਾ ਜਾਂਚੋ

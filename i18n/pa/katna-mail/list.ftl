@@ -387,6 +387,12 @@ menu-add-note = ਨੋਟ ਜੋੜੋ
 menu-print-all = ਸਭ ਪ੍ਰਿੰਟ ਕਰੋ
 menu-new-window = ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ
 menu-move-to = ਇੱਥੇ ਭੇਜੋ
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ਅਗਲੀ ਕਾਰਵਾਈ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ਹੋਰ
 menu-move-to-heading = ਇੱਥੇ ਭੇਜੋ:
 menu-find-from = { $name } ਵੱਲੋਂ ਈਮੇਲਾਂ ਲੱਭੋ
 

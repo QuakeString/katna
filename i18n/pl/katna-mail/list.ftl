@@ -492,6 +492,12 @@ menu-add-note = Dodaj notatkę
 menu-print-all = Drukuj wszystko
 menu-new-window = Otwórz w nowym oknie
 menu-move-to = Przenieś do
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Dalsze działania
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Więcej
 menu-move-to-heading = Przenieś do:
 menu-find-from = Znajdź e-maile od { $name }
 

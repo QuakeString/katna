@@ -39,6 +39,12 @@ contacts-account-failed = Nie udało się odczytać kontaktów.
 # $reason is the server's own words, in English.
 contacts-account-error = Nie udało się odczytać kontaktów: { $reason }
 contacts-account-none = Nie znaleziono książki adresowej
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Nie znaleziono książki adresowej: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } pokazuje kontakty tylko aplikacji Katna zalogowanej przez { $provider }.
+contacts-account-sign-in-with = Zaloguj się przez { $provider }
 contacts-account-looking = Szukanie kontaktów…
 contacts-account-try-again = Spróbuj ponownie
 contacts-account-try-again-tooltip = Sprawdź teraz ponownie kontakty tego konta

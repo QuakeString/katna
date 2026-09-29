@@ -1679,3 +1679,65 @@ Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
 aan om aan te melden met Google of Microsoft, wat hun agenda’s nodig
 hebben.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Selectievakjes die afvinken"
+text = """
+Elk selectievakje in Katna Mail is nu even groot als de ronde knoppen
+ernaast. Het vinkje tekent zich wanneer je het aanvinkt en veegt weg
+wanneer je het uitvinkt, in Instellingen, de e-maillijst, Agenda,
+Contacten, Notities en dialoogvensters.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Een korter rechtsklikmenu dat altijd past"
+text = """
+Het rechtsklikmenu van de e-maillijst houdt de dagelijkse acties
+bovenaan en zet de rest onder “Opvolgen” (taken, notities,
+vergaderingen, gesprekken) en “Meer” (spam, belangrijk, vastzetten). Het
+opent waar je klikt en blijft binnen het venster; in een laag of smal
+venster opent een submenu op de plek van het menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Waarom een account geen contacten heeft"
+text = """
+Als de contacten van een account niet verschijnen, zegt Contacten nu wat
+de server antwoordde, en “Opnieuw proberen” zoekt meteen opnieuw. Een
+Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
+aan om aan te melden met Google of Microsoft, wat hun contacten nodig
+hebben.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Het zoekvak laat zien wanneer het actief is"
+text = """
+Het zoekvak bovenaan krijgt een rand in de accentkleur terwijl je erin
+typt, net als elk ander veld, en de hint Ctrl+F gaat opzij totdat je het
+leeg laat.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Elke takenlijst in beeld"
+text = """
+“Alle taken” toont nu zoveel lijsten naast elkaar als in het venster
+passen, met meer rijen eronder, zodat je elke lijst kunt bereiken. Een
+nieuwe lijst schuift in beeld zodra je hem maakt.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Soepel bladeren tussen bijlagen"
+text = """
+Naar de volgende of vorige bijlage gaan in de viewer met de pijlen
+flikkert niet meer. De viewer blijft open en het volgende bestand neemt
+de plaats van het vorige in zodra het klaar is.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Notities op volgorde slepen"
+text = """
+Sleep een notitie op het bord van Notities om hem te verplaatsen, zoals
+in Keep. De andere notities schuiven opzij om plaats te maken, en hij
+blijft waar je hem loslaat. Ctrl+Z zet hem terug. Kaarten sluiten nu
+netjes aan in hun kolommen, zonder gaten onder korte notities.
+"""

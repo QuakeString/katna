@@ -1546,3 +1546,45 @@ title = "Dalilin da asusu ba shi da kalandoji"
 text = """
 Idan kalandojin wani asusu ba su bayyana ba, Kalanda yanzu yana faɗin abin da sabar ta amsa, kuma Sake gwadawa yana sake nemansu nan take. Asusun Gmail ko Outlook da aka ƙara da kalmar sirri yana ba da damar shiga da Google ko Microsoft, abin da kalandojinsa ke buƙata.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Akwatunan zaɓi masu alamar tabbatarwa"
+text = """
+Kowane akwatin zaɓi a Katna Mail yanzu girmansa daidai yake da maɓallan zagaye da ke kusa da shi. Alamarsa tana zana kanta idan ka zaɓa kuma tana gogewa idan ka cire, a Saituna, jerin wasiƙu, Kalanda, Lambobin sadarwa, Bayanai da akwatunan maganganu duka.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Gajeren menu na danna dama wanda koyaushe yake dacewa"
+text = """
+Menu na danna dama na jerin wasiƙu yana ajiye ayyukan yau da kullum a sama kuma yana sa sauran a ƙarƙashin Bibiya (ayyuka, bayanai, taruka, kira) da Ƙari (saƙon banza, muhimmanci, maƙala). Yana buɗewa inda ka danna kuma yana zama a cikin taga; a gajeriyar taga ko ƙunƙuntar taga, ƙaramin menu yana buɗewa a wurin menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Dalilin da asusu ba shi da lambobin sadarwa"
+text = """
+Idan lambobin sadarwar wani asusu ba su bayyana ba, Lambobin sadarwa yanzu yana faɗin abin da sabar ta amsa, kuma Sake gwadawa yana sake nemansu nan take. Asusun Gmail ko Outlook da aka ƙara da kalmar sirri yana ba da damar shiga da Google ko Microsoft, abin da lambobin sadarwarsa ke buƙata.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Akwatin bincike yana nuna lokacin da yake aiki"
+text = """
+Akwatin bincike a sama yana samun gefe mai launi yayin da kake rubutu a cikinsa, kamar kowane fili, kuma alamar Ctrl+F ɗinsa tana kawar da kai har sai ka bar shi babu komai.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Kowane jerin ayyuka a gani"
+text = """
+Duk ayyuka yanzu yana nuna jeri da yawa gefe da gefe gwargwadon abin da taga ke ɗauka, tare da ƙarin layuka a ƙasa, don a iya kaiwa ga kowane jeri. Sabon jeri yana gungurawa zuwa gani da zarar ka ƙirƙira shi.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Sauyawa cikin sauƙi tsakanin abubuwan haɗawa"
+text = """
+Zuwa abin haɗawa na gaba ko na baya a cikin mai dubawa da kibiyoyi ba ya ƙyalƙyali kuma. Mai dubawa yana nan a buɗe kuma fayil na gaba yana maye gurbin na baya da zarar ya shirya.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Ja bayanai don tsara su"
+text = """
+Ja bayani a kan allon Bayanai don matsar da shi, kamar a Keep. Sauran bayanai suna zamewa gefe don ba da wuri, kuma yana zama inda ka sake shi. Ctrl+Z yana mayar da shi. Katuna yanzu suna zaune daidai a cikin ginshiƙansu, ba tare da gibi a ƙarƙashin gajerun bayanai ba.
+"""

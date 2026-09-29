@@ -1693,3 +1693,65 @@ memberitahu jawapan pelayan, dan “Cuba lagi” terus mencarinya semula.
 Akaun Gmail atau Outlook yang ditambah dengan kata laluan menawarkan log
 masuk dengan Google atau Microsoft, yang diperlukan oleh kalendarnya.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kotak semak yang menanda"
+text = """
+Setiap kotak semak dalam Katna Mail kini sama saiz dengan butang bulat
+di sebelahnya. Tandanya terlukis apabila anda menandanya dan terpadam
+apabila anda mengosongkannya, dalam Tetapan, senarai mel, Kalendar,
+Kenalan, Nota dan dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu klik kanan yang lebih pendek dan sentiasa muat"
+text = """
+Menu klik kanan senarai mel mengekalkan tindakan harian di atas dan
+meletakkan yang lain di bawah “Susulan” (tugas, nota, mesyuarat,
+panggilan) dan “Lagi” (spam, kepentingan, semat). Ia dibuka di tempat
+anda klik dan kekal di dalam tetingkap; dalam tetingkap yang pendek atau
+sempit, submenu dibuka di tempat menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Mengapa akaun tiada kenalan"
+text = """
+Apabila kenalan sesuatu akaun tidak dipaparkan, Kenalan kini memberitahu
+jawapan pelayan, dan “Cuba lagi” terus mencarinya semula. Akaun Gmail
+atau Outlook yang ditambah dengan kata laluan menawarkan log masuk
+dengan Google atau Microsoft, yang diperlukan oleh kenalannya.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Kotak carian menunjukkan bila ia aktif"
+text = """
+Kotak carian di bahagian atas mendapat tepi berwarna aksen semasa anda
+menaip di dalamnya, seperti setiap medan lain, dan petunjuk Ctrl+F nya
+beralih ke tepi sehingga anda membiarkannya kosong.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Setiap senarai tugas kelihatan"
+text = """
+“Semua tugasan” kini menunjukkan seberapa banyak senarai bersebelahan
+yang muat dalam tetingkap, dengan lebih banyak baris di bawah, jadi
+setiap senarai boleh dicapai. Senarai baharu menatal ke dalam paparan
+sebaik sahaja anda membuatnya.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Beralih antara lampiran dengan lancar"
+text = """
+Pergi ke lampiran seterusnya atau sebelumnya dalam pemapar dengan anak
+panah tidak lagi berkelip. Pemapar kekal terbuka dan fail seterusnya
+menggantikan fail terakhir sebaik sahaja ia sedia.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Seret nota untuk menyusunnya"
+text = """
+Seret nota pada papan Nota untuk mengalihkannya, seperti dalam Keep.
+Nota lain meluncur ke tepi untuk memberi ruang, dan ia kekal di tempat
+anda melepaskannya. Ctrl+Z mengembalikannya. Kad kini tersusun rapat
+dalam lajurnya, tanpa ruang kosong di bawah nota pendek.
+"""

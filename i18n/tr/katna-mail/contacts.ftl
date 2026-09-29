@@ -39,6 +39,12 @@ contacts-account-failed = Kişiler okunamadı.
 # $reason is the server's own words, in English.
 contacts-account-error = Kişiler okunamadı: { $reason }
 contacts-account-none = Adres defteri bulunamadı
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Adres defteri bulunamadı: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider }, kişileri yalnızca { $provider } ile oturum açmış Katna'ya gösterir.
+contacts-account-sign-in-with = { $provider } ile oturum aç
 contacts-account-looking = Kişiler aranıyor…
 contacts-account-try-again = Tekrar dene
 contacts-account-try-again-tooltip = Bu hesabın kişilerini şimdi yeniden denetle

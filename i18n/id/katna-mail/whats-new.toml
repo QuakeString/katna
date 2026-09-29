@@ -1682,3 +1682,65 @@ jawaban server, dan Coba lagi langsung mencarinya lagi. Akun Gmail atau
 Outlook yang ditambahkan dengan sandi menawarkan untuk masuk dengan
 Google atau Microsoft, yang dibutuhkan kalendernya.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kotak centang yang mencentang"
+text = """
+Setiap kotak centang di Katna Mail kini seukuran tombol bulat di
+sampingnya. Centangnya tergambar saat Anda mencentangnya dan terhapus
+saat Anda mengosongkannya, di Setelan, daftar email, Kalender, Kontak,
+Catatan, maupun dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu klik kanan yang lebih pendek dan selalu muat"
+text = """
+Menu klik kanan daftar email menaruh tindakan sehari-hari di atas dan
+sisanya di bawah Tindak lanjut (tugas, catatan, rapat, panggilan) dan
+Lainnya (spam, penting, sematkan). Menu terbuka di tempat Anda mengklik
+dan tetap di dalam jendela; di jendela yang pendek atau sempit, submenu
+terbuka di tempat menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Mengapa akun tidak punya kontak"
+text = """
+Jika kontak sebuah akun tidak muncul, Kontak kini memberi tahu jawaban
+server, dan Coba lagi langsung mencarinya lagi. Akun Gmail atau Outlook
+yang ditambahkan dengan sandi menawarkan untuk masuk dengan Google atau
+Microsoft, yang dibutuhkan kontaknya.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Kotak penelusuran menunjukkan saat aktif"
+text = """
+Kotak penelusuran di atas kini mendapat tepi aksen saat Anda mengetik di
+dalamnya, seperti kolom lainnya, dan petunjuk Ctrl+F-nya menyingkir
+sampai Anda mengosongkannya.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Setiap daftar tugas terlihat"
+text = """
+Semua tugas kini menampilkan daftar berdampingan sebanyak yang muat di
+jendela, dengan baris lain di bawahnya, sehingga setiap daftar bisa
+dijangkau. Daftar baru langsung bergulir ke tampilan begitu Anda
+membuatnya.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Berpindah antarlampiran dengan mulus"
+text = """
+Berpindah ke lampiran berikutnya atau sebelumnya di penampil dengan
+tombol panah tidak lagi berkedip. Penampil tetap terbuka dan file
+berikutnya menggantikan yang sebelumnya begitu siap.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Seret catatan untuk mengurutkannya"
+text = """
+Seret catatan di papan Catatan untuk memindahkannya, seperti di Keep.
+Catatan lain bergeser memberi ruang, dan catatan itu tetap di tempat
+Anda melepaskannya. Ctrl+Z mengembalikannya. Kartu kini tersusun rapat
+di kolomnya, tanpa celah di bawah catatan pendek.
+"""

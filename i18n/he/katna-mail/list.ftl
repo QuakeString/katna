@@ -437,6 +437,12 @@ menu-add-note = הוספת הערה
 menu-print-all = הדפסת הכול
 menu-new-window = פתיחה בחלון חדש
 menu-move-to = העברה אל
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = מעקב
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = עוד
 menu-move-to-heading = העברה אל:
 menu-find-from = חיפוש הודעות מאת { $name }
 

@@ -2131,7 +2131,15 @@ Gemini or confidential mode):
   narrow for a submenu beside it, or too short for the whole menu, a
   submenu opens in its place under a row back. In a short window its
   items first come closer together (36 px down to 28 px), and only then
-  does the menu scroll. The "select all
+  does the menu scroll; a long submenu does the same. The Calendar page
+  has right-click menus in the same card (`calendar/menu.rs`): on a free
+  time or day (a new event, focus time or out of office there, and Open
+  day), on an event (details, edit, duplicate, delete, Going?, join,
+  email guests, Google's eleven colors and Move to another calendar,
+  the browser or the contact) and on a task (details, done, star, Date:
+  today, tomorrow, in a week, all day or no date, and delete). Changes
+  go through the same paths as the event card and the Tasks page, so a
+  repeating event asks which occurrences and each change has Undo. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.

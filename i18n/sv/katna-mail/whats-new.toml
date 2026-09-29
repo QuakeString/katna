@@ -1646,3 +1646,64 @@ svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
 Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
 eller Microsoft, vilket deras kalendrar kräver.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kryssrutor som bockas i"
+text = """
+Varje kryssruta i Katna Mail är nu lika stor som de runda knapparna
+bredvid. Bocken ritas fram när du markerar rutan och suddas bort när du
+avmarkerar den, i Inställningar, e-postlistan, Kalender, Kontakter,
+Anteckningar och dialogrutor.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "En kortare högerklicksmeny som alltid får plats"
+text = """
+E-postlistans högerklicksmeny har de vardagliga åtgärderna överst och
+lägger resten under Följ upp (uppgifter, anteckningar, möten, samtal)
+och Mer (skräppost, viktigt, fäst). Den öppnas där du klickar och håller
+sig inom fönstret; i ett lågt eller smalt fönster öppnas en undermeny i
+menyns ställe.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Varför ett konto saknar kontakter"
+text = """
+När ett kontos kontakter inte visas säger Kontakter nu vad servern
+svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
+Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
+eller Microsoft, vilket deras kontakter kräver.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Sökrutan visar när den är aktiv"
+text = """
+Sökrutan högst upp får en accentkant medan du skriver i den, precis som
+alla andra fält, och dess Ctrl+F-tips flyttar undan tills du lämnar den
+tom.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Alla uppgiftslistor syns"
+text = """
+”Alla uppgifter” visar nu så många listor sida vid sida som får plats i
+fönstret, med fler rader nedanför, så att varje lista går att nå. En ny
+lista rullas fram så fort du skapar den.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Mjuk bläddring mellan bilagor"
+text = """
+Att gå till nästa eller föregående bilaga i visaren med pilarna flimrar
+inte längre. Visaren förblir öppen och nästa fil tar den förras plats så
+snart den är klar.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Dra anteckningar i ordning"
+text = """
+Dra en anteckning på tavlan i Anteckningar för att flytta den, som i
+Keep. De andra anteckningarna glider undan för att ge plats, och den
+stannar där du släpper den. Ctrl+Z lägger tillbaka den. Korten sitter nu
+tätt i sina kolumner, utan luckor under korta anteckningar.
+"""

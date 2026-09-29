@@ -1739,3 +1739,67 @@ agad ng Subukang muli ang mga ito. Nag-aalok ang Gmail o Outlook account
 na idinagdag gamit ang password na mag-sign in gamit ang Google o
 Microsoft, na kailangan ng mga kalendaryo nito.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Mga checkbox na may tsek"
+text = """
+Kasinlaki na ngayon ng mga bilog na button sa tabi nito ang bawat
+checkbox sa Katna Mail. Kusang iginuguhit ang tsek nito kapag chineck mo
+at nabubura kapag inalis mo, sa Mga setting, sa listahan ng mail,
+Kalendaryo, Mga Contact, Mga Tala at mga dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Mas maikling right-click menu na laging kasya"
+text = """
+Pinapanatili ng right-click menu ng listahan ng mail sa itaas ang mga
+pang-araw-araw na aksyon at inilalagay ang iba sa ilalim ng I-follow up
+(mga gawain, tala, pulong, tawag) at Iba pa (spam, kahalagahan, pin).
+Bumubukas ito kung saan ka nag-click at nananatili sa loob ng window; sa
+maikli o makitid na window, bumubukas ang submenu sa puwesto ng menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Kung bakit walang contact ang isang account"
+text = """
+Kapag hindi lumalabas ang mga contact ng isang account, sinasabi na
+ngayon ng Mga Contact kung ano ang sagot ng server, at hinahanap muli
+agad ng Subukang muli ang mga ito. Nag-aalok ang Gmail o Outlook account
+na idinagdag gamit ang password na mag-sign in gamit ang Google o
+Microsoft, na kailangan ng mga contact nito.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Makikita kung aktibo ang search box"
+text = """
+Nagkakaroon na ng accent na gilid ang search box sa itaas habang
+nagta-type ka rito, gaya ng ibang field, at umaalis sa daan ang Ctrl+F
+na hint nito hanggang iwan mo itong walang laman.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Nakikita ang bawat listahan ng gawain"
+text = """
+Ipinapakita na ngayon ng Lahat ng gawain ang pinakamaraming listahang
+magkakatabi na kasya sa window, may iba pang hilera sa ibaba, kaya
+maaabot ang bawat listahan. Agad na nag-i-scroll papunta sa view ang
+bagong listahan pagkagawa mo nito.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Maayos na paglipat sa pagitan ng mga attachment"
+text = """
+Hindi na kumikislap ang paglipat sa susunod o nakaraang attachment sa
+viewer gamit ang mga arrow. Nananatiling bukas ang viewer at pinapalitan
+ng susunod na file ang nauna sa sandaling handa na ito.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "I-drag ang mga tala para ayusin"
+text = """
+I-drag ang isang tala sa board ng Mga Tala para ilipat ito, gaya sa
+Keep. Dumudulas sa gilid ang ibang tala para magbigay-puwang, at
+nananatili ito kung saan mo ito binitawan. Ibinabalik ito ng Ctrl+Z.
+Siksik na ngayon ang mga card sa kanilang mga column, walang puwang sa
+ilalim ng maiikling tala.
+"""

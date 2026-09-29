@@ -39,6 +39,12 @@ contacts-account-failed = தொடர்புகளைப் படிக்�
 # $reason is the server's own words, in English.
 contacts-account-error = தொடர்புகளைப் படிக்க முடியவில்லை: { $reason }
 contacts-account-none = முகவரிப் புத்தகம் எதுவும் இல்லை
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = முகவரிப் புத்தகம் எதுவும் இல்லை: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } மூலம் உள்நுழைந்த Katna-வுக்கு மட்டுமே { $provider } தொடர்புகளைக் காட்டும்.
+contacts-account-sign-in-with = { $provider } மூலம் உள்நுழை
 contacts-account-looking = தொடர்புகளைத் தேடுகிறது…
 contacts-account-try-again = மீண்டும் முயல்க
 contacts-account-try-again-tooltip = இந்தக் கணக்கின் தொடர்புகளை இப்போது மீண்டும் சரிபார்
