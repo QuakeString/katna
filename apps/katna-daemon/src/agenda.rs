@@ -16,6 +16,7 @@ use std::sync::Arc;
 use jiff::tz::TimeZone;
 use katna_core::{Paths, ids};
 use katna_dbus::agenda::{Item, edit, event, task};
+use katna_dbus::app_action;
 use katna_store::tasks::{Task, TaskFields};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -103,6 +104,19 @@ fn task_id(id: &str) -> Result<i64, CommandError> {
     id.strip_prefix(TASK_ID)
         .and_then(|n| n.parse().ok())
         .ok_or_else(|| CommandError::InvalidArgs(format!("not a task ID: {id:?}")))
+}
+
+/// Katna Mail's page (`app_action::OPEN_PAGE`) for the event or task
+/// with wire ID `id`: the Calendar on the day the occurrence starts in
+/// `tz`, or the task on the Tasks page.
+fn page_for(id: &str, tz: &TimeZone) -> Option<String> {
+    if let Some(event) = id.strip_prefix(EVENT_ID) {
+        let (_, start) = event.split_once(':')?;
+        let start = jiff::Timestamp::from_second(start.parse().ok()?).ok()?;
+        let day = start.to_zoned(tz.clone()).date().to_string();
+        return Some(app_action::calendar_page(&day, false));
+    }
+    task_id(id).ok().map(|row| format!("tasks:{row}"))
 }
 
 /// A title, trimmed to one line; not empty and not too long.
@@ -528,9 +542,44 @@ macro_rules! agenda_interface {
                 Ok(())
             }
 
-            /// Katna has no calendar or tasks page yet to show one in.
-            async fn open(&self, _id: String) -> bool {
-                false
+            async fn open(
+                &self,
+                #[zbus(connection)] connection: &zbus::Connection,
+                id: String,
+            ) -> bool {
+                let Some(page) = page_for(&id, &TimeZone::system()) else {
+                    return false;
+                };
+                tracing::info!(id, "opening in Katna");
+                crate::mail_app::run(
+                    connection,
+                    Some(app_action::OPEN_PAGE),
+                    vec![Value::from(page)],
+                    None,
+                )
+                .await;
+                true
+            }
+
+            async fn new_event(
+                &self,
+                #[zbus(connection)] connection: &zbus::Connection,
+                day: String,
+            ) -> fdo::Result<()> {
+                if day.is_empty() {
+                    return Err(
+                        CommandError::InvalidArgs("a new event needs a day".to_owned()).into(),
+                    );
+                }
+                let day = self::due(&day)?;
+                crate::mail_app::run(
+                    connection,
+                    Some(app_action::OPEN_PAGE),
+                    vec![Value::from(app_action::calendar_page(day, true))],
+                    None,
+                )
+                .await;
+                Ok(())
             }
 
             #[zbus(signal)]
@@ -551,6 +600,20 @@ mod tests {
         assert!(task_id("42").is_err());
         assert!(task_id("tx").is_err());
         assert!(task_id("e42").is_err());
+    }
+
+    #[test]
+    fn events_open_on_their_day_and_tasks_on_their_page() {
+        let tz = TimeZone::fixed(jiff::tz::offset(5));
+        // 2026-09-29 20:00 UTC is already the 30th at UTC+5.
+        assert_eq!(
+            page_for("e7:1790712000", &tz).as_deref(),
+            Some("calendar:2026-09-30")
+        );
+        assert_eq!(page_for("t42", &tz).as_deref(), Some("tasks:42"));
+        assert_eq!(page_for("e7", &tz), None);
+        assert_eq!(page_for("e7:soon", &tz), None);
+        assert_eq!(page_for("x1", &tz), None);
     }
 
     #[test]

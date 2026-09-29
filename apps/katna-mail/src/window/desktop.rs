@@ -274,20 +274,39 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
-            // `tasks:<id>` opens that task on the Tasks page.
+            // `calendar:<day>` shows that day on the Calendar page (with
+            // `:new`, a new event on it); `tasks:<id>` opens that task.
             Request::Page(page) => {
-                let (key, task) = match page.split_once(':') {
-                    Some((key, id)) => (key, id.parse::<i64>().ok()),
-                    None => (page.as_str(), None),
+                let (name, detail, new_event) = app_action::page_parts(&page);
+                let Some(app) = RailApp::from_key(name) else {
+                    tracing::warn!(page, "unknown page");
+                    return;
                 };
-                match RailApp::from_key(key) {
-                    Some(app) => {
-                        self.show_page(app, window, cx);
-                        if let (RailApp::Tasks, Some(id)) = (app, task) {
+                self.show_page(app, window, cx);
+                match app {
+                    RailApp::Calendar => {
+                        if let Some(day) =
+                            detail.and_then(|day| day.parse::<jiff::civil::Date>().ok())
+                        {
+                            self.open_calendar_on(day, cx);
+                            if new_event {
+                                // The page reads its calendars in the
+                                // background; the new event needs them now.
+                                if self.calendar.calendars.is_empty() {
+                                    self.calendar.calendars = std::rc::Rc::new(
+                                        super::calendar::read_calendars(&self.paths),
+                                    );
+                                }
+                                self.create_event_key(window, cx);
+                            }
+                        }
+                    }
+                    RailApp::Tasks => {
+                        if let Some(id) = detail.and_then(|id| id.parse::<i64>().ok()) {
                             self.task_open_when_read(id, window, cx);
                         }
                     }
-                    None => tracing::warn!(page, "unknown page"),
+                    _ => {}
                 }
             }
             Request::Action { name, message } => match name.as_str() {
