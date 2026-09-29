@@ -572,9 +572,12 @@ impl MailWindow {
     fn close_calendar_event(
         &mut self,
         _: &CalendarCloseEvent,
-        _: &mut Window,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.cancel_calendar_set(window, cx) {
+            return;
+        }
         let card = self.calendar.open.take().is_some();
         // Esc goes back to search results put away.
         let search = &mut self.calendar.search;
