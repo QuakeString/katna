@@ -481,6 +481,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn calendar_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -548,6 +551,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
                 }
                 PimService::calendar_changed(&emitter).await
             }
+            Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
         };
         if let Err(err) = sent {

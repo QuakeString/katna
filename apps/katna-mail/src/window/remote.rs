@@ -317,7 +317,7 @@ fn photo(picture: Arc<gpui::Image>, size: f32) -> AnyElement {
 }
 
 /// A sender's logo, already made to fill its circle.
-fn logo(picture: Arc<RenderImage>, size: f32) -> AnyElement {
+pub(super) fn logo(picture: Arc<RenderImage>, size: f32) -> AnyElement {
     img(picture)
         .size(px(size))
         .flex_none()
@@ -328,7 +328,7 @@ fn logo(picture: Arc<RenderImage>, size: f32) -> AnyElement {
 /// A sender picture as the daemon sent it, made to fill a circle: its
 /// margin trimmed, and cropped to the circle or put on a disc of its own
 /// background (see [`katna_preview::avatar`]).
-fn sender_logo(bytes: Vec<u8>) -> Option<Arc<RenderImage>> {
+pub(super) fn sender_logo(bytes: Vec<u8>) -> Option<Arc<RenderImage>> {
     let square = match ImageKind::sniff(&bytes)? {
         ImageKind::Svg => katna_preview::avatar::from_svg(&bytes),
         _ => katna_preview::avatar::from_bytes(&bytes),
@@ -485,6 +485,10 @@ impl MailWindow {
     pub(super) fn person_avatar(&self, name: &str, email: &str, size: f32) -> AnyElement {
         if let Some(picture) = self.own_picture(email) {
             return photo(picture, size);
+        }
+        // The picture saved with their contact.
+        if let Some(picture) = self.saved_photo(email) {
+            return logo(picture, size);
         }
         if let Some(domain) = domain_of(email)
             .filter(|_| self.config.mail.sender_pictures || self.remote.trusts(email))

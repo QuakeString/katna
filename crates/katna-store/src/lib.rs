@@ -11,6 +11,7 @@ pub mod blob;
 mod cache;
 pub mod calendar;
 mod contact;
+pub mod contacts;
 mod db;
 pub mod error;
 mod gmail_merge;
@@ -41,6 +42,10 @@ pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
 pub use contact::{ContactConversation, ContactFile, ContactSummary};
+pub use contacts::{
+    AddressBook, BookSource, BookState, BookSync, ContactLabel, SavedContact, StoredCard,
+    SyncedContact, SyncedGroup,
+};
 pub use db::{DbKind, Mode};
 pub use error::{Error, Result};
 pub use gmail_merge::Adopted;

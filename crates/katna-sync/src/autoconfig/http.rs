@@ -498,8 +498,8 @@ pub async fn exchange(
     exchange_limited(method, url, headers, body, sent, tls, timeout, MAX_BODY).await
 }
 
-/// Like [`exchange`], taking answers of up to `max_body` bytes: for
-/// calendar sync, whose pages of events can be large.
+/// Like [`exchange`], reading answers of up to `max_body` bytes: for
+/// calendar sync and address books, whose listings can be large.
 #[allow(clippy::too_many_arguments)]
 pub async fn exchange_limited(
     method: &str,
