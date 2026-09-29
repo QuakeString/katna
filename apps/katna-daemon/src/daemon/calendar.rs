@@ -195,12 +195,15 @@ impl Daemon {
                 Err(err) => tracing::warn!(%err, "could not make a calendar on this computer"),
             }
         }
-        smol::spawn(run(Arc::downgrade(self), self.calendars.wake.1.clone())).detach();
-        smol::spawn(send_changes(
-            Arc::downgrade(self),
-            self.calendars.changes.1.clone(),
-        ))
-        .detach();
+        // Their database calls block (crate::threads).
+        crate::threads::detach(
+            "katna-calendars",
+            run(Arc::downgrade(self), self.calendars.wake.1.clone()),
+        );
+        crate::threads::detach(
+            "katna-calendar-changes",
+            send_changes(Arc::downgrade(self), self.calendars.changes.1.clone()),
+        );
     }
 
     /// The service of `account`, made again when what it depends on

@@ -67,14 +67,16 @@ impl Daemon {
             return;
         }
         let daemon = Arc::downgrade(self);
-        smol::spawn(katna_meta::run(wakes, move |now| {
-            let daemon = daemon.upgrade();
-            async move {
-                let daemon = daemon?;
-                daemon.tick(now).await
-            }
-        }))
-        .detach();
+        crate::threads::detach(
+            "katna-scheduler",
+            katna_meta::run(wakes, move |now| {
+                let daemon = daemon.upgrade();
+                async move {
+                    let daemon = daemon?;
+                    daemon.tick(now).await
+                }
+            }),
+        );
     }
 
     /// Has the scheduler look at the clock and the values again.
