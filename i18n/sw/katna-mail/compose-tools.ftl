@@ -103,6 +103,7 @@ compose-tool-remove-link = Ondoa kiungo
 ## More options
 
 compose-tool-full-screen = Fungua kwa skrini nzima kwa chaguomsingi
+compose-tool-video-call = Ongeza simu ya video
 compose-tool-label = Lebo
 compose-tool-label-coming = Lebo kwenye barua zilizotumwa zinakuja hivi karibuni. Weka lebo kwenye ujumbe katika Zilizotumwa baada ya kutumwa.
 compose-tool-plain-mode = Hali ya maandishi matupu

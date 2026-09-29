@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = インポート
 contacts-export = エクスポート
-contacts-import-title = vCard ファイルから連絡先をインポート
+contacts-import-file = vCard または CSV ファイルから連絡先をインポート
 contacts-imported = { $count ->
    *[other] { $place } に { $count } 件の連絡先をインポートしました
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = エクスポートする連絡先がありません
 contacts-export-failed = 連絡先をエクスポートできませんでした: { $error }
+contacts-print = 印刷
+contacts-print-title = 連絡先
+contacts-print-none = 印刷する連絡先がありません
+contacts-print-typed = { $value }（{ $kind }）
+contacts-print-birthday = 誕生日: { $day }
+contacts-print-nickname = ニックネーム: { $name }
 contacts-create = 連絡先を作成
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = 許可
 contacts-back = 連絡先に戻る
 contacts-edit = 編集
 contacts-delete = 削除
+contacts-qr = QR コードで共有
+contacts-qr-about = スマートフォンのカメラでスキャンすると、連絡先を保存できます。
+contacts-qr-too-long = この連絡先は情報が多すぎて QR コードに収まりません。
+contacts-qr-done = 完了
 contacts-deleted = { $name } を削除しました
 contacts-added = { $name } を連絡先に追加しました
 contacts-find-mail = メール

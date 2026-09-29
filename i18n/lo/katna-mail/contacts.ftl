@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ນຳເຂົ້າ
 contacts-export = ສົ່ງອອກ
-contacts-import-title = ນຳເຂົ້າລາຍຊື່ຜູ້ຕິດຕໍ່ຈາກໄຟລ໌ vCard
+contacts-import-file = ນຳເຂົ້າລາຍຊື່ຜູ້ຕິດຕໍ່ຈາກໄຟລ໌ vCard ຫຼື CSV
 contacts-imported = { $count ->
    *[other] ນຳເຂົ້າລາຍຊື່ຜູ້ຕິດຕໍ່ { $count } ລາຍການໄປຍັງ { $place } ແລ້ວ
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ບໍ່ມີລາຍຊື່ຜູ້ຕິດຕໍ່ໃຫ້ສົ່ງອອກ
 contacts-export-failed = ສົ່ງອອກລາຍຊື່ຜູ້ຕິດຕໍ່ບໍ່ໄດ້: { $error }
+contacts-print = ພິມ
+contacts-print-title = ລາຍຊື່ຜູ້ຕິດຕໍ່
+contacts-print-none = ບໍ່ມີລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ຈະພິມ
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = ວັນເກີດ: { $day }
+contacts-print-nickname = ຊື່ຫຼິ້ນ: { $name }
 contacts-create = ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = ອະນຸຍາດ
 contacts-back = ກັບໄປລາຍຊື່ຜູ້ຕິດຕໍ່
 contacts-edit = ແກ້ໄຂ
 contacts-delete = ລຶບ
+contacts-qr = ແບ່ງປັນເປັນລະຫັດ QR
+contacts-qr-about = ສະແກນດ້ວຍກ້ອງຂອງໂທລະສັບເພື່ອບັນທຶກລາຍຊື່ຜູ້ຕິດຕໍ່.
+contacts-qr-too-long = ລາຍຊື່ຜູ້ຕິດຕໍ່ນີ້ມີລາຍລະອຽດຫຼາຍເກີນໄປທີ່ຈະໃສ່ໃນລະຫັດ QR ໄດ້.
+contacts-qr-done = ສຳເລັດ
 contacts-deleted = ລຶບ { $name } ແລ້ວ
 contacts-added = ເພີ່ມ { $name } ໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່ແລ້ວ
 contacts-find-mail = ອີເມວ

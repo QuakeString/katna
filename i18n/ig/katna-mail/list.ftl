@@ -232,6 +232,7 @@ menu-snooze = Yigharịa
 menu-unsnooze = Kagbuo iyigharị
 menu-add-to-tasks = Tinye na Ọrụ
 menu-schedule-meeting = Hazie nnọkọ
+menu-start-call = Malite oku vidio
 menu-add-note = Tinye ndetu
 menu-print-all = Bipụta niile
 menu-new-window = Mepee na windo ọhụrụ

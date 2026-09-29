@@ -103,6 +103,7 @@ compose-tool-remove-link = Remover link
 ## More options
 
 compose-tool-full-screen = Abrir em tela cheia por padrão
+compose-tool-video-call = Adicionar uma videochamada
 compose-tool-label = Marcador
 compose-tool-label-coming = Marcadores em e-mails enviados chegam em breve. Depois do envio, marque a mensagem em Enviados.
 compose-tool-plain-mode = Modo de texto simples

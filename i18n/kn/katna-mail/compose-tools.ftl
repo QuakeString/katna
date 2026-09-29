@@ -103,6 +103,7 @@ compose-tool-remove-link = ಲಿಂಕ್ ತೆಗೆದುಹಾಕಿ
 ## More options
 
 compose-tool-full-screen = ಡೀಫಾಲ್ಟ್ ಆಗಿ ಪೂರ್ಣ ಪರದೆ
+compose-tool-video-call = ವೀಡಿಯೊ ಕರೆ ಸೇರಿಸಿ
 compose-tool-label = ಲೇಬಲ್
 compose-tool-label-coming = ಕಳುಹಿಸಿದ ಮೇಲ್‌ಗೆ ಲೇಬಲ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿವೆ. ಸಂದೇಶ ಕಳುಹಿಸಿದ ನಂತರ ಅದಕ್ಕೆ “ಕಳುಹಿಸಲಾಗಿದೆ” ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಲೇಬಲ್ ಹಾಕಿ.
 compose-tool-plain-mode = ಸಾದಾ ಪಠ್ಯ ಮೋಡ್

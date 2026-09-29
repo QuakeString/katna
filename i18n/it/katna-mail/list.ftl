@@ -436,6 +436,7 @@ menu-snooze = Posticipa
 menu-unsnooze = Annulla posticipo
 menu-add-to-tasks = Aggiungi ad Attività
 menu-schedule-meeting = Pianifica una riunione
+menu-start-call = Avvia una videochiamata
 menu-add-note = Aggiungi una nota
 menu-print-all = Stampa tutto
 menu-new-window = Apri in una nuova finestra

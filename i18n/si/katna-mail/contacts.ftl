@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ආයාත කරන්න
 contacts-export = අපනයනය කරන්න
-contacts-import-title = vCard ගොනුවකින් සම්බන්ධතා ආයාත කරන්න
+contacts-import-file = vCard හෝ CSV ගොනුවකින් සම්බන්ධතා ආයාත කරන්න
 contacts-imported = { $count ->
     [one] { $place } වෙත සම්බන්ධතා { $count }ක් ආයාත කළා
    *[other] { $place } වෙත සම්බන්ධතා { $count }ක් ආයාත කළා
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = අපනයනය කිරීමට සම්බන්ධතා නැත
 contacts-export-failed = සම්බන්ධතා අපනයනය කළ නොහැකි විය: { $error }
+contacts-print = මුද්‍රණය කරන්න
+contacts-print-title = සම්බන්ධතා
+contacts-print-none = මුද්‍රණය කිරීමට සම්බන්ධතා නැත
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = උපන්දිනය: { $day }
+contacts-print-nickname = ආදරනාමය: { $name }
 contacts-create = සම්බන්ධතාව සාදන්න
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = ඉඩ දෙන්න
 contacts-back = සම්බන්ධතා වෙත ආපසු
 contacts-edit = සංස්කරණය කරන්න
 contacts-delete = මකන්න
+contacts-qr = QR කේතයක් ලෙස බෙදාගන්න
+contacts-qr-about = සම්බන්ධතාව සුරැකීමට දුරකථනයේ කැමරාවෙන් මෙය ස්කෑන් කරන්න.
+contacts-qr-too-long = QR කේතයකට ඇතුළත් කිරීමට මෙම සම්බන්ධතාවේ විස්තර ඉතා වැඩිය.
+contacts-qr-done = අවසන්
 contacts-deleted = { $name } මකා දමන ලදී
 contacts-added = { $name } සම්බන්ධතා වෙත එකතු කරන ලදී
 contacts-find-mail = තැපැල්

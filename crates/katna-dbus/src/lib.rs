@@ -331,8 +331,8 @@ pub mod app_action {
     pub const INSTALL_UPDATE: &str = "install-update";
     /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
     /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
-    /// `contacts`, `tasks`, `notes`), for the Calendar also with a day
-    /// ([`calendar_page`]).
+    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, and
+    /// the Calendar takes a day too ([`calendar_page`]).
     pub const OPEN_PAGE: &str = "open-page";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
@@ -363,13 +363,13 @@ pub mod app_action {
         }
     }
 
-    /// Takes `open-page`'s parameter apart: the page's name, the day
-    /// asked for, and whether to start a new event on it.
+    /// Takes `open-page`'s parameter apart: the page's name, what after it
+    /// (the Calendar's day, a task's ID), and whether to start a new event.
     pub fn page_parts(page: &str) -> (&str, Option<&str>, bool) {
         let mut parts = page.splitn(3, ':');
         let name = parts.next().unwrap_or_default();
-        let day = parts.next().filter(|day| !day.is_empty());
-        (name, day, parts.next() == Some(NEW_EVENT))
+        let detail = parts.next().filter(|detail| !detail.is_empty());
+        (name, detail, parts.next() == Some(NEW_EVENT))
     }
 
     const NEW_EVENT: &str = "new";
@@ -378,6 +378,7 @@ pub mod app_action {
     #[test]
     fn calendar_pages_round_trip() {
         assert_eq!(page_parts("tasks"), ("tasks", None, false));
+        assert_eq!(page_parts("tasks:42"), ("tasks", Some("42"), false));
         let page = calendar_page("2026-10-01", false);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);

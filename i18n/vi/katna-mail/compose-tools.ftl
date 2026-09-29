@@ -103,6 +103,7 @@ compose-tool-remove-link = Xóa liên kết
 ## More options
 
 compose-tool-full-screen = Mặc định toàn màn hình
+compose-tool-video-call = Thêm cuộc gọi video
 compose-tool-label = Nhãn
 compose-tool-label-coming = Sắp có nhãn cho thư đã gửi. Hãy gắn nhãn cho thư trong Đã gửi sau khi thư được gửi đi.
 compose-tool-plain-mode = Chế độ văn bản thuần

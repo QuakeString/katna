@@ -41,6 +41,9 @@ tasks-delete = លុប
 tasks-move-to = ផ្លាស់ទីទៅ { $list }
 tasks-from-mail = សំបុត្រ
 tasks-open-mail = បើកសំបុត្រ
+tasks-from-note = កំណត់ចំណាំ
+tasks-open-note = បើកកំណត់ចំណាំ
+tasks-note-gone = កំណត់ចំណាំនោះលែងមាននៅទីនេះទៀតហើយ។
 tasks-no-subject = (គ្មានប្រធានបទ)
 
 ## The details dialog
@@ -56,6 +59,12 @@ tasks-repeat-weekly = ប្រចាំសប្ដាហ៍
 tasks-repeat-monthly = ប្រចាំខែ
 tasks-repeat-yearly = ប្រចាំឆ្នាំ
 tasks-repeat-other = កំណត់ដោយខ្លួនឯង
+tasks-remind = រំលឹកខ្ញុំ
+tasks-remind-off = កុំរំលឹក
+tasks-remind-on-time = នៅពេលកំណត់
+tasks-remind-morning = នៅថ្ងៃនោះ { $time }
+tasks-remind-hour-before = មុន 1 ម៉ោង
+tasks-remind-day-before = មុន 1 ថ្ងៃ
 tasks-cancel = បោះបង់
 tasks-save = រក្សាទុក
 tasks-not-a-time = “{ $text }” មិនមែនជាម៉ោងទេ ឧទាហរណ៍ { $example }។
@@ -70,6 +79,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = បានបញ្ចប់កិច្ចការ
+tasks-toast-next = រួចរាល់។ លើកក្រោយនៅ { $date }
 tasks-toast-deleted = បានលុបកិច្ចការ
 tasks-toast-added = { $count ->
    *[other] បានបន្ថែមកិច្ចការ { $count }

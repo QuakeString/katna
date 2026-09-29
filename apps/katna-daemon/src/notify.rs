@@ -481,10 +481,9 @@ impl NewMailNotices {
                         // The notification itself: the Calendar page, or
                         // Tasks for a task.
                         _ => {
-                            let page = if alarm.task.is_some() {
-                                "tasks"
-                            } else {
-                                "calendar"
+                            let page = match alarm.task {
+                                Some(task) => format!("tasks:{task}"),
+                                None => "calendar".to_owned(),
                             };
                             crate::mail_app::run(
                                 &notices.connection,

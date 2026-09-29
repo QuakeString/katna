@@ -103,6 +103,7 @@ compose-tool-remove-link = הסרת הקישור
 ## More options
 
 compose-tool-full-screen = פתיחה במסך מלא כברירת מחדל
+compose-tool-video-call = הוספת שיחת וידאו
 compose-tool-label = תווית
 compose-tool-label-coming = תוויות על דואר יוצא יגיעו בקרוב. אחרי השליחה אפשר לתייג את ההודעה בתיקייה „נשלחו”.
 compose-tool-plain-mode = מצב טקסט פשוט

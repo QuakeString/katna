@@ -79,6 +79,10 @@ notes-meeting-actions = Tareas pendientes
 notes-event = Evento
 notes-open-event = Abrir el evento
 
+## Tasks
+
+notes-make-task = Convertir en tarea
+
 ## Colors (tooltips)
 
 notes-color-none = Sin color

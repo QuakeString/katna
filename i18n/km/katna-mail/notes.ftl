@@ -77,6 +77,10 @@ notes-meeting-actions = ធាតុសកម្មភាព
 notes-event = ព្រឹត្តិការណ៍
 notes-open-event = បើកព្រឹត្តិការណ៍
 
+## Tasks
+
+notes-make-task = ធ្វើជាកិច្ចការ
+
 ## Colors (tooltips)
 
 notes-color-none = គ្មានពណ៌

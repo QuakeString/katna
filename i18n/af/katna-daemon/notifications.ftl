@@ -38,6 +38,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Heeldag
 notify-event-join = Sluit aan
 notify-event-snooze = Sluimer 5 min
+notify-task-done = Merk as klaar
 notify-open = Maak oop
 notify-reply-all = Antwoord almal
 notify-mark-read = Merk as gelees

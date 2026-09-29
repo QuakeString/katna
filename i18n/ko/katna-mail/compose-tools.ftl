@@ -103,6 +103,7 @@ compose-tool-remove-link = 링크 삭제
 ## More options
 
 compose-tool-full-screen = 기본적으로 전체화면으로 열기
+compose-tool-video-call = 화상 통화 추가
 compose-tool-label = 라벨
 compose-tool-label-coming = 보낸 메일의 라벨 기능은 곧 제공됩니다. 메일을 보낸 뒤 보낸편지함에서 라벨을 지정하세요.
 compose-tool-plain-mode = 일반 텍스트 모드

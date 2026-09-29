@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Find tasks from the desktop"
+text = """
+Type a few words of a task in KRunner or GNOME's search and it shows up
+under Tasks. Press Enter and Katna opens it, ready to edit.
+"""

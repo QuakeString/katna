@@ -77,6 +77,10 @@ notes-meeting-actions = アクション アイテム
 notes-event = 予定
 notes-open-event = 予定を開く
 
+## Tasks
+
+notes-make-task = タスクにする
+
 ## Colors (tooltips)
 
 notes-color-none = 色なし

@@ -382,6 +382,7 @@ menu-snooze = කල් දමන්න
 menu-unsnooze = කල් දැමීම ඉවත් කරන්න
 menu-add-to-tasks = කාර්යයන් වෙත එක් කරන්න
 menu-schedule-meeting = රැස්වීමක් උපලේඛනගත කරන්න
+menu-start-call = වීඩියෝ ඇමතුමක් අරඹන්න
 menu-add-note = සටහනක් එක් කරන්න
 menu-print-all = සියල්ල මුද්‍රණය කරන්න
 menu-new-window = නව කවුළුවක විවෘත කරන්න

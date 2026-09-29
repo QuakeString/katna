@@ -78,6 +78,10 @@ notes-meeting-actions = Actiepunten
 notes-event = Afspraak
 notes-open-event = De afspraak openen
 
+## Tasks
+
+notes-make-task = Er een taak van maken
+
 ## Colors (tooltips)
 
 notes-color-none = Geen kleur

@@ -108,7 +108,7 @@ fn task_id(id: &str) -> Result<i64, CommandError> {
 
 /// Katna Mail's page (`app_action::OPEN_PAGE`) for the event or task
 /// with wire ID `id`: the Calendar on the day the occurrence starts in
-/// `tz`, or the Tasks page.
+/// `tz`, or the task on the Tasks page.
 fn page_for(id: &str, tz: &TimeZone) -> Option<String> {
     if let Some(event) = id.strip_prefix(EVENT_ID) {
         let (_, start) = event.split_once(':')?;
@@ -116,7 +116,7 @@ fn page_for(id: &str, tz: &TimeZone) -> Option<String> {
         let day = start.to_zoned(tz.clone()).date().to_string();
         return Some(app_action::calendar_page(&day, false));
     }
-    task_id(id).ok().map(|_| "tasks".to_owned())
+    task_id(id).ok().map(|row| format!("tasks:{row}"))
 }
 
 /// A title, trimmed to one line; not empty and not too long.
@@ -610,7 +610,7 @@ mod tests {
             page_for("e7:1790712000", &tz).as_deref(),
             Some("calendar:2026-09-30")
         );
-        assert_eq!(page_for("t42", &tz).as_deref(), Some("tasks"));
+        assert_eq!(page_for("t42", &tz).as_deref(), Some("tasks:42"));
         assert_eq!(page_for("e7", &tz), None);
         assert_eq!(page_for("e7:soon", &tz), None);
         assert_eq!(page_for("x1", &tz), None);

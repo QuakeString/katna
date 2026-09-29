@@ -382,6 +382,7 @@ menu-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
 menu-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
 menu-add-to-tasks = ಕಾರ್ಯಗಳಿಗೆ ಸೇರಿಸಿ
 menu-schedule-meeting = ಸಭೆಯನ್ನು ನಿಗದಿಪಡಿಸಿ
+menu-start-call = ವೀಡಿಯೊ ಕರೆ ಪ್ರಾರಂಭಿಸಿ
 menu-add-note = ಟಿಪ್ಪಣಿ ಸೇರಿಸಿ
 menu-print-all = ಎಲ್ಲವನ್ನೂ ಮುದ್ರಿಸಿ
 menu-new-window = ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ

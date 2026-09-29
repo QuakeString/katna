@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = 終日
 notify-event-join = 参加
 notify-event-snooze = 5 分後に再通知
+notify-task-done = 完了にする
 
 ## The buttons of new-mail notifications and reminders
 

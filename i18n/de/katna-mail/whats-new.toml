@@ -1455,3 +1455,39 @@ title = "Duplikate zusammenführen sowie Kontakte importieren und exportieren"
 text = """
 Unter „Korrigieren und verwalten“ in Kontakte findet „Zusammenführen und korrigieren“ doppelt gespeicherte Personen (mit demselben Namen oder derselben Telefonnummer) und führt sie mit einem Klick zusammen, mit „Rückgängig“. „Importieren“ holt Personen aus einer vCard-Datei und lässt bereits gespeicherte aus, und „Exportieren“ speichert alle oder ein Label als vCard-Datei.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Geburtstage im Kalender, Kontakte als QR-Codes"
+text = """
+Die Geburtstage Ihrer Kontakte erscheinen jetzt im Kalender, in einem Kalender „Geburtstage“, den Sie abwählen können. Die Seite eines Kontakts kann ihn als QR-Code anzeigen, den die Kamera eines Smartphones speichert, und ihn drucken; „Drucken“ unter „Korrigieren und verwalten“ druckt alle angezeigten Personen. Der Import liest jetzt auch CSV-Dateien aus Google Kontakte und Outlook, und KRunner und die GNOME-Suche finden Ihre gespeicherten Kontakte.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Kalender: Zeitzonen und Dichte"
+text = """
+Mit der Optionen-Schaltfläche im Kalender legen Sie fest, wie hoch die Stunden sind (An Bildschirm anpassen, Komfortabel oder Kompakt), und fügen neben Ihrer eigenen eine zweite Zeitzone hinzu, für Menschen, die Sie im Ausland treffen.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Videoanruf aus einer Mail starten"
+text = """
+Klicken Sie mit der rechten Maustaste auf eine Unterhaltung oder öffnen Sie ⋮ und wählen Sie Videoanruf starten: Der Anruf wird geöffnet, und eine neue Mail mit dem Link geht an alle in der Unterhaltung. Gmail-Konten nutzen Google Meet, andere erhalten einen Jitsi-Meet-Raum. Bei Mails mit einem Link zu einem Anruf über Meet, Teams, Zoom, Webex, Jitsi, WhatsApp oder Telegram erscheint jetzt die Schaltfläche Teilnehmen.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Eine Checklistenzeile zur Aufgabe machen"
+text = """
+Setzen Sie den Cursor in einer Notiz auf eine Checklistenzeile und wählen Sie Zur Aufgabe machen: Die Zeile landet in Ihren Aufgaben. Über den Chip Notiz auf der Seite Aufgaben öffnen Sie die Notiz wieder.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Der Bereich, in dem Sie sind, hebt sich ab"
+text = """
+Neben der Liste behält nur der Bereich, der die Tastatureingaben erhält, seinen Schatten; die Liste, die Unterhaltung oder das Kontaktfeld, das Sie gerade nicht nutzen, tritt mit einem schwächeren Rand zurück, und die Änderung folgt Ihnen sanft, wenn Sie klicken.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Aufgabenerinnerungen und Wiederholungen"
+text = """
+Öffnen Sie eine Aufgabe und wählen Sie Erinnern: zur festgelegten Zeit, eine Stunde oder einen Tag vorher. Die Erinnerung erscheint auch bei geschlossenem Katna, mit Als erledigt markieren und Zurückstellen. Wenn Sie eine wiederkehrende Aufgabe abhaken, kommt sie jetzt am nächsten Tag wieder.
+"""

@@ -232,6 +232,7 @@ menu-snooze = ເລື່ອນເວລາ
 menu-unsnooze = ຍົກເລີກການເລື່ອນເວລາ
 menu-add-to-tasks = ເພີ່ມໃສ່ວຽກ
 menu-schedule-meeting = ນັດປະຊຸມ
+menu-start-call = ເລີ່ມການປະຊຸມທາງວິດີໂອ
 menu-add-note = ເພີ່ມບັນທຶກ
 menu-print-all = ພິມທັງໝົດ
 menu-new-window = ເປີດໃນໜ້າຕ່າງໃໝ່

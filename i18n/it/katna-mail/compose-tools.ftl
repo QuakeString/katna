@@ -103,6 +103,7 @@ compose-tool-remove-link = Rimuovi link
 ## More options
 
 compose-tool-full-screen = Apri sempre a schermo intero
+compose-tool-video-call = Aggiungi una videochiamata
 compose-tool-label = Etichetta
 compose-tool-label-coming = Le etichette sulla posta inviata arriveranno presto. Dopo l’invio, etichetta il messaggio in Inviati.
 compose-tool-plain-mode = Modalità testo semplice

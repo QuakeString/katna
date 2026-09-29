@@ -78,6 +78,10 @@ notes-meeting-actions = Izinto zokwenza
 notes-event = Umcimbi
 notes-open-event = Vula umcimbi
 
+## Tasks
+
+notes-make-task = Yenze umsebenzi
+
 ## Colors (tooltips)
 
 notes-color-none = Awukho umbala

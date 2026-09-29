@@ -103,6 +103,7 @@ compose-tool-remove-link = リンクを削除
 ## More options
 
 compose-tool-full-screen = デフォルトで全画面表示
+compose-tool-video-call = ビデオ通話を追加
 compose-tool-label = ラベル
 compose-tool-label-coming = 送信メールへのラベル付けは近日対応予定です。送信後に「送信済み」でラベルを付けてください。
 compose-tool-plain-mode = プレーンテキスト モード

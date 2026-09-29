@@ -77,6 +77,10 @@ notes-meeting-actions = 실행 항목
 notes-event = 일정
 notes-open-event = 일정 열기
 
+## Tasks
+
+notes-make-task = 할 일로 만들기
+
 ## Colors (tooltips)
 
 notes-color-none = 색상 없음

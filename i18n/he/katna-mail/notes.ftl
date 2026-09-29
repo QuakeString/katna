@@ -79,6 +79,10 @@ notes-meeting-actions = פריטי פעולה
 notes-event = אירוע
 notes-open-event = פתיחת האירוע
 
+## Tasks
+
+notes-make-task = הפיכה למשימה
+
 ## Colors (tooltips)
 
 notes-color-none = ללא צבע

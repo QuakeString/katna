@@ -78,6 +78,10 @@ notes-meeting-actions = செயல் உருப்படிகள்
 notes-event = நிகழ்வு
 notes-open-event = நிகழ்வைத் திற
 
+## Tasks
+
+notes-make-task = பணியாக்கு
+
 ## Colors (tooltips)
 
 notes-color-none = நிறம் இல்லை

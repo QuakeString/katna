@@ -78,6 +78,10 @@ notes-meeting-actions = اقدام‌ها
 notes-event = رویداد
 notes-open-event = باز کردن رویداد
 
+## Tasks
+
+notes-make-task = تبدیل به کار
+
 ## Colors (tooltips)
 
 notes-color-none = بدون رنگ
