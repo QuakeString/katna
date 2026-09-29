@@ -1690,3 +1690,64 @@ qué respondió el servidor, y Reintentar los vuelve a buscar al momento.
 Una cuenta de Gmail u Outlook añadida con contraseña ofrece iniciar
 sesión con Google o Microsoft, que es lo que necesitan sus calendarios.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Casillas que se marcan"
+text = """
+Cada casilla de Katna Mail tiene ahora el mismo tamaño que los botones
+redondos de al lado. Su marca se dibuja al marcarla y se borra al
+desmarcarla, tanto en Ajustes como en la lista de correo, Calendario,
+Contactos, Notas y los diálogos.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Un menú contextual más corto que siempre cabe"
+text = """
+El menú contextual de la lista de correo deja arriba las acciones de
+todos los días y pone el resto en Hacer seguimiento (tareas, notas,
+reuniones, llamadas) y Más (spam, importancia, fijar). Se abre donde
+haces clic y se queda dentro de la ventana; en una ventana baja o
+estrecha, un submenú se abre en el lugar del menú.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Por qué una cuenta no tiene contactos"
+text = """
+Cuando los contactos de una cuenta no aparecen, Contactos ahora dice qué
+respondió el servidor, y Reintentar los vuelve a buscar al momento. Una
+cuenta de Gmail u Outlook añadida con contraseña ofrece iniciar sesión
+con Google o Microsoft, que es lo que necesitan sus contactos.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "El cuadro de búsqueda muestra cuándo está activo"
+text = """
+El cuadro de búsqueda de arriba se marca con un borde de color mientras
+escribes en él, como cualquier otro campo, y su indicación Ctrl+F se
+aparta hasta que lo dejas vacío.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Todas las listas de tareas a la vista"
+text = """
+Todas las tareas muestra ahora tantas listas una al lado de otra como
+caben en la ventana, con más filas debajo, para que se pueda llegar a
+todas. Una lista nueva se desplaza a la vista en cuanto la creas.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Paso suave entre archivos adjuntos"
+text = """
+Ir al archivo adjunto siguiente o anterior en el visor con las flechas
+ya no parpadea. El visor sigue abierto y el siguiente archivo ocupa el
+lugar del anterior en cuanto está listo.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Arrastra las notas para ordenarlas"
+text = """
+Arrastra una nota en el tablero de Notas para moverla, como en Keep. Las
+demás notas se apartan para hacerle sitio, y se queda donde la sueltas.
+Ctrl+Z la devuelve. Las tarjetas ahora encajan en sus columnas, sin
+huecos bajo las notas cortas.
+"""

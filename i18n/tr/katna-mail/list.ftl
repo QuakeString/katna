@@ -387,6 +387,12 @@ menu-add-note = Not ekle
 menu-print-all = Tümünü yazdır
 menu-new-window = Yeni pencerede aç
 menu-move-to = Taşı
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Takip et
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Diğer
 menu-move-to-heading = Şuraya taşı:
 menu-find-from = { $name } tarafından gönderilen e-postaları bul
 

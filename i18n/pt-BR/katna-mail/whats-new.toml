@@ -1676,3 +1676,64 @@ servidor respondeu, e “Tentar de novo” procura por elas de novo na hora.
 Uma conta do Gmail ou do Outlook adicionada com senha oferece fazer
 login com o Google ou a Microsoft, o que as agendas delas exigem.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Caixas de seleção que marcam"
+text = """
+Toda caixa de seleção do Katna Mail agora tem o mesmo tamanho dos botões
+redondos ao lado. A marca se desenha quando você marca a caixa e se
+apaga quando você desmarca, em Configurações, na lista de e-mails, na
+Agenda, em Contatos, em Notas e nas caixas de diálogo.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Um menu de clique direito mais curto que sempre cabe"
+text = """
+O menu de clique direito da lista de e-mails deixa as ações do dia a dia
+no topo e põe o resto em Acompanhar (tarefas, notas, reuniões, chamadas)
+e Mais (spam, importância, fixar). Ele abre onde você clica e fica
+dentro da janela; numa janela baixa ou estreita, um submenu abre no
+lugar do menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Por que uma conta não tem contatos"
+text = """
+Quando os contatos de uma conta não aparecem, Contatos agora diz o que o
+servidor respondeu, e “Tentar de novo” procura por eles de novo na hora.
+Uma conta do Gmail ou do Outlook adicionada com senha oferece fazer
+login com o Google ou a Microsoft, o que os contatos delas exigem.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "A caixa de pesquisa mostra quando está ativa"
+text = """
+A caixa de pesquisa no topo ganha uma borda de destaque enquanto você
+digita nela, como todos os outros campos, e a dica Ctrl+F sai do caminho
+até você deixá-la vazia.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Todas as listas de tarefas à vista"
+text = """
+“Todas as tarefas” agora mostra lado a lado quantas listas couberem na
+janela, com mais fileiras abaixo, para que todas as listas possam ser
+alcançadas. Uma lista nova rola para a vista assim que você a cria.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Navegação suave entre anexos"
+text = """
+Ir para o anexo seguinte ou anterior no visualizador com as setas não
+pisca mais. O visualizador fica aberto e o próximo arquivo toma o lugar
+do anterior assim que fica pronto.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Arraste notas para ordená-las"
+text = """
+Arraste uma nota no quadro de Notas para movê-la, como no Keep. As
+outras notas deslizam para abrir espaço, e ela fica onde você a soltar.
+Ctrl+Z a coloca de volta. Os cartões agora se encaixam bem nas colunas,
+sem vãos sob notas curtas.
+"""

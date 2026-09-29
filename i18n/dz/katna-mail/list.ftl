@@ -317,6 +317,12 @@ menu-add-note = དྲན་ཐོ་ཅིག་ཁ་སྣོན་འབད�
 menu-print-all = ཆ་མཉམ་དཔར་བསྐྲུན་འབད།
 menu-new-window = སྒོ་སྒྲིག་གསརཔ་ནང་ཁ་ཕྱེ།
 menu-move-to = ལུ་སྤོ།
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = རྗེས་འདེད།
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ཧེང་བཀལ།
 menu-move-to-heading = ལུ་སྤོ:
 menu-find-from = { $name } ལས་འོང་མི་གློག་འཕྲིན་ཚུ་འཚོལ།
 

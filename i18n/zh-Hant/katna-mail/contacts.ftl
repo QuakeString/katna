@@ -39,6 +39,12 @@ contacts-account-failed = 無法讀取聯絡人。
 # $reason is the server's own words, in English.
 contacts-account-error = 無法讀取聯絡人：{ $reason }
 contacts-account-none = 找不到通訊錄
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = 找不到通訊錄：{ $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } 只向使用 { $provider } 登入的 Katna 顯示聯絡人。
+contacts-account-sign-in-with = 使用 { $provider } 登入
 contacts-account-looking = 正在尋找聯絡人…
 contacts-account-try-again = 再試一次
 contacts-account-try-again-tooltip = 立即重新檢查此帳戶的聯絡人

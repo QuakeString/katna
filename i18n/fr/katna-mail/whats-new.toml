@@ -1738,3 +1738,67 @@ aussitôt. Un compte Gmail ou Outlook ajouté avec un mot de passe propose
 de se connecter avec Google ou Microsoft, ce dont ses calendriers ont
 besoin.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Des cases qui se cochent"
+text = """
+Chaque case à cocher de Katna Mail a désormais la taille des boutons
+ronds voisins. Sa coche se dessine quand vous la cochez et s’efface
+quand vous la décochez, dans Paramètres, la liste des messages,
+Calendrier, Contacts, Notes et les boîtes de dialogue.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Un menu contextuel plus court qui tient toujours"
+text = """
+Le menu contextuel de la liste des messages garde les actions courantes
+en haut et range le reste sous Assurer le suivi (tâches, notes,
+réunions, appels) et Plus (spam, importance, épingler). Il s’ouvre là où
+vous cliquez et reste dans la fenêtre ; dans une fenêtre basse ou
+étroite, un sous-menu s’ouvre à la place du menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Pourquoi un compte n’a pas de contacts"
+text = """
+Quand les contacts d’un compte ne s’affichent pas, Contacts indique
+maintenant ce que le serveur a répondu, et Réessayer les recherche
+aussitôt. Un compte Gmail ou Outlook ajouté avec un mot de passe propose
+de se connecter avec Google ou Microsoft, ce dont ses contacts ont
+besoin.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Le champ de recherche montre quand il est actif"
+text = """
+Le champ de recherche en haut prend un contour d’accent pendant que vous
+y tapez, comme tous les autres champs, et son indication Ctrl+F s’efface
+jusqu’à ce que vous le laissiez vide.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Toutes les listes de tâches en vue"
+text = """
+Toutes les tâches affiche désormais autant de listes côte à côte que la
+fenêtre en contient, avec d’autres rangées en dessous, pour que chaque
+liste soit accessible. Une nouvelle liste défile à l’écran dès que vous
+la créez.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Passage fluide d’une pièce jointe à l’autre"
+text = """
+Passer à la pièce jointe suivante ou précédente dans la visionneuse avec
+les flèches ne clignote plus. La visionneuse reste ouverte et le fichier
+suivant prend la place du précédent dès qu’il est prêt.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Faites glisser les notes pour les ranger"
+text = """
+Faites glisser une note sur le tableau de Notes pour la déplacer, comme
+dans Keep. Les autres notes s’écartent pour lui faire de la place, et
+elle reste là où vous la déposez. Ctrl+Z la remet en place. Les cartes
+s’ajustent désormais dans leurs colonnes, sans vide sous les notes
+courtes.
+"""

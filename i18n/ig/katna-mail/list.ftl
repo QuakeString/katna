@@ -237,6 +237,12 @@ menu-add-note = Tinye ndetu
 menu-print-all = Bipụta niile
 menu-new-window = Mepee na windo ọhụrụ
 menu-move-to = Bugharịa gaa
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Soro ya
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Ndị ọzọ
 menu-move-to-heading = Bugharịa gaa:
 menu-find-from = Chọta ozi-e si n'aka { $name }
 

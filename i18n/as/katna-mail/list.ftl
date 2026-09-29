@@ -387,6 +387,12 @@ menu-add-note = টোকা যোগ কৰক
 menu-print-all = সকলো প্ৰিণ্ট কৰক
 menu-new-window = নতুন ৱিণ্ড'ত খোলক
 menu-move-to = ইয়ালৈ স্থানান্তৰ কৰক
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ফ'ল' আপ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = অধিক
 menu-move-to-heading = ইয়ালৈ স্থানান্তৰ কৰক:
 menu-find-from = { $name }ৰ পৰা অহা ইমেইল বিচাৰক
 

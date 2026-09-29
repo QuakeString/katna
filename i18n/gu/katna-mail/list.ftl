@@ -387,6 +387,12 @@ menu-add-note = નોંધ ઉમેરો
 menu-print-all = બધું પ્રિન્ટ કરો
 menu-new-window = નવી વિન્ડોમાં ખોલો
 menu-move-to = આમાં ખસેડો
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ફૉલો અપ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = વધુ
 menu-move-to-heading = આમાં ખસેડો:
 menu-find-from = { $name } તરફથી આવેલા ઇમેઇલ શોધો
 

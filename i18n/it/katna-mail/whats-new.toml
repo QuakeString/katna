@@ -1694,3 +1694,65 @@ ha risposto il server, e «Riprova» li cerca di nuovo subito. Un account
 Gmail o Outlook aggiunto con una password propone di accedere con Google
 o Microsoft, come richiedono i loro calendari.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Caselle di controllo con la spunta"
+text = """
+Ogni casella di controllo in Katna Mail ora ha la stessa dimensione dei
+pulsanti rotondi accanto. La spunta si disegna quando la selezioni e si
+cancella quando la deselezioni, allo stesso modo in Impostazioni,
+nell'elenco dei messaggi, in Calendario, Contatti, Note e nelle finestre
+di dialogo.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Un menu del clic destro più corto che entra sempre"
+text = """
+Il menu del clic destro dell'elenco dei messaggi tiene in alto le azioni
+di tutti i giorni e mette il resto sotto «Dai seguito» (attività, note,
+riunioni, chiamate) e «Altro» (spam, importanza, fissaggio). Si apre
+dove fai clic e resta dentro la finestra; in una finestra bassa o
+stretta un sottomenu si apre al posto del menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Perché un account non ha contatti"
+text = """
+Quando i contatti di un account non compaiono, Contatti ora dice cosa ha
+risposto il server, e «Riprova» li cerca di nuovo subito. Un account
+Gmail o Outlook aggiunto con una password propone di accedere con Google
+o Microsoft, come richiedono i loro contatti.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "La casella di ricerca mostra quando è attiva"
+text = """
+La casella di ricerca in alto prende un bordo in colore d'accento mentre
+ci scrivi, come ogni altro campo, e il suo suggerimento Ctrl+F si fa da
+parte finché non la lasci vuota.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Tutti gli elenchi di attività a portata di vista"
+text = """
+«Tutte le attività» ora mostra affiancati tanti elenchi quanti ne
+entrano nella finestra, con altre righe sotto, così ogni elenco è
+raggiungibile. Un nuovo elenco scorre in vista appena lo crei.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Passaggio fluido tra gli allegati"
+text = """
+Passare all'allegato successivo o precedente nel visualizzatore con le
+frecce non provoca più sfarfallii. Il visualizzatore resta aperto e il
+file successivo prende il posto del precedente appena è pronto.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Trascina le note per ordinarle"
+text = """
+Trascina una nota sulla bacheca di Note per spostarla, come in Keep. Le
+altre note scivolano di lato per farle spazio, e resta dove la lasci.
+Ctrl+Z la rimette a posto. Le schede ora stanno compatte nelle loro
+colonne, senza spazi vuoti sotto le note corte.
+"""

@@ -1625,3 +1625,63 @@ lời gì, và “Thử lại” tìm lại ngay. Tài khoản Gmail hoặc Outl
 thêm bằng mật khẩu sẽ đề nghị đăng nhập bằng Google hoặc Microsoft, điều
 mà lịch của chúng cần.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Ô đánh dấu có dấu tích"
+text = """
+Mọi ô đánh dấu trong Katna Mail giờ có cùng kích thước với các nút tròn
+bên cạnh. Dấu tích tự vẽ ra khi bạn đánh dấu và xóa đi khi bạn bỏ đánh
+dấu, trong Cài đặt, danh sách thư, Lịch, Danh bạ, Ghi chú và các hộp
+thoại.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu chuột phải ngắn hơn và luôn vừa vặn"
+text = """
+Menu chuột phải của danh sách thư giữ các thao tác hằng ngày ở trên cùng
+và đưa phần còn lại vào Theo dõi (việc cần làm, ghi chú, cuộc họp, cuộc
+gọi) và Thêm (thư rác, mức quan trọng, ghim). Menu mở tại chỗ bạn nhấp
+và luôn nằm trong cửa sổ; trong cửa sổ thấp hoặc hẹp, menu con mở ngay
+tại chỗ của menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Vì sao một tài khoản không có danh bạ"
+text = """
+Khi danh bạ của một tài khoản không hiện, Danh bạ giờ cho biết máy chủ
+đã trả lời gì, và “Thử lại” tìm lại ngay. Tài khoản Gmail hoặc Outlook
+được thêm bằng mật khẩu sẽ đề nghị đăng nhập bằng Google hoặc Microsoft,
+điều mà danh bạ của chúng cần.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Ô tìm kiếm cho thấy khi nào đang hoạt động"
+text = """
+Ô tìm kiếm ở trên cùng có viền màu nhấn khi bạn gõ vào, như mọi trường
+khác, và gợi ý Ctrl+F tạm ẩn đi cho đến khi bạn để trống ô.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Mọi danh sách việc cần làm đều trong tầm nhìn"
+text = """
+“Tất cả việc cần làm” giờ hiện nhiều danh sách cạnh nhau nhất có thể vừa
+cửa sổ, cùng thêm các hàng bên dưới, để danh sách nào cũng xem được.
+Danh sách mới sẽ được cuộn vào tầm nhìn ngay khi bạn tạo.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Chuyển giữa các tệp đính kèm mượt mà"
+text = """
+Chuyển sang tệp đính kèm kế tiếp hoặc trước đó trong trình xem bằng các
+mũi tên không còn nhấp nháy. Trình xem vẫn mở và tệp kế tiếp sẽ thay chỗ
+tệp trước ngay khi sẵn sàng.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Kéo ghi chú để sắp xếp"
+text = """
+Kéo một ghi chú trên bảng Ghi chú để di chuyển nó, như trong Keep. Các
+ghi chú khác lướt sang bên để nhường chỗ, và ghi chú nằm lại đúng nơi
+bạn thả. Ctrl+Z đưa nó về chỗ cũ. Các thẻ giờ xếp khít trong cột, không
+còn khoảng trống dưới các ghi chú ngắn.
+"""

@@ -1571,3 +1571,65 @@ lẹ́sẹ̀kẹsẹ̀. Àkáǹtì Gmail tàbí Outlook tí a fi ọ̀rọ̀ a�
 fúnni láti wọlé pẹ̀lú Google tàbí Microsoft, èyí tí àwọn kàlẹ́ńdà wọn
 nílò.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Àwọn àpótí àmì tí ń fi àmì hàn"
+text = """
+Gbogbo àpótí àmì nínú Katna Mail ti tóbi tó àwọn bọ́tìnnì yíká tó wà
+lẹ́gbẹ̀ẹ́ wọn báyìí. Àmì rẹ̀ máa ń ya ara rẹ̀ nígbà tí o bá sàmì sí i, ó
+sì máa ń parẹ́ nígbà tí o bá yọ ọ́, nínú Ètò, àtòjọ lẹ́tà, Kàlẹ́ńdà,
+Olùbásọ̀rọ̀, Àkọsílẹ̀ àti àwọn àpótí ìbánisọ̀rọ̀.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Àkójọ títẹ̀ ọ̀tún tó kúrú tí ó máa ń bá a mu"
+text = """
+Àkójọ títẹ̀ ọ̀tún àtòjọ lẹ́tà ń fi àwọn ìṣe ojoojúmọ́ sí òkè, ó sì ń fi
+ìyókù sábẹ́ Tẹ̀lé e (iṣẹ́, àkọsílẹ̀, ìpàdé, ìpè) àti Síwájú sí i
+(àwúrúju, pàtàkì, lílẹ̀ mọ́). Ó máa ń ṣí níbi tí o tẹ̀, ó sì máa ń dúró
+nínú fèrèsé; nínú fèrèsé kúkúrú tàbí tóóró, àkójọ kékeré máa ń ṣí ní ipò
+àkójọ náà.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Ìdí tí àkáǹtì kan kò fi ní olùbásọ̀rọ̀"
+text = """
+Nígbà tí àwọn olùbásọ̀rọ̀ àkáǹtì kan kò bá hàn, Olùbásọ̀rọ̀ ti ń sọ ohun
+tí sáfà dáhùn báyìí, “Gbìyànjú lẹ́ẹ̀kan sí i” sì ń wá wọn lẹ́ẹ̀kan sí i
+lẹ́sẹ̀kẹsẹ̀. Àkáǹtì Gmail tàbí Outlook tí a fi ọ̀rọ̀ aṣínà kún máa ń
+fúnni láti wọlé pẹ̀lú Google tàbí Microsoft, èyí tí àwọn olùbásọ̀rọ̀ wọn
+nílò.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Àpótí ìwádìí ń fi hàn nígbà tó bá ń ṣiṣẹ́"
+text = """
+Àpótí ìwádìí lókè ń ní etí àwọ̀ àfihàn nígbà tí o bá ń tẹ̀ sínú rẹ̀, bí
+gbogbo ààyè mìíràn, ìtọ́sọ́nà Ctrl+F rẹ̀ sì ń yẹra títí tí o bá fi í
+sílẹ̀ ní òfo.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Gbogbo àtòjọ iṣẹ́ ń hàn"
+text = """
+“Gbogbo iṣẹ́” ti ń fi àtòjọ púpọ̀ hàn lẹ́gbẹ̀ẹ́ ara wọn báyìí bí fèrèsé
+ṣe gbà tó, pẹ̀lú àwọn ìlà mìíràn nísàlẹ̀, kí gbogbo àtòjọ lè dé. Àtòjọ
+tuntun máa ń yí wá sójú ní kété tí o bá ṣe é.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Yíyí láàárín àwọn àsomọ́ láìsí ìdíwọ́"
+text = """
+Lílọ sí àsomọ́ tó kàn tàbí èyí tó ṣáájú nínú olùwò pẹ̀lú àwọn ọfà kò tún
+ń ṣẹ́jú mọ́. Olùwò máa ń wà ní ṣíṣí, fáìlì tó kàn sì máa ń gba ipò èyí
+tó ṣáájú ní kété tí ó bá ti ṣetán.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Fà àwọn àkọsílẹ̀ sí ètò"
+text = """
+Fà àkọsílẹ̀ kan lórí pátákó Àkọsílẹ̀ láti gbé e, bí ti Keep. Àwọn
+àkọsílẹ̀ yòókù máa ń yọ̀ sẹ́gbẹ̀ẹ́ láti fi ààyè sílẹ̀, ó sì máa ń dúró
+síbi tí o jù ú sí. Ctrl+Z máa ń dá a padà. Àwọn káàdì ti ń jókòó dáadáa
+nínú àwọn ọ̀wọ̀n wọn báyìí, láìsí àlàfo lábẹ́ àwọn àkọsílẹ̀ kúkúrú.
+"""

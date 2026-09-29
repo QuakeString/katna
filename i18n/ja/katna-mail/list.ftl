@@ -237,6 +237,12 @@ menu-add-note = メモを追加
 menu-print-all = すべて印刷
 menu-new-window = 新しいウィンドウで開く
 menu-move-to = 移動
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = フォローアップ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = その他
 menu-move-to-heading = 移動先:
 menu-find-from = { $name } からのメールを検索
 

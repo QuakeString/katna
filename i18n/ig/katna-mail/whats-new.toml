@@ -1600,3 +1600,45 @@ title = "Ihe mere akaụntụ enweghị kalịnda"
 text = """
 Mgbe kalịnda nke akaụntụ anaghị egosi, Kalịnda na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kalịnda ha chọrọ.
 """
+
+["2026-09-29-1610-one-checkbox"]
+title = "Igbe nlele na-akara"
+text = """
+Igbe nlele ọ bụla na Katna Mail nwere ugbu a otu nha dị ka bọtịnụ gburugburu dị n'akụkụ ya. Akara ya na-ese onwe ya mgbe ị pịrị ya ma na-ehichapụ mgbe ị kagharịrị ya, n'otu ụzọ na Ntọala, ndepụta ozi, Kalịnda, Kọntaktị, Ndetu na igbe mkparịta ụka.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu pịa aka nri dị mkpụmkpụ nke na-adaba mgbe niile"
+text = """
+Menu pịa aka nri nke ndepụta ozi na-edebe omume kwa ụbọchị n'elu ma tinye ndị ọzọ n'okpuru “Soro ya” (ọrụ, ndetu, nzukọ, oku) na “Ndị ọzọ” (spam, mkpa, ntụkwasị). Ọ na-emepe ebe ị pịrị ma na-anọ n'ime windo; na windo dị mkpụmkpụ ma ọ bụ warara, menu nta na-emepe n'ọnọdụ menu ahụ.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Ihe mere akaụntụ enweghị kọntaktị"
+text = """
+Mgbe kọntaktị nke akaụntụ anaghị egosi, Kọntaktị na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kọntaktị ha chọrọ.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Igbe ọchụchọ na-egosi mgbe ọ na-arụ ọrụ"
+text = """
+Igbe ọchụchọ dị n'elu na-enweta ọnụ agba ntụpọ mgbe ị na-ede na ya, dị ka ogige ọ bụla ọzọ, ntụziaka Ctrl+F ya na-ewepụkwa onwe ya ruo mgbe ị hapụrụ ya ka ọ tọgbọ chakoo.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Ndepụta ọrụ ọ bụla n'anya"
+text = """
+“Ọrụ niile” na-egosi ugbu a ọtụtụ ndepụta n'akụkụ ibe ha dị ka windo nwere ike ịnabata, ya na ahịrị ndị ọzọ n'okpuru, ka e wee ruo ndepụta ọ bụla. Ndepụta ọhụrụ na-apụta n'anya ozugbo ị mere ya.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Ịgafe n'ụzọ dị nro n'etiti mgbakwunye"
+text = """
+Ịga na mgbakwunye na-esote ma ọ bụ nke gara aga n'ime onye nlele site na akụ anaghịzi eme ka ihuenyo na-amụnye amụnye. Onye nlele na-anọgide na-emeghe, faịlụ na-esote na-anọchikwa nke gara aga ozugbo ọ dị njikere.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Dọrọ ndetu ka ị hazie ha"
+text = """
+Dọrọ ndetu na bọọdụ Ndetu iji bugharịa ya, dị ka na Keep. Ndetu ndị ọzọ na-amịfe n'akụkụ iji nye ohere, ọ na-anọkwa ebe ị tụbara ya. Ctrl+Z na-eweghachi ya. Kaadị na-anọ ugbu a nke ọma n'ogidi ha, na-enweghị oghere n'okpuru ndetu dị mkpụmkpụ.
+"""
