@@ -11,6 +11,23 @@ tasks-starred = ติดดาว
 tasks-new-list = สร้างรายการใหม่
 tasks-on-this-computer = ในคอมพิวเตอร์เครื่องนี้
 tasks-my-tasks = งานของฉัน
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = ลงชื่อเข้าใช้อีกครั้งเพื่อแสดงงาน
+tasks-account-signed-in = ลงชื่อเข้าใช้ { $address } อีกครั้งแล้ว กำลังดึงงานของคุณ…
+tasks-account-sign-in-refused = { $provider } ไม่อนุญาตให้ Katna เข้าใช้ ลองอีกครั้ง และอนุญาตให้เข้าถึงงานของคุณ
+tasks-account-refused = เซิร์ฟเวอร์ไม่ยอมรับรหัสผ่าน Yahoo, iCloud, Zoho และอื่นๆ ต้องใช้รหัสผ่านสำหรับแอป
+tasks-account-change-password = เปลี่ยนรหัสผ่าน
+tasks-account-change-password-tooltip = เปิด การตั้งค่า > บัญชี
+tasks-account-not-enabled = ยังไม่ได้เปิดการเข้าถึงงานสำหรับ Katna
+tasks-account-failed = อ่านรายการงานไม่ได้
+# $reason is the server's own words, in English.
+tasks-account-error = อ่านรายการงานไม่ได้: { $reason }
+tasks-account-none = ไม่พบรายการงาน
+tasks-account-looking = กำลังค้นหารายการงาน…
+tasks-account-try-again = ลองอีกครั้ง
+tasks-account-try-again-tooltip = ตรวจสอบงานของบัญชีนี้อีกครั้งตอนนี้
+tasks-account-fixing = กำลังดำเนินการ…
 tasks-list-name-placeholder = ชื่อรายการ
 
 ## Lists and tasks

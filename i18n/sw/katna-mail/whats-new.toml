@@ -1566,3 +1566,11 @@ Anwani za akaunti zisipopakia, mstari chini yake unaeleza sababu, pamoja
 na mbofyo mmoja unaorekebisha, kama vile “Ingia tena ili kuonyesha
 anwani” au “Jaribu tena”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Kila akaunti kwenye ukurasa wa Majukumu"
+text = """
+Kila akaunti sasa inaonekana kwenye paneli ya pembeni ya Majukumu.
+Majukumu ya akaunti yasipopakia, mstari chini yake unaeleza sababu,
+pamoja na mbofyo mmoja wa kurekebisha: ingia tena, au jaribu tena.
+"""

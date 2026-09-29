@@ -11,6 +11,23 @@ tasks-starred = משימות מסומנות בכוכב
 tasks-new-list = יצירת רשימה חדשה
 tasks-on-this-computer = במחשב הזה
 tasks-my-tasks = המשימות שלי
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = יש להתחבר שוב כדי להציג משימות
+tasks-account-signed-in = התחברת שוב אל { $address }. המשימות שלך נטענות…
+tasks-account-sign-in-refused = { $provider } לא הכניס את Katna. יש לנסות שוב ולאשר גישה למשימות שלך.
+tasks-account-refused = השרת לא קיבל את הסיסמה. Yahoo, iCloud, Zoho ואחרים דורשים סיסמה לאפליקציה.
+tasks-account-change-password = שינוי סיסמה
+tasks-account-change-password-tooltip = פתיחת הגדרות > חשבונות
+tasks-account-not-enabled = הגישה למשימות עבור Katna עדיין לא הופעלה.
+tasks-account-failed = לא ניתן היה לקרוא את רשימות המשימות.
+# $reason is the server's own words, in English.
+tasks-account-error = לא ניתן היה לקרוא את רשימות המשימות: { $reason }
+tasks-account-none = לא נמצאו רשימות משימות
+tasks-account-looking = מתבצע חיפוש רשימות משימות…
+tasks-account-try-again = ניסיון נוסף
+tasks-account-try-again-tooltip = בדיקה חוזרת של המשימות בחשבון הזה עכשיו
+tasks-account-fixing = מטפלים בזה…
 tasks-list-name-placeholder = שם הרשימה
 
 ## Lists and tasks

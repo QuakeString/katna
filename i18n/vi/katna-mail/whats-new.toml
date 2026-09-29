@@ -1590,3 +1590,11 @@ tài khoản đó. Khi danh bạ của một tài khoản không tải được,
 dưới cho biết lý do, kèm một cú nhấp để khắc phục, chẳng hạn “Đăng nhập
 lại để hiện danh bạ” hoặc “Thử lại”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Mọi tài khoản trên trang Việc cần làm"
+text = """
+Mọi tài khoản giờ đều hiện trong bảng bên của Việc cần làm. Khi việc cần
+làm của một tài khoản không tải được, một dòng bên dưới cho biết lý do,
+kèm một cú nhấp để khắc phục: đăng nhập lại hoặc thử lại.
+"""

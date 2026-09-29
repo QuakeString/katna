@@ -1699,3 +1699,12 @@ personnes. Quand les contacts d’un compte ne se chargent pas, une ligne
 en dessous dit pourquoi, avec le clic qui règle le problème, comme
 « Reconnectez-vous pour afficher les contacts » ou « Réessayer ».
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Tous les comptes sur la page Tâches"
+text = """
+Chaque compte apparaît désormais dans le panneau latéral de Tâches.
+Quand les tâches d’un compte ne se chargent pas, une ligne en dessous
+dit pourquoi, avec un clic pour régler le problème : se reconnecter, ou
+réessayer.
+"""

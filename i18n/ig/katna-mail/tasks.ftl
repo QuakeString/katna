@@ -11,6 +11,23 @@ tasks-starred = Nwere kpakpando
 tasks-new-list = Mepụta ndepụta ọhụrụ
 tasks-on-this-computer = Na kọmputa a
 tasks-my-tasks = Ọrụ m
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Banye ọzọ iji gosi ọrụ
+tasks-account-signed-in = Abanyela ọzọ na { $address }. Na-enweta ọrụ gị…
+tasks-account-sign-in-refused = { $provider } ekweghị ka Katna banye. Nwaa ọzọ, ma kwe ka ọ nweta ọrụ gị.
+tasks-account-refused = Sava ahụ anabataghị okwuntughe ahụ. Yahoo, iCloud, Zoho na ndị ọzọ chọrọ okwuntughe ngwa.
+tasks-account-change-password = Gbanwee okwuntughe
+tasks-account-change-password-tooltip = Mepee Ntọala > Akaụntụ
+tasks-account-not-enabled = Agbanyebeghị ohere ọrụ maka Katna.
+tasks-account-failed = Enweghị ike ịgụ ndepụta ọrụ.
+# $reason is the server's own words, in English.
+tasks-account-error = Enweghị ike ịgụ ndepụta ọrụ: { $reason }
+tasks-account-none = Ahụghị ndepụta ọrụ ọ bụla
+tasks-account-looking = Na-achọ ndepụta ọrụ…
+tasks-account-try-again = Nwaa ọzọ
+tasks-account-try-again-tooltip = Lelee ọrụ akaụntụ a ọzọ ugbu a
+tasks-account-fixing = Na-arụ ọrụ na ya…
 tasks-list-name-placeholder = Aha ndepụta
 
 ## Lists and tasks

@@ -1700,3 +1700,12 @@ contact ng isang account, may linya sa ilalim nito na nagsasabi kung
 bakit, kasama ang isang click na aayos dito, gaya ng “Mag-sign in muli
 para ipakita ang mga contact” o “Subukang muli”.
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Lahat ng account sa page ng Mga Gawain"
+text = """
+Lumalabas na ngayon ang bawat account sa side panel ng Mga Gawain. Kapag
+hindi ma-load ang mga gawain ng isang account, may linya sa ilalim nito
+na nagsasabi kung bakit, kasama ang isang click para ayusin ito:
+mag-sign in muli, o subukang muli.
+"""

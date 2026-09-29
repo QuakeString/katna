@@ -11,6 +11,23 @@ tasks-starred = Yıldızlı
 tasks-new-list = Yeni liste oluştur
 tasks-on-this-computer = Bu bilgisayarda
 tasks-my-tasks = Görevlerim
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Görevleri göstermek için yeniden oturum aç
+tasks-account-signed-in = { $address } hesabında yeniden oturum açıldı. Görevleriniz alınıyor…
+tasks-account-sign-in-refused = { $provider }, Katna'nın girişine izin vermedi. Tekrar deneyin ve görevlerinize erişime izin verin.
+tasks-account-refused = Sunucu parolayı kabul etmedi. Yahoo, iCloud, Zoho ve diğerleri bir uygulama parolası gerektirir.
+tasks-account-change-password = Parolayı değiştir
+tasks-account-change-password-tooltip = Ayarlar > Hesaplar'ı aç
+tasks-account-not-enabled = Katna için görev erişimi henüz açılmadı.
+tasks-account-failed = Görev listeleri okunamadı.
+# $reason is the server's own words, in English.
+tasks-account-error = Görev listeleri okunamadı: { $reason }
+tasks-account-none = Görev listesi bulunamadı
+tasks-account-looking = Görev listeleri aranıyor…
+tasks-account-try-again = Tekrar dene
+tasks-account-try-again-tooltip = Bu hesabın görevlerini şimdi yeniden denetle
+tasks-account-fixing = Üzerinde çalışılıyor…
 tasks-list-name-placeholder = Liste adı
 
 ## Lists and tasks

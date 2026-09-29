@@ -11,6 +11,23 @@ tasks-starred = Met ster
 tasks-new-list = Nieuwe lijst maken
 tasks-on-this-computer = Op deze computer
 tasks-my-tasks = Mijn taken
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = Meld je opnieuw aan om taken te tonen
+tasks-account-signed-in = Opnieuw aangemeld bij { $address }. Je taken worden opgehaald…
+tasks-account-sign-in-refused = { $provider } heeft Katna niet binnengelaten. Probeer het opnieuw en geef toegang tot je taken.
+tasks-account-refused = De server heeft het wachtwoord niet geaccepteerd. Yahoo, iCloud, Zoho en andere hebben een app-wachtwoord nodig.
+tasks-account-change-password = Wachtwoord wijzigen
+tasks-account-change-password-tooltip = Instellingen > Accounts openen
+tasks-account-not-enabled = Taaktoegang voor Katna is nog niet ingeschakeld.
+tasks-account-failed = De takenlijsten konden niet worden gelezen.
+# $reason is the server's own words, in English.
+tasks-account-error = De takenlijsten konden niet worden gelezen: { $reason }
+tasks-account-none = Geen takenlijsten gevonden
+tasks-account-looking = Takenlijsten zoeken…
+tasks-account-try-again = Opnieuw proberen
+tasks-account-try-again-tooltip = De taken van dit account nu opnieuw controleren
+tasks-account-fixing = Bezig…
 tasks-list-name-placeholder = Naam van de lijst
 
 ## Lists and tasks

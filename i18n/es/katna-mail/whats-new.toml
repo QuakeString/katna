@@ -1655,3 +1655,11 @@ Cuando los contactos de una cuenta no pueden cargarse, una línea debajo
 dice por qué, con el único clic que lo arregla, como «Vuelve a iniciar
 sesión para mostrar los contactos» o «Reintentar».
 """
+
+["2026-09-29-1327-tasks-every-account"]
+title = "Todas las cuentas en la página Tareas"
+text = """
+Todas las cuentas aparecen ahora en el panel lateral de Tareas. Cuando
+las tareas de una cuenta no pueden cargarse, una línea debajo dice por
+qué, con un clic para arreglarlo: volver a iniciar sesión o reintentar.
+"""

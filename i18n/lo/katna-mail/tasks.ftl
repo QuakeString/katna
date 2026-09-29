@@ -11,6 +11,23 @@ tasks-starred = ມີດາວ
 tasks-new-list = ສ້າງລາຍການໃໝ່
 tasks-on-this-computer = ໃນຄອມພິວເຕີເຄື່ອງນີ້
 tasks-my-tasks = ໜ້າວຽກຂອງຂ້ອຍ
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = ເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສະແດງໜ້າວຽກ
+tasks-account-signed-in = ເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງແລ້ວ. ກຳລັງດຶງໜ້າວຽກຂອງທ່ານ…
+tasks-account-sign-in-refused = { $provider } ບໍ່ໃຫ້ Katna ເຂົ້າ. ລອງໃໝ່ ແລະ ອະນຸຍາດໃຫ້ເຂົ້າເຖິງໜ້າວຽກຂອງທ່ານ.
+tasks-account-refused = ເຊີບເວີບໍ່ຍອມຮັບລະຫັດຜ່ານ. Yahoo, iCloud, Zoho ແລະ ອື່ນໆ ຕ້ອງການລະຫັດຜ່ານແອັບ.
+tasks-account-change-password = ປ່ຽນລະຫັດຜ່ານ
+tasks-account-change-password-tooltip = ເປີດ ການຕັ້ງຄ່າ > ບັນຊີ
+tasks-account-not-enabled = ການເຂົ້າເຖິງໜ້າວຽກສຳລັບ Katna ຍັງບໍ່ໄດ້ເປີດເທື່ອ.
+tasks-account-failed = ບໍ່ສາມາດອ່ານລາຍການໜ້າວຽກໄດ້.
+# $reason is the server's own words, in English.
+tasks-account-error = ບໍ່ສາມາດອ່ານລາຍການໜ້າວຽກໄດ້: { $reason }
+tasks-account-none = ບໍ່ພົບລາຍການໜ້າວຽກ
+tasks-account-looking = ກຳລັງຊອກຫາລາຍການໜ້າວຽກ…
+tasks-account-try-again = ລອງໃໝ່
+tasks-account-try-again-tooltip = ກວດເບິ່ງໜ້າວຽກຂອງບັນຊີນີ້ອີກຄັ້ງດຽວນີ້
+tasks-account-fixing = ກຳລັງດຳເນີນການ…
 tasks-list-name-placeholder = ຊື່ລາຍການ
 
 ## Lists and tasks

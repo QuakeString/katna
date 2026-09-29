@@ -11,6 +11,23 @@ tasks-starred = སྐར་མ་བཀལ་ཡོདཔ
 tasks-new-list = ཐོ་ཡིག་གསརཔ་བཟོ།
 tasks-on-this-computer = གློག་ཀླད་འདི་གུ།
 tasks-my-tasks = ངེ་གི་ལཱ་ཚུ།
+# The line under an account in the side list whose task lists could not
+# come: why, and the one click that fixes it.
+tasks-account-sign-in = ལཱ་ཚུ་སྟོན་ནི་ལུ་ ལོག་ནང་བསྐྱོད་འབད།
+tasks-account-signed-in = { $address } ནང་ ལོག་ནང་བསྐྱོད་འབད་ཡི། ཁྱོད་ཀྱི་ལཱ་ཚུ་ལེན་དོ…
+tasks-account-sign-in-refused = { $provider } གིས་ Katna ནང་ན་ འཛུལ་མ་བཅུག ལོག་འབད་རྩོལ་བསྐྱེད་ཞིནམ་ལས་ ཁྱོད་ཀྱི་ལཱ་ཚུ་ལུ་ འཛུལ་སྤྱོད་ཀྱི་གནང་བ་བྱིན།
+tasks-account-refused = སར་བར་གྱིས་ ཆོག་ཡིག་ངོས་ལེན་མ་འབད། Yahoo དང་ iCloud Zoho དེ་ལས་ གཞན་ཚུ་ལུ་ གློག་རིམ་ཆོག་ཡིག་དགོཔ་ཨིན།
+tasks-account-change-password = ཆོག་ཡིག་བསྒྱུར།
+tasks-account-change-password-tooltip = སྒྲིག་སྟངས་ > རྩིས་ཐོ་ཚུ་ ཁ་ཕྱེ།
+tasks-account-not-enabled = Katna གི་དོན་ལུ་ ལཱ་འཛུལ་སྤྱོད་ ད་ཚུན་ཚོད་ ཁ་མ་ཕྱེ་བས།
+tasks-account-failed = ལཱ་ཐོ་ཡིག་ཚུ་ལྷག་མ་ཚུགས།
+# $reason is the server's own words, in English.
+tasks-account-error = ལཱ་ཐོ་ཡིག་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
+tasks-account-none = ལཱ་ཐོ་ཡིག་ག་ནི་ཡང་ མ་ཐོབ།
+tasks-account-looking = ལཱ་ཐོ་ཡིག་ཚུ་འཚོལ་དོ…
+tasks-account-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
+tasks-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་ལཱ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།
+tasks-account-fixing = ལཱ་འབད་དོ…
 tasks-list-name-placeholder = ཐོ་ཡིག་གི་མིང་།
 
 ## Lists and tasks
