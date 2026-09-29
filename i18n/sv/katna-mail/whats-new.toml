@@ -1637,3 +1637,12 @@ den färg du väljer. Ångra med Ctrl+Z, sudda ut en markering med
 suddgummit och spara sedan en uppmärkt kopia. Den ursprungliga bilagan
 förblir som den var.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Varför ett konto saknar kalendrar"
+text = """
+När ett kontos kalendrar inte visas säger Kalender nu vad servern
+svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
+Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
+eller Microsoft, vilket deras kalendrar kräver.
+"""

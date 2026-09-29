@@ -57,6 +57,12 @@ calendar-account-not-enabled = Katna의 캘린더 접근이 아직 켜져 있지
 calendar-account-failed = 캘린더를 읽을 수 없습니다.
 calendar-account-error = 캘린더를 읽을 수 없습니다: { $reason }
 calendar-account-none = 캘린더를 찾을 수 없음
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = 캘린더를 찾을 수 없음: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider }에서는 { $provider }로 로그인한 Katna에만 캘린더를 보여 줍니다.
+calendar-account-sign-in-with = { $provider }로 로그인
 calendar-account-looking = 캘린더를 찾는 중…
 calendar-account-try-again = 다시 시도
 calendar-account-try-again-tooltip = 지금 이 계정의 캘린더를 다시 확인

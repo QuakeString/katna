@@ -58,6 +58,12 @@ calendar-account-not-enabled = Hindi pa naka-on ang access sa kalendaryo para sa
 calendar-account-failed = Hindi mabasa ang mga kalendaryo.
 calendar-account-error = Hindi mabasa ang mga kalendaryo: { $reason }
 calendar-account-none = Walang nakitang kalendaryo
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Walang nakitang kalendaryo: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = Ipinapakita lang ng { $provider } ang mga kalendaryo sa Katna kapag naka-sign in gamit ang { $provider }.
+calendar-account-sign-in-with = Mag-sign in gamit ang { $provider }
 calendar-account-looking = Naghahanap ng mga kalendaryo…
 calendar-account-try-again = Subukang muli
 calendar-account-try-again-tooltip = Suriin muli ngayon ang mga kalendaryo ng account na ito

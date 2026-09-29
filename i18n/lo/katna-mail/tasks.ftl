@@ -24,6 +24,12 @@ tasks-account-failed = ບໍ່ສາມາດອ່ານລາຍການໜ
 # $reason is the server's own words, in English.
 tasks-account-error = ບໍ່ສາມາດອ່ານລາຍການໜ້າວຽກໄດ້: { $reason }
 tasks-account-none = ບໍ່ພົບລາຍການໜ້າວຽກ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = ບໍ່ພົບລາຍການໜ້າວຽກ: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } ສະແດງໜ້າວຽກສະເພາະໃຫ້ Katna ທີ່ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ເທົ່ານັ້ນ.
+tasks-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 tasks-account-looking = ກຳລັງຊອກຫາລາຍການໜ້າວຽກ…
 tasks-account-try-again = ລອງໃໝ່
 tasks-account-try-again-tooltip = ກວດເບິ່ງໜ້າວຽກຂອງບັນຊີນີ້ອີກຄັ້ງດຽວນີ້

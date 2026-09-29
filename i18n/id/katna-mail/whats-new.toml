@@ -1673,3 +1673,12 @@ warna pilihan Anda. Urungkan dengan Ctrl+Z, hapus tanda dengan
 penghapus, lalu simpan salinan bertanda. Lampiran aslinya tetap seperti
 semula.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Mengapa akun tidak punya kalender"
+text = """
+Jika kalender sebuah akun tidak muncul, Kalender kini memberi tahu
+jawaban server, dan Coba lagi langsung mencarinya lagi. Akun Gmail atau
+Outlook yang ditambahkan dengan sandi menawarkan untuk masuk dengan
+Google atau Microsoft, yang dibutuhkan kalendernya.
+"""

@@ -24,6 +24,12 @@ tasks-account-failed = Die takelyste kon nie gelees word nie.
 # $reason is the server's own words, in English.
 tasks-account-error = Die takelyste kon nie gelees word nie: { $reason }
 tasks-account-none = Geen takelyste gevind nie
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Geen takelyste gevind nie: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } wys take net aan Katna as dit met { $provider } aangemeld is.
+tasks-account-sign-in-with = Meld aan met { $provider }
 tasks-account-looking = Soek tans takelyste…
 tasks-account-try-again = Probeer weer
 tasks-account-try-again-tooltip = Kyk nou weer na hierdie rekening se take

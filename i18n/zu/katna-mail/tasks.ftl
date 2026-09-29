@@ -24,6 +24,12 @@ tasks-account-failed = Izinhlu zemisebenzi azikwazanga ukufundwa.
 # $reason is the server's own words, in English.
 tasks-account-error = Izinhlu zemisebenzi azikwazanga ukufundwa: { $reason }
 tasks-account-none = Azikho izinhlu zemisebenzi ezitholakele
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Azikho izinhlu zemisebenzi ezitholakele: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = I-{ $provider } ibonisa imisebenzi kuphela ku-Katna engene nge-{ $provider }.
+tasks-account-sign-in-with = Ngena nge-{ $provider }
 tasks-account-looking = Kufunwa izinhlu zemisebenzi…
 tasks-account-try-again = Zama futhi
 tasks-account-try-again-tooltip = Hlola imisebenzi yale akhawunti futhi manje

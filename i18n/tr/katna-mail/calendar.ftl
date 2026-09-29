@@ -58,6 +58,12 @@ calendar-account-not-enabled = Katna için takvim erişimi henüz açılmadı.
 calendar-account-failed = Takvimler okunamadı.
 calendar-account-error = Takvimler okunamadı: { $reason }
 calendar-account-none = Takvim bulunamadı
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Takvim bulunamadı: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider }, takvimleri yalnızca { $provider } ile oturum açmış Katna'ya gösterir.
+calendar-account-sign-in-with = { $provider } ile oturum aç
 calendar-account-looking = Takvimler aranıyor…
 calendar-account-try-again = Tekrar dene
 calendar-account-try-again-tooltip = Bu hesabın takvimlerini şimdi yeniden denetle

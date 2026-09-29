@@ -57,6 +57,12 @@ calendar-account-not-enabled = ยังไม่ได้เปิดการ�
 calendar-account-failed = อ่านปฏิทินไม่ได้
 calendar-account-error = อ่านปฏิทินไม่ได้: { $reason }
 calendar-account-none = ไม่พบปฏิทิน
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ไม่พบปฏิทิน: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } จะแสดงปฏิทินให้เฉพาะ Katna ที่ลงชื่อเข้าใช้ด้วย { $provider } เท่านั้น
+calendar-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
 calendar-account-looking = กำลังค้นหาปฏิทิน…
 calendar-account-try-again = ลองอีกครั้ง
 calendar-account-try-again-tooltip = ตรวจสอบปฏิทินของบัญชีนี้อีกครั้งตอนนี้

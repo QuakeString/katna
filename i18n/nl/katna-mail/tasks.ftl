@@ -24,6 +24,12 @@ tasks-account-failed = De takenlijsten konden niet worden gelezen.
 # $reason is the server's own words, in English.
 tasks-account-error = De takenlijsten konden niet worden gelezen: { $reason }
 tasks-account-none = Geen takenlijsten gevonden
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Geen takenlijsten gevonden: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } toont taken alleen aan Katna als die is aangemeld met { $provider }.
+tasks-account-sign-in-with = Aanmelden met { $provider }
 tasks-account-looking = Takenlijsten zoeken…
 tasks-account-try-again = Opnieuw proberen
 tasks-account-try-again-tooltip = De taken van dit account nu opnieuw controleren

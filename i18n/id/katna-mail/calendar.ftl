@@ -54,6 +54,12 @@ calendar-account-not-enabled = Akses kalender untuk Katna belum diaktifkan.
 calendar-account-failed = Kalender tidak dapat dibaca.
 calendar-account-error = Kalender tidak dapat dibaca: { $reason }
 calendar-account-none = Tidak ada kalender yang ditemukan
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Tidak ada kalender yang ditemukan: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } hanya menampilkan kalender ke Katna yang masuk dengan { $provider }.
+calendar-account-sign-in-with = Masuk dengan { $provider }
 calendar-account-looking = Mencari kalender…
 calendar-account-try-again = Coba lagi
 calendar-account-try-again-tooltip = Periksa lagi kalender akun ini sekarang

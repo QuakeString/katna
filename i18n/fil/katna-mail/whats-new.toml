@@ -1729,3 +1729,13 @@ na pipiliin mo. I-undo gamit ang Ctrl+Z, burahin ang isang marka gamit
 ang pambura, saka i-save ang kopyang may marka. Mananatili ang orihinal
 na attachment gaya ng dati.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Kung bakit walang kalendaryo ang isang account"
+text = """
+Kapag hindi lumalabas ang mga kalendaryo ng isang account, sinasabi na
+ngayon ng Kalendaryo kung ano ang sagot ng server, at hinahanap muli
+agad ng Subukang muli ang mga ito. Nag-aalok ang Gmail o Outlook account
+na idinagdag gamit ang password na mag-sign in gamit ang Google o
+Microsoft, na kailangan ng mga kalendaryo nito.
+"""

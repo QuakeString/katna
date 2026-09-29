@@ -1728,3 +1728,13 @@ votre choix. Annulez avec Ctrl+Z, effacez une annotation avec la gomme,
 puis enregistrez une copie annotée. La pièce jointe d’origine reste
 telle quelle.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Pourquoi un compte n’a pas de calendriers"
+text = """
+Quand les calendriers d’un compte ne s’affichent pas, Calendrier indique
+maintenant ce que le serveur a répondu, et Réessayer les recherche
+aussitôt. Un compte Gmail ou Outlook ajouté avec un mot de passe propose
+de se connecter avec Google ou Microsoft, ce dont ses calendriers ont
+besoin.
+"""

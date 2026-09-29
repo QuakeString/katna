@@ -57,6 +57,12 @@ calendar-account-not-enabled = ការចូលប្រើប្រតិទ�
 calendar-account-failed = មិនអាចអានប្រតិទិនបានទេ។
 calendar-account-error = មិនអាចអានប្រតិទិនបានទេ៖ { $reason }
 calendar-account-none = រកមិនឃើញប្រតិទិនទេ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = រកមិនឃើញប្រតិទិនទេ៖ { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } បង្ហាញប្រតិទិនតែចំពោះ Katna ដែលបានចូលដោយប្រើ { $provider } ប៉ុណ្ណោះ។
+calendar-account-sign-in-with = ចូលដោយប្រើ { $provider }
 calendar-account-looking = កំពុងស្វែងរកប្រតិទិន…
 calendar-account-try-again = ព្យាយាមម្ដងទៀត
 calendar-account-try-again-tooltip = ពិនិត្យប្រតិទិនរបស់គណនីនេះម្ដងទៀតឥឡូវនេះ

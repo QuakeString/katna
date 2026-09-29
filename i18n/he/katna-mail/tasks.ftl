@@ -24,6 +24,12 @@ tasks-account-failed = לא ניתן היה לקרוא את רשימות המש�
 # $reason is the server's own words, in English.
 tasks-account-error = לא ניתן היה לקרוא את רשימות המשימות: { $reason }
 tasks-account-none = לא נמצאו רשימות משימות
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = לא נמצאו רשימות משימות: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } מציג משימות רק ל-Katna שמחובר עם { $provider }.
+tasks-account-sign-in-with = התחברות עם { $provider }
 tasks-account-looking = מתבצע חיפוש רשימות משימות…
 tasks-account-try-again = ניסיון נוסף
 tasks-account-try-again-tooltip = בדיקה חוזרת של המשימות בחשבון הזה עכשיו

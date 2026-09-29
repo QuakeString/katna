@@ -24,6 +24,12 @@ tasks-account-failed = Görev listeleri okunamadı.
 # $reason is the server's own words, in English.
 tasks-account-error = Görev listeleri okunamadı: { $reason }
 tasks-account-none = Görev listesi bulunamadı
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Görev listesi bulunamadı: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider }, görevleri yalnızca { $provider } ile oturum açmış Katna'ya gösterir.
+tasks-account-sign-in-with = { $provider } ile oturum aç
 tasks-account-looking = Görev listeleri aranıyor…
 tasks-account-try-again = Tekrar dene
 tasks-account-try-again-tooltip = Bu hesabın görevlerini şimdi yeniden denetle

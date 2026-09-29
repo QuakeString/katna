@@ -58,6 +58,12 @@ calendar-account-not-enabled = Katna සඳහා දින දර්ශන ප�
 calendar-account-failed = දින දර්ශන කියවිය නොහැකි විය.
 calendar-account-error = දින දර්ශන කියවිය නොහැකි විය: { $reason }
 calendar-account-none = දින දර්ශන හමු නොවීය
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = දින දර්ශන හමු නොවීය: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } දින දර්ශන පෙන්වන්නේ { $provider } සමඟ පුරනය වූ Katna ට පමණි.
+calendar-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
 calendar-account-looking = දින දර්ශන සොයමින්…
 calendar-account-try-again = නැවත උත්සාහ කරන්න
 calendar-account-try-again-tooltip = මෙම ගිණුමේ දින දර්ශන දැන් නැවත පරීක්ෂා කරන්න

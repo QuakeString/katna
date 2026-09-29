@@ -1711,3 +1711,13 @@ mit Strg+Z, eine Markierung entfernen Sie mit dem Radierer, dann
 speichern Sie eine markierte Kopie. Der ursprüngliche Anhang bleibt, wie
 er war.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Warum ein Konto keine Kalender hat"
+text = """
+Wenn die Kalender eines Kontos nicht erscheinen, sagt der Kalender
+jetzt, was der Server geantwortet hat, und Erneut versuchen sucht sofort
+erneut danach. Ein mit Passwort hinzugefügtes Gmail- oder Outlook-Konto
+bietet an, sich mit Google oder Microsoft anzumelden, was dessen
+Kalender brauchen.
+"""

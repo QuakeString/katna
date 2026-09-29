@@ -24,6 +24,12 @@ tasks-account-failed = タスクリストを読み込めませんでした。
 # $reason is the server's own words, in English.
 tasks-account-error = タスクリストを読み込めませんでした: { $reason }
 tasks-account-none = タスクリストが見つかりません
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = タスクリストが見つかりません: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } のタスクは、{ $provider } でサインインした Katna にのみ表示されます。
+tasks-account-sign-in-with = { $provider } でサインイン
 tasks-account-looking = タスクリストを探しています…
 tasks-account-try-again = 再試行
 tasks-account-try-again-tooltip = このアカウントのタスクを今すぐ再確認

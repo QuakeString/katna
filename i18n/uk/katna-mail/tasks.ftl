@@ -24,6 +24,12 @@ tasks-account-failed = Не вдалося прочитати списки за�
 # $reason is the server's own words, in English.
 tasks-account-error = Не вдалося прочитати списки завдань: { $reason }
 tasks-account-none = Списків завдань не знайдено
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Списків завдань не знайдено: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } показує завдання лише Katna, що увійшла через { $provider }.
+tasks-account-sign-in-with = Увійти через { $provider }
 tasks-account-looking = Пошук списків завдань…
 tasks-account-try-again = Повторити спробу
 tasks-account-try-again-tooltip = Перевірити завдання цього облікового запису ще раз зараз
