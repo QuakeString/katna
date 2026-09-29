@@ -1506,3 +1506,11 @@ Compartir horas libres, en las opciones del Calendario, inicia un
 mensaje que enumera cuándo estás libre en los próximos días laborables,
 listo para enviarlo a quien quieras.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Grupos de calendarios"
+text = """
+Guarda los calendarios que estás mostrando como un grupo, como «Trabajo»
+o «Familia», con + junto a Grupos de calendarios. Un clic en un grupo
+muestra sus calendarios y oculta el resto.
+"""

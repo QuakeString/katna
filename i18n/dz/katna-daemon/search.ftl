@@ -4,9 +4,16 @@
 search-category-mail = གློག་འཕྲིན
 search-category-people = མི་ཚུ
 search-category-tasks = ལཱ་ཚུ
+search-category-events = བྱུང་རིམ་ཚུ
 search-mail-from = { $sender } ལས
 search-no-subject = (དོན་ཚན་མེད)
 search-task-in = { $list } ནང་
+search-event-at = { $when } · { $place }
+search-event-in = { $when } · { $calendar }
+search-event-now = ད་ལྟོ
+search-event-today = ད་རིས
+search-event-tomorrow = ནངས་པ
+search-event-in-days = ཉིན་ { $count } ནང་
 search-reply-all = ཆ་མཉམ་ལུ་ལན་སློག
 search-copy-address = ཁ་བྱང་འདྲ་བཤུས་རྐྱབ།
 search-find-mail = གློག་འཕྲིན་འཚོལ།

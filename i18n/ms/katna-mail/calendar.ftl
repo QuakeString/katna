@@ -9,11 +9,16 @@ calendar-view-week = Minggu
 calendar-view-month = Bulan
 calendar-view-year = Tahun
 calendar-view-schedule = Jadual
+calendar-view-days =
+    { $count ->
+       *[other] { $count } hari
+    }
 calendar-options = Pilihan
 calendar-density = Ketumpatan
 calendar-density-responsive = Responsif kepada skrin anda
 calendar-density-comfortable = Selesa
 calendar-density-compact = Padat
+calendar-custom-days = Paparan tersuai
 calendar-second-zone = Zon waktu kedua
 calendar-zone-none = Tiada
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = Lebih lewat
 calendar-title-months = { $first } – { $last }
 calendar-loading = Memuatkan…
 calendar-read-failed = Kalendar tidak dapat dibaca: { $error }
+calendar-sets = Set kalendar
+calendar-set-add = Simpan kalendar yang dipaparkan sebagai set
+calendar-set-name = Nama set
+calendar-set-remove = Alih keluar set
 calendar-local = Pada komputer ini
 calendar-account-gone = Akaun yang dialih keluar
 calendar-birthdays = Hari lahir

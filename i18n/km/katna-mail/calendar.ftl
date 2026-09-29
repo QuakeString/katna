@@ -9,11 +9,16 @@ calendar-view-week = សប្តាហ៍
 calendar-view-month = ខែ
 calendar-view-year = ឆ្នាំ
 calendar-view-schedule = កាលវិភាគ
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ថ្ងៃ
+    }
 calendar-options = ជម្រើស
 calendar-density = ដង់ស៊ីតេ
 calendar-density-responsive = ឆ្លើយតបតាមអេក្រង់របស់អ្នក
 calendar-density-comfortable = ស្រួល
 calendar-density-compact = បង្រួម
+calendar-custom-days = ទិដ្ឋភាពផ្ទាល់ខ្លួន
 calendar-second-zone = ល្វែងម៉ោងទីពីរ
 calendar-zone-none = គ្មាន
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = បន្ទាប់
 calendar-title-months = { $first } – { $last }
 calendar-loading = កំពុងផ្ទុក…
 calendar-read-failed = មិនអាចអានប្រតិទិនបានទេ៖ { $error }
+calendar-sets = សំណុំប្រតិទិន
+calendar-set-add = រក្សាទុកប្រតិទិនដែលកំពុងបង្ហាញជាសំណុំ
+calendar-set-name = ឈ្មោះសំណុំ
+calendar-set-remove = ដកសំណុំចេញ
 calendar-local = កុំព្យូទ័រនេះ
 calendar-account-gone = គណនីដែលបានដកចេញ
 calendar-birthdays = ថ្ងៃកំណើត

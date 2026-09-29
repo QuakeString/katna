@@ -9,11 +9,16 @@ calendar-view-week = 週
 calendar-view-month = 月
 calendar-view-year = 年
 calendar-view-schedule = 行程
+calendar-view-days =
+    { $count ->
+       *[other] { $count } 天
+    }
 calendar-options = 設定
 calendar-density = 資訊密度
 calendar-density-responsive = 隨螢幕自動調整
 calendar-density-comfortable = 舒適
 calendar-density-compact = 精簡
+calendar-custom-days = 自訂檢視
 calendar-second-zone = 次要時區
 calendar-zone-none = 無
 calendar-zone = { $zone } （{ $offset }）
@@ -36,6 +41,10 @@ calendar-next-period = 較晚
 calendar-title-months = { $first } – { $last }
 calendar-loading = 載入中…
 calendar-read-failed = 無法讀取日曆：{ $error }
+calendar-sets = 日曆組
+calendar-set-add = 將顯示的日曆儲存為組
+calendar-set-name = 組名稱
+calendar-set-remove = 移除組
 calendar-local = 這部電腦
 calendar-account-gone = 已移除的帳號
 calendar-birthdays = 生日

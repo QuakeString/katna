@@ -1545,3 +1545,11 @@ Partager mes disponibilités, dans les options du Calendrier, démarre un
 message qui liste vos créneaux libres des prochains jours ouvrés, prêt à
 être envoyé à qui vous voulez.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Groupes de calendriers"
+text = """
+Enregistrez les calendriers affichés comme groupe, par exemple « Travail »
+ou « Famille », avec le + à côté de Groupes de calendriers. Un clic sur
+un groupe affiche ses calendriers et masque les autres.
+"""

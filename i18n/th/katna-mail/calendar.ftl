@@ -9,11 +9,16 @@ calendar-view-week = สัปดาห์
 calendar-view-month = เดือน
 calendar-view-year = ปี
 calendar-view-schedule = กำหนดการ
+calendar-view-days =
+    { $count ->
+       *[other] { $count } วัน
+    }
 calendar-options = ตัวเลือก
 calendar-density = ความหนาแน่น
 calendar-density-responsive = ปรับตามหน้าจอของคุณ
 calendar-density-comfortable = สบาย
 calendar-density-compact = กะทัดรัด
+calendar-custom-days = มุมมองกำหนดเอง
 calendar-second-zone = เขตเวลาที่สอง
 calendar-zone-none = ไม่มี
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = ถัดไป
 calendar-title-months = { $first } – { $last }
 calendar-loading = กำลังโหลด…
 calendar-read-failed = อ่านปฏิทินไม่ได้: { $error }
+calendar-sets = ชุดปฏิทิน
+calendar-set-add = บันทึกปฏิทินที่แสดงอยู่เป็นชุด
+calendar-set-name = ชื่อชุด
+calendar-set-remove = นำชุดออก
 calendar-local = คอมพิวเตอร์เครื่องนี้
 calendar-account-gone = บัญชีที่ถูกนำออกแล้ว
 calendar-birthdays = วันเกิด

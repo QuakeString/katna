@@ -9,11 +9,16 @@ calendar-view-week = 週
 calendar-view-month = 月
 calendar-view-year = 年
 calendar-view-schedule = スケジュール
+calendar-view-days =
+    { $count ->
+       *[other] { $count } 日間
+    }
 calendar-options = 設定
 calendar-density = 情報密度
 calendar-density-responsive = 画面に合わせて調整
 calendar-density-comfortable = ゆったり
 calendar-density-compact = コンパクト
+calendar-custom-days = カスタム表示
 calendar-second-zone = セカンダリ タイムゾーン
 calendar-zone-none = なし
 calendar-zone = { $zone } （{ $offset }）
@@ -36,6 +41,10 @@ calendar-next-period = 次へ
 calendar-title-months = { $first } – { $last }
 calendar-loading = 読み込み中…
 calendar-read-failed = カレンダーを読み込めませんでした: { $error }
+calendar-sets = カレンダー セット
+calendar-set-add = 表示中のカレンダーをセットとして保存
+calendar-set-name = セットの名前
+calendar-set-remove = セットを削除
 calendar-local = このコンピューター
 calendar-account-gone = 削除されたアカウント
 calendar-birthdays = 誕生日

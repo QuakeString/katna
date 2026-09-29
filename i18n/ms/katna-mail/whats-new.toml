@@ -1510,3 +1510,11 @@ Kongsi masa terluang dalam pilihan Kalendar memulakan mesej yang
 menyenaraikan bila anda terluang dalam beberapa hari bekerja yang akan
 datang, sedia dihantar kepada sesiapa sahaja.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Set kalendar"
+text = """
+Simpan kalendar yang anda paparkan sebagai set, seperti "Kerja" atau
+"Keluarga", dengan + di sebelah Set kalendar. Satu klik pada set
+memaparkan kalendarnya dan menyembunyikan yang lain.
+"""

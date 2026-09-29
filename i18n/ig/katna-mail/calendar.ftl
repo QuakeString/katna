@@ -9,11 +9,16 @@ calendar-view-week = Izu
 calendar-view-month = Onwa
 calendar-view-year = Afọ
 calendar-view-schedule = Nhazi oge
+calendar-view-days =
+    { $count ->
+       *[other] Ụbọchị { $count }
+    }
 calendar-options = Nhọrọ
 calendar-density = Njupụta
 calendar-density-responsive = Na-eso ihuenyo gị
 calendar-density-comfortable = Ọ dị mma
 calendar-density-compact = Nke dị nso
+calendar-custom-days = Ọhụhụ ahaziri
 calendar-second-zone = Mpaghara oge nke abụọ
 calendar-zone-none = Ọ dịghị
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = Nke ga-abịa
 calendar-title-months = { $first } – { $last }
 calendar-loading = Na-ebugo…
 calendar-read-failed = Enweghị ike ịgụ kalịnda: { $error }
+calendar-sets = Otu kalịnda
+calendar-set-add = Chekwaa kalịnda ndị a na-egosi dị ka otu
+calendar-set-name = Aha otu ahụ
+calendar-set-remove = Wepụ otu
 calendar-local = Na kọmputa a
 calendar-account-gone = Akaụntụ e wepụrụ
 calendar-birthdays = Ụbọchị ọmụmụ

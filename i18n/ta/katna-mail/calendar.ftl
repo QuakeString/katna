@@ -9,11 +9,17 @@ calendar-view-week = வாரம்
 calendar-view-month = மாதம்
 calendar-view-year = ஆண்டு
 calendar-view-schedule = அட்டவணை
+calendar-view-days =
+    { $count ->
+        [one] { $count } நாள்
+       *[other] { $count } நாட்கள்
+    }
 calendar-options = விருப்பங்கள்
 calendar-density = அடர்த்தி
 calendar-density-responsive = உங்கள் திரைக்கேற்ப
 calendar-density-comfortable = வசதியானது
 calendar-density-compact = சுருக்கமானது
+calendar-custom-days = தனிப்பயன் காட்சி
 calendar-second-zone = இரண்டாம் நேர மண்டலம்
 calendar-zone-none = எதுவுமில்லை
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = பின்னர்
 calendar-title-months = { $first } – { $last }
 calendar-loading = ஏற்றப்படுகிறது…
 calendar-read-failed = கேலெண்டரைப் படிக்க முடியவில்லை: { $error }
+calendar-sets = கேலெண்டர் தொகுப்புகள்
+calendar-set-add = காட்டப்படும் கேலெண்டர்களை ஒரு தொகுப்பாகச் சேமி
+calendar-set-name = தொகுப்பின் பெயர்
+calendar-set-remove = தொகுப்பை அகற்று
 calendar-local = இந்தக் கணினியில்
 calendar-account-gone = அகற்றப்பட்ட கணக்கு
 calendar-birthdays = பிறந்தநாள்கள்
