@@ -17,6 +17,8 @@ tasks-list-name-placeholder = שם הרשימה
 
 tasks-loading = קורא את המשימות שלך…
 tasks-no-lists = רשימות המשימות שלך יופיעו כאן.
+tasks-search = חיפוש במשימות
+tasks-search-none = אין משימות שתואמות לחיפוש.
 tasks-add = הוספת משימה
 tasks-title-placeholder = כותרת
 tasks-add-step = הוספת תת-משימה

@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Pangalan ng listahan
 
 tasks-loading = Binabasa ang iyong mga gawain…
 tasks-no-lists = Dito lalabas ang iyong mga listahan ng gawain.
+tasks-search = Maghanap sa mga gawain
+tasks-search-none = Walang gawain na tumutugma sa iyong paghahanap.
 tasks-add = Magdagdag ng gawain
 tasks-title-placeholder = Pamagat
 tasks-add-step = Magdagdag ng subtask

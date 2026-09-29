@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Naam van de lijst
 
 tasks-loading = Je taken worden gelezen…
 tasks-no-lists = Je takenlijsten verschijnen hier.
+tasks-search = Taken zoeken
+tasks-search-none = Er zijn geen taken die overeenkomen met je zoekopdracht.
 tasks-add = Een taak toevoegen
 tasks-title-placeholder = Titel
 tasks-add-step = Een subtaak toevoegen

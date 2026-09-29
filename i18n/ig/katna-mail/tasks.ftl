@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Aha ndepụta
 
 tasks-loading = Na-agụ ọrụ gị…
 tasks-no-lists = Ndepụta ọrụ gị ga-apụta ebe a.
+tasks-search = Chọọ ọrụ
+tasks-search-none = Ọ dịghị ọrụ dabara na ọchụchọ gị.
 tasks-add = Tinye ọrụ
 tasks-title-placeholder = Isiokwu
 tasks-add-step = Tinye obere ọrụ

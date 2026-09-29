@@ -1557,3 +1557,10 @@ text = """
 In Attività, trascina un'attività su un altro elenco per spostarla lì.
 Annulla la riporta indietro.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Cerca nelle tue attività"
+text = """
+In Attività la casella di ricerca in alto ora cerca nelle tue attività,
+nelle loro note e sottoattività, invece che nella tua posta.
+"""

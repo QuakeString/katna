@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Igama loluhlu
 
 tasks-loading = Iyafunda imisebenzi yakho…
 tasks-no-lists = Izinhlu zakho zemisebenzi zizovela lapha.
+tasks-search = Sesha imisebenzi
+tasks-search-none = Ayikho imisebenzi efana nosesho lwakho.
 tasks-add = Engeza umsebenzi
 tasks-title-placeholder = Isihloko
 tasks-add-step = Engeza umsebenzi omncane

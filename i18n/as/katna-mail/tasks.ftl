@@ -17,6 +17,8 @@ tasks-list-name-placeholder = তালিকাৰ নাম
 
 tasks-loading = আপোনাৰ কাৰ্য পঢ়া হৈছে…
 tasks-no-lists = আপোনাৰ কাৰ্য তালিকাবোৰ ইয়াত দেখা যাব।
+tasks-search = কাৰ্য সন্ধান কৰক
+tasks-search-none = আপোনাৰ সন্ধানৰ লগত কোনো কাৰ্য নিমিলে।
 tasks-add = কাৰ্য যোগ কৰক
 tasks-title-placeholder = শিৰোনাম
 tasks-add-step = উপ-কাৰ্য যোগ কৰক

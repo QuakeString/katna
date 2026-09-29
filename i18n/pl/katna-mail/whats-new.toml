@@ -1534,3 +1534,10 @@ text = """
 W Zadaniach przeciągnij zadanie na inną listę, aby je tam przenieść.
 Cofnij przywraca je na miejsce.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Szukaj w zadaniach"
+text = """
+W Zadaniach pole wyszukiwania u góry przeszukuje teraz Twoje zadania,
+ich notatki i podzadania, a nie pocztę.
+"""

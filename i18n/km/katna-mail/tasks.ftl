@@ -17,6 +17,8 @@ tasks-list-name-placeholder = ឈ្មោះបញ្ជី
 
 tasks-loading = កំពុងអានកិច្ចការរបស់អ្នក…
 tasks-no-lists = បញ្ជីកិច្ចការរបស់អ្នកនឹងបង្ហាញនៅទីនេះ។
+tasks-search = ស្វែងរកកិច្ចការ
+tasks-search-none = គ្មានកិច្ចការដែលត្រូវនឹងការស្វែងរករបស់អ្នកទេ។
 tasks-add = បន្ថែមកិច្ចការ
 tasks-title-placeholder = ចំណងជើង
 tasks-add-step = បន្ថែមកិច្ចការរង

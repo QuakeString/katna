@@ -1509,3 +1509,10 @@ text = """
 I Uppgifter drar du en uppgift till en annan lista för att flytta den
 dit. Ångra lägger tillbaka den.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Sök i dina uppgifter"
+text = """
+På sidan Uppgifter söker sökrutan högst upp nu i dina uppgifter, deras
+anteckningar och deluppgifter i stället för i din e-post.
+"""

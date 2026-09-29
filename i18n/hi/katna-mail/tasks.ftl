@@ -17,6 +17,8 @@ tasks-list-name-placeholder = सूची का नाम
 
 tasks-loading = आपके टास्क पढ़े जा रहे हैं…
 tasks-no-lists = आपकी टास्क सूचियां यहां दिखेंगी।
+tasks-search = टास्क खोजें
+tasks-search-none = आपकी खोज से कोई टास्क मेल नहीं खाता।
 tasks-add = टास्क जोड़ें
 tasks-title-placeholder = शीर्षक
 tasks-add-step = सबटास्क जोड़ें

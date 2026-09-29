@@ -1467,3 +1467,9 @@ title = "Buruta jukumu hadi orodha nyingine"
 text = """
 Katika Majukumu, buruta jukumu kwenye orodha nyingine ili kulihamishia huko. Tendua hulirudisha.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Tafuta majukumu yako"
+text = """
+Kwenye ukurasa wa Majukumu, kisanduku cha kutafuta kilicho juu sasa kinatafuta majukumu yako, maelezo yake na majukumu madogo, badala ya barua zako.
+"""

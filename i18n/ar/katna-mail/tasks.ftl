@@ -17,6 +17,8 @@ tasks-list-name-placeholder = اسم القائمة
 
 tasks-loading = جارٍ قراءة مهامك…
 tasks-no-lists = تظهر قوائم مهامك هنا.
+tasks-search = البحث في المهام
+tasks-search-none = لا توجد مهام تطابق بحثك.
 tasks-add = إضافة مهمة
 tasks-title-placeholder = العنوان
 tasks-add-step = إضافة مهمة فرعية

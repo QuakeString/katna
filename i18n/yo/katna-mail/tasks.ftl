@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Orúkọ àtòjọ
 
 tasks-loading = À ń ka àwọn iṣẹ́ rẹ…
 tasks-no-lists = Àwọn àtòjọ iṣẹ́ rẹ yóò hàn níbí.
+tasks-search = Ṣàwárí iṣẹ́
+tasks-search-none = Kò sí iṣẹ́ tó bá ìwádìí rẹ mu.
 tasks-add = Fi iṣẹ́ kún un
 tasks-title-placeholder = Àkọlé
 tasks-add-step = Fi iṣẹ́ kékeré kún un
