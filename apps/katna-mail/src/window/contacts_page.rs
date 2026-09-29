@@ -22,13 +22,14 @@ use gpui::{
     rgba, uniform_list,
 };
 use katna_core::contact::Card;
-use katna_core::{Account, OAuthProvider};
+use katna_core::{Account, AccountKind, OAuthProvider};
 use katna_i18n::tr;
 use katna_store::{AddressBook, BookSource, BookState, SavedContact, StoredCard};
 use katna_ui::{InputEvent, Ripple, TextInput, px};
 use zbus::Connection;
 
 use super::MailWindow;
+use super::account_status::{AccountStatus, Of, Say};
 use super::apps::App;
 use super::contacts_edit::{Deleted, Editor, PendingDelete, visible};
 use super::contacts_labels::{LabelDialog, LabelMenu};
@@ -59,7 +60,7 @@ pub(super) enum View {
     /// Suggested duplicates ([`super::contacts_merge`]).
     Merge,
     Label(String),
-    /// The people saved in one account ([`super::contacts_accounts`]).
+    /// The people saved in one account.
     Account(i64),
 }
 
@@ -117,7 +118,7 @@ pub(super) struct ContactsPage {
     /// A person shown as a QR code.
     pub(super) qr: Option<super::contacts_share::QrShare>,
     /// Where each account's contacts sync stands.
-    pub(super) accounts: super::contacts_accounts::AccountStatus,
+    pub(super) accounts: AccountStatus,
 }
 
 pub(super) struct Open {
@@ -149,7 +150,7 @@ impl MailWindow {
     }
 
     pub(super) fn load_contacts(&mut self, cx: &mut Context<Self>) {
-        self.load_contacts_status(cx);
+        self.load_account_status(Of::Contacts, cx);
         let paths = self.paths.clone();
         self.contacts.load = Some(cx.spawn(async move |this, cx| {
             let book = cx
@@ -631,6 +632,120 @@ impl MailWindow {
             }))
             .child(self.contacts_accounts_nav(book, th, cx))
             .child(self.contacts_manage_nav(book, th, cx))
+            .into_any_element()
+    }
+
+    /// "Accounts" in the column: every mail account with how many people
+    /// are saved in it, and why one shows none.
+    pub(super) fn contacts_accounts_nav(
+        &self,
+        book: Option<&SavedBook>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        // A mail archive on this computer has no address book.
+        let accounts: Vec<(i64, String)> = self
+            .accounts
+            .iter()
+            .filter(|a| a.kind.is_mail() && a.kind != AccountKind::Local)
+            .map(|a| (a.id.0, a.address.clone()))
+            .collect();
+        let rows = accounts.into_iter().enumerate().map(|(ix, (id, address))| {
+            let on = self.contacts.view == View::Account(id);
+            let (people, books) = book.map_or((0, 0), |b| {
+                let people = visible(&b.people, &self.contacts.hidden)
+                    .into_iter()
+                    .filter(|&i| {
+                        b.people[i]
+                            .accounts
+                            .iter()
+                            .any(|a| a.is_some_and(|a| a.0 == id))
+                    })
+                    .count();
+                let books = b
+                    .books
+                    .iter()
+                    .filter(|x| x.account.is_some_and(|a| a.0 == id))
+                    .count();
+                (people, books)
+            });
+            let row =
+                div()
+                    .id(("contacts-account", ix))
+                    .relative()
+                    .overflow_hidden()
+                    .h(px(36.0))
+                    .mr(px(12.0))
+                    .pl(px(20.0))
+                    .pr(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(14.0))
+                    .rounded_r_full()
+                    .cursor_pointer()
+                    .when(on, |d| d.bg(rgba(th.nav_selected)))
+                    .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                    .child(Ripple::new(("contacts-account", ix), rgba(th.ripple)))
+                    .child(icon(
+                        "cloud",
+                        if on {
+                            th.nav_selected_text
+                        } else {
+                            th.text_dim
+                        },
+                        20.0,
+                    ))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .truncate()
+                            .text_size(px(14.0))
+                            .when(on, |d| d.font_weight(FontWeight::SEMIBOLD))
+                            .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
+                            .child(address),
+                    )
+                    .when(people > 0, |d| {
+                        d.child(
+                            div()
+                                .flex_none()
+                                .text_size(px(12.0))
+                                .text_color(rgba(if on {
+                                    th.nav_selected_text
+                                } else {
+                                    th.text_faint
+                                }))
+                                .child(katna_i18n::format::number(people as u64)),
+                        )
+                    })
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.set_contacts_view(View::Account(id), cx)
+                    }));
+            div()
+                .flex()
+                .flex_col()
+                .child(row)
+                // Nothing yet, or old people that no longer sync: say why.
+                .when(books == 0 || self.contacts.accounts.failing(id), |d| {
+                    d.child(self.render_account_status(Of::Contacts, id, th, cx))
+                })
+        });
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(
+                div()
+                    .pt(px(18.0))
+                    .pb(px(6.0))
+                    .pl(px(20.0))
+                    .text_size(px(12.0))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .text_color(rgba(th.text))
+                    .child(tr!("contacts-accounts")),
+            )
+            .children(rows)
             .into_any_element()
     }
 
@@ -1318,6 +1433,28 @@ impl MailWindow {
 
 /// Whether `person` matches the lower-case `query`: any word of the name,
 /// an address, the phone or the job.
+/// What the line under an account in the column says.
+pub(super) fn say(say: Say<'_>) -> String {
+    match say {
+        Say::SignIn => tr!("contacts-account-sign-in"),
+        Say::SignInRefused { provider } => {
+            tr!("contacts-account-sign-in-refused", provider = provider)
+        }
+        Say::SignedIn { address } => tr!("contacts-account-signed-in", address = address),
+        Say::Refused => tr!("contacts-account-password"),
+        Say::ChangePassword => tr!("contacts-account-change-password"),
+        Say::ChangePasswordTooltip => tr!("contacts-account-change-password-tooltip"),
+        // The contacts sync never reports an API switched off.
+        Say::NotEnabled | Say::Failed => tr!("contacts-account-failed"),
+        Say::Error { reason } => tr!("contacts-account-error", reason = reason),
+        Say::None => tr!("contacts-account-none"),
+        Say::Looking => tr!("contacts-account-looking"),
+        Say::TryAgain => tr!("contacts-account-try-again"),
+        Say::TryAgainTooltip => tr!("contacts-account-try-again-tooltip"),
+        Say::Fixing => tr!("contacts-account-fixing"),
+    }
+}
+
 fn matches(person: &SavedContact, query: &str) -> bool {
     let name = person.name.to_lowercase();
     name.starts_with(query)

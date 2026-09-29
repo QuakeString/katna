@@ -5,7 +5,7 @@
 //! ("Sign in again to show calendars", "Change password", "Try again"),
 //! as the daemon
 //! reports each account's sync (`katna_dbus::calendar_state`,
-//! `katna_dbus::task_state`). Each page gives its own
+//! `katna_dbus::task_state`, `katna_dbus::contacts_state`). Each page gives its own
 //! words ([`Say`]); the shape, the states and the fixes are the same on
 //! every page.
 
@@ -49,6 +49,7 @@ impl AccountStatus {
 pub(super) enum Of {
     Calendar,
     Tasks,
+    Contacts,
 }
 
 /// What a page says; each page answers with its own words.
@@ -101,6 +102,7 @@ impl Of {
         match self {
             Self::Calendar => super::calendar::say(say),
             Self::Tasks => super::tasks_page::say(say),
+            Self::Contacts => super::contacts_page::say(say),
         }
     }
 
@@ -109,6 +111,8 @@ impl Of {
         match self {
             Self::Calendar => 8.0,
             Self::Tasks => 24.0,
+            // Under the address, past the account's icon.
+            Self::Contacts => 54.0,
         }
     }
 
@@ -116,6 +120,7 @@ impl Of {
         match self {
             Self::Calendar => "calendar",
             Self::Tasks => "tasks",
+            Self::Contacts => "contacts",
         }
     }
 }
@@ -125,6 +130,7 @@ impl MailWindow {
         match of {
             Of::Calendar => &mut self.calendar.accounts,
             Of::Tasks => &mut self.tasks.accounts,
+            Of::Contacts => &mut self.contacts.accounts,
         }
     }
 
@@ -132,6 +138,7 @@ impl MailWindow {
         match of {
             Of::Calendar => &self.calendar.accounts,
             Of::Tasks => &self.tasks.accounts,
+            Of::Contacts => &self.contacts.accounts,
         }
     }
 
@@ -147,6 +154,7 @@ impl MailWindow {
                     match of {
                         Of::Calendar => daemon::calendar_status(&connection).await,
                         Of::Tasks => crate::tasks::status(&connection).await,
+                        Of::Contacts => daemon::contacts_status(&connection).await,
                     }
                 })
                 .await;
