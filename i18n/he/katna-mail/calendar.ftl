@@ -40,7 +40,6 @@ calendar-guests =
        *[other] { $count } אורחים
     }
 calendar-guest-answers = { $yes } כן, { $maybe } אולי, { $no } לא, { $waiting } ממתינים
-calendar-organizer-name = { $name } (מארגן)
 calendar-open-web = פתיחה בדפדפן
 calendar-close = סגירה
 

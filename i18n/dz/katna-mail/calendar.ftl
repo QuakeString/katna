@@ -38,7 +38,6 @@ calendar-guests =
        *[other] { $count } འབོད་མི
     }
 calendar-guest-answers = { $yes } ཨིན, { $maybe } འོང་སྲིད, { $no } མེན, { $waiting } སྒུག་དོ
-calendar-organizer-name = { $name } (བསྒྲིགས་མི)
 calendar-open-web = བརྡ་འཚོལ་ཆས་ནང་ཁ་ཕྱེ
 calendar-close = ཁ་བསྡམས།
 

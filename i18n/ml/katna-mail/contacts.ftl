@@ -7,6 +7,7 @@
 contacts-all = കോൺടാക്റ്റുകൾ
 contacts-frequent = ഇടയ്ക്കിടെ
 contacts-labels = ലേബലുകൾ
+contacts-create = കോൺടാക്റ്റ് സൃഷ്ടിക്കുക
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = അനുവദിക്കുക
 ## A contact's page
 
 contacts-back = കോൺടാക്റ്റുകളിലേക്ക് മടങ്ങുക
+contacts-edit = എഡിറ്റ് ചെയ്യുക
+contacts-delete = ഇല്ലാതാക്കുക
+contacts-deleted = { $name } ഇല്ലാതാക്കി
 contacts-find-mail = മെയിൽ
 contacts-details = കോൺടാക്റ്റ് വിശദാംശങ്ങൾ
 contacts-saved-in = സംരക്ഷിച്ച സ്ഥലം
@@ -52,3 +56,29 @@ contacts-kind-other = മറ്റുള്ളവ
 contacts-source-google = Google കോൺടാക്റ്റുകൾ
 contacts-source-microsoft = Outlook കോൺടാക്റ്റുകൾ
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = കോൺടാക്റ്റ് സൃഷ്ടിക്കുക
+contacts-edit-title = കോൺടാക്റ്റ് എഡിറ്റ് ചെയ്യുക
+contacts-edit-save = സംരക്ഷിക്കുക
+contacts-edit-saving = സംരക്ഷിക്കുന്നു…
+contacts-edit-cancel = റദ്ദാക്കുക
+contacts-saved = കോൺടാക്റ്റ് സംരക്ഷിച്ചു
+contacts-edit-save-to = ഇവിടെ സംരക്ഷിക്കുക
+contacts-edit-changes-go-to = മാറ്റങ്ങൾ { $place } എന്നതിൽ സംരക്ഷിക്കും.
+contacts-edit-given = പേരിന്റെ ആദ്യഭാഗം
+contacts-edit-family = പേരിന്റെ അവസാനഭാഗം
+contacts-edit-company = കമ്പനി
+contacts-edit-job = ജോലിയുടെ പേര്
+contacts-edit-email = ഇമെയിൽ
+contacts-edit-phone = ഫോൺ
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ഇമെയിൽ ചേർക്കുക
+contacts-edit-add-phone = ഫോൺ ചേർക്കുക
+contacts-edit-street = തെരുവ് വിലാസം
+contacts-edit-city = നഗരം
+contacts-edit-postcode = പിൻ കോഡ്
+contacts-edit-country = രാജ്യം
+contacts-edit-birthday = ജന്മദിനം (YYYY-MM-DD)
+contacts-edit-empty = ആദ്യം ഒരു പേരോ ഇമെയിലോ ഫോൺ നമ്പറോ ചേർക്കുക.

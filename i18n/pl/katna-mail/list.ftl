@@ -484,6 +484,7 @@ menu-unpin = Odepnij
 menu-snooze = Odłóż
 menu-unsnooze = Anuluj odłożenie
 menu-add-to-tasks = Dodaj do Zadań
+menu-add-note = Dodaj notatkę
 menu-print-all = Drukuj wszystko
 menu-new-window = Otwórz w nowym oknie
 menu-move-to = Przenieś do

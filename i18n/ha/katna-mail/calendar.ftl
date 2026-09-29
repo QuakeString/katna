@@ -39,7 +39,6 @@ calendar-guests =
        *[other] baƙi { $count }
     }
 calendar-guest-answers = eh { $yes }, wataƙila { $maybe }, a'a { $no }, ana jira { $waiting }
-calendar-organizer-name = { $name } (mai shiryawa)
 calendar-open-web = Buɗe a burauza
 calendar-close = Rufe
 

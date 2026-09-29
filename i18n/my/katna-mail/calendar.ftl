@@ -38,7 +38,6 @@ calendar-guests =
        *[other] ဧည့်သည် { $count } ဦး
     }
 calendar-guest-answers = ဟုတ်ကဲ့ { $yes }၊ ဖြစ်နိုင် { $maybe }၊ မဟုတ်ပါ { $no }၊ စောင့်ဆိုင်းနေ { $waiting }
-calendar-organizer-name = { $name } (စီစဉ်သူ)
 calendar-open-web = ဘရောက်ဇာတွင် ဖွင့်ရန်
 calendar-close = ပိတ်ရန်
 

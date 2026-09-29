@@ -51,6 +51,12 @@ notes-edited = آخر تعديل: { $date }
 notes-on-this-computer = على هذا الكمبيوتر
 notes-where = مكان حفظ هذه الملاحظة
 
+## A note about a mail
+
+notes-mail = البريد
+notes-open-mail = فتح الرسالة
+notes-open-note = فتح الملاحظة
+
 ## Colors (tooltips)
 
 notes-color-none = بلا لون
@@ -73,6 +79,7 @@ notes-unarchived = تم إلغاء أرشفة الملاحظة
 notes-trashed = تم نقل الملاحظة إلى سلة المهملات
 notes-restored = تمت استعادة الملاحظة
 notes-empty-discarded = تم تجاهل الملاحظة الفارغة
+notes-mail-gone = لم تعد هذه الرسالة موجودة هنا
 notes-deleted-forever = { $count ->
     [zero] تم حذف { $count } ملاحظة نهائيًا
     [one] تم حذف الملاحظة نهائيًا

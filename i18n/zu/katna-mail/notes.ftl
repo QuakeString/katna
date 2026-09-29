@@ -47,6 +47,12 @@ notes-edited = Kuhlelwe: { $date }
 notes-on-this-computer = Kule khompyutha
 notes-where = Lapho leli nothi ligcinwe khona
 
+## A note about a mail
+
+notes-mail = Imeyili
+notes-open-mail = Vula imeyili
+notes-open-note = Vula inothi
+
 ## Colors (tooltips)
 
 notes-color-none = Awukho umbala
@@ -69,6 +75,7 @@ notes-unarchived = Inothi likhishwe kungobo yomlando
 notes-trashed = Inothi lidluliselwe kudoti
 notes-restored = Inothi libuyiselwe
 notes-empty-discarded = Inothi elingenalutho lilahliwe
+notes-mail-gone = Leyo meyili ayisekho lapha
 notes-deleted-forever = { $count ->
     [one] Inothi lisusiwe unomphela
    *[other] Amanothi angu-{ $count } asusiwe unomphela

@@ -1280,3 +1280,32 @@ key ng Google Calendar. Binubuksan ng button ng kalendaryo sa kanan ng
 iyong mail ang agenda ng araw, na may Sumali para sa mga tawag. Mag-sign
 in muli sa isang account para mabasa ng Katna ang kalendaryo nito.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Gumawa at magbago ng mga contact"
+text = """
+Ang Gumawa ng contact sa page na Mga Contact ay nagdaragdag ng tao sa
+account na pipiliin mo, at ang I-edit sa page ng isang contact ay
+nagbabago rin sa kanila roon. May I-undo ang I-delete, at pansamantalang
+itinatago ng Google at Outlook ang mga na-delete na contact sa kanilang
+trash.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Mga tala sa isang mail"
+text = """
+Mag-right-click sa isang mail, o buksan ang ⋮ menu nito, at piliin ang
+Magdagdag ng tala: may bubukas na tala sa ibabaw ng mail na ang
+pamagat ay ang subject. Lalabas ang mga tala nito sa ilalim ng subject
+tuwing bubuksan mo ulit ang mail na iyon, at ibinabalik ka ng chip na
+Mail ng isang tala sa mail.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Mga gawain sa sarili mong mail server"
+text = """
+Ang mga account na nagsa-sign in gamit ang password ay itinatago na
+ngayon ang kanilang mga gawain sa mail server kung nag-aalok ito ng
+CalDAV, kaya lumalabas din ang mga gawain sa sariling mga app ng
+server at sa telepono.
+"""

@@ -1207,3 +1207,30 @@ Kalenderknappen till höger om din e-post öppnar dagens agenda, med Anslut
 för samtal. Logga in på ett konto igen så att Katna kan läsa dess
 kalender.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Skapa och ändra kontakter"
+text = """
+Skapa kontakt på sidan Kontakter lägger till någon i det konto du
+väljer, och Redigera på en kontakts sida ändrar kontakten där också.
+Radera har en Ångra, och Google och Outlook sparar raderade kontakter i
+sin papperskorg en tid.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Anteckningar om ett e-postmeddelande"
+text = """
+Högerklicka på ett e-postmeddelande, eller öppna dess meny ⋮, och välj
+Lägg till en anteckning: en anteckning med ämnet som rubrik öppnas
+över meddelandet. Anteckningarna visas under ämnet varje gång du
+öppnar meddelandet igen, och etiketten E-post på en anteckning tar dig
+tillbaka till meddelandet.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Uppgifter på din egen e-postserver"
+text = """
+Konton som loggar in med lösenord sparar nu sina uppgifter på
+e-postservern när den erbjuder CalDAV, så att uppgifterna också visas
+i serverns egna appar och på telefonen.
+"""

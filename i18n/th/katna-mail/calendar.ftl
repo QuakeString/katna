@@ -38,7 +38,6 @@ calendar-guests =
        *[other] แขก { $count } คน
     }
 calendar-guest-answers = ตอบรับ { $yes }, อาจจะ { $maybe }, ปฏิเสธ { $no }, รอการตอบกลับ { $waiting }
-calendar-organizer-name = { $name } (ผู้จัด)
 calendar-open-web = เปิดในเบราว์เซอร์
 calendar-close = ปิด
 

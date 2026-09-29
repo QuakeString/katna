@@ -363,6 +363,8 @@ struct Head<'a> {
     /// A `Range` header (Google's resumable uploads say how much they
     /// have in it).
     range: Option<String>,
+    /// An `ETag` header (a CalDAV server's version of what it took).
+    etag: Option<String>,
     /// What follows the header.
     rest: &'a [u8],
 }
@@ -386,6 +388,7 @@ fn parse_head(response: &[u8]) -> Result<Head<'_>> {
         length: None,
         location: None,
         range: None,
+        etag: None,
         rest: &response[end + 4..],
     };
     for line in lines {
@@ -398,6 +401,7 @@ fn parse_head(response: &[u8]) -> Result<Head<'_>> {
             "content-length" => parsed.length = value.parse::<usize>().ok(),
             "location" => parsed.location = Some(value.to_owned()),
             "range" => parsed.range = Some(value.to_owned()),
+            "etag" => parsed.etag = Some(value.to_owned()),
             _ => {}
         }
     }
@@ -478,6 +482,7 @@ pub struct Reply {
     pub status: u16,
     pub location: Option<String>,
     pub range: Option<String>,
+    pub etag: Option<String>,
     pub body: Vec<u8>,
 }
 
@@ -584,6 +589,7 @@ pub async fn exchange_limited(
             status: head.status,
             location: head.location,
             range: head.range,
+            etag: head.etag,
             body,
         })
     };

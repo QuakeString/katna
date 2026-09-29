@@ -229,6 +229,7 @@ menu-unpin = ឈប់ខ្ទាស់
 menu-snooze = ពន្យារពេល
 menu-unsnooze = ឈប់ពន្យារពេល
 menu-add-to-tasks = បន្ថែមទៅកិច្ចការ
+menu-add-note = បន្ថែមកំណត់ចំណាំ
 menu-print-all = បោះពុម្ពទាំងអស់
 menu-new-window = បើកក្នុងបង្អួចថ្មី
 menu-move-to = ផ្លាស់ទីទៅ

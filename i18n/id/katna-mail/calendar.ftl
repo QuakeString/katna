@@ -38,7 +38,6 @@ calendar-guests =
        *[other] { $count } tamu
     }
 calendar-guest-answers = { $yes } ya, { $maybe } mungkin, { $no } tidak, { $waiting } menunggu
-calendar-organizer-name = { $name } (penyelenggara)
 calendar-open-web = Buka di browser
 calendar-close = Tutup
 

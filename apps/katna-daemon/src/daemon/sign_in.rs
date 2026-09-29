@@ -245,6 +245,12 @@ impl Daemon {
                     .insert(account.id, Arc::new(tokens));
                 tracing::info!(account = %account.id, %provider, "signed in again");
                 self.start_account(&account).await;
+                // The new sign-in may reach what the old one could not.
+                katna_sync::methods::forget(
+                    &mut self.store(),
+                    account.id,
+                    katna_sync::methods::Data::Calendar,
+                );
                 self.wake_calendars();
                 let _ = self.notices.try_send(Notice::AccountsChanged);
                 account.id

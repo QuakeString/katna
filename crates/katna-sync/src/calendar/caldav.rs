@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! CalDAV (RFC 4791) on the server of an IMAP account, when it offers it:
-//! found through `/.well-known/caldav` (RFC 6764) on the IMAP host, then
-//! the user's principal and calendar home. Each sync lists the calendars
+//! CalDAV (RFC 4791): for a password account, looked for on its provider's
+//! known server, its mail domain and its IMAP server
+//! ([`crate::methods::dav_start_urls`], RFC 6764 `.well-known`); for a
+//! Google sign-in whose Calendar API is not available, Google's own CalDAV
+//! with the sign-in's token. Then the user's principal and calendar home. Each sync lists the calendars
 //! (a calendar whose `getctag` or `sync-token` didn't change is skipped),
 //! asks each changed one for its events' etags, and downloads only the
 //! events whose etag changed (`calendar-multiget`), read by
 //! [`katna_dav::ical`]. The password is the IMAP one, sent only over TLS
-//! and only to the IMAP host or another host of its domain.
+//! and only to hosts of the domains the search started on.
 
 use std::{
     collections::{HashMap, HashSet},
-    sync::Mutex,
+    sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
 
@@ -28,7 +30,9 @@ use super::{CalendarError, MAX_ANSWER, SyncResult, hex_color};
 use crate::{
     Error, Result,
     autoconfig::http::{self, Reply},
+    methods::{self, Dav},
     net::Tls,
+    oauth::TokenSource,
 };
 
 const TIMEOUT: Duration = Duration::from_secs(2 * 60);
@@ -48,7 +52,7 @@ const PRINCIPAL: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 const HOME: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav"><d:prop><c:calendar-home-set/></d:prop></d:propfind>"#;
 
-const CALENDARS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+pub(crate) const CALENDARS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:a="http://apple.com/ns/ical/">
 <d:prop><d:resourcetype/><d:displayname/><a:calendar-color/><c:supported-calendar-component-set/><cs:getctag/><d:sync-token/><d:current-user-privilege-set/></d:prop>
 </d:propfind>"#;
@@ -68,44 +72,58 @@ enum Found {
     Missing(Instant),
 }
 
+/// How requests prove who the user is.
+enum Auth {
+    /// The account's password.
+    Basic(String),
+    /// A Google sign-in's access token.
+    Bearer(Arc<TokenSource>),
+}
+
 /// One account's CalDAV server.
 pub struct CalDav {
-    /// `https://host[:port]`.
+    /// `https://host[:port]` of the first place looked: where paths of
+    /// calendars not found yet go.
     origin: String,
-    /// The domain other hosts must be in to get the password.
-    domain: String,
-    authorization: String,
+    /// Where discovery looks, in order.
+    starts: Vec<String>,
+    /// The domains whose hosts may get the credentials.
+    domains: Vec<String>,
+    auth: Auth,
     tls: Tls,
     found: Mutex<Found>,
+    /// Each calendar's URL (by its remote ID) as the last sync found it,
+    /// for sending changes.
+    urls: Mutex<HashMap<String, String>>,
 }
 
 /// One property of a multistatus answer.
 #[derive(Debug, Default, Clone)]
-struct Prop {
+pub(crate) struct Prop {
     /// Local name.
     name: String,
     text: String,
     /// Local names of every element inside.
-    inside: Vec<String>,
+    pub(crate) inside: Vec<String>,
     /// Every `href` inside.
     hrefs: Vec<String>,
     /// The `name` of every `comp` inside.
-    comps: Vec<String>,
+    pub(crate) comps: Vec<String>,
 }
 
 /// One `response` of a multistatus answer, with its found properties.
 #[derive(Debug, Default, Clone)]
-struct DavResponse {
-    href: String,
+pub(crate) struct DavResponse {
+    pub(crate) href: String,
     props: Vec<Prop>,
 }
 
 impl DavResponse {
-    fn prop(&self, name: &str) -> Option<&Prop> {
+    pub(crate) fn prop(&self, name: &str) -> Option<&Prop> {
         self.props.iter().find(|p| p.name == name)
     }
 
-    fn text(&self, name: &str) -> Option<&str> {
+    pub(crate) fn text(&self, name: &str) -> Option<&str> {
         self.prop(name)
             .map(|p| p.text.trim())
             .filter(|t| !t.is_empty())
@@ -175,6 +193,14 @@ fn multistatus(body: &[u8]) -> Result<Vec<DavResponse>> {
     Ok(out)
 }
 
+/// Basic authentication with `user` and `password`.
+fn basic(user: &str, password: &str) -> Auth {
+    Auth::Basic(format!(
+        "Basic {}",
+        STANDARD.encode(format!("{user}:{password}"))
+    ))
+}
+
 /// `scheme://authority` of `url`.
 fn origin(url: &str) -> &str {
     let after = url.find("://").map_or(0, |i| i + 3);
@@ -183,7 +209,7 @@ fn origin(url: &str) -> &str {
 }
 
 /// The path (and query) of `href`, which may be a whole URL.
-fn path(href: &str) -> &str {
+pub(crate) fn path(href: &str) -> &str {
     if href.starts_with("http://") || href.starts_with("https://") {
         let rest = &href[origin(href).len()..];
         if rest.is_empty() { "/" } else { rest }
@@ -192,7 +218,7 @@ fn path(href: &str) -> &str {
     }
 }
 
-fn xml_escape(text: &str) -> String {
+pub(crate) fn xml_escape(text: &str) -> String {
     text.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -209,41 +235,107 @@ impl CalDav {
     /// The CalDAV server on `host` (the account's IMAP host), logging in
     /// as `user` with `password`.
     pub fn new(host: &str, user: &str, password: &str, tls: Tls) -> Self {
-        Self::with_origin(&format!("https://{host}"), user, password, tls)
+        Self::for_account("", host, user, password, tls)
+    }
+
+    /// The CalDAV server of a password account with `address` on IMAP
+    /// server `host`, looked for where [`methods::dav_start_urls`] says.
+    pub fn for_account(address: &str, host: &str, user: &str, password: &str, tls: Tls) -> Self {
+        let starts = methods::dav_start_urls(Dav::Cal, address, Some(host));
+        Self::with_starts(starts, basic(user, password), tls)
+    }
+
+    /// Google's CalDAV for the Google sign-in of `address`.
+    pub fn google(tokens: Arc<TokenSource>, address: &str, tls: Tls) -> Self {
+        let start = methods::google_dav_start(Dav::Cal, address);
+        Self::with_starts(vec![start], Auth::Bearer(tokens), tls)
     }
 
     /// Talks to `origin` (`scheme://host[:port]`), for tests.
     pub fn with_origin(origin: &str, user: &str, password: &str, tls: Tls) -> Self {
-        let origin = origin.trim_end_matches('/').to_owned();
-        let host = host(&origin).to_ascii_lowercase();
-        // `imap.example.com` → `example.com`; a bare domain stays.
-        let domain = match host.split_once('.') {
-            Some((_, rest)) if rest.contains('.') => rest.to_owned(),
-            _ => host,
-        };
+        let origin = origin.trim_end_matches('/');
+        let starts = vec![format!("{origin}/.well-known/caldav"), format!("{origin}/")];
+        Self::with_starts(starts, basic(user, password), tls)
+    }
+
+    /// Google's CalDAV at `origin`, for tests.
+    #[cfg(test)]
+    pub(crate) fn google_at(origin: &str, tokens: Arc<TokenSource>, tls: Tls) -> Self {
+        Self::with_starts(
+            vec![format!("{origin}/caldav/v2/me/user")],
+            Auth::Bearer(tokens),
+            tls,
+        )
+    }
+
+    fn with_starts(starts: Vec<String>, auth: Auth, tls: Tls) -> Self {
+        let mut domains: Vec<String> = Vec::new();
+        for start in &starts {
+            let domain = methods::owner_domain(host(start));
+            if !domains.contains(&domain) {
+                domains.push(domain);
+            }
+        }
         Self {
-            origin,
-            domain,
-            authorization: format!("Basic {}", STANDARD.encode(format!("{user}:{password}"))),
+            origin: starts
+                .first()
+                .map(|s| origin(s).to_owned())
+                .unwrap_or_default(),
+            starts,
+            domains,
+            auth,
             tls,
             found: Mutex::new(Found::Unknown),
+            urls: Mutex::default(),
+        }
+    }
+
+    /// The `Authorization` header.
+    async fn authorization(&self) -> Result<String> {
+        Ok(match &self.auth {
+            Auth::Basic(header) => header.clone(),
+            Auth::Bearer(tokens) => format!("Bearer {}", tokens.access_token().await?),
+        })
+    }
+
+    /// Whether a refused request may pass with a fresh token.
+    fn retry_refused(&self) -> bool {
+        matches!(&self.auth, Auth::Bearer(tokens) if tokens.forget_access_token())
+    }
+
+    /// What the server refusing a request (401 or 403) means.
+    fn refused(&self, status: u16, body: &[u8]) -> CalendarError {
+        match (&self.auth, status) {
+            (Auth::Basic(_), _) => CalendarError::Failed(Error::Rejected(
+                "the CalDAV server refused the password".into(),
+            )),
+            (Auth::Bearer(_), 401) => {
+                CalendarError::NeedsSignIn("Google refused the sign-in for CalDAV".into())
+            }
+            (Auth::Bearer(_), _) => CalendarError::NotEnabled(format!(
+                "Google CalDAV: {}",
+                String::from_utf8_lossy(&body[..body.len().min(300)])
+            )),
         }
     }
 
     /// Whether the password may go to `url`: the same origin, or HTTPS to
     /// a host of the account's domain.
     fn trusted(&self, url: &str) -> bool {
-        if origin(url) == self.origin {
+        if self.starts.iter().any(|start| origin(start) == origin(url)) {
             return true;
         }
         let host = host(url).to_ascii_lowercase();
         url.starts_with("https://")
-            && (host == self.domain || host.ends_with(&format!(".{}", self.domain)))
+            && self
+                .domains
+                .iter()
+                .any(|d| host == *d || host.ends_with(&format!(".{d}")))
     }
 
     /// `href` from an answer to `base` as a whole URL; `None` if the
     /// password may not go there.
-    fn absolute(&self, base: &str, href: &str) -> Option<String> {
+    pub(crate) fn absolute(&self, base: &str, href: &str) -> Option<String> {
         let url = if href.starts_with("http://") || href.starts_with("https://") {
             href.to_owned()
         } else if href.starts_with('/') {
@@ -265,14 +357,13 @@ impl CalDav {
         body: &str,
     ) -> Result<(String, Reply)> {
         let mut url = url.to_owned();
-        for _ in 0..=MAX_REDIRECTS {
+        let mut retried = false;
+        for _ in 0..=MAX_REDIRECTS + 1 {
             if !self.trusted(&url) {
                 return Err(Error::Protocol(format!("CalDAV led elsewhere: {url}")));
             }
-            let headers = [
-                ("Authorization", self.authorization.as_str()),
-                ("Depth", depth),
-            ];
+            let authorization = self.authorization().await?;
+            let headers = [("Authorization", authorization.as_str()), ("Depth", depth)];
             let reply = http::exchange_limited(
                 method,
                 &url,
@@ -292,14 +383,47 @@ impl CalDav {
                     .ok_or_else(|| Error::Protocol(format!("CalDAV led elsewhere: {to}")))?;
                 continue;
             }
+            if reply.status == 401 && !retried && self.retry_refused() {
+                retried = true;
+                continue;
+            }
             return Ok((url, reply));
         }
         Err(Error::Protocol("CalDAV: too many redirects".into()))
     }
 
+    /// Sends `method` to `url` (no redirects followed) with `headers` and
+    /// `body` (content type and bytes): for writes.
+    pub(crate) async fn request(
+        &self,
+        method: &str,
+        url: &str,
+        headers: &[(&str, &str)],
+        body: Option<(&str, &[u8])>,
+    ) -> Result<Reply> {
+        if !self.trusted(url) {
+            return Err(Error::Protocol(format!("CalDAV led elsewhere: {url}")));
+        }
+        let mut retried = false;
+        loop {
+            let authorization = self.authorization().await?;
+            let mut all = vec![("Authorization", authorization.as_str())];
+            all.extend_from_slice(headers);
+            let reply = http::exchange_limited(
+                method, url, &all, body, None, &self.tls, TIMEOUT, MAX_ANSWER,
+            )
+            .await?;
+            if reply.status == 401 && !retried && self.retry_refused() {
+                retried = true;
+                continue;
+            }
+            return Ok(reply);
+        }
+    }
+
     /// A PROPFIND or REPORT: the multistatus answer, `None` when the
     /// server has no such thing (404, 405, 501…).
-    async fn dav(
+    pub(crate) async fn dav(
         &self,
         method: &str,
         url: &str,
@@ -309,9 +433,7 @@ impl CalDav {
         let (url, reply) = self.send(method, url, depth, body).await?;
         match reply.status {
             207 => Ok(Some((url, multistatus(&reply.body)?))),
-            401 | 403 => Err(CalendarError::Failed(Error::Rejected(
-                "the CalDAV server refused the password".into(),
-            ))),
+            401 | 403 => Err(self.refused(reply.status, &reply.body)),
             status if status >= 500 && status != 501 => Err(CalendarError::Failed(
                 Error::Rejected(format!("CalDAV server answered {status}")),
             )),
@@ -321,7 +443,7 @@ impl CalDav {
 
     /// The calendar home, found now or before; `None` when the server has
     /// no CalDAV.
-    async fn home(&self) -> std::result::Result<Option<String>, CalendarError> {
+    pub(crate) async fn home(&self) -> std::result::Result<Option<String>, CalendarError> {
         match &*self.found.lock().unwrap() {
             Found::Home(home) => return Ok(Some(home.clone())),
             Found::Missing(when) if when.elapsed() < RETRY_DISCOVERY => return Ok(None),
@@ -345,10 +467,16 @@ impl CalDav {
 
     async fn discover(&self) -> std::result::Result<Option<String>, CalendarError> {
         let mut principal = None;
-        for start in ["/.well-known/caldav", "/"] {
-            let url = format!("{}{start}", self.origin);
-            let Some((at, responses)) = self.dav("PROPFIND", &url, "0", PRINCIPAL).await? else {
-                continue;
+        for url in &self.starts {
+            let (at, responses) = match self.dav("PROPFIND", url, "0", PRINCIPAL).await {
+                Ok(Some(found)) => found,
+                Ok(None) => continue,
+                // Nothing there, or not a DAV server: the next place.
+                Err(CalendarError::Failed(err)) if !matches!(err, Error::Rejected(_)) => {
+                    tracing::debug!(%url, %err, "no CalDAV here");
+                    continue;
+                }
+                Err(err) => return Err(err),
             };
             let href = responses
                 .iter()
@@ -435,6 +563,10 @@ impl CalDav {
             })
             .collect();
 
+        *self.urls.lock().unwrap() = calendars
+            .iter()
+            .map(|(calendar, url, _)| (calendar.remote_id.clone(), url.clone()))
+            .collect();
         let mut changed = false;
         let before = store.calendars()?;
         let mut ids = Vec::new();
@@ -558,6 +690,8 @@ impl CalDav {
         Ok(true)
     }
 }
+
+mod write;
 
 #[cfg(test)]
 mod tests;

@@ -1249,3 +1249,29 @@ Kalendar. Butang kalendar di sebelah kanan mel anda membuka agenda hari
 itu, dengan Sertai untuk panggilan. Log masuk semula ke akaun supaya
 Katna boleh membaca kalendarnya.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Cipta dan ubah kenalan"
+text = """
+Cipta kenalan pada halaman Kenalan menambah seseorang ke akaun yang anda
+pilih, dan Edit pada halaman kenalan mengubahnya di sana juga. Padam
+mempunyai Buat asal, dan Google serta Outlook menyimpan kenalan yang
+dipadam dalam tong sampah mereka untuk seketika.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Nota pada mel"
+text = """
+Klik kanan pada sesuatu mel, atau buka menu ⋮ mel itu, dan pilih
+Tambah nota: nota bertajuk subjek mel terbuka di atas mel. Notanya
+dipaparkan di bawah subjek setiap kali anda membuka mel itu semula,
+dan cip Mel pada nota membawa anda kembali ke mel.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Tugas pada pelayan mel anda sendiri"
+text = """
+Akaun yang log masuk dengan kata laluan kini menyimpan tugasnya pada
+pelayan mel jika pelayan itu menawarkan CalDAV, supaya tugas turut
+dipaparkan dalam aplikasi pelayan itu sendiri dan pada telefon.
+"""

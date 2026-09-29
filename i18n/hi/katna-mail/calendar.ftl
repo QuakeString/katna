@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } मेहमान
     }
 calendar-guest-answers = { $yes } हां, { $maybe } शायद, { $no } नहीं, { $waiting } प्रतीक्षित
-calendar-organizer-name = { $name } (आयोजक)
 calendar-open-web = ब्राउज़र में खोलें
 calendar-close = बंद करें
 

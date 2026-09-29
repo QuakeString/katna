@@ -40,7 +40,6 @@ calendar-guests =
        *[other] { $count } invités
     }
 calendar-guest-answers = { $yes } oui, { $maybe } peut-être, { $no } non, { $waiting } en attente
-calendar-organizer-name = { $name } (organisateur)
 calendar-open-web = Ouvrir dans le navigateur
 calendar-close = Fermer
 

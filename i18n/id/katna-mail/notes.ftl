@@ -46,6 +46,12 @@ notes-edited = Diedit { $date }
 notes-on-this-computer = Di komputer ini
 notes-where = Tempat catatan ini disimpan
 
+## A note about a mail
+
+notes-mail = Email
+notes-open-mail = Buka email
+notes-open-note = Buka catatan
+
 ## Colors (tooltips)
 
 notes-color-none = Tanpa warna
@@ -68,6 +74,7 @@ notes-unarchived = Arsip catatan dibatalkan
 notes-trashed = Catatan dipindahkan ke Sampah
 notes-restored = Catatan dipulihkan
 notes-empty-discarded = Catatan kosong dibuang
+notes-mail-gone = Email itu sudah tidak ada di sini
 notes-deleted-forever = { $count ->
    *[other] { $count } catatan dihapus permanen
 }

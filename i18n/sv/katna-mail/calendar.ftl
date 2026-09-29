@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } gäster
     }
 calendar-guest-answers = { $yes } ja, { $maybe } kanske, { $no } nej, { $waiting } väntar
-calendar-organizer-name = { $name } (organisatör)
 calendar-open-web = Öppna i webbläsaren
 calendar-close = Stäng
 

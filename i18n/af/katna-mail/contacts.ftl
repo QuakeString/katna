@@ -7,6 +7,7 @@
 contacts-all = Kontakte
 contacts-frequent = Gereeld
 contacts-labels = Etikette
+contacts-create = Skep kontak
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Laat toe
 ## A contact's page
 
 contacts-back = Terug na kontakte
+contacts-edit = Wysig
+contacts-delete = Vee uit
+contacts-deleted = { $name } is uitgevee
 contacts-find-mail = E-pos
 contacts-details = Kontakbesonderhede
 contacts-saved-in = Gestoor in
@@ -52,3 +56,29 @@ contacts-kind-other = Ander
 contacts-source-google = Google Kontakte
 contacts-source-microsoft = Outlook-kontakte
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Skep kontak
+contacts-edit-title = Wysig kontak
+contacts-edit-save = Stoor
+contacts-edit-saving = Stoor tans…
+contacts-edit-cancel = Kanselleer
+contacts-saved = Kontak gestoor
+contacts-edit-save-to = Stoor in
+contacts-edit-changes-go-to = Veranderinge word in { $place } gestoor.
+contacts-edit-given = Voornaam
+contacts-edit-family = Van
+contacts-edit-company = Maatskappy
+contacts-edit-job = Posbenaming
+contacts-edit-email = E-pos
+contacts-edit-phone = Foon
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Voeg e-pos by
+contacts-edit-add-phone = Voeg foon by
+contacts-edit-street = Straatadres
+contacts-edit-city = Stad
+contacts-edit-postcode = Poskode
+contacts-edit-country = Land
+contacts-edit-birthday = Verjaarsdag (YYYY-MM-DD)
+contacts-edit-empty = Voeg eers 'n naam, e-pos of foonnommer by.

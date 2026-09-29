@@ -1196,3 +1196,29 @@ izu, onwa ma ọ bụ nhazi oge, yana igodo Google Calendar. Bọtịnụ kalị
 n'aka nri ozi na-emepe atụmatụ ụbọchị ahụ, yana Sonye maka oku. Banye
 ọzọ n'akaụntụ ka Katna nwee ike ịgụ kalịnda ya.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Mepụta ma gbanwee kọntaktị"
+text = """
+Mepụta kọntaktị na peeji Kọntaktị na-agbakwunye onye n'akaụntụ ị họọrọ,
+Dezie na peeji kọntaktị na-agbanwe ya n'ebe ahụ kwa. Hichapụ nwere
+Megharịa, Google na Outlook na-edebekwa kọntaktị ndị a hichapụrụ n'ọkpọ
+ahịhịa ha nwa oge.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Ndetu na ozi"
+text = """
+Pịa aka nri n'ozi ma ọ bụ mepee menu ⋮ ya, họrọ Tinye ndetu: ndetu
+nwere isiokwu ozi ahụ ga-emeghe n'elu ozi ahụ. Ndetu ya ga-apụta
+n'okpuru isiokwu ahụ mgbe ọ bụla ị meghegharịrị ozi ahụ, ma chip Ozi
+nke ndetu ahụ na-eduga gị azụ n'ozi ahụ.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Ọrụ dị na sava ozi gị"
+text = """
+Akaụntụ ndị na-abanye site na okwuntughe na-edebe ọrụ ha ugbu a na sava
+ozi ha mgbe ọ na-enye CalDAV, ya mere ọrụ ndị ahụ na-apụtakwa n'ngwa
+sava ahụ na n'ekwentị.
+"""

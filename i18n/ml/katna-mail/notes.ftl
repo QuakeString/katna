@@ -47,6 +47,12 @@ notes-edited = എഡിറ്റ് ചെയ്‌തത്: { $date }
 notes-on-this-computer = ഈ കമ്പ്യൂട്ടറിൽ
 notes-where = ഈ കുറിപ്പ് എവിടെയാണ് സൂക്ഷിച്ചിരിക്കുന്നത്
 
+## A note about a mail
+
+notes-mail = മെയിൽ
+notes-open-mail = മെയിൽ തുറക്കുക
+notes-open-note = കുറിപ്പ് തുറക്കുക
+
 ## Colors (tooltips)
 
 notes-color-none = നിറമില്ല
@@ -69,6 +75,7 @@ notes-unarchived = കുറിപ്പ് ആർക്കൈവിൽ നി�
 notes-trashed = കുറിപ്പ് ട്രാഷിലേക്ക് നീക്കി
 notes-restored = കുറിപ്പ് പുനഃസ്ഥാപിച്ചു
 notes-empty-discarded = ശൂന്യമായ കുറിപ്പ് ഉപേക്ഷിച്ചു
+notes-mail-gone = ആ മെയിൽ ഇപ്പോൾ ഇവിടെ ഇല്ല
 notes-deleted-forever = { $count ->
     [one] കുറിപ്പ് ശാശ്വതമായി ഇല്ലാതാക്കി
    *[other] { $count } കുറിപ്പുകൾ ശാശ്വതമായി ഇല്ലാതാക്കി

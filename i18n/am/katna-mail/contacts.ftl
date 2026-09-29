@@ -7,6 +7,7 @@
 contacts-all = እውቂያዎች
 contacts-frequent = ተደጋጋሚ
 contacts-labels = መሰየሚያዎች
+contacts-create = እውቂያ ፍጠር
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = ፍቀድ
 ## A contact's page
 
 contacts-back = ወደ እውቂያዎች ተመለስ
+contacts-edit = አርትዕ
+contacts-delete = ሰርዝ
+contacts-deleted = { $name } ተሰርዟል
 contacts-find-mail = ደብዳቤ
 contacts-details = የእውቂያ ዝርዝሮች
 contacts-saved-in = የተቀመጠው በ
@@ -52,3 +56,29 @@ contacts-kind-other = ሌላ
 contacts-source-google = የGoogle እውቂያዎች
 contacts-source-microsoft = የOutlook እውቂያዎች
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = እውቂያ ፍጠር
+contacts-edit-title = እውቂያ አርትዕ
+contacts-edit-save = አስቀምጥ
+contacts-edit-saving = በማስቀመጥ ላይ…
+contacts-edit-cancel = ይቅር
+contacts-saved = እውቂያ ተቀምጧል
+contacts-edit-save-to = አስቀምጥ በ
+contacts-edit-changes-go-to = ለውጦች በ{ $place } ውስጥ ይቀመጣሉ።
+contacts-edit-given = የመጀመሪያ ስም
+contacts-edit-family = የአባት ስም
+contacts-edit-company = ኩባንያ
+contacts-edit-job = የሥራ ማዕረግ
+contacts-edit-email = ኢሜይል
+contacts-edit-phone = ስልክ
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ኢሜይል ጨምር
+contacts-edit-add-phone = ስልክ ጨምር
+contacts-edit-street = የመንገድ አድራሻ
+contacts-edit-city = ከተማ
+contacts-edit-postcode = የፖስታ ኮድ
+contacts-edit-country = ሀገር
+contacts-edit-birthday = የልደት ቀን (YYYY-MM-DD)
+contacts-edit-empty = መጀመሪያ ስም፣ ኢሜይል ወይም ስልክ ቁጥር ያክሉ።

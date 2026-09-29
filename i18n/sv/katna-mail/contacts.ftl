@@ -7,6 +7,7 @@
 contacts-all = Kontakter
 contacts-frequent = Ofta kontaktade
 contacts-labels = Etiketter
+contacts-create = Skapa kontakt
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Tillåt
 ## A contact's page
 
 contacts-back = Tillbaka till kontakter
+contacts-edit = Redigera
+contacts-delete = Radera
+contacts-deleted = { $name } raderades
 contacts-find-mail = E-post
 contacts-details = Kontaktuppgifter
 contacts-saved-in = Sparad i
@@ -52,3 +56,29 @@ contacts-kind-other = Övrigt
 contacts-source-google = Google Kontakter
 contacts-source-microsoft = Outlook-kontakter
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Skapa kontakt
+contacts-edit-title = Redigera kontakt
+contacts-edit-save = Spara
+contacts-edit-saving = Sparar…
+contacts-edit-cancel = Avbryt
+contacts-saved = Kontakten sparades
+contacts-edit-save-to = Spara i
+contacts-edit-changes-go-to = Ändringar sparas i { $place }.
+contacts-edit-given = Förnamn
+contacts-edit-family = Efternamn
+contacts-edit-company = Företag
+contacts-edit-job = Befattning
+contacts-edit-email = E-post
+contacts-edit-phone = Telefon
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Lägg till e-postadress
+contacts-edit-add-phone = Lägg till telefonnummer
+contacts-edit-street = Gatuadress
+contacts-edit-city = Ort
+contacts-edit-postcode = Postnummer
+contacts-edit-country = Land
+contacts-edit-birthday = Födelsedag (YYYY-MM-DD)
+contacts-edit-empty = Lägg först till ett namn, en e-postadress eller ett telefonnummer.

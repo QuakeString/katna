@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } gaste
     }
 calendar-guest-answers = { $yes } ja, { $maybe } miskien, { $no } nee, { $waiting } wag
-calendar-organizer-name = { $name } (organiseerder)
 calendar-open-web = Maak in die blaaier oop
 calendar-close = Maak toe
 

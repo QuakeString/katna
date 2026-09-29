@@ -1178,3 +1178,24 @@ Kàlẹ́ńdà ń fi àwọn kàlẹ́ńdà Google, Microsoft àti àwọn mìí
 Bọ́tìnì kàlẹ́ńdà ní ìhà ọ̀tún meeli rẹ ń ṣí àtòjọ ọjọ́ náà, pẹ̀lú Darapọ̀ fún àwọn ìpè.
 Wọlé sí àkọọ́lẹ̀ kan lẹ́ẹ̀kan sí i kí Katna lè ka kàlẹ́ńdà rẹ̀.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Ṣíṣẹ̀dá àti yíyí àwọn olùbásọ̀rọ̀ padà"
+text = """
+Ṣẹ̀dá olùbásọ̀rọ̀ lórí ojú ìwé Àwọn olùbásọ̀rọ̀ máa ń fi ẹnì kan kún àkọọ́lẹ̀ tí o yàn, Ṣàtúnṣe lórí ojú ìwé olùbásọ̀rọ̀ sì máa ń yí i padà níbẹ̀ náà.
+Pa rẹ́ ní Dá padà, Google àti Outlook sì máa ń tọ́jú àwọn olùbásọ̀rọ̀ tí a pa rẹ́ sínú àpò ìdọ̀tí fún ìgbà díẹ̀.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Àkọsílẹ̀ lórí lẹ́tà"
+text = """
+Tẹ lẹ́tà kan ní bọ́tìnnì ọ̀tún, tàbí ṣí àtòjọ ⋮ rẹ̀, kí o sì yan Fi àkọsílẹ̀ kún un: àkọsílẹ̀ tí àkọlé rẹ̀ jẹ́ kókó lẹ́tà náà yóò ṣí lórí lẹ́tà náà.
+Àwọn àkọsílẹ̀ rẹ̀ máa ń hàn lábẹ́ kókó lẹ́tà náà nígbàkúùgbà tí o bá tún ṣí lẹ́tà yẹn, ìdámọ̀ Lẹ́tà lórí àkọsílẹ̀ sì máa ń mú ọ padà sórí lẹ́tà náà.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Iṣẹ́ lórí olupèsè lẹ́tà tìrẹ"
+text = """
+Àwọn àkọọ́lẹ̀ tí a fi ọ̀rọ̀ìgbaniwọlé wọlé máa ń tọ́jú iṣẹ́ wọn sórí olupèsè lẹ́tà wọn báyìí nígbà tí ó bá fúnni ní CalDAV,
+nítorí náà iṣẹ́ náà tún máa ń hàn nínú àwọn ohun èlò olupèsè fúnra rẹ̀ àti lórí fóònù.
+"""

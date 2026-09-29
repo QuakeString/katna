@@ -1246,3 +1246,30 @@ calendario a la derecha de tu correo abre la agenda del día, con «Unirse»
 para las llamadas. Vuelve a iniciar sesión en una cuenta para que Katna
 pueda leer su calendario.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Crear y editar contactos"
+text = """
+Crear contacto, en la página Contactos, añade a alguien a la cuenta que
+elijas, y Editar, en la página de un contacto, lo modifica también allí.
+Eliminar tiene un Deshacer, y Google y Outlook conservan los contactos
+eliminados en su papelera durante un tiempo.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notas sobre un correo"
+text = """
+Haz clic derecho en un correo, o abre su menú ⋮, y elige Añadir una
+nota: se abre sobre el correo una nota con el asunto como título. Sus
+notas aparecen bajo el asunto cada vez que vuelves a abrir ese correo,
+y la etiqueta Correo de una nota te lleva de vuelta al correo.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Tareas en su propio servidor de correo"
+text = """
+Las cuentas que inician sesión con contraseña ahora guardan sus tareas
+en su servidor de correo cuando este ofrece CalDAV, de modo que las
+tareas también aparecen en las aplicaciones del propio servidor y en
+el teléfono.
+"""

@@ -236,6 +236,141 @@ pub struct StoredEvent {
     pub data: EventData,
 }
 
+/// What the user sets on an event in the editor: the fields an app sends
+/// the daemon to add or change an event ([`EventChange`]).
+#[derive(Debug, Clone, PartialEq, Eq, Default, serde::Serialize, serde::Deserialize)]
+pub struct EventEdit {
+    pub title: String,
+    #[serde(default)]
+    pub location: String,
+    #[serde(default)]
+    pub description: String,
+    /// Unix seconds; a whole-day event's are UTC midnights.
+    pub start: i64,
+    pub end: i64,
+    #[serde(default)]
+    pub all_day: bool,
+    /// IANA name of the zone the times were picked in.
+    #[serde(default)]
+    pub time_zone: String,
+    /// The RRULE value, or empty.
+    #[serde(default)]
+    pub rrule: String,
+    #[serde(default = "busy_default")]
+    pub busy: bool,
+    /// `#rrggbb`, or empty for the calendar's.
+    #[serde(default)]
+    pub color: String,
+    /// Minutes before the start.
+    #[serde(default)]
+    pub reminders: Vec<i64>,
+    #[serde(default)]
+    pub attendees: Vec<Attendee>,
+    /// Asks the service to add a video call (Google Meet, Teams).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub add_call: bool,
+}
+
+fn busy_default() -> bool {
+    true
+}
+
+impl EventEdit {
+    /// What `event` has now, to edit.
+    pub fn of(event: &EventData) -> Self {
+        Self {
+            title: event.title.clone(),
+            location: event.location.clone(),
+            description: event.description.clone(),
+            start: event.start,
+            end: event.end,
+            all_day: event.all_day,
+            time_zone: event.time_zone.clone(),
+            rrule: event.rrule.clone(),
+            busy: event.busy,
+            color: event.color.clone(),
+            reminders: event.reminders.clone(),
+            attendees: event.attendees.clone(),
+            add_call: false,
+        }
+    }
+
+    /// Sets these fields on `event`.
+    pub fn apply(&self, event: &mut EventData) {
+        event.title = self.title.clone();
+        event.location = self.location.clone();
+        event.description = self.description.clone();
+        event.start = self.start;
+        event.end = self.end;
+        event.all_day = self.all_day;
+        event.time_zone = self.time_zone.clone();
+        event.rrule = self.rrule.clone();
+        event.busy = self.busy;
+        event.color = self.color.clone();
+        event.reminders = self.reminders.clone();
+        event.attendees = self.attendees.clone();
+    }
+}
+
+/// Which occurrences of a repeating event a change is for.
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize,
+)]
+#[serde(rename_all = "snake_case")]
+pub enum EditScope {
+    /// This occurrence only, or the event when it does not repeat.
+    #[default]
+    This,
+    /// This occurrence and those after it.
+    Following,
+    /// The whole series.
+    All,
+}
+
+/// A change to the calendar that an app asks the daemon for
+/// (`Pim1.EditEvent`, as JSON). The daemon writes it to `pim.db` at once
+/// and then to the calendar's service.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(tag = "op", rename_all = "snake_case")]
+pub enum EventChange {
+    /// A new event in calendar `calendar`.
+    Add { calendar: i64, edit: EventEdit },
+    /// Changes event `event`; for a repeating one, `occurrence` is the
+    /// start the occurrence has in the series.
+    Change {
+        event: i64,
+        #[serde(default)]
+        scope: EditScope,
+        #[serde(default)]
+        occurrence: Option<i64>,
+        edit: EventEdit,
+        /// Moves the event to this calendar.
+        #[serde(default)]
+        calendar: Option<i64>,
+    },
+    /// Deletes event `event`, or occurrences of it.
+    Delete {
+        event: i64,
+        #[serde(default)]
+        scope: EditScope,
+        #[serde(default)]
+        occurrence: Option<i64>,
+    },
+    /// Brings back the occurrence starting at `occurrence` of the series
+    /// `event`, deleted by itself.
+    Restore { event: i64, occurrence: i64 },
+    /// The user's answer to an invitation: `accepted`, `tentative` or
+    /// `declined`, for one occurrence or the series.
+    Respond {
+        event: i64,
+        #[serde(default)]
+        scope: EditScope,
+        #[serde(default)]
+        occurrence: Option<i64>,
+        status: String,
+    },
+}
+
 fn join(numbers: &[i64]) -> String {
     numbers
         .iter()
@@ -316,61 +451,117 @@ fn event_row(row: &Row<'_>) -> rusqlite::Result<StoredEvent> {
 /// range asked in local time reaches this far either side.
 const DAY: i64 = 24 * 60 * 60;
 
+/// Where an event row stands with its calendar's service.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum Pending {
+    /// As the service has it (or in a calendar on this computer).
+    #[default]
+    None,
+    /// Added or changed here; the service doesn't have it yet.
+    Write,
+    /// Deleted here: kept, cancelled, until the service deleted it too.
+    Delete,
+}
+
+impl Pending {
+    fn as_int(self) -> i64 {
+        match self {
+            Self::None => 0,
+            Self::Write => 1,
+            Self::Delete => 2,
+        }
+    }
+
+    fn parse(value: i64) -> Self {
+        match value {
+            1 => Self::Write,
+            2 => Self::Delete,
+            _ => Self::None,
+        }
+    }
+}
+
+/// Inserts `event` into calendar `calendar` under `remote_id`. Returns
+/// its ID.
+fn insert_event(
+    conn: &rusqlite::Connection,
+    calendar: i64,
+    remote_id: &str,
+    event: &EventData,
+    pending: Pending,
+) -> Result<i64> {
+    let attendees = serde_json::to_string(&event.attendees).unwrap_or_else(|_| "[]".to_owned());
+    conn.prepare_cached(
+        "INSERT INTO event (calendar_id, remote_id, uid, etag, recurrence_id, status,
+             title, location, description, start, end, all_day, time_zone, rrule,
+             exdates, rdates, range_end, busy, kind, color, organizer, organizer_name,
+             attendees_json, self_status, join_url, reminders, web_link, updated_at, pending)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15,
+             ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29)",
+    )?
+    .execute(params![
+        calendar,
+        remote_id,
+        event.uid,
+        event.etag,
+        event.recurrence_id,
+        event.status.as_str(),
+        event.title,
+        event.location,
+        event.description,
+        event.start,
+        event.end,
+        event.all_day,
+        event.time_zone,
+        event.rrule,
+        join(&event.exdates),
+        join(&event.rdates),
+        event.range_end,
+        event.busy,
+        event.kind.as_str(),
+        event.color,
+        event.organizer,
+        event.organizer_name,
+        attendees,
+        event.self_status,
+        event.join_url,
+        join(&event.reminders),
+        event.web_link,
+        event.updated_at,
+        pending.as_int(),
+    ])?;
+    Ok(conn.last_insert_rowid())
+}
+
 /// Replaces the rows under `remote_id` in calendar `calendar` with
-/// `events`, inside transaction `tx`.
+/// `events`, inside transaction `tx`. Rows changed here that the service
+/// doesn't have yet stay as they are.
 fn write_events(
     tx: &rusqlite::Transaction<'_>,
     calendar: i64,
     remote_id: &str,
     events: &[EventData],
 ) -> Result<()> {
+    let pending: bool = tx
+        .prepare_cached(
+            "SELECT EXISTS (SELECT 1 FROM event
+                 WHERE calendar_id = ?1 AND remote_id = ?2 AND pending != 0)",
+        )?
+        .query_row(params![calendar, remote_id], |row| row.get(0))?;
+    if pending {
+        tracing::debug!(
+            calendar,
+            remote_id,
+            "event changed here; the sync leaves it"
+        );
+        return Ok(());
+    }
     tx.execute(
         "DELETE FROM event WHERE calendar_id = ?1 AND remote_id = ?2",
         params![calendar, remote_id],
     )?;
-    {
-        let mut insert = tx.prepare_cached(
-            "INSERT INTO event (calendar_id, remote_id, uid, etag, recurrence_id, status,
-                 title, location, description, start, end, all_day, time_zone, rrule,
-                 exdates, rdates, range_end, busy, kind, color, organizer, organizer_name,
-                 attendees_json, self_status, join_url, reminders, web_link, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15,
-                 ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28)",
-        )?;
-        for event in events {
-            let attendees =
-                serde_json::to_string(&event.attendees).unwrap_or_else(|_| "[]".to_owned());
-            insert.execute(params![
-                calendar,
-                remote_id,
-                event.uid,
-                event.etag,
-                event.recurrence_id,
-                event.status.as_str(),
-                event.title,
-                event.location,
-                event.description,
-                event.start,
-                event.end,
-                event.all_day,
-                event.time_zone,
-                event.rrule,
-                join(&event.exdates),
-                join(&event.rdates),
-                event.range_end,
-                event.busy,
-                event.kind.as_str(),
-                event.color,
-                event.organizer,
-                event.organizer_name,
-                attendees,
-                event.self_status,
-                event.join_url,
-                join(&event.reminders),
-                event.web_link,
-                event.updated_at,
-            ])?;
-        }
+    for event in events {
+        insert_event(tx, calendar, remote_id, event, Pending::None)?;
     }
     Ok(())
 }
@@ -543,18 +734,21 @@ impl Store {
 
     /// Deletes the series `uid` of calendar `calendar` with its changed
     /// occurrences (the series was deleted). Returns how many rows went.
+    /// Rows changed here that the service doesn't have yet stay.
     pub fn remove_series(&mut self, calendar: i64, uid: &str) -> Result<usize> {
         Ok(self.pim.execute(
-            "DELETE FROM event WHERE calendar_id = ?1 AND uid = ?2",
+            "DELETE FROM event WHERE calendar_id = ?1 AND uid = ?2 AND pending = 0",
             params![calendar, uid],
         )?)
     }
 
-    /// Deletes every event of calendar `calendar`, before a full sync.
+    /// Deletes every event of calendar `calendar`, before a full sync,
+    /// but those changed here that the service doesn't have yet.
     pub fn clear_calendar_events(&mut self, calendar: i64) -> Result<usize> {
-        Ok(self
-            .pim
-            .execute("DELETE FROM event WHERE calendar_id = ?1", [calendar])?)
+        Ok(self.pim.execute(
+            "DELETE FROM event WHERE calendar_id = ?1 AND pending = 0",
+            [calendar],
+        )?)
     }
 
     /// The remote IDs and etags of calendar `calendar`'s events, for a
@@ -587,6 +781,7 @@ impl Store {
         let mut stmt = self.pim.prepare_cached(&format!(
             "SELECT {EVENT_COLUMNS} FROM event
              WHERE calendar_id IN (SELECT id FROM calendar WHERE hidden = 0)
+               AND pending != 2
                AND start < ?2
                AND (
                      (rrule = '' AND end > ?1)
@@ -596,6 +791,7 @@ impl Store {
              UNION
              SELECT {EVENT_COLUMNS} FROM event
              WHERE calendar_id IN (SELECT id FROM calendar WHERE hidden = 0)
+               AND pending != 2
                AND recurrence_id IS NOT NULL AND recurrence_id >= ?1 AND recurrence_id < ?2
              ORDER BY start, id"
         ))?;
@@ -613,6 +809,232 @@ impl Store {
         let rows = stmt.query_map(params![calendar, uid], event_row)?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
+
+    /// The series (or single event) `uid` of calendar `calendar`: its row
+    /// that is not a changed occurrence.
+    pub fn event_series(&self, calendar: i64, uid: &str) -> Result<Option<StoredEvent>> {
+        Ok(self
+            .pim
+            .prepare_cached(&format!(
+                "SELECT {EVENT_COLUMNS} FROM event
+                 WHERE calendar_id = ?1 AND uid = ?2 AND recurrence_id IS NULL
+                 ORDER BY pending = 2, id LIMIT 1"
+            ))?
+            .query_row(params![calendar, uid], event_row)
+            .optional()?)
+    }
+
+    /// The rows stored under `remote_id` in calendar `calendar` (a CalDAV
+    /// resource: a series and its changed occurrences), with where each
+    /// stands with the service.
+    pub fn resource_events(
+        &self,
+        calendar: i64,
+        remote_id: &str,
+    ) -> Result<Vec<(StoredEvent, Pending)>> {
+        let mut stmt = self.pim.prepare_cached(&format!(
+            "SELECT {EVENT_COLUMNS}, pending FROM event
+             WHERE calendar_id = ?1 AND remote_id = ?2
+             ORDER BY recurrence_id IS NOT NULL, recurrence_id, id"
+        ))?;
+        let rows = stmt.query_map(params![calendar, remote_id], |row| {
+            Ok((event_row(row)?, Pending::parse(row.get(29)?)))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Where event `id` stands with its service; `None` if there is no
+    /// such event.
+    pub fn event_pending(&self, id: i64) -> Result<Option<Pending>> {
+        Ok(self
+            .pim
+            .prepare_cached("SELECT pending FROM event WHERE id = ?1")?
+            .query_row([id], |row| row.get::<_, i64>(0))
+            .optional()?
+            .map(Pending::parse))
+    }
+
+    /// Adds `event` to calendar `calendar`, as the user made it here.
+    /// Returns its ID.
+    pub fn add_event(&mut self, calendar: i64, event: &EventData, pending: Pending) -> Result<i64> {
+        insert_event(&self.pim, calendar, &event.remote_id, event, pending)
+    }
+
+    /// Replaces what event `id` holds with `event`, as the user changed it
+    /// here. Returns whether it exists.
+    pub fn update_event(&mut self, id: i64, event: &EventData, pending: Pending) -> Result<bool> {
+        let attendees = serde_json::to_string(&event.attendees).unwrap_or_else(|_| "[]".to_owned());
+        let changed = self
+            .pim
+            .prepare_cached(
+                "UPDATE event SET remote_id = ?2, uid = ?3, etag = ?4, recurrence_id = ?5,
+                     status = ?6, title = ?7, location = ?8, description = ?9, start = ?10,
+                     end = ?11, all_day = ?12, time_zone = ?13, rrule = ?14, exdates = ?15,
+                     rdates = ?16, range_end = ?17, busy = ?18, kind = ?19, color = ?20,
+                     organizer = ?21, organizer_name = ?22, attendees_json = ?23,
+                     self_status = ?24, join_url = ?25, reminders = ?26, web_link = ?27,
+                     updated_at = ?28, pending = ?29
+                 WHERE id = ?1",
+            )?
+            .execute(params![
+                id,
+                event.remote_id,
+                event.uid,
+                event.etag,
+                event.recurrence_id,
+                event.status.as_str(),
+                event.title,
+                event.location,
+                event.description,
+                event.start,
+                event.end,
+                event.all_day,
+                event.time_zone,
+                event.rrule,
+                join(&event.exdates),
+                join(&event.rdates),
+                event.range_end,
+                event.busy,
+                event.kind.as_str(),
+                event.color,
+                event.organizer,
+                event.organizer_name,
+                attendees,
+                event.self_status,
+                event.join_url,
+                join(&event.reminders),
+                event.web_link,
+                event.updated_at,
+                pending.as_int(),
+            ])?;
+        Ok(changed > 0)
+    }
+
+    /// Moves event `id` to calendar `calendar`.
+    pub fn set_event_calendar(&mut self, id: i64, calendar: i64) -> Result<()> {
+        self.pim.execute(
+            "UPDATE event SET calendar_id = ?2 WHERE id = ?1",
+            params![id, calendar],
+        )?;
+        Ok(())
+    }
+
+    /// Marks event `id` deleted here: kept, cancelled, until its service
+    /// deleted it too.
+    pub fn mark_event_deleted(&mut self, id: i64) -> Result<()> {
+        self.pim.execute(
+            "UPDATE event SET status = 'cancelled', pending = 2 WHERE id = ?1",
+            [id],
+        )?;
+        Ok(())
+    }
+
+    /// Deletes event `id` at once. Returns whether it existed.
+    pub fn delete_event(&mut self, id: i64) -> Result<bool> {
+        Ok(self.pim.execute("DELETE FROM event WHERE id = ?1", [id])? > 0)
+    }
+
+    /// Keeps what the service calls event `id` and its etag, once the
+    /// service took it.
+    pub fn set_event_remote(&mut self, id: i64, remote_id: &str, etag: Option<&str>) -> Result<()> {
+        self.pim.execute(
+            "UPDATE event SET remote_id = ?2, etag = ?3 WHERE id = ?1",
+            params![id, remote_id, etag],
+        )?;
+        Ok(())
+    }
+
+    /// Keeps the link to the video call the service added to event `id`.
+    pub fn set_event_join_url(&mut self, id: i64, url: &str) -> Result<()> {
+        self.pim.execute(
+            "UPDATE event SET join_url = ?2 WHERE id = ?1",
+            params![id, url],
+        )?;
+        Ok(())
+    }
+
+    /// Sets the etag of every row under `remote_id` in calendar
+    /// `calendar` (a CalDAV resource the server just took).
+    pub fn set_resource_etag(
+        &mut self,
+        calendar: i64,
+        remote_id: &str,
+        etag: Option<&str>,
+    ) -> Result<()> {
+        self.pim.execute(
+            "UPDATE event SET etag = ?3 WHERE calendar_id = ?1 AND remote_id = ?2",
+            params![calendar, remote_id, etag],
+        )?;
+        Ok(())
+    }
+
+    /// Events `ids` are now as their service has them: those deleted here
+    /// go, the others are synced again as usual.
+    pub fn events_pushed(&mut self, ids: &[i64]) -> Result<()> {
+        let tx = self.pim.transaction()?;
+        for id in ids {
+            tx.execute("DELETE FROM event WHERE id = ?1 AND pending = 2", [id])?;
+            tx.execute("UPDATE event SET pending = 0 WHERE id = ?1", [id])?;
+        }
+        tx.commit()?;
+        Ok(())
+    }
+
+    /// Gives up sending the changes made here to events `ids` (every
+    /// change, with `None`): their rows, and the rows stored with them,
+    /// lose their etag and their calendars their sync token, so the next
+    /// sync writes them again as the service has them. Returns the
+    /// calendars that need that sync.
+    pub fn forget_pending_events(&mut self, ids: Option<&[i64]>) -> Result<Vec<i64>> {
+        let tx = self.pim.transaction()?;
+        let rows: Vec<(i64, i64, String)> = {
+            let mut stmt = tx.prepare_cached(
+                "SELECT id, calendar_id, remote_id FROM event WHERE pending != 0",
+            )?;
+            let found = stmt.query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))?;
+            found.collect::<rusqlite::Result<_>>()?
+        };
+        let mut calendars = Vec::new();
+        for (id, calendar, remote_id) in rows {
+            if ids.is_some_and(|ids| !ids.contains(&id)) {
+                continue;
+            }
+            tx.execute(
+                "UPDATE event SET etag = NULL WHERE calendar_id = ?1 AND remote_id = ?2",
+                params![calendar, remote_id],
+            )?;
+            tx.execute("UPDATE event SET pending = 0 WHERE id = ?1", [id])?;
+            if !calendars.contains(&calendar) {
+                tx.execute(
+                    "UPDATE calendar SET sync_token = NULL WHERE id = ?1",
+                    [calendar],
+                )?;
+                calendars.push(calendar);
+            }
+        }
+        tx.commit()?;
+        Ok(calendars)
+    }
+
+    /// Makes a calendar on this computer when there is no calendar at all,
+    /// so events can be added from the start. It has no name: apps show
+    /// their own for it. Returns its ID when it made one.
+    pub fn add_local_calendar_if_none(&mut self) -> Result<Option<i64>> {
+        let any: bool =
+            self.pim
+                .query_row("SELECT EXISTS (SELECT 1 FROM calendar)", [], |row| {
+                    row.get(0)
+                })?;
+        if any {
+            return Ok(None);
+        }
+        self.pim.execute(
+            "INSERT INTO calendar (account_id, source, remote_id, name, access, is_primary)
+             VALUES (NULL, 'local', 'local', '', 'owner', 1)",
+            [],
+        )?;
+        Ok(Some(self.pim.last_insert_rowid()))
+    }
 }
 
 #[cfg(test)]
@@ -626,6 +1048,37 @@ mod tests {
         let paths = Paths::with_root(dir.path());
         let store = Store::open(&paths, Mode::ReadWrite).unwrap();
         (dir, store)
+    }
+
+    #[test]
+    fn event_changes_read_back_as_sent() {
+        let change = EventChange::Change {
+            event: 7,
+            scope: EditScope::Following,
+            occurrence: Some(1_800_000_000),
+            edit: EventEdit {
+                title: "Standup".into(),
+                start: 1_800_000_000,
+                end: 1_800_001_800,
+                rrule: "FREQ=WEEKLY;BYDAY=MO".into(),
+                busy: true,
+                reminders: vec![10],
+                ..EventEdit::default()
+            },
+            calendar: None,
+        };
+        let json = serde_json::to_string(&change).unwrap();
+        assert!(json.contains("\"op\":\"change\""), "{json}");
+        assert_eq!(serde_json::from_str::<EventChange>(&json).unwrap(), change);
+        let delete: EventChange = serde_json::from_str(r#"{"op":"delete","event":3}"#).unwrap();
+        assert_eq!(
+            delete,
+            EventChange::Delete {
+                event: 3,
+                scope: EditScope::This,
+                occurrence: None
+            }
+        );
     }
 
     fn work() -> NewCalendar {
@@ -776,5 +1229,148 @@ mod tests {
         );
         store.replace_events(cal, "r.ics", &[]).unwrap();
         assert!(store.event_rows_in_range(0, 3 * DAY).unwrap().is_empty());
+    }
+
+    #[test]
+    fn a_sync_leaves_changes_the_service_does_not_have_yet() {
+        let (_dir, mut store) = store();
+        let cal = store
+            .upsert_calendar(Some(AccountId(1)), CalendarSource::Google, &work(), 0)
+            .unwrap();
+        let mut synced = event("a", 100, 200);
+        synced.etag = Some("1".into());
+        store.replace_events(cal, "a", &[synced.clone()]).unwrap();
+        let id = store.event_rows_in_range(0, 1000).unwrap()[0].id;
+
+        let mut mine = synced.clone();
+        mine.title = "Mine".into();
+        assert!(store.update_event(id, &mine, Pending::Write).unwrap());
+        let added = store
+            .add_event(cal, &event("new", 300, 400), Pending::Write)
+            .unwrap();
+        // The service still has the old one, and not the new one.
+        store
+            .replace_events_batch(
+                cal,
+                &[("a".into(), vec![synced.clone()]), ("new".into(), vec![])],
+            )
+            .unwrap();
+        store.remove_series(cal, "new@test").unwrap();
+        store.clear_calendar_events(cal).unwrap();
+        assert_eq!(store.event(id).unwrap().unwrap().data.title, "Mine");
+        assert!(store.event(added).unwrap().is_some());
+        assert_eq!(store.event_pending(id).unwrap(), Some(Pending::Write));
+
+        // Once sent, the next sync writes it as the service has it.
+        store.set_event_remote(added, "new-id", Some("7")).unwrap();
+        store.events_pushed(&[id, added]).unwrap();
+        assert_eq!(store.event_pending(added).unwrap(), Some(Pending::None));
+        assert_eq!(
+            store.event(added).unwrap().unwrap().data.remote_id,
+            "new-id"
+        );
+        store.replace_events(cal, "a", &[synced]).unwrap();
+        let titles: Vec<String> = store
+            .event_rows_in_range(0, 1000)
+            .unwrap()
+            .into_iter()
+            .map(|e| e.data.title)
+            .collect();
+        assert_eq!(titles, ["a", "new"]);
+    }
+
+    #[test]
+    fn deleted_here_hides_at_once_and_goes_once_sent() {
+        let (_dir, mut store) = store();
+        let cal = store
+            .upsert_calendar(Some(AccountId(1)), CalendarSource::Google, &work(), 0)
+            .unwrap();
+        store
+            .replace_events(cal, "a", &[event("a", 100, 200)])
+            .unwrap();
+        let id = store.event_rows_in_range(0, 1000).unwrap()[0].id;
+        store.mark_event_deleted(id).unwrap();
+        assert!(store.event_rows_in_range(0, 1000).unwrap().is_empty());
+        store
+            .replace_events(cal, "a", &[event("a", 100, 200)])
+            .unwrap();
+        assert!(store.event_rows_in_range(0, 1000).unwrap().is_empty());
+        store.events_pushed(&[id]).unwrap();
+        assert!(store.event(id).unwrap().is_none());
+    }
+
+    #[test]
+    fn a_change_the_service_refused_is_synced_over() {
+        let (_dir, mut store) = store();
+        let cal = store
+            .upsert_calendar(Some(AccountId(1)), CalendarSource::CalDav, &work(), 0)
+            .unwrap();
+        store.set_calendar_sync_token(cal, Some("ctag")).unwrap();
+        let mut master = event("r.ics", 0, 3600);
+        master.etag = Some("e1".into());
+        let mut moved = master.clone();
+        moved.recurrence_id = Some(DAY);
+        store
+            .replace_events(cal, "r.ics", &[master.clone(), moved])
+            .unwrap();
+        let rows = store.resource_events(cal, "r.ics").unwrap();
+        assert_eq!(rows.len(), 2);
+        let id = rows[0].0.id;
+        master.title = "Changed".into();
+        store.update_event(id, &master, Pending::Write).unwrap();
+        assert_eq!(store.forget_pending_events(Some(&[id])).unwrap(), [cal]);
+        assert_eq!(store.event_pending(id).unwrap(), Some(Pending::None));
+        assert_eq!(store.event_etags(cal).unwrap(), [("r.ics".into(), None)]);
+        assert_eq!(store.calendar(cal).unwrap().unwrap().sync_token, None);
+        assert!(store.forget_pending_events(None).unwrap().is_empty());
+    }
+
+    #[test]
+    fn a_local_calendar_only_when_there_is_none() {
+        let (_dir, mut store) = store();
+        let id = store.add_local_calendar_if_none().unwrap().unwrap();
+        let calendar = store.calendar(id).unwrap().unwrap();
+        assert_eq!(calendar.source, CalendarSource::Local);
+        assert_eq!(calendar.account, None);
+        assert!(calendar.name.is_empty());
+        assert!(calendar.access.can_edit());
+        assert_eq!(store.add_local_calendar_if_none().unwrap(), None);
+    }
+
+    #[test]
+    fn events_are_added_changed_and_moved_here() {
+        let (_dir, mut store) = store();
+        let one = store
+            .upsert_calendar(None, CalendarSource::Local, &work(), 0)
+            .unwrap();
+        let mut other = work();
+        other.remote_id = "other".into();
+        let two = store
+            .upsert_calendar(None, CalendarSource::Local, &other, 1)
+            .unwrap();
+        let mut series = event("s", 0, 3600);
+        series.rrule = "FREQ=DAILY".into();
+        series.range_end = None;
+        let id = store.add_event(one, &series, Pending::None).unwrap();
+        let mut moved = series.clone();
+        moved.rrule.clear();
+        moved.recurrence_id = Some(DAY);
+        moved.start = DAY + 600;
+        moved.end = DAY + 4200;
+        moved.range_end = Some(moved.end);
+        let exception = store.add_event(one, &moved, Pending::None).unwrap();
+        assert_eq!(store.event_series(one, "s@test").unwrap().unwrap().id, id);
+        assert_eq!(
+            store.event_exceptions(one, "s@test").unwrap()[0].id,
+            exception
+        );
+        series.title = "Renamed".into();
+        store.update_event(id, &series, Pending::None).unwrap();
+        store.set_event_calendar(id, two).unwrap();
+        let back = store.event(id).unwrap().unwrap();
+        assert_eq!(back.calendar_id, two);
+        assert_eq!(back.data, series);
+        assert!(store.delete_event(exception).unwrap());
+        assert!(!store.delete_event(exception).unwrap());
     }
 }
