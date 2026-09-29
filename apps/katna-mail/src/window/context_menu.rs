@@ -33,6 +33,9 @@ use crate::widgets::{icon, raised};
 const MENU_WIDTH: f32 = 264.0;
 const SUB_WIDTH: f32 = 240.0;
 const ITEM_HEIGHT: f32 = 36.0;
+/// Items come no closer than this in a short window; below it the menu
+/// scrolls.
+const MIN_ITEM_HEIGHT: f32 = 28.0;
 const PADDING: f32 = 8.0;
 const RULE_MARGIN: f32 = 6.0;
 const RULE_HEIGHT: f32 = 2.0 * RULE_MARGIN + 1.0;
@@ -50,6 +53,8 @@ pub(super) struct ContextMenu {
     open: Option<Sub>,
     /// How tall the menu stands without a submenu, as last drawn.
     height: Cell<f32>,
+    /// Each item's height: less than [`ITEM_HEIGHT`] in a short window.
+    row_height: Cell<f32>,
 }
 
 impl MailWindow {
@@ -83,6 +88,7 @@ impl MailWindow {
             row,
             open: None,
             height: Cell::new(0.0),
+            row_height: Cell::new(ITEM_HEIGHT),
         });
         cx.notify();
     }
@@ -165,9 +171,11 @@ impl MailWindow {
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let row = &menu.row;
+        let rh = self.context_row_height(vh);
+        menu.row_height.set(rh);
         // Resting on an item of the menu itself folds an open submenu away.
         let plain = |id: &'static str, name: &str, label: &str| {
-            menu_row(id, name, label.to_owned().into(), th).on_hover(cx.listener(
+            menu_row(id, name, label.to_owned().into(), th, rh).on_hover(cx.listener(
                 |this, hovered: &bool, _, cx| {
                     if *hovered {
                         this.open_context_sub(None, cx);
@@ -211,7 +219,7 @@ impl MailWindow {
         // archiving what is archived, in Spam or in Trash, and Trash
         // restores and deletes for good. The everyday actions stay on top;
         // the rarer ones wait in submenus, so the menu fits a short window.
-        let mut main = Rows::new();
+        let mut main = Rows::new(rh);
         if !drafts {
             main.item(
                 plain("context-reply", "reply", &tr!("menu-reply")).on_click(reply(Kind::Reply)),
@@ -289,6 +297,7 @@ impl MailWindow {
                     "search",
                     tr!("menu-find-from", name = name.as_str()).into(),
                     th,
+                    rh,
                 )
                 .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
                     if *hovered {
@@ -342,9 +351,9 @@ impl MailWindow {
             .map(|sub| (sub, self.context_sub_rows(sub, th, cx)));
         let (content, card_y, beside) = match open {
             Some((sub, rows)) if drills => {
-                let mut card = Rows::new();
+                let mut card = Rows::new(rh);
                 card.item(
-                    menu_row("context-back", "back", sub.label(), th)
+                    menu_row("context-back", "back", sub.label(), th, rh)
                         .font_weight(FontWeight::MEDIUM)
                         .on_click(cx.listener(|this, _, _, cx| {
                             cx.stop_propagation();
@@ -464,11 +473,15 @@ impl MailWindow {
     /// The row that opens submenu `sub`: as the pointer comes to it, or on
     /// a click where submenus open in the menu's place.
     fn context_parent(&self, sub: Sub, th: &Theme, cx: &Context<Self>) -> Stateful<Div> {
+        let rh = self
+            .context_menu
+            .as_ref()
+            .map_or(ITEM_HEIGHT, |m| m.row_height.get());
         let open = self
             .context_menu
             .as_ref()
             .is_some_and(|m| m.open == Some(sub));
-        menu_row(sub.id(), sub.icon(), sub.label(), th)
+        menu_row(sub.id(), sub.icon(), sub.label(), th, rh)
             .when(open, |d| d.bg(rgba(th.hover)))
             .on_hover(cx.listener(move |this, hovered: &bool, window, cx| {
                 if *hovered && !this.context_menu_drills(window) {
@@ -492,6 +505,34 @@ impl MailWindow {
             .child(icon("chevron-right", th.text_dim, 18.0))
     }
 
+    /// How tall each item stands: the menu gets shorter with the window,
+    /// its items closer together, down to [`MIN_ITEM_HEIGHT`].
+    fn context_row_height(&self, vh: f32) -> f32 {
+        let Some(menu) = self.context_menu.as_ref() else {
+            return ITEM_HEIGHT;
+        };
+        let role = self.folder_role();
+        let drafts = role == Role::Drafts;
+        // Counted as `render_context_menu` lays them out.
+        let answers = if drafts { 0 } else { 3 };
+        let archive = usize::from(!matches!(
+            role,
+            Role::Drafts | Role::Sent | Role::Junk | Role::Trash | Role::Archive | Role::All
+        ));
+        let to_inbox = usize::from(matches!(role, Role::Trash | Role::Archive | Role::All));
+        let snooze = usize::from(!matches!(
+            role,
+            Role::Drafts | Role::Sent | Role::Trash | Role::Junk
+        ));
+        let subs = if drafts { 2 } else { 3 };
+        let find = usize::from(!menu.row.sender.is_empty());
+        // Delete, read, star and new window.
+        let items = answers + archive + to_inbox + snooze + subs + find + 4;
+        let rules = if drafts { 2.0 } else { 3.0 };
+        let room = vh - 2.0 * MARGIN - 2.0 * PADDING - rules * RULE_HEIGHT;
+        (room / items as f32).clamp(MIN_ITEM_HEIGHT, ITEM_HEIGHT)
+    }
+
     /// Whether submenus open in the menu's place: the window is too narrow
     /// for one beside the menu, or too short for the whole menu.
     fn context_menu_drills(&self, window: &Window) -> bool {
@@ -503,6 +544,10 @@ impl MailWindow {
 
     /// The items of submenu `sub`.
     fn context_sub_rows(&self, sub: Sub, th: &Theme, cx: &Context<Self>) -> Rows {
+        let rh = self
+            .context_menu
+            .as_ref()
+            .map_or(ITEM_HEIGHT, |m| m.row_height.get());
         let row = self.context_menu.as_ref().map(|m| m.row.clone());
         let act = |act: Act| {
             cx.listener(
@@ -511,7 +556,7 @@ impl MailWindow {
                 },
             )
         };
-        let mut rows = Rows::new();
+        let mut rows = Rows::new(rh);
         match sub {
             Sub::MoveTo => {
                 // Search results can be anywhere, so every folder is offered.
@@ -528,6 +573,7 @@ impl MailWindow {
                             super::nav::role_icon(role),
                             name.into(),
                             th,
+                            rh,
                         )
                         .on_click(act(Act::MoveTo(id))),
                     );
@@ -540,6 +586,7 @@ impl MailWindow {
                         "tasks",
                         tr!("menu-add-to-tasks").into(),
                         th,
+                        rh,
                     )
                     .on_click(cx.listener(|this, _, _, cx| {
                         let Some(menu) = this.context_menu.take() else {
@@ -550,14 +597,20 @@ impl MailWindow {
                     })),
                 );
                 rows.item(
-                    menu_row("context-add-note", "notes", tr!("menu-add-note").into(), th)
-                        .on_click(cx.listener(|this, _, window, cx| {
-                            let Some(menu) = this.context_menu.take() else {
-                                return;
-                            };
-                            let keys = this.context_targets(menu.key);
-                            this.add_note_from(keys, window, cx);
-                        })),
+                    menu_row(
+                        "context-add-note",
+                        "notes",
+                        tr!("menu-add-note").into(),
+                        th,
+                        rh,
+                    )
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        let Some(menu) = this.context_menu.take() else {
+                            return;
+                        };
+                        let keys = this.context_targets(menu.key);
+                        this.add_note_from(keys, window, cx);
+                    })),
                 );
                 rows.item(
                     menu_row(
@@ -565,6 +618,7 @@ impl MailWindow {
                         "calendar",
                         tr!("menu-schedule-meeting").into(),
                         th,
+                        rh,
                     )
                     .on_click(cx.listener(|this, _, window, cx| {
                         let Some(menu) = this.context_menu.take() else {
@@ -579,6 +633,7 @@ impl MailWindow {
                         "video",
                         tr!("menu-start-call").into(),
                         th,
+                        rh,
                     )
                     .on_click(cx.listener(|this, _, window, cx| {
                         let Some(menu) = this.context_menu.take() else {
@@ -592,7 +647,7 @@ impl MailWindow {
                 let role = self.folder_role();
                 if !matches!(role, Role::Drafts | Role::Sent | Role::Trash) {
                     rows.item(
-                        menu_row("context-spam", "junk", self.spam_label(true).into(), th)
+                        menu_row("context-spam", "junk", self.spam_label(true).into(), th, rh)
                             .on_click(act(Act::Spam)),
                     );
                 }
@@ -603,6 +658,7 @@ impl MailWindow {
                         "important",
                         tr!("menu-not-important").into(),
                         th,
+                        rh,
                     )
                     .on_click(act(Act::Important(false)))
                 } else {
@@ -611,15 +667,22 @@ impl MailWindow {
                         "important",
                         tr!("menu-important").into(),
                         th,
+                        rh,
                     )
                     .on_click(act(Act::Important(true)))
                 });
                 let pinned = row.as_ref().is_some_and(|r| r.pinned);
                 rows.item(if pinned {
-                    menu_row("context-pin", "pin-filled", tr!("menu-unpin").into(), th)
-                        .on_click(act(Act::Pin(false)))
+                    menu_row(
+                        "context-pin",
+                        "pin-filled",
+                        tr!("menu-unpin").into(),
+                        th,
+                        rh,
+                    )
+                    .on_click(act(Act::Pin(false)))
                 } else {
-                    menu_row("context-pin", "pin", tr!("menu-pin").into(), th)
+                    menu_row("context-pin", "pin", tr!("menu-pin").into(), th, rh)
                         .on_click(act(Act::Pin(true)))
                 });
             }
@@ -671,14 +734,17 @@ impl Sub {
 /// A menu's rows and how tall they stand.
 struct Rows {
     els: Vec<AnyElement>,
+    /// Each item's height.
+    row: f32,
     /// From the menu's top to below the last row.
     h: f32,
 }
 
 impl Rows {
-    fn new() -> Self {
+    fn new(row: f32) -> Self {
         Rows {
             els: Vec::new(),
+            row,
             h: PADDING,
         }
     }
@@ -687,7 +753,7 @@ impl Rows {
     fn item(&mut self, row: impl IntoElement) -> f32 {
         let top = self.h;
         self.els.push(row.into_any_element());
-        self.h += ITEM_HEIGHT;
+        self.h += self.row;
         top
     }
 
@@ -714,11 +780,12 @@ fn menu_row(
     icon_name: &str,
     label: SharedString,
     th: &Theme,
+    height: f32,
 ) -> Stateful<Div> {
     div()
         .id(id)
         .flex_none()
-        .h(px(ITEM_HEIGHT))
+        .h(px(height))
         .pl(px(16.0))
         .pr(px(24.0))
         .flex()

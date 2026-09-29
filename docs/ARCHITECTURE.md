@@ -2126,8 +2126,9 @@ Gemini or confidential mode):
   clicked one. It opens at the pointer, flips left or up where there is
   no room and else is pushed in from the edge; where the window is too
   narrow for a submenu beside it, or too short for the whole menu, a
-  submenu opens in its place under a row back, and only then does the
-  menu scroll. The "select all
+  submenu opens in its place under a row back. In a short window its
+  items first come closer together (36 px down to 28 px), and only then
+  does the menu scroll. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.
