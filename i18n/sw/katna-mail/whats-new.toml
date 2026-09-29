@@ -1369,3 +1369,9 @@ title = "Msongamano wa Kalenda na saa za eneo la pili"
 text = """
 Kitufe cha Chaguo katika Kalenda huweka urefu wa saa (Hujirekebisha kulingana na skrini yako, Starehe au Fupi) na huongeza saa za eneo la pili kando ya zako, kwa watu unaokutana nao ughaibuni.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Anzisha simu ya video kutoka barua pepe"
+text = """
+Bofya kulia mazungumzo, au fungua ⋮, kisha uchague Anzisha simu ya video: simu hufunguka, pamoja na barua pepe mpya kwa kila mtu katika mazungumzo yenye kiungo chake. Akaunti za Gmail hutumia Google Meet; nyingine hupata chumba cha Jitsi Meet. Barua pepe zenye kiungo cha simu ya Meet, Teams, Zoom, Webex, Jitsi, WhatsApp au Telegram sasa zinaonyesha kitufe cha Jiunge.
+"""

@@ -103,6 +103,7 @@ compose-tool-remove-link = လင့်ခ်ကို ဖယ်ရှားရ�
 ## More options
 
 compose-tool-full-screen = မူလအားဖြင့် မျက်နှာပြင်အပြည့်
+compose-tool-video-call = ဗီဒီယိုကောလ် ထည့်ရန်
 compose-tool-label = အညွှန်း
 compose-tool-label-coming = ပို့သောမေးလ်များအတွက် အညွှန်းများ မကြာမီ ရောက်လာမည်။ မက်ဆေ့ဂျ် ပို့ပြီးနောက် ပို့ပြီး ထဲတွင် အညွှန်းတပ်ပါ။
 compose-tool-plain-mode = စာသားသက်သက်မုဒ်

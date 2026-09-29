@@ -1394,3 +1394,9 @@ title = "Kalenderns täthet och en andra tidszon"
 text = """
 Alternativknappen i Kalender styr hur höga timmarna är (Anpassas efter skärmen, Bekväm eller Kompakt) och lägger till en andra tidszon vid sidan av din egen, för de du möter utomlands.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Starta ett videosamtal från ett mejl"
+text = """
+Högerklicka på en konversation, eller öppna ⋮, och välj Starta ett videosamtal: samtalet öppnas, med ett nytt mejl med länken till alla i konversationen. Gmail-konton använder Google Meet; andra får ett Jitsi Meet-rum. Mejl med en samtalslänk till Meet, Teams, Zoom, Webex, Jitsi, WhatsApp eller Telegram visar nu en Anslut-knapp.
+"""

@@ -1476,3 +1476,9 @@ title = "Densidad ng Kalendaryo at pangalawang time zone"
 text = """
 Itinatakda ng button na Mga opsyon sa Kalendaryo kung gaano kataas ang mga oras (Tumutugon sa iyong screen, Kumportable, o Compact) at nagdaragdag ng pangalawang time zone sa tabi ng sa iyo, para sa mga taong nakikilala mo sa ibang bansa.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Magsimula ng video call mula sa isang mail"
+text = """
+I-right-click ang isang usapan, o buksan ang ⋮, at piliin ang Magsimula ng video call: magbubukas ang call, kasama ang bagong mail na may link nito para sa lahat sa usapan. Ang mga Gmail account ay gumagamit ng Google Meet; ang iba ay nakakakuha ng Jitsi Meet room. Ang mga mail na may link ng call sa Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ay may Sumali button na ngayon.
+"""

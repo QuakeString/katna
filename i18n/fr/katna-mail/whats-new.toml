@@ -1475,3 +1475,9 @@ title = "Densité du Calendrier et deuxième fuseau horaire"
 text = """
 Le bouton Options du Calendrier règle la hauteur des heures (Adaptée à votre écran, Confortable ou Compacte) et ajoute un deuxième fuseau horaire à côté du vôtre, pour les personnes que vous rencontrez à l'étranger.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Démarrer un appel vidéo depuis un e-mail"
+text = """
+Faites un clic droit sur une conversation, ou ouvrez ⋮, puis choisissez Démarrer un appel vidéo : l’appel s’ouvre, et un nouvel e-mail contenant son lien est adressé à tous les participants de la conversation. Les comptes Gmail utilisent Google Meet ; les autres obtiennent une salle Jitsi Meet. Les e-mails contenant un lien d’appel Meet, Teams, Zoom, Webex, Jitsi, WhatsApp ou Telegram affichent désormais un bouton Participer.
+"""

@@ -1414,3 +1414,9 @@ title = "Takvim yoğunluğu ve ikinci saat dilimi"
 text = """
 Takvim'deki Seçenekler düğmesi saatlerin ne kadar yüksek olacağını (Ekranınıza duyarlı, Rahat veya Kompakt) ayarlar ve yurt dışında görüştüğünüz kişiler için sizinkinin yanına ikinci bir saat dilimi ekler.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Bir e-postadan görüntülü görüşme başlatın"
+text = """
+Bir konuşmaya sağ tıklayın veya ⋮ menüsünü açıp Görüntülü görüşme başlat’ı seçin: görüşme açılır ve konuşmadaki herkese bağlantıyı içeren yeni bir e-posta gider. Gmail hesapları Google Meet kullanır, diğerleri bir Jitsi Meet odası alır. Meet, Teams, Zoom, Webex, Jitsi, WhatsApp veya Telegram görüşme bağlantısı içeren e-postalarda artık bir Katıl düğmesi görünür.
+"""

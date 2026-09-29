@@ -1383,3 +1383,9 @@ title = "Kalenderdigtheid en 'n tweede tydsone"
 text = """
 Die Opsies-knoppie in Kalender bepaal hoe hoog die ure is (Reageer op jou skerm, Gemaklik of Kompak) en voeg 'n tweede tydsone langs joune by, vir die mense wat jy oorsee ontmoet.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Begin ’n video-oproep vanuit ’n e-pos"
+text = """
+Regsklik op ’n gesprek, of maak ⋮ oop, en kies Begin ’n video-oproep: die oproep maak oop, met ’n nuwe e-pos met sy skakel aan almal in die gesprek. Gmail-rekeninge gebruik Google Meet; ander kry ’n Jitsi Meet-kamer. E-pos met ’n Meet-, Teams-, Zoom-, Webex-, Jitsi-, WhatsApp- of Telegram-oproepskakel wys nou ’n Sluit aan-knoppie.
+"""

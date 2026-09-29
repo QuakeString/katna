@@ -1441,3 +1441,9 @@ title = "Ketumpatan Kalendar dan zon waktu kedua"
 text = """
 Butang Pilihan dalam Kalendar menetapkan ketinggian jam (Responsif kepada skrin anda, Selesa atau Padat) dan menambah zon waktu kedua di sebelah zon waktu anda, untuk orang yang anda temui di luar negara.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Mulakan panggilan video daripada e-mel"
+text = """
+Klik kanan pada perbualan, atau buka ⋮, dan pilih Mulakan panggilan video: panggilan dibuka, bersama e-mel baharu yang membawa pautannya kepada semua orang dalam perbualan. Akaun Gmail menggunakan Google Meet; akaun lain mendapat bilik Jitsi Meet. E-mel yang mempunyai pautan panggilan Meet, Teams, Zoom, Webex, Jitsi, WhatsApp atau Telegram kini memaparkan butang Sertai.
+"""

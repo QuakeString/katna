@@ -103,6 +103,7 @@ compose-tool-remove-link = Alisin ang link
 ## More options
 
 compose-tool-full-screen = Full screen bilang default
+compose-tool-video-call = Magdagdag ng video call
 compose-tool-label = Label
 compose-tool-label-coming = Malapit nang dumating ang mga label sa naipadalang mail. Lagyan ng label ang mensahe sa Naipadala kapag naipadala na ito.
 compose-tool-plain-mode = Plain text mode

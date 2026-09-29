@@ -1425,3 +1425,9 @@ title = "Densidade da Agenda e segundo fuso horário"
 text = """
 O botão Opções da Agenda define a altura das horas (Responsivo à tela, Confortável ou Compacto) e adiciona um segundo fuso horário ao lado do seu, para as pessoas que você encontra no exterior.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Inicie uma videochamada a partir de um e-mail"
+text = """
+Clique com o botão direito em uma conversa, ou abra ⋮, e escolha Iniciar uma videochamada: a chamada é aberta, com um novo e-mail contendo o link para todos da conversa. Contas do Gmail usam o Google Meet; as outras recebem uma sala do Jitsi Meet. E-mails com um link de chamada do Meet, Teams, Zoom, Webex, Jitsi, WhatsApp ou Telegram agora mostram um botão Participar.
+"""

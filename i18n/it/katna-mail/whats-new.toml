@@ -1440,3 +1440,9 @@ title = "Densità del Calendario e secondo fuso orario"
 text = """
 Il pulsante Opzioni del Calendario imposta l'altezza delle ore (Adattiva allo schermo, Comoda o Compatta) e aggiunge un secondo fuso orario accanto al tuo, per le persone che incontri all'estero.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Avvia una videochiamata da una mail"
+text = """
+Fai clic con il pulsante destro su una conversazione, oppure apri ⋮, e scegli Avvia una videochiamata: la chiamata si apre e una nuova mail con il suo link viene inviata a tutti i partecipanti alla conversazione. Gli account Gmail usano Google Meet; gli altri ricevono una stanza Jitsi Meet. Le mail con un link a una chiamata Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ora mostrano un pulsante Partecipa.
+"""

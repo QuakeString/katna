@@ -1461,3 +1461,9 @@ title = "Kalender: Zeitzonen und Dichte"
 text = """
 Mit der Optionen-Schaltfläche im Kalender legen Sie fest, wie hoch die Stunden sind (An Bildschirm anpassen, Komfortabel oder Kompakt), und fügen neben Ihrer eigenen eine zweite Zeitzone hinzu, für Menschen, die Sie im Ausland treffen.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Videoanruf aus einer Mail starten"
+text = """
+Klicken Sie mit der rechten Maustaste auf eine Unterhaltung oder öffnen Sie ⋮ und wählen Sie Videoanruf starten: Der Anruf wird geöffnet, und eine neue Mail mit dem Link geht an alle in der Unterhaltung. Gmail-Konten nutzen Google Meet, andere erhalten einen Jitsi-Meet-Raum. Bei Mails mit einem Link zu einem Anruf über Meet, Teams, Zoom, Webex, Jitsi, WhatsApp oder Telegram erscheint jetzt die Schaltfläche Teilnehmen.
+"""

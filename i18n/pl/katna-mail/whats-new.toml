@@ -1418,3 +1418,9 @@ title = "Gęstość Kalendarza i druga strefa czasowa"
 text = """
 Przycisk Opcje w Kalendarzu ustawia wysokość godzin (Dopasowana do ekranu, Wygodna lub Kompaktowa) i dodaje drugą strefę czasową obok Twojej, dla osób, które spotykasz za granicą.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Rozpocznij rozmowę wideo z wiadomości"
+text = """
+Kliknij konwersację prawym przyciskiem myszy lub otwórz ⋮ i wybierz Rozpocznij rozmowę wideo: rozmowa się otworzy, a do wszystkich w konwersacji trafi nowa wiadomość z linkiem. Konta Gmail używają Google Meet, pozostałe dostają pokój Jitsi Meet. Przy wiadomościach z linkiem do rozmowy w Meet, Teams, Zoom, Webex, Jitsi, WhatsApp lub Telegramie pojawia się teraz przycisk Dołącz.
+"""

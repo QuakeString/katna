@@ -1381,3 +1381,9 @@ title = "Mật độ Lịch và múi giờ thứ hai"
 text = """
 Nút Tùy chọn trong Lịch đặt độ cao của các giờ (Tự điều chỉnh theo màn hình của bạn, Thoải mái hoặc Gọn) và thêm múi giờ thứ hai bên cạnh múi giờ của bạn, dành cho những người bạn gặp ở nước ngoài.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Bắt đầu cuộc gọi video từ một thư"
+text = """
+Nhấp chuột phải vào một cuộc trò chuyện, hoặc mở ⋮, rồi chọn Bắt đầu cuộc gọi video: cuộc gọi sẽ mở ra, kèm một thư mới chứa liên kết gửi đến mọi người trong cuộc trò chuyện. Tài khoản Gmail dùng Google Meet; các tài khoản khác nhận một phòng Jitsi Meet. Thư có liên kết cuộc gọi Meet, Teams, Zoom, Webex, Jitsi, WhatsApp hoặc Telegram nay hiển thị nút Tham gia.
+"""

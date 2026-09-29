@@ -1428,3 +1428,9 @@ title = "Dichtheid van de Agenda en een tweede tijdzone"
 text = """
 Met de knop Opties in de Agenda stel je in hoe hoog de uren zijn (Afgestemd op je scherm, Comfortabel of Compact) en voeg je naast de jouwe een tweede tijdzone toe, voor de mensen die je in het buitenland ontmoet.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Een videogesprek starten vanuit een mail"
+text = """
+Klik met de rechtermuisknop op een gesprek, of open ⋮, en kies Een videogesprek starten: het videogesprek wordt geopend, met een nieuwe mail met de link voor iedereen in het gesprek. Gmail-accounts gebruiken Google Meet; andere accounts krijgen een Jitsi Meet-ruimte. Bij mail met een link naar een gesprek via Meet, Teams, Zoom, Webex, Jitsi, WhatsApp of Telegram staat nu een knop Deelnemen.
+"""

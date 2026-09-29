@@ -103,6 +103,7 @@ compose-tool-remove-link = አገናኙን አስወግድ
 ## More options
 
 compose-tool-full-screen = በነባሪ ሙሉ ማያ ገጽ
+compose-tool-video-call = የቪዲዮ ጥሪ ጨምር
 compose-tool-label = መሰየሚያ
 compose-tool-label-coming = በተላከ ደብዳቤ ላይ መሰየሚያዎች በቅርቡ ይመጣሉ። መልዕክቱ ከተላከ በኋላ በየተላኩ ውስጥ ይሰይሙት።
 compose-tool-plain-mode = የግልጽ ጽሑፍ ሁነታ

@@ -436,6 +436,7 @@ menu-snooze = Mettre en attente
 menu-unsnooze = Annuler la mise en attente
 menu-add-to-tasks = Ajouter aux tâches
 menu-schedule-meeting = Planifier une réunion
+menu-start-call = Démarrer un appel vidéo
 menu-add-note = Ajouter une note
 menu-print-all = Tout imprimer
 menu-new-window = Ouvrir dans une nouvelle fenêtre

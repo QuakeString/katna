@@ -103,6 +103,7 @@ compose-tool-remove-link = ਲਿੰਕ ਹਟਾਓ
 ## More options
 
 compose-tool-full-screen = ਪੂਰਵ-ਨਿਰਧਾਰਤ ਤੌਰ ’ਤੇ ਪੂਰੀ ਸਕ੍ਰੀਨ
+compose-tool-video-call = ਵੀਡੀਓ ਕਾਲ ਜੋੜੋ
 compose-tool-label = ਲੇਬਲ
 compose-tool-label-coming = ਭੇਜੀ ਜਾਂਦੀ ਮੇਲ ’ਤੇ ਲੇਬਲ ਜਲਦੀ ਆ ਰਹੇ ਹਨ। ਸੁਨੇਹਾ ਚਲੇ ਜਾਣ ਤੋਂ ਬਾਅਦ ਭੇਜੀਆਂ ਗਈਆਂ ਵਿੱਚ ਉਸਨੂੰ ਲੇਬਲ ਲਾਓ।
 compose-tool-plain-mode = ਸਾਦੀ ਲਿਖਤ ਮੋਡ

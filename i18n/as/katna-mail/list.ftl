@@ -382,6 +382,7 @@ menu-snooze = স্নুজ কৰক
 menu-unsnooze = স্নুজ বাতিল কৰক
 menu-add-to-tasks = কাৰ্যত যোগ কৰক
 menu-schedule-meeting = বৈঠক নিৰ্ধাৰণ কৰক
+menu-start-call = ভিডিঅ' কল আৰম্ভ কৰক
 menu-add-note = টোকা যোগ কৰক
 menu-print-all = সকলো প্ৰিণ্ট কৰক
 menu-new-window = নতুন ৱিণ্ড'ত খোলক

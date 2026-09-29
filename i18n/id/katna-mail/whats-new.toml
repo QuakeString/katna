@@ -1426,3 +1426,9 @@ title = "Kepadatan Kalender dan zona waktu kedua"
 text = """
 Tombol Opsi di Kalender mengatur setinggi apa jam ditampilkan (Responsif terhadap layar Anda, Nyaman, atau Ringkas) dan menambahkan zona waktu kedua di samping zona waktu Anda, untuk orang yang Anda temui di luar negeri.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Mulai panggilan video dari email"
+text = """
+Klik kanan percakapan, atau buka ⋮, lalu pilih Mulai panggilan video: panggilan terbuka, dan email baru berisi link-nya dikirim ke semua orang dalam percakapan. Akun Gmail menggunakan Google Meet; akun lain mendapat ruang Jitsi Meet. Email dengan link panggilan Meet, Teams, Zoom, Webex, Jitsi, WhatsApp, atau Telegram kini menampilkan tombol Gabung.
+"""

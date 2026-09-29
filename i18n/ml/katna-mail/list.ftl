@@ -382,6 +382,7 @@ menu-snooze = സ്‌നൂസ് ചെയ്യുക
 menu-unsnooze = സ്‌നൂസ് ഒഴിവാക്കുക
 menu-add-to-tasks = ടാസ്‌ക്കുകളിലേക്ക് ചേർക്കുക
 menu-schedule-meeting = മീറ്റിംഗ് ഷെഡ്യൂൾ ചെയ്യുക
+menu-start-call = വീഡിയോ കോൾ ആരംഭിക്കുക
 menu-add-note = കുറിപ്പ് ചേർക്കുക
 menu-print-all = എല്ലാം പ്രിന്റ് ചെയ്യുക
 menu-new-window = പുതിയ വിൻഡോയിൽ തുറക്കുക

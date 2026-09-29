@@ -1436,3 +1436,9 @@ title = "Densidad del Calendario y segunda zona horaria"
 text = """
 El botón Opciones del Calendario define la altura de las horas (Adaptable a tu pantalla, Cómoda o Compacta) y añade una segunda zona horaria junto a la tuya, para las personas con las que te reúnes en el extranjero.
 """
+
+["2026-09-29-0809-video-calls"]
+title = "Inicia una videollamada desde un correo"
+text = """
+Haz clic derecho en una conversación, o abre ⋮, y elige Iniciar una videollamada: la llamada se abre y se envía un correo nuevo con su enlace a todos los de la conversación. Las cuentas de Gmail usan Google Meet; las demás obtienen una sala de Jitsi Meet. Los correos con un enlace de llamada de Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ahora muestran un botón Unirse.
+"""
