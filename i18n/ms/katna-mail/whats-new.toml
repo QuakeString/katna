@@ -1191,3 +1191,13 @@ Nota, seperti dalam Outlook, dan menu Pergi turut menyenaraikannya. Klik
 kanan Katna Mail pada bar tugas untuk terus membuka Kalendar atau
 Kenalan.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Tugas"
+text = """
+Tekan Ctrl+4 atau pilih Tugas di sebelah kiri: semua senarai
+bersebelahan seperti dalam Google Tasks, dengan subtugasan, bintang,
+hari tarikh akhir, ulangan dan butiran. Senarai disegerakkan dengan
+Google Tasks dan Microsoft To Do, dan tugasan daripada jam desktop juga
+muncul di sini.
+"""

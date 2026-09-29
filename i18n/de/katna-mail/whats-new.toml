@@ -1206,3 +1206,13 @@ Aufgaben und Notizen, wie in Outlook, und das Menü Gehe zu listet sie
 ebenfalls auf. Klicken Sie in der Taskleiste mit der rechten Maustaste
 auf Katna Mail, um direkt den Kalender oder die Kontakte zu öffnen.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Aufgaben"
+text = """
+Drücken Sie Strg+4 oder wählen Sie links Aufgaben: alle Listen
+nebeneinander wie in Google Tasks, mit Unteraufgaben, Markierungen,
+Fälligkeitstagen, Wiederholungen und Details. Die Listen werden mit
+Google Tasks und Microsoft To Do synchronisiert, und Aufgaben von der
+Desktop-Uhr erscheinen hier ebenfalls.
+"""

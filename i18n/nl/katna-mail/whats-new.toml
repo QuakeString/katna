@@ -1181,3 +1181,12 @@ en Notities, net als in Outlook, en het menu Ga toont ze ook. Klik met
 de rechtermuisknop op Katna Mail in de taakbalk om meteen Agenda of
 Contacten te openen.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Taken"
+text = """
+Druk op Ctrl+4 of kies links Taken: alle lijsten naast elkaar zoals in
+Google Tasks, met subtaken, sterren, vervaldagen, herhalingen en
+details. Lijsten worden gesynchroniseerd met Google Tasks en Microsoft
+To Do, en taken van de bureaubladklok verschijnen hier ook.
+"""

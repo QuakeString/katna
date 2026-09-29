@@ -1143,3 +1143,12 @@ Ctrl+1 tot Ctrl+5 skakel tussen E-pos, Kalender, Kontakte, Take en
 Notas, soos in Outlook, en die Gaan-kieslys lys hulle ook. Regsklik op
 Katna Mail in die taakbalk om Kalender of Kontakte dadelik oop te maak.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Take"
+text = """
+Druk Ctrl+4 of kies Take links: elke lys langs mekaar soos in Google
+Tasks, met subtake, sterre, vervaldae, herhalings en besonderhede. Lyste
+sinkroniseer met Google Tasks en Microsoft To Do, en take van die
+lessenaarhorlosie verskyn ook hier.
+"""

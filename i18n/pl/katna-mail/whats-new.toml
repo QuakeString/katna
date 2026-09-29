@@ -1170,3 +1170,12 @@ Zadaniami i Notatkami, tak jak w Outlooku, a menu Przejdź też je
 wyświetla. Kliknij prawym przyciskiem myszy Katna Mail na pasku zadań,
 aby od razu otworzyć Kalendarz lub Kontakty.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Zadania"
+text = """
+Naciśnij Ctrl+4 lub wybierz Zadania po lewej: wszystkie listy obok
+siebie jak w Google Tasks, z podzadaniami, gwiazdkami, terminami,
+powtarzaniem i szczegółami. Listy synchronizują się z Google Tasks i
+Microsoft To Do, a zadania z zegara na pulpicie też pojawiają się tutaj.
+"""
