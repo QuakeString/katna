@@ -2557,6 +2557,68 @@ code and baked data for 51 locales, measured when added (expected a few
 MB). The app is about 56 MB of its 100 MB budget, so this fits; the daemon
 adds only Fluent and its own strings.
 
+### 13.11 Katna Notes
+
+The owner asked for Notes on 2026-09-29, study first
+(`/mnt/project-files/research/notes/katna-notes-study.html`, published as
+an artifact). The study's recommended options were taken while he was
+away; he can still change them.
+
+- **Look.** Google Keep: the Notes page of the main window (the rail's
+  Notes button) has a side list (Notes, Archive, Trash), a "Take a note…"
+  bar with a New list button, and a board of 240 px cards in columns,
+  each card going to the shortest column. Pinned notes come first under
+  "Pinned". Cards take Keep's eleven colors (light and dark). Hovering a
+  card shows its pin and its Archive and Delete buttons; checklist items
+  tick right on the card, and ticked ones fold into "+ N ticked items".
+  A card opens as a note over the dimmed board (600 px, 15 px corners):
+  title, text, pin, colors, Show/Hide checkboxes, Archive, Delete, Close.
+  It saves as it is typed (0.7 s after the last key) and on Close or Esc;
+  an empty new note is discarded. The top bar's search box searches notes
+  (every word in the title, text or labels) while the page is open, and
+  mail again after.
+- **Checklists.** A note is plain text. Lines starting "☐ " or "☑ " are
+  checklist items, the way a note in an IMAP Notes folder carries them,
+  so Apple Notes shows them as readable lines.
+- **Trash.** Deleting moves a note to Trash for 7 days (Keep's time), with
+  Undo; the daemon deletes older ones whenever notes are trashed. Trash
+  has Restore, Delete forever and Empty Trash.
+- **Store.** `note` in `pim.db` (schema v7, `pim_v7.sql`): account (NULL
+  for this computer only), a UUID, title, body, color, pinned, archived,
+  labels (JSON), link (the `Message-ID` of a mail it is about), position,
+  times, `trashed_at`, `server_uid` and `dirty`. `note_gone` lists server
+  copies still to delete. Changes are journaled as `note`.
+- **D-Bus.** `SaveNote(NoteItem)` (ID 0 makes a new one on top) returns
+  the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`. Apps read notes
+  from the store.
+- **Sync.** A note of a mail account is kept in that account's `Notes`
+  folder in Apple's format (`katna_sync::notes`): one message per note
+  with `X-Uniform-Type-Identifier: com.apple.mail-note`,
+  `X-Universally-Unique-Identifier`, the title as Subject and the text as
+  simple HTML, one `<div>` per line with the title first, stored as
+  \Seen so the folder shows no unread count. Katna's extras travel in
+  `X-Katna-Title`, `X-Katna-Color`, `X-Katna-Pinned`,
+  `X-Katna-Archived`, `X-Katna-Labels` (base64 JSON) and `X-Katna-Link`,
+  which other apps ignore. Editing appends the new copy and deletes the
+  old one; trashing, deleting or moving a note to another place deletes
+  the server copy (`note_gone`). Coming in, an unknown message becomes a
+  note (by its UUID), and a note whose message is gone from the folder is
+  deleted here, unless it was changed here since, which wins. The daemon
+  syncs an account 3 s after a note of it changes and looks at every
+  IMAP account every 10 minutes; the folder is made only when there is a
+  note to put in it. The daemon sends `MailChanged` when notes came in,
+  and the Notes page reloads.
+- **Where a note is kept.** A new note goes to the account whose mail
+  was open (else the first IMAP account); POP and Graph-only accounts
+  have no folders. The note's footer ("Edited … · Dev Dovecot") opens a
+  row of accounts plus "On this computer" to move it. Google Keep
+  (Workspace only) and OneNote (work and school accounts only) have no
+  API for personal accounts, so the Notes folder is the mail service's
+  own feature that every IMAP account has.
+- **Later.** Notes on a conversation ("Add a note", §13.7), meeting notes
+  from an event, a checklist line made a task, labels, formatting,
+  pictures.
+
 ## 14. D-Bus API (`katna-dbus`)
 
 ### 14.1 Interface `in.invenia.katna.Pim1` (object `/in/invenia/katna/Pim1`, bus name `in.invenia.katna.Daemon`)
