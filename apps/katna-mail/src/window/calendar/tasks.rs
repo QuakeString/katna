@@ -18,7 +18,7 @@ use katna_ui::px;
 
 use super::super::MailWindow;
 use super::super::event_edit::time_at;
-use super::{ALL_DAY_LINE, GUTTER, HOUR_HEIGHT, MONTH_LINE};
+use super::{ALL_DAY_LINE, MONTH_LINE};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::icon;
 
@@ -250,8 +250,8 @@ impl MailWindow {
                 Some(
                     div()
                         .absolute()
-                        .top(px(at as f32 / 60.0 * HOUR_HEIGHT + 1.0))
-                        .h(px(TASK_MINUTES as f32 / 60.0 * HOUR_HEIGHT - 2.0))
+                        .top(px(at as f32 / 60.0 * self.calendar.hour + 1.0))
+                        .h(px(TASK_MINUTES as f32 / 60.0 * self.calendar.hour - 2.0))
                         .left(gpui::relative(if beside { 0.5 } else { 0.0 }))
                         .right(px(8.0))
                         .when(dragged, |d| {
@@ -384,16 +384,16 @@ impl MailWindow {
         let count = i64::from((end - first).get_days().max(1));
         let scroll = &self.calendar.grid_scroll;
         let bounds = scroll.bounds();
-        let width = katna_ui::unpx(bounds.size.width) - GUTTER;
+        let width = katna_ui::unpx(bounds.size.width) - self.gutter();
         if width <= 0.0 {
             return None;
         }
-        let x = katna_ui::unpx(at.x - bounds.left()) - GUTTER;
+        let x = katna_ui::unpx(at.x - bounds.left()) - self.gutter();
         let column = ((x / (width / count as f32)).floor() as i64).clamp(0, count - 1);
         let day = first.checked_add(column.days()).ok()?;
         let minutes = (at.y >= bounds.top()).then(|| {
             let y = katna_ui::unpx(at.y - bounds.top() - scroll.offset().y);
-            let time = time_at(y, HOUR_HEIGHT);
+            let time = time_at(y, self.calendar.hour);
             i64::from(time.hour()) * 60 + i64::from(time.minute())
         });
         Some((day, minutes))

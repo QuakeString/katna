@@ -12,7 +12,7 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, App, ClickEvent, Context, FocusHandle, FontWeight,
+    Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
     KeyBinding, MouseButton, Pixels, Point, ScrollHandle, SharedString, Task, Window, anchored,
     deferred, div, ease_out_quint, prelude::*, rgba,
 };
@@ -20,18 +20,19 @@ use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
 use jiff::{ToSpan, Zoned};
 use katna_core::Paths;
+use katna_core::config::CalendarDensity;
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
 use katna_ui::px;
 
-use super::MailWindow;
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
+use super::{MailWindow, Menu, MenuKey};
 
 mod tasks;
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{icon, icon_button, outlined_button, raised, tip};
+use crate::widgets::{icon, icon_button, menu, menu_item, outlined_button, raised, tip};
 
 gpui::actions!(
     katna_calendar,
@@ -84,6 +85,10 @@ const SIDE_WIDTH: f32 = 256.0;
 const BAR_HEIGHT: f32 = 64.0;
 /// An hour of the Day and Week grids.
 const HOUR_HEIGHT: f32 = 48.0;
+/// An hour of Day and Week in the compact density.
+const COMPACT_HOUR: f32 = 36.0;
+/// The responsive density's hours: a twelfth of the grid, within these.
+const RESPONSIVE_HOURS: (f32, f32) = (40.0, 72.0);
 /// The hours down the left of the grid.
 const GUTTER: f32 = 64.0;
 /// A line of the whole-day row.
@@ -98,6 +103,27 @@ const SCHEDULE_DAYS: i64 = 60;
 const CARD_WIDTH: f32 = 400.0;
 /// Where the grid opens: a little before 8 in the morning, as Google does.
 const MORNING_HOUR: f32 = 7.5;
+
+/// The second time zones the options menu offers, besides one set in
+/// the settings file.
+const ZONES: [&str; 16] = [
+    "UTC",
+    "America/Los_Angeles",
+    "America/Denver",
+    "America/Chicago",
+    "America/New_York",
+    "America/Sao_Paulo",
+    "Europe/London",
+    "Europe/Berlin",
+    "Africa/Cairo",
+    "Asia/Dubai",
+    "Asia/Kolkata",
+    "Asia/Dhaka",
+    "Asia/Singapore",
+    "Asia/Shanghai",
+    "Asia/Tokyo",
+    "Australia/Sydney",
+];
 
 /// How the page shows the days.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -169,6 +195,8 @@ pub(super) struct CalendarPage {
     grid_scroll: ScrollHandle,
     /// The grid was scrolled to the morning since it last appeared.
     scrolled: bool,
+    /// How tall an hour of the grid is, as last drawn.
+    pub(super) hour: f32,
     pub(super) open: Option<OpenEvent>,
     /// An event being added or changed.
     pub(super) draft: Option<Draft>,
@@ -196,6 +224,7 @@ impl CalendarPage {
             task: None,
             grid_scroll: ScrollHandle::new(),
             scrolled: false,
+            hour: HOUR_HEIGHT,
             open: None,
             draft: None,
             drag: None,
@@ -265,6 +294,55 @@ impl CalendarPage {
             self.mini = self.day.first_of_month();
         }
     }
+}
+
+/// A menu item with a check before it when it is the one chosen.
+fn checked_item(
+    id: impl Into<gpui::ElementId>,
+    label: &str,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .h(px(32.0))
+        .pl(px(12.0))
+        .pr(px(24.0))
+        .flex()
+        .items_center()
+        .gap(px(8.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .menu_key(th)
+        .child(
+            div()
+                .size(px(18.0))
+                .flex_none()
+                .when(on, |d| d.child(icon("check", th.accent, 18.0))),
+        )
+        .child(label.to_owned())
+}
+
+/// A UTC offset as the grid and the zone list show it: "GMT-4",
+/// "GMT+5:30", "GMT".
+fn gmt(zoned: &Zoned) -> String {
+    let seconds = zoned.offset().seconds();
+    if seconds == 0 {
+        return "GMT".to_owned();
+    }
+    let sign = if seconds < 0 { '-' } else { '+' };
+    let (hours, minutes) = (seconds.abs() / 3600, seconds.abs() % 3600 / 60);
+    if minutes == 0 {
+        format!("GMT{sign}{hours}")
+    } else {
+        format!("GMT{sign}{hours}:{minutes:02}")
+    }
+}
+
+/// A time zone as people know it: its city ("New York"), or UTC.
+fn zone_name(iana: &str) -> String {
+    iana.rsplit('/').next().unwrap_or(iana).replace('_', " ")
 }
 
 pub(super) fn midnight(day: Date, tz: &TimeZone) -> i64 {
@@ -491,6 +569,153 @@ impl MailWindow {
     }
 
     /// Shows the Calendar page's Day view on `day`.
+    /// How tall an hour of Day and Week is in the chosen density.
+    fn hour_height(&self, cx: &mut Context<Self>) -> f32 {
+        match self.config.calendar.density {
+            CalendarDensity::Compact => COMPACT_HOUR,
+            CalendarDensity::Comfortable => HOUR_HEIGHT,
+            CalendarDensity::Responsive => {
+                let seen = katna_ui::unpx(self.calendar.grid_scroll.bounds().size.height);
+                if seen <= 0.0 {
+                    // Not laid out yet: again once it is.
+                    let this = cx.entity().downgrade();
+                    cx.defer(move |cx| {
+                        let _ = this.update(cx, |_, cx| cx.notify());
+                    });
+                    return self.calendar.hour;
+                }
+                (seen / 12.0).clamp(RESPONSIVE_HOURS.0, RESPONSIVE_HOURS.1)
+            }
+        }
+    }
+
+    /// The second time zone of Day and Week, when one is chosen.
+    fn second_zone(&self) -> Option<TimeZone> {
+        let name = self.config.calendar.second_time_zone.trim();
+        (!name.is_empty())
+            .then(|| TimeZone::get(name).ok())
+            .flatten()
+    }
+
+    /// The width of the hours at the left of Day and Week.
+    fn gutter(&self) -> f32 {
+        if self.second_zone().is_some() {
+            2.0 * GUTTER
+        } else {
+            GUTTER
+        }
+    }
+
+    fn set_calendar_density(&mut self, density: CalendarDensity, cx: &mut Context<Self>) {
+        self.config.calendar.density = density;
+        self.save_config();
+        self.menu = None;
+        cx.notify();
+    }
+
+    fn set_second_zone(&mut self, name: String, cx: &mut Context<Self>) {
+        self.config.calendar.second_time_zone = name;
+        self.save_config();
+        self.menu = None;
+        cx.notify();
+    }
+
+    /// The calendar bar's options: the density, and the second time zone
+    /// (which opens the list of zones).
+    pub(super) fn calendar_options_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let density = self.config.calendar.density;
+        let heading = |text: String| {
+            div()
+                .px(px(16.0))
+                .pt(px(4.0))
+                .pb(px(4.0))
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.text_dim))
+                .child(text)
+        };
+        let densities = [
+            (CalendarDensity::Responsive, "calendar-density-responsive"),
+            (CalendarDensity::Comfortable, "calendar-density-comfortable"),
+            (CalendarDensity::Compact, "calendar-density-compact"),
+        ]
+        .into_iter()
+        .map(|(choice, label)| {
+            checked_item(
+                ("calendar-density", choice as usize),
+                &tr!(label),
+                choice == density,
+                th,
+            )
+            .on_click(cx.listener(move |this, _, _, cx| this.set_calendar_density(choice, cx)))
+        });
+        let zone = self.second_zone().map_or_else(
+            || tr!("calendar-zone-none"),
+            |_| zone_name(&self.config.calendar.second_time_zone),
+        );
+        menu(th)
+            .min_w(px(240.0))
+            .child(heading(tr!("calendar-density")))
+            .children(densities)
+            .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+            .child(heading(tr!("calendar-second-zone")))
+            .child(
+                menu_item("calendar-second-zone", &zone, th)
+                    .justify_between()
+                    .gap(px(16.0))
+                    .child(icon("chevron-right", th.text_dim, 18.0))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        this.menu = Some(Menu::CalendarZones);
+                        cx.notify();
+                    })),
+            )
+    }
+
+    /// The list of second time zones, with their offsets now.
+    pub(super) fn calendar_zones_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let chosen = self.config.calendar.second_time_zone.trim().to_owned();
+        let now = jiff::Timestamp::now();
+        let mut names: Vec<String> = ZONES.iter().map(|z| (*z).to_owned()).collect();
+        if !chosen.is_empty() && !names.contains(&chosen) && TimeZone::get(&chosen).is_ok() {
+            names.insert(0, chosen.clone());
+        }
+        let none = checked_item(
+            "calendar-zone-none",
+            &tr!("calendar-zone-none"),
+            chosen.is_empty(),
+            th,
+        )
+        .on_click(cx.listener(|this, _, _, cx| this.set_second_zone(String::new(), cx)));
+        let zones = names.into_iter().enumerate().filter_map(|(ix, name)| {
+            let zone = TimeZone::get(&name).ok()?;
+            let label = if name == "UTC" {
+                name.clone()
+            } else {
+                tr!(
+                    "calendar-zone",
+                    zone = zone_name(&name),
+                    offset = gmt(&now.to_zoned(zone))
+                )
+            };
+            let on = name == chosen;
+            Some(
+                checked_item(("calendar-zone", ix), &label, on, th).on_click(
+                    cx.listener(move |this, _, _, cx| this.set_second_zone(name.clone(), cx)),
+                ),
+            )
+        });
+        menu(th).min_w(px(240.0)).child(
+            div()
+                .id("calendar-zones")
+                .max_h(px(420.0))
+                .overflow_y_scroll()
+                .flex()
+                .flex_col()
+                .child(none)
+                .children(zones),
+        )
+    }
+
     pub(super) fn open_calendar_on(&mut self, day: Date, cx: &mut Context<Self>) {
         self.open_calendar_day(day, Some(CalView::Day), cx);
     }
@@ -713,6 +938,22 @@ impl MailWindow {
                     .border_1()
                     .border_color(rgba(fade(th.text_faint, 0.5)))
                     .children(views),
+            )
+            .child(
+                self.with_menu(
+                    icon_button("calendar-options", "tune", 22.0, th)
+                        .when(self.menu.is_none(), |d| {
+                            d.tooltip(tip(tr!("calendar-options"), th))
+                        })
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            this.toggle_menu(Menu::CalendarOptions, cx)
+                        })),
+                    self.menu
+                        .filter(|m| *m == Menu::CalendarZones)
+                        .unwrap_or(Menu::CalendarOptions),
+                    th,
+                    cx,
+                ),
             )
             .into_any_element()
     }
@@ -1006,6 +1247,20 @@ impl MailWindow {
             .into_iter()
             .partition(|o| o.all_day() || o.end - o.start >= 24 * 3600);
 
+        // The density's hour; the grid keeps the same time at its top when
+        // it changes.
+        let hour_height = self.hour_height(cx);
+        if hour_height != self.calendar.hour {
+            let offset = self.calendar.grid_scroll.offset();
+            let by = hour_height / self.calendar.hour;
+            self.calendar
+                .grid_scroll
+                .set_offset(gpui::point(offset.x, offset.y * by));
+            self.calendar.hour = hour_height;
+        }
+        let second = self.second_zone();
+        let gutter = self.gutter();
+
         if !self.calendar.scrolled {
             self.calendar.scrolled = true;
             let hour = if days.contains(&today) {
@@ -1015,7 +1270,7 @@ impl MailWindow {
             };
             self.calendar
                 .grid_scroll
-                .set_offset(gpui::point(px(0.0), -px(HOUR_HEIGHT * hour)));
+                .set_offset(gpui::point(px(0.0), -px(hour_height * hour)));
         }
 
         // The header: weekday and date of each day.
@@ -1128,23 +1383,35 @@ impl MailWindow {
             })
             .collect::<Vec<_>>();
 
-        // The hours down the left.
-        let hours = (1..24).map(|hour| {
-            let label = format::time(
-                today.to_datetime(Time::new(hour, 0, 0, 0).unwrap_or(Time::midnight())),
-            );
-            div()
-                .absolute()
-                .top(px(hour as f32 * HOUR_HEIGHT - 7.0))
-                .right(px(8.0))
-                .text_size(px(10.0))
-                .text_color(rgba(th.text_faint))
-                .child(label)
-        });
+        // The hours down the left, and in the second time zone beside them.
+        let hour_labels = |zone: Option<&TimeZone>| {
+            (1..24)
+                .map(|hour| {
+                    let at =
+                        today.to_datetime(Time::new(hour, 0, 0, 0).unwrap_or(Time::midnight()));
+                    let at = match zone {
+                        Some(zone) => at
+                            .to_zoned(tz.clone())
+                            .map(|z| z.with_time_zone(zone.clone()).datetime())
+                            .unwrap_or(at),
+                        None => at,
+                    };
+                    div()
+                        .absolute()
+                        .top(px(hour as f32 * hour_height - 7.0))
+                        .right(px(8.0))
+                        .text_size(px(10.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(format::time(at))
+                })
+                .collect::<Vec<_>>()
+        };
+        let hours = hour_labels(None);
+        let second_hours = second.as_ref().map(|zone| hour_labels(Some(zone)));
         let lines = (1..24).map(|hour| {
             div()
                 .absolute()
-                .top(px(hour as f32 * HOUR_HEIGHT))
+                .top(px(hour as f32 * hour_height))
                 .left_0()
                 .right_0()
                 .h(px(1.0))
@@ -1167,9 +1434,9 @@ impl MailWindow {
                     .map(|o| ((o.start - start) / 60, (o.end - start) / 60))
                     .collect();
                 let day_tasks = self.render_timed_tasks(day, &busy, th, cx);
-                let placed = lay_out(&mine, start, next);
+                let placed = lay_out(&mine, start, next, hour_height);
                 let is_today = day == today;
-                let now_y = ((now.timestamp().as_second() - start) as f32 / 3600.0) * HOUR_HEIGHT;
+                let now_y = ((now.timestamp().as_second() - start) as f32 / 3600.0) * hour_height;
                 let scroll = self.calendar.grid_scroll.clone();
                 let placeholder = self
                     .calendar
@@ -1189,7 +1456,7 @@ impl MailWindow {
                         cx.listener(move |this, event: &gpui::MouseDownEvent, window, cx| {
                             let top = scroll.bounds().top() + scroll.offset().y;
                             let y = katna_ui::unpx(event.position.y - top);
-                            let time = super::event_edit::time_at(y, HOUR_HEIGHT);
+                            let time = super::event_edit::time_at(y, hour_height);
                             this.start_new_event(
                                 day,
                                 Some(time),
@@ -1201,8 +1468,8 @@ impl MailWindow {
                         }),
                     )
                     .children(placeholder.map(|(start, end, title)| {
-                        let top = (start / 60.0) * HOUR_HEIGHT;
-                        let height = ((end - start) / 60.0 * HOUR_HEIGHT).max(20.0);
+                        let top = (start / 60.0) * hour_height;
+                        let height = ((end - start) / 60.0 * hour_height).max(20.0);
                         div()
                             .absolute()
                             .top(px(top))
@@ -1251,7 +1518,14 @@ impl MailWindow {
                     })
             })
             .collect::<Vec<_>>();
-        let zone = now.strftime("GMT%:z").to_string().replace(":00", "");
+        let zones = std::iter::once(gmt(&now)).chain(
+            second
+                .as_ref()
+                .map(|zone| gmt(&now.with_time_zone(zone.clone()))),
+        );
+        let zones = zones
+            .rev()
+            .map(|label| div().flex_1().pr(px(8.0)).flex().justify_end().child(label));
         div()
             .id("calendar-days")
             .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
@@ -1271,7 +1545,7 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .flex_row()
-                    .child(div().flex_none().w(px(GUTTER)))
+                    .child(div().flex_none().w(px(gutter)))
                     .children(head),
             )
             .child(
@@ -1284,14 +1558,12 @@ impl MailWindow {
                     .child(
                         div()
                             .flex_none()
-                            .w(px(GUTTER))
-                            .pr(px(8.0))
+                            .w(px(gutter))
                             .flex()
-                            .justify_end()
                             .items_end()
                             .text_size(px(10.0))
                             .text_color(rgba(th.text_faint))
-                            .child(zone),
+                            .children(zones),
                     )
                     .child(
                         div()
@@ -1321,9 +1593,17 @@ impl MailWindow {
                     .child(
                         div()
                             .relative()
-                            .h(px(24.0 * HOUR_HEIGHT))
+                            .h(px(24.0 * hour_height))
                             .flex()
                             .flex_row()
+                            .children(second_hours.map(|hours| {
+                                div()
+                                    .relative()
+                                    .flex_none()
+                                    .w(px(GUTTER))
+                                    .h_full()
+                                    .children(hours)
+                            }))
                             .child(
                                 div()
                                     .relative()
@@ -1383,9 +1663,9 @@ impl MailWindow {
         let (mut start, mut end) = (occurrence.start, occurrence.end);
         let dragged = self.calendar.drag.as_ref().filter(|d| d.is(&occurrence));
         if let Some(drag) = dragged {
-            let by = drag.minutes as f32 / 60.0 * HOUR_HEIGHT;
+            let by = drag.minutes as f32 / 60.0 * self.calendar.hour;
             if drag.resize {
-                height = (height + by).max(HOUR_HEIGHT / 4.0);
+                height = (height + by).max(self.calendar.hour / 4.0);
                 end = (end + drag.minutes * 60).max(start + 15 * 60);
             } else {
                 top += by;
@@ -1539,13 +1819,13 @@ impl MailWindow {
     fn drag_event_to(&mut self, at: Point<Pixels>, cx: &mut Context<Self>) {
         let (first, end) = self.calendar.days();
         let count = (end - first).get_days().max(1) as f32;
-        let width = katna_ui::unpx(self.calendar.grid_scroll.bounds().size.width) - GUTTER;
+        let width = katna_ui::unpx(self.calendar.grid_scroll.bounds().size.width) - self.gutter();
         let Some(drag) = &mut self.calendar.drag else {
             return;
         };
         let dy = katna_ui::unpx(at.y - drag.origin.y);
         let dx = katna_ui::unpx(at.x - drag.origin.x);
-        let minutes = ((dy / HOUR_HEIGHT * 60.0 / 15.0).round() as i64) * 15;
+        let minutes = ((dy / self.calendar.hour * 60.0 / 15.0).round() as i64) * 15;
         let days = if drag.resize || width <= 0.0 {
             0
         } else {
@@ -2350,10 +2630,11 @@ fn lay_out(
     events: &[&Occurrence],
     day_start: i64,
     day_end: i64,
+    hour_height: f32,
 ) -> Vec<(Occurrence, f32, f32, usize, usize)> {
     let mut sorted: Vec<&Occurrence> = events.to_vec();
     sorted.sort_by(|a, b| a.start.cmp(&b.start).then(b.end.cmp(&a.end)));
-    let y = |t: i64| ((t.clamp(day_start, day_end) - day_start) as f32 / 3600.0) * HOUR_HEIGHT;
+    let y = |t: i64| ((t.clamp(day_start, day_end) - day_start) as f32 / 3600.0) * hour_height;
     let mut out = Vec::new();
     let mut cluster: Vec<(&Occurrence, usize)> = Vec::new();
     let mut columns_end: Vec<i64> = Vec::new();
@@ -2368,7 +2649,7 @@ fn lay_out(
             out.push((
                 occurrence.clone(),
                 top,
-                (y(end) - top).max(HOUR_HEIGHT / 4.0),
+                (y(end) - top).max(hour_height / 4.0),
                 col,
                 columns.max(1),
             ));
@@ -2429,7 +2710,7 @@ mod tests {
         let b = occurrence(2, 9 * h + 1800, 11 * h);
         let c = occurrence(3, 10 * h, 10 * h + 1800);
         let d = occurrence(4, 14 * h, 15 * h);
-        let placed = lay_out(&[&a, &b, &c, &d], 0, 24 * h);
+        let placed = lay_out(&[&a, &b, &c, &d], 0, 24 * h, HOUR_HEIGHT);
         let cols: Vec<(i64, usize, usize)> = placed
             .iter()
             .map(|(o, _, _, col, cols)| (o.event.id, *col, *cols))
