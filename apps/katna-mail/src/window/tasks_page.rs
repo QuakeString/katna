@@ -302,6 +302,7 @@ impl MailWindow {
                 .iter()
                 .flat_map(|c| c.tasks.iter())
                 .filter(|t| t.done_at.is_none() && !t.mail.is_empty())
+                .filter(|t| super::notes::note_of_task(&t.mail).is_none())
                 .collect();
             // Undated last, each key keeping the first it gets.
             tasks.sort_by_key(|t| (t.due.is_empty(), t.due.clone(), t.due_time));
@@ -1604,7 +1605,32 @@ impl MailWindow {
                 any = true;
                 chips = chips.child(icon("refresh", th.text_faint, 14.0));
             }
-            if !task.mail.is_empty() {
+            if let Some(note) = super::notes::note_of_task(&task.mail) {
+                any = true;
+                chips = chips.child(
+                    div()
+                        .id(("task-note", id as usize))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .tooltip(tip(tr!("tasks-open-note"), th))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.open_task_note(note, window, cx)
+                        }))
+                        .h(px(24.0))
+                        .px(px(8.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(4.0))
+                        .rounded(px(8.0))
+                        .bg(rgba(th.chip))
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(icon("notes", th.text_dim, 14.0))
+                        .child(tr!("tasks-from-note")),
+                );
+            } else if !task.mail.is_empty() {
                 any = true;
                 let header = task.mail.clone();
                 chips = chips.child(

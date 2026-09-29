@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Make a checklist line a task"
+text = """
+Put the cursor on a checklist line in a note and pick Make it a task: the line
+goes to your tasks. Its Note chip on the Tasks page opens the note again.
+"""
