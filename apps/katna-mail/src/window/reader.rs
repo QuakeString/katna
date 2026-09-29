@@ -779,6 +779,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_read))
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
+            .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::mark_not_important))
             .child(self.render_reader_toolbar(th, cx))

@@ -150,6 +150,21 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
+    /// The newest message of any account with `Message-ID` `header` that
+    /// is in a folder: where a task made from a mail leads back to.
+    pub fn message_with_header(&self, header: &str) -> Result<Option<MessageId>> {
+        Ok(self
+            .mail
+            .prepare_cached(
+                "SELECT m.id FROM message m
+                 WHERE m.message_id_hdr = ?1
+                   AND EXISTS (SELECT 1 FROM message_location l WHERE l.message_id = m.id)
+                 ORDER BY m.id DESC LIMIT 1",
+            )?
+            .query_row([header], |row| Ok(MessageId(row.get(0)?)))
+            .optional()?)
+    }
+
     /// Whether the conversation of `message` has a message written after
     /// it (another `Message-ID`, a later date): a reply, or a follow-up.
     pub fn has_later_in_thread(&self, message: MessageId) -> Result<bool> {
