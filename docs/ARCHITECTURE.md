@@ -53,7 +53,7 @@ Merkuro).
            │ SQLite (WAL) · blobs ·    │◄─────┤  Katna Mail, Katna Calendar (GPUI)   │
            │ tantivy index             │ read │  KRunner, GNOME Shell search         │
            └───────────────────────────┘ only │  Plasma calendar-events plugin (C++) │
-                                               │  Katna Clock plasmoid (QML/C++)      │
+                                               │  Katna Digital Clock (QML), GNOME ext│
                                                │  notification server (actions/reply) │
                                                └──────────────────────────────────────┘
            Protocols inside the daemon: Pimalaya io-* (IMAP, SMTP, JMAP,
@@ -109,7 +109,8 @@ katna/
 │   └── katna-calendar/        # GPUI
 ├── integrations/
 │   ├── plasma-calendar-plugin/    # C++ CalendarEventsPlugin → daemon over D-Bus
-│   ├── plasma-clock/              # fork of Plasma's digital clock (QML + C++)
+│   ├── plasma-clock/              # Katna Digital Clock: Plasma's clock (QML) + Tasks
+│   ├── gnome-shell-extension/     # Katna events and Tasks in GNOME's clock menu
 │   ├── krunner/                   # dbusplugin .desktop metadata
 │   ├── gnome-search-provider/     # search-provider .ini
 │   └── dolphin-servicemenu/       # "Send as attachment with Katna"
@@ -169,7 +170,7 @@ not runtime performance.
 |---|---|
 | `$XDG_CONFIG_HOME/katna/` | Settings (TOML). |
 | `$XDG_DATA_HOME/katna/mail.db` | Mail database. |
-| `$XDG_DATA_HOME/katna/pim.db` | Shared: accounts, contacts, organizations. |
+| `$XDG_DATA_HOME/katna/pim.db` | Shared: accounts, contacts, organizations, templates, tracking, tasks. |
 | `$XDG_DATA_HOME/katna/calendar.db` | Calendar database. |
 | `$XDG_DATA_HOME/katna/blobs.db` | Raw messages, zstd-compressed, content-addressed (§5.2). |
 | `$XDG_DATA_HOME/katna/attachments/` | Large attachments only (> 256 KB). |
@@ -2730,49 +2731,68 @@ hidden **"Add…"** button, shown only when an events plugin is enabled **and**
 a default `text/calendar` application exists; it launches that app without a
 date. Events in its agenda have no click or right-click actions.
 
-Katna integrates in three layers:
+Katna integrates in three layers. All of them read the daemon's
+`in.invenia.katna.Agenda1` (`crates/katna-dbus/src/agenda.rs`): events for
+a range of days and tasks, which they add and tick off; `Changed` says to
+read again. Until Katna syncs calendars it lists no events; tasks are
+Katna's own, kept in `pim.db` (`task`, schema v4), until tasks sync with
+the mail service's list (owner, 29 September 2026: "local now").
+`integrations/README.md` has the details.
 
-**A. Calendar-events plugin (`integrations/plasma-calendar-plugin`)**
+**A. Calendar-events plugin (planned, `integrations/plasma-calendar-plugin`)**
 
-- A small C++ `CalendarEvents::CalendarEventsPlugin` that asks
-  `katna-daemon` for `EventsInRange` over D-Bus and listens to
-  `EventsChanged`.
+- A small C++ `CalendarEvents::CalendarEventsPlugin` that reads `Events`
+  over D-Bus and listens to `Changed`, so the stock clock shows Katna's
+  events and their dots in the month.
 - Katna Calendar registers as the `text/calendar` handler, so the stock
   clock shows **"Add…"** for Katna without any fork.
 - Runs inside `plasmashell`: fully asynchronous, never blocks, minimal code
-  (a crash here crashes the desktop shell).
+  (a crash here crashes the desktop shell). Comes with calendar sync, when
+  there are events to show.
 
-**B. Katna Clock — fork of the official clock (`integrations/plasma-clock`)**
+**B. Katna Digital Clock, a copy of the official clock (`integrations/plasma-clock`, built)**
 
-- Source: `plasma-workspace/applets/digital-clock` (about 5,900 lines together
-  with the calendar component; GPL-2.0-or-later / LGPL / KDE-accepted GPL).
-- Renamed to avoid clashes in the shared `plasmashell` process:
-  applet `org.kde.plasma.digitalclock` → `in.invenia.katna.clock`;
-  QML module `org.kde.plasma.private.digitalclock` → `in.invenia.katna.private.clock`.
+- Source: `plasma-workspace/applets/digital-clock` at v6.7.5, its QML only
+  (GPL-2.0-or-later and compatible licences). The first commit is the
+  unchanged copy; Katna's edits are marked `// Katna:`.
+- Plugin ID `in.invenia.katna.digitalclock` (`ids::CLOCK_APPLET_ID`),
+  installed as a QML package: nothing to compile.
 - Declares `X-Plasma-Provides: org.kde.plasma.time, org.kde.plasma.date`, so
   it appears in the clock's **"Show Alternatives"** menu (two-click switch).
-- Keeps importing the shared `org.kde.plasma.workspace.calendar` component
-  (identical look, gets upstream fixes); copied only if upstream changes
-  break us.
-- Katna features in new files (`KatnaAgenda.qml`, `QuickAddEvent.qml`, a C++
-  `KatnaBridge` for D-Bus), with minimal edits to upstream files:
-  - click a day → quick-add form;
-  - click an event → details; right-click → edit, delete, join meeting;
-  - drag to reschedule;
-  - organization badges ("Meeting with Acme") and related emails.
+- Imports Plasma's shared modules from the system instead of copying them:
+  the calendar component (`org.kde.plasma.workspace.calendar`), the
+  clock's helpers (`org.kde.plasma.private.digitalclock`) and D-Bus
+  (`org.kde.plasma.workspace.dbus`). Identical look, upstream fixes; copied
+  only if upstream changes break us. Upstream text keeps Plasma's
+  translation domain.
+- Katna features in new files (`KatnaAgenda.qml` for D-Bus, `KatnaTasks.qml`,
+  `KatnaJoinButton.qml`), with minimal edits to upstream files:
+  - a Tasks list under the day's events: add a task (due on the day
+    picked, when that isn't today), tick one off;
+  - click a Katna event to open it in Katna; a Join button for its video
+    call;
+  - later: quick-add events, right-click edit, delete, drag to reschedule,
+    organization badges and related emails.
 - Still reads events through the plugin system (A), so holidays and other
-  plugins keep working.
+  plugins keep working. The plugins' event data carries no ID in Plasma
+  6.7, so a Katna event is matched by title and start.
 
 **C. Upstream contributions to Plasma**
 
 - "Add…" opens the calendar app on the selected date.
-- Clicking an event opens it in the calendar app.
+- Clicking an event opens it in the calendar app (the event data needs its
+  ID for that).
 - An optional plugin hook for "create/edit event" actions.
 
 Each accepted change shrinks the fork and improves the stock clock.
 
-**GNOME:** the top-bar calendar reads only Evolution Data Server; showing
-Katna events there needs an EDS backend (C). Deferred.
+**GNOME:** the top-bar calendar reads only Evolution Data Server. Instead
+of an EDS backend (C), Katna's GNOME Shell extension
+(`integrations/gnome-shell-extension`, UUID `ids::CLOCK_EXTENSION_UUID`,
+GNOME 48 and later) wraps the date menu's event source so Katna's events
+join EDS's, and adds a Tasks card under the day's events, in GNOME's own
+styles. `katna-daemon` switches it on once, the first time GNOME Shell
+knows it; after that turning it off is the user's choice.
 
 ### 15.5 Other integration
 
@@ -2789,7 +2809,8 @@ Plasma's extension points are C++/QML, so these are the only non-Rust parts:
 | Component | Language | Size goal |
 |---|---|---|
 | Calendar-events plugin | C++ / Qt 6 | A few hundred lines |
-| Katna Clock (fork) | QML + C++ | Upstream code + small Katna additions |
+| Katna Digital Clock (copy of Plasma's) | QML | Upstream code + small Katna additions |
+| GNOME Shell extension | JavaScript | A few hundred lines |
 
 They only display data and forward actions to `katna-daemon`; no business
 logic lives there.

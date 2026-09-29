@@ -1,0 +1,8 @@
+{
+    "uuid": "clock@katna.invenia.in",
+    "name": "Katna in the clock",
+    "description": "Adds your Katna events and a Tasks list to the clock's menu.",
+    "shell-version": ["48", "49", "50", "51"],
+    "gettext-domain": "katna-clock",
+    "url": "https://github.com/QuakeString/katna"
+}

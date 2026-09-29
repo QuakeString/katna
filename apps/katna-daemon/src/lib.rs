@@ -8,6 +8,7 @@
 //! KRunner's and GNOME Shell's search; owning the bus name keeps it to a
 //! single instance.
 
+mod agenda;
 mod crash_upload;
 pub mod daemon;
 mod desktop;
@@ -86,6 +87,8 @@ struct Backfill {
 
 /// How long after starting the desktop search reads the addresses.
 const DESKTOP_SEARCH_WARM_UP: Duration = Duration::from_secs(20);
+/// When the daemon switches on Katna's GNOME Shell clock extension.
+const GNOME_EXTENSION_DELAY: Duration = Duration::from_secs(10);
 
 /// Pause between backfill batches, so sync gets the write lock often.
 const BACKFILL_PAUSE: Duration = Duration::from_millis(20);
@@ -208,6 +211,14 @@ impl Instance {
         );
         daemon.set_finder(finder.clone());
         desktop_search::serve(&connection, finder.clone()).await?;
+        agenda::serve(&connection, daemon.clone()).await?;
+        let (shell, shell_paths) = (connection.clone(), index_paths.clone());
+        smol::spawn(async move {
+            // Out of the way of the first sync after login.
+            smol::Timer::after(GNOME_EXTENSION_DELAY).await;
+            agenda::enable_gnome_extension(&shell, &shell_paths).await;
+        })
+        .detach();
         let warm = finder.clone();
         smol::spawn(async move {
             // Out of the way of the first sync after login.

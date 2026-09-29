@@ -27,6 +27,7 @@ mod quota;
 mod receipts;
 pub mod remote;
 mod sender_auth;
+pub mod tasks;
 pub mod templates;
 mod thread;
 pub mod tracking;
