@@ -145,6 +145,22 @@ pub mod drive_state {
     pub const NEEDS_PERMISSION: &str = "needs-permission";
 }
 
+/// States of an account's calendar sync, from `CalendarStatus`.
+pub mod calendar_state {
+    /// Synced, or about to be.
+    pub const OK: &str = "ok";
+    /// The account's sign-in did not allow Katna into its calendars (it
+    /// was signed in before Katna asked): `SignIn` again.
+    pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
+    /// The provider has its calendar API switched off for Katna (Google
+    /// Calendar API not enabled in Katna's Google Cloud project).
+    pub const NOT_ENABLED: &str = "not-enabled";
+    /// The last sync failed; the detail says why. It is tried again.
+    pub const ERROR: &str = "error";
+    /// The account has no calendars Katna can reach.
+    pub const NONE: &str = "none";
+}
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -560,6 +576,15 @@ macro_rules! pim_proxy {
             /// gives such a link its own address).
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
 
+            /// Shows or hides the events of calendar `id` (the store's
+            /// `calendar.id`) everywhere: the Calendar page, the agenda and
+            /// the desktop's clock. Sends `CalendarChanged`.
+            fn set_calendar_hidden(&self, id: i64, hidden: bool) -> zbus::Result<()>;
+
+            /// Where each account's calendar sync stands: its ID, a
+            /// [`calendar_state`] and a detail for people (may be empty).
+            fn calendar_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
+
             /// Saves a mail template on this computer, in place of the one
             /// with its ID (0: a new one). Its name must not be empty, and
             /// its attachments are at most 20 MB. Returns its ID. Apps read
@@ -718,6 +743,11 @@ macro_rules! pim_proxy {
             /// Drive upload `id` moved on; see `DriveUploadStatus`.
             #[zbus(signal)]
             fn drive_changed(&self, id: i64) -> zbus::Result<()>;
+
+            /// Calendars or their events changed in the store, or
+            /// `CalendarStatus` did: read them again.
+            #[zbus(signal)]
+            fn calendar_changed(&self) -> zbus::Result<()>;
 
             /// `Metered` changed.
             #[zbus(signal)]

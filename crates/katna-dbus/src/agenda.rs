@@ -41,7 +41,8 @@ pub mod event {
     pub const ALL_DAY: &str = "all_day";
     /// `s`, may be empty.
     pub const LOCATION: &str = "location";
-    /// `s`: `#rrggbb`, the calendar's colour, or empty.
+    /// `s`: `#rrggbb`, the event's colour or else its calendar's, or
+    /// empty.
     pub const COLOR: &str = "color";
     /// `s`: the calendar's name.
     pub const CALENDAR: &str = "calendar";

@@ -245,6 +245,7 @@ impl Daemon {
                     .insert(account.id, Arc::new(tokens));
                 tracing::info!(account = %account.id, %provider, "signed in again");
                 self.start_account(&account).await;
+                self.wake_calendars();
                 let _ = self.notices.try_send(Notice::AccountsChanged);
                 account.id
             }

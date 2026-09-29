@@ -314,6 +314,14 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
+            async fn set_calendar_hidden(&self, id: i64, hidden: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_calendar_hidden(id, hidden)?)
+            }
+
+            async fn calendar_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
+                Ok(self.daemon.calendar_status()?)
+            }
+
             async fn fetch_image(&self, url: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.fetch_image(&url).await?)
             }
@@ -470,6 +478,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn drive_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn calendar_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -512,6 +523,9 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             return;
         }
     };
+    let agenda = SignalEmitter::new(&connection, ids::AGENDA_OBJECT_PATH)
+        .map_err(|err| tracing::warn!(%err, "no agenda signal emitter"))
+        .ok();
     while let Ok(notice) = notices.recv().await {
         let sent = match notice {
             Notice::AccountsChanged => PimService::accounts_changed(&emitter).await,
@@ -523,6 +537,15 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
+            Notice::CalendarChanged => {
+                // The clock shows the events too.
+                if let Some(agenda) = &agenda
+                    && let Err(err) = crate::agenda::changed(agenda).await
+                {
+                    tracing::warn!(%err, "could not tell the clock");
+                }
+                PimService::calendar_changed(&emitter).await
+            }
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

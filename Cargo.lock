@@ -5908,6 +5908,7 @@ dependencies = [
  "async-io",
  "async-signal",
  "futures-lite",
+ "jiff",
  "katna-core",
  "katna-dav",
  "katna-dbus",
