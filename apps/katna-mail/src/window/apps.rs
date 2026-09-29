@@ -89,9 +89,8 @@ impl App {
     /// What the app will do, for its "coming soon" page.
     fn promise(self) -> String {
         match self {
-            Self::Mail | Self::Contacts => String::new(),
+            Self::Mail | Self::Contacts | Self::Tasks => String::new(),
             Self::Calendar => tr!("app-calendar-promise"),
-            Self::Tasks => tr!("app-tasks-promise"),
             Self::Notes => tr!("app-notes-promise"),
             Self::Feeds => tr!("app-feeds-promise"),
         }
@@ -132,6 +131,9 @@ impl MailWindow {
         self.search_panel = None;
         if app == App::Contacts && !matches!(self.contacts.book, Some(Ok(_))) {
             self.load_contacts(cx);
+        }
+        if app == App::Tasks {
+            self.open_tasks_page(cx);
         }
         cx.notify();
     }
@@ -306,9 +308,8 @@ impl MailWindow {
     pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts_page(th, cx),
-            App::Mail | App::Calendar | App::Tasks | App::Notes | App::Feeds => {
-                self.render_coming_soon(th)
-            }
+            App::Tasks => self.render_tasks(th, cx),
+            App::Mail | App::Calendar | App::Notes | App::Feeds => self.render_coming_soon(th),
         };
         div()
             .flex_1()

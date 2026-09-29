@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna Tasks"
+text = """
+Press Ctrl+4 or pick Tasks on the left: every list side by side as in
+Google Tasks, with subtasks, stars, due days, repeats and details. Lists
+sync with Google Tasks and Microsoft To Do, and tasks from the desktop
+clock show up here too.
+"""
