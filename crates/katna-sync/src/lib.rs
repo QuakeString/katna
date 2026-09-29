@@ -55,6 +55,7 @@ pub mod outbox;
 pub mod pictures;
 pub mod pop3;
 pub mod smtp;
+pub mod tasks;
 pub mod tracking;
 pub mod worker;
 

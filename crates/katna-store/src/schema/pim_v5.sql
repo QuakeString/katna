@@ -1,78 +1,48 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
--- pim.db schema v5: contacts synced from each account's address books
--- (Google People API, Microsoft Graph, CardDAV) or kept on this computer
--- (docs/ARCHITECTURE.md §8.6). The v1 contact tables were never written,
--- so they are made again with the columns sync needs.
+-- pim.db schema v5: task lists, and tasks synced with each account's own
+-- task service (Google Tasks, Microsoft To Do) besides the list kept on
+-- this computer (docs/ARCHITECTURE.md §18.1).
 
-DROP TABLE org_member;
-DROP TABLE contact_address;
-DROP TABLE contact;
-
--- One address book: a Google account's contacts, a Microsoft contact
--- folder, a CardDAV collection, or the book on this computer (no account).
-CREATE TABLE address_book (
+-- A task list: an account's (Google Tasks, To Do) or, with no account,
+-- one kept on this computer.
+CREATE TABLE task_list (
     id         INTEGER PRIMARY KEY,
     account_id INTEGER REFERENCES account (id) ON DELETE CASCADE,
-    source     TEXT    NOT NULL CHECK (source IN ('google', 'microsoft', 'carddav', 'local')),
-    remote_id  TEXT    NOT NULL,                -- '' (Google), folder id, collection URL
-    name       TEXT    NOT NULL DEFAULT '',
-    sync_token TEXT,                            -- where the next sync picks up
-    synced_at  INTEGER,                         -- Unix seconds
-    state      TEXT    NOT NULL DEFAULT 'ok'
-               CHECK (state IN ('ok', 'needs-permission', 'failed')),
+    remote_id  TEXT,                         -- the service's ID; NULL until created there
+    title      TEXT    NOT NULL,
+    is_default INTEGER NOT NULL DEFAULT 0,   -- the account's own default list
+    sync_state TEXT,                         -- where the last pull ended (a time or a delta link)
+    dirty      INTEGER NOT NULL DEFAULT 0,   -- renamed here, not yet on the service
+    deleted    INTEGER NOT NULL DEFAULT 0,   -- deleted here, not yet on the service
+    -- Its tasks move to the first synced default list once one exists
+    -- (tasks added in the desktop clock before any list synced).
+    move_out   INTEGER NOT NULL DEFAULT 0,
     UNIQUE (account_id, remote_id)
 );
 
-CREATE TABLE contact (
-    id           INTEGER PRIMARY KEY,
-    book_id      INTEGER NOT NULL REFERENCES address_book (id) ON DELETE CASCADE,
-    remote_id    TEXT    NOT NULL,              -- resourceName, Graph id, CardDAV href
-    etag         TEXT,
-    display_name TEXT    NOT NULL DEFAULT '',
-    sort_key     TEXT    NOT NULL DEFAULT '',
-    job          TEXT    NOT NULL DEFAULT '',   -- "Title, Company"
-    phone        TEXT    NOT NULL DEFAULT '',   -- the first one, for the list
-    starred      INTEGER NOT NULL DEFAULT 0 CHECK (starred IN (0, 1)),
-    card_json    TEXT    NOT NULL,              -- katna_core::contact::Card
-    raw          TEXT,                          -- the source's own form (vCard, JSON)
-    updated_at   INTEGER NOT NULL,
-    UNIQUE (book_id, remote_id)
-);
-CREATE INDEX contact_by_sort ON contact (sort_key);
+-- The list the clock's tasks were kept in until now.
+INSERT INTO task_list (id, title, is_default, move_out) VALUES (1, 'My Tasks', 1, 1);
 
-CREATE TABLE contact_address (
-    contact_id INTEGER NOT NULL REFERENCES contact (id) ON DELETE CASCADE,
-    email_norm TEXT    NOT NULL,
-    position   INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (contact_id, email_norm)
-);
-CREATE INDEX contact_address_by_email ON contact_address (email_norm);
+-- NULL never stays: SQLite adds a REFERENCES column only with no default.
+ALTER TABLE task ADD COLUMN list_id   INTEGER REFERENCES task_list (id) ON DELETE CASCADE;
+ALTER TABLE task ADD COLUMN parent_id INTEGER REFERENCES task (id) ON DELETE CASCADE;
+ALTER TABLE task ADD COLUMN remote_id TEXT;
+ALTER TABLE task ADD COLUMN etag      TEXT;
+-- The service's order (Google's position string); '' sorts newest first.
+ALTER TABLE task ADD COLUMN position  TEXT    NOT NULL DEFAULT '';
+-- What Google Tasks can't keep stays here only: a time on the due day
+-- (minutes after local midnight), a reminder (Unix seconds), a repeat
+-- rule (RFC 5545 RRULE value) and the star.
+ALTER TABLE task ADD COLUMN due_time  INTEGER;
+ALTER TABLE task ADD COLUMN remind_at INTEGER;
+ALTER TABLE task ADD COLUMN repeat    TEXT    NOT NULL DEFAULT '';
+ALTER TABLE task ADD COLUMN starred   INTEGER NOT NULL DEFAULT 0;
+-- The mail it was made from: its Message-ID, without angle brackets.
+ALTER TABLE task ADD COLUMN mail      TEXT    NOT NULL DEFAULT '';
+ALTER TABLE task ADD COLUMN dirty     INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE task ADD COLUMN deleted   INTEGER NOT NULL DEFAULT 0;
 
--- A label (Google contact group, Microsoft category, CardDAV group card).
-CREATE TABLE contact_group (
-    id        INTEGER PRIMARY KEY,
-    book_id   INTEGER NOT NULL REFERENCES address_book (id) ON DELETE CASCADE,
-    remote_id TEXT    NOT NULL,
-    name      TEXT    NOT NULL,
-    UNIQUE (book_id, remote_id)
-);
+UPDATE task SET list_id = 1;
 
-CREATE TABLE contact_group_member (
-    group_id   INTEGER NOT NULL REFERENCES contact_group (id) ON DELETE CASCADE,
-    contact_id INTEGER NOT NULL REFERENCES contact (id) ON DELETE CASCADE,
-    PRIMARY KEY (group_id, contact_id)
-);
-CREATE INDEX contact_group_member_by_contact ON contact_group_member (contact_id);
-
--- The contact's picture, fetched once per source value.
-CREATE TABLE contact_photo (
-    contact_id INTEGER PRIMARY KEY REFERENCES contact (id) ON DELETE CASCADE,
-    source     TEXT    NOT NULL,                -- URL or a hash of inline data
-    data       BLOB    NOT NULL
-);
-
-CREATE TABLE org_member (
-    org_id     INTEGER NOT NULL REFERENCES organization (id) ON DELETE CASCADE,
-    contact_id INTEGER NOT NULL REFERENCES contact (id) ON DELETE CASCADE,
-    PRIMARY KEY (org_id, contact_id)
-);
+CREATE INDEX task_by_list ON task (list_id, parent_id);
+CREATE UNIQUE INDEX task_by_remote ON task (list_id, remote_id) WHERE remote_id IS NOT NULL;

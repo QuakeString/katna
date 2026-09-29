@@ -6199,6 +6199,7 @@ dependencies = [
  "io-imap",
  "io-sasl",
  "io-smtp",
+ "jiff",
  "katna-core",
  "katna-crypto",
  "katna-dav",
