@@ -1331,6 +1331,8 @@ pub fn saved_contacts(paths: &Paths) -> Result<SavedBook, String> {
                 people: store.saved_contacts()?,
                 labels: store.contact_labels()?,
                 books: store.address_books()?,
+                others: store.other_contacts()?,
+                others_blocked: store.other_contacts_blocked()?,
             })
         })
         .map_err(|err| format!("Reading contacts failed: {err}"))
@@ -1342,6 +1344,9 @@ pub struct SavedBook {
     pub people: Vec<katna_store::SavedContact>,
     pub labels: Vec<katna_store::ContactLabel>,
     pub books: Vec<katna_store::AddressBook>,
+    /// Google's other contacts, and the accounts that have to allow them.
+    pub others: Vec<katna_store::OtherContact>,
+    pub others_blocked: Vec<katna_core::AccountId>,
 }
 
 /// The cards that have a picture.

@@ -104,6 +104,10 @@ async fn sync_account(
     let provider = settings.oauth;
     let now = unix_now();
     let order = methods::order(&daemon.store(), account.id, Data::Contacts, provider, now);
+    // Other contacts only come from Google's API, whatever way the
+    // account's own contacts come.
+    let others = provider == Some(OAuthProvider::Google)
+        && super::other_contacts::sync(daemon, account, &tls).await;
     let due = looked
         .get(&account.id)
         .is_none_or(|at| at.elapsed() >= LOOK_AGAIN);
@@ -145,7 +149,7 @@ async fn sync_account(
         };
         if let Some(changed) = changed {
             methods::remember(&mut daemon.store(), account.id, Data::Contacts, method, now);
-            return Ok(changed);
+            return Ok(changed || others);
         }
         tracing::debug!(account = %account.id, ?method, "contacts: this way is not available");
     }
@@ -156,9 +160,9 @@ async fn sync_account(
                 .store()
                 .ensure_address_book(Some(account.id), source, "", "")
                 .map_err(|e| e.to_string())?;
-            save(daemon, book, Err(SyncError::Auth(why)))
+            Ok(save(daemon, book, Err(SyncError::Auth(why)))? || others)
         }
-        None => Ok(false),
+        None => Ok(others),
     }
 }
 

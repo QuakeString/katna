@@ -16,7 +16,7 @@ use crate::{
     Error, Result,
     autoconfig::http::{self, Reply},
     net::Tls,
-    oauth::{GOOGLE_CONTACTS, MICROSOFT_CONTACTS, TokenSource},
+    oauth::{GOOGLE_CONTACTS, GOOGLE_OTHER_CONTACTS, MICROSOFT_CONTACTS, TokenSource},
 };
 
 /// Google's People API host.
@@ -38,6 +38,12 @@ const PAGE: u32 = 500;
 /// The fields of a person Katna reads.
 const PERSON_FIELDS: &str = "names,nicknames,emailAddresses,phoneNumbers,addresses,\
 organizations,birthdays,urls,biographies,photos,memberships,metadata";
+
+/// The fields of an "other contact" Katna reads (all Google gives).
+const OTHER_FIELDS: &str = "names,emailAddresses,phoneNumbers,photos,metadata";
+
+/// What Google copies when an other contact is saved.
+const COPY_FIELDS: &str = "names,emailAddresses,phoneNumbers";
 
 /// The fields Katna writes; memberships (labels, the star) are left alone.
 const UPDATE_FIELDS: &str = "names,nicknames,emailAddresses,phoneNumbers,addresses,\
@@ -237,6 +243,86 @@ impl GoogleContacts {
         .to_string();
         let reply = self.send("POST", &url, Some(body.as_bytes())).await?;
         check(&reply, "changing a label")
+    }
+
+    /// Whether the account's sign-in allowed Katna to read its other
+    /// contacts.
+    pub async fn other_allowed(&self) -> Result<bool> {
+        self.tokens.has_scope(GOOGLE_OTHER_CONTACTS).await
+    }
+
+    /// Reads the other contacts (people mailed but not saved) changed
+    /// since `sync_token`, or all of them without one or when Google no
+    /// longer knows it.
+    pub async fn other_contacts(&self, sync_token: Option<&str>) -> Result<BookSync> {
+        match self.other_pages(sync_token).await {
+            Err(Error::Rejected(e)) if sync_token.is_some() && e.contains("410") => {
+                tracing::info!("contacts: Google's other contacts token ran out; reading all");
+                self.other_pages(None).await
+            }
+            other => other,
+        }
+    }
+
+    /// Saves other contact `remote_id` in the user's contacts; returns the
+    /// new contact.
+    pub async fn copy_other(&self, remote_id: &str) -> Result<SyncedContact> {
+        let url = format!(
+            "{}/v1/{remote_id}:copyOtherContactToMyContactsGroup",
+            self.api
+        );
+        let body = serde_json::json!({ "copyMask": COPY_FIELDS }).to_string();
+        let reply = self.send("POST", &url, Some(body.as_bytes())).await?;
+        check(&reply, "saving an other contact")?;
+        let person: Person = parse(&reply.body)?;
+        // The copy's answer leaves out labels and the like: read it whole.
+        self.person(&person.resource_name).await
+    }
+
+    async fn other_pages(&self, sync_token: Option<&str>) -> Result<BookSync> {
+        #[derive(Deserialize)]
+        struct Page {
+            #[serde(default, rename = "otherContacts")]
+            people: Vec<Person>,
+            #[serde(rename = "nextPageToken")]
+            next: Option<String>,
+            #[serde(rename = "nextSyncToken")]
+            sync: Option<String>,
+        }
+        let mut out = BookSync {
+            full: sync_token.is_none(),
+            ..BookSync::default()
+        };
+        let mut page_token: Option<String> = None;
+        loop {
+            let mut url = format!(
+                "{}/v1/otherContacts?pageSize=1000&readMask={OTHER_FIELDS}&requestSyncToken=true",
+                self.api
+            );
+            if let Some(token) = sync_token {
+                url.push_str(&format!("&syncToken={}", http::escape(token)));
+            }
+            if let Some(token) = &page_token {
+                url.push_str(&format!("&pageToken={}", http::escape(token)));
+            }
+            let reply = self.get(&url).await?;
+            check(&reply, "reading other contacts")?;
+            let page: Page = parse(&reply.body)?;
+            for person in page.people {
+                if person.metadata.deleted {
+                    out.deleted.push(person.resource_name);
+                } else {
+                    out.contacts.push(person.into_synced());
+                }
+            }
+            if page.sync.is_some() {
+                out.sync_token = page.sync;
+            }
+            match page.next {
+                Some(next) if !next.is_empty() => page_token = Some(next),
+                _ => return Ok(out),
+            }
+        }
     }
 
     /// The user's own labels (not Google's system groups).

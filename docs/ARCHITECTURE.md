@@ -983,8 +983,16 @@ label ticked on a person goes on each of their cards; renaming or deleting
 a label changes it in every account, and its people stay. A label nobody
 has is forgotten except at Google, which keeps empty labels. Each change
 has an Undo; "Email everyone" on a label starts a message to all of them.
-Other contacts, merge and import/export follow in the next phases of the
-study.
+
+Other contacts are Google's list of people a Gmail account mailed but never
+saved (People API `otherContacts`, scope `contacts.other.readonly`, read
+with a sync token each pass whatever way the account's own contacts come).
+They live apart from saved cards (`other_contact`, pim.db v10), so they
+never merge into people or labels. The page lists them under Other
+contacts, leaving out anyone saved since; Add to contacts copies one with
+`copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
+Outlook and CardDAV have no such list. Merge and import/export follow in
+the next phases of the study.
 
 ## 9. Background service (`katna-daemon`)
 

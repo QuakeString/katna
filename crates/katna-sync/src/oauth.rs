@@ -57,6 +57,10 @@ pub const GOOGLE_CONTACTS: &str = "https://www.googleapis.com/auth/contacts";
 /// Outlook contacts, through Microsoft Graph, like [`MICROSOFT_FILES`].
 pub const MICROSOFT_CONTACTS: &str = "https://graph.microsoft.com/Contacts.ReadWrite";
 
+/// Google's "Other contacts": people the user mailed but never saved,
+/// read-only.
+pub const GOOGLE_OTHER_CONTACTS: &str = "https://www.googleapis.com/auth/contacts.other.readonly";
+
 /// Google Tasks: the account's task lists, synced with Katna Tasks.
 pub const GOOGLE_TASKS: &str = "https://www.googleapis.com/auth/tasks";
 
@@ -122,12 +126,14 @@ impl Provider {
                 },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
-                // large attachments, the calendars, the contacts, the task
+                // large attachments, the calendars, the contacts and other
+                // contacts, the task
                 // lists, and who signed in (address, name, picture) in the ID
                 // token.
                 scope: format!(
                     "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
-                     {GOOGLE_CONTACTS} {GOOGLE_TASKS} openid email profile"
+                     {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_TASKS} \
+                     openid email profile"
                 ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",
