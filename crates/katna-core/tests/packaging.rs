@@ -80,7 +80,16 @@ fn desktop_actions_run_katna_mail_with_a_flag() {
         .split(';')
         .filter(|a| !a.is_empty())
         .collect();
-    assert_eq!(actions, ["new-message", "inbox", "preferences"]);
+    assert_eq!(
+        actions,
+        [
+            "new-message",
+            "inbox",
+            "calendar",
+            "contacts",
+            "preferences"
+        ]
+    );
     let groups: Vec<&str> = text.split("\n[").skip(1).collect();
     for action in actions {
         let group = groups
@@ -96,6 +105,8 @@ fn desktop_actions_run_katna_mail_with_a_flag() {
             [
                 "katna-mail --compose",
                 "katna-mail --inbox",
+                "katna-mail --page calendar",
+                "katna-mail --page contacts",
                 "katna-mail --settings"
             ]
             .contains(&exec),

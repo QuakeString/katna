@@ -31,6 +31,8 @@ pub enum Request {
     /// Text to search for (`app_action::SEARCH`), from KRunner or GNOME's
     /// search.
     Search(String),
+    /// The page to show (`app_action::OPEN_PAGE`): `calendar`, `tasks`…
+    Page(String),
 }
 
 impl Request {
@@ -113,13 +115,19 @@ impl Application {
         platform_data: HashMap<String, OwnedValue>,
     ) {
         keep_activation_token(&platform_data);
-        if action_name == app_action::SEARCH {
+        if app_action::takes_text(&action_name) {
             if let Some(text) = parameter
                 .into_iter()
                 .next()
                 .and_then(|value| String::try_from(value).ok())
             {
-                let _ = self.requests.try_send(Request::Search(text));
+                let _ = self
+                    .requests
+                    .try_send(if action_name == app_action::SEARCH {
+                        Request::Search(text)
+                    } else {
+                        Request::Page(text)
+                    });
             }
             return;
         }
@@ -257,6 +265,18 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
                     interface,
                     "ActivateAction",
                     &(app_action::SEARCH, params, platform),
+                )
+                .await
+        }
+        Some(Request::Page(page)) => {
+            let params = vec![Value::from(page.as_str())];
+            connection
+                .call_method(
+                    app,
+                    path,
+                    interface,
+                    "ActivateAction",
+                    &(app_action::OPEN_PAGE, params, platform),
                 )
                 .await
         }

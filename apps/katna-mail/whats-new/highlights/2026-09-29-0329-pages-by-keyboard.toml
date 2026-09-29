@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pages by keyboard and from the taskbar"
+text = """
+Ctrl+1 to Ctrl+5 switch between Mail, Calendar, Contacts, Tasks and
+Notes, as in Outlook, and the Go menu lists them too. Right-click Katna
+Mail on the taskbar to open Calendar or Contacts straight away.
+"""

@@ -12,7 +12,7 @@ MimeType=x-scheme-handler/mailto;
 Keywords=email;mail;inbox;imap;
 StartupNotify=true
 StartupWMClass=in.invenia.katna.Mail
-Actions=new-message;inbox;preferences;
+Actions=new-message;inbox;calendar;contacts;preferences;
 
 [Desktop Action new-message]
 Name=New Message
@@ -23,6 +23,16 @@ Exec=katna-mail --compose
 Name=Open Inbox
 Icon=mail-folder-inbox
 Exec=katna-mail --inbox
+
+[Desktop Action calendar]
+Name=Calendar
+Icon=view-calendar
+Exec=katna-mail --page calendar
+
+[Desktop Action contacts]
+Name=Contacts
+Icon=view-pim-contacts
+Exec=katna-mail --page contacts
 
 [Desktop Action preferences]
 Name=Preferences

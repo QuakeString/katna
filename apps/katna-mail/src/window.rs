@@ -159,6 +159,11 @@ actions!(
         GoToSent,
         GoToDrafts,
         GoToAllMail,
+        ShowMail,
+        ShowCalendar,
+        ShowContacts,
+        ShowTasks,
+        ShowNotes,
         OpenSettings,
         ShowShortcuts,
         ShowWhatsNew,
@@ -3389,6 +3394,21 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::go_to_sent))
             .on_action(cx.listener(Self::go_to_drafts))
             .on_action(cx.listener(Self::go_to_all_mail))
+            .on_action(cx.listener(|this, _: &ShowMail, window, cx| {
+                this.show_page(RailApp::Mail, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowCalendar, window, cx| {
+                this.show_page(RailApp::Calendar, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowContacts, window, cx| {
+                this.show_page(RailApp::Contacts, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowTasks, window, cx| {
+                this.show_page(RailApp::Tasks, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowNotes, window, cx| {
+                this.show_page(RailApp::Notes, window, cx)
+            }))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
             .on_action(cx.listener(Self::show_whats_new_action))

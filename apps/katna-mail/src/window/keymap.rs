@@ -16,7 +16,8 @@ use super::{
     OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply,
     ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp,
     SelectAll, SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail,
-    ShowShortcuts, ToggleCheck, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    ShowCalendar, ShowContacts, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck,
+    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -171,6 +172,12 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("go_sent", GoTo, Anywhere, ["g t"], GoToSent),
     shortcut!("go_drafts", GoTo, Anywhere, ["g d"], GoToDrafts),
     shortcut!("go_all", GoTo, Anywhere, ["g a"], GoToAllMail),
+    // The pages of the window, on Outlook's keys.
+    shortcut!("page_mail", GoTo, Anywhere, ["ctrl-1"], ShowMail),
+    shortcut!("page_calendar", GoTo, Anywhere, ["ctrl-2"], ShowCalendar),
+    shortcut!("page_contacts", GoTo, Anywhere, ["ctrl-3"], ShowContacts),
+    shortcut!("page_tasks", GoTo, Anywhere, ["ctrl-4"], ShowTasks),
+    shortcut!("page_notes", GoTo, Anywhere, ["ctrl-5"], ShowNotes),
     shortcut!("search", App, Anywhere, ["/", "ctrl-f"], FocusSearch),
     shortcut!("navigation", App, Anywhere, [], ToggleNavigation),
     shortcut!("quick_settings", App, Anywhere, ["ctrl-,"], ToggleSettings),
@@ -213,6 +220,7 @@ const APPLE_MAIL: Preset = &[
     ("select_all", &["ctrl-a"]),
     ("undo", &["ctrl-z"]),
     ("go_inbox", &["ctrl-1"]),
+    ("page_mail", &[]),
     ("search", &["ctrl-alt-f"]),
     ("reload", &["ctrl-shift-n"]),
 ];

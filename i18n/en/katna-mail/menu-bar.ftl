@@ -25,6 +25,12 @@ desktop-menu-starred = _Starred
 desktop-menu-sent = S_ent
 desktop-menu-drafts = _Drafts
 desktop-menu-all-mail = _All Mail
+# The pages of the window, like the names in the app rail.
+desktop-menu-page-mail = _Mail
+desktop-menu-page-calendar = _Calendar
+desktop-menu-page-contacts = C_ontacts
+desktop-menu-page-tasks = Tas_ks
+desktop-menu-page-notes = No_tes
 desktop-menu-next = _Next Conversation
 desktop-menu-previous = _Previous Conversation
 desktop-menu-message = _Message
