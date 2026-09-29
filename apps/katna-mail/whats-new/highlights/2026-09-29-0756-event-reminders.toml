@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Reminders for your events"
+text = """
+Events now remind you with a notification, even when Katna is closed.
+Join opens the video call, and Snooze reminds you again in five minutes.
+"""
