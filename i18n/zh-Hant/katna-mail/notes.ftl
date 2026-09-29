@@ -46,6 +46,12 @@ notes-edited = 編輯時間：{ $date }
 notes-on-this-computer = 這部電腦
 notes-where = 記事的儲存位置
 
+## A note about a mail
+
+notes-mail = 郵件
+notes-open-mail = 開啟郵件
+notes-open-note = 開啟記事
+
 ## Colors (tooltips)
 
 notes-color-none = 無顏色
@@ -68,6 +74,7 @@ notes-unarchived = 記事已取消封存
 notes-trashed = 記事已移至垃圾桶
 notes-restored = 記事已還原
 notes-empty-discarded = 已捨棄空白記事
+notes-mail-gone = 這封郵件已不存在
 notes-deleted-forever = { $count ->
    *[other] 已永久刪除 { $count } 則記事
 }

@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } জন অতিথি
     }
 calendar-guest-answers = { $yes } হয়, { $maybe } হয়তো, { $no } নহয়, { $waiting } অপেক্ষাত
-calendar-organizer-name = { $name } (আয়োজক)
 calendar-open-web = ব্ৰাউজাৰত খোলক
 calendar-close = বন্ধ কৰক
 

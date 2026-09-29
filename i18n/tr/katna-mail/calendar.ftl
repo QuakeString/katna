@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } konuk
     }
 calendar-guest-answers = { $yes } evet, { $maybe } belki, { $no } hayır, { $waiting } yanıt bekliyor
-calendar-organizer-name = { $name } (organizatör)
 calendar-open-web = Tarayıcıda aç
 calendar-close = Kapat
 

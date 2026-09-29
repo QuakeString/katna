@@ -7,6 +7,7 @@
 contacts-all = Kenalan
 contacts-frequent = Kerap
 contacts-labels = Label
+contacts-create = Cipta kenalan
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = Benarkan
 ## A contact's page
 
 contacts-back = Kembali ke kenalan
+contacts-edit = Edit
+contacts-delete = Padam
+contacts-deleted = { $name } dipadam
 contacts-find-mail = Mel
 contacts-details = Butiran kenalan
 contacts-saved-in = Disimpan dalam
@@ -50,3 +54,29 @@ contacts-kind-other = Lain-lain
 contacts-source-google = Google Kenalan
 contacts-source-microsoft = Kenalan Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Cipta kenalan
+contacts-edit-title = Edit kenalan
+contacts-edit-save = Simpan
+contacts-edit-saving = Menyimpan…
+contacts-edit-cancel = Batal
+contacts-saved = Kenalan disimpan
+contacts-edit-save-to = Simpan ke
+contacts-edit-changes-go-to = Perubahan disimpan ke { $place }.
+contacts-edit-given = Nama pertama
+contacts-edit-family = Nama akhir
+contacts-edit-company = Syarikat
+contacts-edit-job = Jawatan
+contacts-edit-email = E-mel
+contacts-edit-phone = Telefon
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Tambah e-mel
+contacts-edit-add-phone = Tambah telefon
+contacts-edit-street = Alamat jalan
+contacts-edit-city = Bandar
+contacts-edit-postcode = Poskod
+contacts-edit-country = Negara
+contacts-edit-birthday = Hari lahir (YYYY-MM-DD)
+contacts-edit-empty = Tambah nama, e-mel atau nombor telefon dahulu.

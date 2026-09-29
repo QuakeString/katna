@@ -21,6 +21,10 @@ use katna_store::calendar::{Attendee, EventData, EventKind, EventStatus};
 
 use crate::recurrence::{Rule, last_start};
 
+mod write;
+
+pub use write::{escape, fold, recurrence_lines, time_value, write_calendar, write_event};
+
 /// One content line: `NAME;PARAM=value:VALUE`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Property {
@@ -304,6 +308,18 @@ const WINDOWS_ZONES: &[(&str, &str)] = &[
 pub fn zone(tzid: &str) -> Option<TimeZone> {
     let name = zone_name(tzid)?;
     TimeZone::get(&name).ok()
+}
+
+/// The Windows name of IANA zone `iana` (what Exchange and Microsoft
+/// Graph take), when it is one of those [`WINDOWS_ZONES`] lists.
+pub fn windows_zone(iana: &str) -> Option<&'static str> {
+    if matches!(iana, "UTC" | "Etc/UTC") {
+        return Some("UTC");
+    }
+    WINDOWS_ZONES
+        .iter()
+        .find(|(_, name)| *name == iana)
+        .map(|(windows, _)| *windows)
 }
 
 /// The IANA name of the zone `tzid` names, as [`zone`] finds it.
@@ -751,6 +767,12 @@ mod tests {
             Some("America/New_York")
         );
         assert_eq!(zone_name("Nowhere Standard Time"), None);
+        assert_eq!(windows_zone("Asia/Kolkata"), Some("India Standard Time"));
+        assert_eq!(
+            windows_zone("Europe/Berlin"),
+            Some("W. Europe Standard Time")
+        );
+        assert_eq!(windows_zone("Mars/Olympus"), None);
     }
 
     #[test]

@@ -38,7 +38,6 @@ calendar-guests =
        *[other] ゲスト { $count } 人
     }
 calendar-guest-answers = はい { $yes }、未定 { $maybe }、いいえ { $no }、返信待ち { $waiting }
-calendar-organizer-name = { $name } (主催者)
 calendar-open-web = ブラウザで開く
 calendar-close = 閉じる
 

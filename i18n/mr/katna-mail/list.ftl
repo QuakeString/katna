@@ -379,6 +379,7 @@ menu-unpin = अनपिन करा
 menu-snooze = स्नूझ करा
 menu-unsnooze = स्नूझ रद्द करा
 menu-add-to-tasks = कार्यांमध्ये जोडा
+menu-add-note = नोट जोडा
 menu-print-all = सर्व प्रिंट करा
 menu-new-window = नवीन विंडोमध्ये उघडा
 menu-move-to = येथे हलवा

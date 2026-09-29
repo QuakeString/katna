@@ -47,6 +47,12 @@ notes-edited = Redigerad { $date }
 notes-on-this-computer = På den här datorn
 notes-where = Var anteckningen sparas
 
+## A note about a mail
+
+notes-mail = E-post
+notes-open-mail = Öppna e-postmeddelandet
+notes-open-note = Öppna anteckningen
+
 ## Colors (tooltips)
 
 notes-color-none = Ingen färg
@@ -69,6 +75,7 @@ notes-unarchived = Anteckningen har avarkiverats
 notes-trashed = Anteckningen har flyttats till papperskorgen
 notes-restored = Anteckningen har återställts
 notes-empty-discarded = Den tomma anteckningen har tagits bort
+notes-mail-gone = Det e-postmeddelandet finns inte längre
 notes-deleted-forever = { $count ->
     [one] Anteckningen har raderats permanent
    *[other] { $count } anteckningar har raderats permanent

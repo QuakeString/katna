@@ -62,6 +62,7 @@ impl DbKind {
                 include_str!("schema/pim_v6.sql"),
                 include_str!("schema/pim_v7.sql"),
                 include_str!("schema/pim_v8.sql"),
+                include_str!("schema/pim_v9.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }

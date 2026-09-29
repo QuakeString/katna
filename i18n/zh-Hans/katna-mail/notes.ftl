@@ -46,6 +46,12 @@ notes-edited = 编辑时间：{ $date }
 notes-on-this-computer = 此计算机
 notes-where = 笔记的保存位置
 
+## A note about a mail
+
+notes-mail = 邮件
+notes-open-mail = 打开邮件
+notes-open-note = 打开笔记
+
 ## Colors (tooltips)
 
 notes-color-none = 无颜色
@@ -68,6 +74,7 @@ notes-unarchived = 笔记已取消归档
 notes-trashed = 笔记已移至回收站
 notes-restored = 笔记已恢复
 notes-empty-discarded = 已舍弃空笔记
+notes-mail-gone = 该邮件已不存在
 notes-deleted-forever = { $count ->
    *[other] 已永久删除 { $count } 条笔记
 }

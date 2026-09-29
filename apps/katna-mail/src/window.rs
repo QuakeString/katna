@@ -39,6 +39,7 @@ mod delete_ask;
 mod desktop;
 mod detached;
 mod download;
+mod event_edit;
 mod feedback_page;
 mod katna_account;
 mod keymap;
@@ -2638,6 +2639,10 @@ impl MailWindow {
         }
         if undo == Command::RestoreQuote {
             self.restore_quote(window, cx);
+            return;
+        }
+        if let Command::Event(change) = undo {
+            self.undo_event_change(*change, cx);
             return;
         }
         if let Command::RestoreContacts(keys) = &undo {

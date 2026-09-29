@@ -379,6 +379,7 @@ menu-unpin = Susa ukuphina
 menu-snooze = Libazisa
 menu-unsnooze = Yeka ukulibazisa
 menu-add-to-tasks = Engeza Kumisebenzi
+menu-add-note = Engeza inothi
 menu-print-all = Phrinta konke
 menu-new-window = Vula ewindini elisha
 menu-move-to = Hambisa ku-

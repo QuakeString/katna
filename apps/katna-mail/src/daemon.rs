@@ -49,6 +49,8 @@ pub enum Command {
     /// These, one after the other: an undo that moves mail back to
     /// several folders.
     Several(Vec<Command>),
+    /// A change to the calendar (`Pim1.EditEvent`).
+    Event(Box<katna_store::calendar::EventChange>),
     /// Saves a note (a new one for ID 0).
     SaveNote(Box<katna_dbus::NoteItem>),
     /// Moves notes to Trash, or back out of it.
@@ -136,6 +138,7 @@ impl Command {
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
+            | Self::Event(_)
             | Self::Several(_)
             | Self::Task(_) => {
                 return None;
@@ -236,6 +239,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
             return Ok(());
         }
+        Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
         Command::Several(commands) => {
             for command in commands {
@@ -324,6 +328,29 @@ pub async fn set_calendar_hidden(
         .await
         .map(|_| ())
         .map_err(|err| describe(&err))
+}
+
+/// Asks the daemon for a change to the calendar. Returns the ID of the
+/// event added or changed, or 0.
+pub async fn edit_event(
+    connection: &Connection,
+    change: &katna_store::calendar::EventChange,
+) -> Result<i64, String> {
+    let json = serde_json::to_string(change).map_err(|err| err.to_string())?;
+    let reply = connection
+        .call_method(
+            Some(katna_core::ids::DAEMON_BUS_NAME),
+            katna_core::ids::PIM_OBJECT_PATH,
+            Some(katna_core::ids::PIM_INTERFACE),
+            "EditEvent",
+            &(json,),
+        )
+        .await
+        .map_err(|err| describe(&err))?;
+    reply
+        .body()
+        .deserialize::<i64>()
+        .map_err(|err| err.to_string())
 }
 
 /// Queues an RFC 5322 message from `account` to go out in `delay` seconds.

@@ -7,6 +7,7 @@
 contacts-all = కాంటాక్ట్‌లు
 contacts-frequent = తరచుగా
 contacts-labels = లేబుల్‌లు
+contacts-create = కాంటాక్ట్‌ను సృష్టించండి
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = అనుమతించండి
 ## A contact's page
 
 contacts-back = కాంటాక్ట్‌లకు తిరిగి వెళ్లండి
+contacts-edit = ఎడిట్ చేయండి
+contacts-delete = తొలగించండి
+contacts-deleted = { $name } తొలగించబడింది
 contacts-find-mail = మెయిల్
 contacts-details = కాంటాక్ట్ వివరాలు
 contacts-saved-in = సేవ్ చేసిన చోటు
@@ -52,3 +56,29 @@ contacts-kind-other = ఇతర
 contacts-source-google = Google కాంటాక్ట్‌లు
 contacts-source-microsoft = Outlook కాంటాక్ట్‌లు
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = కాంటాక్ట్‌ను సృష్టించండి
+contacts-edit-title = కాంటాక్ట్‌ను ఎడిట్ చేయండి
+contacts-edit-save = సేవ్ చేయండి
+contacts-edit-saving = సేవ్ చేస్తోంది…
+contacts-edit-cancel = రద్దు చేయండి
+contacts-saved = కాంటాక్ట్ సేవ్ చేయబడింది
+contacts-edit-save-to = ఇక్కడ సేవ్ చేయండి
+contacts-edit-changes-go-to = మార్పులు { $place }లో సేవ్ చేయబడతాయి.
+contacts-edit-given = మొదటి పేరు
+contacts-edit-family = ఇంటి పేరు
+contacts-edit-company = కంపెనీ
+contacts-edit-job = ఉద్యోగ శీర్షిక
+contacts-edit-email = ఇమెయిల్
+contacts-edit-phone = ఫోన్
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ఇమెయిల్‌ను జోడించండి
+contacts-edit-add-phone = ఫోన్‌ను జోడించండి
+contacts-edit-street = వీధి చిరునామా
+contacts-edit-city = నగరం
+contacts-edit-postcode = పిన్ కోడ్
+contacts-edit-country = దేశం
+contacts-edit-birthday = పుట్టినరోజు (YYYY-MM-DD)
+contacts-edit-empty = ముందుగా పేరు, ఇమెయిల్ లేదా ఫోన్ నంబర్‌ను జోడించండి.

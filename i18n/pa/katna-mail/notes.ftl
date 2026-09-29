@@ -47,6 +47,12 @@ notes-edited = ਸੰਪਾਦਿਤ: { $date }
 notes-on-this-computer = ਇਸ ਕੰਪਿਊਟਰ ਉੱਤੇ
 notes-where = ਇਹ ਨੋਟ ਕਿੱਥੇ ਰੱਖਿਆ ਹੈ
 
+## A note about a mail
+
+notes-mail = ਮੇਲ
+notes-open-mail = ਮੇਲ ਖੋਲ੍ਹੋ
+notes-open-note = ਨੋਟ ਖੋਲ੍ਹੋ
+
 ## Colors (tooltips)
 
 notes-color-none = ਕੋਈ ਰੰਗ ਨਹੀਂ
@@ -69,6 +75,7 @@ notes-unarchived = ਨੋਟ ਪੁਰਾਲੇਖ ਵਿੱਚੋਂ ਕੱਢ�
 notes-trashed = ਨੋਟ ਰੱਦੀ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ
 notes-restored = ਨੋਟ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ
 notes-empty-discarded = ਖਾਲੀ ਨੋਟ ਛੱਡ ਦਿੱਤਾ ਗਿਆ
+notes-mail-gone = ਉਹ ਮੇਲ ਹੁਣ ਇੱਥੇ ਨਹੀਂ ਹੈ
 notes-deleted-forever = { $count ->
     [one] ਨੋਟ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਇਆ ਗਿਆ
    *[other] { $count } ਨੋਟ ਹਮੇਸ਼ਾ ਲਈ ਮਿਟਾਏ ਗਏ

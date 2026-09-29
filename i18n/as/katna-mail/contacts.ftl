@@ -7,6 +7,7 @@
 contacts-all = সম্পৰ্কসমূহ
 contacts-frequent = ঘনঘন
 contacts-labels = লেবেলসমূহ
+contacts-create = সম্পৰ্ক সৃষ্টি কৰক
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = অনুমতি দিয়ক
 ## A contact's page
 
 contacts-back = সম্পৰ্কসমূহলৈ উভতি যাওক
+contacts-edit = সম্পাদনা কৰক
+contacts-delete = মচক
+contacts-deleted = { $name } মচা হ'ল
 contacts-find-mail = মেইল
 contacts-details = সম্পৰ্কৰ বিৱৰণ
 contacts-saved-in = ইয়াত সংৰক্ষণ কৰা হৈছে
@@ -52,3 +56,29 @@ contacts-kind-other = অন্য
 contacts-source-google = Google সম্পৰ্কসমূহ
 contacts-source-microsoft = Outlook সম্পৰ্কসমূহ
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = সম্পৰ্ক সৃষ্টি কৰক
+contacts-edit-title = সম্পৰ্ক সম্পাদনা কৰক
+contacts-edit-save = ছেভ কৰক
+contacts-edit-saving = ছেভ কৰি আছে…
+contacts-edit-cancel = বাতিল কৰক
+contacts-saved = সম্পৰ্ক ছেভ কৰা হ'ল
+contacts-edit-save-to = ইয়াত ছেভ কৰক
+contacts-edit-changes-go-to = সলনিসমূহ { $place }ত ছেভ কৰা হয়।
+contacts-edit-given = প্ৰথম নাম
+contacts-edit-family = অন্তিম নাম
+contacts-edit-company = কোম্পানী
+contacts-edit-job = পদবী
+contacts-edit-email = ইমেইল
+contacts-edit-phone = ফোন
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ইমেইল যোগ কৰক
+contacts-edit-add-phone = ফোন যোগ কৰক
+contacts-edit-street = ৰাস্তাৰ ঠিকনা
+contacts-edit-city = নগৰ
+contacts-edit-postcode = ডাক কোড
+contacts-edit-country = দেশ
+contacts-edit-birthday = জন্মদিন (YYYY-MM-DD)
+contacts-edit-empty = প্ৰথমে এটা নাম, ইমেইল বা ফোন নম্বৰ যোগ কৰক।

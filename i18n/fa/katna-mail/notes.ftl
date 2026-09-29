@@ -47,6 +47,12 @@ notes-edited = آخرین ویرایش: { $date }
 notes-on-this-computer = روی این رایانه
 notes-where = جای نگهداری این یادداشت
 
+## A note about a mail
+
+notes-mail = ایمیل
+notes-open-mail = باز کردن ایمیل
+notes-open-note = باز کردن یادداشت
+
 ## Colors (tooltips)
 
 notes-color-none = بدون رنگ
@@ -69,6 +75,7 @@ notes-unarchived = یادداشت از بایگانی خارج شد
 notes-trashed = یادداشت به سطل زباله منتقل شد
 notes-restored = یادداشت بازیابی شد
 notes-empty-discarded = یادداشت خالی کنار گذاشته شد
+notes-mail-gone = آن ایمیل دیگر اینجا نیست
 notes-deleted-forever = { $count ->
     [one] یادداشت برای همیشه حذف شد
    *[other] { $count } یادداشت برای همیشه حذف شد

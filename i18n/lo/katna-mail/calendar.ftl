@@ -38,7 +38,6 @@ calendar-guests =
        *[other] ແຂກ { $count } ຄົນ
     }
 calendar-guest-answers = ຕອບຮັບ { $yes }, ອາດຈະ { $maybe }, ປະຕິເສດ { $no }, ລໍຖ້າ { $waiting }
-calendar-organizer-name = { $name } (ຜູ້ຈັດ)
 calendar-open-web = ເປີດໃນບຣາວເຊີ
 calendar-close = ປິດ
 

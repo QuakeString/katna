@@ -47,6 +47,12 @@ notes-edited = திருத்தியது: { $date }
 notes-on-this-computer = இந்தக் கணினியில்
 notes-where = இந்தக் குறிப்பு எங்கே சேமிக்கப்பட்டுள்ளது
 
+## A note about a mail
+
+notes-mail = அஞ்சல்
+notes-open-mail = அஞ்சலைத் திற
+notes-open-note = குறிப்பைத் திற
+
 ## Colors (tooltips)
 
 notes-color-none = நிறம் இல்லை
@@ -69,6 +75,7 @@ notes-unarchived = குறிப்பு காப்பகத்திலி
 notes-trashed = குறிப்பு குப்பைக்கு நகர்த்தப்பட்டது
 notes-restored = குறிப்பு மீட்டெடுக்கப்பட்டது
 notes-empty-discarded = காலியான குறிப்பு நிராகரிக்கப்பட்டது
+notes-mail-gone = அந்த அஞ்சல் இனி இங்கு இல்லை
 notes-deleted-forever = { $count ->
     [one] குறிப்பு நிரந்தரமாக நீக்கப்பட்டது
    *[other] { $count } குறிப்புகள் நிரந்தரமாக நீக்கப்பட்டன

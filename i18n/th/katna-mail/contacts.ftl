@@ -7,6 +7,7 @@
 contacts-all = รายชื่อติดต่อ
 contacts-frequent = ที่ติดต่อบ่อย
 contacts-labels = ป้ายกำกับ
+contacts-create = สร้างรายชื่อติดต่อ
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = อนุญาต
 ## A contact's page
 
 contacts-back = กลับไปที่รายชื่อติดต่อ
+contacts-edit = แก้ไข
+contacts-delete = ลบ
+contacts-deleted = ลบ { $name } แล้ว
 contacts-find-mail = อีเมล
 contacts-details = รายละเอียดผู้ติดต่อ
 contacts-saved-in = บันทึกไว้ใน
@@ -50,3 +54,29 @@ contacts-kind-other = อื่นๆ
 contacts-source-google = Google รายชื่อติดต่อ
 contacts-source-microsoft = รายชื่อติดต่อ Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = สร้างรายชื่อติดต่อ
+contacts-edit-title = แก้ไขรายชื่อติดต่อ
+contacts-edit-save = บันทึก
+contacts-edit-saving = กำลังบันทึก…
+contacts-edit-cancel = ยกเลิก
+contacts-saved = บันทึกรายชื่อติดต่อแล้ว
+contacts-edit-save-to = บันทึกไปยัง
+contacts-edit-changes-go-to = ระบบจะบันทึกการเปลี่ยนแปลงไปยัง { $place }
+contacts-edit-given = ชื่อ
+contacts-edit-family = นามสกุล
+contacts-edit-company = บริษัท
+contacts-edit-job = ตำแหน่งงาน
+contacts-edit-email = อีเมล
+contacts-edit-phone = โทรศัพท์
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = เพิ่มอีเมล
+contacts-edit-add-phone = เพิ่มหมายเลขโทรศัพท์
+contacts-edit-street = ที่อยู่ถนน
+contacts-edit-city = เมือง
+contacts-edit-postcode = รหัสไปรษณีย์
+contacts-edit-country = ประเทศ
+contacts-edit-birthday = วันเกิด (YYYY-MM-DD)
+contacts-edit-empty = เพิ่มชื่อ อีเมล หรือหมายเลขโทรศัพท์ก่อน

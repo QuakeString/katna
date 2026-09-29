@@ -359,6 +359,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.calendar_status()?)
             }
 
+            async fn edit_event(&self, json: String) -> fdo::Result<i64> {
+                Ok(self.daemon.edit_event(&json)?)
+            }
+
             async fn fetch_image(&self, url: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.fetch_image(&url).await?)
             }

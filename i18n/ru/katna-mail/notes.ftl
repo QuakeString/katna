@@ -49,6 +49,12 @@ notes-edited = Изменено: { $date }
 notes-on-this-computer = На этом компьютере
 notes-where = Где хранится эта заметка
 
+## A note about a mail
+
+notes-mail = Почта
+notes-open-mail = Открыть письмо
+notes-open-note = Открыть заметку
+
 ## Colors (tooltips)
 
 notes-color-none = Без цвета
@@ -71,6 +77,7 @@ notes-unarchived = Заметка возвращена из архива
 notes-trashed = Заметка перемещена в корзину
 notes-restored = Заметка восстановлена
 notes-empty-discarded = Пустая заметка удалена
+notes-mail-gone = Этого письма больше нет
 notes-deleted-forever = { $count ->
     [one] { $count } заметка удалена навсегда
     [few] { $count } заметки удалены навсегда

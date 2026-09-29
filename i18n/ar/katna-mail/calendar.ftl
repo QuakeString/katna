@@ -43,7 +43,6 @@ calendar-guests =
        *[other] { $count } ضيف
     }
 calendar-guest-answers = { $yes } نعم، { $maybe } ربما، { $no } لا، { $waiting } في الانتظار
-calendar-organizer-name = { $name } (المنظِّم)
 calendar-open-web = فتح في المتصفح
 calendar-close = إغلاق
 

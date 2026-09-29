@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add and change events"
+text = """
+Click or drag on the calendar, or press C, to add an event. Drag an event
+to move it or its bottom edge to change its length, and open it to change
+the time, repeat, reminders, guests or add a Meet or Teams call. Answer
+invitations with Yes, No or Maybe. Undo puts everything back.
+"""

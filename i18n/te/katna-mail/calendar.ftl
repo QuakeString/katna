@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } అతిథులు
     }
 calendar-guest-answers = { $yes } అవును, { $maybe } కావచ్చు, { $no } కాదు, { $waiting } వేచి ఉన్నారు
-calendar-organizer-name = { $name } (నిర్వాహకులు)
 calendar-open-web = బ్రౌజర్‌లో తెరవండి
 calendar-close = మూసివేయండి
 

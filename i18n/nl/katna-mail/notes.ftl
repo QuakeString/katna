@@ -47,6 +47,12 @@ notes-edited = Bewerkt: { $date }
 notes-on-this-computer = Op deze computer
 notes-where = Waar deze notitie wordt bewaard
 
+## A note about a mail
+
+notes-mail = E-mail
+notes-open-mail = De e-mail openen
+notes-open-note = De notitie openen
+
 ## Colors (tooltips)
 
 notes-color-none = Geen kleur
@@ -69,6 +75,7 @@ notes-unarchived = Notitie uit archief gehaald
 notes-trashed = Notitie naar de prullenbak verplaatst
 notes-restored = Notitie hersteld
 notes-empty-discarded = Lege notitie verwijderd
+notes-mail-gone = Die e-mail is er niet meer
 notes-deleted-forever = { $count ->
     [one] Notitie definitief verwijderd
    *[other] { $count } notities definitief verwijderd

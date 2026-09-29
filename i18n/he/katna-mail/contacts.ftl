@@ -7,6 +7,7 @@
 contacts-all = אנשי קשר
 contacts-frequent = תדירים
 contacts-labels = תוויות
+contacts-create = יצירת איש קשר
 
 ## Search and the list
 
@@ -40,6 +41,9 @@ contacts-allow-button = אפשר
 ## A contact's page
 
 contacts-back = חזרה לאנשי הקשר
+contacts-edit = עריכה
+contacts-delete = מחיקה
+contacts-deleted = איש הקשר { $name } נמחק
 contacts-find-mail = אימייל
 contacts-details = פרטי איש קשר
 contacts-saved-in = נשמר ב
@@ -54,3 +58,29 @@ contacts-kind-other = אחר
 contacts-source-google = אנשי קשר ב-Google
 contacts-source-microsoft = אנשי קשר ב-Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = יצירת איש קשר
+contacts-edit-title = עריכת איש קשר
+contacts-edit-save = שמירה
+contacts-edit-saving = שומר…
+contacts-edit-cancel = ביטול
+contacts-saved = איש הקשר נשמר
+contacts-edit-save-to = שמירה ב
+contacts-edit-changes-go-to = השינויים נשמרים ב-{ $place }.
+contacts-edit-given = שם פרטי
+contacts-edit-family = שם משפחה
+contacts-edit-company = חברה
+contacts-edit-job = תפקיד
+contacts-edit-email = אימייל
+contacts-edit-phone = טלפון
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = הוספת אימייל
+contacts-edit-add-phone = הוספת טלפון
+contacts-edit-street = כתובת
+contacts-edit-city = עיר
+contacts-edit-postcode = מיקוד
+contacts-edit-country = מדינה
+contacts-edit-birthday = יום הולדת (YYYY-MM-DD)
+contacts-edit-empty = קודם יש להוסיף שם, אימייל או מספר טלפון.
