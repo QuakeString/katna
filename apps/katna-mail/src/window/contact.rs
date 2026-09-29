@@ -18,6 +18,7 @@ use gpui::{
     Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, SharedString, Window,
     div, ease_out_quint, prelude::*, rgba,
 };
+use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
@@ -85,6 +86,17 @@ impl ContactPanel {
             profiles: HashMap::new(),
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
+        }
+    }
+
+    /// Has every profile read again when next shown, the old one showing
+    /// meanwhile: when the tasks made from mail change.
+    pub(super) fn forget_profiles(&mut self) {
+        let Some(long_ago) = Instant::now().checked_sub(STALE) else {
+            return;
+        };
+        for (at, _) in self.profiles.values_mut() {
+            *at = long_ago;
         }
     }
 }
@@ -202,12 +214,13 @@ impl MailWindow {
                 .insert(email.to_owned(), (Instant::now(), old));
             let paths = self.paths.clone();
             let address = email.to_owned();
+            let task_mails = self.tasks.open_mails.clone();
             cx.spawn(async move |this, cx| {
                 let read = cx
                     .background_executor()
                     .spawn({
                         let address = address.clone();
-                        async move { profile::read(&paths, &address) }
+                        async move { profile::read(&paths, &address, &task_mails) }
                     })
                     .await;
                 this.update(cx, |this, cx| {
@@ -398,6 +411,12 @@ impl MailWindow {
                 sections.push(details);
             }
             sections.push(self.contact_mail(profile, &mut pieces, th));
+            if let Some(tasks) = self.contact_tasks(&profile.task_mails, &mut pieces, th, cx) {
+                sections.push(tasks);
+            }
+            if !profile.meetings.is_empty() {
+                sections.push(self.contact_meetings(&profile.meetings, &mut pieces, th, cx));
+            }
             if !profile.conversations.is_empty() {
                 sections.push(self.contact_conversations(
                     email,
@@ -849,6 +868,134 @@ impl MailWindow {
             ),
         )
         .into_any_element()
+    }
+
+    /// Open tasks made from mail with them, due first first: a tick to
+    /// complete one, and a click to open it on the Tasks page.
+    fn contact_tasks(
+        &self,
+        mails: &[String],
+        pieces: &mut Pieces,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let tasks = self.tasks_of_mails(mails);
+        if tasks.is_empty() {
+            return None;
+        }
+        let today = super::tasks_page::today();
+        let title = words(pieces, tr!("contact-tasks"));
+        let rows: Vec<_> = tasks
+            .into_iter()
+            .map(|(task, done)| {
+                let id = task.id;
+                let due = super::tasks_page::due_label(task, today);
+                row(("contact-task", id as usize), th)
+                    .group("task-row")
+                    .child(
+                        div()
+                            .id(("contact-task-tick", id as usize))
+                            .flex_none()
+                            .rounded_full()
+                            .tooltip(tip(
+                                if done {
+                                    tr!("tasks-mark-open")
+                                } else {
+                                    tr!("tasks-mark-done")
+                                },
+                                th,
+                            ))
+                            .child(super::tasks_page::round_tick(done, true, th))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                cx.stop_propagation();
+                                this.task_toggle_done(id, cx)
+                            })),
+                    )
+                    .child(
+                        words(pieces, task.title.clone())
+                            .flex_1()
+                            .min_w_0()
+                            .truncate()
+                            .cursor_pointer()
+                            .text_color(rgba(if done { th.text_dim } else { th.text }))
+                            .when(done, |d| d.line_through()),
+                    )
+                    .children(due.map(|(label, past)| {
+                        words(pieces, label)
+                            .flex_none()
+                            .cursor_pointer()
+                            .text_size(px(12.0))
+                            .text_color(rgba(if past { th.error } else { th.text_dim }))
+                    }))
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.show_page(super::apps::App::Tasks, window, cx);
+                        this.task_open_details(id, window, cx);
+                    }))
+            })
+            .collect();
+        Some(section(title, th).children(rows).into_any_element())
+    }
+
+    /// The next meetings with them; a click opens one in the Calendar.
+    fn contact_meetings(
+        &self,
+        meetings: &[Occurrence],
+        pieces: &mut Pieces,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let tz = &self.tz;
+        let today = jiff::Zoned::now().with_time_zone(tz.clone()).date();
+        let rows: Vec<_> = meetings
+            .iter()
+            .map(|occurrence| {
+                let data = &occurrence.event.data;
+                let color = super::calendar::event_color(&self.calendar.calendars, occurrence);
+                let start = super::calendar::civil(occurrence.start, tz);
+                let when = if occurrence.all_day() {
+                    katna_i18n::format::day_month(start)
+                } else if start.date() == today {
+                    katna_i18n::format::time(start)
+                } else {
+                    katna_i18n::format::day_month_time(start)
+                };
+                let title = if data.title.trim().is_empty() {
+                    tr!("calendar-no-title")
+                } else {
+                    data.title.trim().to_owned()
+                };
+                let open = occurrence.clone();
+                row(
+                    SharedString::from(format!(
+                        "contact-meeting-{}-{}",
+                        occurrence.event.id, occurrence.start
+                    )),
+                    th,
+                )
+                .child(icon("event", color, 18.0))
+                .child(
+                    words(pieces, title)
+                        .flex_1()
+                        .min_w_0()
+                        .truncate()
+                        .cursor_pointer()
+                        .text_color(rgba(th.text)),
+                )
+                .child(
+                    words(pieces, when)
+                        .flex_none()
+                        .cursor_pointer()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim)),
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.open_calendar_occurrence(open.clone(), window, cx)
+                }))
+            })
+            .collect();
+        section(words(pieces, tr!("contact-meetings")), th)
+            .children(rows)
+            .into_any_element()
     }
 
     fn contact_files(

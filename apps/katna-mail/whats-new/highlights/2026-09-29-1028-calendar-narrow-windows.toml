@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendar in a narrow window"
+text = """
+In a narrow window Calendar keeps Today and the dates in its bar and
+puts the views in one menu. Event times no longer break mid-word, and
+Tab reaches every button and calendar.
+"""

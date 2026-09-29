@@ -1566,3 +1566,33 @@ title = "Amasethi amakhalenda"
 text = """
 Londoloza amakhalenda owabonisayo njengesethi, njengo-“Umsebenzi” noma “Umndeni”, nge-+ eduze kwe-Amasethi amakhalenda. Ukuchofoza kanye kusethi kubonisa amakhalenda ayo bese kufihla amanye.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Thayipha umsebenzi ngomugqa owodwa"
+text = """
+Engeza umsebenzi onjengo-“Shayela ibhange kusasa ngo-3 ntambama” noma “Nisela izitshalo njalo ngoMsombuluko ngo-8 ekuseni”, bese Imisebenzi ikusethela usuku, isikhathi nokuphindaphinda, ikubonisa lokho ekuqondile njengoba uthayipha.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Ikhalenda ewindini elincane"
+text = """
+Ewindini elincane, iKhalenda igcina Namuhla nezinsuku kubha yayo futhi ifake ukubuka kumenyu eyodwa. Izikhathi zemicimbi azisaphuki phakathi negama, futhi i-Tab ifinyelela kuzo zonke izinkinobho namakhalenda.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Imisebenzi nabo, eduze kweposi labo"
+text = """
+Iphaneli yoxhumana naye eduze kwengxoxo manje ibala imisebenzi yakho evulekile eyenziwe eposini nalowo muntu. Maka owodwa ukuze uwuqede, noma uwuchofoze ukuze uwuvule ku-Imisebenzi.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Imihlangano yakho elandelayo nabo"
+text = """
+Iphaneli yoxhumana naye eduze kwengxoxo manje ikhombisa imihlangano yakho elandelayo nalowo muntu. Chofoza owodwa ukuze uwuvule eKhalendeni.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Hudula umsebenzi uye kolunye uhlu"
+text = """
+Ku-Imisebenzi, hudula umsebenzi uwubeke kolunye uhlu ukuze uwuhambise lapho. Hlehlisa iyawubuyisela.
+"""

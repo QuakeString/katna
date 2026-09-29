@@ -24,5 +24,7 @@ contact-conversations = শেহতীয়া কথোপকথন
 contact-more = অধিক
 contact-less = কম
 contact-files = ফাইলসমূহ
+contact-tasks = কাৰ্যসমূহ
+contact-meetings = আগন্তুক মিটিং
 contact-people = এই কথোপকথনত
 contact-local-only = কেৱল এই কম্পিউটাৰত থকা আপোনাৰ মেইলৰ পৰা

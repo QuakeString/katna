@@ -1505,3 +1505,41 @@ Sla de agenda’s die je toont op als groep, zoals "Werk" of "Gezin",
 met + naast Agendagroepen. Eén klik op een groep toont de agenda’s ervan
 en verbergt de rest.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Typ een taak in één regel"
+text = """
+Voeg een taak toe zoals “Bank bellen morgen 15:00” of “Planten water
+geven elke maandag 8:00”, en Taken stelt de dag, de tijd en de herhaling
+voor je in en laat tijdens het typen zien wat het heeft begrepen.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Agenda in een smal venster"
+text = """
+In een smal venster houdt Agenda Vandaag en de datums in de balk en zet
+de weergaven in één menu. Tijden van afspraken breken niet meer midden
+in een woord af, en met Tab bereik je elke knop en agenda.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Taken met hen, naast hun e-mail"
+text = """
+Het contactpaneel naast een gesprek toont nu je openstaande taken die je
+hebt gemaakt van e-mail met die persoon. Vink er een af om hem te
+voltooien, of klik erop om hem in Taken te openen.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Je volgende afspraken met hen"
+text = """
+Het contactpaneel naast een gesprek toont nu je volgende afspraken met
+die persoon. Klik op een afspraak om hem in de Agenda te openen.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Sleep een taak naar een andere lijst"
+text = """
+Sleep in Taken een taak naar een andere lijst om hem daarheen te
+verplaatsen. Ongedaan maken zet hem terug.
+"""

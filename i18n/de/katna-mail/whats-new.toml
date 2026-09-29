@@ -1538,3 +1538,44 @@ Speichern Sie die angezeigten Kalender als Gruppe, etwa „Arbeit“ oder
 „Familie“, mit + neben Kalendergruppen. Ein Klick auf eine Gruppe zeigt
 ihre Kalender und blendet die übrigen aus.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Eine Aufgabe in einer Zeile eingeben"
+text = """
+Fügen Sie eine Aufgabe wie „Bank anrufen morgen 15 Uhr“ oder „Pflanzen
+gießen jeden Montag 8 Uhr“ hinzu, und Aufgaben setzt Tag, Uhrzeit und
+Wiederholung für Sie und zeigt beim Tippen, was es verstanden hat.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalender im schmalen Fenster"
+text = """
+In einem schmalen Fenster behält der Kalender „Heute“ und die Daten in
+seiner Leiste und legt die Ansichten in ein Menü. Terminzeiten brechen
+nicht mehr mitten im Wort um, und Tab erreicht jeden Knopf und jeden
+Kalender.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Aufgaben mit ihnen, neben ihrer Mail"
+text = """
+Die Kontaktdetails neben einer Unterhaltung listen jetzt Ihre offenen
+Aufgaben auf, die aus Mails mit dieser Person entstanden sind. Haken Sie
+eine ab, um sie zu erledigen, oder klicken Sie darauf, um sie in
+Aufgaben zu öffnen.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Ihre nächsten Termine mit ihnen"
+text = """
+Die Kontaktdetails neben einer Unterhaltung zeigen jetzt Ihre nächsten
+Termine mit dieser Person. Klicken Sie auf einen, um ihn im Kalender zu
+öffnen.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Aufgabe in eine andere Liste ziehen"
+text = """
+Ziehen Sie in Aufgaben eine Aufgabe auf eine andere Liste, um sie
+dorthin zu verschieben. Rückgängig legt sie zurück.
+"""

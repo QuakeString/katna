@@ -373,6 +373,8 @@ enum Menu {
     CalendarOptions,
     /// The second time zones to choose from.
     CalendarZones,
+    /// The views, when the bar is too narrow for their buttons.
+    CalendarViews,
 }
 
 /// A change the user asks for on some lines of the list.
@@ -2118,6 +2120,10 @@ impl MailWindow {
         }
         if self.app == RailApp::Contacts {
             self.on_contacts_search(search, event, cx);
+            return;
+        }
+        if self.app == RailApp::Tasks {
+            self.on_tasks_search(search, event, window, cx);
             return;
         }
         match event {

@@ -24,5 +24,7 @@ contact-conversations = Recente gesprekken
 contact-more = Meer
 contact-less = Minder
 contact-files = Bestanden
+contact-tasks = Taken
+contact-meetings = Komende afspraken
 contact-people = In dit gesprek
 contact-local-only = Alleen uit je e-mail op deze computer

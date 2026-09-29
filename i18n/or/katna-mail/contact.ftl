@@ -24,5 +24,7 @@ contact-conversations = ସାମ୍ପ୍ରତିକ ବାର୍ତ୍ତା�
 contact-more = ଅଧିକ
 contact-less = କମ
 contact-files = ଫାଇଲ
+contact-tasks = କାର୍ଯ୍ୟ
+contact-meetings = ଆଗାମୀ ବୈଠକ
 contact-people = ଏହି ବାର୍ତ୍ତାଳାପରେ
 contact-local-only = କେବଳ ଏହି କମ୍ପ୍ୟୁଟରରେ ଥିବା ଆପଣଙ୍କ ମେଲରୁ

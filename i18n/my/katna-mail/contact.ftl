@@ -21,5 +21,7 @@ contact-conversations = မကြာသေးမီက စကားဝိုင�
 contact-more = ထပ်ကြည့်ရန်
 contact-less = ခေါက်ရန်
 contact-files = ဖိုင်များ
+contact-tasks = လုပ်ဆောင်စရာများ
+contact-meetings = လာမည့် အစည်းအဝေးများ
 contact-people = ဤစကားဝိုင်းတွင်
 contact-local-only = ဤကွန်ပျူတာပေါ်ရှိ သင့်မေးလ်မှသာ

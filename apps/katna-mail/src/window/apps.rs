@@ -133,14 +133,20 @@ impl MailWindow {
         }
         let from = self.app;
         self.app = app;
-        // Notes hands the search box back before Contacts takes it, and
-        // takes it after Contacts hands it back.
+        // Notes and Tasks hand the search box back before Contacts takes
+        // it, and take it after Contacts hands it back.
         if from == App::Notes {
             self.sync_notes_search(cx);
+        }
+        if from == App::Tasks {
+            self.swap_tasks_search(false, cx);
         }
         if from == App::Contacts || app == App::Contacts {
             // The search box follows: contacts on this page, mail elsewhere.
             self.swap_contacts_search(app == App::Contacts, cx);
+        }
+        if app == App::Tasks {
+            self.swap_tasks_search(true, cx);
         }
         // The name at the top left rolls from the old app's to the new.
         self.title_from = from;

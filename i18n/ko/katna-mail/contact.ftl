@@ -21,5 +21,7 @@ contact-conversations = 최근 대화
 contact-more = 더 보기
 contact-less = 접기
 contact-files = 파일
+contact-tasks = 할 일
+contact-meetings = 다가오는 일정
 contact-people = 이 대화의 참여자
 contact-local-only = 이 컴퓨터에 있는 메일에서만 가져옴

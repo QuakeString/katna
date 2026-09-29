@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search your tasks"
+text = """
+On the Tasks page the search box at the top now searches your tasks,
+their notes and subtasks, instead of your mail.
+"""

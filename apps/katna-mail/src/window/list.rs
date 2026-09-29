@@ -728,6 +728,7 @@ impl MailWindow {
         match which {
             Menu::CalendarOptions => self.calendar_options_menu(th, cx),
             Menu::CalendarZones => self.calendar_zones_menu(th, cx),
+            Menu::CalendarViews => self.calendar_views_menu(th, cx),
             Menu::Select => menu(th).children(
                 [
                     (Pick::All, tr!("list-pick-all")),
