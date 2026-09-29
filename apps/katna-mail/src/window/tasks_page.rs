@@ -111,7 +111,7 @@ pub(super) struct TasksPage {
     /// The task picked by click or keys.
     picked: Option<i64>,
     pending: HashMap<i64, Pending>,
-    focus: Option<FocusHandle>,
+    pub(super) focus: Option<FocusHandle>,
     loading: Option<Task<()>>,
     /// Reads again whenever the daemon says tasks changed.
     watching: Option<Task<()>>,
