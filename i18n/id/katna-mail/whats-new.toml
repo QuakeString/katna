@@ -1503,3 +1503,28 @@ Simpan kalender yang sedang ditampilkan sebagai set, seperti “Kerja”
 atau “Keluarga”, dengan + di samping Set kalender. Satu klik pada set
 menampilkan kalendernya dan menyembunyikan sisanya.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Ketik tugas dalam satu baris"
+text = """
+Tambahkan tugas seperti “Telepon bank besok jam 15.00” atau “Siram
+tanaman setiap Senin jam 08.00”, dan Tugas mengatur hari, jam, dan
+pengulangannya untuk Anda, sambil menampilkan apa yang dipahaminya saat
+Anda mengetik.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalender di jendela sempit"
+text = """
+Di jendela sempit, Kalender tetap menampilkan Hari ini dan tanggal di
+bilahnya serta menaruh tampilan dalam satu menu. Jam acara tidak lagi
+terpotong di tengah kata, dan Tab menjangkau setiap tombol dan kalender.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Tugas bersama mereka, di samping email mereka"
+text = """
+Panel kontak di samping percakapan kini mencantumkan tugas terbuka Anda
+yang dibuat dari email dengan orang tersebut. Centang salah satunya
+untuk menyelesaikannya, atau klik untuk membukanya di Tugas.
+"""

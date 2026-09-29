@@ -21,5 +21,6 @@ contact-conversations = 最近的会话
 contact-more = 更多
 contact-less = 收起
 contact-files = 文件
+contact-tasks = 任务
 contact-people = 此会话中的人
 contact-local-only = 仅来自此电脑上你的邮件

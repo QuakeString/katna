@@ -24,5 +24,6 @@ contact-conversations = Tattaunawa na kwanan nan
 contact-more = Ƙari
 contact-less = Kaɗan
 contact-files = Fayiloli
+contact-tasks = Ayyuka
 contact-people = A cikin wannan tattaunawa
 contact-local-only = Daga wasiƙun da ke wannan kwamfuta kawai

@@ -26,5 +26,6 @@ contact-conversations = Недавние цепочки
 contact-more = Ещё
 contact-less = Свернуть
 contact-files = Файлы
+contact-tasks = Задачи
 contact-people = В этой цепочке
 contact-local-only = Только из вашей почты на этом компьютере

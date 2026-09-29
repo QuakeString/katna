@@ -24,5 +24,6 @@ contact-conversations = സമീപകാല സംഭാഷണങ്ങൾ
 contact-more = കൂടുതൽ
 contact-less = കുറവ്
 contact-files = ഫയലുകൾ
+contact-tasks = ടാസ്‌ക്കുകൾ
 contact-people = ഈ സംഭാഷണത്തിൽ
 contact-local-only = ഈ കമ്പ്യൂട്ടറിലെ നിങ്ങളുടെ മെയിലിൽ നിന്ന് മാത്രം

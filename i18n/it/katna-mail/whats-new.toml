@@ -1517,3 +1517,28 @@ Salva i calendari che stai visualizzando come gruppo, ad esempio
 "Lavoro" o "Famiglia", con + accanto a Gruppi di calendari. Un clic su
 un gruppo mostra i suoi calendari e nasconde gli altri.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Scrivi un'attività in una riga"
+text = """
+Aggiungi un'attività come «Chiama la banca domani alle 15» o «Innaffia
+le piante ogni lunedì alle 8», e Attività imposta per te il giorno,
+l'ora e la ripetizione, mostrando ciò che ha capito mentre scrivi.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Il Calendario in una finestra stretta"
+text = """
+In una finestra stretta il Calendario mantiene Oggi e le date nella sua
+barra e raccoglie le viste in un unico menu. Gli orari degli eventi non
+si spezzano più a metà parola, e Tab raggiunge ogni pulsante e
+calendario.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Attività con loro, accanto alla loro posta"
+text = """
+Il pannello del contatto accanto a una conversazione ora elenca le tue
+attività aperte create da messaggi con quella persona. Spuntane una per
+completarla, o fai clic per aprirla in Attività.
+"""

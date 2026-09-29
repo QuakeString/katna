@@ -24,5 +24,6 @@ contact-conversations = Letzte Konversationen
 contact-more = Mehr
 contact-less = Weniger
 contact-files = Dateien
+contact-tasks = Aufgaben
 contact-people = In dieser Konversation
 contact-local-only = Nur aus Ihren E-Mails auf diesem Computer

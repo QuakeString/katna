@@ -24,5 +24,6 @@ contact-conversations = Son ileti dizileri
 contact-more = Daha fazla
 contact-less = Daha az
 contact-files = Dosyalar
+contact-tasks = Görevler
 contact-people = Bu ileti dizisinde
 contact-local-only = Yalnızca bu bilgisayardaki postalarınızdan

@@ -25,5 +25,6 @@ contact-conversations = Conversations récentes
 contact-more = Plus
 contact-less = Moins
 contact-files = Fichiers
+contact-tasks = Tâches
 contact-people = Dans cette conversation
 contact-local-only = Uniquement d’après vos messages sur cet ordinateur

@@ -1490,3 +1490,27 @@ Gösterdiğiniz takvimleri, Takvim kümeleri’nin yanındaki + ile “İş” v
 “Aile” gibi bir küme olarak kaydedin. Bir kümeye tek tıklama, onun
 takvimlerini gösterir ve diğerlerini gizler.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Görevi tek satırda yazın"
+text = """
+“Yarın 15.00’te bankayı ara” veya “Her pazartesi 08.00’de çiçekleri
+sula” gibi bir görev ekleyin; Görevler günü, saati ve tekrarı sizin için
+ayarlar ve siz yazarken ne anladığını gösterir.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Dar bir pencerede Takvim"
+text = """
+Dar bir pencerede Takvim, Bugün’ü ve tarihleri çubuğunda tutar ve
+görünümleri tek bir menüde toplar. Etkinlik saatleri artık kelimenin
+ortasından bölünmez ve Tab her düğmeye ve takvime ulaşır.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Onlarla görevler, e-postalarının yanında"
+text = """
+Bir yazışmanın yanındaki kişi paneli artık o kişiyle olan e-postalardan
+oluşturulan açık görevlerinizi listeler. Tamamlamak için birini
+işaretleyin veya Görevler’de açmak için üzerine tıklayın.
+"""

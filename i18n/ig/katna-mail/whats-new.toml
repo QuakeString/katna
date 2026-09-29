@@ -1474,3 +1474,21 @@ title = "Otu kalịnda"
 text = """
 Chekwaa kalịnda ndị ị na-egosi dị ka otu, dị ka "Ọrụ" ma ọ bụ "Ezinụlọ", site na + dị n'akụkụ Otu kalịnda. Ịpị otu ugboro n'otu otu na-egosi kalịnda ya ma zoo ndị ọzọ.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Pịnye ọrụ n'otu ahịrị"
+text = """
+Tinye ọrụ dị ka "Kpọọ bank echi elekere 3 ehihie" ma ọ bụ "Wụsa osisi mmiri kwa Mọnde elekere 8 ụtụtụ", Ọrụ ga-edozi ụbọchị, oge na nmegharị maka gị, na-egosi ihe ọ ghọtara ka ị na-ede.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalịnda na windo dị warara"
+text = """
+Na windo dị warara, Kalịnda na-edebe Taa na ụbọchị ndị ahụ n'ogwe ya ma tinye ọhụhụ niile n'otu nhọrọ. Oge ihe omume anaghịzi agbaji n'etiti okwu, Tab na-erutekwa bọtịnụ na kalịnda ọ bụla.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Ọrụ gị na ha, n'akụkụ ozi ha"
+text = """
+Mpempe onye kọntaktị dị n'akụkụ mkparịta ụka na-edepụta ugbu a ọrụ gị ndị na-emeghe e mere site n'ozi gị na onye ahụ. Kaa akara n'otu ka i mechaa ya, ma ọ bụ pịa ya ka i meghee ya n'Ọrụ.
+"""

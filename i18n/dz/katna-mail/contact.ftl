@@ -23,5 +23,6 @@ contact-conversations = ཉེ་གྲངས་ཀྱི་གླེང་མ�
 contact-more = གཞན་ཡང་།
 contact-less = ཉུང་ཤོས།
 contact-files = ཡིག་སྣོད་ཚུ
+contact-tasks = ལཱ་ཚུ
 contact-people = གླེང་མོལ་འདི་ནང་
 contact-local-only = གློག་རིག་འདི་གུ་ཡོད་པའི་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ནང་ལས་རྐྱངམ་ཅིག

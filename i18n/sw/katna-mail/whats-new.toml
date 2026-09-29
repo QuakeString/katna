@@ -1437,3 +1437,21 @@ title = "Seti za kalenda"
 text = """
 Hifadhi kalenda unazoonyesha kama seti, kama “Kazi” au “Familia”, kwa + kando ya Seti za kalenda. Kubofya mara moja kwenye seti huonyesha kalenda zake na kuficha zingine.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Andika jukumu kwa mstari mmoja"
+text = """
+Ongeza jukumu kama “Piga simu benki kesho saa tisa alasiri” au “Mwagilia mimea kila Jumatatu saa mbili asubuhi”, na Majukumu huweka siku, saa na marudio kwa ajili yako, ikionyesha ilichoelewa unapoandika.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalenda katika dirisha jembamba"
+text = """
+Katika dirisha jembamba, Kalenda huweka Leo na tarehe kwenye upau wake na kuweka mionekano katika menyu moja. Nyakati za matukio hazikatiki tena katikati ya neno, na Tab hufikia kila kitufe na kalenda.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Majukumu pamoja nao, kando ya barua zao"
+text = """
+Kidirisha cha mwasiliani kando ya mazungumzo sasa kinaorodhesha majukumu yako yaliyo wazi yaliyotokana na barua na mtu huyo. Weka alama kwenye moja ili kulikamilisha, au ulibofye ili kulifungua katika Majukumu.
+"""

@@ -21,5 +21,6 @@ contact-conversations = ການສົນທະນາຫຼ້າສຸດ
 contact-more = ເພີ່ມເຕີມ
 contact-less = ຫຍໍ້
 contact-files = ໄຟລ໌
+contact-tasks = ໜ້າວຽກ
 contact-people = ໃນການສົນທະນານີ້
 contact-local-only = ຈາກອີເມວຂອງທ່ານໃນຄອມພິວເຕີນີ້ເທົ່ານັ້ນ

@@ -1514,3 +1514,28 @@ Guarda los calendarios que estás mostrando como un grupo, como «Trabajo»
 o «Familia», con + junto a Grupos de calendarios. Un clic en un grupo
 muestra sus calendarios y oculta el resto.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Escribe una tarea en una línea"
+text = """
+Añade una tarea como «Llamar al banco mañana 15:00» o «Regar las plantas
+cada lunes 8:00», y Tareas fija el día, la hora y la repetición por ti,
+mostrando lo que ha entendido mientras escribes.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "El Calendario en una ventana estrecha"
+text = """
+En una ventana estrecha, el Calendario mantiene Hoy y las fechas en su
+barra y reúne las vistas en un solo menú. Las horas de los eventos ya no
+se cortan a mitad de palabra, y Tab llega a todos los botones y
+calendarios.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Tareas con esa persona, junto a su correo"
+text = """
+Los detalles del contacto junto a una conversación ahora muestran tus
+tareas abiertas creadas a partir del correo con esa persona. Marca una
+para completarla, o haz clic en ella para abrirla en Tareas.
+"""

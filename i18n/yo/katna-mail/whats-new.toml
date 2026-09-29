@@ -1407,3 +1407,21 @@ title = "Àwọn àkójọ kàlẹ́ńdà"
 text = """
 Fi àwọn kàlẹ́ńdà tí ò ń fihàn pamọ́ gẹ́gẹ́ bí àkójọ kan, bí "Iṣẹ́" tàbí "Ẹbí", pẹ̀lú + lẹ́gbẹ̀ẹ́ Àwọn àkójọ kàlẹ́ńdà. Títẹ àkójọ kan lẹ́ẹ̀kan yóò fi àwọn kàlẹ́ńdà rẹ̀ hàn, yóò sì fi àwọn yòókù pamọ́.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Tẹ iṣẹ́ kan ní ìlà kan"
+text = """
+Fi iṣẹ́ kan kún un bíi "Pe báńkì ní ọ̀la ní aago mẹ́ta ọ̀sán" tàbí "Bomi rin àwọn ohun ọ̀gbìn ní gbogbo ọjọ́ Ajé ní aago mẹ́jọ àárọ̀", Iṣẹ́ yóò sì ṣètò ọjọ́, àkókò àti àtúnṣe fún ọ, yóò máa fi ohun tó yé e hàn bí o ṣe ń tẹ̀ ẹ́.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kàlẹ́ńdà nínú fèrèsé tóóró"
+text = """
+Nínú fèrèsé tóóró, Kàlẹ́ńdà máa ń pa Òní àti àwọn ọjọ́ mọ́ sórí ọ̀pá rẹ̀, yóò sì kó àwọn ìwò sínú àkójọ-àṣàyàn kan. Àkókò ìṣẹ̀lẹ̀ kò ní já láàárín ọ̀rọ̀ mọ́, Tab sì ń dé gbogbo bọ́tìnnì àti kàlẹ́ńdà.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Iṣẹ́ pẹ̀lú wọn, lẹ́gbẹ̀ẹ́ lẹ́tà wọn"
+text = """
+Pánẹ́ẹ̀lì olùbásọ̀rọ̀ lẹ́gbẹ̀ẹ́ ìjíròrò kan ti ń ṣàkójọ àwọn iṣẹ́ rẹ tó ṣí sílẹ̀ tí a ṣe láti inú lẹ́tà pẹ̀lú ẹni náà báyìí. Fi àmì sí ọ̀kan láti parí rẹ̀, tàbí tẹ̀ ẹ́ láti ṣí i nínú Iṣẹ́.
+"""

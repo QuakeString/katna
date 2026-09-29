@@ -21,5 +21,6 @@ contact-conversations = ការសន្ទនាថ្មីៗ
 contact-more = ច្រើនទៀត
 contact-less = បង្រួម
 contact-files = ឯកសារ
+contact-tasks = កិច្ចការ
 contact-people = ក្នុងការសន្ទនានេះ
 contact-local-only = ពីសំបុត្ររបស់អ្នកនៅលើកុំព្យូទ័រនេះតែប៉ុណ្ណោះ

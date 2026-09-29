@@ -1420,3 +1420,21 @@ title = "Rukunin kalanda"
 text = """
 Ajiye kalandun da kake nunawa a matsayin rukuni, kamar “Aiki” ko “Iyali”, da + kusa da Rukunin kalanda. Danna rukuni sau ɗaya yana nuna kalandunsa kuma yana ɓoye sauran.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Rubuta aiki a layi ɗaya"
+text = """
+Ƙara aiki kamar "Kira banki gobe ƙarfe 3 na rana" ko "Shayar da shuke-shuke kowace Litinin ƙarfe 8 na safe", sai Ayyuka su saita maka rana, lokaci da maimaitawa, suna nuna abin da suka fahimta yayin da kake rubutu.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Kalanda a ƙunƙuntar taga"
+text = """
+A ƙunƙuntar taga, Kalanda tana ajiye “Yau” da kwanakin a sandarta, kuma tana saka ra'ayoyi a menu ɗaya. Lokutan taro ba sa karyewa a tsakiyar kalma yanzu, kuma Tab yana kaiwa kowane maɓalli da kowace kalanda.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Ayyuka tare da su, kusa da saƙonninsu"
+text = """
+Fanel na tuntuɓar da ke kusa da tattaunawa yanzu yana jera ayyukanku da ke buɗe waɗanda aka ƙirƙira daga saƙonni da mutumin. Yi alama a kan ɗaya don kammala shi, ko danna shi don buɗe shi a cikin Ayyuka.
+"""
