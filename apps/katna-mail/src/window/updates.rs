@@ -11,8 +11,8 @@
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Task,
-    Window, div, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent,
+    MouseButton, SharedString, Task, Window, div, prelude::*, relative, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_core::update::Manifest;
@@ -414,6 +414,15 @@ impl MailWindow {
                     })),
             );
 
+        // While checking or installing, a bar that runs to and fro where the
+        // download's progress goes.
+        let working = (busy || status.state == state::CHECKING).then(|| {
+            div()
+                .flex_none()
+                .px(px(24.0))
+                .pt(px(16.0))
+                .child(working_bar(th))
+        });
         let progress = (status.state == state::DOWNLOADING && !busy).then(|| {
             let share = if status.total > 0 {
                 (status.done as f32 / status.total as f32).clamp(0.0, 1.0)
@@ -464,6 +473,7 @@ impl MailWindow {
                 commit: katna_core::update::commit_of(whats_new::VERSION).map(str::to_owned),
                 source: source(),
                 size: None,
+                new: false,
             },
             th,
         );
@@ -491,6 +501,7 @@ impl MailWindow {
                     commit,
                     source: None,
                     size: Some(details.map_or(status.total, |d| d.size)).filter(|size| *size > 0),
+                    new: true,
                 },
                 th,
             )
@@ -669,6 +680,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(header)
+            .children(working)
             .children(progress)
             .child(versions)
             .children(whats_new_section)
@@ -807,6 +819,32 @@ fn source() -> Option<String> {
     }
 }
 
+/// A bar with no end: a stretch of the accent colour that runs across,
+/// as the Add account card shows while the daemon works.
+fn working_bar(th: &Theme) -> impl IntoElement {
+    div()
+        .relative()
+        .h(px(6.0))
+        .w_full()
+        .rounded_full()
+        .overflow_hidden()
+        .bg(rgba(fade(th.accent, 0.2)))
+        .child(
+            div()
+                .absolute()
+                .top_0()
+                .h_full()
+                .w(relative(0.4))
+                .rounded_full()
+                .bg(rgba(th.accent))
+                .with_animation(
+                    "update-working",
+                    Animation::new(std::time::Duration::from_millis(1300)).repeat(),
+                    |bar, t| bar.left(relative(lerp(-0.4, 1.0, t))),
+                ),
+        )
+}
+
 /// What a version tile shows.
 struct Tile<'a> {
     id: &'static str,
@@ -819,6 +857,8 @@ struct Tile<'a> {
     /// Where the installed build came from.
     source: Option<String>,
     size: Option<u64>,
+    /// The version on offer: tinted, its number in the accent colour.
+    new: bool,
 }
 
 fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
@@ -831,6 +871,7 @@ fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
         commit,
         source,
         size,
+        new,
     } = tile;
     let fact = |text: String| {
         div()
@@ -876,12 +917,16 @@ fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
         .flex_col()
         .gap(px(2.0))
         .rounded(px(12.0))
-        .bg(rgba(th.chip))
+        .bg(rgba(if new {
+            fade(th.accent, if th.dark { 0.24 } else { 0.08 })
+        } else {
+            th.chip
+        }))
         .child(
             div()
                 .text_size(px(12.0))
                 .font_weight(FontWeight::MEDIUM)
-                .text_color(rgba(th.text_dim))
+                .text_color(rgba(if new { th.accent } else { th.text_dim }))
                 .child(label),
         )
         .child(
@@ -891,6 +936,7 @@ fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
                 .text_size(px(16.0))
                 .line_height(px(22.0))
                 .font_weight(FontWeight::MEDIUM)
+                .when(new, |v| v.text_color(rgba(th.accent)))
                 .child(version.to_owned()),
         )
         .children(title)

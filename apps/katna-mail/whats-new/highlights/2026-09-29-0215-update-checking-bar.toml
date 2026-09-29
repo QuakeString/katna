@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A clearer Update window"
+text = """
+A running bar shows while Katna checks for updates, and the new version
+stands out in its own colour beside the one you have.
+"""
