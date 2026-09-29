@@ -22,7 +22,9 @@ Both read `in.invenia.katna.Agenda1` from the daemon
 (`crates/katna-dbus/src/agenda.rs`): events for a range of days, and
 tasks, which they add and tick off. A call starts the daemon (D-Bus
 activation). Until Katna syncs calendars there are no Katna events; the
-tasks are Katna's own, kept in `pim.db`.
+tasks are those of every task list, synced with each account's Google
+Tasks or Microsoft To Do (`docs/ARCHITECTURE.md` §18.1), and a task added
+in the clock goes to the first account's default list.
 
 ## Katna Digital Clock (Plasma)
 

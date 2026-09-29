@@ -1,32 +1,48 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
--- pim.db schema v5: notes (docs/ARCHITECTURE.md §13.11). A note of a mail
--- account is kept in that account's Notes folder in Apple's format; one
--- with no account stays on this computer.
+-- pim.db schema v5: task lists, and tasks synced with each account's own
+-- task service (Google Tasks, Microsoft To Do) besides the list kept on
+-- this computer (docs/ARCHITECTURE.md §18.1).
 
-CREATE TABLE note (
-    id           INTEGER PRIMARY KEY,
-    account_id   INTEGER,                    -- NULL: on this computer only
-    uuid         TEXT    NOT NULL UNIQUE,    -- X-Universally-Unique-Identifier
-    title        TEXT    NOT NULL DEFAULT '',
-    body         TEXT    NOT NULL DEFAULT '', -- plain text; "☐ " / "☑ " lines are a checklist
-    color        INTEGER NOT NULL DEFAULT 0, -- 0 none, else a palette number
-    pinned       INTEGER NOT NULL DEFAULT 0,
-    archived     INTEGER NOT NULL DEFAULT 0,
-    labels       TEXT    NOT NULL DEFAULT '[]', -- JSON array of label names
-    link         TEXT,                       -- Message-ID of the mail the note is about
-    position     INTEGER NOT NULL DEFAULT 0, -- larger shows first
-    created_at   INTEGER NOT NULL,
-    updated_at   INTEGER NOT NULL,
-    trashed_at   INTEGER,                    -- in Trash since; gone for good 7 days later
-    server_uid   INTEGER,                    -- UID in the account's Notes folder
-    dirty        INTEGER NOT NULL DEFAULT 0  -- changed here, the server copy not yet
+-- A task list: an account's (Google Tasks, To Do) or, with no account,
+-- one kept on this computer.
+CREATE TABLE task_list (
+    id         INTEGER PRIMARY KEY,
+    account_id INTEGER REFERENCES account (id) ON DELETE CASCADE,
+    remote_id  TEXT,                         -- the service's ID; NULL until created there
+    title      TEXT    NOT NULL,
+    is_default INTEGER NOT NULL DEFAULT 0,   -- the account's own default list
+    sync_state TEXT,                         -- where the last pull ended (a time or a delta link)
+    dirty      INTEGER NOT NULL DEFAULT 0,   -- renamed here, not yet on the service
+    deleted    INTEGER NOT NULL DEFAULT 0,   -- deleted here, not yet on the service
+    -- Its tasks move to the first synced default list once one exists
+    -- (tasks added in the desktop clock before any list synced).
+    move_out   INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (account_id, remote_id)
 );
-CREATE INDEX note_by_account ON note (account_id, server_uid);
-CREATE INDEX note_by_order ON note (trashed_at, archived, pinned DESC, position DESC);
 
--- Notes deleted here whose server copy is still to be deleted.
-CREATE TABLE note_gone (
-    account_id INTEGER NOT NULL,
-    server_uid INTEGER NOT NULL,
-    PRIMARY KEY (account_id, server_uid)
-);
+-- The list the clock's tasks were kept in until now.
+INSERT INTO task_list (id, title, is_default, move_out) VALUES (1, 'My Tasks', 1, 1);
+
+-- NULL never stays: SQLite adds a REFERENCES column only with no default.
+ALTER TABLE task ADD COLUMN list_id   INTEGER REFERENCES task_list (id) ON DELETE CASCADE;
+ALTER TABLE task ADD COLUMN parent_id INTEGER REFERENCES task (id) ON DELETE CASCADE;
+ALTER TABLE task ADD COLUMN remote_id TEXT;
+ALTER TABLE task ADD COLUMN etag      TEXT;
+-- The service's order (Google's position string); '' sorts newest first.
+ALTER TABLE task ADD COLUMN position  TEXT    NOT NULL DEFAULT '';
+-- What Google Tasks can't keep stays here only: a time on the due day
+-- (minutes after local midnight), a reminder (Unix seconds), a repeat
+-- rule (RFC 5545 RRULE value) and the star.
+ALTER TABLE task ADD COLUMN due_time  INTEGER;
+ALTER TABLE task ADD COLUMN remind_at INTEGER;
+ALTER TABLE task ADD COLUMN repeat    TEXT    NOT NULL DEFAULT '';
+ALTER TABLE task ADD COLUMN starred   INTEGER NOT NULL DEFAULT 0;
+-- The mail it was made from: its Message-ID, without angle brackets.
+ALTER TABLE task ADD COLUMN mail      TEXT    NOT NULL DEFAULT '';
+ALTER TABLE task ADD COLUMN dirty     INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE task ADD COLUMN deleted   INTEGER NOT NULL DEFAULT 0;
+
+UPDATE task SET list_id = 1;
+
+CREATE INDEX task_by_list ON task (list_id, parent_id);
+CREATE UNIQUE INDEX task_by_remote ON task (list_id, remote_id) WHERE remote_id IS NOT NULL;

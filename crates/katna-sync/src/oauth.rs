@@ -42,6 +42,13 @@ pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file"
 /// its tokens come separately ([`TokenSource::access_token_for`]).
 pub const MICROSOFT_FILES: &str = "https://graph.microsoft.com/Files.ReadWrite";
 
+/// Google Tasks: the account's task lists, synced with Katna Tasks.
+pub const GOOGLE_TASKS: &str = "https://www.googleapis.com/auth/tasks";
+
+/// Microsoft To Do, through Microsoft Graph: the account's task lists.
+/// Like [`MICROSOFT_FILES`], its tokens come separately.
+pub const MICROSOFT_TASKS: &str = "https://graph.microsoft.com/Tasks.ReadWrite";
+
 /// Largest request the loopback listener reads.
 const MAX_REQUEST: usize = 16 * 1024;
 
@@ -100,9 +107,12 @@ impl Provider {
                 },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
-                // large attachments, and who signed in (address, name,
-                // picture) in the ID token.
-                scope: format!("https://mail.google.com/ {GOOGLE_DRIVE_FILE} openid email profile"),
+                // large attachments, the task lists, and who signed in
+                // (address, name, picture) in the ID token.
+                scope: format!(
+                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_TASKS} \
+                     openid email profile"
+                ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",
                 tls,
@@ -122,9 +132,9 @@ impl Provider {
                 scope: "https://outlook.office.com/IMAP.AccessAsUser.All \
                         https://outlook.office.com/SMTP.Send offline_access openid email profile"
                     .into(),
-                // OneDrive, for large attachments, allowed at the same
-                // sign-in.
-                consent: MICROSOFT_FILES.into(),
+                // OneDrive, for large attachments, and To Do, allowed at
+                // the same sign-in.
+                consent: format!("{MICROSOFT_FILES} {MICROSOFT_TASKS}"),
                 // Entra registers loopback redirects as `http://localhost`.
                 redirect_host: "localhost",
                 tls,
@@ -766,6 +776,15 @@ impl TokenSource {
         .await;
         let _ = self.gate.0.try_send(());
         result
+    }
+
+    /// Starts with an access token for `scope`, for tests.
+    #[cfg(test)]
+    pub(crate) fn set_access_token_for_tests(&self, scope: &str, token: &str) {
+        self.others.lock().unwrap().insert(
+            scope.to_owned(),
+            (token.to_owned(), Instant::now() + Duration::from_secs(3600)),
+        );
     }
 
     /// Like [`Self::forget_access_token`], for [`Self::access_token_for`].
