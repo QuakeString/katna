@@ -262,6 +262,9 @@ pub struct Daemon {
     /// Where each account's contacts sync stands: a
     /// `katna_dbus::contacts_state` and a detail.
     contacts_status: Mutex<HashMap<AccountId, (&'static str, String)>>,
+    /// Accounts whose address books are looked for again from scratch
+    /// next pass ("Try again").
+    contacts_recheck: Mutex<std::collections::HashSet<AccountId>>,
     /// The languages Katna Server translates between, once asked.
     translation_languages: crate::translate::Languages,
     /// Wakes the scheduler of snooze and reminders, once it runs.
@@ -327,6 +330,7 @@ impl Daemon {
             notes_wake: async_channel::unbounded(),
             contacts_wake: async_channel::bounded(1),
             contacts_status: Mutex::default(),
+            contacts_recheck: Mutex::default(),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
             updates: crate::updates::Updates::default(),
@@ -999,6 +1003,10 @@ impl Daemon {
         };
         // "Try again" looks for the calendars from scratch.
         self.recheck_calendars(accounts.iter().map(|a| a.id));
+        self.contacts_recheck
+            .lock()
+            .unwrap()
+            .extend(accounts.iter().map(|a| a.id));
         for account in accounts {
             let running = self
                 .workers()

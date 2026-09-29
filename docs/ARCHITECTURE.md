@@ -1021,12 +1021,15 @@ dropped when it would not fit), which a phone's camera saves.
 The column also lists every mail account under Accounts, with how many
 people are saved in it (a click lists only those). The daemon keeps where
 each account's contacts sync stands (`Pim1.ContactsStatus()`, a
-`contacts_state`: ok, needs-sign-in, error or none, sending
+`contacts_state`: ok, needs-sign-in, use-sign-in, error or none, sending
 `ContactsChanged` when one changes); an account whose contacts did not
-come shows one line under it with why and its fix: "Sign in again to show
-contacts" (OAuth2 without the contacts scopes), Change password (a server
-that refused the password; many need an app password), or Try again
-(`SyncNow`), as the Calendar does.
+come shows one line under it (`window/account_status.rs`, shared with
+Calendar and Tasks) with why and its fix: "Sign in again to show
+contacts" (OAuth2 without the contacts scopes), "Sign in with Google" (a
+Gmail or Outlook account added with a password, which their contacts
+need), Change password (a server that refused the password; many need an
+app password), or Try again (`SyncNow`, which looks for the address books
+from scratch); "none" carries what the server answered.
 
 Saved people's birthdays show on the Calendar and the agenda as a
 Birthdays calendar made on this computer (id -1, read-only, never stored):
@@ -2120,8 +2123,15 @@ Gemini or confidential mode):
   too narrow for the reading pane, New Message covers the whole window;
   the list's single-letter keys are switched off inside text
   fields. The list has a right-click menu (reply, reply all, forward,
-  archive, delete, spam, read, star, move to, find emails from the
-  sender) acting on the ticked lines or the clicked one. The "select all
+  archive, delete, read, snooze, star, then the submenus Move to, Follow
+  up (tasks, notes, meetings, calls) and More (spam, importance, pin),
+  and find emails from the sender) acting on the ticked lines or the
+  clicked one. It opens at the pointer, flips left or up where there is
+  no room and else is pushed in from the edge; where the window is too
+  narrow for a submenu beside it, or too short for the whole menu, a
+  submenu opens in its place under a row back. In a short window its
+  items first come closer together (36 px down to 28 px), and only then
+  does the menu scroll. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.
