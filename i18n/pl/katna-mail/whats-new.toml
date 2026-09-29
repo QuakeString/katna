@@ -1721,3 +1721,12 @@ Przechodzenie strzałkami do następnego lub poprzedniego załącznika w
 przeglądarce już nie migocze. Przeglądarka pozostaje otwarta, a następny
 plik zajmuje miejsce poprzedniego, gdy tylko jest gotowy.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Przeciągaj notatki, aby ułożyć je po swojemu"
+text = """
+Przeciągnij notatkę na tablicy Notatek, aby ją przenieść, jak w Keep.
+Pozostałe notatki płynnie odsuwają się, robiąc miejsce, a ona zostaje
+tam, gdzie ją upuścisz. Ctrl+Z przywraca ją na miejsce. Karty układają
+się teraz ciasno w kolumnach, bez przerw pod krótkimi notatkami.
+"""

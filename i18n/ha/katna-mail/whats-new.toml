@@ -1582,3 +1582,9 @@ title = "Sauyawa cikin sauƙi tsakanin abubuwan haɗawa"
 text = """
 Zuwa abin haɗawa na gaba ko na baya a cikin mai dubawa da kibiyoyi ba ya ƙyalƙyali kuma. Mai dubawa yana nan a buɗe kuma fayil na gaba yana maye gurbin na baya da zarar ya shirya.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Ja bayanai don tsara su"
+text = """
+Ja bayani a kan allon Bayanai don matsar da shi, kamar a Keep. Sauran bayanai suna zamewa gefe don ba da wuri, kuma yana zama inda ka sake shi. Ctrl+Z yana mayar da shi. Katuna yanzu suna zaune daidai a cikin ginshiƙansu, ba tare da gibi a ƙarƙashin gajerun bayanai ba.
+"""

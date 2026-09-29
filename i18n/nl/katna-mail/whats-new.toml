@@ -1732,3 +1732,12 @@ Naar de volgende of vorige bijlage gaan in de viewer met de pijlen
 flikkert niet meer. De viewer blijft open en het volgende bestand neemt
 de plaats van het vorige in zodra het klaar is.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Notities op volgorde slepen"
+text = """
+Sleep een notitie op het bord van Notities om hem te verplaatsen, zoals
+in Keep. De andere notities schuiven opzij om plaats te maken, en hij
+blijft waar je hem loslaat. Ctrl+Z zet hem terug. Kaarten sluiten nu
+netjes aan in hun kolommen, zonder gaten onder korte notities.
+"""

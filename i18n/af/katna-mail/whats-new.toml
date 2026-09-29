@@ -1682,3 +1682,12 @@ Om met die pyltjies na die volgende of vorige aanhegsel in die kyker te
 gaan, flikker nie meer nie. Die kyker bly oop en die volgende lêer neem
 die plek van die vorige in sodra dit gereed is.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Sleep notas in volgorde"
+text = """
+Sleep 'n nota op die Notas-bord om dit te skuif, soos in Keep. Die ander
+notas gly opsy om plek te maak, en dit bly waar jy dit los. Ctrl+Z sit
+dit terug. Kaarte sit nou styf in hul kolomme, sonder gapings onder kort
+notas.
+"""

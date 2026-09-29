@@ -1742,3 +1742,12 @@ Ir al archivo adjunto siguiente o anterior en el visor con las flechas
 ya no parpadea. El visor sigue abierto y el siguiente archivo ocupa el
 lugar del anterior en cuanto está listo.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Arrastra las notas para ordenarlas"
+text = """
+Arrastra una nota en el tablero de Notas para moverla, como en Keep. Las
+demás notas se apartan para hacerle sitio, y se queda donde la sueltas.
+Ctrl+Z la devuelve. Las tarjetas ahora encajan en sus columnas, sin
+huecos bajo las notas cortas.
+"""

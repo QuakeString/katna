@@ -1728,3 +1728,12 @@ Ir para o anexo seguinte ou anterior no visualizador com as setas não
 pisca mais. O visualizador fica aberto e o próximo arquivo toma o lugar
 do anterior assim que fica pronto.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Arraste notas para ordená-las"
+text = """
+Arraste uma nota no quadro de Notas para movê-la, como no Keep. As
+outras notas deslizam para abrir espaço, e ela fica onde você a soltar.
+Ctrl+Z a coloca de volta. Os cartões agora se encaixam bem nas colunas,
+sem vãos sob notas curtas.
+"""

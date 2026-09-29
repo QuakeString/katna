@@ -1746,3 +1746,12 @@ Pergi ke lampiran seterusnya atau sebelumnya dalam pemapar dengan anak
 panah tidak lagi berkelip. Pemapar kekal terbuka dan fail seterusnya
 menggantikan fail terakhir sebaik sahaja ia sedia.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Seret nota untuk menyusunnya"
+text = """
+Seret nota pada papan Nota untuk mengalihkannya, seperti dalam Keep.
+Nota lain meluncur ke tepi untuk memberi ruang, dan ia kekal di tempat
+anda melepaskannya. Ctrl+Z mengembalikannya. Kad kini tersusun rapat
+dalam lajurnya, tanpa ruang kosong di bawah nota pendek.
+"""

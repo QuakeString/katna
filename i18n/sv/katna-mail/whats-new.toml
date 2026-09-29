@@ -1698,3 +1698,12 @@ Att gå till nästa eller föregående bilaga i visaren med pilarna flimrar
 inte längre. Visaren förblir öppen och nästa fil tar den förras plats så
 snart den är klar.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Dra anteckningar i ordning"
+text = """
+Dra en anteckning på tavlan i Anteckningar för att flytta den, som i
+Keep. De andra anteckningarna glider undan för att ge plats, och den
+stannar där du släpper den. Ctrl+Z lägger tillbaka den. Korten sitter nu
+tätt i sina kolumner, utan luckor under korta anteckningar.
+"""

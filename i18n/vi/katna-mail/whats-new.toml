@@ -1676,3 +1676,12 @@ Chuyển sang tệp đính kèm kế tiếp hoặc trước đó trong trình xe
 mũi tên không còn nhấp nháy. Trình xem vẫn mở và tệp kế tiếp sẽ thay chỗ
 tệp trước ngay khi sẵn sàng.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Kéo ghi chú để sắp xếp"
+text = """
+Kéo một ghi chú trên bảng Ghi chú để di chuyển nó, như trong Keep. Các
+ghi chú khác lướt sang bên để nhường chỗ, và ghi chú nằm lại đúng nơi
+bạn thả. Ctrl+Z đưa nó về chỗ cũ. Các thẻ giờ xếp khít trong cột, không
+còn khoảng trống dưới các ghi chú ngắn.
+"""

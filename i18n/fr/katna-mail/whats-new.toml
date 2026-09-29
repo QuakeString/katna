@@ -1792,3 +1792,13 @@ Passer à la pièce jointe suivante ou précédente dans la visionneuse avec
 les flèches ne clignote plus. La visionneuse reste ouverte et le fichier
 suivant prend la place du précédent dès qu’il est prêt.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Faites glisser les notes pour les ranger"
+text = """
+Faites glisser une note sur le tableau de Notes pour la déplacer, comme
+dans Keep. Les autres notes s’écartent pour lui faire de la place, et
+elle reste là où vous la déposez. Ctrl+Z la remet en place. Les cartes
+s’ajustent désormais dans leurs colonnes, sans vide sous les notes
+courtes.
+"""

@@ -1774,3 +1774,13 @@ Das Wechseln zum nächsten oder vorherigen Anhang im Betrachter mit den
 Pfeilen flackert nicht mehr. Der Betrachter bleibt offen, und die
 nächste Datei ersetzt die vorige, sobald sie bereit ist.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Notizen per Ziehen ordnen"
+text = """
+Ziehen Sie eine Notiz auf der Pinnwand von Notizen, um sie zu
+verschieben, wie in Keep. Die anderen Notizen gleiten beiseite, um Platz
+zu machen, und sie bleibt dort, wo Sie sie ablegen. Strg+Z legt sie
+zurück. Karten sitzen jetzt dicht in ihren Spalten, ohne Lücken unter
+kurzen Notizen.
+"""

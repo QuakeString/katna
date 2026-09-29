@@ -1747,3 +1747,12 @@ Passare all'allegato successivo o precedente nel visualizzatore con le
 frecce non provoca più sfarfallii. Il visualizzatore resta aperto e il
 file successivo prende il posto del precedente appena è pronto.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Trascina le note per ordinarle"
+text = """
+Trascina una nota sulla bacheca di Note per spostarla, come in Keep. Le
+altre note scivolano di lato per farle spazio, e resta dove la lasci.
+Ctrl+Z la rimette a posto. Le schede ora stanno compatte nelle loro
+colonne, senza spazi vuoti sotto le note corte.
+"""

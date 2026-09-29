@@ -1714,3 +1714,12 @@ Görüntüleyicide oklarla sonraki ya da önceki eke geçmek artık
 titremiyor. Görüntüleyici açık kalıyor ve sonraki dosya hazır olur olmaz
 öncekinin yerini alıyor.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Notları sürükleyerek sıralayın"
+text = """
+Notlar panosunda bir notu taşımak için sürükleyin, Keep'teki gibi. Diğer
+notlar yer açmak için kayarak kenara çekiliyor ve not bıraktığınız yerde
+kalıyor. Ctrl+Z onu geri koyar. Kartlar artık sütunlarına sıkıca
+oturuyor; kısa notların altında boşluk kalmıyor.
+"""

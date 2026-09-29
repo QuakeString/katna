@@ -1735,3 +1735,12 @@ Berpindah ke lampiran berikutnya atau sebelumnya di penampil dengan
 tombol panah tidak lagi berkedip. Penampil tetap terbuka dan file
 berikutnya menggantikan yang sebelumnya begitu siap.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Seret catatan untuk mengurutkannya"
+text = """
+Seret catatan di papan Catatan untuk memindahkannya, seperti di Keep.
+Catatan lain bergeser memberi ruang, dan catatan itu tetap di tempat
+Anda melepaskannya. Ctrl+Z mengembalikannya. Kartu kini tersusun rapat
+di kolomnya, tanpa celah di bawah catatan pendek.
+"""

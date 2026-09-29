@@ -1793,3 +1793,13 @@ Hindi na kumikislap ang paglipat sa susunod o nakaraang attachment sa
 viewer gamit ang mga arrow. Nananatiling bukas ang viewer at pinapalitan
 ng susunod na file ang nauna sa sandaling handa na ito.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "I-drag ang mga tala para ayusin"
+text = """
+I-drag ang isang tala sa board ng Mga Tala para ilipat ito, gaya sa
+Keep. Dumudulas sa gilid ang ibang tala para magbigay-puwang, at
+nananatili ito kung saan mo ito binitawan. Ibinabalik ito ng Ctrl+Z.
+Siksik na ngayon ang mga card sa kanilang mga column, walang puwang sa
+ilalim ng maiikling tala.
+"""

@@ -1654,3 +1654,12 @@ Kwenda kwenye kiambatisho kinachofuata au kilichotangulia katika
 kitazamaji kwa mishale hakumweki tena. Kitazamaji hubaki wazi na faili
 inayofuata huchukua nafasi ya iliyotangulia mara tu inapokuwa tayari.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Buruta madokezo kuyapanga"
+text = """
+Buruta dokezo kwenye ubao wa Madokezo ili kulisogeza, kama katika Keep.
+Madokezo mengine huteleza kando kutoa nafasi, nalo hubaki pale
+unapoliachilia. Ctrl+Z hulirudisha. Kadi sasa hukaa vizuri kwenye safu
+zake, bila mapengo chini ya madokezo mafupi.
+"""

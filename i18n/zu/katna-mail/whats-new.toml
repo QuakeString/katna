@@ -1790,3 +1790,12 @@ Ukuya kokunamathiselwe okulandelayo noma okwangaphambili esibukini
 ngemicibisholo akusacwayizi. Isibuki sihlala sivuliwe futhi ifayela
 elilandelayo lithatha indawo yelangaphambili lapho nje selilungile.
 """
+
+["2026-09-29-1656-drag-notes"]
+title = "Hudula amanothi uwahlele"
+text = """
+Hudula inothi ebhodini le-Amanothi ukuze ulihambise, njengaku-Keep.
+Amanothi amanye ashelela eceleni ukuze enze isikhala, futhi lihlala
+lapho ulibeka khona. I-Ctrl+Z iyalibuyisela. Amakhadi manje ahlala kahle
+emakholamu awo, engenazo izikhala ngaphansi kwamanothi amafushane.
+"""
