@@ -491,6 +491,8 @@ struct Graph {
     delta_given: bool,
     changed: Vec<String>,
     next: u32,
+    /// Task ID to its checklist items.
+    checks: BTreeMap<String, Vec<Value>>,
 }
 
 fn graph(state: &mut Graph, request: &Seen, base: &str) -> (u16, Value) {
@@ -554,6 +556,39 @@ fn graph(state: &mut Graph, request: &Seen, base: &str) -> (u16, Value) {
             task["@odata.etag"] = json!(format!("W/\"{}\"", state.next));
             state.tasks.insert((*id).to_owned(), (list, task.clone()));
             (200, task)
+        }
+        ("GET", ["lists", _, "tasks", task, "checklistItems"]) => {
+            if !state.tasks.contains_key(*task) {
+                return (404, json!({ "error": { "code": "ErrorItemNotFound" } }));
+            }
+            let value = state.checks.get(*task).cloned().unwrap_or_default();
+            (200, json!({ "value": value }))
+        }
+        ("POST", ["lists", _, "tasks", task, "checklistItems"]) => {
+            state.next += 1;
+            let mut check = request.body.clone();
+            check["id"] = json!(format!("C{}", state.next));
+            state
+                .checks
+                .entry((*task).to_owned())
+                .or_default()
+                .push(check.clone());
+            (201, check)
+        }
+        ("PATCH", ["lists", _, "tasks", task, "checklistItems", id]) => {
+            let checks = state.checks.entry((*task).to_owned()).or_default();
+            let Some(check) = checks.iter_mut().find(|c| c["id"] == *id) else {
+                return (404, json!({ "error": { "code": "ErrorItemNotFound" } }));
+            };
+            for (key, value) in request.body.as_object().unwrap() {
+                check[key] = value.clone();
+            }
+            (200, check.clone())
+        }
+        ("DELETE", ["lists", _, "tasks", task, "checklistItems", id]) => {
+            let checks = state.checks.entry((*task).to_owned()).or_default();
+            checks.retain(|c| c["id"] != *id);
+            (204, Value::Null)
         }
         _ => (404, json!({ "error": { "code": "NotFound" } })),
     }
@@ -647,6 +682,98 @@ fn to_do_syncs_with_reminders_repeat_and_star() {
             .unwrap()
             .is_empty()
     );
+}
+
+#[test]
+fn to_do_steps_are_checklist_items() {
+    let mut fake = Graph::default();
+    fake.lists
+        .insert("D".into(), ("Tasks".into(), "defaultList".into()));
+    fake.tasks.insert(
+        "X".into(),
+        (
+            "D".into(),
+            json!({ "id": "X", "@odata.etag": "W/\"1\"", "title": "Repot the fern",
+                    "status": "notStarted" }),
+        ),
+    );
+    fake.checks.insert(
+        "X".into(),
+        vec![
+            json!({ "id": "A", "displayName": "Buy soil", "isChecked": false }),
+            json!({ "id": "B", "displayName": "Find a pot", "isChecked": true,
+                    "checkedDateTime": "2026-09-28T10:00:00.0000000Z" }),
+        ],
+    );
+    let (api, fake) = serve(fake, graph);
+    let service = graph_service(&api);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+
+    let list = account_lists(&store)[0].id;
+    let tasks = store.lock().unwrap().tasks_in(list).unwrap();
+    let parent = tasks.iter().find(|t| t.parent.is_none()).unwrap().id;
+    let steps: Vec<_> = tasks.iter().filter(|t| t.parent == Some(parent)).collect();
+    assert_eq!(steps.len(), 2);
+    assert_eq!(steps[0].title, "Buy soil");
+    assert_eq!(steps[1].title, "Find a pot");
+    assert_eq!(steps[1].done_at, Some(1_790_589_600));
+    let soil = steps[0].id;
+
+    // A step added and one ticked off here reach To Do.
+    {
+        let mut store = store.lock().unwrap();
+        let fields = TaskFields {
+            title: "Water it".into(),
+            ..TaskFields::default()
+        };
+        store.add_task_to(list, Some(parent), &fields).unwrap();
+        store.set_task_done(soil, true).unwrap();
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let fake = fake.lock().unwrap();
+        let checks = &fake.0.checks["X"];
+        assert_eq!(checks.len(), 3);
+        assert_eq!(checks[0]["isChecked"], true);
+        assert_eq!(checks[2]["displayName"], "Water it");
+    }
+
+    // Removed in To Do: the task comes in the delta, the step goes here.
+    {
+        let mut fake = fake.lock().unwrap();
+        fake.0
+            .checks
+            .get_mut("X")
+            .unwrap()
+            .retain(|c| c["id"] != "B");
+        fake.0.changed.push("X".into());
+    }
+    assert!(smol::block_on(sync_account(&service, &store, account)).unwrap());
+    let titles: Vec<String> = store
+        .lock()
+        .unwrap()
+        .tasks_in(list)
+        .unwrap()
+        .into_iter()
+        .filter(|t| t.parent.is_some())
+        .map(|t| t.title)
+        .collect();
+    assert_eq!(titles, ["Buy soil", "Water it"]);
+
+    // Deleted here: To Do deletes the checklist item.
+    let water = store
+        .lock()
+        .unwrap()
+        .tasks_in(list)
+        .unwrap()
+        .into_iter()
+        .find(|t| t.title == "Water it")
+        .unwrap()
+        .id;
+    store.lock().unwrap().delete_task(water).unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(fake.lock().unwrap().0.checks["X"].len(), 1);
 }
 
 #[test]
