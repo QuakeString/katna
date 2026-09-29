@@ -1152,3 +1152,12 @@ Enter odpowiada, Esc anuluje, a Tab zostaje w ich wnętrzu. W nowej
 wiadomości Ctrl+Enter wysyła z dowolnego pola, a Esc ją zamyka,
 zachowując wersję roboczą.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Zadania"
+text = """
+Naciśnij Ctrl+4 lub wybierz Zadania po lewej: wszystkie listy obok
+siebie jak w Google Tasks, z podzadaniami, gwiazdkami, terminami,
+powtarzaniem i szczegółami. Listy synchronizują się z Google Tasks i
+Microsoft To Do, a zadania z zegara na pulpicie też pojawiają się tutaj.
+"""

@@ -1203,3 +1203,13 @@ Enter, nagka-cancel ang Esc, at nananatili sa loob nila ang Tab. Sa
 bagong mensahe, nagpapadala ang Ctrl+Enter mula sa anumang field at
 isinasara ito ng Esc habang pinananatili ang draft.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Mga Gawain"
+text = """
+Pindutin ang Ctrl+4 o piliin ang Mga Gawain sa kaliwa: lahat ng listahan
+nang magkakatabi tulad ng sa Google Tasks, may mga subtask, star, due
+date, pag-uulit at mga detalye. Nagsi-sync ang mga listahan sa Google
+Tasks at Microsoft To Do, at lumalabas din dito ang mga gawain mula sa
+orasan ng desktop.
+"""

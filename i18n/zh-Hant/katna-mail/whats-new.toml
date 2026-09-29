@@ -1000,3 +1000,11 @@ Enter 進入其中的郵件。任何選單裡都可用 ↑ 和 ↓ 移動，Ente
 Enter 確認，Esc 取消，Tab 只在對話方塊內切換。在新郵件中，\
 任何欄位裡都可以按 Ctrl+Enter 傳送，按 Esc 關閉並保留草稿。
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna 工作"
+text = """
+按 Ctrl+4 或在左側選擇工作：與 Google Tasks 一樣，所有清單並排顯示，支援子工作、星號、\
+到期日、重複和詳細資料。清單會與 Google Tasks 和 Microsoft To Do 同步，桌面時鐘裡的\
+工作也會顯示在這裡。
+"""

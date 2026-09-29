@@ -1163,3 +1163,12 @@ over zodra ze opengaan: Enter beantwoordt, Esc annuleert en Tab blijft
 erbinnen. In een nieuw bericht verzendt Ctrl+Enter vanuit elk veld en
 sluit Esc het, waarbij een concept bewaard blijft.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Taken"
+text = """
+Druk op Ctrl+4 of kies links Taken: alle lijsten naast elkaar zoals in
+Google Tasks, met subtaken, sterren, vervaldagen, herhalingen en
+details. Lijsten worden gesynchroniseerd met Google Tasks en Microsoft
+To Do, en taken van de bureaubladklok verschijnen hier ook.
+"""

@@ -1198,3 +1198,14 @@ lapho evulwa: u-Enter uyaphendula, u-Esc uyakhansela, futhi u-Tab uhlala
 ngaphakathi kuwo. Emlayezweni omusha, u-Ctrl+Enter uthumela kunoma
 iyiphi inkambu futhi u-Esc uyawuvala, ugcine okusalungiswa.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Imisebenzi ye-Katna"
+text = """
+Cindezela Ctrl+4 noma ukhethe Imisebenzi ohlangothini
+lwesokunxele: uhlu ngalunye eceleni kwalunye njenge-Google Tasks,
+kanye nemisebenzi emincane, izinkanyezi, izinsuku zokuphela,
+ukuphindaphinda nemininingwane. Izinhlu zivumelanisa ne-Google
+Tasks ne-Microsoft To Do, futhi imisebenzi evela ewashini
+yedeskithophu iyavela lapha.
+"""

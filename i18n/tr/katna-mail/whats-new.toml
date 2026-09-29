@@ -1153,3 +1153,12 @@ yanıtlar, Esc iptal eder ve Tab kutunun içinde kalır. Yeni bir iletide
 Ctrl+Enter herhangi bir alandan gönderir, Esc ise iletiyi kapatıp bir
 taslak bırakır.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Görevler"
+text = """
+Ctrl+4 tuşuna basın veya solda “Görevler” bölümünü seçin: Google
+Tasks’taki gibi tüm listeler yan yana; alt görevler, yıldızlar, bitiş
+günleri, tekrarlar ve ayrıntılarla. Listeler Google Tasks ve Microsoft
+To Do ile eşitlenir, masaüstü saatindeki görevler de burada görünür.
+"""

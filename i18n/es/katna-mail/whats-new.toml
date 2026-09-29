@@ -1168,3 +1168,13 @@ abrirse: Intro responde, Esc cancela y Tab se queda dentro. En un
 mensaje nuevo, Ctrl+Intro envía desde cualquier campo y Esc lo cierra
 conservando un borrador.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Tareas"
+text = """
+Pulsa Ctrl+4 o elige Tareas a la izquierda: todas las listas una junto a
+otra como en Google Tasks, con subtareas, destacadas, días de
+vencimiento, repeticiones y detalles. Las listas se sincronizan con
+Google Tasks y Microsoft To Do, y las tareas del reloj del escritorio
+también aparecen aquí.
+"""

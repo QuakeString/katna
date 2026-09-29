@@ -1164,3 +1164,12 @@ saat terbuka: Enter menjawab, Esc membatalkan, dan Tab tetap di
 dalamnya. Di pesan baru, Ctrl+Enter mengirim dari kolom mana pun dan Esc
 menutupnya sambil menyimpan draf.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Tugas"
+text = """
+Tekan Ctrl+4 atau pilih Tugas di sebelah kiri: semua daftar berdampingan
+seperti di Google Tasks, lengkap dengan subtugas, bintang, hari jatuh
+tempo, pengulangan, dan detail. Daftar disinkronkan dengan Google Tasks
+dan Microsoft To Do, dan tugas dari jam desktop juga muncul di sini.
+"""

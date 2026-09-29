@@ -1125,3 +1125,12 @@ menu, và Enter chọn. Shift+F10 hoặc phím Menu mở menu chuột phải c�
 Tab ở lại bên trong. Trong thư mới, Ctrl+Enter gửi từ bất kỳ trường nào
 và Esc đóng thư, giữ lại một thư nháp.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Việc cần làm"
+text = """
+Nhấn Ctrl+4 hoặc chọn Việc cần làm ở bên trái: mọi danh sách nằm cạnh
+nhau như trong Google Tasks, với việc phụ, dấu sao, ngày đến hạn, lặp
+lại và chi tiết. Các danh sách đồng bộ với Google Tasks và Microsoft To
+Do, và việc cần làm từ đồng hồ trên máy tính cũng hiện ở đây.
+"""

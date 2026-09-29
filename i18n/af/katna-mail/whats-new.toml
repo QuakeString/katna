@@ -1126,3 +1126,12 @@ oopgaan: Enter antwoord, Esc kanselleer en Tab bly binne-in hulle. In ’n
 nuwe boodskap stuur Ctrl+Enter vanuit enige veld en Esc maak dit toe,
 met ’n konsep wat bewaar word.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Take"
+text = """
+Druk Ctrl+4 of kies Take links: elke lys langs mekaar soos in Google
+Tasks, met subtake, sterre, vervaldae, herhalings en besonderhede. Lyste
+sinkroniseer met Google Tasks en Microsoft To Do, en take van die
+lessenaarhorlosie verskyn ook hier.
+"""

@@ -1187,3 +1187,13 @@ Eingabetaste antwortet, Esc bricht ab, und Tab bleibt in ihnen. In einer
 neuen Nachricht sendet Strg+Eingabetaste aus jedem Feld, und Esc
 schließt sie und behält einen Entwurf.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Aufgaben"
+text = """
+Drücken Sie Strg+4 oder wählen Sie links Aufgaben: alle Listen
+nebeneinander wie in Google Tasks, mit Unteraufgaben, Markierungen,
+Fälligkeitstagen, Wiederholungen und Details. Die Listen werden mit
+Google Tasks und Microsoft To Do synchronisiert, und Aufgaben von der
+Desktop-Uhr erscheinen hier ebenfalls.
+"""

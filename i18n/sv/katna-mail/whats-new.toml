@@ -1132,3 +1132,13 @@ högerklicksmenyn för det markerade e-postmeddelandet. Dialogrutor tar
 stannar inuti dem. I ett nytt meddelande skickar Ctrl+Retur från vilket
 fält som helst och Esc stänger det och behåller ett utkast.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Uppgifter"
+text = """
+Tryck på Ctrl+4 eller välj Uppgifter till vänster: alla listor sida vid
+sida som i Google Tasks, med deluppgifter, stjärnor, förfallodagar,
+upprepningar och information. Listorna synkroniseras med Google Tasks
+och Microsoft To Do, och uppgifter från skrivbordsklockan visas också
+här.
+"""

@@ -1147,3 +1147,11 @@ menyu hufungua menyu ya kubofya kulia ya barua iliyochaguliwa. Madirisha ya mazu
 vitufe yanapofunguka: Enter hujibu, Esc hughairi, na Tab hubaki ndani yake. Kwenye ujumbe mpya,
 Ctrl+Enter hutuma kutoka sehemu yoyote na Esc huufunga, ukihifadhi rasimu.
 """
+
+["2026-09-29-0412-tasks-page"]
+title = "Katna Majukumu"
+text = """
+Bonyeza Ctrl+4 au chagua Majukumu upande wa kushoto: orodha zote kando kwa kando kama katika Google Tasks,
+zikiwa na majukumu madogo, nyota, siku za kukamilisha, marudio na maelezo. Orodha husawazishwa na Google Tasks
+na Microsoft To Do, na majukumu kutoka saa ya eneo-kazi pia yanaonekana hapa.
+"""
