@@ -29,6 +29,7 @@ mod calendar;
 mod colors;
 mod compose;
 mod contact;
+mod contacts_edit;
 mod contacts_page;
 mod context_menu;
 mod crash_notice;
@@ -2636,6 +2637,10 @@ impl MailWindow {
         }
         if undo == Command::RestoreQuote {
             self.restore_quote(window, cx);
+            return;
+        }
+        if let Command::RestoreContacts(keys) = &undo {
+            self.restore_contacts(keys, cx);
             return;
         }
         if let Command::UndoSend(id) = undo {

@@ -13,8 +13,9 @@ use std::time::{Duration, Instant};
 
 use async_channel::Receiver;
 use futures_lite::FutureExt;
+use katna_core::contact::Card;
 use katna_core::{Account, AccountId, OAuthProvider};
-use katna_store::{BookSource, BookState, BookSync};
+use katna_store::{BookSource, BookState, BookSync, ContactRef, SyncedContact};
 use katna_sync::{
     Error as SyncError,
     carddav::{self, CardDav},
@@ -22,7 +23,7 @@ use katna_sync::{
     net::Tls,
 };
 
-use super::{Daemon, Notice};
+use super::{CommandError, Daemon, Notice};
 
 /// Wait after start, so the first sync of mail goes first.
 const FIRST: Duration = Duration::from_secs(20);
@@ -131,21 +132,9 @@ async fn sync_account(
             Ok(changed)
         }
         None => {
-            let Some(password) = daemon
-                .secrets
-                .password(account.id)
-                .await
-                .map_err(|e| e.to_string())?
-            else {
+            let Some(dav) = card_dav(daemon, account.id, tls).await? else {
                 return Ok(false);
             };
-            let user = settings
-                .imap
-                .as_ref()
-                .map(|s| s.username.clone())
-                .filter(|u| !u.is_empty())
-                .unwrap_or_else(|| account.address.clone());
-            let dav = CardDav::new(&user, &password, tls);
             let books: Vec<(i64, String)> = daemon
                 .store()
                 .address_books()
@@ -210,6 +199,39 @@ async fn sync_account(
     }
 }
 
+/// The account's CardDAV login: its password with its IMAP user name.
+async fn card_dav(
+    daemon: &Daemon,
+    account: AccountId,
+    tls: Tls,
+) -> Result<Option<CardDav>, String> {
+    let Some(password) = daemon
+        .secrets
+        .password(account)
+        .await
+        .map_err(|e| e.to_string())?
+    else {
+        return Ok(None);
+    };
+    let address = daemon
+        .store()
+        .accounts()
+        .map_err(|e| e.to_string())?
+        .into_iter()
+        .find(|a| a.id == account)
+        .map(|a| a.address)
+        .unwrap_or_default();
+    let user = daemon
+        .store()
+        .account_settings(account)
+        .map_err(|e| e.to_string())?
+        .and_then(|s| s.imap)
+        .map(|s| s.username)
+        .filter(|u| !u.is_empty())
+        .unwrap_or(address);
+    Ok(Some(CardDav::new(&user, &password, tls)))
+}
+
 fn sync_token(daemon: &Daemon, book: i64) -> Option<String> {
     daemon
         .store()
@@ -270,4 +292,192 @@ async fn fetch_pictures(daemon: &Daemon, book: i64, tls: &Tls) -> bool {
         }
     }
     any
+}
+
+/// A change made on the Contacts page failed.
+fn failed(err: SyncError) -> CommandError {
+    match err {
+        SyncError::Auth(why) => CommandError::AuthFailed(why),
+        other => CommandError::Failed(other.to_string()),
+    }
+}
+
+impl Daemon {
+    /// Saves `card` (a `katna_core::contact::Card` as JSON) over saved
+    /// card `contact`, or as a new card in address book `book` (0: the
+    /// book on this computer) when `contact` is 0. The account's service
+    /// is written first, so what is saved is what it keeps. Returns the
+    /// card's id.
+    pub async fn save_contact(
+        &self,
+        contact: i64,
+        book: i64,
+        card: &str,
+    ) -> Result<i64, CommandError> {
+        let card: Card = serde_json::from_str(card)
+            .map_err(|e| CommandError::InvalidArgs(format!("contact card: {e}")))?;
+        if card.is_empty() {
+            return Err(CommandError::InvalidArgs("an empty contact".into()));
+        }
+        let (book, old) = if contact != 0 {
+            let old = self
+                .store()
+                .contact_ref(contact)?
+                .ok_or_else(|| CommandError::InvalidArgs(format!("no contact {contact}")))?;
+            (old.book.clone(), Some(old))
+        } else {
+            let id = match book {
+                0 => self.store().local_address_book()?,
+                id => id,
+            };
+            let book = self
+                .store()
+                .address_book(id)?
+                .ok_or_else(|| CommandError::InvalidArgs(format!("no address book {id}")))?;
+            (book, None)
+        };
+        let remote = old.as_ref().map(|o| o.remote_id.as_str());
+        let etag = old.as_ref().and_then(|o| o.etag.as_deref());
+        let tls = || Tls::system().map_err(|e| CommandError::Failed(e.to_string()));
+        let saved = match (book.source, book.account) {
+            (BookSource::Local, _) | (_, None) => SyncedContact {
+                remote_id: remote
+                    .map_or_else(|| format!("local:{}", carddav::new_uid()), str::to_owned),
+                etag: None,
+                card,
+                raw: None,
+                starred: old.as_ref().is_some_and(|o| o.starred),
+                groups: old.as_ref().map(|o| o.groups.clone()).unwrap_or_default(),
+                photo: None,
+            },
+            (BookSource::Google, Some(account)) => {
+                let tokens = self
+                    .oauth_tokens(account, OAuthProvider::Google)
+                    .await
+                    .map_err(CommandError::AuthFailed)?;
+                GoogleContacts::new(tokens, tls()?)
+                    .save(remote, etag, &card)
+                    .await
+                    .map_err(failed)?
+            }
+            (BookSource::Microsoft, Some(account)) => {
+                let tokens = self
+                    .oauth_tokens(account, OAuthProvider::Microsoft)
+                    .await
+                    .map_err(CommandError::AuthFailed)?;
+                MicrosoftContacts::new(tokens, tls()?)
+                    .save(remote, &card)
+                    .await
+                    .map_err(failed)?
+            }
+            (BookSource::CardDav, Some(account)) => {
+                let dav = card_dav(self, account, tls()?)
+                    .await
+                    .map_err(CommandError::Failed)?
+                    .ok_or_else(|| CommandError::AuthFailed("no password saved".into()))?;
+                let groups = old.as_ref().map(|o| o.groups.clone()).unwrap_or_default();
+                let (apple, categories): (Vec<String>, Vec<String>) =
+                    groups.into_iter().partition(|g| g.starts_with("group:"));
+                let raw = old.as_ref().and_then(|o| o.raw.as_deref());
+                let mut saved = dav
+                    .save(&book.remote_id, remote, etag, raw, &categories, &card)
+                    .await
+                    .map_err(failed)?;
+                // Group cards are not re-read with one card: keep its own.
+                saved.groups.extend(apple);
+                saved
+            }
+        };
+        let remote_id = saved.remote_id.clone();
+        let sync = BookSync {
+            contacts: vec![saved],
+            ..BookSync::default()
+        };
+        let id = {
+            let mut store = self.store();
+            store.save_book_sync(book.id, &sync)?;
+            store.contact_id(book.id, &remote_id)?
+        }
+        .ok_or_else(|| CommandError::Failed("the saved contact went missing".into()))?;
+        tracing::info!(id, book = book.id, "contact saved");
+        let _ = self.notices().try_send(Notice::ContactsChanged);
+        Ok(id)
+    }
+
+    /// Deletes saved cards `ids` from their accounts' services (Google and
+    /// Microsoft keep them in their trash) and from here. Tries every card
+    /// and returns the first failure.
+    pub async fn delete_contacts(&self, ids: &[i64]) -> Result<(), CommandError> {
+        let mut first_error = None;
+        let mut changed = false;
+        for &id in ids {
+            let Some(old) = self.store().contact_ref(id)? else {
+                continue;
+            };
+            let gone = match (old.book.source, old.book.account) {
+                (BookSource::Local, _) | (_, None) => Ok(()),
+                (source, Some(account)) => self.delete_remote(source, account, &old).await,
+            };
+            match gone {
+                Ok(()) => {
+                    let sync = BookSync {
+                        deleted: vec![old.remote_id.clone()],
+                        ..BookSync::default()
+                    };
+                    changed |= self.store().save_book_sync(old.book.id, &sync)?;
+                    tracing::info!(id, "contact deleted");
+                }
+                Err(err) => {
+                    tracing::info!(id, %err, "contact not deleted");
+                    first_error.get_or_insert(err);
+                }
+            }
+        }
+        if changed {
+            let _ = self.notices().try_send(Notice::ContactsChanged);
+        }
+        first_error.map_or(Ok(()), Err)
+    }
+
+    async fn delete_remote(
+        &self,
+        source: BookSource,
+        account: AccountId,
+        old: &ContactRef,
+    ) -> Result<(), CommandError> {
+        let tls = Tls::system().map_err(|e| CommandError::Failed(e.to_string()))?;
+        match source {
+            BookSource::Google | BookSource::Microsoft => {
+                let provider = if source == BookSource::Google {
+                    OAuthProvider::Google
+                } else {
+                    OAuthProvider::Microsoft
+                };
+                let tokens = self
+                    .oauth_tokens(account, provider)
+                    .await
+                    .map_err(CommandError::AuthFailed)?;
+                if source == BookSource::Google {
+                    GoogleContacts::new(tokens, tls)
+                        .delete(&old.remote_id)
+                        .await
+                } else {
+                    MicrosoftContacts::new(tokens, tls)
+                        .delete(&old.remote_id)
+                        .await
+                }
+                .map_err(failed)
+            }
+            BookSource::CardDav => {
+                let dav = card_dav(self, account, tls)
+                    .await
+                    .map_err(CommandError::Failed)?
+                    .ok_or_else(|| CommandError::AuthFailed("no password saved".into()))?;
+                dav.delete(&old.book.remote_id, &old.remote_id, old.etag.as_deref())
+                    .await
+                    .map_err(failed)
+            }
+            BookSource::Local => Ok(()),
+        }
+    }
 }

@@ -10,6 +10,7 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use base64::Engine as _;
+use katna_core::contact::Card;
 use katna_dav::vcard;
 use katna_store::{BookSync, SyncedContact, SyncedGroup};
 
@@ -537,6 +538,127 @@ impl CardDav {
         }
         Ok(out)
     }
+}
+
+impl CardDav {
+    /// Saves `card` in collection `url`: a new card when `href` is `None`,
+    /// else over `href`, only if it is still at `etag` (a change made
+    /// elsewhere since is not overwritten). `old` is the card's vCard as
+    /// read, so properties Katna does not show are kept. Returns the card
+    /// as the server keeps it.
+    pub async fn save(
+        &self,
+        url: &str,
+        href: Option<&str>,
+        etag: Option<&str>,
+        old: Option<&str>,
+        categories: &[String],
+        card: &Card,
+    ) -> Result<SyncedContact> {
+        let (target, uid) = match href {
+            Some(href) => {
+                let uid = old
+                    .and_then(|old| vcard::parse(old).into_iter().next())
+                    .map(|p| p.uid)
+                    .filter(|uid| !uid.is_empty())
+                    .unwrap_or_else(new_uid);
+                (absolute(url, href), uid)
+            }
+            None => {
+                let uid = new_uid();
+                (format!("{}/{uid}.vcf", url.trim_end_matches('/')), uid)
+            }
+        };
+        let text = vcard::write(&uid, card, categories, old);
+        let mut headers = vec![("Authorization", self.authorization.as_str())];
+        match (href, etag) {
+            (Some(_), Some(etag)) => headers.push(("If-Match", etag)),
+            (None, _) => headers.push(("If-None-Match", "*")),
+            (Some(_), None) => {}
+        }
+        let reply = http::exchange_limited(
+            "PUT",
+            &target,
+            &headers,
+            Some(("text/vcard; charset=utf-8", text.as_bytes())),
+            None,
+            &self.tls,
+            TIMEOUT,
+            MAX_ANSWER,
+        )
+        .await?;
+        write_status(&reply, &target, "saving a card")?;
+        // The server may change the card (a new ETag at least): read it
+        // back as it keeps it.
+        let path = path_of(&target);
+        let listing = Listing {
+            full: false,
+            cards: vec![(path.clone(), None)],
+            ..Listing::default()
+        };
+        let read = self.fetch(url, listing, &HashMap::new()).await?;
+        read.contacts
+            .into_iter()
+            .find(|c| c.remote_id == path)
+            .ok_or_else(|| Error::Protocol(format!("CardDAV {target}: saved card not found")))
+    }
+
+    /// Deletes card `href` of collection `url`, only if it is still at
+    /// `etag`. One already gone is fine.
+    pub async fn delete(&self, url: &str, href: &str, etag: Option<&str>) -> Result<()> {
+        let target = absolute(url, href);
+        let mut headers = vec![("Authorization", self.authorization.as_str())];
+        if let Some(etag) = etag {
+            headers.push(("If-Match", etag));
+        }
+        let reply = http::exchange_limited(
+            "DELETE", &target, &headers, None, None, &self.tls, TIMEOUT, MAX_ANSWER,
+        )
+        .await?;
+        if reply.status == 404 {
+            return Ok(());
+        }
+        write_status(&reply, &target, "deleting a card")
+    }
+}
+
+/// A `2xx` answer to a write is fine; a changed card is said so.
+fn write_status(reply: &Reply, url: &str, doing: &str) -> Result<()> {
+    match reply.status {
+        200..=299 => Ok(()),
+        401 => Err(Error::Auth(format!(
+            "CardDAV refused the password at {url}"
+        ))),
+        412 => Err(Error::Rejected(format!(
+            "CardDAV {url}: the card was changed elsewhere; try again after the next sync"
+        ))),
+        status => Err(Error::Rejected(format!(
+            "CardDAV {url}: {doing}: status {status}"
+        ))),
+    }
+}
+
+/// A new card's UID, random like a UUID.
+pub fn new_uid() -> String {
+    use ring::rand::SecureRandom;
+    let mut bytes = [0u8; 16];
+    if ring::rand::SystemRandom::new().fill(&mut bytes).is_err() {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_nanos());
+        bytes = nanos.to_le_bytes();
+    }
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    let hex: String = bytes.iter().map(|b| format!("{b:02x}")).collect();
+    format!(
+        "{}-{}-{}-{}-{}",
+        &hex[..8],
+        &hex[8..12],
+        &hex[12..16],
+        &hex[16..20],
+        &hex[20..]
+    )
 }
 
 /// What a listing found before the cards are fetched.
