@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mark up PDFs"
+text = """
+Press the pen in the PDF viewer to highlight, underline, squiggle or strike
+through text, or draw with a pen, in the colour you pick. Undo with Ctrl+Z,
+erase a mark with the eraser, then save a marked copy. The original
+attachment stays as it was.
+"""

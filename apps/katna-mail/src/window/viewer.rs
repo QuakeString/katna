@@ -18,6 +18,7 @@
 //! text a PDF draws (read in the background, page by page). A
 //! spreadsheet selects cells instead, and copies them tab-separated.
 
+mod markup;
 mod office;
 
 use std::collections::HashMap;
@@ -27,9 +28,9 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EventEmitter, FocusHandle, Focusable,
-    FontWeight, ImageSource, KeyDownEvent, MouseButton, ObjectFit, RenderImage, ScrollHandle,
-    SharedString, Subscription, Task, Window, div, ease_out_quint, img, prelude::*, rgba,
-    uniform_list,
+    FontWeight, ImageSource, KeyDownEvent, MouseButton, MouseDownEvent, ObjectFit, RenderImage,
+    ScrollHandle, SharedString, Subscription, Task, Window, div, ease_out_quint, img, prelude::*,
+    rgba, uniform_list,
 };
 use katna_i18n::tr;
 use katna_preview::pdf::{self, Document, TextLine};
@@ -39,6 +40,7 @@ use katna_ui::px;
 use katna_ui::unpx;
 use katna_ui::{InputEvent, Ripple, TextInput};
 
+use self::markup::{Leave, Markup};
 use self::office::{DocumentView, SheetView};
 use super::attachments::{Item, bitmap, kind_badge};
 use super::select::{self, Key, Marker, SelectHost, TextSelection};
@@ -68,6 +70,9 @@ const INK: u32 = 0xffffffff;
 const INK_DIM: u32 = 0xffffffb3;
 const HOVER: u32 = 0xffffff1f;
 const PILL: u32 = 0x2d2f31f2;
+
+/// The viewer's key context.
+pub(super) const KEY_CONTEXT: &str = "AttachmentViewer";
 
 /// What the viewer asks the window to do.
 pub(super) enum ViewerEvent {
@@ -109,6 +114,8 @@ pub(super) struct Viewer {
     /// The page last gone to and the scroll offset that shows it: the page
     /// counts as on show until the PDF scrolls.
     went: Option<(usize, f32)>,
+    /// Marks made on a PDF, and the tools for them.
+    markup: Markup,
     pub(super) th: Theme,
 }
 
@@ -124,6 +131,10 @@ impl SelectHost for Viewer {
     /// The viewer keeps the focus, so its keys still work.
     fn text_focus(&self) -> FocusHandle {
         self.focus.clone()
+    }
+
+    fn selected(&mut self, cx: &mut Context<Self>) {
+        self.mark_selection(cx);
     }
 }
 
@@ -215,6 +226,7 @@ impl Viewer {
             _goto,
             goto_click: false,
             went: None,
+            markup: Markup::new(),
             th,
         };
         this.show(current, cx);
@@ -251,6 +263,7 @@ impl Viewer {
         self.text.begin(self.seq);
         self.zoom = fit_step();
         self.went = None;
+        self.markup = Markup::new();
         self.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
         self.file = None;
         self.drawing = None;
@@ -314,8 +327,19 @@ impl Viewer {
         cx.notify();
     }
 
+    /// Closes the viewer, asking first about unsaved marks.
     fn close(&mut self, cx: &mut Context<Self>) {
-        cx.emit(ViewerEvent::Close);
+        self.leave(Leave::Close, cx);
+    }
+
+    /// Shows the attachment `ix` places on (wrapping around), asking
+    /// first about unsaved marks.
+    fn step(&mut self, by: isize, cx: &mut Context<Self>) {
+        let count = self.items.len() as isize;
+        if count > 0 {
+            let ix = (self.current as isize + by).rem_euclid(count) as usize;
+            self.leave(Leave::Show(ix), cx);
+        }
     }
 
     /// Reads the text of `doc`'s pages in the background, a few pages at
@@ -382,8 +406,11 @@ impl Viewer {
         }
     }
 
+    /// Saves the attachment, or a copy of a PDF with the marks made on it.
     fn save(&mut self, cx: &mut Context<Self>) {
-        if let Some(file) = &self.file {
+        if self.saves_marks() {
+            self.save_marked(None, cx);
+        } else if let Some(file) = &self.file {
             cx.emit(ViewerEvent::Save(file.clone()));
         }
     }
@@ -460,6 +487,29 @@ impl Viewer {
         }
         let keystroke = &event.keystroke;
         let ctrl = keystroke.modifiers.control;
+        let shift = keystroke.modifiers.shift;
+        // The question about unsaved marks: Enter saves, Escape stays.
+        if self.markup.asking() {
+            match keystroke.key.as_str() {
+                "enter" => self.answer(Some(true), cx),
+                "escape" => self.answer(None, cx),
+                _ => {}
+            }
+            cx.stop_propagation();
+            return;
+        }
+        if matches!(self.content, Content::Pdf(_)) && ctrl {
+            let done = match keystroke.key.as_str() {
+                "z" if shift => self.redo_mark(cx),
+                "y" => self.redo_mark(cx),
+                "z" => self.undo_mark(cx),
+                _ => false,
+            };
+            if done {
+                cx.stop_propagation();
+                return;
+            }
+        }
         let view = match &self.content {
             Content::Sheet(sheet) => sheet.scroll.0.borrow().base_handle.bounds(),
             Content::Document(doc) => doc.state.viewport_bounds(),
@@ -468,8 +518,8 @@ impl Viewer {
         let page = (unpx(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
         match keystroke.key.as_str() {
             "escape" => self.close(cx),
-            "left" => self.show(self.current + self.items.len() - 1, cx),
-            "right" => self.show(self.current + 1, cx),
+            "left" => self.step(-1, cx),
+            "right" => self.step(1, cx),
             "+" | "=" => self.set_zoom(self.zoom + 1, cx),
             "-" => self.set_zoom(self.zoom.saturating_sub(1), cx),
             "0" => self.set_zoom(fit_step(), cx),
@@ -624,6 +674,16 @@ fn fit_step() -> usize {
 
 /// A round button on the dark bar.
 fn bar_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    bar_button_tip(id, name, tooltip_for(id).into(), th)
+}
+
+/// A round button on the dark bar, with its own tooltip.
+fn bar_button_tip(
+    id: &'static str,
+    name: &str,
+    tooltip: SharedString,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
     div()
         .id(id)
         .relative()
@@ -638,7 +698,7 @@ fn bar_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::
         .hover(|s| s.bg(rgba(HOVER)))
         .child(Ripple::new(id, rgba(0xffffff33)).centered())
         .child(icon(name, INK, 22.0))
-        .tooltip(tip(tooltip_for(id), th))
+        .tooltip(tip(tooltip, th))
 }
 
 fn tooltip_for(id: &str) -> &'static str {
@@ -820,6 +880,7 @@ impl Render for Viewer {
                     pdf_z = Some(z);
                     let wide = widest * z > vw - 32.0;
                     let marker = self.text.marker(&th);
+                    let drawing = self.markup.drawing();
                     let pages: Vec<AnyElement> = (0..count)
                         .map(|p| {
                             let (w, h) = pdf.doc.page_size(p);
@@ -846,6 +907,7 @@ impl Render for Viewer {
                                             .object_fit(ObjectFit::Fill),
                                     )
                                 })
+                                .child(self.page_marks(p, z))
                                 .when_some(text, |d, lines| {
                                     d.cursor_text().child(page_text(
                                         p,
@@ -853,6 +915,16 @@ impl Render for Viewer {
                                         z,
                                         marker.clone(),
                                     ))
+                                })
+                                .when(drawing, |d| {
+                                    d.cursor(markup::drawing_cursor()).on_mouse_down(
+                                        MouseButton::Left,
+                                        cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                                            if this.press_page(p, event.position, cx) {
+                                                cx.stop_propagation();
+                                            }
+                                        }),
+                                    )
                                 })
                                 .into_any_element()
                         })
@@ -944,15 +1016,26 @@ impl Render for Viewer {
                         ))
                     }),
             )
+            .when(
+                self.file.is_some() && matches!(self.content, Content::Pdf(_)),
+                |d| d.child(self.markup_button(&th, cx)),
+            )
             .when(self.file.is_some(), |d| {
+                let save = if self.saves_marks() {
+                    bar_button_tip(
+                        "viewer-save",
+                        "download",
+                        tr!("viewer-save-marked-tip").into(),
+                        &th,
+                    )
+                } else {
+                    bar_button("viewer-save", "download", &th)
+                };
                 d.child(
                     bar_button("viewer-open", "open-external", &th)
                         .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
                 )
-                .child(
-                    bar_button("viewer-save", "download", &th)
-                        .on_click(cx.listener(|this, _, _, cx| this.save(cx))),
-                )
+                .child(save.on_click(cx.listener(|this, _, _, cx| this.save(cx))))
             });
 
         let zoomable = matches!(
@@ -1080,14 +1163,13 @@ impl Render for Viewer {
         let arrows = many.then(|| {
             [
                 side(
-                    bar_button("viewer-prev", "chevron-left", &th).on_click(cx.listener(
-                        |this, _, _, cx| this.show(this.current + this.items.len() - 1, cx),
-                    )),
+                    bar_button("viewer-prev", "chevron-left", &th)
+                        .on_click(cx.listener(|this, _, _, cx| this.step(-1, cx))),
                     true,
                 ),
                 side(
                     bar_button("viewer-next", "chevron-right", &th)
-                        .on_click(cx.listener(|this, _, _, cx| this.show(this.current + 1, cx))),
+                        .on_click(cx.listener(|this, _, _, cx| this.step(1, cx))),
                     false,
                 ),
             ]
@@ -1096,7 +1178,7 @@ impl Render for Viewer {
         div()
             .id(("viewer", self.seq))
             .track_focus(&self.focus)
-            .key_context("AttachmentViewer")
+            .key_context(KEY_CONTEXT)
             .on_key_down(cx.listener(Self::on_key))
             .absolute()
             .top_0()
@@ -1117,11 +1199,14 @@ impl Render for Viewer {
             .child(body)
             .child(select::follow_drags(cx))
             .child(self.follow_cell_drags(cx))
+            .child(self.follow_marking(cx))
             .child(top_bar)
+            .children(self.markup_pill(&th, cx))
             .children(arrows.into_iter().flatten())
             .children(foot)
             .children(select::text_menu(self, &th, cx))
             .children(self.cell_menu(&th, cx))
+            .children(self.leave_dialog(&th, cx))
             .with_animation(
                 ("viewer-in", self.seq),
                 Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
