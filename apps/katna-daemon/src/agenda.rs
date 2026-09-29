@@ -15,8 +15,8 @@ use std::sync::Arc;
 
 use jiff::tz::TimeZone;
 use katna_core::{Paths, ids};
-use katna_dbus::agenda::{Item, event, task};
-use katna_store::tasks::Task;
+use katna_dbus::agenda::{Item, edit, event, task};
+use katna_store::tasks::{Task, TaskFields};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
@@ -25,6 +25,8 @@ use crate::daemon::{CommandError, Daemon};
 
 /// The longest task title, in characters.
 const MAX_TITLE: usize = 500;
+/// The longest task notes, in characters.
+const MAX_NOTES: usize = 8192;
 /// Ticked-off tasks stay in the list this long, so a wrong tick can be
 /// taken back.
 const DONE_SHOWN_SECS: i64 = 24 * 60 * 60;
@@ -156,6 +158,72 @@ fn due(text: &str) -> Result<&str, CommandError> {
     }
 }
 
+/// `task`'s fields with those in `fields` ([`edit`]) set.
+fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
+    let text = |key: &str| -> Result<Option<String>, CommandError> {
+        fields
+            .get(key)
+            .map(|v| String::try_from(v.try_clone().map_err(|_| bad(key))?).map_err(|_| bad(key)))
+            .transpose()
+    };
+    let mut out = TaskFields {
+        title: task.title,
+        notes: task.notes,
+        due: task.due,
+        due_time: task.due_time,
+        remind_at: task.remind_at,
+        repeat: task.repeat,
+        starred: task.starred,
+        mail: task.mail,
+    };
+    if let Some(title) = text(edit::TITLE)? {
+        out.title = self::title(&title)?;
+    }
+    if let Some(notes) = text(edit::NOTES)? {
+        if notes.chars().count() > MAX_NOTES {
+            return Err(CommandError::InvalidArgs(format!(
+                "task notes are at most {MAX_NOTES} characters"
+            )));
+        }
+        out.notes = notes;
+    }
+    if let Some(due) = text(edit::DUE)? {
+        out.due = self::due(&due)?.to_owned();
+    }
+    if let Some(value) = fields.get(edit::DUE_TIME) {
+        let minutes = i32::try_from(value).map_err(|_| bad(edit::DUE_TIME))?;
+        out.due_time = match minutes {
+            -1 => None,
+            0..1440 => Some(minutes.unsigned_abs()),
+            _ => return Err(bad(edit::DUE_TIME)),
+        };
+    }
+    if let Some(value) = fields.get(edit::REMIND_AT) {
+        let at = i64::try_from(value).map_err(|_| bad(edit::REMIND_AT))?;
+        out.remind_at = (at > 0).then_some(at);
+    }
+    if let Some(repeat) = text(edit::REPEAT)? {
+        if repeat.len() > 200 || repeat.contains(['\r', '\n']) {
+            return Err(bad(edit::REPEAT));
+        }
+        out.repeat = repeat;
+    }
+    if let Some(value) = fields.get(edit::STARRED) {
+        out.starred = bool::try_from(value).map_err(|_| bad(edit::STARRED))?;
+    }
+    if let Some(mail) = text(edit::MAIL)? {
+        if mail.len() > 998 || mail.contains(['\r', '\n', '<', '>']) {
+            return Err(bad(edit::MAIL));
+        }
+        out.mail = mail;
+    }
+    Ok(out)
+}
+
+fn bad(key: &str) -> CommandError {
+    CommandError::InvalidArgs(format!("bad task field {key:?}"))
+}
+
 fn value(value: Value<'_>) -> OwnedValue {
     // Plain strings and numbers always convert.
     OwnedValue::try_from(value).expect("no file descriptors")
@@ -233,6 +301,13 @@ impl AgendaService {
                 ])
             })
             .collect())
+    }
+
+    /// A task changed in Katna: it goes to the service soon, and clients
+    /// read again.
+    async fn changed_here(&self, emitter: &SignalEmitter<'_>) -> zbus::Result<()> {
+        self.daemon.wake_task_sync();
+        Self::changed(emitter).await
     }
 
     fn task_list(&self) -> Result<Vec<Item>, CommandError> {
@@ -318,8 +393,145 @@ macro_rules! agenda_interface {
                 Ok(())
             }
 
-            /// Katna has no calendar or tasks page yet to show one in
-            /// from here.
+            async fn add_task_to(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                list: i64,
+                parent: String,
+                title: String,
+            ) -> fdo::Result<String> {
+                let fields = TaskFields {
+                    title: self::title(&title)?,
+                    ..TaskFields::default()
+                };
+                let parent = if parent.is_empty() {
+                    None
+                } else {
+                    Some(task_id(&parent)?)
+                };
+                let id = {
+                    let mut store = self.daemon.store();
+                    let list = if list == 0 {
+                        store.default_task_list().map_err(CommandError::from)?
+                    } else {
+                        list
+                    };
+                    store
+                        .add_task_to(list, parent, &fields)
+                        .map_err(CommandError::from)?
+                };
+                tracing::info!(id, "task added");
+                self.changed_here(&emitter).await?;
+                Ok(format!("{TASK_ID}{id}"))
+            }
+
+            async fn edit_task(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                id: String,
+                fields: Item,
+            ) -> fdo::Result<()> {
+                let row = task_id(&id)?;
+                {
+                    let mut store = self.daemon.store();
+                    let task = store
+                        .task(row)
+                        .map_err(CommandError::from)?
+                        .ok_or_else(|| fdo::Error::UnknownObject(format!("no task {id}")))?;
+                    let fields = edited(task, &fields)?;
+                    store.edit_task(row, &fields).map_err(CommandError::from)?;
+                }
+                self.changed_here(&emitter).await?;
+                Ok(())
+            }
+
+            async fn move_task(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                id: String,
+                list: i64,
+            ) -> fdo::Result<()> {
+                let row = task_id(&id)?;
+                let known = self
+                    .daemon
+                    .store()
+                    .task_lists()
+                    .map_err(CommandError::from)?;
+                if !known.iter().any(|l| l.id == list) {
+                    return Err(fdo::Error::UnknownObject(format!("no task list {list}")));
+                }
+                let found = self
+                    .daemon
+                    .store()
+                    .move_task(row, list)
+                    .map_err(CommandError::from)?;
+                if !found {
+                    return Err(fdo::Error::UnknownObject(format!("no task {id}")));
+                }
+                self.changed_here(&emitter).await?;
+                Ok(())
+            }
+
+            async fn add_task_list(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                account: i64,
+                title: String,
+            ) -> fdo::Result<i64> {
+                let title = self::title(&title)?;
+                let account = (account != 0).then_some(katna_core::AccountId(account));
+                if let Some(account) = account {
+                    let accounts = self.daemon.store().accounts().map_err(CommandError::from)?;
+                    if !accounts.iter().any(|a| a.id == account) {
+                        return Err(CommandError::UnknownAccount(account.0).into());
+                    }
+                }
+                let id = self
+                    .daemon
+                    .store()
+                    .add_task_list(account, &title)
+                    .map_err(CommandError::from)?;
+                self.changed_here(&emitter).await?;
+                Ok(id)
+            }
+
+            async fn rename_task_list(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                list: i64,
+                title: String,
+            ) -> fdo::Result<()> {
+                let title = self::title(&title)?;
+                let found = self
+                    .daemon
+                    .store()
+                    .rename_task_list(list, &title)
+                    .map_err(CommandError::from)?;
+                if !found {
+                    return Err(fdo::Error::UnknownObject(format!("no task list {list}")));
+                }
+                self.changed_here(&emitter).await?;
+                Ok(())
+            }
+
+            async fn delete_task_list(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                list: i64,
+            ) -> fdo::Result<()> {
+                let found = self
+                    .daemon
+                    .store()
+                    .delete_task_list(list)
+                    .map_err(CommandError::from)?;
+                if !found {
+                    return Err(fdo::Error::UnknownObject(format!("no task list {list}")));
+                }
+                self.changed_here(&emitter).await?;
+                Ok(())
+            }
+
+            /// Katna has no calendar or tasks page yet to show one in.
             async fn open(&self, _id: String) -> bool {
                 false
             }
@@ -369,6 +581,48 @@ mod tests {
             "+026-09-29",
         ] {
             assert!(due(bad).is_err(), "{bad}");
+        }
+    }
+    #[test]
+    fn edits_change_only_the_fields_sent() {
+        let task = Task {
+            title: "Old".into(),
+            notes: "keep".into(),
+            due_time: Some(600),
+            remind_at: Some(1_790_825_400),
+            starred: true,
+            ..Task::default()
+        };
+        let fields = Item::from([
+            (edit::TITLE.to_owned(), value(" New\n title ".into())),
+            (edit::DUE.to_owned(), value("2026-10-02".into())),
+            (edit::DUE_TIME.to_owned(), value((-1i32).into())),
+            (edit::REMIND_AT.to_owned(), value(0i64.into())),
+            (edit::STARRED.to_owned(), value(false.into())),
+        ]);
+        let out = edited(task, &fields).unwrap();
+        assert_eq!(out.title, "New title");
+        assert_eq!(out.notes, "keep");
+        assert_eq!(out.due, "2026-10-02");
+        assert_eq!(out.due_time, None);
+        assert_eq!(out.remind_at, None);
+        assert!(!out.starred);
+    }
+
+    #[test]
+    fn bad_edits_are_refused() {
+        for (key, v) in [
+            (edit::DUE_TIME, value(1440i32.into())),
+            (edit::DUE_TIME, value("noon".into())),
+            (edit::DUE, value("2026-02-30".into())),
+            (edit::TITLE, value(" ".into())),
+            (edit::NOTES, value("x".repeat(MAX_NOTES + 1).into())),
+            (edit::REPEAT, value("FREQ=DAILY\nX".into())),
+            (edit::STARRED, value(1i32.into())),
+            (edit::MAIL, value("<id@example.org>".into())),
+        ] {
+            let fields = Item::from([(key.to_owned(), v)]);
+            assert!(edited(Task::default(), &fields).is_err(), "{key}");
         }
     }
 }
