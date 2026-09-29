@@ -54,6 +54,10 @@ impl Key {
     }
 }
 
+/// A place in the text, from outside: the part, the piece in it and a
+/// byte offset in the piece.
+pub(super) type TextPlace = (usize, usize, usize);
+
 /// What owns a [`TextSelection`]: the conversation's window, the
 /// attachment viewer.
 pub(super) trait SelectHost: 'static + Sized {
@@ -63,6 +67,10 @@ pub(super) trait SelectHost: 'static + Sized {
     fn text_focus(&self) -> FocusHandle {
         self.selection().focus.clone()
     }
+
+    /// A drag or click that selects has ended (the PDF viewer turns the
+    /// selection into a highlight when marking up).
+    fn selected(&mut self, _cx: &mut Context<Self>) {}
 }
 
 /// A place in the conversation's text: a byte offset in a piece.
@@ -203,6 +211,15 @@ impl TextSelection {
 
     pub(super) fn is_empty(&self) -> bool {
         self.ordered().is_none()
+    }
+
+    /// Where the selection starts and ends, start first.
+    pub(super) fn span(&self) -> Option<(TextPlace, TextPlace)> {
+        let (start, end) = self.ordered()?;
+        Some((
+            (start.key.part, start.key.piece, start.offset),
+            (end.key.part, end.key.piece, end.offset),
+        ))
     }
 
     /// The selected part of the piece `key`, `len` bytes long.
@@ -596,6 +613,7 @@ fn release<T: SelectHost>(this: &mut T, cx: &mut Context<T>) {
     if !selected.is_empty() {
         katna_ui::native::write_to_primary(cx, ClipboardItem::new_string(selected));
     }
+    this.selected(cx);
 }
 
 /// Copies the selection, if any.
