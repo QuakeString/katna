@@ -512,6 +512,13 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             return;
         }
     };
+    let agenda = match SignalEmitter::new(&connection, ids::AGENDA_OBJECT_PATH) {
+        Ok(emitter) => emitter,
+        Err(err) => {
+            tracing::error!(%err, "no signal emitter");
+            return;
+        }
+    };
     while let Ok(notice) = notices.recv().await {
         let sent = match notice {
             Notice::AccountsChanged => PimService::accounts_changed(&emitter).await,
@@ -523,6 +530,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
+            Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");
