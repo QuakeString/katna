@@ -10,7 +10,8 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, ClickEvent, Context, Entity, FontWeight, Task, Window, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Entity, FontWeight, MouseButton, Task, Window, div,
+    prelude::*, rgba,
 };
 use jiff::Zoned;
 use jiff::tz::TimeZone;
@@ -316,7 +317,12 @@ impl MailWindow {
             .map(|(day, events)| {
                 let events = events.into_iter().map(|occurrence| {
                     let open = occurrence.clone();
+                    let menu = self.calendar_menu_on(
+                        super::menu::CalTarget::Event(Box::new(occurrence.clone())),
+                        cx,
+                    );
                     self.schedule_event(&format!("found-{day}"), occurrence, th)
+                        .on_mouse_down(MouseButton::Right, menu)
                         .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                             cx.stop_propagation();
                             this.open_found(open.clone(), event.position(), cx);
