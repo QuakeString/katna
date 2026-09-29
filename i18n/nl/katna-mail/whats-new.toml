@@ -1109,3 +1109,57 @@ afzender van wie u altijd afbeeldingen toont, worden nu alleen geladen
 als uw e-mailprovider bevestigt dat het bericht echt van die afzender
 komt.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Meer over je build"
+text = """
+Het venster Updates noemt nu de laatste wijziging van elke versie, laat
+zien waar je exemplaar vandaan komt en wanneer Katna voor het laatst op
+updates heeft gecontroleerd.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Een klein toneelstukje in Trakteer me op een koffie"
+text = """
+Laat de aanwijzer rusten op Trakteer me op een koffie in Over Katna: de
+knop vraagt om koffie, thee, pizza, dan om helemaal niks, neemt genoegen
+met water en bedankt je met een paar sterretjes. Het speelt telkens één
+keer en blijft stil als je beweging hebt verminderd.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Een duidelijker updatevenster"
+text = """
+Er loopt een balk terwijl Katna naar updates zoekt, en de nieuwe versie
+valt op in een eigen kleur naast de versie die je hebt.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Toetsen die het venster volgen waarin je zit"
+text = """
+Met het gesprek naast de lijst verplaatsen Omhoog en Omlaag nu de
+selectie in de lijst en tonen ze elk gesprek. Tab of Enter gaat het
+gesprek in, waar Omhoog en Omlaag het scrollen; Esc of Shift+Tab gaat
+terug naar de lijst. F6 wisselt tussen vensters, zoals in andere
+mailprogramma’s.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Mappen schuiven open en dicht"
+text = """
+Als je in het mappenvenster op de pijl naast een account of map klikt,
+schuift wat erin zit nu open of dicht, waarbij de mappen eronder
+meeglijden, in plaats van te springen.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Mappen, menu’s en dialogen met het toetsenbord"
+text = """
+Met Shift+Tab of F6 kom je in het mappenvenster, waar Omhoog en Omlaag
+elke map openen en Enter naar de mail gaat. Omhoog en Omlaag lopen door
+elk menu en Enter kiest. Shift+F10 of de menutoets opent het
+rechtermuisknopmenu van de geselecteerde mail. Dialogen nemen de toetsen
+over zodra ze opengaan: Enter beantwoordt, Esc annuleert en Tab blijft
+erbinnen. In een nieuw bericht verzendt Ctrl+Enter vanuit elk veld en
+sluit Esc het, waarbij een concept bewaard blijft.
+"""

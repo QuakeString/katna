@@ -1080,3 +1080,55 @@ oavsett vad länkens text säger. Bilder från en avsändare du alltid visar
 bilder från läses nu bara in när din e-postleverantör bekräftar att
 meddelandet verkligen kommer från den avsändaren.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Mer om ditt bygge"
+text = """
+Fönstret Uppdateringar visar nu senaste ändringen i varje version, var
+din kopia kommer ifrån och när Katna senast sökte efter uppdateringar.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Ett litet skådespel i Bjud mig på en kaffe"
+text = """
+Låt pekaren vila på Bjud mig på en kaffe i Om Katna: knappen ber om
+kaffe, te, pizza, sedan om ingenting alls, nöjer sig med vatten och
+säger tack med några gnistor. Det spelas en gång varje gång och står
+still om du har minskat rörelse.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Ett tydligare uppdateringsfönster"
+text = """
+Ett rörligt streck visas medan Katna söker efter uppdateringar, och den
+nya versionen sticker ut i en egen färg bredvid den du har.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Tangenter som följer fönstret du är i"
+text = """
+Med konversationen bredvid listan flyttar Upp och Ned nu i listan och
+visar varje konversation. Tab eller Retur går in i konversationen, där
+Upp och Ned rullar den; Esc eller Skift+Tab går tillbaka till listan. F6
+växlar mellan fönstren, som i andra e-postprogram.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Mappar glider upp och igen"
+text = """
+När du klickar på pilen bredvid ett konto eller en mapp i mappfönstret
+glider nu innehållet upp eller igen, och mapparna under glider med, i
+stället för att hoppa.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Mappar, menyer och dialogrutor med tangentbordet"
+text = """
+Skift+Tab eller F6 tar dig till mappfönstret, där Upp och Ned öppnar
+varje mapp och Retur går till dess e-post. Upp och Ned flyttar genom
+alla menyer, och Retur väljer. Skift+F10 eller menytangenten öppnar
+högerklicksmenyn för det markerade e-postmeddelandet. Dialogrutor tar
+över tangenterna när de öppnas: Retur svarar, Esc avbryter och Tab
+stannar inuti dem. I ett nytt meddelande skickar Ctrl+Retur från vilket
+fält som helst och Esc stänger det och behåller ett utkast.
+"""

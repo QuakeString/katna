@@ -1074,3 +1074,54 @@ văn bản của liên kết ghi gì. Hình ảnh từ người gửi mà bạn 
 hình ảnh nay chỉ được tải khi nhà cung cấp thư của bạn xác nhận thư thực
 sự đến từ họ.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Thêm về bản dựng của bạn"
+text = """
+Cửa sổ Cập nhật giờ cho biết thay đổi mới nhất của từng phiên bản, bản
+của bạn đến từ đâu và lần gần nhất Katna kiểm tra cập nhật là khi nào.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Một màn diễn nhỏ ở nút Mời tôi một ly cà phê"
+text = """
+Đặt con trỏ lên nút Mời tôi một ly cà phê trong Giới thiệu về Katna: nút
+sẽ xin cà phê, trà, pizza, rồi chẳng xin gì nữa, chịu uống nước lọc và
+cảm ơn bạn bằng vài tia lấp lánh. Mỗi lần chỉ diễn một lượt và đứng yên
+khi bạn đã giảm chuyển động.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Cửa sổ Cập nhật rõ ràng hơn"
+text = """
+Một thanh chạy hiện ra khi Katna kiểm tra bản cập nhật, và phiên bản mới
+nổi bật với màu riêng bên cạnh phiên bản bạn đang dùng.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Phím đi theo ngăn bạn đang ở"
+text = """
+Khi cuộc trò chuyện nằm cạnh danh sách, Lên và Xuống giờ di chuyển trong
+danh sách và hiện từng cuộc trò chuyện. Tab hoặc Enter vào cuộc trò
+chuyện, nơi Lên và Xuống cuộn nó; Esc hoặc Shift+Tab quay về danh sách.
+F6 chuyển giữa các ngăn, như trong các ứng dụng thư khác.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Thư mục trượt mở và trượt đóng"
+text = """
+Nhấp vào mũi tên bên cạnh một tài khoản hoặc thư mục trong ngăn thư mục
+giờ sẽ trượt mở hoặc trượt đóng nội dung bên trong, các thư mục bên dưới
+trượt theo, thay vì nhảy.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Thư mục, menu và hộp thoại bằng bàn phím"
+text = """
+Shift+Tab hoặc F6 đưa bạn tới ngăn thư mục, nơi Lên và Xuống mở từng thư
+mục và Enter chuyển sang thư của nó. Lên và Xuống di chuyển trong mọi
+menu, và Enter chọn. Shift+F10 hoặc phím Menu mở menu chuột phải của thư
+đang chọn. Hộp thoại nhận phím ngay khi mở: Enter trả lời, Esc hủy và
+Tab ở lại bên trong. Trong thư mới, Ctrl+Enter gửi từ bất kỳ trường nào
+và Esc đóng thư, giữ lại một thư nháp.
+"""

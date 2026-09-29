@@ -1132,3 +1132,58 @@ was der Linktext sagt. Bilder von einem Absender, von dem Sie immer
 Bilder anzeigen, werden jetzt nur noch geladen, wenn Ihr E-Mail-Anbieter
 bestätigt, dass die Nachricht wirklich von ihm stammt.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Mehr über Ihren Build"
+text = """
+Das Fenster „Updates“ nennt jetzt die letzte Änderung jeder Version,
+zeigt, woher Ihre Kopie stammt, und wann Katna zuletzt nach Updates
+gesucht hat.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Ein kleines Theaterstück bei „Spendieren Sie mir einen Kaffee“"
+text = """
+Halten Sie den Mauszeiger in „Über Katna“ auf „Spendieren Sie mir einen
+Kaffee“: Der Knopf bittet um Kaffee, Tee, Pizza, dann um gar nichts,
+gibt sich mit Wasser zufrieden und sagt mit ein paar Funken Danke. Es
+läuft jedes Mal einmal ab und bleibt bei reduzierter Bewegung ruhig.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Ein übersichtlicheres Update-Fenster"
+text = """
+Während Katna nach Updates sucht, läuft ein Balken, und die neue Version
+hebt sich in einer eigenen Farbe neben der Version ab, die Sie haben.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Tasten, die dem Bereich folgen, in dem Sie sind"
+text = """
+Steht die Unterhaltung neben der Liste, bewegen ↑ und ↓ jetzt die
+Auswahl in der Liste und zeigen jede Unterhaltung an. Tab oder
+Eingabetaste wechselt in die Unterhaltung, wo ↑ und ↓ sie scrollen; Esc
+oder Umschalt+Tab führt zurück zur Liste. F6 wechselt zwischen den
+Bereichen, wie in anderen Mailprogrammen.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Ordner öffnen und schließen sich mit einem Gleiten"
+text = """
+Ein Klick auf den Pfeil neben einem Konto oder Ordner im Ordnerbereich
+lässt jetzt den Inhalt auf- oder zugleiten, und die Ordner darunter
+rutschen mit, statt zu springen.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Ordner, Menüs und Dialoge per Tastatur"
+text = """
+Mit Umschalt+Tab oder F6 erreichen Sie den Ordnerbereich, wo ↑ und ↓
+jeden Ordner öffnen und die Eingabetaste zu seinen Mails wechselt. ↑ und
+↓ bewegen sich durch jedes Menü, die Eingabetaste wählt aus.
+Umschalt+F10 oder die Menütaste öffnet das Kontextmenü der ausgewählten
+Mail. Dialoge übernehmen die Tasten, sobald sie sich öffnen: Die
+Eingabetaste antwortet, Esc bricht ab, und Tab bleibt in ihnen. In einer
+neuen Nachricht sendet Strg+Eingabetaste aus jedem Feld, und Esc
+schließt sie und behält einen Entwurf.
+"""

@@ -1100,3 +1100,50 @@ Weka kielekezi juu ya kiungo kwenye ujumbe na anwani inayofunguliwa kikweli huon
 huku jina la tovuti likionekana wazi, bila kujali maandishi ya kiungo yanasema nini. Picha kutoka kwa mtumaji ambaye
 unamwonyesha picha kila wakati sasa hupakiwa tu mtoa huduma wako wa barua anapothibitisha kuwa ujumbe huo umetoka kwake kweli.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Zaidi kuhusu muundo wako"
+text = """
+Dirisha la Masasisho sasa linataja badiliko la hivi karibuni la kila toleo, linasema nakala yako
+ilitoka wapi na Katna ilikagua masasisho mara ya mwisho lini.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Igizo dogo ndani ya Ninunulie kahawa"
+text = """
+Weka kielekezi juu ya Ninunulie kahawa katika Kuhusu Katna: inaomba kahawa, chai, pizza, kisha
+hakuna kabisa, inaridhika na maji na kusema asante kwa mimuliko michache. Huchezwa mara moja kila
+wakati, na hubaki tuli ukipunguza mwendo.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Dirisha la masasisho lililo wazi zaidi"
+text = """
+Upau unaokimbia huonekana wakati Katna inakagua masasisho, na toleo jipya hujitokeza kwa rangi yake
+kando ya toleo ulilo nalo.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Vitufe vinavyofuata kidirisha ulichomo"
+text = """
+Mazungumzo yakiwa kando ya orodha, ↑ na ↓ husogea kwenye orodha na kuonyesha kila mazungumzo. Tab au
+Enter huingia kwenye mazungumzo, ambapo ↑ na ↓ huyasogeza; Esc au Shift+Tab hurudi kwenye orodha. F6
+husogea kati ya vidirisha, kama katika programu nyingine za barua.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Folda hutelezesha kufunguka na kufungika"
+text = """
+Kubofya mshale kando ya akaunti au folda kwenye kidirisha cha folda sasa hutelezesha kufungua au
+kufunga vilivyomo, huku folda za chini zikiteleza pamoja, badala ya kuruka.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Folda, menyu na vidirisha vya mazungumzo kwa kibodi"
+text = """
+Shift+Tab au F6 hufikia kidirisha cha folda, ambapo ↑ na ↓ hufungua kila folda na Enter huenda
+kwenye barua zake. ↑ na ↓ husogea kwenye menyu yoyote, na Enter huchagua. Shift+F10 au kitufe cha
+menyu hufungua menyu ya kubofya kulia ya barua iliyochaguliwa. Madirisha ya mazungumzo hupokea
+vitufe yanapofunguka: Enter hujibu, Esc hughairi, na Tab hubaki ndani yake. Kwenye ujumbe mpya,
+Ctrl+Enter hutuma kutoka sehemu yoyote na Esc huufunga, ukihifadhi rasimu.
+"""
