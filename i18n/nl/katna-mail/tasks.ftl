@@ -42,6 +42,9 @@ tasks-delete = Verwijderen
 tasks-move-to = Verplaatsen naar { $list }
 tasks-from-mail = E-mail
 tasks-open-mail = De e-mail openen
+tasks-from-note = Notitie
+tasks-open-note = De notitie openen
+tasks-note-gone = Die notitie is er niet meer.
 tasks-no-subject = (geen onderwerp)
 
 ## The details dialog

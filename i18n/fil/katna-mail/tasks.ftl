@@ -42,6 +42,9 @@ tasks-delete = I-delete
 tasks-move-to = Ilipat sa { $list }
 tasks-from-mail = Mail
 tasks-open-mail = Buksan ang mail
+tasks-from-note = Tala
+tasks-open-note = Buksan ang tala
+tasks-note-gone = Wala na rito ang talang iyon.
 tasks-no-subject = (walang paksa)
 
 ## The details dialog

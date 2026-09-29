@@ -42,6 +42,9 @@ tasks-delete = Share
 tasks-move-to = Mayar zuwa { $list }
 tasks-from-mail = Wasiƙu
 tasks-open-mail = Buɗe wasiƙar
+tasks-from-note = Bayani
+tasks-open-note = Buɗe bayanin
+tasks-note-gone = Wannan bayanin ba ya nan kuma.
 tasks-no-subject = (babu jigo)
 
 ## The details dialog

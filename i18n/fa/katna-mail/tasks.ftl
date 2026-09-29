@@ -42,6 +42,9 @@ tasks-delete = حذف
 tasks-move-to = انتقال به { $list }
 tasks-from-mail = ایمیل
 tasks-open-mail = باز کردن ایمیل
+tasks-from-note = یادداشت
+tasks-open-note = باز کردن یادداشت
+tasks-note-gone = آن یادداشت دیگر اینجا نیست.
 tasks-no-subject = (بدون موضوع)
 
 ## The details dialog

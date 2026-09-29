@@ -41,6 +41,9 @@ tasks-delete = 削除
 tasks-move-to = { $list } に移動
 tasks-from-mail = メール
 tasks-open-mail = メールを開く
+tasks-from-note = メモ
+tasks-open-note = メモを開く
+tasks-note-gone = そのメモは見つかりません。
 tasks-no-subject = （件名なし）
 
 ## The details dialog

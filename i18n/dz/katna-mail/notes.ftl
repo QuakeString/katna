@@ -77,6 +77,10 @@ notes-meeting-actions = ལས་འགན་ཚུ
 notes-event = བྱུང་རིམ
 notes-open-event = བྱུང་རིམ་ཁ་ཕྱེ
 
+## Tasks
+
+notes-make-task = ལཱ་བཟོ།
+
 ## Colors (tooltips)
 
 notes-color-none = ཚོན་ཁ་མེད།

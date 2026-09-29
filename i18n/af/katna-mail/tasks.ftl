@@ -42,6 +42,9 @@ tasks-delete = Vee uit
 tasks-move-to = Skuif na { $list }
 tasks-from-mail = E-pos
 tasks-open-mail = Maak die e-pos oop
+tasks-from-note = Nota
+tasks-open-note = Maak die nota oop
+tasks-note-gone = Daardie nota is nie meer hier nie.
 tasks-no-subject = (geen onderwerp)
 
 ## The details dialog

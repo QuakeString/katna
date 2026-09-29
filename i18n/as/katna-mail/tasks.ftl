@@ -42,6 +42,9 @@ tasks-delete = মচক
 tasks-move-to = { $list }লৈ স্থানান্তৰ কৰক
 tasks-from-mail = মেইল
 tasks-open-mail = মেইল খোলক
+tasks-from-note = টোকা
+tasks-open-note = টোকা খোলক
+tasks-note-gone = সেই টোকা আৰু ইয়াত নাই।
 tasks-no-subject = (কোনো বিষয় নাই)
 
 ## The details dialog

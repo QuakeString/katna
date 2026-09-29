@@ -1387,3 +1387,15 @@ title = "Bắt đầu cuộc gọi video từ một thư"
 text = """
 Nhấp chuột phải vào một cuộc trò chuyện, hoặc mở ⋮, rồi chọn Bắt đầu cuộc gọi video: cuộc gọi sẽ mở ra, kèm một thư mới chứa liên kết gửi đến mọi người trong cuộc trò chuyện. Tài khoản Gmail dùng Google Meet; các tài khoản khác nhận một phòng Jitsi Meet. Thư có liên kết cuộc gọi Meet, Teams, Zoom, Webex, Jitsi, WhatsApp hoặc Telegram nay hiển thị nút Tham gia.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Biến một dòng danh sách kiểm tra thành việc cần làm"
+text = """
+Đặt con trỏ vào một dòng danh sách kiểm tra trong ghi chú và chọn Biến thành việc cần làm: dòng đó sẽ chuyển sang mục Việc cần làm của bạn. Thẻ Ghi chú trên trang Việc cần làm sẽ mở lại ghi chú.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Ngăn bạn đang dùng nổi bật lên"
+text = """
+Bên cạnh danh sách, chỉ ngăn đang nhận bàn phím mới giữ bóng đổ; danh sách, cuộc trò chuyện hoặc bảng liên hệ mà bạn không dùng sẽ lùi xuống với viền nhạt hơn, và thay đổi đó nhẹ nhàng theo bạn khi bạn nhấp chuột.
+"""

@@ -1420,3 +1420,15 @@ title = "Bir e-postadan görüntülü görüşme başlatın"
 text = """
 Bir konuşmaya sağ tıklayın veya ⋮ menüsünü açıp Görüntülü görüşme başlat’ı seçin: görüşme açılır ve konuşmadaki herkese bağlantıyı içeren yeni bir e-posta gider. Gmail hesapları Google Meet kullanır, diğerleri bir Jitsi Meet odası alır. Meet, Teams, Zoom, Webex, Jitsi, WhatsApp veya Telegram görüşme bağlantısı içeren e-postalarda artık bir Katıl düğmesi görünür.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Bir kontrol listesi satırını göreve dönüştürün"
+text = """
+Bir notta imleci kontrol listesi satırına getirip Göreve dönüştür seçeneğini seçin: satır görevlerinize gider. Görevler sayfasındaki Not çipi notu yeniden açar.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "İçinde olduğunuz bölme öne çıkar"
+text = """
+Listenin yanında yalnızca klavyeyi alan bölme gölgesini korur; kullanmadığınız liste, konuşma veya kişi paneli daha soluk bir kenarla geri çekilir ve değişiklik tıkladıkça yumuşakça sizi izler.
+"""

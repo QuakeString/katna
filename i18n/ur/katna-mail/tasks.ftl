@@ -42,6 +42,9 @@ tasks-delete = حذف کریں
 tasks-move-to = { $list } میں منتقل کریں
 tasks-from-mail = میل
 tasks-open-mail = میل کھولیں
+tasks-from-note = نوٹ
+tasks-open-note = نوٹ کھولیں
+tasks-note-gone = وہ نوٹ اب یہاں نہیں ہے۔
 tasks-no-subject = (کوئی موضوع نہیں)
 
 ## The details dialog

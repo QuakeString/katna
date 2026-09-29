@@ -41,6 +41,9 @@ tasks-delete = 刪除
 tasks-move-to = 移至 { $list }
 tasks-from-mail = 郵件
 tasks-open-mail = 開啟郵件
+tasks-from-note = 記事
+tasks-open-note = 開啟記事
+tasks-note-gone = 這則記事已不存在。
 tasks-no-subject = （無主旨）
 
 ## The details dialog

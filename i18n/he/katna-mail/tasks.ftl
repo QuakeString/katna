@@ -43,6 +43,9 @@ tasks-delete = מחיקה
 tasks-move-to = העברה אל { $list }
 tasks-from-mail = אימייל
 tasks-open-mail = פתיחת האימייל
+tasks-from-note = הערה
+tasks-open-note = פתיחת ההערה
+tasks-note-gone = ההערה הזאת כבר לא כאן.
 tasks-no-subject = (ללא נושא)
 
 ## The details dialog

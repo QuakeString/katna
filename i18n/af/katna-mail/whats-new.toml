@@ -1389,3 +1389,15 @@ title = "Begin ’n video-oproep vanuit ’n e-pos"
 text = """
 Regsklik op ’n gesprek, of maak ⋮ oop, en kies Begin ’n video-oproep: die oproep maak oop, met ’n nuwe e-pos met sy skakel aan almal in die gesprek. Gmail-rekeninge gebruik Google Meet; ander kry ’n Jitsi Meet-kamer. E-pos met ’n Meet-, Teams-, Zoom-, Webex-, Jitsi-, WhatsApp- of Telegram-oproepskakel wys nou ’n Sluit aan-knoppie.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Maak 'n kontrolelysreël 'n taak"
+text = """
+Plaas die wyser op 'n kontrolelysreël in 'n nota en kies Maak dit 'n taak: die reël gaan na jou take. Die Nota-skyfie op die Take-bladsy maak die nota weer oop.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Die paneel waarin jy is, val op"
+text = """
+Langs die lys behou net die paneel wat die sleutels het sy skaduwee; die lys, die gesprek of die kontakpaneel wat jy nie gebruik nie, sak terug met 'n vaagker rand, en die verandering volg jou sag terwyl jy klik.
+"""

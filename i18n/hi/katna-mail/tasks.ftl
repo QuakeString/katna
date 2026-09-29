@@ -42,6 +42,9 @@ tasks-delete = मिटाएं
 tasks-move-to = { $list } में ले जाएं
 tasks-from-mail = मेल
 tasks-open-mail = मेल खोलें
+tasks-from-note = नोट
+tasks-open-note = नोट खोलें
+tasks-note-gone = वह नोट अब यहां नहीं है।
 tasks-no-subject = (कोई विषय नहीं)
 
 ## The details dialog

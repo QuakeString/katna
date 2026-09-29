@@ -41,6 +41,9 @@ tasks-delete = 删除
 tasks-move-to = 移至 { $list }
 tasks-from-mail = 邮件
 tasks-open-mail = 打开邮件
+tasks-from-note = 笔记
+tasks-open-note = 打开笔记
+tasks-note-gone = 该笔记已不存在。
 tasks-no-subject = （无主题）
 
 ## The details dialog

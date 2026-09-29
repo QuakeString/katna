@@ -42,6 +42,9 @@ tasks-delete = Sil
 tasks-move-to = { $list } listesine taşı
 tasks-from-mail = Posta
 tasks-open-mail = E-postayı aç
+tasks-from-note = Not
+tasks-open-note = Notu aç
+tasks-note-gone = O not artık burada değil.
 tasks-no-subject = (konu yok)
 
 ## The details dialog

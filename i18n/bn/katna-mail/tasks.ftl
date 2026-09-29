@@ -42,6 +42,9 @@ tasks-delete = মুছুন
 tasks-move-to = { $list }-এ সরান
 tasks-from-mail = মেল
 tasks-open-mail = মেল খুলুন
+tasks-from-note = নোট
+tasks-open-note = নোট খুলুন
+tasks-note-gone = সেই নোটটি আর এখানে নেই।
 tasks-no-subject = (কোনো বিষয় নেই)
 
 ## The details dialog

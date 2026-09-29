@@ -1375,3 +1375,15 @@ title = "Anzisha simu ya video kutoka barua pepe"
 text = """
 Bofya kulia mazungumzo, au fungua ⋮, kisha uchague Anzisha simu ya video: simu hufunguka, pamoja na barua pepe mpya kwa kila mtu katika mazungumzo yenye kiungo chake. Akaunti za Gmail hutumia Google Meet; nyingine hupata chumba cha Jitsi Meet. Barua pepe zenye kiungo cha simu ya Meet, Teams, Zoom, Webex, Jitsi, WhatsApp au Telegram sasa zinaonyesha kitufe cha Jiunge.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Fanya mstari wa orodha hakiki kuwa jukumu"
+text = """
+Weka kielekezi kwenye mstari wa orodha hakiki katika dokezo, kisha uchague Ifanye jukumu: mstari huo huenda kwenye majukumu yako. Chipu yake ya Dokezo kwenye ukurasa wa Majukumu hufungua dokezo tena.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Kidirisha ulichomo kinajitokeza"
+text = """
+Kando ya orodha, ni kidirisha kinachopokea vitufe tu kinachobaki na kivuli chake; orodha, mazungumzo au paneli ya mwasiliani usiyoitumia hurudi nyuma ikiwa na ukingo hafifu zaidi, na mabadiliko hukufuata taratibu unapobofya.
+"""

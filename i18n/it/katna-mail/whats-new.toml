@@ -1446,3 +1446,15 @@ title = "Avvia una videochiamata da una mail"
 text = """
 Fai clic con il pulsante destro su una conversazione, oppure apri ⋮, e scegli Avvia una videochiamata: la chiamata si apre e una nuova mail con il suo link viene inviata a tutti i partecipanti alla conversazione. Gli account Gmail usano Google Meet; gli altri ricevono una stanza Jitsi Meet. Le mail con un link a una chiamata Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ora mostrano un pulsante Partecipa.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Trasforma una riga di elenco in un’attività"
+text = """
+Metti il cursore su una riga di elenco in una nota e scegli Trasforma in attività: la riga passa alle tue attività. Il suo chip Nota nella pagina Attività riapre la nota.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Il riquadro in cui ti trovi risalta"
+text = """
+Accanto all’elenco, solo il riquadro che riceve la tastiera mantiene la sua ombra; l’elenco, la conversazione o il pannello del contatto che non usi si abbassa con un bordo più tenue, e il cambio ti segue con dolcezza mentre fai clic.
+"""

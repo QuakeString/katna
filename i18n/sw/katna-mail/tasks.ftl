@@ -42,6 +42,9 @@ tasks-delete = Futa
 tasks-move-to = Hamishia { $list }
 tasks-from-mail = Barua
 tasks-open-mail = Fungua barua
+tasks-from-note = Dokezo
+tasks-open-note = Fungua dokezo
+tasks-note-gone = Dokezo hilo halipo hapa tena.
 tasks-no-subject = (hakuna mada)
 
 ## The details dialog

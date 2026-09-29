@@ -78,6 +78,10 @@ notes-meeting-actions = කළ යුතු දේ
 notes-event = සිදුවීම
 notes-open-event = සිදුවීම විවෘත කරන්න
 
+## Tasks
+
+notes-make-task = කාර්යයක් කරන්න
+
 ## Colors (tooltips)
 
 notes-color-none = වර්ණයක් නැත

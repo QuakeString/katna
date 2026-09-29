@@ -41,6 +41,9 @@ tasks-delete = ဖျက်ရန်
 tasks-move-to = { $list } သို့ ရွှေ့ရန်
 tasks-from-mail = မေးလ်
 tasks-open-mail = မေးလ်ကို ဖွင့်ရန်
+tasks-from-note = မှတ်စု
+tasks-open-note = မှတ်စုကို ဖွင့်ရန်
+tasks-note-gone = ထိုမှတ်စု ဤနေရာတွင် မရှိတော့ပါ။
 tasks-no-subject = (ခေါင်းစဉ်မရှိ)
 
 ## The details dialog

@@ -41,6 +41,9 @@ tasks-delete = ลบ
 tasks-move-to = ย้ายไปที่ { $list }
 tasks-from-mail = อีเมล
 tasks-open-mail = เปิดอีเมล
+tasks-from-note = โน้ต
+tasks-open-note = เปิดโน้ต
+tasks-note-gone = ไม่มีโน้ตนั้นแล้ว
 tasks-no-subject = (ไม่มีหัวเรื่อง)
 
 ## The details dialog

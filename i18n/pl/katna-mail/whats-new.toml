@@ -1424,3 +1424,15 @@ title = "Rozpocznij rozmowę wideo z wiadomości"
 text = """
 Kliknij konwersację prawym przyciskiem myszy lub otwórz ⋮ i wybierz Rozpocznij rozmowę wideo: rozmowa się otworzy, a do wszystkich w konwersacji trafi nowa wiadomość z linkiem. Konta Gmail używają Google Meet, pozostałe dostają pokój Jitsi Meet. Przy wiadomościach z linkiem do rozmowy w Meet, Teams, Zoom, Webex, Jitsi, WhatsApp lub Telegramie pojawia się teraz przycisk Dołącz.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Zamień wiersz listy kontrolnej w zadanie"
+text = """
+Ustaw kursor na wierszu listy kontrolnej w notatce i wybierz Zamień w zadanie: wiersz trafi do Twoich zadań. Jego znacznik Notatka na stronie Zadania ponownie otwiera notatkę.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Panel, w którym jesteś, się wyróżnia"
+text = """
+Obok listy tylko panel, który odbiera klawiaturę, zachowuje cień; lista, rozmowa lub panel kontaktu, z których nie korzystasz, cofa się z delikatniejszą krawędzią, a zmiana płynnie podąża za Twoim kliknięciem.
+"""

@@ -1467,3 +1467,15 @@ title = "Videoanruf aus einer Mail starten"
 text = """
 Klicken Sie mit der rechten Maustaste auf eine Unterhaltung oder öffnen Sie ⋮ und wählen Sie Videoanruf starten: Der Anruf wird geöffnet, und eine neue Mail mit dem Link geht an alle in der Unterhaltung. Gmail-Konten nutzen Google Meet, andere erhalten einen Jitsi-Meet-Raum. Bei Mails mit einem Link zu einem Anruf über Meet, Teams, Zoom, Webex, Jitsi, WhatsApp oder Telegram erscheint jetzt die Schaltfläche Teilnehmen.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Eine Checklistenzeile zur Aufgabe machen"
+text = """
+Setzen Sie den Cursor in einer Notiz auf eine Checklistenzeile und wählen Sie Zur Aufgabe machen: Die Zeile landet in Ihren Aufgaben. Über den Chip Notiz auf der Seite Aufgaben öffnen Sie die Notiz wieder.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Der Bereich, in dem Sie sind, hebt sich ab"
+text = """
+Neben der Liste behält nur der Bereich, der die Tastatureingaben erhält, seinen Schatten; die Liste, die Unterhaltung oder das Kontaktfeld, das Sie gerade nicht nutzen, tritt mit einem schwächeren Rand zurück, und die Änderung folgt Ihnen sanft, wenn Sie klicken.
+"""

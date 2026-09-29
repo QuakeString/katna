@@ -41,6 +41,9 @@ tasks-delete = Xóa
 tasks-move-to = Chuyển đến { $list }
 tasks-from-mail = Thư
 tasks-open-mail = Mở thư
+tasks-from-note = Ghi chú
+tasks-open-note = Mở ghi chú
+tasks-note-gone = Ghi chú đó không còn ở đây nữa.
 tasks-no-subject = (không có tiêu đề)
 
 ## The details dialog

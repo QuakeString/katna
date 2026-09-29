@@ -1400,3 +1400,15 @@ title = "Starta ett videosamtal från ett mejl"
 text = """
 Högerklicka på en konversation, eller öppna ⋮, och välj Starta ett videosamtal: samtalet öppnas, med ett nytt mejl med länken till alla i konversationen. Gmail-konton använder Google Meet; andra får ett Jitsi Meet-rum. Mejl med en samtalslänk till Meet, Teams, Zoom, Webex, Jitsi, WhatsApp eller Telegram visar nu en Anslut-knapp.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Gör en checklistrad till en uppgift"
+text = """
+Placera markören på en checklistrad i en anteckning och välj Gör till uppgift: raden hamnar bland dina uppgifter. Dess Anteckning-chip på sidan Uppgifter öppnar anteckningen igen.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Den ruta du är i sticker ut"
+text = """
+Bredvid listan behåller bara den ruta som har tangentbordet sin skugga; listan, konversationen eller kontaktpanelen som du inte använder sjunker tillbaka med en svagare kant, och ändringen följer dig mjukt när du klickar.
+"""

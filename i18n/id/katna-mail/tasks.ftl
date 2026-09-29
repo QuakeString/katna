@@ -41,6 +41,9 @@ tasks-delete = Hapus
 tasks-move-to = Pindahkan ke { $list }
 tasks-from-mail = Email
 tasks-open-mail = Buka email
+tasks-from-note = Catatan
+tasks-open-note = Buka catatan
+tasks-note-gone = Catatan itu sudah tidak ada.
 tasks-no-subject = (tanpa subjek)
 
 ## The details dialog

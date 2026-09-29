@@ -41,6 +41,9 @@ tasks-delete = ລຶບ
 tasks-move-to = ຍ້າຍໄປ { $list }
 tasks-from-mail = ອີເມວ
 tasks-open-mail = ເປີດອີເມວ
+tasks-from-note = ບັນທຶກ
+tasks-open-note = ເປີດບັນທຶກ
+tasks-note-gone = ບໍ່ມີບັນທຶກນັ້ນອີກແລ້ວ.
 tasks-no-subject = (ບໍ່ມີຫົວຂໍ້)
 
 ## The details dialog

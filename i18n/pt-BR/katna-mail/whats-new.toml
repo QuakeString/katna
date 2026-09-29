@@ -1431,3 +1431,15 @@ title = "Inicie uma videochamada a partir de um e-mail"
 text = """
 Clique com o botão direito em uma conversa, ou abra ⋮, e escolha Iniciar uma videochamada: a chamada é aberta, com um novo e-mail contendo o link para todos da conversa. Contas do Gmail usam o Google Meet; as outras recebem uma sala do Jitsi Meet. E-mails com um link de chamada do Meet, Teams, Zoom, Webex, Jitsi, WhatsApp ou Telegram agora mostram um botão Participar.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Transforme uma linha de lista em tarefa"
+text = """
+Coloque o cursor em uma linha de lista de uma nota e escolha Transformar em tarefa: a linha vai para as suas tarefas. O chip Nota na página Tarefas abre a nota de novo.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "O painel em que você está se destaca"
+text = """
+Ao lado da lista, só o painel que recebe o teclado mantém a sombra; a lista, a conversa ou o painel de contato que você não está usando recua com uma borda mais tênue, e a mudança acompanha você suavemente conforme você clica.
+"""

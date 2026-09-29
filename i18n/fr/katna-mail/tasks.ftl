@@ -43,6 +43,9 @@ tasks-delete = Supprimer
 tasks-move-to = Déplacer vers { $list }
 tasks-from-mail = Courrier
 tasks-open-mail = Ouvrir le message
+tasks-from-note = Note
+tasks-open-note = Ouvrir la note
+tasks-note-gone = Cette note n’existe plus.
 tasks-no-subject = (aucun objet)
 
 ## The details dialog

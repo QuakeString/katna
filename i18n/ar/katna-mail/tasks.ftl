@@ -46,6 +46,9 @@ tasks-delete = حذف
 tasks-move-to = نقل إلى { $list }
 tasks-from-mail = البريد
 tasks-open-mail = فتح الرسالة
+tasks-from-note = ملاحظة
+tasks-open-note = فتح الملاحظة
+tasks-note-gone = لم تعد هذه الملاحظة موجودة هنا.
 tasks-no-subject = (بلا موضوع)
 
 ## The details dialog

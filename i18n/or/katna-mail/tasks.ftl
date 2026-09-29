@@ -42,6 +42,9 @@ tasks-delete = ଡିଲିଟ କରନ୍ତୁ
 tasks-move-to = { $list } କୁ ଘୁଞ୍ଚାନ୍ତୁ
 tasks-from-mail = ମେଲ
 tasks-open-mail = ମେଲ ଖୋଲନ୍ତୁ
+tasks-from-note = ନୋଟ
+tasks-open-note = ନୋଟ ଖୋଲନ୍ତୁ
+tasks-note-gone = ସେହି ନୋଟ ଆଉ ଏଠାରେ ନାହିଁ।
 tasks-no-subject = (କୌଣସି ବିଷୟ ନାହିଁ)
 
 ## The details dialog

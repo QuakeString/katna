@@ -42,6 +42,9 @@ tasks-delete = Radera
 tasks-move-to = Flytta till { $list }
 tasks-from-mail = E-post
 tasks-open-mail = Öppna e-postmeddelandet
+tasks-from-note = Anteckning
+tasks-open-note = Öppna anteckningen
+tasks-note-gone = Den anteckningen finns inte längre.
 tasks-no-subject = (inget ämne)
 
 ## The details dialog

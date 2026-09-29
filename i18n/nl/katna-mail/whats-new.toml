@@ -1434,3 +1434,15 @@ title = "Een videogesprek starten vanuit een mail"
 text = """
 Klik met de rechtermuisknop op een gesprek, of open ⋮, en kies Een videogesprek starten: het videogesprek wordt geopend, met een nieuwe mail met de link voor iedereen in het gesprek. Gmail-accounts gebruiken Google Meet; andere accounts krijgen een Jitsi Meet-ruimte. Bij mail met een link naar een gesprek via Meet, Teams, Zoom, Webex, Jitsi, WhatsApp of Telegram staat nu een knop Deelnemen.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Maak van een checklistregel een taak"
+text = """
+Zet de cursor op een checklistregel in een notitie en kies Er een taak van maken: de regel komt bij je taken. Het chipje Notitie op de pagina Taken opent de notitie weer.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Het deel waarin je zit valt op"
+text = """
+Naast de lijst houdt alleen het deel dat het toetsenbord heeft zijn schaduw; de lijst, het gesprek of het contactpaneel dat je niet gebruikt zakt weg met een vagere rand, en de verandering volgt je zacht terwijl je klikt.
+"""

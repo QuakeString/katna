@@ -42,6 +42,9 @@ tasks-delete = Löschen
 tasks-move-to = Nach { $list } verschieben
 tasks-from-mail = E-Mail
 tasks-open-mail = Die E-Mail öffnen
+tasks-from-note = Notiz
+tasks-open-note = Die Notiz öffnen
+tasks-note-gone = Diese Notiz gibt es nicht mehr.
 tasks-no-subject = (kein Betreff)
 
 ## The details dialog

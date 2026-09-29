@@ -41,6 +41,9 @@ tasks-delete = លុប
 tasks-move-to = ផ្លាស់ទីទៅ { $list }
 tasks-from-mail = សំបុត្រ
 tasks-open-mail = បើកសំបុត្រ
+tasks-from-note = កំណត់ចំណាំ
+tasks-open-note = បើកកំណត់ចំណាំ
+tasks-note-gone = កំណត់ចំណាំនោះលែងមាននៅទីនេះទៀតហើយ។
 tasks-no-subject = (គ្មានប្រធានបទ)
 
 ## The details dialog

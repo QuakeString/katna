@@ -42,6 +42,9 @@ tasks-delete = ಅಳಿಸಿ
 tasks-move-to = { $list } ಗೆ ಸರಿಸಿ
 tasks-from-mail = ಮೇಲ್
 tasks-open-mail = ಮೇಲ್ ತೆರೆಯಿರಿ
+tasks-from-note = ಟಿಪ್ಪಣಿ
+tasks-open-note = ಟಿಪ್ಪಣಿ ತೆರೆಯಿರಿ
+tasks-note-gone = ಆ ಟಿಪ್ಪಣಿ ಇನ್ನು ಇಲ್ಲಿಲ್ಲ.
 tasks-no-subject = (ವಿಷಯವಿಲ್ಲ)
 
 ## The details dialog

@@ -42,6 +42,9 @@ tasks-delete = Susa
 tasks-move-to = Hambisa ku-{ $list }
 tasks-from-mail = Imeyili
 tasks-open-mail = Vula imeyili
+tasks-from-note = Inothi
+tasks-open-note = Vula inothi
+tasks-note-gone = Leli nothi alisekho lapha.
 tasks-no-subject = (asikho isihloko)
 
 ## The details dialog

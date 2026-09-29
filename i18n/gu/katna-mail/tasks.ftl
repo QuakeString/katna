@@ -42,6 +42,9 @@ tasks-delete = ડિલીટ કરો
 tasks-move-to = { $list } માં ખસેડો
 tasks-from-mail = મેઇલ
 tasks-open-mail = મેઇલ ખોલો
+tasks-from-note = નોંધ
+tasks-open-note = નોંધ ખોલો
+tasks-note-gone = તે નોંધ હવે અહીં નથી.
 tasks-no-subject = (કોઈ વિષય નથી)
 
 ## The details dialog

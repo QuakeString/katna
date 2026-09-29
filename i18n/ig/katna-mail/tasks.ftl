@@ -41,6 +41,9 @@ tasks-delete = Hichapụ
 tasks-move-to = Kpọga na { $list }
 tasks-from-mail = Ozi
 tasks-open-mail = Mepee ozi
+tasks-from-note = Ndetu
+tasks-open-note = Mepee ndetu
+tasks-note-gone = Ndetu ahụ anọghịzi ebe a.
 tasks-no-subject = (enweghị isiokwu)
 
 ## The details dialog

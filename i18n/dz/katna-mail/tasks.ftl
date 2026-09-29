@@ -41,6 +41,9 @@ tasks-delete = བཏོན་གཏང་།
 tasks-move-to = { $list } ནང་སྤོ།
 tasks-from-mail = གློག་འཕྲིན
 tasks-open-mail = གློག་འཕྲིན་ཁ་ཕྱེ།
+tasks-from-note = དྲན་ཐོ
+tasks-open-note = དྲན་ཐོ་ཁ་ཕྱེ།
+tasks-note-gone = དྲན་ཐོ་དེ་ད་ལུ་འདི་ལུ་མིན་འདུག
 tasks-no-subject = (དོན་ཚན་མེད)
 
 ## The details dialog

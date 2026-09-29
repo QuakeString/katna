@@ -80,6 +80,10 @@ notes-meeting-actions = Zadania do wykonania
 notes-event = Wydarzenie
 notes-open-event = Otwórz wydarzenie
 
+## Tasks
+
+notes-make-task = Zamień w zadanie
+
 ## Colors (tooltips)
 
 notes-color-none = Bez koloru

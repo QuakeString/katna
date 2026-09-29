@@ -42,6 +42,9 @@ tasks-delete = ሰርዝ
 tasks-move-to = ወደ { $list } ውሰድ
 tasks-from-mail = ደብዳቤ
 tasks-open-mail = ደብዳቤውን ክፈት
+tasks-from-note = ማስታወሻ
+tasks-open-note = ማስታወሻውን ክፈት
+tasks-note-gone = ያ ማስታወሻ ከእንግዲህ እዚህ የለም።
 tasks-no-subject = (ርዕሰ ጉዳይ የለም)
 
 ## The details dialog

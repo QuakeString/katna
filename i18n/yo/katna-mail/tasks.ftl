@@ -41,6 +41,9 @@ tasks-delete = Pa rẹ́
 tasks-move-to = Gbé lọ sí { $list }
 tasks-from-mail = Lẹ́tà
 tasks-open-mail = Ṣí lẹ́tà
+tasks-from-note = Àkọsílẹ̀
+tasks-open-note = Ṣí àkọsílẹ̀ náà
+tasks-note-gone = Àkọsílẹ̀ yẹn kò sí níbí mọ́.
 tasks-no-subject = (kò sí àkọlé)
 
 ## The details dialog

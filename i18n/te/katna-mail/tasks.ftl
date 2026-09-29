@@ -42,6 +42,9 @@ tasks-delete = తొలగించండి
 tasks-move-to = { $list }కు తరలించండి
 tasks-from-mail = మెయిల్
 tasks-open-mail = మెయిల్‌ను తెరవండి
+tasks-from-note = గమనిక
+tasks-open-note = గమనికను తెరవండి
+tasks-note-gone = ఆ గమనిక ఇకపై ఇక్కడ లేదు.
 tasks-no-subject = (సబ్జెక్ట్ లేదు)
 
 ## The details dialog

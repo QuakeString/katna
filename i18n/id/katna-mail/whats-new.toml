@@ -1432,3 +1432,15 @@ title = "Mulai panggilan video dari email"
 text = """
 Klik kanan percakapan, atau buka ⋮, lalu pilih Mulai panggilan video: panggilan terbuka, dan email baru berisi link-nya dikirim ke semua orang dalam percakapan. Akun Gmail menggunakan Google Meet; akun lain mendapat ruang Jitsi Meet. Email dengan link panggilan Meet, Teams, Zoom, Webex, Jitsi, WhatsApp, atau Telegram kini menampilkan tombol Gabung.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Jadikan baris daftar periksa sebuah tugas"
+text = """
+Letakkan kursor pada baris daftar periksa di sebuah catatan lalu pilih Jadikan tugas: baris itu masuk ke tugas Anda. Chip Catatan pada halaman Tugas membuka catatan itu lagi.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Panel yang sedang Anda pakai menonjol"
+text = """
+Di samping daftar, hanya panel yang menerima input keyboard yang tetap punya bayangan; daftar, percakapan, atau panel kontak yang tidak Anda pakai surut dengan tepi yang lebih samar, dan perubahannya mengikuti Anda dengan halus saat Anda mengeklik.
+"""

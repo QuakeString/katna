@@ -42,6 +42,9 @@ tasks-delete = ਮਿਟਾਓ
 tasks-move-to = { $list } ਵਿੱਚ ਭੇਜੋ
 tasks-from-mail = ਮੇਲ
 tasks-open-mail = ਮੇਲ ਖੋਲ੍ਹੋ
+tasks-from-note = ਨੋਟ
+tasks-open-note = ਨੋਟ ਖੋਲ੍ਹੋ
+tasks-note-gone = ਉਹ ਨੋਟ ਹੁਣ ਇੱਥੇ ਨਹੀਂ ਹੈ।
 tasks-no-subject = (ਕੋਈ ਵਿਸ਼ਾ ਨਹੀਂ)
 
 ## The details dialog

@@ -1481,3 +1481,15 @@ title = "Démarrer un appel vidéo depuis un e-mail"
 text = """
 Faites un clic droit sur une conversation, ou ouvrez ⋮, puis choisissez Démarrer un appel vidéo : l’appel s’ouvre, et un nouvel e-mail contenant son lien est adressé à tous les participants de la conversation. Les comptes Gmail utilisent Google Meet ; les autres obtiennent une salle Jitsi Meet. Les e-mails contenant un lien d’appel Meet, Teams, Zoom, Webex, Jitsi, WhatsApp ou Telegram affichent désormais un bouton Participer.
 """
+
+["2026-09-29-0815-note-line-task"]
+title = "Transformer une ligne de liste en tâche"
+text = """
+Placez le curseur sur une ligne de liste de contrôle dans une note et choisissez En faire une tâche : la ligne passe dans vos tâches. Sa pastille Note sur la page Tâches rouvre la note.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Le volet où vous êtes se distingue"
+text = """
+À côté de la liste, seul le volet qui reçoit le clavier garde son ombre ; la liste, la conversation ou le panneau de contact que vous n’utilisez pas s’efface avec un bord plus discret, et le changement vous suit en douceur quand vous cliquez.
+"""

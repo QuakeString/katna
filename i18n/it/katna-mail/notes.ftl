@@ -79,6 +79,10 @@ notes-meeting-actions = Azioni da svolgere
 notes-event = Evento
 notes-open-event = Apri l’evento
 
+## Tasks
+
+notes-make-task = Trasforma in attività
+
 ## Colors (tooltips)
 
 notes-color-none = Nessun colore
