@@ -3535,6 +3535,15 @@ most useful reason is shown. Changes go back the way their calendar came
   `SetCalendarHidden` as the ticks), and the set matching what is on
   show is highlighted. Kept in `config.toml` (`[[calendar.sets]]`, the
   page's calendar IDs), not synced.
+- Search (`window/calendar/search.rs`): on the Calendar page the top
+  bar's box says "Search events" and finds events, as Google Calendar's
+  does, keeping the mail search's words for when Mail shows again. An
+  event matches when its title, place, notes, organizer or guests hold
+  every word. The results take the view's place, by date, over two years
+  either side: coming events soonest first, then Past events newest
+  first, a repeating event once in each. A click (or Enter, for the
+  first) opens the event on its day with its card; Esc, or any move of
+  the page, puts the results away, and Esc brings them back.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks

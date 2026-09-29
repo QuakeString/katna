@@ -32,6 +32,7 @@ use super::{MailWindow, Menu, MenuKey};
 
 mod birthdays;
 mod free;
+mod search;
 mod sets;
 mod tasks;
 use crate::theme::{Theme, fade, mix};
@@ -245,6 +246,8 @@ pub(super) struct CalendarPage {
     pub(super) focus: FocusHandle,
     /// A new calendar set's name being typed.
     naming_set: Option<sets::Naming>,
+    /// The top bar's search box, finding events.
+    pub(super) search: search::Search,
 }
 
 impl CalendarPage {
@@ -273,6 +276,7 @@ impl CalendarPage {
             ask: None,
             focus: cx.focus_handle(),
             naming_set: None,
+            search: search::Search::default(),
         }
     }
 
@@ -528,6 +532,8 @@ impl MailWindow {
 
     fn calendar_moved(&mut self, cx: &mut Context<Self>) {
         self.calendar.open = None;
+        // Moving on puts search results away; Esc brings them back.
+        self.calendar.search.away = true;
         self.load_calendar(cx);
         cx.notify();
     }
@@ -564,7 +570,14 @@ impl MailWindow {
         _: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if self.calendar.open.take().is_some() {
+        let card = self.calendar.open.take().is_some();
+        // Esc goes back to search results put away.
+        let search = &mut self.calendar.search;
+        let results = !search.query.trim().is_empty() && search.away;
+        if results {
+            search.away = false;
+        }
+        if card || results {
             cx.notify();
         } else {
             cx.propagate();
@@ -911,6 +924,8 @@ impl MailWindow {
             loading(th)
         } else if self.calendar.calendars.is_empty() {
             self.render_calendar_empty(th)
+        } else if self.calendar.search.showing() {
+            self.render_calendar_search(th, cx)
         } else {
             match self.calendar.view {
                 CalView::Day | CalView::Week | CalView::Days => self.render_time_grid(th, cx),
@@ -2419,119 +2434,22 @@ impl MailWindow {
             return crate::widgets::placeholder(&tr!("calendar-schedule-empty"), th);
         }
         let rows = days.into_iter().map(|(day, list)| {
-            let is_today = day == today;
             let events = list.into_iter().map(|occurrence| {
-                let color = self.event_color(&occurrence);
-                let data = &occurrence.event.data;
-                let when = if occurrence.all_day() {
-                    tr!("calendar-all-day")
-                } else {
-                    time_range(occurrence.start, occurrence.end, &tz)
-                };
-                let title = if data.title.is_empty() {
-                    tr!("calendar-no-title")
-                } else {
-                    data.title.clone()
-                };
                 let open = occurrence.clone();
-                div()
-                    .id(SharedString::from(format!(
-                        "schedule-{}-{}-{}",
-                        day, occurrence.event.id, occurrence.start
-                    )))
-                    .h(px(40.0))
-                    .px(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(16.0))
-                    .rounded(px(8.0))
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .child(
-                        div()
-                            .flex_none()
-                            .size(px(12.0))
-                            .rounded_full()
-                            .bg(rgba(color)),
-                    )
-                    .child(
-                        div()
-                            .flex_none()
-                            .w(px(150.0))
-                            .text_size(px(13.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(when),
-                    )
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .truncate()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text))
-                            .child(title),
-                    )
+                self.schedule_event(&day.to_string(), occurrence, th)
                     .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                         this.open_calendar_event(open.clone(), event.position(), cx)
                     }))
             });
-            div()
-                .flex()
-                .flex_row()
-                .items_start()
-                .py(px(8.0))
-                .border_b_1()
-                .border_color(rgba(th.divider))
-                .child(
-                    div()
-                        .flex_none()
-                        .w(px(200.0))
-                        .h(px(40.0))
-                        .pl(px(16.0))
-                        .flex()
-                        .flex_row()
-                        .items_center()
-                        .gap(px(10.0))
-                        .child(
-                            div()
-                                .size(px(32.0))
-                                .flex()
-                                .items_center()
-                                .justify_center()
-                                .rounded_full()
-                                .text_size(px(20.0))
-                                .when(is_today, |d| {
-                                    d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
-                                })
-                                .when(!is_today, |d| d.text_color(rgba(th.text)))
-                                .child(format::number(day.day() as u64)),
-                        )
-                        .child(
-                            div()
-                                .text_size(px(11.0))
-                                .font_weight(FontWeight::MEDIUM)
-                                .text_color(rgba(if is_today { th.accent } else { th.text_dim }))
-                                .child(
-                                    format!(
-                                        "{}, {}",
-                                        format::weekday(day.to_datetime(Time::midnight())),
-                                        format::month_name(day.month())
-                                    )
-                                    .to_uppercase(),
-                                ),
-                        ),
-                )
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .flex()
-                        .flex_col()
-                        .children(events)
-                        .children(self.render_schedule_tasks(day, th, cx)),
-                )
+            schedule_day(day, day == today, false, th).child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .children(events)
+                    .children(self.render_schedule_tasks(day, th, cx)),
+            )
         });
         div()
             .id("calendar-schedule")
@@ -2539,6 +2457,69 @@ impl MailWindow {
             .overflow_y_scroll()
             .children(rows)
             .into_any_element()
+    }
+
+    /// One event's line in Schedule and in search results: its color, when
+    /// and title; a click opens its card.
+    pub(super) fn schedule_event(
+        &self,
+        key: &str,
+        occurrence: Occurrence,
+        th: &Theme,
+    ) -> gpui::Stateful<Div> {
+        let tz = &self.tz;
+        let color = self.event_color(&occurrence);
+        let data = &occurrence.event.data;
+        let when = if occurrence.all_day() {
+            tr!("calendar-all-day")
+        } else {
+            time_range(occurrence.start, occurrence.end, tz)
+        };
+        let title = if data.title.is_empty() {
+            tr!("calendar-no-title")
+        } else {
+            data.title.clone()
+        };
+        let id = SharedString::from(format!(
+            "schedule-{key}-{}-{}",
+            occurrence.event.id, occurrence.start
+        ));
+        div()
+            .id(id)
+            .h(px(40.0))
+            .px(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(16.0))
+            .rounded(px(8.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .child(
+                div()
+                    .flex_none()
+                    .size(px(12.0))
+                    .rounded_full()
+                    .bg(rgba(color)),
+            )
+            .child(
+                div()
+                    .flex_none()
+                    .w(px(150.0))
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(when),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .truncate()
+                    .text_size(px(14.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.text))
+                    .child(title),
+            )
     }
 
     fn open_calendar_event(
@@ -2988,6 +2969,58 @@ impl MailWindow {
 }
 
 /// "9:00 – 9:30 AM": the start and end times of an event.
+/// A day's row in Schedule and in search results: its number (ringed when
+/// today), weekday and month, with its events beside. `year` adds the
+/// year, for days in another year.
+pub(super) fn schedule_day(day: Date, is_today: bool, year: bool, th: &Theme) -> Div {
+    let date = day.to_datetime(Time::midnight());
+    let month = if year {
+        format::month_year(day)
+    } else {
+        format::month_name(day.month())
+    };
+    let label = format!("{}, {month}", format::weekday(date));
+    div()
+        .flex()
+        .flex_row()
+        .items_start()
+        .py(px(8.0))
+        .border_b_1()
+        .border_color(rgba(th.divider))
+        .child(
+            div()
+                .flex_none()
+                .w(px(200.0))
+                .h(px(40.0))
+                .pl(px(16.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(10.0))
+                .child(
+                    div()
+                        .size(px(32.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .text_size(px(20.0))
+                        .when(is_today, |d| {
+                            d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
+                        })
+                        .when(!is_today, |d| d.text_color(rgba(th.text)))
+                        .child(format::number(day.day() as u64)),
+                )
+                .child(
+                    div()
+                        .text_size(px(11.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(if is_today { th.accent } else { th.text_dim }))
+                        .child(label.to_uppercase()),
+                ),
+        )
+}
+
 pub(super) fn time_range(start: i64, end: i64, tz: &TimeZone) -> String {
     tr!(
         "calendar-time-range",
@@ -2997,7 +3030,7 @@ pub(super) fn time_range(start: i64, end: i64, tz: &TimeZone) -> String {
 }
 
 /// The page's spinner while the first read runs.
-fn loading(th: &Theme) -> AnyElement {
+pub(super) fn loading(th: &Theme) -> AnyElement {
     crate::widgets::placeholder(&tr!("calendar-loading"), th)
 }
 

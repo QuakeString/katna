@@ -62,6 +62,11 @@ calendar-birthday-of = { $name }'s birthday
 calendar-empty-title = No calendars yet
 calendar-empty-text = Katna shows the calendars of your Google and Microsoft accounts here once they are synced, and those of other servers that offer CalDAV.
 calendar-schedule-empty = Nothing planned for the next two months.
+# The top bar's search box on the Calendar page, its results' heading for
+# events already over, and when nothing matches.
+calendar-search = Search events
+calendar-search-past = Past events
+calendar-search-none = No events match your search.
 calendar-no-title = (No title)
 calendar-all-day = All day
 # "9:00 – 9:30 AM": when an event starts and ends.

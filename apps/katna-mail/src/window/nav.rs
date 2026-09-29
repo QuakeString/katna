@@ -287,6 +287,8 @@ impl MailWindow {
         let keys = super::keymap::hint("search", &self.config.shortcuts)?;
         let words = if self.app == super::RailApp::Contacts {
             tr!("contacts-search")
+        } else if self.app == super::RailApp::Calendar {
+            tr!("calendar-search")
         } else {
             tr!("search-mail")
         };
@@ -333,8 +335,12 @@ impl MailWindow {
         let panel_open = self.search_panel.is_some();
         // While the Settings page is open the box searches settings.
         let settings = self.settings_page.is_some();
-        // On the Contacts page it finds people, with no mail options.
-        let contacts = self.app == super::RailApp::Contacts;
+        // On the Contacts page it finds people and on the Calendar page
+        // events, with no mail options.
+        let contacts = matches!(
+            self.app,
+            super::RailApp::Contacts | super::RailApp::Calendar
+        );
         // On a phone the box is a pill across the bar, with the menu button
         // and the account picture over its two ends.
         let phone = self.layout.shape.phone;
@@ -386,6 +392,7 @@ impl MailWindow {
                                     if text.is_empty()
                                         || this.settings_page.is_some()
                                         || this.app == super::RailApp::Contacts
+                                        || this.app == super::RailApp::Calendar
                                     {
                                         this.focus_search(&FocusSearch, window, cx);
                                     } else {

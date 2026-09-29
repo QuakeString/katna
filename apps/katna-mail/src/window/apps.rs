@@ -201,6 +201,9 @@ impl MailWindow {
         if from == App::Notes {
             self.sync_notes_search(cx);
         }
+        if from == App::Calendar {
+            self.swap_calendar_search(false, cx);
+        }
         if from == App::Tasks {
             self.swap_tasks_search(false, cx);
         }
@@ -221,6 +224,7 @@ impl MailWindow {
             self.load_contacts(cx);
         }
         if app == App::Calendar {
+            self.swap_calendar_search(true, cx);
             self.load_calendar(cx);
         }
         if app == App::Notes {
