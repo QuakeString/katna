@@ -3,8 +3,10 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = মেইল
 search-category-people = মানুহ
+search-category-tasks = কাৰ্যসমূহ
 search-mail-from = প্ৰেৰক: { $sender }
 search-no-subject = (কোনো বিষয় নাই)
+search-task-in = { $list }ত
 search-reply-all = সকলোকে উত্তৰ দিয়ক
 search-copy-address = ঠিকনা কপি কৰক
 search-find-mail = মেইল বিচাৰক

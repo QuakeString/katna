@@ -3,8 +3,10 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = Lẹ́tà
 search-category-people = Ènìyàn
+search-category-tasks = Iṣẹ́
 search-mail-from = Láti ọ̀dọ̀ { $sender }
 search-no-subject = (kò sí àkọlé)
+search-task-in = Nínú { $list }
 search-reply-all = Fèsì sí gbogbo
 search-copy-address = Ṣe ẹ̀dà àdírẹ́sì
 search-find-mail = Wá lẹ́tà

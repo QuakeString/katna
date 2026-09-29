@@ -3,8 +3,10 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = మెయిల్
 search-category-people = వ్యక్తులు
+search-category-tasks = టాస్క్‌లు
 search-mail-from = పంపినవారు: { $sender }
 search-no-subject = (సబ్జెక్ట్ లేదు)
+search-task-in = { $list } లో
 search-reply-all = అందరికీ రిప్లయి ఇవ్వండి
 search-copy-address = అడ్రస్‌ను కాపీ చేయండి
 search-find-mail = మెయిల్‌ను కనుగొనండి

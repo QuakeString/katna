@@ -1444,3 +1444,41 @@ title = "Görev hatırlatıcıları ve tekrarlar"
 text = """
 Bir görevi açın ve Bana hatırlat seçeneğini seçin: görev zamanında, bir saat veya bir gün önce. Hatırlatıcı Katna kapalıyken bile görünür ve Tamamlandı olarak işaretle ile Ertele düğmelerini içerir. Tekrarlanan bir görevi işaretlediğinizde artık bir sonraki günde geri gelir.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Görevleri masaüstünden bulun"
+text = """
+KRunner'da veya GNOME aramasında bir görevden birkaç sözcük yazın, görev Görevler başlığı altında görünür. Enter'a basın, Katna görevi düzenlemeye hazır hâlde açar.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Masaüstü saatinden etkinlik ve görev ekleyin"
+text = """
+Katna Digital Clock’ta ayda bir güne sağ tıklayarak o gün için bir görev
+ya da etkinlik ekleyin; etkinlik Katna’nın Takvim’inde açılır.
+Etkinliklerinizden birine tıklamak Takvim’i o günde açar.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Etkinliği tek satırda yazın"
+text = """
+Yeni bir etkinliğin başlığı olarak “Cuma 13:00 Anita ile öğle yemeği
+Cafe Mocha’da” ya da “Her iş günü 9:30 toplantı” yazın; Takvim siz
+yazdıkça günü, saati, tekrarı ve yeri doldurur.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Yılın tamamını görün"
+text = """
+Takvim’in bir Yıl görünümü var: on iki ayın hepsi bir arada, etkinliği
+olan günlerin altında bir nokta ile. Y tuşuna basın ve bir güne tıklayıp
+açın.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Boş zamanlarınızı paylaşın"
+text = """
+Takvim’in seçeneklerindeki Boş zamanları paylaş, önümüzdeki iş
+günlerinde ne zaman müsait olduğunuzu listeleyen, herkese göndermeye
+hazır bir ileti başlatır.
+"""

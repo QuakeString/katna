@@ -42,6 +42,16 @@ msgstr "Ọ̀la"
 msgid "No tasks"
 msgstr "Kò sí iṣẹ́"
 
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu %1 is a short date"
+msgid "Add a Task for %1"
+msgstr "Fi iṣẹ́ kún fún %1"
+
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu"
+msgid "Add an Event"
+msgstr "Fi ìṣẹ̀lẹ̀ kún"
+
 # plasma-clock/package/contents/ui/KatnaJoinButton.qml
 msgctxt "@action:button join the event's video call"
 msgid "Join"

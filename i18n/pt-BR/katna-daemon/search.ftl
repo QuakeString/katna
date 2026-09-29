@@ -3,8 +3,10 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = E-mail
 search-category-people = Pessoas
+search-category-tasks = Tarefas
 search-mail-from = De { $sender }
 search-no-subject = (sem assunto)
+search-task-in = Em { $list }
 search-reply-all = Responder a todos
 search-copy-address = Copiar endereço
 search-find-mail = Encontrar e-mails
