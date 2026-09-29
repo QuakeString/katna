@@ -148,6 +148,7 @@ impl MailWindow {
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
+        let (shadow, edge) = self.card_edges(self.card_keys(false), outline);
         let card = div()
             .id("card")
             .key_context(if reading_context {
@@ -163,7 +164,7 @@ impl MailWindow {
             .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
-            .shadow(card_shadow(th, outline))
+            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
             // rounded bottom corners rather than showing square ones.
@@ -192,7 +193,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_check))
             .on_action(cx.listener(Self::open_context_menu_key))
             .child(inner)
-            .children(card_outline(th, radius, outline));
+            .children(card_outline(th, radius, edge));
         card.into_any_element()
     }
 

@@ -2681,7 +2681,13 @@ away; he can still change them.
   Its `link` is `event:<start>:<UID>`, so each occurrence of a repeating
   event has its own notes. Such a note has an Event chip that opens the
   Calendar's Day view on that day.
-- **Later.** A checklist line made a task, formatting, pictures.
+- **Tasks from checklist lines.** "Make it a task" in a note's toolbar,
+  shown while the cursor is on an unticked checklist line of a saved note,
+  adds the line to the default task list. The task keeps `note:<id>` where
+  a task made from a mail keeps its Message-ID (the field stays on this
+  computer), so its Note chip on the Tasks page opens the note; Undo takes
+  the task back.
+- **Later.** Formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 

@@ -771,6 +771,7 @@ impl MailWindow {
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
+        let (shadow, edge) = self.card_edges(self.card_keys(true), outline);
         let keys = self.reader_keys;
         div()
             .id("reader-card")
@@ -783,7 +784,7 @@ impl MailWindow {
             .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
-            .shadow(card_shadow(th, outline))
+            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .on_action(cx.listener(Self::reader_back))
             .on_action(cx.listener(Self::select_next))
@@ -803,7 +804,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_not_important))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
-            .children(card_outline(th, radius, outline))
+            .children(card_outline(th, radius, edge))
             // Which pane has the keys: a faint accent edge on this one.
             .when(keys, |d| {
                 d.child(

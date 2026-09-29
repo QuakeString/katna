@@ -197,6 +197,10 @@ const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
+/// The share of its shadow and of its edge a card keeps while another
+/// pane has the keys.
+const SHADOW_REST: f32 = 0.15;
+const EDGE_REST: f32 = 0.55;
 /// The one gap between the top bar's elements: the menu button and the
 /// app's name, the name and the search box (when the window is too narrow
 /// for the box's usual place), the search box and Settings, Settings and
@@ -577,6 +581,10 @@ pub struct MailWindow {
     search_spring: Spring,
     /// 0 = closed, 1 = open: the reading pane beside the list.
     pane_spring: Spring,
+    /// How far the keys have moved to the conversation beside the list,
+    /// from 0 (the list has them) to 1; the pane without them sinks back.
+    keys_spring: Spring,
+    keys_t: f32,
     /// Where the divider drag started: pointer x and the pane's share.
     split_drag: Option<(f32, f32)>,
     /// Width available to the list and the reading pane, at the last frame.
@@ -872,6 +880,8 @@ impl MailWindow {
             reserve_spring: Spring::new(motion::SLIDE, 1.0),
             search_spring: Spring::new(motion::SMOOTH, 0.0),
             pane_spring: Spring::new(motion::SLIDE, 0.0),
+            keys_spring: Spring::new(motion::SMOOTH, 0.0),
+            keys_t: 0.0,
             split_drag: None,
             cards_width: 0.0,
             reply_row: reply_row::ReplyRow::new(),
@@ -1197,6 +1207,28 @@ impl MailWindow {
                 }
             }
         }));
+    }
+
+    /// How strongly a card beside the list shows its shadow and its edge,
+    /// as `outline` times (shadow, edge): the pane with the keys stands out
+    /// and the others sink back. `active` is how far this card has the
+    /// keys, from [`MailWindow::card_keys`].
+    fn card_edges(&self, active: f32, outline: f32) -> (f32, f32) {
+        let active = active.clamp(0.0, 1.0);
+        (
+            outline * lerp(SHADOW_REST, 1.0, active),
+            outline * lerp(EDGE_REST, 1.0, active),
+        )
+    }
+
+    /// How far the list (`reader` false) or the conversation beside it has
+    /// the keys, following them as they move.
+    fn card_keys(&self, reader: bool) -> f32 {
+        if reader {
+            self.keys_t
+        } else {
+            1.0 - self.keys_t
+        }
     }
 
     /// With one account the folders stand alone, without an account heading.
@@ -3079,6 +3111,8 @@ impl Render for MailWindow {
         let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
         self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);
+        self.keys_spring
+            .set(if self.reader_keys { 1.0 } else { 0.0 });
         self.nav_keys_shown = self.nav_focus.is_focused(window);
         self.settings_spring
             .set(if self.settings_open { 1.0 } else { 0.0 });
@@ -3093,6 +3127,7 @@ impl Render for MailWindow {
         let reserve = self.reserve_spring.tick(window, reduce);
         let search_t = self.search_spring.tick(window, reduce);
         let pane_t = self.pane_spring.tick(window, reduce);
+        self.keys_t = self.keys_spring.tick(window, reduce);
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
         self.tab_spring.tick(window, reduce);

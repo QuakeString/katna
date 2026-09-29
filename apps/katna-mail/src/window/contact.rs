@@ -270,6 +270,7 @@ impl MailWindow {
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
+        let (shadow, edge) = self.card_edges(0.0, outline);
         let key = self.reader.as_ref().map(|r| r.key);
         let people = self.contact_people();
         let picked = self
@@ -306,7 +307,7 @@ impl MailWindow {
             .rounded(px(radius))
             .overflow_hidden()
             .bg(rgba(th.surface))
-            .shadow(card_shadow(th, outline))
+            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .child(
                 div()
@@ -315,7 +316,7 @@ impl MailWindow {
                     .overflow_y_scroll()
                     .child(body),
             )
-            .children(card_outline(th, radius, outline))
+            .children(card_outline(th, radius, edge))
             .into_any_element()
     }
 
