@@ -57,6 +57,12 @@ calendar-account-not-enabled = Katna အတွက် ပြက္ခဒိန်
 calendar-account-failed = ပြက္ခဒိန်များကို ဖတ်၍မရပါ။
 calendar-account-error = ပြက္ခဒိန်များကို ဖတ်၍မရပါ- { $reason }
 calendar-account-none = ပြက္ခဒိန် မတွေ့ပါ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ပြက္ခဒိန် မတွေ့ပါ- { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } သည် { $provider } ဖြင့် ဝင်ရောက်ထားသော Katna ကိုသာ ပြက္ခဒိန်များကို ပြပါသည်။
+calendar-account-sign-in-with = { $provider } ဖြင့် ဝင်ရောက်ရန်
 calendar-account-looking = ပြက္ခဒိန်များကို ရှာနေသည်…
 calendar-account-try-again = ထပ်စမ်းကြည့်ရန်
 calendar-account-try-again-tooltip = ဤအကောင့်၏ ပြက္ခဒိန်များကို ယခု ထပ်စစ်ရန်

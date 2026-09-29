@@ -1669,3 +1669,13 @@ tekenen, in de kleur die je kiest. Maak ongedaan met Ctrl+Z, wis een
 aantekening met de gum en sla daarna een kopie met aantekeningen op. De
 oorspronkelijke bijlage blijft zoals hij was.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Waarom een account geen agenda’s heeft"
+text = """
+Als de agenda’s van een account niet verschijnen, zegt Agenda nu wat de
+server antwoordde, en “Opnieuw proberen” zoekt meteen opnieuw. Een
+Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
+aan om aan te melden met Google of Microsoft, wat hun agenda’s nodig
+hebben.
+"""

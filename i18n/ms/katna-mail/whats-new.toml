@@ -1684,3 +1684,12 @@ berombak atau melorek teks, atau melukis dengan pen, dalam warna yang
 anda pilih. Buat asal dengan Ctrl+Z, padam tanda dengan pemadam,
 kemudian simpan salinan bertanda. Lampiran asal kekal seperti asalnya.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Mengapa akaun tiada kalendar"
+text = """
+Apabila kalendar sesuatu akaun tidak dipaparkan, Kalendar kini
+memberitahu jawapan pelayan, dan “Cuba lagi” terus mencarinya semula.
+Akaun Gmail atau Outlook yang ditambah dengan kata laluan menawarkan log
+masuk dengan Google atau Microsoft, yang diperlukan oleh kalendarnya.
+"""

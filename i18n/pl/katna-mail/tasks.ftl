@@ -24,6 +24,12 @@ tasks-account-failed = Nie udało się odczytać list zadań.
 # $reason is the server's own words, in English.
 tasks-account-error = Nie udało się odczytać list zadań: { $reason }
 tasks-account-none = Nie znaleziono list zadań
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Nie znaleziono list zadań: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } pokazuje zadania tylko aplikacji Katna zalogowanej przez { $provider }.
+tasks-account-sign-in-with = Zaloguj się przez { $provider }
 tasks-account-looking = Szukanie list zadań…
 tasks-account-try-again = Spróbuj ponownie
 tasks-account-try-again-tooltip = Sprawdź teraz ponownie zadania tego konta

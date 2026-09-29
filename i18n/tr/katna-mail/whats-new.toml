@@ -1653,3 +1653,12 @@ dalgalı çizin, üstünü çizin veya seçtiğiniz renkte kalemle çizim yapın
 Ctrl+Z ile geri alın, bir işareti silgiyle silin, sonra işaretli bir
 kopya kaydedin. Asıl ek olduğu gibi kalır.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Bir hesapta neden takvim yok"
+text = """
+Bir hesabın takvimleri görünmediğinde Takvim artık sunucunun ne yanıt
+verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
+Parolayla eklenmiş bir Gmail ya da Outlook hesabı, takvimlerinin
+gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
+"""

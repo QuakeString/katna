@@ -1660,3 +1660,12 @@ falistą linią lub przekreślić tekst albo rysować piórem w wybranym
 kolorze. Cofnij za pomocą Ctrl+Z, usuń adnotację gumką, a potem zapisz
 kopię z adnotacjami. Oryginalny załącznik pozostaje bez zmian.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Dlaczego konto nie ma kalendarzy"
+text = """
+Gdy kalendarze konta się nie pokazują, Kalendarz podaje teraz, co
+odpowiedział serwer, a „Spróbuj ponownie” od razu szuka ich jeszcze raz.
+Konto Gmail lub Outlook dodane z hasłem proponuje zalogowanie się przez
+Google lub Microsoft, czego wymagają ich kalendarze.
+"""

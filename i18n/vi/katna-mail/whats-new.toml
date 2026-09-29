@@ -1616,3 +1616,12 @@ sóng hoặc gạch ngang văn bản, hoặc vẽ bằng bút, với màu bạn 
 tác bằng Ctrl+Z, xóa một dấu bằng tẩy, rồi lưu một bản sao đã đánh dấu.
 Tệp đính kèm gốc vẫn giữ nguyên.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Vì sao một tài khoản không có lịch"
+text = """
+Khi lịch của một tài khoản không hiện, Lịch giờ cho biết máy chủ đã trả
+lời gì, và “Thử lại” tìm lại ngay. Tài khoản Gmail hoặc Outlook được
+thêm bằng mật khẩu sẽ đề nghị đăng nhập bằng Google hoặc Microsoft, điều
+mà lịch của chúng cần.
+"""

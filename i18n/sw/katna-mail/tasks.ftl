@@ -24,6 +24,12 @@ tasks-account-failed = Orodha za majukumu hazikuweza kusomwa.
 # $reason is the server's own words, in English.
 tasks-account-error = Orodha za majukumu hazikuweza kusomwa: { $reason }
 tasks-account-none = Hakuna orodha za majukumu zilizopatikana
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Hakuna orodha za majukumu zilizopatikana: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } huonyesha majukumu kwa Katna iliyoingia kwa { $provider } pekee.
+tasks-account-sign-in-with = Ingia kwa { $provider }
 tasks-account-looking = Inatafuta orodha za majukumu…
 tasks-account-try-again = Jaribu tena
 tasks-account-try-again-tooltip = Kagua majukumu ya akaunti hii tena sasa

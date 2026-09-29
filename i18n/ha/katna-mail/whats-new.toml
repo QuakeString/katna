@@ -1540,3 +1540,9 @@ title = "Yi wa PDF alama"
 text = """
 Danna alƙalami a cikin mai duba PDF don haskaka, ja layi a ƙasa, layi mai lanƙwasa ko ja layi a tsakiyar rubutu, ko zana da alƙalami, a launin da ka zaɓa. Janye da Ctrl+Z, goge alama da magogi, sannan ka ajiye kwafi mai alama. Ainihin abin haɗawar yana nan kamar yadda yake.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Dalilin da asusu ba shi da kalandoji"
+text = """
+Idan kalandojin wani asusu ba su bayyana ba, Kalanda yanzu yana faɗin abin da sabar ta amsa, kuma Sake gwadawa yana sake nemansu nan take. Asusun Gmail ko Outlook da aka ƙara da kalmar sirri yana ba da damar shiga da Google ko Microsoft, abin da kalandojinsa ke buƙata.
+"""

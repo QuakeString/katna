@@ -24,6 +24,12 @@ tasks-account-failed = ടാസ്‌ക് ലിസ്റ്റുകൾ വ�
 # $reason is the server's own words, in English.
 tasks-account-error = ടാസ്‌ക് ലിസ്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല: { $reason }
 tasks-account-none = ടാസ്‌ക് ലിസ്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = ടാസ്‌ക് ലിസ്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്ത Katna-യ്ക്ക് മാത്രമേ { $provider } ടാസ്‌ക്കുകൾ കാണിക്കൂ.
+tasks-account-sign-in-with = { $provider } ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക
 tasks-account-looking = ടാസ്‌ക് ലിസ്റ്റുകൾ തിരയുന്നു…
 tasks-account-try-again = വീണ്ടും ശ്രമിക്കുക
 tasks-account-try-again-tooltip = ഈ അക്കൗണ്ടിന്റെ ടാസ്‌ക്കുകൾ ഇപ്പോൾ വീണ്ടും പരിശോധിക്കുക

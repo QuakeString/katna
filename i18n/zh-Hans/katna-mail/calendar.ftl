@@ -57,6 +57,12 @@ calendar-account-not-enabled = Katna 的日历访问权限尚未开启。
 calendar-account-failed = 无法读取日历。
 calendar-account-error = 无法读取日历：{ $reason }
 calendar-account-none = 未找到日历
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = 未找到日历：{ $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } 只向使用 { $provider } 登录的 Katna 显示日历。
+calendar-account-sign-in-with = 使用 { $provider } 登录
 calendar-account-looking = 正在查找日历…
 calendar-account-try-again = 重试
 calendar-account-try-again-tooltip = 立即重新检查此账号的日历

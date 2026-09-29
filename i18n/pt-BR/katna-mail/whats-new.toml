@@ -1667,3 +1667,12 @@ ou ondulado) ou tachar texto, ou desenhar com uma caneta, na cor que
 escolher. Desfaça com Ctrl+Z, apague uma marcação com a borracha e
 depois salve uma cópia marcada. O anexo original fica como estava.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Por que uma conta não tem agendas"
+text = """
+Quando as agendas de uma conta não aparecem, a Agenda agora diz o que o
+servidor respondeu, e “Tentar de novo” procura por elas de novo na hora.
+Uma conta do Gmail ou do Outlook adicionada com senha oferece fazer
+login com o Google ou a Microsoft, o que as agendas delas exigem.
+"""

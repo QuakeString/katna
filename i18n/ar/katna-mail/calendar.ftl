@@ -62,6 +62,12 @@ calendar-account-not-enabled = لم يُفعَّل الوصول إلى التق�
 calendar-account-failed = تعذّرت قراءة التقاويم.
 calendar-account-error = تعذّرت قراءة التقاويم: { $reason }
 calendar-account-none = لم يُعثر على أي تقويم
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = لم يُعثر على أي تقويم: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = لا يعرض { $provider } التقاويم إلا لـ Katna المسجَّل دخوله باستخدام { $provider }.
+calendar-account-sign-in-with = تسجيل الدخول باستخدام { $provider }
 calendar-account-looking = جارٍ البحث عن التقاويم…
 calendar-account-try-again = إعادة المحاولة
 calendar-account-try-again-tooltip = التحقق من تقاويم هذا الحساب مجددًا الآن

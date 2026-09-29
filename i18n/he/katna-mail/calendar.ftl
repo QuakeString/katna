@@ -59,6 +59,12 @@ calendar-account-not-enabled = הגישה ליומן עבור Katna עדיין �
 calendar-account-failed = לא ניתן היה לקרוא את היומנים.
 calendar-account-error = לא ניתן היה לקרוא את היומנים: { $reason }
 calendar-account-none = לא נמצאו יומנים
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = לא נמצאו יומנים: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } מציג יומנים רק ל-Katna שמחובר עם { $provider }.
+calendar-account-sign-in-with = התחברות עם { $provider }
 calendar-account-looking = מתבצע חיפוש יומנים…
 calendar-account-try-again = ניסיון נוסף
 calendar-account-try-again-tooltip = בדיקה חוזרת של היומנים בחשבון הזה עכשיו

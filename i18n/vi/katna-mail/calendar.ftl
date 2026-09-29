@@ -57,6 +57,12 @@ calendar-account-not-enabled = Quyền truy cập lịch cho Katna chưa đượ
 calendar-account-failed = Không đọc được lịch.
 calendar-account-error = Không đọc được lịch: { $reason }
 calendar-account-none = Không tìm thấy lịch nào
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Không tìm thấy lịch nào: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } chỉ hiện lịch cho Katna khi đăng nhập bằng { $provider }.
+calendar-account-sign-in-with = Đăng nhập bằng { $provider }
 calendar-account-looking = Đang tìm lịch…
 calendar-account-try-again = Thử lại
 calendar-account-try-again-tooltip = Kiểm tra lại lịch của tài khoản này ngay

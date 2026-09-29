@@ -58,6 +58,12 @@ calendar-account-not-enabled = Katna का लागि पात्रो प�
 calendar-account-failed = पात्रोहरू पढ्न सकिएन।
 calendar-account-error = पात्रोहरू पढ्न सकिएन: { $reason }
 calendar-account-none = कुनै पात्रो भेटिएन
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = कुनै पात्रो भेटिएन: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } ले { $provider } बाट साइन इन गरिएको Katna लाई मात्र पात्रोहरू देखाउँछ।
+calendar-account-sign-in-with = { $provider } बाट साइन इन गर्नुहोस्
 calendar-account-looking = पात्रोहरू खोज्दै…
 calendar-account-try-again = फेरि प्रयास गर्नुहोस्
 calendar-account-try-again-tooltip = यो खाताका पात्रोहरू अहिले फेरि जाँच गर्नुहोस्

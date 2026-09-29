@@ -57,6 +57,12 @@ calendar-account-not-enabled = ການເຂົ້າເຖິງປະຕິ�
 calendar-account-failed = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້.
 calendar-account-error = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້: { $reason }
 calendar-account-none = ບໍ່ພົບປະຕິທິນ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ບໍ່ພົບປະຕິທິນ: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } ສະແດງປະຕິທິນສະເພາະໃຫ້ Katna ທີ່ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ເທົ່ານັ້ນ.
+calendar-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 calendar-account-looking = ກຳລັງຊອກຫາປະຕິທິນ…
 calendar-account-try-again = ລອງໃໝ່
 calendar-account-try-again-tooltip = ກວດເບິ່ງປະຕິທິນຂອງບັນຊີນີ້ອີກຄັ້ງດຽວນີ້

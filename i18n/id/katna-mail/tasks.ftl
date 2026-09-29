@@ -24,6 +24,12 @@ tasks-account-failed = Daftar tugas tidak dapat dibaca.
 # $reason is the server's own words, in English.
 tasks-account-error = Daftar tugas tidak dapat dibaca: { $reason }
 tasks-account-none = Tidak ada daftar tugas yang ditemukan
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Tidak ada daftar tugas yang ditemukan: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } hanya menampilkan tugas ke Katna yang masuk dengan { $provider }.
+tasks-account-sign-in-with = Masuk dengan { $provider }
 tasks-account-looking = Mencari daftar tugas…
 tasks-account-try-again = Coba lagi
 tasks-account-try-again-tooltip = Periksa lagi tugas akun ini sekarang
