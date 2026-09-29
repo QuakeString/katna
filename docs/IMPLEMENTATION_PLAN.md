@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 29 September 2026, through PR #277). Companion to
+> Status: **v0.2** (updated 29 September 2026, through PR #278). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -41,21 +41,25 @@ Mail that the phases did not name.
   newest (#240); search bar blur (#243); scrolling the account picture to
   switch accounts (#245); a narrow reader toolbar (#249); folder pane
   right-click (#257); shorter What's new and About dialogs (#259); the
-  coffee button's play (#274); `arch-latest` updated in place and always
+  coffee button's play (#274); the Katna Digital Clock for Plasma and GNOME with a task list
+  (#278); `arch-latest` updated in place and always
   finished (#233, #235); a sturdier sync test (#277); translations (#228,
   #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268).
 - **In progress:** Katna Calendar as a page of the Katna window (Phase 6,
-  decided 29 September 2026), then Katna Tasks; studies of Katna Notes and
-  Katna Contacts; the Katna Digital Clock for Plasma and GNOME with a task
-  list (#278, open); testing Katna on a Windows 11 virtual machine.
+  decided 29 September 2026), then Katna Tasks; Katna Notes and
+  Katna Contacts, building from their studies; testing Katna on a Windows
+  11 virtual machine.
 - **Next:** usage statistics, feedback form and debug-file upload (C.3,
   C.6, C.7); right-to-left layout (L.2, L.3); the rest of the release
   track before any public release. Organizations (Phase 2) comes later.
 - **Size:** the owner raised the daemon's budget from 20 MiB to 50 MB
   (27 September 2026).
 - **Needs from the owner:** the Google and Microsoft OAuth2 client IDs as
-  GitHub secrets (the sign-in buttons stay hidden until then), and a
-  code-signing certificate for Windows.
+  GitHub secrets (the sign-in buttons stay hidden until then); a
+  code-signing certificate for Windows; for Contacts (6.10), the People
+  API with the `contacts` and `contacts.other.readonly` scopes in Google
+  Cloud and the delegated Graph permission `Contacts.ReadWrite` in the
+  Microsoft app registration.
 - **Later:** Organizations (Phase 2), Feeds, phones, notes on mail, Workspace, own crash server,
   a server check that recipient addresses exist.
 
@@ -629,17 +633,25 @@ popover and density setting; calendars grouped by account with colors
 | 6.3 Meetings (Katna Calendar thread) | Invitation card in the reader with Yes, Maybe, No and the day around it; replies through Google or Graph, else iMIP mail; guests and busy times (freeBusy, getSchedule); Meet and Teams links; Schedule meeting from a conversation; running-late mail; focus time, out of office, working location |
 | 6.4 Tasks (Katna Tasks thread) | Google Tasks, To Do and CalDAV task sync with local extras; Tasks page and Today view; Add to tasks from mail (Shift+T) with the link back; task chips in the mail list; tasks on the calendar and drag to block time |
 | 6.5 Polish | Typed quick add for events and tasks, calendar sets, Year view, share free times as text, birthdays, holidays, events in KRunner and GNOME search |
-| 6.6 Katna Digital Clock ◐ #278 (open) | Plasma: an alternative to the digital clock with Plasma's calendar and a task list under the day; GNOME: a Tasks card under the calendar; events once 6.1 syncs them; installed by the Arch package, and by `katna-plasma-integration` for .deb later |
-| 6.7 Katna Notes (study, then build) | Study of note apps first; the build rows follow the owner's decisions |
-| 6.8 Katna Contacts (study, then build) | Study of contact apps first (Google People API, Graph contacts, CardDAV); the build rows follow the owner's decisions |
-| 6.9 Upstream proposals | Merge requests to Plasma: "Add…" with date, click event to open, plugin action hook |
+| 6.6 Katna Digital Clock ✅ #278 | Plasma: an alternative to the digital clock with Plasma's calendar and a task list under the day; GNOME: a Tasks card under the calendar; tasks stored locally in `pim.db` (v4); installed by the Arch package; events once 6.1 syncs them |
+| 6.7 Notes page (Katna Notes thread) | A note table in `pim.db` with a change journal, "On this computer" notes with no account; the Notes page in Google Keep's look: Take a note bar, board of cards (grid and list), pinned first, a note that opens over the board and saves as you type, checklists with ticked items folding down, colors, archive, Trash for 7 days, Undo, search |
+| 6.8 Notes sync | Each IMAP account's Notes folder in Apple's format (`X-Uniform-Type-Identifier: com.apple.mail-note`, one HTML message per note), so notes show in Apple Notes and Thunderbird; colors, pins, labels and links in Katna's own `X-Katna-*` headers; checklists as ☐/☑ lines; new notes go to the account last looked at, with a picker; checked against Stalwart and Dovecot. Google Keep and OneNote have no API for personal accounts |
+| 6.9 Notes ties | Labels; "Add a note" on a conversation with a "Your note" card in the reader; meeting notes from an event; a checklist line made a task; bold, italic, headings, lists and links. Later: pictures, version history, links between notes, Nextcloud Notes |
+| 6.10 Contacts: see them (Katna Contacts thread) | Contact tables in `pim.db` (phones, addresses, dates, labels, photo, raw vCard, source); daemon sync through the Google People API, Microsoft Graph and CardDAV, and a local address book; the Contacts page in Google Contacts' look (list with A–Z and starred, search, contact page with mail history and "Where it's saved"); one person across accounts, linked by email address; saved names in Mail and ranked first in address suggestions. Today's mail-derived list becomes Frequent |
+| 6.11 Contacts: edit | Create (Ctrl+N, "Save to" picker), edit in place (F2), delete with the Undo toast then the service's own Trash; Add to contacts from the contact panel and the reader; pictures |
+| 6.12 Contacts: labels and tidy | Labels (Google groups, Graph categories, CardDAV group vCards) and mailing a label; Google's Other contacts, read-only with Add to contacts; Merge & fix; vCard and CSV import, vCard export. People written to are not saved on their own |
+| 6.13 Contacts: polish | Birthdays in Calendar, QR code share, print, saved contacts in KRunner and GNOME search |
+| 6.14 Upstream proposals | Merge requests to Plasma: "Add…" with date, click event to open, plugin action hook |
 
 **Done when:** on the Katna window's Calendar page, events from Gmail,
 a Microsoft account and a CalDAV server (Nextcloud or Fastmail) sync both
 ways; recurring events with exceptions and time zones match a reference
 test set; an invitation answered from Katna Mail reaches the organizer; a
-Gmail task made in Katna appears in Google Tasks on the phone; and the app
-stays within its size budget.
+Gmail task made in Katna appears in Google Tasks on the phone; a note
+written in Katna opens in Apple Notes from the same Gmail account and back;
+a contact edited in Katna shows the change in Google Contacts, and the
+same person saved in two accounts shows once; and the app stays within its
+size budget.
 
 ### Phase 7 — Katna Server (≈ 8 weeks)
 
