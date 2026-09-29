@@ -11,6 +11,7 @@
 //!
 //! Each client's `sync` writes through [`katna_store::Store`] and says
 //! whether anything changed, so the daemon only signals real changes.
+//! Changes made in Katna go the other way through [`edit`].
 
 use std::collections::{HashMap, HashSet};
 
@@ -19,6 +20,7 @@ use katna_store::{Store, calendar::EventData};
 use crate::Error;
 
 pub mod caldav;
+pub mod edit;
 pub mod google;
 pub mod graph;
 

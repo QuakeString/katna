@@ -38,7 +38,6 @@ calendar-guests =
        *[other] { $count } khách
     }
 calendar-guest-answers = { $yes } có, { $maybe } có thể, { $no } không, { $waiting } đang chờ
-calendar-organizer-name = { $name } (người tổ chức)
 calendar-open-web = Mở trong trình duyệt
 calendar-close = Đóng
 

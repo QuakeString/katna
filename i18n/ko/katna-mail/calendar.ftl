@@ -38,7 +38,6 @@ calendar-guests =
        *[other] 게스트 { $count }명
     }
 calendar-guest-answers = 예 { $yes }, 미정 { $maybe }, 아니요 { $no }, 응답 대기 중 { $waiting }
-calendar-organizer-name = { $name } (주최자)
 calendar-open-web = 브라우저에서 열기
 calendar-close = 닫기
 

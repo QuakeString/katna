@@ -613,6 +613,18 @@ macro_rules! pim_proxy {
             /// [`calendar_state`] and a detail for people (may be empty).
             fn calendar_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
 
+            /// Adds, changes, deletes or restores events, or answers an
+            /// invitation: `json` is a `katna_store::calendar::EventChange`
+            /// (tagged by `op`). The daemon writes it to the store at once
+            /// and sends `CalendarChanged`, then sends it to the calendar's
+            /// service; if the service refuses, the calendar syncs again,
+            /// which undoes the change here. Returns the ID of the event
+            /// added or changed (for one occurrence of a series, its
+            /// changed occurrence; for "this and following", the new
+            /// series), or 0. `InvalidArgs` for a calendar that can't be
+            /// changed, an event that doesn't exist or a bad edit.
+            fn edit_event(&self, json: &str) -> zbus::Result<i64>;
+
             /// Saves a mail template on this computer, in place of the one
             /// with its ID (0: a new one). Its name must not be empty, and
             /// its attachments are at most 20 MB. Returns its ID. Apps read

@@ -38,7 +38,6 @@ calendar-guests =
        *[other] { $count } 位嘉宾
     }
 calendar-guest-answers = { $yes } 人参加，{ $maybe } 人可能参加，{ $no } 人不参加，{ $waiting } 人未回复
-calendar-organizer-name = { $name }（组织者）
 calendar-open-web = 在浏览器中打开
 calendar-close = 关闭
 

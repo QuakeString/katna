@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendars from more accounts"
+text = """
+Katna now finds the calendars of Yahoo, Zoho, iCloud, Fastmail, GMX and
+other accounts, even when they live on another server than the mail. It
+tries each account's best way first and another when that one is off.
+"""
