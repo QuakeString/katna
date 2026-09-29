@@ -2,16 +2,21 @@
 
 //! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
 //! and Feeds, with settings at the bottom; their names can be hidden in
-//! quick settings. Mail is the
-//! only app so far; Contacts lists the people from the mail, and the
-//! others show what is coming. Each app gets its own page here, so new
-//! ones plug in as they are built.
+//! quick settings. Each app is a page of the one window: the rail, Ctrl+1
+//! to Ctrl+5 (Outlook's keys), the Go menu, the desktop file's actions and
+//! `katna-mail --page NAME` (D-Bus `ActivateAction("open-page", [NAME])`)
+//! all switch pages through [`MailWindow::show_page`].
+//!
+//! Adding a page: give it a module of its own under `window/` with a
+//! `render_<name>_page` method, call it from its arm in
+//! [`MailWindow::render_app_page`], and load what it needs in
+//! [`MailWindow::open_app`]'s arm. Pages without one show "coming soon".
 
 use std::ops::Range;
 use std::rc::Rc;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, div, prelude::*, rgba,
+    AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Window, div, prelude::*, rgba,
     uniform_list,
 };
 use katna_i18n::tr;
@@ -59,6 +64,17 @@ impl App {
         })
     }
 
+    /// The page's name for `--page` and `open-page`, and in the saved
+    /// window state.
+    pub(super) fn key(self) -> &'static str {
+        self.icon()
+    }
+
+    /// The page named `key`.
+    pub(super) fn from_key(key: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|app| app.key() == key)
+    }
+
     pub(super) fn icon(self) -> &'static str {
         match self {
             Self::Mail => "mail",
@@ -90,6 +106,14 @@ pub(super) enum People {
 }
 
 impl MailWindow {
+    /// Shows page `app`, leaving Settings as picking a folder does.
+    pub(super) fn show_page(&mut self, app: App, window: &mut Window, cx: &mut Context<Self>) {
+        if self.settings_page.is_some() {
+            self.close_settings_page(window, cx);
+        }
+        self.open_app(app, cx);
+    }
+
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
         if self.app == app {
             return;
@@ -167,13 +191,7 @@ impl MailWindow {
                         this.hover_navigation(super::Hover::Mail, *hovered, cx)
                     }))
                 })
-                // Picking an app leaves Settings, as picking a folder does.
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    if this.settings_page.is_some() {
-                        this.close_settings_page(window, cx);
-                    }
-                    this.open_app(app, cx)
-                }))
+                .on_click(cx.listener(move |this, _, window, cx| this.show_page(app, window, cx)))
                 .child(
                     div()
                         .relative()
@@ -288,57 +306,9 @@ impl MailWindow {
     pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts_page(th, cx),
-            app => div()
-                .size_full()
-                .flex()
-                .flex_col()
-                .items_center()
-                .justify_center()
-                .gap(px(12.0))
-                .child(
-                    div()
-                        .size(px(96.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .bg(rgba(th.nav_selected))
-                        .child(icon(app.icon(), th.nav_selected_text, 48.0)),
-                )
-                .child(
-                    div()
-                        .pt(px(8.0))
-                        .text_size(px(22.0))
-                        .text_color(rgba(th.text))
-                        .child(tr!("app-page-title", app = app.label())),
-                )
-                .child(
-                    div()
-                        .px(px(10.0))
-                        .py(px(2.0))
-                        .rounded_full()
-                        .bg(rgba(th.chip))
-                        .text_size(px(12.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("app-coming-soon")),
-                )
-                .child(
-                    div()
-                        .max_w(px(420.0))
-                        .text_center()
-                        .text_size(px(14.0))
-                        .line_height(px(21.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(app.promise()),
-                )
-                .with_animation(
-                    ("app-page", self.app as usize),
-                    gpui::Animation::new(std::time::Duration::from_millis(260))
-                        .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t).mt(px(12.0 * (1.0 - t))),
-                )
-                .into_any_element(),
+            App::Mail | App::Calendar | App::Tasks | App::Notes | App::Feeds => {
+                self.render_coming_soon(th)
+            }
         };
         div()
             .flex_1()
@@ -353,6 +323,62 @@ impl MailWindow {
                     .overflow_hidden()
                     .bg(rgba(th.surface))
                     .child(body),
+            )
+            .into_any_element()
+    }
+
+    /// The page of an app not built yet: what it will do.
+    fn render_coming_soon(&self, th: &Theme) -> AnyElement {
+        let app = self.app;
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .items_center()
+            .justify_center()
+            .gap(px(12.0))
+            .child(
+                div()
+                    .size(px(96.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .bg(rgba(th.nav_selected))
+                    .child(icon(app.icon(), th.nav_selected_text, 48.0)),
+            )
+            .child(
+                div()
+                    .pt(px(8.0))
+                    .text_size(px(22.0))
+                    .text_color(rgba(th.text))
+                    .child(tr!("app-page-title", app = app.label())),
+            )
+            .child(
+                div()
+                    .px(px(10.0))
+                    .py(px(2.0))
+                    .rounded_full()
+                    .bg(rgba(th.chip))
+                    .text_size(px(12.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.text_dim))
+                    .child(tr!("app-coming-soon")),
+            )
+            .child(
+                div()
+                    .max_w(px(420.0))
+                    .text_center()
+                    .text_size(px(14.0))
+                    .line_height(px(21.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(app.promise()),
+            )
+            .with_animation(
+                ("app-page", self.app as usize),
+                gpui::Animation::new(std::time::Duration::from_millis(260))
+                    .with_easing(gpui::ease_out_quint()),
+                |el, t| el.opacity(t).mt(px(12.0 * (1.0 - t))),
             )
             .into_any_element()
     }

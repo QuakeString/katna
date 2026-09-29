@@ -14,7 +14,7 @@ use katna_i18n::tr;
 use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
-use super::MailWindow;
+use super::{MailWindow, RailApp};
 use crate::data::EntryKey;
 use crate::instance::Request;
 
@@ -65,6 +65,12 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
             Item("desktop-menu-sent", "katna_mail::GoToSent"),
             Item("desktop-menu-drafts", "katna_mail::GoToDrafts"),
             Item("desktop-menu-all-mail", "katna_mail::GoToAllMail"),
+            Separator,
+            Item("desktop-menu-page-mail", "katna_mail::ShowMail"),
+            Item("desktop-menu-page-calendar", "katna_mail::ShowCalendar"),
+            Item("desktop-menu-page-contacts", "katna_mail::ShowContacts"),
+            Item("desktop-menu-page-tasks", "katna_mail::ShowTasks"),
+            Item("desktop-menu-page-notes", "katna_mail::ShowNotes"),
             Separator,
             Item("desktop-menu-next", "katna_mail::SelectNext"),
             Item("desktop-menu-previous", "katna_mail::SelectPrevious"),
@@ -268,6 +274,10 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            Request::Page(page) => match RailApp::from_key(&page) {
+                Some(app) => self.show_page(app, window, cx),
+                None => tracing::warn!(page, "unknown page"),
+            },
             Request::Action { name, message } => match name.as_str() {
                 app_action::OPEN_INBOX => {
                     if !self.run_action("katna_mail::GoToInbox", window, cx) {
