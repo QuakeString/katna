@@ -6,6 +6,7 @@
 pub mod account;
 pub mod category;
 pub mod config;
+pub mod contact;
 pub mod crash;
 pub mod error;
 pub mod ids;

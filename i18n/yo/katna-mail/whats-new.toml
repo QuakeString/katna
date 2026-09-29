@@ -1118,6 +1118,22 @@ dáhùn, Esc ń fagilé, Tab sì ń dúró nínú wọn. Nínú ìfiránṣẹ́
 kankan, Esc sì ń pa á, ó ń pa àkọ̀pamọ́ kan mọ́.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Àwọn iṣẹ́ nínú aago orí tábìlì rẹ"
+text = """
+Tẹ aago náà láti fi iṣẹ́ kún un àti láti fi àmì sí àwọn iṣẹ́ tí a ti parí. Lórí Plasma, tẹ aago
+náà lọ́tùn-ún kí o sì yan Fi Àwọn Àṣàyàn Mìíràn Hàn láti yan Aago Dijítàlì Katna. Lórí GNOME,
+káàdì Iṣẹ́ yóò hàn lábẹ́ kàlẹ́ńdà aago náà láti ìgbà tí o bá wọlé lẹ́ẹ̀kan sí i.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Àwọn ojú-ìwé pẹ̀lú kọ́kọ́rọ́ àti láti pẹpẹ iṣẹ́"
+text = """
+Ctrl+1 sí Ctrl+5 ń yípadà láàárín Lẹ́tà, Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́ àti Àkọsílẹ̀, bí ti
+Outlook, mẹ́nù Lọ sì ń tò wọ́n pẹ̀lú. Tẹ Katna Mail lọ́tùn-ún lórí pẹpẹ iṣẹ́ láti ṣí Kàlẹ́ńdà
+tàbí Olùbásọ̀rọ̀ lẹ́sẹ̀kẹsẹ̀.
+"""
+
 ["2026-09-29-0412-tasks-page"]
 title = "Katna Iṣẹ́"
 text = """

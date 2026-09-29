@@ -59,6 +59,7 @@ impl DbKind {
                 include_str!("schema/pim_v3.sql"),
                 include_str!("schema/pim_v4.sql"),
                 include_str!("schema/pim_v5.sql"),
+                include_str!("schema/pim_v6.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -244,9 +245,13 @@ mod tests {
             tables(&pim),
             [
                 "account",
+                "address_book",
                 "change_log",
                 "contact",
                 "contact_address",
+                "contact_group",
+                "contact_group_member",
+                "contact_photo",
                 "meta",
                 "org_alias",
                 "org_member",

@@ -1201,6 +1201,25 @@ l’intérieur. Dans un nouveau message, Ctrl+Entrée envoie depuis
 n’importe quel champ et Échap le ferme en gardant un brouillon.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Des tâches dans l'horloge de votre bureau"
+text = """
+Cliquez sur l'horloge pour ajouter une tâche et cocher les tâches
+terminées. Sous Plasma, faites un clic droit sur l'horloge et choisissez
+Afficher les alternatives pour sélectionner Horloge numérique Katna.
+Sous GNOME, une carte Tâches s'affiche sous le calendrier de l'horloge
+dès votre prochaine ouverture de session.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Les pages au clavier et depuis la barre des tâches"
+text = """
+Ctrl+1 à Ctrl+5 permettent de passer de Courrier à Calendrier, Contacts,
+Tâches et Notes, comme dans Outlook, et le menu Aller les répertorie
+aussi. Faites un clic droit sur Katna Mail dans la barre des tâches pour
+ouvrir directement Calendrier ou Contacts.
+"""
+
 ["2026-09-29-0412-tasks-page"]
 title = "Katna Tâches"
 text = """
