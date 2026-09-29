@@ -49,6 +49,7 @@ use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secre
 mod calendar;
 mod contacts;
 mod drive;
+mod notes;
 mod reminders;
 
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -246,6 +247,9 @@ pub struct Daemon {
     /// Tells the tracking event stream to look again (a tracked message
     /// went out, or settings changed).
     tracking_wake: (Sender<()>, Receiver<()>),
+    /// Accounts whose notes changed here, for the notes sync
+    /// ([`notes::run`]).
+    notes_wake: (Sender<AccountId>, Receiver<AccountId>),
     /// Wakes the contacts sync.
     contacts_wake: (Sender<()>, Receiver<()>),
     /// The languages Katna Server translates between, once asked.
@@ -308,6 +312,7 @@ impl Daemon {
             uploads: drive::Uploads::default(),
             calendars: calendar::Calendars::default(),
             tracking_wake: async_channel::bounded(1),
+            notes_wake: async_channel::unbounded(),
             contacts_wake: async_channel::bounded(1),
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
@@ -393,6 +398,7 @@ impl Daemon {
             self.task_sync_wake.1.clone(),
         ))
         .detach();
+        smol::spawn(notes::run(Arc::downgrade(self), self.notes_wake.1.clone())).detach();
         Ok(())
     }
 

@@ -6217,6 +6217,7 @@ dependencies = [
  "katna-import",
  "katna-meta",
  "katna-store",
+ "mail-parser",
  "ring",
  "roxmltree 0.21.1",
  "rustls-platform-verifier",

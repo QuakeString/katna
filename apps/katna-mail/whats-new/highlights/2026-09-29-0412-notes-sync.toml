@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes on every device"
+text = """
+Notes now live in your mail account's Notes folder, where iPhone and Mac
+Notes keep theirs, so they follow you to your other devices and come back
+from them. The account's name under a note shows where it is kept; click
+it to move the note, or keep it on this computer only.
+"""

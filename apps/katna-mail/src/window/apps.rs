@@ -122,6 +122,11 @@ impl MailWindow {
         }
         let from = self.app;
         self.app = app;
+        // Notes hands the search box back before Contacts takes it, and
+        // takes it after Contacts hands it back.
+        if from == App::Notes {
+            self.sync_notes_search(cx);
+        }
         if from == App::Contacts || app == App::Contacts {
             // The search box follows: contacts on this page, mail elsewhere.
             self.swap_contacts_search(app == App::Contacts, cx);
@@ -137,6 +142,9 @@ impl MailWindow {
         }
         if app == App::Calendar {
             self.load_calendar(cx);
+        }
+        if app == App::Notes {
+            self.sync_notes_search(cx);
         }
         if app == App::Tasks {
             self.open_tasks_page(cx);
@@ -311,12 +319,18 @@ impl MailWindow {
     }
 
     /// The page of an app other than Mail.
-    pub(super) fn render_app_page(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_app_page(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let body = match self.app {
             App::Contacts => self.render_contacts_page(th, cx),
             App::Calendar => self.render_calendar_page(th, cx),
+            App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
-            App::Mail | App::Notes | App::Feeds => self.render_coming_soon(th),
+            App::Mail | App::Feeds => self.render_coming_soon(th),
         };
         div()
             .flex_1()
