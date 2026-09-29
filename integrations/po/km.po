@@ -42,6 +42,16 @@ msgstr "ថ្ងៃស្អែក"
 msgid "No tasks"
 msgstr "គ្មានកិច្ចការ"
 
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu %1 is a short date"
+msgid "Add a Task for %1"
+msgstr "បន្ថែមកិច្ចការសម្រាប់ %1"
+
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu"
+msgid "Add an Event"
+msgstr "បន្ថែមព្រឹត្តិការណ៍"
+
 # plasma-clock/package/contents/ui/KatnaJoinButton.qml
 msgctxt "@action:button join the event's video call"
 msgid "Join"

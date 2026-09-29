@@ -1505,3 +1505,43 @@ title = "Rappels de tâches et répétitions"
 text = """
 Ouvrez une tâche et choisissez Me le rappeler : à l'heure prévue, une heure ou un jour avant. Le rappel s'affiche même quand Katna est fermé, avec Marquer comme terminée et Répéter. Cocher une tâche récurrente la fait maintenant revenir à sa prochaine date.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Retrouvez vos tâches depuis le bureau"
+text = """
+Saisissez quelques mots d'une tâche dans KRunner ou dans la recherche de GNOME, et elle apparaît sous Tâches. Appuyez sur Entrée et Katna l'ouvre, prête à être modifiée.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Ajouter des événements et des tâches depuis l’horloge du bureau"
+text = """
+Dans Katna Digital Clock, faites un clic droit sur un jour du mois pour
+ajouter une tâche ou un événement à ce jour ; l’événement s’ouvre dans
+le Calendrier de Katna. Cliquer sur l’un de vos événements ouvre le
+Calendrier à sa date.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Saisir un événement en une ligne"
+text = """
+Saisissez « Déjeuner avec Anita vendredi 13h au Cafe Mocha » ou «
+Réunion debout tous les jours ouvrés 9h30 » comme titre d’un nouvel
+événement, et le Calendrier renseigne le jour, l’heure, la répétition et
+le lieu au fil de la frappe.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Voir toute l’année"
+text = """
+Le Calendrier a une vue Année : les douze mois d’un coup, avec un point
+sous les jours qui ont des événements. Appuyez sur Y, puis cliquez sur
+un jour pour l’ouvrir.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Partager vos disponibilités"
+text = """
+Partager mes disponibilités, dans les options du Calendrier, démarre un
+message qui liste vos créneaux libres des prochains jours ouvrés, prêt à
+être envoyé à qui vous voulez.
+"""

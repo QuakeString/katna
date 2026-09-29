@@ -42,6 +42,16 @@ msgstr "നാളെ"
 msgid "No tasks"
 msgstr "ടാസ്‌ക്കുകളില്ല"
 
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu %1 is a short date"
+msgid "Add a Task for %1"
+msgstr "%1-ലേക്ക് ടാസ്‌ക് ചേർക്കുക"
+
+# plasma-clock/package/contents/ui/KatnaDayMenu.qml
+msgctxt "@action:inmenu"
+msgid "Add an Event"
+msgstr "ഇവന്റ് ചേർക്കുക"
+
 # plasma-clock/package/contents/ui/KatnaJoinButton.qml
 msgctxt "@action:button join the event's video call"
 msgid "Join"

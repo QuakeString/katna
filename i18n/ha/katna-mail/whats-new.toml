@@ -1384,3 +1384,33 @@ title = "Tunatarwar aiki da maimaitawa"
 text = """
 Buɗe aiki sannan ka zaɓi Tunatar da ni: a lokacin, awa ɗaya ko kwana ɗaya kafin lokaci. Tunatarwar tana bayyana ko da Katna a rufe take, tare da maɓallan Yi alama an gama da Jinkirta. Idan ka yi wa aiki mai maimaitawa alamar an gama, yanzu yana dawowa a ranarsa ta gaba.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Nemo ayyuka daga tebur ɗin kwamfuta"
+text = """
+Rubuta kalmomi kaɗan na aiki a binciken KRunner ko GNOME, sai ya bayyana ƙarƙashin Ayyuka. Danna Enter, Katna kuma za ta buɗe shi, a shirye don gyara.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Ƙara abubuwan da suka faru da ayyuka daga agogon kwamfuta"
+text = """
+A cikin Agogon Dijital na Katna, danna rana a cikin wata da dama ka ƙara aiki ko taro na wannan ranar; taron yana buɗewa a Kalandar Katna. Danna ɗaya daga cikin tarurrukanka yana buɗe Kalanda a ranar tasa.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Rubuta taron a layi ɗaya"
+text = """
+Rubuta "Abincin rana da Anita ranar Juma'a ƙarfe 1 na rana a Cafe Mocha" ko "Taron gaggawa kowace ranar aiki 9:30" a matsayin taken sabon taro, sai Kalanda ta cike rana, lokaci, maimaitawa da wuri yayin da kake rubutu.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Ga shekara gabaɗaya"
+text = """
+Kalanda tana da kallon Shekara: dukkan watanni goma sha biyu a lokaci guda, tare da ɗigo a ƙarƙashin ranakun da ke da tarurruka. Danna Y, sannan ka danna rana don buɗe ta.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Raba lokutan hutunka"
+text = """
+Raba lokutan hutu a cikin zaɓukan Kalanda yana fara saƙo da ke lissafa lokutan da kake hutu a kwanakin aiki masu zuwa, a shirye don aika wa kowa.
+"""

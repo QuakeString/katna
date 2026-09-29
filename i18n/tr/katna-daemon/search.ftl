@@ -3,8 +3,10 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = Posta
 search-category-people = Kişiler
+search-category-tasks = Görevler
 search-mail-from = Kimden: { $sender }
 search-no-subject = (konu yok)
+search-task-in = { $list } içinde
 search-reply-all = Tümünü yanıtla
 search-copy-address = Adresi kopyala
 search-find-mail = Postaları bul
