@@ -9,12 +9,16 @@ calendar-view-week = Week
 calendar-view-month = Month
 calendar-view-year = Year
 calendar-view-schedule = Schedule
+# The custom view, as many days as chosen in Options.
+calendar-view-days = { $count } days
 # The gear at the right of the calendar bar, and its menu.
 calendar-options = Options
 calendar-density = Density
 calendar-density-responsive = Responsive to your screen
 calendar-density-comfortable = Comfortable
 calendar-density-compact = Compact
+# How many days the custom view shows: a row of numbers.
+calendar-custom-days = Custom view
 calendar-second-zone = Second time zone
 calendar-zone-none = None
 # A time zone to choose. $zone: its city ("New York"), $offset: "GMT+5:30".

@@ -3465,7 +3465,9 @@ most useful reason is shown. Changes go back the way their calendar came
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events; a day opens Day, a month's
-  name opens Month) and Schedule, like Google Calendar, with calendars grouped by account; the week starts as the
+  name opens Month), Schedule and a custom view (X or 6: 2 to 7 days
+  from the day picked, 4 by default, chosen in the options menu as
+  `custom_days`), like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
 - The bar's options button (⚙ in Google, a tune icon here, beside the
   app's own gear) has Density and Second time zone (`[calendar]` in

@@ -913,6 +913,19 @@ pub struct CalendarView {
     /// A second column of hours in another time zone (IANA name); empty
     /// for none.
     pub second_time_zone: String,
+    /// How many days the custom view shows, 2 to 7; 0 for the default.
+    pub custom_days: u8,
+}
+
+impl CalendarView {
+    /// The days of the custom view: [`Self::custom_days`], or 4 as
+    /// Google Calendar starts it.
+    pub fn custom_days(&self) -> u8 {
+        match self.custom_days {
+            n @ 2..=7 => n,
+            _ => 4,
+        }
+    }
 }
 
 /// [`CalendarView::density`], as Google Calendar has them.

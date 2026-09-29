@@ -49,6 +49,7 @@ gpui::actions!(
         CalendarMonthView,
         CalendarYearView,
         CalendarScheduleView,
+        CalendarCustomView,
         CalendarCloseEvent,
         CalendarCreateEvent,
         CalendarEditEvent,
@@ -78,6 +79,8 @@ pub(super) fn bindings() -> Vec<KeyBinding> {
         KeyBinding::new("5", CalendarYearView, c),
         KeyBinding::new("a", CalendarScheduleView, c),
         KeyBinding::new("4", CalendarScheduleView, c),
+        KeyBinding::new("x", CalendarCustomView, c),
+        KeyBinding::new("6", CalendarCustomView, c),
         KeyBinding::new("escape", CalendarCloseEvent, c),
         KeyBinding::new("c", CalendarCreateEvent, c),
         KeyBinding::new("e", CalendarEditEvent, c),
@@ -142,25 +145,30 @@ pub(super) enum CalView {
     Month,
     Year,
     Schedule,
+    /// The custom view: a few days from the one picked.
+    Days,
 }
 
 impl CalView {
-    const ALL: [Self; 5] = [
+    const ALL: [Self; 6] = [
         Self::Day,
         Self::Week,
         Self::Month,
         Self::Year,
         Self::Schedule,
+        Self::Days,
     ];
 
-    fn label(self) -> String {
-        tr!(match self {
-            Self::Day => "calendar-view-day",
-            Self::Week => "calendar-view-week",
-            Self::Month => "calendar-view-month",
-            Self::Year => "calendar-view-year",
-            Self::Schedule => "calendar-view-schedule",
-        })
+    /// The view's name; `days` is how many the custom view shows.
+    fn label(self, days: u8) -> String {
+        match self {
+            Self::Day => tr!("calendar-view-day"),
+            Self::Week => tr!("calendar-view-week"),
+            Self::Month => tr!("calendar-view-month"),
+            Self::Year => tr!("calendar-view-year"),
+            Self::Schedule => tr!("calendar-view-schedule"),
+            Self::Days => tr!("calendar-view-days", count = days),
+        }
     }
 }
 
@@ -196,6 +204,8 @@ impl EventDrag {
 /// The state of the Calendar page.
 pub(super) struct CalendarPage {
     view: CalView,
+    /// How many days the custom view shows.
+    custom_days: u8,
     /// The day the views are on.
     day: Date,
     /// The month the small month shows, by its first day.
@@ -226,10 +236,11 @@ pub(super) struct CalendarPage {
 }
 
 impl CalendarPage {
-    pub(super) fn new(cx: &mut App) -> Self {
+    pub(super) fn new(custom_days: u8, cx: &mut App) -> Self {
         let today = Zoned::now().date();
         Self {
             view: CalView::Week,
+            custom_days,
             day: today,
             mini: today.first_of_month(),
             loaded: None,
@@ -295,6 +306,12 @@ impl CalendarPage {
                     .checked_add(SCHEDULE_DAYS.days())
                     .unwrap_or(self.day),
             ),
+            CalView::Days => (
+                self.day,
+                self.day
+                    .checked_add(i64::from(self.custom_days).days())
+                    .unwrap_or(self.day),
+            ),
         }
     }
 
@@ -306,6 +323,7 @@ impl CalendarPage {
             CalView::Month => by.months(),
             CalView::Year => by.years(),
             CalView::Schedule => (SCHEDULE_DAYS * by).days(),
+            CalView::Days => (i64::from(self.custom_days) * by).days(),
         };
         if let Ok(day) = self.day.checked_add(span) {
             self.day = match self.view {
@@ -659,8 +677,20 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// The calendar bar's options: the density, and the second time zone
-    /// (which opens the list of zones).
+    /// Shows the custom view with `days` days.
+    fn set_custom_days(&mut self, days: u8, cx: &mut Context<Self>) {
+        self.config.calendar.custom_days = days;
+        self.save_config();
+        self.calendar.custom_days = days;
+        self.menu = None;
+        self.calendar.view = CalView::Days;
+        self.calendar.scrolled = false;
+        self.calendar_moved(cx);
+    }
+
+    /// The calendar bar's options: the density, how many days the custom
+    /// view shows, and the second time zone (which opens the list of
+    /// zones).
     pub(super) fn calendar_options_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
         let density = self.config.calendar.density;
         let heading = |text: String| {
@@ -688,6 +718,30 @@ impl MailWindow {
             )
             .on_click(cx.listener(move |this, _, _, cx| this.set_calendar_density(choice, cx)))
         });
+        let custom = self.calendar.custom_days;
+        let counts = (2..=7u8).map(|days| {
+            let on = days == custom;
+            div()
+                .id(("calendar-custom-days", usize::from(days)))
+                .size(px(30.0))
+                .flex()
+                .flex_none()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .text_size(px(13.0))
+                .font_weight(FontWeight::MEDIUM)
+                .cursor_pointer()
+                .when(on, |d| {
+                    d.bg(rgba(th.nav_selected))
+                        .text_color(rgba(th.nav_selected_text))
+                })
+                .when(!on, |d| {
+                    d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
+                })
+                .on_click(cx.listener(move |this, _, _, cx| this.set_custom_days(days, cx)))
+                .child(format::number(u64::from(days)))
+        });
         let zone = self.second_zone().map_or_else(
             || tr!("calendar-zone-none"),
             |_| zone_name(&self.config.calendar.second_time_zone),
@@ -696,6 +750,16 @@ impl MailWindow {
             .min_w(px(240.0))
             .child(heading(tr!("calendar-density")))
             .children(densities)
+            .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+            .child(heading(tr!("calendar-custom-days")))
+            .child(
+                div()
+                    .px(px(12.0))
+                    .pb(px(4.0))
+                    .flex()
+                    .gap(px(4.0))
+                    .children(counts),
+            )
             .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
             .child(heading(tr!("calendar-second-zone")))
             .child(
@@ -799,7 +863,7 @@ impl MailWindow {
             self.render_calendar_empty(th)
         } else {
             match self.calendar.view {
-                CalView::Day | CalView::Week => self.render_time_grid(th, cx),
+                CalView::Day | CalView::Week | CalView::Days => self.render_time_grid(th, cx),
                 CalView::Month => self.render_month(th, cx),
                 CalView::Year => self.render_year(th, cx),
                 CalView::Schedule => self.render_schedule(th, cx),
@@ -829,6 +893,9 @@ impl MailWindow {
             }))
             .on_action(cx.listener(|this, _: &CalendarScheduleView, _, cx| {
                 this.set_calendar_view(CalView::Schedule, cx)
+            }))
+            .on_action(cx.listener(|this, _: &CalendarCustomView, _, cx| {
+                this.set_calendar_view(CalView::Days, cx)
             }))
             .on_action(cx.listener(Self::close_calendar_event))
             .on_action(cx.listener(|this, _: &CalendarCreateEvent, window, cx| {
@@ -881,7 +948,7 @@ impl MailWindow {
             CalView::Day => format::day_month_year(page.day.to_datetime(Time::midnight())),
             CalView::Month => format::month_year(page.day),
             CalView::Year => format::year(page.day.year()),
-            CalView::Week | CalView::Schedule => {
+            CalView::Week | CalView::Schedule | CalView::Days => {
                 if first.year() == last.year() && first.month() == last.month() {
                     format::month_year(first)
                 } else if first.year() == last.year() {
@@ -904,7 +971,9 @@ impl MailWindow {
             CalView::Week => ("calendar-previous-week", "calendar-next-week"),
             CalView::Month => ("calendar-previous-month", "calendar-next-month"),
             CalView::Year => ("calendar-previous-year", "calendar-next-year"),
-            CalView::Schedule => ("calendar-previous-period", "calendar-next-period"),
+            CalView::Schedule | CalView::Days => {
+                ("calendar-previous-period", "calendar-next-period")
+            }
         };
         let views = CalView::ALL.into_iter().map(|view| {
             let on = view == page.view;
@@ -927,7 +996,7 @@ impl MailWindow {
                         .hover(|s| s.bg(rgba(th.hover)))
                 })
                 .on_click(cx.listener(move |this, _, _, cx| this.set_calendar_view(view, cx)))
-                .child(view.label())
+                .child(view.label(page.custom_days))
         });
         div()
             .flex_none()
@@ -1059,7 +1128,7 @@ impl MailWindow {
                 let is_today = day == today;
                 let picked = day == page.day;
                 let in_month = day.month() == page.mini.month();
-                let on_show = matches!(page.view, CalView::Day | CalView::Week)
+                let on_show = matches!(page.view, CalView::Day | CalView::Week | CalView::Days)
                     && day >= shown_first
                     && day < shown_end;
                 div()
