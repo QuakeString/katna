@@ -41,21 +41,28 @@ impl CalDav {
         if !self.trusted(url) {
             return Err(Error::Protocol(format!("CalDAV led elsewhere: {url}")));
         }
-        let mut all = vec![("Authorization", self.authorization.as_str())];
-        all.extend_from_slice(headers);
-        http::exchange_limited(
-            method, url, &all, body, None, &self.tls, TIMEOUT, MAX_ANSWER,
-        )
-        .await
+        let mut retried = false;
+        loop {
+            let authorization = self.authorization().await?;
+            let mut all = vec![("Authorization", authorization.as_str())];
+            all.extend_from_slice(headers);
+            let reply = http::exchange_limited(
+                method, url, &all, body, None, &self.tls, TIMEOUT, MAX_ANSWER,
+            )
+            .await?;
+            if reply.status == 401 && !retried && self.retry_refused() {
+                retried = true;
+                continue;
+            }
+            return Ok(reply);
+        }
     }
 
     /// What the server's answer to a write means.
-    fn answered(reply: &Reply, doing: &str) -> std::result::Result<(), CalendarError> {
+    fn answered(&self, reply: &Reply, doing: &str) -> std::result::Result<(), CalendarError> {
         match reply.status {
             200..=299 => Ok(()),
-            401 | 403 => Err(CalendarError::Failed(Error::Rejected(
-                "the CalDAV server refused the password".into(),
-            ))),
+            401 | 403 => Err(self.refused(reply.status, &reply.body)),
             412 => Err(CalendarError::Failed(Error::Rejected(format!(
                 "the event changed on the CalDAV server while {doing}"
             )))),
@@ -78,7 +85,7 @@ impl CalDav {
         if reply.status == 404 {
             return Ok(());
         }
-        Self::answered(&reply, "deleting an event")
+        self.answered(&reply, "deleting an event")
     }
 
     /// Writes resource `href` of `calendar` as the store has it now.
@@ -112,7 +119,7 @@ impl CalDav {
                 Some(("text/calendar; charset=utf-8", text.as_bytes())),
             )
             .await?;
-        Self::answered(&reply, "saving an event")?;
+        self.answered(&reply, "saving an event")?;
         // Without an ETag the next sync downloads what the server made of it.
         store.set_resource_etag(calendar.id, href, reply.etag.as_deref())?;
         Ok(())

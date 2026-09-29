@@ -3215,7 +3215,26 @@ removed.
 Calendar API (Meet links, event types, colors; Google sends the
 invitations), Microsoft accounts use Microsoft Graph, other servers CalDAV
 (`katna-dav`), and there are local calendars for no account. Google's
-CalDAV endpoint can't make Meet links or event types, so it is not used.
+CalDAV endpoint can't make Meet links or event types, so it is only the
+fallback.
+
+**Best way first, others when it is not available** (`katna_sync::methods`,
+shared by Calendar, Contacts and Tasks). Each kind of account has a best
+way, tried first; when it answers "not enabled", "not offered" or "sign in
+again", the next is tried, and the way that worked is remembered per
+account and kind (`meta` rows, object `account`, plugin
+`sync-method:calendar|contacts|tasks`) and tried first for 7 days, after
+which the best way goes first again. A new sign-in forgets it. Network or
+server errors never switch ways. Google sign-ins: the Google API, then
+Google's CalDAV/CardDAV with the same token. Microsoft sign-ins: Graph
+(Outlook.com has no CalDAV). Password accounts: CalDAV/CardDAV looked for
+on the provider's known server (Yahoo, Zoho by region, iCloud, Fastmail,
+mailbox.org, Posteo, GMX, web.de, AOL; by mail domain or IMAP host), then
+`.well-known` on the mail domain, the IMAP server's domain and the IMAP
+server, and its root (`methods::dav_start_urls`). Credentials go only over
+TLS to hosts of the domains the search started on. When no way works, the
+most useful reason is shown. Changes go back the way their calendar came
+(`calendar.source`).
 
 - Calendars and events live in `pim.db`, synced by the daemon; apps read
   them read-only, as with mail.
@@ -3241,9 +3260,9 @@ CalDAV endpoint can't make Meet links or event types, so it is not used.
   that refuses the expansion shows its series without changed
   occurrences). Scope `https://graph.microsoft.com/Calendars.ReadWrite`,
   consented at sign-in beside `Files.ReadWrite`, its tokens separate.
-  **Other IMAP accounts**: CalDAV found through `/.well-known/caldav` (or
-  `/`) on the IMAP host, with the IMAP password over TLS, only to that
-  host's domain; a calendar whose `getctag`/`sync-token` didn't change is
+  **CalDAV** (password accounts, and Google's fallback): found from the
+  places above, with the IMAP password (or Google's token) over TLS; a
+  calendar whose `getctag`/`sync-token` didn't change is
   skipped, otherwise the etags of its `VEVENT`s are compared with the
   store and only changed ones fetched by `calendar-multiget`
   (`katna_dav::ical` reads them). A server without CalDAV is asked again

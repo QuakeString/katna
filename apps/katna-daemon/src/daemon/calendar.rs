@@ -2,9 +2,11 @@
 
 //! Calendar sync (`docs/ARCHITECTURE.md` §18): every account's calendars
 //! and events into `pim.db`, at start, every five minutes and on
-//! `SyncNow`, through its provider's API: Google Calendar for Google
-//! accounts, Microsoft Graph for Microsoft ones, CalDAV on the IMAP
-//! server of others that offer it ([`katna_sync::calendar`]). One task
+//! `SyncNow`, the best way first and others when that one is not
+//! available ([`katna_sync::methods`]): Google Calendar, then Google's
+//! CalDAV, for Google sign-ins; Microsoft Graph for Microsoft ones; CalDAV
+//! on the provider's server for others ([`katna_sync::calendar`]). The
+//! way that worked is remembered per account. One task
 //! goes through the accounts in turn with its own store connection, apart
 //! from the mail workers, and says `CalendarChanged` (and the clock's
 //! `Changed`) only when something changed.
@@ -25,7 +27,10 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
 use katna_dbus::calendar_state;
-use katna_store::{Mode, Store, calendar::EventChange};
+use katna_store::{
+    Mode, Store,
+    calendar::{CalendarSource, EventChange},
+};
 use katna_sync::{
     calendar::{
         CalendarError,
@@ -34,6 +39,7 @@ use katna_sync::{
         google::GoogleCalendar,
         graph::GraphCalendar,
     },
+    methods::{self, Data, Method},
     net::Tls,
 };
 
@@ -94,10 +100,10 @@ impl Service {
     }
 }
 
-/// The services of the accounts, kept between rounds (CalDAV remembers
-/// where the calendars are) and made again when what they depend on
-/// changes (a new sign-in, another server or password).
-type Services = HashMap<AccountId, (String, Service)>;
+/// The services of the accounts, one per way tried, kept between rounds
+/// (CalDAV remembers where the calendars are) and made again when what
+/// they depend on changes (a new sign-in, another server or password).
+type Services = HashMap<(AccountId, Method), (String, Service)>;
 
 impl Daemon {
     /// Has the calendar sync go through every account now.
@@ -203,19 +209,19 @@ impl Daemon {
         &self,
         services: &'a mut Services,
         account: &Account,
+        method: Method,
     ) -> Result<Option<&'a Service>, String> {
-        match self.calendar_service(account).await? {
+        let at = (account.id, method);
+        match self.calendar_service(account, method).await? {
             Some((key, service)) => {
-                let keep = services
-                    .get(&account.id)
-                    .is_some_and(|(old, _)| *old == key);
+                let keep = services.get(&at).is_some_and(|(old, _)| *old == key);
                 if !keep {
-                    services.insert(account.id, (key, service));
+                    services.insert(at, (key, service));
                 }
-                Ok(Some(&services[&account.id].1))
+                Ok(Some(&services[&at].1))
             }
             None => {
-                services.remove(&account.id);
+                services.remove(&at);
                 Ok(None)
             }
         }
@@ -238,9 +244,15 @@ impl Daemon {
                 .into_iter()
                 .find(|a| a.id == account)
                 .ok_or("the account is gone")?;
+            // The way the calendar came: its events' IDs are that service's.
+            let method = match calendar.source {
+                CalendarSource::CalDav => Method::Dav,
+                CalendarSource::Google | CalendarSource::Microsoft => Method::Api,
+                CalendarSource::Local => continue,
+            };
             let mut services = self.calendars.services.lock().await;
             let service = self
-                .service(&mut services, &account)
+                .service(&mut services, &account, method)
                 .await?
                 .ok_or("the account has no calendars Katna can reach")?;
             edit::push(&service.remote(), store, &calendar, step)
@@ -255,6 +267,7 @@ impl Daemon {
     async fn calendar_service(
         &self,
         account: &Account,
+        method: Method,
     ) -> Result<Option<(String, Service)>, String> {
         if account.kind != AccountKind::Imap {
             return Ok(None);
@@ -268,12 +281,22 @@ impl Daemon {
             let tokens = self.oauth_tokens(account.id, provider).await?;
             let key = format!("{provider:?} {:p}", Arc::as_ptr(&tokens));
             let tls = Tls::system().map_err(|err| format!("TLS setup: {err}"))?;
-            return Ok(Some(match provider {
-                OAuthProvider::Google => (key, Service::Google(GoogleCalendar::new(tokens, tls))),
-                OAuthProvider::Microsoft => {
-                    (key, Service::Microsoft(GraphCalendar::new(tokens, tls)))
+            return Ok(match (provider, method) {
+                (OAuthProvider::Google, Method::Api) => {
+                    Some((key, Service::Google(GoogleCalendar::new(tokens, tls))))
                 }
-            }));
+                (OAuthProvider::Google, Method::Dav) => {
+                    let dav = CalDav::google(tokens, &account.address, tls);
+                    Some((key, Service::CalDav(dav)))
+                }
+                (OAuthProvider::Microsoft, Method::Api) => {
+                    Some((key, Service::Microsoft(GraphCalendar::new(tokens, tls))))
+                }
+                (OAuthProvider::Microsoft, Method::Dav) => None,
+            });
+        }
+        if method != Method::Dav {
+            return Ok(None);
         }
         let Some(server) = settings.imap else {
             return Ok(None);
@@ -286,14 +309,21 @@ impl Daemon {
             .ok_or("no password saved")?;
         let (_, tls) = super::endpoint(&server)?;
         let key = format!(
-            "caldav {} {} {} {password}",
-            server.host, server.username, server.accept_invalid_certs
+            "caldav {} {} {} {} {password}",
+            account.address, server.host, server.username, server.accept_invalid_certs
         );
-        let dav = CalDav::new(&server.host, &server.username, &password, tls);
+        let dav = CalDav::for_account(
+            &account.address,
+            &server.host,
+            &server.username,
+            &password,
+            tls,
+        );
         Ok(Some((key, Service::CalDav(dav))))
     }
 
-    /// Syncs `account`'s calendars; returns what to show and whether
+    /// Syncs `account`'s calendars, the best way first and the others
+    /// when it is not available; returns what to show and whether
     /// anything changed.
     async fn sync_calendars(
         &self,
@@ -301,25 +331,39 @@ impl Daemon {
         services: &mut Services,
         account: &Account,
     ) -> ((&'static str, String), bool) {
-        let service = match self.service(services, account).await {
-            Ok(Some(service)) => service,
-            Ok(None) => return ((calendar_state::NONE, String::new()), false),
-            Err(detail) => return ((calendar_state::ERROR, detail), false),
+        let provider = match self.store().account_settings(account.id) {
+            Ok(settings) => settings.and_then(|s| s.oauth),
+            Err(err) => return ((calendar_state::ERROR, err.to_string()), false),
         };
-        match service.sync(store, account).await {
-            Ok(changed) => ((calendar_state::OK, String::new()), changed),
-            Err(CalendarError::NeedsSignIn(detail)) => {
-                ((calendar_state::NEEDS_SIGN_IN, detail), false)
-            }
-            Err(CalendarError::NotEnabled(detail)) => {
-                ((calendar_state::NOT_ENABLED, detail), false)
-            }
-            Err(CalendarError::NotOffered) => ((calendar_state::NONE, String::new()), false),
-            Err(CalendarError::Failed(err)) => {
-                tracing::warn!(account = %account.id, %err, "calendar sync failed");
-                ((calendar_state::ERROR, err.to_string()), false)
+        let now = unix_now();
+        // What to show when no way works: the most useful reason.
+        let mut shown = (calendar_state::NONE, String::new());
+        for method in methods::order(store, account.id, Data::Calendar, provider, now) {
+            let service = match self.service(services, account, method).await {
+                Ok(Some(service)) => service,
+                Ok(None) => continue,
+                Err(detail) => return ((calendar_state::ERROR, detail), false),
+            };
+            let (state, detail) = match service.sync(store, account).await {
+                Ok(changed) => {
+                    methods::remember(store, account.id, Data::Calendar, method, now);
+                    return ((calendar_state::OK, String::new()), changed);
+                }
+                Err(CalendarError::NeedsSignIn(detail)) => (calendar_state::NEEDS_SIGN_IN, detail),
+                Err(CalendarError::NotEnabled(detail)) => (calendar_state::NOT_ENABLED, detail),
+                Err(CalendarError::NotOffered) => (calendar_state::NONE, String::new()),
+                // The network or the server: not a reason to go another way.
+                Err(CalendarError::Failed(err)) => {
+                    tracing::warn!(account = %account.id, ?method, %err, "calendar sync failed");
+                    return ((calendar_state::ERROR, err.to_string()), false);
+                }
+            };
+            tracing::debug!(account = %account.id, ?method, state, detail, "calendar way not available");
+            if shown.0 == calendar_state::NONE {
+                shown = (state, detail);
             }
         }
+        (shown, false)
     }
 }
 
@@ -423,7 +467,7 @@ impl Daemon {
                 return;
             }
         };
-        services.retain(|id, _| accounts.iter().any(|a| a.id == *id));
+        services.retain(|(id, _), _| accounts.iter().any(|a| a.id == *id));
         let mut changed = false;
         // Calendars of accounts removed while the daemon was away.
         if let Ok(calendars) = store.calendars() {
