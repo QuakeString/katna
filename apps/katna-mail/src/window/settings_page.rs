@@ -1546,20 +1546,12 @@ impl MailWindow {
                             )
                         }))
                 })
-                .child(icon(
-                    if shown {
-                        "checkbox-checked"
-                    } else {
-                        "checkbox"
-                    },
-                    if first {
-                        th.text_faint
-                    } else if shown {
-                        th.accent
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
+                // Inbox is always shown: checked, and greyed out.
+                .child(crate::widgets::checkbox_colored(
+                    ("page-tab-box", ix * 10 + n),
+                    crate::widgets::Check::from(shown),
+                    if first { th.text_faint } else { th.accent },
+                    th,
                 ))
                 .child(icon(tab.icon, th.tabs[tab.color], 18.0))
                 .child(tab.label())

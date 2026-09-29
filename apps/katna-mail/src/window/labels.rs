@@ -18,7 +18,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button, icon, radio};
+use crate::widgets::{FocusRing, elevation, filled_button, radio};
 use crate::{daemon, format};
 
 const WIDTH: f32 = 420.0;
@@ -232,14 +232,10 @@ impl MailWindow {
                 }
                 cx.notify();
             }))
-            .child(icon(
-                if dialog.nest {
-                    "checkbox-checked"
-                } else {
-                    "checkbox"
-                },
-                if dialog.nest { th.accent } else { th.text_dim },
-                20.0,
+            .child(crate::widgets::checkbox(
+                "label-nest-box",
+                crate::widgets::Check::from(dialog.nest),
+                th,
             ))
             .child(if gmail {
                 tr!("label-nest")

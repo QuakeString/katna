@@ -8,9 +8,9 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle, FontWeight, Pixels,
-    ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div, img, point,
-    prelude::*, rgba, svg,
+    AnimationExt, AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle,
+    FontWeight, Pixels, ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div,
+    img, point, prelude::*, rgba, svg,
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
@@ -566,6 +566,165 @@ pub fn switch(t: f32, th: &Theme) -> AnyElement {
                 .bg(rgba(knob))
         })
         .into_any_element()
+}
+
+/// What a [`checkbox`] shows.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Check {
+    Off,
+    On,
+    /// Some of what it stands for, as the list's select-all box shows: a
+    /// smaller square inside the edge.
+    Partial,
+}
+
+impl Check {
+    pub fn from(on: bool) -> Self {
+        if on { Check::On } else { Check::Off }
+    }
+}
+
+/// The box of a checkbox: 18 px with a 2 px edge, which sits with a 20 px
+/// [`radio`] ring at the same weight, as Material draws the pair.
+const CHECK_BOX: f32 = 18.0;
+/// The square of a partly checked box: 1 px clear of the edge all round.
+const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 2.0;
+
+/// A checkbox in the accent colour. Its tick draws itself in when checked
+/// and wipes back out when cleared; `id` keys that motion, so give each box
+/// on screen its own.
+pub fn checkbox(id: impl Into<ElementId>, state: Check, th: &Theme) -> AnyElement {
+    checkbox_colored(id, state, th.accent, th)
+}
+
+/// A checkbox filled with `fill` when checked, such as a calendar's own
+/// colour. Pass `th.text_faint` for one that can't be changed.
+pub fn checkbox_colored(
+    id: impl Into<ElementId>,
+    state: Check,
+    fill: u32,
+    th: &Theme,
+) -> AnyElement {
+    check_box(id.into(), state, fill, th.text_dim, th)
+}
+
+/// A checkbox edged in `color` even when clear, as Calendar shows each
+/// calendar's own colour.
+pub fn checkbox_tinted(id: impl Into<ElementId>, on: bool, color: u32, th: &Theme) -> AnyElement {
+    check_box(id.into(), Check::from(on), color, color, th)
+}
+
+fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> AnyElement {
+    let tick = tick_color(fill, th);
+    // One spring runs clear (0), partly (1) and checked (2), so any change
+    // between the three moves through the ones between.
+    let target = match state {
+        Check::Off => 0.0,
+        Check::Partial => 1.0,
+        Check::On => 2.0,
+    };
+    // A slot the size of a radio button, so rows of both line up.
+    div()
+        .size(px(20.0))
+        .flex_none()
+        .flex()
+        .items_center()
+        .justify_center()
+        .child(div().size(px(CHECK_BOX)).flex_none().with_spring(
+            id,
+            gpui::SpringAnimation::new(katna_ui::motion::SMOOTH).to(target),
+            move |d, v: f32| {
+                // How far the edge has taken its colour, and how far the box
+                // has filled and the tick has drawn.
+                let edge = v.clamp(0.0, 1.0);
+                let full = (v - 1.0).clamp(0.0, 1.0);
+                // Partly checked is a smaller square inside the edge, with a
+                // gap between them; checking grows it to fill the box.
+                let inner = lerp(PARTIAL_SQUARE, CHECK_BOX - 4.0, full) * edge;
+                d.rounded(px(3.0))
+                    .border_2()
+                    .border_color(rgba(crate::theme::mix(rest, fill, edge)))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .relative()
+                    .when(inner > 0.1, |d| {
+                        d.child(
+                            div()
+                                .size(px(inner))
+                                .flex_none()
+                                .rounded(px(lerp(1.0, 0.0, full)))
+                                .bg(rgba(fill)),
+                        )
+                    })
+                    .when(full > 0.001, |d| d.bg(rgba(fade(fill, full))))
+                    .child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                            .child(check_mark(full, tick)),
+                    )
+            },
+        ))
+        .into_any_element()
+}
+
+/// White on a dark fill, near-black on a light one.
+fn tick_color(fill: u32, th: &Theme) -> u32 {
+    if fill == th.accent {
+        return th.on_accent;
+    }
+    let channel = |shift: u32| ((fill >> shift) & 0xff) as f32 / 255.0;
+    let light = 0.299 * channel(24) + 0.587 * channel(16) + 0.114 * channel(8);
+    if light > 0.6 {
+        0x2021_24ff
+    } else {
+        0xffff_ffff
+    }
+}
+
+/// The tick drawn from its start to `t` of its length, inside the box's
+/// 2 px edge.
+fn check_mark(t: f32, color: u32) -> impl IntoElement {
+    // Points in the box, less its edge, whose sides are 14 px.
+    let points: &'static [(f32, f32)] = &[(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)];
+    // The tick starts once the box has begun to fill.
+    let drawn = ((t - 0.25) / 0.75).clamp(0.0, 1.0);
+    canvas(
+        |_, _, _| {},
+        move |bounds, _, window, _| {
+            if drawn <= 0.0 {
+                return;
+            }
+            let o = bounds.origin;
+            let at = |(x, y): (f32, f32)| point(o.x + px(x), o.y + px(y));
+            let lengths: Vec<f32> = points
+                .windows(2)
+                .map(|w| ((w[1].0 - w[0].0).powi(2) + (w[1].1 - w[0].1).powi(2)).sqrt())
+                .collect();
+            let mut left = drawn * lengths.iter().sum::<f32>();
+            let mut path = gpui::PathBuilder::stroke(px(2.0));
+            path.move_to(at(points[0]));
+            for (w, len) in points.windows(2).zip(&lengths) {
+                if left <= 0.0 {
+                    break;
+                }
+                let k = (left / len).min(1.0);
+                let end = (
+                    w[0].0 + (w[1].0 - w[0].0) * k,
+                    w[0].1 + (w[1].1 - w[0].1) * k,
+                );
+                path.line_to(at(end));
+                left -= len;
+            }
+            if let Ok(path) = path.build() {
+                window.paint_path(path, rgba(color));
+            }
+        },
+    )
+    .size_full()
 }
 
 /// A radio button drawn at `t` (0 off, 1 on).

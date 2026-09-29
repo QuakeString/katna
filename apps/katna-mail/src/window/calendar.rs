@@ -1385,19 +1385,12 @@ impl MailWindow {
                     .hover(|s| s.bg(rgba(th.hover)))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.toggle_calendar(id, cx)))
-                    .child(
-                        div()
-                            .flex_none()
-                            .size(px(18.0))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .rounded(px(3.0))
-                            .border_2()
-                            .border_color(rgba(color))
-                            .when(shown, |d| d.bg(rgba(color)))
-                            .when(shown, |d| d.child(icon("check", 0xffff_ffff, 14.0))),
-                    )
+                    .child(crate::widgets::checkbox_tinted(
+                        ("calendar-box", id as usize),
+                        shown,
+                        color,
+                        th,
+                    ))
                     .child(
                         div()
                             .flex_1()
