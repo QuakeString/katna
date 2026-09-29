@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
--- pim.db schema v4: notes (docs/ARCHITECTURE.md §13.11). A note of a mail
+-- pim.db schema v5: notes (docs/ARCHITECTURE.md §13.11). A note of a mail
 -- account is kept in that account's Notes folder in Apple's format; one
 -- with no account stays on this computer.
 
