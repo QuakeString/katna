@@ -300,6 +300,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.trash_notes(&ids, trashed)?)
             }
 
+            async fn order_notes(&self, ids: Vec<i64>) -> fdo::Result<u32> {
+                Ok(self.daemon.order_notes(&ids)?)
+            }
+
             async fn delete_notes(&self, ids: Vec<i64>) -> fdo::Result<u32> {
                 Ok(self.daemon.delete_notes(&ids)?)
             }
