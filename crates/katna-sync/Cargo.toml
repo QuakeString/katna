@@ -21,6 +21,8 @@ jiff.workspace = true
 
 async-channel.workspace = true
 base64.workspace = true
+# Notes read from an account's Notes folder (`src/notes.rs`).
+mail-parser.workspace = true
 blocking.workspace = true
 async-io.workspace = true
 async-net.workspace = true

@@ -601,8 +601,15 @@ impl MailBackend for FakeConnection {
         Ok(())
     }
 
-    async fn create_folder(&mut self, _: &str) -> Result<()> {
-        unimplemented!()
+    async fn create_folder(&mut self, folder: &str) -> Result<()> {
+        let mut state = self.state(format!("CREATE {folder}"))?;
+        state.folders.entry(folder.to_owned()).or_insert(Mailbox {
+            uid_validity: 1,
+            uid_next: 1,
+            messages: BTreeMap::new(),
+            vanished: Vec::new(),
+        });
+        Ok(())
     }
 
     async fn append_with_flags(

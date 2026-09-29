@@ -382,7 +382,7 @@ fn unique_id(now: i64) -> String {
 
 /// `now` as an RFC 5322 date in UTC, for example
 /// `Sat, 26 Sep 2026 10:00:00 +0000`.
-fn rfc5322_date(now: i64) -> String {
+pub(crate) fn rfc5322_date(now: i64) -> String {
     let days = now.div_euclid(86_400);
     let secs = now.rem_euclid(86_400);
     let (year, month, day) = civil_date(days);

@@ -24,16 +24,18 @@ pub enum ObjectKind {
     Thread,
     Organization,
     Contact,
+    Note,
 }
 
 impl ObjectKind {
-    const ALL: [Self; 6] = [
+    const ALL: [Self; 7] = [
         Self::Account,
         Self::Folder,
         Self::Message,
         Self::Thread,
         Self::Organization,
         Self::Contact,
+        Self::Note,
     ];
 
     /// Stable name stored in `change_log.object_kind`.
@@ -45,6 +47,7 @@ impl ObjectKind {
             Self::Thread => "thread",
             Self::Organization => "organization",
             Self::Contact => "contact",
+            Self::Note => "note",
         }
     }
 }

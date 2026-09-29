@@ -116,6 +116,25 @@ pub struct TemplateFileItem {
     pub data: Vec<u8>,
 }
 
+/// A note for `SaveNote`; `id` 0 saves a new one.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct NoteItem {
+    pub id: i64,
+    /// The mail account whose Notes folder keeps it; 0 for this computer
+    /// only.
+    pub account: i64,
+    pub title: String,
+    /// Plain text; lines starting "☐ " or "☑ " are checklist items.
+    pub body: String,
+    /// 0 for none, else a number in the Notes palette.
+    pub color: i64,
+    pub pinned: bool,
+    pub archived: bool,
+    pub labels: Vec<String>,
+    /// The `Message-ID` of the mail the note is about, or empty.
+    pub link: String,
+}
+
 /// A file going up to Google Drive or OneDrive for a message, from
 /// `DriveUpload`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -571,6 +590,20 @@ macro_rules! pim_proxy {
 
             /// Deletes a template. Returns whether it existed.
             fn delete_template(&self, id: i64) -> zbus::Result<bool>;
+
+            /// Saves a note in place of the one with its ID (0: a new one,
+            /// on top). A note of a mail account goes to that account's
+            /// Notes folder too. Returns its ID. Apps read notes from the
+            /// store.
+            fn save_note(&self, note: &NoteItem) -> zbus::Result<i64>;
+
+            /// Moves notes to Trash (`trashed` true), or back. Returns how
+            /// many changed.
+            fn trash_notes(&self, ids: &[i64], trashed: bool) -> zbus::Result<u32>;
+
+            /// Deletes notes for good, here and on their servers. Returns
+            /// how many existed.
+            fn delete_notes(&self, ids: &[i64]) -> zbus::Result<u32>;
 
             /// Saves `message` (RFC 5322, with `Bcc` if any) as a draft of
             /// `account` in its Drafts folder, here and on the server,

@@ -46,6 +46,7 @@ mod list;
 mod look;
 mod nav;
 mod nav_menu;
+mod notes;
 mod onboarding;
 mod popovers;
 mod print;
@@ -436,6 +437,8 @@ pub struct MailWindow {
     /// 0 = Compose is in the rail, 1 = over the folders beside the list.
     compose_dock: Spring,
     people: Option<People>,
+    /// The Notes page, once opened.
+    notes: Option<notes::NotesPage>,
     people_task: Option<Task<()>>,
     /// The Contacts page: saved contacts and their pictures.
     contacts: contacts_page::ContactsPage,
@@ -782,6 +785,7 @@ impl MailWindow {
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
             compose_dock: Spring::new(motion::SLIDE, 1.0),
             people: None,
+            notes: None,
             people_task: None,
             contacts: Default::default(),
             tasks: Default::default(),
@@ -1122,6 +1126,10 @@ impl MailWindow {
                 while let Some(Some(())) = futures_lite::future::poll_once(changes.next()).await {}
                 let refreshed = this.update(cx, |this, cx| {
                     this.refresh(false, cx);
+                    // Notes written on another device came in.
+                    if this.notes.is_some() {
+                        this.load_notes(cx);
+                    }
                     if !this.detached {
                         this.check_first_sync(cx);
                         this.check_signed_out(cx);
@@ -2043,6 +2051,10 @@ impl MailWindow {
             self.on_settings_search(event, window, cx);
             return;
         }
+        if self.app == RailApp::Notes {
+            self.on_notes_search(event, window, cx);
+            return;
+        }
         if self.app == RailApp::Contacts {
             self.on_contacts_search(search, event, cx);
             return;
@@ -2530,6 +2542,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let connection = self.daemon.clone();
+        let notes = command.touches_notes();
         cx.spawn(async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -2543,6 +2556,9 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match result {
                 Ok(()) => {
+                    if notes {
+                        this.load_notes(cx);
+                    }
                     if let Some(done) = done {
                         this.show_snackbar(done, undo, cx);
                     }
@@ -3151,7 +3167,7 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(self.render_app_page(&th, cx))
+                .child(self.render_app_page(&th, window, cx))
                 .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };

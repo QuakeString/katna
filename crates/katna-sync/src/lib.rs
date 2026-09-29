@@ -48,6 +48,7 @@ mod error;
 mod fake_http;
 pub mod imap;
 pub mod net;
+pub mod notes;
 pub mod oauth;
 pub mod onedrive;
 pub mod ops;

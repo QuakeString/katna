@@ -39,6 +39,12 @@ pub enum Command {
     /// These, one after the other: an undo that moves mail back to
     /// several folders.
     Several(Vec<Command>),
+    /// Saves a note (a new one for ID 0).
+    SaveNote(Box<katna_dbus::NoteItem>),
+    /// Moves notes to Trash, or back out of it.
+    TrashNotes(Vec<i64>, bool),
+    /// Deletes notes for good.
+    DeleteNotes(Vec<i64>),
     /// A change on the Tasks page.
     Task(Box<crate::tasks::TaskCommand>),
 }
@@ -49,6 +55,15 @@ pub enum Command {
 const BATCH: usize = 500;
 
 impl Command {
+    /// Whether this changes notes, so the Notes page reads them again.
+    pub fn touches_notes(&self) -> bool {
+        match self {
+            Self::SaveNote(_) | Self::TrashNotes(..) | Self::DeleteNotes(_) => true,
+            Self::Several(commands) => commands.iter().any(Self::touches_notes),
+            _ => false,
+        }
+    }
+
     /// `self` split into commands of at most `size` messages each, in order.
     pub fn batches(&self, size: usize) -> Vec<Command> {
         let split = |ids: &[MessageId], make: &dyn Fn(Vec<MessageId>) -> Command| {
@@ -104,6 +119,9 @@ impl Command {
             | Self::ReopenDraft
             | Self::RestoreQuote
             | Self::ReloadConfig
+            | Self::SaveNote(_)
+            | Self::TrashNotes(..)
+            | Self::DeleteNotes(_)
             | Self::Several(_)
             | Self::Task(_) => {
                 return None;
@@ -188,6 +206,9 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             Ok(false) => return Err(katna_i18n::tr!("toast-too-late-to-undo-send")),
             Err(err) => Err(err),
         },
+        Command::SaveNote(note) => pim.save_note(note).await.map(|_| ()),
+        Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
+        Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
         Command::ReopenDraft | Command::RestoreQuote => return Ok(()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
         Command::Several(commands) => {
@@ -211,6 +232,17 @@ pub async fn save_template(
     pim.save_template(template)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Saves a note (a new one when its ID is 0). Returns its ID.
+pub async fn save_note(
+    connection: &Connection,
+    note: &katna_dbus::NoteItem,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.save_note(note).await.map_err(|err| describe(&err))
 }
 
 /// Deletes template `id`.
