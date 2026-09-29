@@ -1109,3 +1109,11 @@ afzender van wie u altijd afbeeldingen toont, worden nu alleen geladen
 als uw e-mailprovider bevestigt dat het bericht echt van die afzender
 komt.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Meer over je build"
+text = """
+Het venster Updates noemt nu de laatste wijziging van elke versie, laat
+zien waar je exemplaar vandaan komt en wanneer Katna voor het laatst op
+updates heeft gecontroleerd.
+"""
