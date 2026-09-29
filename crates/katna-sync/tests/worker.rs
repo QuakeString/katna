@@ -545,15 +545,29 @@ fn an_unchanged_look_at_other_folders_leaves_idle_alone() {
     smol::block_on(async {
         assert!(matches!(worker.next().await, Event::Connected));
         assert_eq!(added(&worker.next().await), 1);
-        // The first look is always handed over; let it settle.
-        Timer::after(Duration::from_millis(200)).await;
         let count = |what: &str| server.log().iter().filter(|c| *c == what).count();
+        // Waits, without a fixed time, for `what` to reach `at_least`: a
+        // slow CI runner may make fewer looks than the interval allows.
+        let wait_for = async |what: &str, at_least: usize| {
+            let deadline = std::time::Instant::now() + Duration::from_secs(20);
+            while count(what) < at_least {
+                assert!(
+                    std::time::Instant::now() < deadline,
+                    "only {} of {at_least} {what}",
+                    count(what)
+                );
+                Timer::after(Duration::from_millis(10)).await;
+            }
+        };
+        // The first look is always handed over; let it settle.
+        wait_for("STATUS Archive", 1).await;
+        wait_for("IDLE", 1).await;
+        Timer::after(Duration::from_millis(200)).await;
         let (idles, looks) = (count("IDLE"), count("STATUS Archive"));
 
-        Timer::after(Duration::from_millis(400)).await;
+        wait_for("STATUS Archive", looks + 3).await;
         // The watcher kept looking, but nothing changed, so the inbox
         // connection stayed in the same IDLE.
-        assert!(count("STATUS Archive") >= looks + 3);
         assert_eq!(count("IDLE"), idles);
         worker.stop().await;
     });
