@@ -7,6 +7,7 @@
 contacts-all = Anwani
 contacts-frequent = Zinazotumika mara kwa mara
 contacts-labels = Lebo
+contacts-create = Unda anwani
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = Ruhusu
 ## A contact's page
 
 contacts-back = Rudi kwenye anwani
+contacts-edit = Hariri
+contacts-delete = Futa
+contacts-deleted = Imefutwa: { $name }
 contacts-find-mail = Barua
 contacts-details = Maelezo ya anwani
 contacts-saved-in = Imehifadhiwa katika
@@ -52,3 +56,29 @@ contacts-kind-other = Nyingine
 contacts-source-google = Anwani za Google
 contacts-source-microsoft = Anwani za Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Unda anwani
+contacts-edit-title = Hariri anwani
+contacts-edit-save = Hifadhi
+contacts-edit-saving = Inahifadhi…
+contacts-edit-cancel = Ghairi
+contacts-saved = Anwani imehifadhiwa
+contacts-edit-save-to = Hifadhi kwenye
+contacts-edit-changes-go-to = Mabadiliko yanahifadhiwa kwenye { $place }.
+contacts-edit-given = Jina la kwanza
+contacts-edit-family = Jina la ukoo
+contacts-edit-company = Kampuni
+contacts-edit-job = Cheo cha kazi
+contacts-edit-email = Barua pepe
+contacts-edit-phone = Simu
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Ongeza barua pepe
+contacts-edit-add-phone = Ongeza simu
+contacts-edit-street = Anwani ya mtaa
+contacts-edit-city = Jiji
+contacts-edit-postcode = Msimbo wa posta
+contacts-edit-country = Nchi
+contacts-edit-birthday = Siku ya kuzaliwa (YYYY-MM-DD)
+contacts-edit-empty = Ongeza jina, barua pepe au nambari ya simu kwanza.

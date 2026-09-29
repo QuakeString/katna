@@ -48,6 +48,12 @@ notes-edited = נערך לאחרונה: { $date }
 notes-on-this-computer = במחשב הזה
 notes-where = המקום שבו ההערה נשמרת
 
+## A note about a mail
+
+notes-mail = אימייל
+notes-open-mail = פתיחת האימייל
+notes-open-note = פתיחת ההערה
+
 ## Colors (tooltips)
 
 notes-color-none = ללא צבע
@@ -70,6 +76,7 @@ notes-unarchived = ההערה הוצאה מהארכיון
 notes-trashed = ההערה הועברה לאשפה
 notes-restored = ההערה שוחזרה
 notes-empty-discarded = הערה ריקה נמחקה
+notes-mail-gone = האימייל הזה כבר לא כאן
 notes-deleted-forever = { $count ->
     [one] ההערה נמחקה לצמיתות
     [two] { $count } הערות נמחקו לצמיתות

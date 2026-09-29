@@ -46,6 +46,12 @@ notes-edited = 수정됨: { $date }
 notes-on-this-computer = 이 컴퓨터
 notes-where = 메모 저장 위치
 
+## A note about a mail
+
+notes-mail = 메일
+notes-open-mail = 메일 열기
+notes-open-note = 메모 열기
+
 ## Colors (tooltips)
 
 notes-color-none = 색상 없음
@@ -68,6 +74,7 @@ notes-unarchived = 메모 보관처리가 해제되었습니다
 notes-trashed = 메모가 휴지통으로 이동되었습니다
 notes-restored = 메모가 복원되었습니다
 notes-empty-discarded = 빈 메모를 삭제했습니다
+notes-mail-gone = 해당 메일이 더 이상 없습니다
 notes-deleted-forever = { $count ->
    *[other] 메모 { $count }개를 완전히 삭제했습니다
 }

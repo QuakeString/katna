@@ -47,6 +47,12 @@ notes-edited = የተስተካከለው { $date }
 notes-on-this-computer = በዚህ ኮምፒውተር ላይ
 notes-where = ይህ ማስታወሻ የሚቀመጥበት
 
+## A note about a mail
+
+notes-mail = ደብዳቤ
+notes-open-mail = ደብዳቤውን ክፈት
+notes-open-note = ማስታወሻውን ክፈት
+
 ## Colors (tooltips)
 
 notes-color-none = ቀለም የለም
@@ -69,6 +75,7 @@ notes-unarchived = ማስታወሻ ከማህደር ወጥቷል
 notes-trashed = ማስታወሻ ወደ መጣያ ተወስዷል
 notes-restored = ማስታወሻ እነበረበት ተመልሷል
 notes-empty-discarded = ባዶ ማስታወሻ ተጥሏል
+notes-mail-gone = ያ ደብዳቤ ከእንግዲህ እዚህ የለም
 notes-deleted-forever = { $count ->
     [one] ማስታወሻ ለዘለቄታው ተሰርዟል
    *[other] { $count } ማስታወሻዎች ለዘለቄታው ተሰርዘዋል

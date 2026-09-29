@@ -1227,3 +1227,30 @@ Kalendarza Google. Przycisk kalendarza po prawej stronie poczty otwiera
 plan dnia z przyciskiem Dołącz do rozmów. Zaloguj się ponownie na konto,
 aby Katna mogła odczytać jego kalendarz.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Tworzenie i edytowanie kontaktów"
+text = """
+Utwórz kontakt na stronie Kontakty dodaje osobę do wybranego konta, a
+Edytuj na stronie kontaktu zmienia ją także tam. Usuń ma opcję Cofnij, a
+Google i Outlook przez pewien czas przechowują usunięte kontakty w
+koszu.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notatki do wiadomości"
+text = """
+Kliknij wiadomość prawym przyciskiem myszy albo otwórz jej menu ⋮ i
+wybierz Dodaj notatkę: nad wiadomością otworzy się notatka z tematem
+jako tytułem. Notatki wiadomości widać pod tematem za każdym razem,
+gdy otworzysz ją ponownie, a znacznik Poczta na notatce przenosi z
+powrotem do wiadomości.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Zadania na własnym serwerze poczty"
+text = """
+Konta logujące się hasłem przechowują teraz swoje zadania na serwerze
+poczty, jeśli oferuje on CalDAV, dzięki czemu zadania widać także w
+aplikacjach serwera i na telefonie.
+"""

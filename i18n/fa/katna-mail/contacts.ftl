@@ -7,6 +7,7 @@
 contacts-all = مخاطبین
 contacts-frequent = پرتماس‌ها
 contacts-labels = برچسب‌ها
+contacts-create = ایجاد مخاطب
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = اجازه دادن
 ## A contact's page
 
 contacts-back = بازگشت به مخاطبین
+contacts-edit = ویرایش
+contacts-delete = حذف
+contacts-deleted = { $name } حذف شد
 contacts-find-mail = ایمیل
 contacts-details = جزئیات مخاطب
 contacts-saved-in = ذخیره‌شده در
@@ -52,3 +56,29 @@ contacts-kind-other = سایر
 contacts-source-google = مخاطبین Google
 contacts-source-microsoft = مخاطبین Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = ایجاد مخاطب
+contacts-edit-title = ویرایش مخاطب
+contacts-edit-save = ذخیره
+contacts-edit-saving = در حال ذخیره…
+contacts-edit-cancel = لغو
+contacts-saved = مخاطب ذخیره شد
+contacts-edit-save-to = ذخیره در
+contacts-edit-changes-go-to = تغییرات در { $place } ذخیره می‌شوند.
+contacts-edit-given = نام
+contacts-edit-family = نام خانوادگی
+contacts-edit-company = شرکت
+contacts-edit-job = عنوان شغلی
+contacts-edit-email = ایمیل
+contacts-edit-phone = تلفن
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = افزودن ایمیل
+contacts-edit-add-phone = افزودن تلفن
+contacts-edit-street = آدرس خیابان
+contacts-edit-city = شهر
+contacts-edit-postcode = کد پستی
+contacts-edit-country = کشور
+contacts-edit-birthday = تاریخ تولد (YYYY-MM-DD)
+contacts-edit-empty = ابتدا یک نام، ایمیل یا شماره تلفن اضافه کنید.

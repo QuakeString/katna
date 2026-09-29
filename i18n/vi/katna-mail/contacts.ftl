@@ -7,6 +7,7 @@
 contacts-all = Danh bạ
 contacts-frequent = Thường xuyên
 contacts-labels = Nhãn
+contacts-create = Tạo người liên hệ
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = Cho phép
 ## A contact's page
 
 contacts-back = Quay lại danh bạ
+contacts-edit = Sửa
+contacts-delete = Xóa
+contacts-deleted = Đã xóa { $name }
 contacts-find-mail = Thư
 contacts-details = Thông tin liên hệ
 contacts-saved-in = Đã lưu trong
@@ -50,3 +54,29 @@ contacts-kind-other = Khác
 contacts-source-google = Danh bạ Google
 contacts-source-microsoft = Danh bạ Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Tạo người liên hệ
+contacts-edit-title = Sửa người liên hệ
+contacts-edit-save = Lưu
+contacts-edit-saving = Đang lưu…
+contacts-edit-cancel = Hủy
+contacts-saved = Đã lưu người liên hệ
+contacts-edit-save-to = Lưu vào
+contacts-edit-changes-go-to = Các thay đổi được lưu vào { $place }.
+contacts-edit-given = Tên
+contacts-edit-family = Họ
+contacts-edit-company = Công ty
+contacts-edit-job = Chức danh
+contacts-edit-email = Email
+contacts-edit-phone = Điện thoại
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Thêm email
+contacts-edit-add-phone = Thêm số điện thoại
+contacts-edit-street = Địa chỉ đường phố
+contacts-edit-city = Thành phố
+contacts-edit-postcode = Mã bưu chính
+contacts-edit-country = Quốc gia
+contacts-edit-birthday = Sinh nhật (YYYY-MM-DD)
+contacts-edit-empty = Hãy thêm tên, email hoặc số điện thoại trước.

@@ -7,6 +7,7 @@
 contacts-all = পরিচিতি
 contacts-frequent = ঘন ঘন
 contacts-labels = লেবেল
+contacts-create = পরিচিতি তৈরি করুন
 
 ## Search and the list
 
@@ -38,6 +39,9 @@ contacts-allow-button = অনুমতি দিন
 ## A contact's page
 
 contacts-back = পরিচিতিতে ফিরে যান
+contacts-edit = সম্পাদনা করুন
+contacts-delete = মুছুন
+contacts-deleted = { $name } মুছে ফেলা হয়েছে
 contacts-find-mail = মেল
 contacts-details = যোগাযোগের বিবরণ
 contacts-saved-in = যেখানে সেভ করা
@@ -52,3 +56,29 @@ contacts-kind-other = অন্যান্য
 contacts-source-google = Google পরিচিতি
 contacts-source-microsoft = Outlook পরিচিতি
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = পরিচিতি তৈরি করুন
+contacts-edit-title = পরিচিতি সম্পাদনা করুন
+contacts-edit-save = সেভ করুন
+contacts-edit-saving = সেভ হচ্ছে…
+contacts-edit-cancel = বাতিল করুন
+contacts-saved = পরিচিতি সেভ করা হয়েছে
+contacts-edit-save-to = এখানে সেভ করুন
+contacts-edit-changes-go-to = পরিবর্তনগুলি { $place }-এ সেভ করা হবে।
+contacts-edit-given = প্রথম নাম
+contacts-edit-family = শেষ নাম
+contacts-edit-company = কোম্পানি
+contacts-edit-job = পদবি
+contacts-edit-email = ইমেল
+contacts-edit-phone = ফোন
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = ইমেল যোগ করুন
+contacts-edit-add-phone = ফোন যোগ করুন
+contacts-edit-street = রাস্তার ঠিকানা
+contacts-edit-city = শহর
+contacts-edit-postcode = পোস্টাল কোড
+contacts-edit-country = দেশ
+contacts-edit-birthday = জন্মদিন (YYYY-MM-DD)
+contacts-edit-empty = আগে একটি নাম, ইমেল বা ফোন নম্বর যোগ করুন।

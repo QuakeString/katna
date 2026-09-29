@@ -229,6 +229,7 @@ menu-unpin = 取消置顶
 menu-snooze = 延后
 menu-unsnooze = 取消延后
 menu-add-to-tasks = 添加到任务
+menu-add-note = 添加笔记
 menu-print-all = 全部打印
 menu-new-window = 在新窗口中打开
 menu-move-to = 移至

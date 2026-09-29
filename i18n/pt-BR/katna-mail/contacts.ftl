@@ -7,6 +7,7 @@
 contacts-all = Contatos
 contacts-frequent = Frequentes
 contacts-labels = Marcadores
+contacts-create = Criar contato
 
 ## Search and the list
 
@@ -40,6 +41,9 @@ contacts-allow-button = Permitir
 ## A contact's page
 
 contacts-back = Voltar aos contatos
+contacts-edit = Editar
+contacts-delete = Excluir
+contacts-deleted = Contato excluído: { $name }
 contacts-find-mail = E-mail
 contacts-details = Detalhes do contato
 contacts-saved-in = Salvo em
@@ -54,3 +58,29 @@ contacts-kind-other = Outro
 contacts-source-google = Contatos do Google
 contacts-source-microsoft = Contatos do Outlook
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = Criar contato
+contacts-edit-title = Editar contato
+contacts-edit-save = Salvar
+contacts-edit-saving = Salvando…
+contacts-edit-cancel = Cancelar
+contacts-saved = Contato salvo
+contacts-edit-save-to = Salvar em
+contacts-edit-changes-go-to = As alterações são salvas em { $place }.
+contacts-edit-given = Nome
+contacts-edit-family = Sobrenome
+contacts-edit-company = Empresa
+contacts-edit-job = Cargo
+contacts-edit-email = E-mail
+contacts-edit-phone = Telefone
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = Adicionar e-mail
+contacts-edit-add-phone = Adicionar telefone
+contacts-edit-street = Endereço
+contacts-edit-city = Cidade
+contacts-edit-postcode = CEP
+contacts-edit-country = País
+contacts-edit-birthday = Aniversário (YYYY-MM-DD)
+contacts-edit-empty = Primeiro, adicione um nome, um e-mail ou um telefone.

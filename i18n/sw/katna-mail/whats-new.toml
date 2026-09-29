@@ -1208,3 +1208,24 @@ Kalenda huonyesha kalenda zako za Google, Microsoft na nyinginezo kwa siku, wiki
 Kitufe cha kalenda upande wa kulia wa barua zako hufungua ratiba ya siku, kikiwa na Jiunge kwa simu za mkutano.
 Ingia tena kwenye akaunti ili Katna isome kalenda yake.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Kuunda na kubadilisha anwani"
+text = """
+Unda anwani kwenye ukurasa wa Anwani huongeza mtu kwenye akaunti unayochagua, na Hariri kwenye ukurasa wa anwani huibadilisha huko pia.
+Futa ina Tendua, na Google na Outlook huweka anwani zilizofutwa kwenye tupio kwa muda.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Madokezo kwenye barua"
+text = """
+Bofya kulia barua, au fungua menyu yake ya ⋮, kisha uchague Ongeza dokezo: dokezo lenye kichwa cha mada ya barua hufunguka juu ya barua.
+Madokezo yake huonekana chini ya mada kila unapofungua barua hiyo tena, na chip ya Barua ya dokezo hukurudisha kwenye barua.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Majukumu kwenye seva yako ya barua"
+text = """
+Akaunti zinazoingia kwa nenosiri sasa huweka majukumu yake kwenye seva ya barua inapotoa CalDAV,
+kwa hivyo majukumu pia huonekana kwenye programu za seva yenyewe na kwenye simu.
+"""

@@ -433,6 +433,7 @@ menu-unpin = No fijar
 menu-snooze = Posponer
 menu-unsnooze = Dejar de posponer
 menu-add-to-tasks = Añadir a Tareas
+menu-add-note = Añadir una nota
 menu-print-all = Imprimir todo
 menu-new-window = Abrir en una ventana nueva
 menu-move-to = Mover a

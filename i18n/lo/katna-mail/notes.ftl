@@ -46,6 +46,12 @@ notes-edited = ແກ້ໄຂເມື່ອ { $date }
 notes-on-this-computer = ໃນຄອມພິວເຕີເຄື່ອງນີ້
 notes-where = ບ່ອນເກັບບັນທຶກນີ້
 
+## A note about a mail
+
+notes-mail = ອີເມວ
+notes-open-mail = ເປີດອີເມວ
+notes-open-note = ເປີດບັນທຶກ
+
 ## Colors (tooltips)
 
 notes-color-none = ບໍ່ມີສີ
@@ -68,6 +74,7 @@ notes-unarchived = ຍົກເລີກການເກັບບັນທຶກ�
 notes-trashed = ຍ້າຍບັນທຶກໄປຖັງຂີ້ເຫຍື້ອແລ້ວ
 notes-restored = ກູ້ຄືນບັນທຶກແລ້ວ
 notes-empty-discarded = ຖິ້ມບັນທຶກເປົ່າແລ້ວ
+notes-mail-gone = ບໍ່ມີອີເມວນັ້ນອີກແລ້ວ
 notes-deleted-forever = { $count ->
    *[other] ລຶບບັນທຶກ { $count } ລາຍການຖາວອນແລ້ວ
 }

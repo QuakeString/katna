@@ -1250,3 +1250,30 @@ pulsante del calendario a destra della posta apre l’agenda del giorno, con
 «Partecipa» per le chiamate. Accedi di nuovo a un account per permettere a
 Katna di leggerne il calendario.
 """
+
+["2026-09-29-0442-contacts-edit"]
+title = "Creare e modificare i contatti"
+text = """
+Crea contatto, nella pagina Contatti, aggiunge una persona all’account
+che scegli, e Modifica, nella pagina di un contatto, la modifica lì.
+Elimina ha un Annulla, e Google e Outlook conservano per un po’ i
+contatti eliminati nel loro cestino.
+"""
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Note su un’email"
+text = """
+Fai clic con il tasto destro su un’email, oppure apri il suo menu ⋮, e
+scegli Aggiungi una nota: sopra l’email si apre una nota con l’oggetto
+come titolo. Le sue note compaiono sotto l’oggetto ogni volta che
+riapri quell’email, e l’etichetta Posta di una nota ti riporta
+all’email.
+"""
+
+["2026-09-29-0542-caldav-tasks"]
+title = "Attività sul proprio server di posta"
+text = """
+Gli account che accedono con una password ora conservano le proprie
+attività sul server di posta quando questo offre CalDAV, così le
+attività compaiono anche nelle app del server e sul telefono.
+"""

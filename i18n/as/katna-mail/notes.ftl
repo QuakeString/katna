@@ -47,6 +47,12 @@ notes-edited = সম্পাদনা কৰা হ’ল: { $date }
 notes-on-this-computer = এই কম্পিউটাৰত
 notes-where = এই টোকাটো ক’ত ৰখা হৈছে
 
+## A note about a mail
+
+notes-mail = মেইল
+notes-open-mail = মেইল খোলক
+notes-open-note = টোকা খোলক
+
 ## Colors (tooltips)
 
 notes-color-none = কোনো ৰং নাই
@@ -69,6 +75,7 @@ notes-unarchived = টোকা আৰ্কাইভৰ পৰা আঁতৰ�
 notes-trashed = টোকা ট্ৰেশলৈ স্থানান্তৰ কৰা হ’ল
 notes-restored = টোকা পুনৰুদ্ধাৰ কৰা হ’ল
 notes-empty-discarded = খালী টোকা বাতিল কৰা হ’ল
+notes-mail-gone = সেই মেইলটো আৰু ইয়াত নাই
 notes-deleted-forever = { $count ->
     [one] টোকা চিৰদিনৰ বাবে মচি পেলোৱা হ’ল
    *[other] { $count }টা টোকা চিৰদিনৰ বাবে মচি পেলোৱা হ’ল

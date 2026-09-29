@@ -379,6 +379,7 @@ menu-unpin = અનપિન કરો
 menu-snooze = સ્નૂઝ કરો
 menu-unsnooze = સ્નૂઝ રદ કરો
 menu-add-to-tasks = કાર્યોમાં ઉમેરો
+menu-add-note = નોંધ ઉમેરો
 menu-print-all = બધું પ્રિન્ટ કરો
 menu-new-window = નવી વિન્ડોમાં ખોલો
 menu-move-to = આમાં ખસેડો

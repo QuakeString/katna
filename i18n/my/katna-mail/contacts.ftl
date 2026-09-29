@@ -7,6 +7,7 @@
 contacts-all = အဆက်အသွယ်များ
 contacts-frequent = မကြာခဏ
 contacts-labels = အညွှန်းများ
+contacts-create = အဆက်အသွယ် ဖန်တီးရန်
 
 ## Search and the list
 
@@ -36,6 +37,9 @@ contacts-allow-button = ခွင့်ပြုသည်
 ## A contact's page
 
 contacts-back = အဆက်အသွယ်များသို့ ပြန်သွားရန်
+contacts-edit = တည်းဖြတ်ရန်
+contacts-delete = ဖျက်ရန်
+contacts-deleted = { $name } ကို ဖျက်ပြီးပါပြီ
 contacts-find-mail = မေးလ်
 contacts-details = အဆက်အသွယ် အသေးစိတ်
 contacts-saved-in = သိမ်းဆည်းထားရာ
@@ -50,3 +54,29 @@ contacts-kind-other = အခြား
 contacts-source-google = Google အဆက်အသွယ်များ
 contacts-source-microsoft = Outlook အဆက်အသွယ်များ
 contacts-source-carddav = CardDAV
+
+## Creating and changing a contact
+
+contacts-edit-new-title = အဆက်အသွယ် ဖန်တီးရန်
+contacts-edit-title = အဆက်အသွယ် တည်းဖြတ်ရန်
+contacts-edit-save = သိမ်းရန်
+contacts-edit-saving = သိမ်းနေသည်…
+contacts-edit-cancel = မလုပ်တော့ပါ
+contacts-saved = အဆက်အသွယ်ကို သိမ်းပြီးပါပြီ
+contacts-edit-save-to = သိမ်းမည့်နေရာ
+contacts-edit-changes-go-to = ပြောင်းလဲမှုများကို { $place } တွင် သိမ်းဆည်းပါမည်။
+contacts-edit-given = နာမည်
+contacts-edit-family = မျိုးရိုးအမည်
+contacts-edit-company = ကုမ္ပဏီ
+contacts-edit-job = ရာထူး
+contacts-edit-email = အီးမေးလ်
+contacts-edit-phone = ဖုန်း
+contacts-edit-with-kind = { $field } ({ $kind })
+contacts-edit-add-email = အီးမေးလ် ထည့်ရန်
+contacts-edit-add-phone = ဖုန်း ထည့်ရန်
+contacts-edit-street = လမ်းလိပ်စာ
+contacts-edit-city = မြို့
+contacts-edit-postcode = စာတိုက်သင်္ကေတ
+contacts-edit-country = နိုင်ငံ
+contacts-edit-birthday = မွေးနေ့ (YYYY-MM-DD)
+contacts-edit-empty = အမည်၊ အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ် အရင်ထည့်ပါ။
