@@ -3428,6 +3428,10 @@ most useful reason is shown. Changes go back the way their calendar came
   `not-enabled`, `error`, `none`) is `CalendarStatus()` on `Pim1`;
   `CalendarChanged()` (and the clock's `Agenda1.Changed()`) says when to
   read again; `SetCalendarHidden(id, hidden)` ticks calendars on and off.
+  The Calendar page's side list shows every account, also one without
+  calendars: one line under it gives that state's reason with its fix
+  ("Sign in again to show calendars" for an OAuth2 account missing the
+  calendar scope, else "Try again", which is `SyncNow`).
 - How edits flow (`Pim1.EditEvent`, `katna_sync::calendar::edit`): the
   daemon writes the change to `pim.db` at once and says
   `CalendarChanged`, so the app shows it on reload; rows the service
