@@ -2,7 +2,8 @@
 
 //! The line under an account in a page's side list when its lists could
 //! not come: one short sentence says why, with the one click that fixes it
-//! ("Sign in again to show calendars", "Try again"), as the daemon
+//! ("Sign in again to show calendars", "Change password", "Try again"),
+//! as the daemon
 //! reports each account's sync (`katna_dbus::calendar_state`,
 //! `katna_dbus::task_state`). Each page gives its own
 //! words ([`Say`]); the shape, the states and the fixes are the same on
@@ -10,11 +11,12 @@
 
 use std::collections::{HashMap, HashSet};
 
-use gpui::{AnyElement, Context, FontWeight, SharedString, Task, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, FontWeight, SharedString, Task, Window, div, prelude::*, rgba};
 use katna_dbus::task_state;
 use katna_ui::px;
 
 use super::MailWindow;
+use super::settings_page::Section;
 use crate::daemon::{self, AccountState, AddError};
 use crate::theme::Theme;
 use crate::widgets::tip;
@@ -61,8 +63,11 @@ pub(super) enum Say<'a> {
     SignedIn {
         address: &'a str,
     },
-    /// The server refused the password.
+    /// The server refused the password of an account without OAuth2.
     Refused,
+    /// The button that opens Settings > Accounts to change it.
+    ChangePassword,
+    ChangePasswordTooltip,
     /// The provider has the API switched off for Katna.
     NotEnabled,
     /// The last sync failed, and the server said why (in English).
@@ -85,6 +90,8 @@ pub(super) enum Say<'a> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Fix {
     SignIn,
+    /// The password was refused: change it in Settings > Accounts.
+    Password,
     TryAgain,
     None,
 }
@@ -160,7 +167,18 @@ impl MailWindow {
         self.account_status(of).task = Some(task);
     }
 
-    fn fix_account(&mut self, of: Of, id: i64, fix: Fix, cx: &mut Context<Self>) {
+    fn fix_account(
+        &mut self,
+        of: Of,
+        id: i64,
+        fix: Fix,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if fix == Fix::Password {
+            self.open_settings_page(Section::Accounts, window, cx);
+            return;
+        }
         let Some(connection) = self.daemon.clone() else {
             return;
         };
@@ -232,7 +250,7 @@ impl MailWindow {
         let signs_in = status.is_some_and(|s| s.sign_in.is_some());
         let (text, fix) = match state {
             task_state::NEEDS_SIGN_IN if signs_in => (String::new(), Fix::SignIn),
-            task_state::NEEDS_SIGN_IN => (of.say(Say::Refused), Fix::TryAgain),
+            task_state::NEEDS_SIGN_IN => (of.say(Say::Refused), Fix::Password),
             task_state::NOT_ENABLED => (of.say(Say::NotEnabled), Fix::TryAgain),
             task_state::ERROR if detail.is_empty() => (of.say(Say::Failed), Fix::TryAgain),
             task_state::ERROR => (of.say(Say::Error { reason: detail }), Fix::TryAgain),
@@ -248,14 +266,19 @@ impl MailWindow {
                     .into_any_element(),
             ),
             _ => {
-                let (label, hint) = if fix == Fix::SignIn {
-                    let provider = status.and_then(|s| s.sign_in).map_or("", |p| p.name());
-                    (
-                        of.say(Say::SignIn),
-                        katna_i18n::tr!("sign-in-again-tooltip", provider = provider),
-                    )
-                } else {
-                    (of.say(Say::TryAgain), of.say(Say::TryAgainTooltip))
+                let (label, hint) = match fix {
+                    Fix::SignIn => {
+                        let provider = status.and_then(|s| s.sign_in).map_or("", |p| p.name());
+                        (
+                            of.say(Say::SignIn),
+                            katna_i18n::tr!("sign-in-again-tooltip", provider = provider),
+                        )
+                    }
+                    Fix::Password => (
+                        of.say(Say::ChangePassword),
+                        of.say(Say::ChangePasswordTooltip),
+                    ),
+                    _ => (of.say(Say::TryAgain), of.say(Say::TryAgainTooltip)),
                 };
                 Some(
                     div()
@@ -269,9 +292,9 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .hover(|s| s.underline())
                         .tooltip(tip(hint, th))
-                        .on_click(
-                            cx.listener(move |this, _, _, cx| this.fix_account(of, id, fix, cx)),
-                        )
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.fix_account(of, id, fix, window, cx)
+                        }))
                         .child(label)
                         .into_any_element(),
                 )

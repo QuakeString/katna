@@ -183,6 +183,19 @@ pub mod calendar_state {
     pub const NONE: &str = "none";
 }
 
+/// Where an account's contacts sync stands, as `ContactsStatus` reports it.
+pub mod contacts_state {
+    /// Synced, or about to be.
+    pub const OK: &str = "ok";
+    /// The account's sign-in or password did not let Katna into its
+    /// contacts: sign in again (OAuth2), or check the password.
+    pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
+    /// The last sync failed; the detail says why. It is tried again.
+    pub const ERROR: &str = "error";
+    /// The account has no address book Katna can reach.
+    pub const NONE: &str = "none";
+}
+
 /// States of an account's task sync, from `TasksStatus`: the same as a
 /// calendar's (a Google sign-in without tasks, a refused password, the
 /// Google Tasks API switched off, a failed sync, no task service).
@@ -676,6 +689,11 @@ macro_rules! pim_proxy {
             /// Where each account's calendar sync stands: its ID, a
             /// [`calendar_state`] and a detail for people (may be empty).
             fn calendar_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
+
+            /// Where each account's contacts sync stands: its ID, a
+            /// [`contacts_state`] and a detail for people (may be empty).
+            /// `ContactsChanged` is sent when one changes.
+            fn contacts_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
 
             /// Where each account's task sync stands: its ID, a
             /// [`task_state`] and a detail for people (may be empty).

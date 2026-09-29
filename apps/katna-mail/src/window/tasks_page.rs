@@ -2456,6 +2456,8 @@ pub(super) fn say(say: Say<'_>) -> String {
         }
         Say::SignedIn { address } => tr!("tasks-account-signed-in", address = address),
         Say::Refused => tr!("tasks-account-refused"),
+        Say::ChangePassword => tr!("tasks-account-change-password"),
+        Say::ChangePasswordTooltip => tr!("tasks-account-change-password-tooltip"),
         Say::NotEnabled => tr!("tasks-account-not-enabled"),
         Say::Error { reason } => tr!("tasks-account-error", reason = reason),
         Say::Failed => tr!("tasks-account-failed"),

@@ -690,6 +690,35 @@ pub async fn calendar_status(
         .collect())
 }
 
+/// Where each account's contacts sync stands, by account: the state is a
+/// [`katna_dbus::contacts_state`].
+pub async fn contacts_status(
+    connection: &Connection,
+) -> Result<HashMap<i64, AccountState>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    let status = pim.contacts_status().await.map_err(|err| describe(&err))?;
+    Ok(status
+        .into_iter()
+        .map(|(id, state, detail)| {
+            let sign_in = accounts
+                .iter()
+                .find(|a| a.id == id)
+                .and_then(|a| a.sign_in.parse().ok());
+            (
+                id,
+                AccountState {
+                    state,
+                    detail,
+                    sign_in,
+                },
+            )
+        })
+        .collect())
+}
+
 /// Wakes `account`'s sync (mail, calendars, contacts and tasks) without
 /// waiting.
 pub async fn sync_now(connection: &Connection, account: i64) -> Result<(), String> {

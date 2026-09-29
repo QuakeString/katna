@@ -3121,6 +3121,8 @@ pub(super) fn say(say: Say<'_>) -> String {
         }
         Say::SignedIn { address } => tr!("calendar-account-signed-in", address = address),
         Say::Refused => tr!("calendar-account-refused"),
+        Say::ChangePassword => tr!("calendar-account-change-password"),
+        Say::ChangePasswordTooltip => tr!("calendar-account-change-password-tooltip"),
         Say::NotEnabled => tr!("calendar-account-not-enabled"),
         Say::Error { reason } => tr!("calendar-account-error", reason = reason),
         Say::Failed => tr!("calendar-account-failed"),

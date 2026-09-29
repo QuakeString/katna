@@ -1018,6 +1018,16 @@ mail's print preview). A person's page prints them alone and shows them as
 a QR code of their vCard, without notes or picture (addresses and links are
 dropped when it would not fit), which a phone's camera saves.
 
+The column also lists every mail account under Accounts, with how many
+people are saved in it (a click lists only those). The daemon keeps where
+each account's contacts sync stands (`Pim1.ContactsStatus()`, a
+`contacts_state`: ok, needs-sign-in, error or none, sending
+`ContactsChanged` when one changes); an account whose contacts did not
+come shows one line under it with why and its fix: "Sign in again to show
+contacts" (OAuth2 without the contacts scopes), Change password (a server
+that refused the password; many need an app password), or Try again
+(`SyncNow`), as the Calendar does.
+
 Saved people's birthdays show on the Calendar and the agenda as a
 Birthdays calendar made on this computer (id -1, read-only, never stored):
 a yearly whole-day event per person, built from the cards each time the
@@ -3622,9 +3632,10 @@ server error is not.
   (`error`); or no task service (`none`). Every mail account shows in the
   Tasks page's side list, also one without lists, and one line under it
   says why its lists are missing, with the click that fixes it: "Sign in
-  again to show tasks" for an OAuth2 account, else the reason (app
-  password advice for a refused password) and "Try again", which syncs
-  the account now (`SyncNow` wakes the task sync too). The line is
+  again to show tasks" for an OAuth2 account; for a refused password, app
+  password advice and "Change password" (Settings > Accounts), as on
+  Contacts; else the reason and "Try again", which syncs the account now
+  (`SyncNow` wakes the task sync too). The line is
   `window/account_status.rs`, shared by the pages whose lists come per
   account; each page gives its own words.
 - **Default list**: new tasks without a list (the desktop clock's) go to

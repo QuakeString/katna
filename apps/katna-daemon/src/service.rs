@@ -380,6 +380,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.calendar_status()?)
             }
 
+            async fn contacts_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
+                Ok(self.daemon.contacts_status()?)
+            }
+
             async fn tasks_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
                 Ok(self.daemon.tasks_status()?)
             }

@@ -15,7 +15,8 @@ use std::time::{Duration, Instant};
 use async_channel::Receiver;
 use futures_lite::FutureExt;
 use katna_core::contact::Card;
-use katna_core::{Account, AccountId, OAuthProvider};
+use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
+use katna_dbus::contacts_state;
 use katna_store::{BookSource, BookState, BookSync, ContactRef, SyncedContact};
 use katna_sync::{
     Error as SyncError,
@@ -68,22 +69,43 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
             if daemon.closing() {
                 return;
             }
-            match sync_account(&daemon, account, &mut looked).await {
-                Ok(c) => changed |= c,
+            let status = match sync_account(&daemon, account, &mut looked).await {
+                Ok((c, status)) => {
+                    changed |= c;
+                    status
+                }
                 Err(err) => {
                     tracing::info!(account = %account.id, %err, "contacts: sync failed");
+                    (contacts_state::ERROR, err)
                 }
-            }
+            };
+            // A new reason shows in Contacts at once.
+            let old = daemon
+                .contacts_status
+                .lock()
+                .unwrap()
+                .insert(account.id, status.clone());
+            changed |= old.as_ref() != Some(&status);
         }
         // A removed account's books went with it.
         looked.retain(|id, _| accounts.iter().any(|a| a.id == *id));
+        daemon
+            .contacts_status
+            .lock()
+            .unwrap()
+            .retain(|id, _| accounts.iter().any(|a| a.id == *id));
         if changed {
             let _ = daemon.notices().try_send(Notice::ContactsChanged);
         }
     }
 }
 
-/// Syncs the address books of `account`; returns whether anything changed.
+/// Where an account's contacts sync stands: a [`contacts_state`] and a
+/// detail for people.
+type Status = (&'static str, String);
+
+/// Syncs the address books of `account`; returns whether anything changed
+/// and where it stands.
 ///
 /// The best way for the account comes first and the others follow when it
 /// is not available ([`methods`]): Google's People API, then Google's
@@ -94,7 +116,7 @@ async fn sync_account(
     daemon: &Arc<Daemon>,
     account: &Account,
     looked: &mut HashMap<AccountId, Instant>,
-) -> Result<bool, String> {
+) -> Result<(bool, Status), String> {
     let settings = daemon
         .store()
         .account_settings(account.id)
@@ -116,6 +138,8 @@ async fn sync_account(
     }
     // Why the service's own API was refused, for the Allow banner.
     let mut refused: Option<(BookSource, String)> = None;
+    // Why a CardDAV server refused the sign-in or password.
+    let mut dav_refused: Option<String> = None;
     for method in order {
         let changed = match (method, provider) {
             (Method::Api, Some(provider)) => {
@@ -135,7 +159,7 @@ async fn sync_account(
             }
             (Method::Dav, Some(OAuthProvider::Google)) => {
                 let starts = [methods::google_dav_start(Dav::Card, &account.address)];
-                sync_card_dav(daemon, account, &tls, &starts, due).await?
+                sync_card_dav(daemon, account, &tls, &starts, due, &mut dav_refused).await?
             }
             (Method::Dav, None) => {
                 let starts = carddav::start_urls(
@@ -143,26 +167,40 @@ async fn sync_account(
                     &account.address,
                     settings.imap.as_ref().map(|s| s.host.as_str()),
                 );
-                sync_card_dav(daemon, account, &tls, &starts, due).await?
+                sync_card_dav(daemon, account, &tls, &starts, due, &mut dav_refused).await?
             }
             _ => None,
         };
         if let Some(changed) = changed {
             methods::remember(&mut daemon.store(), account.id, Data::Contacts, method, now);
-            return Ok(changed || others);
+            // A book the server stopped letting Katna into.
+            let refused = daemon
+                .store()
+                .address_books()
+                .map_err(|e| e.to_string())?
+                .iter()
+                .any(|b| b.account == Some(account.id) && b.state == BookState::NeedsPermission);
+            let status = if refused {
+                (contacts_state::NEEDS_SIGN_IN, String::new())
+            } else {
+                (contacts_state::OK, String::new())
+            };
+            return Ok((changed || others, status));
         }
         tracing::debug!(account = %account.id, ?method, "contacts: this way is not available");
     }
     // No way worked: a refused API asks the user to allow contacts.
-    match refused {
-        Some((source, why)) => {
+    match (refused, dav_refused) {
+        (Some((source, why)), _) => {
             let book = daemon
                 .store()
                 .ensure_address_book(Some(account.id), source, "", "")
                 .map_err(|e| e.to_string())?;
-            Ok(save(daemon, book, Err(SyncError::Auth(why)))? || others)
+            let changed = save(daemon, book, Err(SyncError::Auth(why.clone())))? || others;
+            Ok((changed, (contacts_state::NEEDS_SIGN_IN, why)))
         }
-        None => Ok(others),
+        (None, Some(why)) => Ok((others, (contacts_state::NEEDS_SIGN_IN, why))),
+        (None, None) => Ok((others, (contacts_state::NONE, String::new()))),
     }
 }
 
@@ -243,14 +281,16 @@ fn dav_books(daemon: &Daemon, account: AccountId) -> Result<Vec<(i64, String)>, 
 
 /// Syncs the account's CardDAV address books, looking for them from
 /// `starts` when `due` or none are known. `None` when the account has no
-/// way in or no address book there; otherwise whether anything changed.
-/// The account's books from any other way go.
+/// way in or no address book there (a server that refused the password
+/// says why in `refused`); otherwise whether anything changed. The
+/// account's books from any other way go.
 async fn sync_card_dav(
     daemon: &Arc<Daemon>,
     account: &Account,
     tls: &Tls,
     starts: &[String],
     due: bool,
+    refused: &mut Option<String>,
 ) -> Result<Option<bool>, String> {
     let Some(dav) = card_dav(daemon, account.id, tls.clone()).await? else {
         return Ok(None);
@@ -276,6 +316,10 @@ async fn sync_card_dav(
             }
             Ok(_) => {
                 tracing::debug!(account = %account.id, "contacts: no CardDAV address book");
+            }
+            Err(SyncError::Auth(why)) => {
+                tracing::debug!(account = %account.id, %why, "contacts: CardDAV refused");
+                *refused = Some(why);
             }
             // Keeps the books it had: the server may be down.
             Err(err) => {
@@ -437,6 +481,28 @@ pub(super) fn failed(err: SyncError) -> CommandError {
 }
 
 impl Daemon {
+    /// Where each account's contacts sync stands; a mail account not
+    /// synced yet is `ok` (about to be).
+    pub fn contacts_status(&self) -> Result<Vec<(i64, String, String)>, CommandError> {
+        let accounts = self.store().accounts()?;
+        let status = self.contacts_status.lock().unwrap();
+        Ok(accounts
+            .into_iter()
+            .map(|account| {
+                let (state, detail) = status.get(&account.id).cloned().unwrap_or_else(|| {
+                    // A mail archive on this computer has no address book.
+                    let state = if account.kind.is_mail() && account.kind != AccountKind::Local {
+                        contacts_state::OK
+                    } else {
+                        contacts_state::NONE
+                    };
+                    (state, String::new())
+                });
+                (account.id.0, state.to_owned(), detail)
+            })
+            .collect())
+    }
+
     /// Saves `card` (a `katna_core::contact::Card` as JSON) over saved
     /// card `contact`, or as a new card in address book `book` (0: the
     /// book on this computer) when `contact` is 0. The account's service
