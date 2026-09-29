@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Smooth paging between attachments"
+text = """
+Going to the next or previous attachment in the viewer with the arrows no
+longer flickers. The viewer stays open and the next file takes the place
+of the last one as soon as it is ready.
+"""

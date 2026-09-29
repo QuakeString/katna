@@ -24,6 +24,7 @@ mod office;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use gpui::{
@@ -54,6 +55,10 @@ const ZOOMS: [f32; 12] = [
 ];
 /// A PDF page is at most this wide at zoom 1, in logical pixels.
 const PAGE_WIDTH: f32 = 880.0;
+/// How long the last file stays on show while the next one opens.
+const SLOW_LOAD: Duration = Duration::from_millis(300);
+/// Counts viewers opened, for [`Viewer::opened`].
+static OPENED: AtomicUsize = AtomicUsize::new(0);
 const PAGE_GAP: f32 = 16.0;
 /// Pages this far from the screen keep their bitmaps.
 const KEEP_PAGES: usize = 2;
@@ -91,6 +96,8 @@ pub(super) struct Viewer {
     items: Vec<Item>,
     /// The item on show.
     current: usize,
+    /// The item on show or opening, which the arrows page on from.
+    target: usize,
     file: Option<Arc<AttachmentFile>>,
     content: Content,
     /// A step of [`ZOOMS`].
@@ -99,10 +106,18 @@ pub(super) struct Viewer {
     /// Bitmaps no longer drawn; the window frees them at the next frame.
     released: Vec<Arc<RenderImage>>,
     _load: Option<Task<()>>,
+    /// Shows "Opening…" when the next file takes long.
+    _wait: Option<Task<()>>,
     /// The page being drawn in the background.
     drawing: Option<(usize, Task<()>)>,
-    /// Counts openings, to replay the fade-in.
+    /// Counts the files shown, so each starts with a fresh selection.
     seq: usize,
+    /// Tells this viewer's fade-in from an earlier one's; paging between
+    /// files keeps it, so the viewer fades in only when it opens.
+    opened: usize,
+    /// The viewer's width and the screen's scale at the last frame, to
+    /// draw the next PDF's first page at the size it will be shown.
+    frame: (f32, f32),
     /// Selected text of a text file, document or PDF.
     text: TextSelection,
     /// The PDF page number in the foot pill, typed to go to a page.
@@ -168,7 +183,8 @@ const TEXT_PAGES: usize = 2000;
 
 /// What loading found, made on a background thread.
 enum Loaded {
-    Pdf(Document),
+    /// The PDF and its first page, drawn at the scale it will be shown.
+    Pdf(Document, Option<(f32, Arc<RenderImage>)>),
     Bitmap(Arc<RenderImage>, (u32, u32)),
     Drawn(Arc<gpui::Image>, Option<(u32, u32)>),
     Text(Vec<SharedString>, bool),
@@ -213,14 +229,18 @@ impl Viewer {
             raw,
             items,
             current: 0,
+            target: 0,
             file: None,
             content: Content::Loading,
             zoom: fit_step(),
             scroll: ScrollHandle::new(),
             released: Vec::new(),
             _load: None,
+            _wait: None,
             drawing: None,
             seq: 0,
+            opened: OPENED.fetch_add(1, Ordering::Relaxed),
+            frame: (unpx(window.viewport_size().width), window.scale_factor()),
             text: TextSelection::new(cx),
             goto,
             _goto,
@@ -252,35 +272,57 @@ impl Viewer {
         }
     }
 
-    /// Shows item `ix` (wrapping around).
+    /// Shows item `ix` (wrapping around). The file on show stays until
+    /// the next one is ready (a PDF with its first page drawn), so paging
+    /// swaps one for the other with nothing in between; a file that takes
+    /// long shows "Opening…" meanwhile.
     fn show(&mut self, ix: usize, cx: &mut Context<Self>) {
         if self.items.is_empty() {
             return;
         }
         let ix = ix % self.items.len();
-        self.current = ix;
-        self.seq += 1;
-        self.text.begin(self.seq);
-        self.zoom = fit_step();
-        self.went = None;
-        self.markup = Markup::new();
-        self.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
-        self.file = None;
-        self.drawing = None;
-        let old = std::mem::replace(&mut self.content, Content::Loading);
-        self.release(old);
+        self.target = ix;
         let item = self.items[ix].clone();
         let raw = self.raw.clone();
         // Only the file the viewer was opened on is handed to another app
         // when it cannot be shown; paging through never launches one.
-        let first = self.seq == 1;
+        let first = self.seq == 0;
+        if first {
+            self.enter(ix);
+        }
         let risky = item.risky;
+        let (vw, scale_factor) = self.frame;
+        let waiting = self.seq;
+        let slow = cx.background_executor().timer(SLOW_LOAD);
+        self._wait = Some(cx.spawn(async move |this, cx| {
+            slow.await;
+            this.update(cx, |this, cx| {
+                if this.seq == waiting && this.current != ix {
+                    this.enter(ix);
+                    cx.notify();
+                }
+            })
+            .ok();
+        }));
         self._load = Some(cx.spawn(async move |this, cx| {
             let (file, loaded) = cx
                 .background_executor()
-                .spawn(async move { load(&raw, &item) })
+                .spawn(async move {
+                    let (file, loaded) = load(&raw, &item);
+                    let loaded = match loaded {
+                        Loaded::Pdf(doc, _) if vw > 0.0 => {
+                            let scale = pdf_fit(&doc, vw) * ZOOMS[fit_step()] * scale_factor;
+                            let page = doc.render(0, scale).map(|p| (scale, bitmap(p)));
+                            Loaded::Pdf(doc, page)
+                        }
+                        loaded => loaded,
+                    };
+                    (file, loaded)
+                })
                 .await;
             this.update(cx, |this, cx| {
+                this._wait = None;
+                this.enter(ix);
                 this.file = file.map(Arc::new);
                 if first
                     && matches!(loaded, Loaded::Nothing(_))
@@ -290,12 +332,12 @@ impl Viewer {
                     cx.emit(ViewerEvent::Unreadable(file.clone()));
                 }
                 this.content = match loaded {
-                    Loaded::Pdf(doc) => {
+                    Loaded::Pdf(doc, page) => {
                         let doc = Arc::new(doc);
                         Content::Pdf(PdfView {
                             _reading: Some(this.read_pdf_text(doc.clone(), cx)),
                             doc,
-                            pages: HashMap::new(),
+                            pages: page.into_iter().map(|page| (0, page)).collect(),
                             text: Vec::new(),
                             z: 1.0,
                         })
@@ -327,6 +369,22 @@ impl Viewer {
         cx.notify();
     }
 
+    /// Puts item `ix` on show, still opening: the last file's view, marks
+    /// and selection go.
+    fn enter(&mut self, ix: usize) {
+        self.current = ix;
+        self.seq += 1;
+        self.text.begin(self.seq);
+        self.zoom = fit_step();
+        self.went = None;
+        self.markup = Markup::new();
+        self.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
+        self.file = None;
+        self.drawing = None;
+        let old = std::mem::replace(&mut self.content, Content::Loading);
+        self.release(old);
+    }
+
     /// Closes the viewer, asking first about unsaved marks.
     fn close(&mut self, cx: &mut Context<Self>) {
         self.leave(Leave::Close, cx);
@@ -337,7 +395,7 @@ impl Viewer {
     fn step(&mut self, by: isize, cx: &mut Context<Self>) {
         let count = self.items.len() as isize;
         if count > 0 {
-            let ix = (self.current as isize + by).rem_euclid(count) as usize;
+            let ix = (self.target as isize + by).rem_euclid(count) as usize;
             self.leave(Leave::Show(ix), cx);
         }
     }
@@ -612,6 +670,15 @@ impl Viewer {
     }
 }
 
+/// Points to logical pixels that fit `doc`'s widest page in a viewer
+/// `vw` wide, at 100%.
+fn pdf_fit(doc: &Document, vw: f32) -> f32 {
+    let widest = (0..doc.pages())
+        .map(|p| doc.page_size(p).0)
+        .fold(1.0_f32, f32::max);
+    ((vw - 176.0).min(PAGE_WIDTH) / widest).clamp(0.2, 4.0)
+}
+
 /// Extracts `item` from the raw message and decodes it for showing.
 fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
     let Some(file) = katna_render::attachment_file(raw, item.index) else {
@@ -619,7 +686,7 @@ fn load(raw: &[u8], item: &Item) -> (Option<AttachmentFile>, Loaded) {
     };
     let loaded = match katna_preview::kind(&file.mime, &file.name) {
         Kind::Pdf => match Document::open(file.bytes.clone()) {
-            Ok(doc) => Loaded::Pdf(doc),
+            Ok(doc) => Loaded::Pdf(doc, None),
             Err(pdf::Error::Locked) => Loaded::Nothing("viewer-pdf-locked"),
             Err(pdf::Error::Invalid) => Loaded::Nothing("viewer-pdf-unreadable"),
         },
@@ -731,6 +798,7 @@ impl Render for Viewer {
         } else {
             (unpx(viewport.width), unpx(viewport.height) - BAR_HEIGHT)
         };
+        self.frame = (vw, window.scale_factor());
         let zoom = ZOOMS[self.zoom];
         let item = self.items.get(self.current).cloned();
         let name = item.as_ref().map(|i| i.name.clone()).unwrap_or_default();
@@ -866,8 +934,7 @@ impl Render for Viewer {
                     let widest = (0..count)
                         .map(|p| pdf.doc.page_size(p).0)
                         .fold(1.0_f32, f32::max);
-                    let fit = ((vw - 176.0).min(PAGE_WIDTH) / widest).clamp(0.2, 4.0);
-                    let z = fit * zoom;
+                    let z = pdf_fit(&pdf.doc, vw) * zoom;
                     let scale = z * window.scale_factor();
                     let went = self
                         .went
@@ -1176,7 +1243,7 @@ impl Render for Viewer {
         });
 
         div()
-            .id(("viewer", self.seq))
+            .id(("viewer", self.opened))
             .track_focus(&self.focus)
             .key_context(KEY_CONTEXT)
             .on_key_down(cx.listener(Self::on_key))
@@ -1208,7 +1275,7 @@ impl Render for Viewer {
             .children(self.cell_menu(&th, cx))
             .children(self.leave_dialog(&th, cx))
             .with_animation(
-                ("viewer-in", self.seq),
+                ("viewer-in", self.opened),
                 Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
