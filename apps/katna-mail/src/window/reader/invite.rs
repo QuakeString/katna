@@ -10,9 +10,10 @@ use std::sync::{Arc, Mutex};
 
 use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
 use jiff::tz::TimeZone;
-use katna_core::Paths;
+use katna_core::{AccountId, Paths};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
+use katna_store::MessageId;
 use katna_store::calendar::{Calendar, CalendarAccess, EditScope, EventData, EventStatus};
 use katna_ui::px;
 
@@ -39,6 +40,11 @@ pub(in crate::window) enum Method {
 pub(in crate::window) struct Invite {
     pub method: Method,
     pub event: EventData,
+    /// The calendar part as sent, for an answer by mail.
+    text: String,
+    /// The answer mailed to the organizer from here, while no calendar
+    /// holds the invitation.
+    mailed: Mutex<Option<&'static str>>,
     /// What the user's calendars hold for it, read when first shown.
     look: Mutex<Option<Look>>,
 }
@@ -77,6 +83,8 @@ pub(in crate::window) fn invite(raw: &[u8]) -> Option<Arc<Invite>> {
     Some(Arc::new(Invite {
         method,
         event,
+        text,
+        mailed: Mutex::new(None),
         look: Mutex::new(None),
     }))
 }
@@ -133,6 +141,48 @@ impl Invite {
     }
 }
 
+/// "Going?" before the answers.
+fn going_row(th: &Theme) -> gpui::Div {
+    div()
+        .flex()
+        .flex_row()
+        .flex_wrap()
+        .items_center()
+        .gap(px(8.0))
+        .child(
+            div()
+                .mr(px(8.0))
+                .text_size(px(14.0))
+                .text_color(rgba(th.text_dim))
+                .child(tr!("calendar-going")),
+        )
+}
+
+/// One answer, Yes, No or Maybe; `on` when it is the user's.
+fn answer_chip(
+    id: (&'static str, usize, &'static str),
+    label: String,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(SharedString::from(format!("{}-{}-{}", id.0, id.2, id.1)))
+        .h(px(32.0))
+        .px(px(16.0))
+        .flex()
+        .items_center()
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(if on { th.accent } else { th.divider }))
+        .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
+        .text_size(px(14.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(if on { th.accent } else { th.text }))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(label)
+}
+
 /// The person an answer came from: their name, else their address.
 fn who(event: &EventData) -> String {
     event
@@ -161,10 +211,125 @@ impl MailWindow {
         }
     }
 
-    /// The card of `invite`, in message `ix` of the conversation.
+    /// The address of the user's that `invite` was sent to, and the
+    /// account message `id` came to: the answer goes from there.
+    fn invited_as(&self, id: MessageId, invite: &Invite) -> Option<(AccountId, String)> {
+        let account = self.mail.as_ref().ok()?.message_account(id)?;
+        let address = &self.accounts.iter().find(|a| a.id == account)?.address;
+        let attendees = &invite.event.attendees;
+        let invited = attendees
+            .iter()
+            .find(|a| a.email.eq_ignore_ascii_case(address))
+            .or_else(|| {
+                attendees.iter().find(|a| {
+                    self.accounts
+                        .iter()
+                        .any(|me| me.address.eq_ignore_ascii_case(&a.email))
+                })
+            })?;
+        Some((account, invited.email.clone()))
+    }
+
+    /// Answers `invite` by mail to its organizer (iMIP, RFC 6047), for
+    /// an invitation no calendar of the user's holds: from the account the
+    /// invitation came to, as a reply to it, with the answer in a calendar
+    /// part the organizer's calendar reads.
+    fn answer_invite_by_mail(
+        &mut self,
+        id: MessageId,
+        invite: Arc<Invite>,
+        status: &'static str,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((account, address)) = self.invited_as(id, &invite) else {
+            return;
+        };
+        let event = &invite.event;
+        let stamp = jiff::Timestamp::now().as_second();
+        let Some(ics) = katna_dav::ical::reply_calendar(&invite.text, &address, status, stamp)
+        else {
+            return;
+        };
+        let name = self
+            .accounts
+            .iter()
+            .find(|a| a.id == account)
+            .map(|a| a.display_name.trim().to_owned())
+            .filter(|n| !n.is_empty());
+        let title = if event.title.is_empty() {
+            tr!("calendar-no-title")
+        } else {
+            event.title.clone()
+        };
+        let who = name.clone().unwrap_or_else(|| address.clone());
+        let (subject, body) = match status {
+            "accepted" => (
+                tr!("calendar-mail-yes", title = title),
+                tr!("calendar-mail-yes-body", name = who),
+            ),
+            "declined" => (
+                tr!("calendar-mail-no", title = title),
+                tr!("calendar-mail-no-body", name = who),
+            ),
+            _ => (
+                tr!("calendar-mail-maybe", title = title),
+                tr!("calendar-mail-maybe-body", name = who),
+            ),
+        };
+        let header = self
+            .mail
+            .as_ref()
+            .ok()
+            .and_then(|mail| mail.message_id_header(id))
+            .map(|h| h.trim_matches(['<', '>']).to_owned());
+        let raw = crate::outgoing::build(&crate::outgoing::Outgoing {
+            from: Some(crate::outgoing::Mailbox {
+                name,
+                email: address,
+            }),
+            to: vec![crate::outgoing::Mailbox {
+                name: Some(event.organizer_name.clone()).filter(|n| !n.is_empty()),
+                email: event.organizer.clone(),
+            }],
+            subject,
+            body,
+            references: header.iter().cloned().collect(),
+            in_reply_to: header,
+            calendar: Some(("REPLY".to_owned(), ics)),
+            ..Default::default()
+        });
+        let before = invite.mailed.lock().unwrap().replace(status);
+        cx.notify();
+        let connection = self.daemon.clone();
+        let delay = self.config.sending.undo_send_seconds;
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => crate::daemon::connect().await?,
+                    };
+                    crate::daemon::queue_send(&connection, account.0, &raw, delay).await
+                })
+                .await;
+            this.update(cx, |this, cx| match result {
+                Ok(outbox) => this.queued(outbox, delay, false, cx),
+                Err(err) => {
+                    *invite.mailed.lock().unwrap() = before;
+                    this.show_snackbar(err, None, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// The card of `invite`, in message `ix` (`id`) of the conversation.
     pub(super) fn invite_card(
         &self,
         ix: usize,
+        id: MessageId,
         invite: &Arc<Invite>,
         th: &Theme,
         cx: &mut Context<Self>,
@@ -276,26 +441,11 @@ impl MailWindow {
         let answers = answerable.then(|| {
             let found = found.cloned().expect("answerable");
             let mine = found.event.data.self_status.clone();
-            let answer = |id: &'static str, label: String, status: &'static str| {
+            let answer = |key: &'static str, label: String, status: &'static str| {
                 let on = mine == status;
                 let occurrence = found.clone();
-                div()
-                    .id(SharedString::from(format!("invite-{id}-{ix}")))
-                    .h(px(32.0))
-                    .px(px(16.0))
-                    .flex()
-                    .items_center()
-                    .rounded_full()
-                    .border_1()
-                    .border_color(rgba(if on { th.accent } else { th.divider }))
-                    .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(rgba(if on { th.accent } else { th.text }))
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .child(label)
-                    .on_click(cx.listener(move |this, _, _, cx| {
+                answer_chip(("invite", ix, key), label, on, th).on_click(cx.listener(
+                    move |this, _, _, cx| {
                         if occurrence.event.data.self_status != status {
                             // An invitation to a series is answered for all
                             // of it, as the organizer asked.
@@ -306,21 +456,10 @@ impl MailWindow {
                                 cx,
                             );
                         }
-                    }))
+                    },
+                ))
             };
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .items_center()
-                .gap(px(8.0))
-                .child(
-                    div()
-                        .mr(px(8.0))
-                        .text_size(px(14.0))
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("calendar-going")),
-                )
+            going_row(th)
                 .child(answer("yes", tr!("calendar-answer-yes"), "accepted"))
                 .child(answer("no", tr!("calendar-answer-no"), "declined"))
                 .child(answer("maybe", tr!("calendar-answer-maybe"), "tentative"))
@@ -328,6 +467,38 @@ impl MailWindow {
         let waiting = invite.method == Method::Request
             && event.status != EventStatus::Cancelled
             && found.is_none();
+        // It came to an account without calendars (Google, Outlook and
+        // scheduling CalDAV servers put it in theirs): the answer goes to
+        // the organizer by mail.
+        let by_mail = waiting
+            && !event.organizer.is_empty()
+            && !self
+                .accounts
+                .iter()
+                .any(|me| me.address.eq_ignore_ascii_case(&event.organizer))
+            && self.invited_as(id, invite).is_some_and(|(account, _)| {
+                !look.is_some_and(|l| l.calendars.iter().any(|c| c.account == Some(account)))
+            });
+        let answers = answers.or_else(|| {
+            by_mail.then(|| {
+                let mailed = *invite.mailed.lock().unwrap();
+                let answer = |key: &'static str, label: String, status: &'static str| {
+                    let on = mailed == Some(status);
+                    let invite = invite.clone();
+                    answer_chip(("invite-mail", ix, key), label, on, th).on_click(cx.listener(
+                        move |this, _, _, cx| {
+                            if *invite.mailed.lock().unwrap() != Some(status) {
+                                this.answer_invite_by_mail(id, invite.clone(), status, cx);
+                            }
+                        },
+                    ))
+                };
+                going_row(th)
+                    .child(answer("yes", tr!("calendar-answer-yes"), "accepted"))
+                    .child(answer("no", tr!("calendar-answer-no"), "declined"))
+                    .child(answer("maybe", tr!("calendar-answer-maybe"), "tentative"))
+            })
+        });
 
         let join = (!event.join_url.is_empty() && event.status != EventStatus::Cancelled)
             .then(|| event.join_url.clone());
@@ -399,7 +570,11 @@ impl MailWindow {
                     div()
                         .text_size(px(12.0))
                         .text_color(rgba(th.text_dim))
-                        .child(tr!("calendar-invite-not-yet")),
+                        .child(if by_mail {
+                            tr!("calendar-invite-by-mail")
+                        } else {
+                            tr!("calendar-invite-not-yet")
+                        }),
                 )
             })
             .child(actions)
