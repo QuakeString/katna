@@ -328,6 +328,17 @@ pub(super) fn read(
     Ok((calendars, katna_dav::occurrences(rows, from, to, tz)))
 }
 
+/// Reads the calendars alone, for an event made before the page has read
+/// them.
+pub(super) fn read_calendars(paths: &Paths) -> Vec<Calendar> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.calendars())
+        .unwrap_or_else(|err| {
+            tracing::warn!(%err, "reading the calendars failed");
+            Vec::new()
+        })
+}
+
 impl MailWindow {
     /// Reads what the Calendar page shows, when it is on show.
     pub(super) fn load_calendar(&mut self, cx: &mut Context<Self>) {
