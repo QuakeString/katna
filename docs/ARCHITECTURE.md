@@ -3452,7 +3452,12 @@ most useful reason is shown. Changes go back the way their calendar came
   books") stay in the title.
 - Desktop: Katna Digital Clock (§15.4) through the daemon's
   `in.invenia.katna.Agenda1`; KRunner results (§15.3).
-- No booking pages: free times are shared as text in a mail.
+- No booking pages: free times are shared as text in a mail. The options
+  menu's Share free times (`window/calendar/free.rs`) opens a new
+  message listing the gaps of at least 30 minutes between busy events
+  (shown calendars, not cancelled or declined) from 9:00 to 17:00 on the
+  next five weekdays, from the next half hour today, with the UTC
+  offset.
 - Server quirks: test against Google, Nextcloud, Radicale, Fastmail, Stalwart.
 
 ### 18.1 Katna Tasks

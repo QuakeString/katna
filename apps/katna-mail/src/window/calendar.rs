@@ -30,9 +30,12 @@ use katna_ui::px;
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use super::{MailWindow, Menu, MenuKey};
 
+mod free;
 mod tasks;
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{icon, icon_button, menu, menu_item, outlined_button, raised, tip};
+use crate::widgets::{
+    icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
+};
 
 gpui::actions!(
     katna_calendar,
@@ -686,6 +689,16 @@ impl MailWindow {
                         this.menu = Some(Menu::CalendarZones);
                         cx.notify();
                     })),
+            )
+            .child(div().my(px(8.0)).h(px(1.0)).bg(rgba(th.divider)))
+            .child(
+                menu_item_icon(
+                    "calendar-share-free",
+                    "event",
+                    &tr!("calendar-share-free"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| this.share_free_times(window, cx))),
             )
     }
 
