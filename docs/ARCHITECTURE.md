@@ -939,6 +939,11 @@ folder, categories as labels), and CardDAV (RFC 6352) for the rest, found
 from the provider's known server or the `.well-known/carddav` of the mail
 and IMAP domains, read with `sync-collection` and `addressbook-multiget`
 (`katna_sync::{contacts, carddav}`; vCard 3.0/4.0 in `katna_dav::vcard`).
+Each account tries its best way first and the others when that one is not
+available (`katna_sync::methods`, `Data::Contacts`): a Google sign-in uses
+the People API, then Google's CardDAV server with the same token; Outlook
+has only Graph; a password account has CardDAV. The way that worked is
+remembered and replaces the account's address books from any other way.
 The daemon syncs 20 s after start, every 15 minutes, on Sync now and after
 a sign-in, and signals `ContactsChanged`. Every source is read into one
 `katna_core::contact::Card`, kept as JSON beside the source's own form
