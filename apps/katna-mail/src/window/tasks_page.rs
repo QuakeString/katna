@@ -23,6 +23,8 @@ use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 
+mod details;
+
 use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
@@ -93,6 +95,7 @@ pub(super) struct TasksPage {
     adding: Option<Adding>,
     editing: Option<Editing>,
     naming: Option<Naming>,
+    details: Option<details::Details>,
     menu: Option<Menu>,
     /// Lists whose Completed section is open.
     open_done: HashSet<i64>,
@@ -606,6 +609,7 @@ impl MailWindow {
         if self.tasks.adding.is_some()
             || self.tasks.editing.is_some()
             || self.tasks.naming.is_some()
+            || self.tasks.details.is_some()
         {
             return;
         }
@@ -642,6 +646,11 @@ impl MailWindow {
             }
             "enter" => {
                 if let Some(id) = self.tasks.picked {
+                    self.task_open_details(id, window, cx);
+                }
+            }
+            "f2" => {
+                if let Some(id) = self.tasks.picked {
                     self.task_start_editing(id, window, cx);
                 }
             }
@@ -677,6 +686,7 @@ impl MailWindow {
             Some(Ok(_)) => self.render_task_board(th, cx),
         };
         let menu = self.render_tasks_menu(th, cx);
+        let details = self.render_task_details(th, cx);
         div()
             .id("tasks-page")
             .size_full()
@@ -687,6 +697,7 @@ impl MailWindow {
             .child(self.render_tasks_nav(th, cx))
             .child(div().flex_1().min_w_0().h_full().child(body))
             .children(menu)
+            .children(details)
             .with_animation(
                 "tasks-page-in",
                 Animation::new(std::time::Duration::from_millis(220)).with_easing(ease_out_quint()),
@@ -1240,6 +1251,7 @@ impl MailWindow {
                 let color = if past { th.error } else { th.text_dim };
                 chips = chips.child(
                     div()
+                        .id(("task-due", id as usize))
                         .h(px(24.0))
                         .px(px(8.0))
                         .flex()
@@ -1247,6 +1259,12 @@ impl MailWindow {
                         .items_center()
                         .gap(px(4.0))
                         .rounded(px(8.0))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.task_open_details(id, window, cx)
+                        }))
                         .border_1()
                         .border_color(rgba(if past {
                             fade(th.error, 0.5)
@@ -1359,7 +1377,7 @@ impl MailWindow {
             .items_start()
             .gap(px(16.0))
             .cursor_pointer()
-            .when(picked, |d| d.bg(rgba(th.checked_row)))
+            .when(picked, |d| d.bg(rgba(fade(th.accent, 0.12))))
             .when(!picked, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .child(tick)
             .child(
@@ -1375,7 +1393,9 @@ impl MailWindow {
             .when(!done, |d| d.child(star))
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
-                    if event.click_count() >= 2 || this.tasks.picked == Some(id) {
+                    if event.click_count() >= 2 {
+                        this.task_open_details(id, window, cx);
+                    } else if this.tasks.picked == Some(id) {
                         this.task_start_editing(id, window, cx);
                     } else {
                         this.tasks.picked = Some(id);
@@ -1505,6 +1525,11 @@ impl MailWindow {
                         this.task_start_editing(id, window, cx)
                     }))
                     .into_any_element(),
+                    item("tasks-menu-details".into(), "notes", tr!("tasks-details"))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.task_open_details(id, window, cx)
+                        }))
+                        .into_any_element(),
                 ];
                 if top {
                     items.push(

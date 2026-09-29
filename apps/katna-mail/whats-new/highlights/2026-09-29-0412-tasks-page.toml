@@ -2,8 +2,8 @@
 
 title = "Katna Tasks"
 text = """
-Tasks now has its own page, laid out like Google Tasks: every list side by
-side, subtasks, stars, due days and a Completed fold. Lists sync with
-Google Tasks and Microsoft To Do, and tasks from the desktop clock show up
-here too. Open it from the rail or with Ctrl+4.
+Press Ctrl+4 or pick Tasks on the left: every list side by side as in
+Google Tasks, with subtasks, stars, due days, repeats and details. Lists
+sync with Google Tasks and Microsoft To Do, and tasks from the desktop
+clock show up here too.
 """

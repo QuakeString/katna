@@ -38,11 +38,32 @@ tasks-mark-open = Mark uncompleted
 tasks-star = Star
 tasks-unstar = Remove star
 tasks-edit-title = Edit title
+# Opens the dialog with a task's details, date and repeat.
+tasks-details = Details
 tasks-delete = Delete
 # $list: the name of another list.
 tasks-move-to = Move to { $list }
 # A chip on a task made from a mail.
 tasks-from-mail = Mail
+
+## The details dialog
+
+tasks-notes-placeholder = Add details
+tasks-date = Date
+tasks-no-date = No date
+tasks-time-placeholder = Add time
+tasks-repeat = Repeat
+tasks-repeat-never = Doesn't repeat
+tasks-repeat-daily = Daily
+tasks-repeat-weekly = Weekly
+tasks-repeat-monthly = Monthly
+tasks-repeat-yearly = Yearly
+# A repeat set elsewhere that has no button here, like every second Tuesday.
+tasks-repeat-other = Custom
+tasks-cancel = Cancel
+tasks-save = Save
+# $text: what was typed; $example: a time written the usual way, like "4:00 PM".
+tasks-not-a-time = “{ $text }” is not a time, for example { $example }.
 
 ## Due days
 
