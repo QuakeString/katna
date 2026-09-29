@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } tane daha
 calendar-repeats = Tekrarlanır
 calendar-join = Katıl
+calendar-email-guests = Konuklara posta gönder
+calendar-running-late = Geç kalıyorum
+calendar-late-subject = Geç kalıyorum: { $title }
+calendar-late-body = Kusura bakmayın, { $title } için birkaç dakika geç kalacağım. Birazdan orada olacağım.
 calendar-guests =
     { $count ->
         [one] { $count } konuk

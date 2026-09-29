@@ -1258,3 +1258,17 @@ text = """
 Mwaliko sasa unaonekana kama kadi juu ya barua: lini na wapi, nani aliyeuandaa, siku yako kuuzunguka ikiwa na alama ya mgongano wowote, Jiunge,
 na Utaenda? Ndiyo, Hapana au Labda, vyote vikijibiwa papo hapo.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Panga mkutano kutoka kwa barua"
+text = """
+Bofya-kulia mazungumzo, au fungua ⋮, kisha chagua Panga mkutano: tukio jipya hufunguka kwenye ukurasa wa Kalenda
+likiwa na mada kama kichwa chake na kila mtu kwenye mazungumzo kama mgeni.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Umechelewa? Waambie wote kwa mbofyo mmoja"
+text = """
+Tukio lenye wageni sasa lina Tuma barua pepe kwa wageni, na kuanzia saa moja kabla halijaanza, Nimechelewa:
+barua kwa kila mtu, kutoka akaunti ya kalenda hiyo, tayari kutumwa.
+"""

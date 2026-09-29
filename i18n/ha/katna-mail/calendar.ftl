@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = ƙarin { $count }
 calendar-repeats = Yana maimaituwa
 calendar-join = Shiga
+calendar-email-guests = Aika wa baƙi wasiƙa
+calendar-running-late = Ina makara
+calendar-late-subject = Ina makara: { $title }
+calendar-late-body = Yi haƙuri, zan yi ɗan jinkiri zuwa { $title } na 'yan mintuna. Zan iso nan ba da jimawa ba.
 calendar-guests =
     { $count ->
         [one] baƙo { $count }

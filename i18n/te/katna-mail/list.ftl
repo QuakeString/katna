@@ -379,6 +379,7 @@ menu-unpin = అన్‌పిన్ చేయండి
 menu-snooze = స్నూజ్ చేయండి
 menu-unsnooze = స్నూజ్ తీసివేయండి
 menu-add-to-tasks = టాస్క్‌లకు జోడించండి
+menu-schedule-meeting = సమావేశాన్ని షెడ్యూల్ చేయండి
 menu-add-note = గమనికను జోడించండి
 menu-print-all = అన్నీ ప్రింట్ చేయండి
 menu-new-window = కొత్త విండోలో తెరవండి

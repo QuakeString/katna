@@ -1310,3 +1310,19 @@ del correo: cuándo y dónde, quién la organizó, tu día alrededor con los
 solapamientos marcados, Unirse y ¿Asistirás? Sí, No o Quizás, con
 respuesta allí mismo.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Programa una reunión desde un correo"
+text = """
+Haz clic derecho en una conversación, o abre ⋮, y elige Programar una
+reunión: se abre un evento nuevo en la página Calendario con el asunto
+como título y todas las personas de la conversación como invitados.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "¿Llegas tarde? Avisa a todos con un clic"
+text = """
+Un evento con invitados ahora tiene Enviar correo a los invitados y,
+desde una hora antes de que empiece, Llegaré tarde: un correo para
+todos, desde la cuenta de ese calendario, listo para enviar.
+"""

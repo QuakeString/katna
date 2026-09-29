@@ -1343,3 +1343,20 @@ message : quand et où, qui l’a organisée, votre journée autour avec les
 chevauchements signalés, Participer, et Participez-vous ? Oui, Non ou
 Peut-être, avec une réponse directement sur place.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Planifier une réunion depuis un e-mail"
+text = """
+Faites un clic droit sur une conversation, ou ouvrez ⋮, et choisissez
+Planifier une réunion : un nouvel événement s’ouvre sur la page
+Calendrier, avec l’objet comme titre et toutes les personnes de la
+conversation comme invités.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "En retard ? Prévenez tout le monde en un clic"
+text = """
+Un événement avec des invités propose désormais Envoyer un e-mail aux
+invités et, dès une heure avant son début, En retard : un e-mail à tout
+le monde, depuis le compte de ce calendrier, prêt à être envoyé.
+"""

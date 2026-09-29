@@ -1313,3 +1313,20 @@ chi lo ha organizzato, la tua giornata intorno con le sovrapposizioni
 segnalate, Partecipa e Partecipi? Sì, No o Forse, con risposta
 direttamente lì.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Pianifica una riunione da una e-mail"
+text = """
+Fai clic con il pulsante destro su una conversazione, oppure apri ⋮, e
+scegli Pianifica una riunione: si apre un nuovo evento nella pagina
+Calendario con l’oggetto come titolo e tutte le persone della
+conversazione come ospiti.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "In ritardo? Avvisa tutti con un clic"
+text = """
+Un evento con ospiti ora ha Invia e-mail agli ospiti e, da un’ora prima
+dell’inizio, Sono in ritardo: una e-mail a tutti, dall’account di quel
+calendario, pronta da inviare.
+"""

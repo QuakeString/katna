@@ -1291,3 +1291,19 @@ gdzie, kto je zorganizował, Twój dzień wokół niego z zaznaczonymi
 kolizjami, Dołącz oraz Bierzesz udział? Tak, Nie lub Może, z odpowiedzią
 prosto tam.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Zaplanuj spotkanie z poziomu e-maila"
+text = """
+Kliknij rozmowę prawym przyciskiem myszy lub otwórz ⋮ i wybierz Zaplanuj
+spotkanie: na stronie Kalendarz otworzy się nowe wydarzenie z tematem
+jako tytułem i wszystkimi osobami z rozmowy jako gośćmi.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Spóźniasz się? Powiadom wszystkich jednym kliknięciem"
+text = """
+Wydarzenie z gośćmi ma teraz Wyślij e-mail do gości, a od godziny przed
+jego rozpoczęciem także Spóźniam się: e-mail do wszystkich, z konta tego
+kalendarza, gotowy do wysłania.
+"""

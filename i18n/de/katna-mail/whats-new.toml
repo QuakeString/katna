@@ -1331,3 +1331,20 @@ wo, wer sie organisiert hat, Ihr Tag drumherum mit markierten
 Überschneidungen, Teilnehmen und Teilnehmen? Ja, Nein oder Vielleicht,
 direkt dort beantwortet.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Besprechung aus einer E-Mail planen"
+text = """
+Klicken Sie mit der rechten Maustaste auf eine Unterhaltung oder öffnen
+Sie ⋮ und wählen Sie Besprechung planen: Auf der Seite Kalender öffnet
+sich ein neuer Termin mit dem Betreff als Titel und allen Beteiligten
+der Unterhaltung als Gästen.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Verspätet? Alle mit einem Klick informieren"
+text = """
+Ein Termin mit Gästen hat jetzt E-Mail an Gäste und ab einer Stunde vor
+dem Beginn Ich verspäte mich: eine E-Mail an alle, vom Konto dieses
+Kalenders, versandfertig.
+"""

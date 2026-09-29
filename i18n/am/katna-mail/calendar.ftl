@@ -33,6 +33,10 @@ calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ተጨማሪ
 calendar-repeats = ይደገማል
 calendar-join = ተቀላቀል
+calendar-email-guests = ለእንግዶች ደብዳቤ ላክ
+calendar-running-late = እዘገያለሁ
+calendar-late-subject = እዘገያለሁ፦ { $title }
+calendar-late-body = ይቅርታ፣ ለ{ $title } ጥቂት ደቂቃዎች እዘገያለሁ። በቅርቡ እደርሳለሁ።
 calendar-guests =
     { $count ->
         [one] { $count } እንግዳ

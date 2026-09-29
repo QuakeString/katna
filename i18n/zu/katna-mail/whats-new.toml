@@ -1341,3 +1341,21 @@ nini nokuthi kuphi, ohlele, usuku lwakho eduze kwaso
 nokuphambana kuphawulwe, Joyina, kanye no-Uyahamba? Yebo,
 Cha noma Mhlawumbe, uphendule lapho lapho.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Hlela umhlangano ngemeyili"
+text = """
+Chofoza kwesokudla enkulumweni, noma uvule ⋮ bese ukhetha Hlela
+umhlangano: umcimbi omusha uvulwa ekhasini Ikhalenda, isihloko
+sawo siba yisihloko, bese wonke umuntu okulo mkhulumo eba
+yizihambeli.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Uyephuza? Tshela wonke umuntu ngokuchofoza kanye"
+text = """
+Umcimbi onezihambeli manje unokuthi Thumela izihambeli
+i-imeyili, futhi kusukela ihora ngaphambi kokuba uqale,
+Ngiyephuza: imeyili eya kubo bonke, isuka ku-akhawunti
+yekhalenda, ilungele ukuthunyelwa.
+"""
