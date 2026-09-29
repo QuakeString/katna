@@ -8,6 +8,8 @@
 # The button at the top left that adds a task, like Google Tasks' "Create".
 tasks-create = Create
 tasks-all = All tasks
+# Tasks due today and overdue, from every list.
+tasks-today = Today
 tasks-starred = Starred
 tasks-new-list = Create new list
 # Heading over the lists kept on this computer, not in an account.
@@ -25,6 +27,11 @@ tasks-title-placeholder = Title
 tasks-add-step = Add a subtask
 tasks-empty = No tasks yet. Add one above.
 tasks-starred-empty = Star a task to see it here.
+tasks-today-empty = Nothing due today.
+# Under the Today heading: $weekday is the day's name, $day the day and month.
+tasks-today-date = { $weekday }, { $day }
+# The section of Today with tasks whose day has passed.
+tasks-overdue = Overdue
 # The folded section at the bottom of a list.
 tasks-completed = { $count ->
     [one] Completed ({ $count })

@@ -46,14 +46,19 @@ pub(super) enum View {
     /// Every list, side by side.
     #[default]
     All,
+    /// Due today or overdue, from every list.
+    Today,
     Starred,
     List(i64),
 }
 
 /// A task typed into a list's "Add a task" row.
 struct Adding {
+    /// `0` for the default list.
     list: i64,
     parent: Option<i64>,
+    /// `YYYY-MM-DD` the new task is due, or empty.
+    due: String,
     input: Entity<TextInput>,
     _subscription: Subscription,
 }
@@ -87,6 +92,9 @@ struct Pending {
     starred: Option<bool>,
 }
 
+/// A task with the list it is in.
+type Placed<'a> = (&'a Column, &'a TaskItem);
+
 /// The Tasks page's state, kept while other apps show.
 #[derive(Default)]
 pub(super) struct TasksPage {
@@ -103,7 +111,7 @@ pub(super) struct TasksPage {
     /// The task picked by click or keys.
     picked: Option<i64>,
     pending: HashMap<i64, Pending>,
-    focus: Option<FocusHandle>,
+    pub(super) focus: Option<FocusHandle>,
     loading: Option<Task<()>>,
     /// Reads again whenever the daemon says tasks changed.
     watching: Option<Task<()>>,
@@ -148,10 +156,43 @@ impl TasksPage {
                 }
             }
         }
-        if self.view == View::Starred {
-            shown.retain(|id| self.task(*id).is_some_and(|t| self.starred(t)));
+        match self.view {
+            View::Starred => {
+                shown.retain(|id| self.task(*id).is_some_and(|t| self.starred(t)));
+            }
+            View::Today => {
+                let (overdue, due) = self.due_now(today());
+                return overdue.into_iter().chain(due).map(|(_, t)| t.id).collect();
+            }
+            View::All | View::List(_) => {}
         }
         shown
+    }
+
+    /// The open tasks due before `today` and on it, from every list, each
+    /// with its list: by day, then by time (those without one last).
+    fn due_now(&self, today: jiff::civil::Date) -> (Vec<Placed<'_>>, Vec<Placed<'_>>) {
+        let mut found: Vec<(jiff::civil::Date, &Column, &TaskItem)> = self
+            .columns()
+            .iter()
+            .flat_map(|c| c.tasks.iter().map(move |t| (c, t)))
+            .filter(|(_, t)| !self.done(t) && self.parent_open(t))
+            .filter_map(|(c, t)| {
+                let day: jiff::civil::Date = t.due.parse().ok()?;
+                (day <= today).then_some((day, c, t))
+            })
+            .collect();
+        found.sort_by_key(|(day, _, t)| (*day, t.due_time.is_none(), t.due_time));
+        let mut overdue = Vec::new();
+        let mut due = Vec::new();
+        for (day, column, task) in found {
+            if day < today {
+                overdue.push((column, task));
+            } else {
+                due.push((column, task));
+            }
+        }
+        (overdue, due)
     }
 
     /// Whether a step's task is still open (a done task hides its steps
@@ -164,7 +205,7 @@ impl TasksPage {
 
     fn shown_columns(&self) -> Vec<&Column> {
         match self.view {
-            View::All | View::Starred => self.columns().iter().collect(),
+            View::All | View::Today | View::Starred => self.columns().iter().collect(),
             View::List(id) => self.columns().iter().filter(|c| c.list.id == id).collect(),
         }
     }
@@ -291,6 +332,7 @@ impl MailWindow {
     fn task_set_view(&mut self, view: View, cx: &mut Context<Self>) {
         self.tasks.view = view;
         self.tasks.menu = None;
+        self.tasks.adding = None;
         cx.notify();
     }
 
@@ -382,6 +424,7 @@ impl MailWindow {
         &mut self,
         list: i64,
         parent: Option<i64>,
+        due: String,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
@@ -410,6 +453,7 @@ impl MailWindow {
         self.tasks.adding = Some(Adding {
             list,
             parent,
+            due,
             input,
             _subscription: subscription,
         });
@@ -435,6 +479,7 @@ impl MailWindow {
             list: adding.list,
             parent: adding.parent,
             title,
+            due: adding.due.clone(),
             mail: String::new(),
         };
         adding.input.update(cx, |input, cx| input.set_text("", cx));
@@ -640,6 +685,7 @@ impl MailWindow {
                     list: 0,
                     parent: None,
                     title,
+                    due: String::new(),
                     mail: header,
                 },
                 last.then(|| tr!("tasks-toast-added", count = count as u64)),
@@ -828,10 +874,15 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| {
                 let list = match this.tasks.view {
                     View::List(id) => Some(id),
+                    // Today's go to the default list, due today.
+                    View::Today => {
+                        let due = today().to_string();
+                        return this.task_start_adding(0, None, due, window, cx);
+                    }
                     _ => this.tasks.columns().first().map(|c| c.list.id),
                 };
                 if let Some(list) = list {
-                    this.task_start_adding(list, None, window, cx);
+                    this.task_start_adding(list, None, String::new(), window, cx);
                 }
             }));
         let open_count = |column: &Column| {
@@ -847,6 +898,10 @@ impl MailWindow {
             .flat_map(|c| c.tasks.iter())
             .filter(|t| page.starred(t) && !page.done(t))
             .count();
+        let due_now = {
+            let (overdue, due) = page.due_now(today());
+            overdue.len() + due.len()
+        };
         let mut nav = div()
             .id("tasks-nav")
             .flex_none()
@@ -865,6 +920,23 @@ impl MailWindow {
                     page.view == View::All,
                 )
                 .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::All, cx))),
+            )
+            .child(
+                row(
+                    "tasks-today".into(),
+                    "today",
+                    tr!("tasks-today"),
+                    page.view == View::Today,
+                )
+                .when(due_now > 0, |d| {
+                    d.child(
+                        div()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(katna_i18n::format::number(due_now as u64)),
+                    )
+                })
+                .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::Today, cx))),
             )
             .child(
                 row(
@@ -1011,6 +1083,7 @@ impl MailWindow {
                 )
                 .into_any_element(),
             View::Starred => self.render_starred(columns, th, cx),
+            View::Today => self.render_today(th, cx),
         }
     }
 
@@ -1067,6 +1140,129 @@ impl MailWindow {
                     .children(rows),
             )
             .into_any_element()
+    }
+
+    /// Today: what is overdue, then what is due today, from every list,
+    /// with a row to add a task due today.
+    fn render_today(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let page = &self.tasks;
+        let day = today();
+        let (overdue, due) = page.due_now(day);
+        // A task's row, and the row adding a step to it.
+        let mut row = |(c, t): (&Column, &TaskItem)| {
+            let mut rows = vec![self.render_task_row(t, Some(&list_title(c)), day, th, cx)];
+            if let Some(adding) = page.adding.as_ref().filter(|a| a.parent == Some(t.id)) {
+                rows.push(self.adding_row(adding, true, th, cx));
+            }
+            rows
+        };
+        let section = |label: String, color: u32| {
+            div()
+                .mt(px(8.0))
+                .px(px(20.0))
+                .h(px(32.0))
+                .flex()
+                .items_center()
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(color))
+                .child(label)
+        };
+        let empty = overdue.is_empty() && due.is_empty();
+        let has_overdue = !overdue.is_empty();
+        let overdue_rows: Vec<AnyElement> = overdue.into_iter().flat_map(&mut row).collect();
+        let due_rows: Vec<AnyElement> = due.into_iter().flat_map(&mut row).collect();
+        let at = day.to_datetime(jiff::civil::Time::midnight());
+        let date = tr!(
+            "tasks-today-date",
+            weekday = katna_i18n::format::weekday(at),
+            day = katna_i18n::format::day_month(at)
+        );
+        let adding = page
+            .adding
+            .as_ref()
+            .filter(|a| a.parent.is_none() && !a.due.is_empty());
+        let add = match adding {
+            Some(adding) => self.adding_row(adding, false, th, cx),
+            None => self
+                .add_row("tasks-today-add".into(), th)
+                .on_click(cx.listener(|this, _, window, cx| {
+                    this.task_start_adding(0, None, today().to_string(), window, cx)
+                }))
+                .into_any_element(),
+        };
+        div()
+            .size_full()
+            .p(px(16.0))
+            .flex()
+            .justify_center()
+            .child(
+                self.card_frame("tasks-today-card".into(), SINGLE_WIDTH, th)
+                    .child(card_heading(tr!("tasks-today"), th))
+                    .child(
+                        div()
+                            .px(px(20.0))
+                            .mt(px(-8.0))
+                            .mb(px(4.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(date),
+                    )
+                    .child(add)
+                    .when(empty, |d| {
+                        d.child(
+                            div()
+                                .py(px(24.0))
+                                .px(px(24.0))
+                                .flex()
+                                .flex_col()
+                                .items_center()
+                                .gap(px(8.0))
+                                .text_center()
+                                .child(icon("check-circle", th.text_faint, 40.0))
+                                .child(
+                                    div()
+                                        .text_size(px(14.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(tr!("tasks-today-empty")),
+                                ),
+                        )
+                    })
+                    .when(has_overdue, |d| {
+                        d.child(section(tr!("tasks-overdue"), th.error))
+                            .children(overdue_rows)
+                            .when(!due_rows.is_empty(), |d| {
+                                d.child(section(tr!("tasks-due-today"), th.text_dim))
+                            })
+                    })
+                    .children(due_rows),
+            )
+            .into_any_element()
+    }
+
+    /// The "Add a task" row at the top of a card.
+    fn add_row(&self, id: gpui::ElementId, th: &Theme) -> gpui::Stateful<gpui::Div> {
+        div()
+            .id(id)
+            .h(px(40.0))
+            .px(px(16.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(16.0))
+            .cursor_pointer()
+            .text_size(px(14.0))
+            .text_color(rgba(th.accent))
+            .hover(|s| s.bg(rgba(th.hover)))
+            .child(
+                div()
+                    .size(px(20.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .child(icon("add", th.accent, 20.0)),
+            )
+            .child(tr!("tasks-add"))
     }
 
     fn render_task_card(
@@ -1135,29 +1331,10 @@ impl MailWindow {
         );
         let add = match adding_top {
             Some(adding) => self.adding_row(adding, false, th, cx),
-            None => div()
-                .id(("tasks-add", id as usize))
-                .h(px(40.0))
-                .px(px(16.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(16.0))
-                .cursor_pointer()
-                .text_size(px(14.0))
-                .text_color(rgba(th.accent))
-                .hover(|s| s.bg(rgba(th.hover)))
-                .child(
-                    div()
-                        .size(px(20.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .child(icon("add", th.accent, 20.0)),
-                )
-                .child(tr!("tasks-add"))
+            None => self
+                .add_row(("tasks-add", id as usize).into(), th)
                 .on_click(cx.listener(move |this, _, window, cx| {
-                    this.task_start_adding(id, None, window, cx)
+                    this.task_start_adding(id, None, String::new(), window, cx)
                 }))
                 .into_any_element(),
         };
@@ -1611,7 +1788,7 @@ impl MailWindow {
                         )
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.tasks.menu = None;
-                            this.task_start_adding(from, Some(id), window, cx)
+                            this.task_start_adding(from, Some(id), String::new(), window, cx)
                         }))
                         .into_any_element(),
                     );

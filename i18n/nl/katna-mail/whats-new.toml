@@ -1265,3 +1265,22 @@ Accounts die met een wachtwoord inloggen bewaren hun taken nu op hun
 mailserver als die CalDAV biedt, zodat de taken ook in de eigen apps
 van de server en op de telefoon verschijnen.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Afspraken toevoegen en wijzigen"
+text = """
+Klik of sleep in de agenda, of druk op C, om een afspraak toe te voegen.
+Sleep een afspraak om die te verplaatsen of de onderrand om de duur te
+wijzigen, en open hem om tijd, herhaling, herinneringen en gasten te
+wijzigen of een Meet- of Teams-gesprek toe te voegen. Beantwoord
+uitnodigingen met Ja, Nee of Misschien. Ongedaan maken zet alles terug.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Agenda’s van meer accounts"
+text = """
+Katna vindt nu de agenda’s van Yahoo, Zoho, iCloud, Fastmail, GMX en
+andere accounts, ook als ze op een andere server staan dan de e-mail.
+Het probeert eerst de beste manier van elk account en een andere als die
+niet beschikbaar is.
+"""

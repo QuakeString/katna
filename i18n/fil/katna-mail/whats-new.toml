@@ -1309,3 +1309,22 @@ ngayon ang kanilang mga gawain sa mail server kung nag-aalok ito ng
 CalDAV, kaya lumalabas din ang mga gawain sa sariling mga app ng
 server at sa telepono.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Magdagdag at magbago ng mga event"
+text = """
+Mag-click o mag-drag sa kalendaryo, o pindutin ang C, para magdagdag ng
+event. I-drag ang event para ilipat ito o ang ibabang gilid nito para
+baguhin ang haba, at buksan ito para baguhin ang oras, pag-ulit, mga
+paalala at mga bisita o magdagdag ng Meet o Teams call. Sagutin ang mga
+imbitasyon ng Oo, Hindi o Baka. Ibinabalik ng I-undo ang lahat.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Mga kalendaryo mula sa mas maraming account"
+text = """
+Nahahanap na ng Katna ang mga kalendaryo ng Yahoo, Zoho, iCloud,
+Fastmail, GMX at iba pang account, kahit nasa ibang server ang mga ito
+kaysa sa mail. Sinusubukan muna nito ang pinakamahusay na paraan ng
+bawat account at ang isa pa kapag hindi available ang paraang iyon.
+"""

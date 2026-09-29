@@ -39,8 +39,83 @@ calendar-guests =
        *[other] { $count } അതിഥികൾ
     }
 calendar-guest-answers = { $yes } അതെ, { $maybe } ആയിരിക്കാം, { $no } ഇല്ല, { $waiting } കാത്തിരിക്കുന്നു
+calendar-organizer = സംഘാടകൻ
+calendar-optional = ഓപ്ഷണൽ
 calendar-open-web = ബ്രൗസറിൽ തുറക്കുക
 calendar-close = അടയ്ക്കുക
+
+## Adding, changing and deleting events.
+
+calendar-add-title = തലക്കെട്ട് ചേർക്കുക
+calendar-add-location = സ്ഥലം ചേർക്കുക
+calendar-add-notes = വിവരണം ചേർക്കുക
+calendar-add-guests = അതിഥികളെ ചേർക്കുക
+calendar-remove-guest = നീക്കം ചെയ്യുക
+calendar-add-meet = Google Meet വീഡിയോ കോൾ ചേർക്കുക
+calendar-add-teams = Teams മീറ്റിംഗ് ചേർക്കുക
+calendar-has-call = വീഡിയോ കോൾ ചേർത്തു
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = ദിവസം മുഴുവൻ
+calendar-more-options = കൂടുതൽ ഓപ്ഷനുകൾ
+calendar-save = സംരക്ഷിക്കുക
+calendar-saved = ഇവന്റ് സംരക്ഷിച്ചു
+calendar-deleted = ഇവന്റ് ഇല്ലാതാക്കി
+calendar-discard = മാറ്റങ്ങൾ നിരസിക്കുക
+calendar-edit = ഇവന്റ് എഡിറ്റ് ചെയ്യുക
+calendar-delete = ഇവന്റ് ഇല്ലാതാക്കുക
+calendar-event-details = ഇവന്റ് വിശദാംശങ്ങൾ
+calendar-busy = തിരക്കിലാണ്
+calendar-free = ഒഴിവാണ്
+calendar-cancel = റദ്ദാക്കുക
+calendar-ok = ശരി
+calendar-read-only = ഈ കലണ്ടറിലെ ഇവന്റുകൾ നിങ്ങൾക്ക് മാറ്റാനാകില്ല
+calendar-none-editable = ഇവന്റുകൾ ചേർക്കാനാകുന്ന കലണ്ടർ ഇതുവരെ ഇല്ല
+calendar-no-such-time = നിങ്ങളുടെ ടൈം സോണിൽ ആ സമയം ഇല്ല
+calendar-end-before-start = ഇവന്റ് തുടങ്ങുന്നതിന് മുമ്പേ അവസാനിക്കുന്നു
+calendar-repeat-never = ആവർത്തിക്കുന്നില്ല
+calendar-repeat-daily = ദിവസവും
+calendar-repeat-weekly = പ്രതിവാരം: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] പ്രതിമാസം: ആദ്യത്തെ { $weekday }
+        [2] പ്രതിമാസം: രണ്ടാമത്തെ { $weekday }
+        [3] പ്രതിമാസം: മൂന്നാമത്തെ { $weekday }
+        [4] പ്രതിമാസം: നാലാമത്തെ { $weekday }
+       *[other] പ്രതിമാസം: അവസാനത്തെ { $weekday }
+    }
+calendar-repeat-yearly = വാർഷികം: { $day }
+calendar-repeat-weekdays = എല്ലാ പ്രവൃത്തി ദിവസവും (തിങ്കൾ മുതൽ വെള്ളി വരെ)
+calendar-repeat-custom = ഇഷ്ടാനുസൃതം
+calendar-reminder-none = അറിയിപ്പില്ല
+calendar-reminder-at-start = ആരംഭത്തിൽ
+calendar-reminder-minutes =
+    { $count ->
+        [one] { $count } മിനിറ്റ് മുമ്പ്
+       *[other] { $count } മിനിറ്റ് മുമ്പ്
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] { $count } മണിക്കൂർ മുമ്പ്
+       *[other] { $count } മണിക്കൂർ മുമ്പ്
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] { $count } ദിവസം മുമ്പ്
+       *[other] { $count } ദിവസം മുമ്പ്
+    }
+calendar-scope-edit-title = ആവർത്തിക്കുന്ന ഇവന്റ് എഡിറ്റ് ചെയ്യുക
+calendar-scope-delete-title = ആവർത്തിക്കുന്ന ഇവന്റ് ഇല്ലാതാക്കുക
+calendar-scope-this = ഈ ഇവന്റ്
+calendar-scope-following = ഈ ഇവന്റും തുടർന്നുള്ളവയും
+calendar-scope-all = എല്ലാ ഇവന്റുകളും
+calendar-scope-respond-title = ആവർത്തിക്കുന്ന ഇവന്റിനുള്ള മറുപടി
+calendar-going = നിങ്ങൾ പോകുന്നുണ്ടോ?
+calendar-answer-yes = അതെ
+calendar-answer-no = ഇല്ല
+calendar-answer-maybe = ആയിരിക്കാം
+calendar-answered-yes = നിങ്ങൾ പോകുന്നു
+calendar-answered-no = നിങ്ങൾ പോകുന്നില്ല
+calendar-answered-maybe = നിങ്ങൾ പോയേക്കാം
 
 ## The day's agenda beside the mail.
 

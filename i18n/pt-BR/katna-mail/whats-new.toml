@@ -1265,3 +1265,22 @@ As contas que entram com senha agora mantêm suas tarefas no servidor
 de e-mail quando ele oferece CalDAV, e assim as tarefas também
 aparecem nos aplicativos do próprio servidor e no celular.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Adicione e altere eventos"
+text = """
+Clique ou arraste na agenda, ou pressione C, para adicionar um evento.
+Arraste um evento para movê-lo ou a borda inferior dele para mudar a
+duração, e abra-o para alterar o horário, a repetição, os lembretes e os
+convidados, ou para adicionar uma chamada do Meet ou do Teams. Responda
+aos convites com Sim, Não ou Talvez. Desfazer coloca tudo de volta.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Agendas de mais contas"
+text = """
+O Katna agora encontra as agendas do Yahoo, Zoho, iCloud, Fastmail, GMX
+e de outras contas, mesmo quando elas estão em outro servidor que não o
+do e-mail. Ele tenta primeiro o melhor método de cada conta e outro
+quando esse não está disponível.
+"""

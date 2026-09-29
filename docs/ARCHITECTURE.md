@@ -3340,8 +3340,18 @@ most useful reason is shown. Changes go back the way their calendar came
   is no calendar at all.
 - `jiff` for time zones; recurrence is expanded when read, with
   exceptions (`RECURRENCE-ID`, `EXDATE`).
-- Invitations (iTIP/iMIP) shared with Katna Mail: accept/decline from mail,
-  sent through Google or Graph when the invitation belongs to that account.
+- Invitations (iTIP/iMIP) shared with Katna Mail: a mail with a
+  `text/calendar` part (`katna_render::calendar_part`) shows a card at the
+  top of the message (`apps/katna-mail/src/window/reader/invite.rs`):
+  `METHOD:REQUEST` shows the event, the user's day two hours either side
+  (clashes with busy events marked), Join, Open in Calendar and "Going? Yes
+  No Maybe"; `REPLY` says who answered and how; `CANCEL` crosses it out.
+  The card reads the calendars read-only and finds the event by its UID:
+  Google, Graph and scheduling CalDAV servers put invitations in the
+  calendar themselves, so answering is the calendar's own `respond`
+  (the whole series for an invitation to one). Until the calendar has it,
+  the card says so. Answering by iMIP mail, for servers that don't
+  schedule, is later.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the
@@ -3401,7 +3411,10 @@ use their own APIs only.
 - **The Tasks page** (`window/tasks_page.rs`) is a page of the mail
   window, laid out like Google Tasks. It reads `pim.db` read-only and
   sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, the
-  list calls), then reads again on `Changed`.
+  list calls), then reads again on `Changed`. Beside All tasks and
+  Starred, Today (as in To Do's My Day and TickTick) gathers the open
+  tasks due today or before from every list: Overdue first, then Today,
+  by day and time. A task added there goes to the default list, due today.
 - **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
   right-click and ⋮ menus) makes a task in the default list titled with the
   conversation's subject, keeping the newest message's `Message-ID` in

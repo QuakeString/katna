@@ -424,9 +424,9 @@ impl MailWindow {
                 .gap(px(4.0))
                 .cursor_pointer()
                 .group("bottom-app")
-                .on_click(cx.listener(move |this, _, _, cx| {
+                .on_click(cx.listener(move |this, _, window, cx| {
                     this.close_drawer(cx);
-                    this.open_app(app, cx)
+                    this.show_page(app, window, cx)
                 }))
                 .child(
                     div()

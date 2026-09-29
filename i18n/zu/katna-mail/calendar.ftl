@@ -39,8 +39,83 @@ calendar-guests =
        *[other] Izihambeli { $count }
     }
 calendar-guest-answers = { $yes } yebo, { $maybe } mhlawumbe, { $no } cha, { $waiting } okulindile
+calendar-organizer = Umhleli
+calendar-optional = Okungakhethwa
 calendar-open-web = Vula esiphequluli
 calendar-close = Vala
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Engeza isihloko
+calendar-add-location = Engeza indawo
+calendar-add-notes = Engeza incazelo
+calendar-add-guests = Engeza izihambeli
+calendar-remove-guest = Susa
+calendar-add-meet = Engeza ikholi yevidiyo ye-Google Meet
+calendar-add-teams = Engeza umhlangano we-Teams
+calendar-has-call = Ikholi yevidiyo ingeziwe
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Usuku lonke
+calendar-more-options = Okunye okungakhethwa
+calendar-save = Londoloza
+calendar-saved = Umcimbi ulondoloziwe
+calendar-deleted = Umcimbi ususiwe
+calendar-discard = Lahla izinguquko
+calendar-edit = Hlela umcimbi
+calendar-delete = Susa umcimbi
+calendar-event-details = Imininingwane yomcimbi
+calendar-busy = Umatasa
+calendar-free = Ukhululekile
+calendar-cancel = Khansela
+calendar-ok = Kulungile
+calendar-read-only = Awukwazi ukushintsha imicimbi kule khalenda
+calendar-none-editable = Akukabikho ikhalenda ongengeza kulo imicimbi
+calendar-no-such-time = Leyo nkathi ayikho endaweni yakho yesikhathi
+calendar-end-before-start = Umcimbi uphela ungakaqali
+calendar-repeat-never = Akuphindwa
+calendar-repeat-daily = Nsuku zonke
+calendar-repeat-weekly = Njalo ngeviki: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Njalo ngenyanga: okokuqala { $weekday }
+        [2] Njalo ngenyanga: okwesibili { $weekday }
+        [3] Njalo ngenyanga: okwesithathu { $weekday }
+        [4] Njalo ngenyanga: okwesine { $weekday }
+       *[other] Njalo ngenyanga: okokugcina { $weekday }
+    }
+calendar-repeat-yearly = Njalo ngonyaka: { $day }
+calendar-repeat-weekdays = Yonke insuku zomsebenzi (uMsombuluko kuya kuLwesihlanu)
+calendar-repeat-custom = Ngokwezifiso
+calendar-reminder-none = Akukho isaziso
+calendar-reminder-at-start = Ekuqaleni
+calendar-reminder-minutes =
+    { $count ->
+        [one] Umzuzu { $count } ngaphambili
+       *[other] Imizuzu { $count } ngaphambili
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] Ihora { $count } ngaphambili
+       *[other] Amahora { $count } ngaphambili
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] Usuku { $count } ngaphambili
+       *[other] Izinsuku { $count } ngaphambili
+    }
+calendar-scope-edit-title = Hlela umcimbi obuyelelwayo
+calendar-scope-delete-title = Susa umcimbi obuyelelwayo
+calendar-scope-this = Lo mcimbi
+calendar-scope-following = Lo nemicimbi elandelayo
+calendar-scope-all = Yonke imicimbi
+calendar-scope-respond-title = Impendulo yomcimbi obuyelelwayo
+calendar-going = Uyahamba?
+calendar-answer-yes = Yebo
+calendar-answer-no = Cha
+calendar-answer-maybe = Mhlawumbe
+calendar-answered-yes = Uyahamba
+calendar-answered-no = Awuhambi
+calendar-answered-maybe = Ungahamba
 
 ## The day's agenda beside the mail.
 

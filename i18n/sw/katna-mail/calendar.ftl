@@ -39,8 +39,83 @@ calendar-guests =
        *[other] wageni { $count }
     }
 calendar-guest-answers = ndiyo { $yes }, labda { $maybe }, hapana { $no }, wanasubiri { $waiting }
+calendar-organizer = Mwandalizi
+calendar-optional = Hiari
 calendar-open-web = Fungua kwenye kivinjari
 calendar-close = Funga
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Ongeza kichwa
+calendar-add-location = Ongeza mahali
+calendar-add-notes = Ongeza maelezo
+calendar-add-guests = Ongeza wageni
+calendar-remove-guest = Ondoa
+calendar-add-meet = Ongeza mkutano wa video wa Google Meet
+calendar-add-teams = Ongeza mkutano wa Teams
+calendar-has-call = Simu ya video imeongezwa
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Siku nzima
+calendar-more-options = Chaguo zaidi
+calendar-save = Hifadhi
+calendar-saved = Tukio limehifadhiwa
+calendar-deleted = Tukio limefutwa
+calendar-discard = Tupa mabadiliko
+calendar-edit = Hariri tukio
+calendar-delete = Futa tukio
+calendar-event-details = Maelezo ya tukio
+calendar-busy = Ana shughuli
+calendar-free = Yuko huru
+calendar-cancel = Ghairi
+calendar-ok = Sawa
+calendar-read-only = Huwezi kubadilisha matukio katika kalenda hii
+calendar-none-editable = Bado huna kalenda unayoweza kuongeza matukio
+calendar-no-such-time = Muda huo haupo katika saa za eneo lako
+calendar-end-before-start = Tukio linaisha kabla ya kuanza
+calendar-repeat-never = Halijirudii
+calendar-repeat-daily = Kila siku
+calendar-repeat-weekly = Kila wiki siku ya { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Kila mwezi { $weekday } ya kwanza
+        [2] Kila mwezi { $weekday } ya pili
+        [3] Kila mwezi { $weekday } ya tatu
+        [4] Kila mwezi { $weekday } ya nne
+       *[other] Kila mwezi { $weekday } ya mwisho
+    }
+calendar-repeat-yearly = Kila mwaka tarehe { $day }
+calendar-repeat-weekdays = Kila siku ya kazi (Jumatatu hadi Ijumaa)
+calendar-repeat-custom = Maalum
+calendar-reminder-none = Hakuna arifa
+calendar-reminder-at-start = Mwanzoni
+calendar-reminder-minutes =
+    { $count ->
+        [one] dakika { $count } kabla
+       *[other] dakika { $count } kabla
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] saa { $count } kabla
+       *[other] saa { $count } kabla
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] siku { $count } kabla
+       *[other] siku { $count } kabla
+    }
+calendar-scope-edit-title = Hariri tukio linalojirudia
+calendar-scope-delete-title = Futa tukio linalojirudia
+calendar-scope-this = Tukio hili
+calendar-scope-following = Tukio hili na yanayofuata
+calendar-scope-all = Matukio yote
+calendar-scope-respond-title = Jibu kwa tukio linalojirudia
+calendar-going = Utaenda?
+calendar-answer-yes = Ndiyo
+calendar-answer-no = Hapana
+calendar-answer-maybe = Labda
+calendar-answered-yes = Unaenda
+calendar-answered-no = Huendi
+calendar-answered-maybe = Huenda ukaenda
 
 ## The day's agenda beside the mail.
 
