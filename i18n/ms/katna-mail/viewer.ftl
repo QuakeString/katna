@@ -26,6 +26,8 @@ viewer-tool-underline = Garis bawah
 viewer-tool-squiggly = Garis berombak
 viewer-tool-strike = Garis lorek
 viewer-tool-pen = Pen
+viewer-tool-note = Nota lekat
+viewer-tool-text = Kotak teks
 viewer-tool-eraser = Pemadam
 viewer-color-yellow = Kuning
 viewer-color-green = Hijau
@@ -38,6 +40,12 @@ viewer-color-purple = Ungu
 viewer-marks-undo-tip = Buat asal (Ctrl+Z)
 viewer-marks-redo-tip = Buat semula (Ctrl+Shift+Z)
 viewer-save-marked-tip = Simpan salinan dengan tanda anda (Ctrl+S)
+viewer-reply-marked-tip = Balas dengan salinan bertanda
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Tulis nota
+viewer-text-placeholder = Taip di sini
+viewer-note-done = Selesai
+viewer-note-delete = Padam
 viewer-markup-protected = PDF ini dilindungi daripada perubahan, jadi ia tidak boleh ditanda.
 viewer-marks-save-failed = Salinan bertanda tidak dapat disimpan.
 # Asked when closing a PDF, or moving to another attachment, with marks

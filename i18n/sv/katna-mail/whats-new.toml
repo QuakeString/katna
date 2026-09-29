@@ -1718,3 +1718,29 @@ gästerna, färga den eller flytta den till en annan kalender, och på en
 uppgift för att bocka av den, stjärnmärka den, ge den en annan dag eller
 radera den. Ångra tar tillbaka en ändring.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Anteckningar och text i PDF-filer"
+text = """
+När du märker upp en PDF finns nu fästisar och textrutor: klicka på
+sidan, skriv och tryck på Ctrl+Enter. Håll pekaren över en anteckning
+för att läsa den, eller klicka på den för att ändra den. Svara skickar
+den uppmärkta kopian direkt tillbaka i ett svar på meddelandet.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Dra uppgifter dit du vill ha dem"
+text = """
+Dra en uppgift uppåt eller nedåt i listan, eller till en annan lista,
+och uppgifterna där glider undan för att visa var den hamnar. Google
+Tasks behåller den nya ordningen på telefonen också, och Ångra lägger
+tillbaka uppgiften.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Lägg till en uppgift från Kalender"
+text = """
+Kortet för ny händelse har en flik Uppgift, som i Google Kalender.
+Klicka på en tid, välj Uppgift, så blir titeln, dagen och tiden en
+uppgift i den lista du väljer, med en beskrivning om du vill.
+"""

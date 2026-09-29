@@ -26,6 +26,8 @@ viewer-tool-underline = Understryk
 viewer-tool-squiggly = Vågig linje
 viewer-tool-strike = Genomstryk
 viewer-tool-pen = Penna
+viewer-tool-note = Fästis
+viewer-tool-text = Textruta
 viewer-tool-eraser = Suddgummi
 viewer-color-yellow = Gul
 viewer-color-green = Grön
@@ -38,6 +40,12 @@ viewer-color-purple = Lila
 viewer-marks-undo-tip = Ångra (Ctrl+Z)
 viewer-marks-redo-tip = Gör om (Ctrl+Shift+Z)
 viewer-save-marked-tip = Spara en kopia med dina markeringar (Ctrl+S)
+viewer-reply-marked-tip = Svara med den uppmärkta kopian
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Skriv en anteckning
+viewer-text-placeholder = Skriv här
+viewer-note-done = Klar
+viewer-note-delete = Radera
 viewer-markup-protected = Den här PDF-filen är skyddad mot ändringar och kan därför inte märkas upp.
 viewer-marks-save-failed = Det gick inte att spara den uppmärkta kopian.
 # Asked when closing a PDF, or moving to another attachment, with marks

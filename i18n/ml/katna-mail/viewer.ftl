@@ -26,6 +26,8 @@ viewer-tool-underline = അടിവര
 viewer-tool-squiggly = തരംഗ അടിവര
 viewer-tool-strike = വെട്ടിക്കളയുക
 viewer-tool-pen = പേന
+viewer-tool-note = സ്റ്റിക്കി കുറിപ്പ്
+viewer-tool-text = ടെക്സ്റ്റ് ബോക്സ്
 viewer-tool-eraser = ഇറേസർ
 viewer-color-yellow = മഞ്ഞ
 viewer-color-green = പച്ച
@@ -38,6 +40,12 @@ viewer-color-purple = പർപ്പിൾ
 viewer-marks-undo-tip = പഴയപടിയാക്കുക (Ctrl+Z)
 viewer-marks-redo-tip = വീണ്ടും ചെയ്യുക (Ctrl+Shift+Z)
 viewer-save-marked-tip = നിങ്ങളുടെ അടയാളങ്ങളോടെ ഒരു പകർപ്പ് സംരക്ഷിക്കുക (Ctrl+S)
+viewer-reply-marked-tip = അടയാളപ്പെടുത്തിയ പകർപ്പോടെ മറുപടി നൽകുക
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ഒരു കുറിപ്പ് എഴുതുക
+viewer-text-placeholder = ഇവിടെ ടൈപ്പ് ചെയ്യുക
+viewer-note-done = കഴിഞ്ഞു
+viewer-note-delete = ഇല്ലാതാക്കുക
 viewer-markup-protected = ഈ PDF മാറ്റങ്ങളിൽ നിന്ന് പരിരക്ഷിച്ചിരിക്കുന്നു, അതിനാൽ അടയാളപ്പെടുത്താൻ കഴിയില്ല.
 viewer-marks-save-failed = അടയാളപ്പെടുത്തിയ പകർപ്പ് സംരക്ഷിക്കാനായില്ല.
 # Asked when closing a PDF, or moving to another attachment, with marks

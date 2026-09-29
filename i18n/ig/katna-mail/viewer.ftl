@@ -26,6 +26,8 @@ viewer-tool-underline = Kpọọ akara n'okpuru
 viewer-tool-squiggly = Akara ebili mmiri
 viewer-tool-strike = Gbachapụ
 viewer-tool-pen = Pen
+viewer-tool-note = Ndetu nrapado
+viewer-tool-text = Igbe ederede
 viewer-tool-eraser = Ihe nhichapụ
 viewer-color-yellow = Edo
 viewer-color-green = Akwụkwọ ndụ
@@ -38,6 +40,12 @@ viewer-color-purple = Pọpụl
 viewer-marks-undo-tip = Megharịa (Ctrl+Z)
 viewer-marks-redo-tip = Mee ọzọ (Ctrl+Shift+Z)
 viewer-save-marked-tip = Chekwaa otu mbipụta nwere akara gị (Ctrl+S)
+viewer-reply-marked-tip = Zaa na mbipụta nwere akara ahụ
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Dee ndetu
+viewer-text-placeholder = Pịnye ebe a
+viewer-note-done = Emechala
+viewer-note-delete = Hichapụ
 viewer-markup-protected = E chebere PDF a pụọ na mgbanwe, ya mere enweghị ike itinye akara na ya.
 viewer-marks-save-failed = Enweghị ike ichekwa mbipụta nwere akara ahụ.
 # Asked when closing a PDF, or moving to another attachment, with marks

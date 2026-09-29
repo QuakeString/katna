@@ -26,6 +26,8 @@ viewer-tool-underline = Altını çiz
 viewer-tool-squiggly = Dalgalı çizgi
 viewer-tool-strike = Üstünü çiz
 viewer-tool-pen = Kalem
+viewer-tool-note = Yapışkan not
+viewer-tool-text = Metin kutusu
 viewer-tool-eraser = Silgi
 viewer-color-yellow = Sarı
 viewer-color-green = Yeşil
@@ -38,6 +40,12 @@ viewer-color-purple = Mor
 viewer-marks-undo-tip = Geri al (Ctrl+Z)
 viewer-marks-redo-tip = Yinele (Ctrl+Shift+Z)
 viewer-save-marked-tip = İşaretlerinizle bir kopya kaydedin (Ctrl+S)
+viewer-reply-marked-tip = İşaretli kopyayla yanıtla
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Not yazın
+viewer-text-placeholder = Buraya yazın
+viewer-note-done = Bitti
+viewer-note-delete = Sil
 viewer-markup-protected = Bu PDF değişikliklere karşı korumalı, bu yüzden işaretlenemiyor.
 viewer-marks-save-failed = İşaretli kopya kaydedilemedi.
 # Asked when closing a PDF, or moving to another attachment, with marks

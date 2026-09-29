@@ -1648,3 +1648,21 @@ title = "Pịa aka nri na Kalịnda"
 text = """
 Pịa aka nri n'oge efu ma ọ bụ ụbọchị iji tinye ihe omume, oge nlekwasị anya ma ọ bụ n'èzí ọfịs n'ebe ahụ. Pịa aka nri n'ihe omume iji dezie, mepụta oyiri, hichapụ, zaa, sonye, zipụ ndị ọbịa email, nye ya agba ma ọ bụ bugara ya na kalịnda ọzọ, na n'ọrụ iji kaa ya dị ka emechara, tinye ya kpakpando, nye ya ụbọchị ọzọ ma ọ bụ hichapụ ya. Mwepu na-eweghachi mgbanwe.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Ndetu na ederede na PDF"
+text = """
+Ịtinye akara na PDF ugbu a nwere ndetu nrapado na igbe ederede: pịa peeji ahụ, pịnye, ma pịa Ctrl+Enter. Bugharịa ntụaka n'elu ndetu iji gụọ ya, ma ọ bụ pịa ya iji gbanwee ya. Zaa na-eziga mbipụta gị nwere akara ozugbo n'ime nzaghachi na ozi ahụ.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Dọrọ ọrụ ebe ị chọrọ ha"
+text = """
+Dọrọ ọrụ elu ma ọ bụ ala na ndepụta ya, ma ọ bụ banye n'ndepụta ọzọ, ọrụ ndị nọ ebe ahụ ga-esebe n'akụkụ iji gosi ebe ọ ga-adakwasị. Google Tasks na-edebe usoro ọhụrụ ahụ na ekwentị gị kwa, ma Mebie na-eweghachi ọrụ ahụ.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tinye ọrụ site na Kalịnda"
+text = """
+Kaadị ihe omume ọhụrụ nwere taabụ Ọrụ, dịka na Google Calendar. Pịa oge, họrọ Ọrụ, ma isiokwu, ụbọchị na oge ga-aghọ ọrụ n'ndepụta ị họọrọ, ya na nkọwa ma ọ bụrụ na ị chọrọ.
+"""

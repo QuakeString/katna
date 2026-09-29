@@ -1766,3 +1766,29 @@ atau mengalihkannya ke kalendar lain, dan tugas untuk menandainya selesai,
 membintanginya, memberinya hari lain atau memadamnya. Buat asal mengembalikan
 perubahan.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Nota dan teks pada PDF"
+text = """
+Menanda PDF kini ada nota lekat dan kotak teks: klik halaman, taip, dan
+tekan Ctrl+Enter. Tuding pada nota untuk membacanya, atau klik untuk
+mengubahnya. Balas menghantar salinan bertanda anda terus dalam balasan
+kepada mesej itu.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Seret tugasan ke tempat yang anda mahu"
+text = """
+Seret tugasan ke atas atau ke bawah dalam senarainya, atau ke senarai lain,
+dan tugasan di situ akan beralih ke tepi untuk menunjukkan tempat ia akan
+diletakkan. Google Tasks menyimpan susunan baharu itu pada telefon anda
+juga, dan Buat asal meletakkan tugasan itu semula.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tambah tugasan dari Kalendar"
+text = """
+Kad acara baharu ada tab Tugasan, seperti dalam Google Calendar. Klik satu
+masa, pilih Tugasan, dan tajuk, hari serta masa menjadi tugasan dalam
+senarai yang anda pilih, dengan keterangan jika anda mahu.
+"""

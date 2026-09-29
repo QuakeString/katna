@@ -112,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Mel itu tidak lagi ada di sini.
 tasks-toast-list-deleted = Senarai dipadam
 tasks-toast-moved = Dialihkan ke { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Tugasan dialihkan
 tasks-toast-rescheduled = Tugas dijadual semula

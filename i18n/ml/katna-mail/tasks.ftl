@@ -114,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ആ മെയിൽ ഇപ്പോൾ ഇവിടെ ഇല്ല.
 tasks-toast-list-deleted = ലിസ്റ്റ് ഇല്ലാതാക്കി
 tasks-toast-moved = { $list } എന്നതിലേക്ക് നീക്കി
+# A task dragged to another place in its own list.
+tasks-toast-placed = ടാസ്‌ക് നീക്കി
 tasks-toast-rescheduled = ടാസ്‌ക്കിന്റെ സമയം മാറ്റി

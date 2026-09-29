@@ -1674,3 +1674,29 @@ kwa wageni, kulipa rangi au kulihamishia kalenda nyingine, na kazi ili
 kuiwekea alama ya kukamilika, kuiwekea nyota, kuipa siku nyingine au
 kuifuta. Tendua hurudisha badiliko.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Madokezo na maandishi kwenye PDF"
+text = """
+Kuweka alama kwenye PDF sasa kuna vidokezo vya kubandika na visanduku
+vya maandishi: bofya ukurasa, andika, kisha bonyeza Ctrl+Enter. Weka
+kiashiria juu ya dokezo ili kulisoma, au libofye ili kulibadilisha.
+Jibu hutuma nakala yako yenye alama moja kwa moja katika jibu la ujumbe.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Buruta majukumu unapoyataka"
+text = """
+Buruta jukumu juu au chini kwenye orodha yake, au hadi orodha nyingine,
+na majukumu yaliyopo huteleza kando kuonyesha litakapotua. Google Tasks
+huhifadhi mpangilio mpya kwenye simu yako pia, na Tendua hulirudisha
+jukumu.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Ongeza jukumu kutoka Kalenda"
+text = """
+Kadi ya tukio jipya ina kichupo cha Jukumu, kama katika Google Calendar.
+Bofya muda, chagua Jukumu, na kichwa, siku na muda vinakuwa jukumu
+kwenye orodha unayochagua, pamoja na maelezo ukipenda.
+"""

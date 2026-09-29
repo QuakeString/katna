@@ -26,6 +26,8 @@ viewer-tool-underline = ಅಡಿಗೆರೆ
 viewer-tool-squiggly = ಅಲೆಗೆರೆ
 viewer-tool-strike = ಹೊಡೆದುಹಾಕು
 viewer-tool-pen = ಪೆನ್
+viewer-tool-note = ಸ್ಟಿಕಿ ಟಿಪ್ಪಣಿ
+viewer-tool-text = ಪಠ್ಯ ಪೆಟ್ಟಿಗೆ
 viewer-tool-eraser = ಎರೇಸರ್
 viewer-color-yellow = ಹಳದಿ
 viewer-color-green = ಹಸಿರು
@@ -38,6 +40,12 @@ viewer-color-purple = ನೇರಳೆ
 viewer-marks-undo-tip = ರದ್ದುಗೊಳಿಸಿ (Ctrl+Z)
 viewer-marks-redo-tip = ಮತ್ತೆ ಮಾಡಿ (Ctrl+Shift+Z)
 viewer-save-marked-tip = ನಿಮ್ಮ ಗುರುತುಗಳೊಂದಿಗೆ ಪ್ರತಿಯನ್ನು ಉಳಿಸಿ (Ctrl+S)
+viewer-reply-marked-tip = ಗುರುತು ಮಾಡಿದ ಪ್ರತಿಯೊಂದಿಗೆ ಪ್ರತ್ಯುತ್ತರಿಸಿ
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ
+viewer-text-placeholder = ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ
+viewer-note-done = ಮುಗಿದಿದೆ
+viewer-note-delete = ಅಳಿಸಿ
 viewer-markup-protected = ಈ PDF ಬದಲಾವಣೆಗಳಿಂದ ರಕ್ಷಿತವಾಗಿದೆ, ಆದ್ದರಿಂದ ಇದರಲ್ಲಿ ಗುರುತು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.
 viewer-marks-save-failed = ಗುರುತು ಮಾಡಿದ ಪ್ರತಿಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 # Asked when closing a PDF, or moving to another attachment, with marks

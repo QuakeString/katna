@@ -1796,3 +1796,31 @@ ihn ein oder verschiebt ihn in einen anderen Kalender; auf eine Aufgabe
 hakt er sie ab, markiert sie mit einem Stern, gibt ihr einen anderen Tag
 oder löscht sie. Rückgängig nimmt eine Änderung zurück.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notizen und Text auf PDFs"
+text = """
+Beim Markieren eines PDFs gibt es jetzt Haftnotizen und Textfelder:
+Klicken Sie auf die Seite, tippen Sie und drücken Sie Strg+Eingabe.
+Zeigen Sie auf eine Notiz, um sie zu lesen, oder klicken Sie darauf, um
+sie zu ändern. Antworten schickt Ihre markierte Kopie direkt in einer
+Antwort auf die Nachricht zurück.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Aufgaben dorthin ziehen, wo Sie sie wollen"
+text = """
+Ziehen Sie eine Aufgabe in ihrer Liste nach oben oder unten oder in eine
+andere Liste, und die Aufgaben dort gleiten beiseite, um zu zeigen, wo
+sie landet. Google Tasks übernimmt die neue Reihenfolge auch auf Ihrem
+Telefon, und Rückgängig legt die Aufgabe zurück.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Eine Aufgabe aus dem Kalender anlegen"
+text = """
+Die Karte für einen neuen Termin hat einen Tab „Aufgabe“, wie in Google
+Calendar. Klicken Sie auf eine Zeit, wählen Sie „Aufgabe“, und Titel,
+Tag und Uhrzeit werden zu einer Aufgabe in der Liste Ihrer Wahl, auf
+Wunsch mit einer Beschreibung.
+"""

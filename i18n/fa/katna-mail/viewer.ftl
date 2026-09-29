@@ -26,6 +26,8 @@ viewer-tool-underline = زیرخط
 viewer-tool-squiggly = خط موج‌دار
 viewer-tool-strike = خط‌خورده
 viewer-tool-pen = قلم
+viewer-tool-note = یادداشت چسبان
+viewer-tool-text = کادر متن
 viewer-tool-eraser = پاک‌کن
 viewer-color-yellow = زرد
 viewer-color-green = سبز
@@ -38,6 +40,12 @@ viewer-color-purple = بنفش
 viewer-marks-undo-tip = واگرد (Ctrl+Z)
 viewer-marks-redo-tip = ازنو (Ctrl+Shift+Z)
 viewer-save-marked-tip = ذخیرهٔ یک نسخه با علامت‌هایتان (Ctrl+S)
+viewer-reply-marked-tip = پاسخ با نسخهٔ علامت‌خورده
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = یادداشتی بنویسید
+viewer-text-placeholder = اینجا تایپ کنید
+viewer-note-done = تمام
+viewer-note-delete = حذف
 viewer-markup-protected = این PDF در برابر تغییر محافظت شده است، پس نمی‌توان روی آن علامت گذاشت.
 viewer-marks-save-failed = ذخیرهٔ نسخهٔ علامت‌خورده ممکن نشد.
 # Asked when closing a PDF, or moving to another attachment, with marks

@@ -112,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = 해당 메일이 더 이상 없습니다.
 tasks-toast-list-deleted = 목록을 삭제했습니다
 tasks-toast-moved = { $list }(으)로 이동했습니다
+# A task dragged to another place in its own list.
+tasks-toast-placed = 할 일을 이동했습니다
 tasks-toast-rescheduled = 할 일의 일정을 변경했습니다

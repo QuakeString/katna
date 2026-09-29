@@ -114,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Bu e-posta artık burada değil.
 tasks-toast-list-deleted = Liste silindi
 tasks-toast-moved = { $list } listesine taşındı
+# A task dragged to another place in its own list.
+tasks-toast-placed = Görev taşındı
 tasks-toast-rescheduled = Görev yeniden zamanlandı

@@ -26,6 +26,8 @@ viewer-tool-underline = Sublinhar
 viewer-tool-squiggly = Ondulado
 viewer-tool-strike = Tachar
 viewer-tool-pen = Caneta
+viewer-tool-note = Nota adesiva
+viewer-tool-text = Caixa de texto
 viewer-tool-eraser = Borracha
 viewer-color-yellow = Amarelo
 viewer-color-green = Verde
@@ -38,6 +40,12 @@ viewer-color-purple = Roxo
 viewer-marks-undo-tip = Desfazer (Ctrl+Z)
 viewer-marks-redo-tip = Refazer (Ctrl+Shift+Z)
 viewer-save-marked-tip = Salvar uma cópia com suas marcações (Ctrl+S)
+viewer-reply-marked-tip = Responder com a cópia marcada
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Escreva uma nota
+viewer-text-placeholder = Digite aqui
+viewer-note-done = Concluído
+viewer-note-delete = Excluir
 viewer-markup-protected = Este PDF está protegido contra alterações, então não pode ser marcado.
 viewer-marks-save-failed = Não foi possível salvar a cópia marcada.
 # Asked when closing a PDF, or moving to another attachment, with marks

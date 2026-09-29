@@ -26,6 +26,8 @@ viewer-tool-underline = Podkreślenie
 viewer-tool-squiggly = Falista linia
 viewer-tool-strike = Przekreślenie
 viewer-tool-pen = Pióro
+viewer-tool-note = Karteczka
+viewer-tool-text = Pole tekstowe
 viewer-tool-eraser = Gumka
 viewer-color-yellow = Żółty
 viewer-color-green = Zielony
@@ -38,6 +40,12 @@ viewer-color-purple = Fioletowy
 viewer-marks-undo-tip = Cofnij (Ctrl+Z)
 viewer-marks-redo-tip = Ponów (Ctrl+Shift+Z)
 viewer-save-marked-tip = Zapisz kopię z adnotacjami (Ctrl+S)
+viewer-reply-marked-tip = Odpowiedz, dołączając kopię z adnotacjami
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Napisz notatkę
+viewer-text-placeholder = Pisz tutaj
+viewer-note-done = Gotowe
+viewer-note-delete = Usuń
 viewer-markup-protected = Ten plik PDF jest chroniony przed zmianami, więc nie można dodawać do niego adnotacji.
 viewer-marks-save-failed = Nie udało się zapisać kopii z adnotacjami.
 # Asked when closing a PDF, or moving to another attachment, with marks

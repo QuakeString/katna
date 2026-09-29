@@ -26,6 +26,8 @@ viewer-tool-underline = အောက်မျဉ်းသားရန်
 viewer-tool-squiggly = လှိုင်းမျဉ်း
 viewer-tool-strike = ကန့်လန့်ဖြတ်မျဉ်း
 viewer-tool-pen = ဘောပင်
+viewer-tool-note = ကပ်စာရွက်မှတ်စု
+viewer-tool-text = စာသားအကွက်
 viewer-tool-eraser = ခဲဖျက်
 viewer-color-yellow = အဝါ
 viewer-color-green = အစိမ်း
@@ -38,6 +40,12 @@ viewer-color-purple = ခရမ်းရောင်
 viewer-marks-undo-tip = နောက်ပြန်ရန် (Ctrl+Z)
 viewer-marks-redo-tip = ပြန်လုပ်ရန် (Ctrl+Shift+Z)
 viewer-save-marked-tip = သင့်အမှတ်အသားများပါသော မိတ္တူကို သိမ်းရန် (Ctrl+S)
+viewer-reply-marked-tip = မှတ်သားထားသော မိတ္တူဖြင့် ပြန်စာရေးရန်
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = မှတ်စုရေးပါ
+viewer-text-placeholder = ဤနေရာတွင် ရိုက်ပါ
+viewer-note-done = ပြီးပြီ
+viewer-note-delete = ဖျက်ရန်
 viewer-markup-protected = ဤ PDF ကို ပြောင်းလဲခြင်းမှ ကာကွယ်ထားသဖြင့် မှတ်သား၍ မရပါ။
 viewer-marks-save-failed = မှတ်သားထားသော မိတ္တူကို သိမ်း၍ မရပါ။
 # Asked when closing a PDF, or moving to another attachment, with marks

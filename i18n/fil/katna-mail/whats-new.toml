@@ -1814,3 +1814,29 @@ kulayan ito o ilipat sa ibang kalendaryo, at sa isang gawain para i-tsek
 ito, lagyan ng star, bigyan ng ibang araw o i-delete. Ibinabalik ng
 I-undo ang isang pagbabago.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Mga note at text sa mga PDF"
+text = """
+May sticky note at text box na ngayon kapag nagmamarka ng PDF: i-click
+ang page, mag-type, at pindutin ang Ctrl+Enter. I-hover ang note para
+basahin ito, o i-click ito para baguhin. Ipinapadala ng Sumagot ang
+kopya mong may marka pabalik sa isang sagot sa mensahe.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "I-drag ang mga gawain kung saan mo gusto"
+text = """
+I-drag ang isang gawain pataas o pababa sa listahan nito, o sa ibang
+listahan, at uusog ang mga gawain doon para ipakita kung saan ito
+lalapag. Pinapanatili rin ng Google Tasks ang bagong ayos sa phone mo,
+at ibinabalik ng I-undo ang gawain.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Magdagdag ng gawain mula sa Calendar"
+text = """
+May tab na Gawain ang card ng bagong event, gaya sa Google Calendar.
+Mag-click ng oras, piliin ang Gawain, at magiging gawain ang pamagat,
+araw at oras sa listahang pipiliin mo, may paglalarawan kung gusto mo.
+"""

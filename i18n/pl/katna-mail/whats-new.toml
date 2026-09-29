@@ -1741,3 +1741,28 @@ wysłać e-mail do gości, nadać mu kolor lub przenieść je do innego
 kalendarza, a zadanie, aby je odhaczyć, oznaczyć gwiazdką, dać mu inny dzień
 lub je usunąć. Cofnij wycofuje zmianę.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notatki i tekst w plikach PDF"
+text = """
+Adnotacje w PDF obejmują teraz karteczki i pola tekstowe: kliknij stronę,
+pisz i naciśnij Ctrl+Enter. Najedź na notatkę, aby ją przeczytać, albo
+kliknij, aby ją zmienić. Odpowiedz wysyła kopię z adnotacjami od razu w
+odpowiedzi na wiadomość.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Przeciągaj zadania, gdzie chcesz"
+text = """
+Przeciągnij zadanie w górę lub w dół listy albo do innej listy, a zadania w
+tym miejscu rozsuną się, pokazując, gdzie trafi. Google Tasks zachowa nową
+kolejność także na telefonie, a Cofnij odłoży zadanie z powrotem.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Dodawaj zadania z Kalendarza"
+text = """
+Karta nowego wydarzenia ma zakładkę Zadanie, jak w Kalendarzu Google. Kliknij
+godzinę, wybierz Zadanie, a tytuł, dzień i godzina staną się zadaniem na
+wybranej liście, z opisem, jeśli chcesz.
+"""

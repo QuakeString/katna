@@ -1767,3 +1767,29 @@ un'e-mail agli ospiti, colorarlo o spostarlo in un altro calendario, e su
 un'attività per completarla, aggiungerla a Speciali, darle un altro giorno o
 eliminarla. Annulla riporta indietro una modifica.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Note e testo sui PDF"
+text = """
+Annotare un PDF ora include note adesive e caselle di testo: fai clic sulla
+pagina, scrivi e premi Ctrl+Invio. Passa sopra una nota per leggerla, o fai
+clic per modificarla. Rispondi invia la tua copia annotata direttamente in
+una risposta al messaggio.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Trascina le attività dove vuoi"
+text = """
+Trascina un’attività in alto o in basso nel suo elenco, o in un altro
+elenco, e le attività lì si spostano di lato per mostrare dove finirà.
+Google Tasks mantiene il nuovo ordine anche sul telefono, e Annulla rimette
+l’attività al suo posto.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Aggiungi un’attività dal Calendario"
+text = """
+La scheda del nuovo evento ha una scheda Attività, come in Google Calendar.
+Fai clic su un orario, scegli Attività, e titolo, giorno e ora diventano
+un’attività nell’elenco che scegli, con una descrizione se vuoi.
+"""

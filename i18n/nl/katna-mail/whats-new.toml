@@ -1753,3 +1753,29 @@ verplaatsen, en op een taak om hem af te vinken, een ster te geven, een
 andere dag te geven of te verwijderen. Ongedaan maken draait een wijziging
 terug.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notities en tekst op pdf's"
+text = """
+Aantekeningen maken op een pdf kan nu ook met plaknotities en tekstvakken:
+klik op de pagina, typ en druk op Ctrl+Enter. Wijs een notitie aan om hem te
+lezen, of klik erop om hem te wijzigen. Beantwoorden stuurt je kopie met
+aantekeningen meteen terug in een antwoord op het bericht.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Sleep taken waar je ze wilt hebben"
+text = """
+Sleep een taak omhoog of omlaag in de lijst, of naar een andere lijst, en de
+taken daar schuiven opzij om te laten zien waar hij terechtkomt. Google
+Tasks bewaart de nieuwe volgorde ook op je telefoon, en Ongedaan maken zet
+de taak terug.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Een taak toevoegen vanuit de agenda"
+text = """
+De kaart voor een nieuwe afspraak heeft een tabblad Taak, zoals in Google
+Agenda. Klik op een tijd, kies Taak, en de titel, dag en tijd worden een
+taak in de lijst die je kiest, met een beschrijving als je wilt.
+"""

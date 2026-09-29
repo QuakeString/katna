@@ -1748,3 +1748,29 @@ enviar e-mail aos convidados, mudar a cor ou movê-lo para outra agenda,
 e em uma tarefa para marcá-la como concluída, adicionar estrela, dar
 outro dia a ela ou excluí-la. Desfazer reverte uma alteração.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notas e texto em PDFs"
+text = """
+Marcar um PDF agora tem notas adesivas e caixas de texto: clique na
+página, digite e pressione Ctrl+Enter. Passe o cursor sobre uma nota
+para lê-la ou clique nela para alterá-la. Responder envia sua cópia
+marcada direto em uma resposta à mensagem.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Arraste tarefas para onde quiser"
+text = """
+Arraste uma tarefa para cima ou para baixo na lista, ou para outra
+lista, e as tarefas ali deslizam para mostrar onde ela vai ficar. O
+Google Tasks mantém a nova ordem no seu celular também, e Desfazer
+coloca a tarefa de volta.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Adicionar uma tarefa pela Agenda"
+text = """
+O cartão de novo evento tem uma guia Tarefa, como no Google Agenda.
+Clique em um horário, escolha Tarefa, e o título, o dia e a hora viram
+uma tarefa na lista que você escolher, com uma descrição se quiser.
+"""

@@ -1735,3 +1735,29 @@ görevi tamamlandı olarak işaretlemek, yıldızlamak, başka bir güne almak
 veya silmek için göreve sağ tıklayın. Geri al, bir değişikliği geri
 alır.
 """
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "PDF'lerde notlar ve metin"
+text = """
+PDF işaretlerken artık yapışkan notlar ve metin kutuları var: sayfaya
+tıklayın, yazın ve Ctrl+Enter'a basın. Bir notu okumak için üzerine
+gelin, değiştirmek için tıklayın. Yanıtla, işaretli kopyanızı doğrudan
+ileti yanıtında geri gönderir.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Görevleri istediğiniz yere sürükleyin"
+text = """
+Bir görevi listesinde yukarı veya aşağı ya da başka bir listeye
+sürükleyin; oradaki görevler nereye yerleşeceğini göstermek için kenara
+kayar. Google Tasks yeni sırayı telefonunuzda da korur, Geri al ise
+görevi eski yerine koyar.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Takvim'den görev ekleyin"
+text = """
+Yeni etkinlik kartında, Google Takvim'deki gibi bir Görev sekmesi var.
+Bir saate tıklayın, Görev'i seçin; başlık, gün ve saat, seçtiğiniz
+listede bir görev olur, isterseniz bir açıklamayla birlikte.
+"""

@@ -112,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Thư đó không còn ở đây nữa.
 tasks-toast-list-deleted = Đã xóa danh sách
 tasks-toast-moved = Đã chuyển đến { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Đã di chuyển việc cần làm
 tasks-toast-rescheduled = Đã dời lịch tác vụ

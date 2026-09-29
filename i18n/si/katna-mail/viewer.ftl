@@ -26,6 +26,8 @@ viewer-tool-underline = යටි ඉර
 viewer-tool-squiggly = රැලි ඉර
 viewer-tool-strike = කපා හරින්න
 viewer-tool-pen = පෑන
+viewer-tool-note = ඇලෙන සටහන
+viewer-tool-text = පෙළ කොටුව
 viewer-tool-eraser = මකනය
 viewer-color-yellow = කහ
 viewer-color-green = කොළ
@@ -38,6 +40,12 @@ viewer-color-purple = දම්
 viewer-marks-undo-tip = අහෝසි කරන්න (Ctrl+Z)
 viewer-marks-redo-tip = නැවත කරන්න (Ctrl+Shift+Z)
 viewer-save-marked-tip = ඔබේ සලකුණු සහිත පිටපතක් සුරකින්න (Ctrl+S)
+viewer-reply-marked-tip = සලකුණු කළ පිටපත සමඟ පිළිතුරු දෙන්න
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = සටහනක් ලියන්න
+viewer-text-placeholder = මෙහි ටයිප් කරන්න
+viewer-note-done = අවසන්
+viewer-note-delete = මකන්න
 viewer-markup-protected = මෙම PDF වෙනස් කිරීම්වලින් ආරක්ෂා කර ඇති නිසා එය සලකුණු කළ නොහැක.
 viewer-marks-save-failed = සලකුණු කළ පිටපත සුරැකිය නොහැකි විය.
 # Asked when closing a PDF, or moving to another attachment, with marks
