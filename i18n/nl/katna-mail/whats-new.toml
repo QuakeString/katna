@@ -1404,3 +1404,15 @@ text = """
 Het paginanummer onder een pdf is nu een vak: klik erop of druk op
 Ctrl+G, typ een pagina en druk op Enter om ernaartoe te gaan.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Taken in de agenda"
+text = """
+Taken met een vervaldatum staan nu in de Agenda, op hun tijd of bij de evenementen die de hele dag duren. Vink ze daar af, klik om er een te openen of sleep een taak naar een andere dag of tijd om die tijd voor de taak te blokkeren.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Herinneringen voor je evenementen"
+text = """
+Evenementen herinneren je nu met een melding, ook als Katna is gesloten. Met Deelnemen open je het videogesprek en met 5 min snoozen word je over vijf minuten opnieuw herinnerd.
+"""

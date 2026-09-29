@@ -1451,3 +1451,15 @@ Le numéro de page sous un PDF est désormais une zone de saisie : cliquez
 dessus ou appuyez sur Ctrl+G, saisissez un numéro de page et appuyez sur
 Entrée pour y accéder.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Les tâches dans le calendrier"
+text = """
+Les tâches avec une date d’échéance apparaissent désormais dans le Calendrier, à leur heure ou avec les événements de la journée entière. Cochez-les directement, cliquez pour en ouvrir une, ou faites-la glisser vers un autre jour ou une autre heure pour réserver ce créneau.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Des rappels pour vos événements"
+text = """
+Vos événements vous envoient désormais une notification de rappel, même quand Katna est fermé. « Participer » ouvre la visioconférence, et « Répéter 5 min » vous rappelle à nouveau dans cinq minutes.
+"""

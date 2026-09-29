@@ -79,3 +79,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Wannan wasiƙar ba ta nan kuma.
 tasks-toast-list-deleted = An share jerin
 tasks-toast-moved = An mayar zuwa { $list }
+tasks-toast-rescheduled = An sake tsara lokacin aikin

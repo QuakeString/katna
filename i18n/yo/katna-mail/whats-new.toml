@@ -1312,3 +1312,17 @@ text = """
 Nọ́mbà ojú ìwé tó wà lábẹ́ PDF ti di àpótí báyìí:
 Tẹ̀ ẹ́ tàbí tẹ Ctrl+G, tẹ nọ́mbà ojú ìwé, lẹ́yìn náà tẹ Enter láti fò lọ síbẹ̀.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Àwọn iṣẹ́ lórí kàlẹ́ńdà"
+text = """
+Àwọn iṣẹ́ tí ó ní ọjọ́ ìparí báyìí máa ń hàn lórí Kàlẹ́ńdà, ní àkókò wọn tàbí pẹ̀lú àwọn ìṣẹ̀lẹ̀ gbogbo ọjọ́.
+O lè sàmì sí wọn bí ti parí níbẹ̀, tẹ̀ láti ṣí ọ̀kan, tàbí fà á lọ sí ọjọ́ tàbí àkókò mìíràn láti fi àkókò yẹn pamọ́ fún un.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Àwọn ìránnilétí fún àwọn ìṣẹ̀lẹ̀ rẹ"
+text = """
+Àwọn ìṣẹ̀lẹ̀ máa ń rán ọ létí pẹ̀lú ìwifúnni báyìí, àní nígbà tí Katna bá wà ní títìpa.
+Darapọ̀ ń ṣí ìpè fídíò, Sún síwájú ní ìṣẹ́jú 5 sì ń rán ọ létí lẹ́ẹ̀kan sí i lẹ́yìn ìṣẹ́jú márùn-ún.
+"""

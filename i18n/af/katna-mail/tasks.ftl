@@ -79,3 +79,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Daardie e-pos is nie meer hier nie.
 tasks-toast-list-deleted = Lys uitgevee
 tasks-toast-moved = Geskuif na { $list }
+tasks-toast-rescheduled = Taak herskeduleer

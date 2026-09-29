@@ -1416,3 +1416,15 @@ text = """
 Il numero di pagina sotto un PDF ora è una casella: fai clic su di essa
 o premi Ctrl+G, digita una pagina e premi Invio per andarci.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Attività nel calendario"
+text = """
+Le attività con una scadenza ora compaiono nel Calendario, all’orario previsto o insieme agli eventi che durano tutto il giorno. Spuntale da lì, fai clic per aprirne una o trascinala su un altro giorno o orario per riservarle quel tempo.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Promemoria per i tuoi eventi"
+text = """
+Ora gli eventi ti avvisano con una notifica, anche quando Katna è chiuso. «Partecipa» apre la videochiamata e «Posticipa di 5 min» ti ricorda di nuovo tra cinque minuti.
+"""

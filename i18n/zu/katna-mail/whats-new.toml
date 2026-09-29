@@ -1446,3 +1446,20 @@ Inombolo yekhasi engaphansi kwe-PDF manje iyibhokisi: chofoza kuyo noma
 ucindezele Ctrl+G, thayipha ikhasi bese ucindezela u-Enter ukuze uye
 lapho ngokuqondile.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Imisebenzi kukhalenda"
+text = """
+Imisebenzi enosuku lokuphela manje iyavela kuKhalenda, ngesikhathi sayo
+noma kanye nemicimbi yosuku lonke. Yiphawule lapho, chofoza ukuze uvule
+owodwa, noma uyihudulele kolunye usuku noma isikhathi ukuze ubekele
+isikhathi salo msebenzi eceleni.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Izikhumbuzo zemicimbi yakho"
+text = """
+Imicimbi manje iyakukhumbuza ngesaziso, ngisho noma iKatna ivaliwe.
+Joyina ivula ucingo lwevidiyo, futhi Libazisa likukhumbuza futhi ngemva
+kwemizuzu emihlanu.
+"""

@@ -1370,3 +1370,15 @@ text = """
 Sidnumret under en PDF är nu en ruta: klicka på den eller tryck på
 Ctrl+G, skriv en sida och tryck på Retur för att hoppa dit.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Uppgifter i kalendern"
+text = """
+Uppgifter med förfallodag visas nu i Kalendern, vid sin tid eller bland dagens heldagshändelser. Bocka av dem där, klicka för att öppna en eller dra den till en annan dag eller tid för att reservera den tiden åt den.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Påminnelser för dina händelser"
+text = """
+Händelser påminner dig nu med en avisering, även när Katna är stängt. Anslut öppnar videosamtalet och Snooza 5 min påminner dig igen om fem minuter.
+"""

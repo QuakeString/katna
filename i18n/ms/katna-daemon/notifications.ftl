@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } mengklik pautan dalam { $subject }
 notify-update-ready = Katna Mail boleh dikemas kini
 notify-update-ready-body = Versi { $version } telah dimuat turun. Kemas kini akan memasangnya dan memulakan semula Katna Mail.
 notify-update = Kemas kini
+notify-event-now = Sekarang
+notify-event-in-minutes = { $count ->
+   *[other] Dalam { $count } minit
+}
+notify-event-in-hours = { $count ->
+   *[other] Dalam { $count } jam
+}
+notify-event-in-days = { $count ->
+    [1] Esok
+   *[other] Dalam { $count } hari
+}
+notify-event-all-day = Sepanjang hari
+notify-event-join = Sertai
+notify-event-snooze = Tunda 5 minit
 notify-open = Buka
 notify-reply-all = Balas semua
 notify-mark-read = Tandai sebagai dibaca

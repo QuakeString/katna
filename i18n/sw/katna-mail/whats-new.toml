@@ -1342,3 +1342,17 @@ text = """
 Nambari ya ukurasa chini ya PDF sasa ni kisanduku:
 kibofye au bonyeza Ctrl+G, andika nambari ya ukurasa kisha bonyeza Enter ili kuruka hadi huko.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Majukumu kwenye kalenda"
+text = """
+Majukumu yenye siku ya kukamilika sasa yanaonekana kwenye Kalenda, kwa wakati wake au pamoja na matukio ya siku nzima.
+Unaweza kuyatia alama kuwa yamekamilika hapo hapo, kubofya ili kufungua, au kuyaburuza hadi siku au wakati mwingine ili kutenga muda huo kwa ajili yake.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Vikumbusho vya matukio yako"
+text = """
+Matukio sasa hukukumbusha kwa arifa, hata wakati Katna imefungwa.
+Jiunge hufungua simu ya video, na Ahirisha dakika 5 hukukumbusha tena baada ya dakika tano.
+"""

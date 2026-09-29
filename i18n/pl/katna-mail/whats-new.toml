@@ -1394,3 +1394,15 @@ text = """
 Numer strony pod plikiem PDF jest teraz polem: kliknij go lub naciśnij
 Ctrl+G, wpisz numer strony i naciśnij Enter, aby tam przejść.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Zadania w kalendarzu"
+text = """
+Zadania z terminem są teraz widoczne w Kalendarzu: o swojej godzinie lub razem z wydarzeniami całodniowymi. Odhaczaj je tam, kliknij, aby otworzyć zadanie, albo przeciągnij je na inny dzień lub godzinę, aby zarezerwować na nie ten czas.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Przypomnienia o wydarzeniach"
+text = """
+Wydarzenia przypominają o sobie powiadomieniem, nawet gdy Katna jest zamknięta. Przycisk Dołącz otwiera rozmowę wideo, a Drzemka 5 min przypomni o wydarzeniu ponownie za pięć minut.
+"""

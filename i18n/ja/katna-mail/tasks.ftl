@@ -77,3 +77,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = そのメールは見つかりません。
 tasks-toast-list-deleted = リストを削除しました
 tasks-toast-moved = { $list } に移動しました
+tasks-toast-rescheduled = タスクの日時を変更しました

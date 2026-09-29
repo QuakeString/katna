@@ -1357,3 +1357,15 @@ text = """
 Số trang bên dưới tệp PDF nay là một ô nhập: nhấp vào đó hoặc nhấn
 Ctrl+G, nhập số trang rồi nhấn Enter để chuyển tới đó.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tác vụ trên lịch"
+text = """
+Tác vụ có ngày đến hạn giờ hiển thị trên Lịch, đúng giờ của chúng hoặc cùng các sự kiện cả ngày. Đánh dấu hoàn tất ngay tại đó, nhấp để mở một tác vụ, hoặc kéo sang ngày hay giờ khác để dành khoảng thời gian đó cho tác vụ.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Nhắc nhở cho sự kiện của bạn"
+text = """
+Sự kiện giờ sẽ nhắc bạn bằng thông báo, kể cả khi Katna đã đóng. Tham gia sẽ mở cuộc gọi video, còn Báo lại sau 5 phút sẽ nhắc bạn lại sau năm phút.
+"""

@@ -83,3 +83,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Этого письма больше нет.
 tasks-toast-list-deleted = Список удалён
 tasks-toast-moved = Перемещено в { $list }
+tasks-toast-rescheduled = Задача перенесена

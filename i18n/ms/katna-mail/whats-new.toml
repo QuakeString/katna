@@ -1417,3 +1417,15 @@ Nombor halaman di bawah PDF kini ialah sebuah kotak: klik padanya atau
 tekan Ctrl+G, taip nombor halaman dan tekan Enter untuk melompat ke
 sana.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tugas dalam kalendar"
+text = """
+Tugas yang mempunyai tarikh akhir kini dipaparkan dalam Kalendar, pada waktunya atau bersama acara sepanjang hari. Tandakan selesai di situ, klik untuk membukanya, atau seret ke hari atau masa lain untuk menempah masa itu bagi tugas tersebut.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Peringatan untuk acara anda"
+text = """
+Acara kini mengingatkan anda melalui pemberitahuan, walaupun Katna ditutup. Sertai membuka panggilan video, dan Tunda 5 minit mengingatkan anda semula lima minit kemudian.
+"""

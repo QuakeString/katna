@@ -1359,3 +1359,15 @@ text = """
 Die bladsynommer onder ’n PDF is nou ’n blokkie: klik daarop of druk
 Ctrl+G, tik ’n bladsy en druk Enter om soontoe te spring.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Take in die kalender"
+text = """
+Take met ’n sperdatum verskyn nou in die Kalender, op hul tyd of by die dag se heeldaggebeurtenisse. Merk hulle daar as klaar, klik om een oop te maak, of sleep dit na ’n ander dag of tyd om daardie tyd vir die taak te reserveer.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Herinnerings vir jou geleenthede"
+text = """
+Geleenthede herinner jou nou met ’n kennisgewing, selfs wanneer Katna toe is. Sluit aan maak die video-oproep oop, en Sluimer 5 min herinner jou oor vyf minute weer.
+"""

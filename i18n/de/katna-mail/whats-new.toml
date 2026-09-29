@@ -1437,3 +1437,15 @@ Die Seitenzahl unter einer PDF ist jetzt ein Feld: Klicken Sie darauf
 oder drücken Sie Strg+G, geben Sie eine Seite ein und drücken Sie die
 Eingabetaste, um dorthin zu springen.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Aufgaben im Kalender"
+text = """
+Aufgaben mit Fälligkeitstag erscheinen jetzt im Kalender, zu ihrer Uhrzeit oder bei den ganztägigen Events des Tages. Haken Sie sie dort ab, klicken Sie, um eine zu öffnen, oder ziehen Sie sie auf einen anderen Tag oder eine andere Uhrzeit, um diese Zeit dafür zu blocken.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Erinnerungen für Ihre Events"
+text = """
+Events erinnern Sie jetzt mit einer Benachrichtigung, auch wenn Katna geschlossen ist. „Teilnehmen“ öffnet den Videoanruf, und „5 Min. zurückstellen“ erinnert Sie fünf Minuten später erneut.
+"""

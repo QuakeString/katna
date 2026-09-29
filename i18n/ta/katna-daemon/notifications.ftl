@@ -22,6 +22,23 @@ notify-tracking-clicked = { $who } { $subject } மெயிலில் ஒர�
 notify-update-ready = Katna Mail-ஐ புதுப்பிக்கலாம்
 notify-update-ready-body = பதிப்பு { $version } பதிவிறக்கப்பட்டுள்ளது. புதுப்பி அதை நிறுவி Katna Mail-ஐ மறுதொடக்கம் செய்யும்.
 notify-update = புதுப்பி
+notify-event-now = இப்போது
+notify-event-in-minutes = { $count ->
+    [one] { $count } நிமிடங்களில்
+   *[other] { $count } நிமிடங்களில்
+}
+notify-event-in-hours = { $count ->
+    [one] { $count } மணி நேரத்தில்
+   *[other] { $count } மணி நேரத்தில்
+}
+notify-event-in-days = { $count ->
+    [1] நாளை
+    [one] { $count } நாட்களில்
+   *[other] { $count } நாட்களில்
+}
+notify-event-all-day = நாள் முழுவதும்
+notify-event-join = சேர்
+notify-event-snooze = 5 நிமிடம் உறக்கநிலையில் வை
 
 ## Its buttons
 

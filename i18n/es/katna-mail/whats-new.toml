@@ -1412,3 +1412,15 @@ text = """
 El número de página bajo un PDF ahora es un cuadro: haz clic en él o
 pulsa Ctrl+G, escribe una página y pulsa Intro para ir a ella.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tareas en el calendario"
+text = """
+Las tareas con fecha de vencimiento ahora aparecen en el Calendario, a su hora o junto con los eventos de todo el día. Márcalas como hechas allí, haz clic para abrir una o arrástrala a otro día u hora para reservar ese tiempo para ella.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Recordatorios para tus eventos"
+text = """
+Ahora los eventos te avisan con una notificación, incluso con Katna cerrado. «Unirse» abre la videollamada y «Posponer 5 min» te lo recuerda de nuevo en cinco minutos.
+"""

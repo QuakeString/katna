@@ -77,3 +77,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = གློག་འཕྲིན་དེ་ད་ལུ་འདི་ལུ་མིན་འདུག
 tasks-toast-list-deleted = ཐོ་ཡིག་བཏོན་གཏང་ཡི།
 tasks-toast-moved = { $list } ནང་སྤོ་ཡི།
+tasks-toast-rescheduled = ལས་འགན་གྱི་དུས་ཚོད་བསྒྱུར་ཡི།

@@ -77,3 +77,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Email itu sudah tidak ada di sini.
 tasks-toast-list-deleted = Daftar dihapus
 tasks-toast-moved = Dipindahkan ke { $list }
+tasks-toast-rescheduled = Tugas dijadwalkan ulang

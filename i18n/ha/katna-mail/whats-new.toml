@@ -1325,3 +1325,17 @@ text = """
 Lambar shafi a ƙarƙashin PDF yanzu akwati ce:
 Danna ta ko ka latsa Ctrl+G, rubuta lambar shafi sannan ka latsa Enter don tsallakawa can.
 """
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Ayyuka a kan kalanda"
+text = """
+Ayyukan da ke da ranar ƙarewa yanzu suna bayyana a Kalanda, a lokacinsu ko tare da al'amuran duk rana.
+Kuna iya yi musu alamar an gama a can, ku danna don buɗe ɗaya, ko ku jawo shi zuwa wata rana ko lokaci daban don ware masa wannan lokacin.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Tunatarwa ga al'amuranku"
+text = """
+Yanzu al'amura suna tunatar da ku ta sanarwa, ko da Katna a rufe take.
+Shiga yana buɗe kiran bidiyo, kuma Jinkirta na mintuna 5 yana sake tunatar da ku bayan mintuna biyar.
+"""

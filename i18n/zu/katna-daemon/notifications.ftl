@@ -22,6 +22,23 @@ notify-tracking-clicked = U-{ $who } uchofoze isixhumanisi ku-{ $subject }
 notify-update-ready = I-Katna Mail ingabuyekezwa
 notify-update-ready-body = Inguqulo { $version } ilandiwe. Ukubuyekeza kuyifaka bese kuqala kabusha i-Katna Mail.
 notify-update = Buyekeza
+notify-event-now = Manje
+notify-event-in-minutes = { $count ->
+    [one] Emizuzwini engu-{ $count }
+   *[other] Emizuzwini engu-{ $count }
+}
+notify-event-in-hours = { $count ->
+    [one] Emahoreni angu-{ $count }
+   *[other] Emahoreni angu-{ $count }
+}
+notify-event-in-days = { $count ->
+    [1] Kusasa
+    [one] Ezinsukwini ezingu-{ $count }
+   *[other] Ezinsukwini ezingu-{ $count }
+}
+notify-event-all-day = Usuku lonke
+notify-event-join = Joyina
+notify-event-snooze = Libazisa imizuzu emi-5
 
 ## Its buttons
 
