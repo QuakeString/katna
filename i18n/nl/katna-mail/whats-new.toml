@@ -1543,3 +1543,10 @@ text = """
 Sleep in Taken een taak naar een andere lijst om hem daarheen te
 verplaatsen. Ongedaan maken zet hem terug.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Je taken doorzoeken"
+text = """
+In Taken doorzoekt het zoekvak bovenaan nu je taken, hun notities en
+subtaken, in plaats van je mail.
+"""

@@ -1595,3 +1595,11 @@ text = """
 Dans Tâches, faites glisser une tâche sur une autre liste pour l’y
 déplacer. Annuler la remet à sa place.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Rechercher dans vos tâches"
+text = """
+Sur la page Tâches, le champ de recherche en haut cherche désormais dans
+vos tâches, leurs notes et leurs sous-tâches, et non plus dans vos
+messages.
+"""

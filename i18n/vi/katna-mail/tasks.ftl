@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Tên danh sách
 
 tasks-loading = Đang đọc các việc cần làm của bạn…
 tasks-no-lists = Danh sách việc cần làm của bạn sẽ hiện ở đây.
+tasks-search = Tìm việc cần làm
+tasks-search-none = Không có việc cần làm nào khớp với nội dung tìm kiếm.
 tasks-add = Thêm việc cần làm
 tasks-title-placeholder = Tiêu đề
 tasks-add-step = Thêm việc phụ

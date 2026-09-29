@@ -17,6 +17,8 @@ tasks-list-name-placeholder = ලැයිස්තුවේ නම
 
 tasks-loading = ඔබේ කාර්යයන් කියවමින්…
 tasks-no-lists = ඔබේ කාර්ය ලැයිස්තු මෙහි පෙනෙනු ඇත.
+tasks-search = කාර්යයන් සොයන්න
+tasks-search-none = ඔබේ සෙවුමට ගැළපෙන කාර්යයන් නැත.
 tasks-add = කාර්යයක් එක් කරන්න
 tasks-title-placeholder = මාතෘකාව
 tasks-add-step = උප කාර්යයක් එක් කරන්න

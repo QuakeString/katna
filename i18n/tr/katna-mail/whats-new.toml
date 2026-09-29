@@ -1528,3 +1528,10 @@ text = """
 Görevler’de bir görevi taşımak için başka bir listenin üzerine
 sürükleyin. Geri al onu eski yerine koyar.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Görevlerinizde arayın"
+text = """
+Görevler sayfasında üstteki arama kutusu artık postalarınız yerine
+görevlerinizde, notlarında ve alt görevlerinde arama yapar.
+"""

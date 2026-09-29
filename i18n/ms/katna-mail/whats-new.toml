@@ -1557,3 +1557,10 @@ text = """
 Dalam Tugas, seret tugas ke senarai lain untuk mengalihkannya ke sana.
 Buat asal meletakkannya semula.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Cari tugas anda"
+text = """
+Dalam Tugas, kotak carian di bahagian atas kini mencari tugas anda,
+nota dan subtugasnya, dan bukan lagi e-mel anda.
+"""

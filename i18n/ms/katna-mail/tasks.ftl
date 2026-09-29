@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Nama senarai
 
 tasks-loading = Membaca tugasan anda…
 tasks-no-lists = Senarai tugasan anda muncul di sini.
+tasks-search = Cari tugasan
+tasks-search-none = Tiada tugasan yang sepadan dengan carian anda.
 tasks-add = Tambah tugasan
 tasks-title-placeholder = Tajuk
 tasks-add-step = Tambah subtugasan

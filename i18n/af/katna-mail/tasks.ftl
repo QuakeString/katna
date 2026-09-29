@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Lysnaam
 
 tasks-loading = Lees tans jou take…
 tasks-no-lists = Jou takelyste verskyn hier.
+tasks-search = Soek take
+tasks-search-none = Geen take pas by jou soektog nie.
 tasks-add = Voeg ’n taak by
 tasks-title-placeholder = Titel
 tasks-add-step = Voeg ’n subtaak by

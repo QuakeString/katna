@@ -17,6 +17,8 @@ tasks-list-name-placeholder = ຊື່ລາຍການ
 
 tasks-loading = ກຳລັງອ່ານໜ້າວຽກຂອງເຈົ້າ…
 tasks-no-lists = ລາຍການໜ້າວຽກຂອງເຈົ້າຈະສະແດງຢູ່ບ່ອນນີ້.
+tasks-search = ຊອກຫາໜ້າວຽກ
+tasks-search-none = ບໍ່ມີໜ້າວຽກທີ່ກົງກັບການຊອກຫາຂອງທ່ານ.
 tasks-add = ເພີ່ມໜ້າວຽກ
 tasks-title-placeholder = ຫົວຂໍ້
 tasks-add-step = ເພີ່ມໜ້າວຽກຍ່ອຍ

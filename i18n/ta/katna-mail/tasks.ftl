@@ -17,6 +17,8 @@ tasks-list-name-placeholder = பட்டியலின் பெயர்
 
 tasks-loading = உங்கள் பணிகளைப் படிக்கிறது…
 tasks-no-lists = உங்கள் பணிப் பட்டியல்கள் இங்கே தோன்றும்.
+tasks-search = பணிகளைத் தேடு
+tasks-search-none = உங்கள் தேடலுக்குப் பொருந்தும் பணிகள் இல்லை.
 tasks-add = பணியைச் சேர்
 tasks-title-placeholder = தலைப்பு
 tasks-add-step = துணைப் பணியைச் சேர்

@@ -17,6 +17,8 @@ tasks-list-name-placeholder = 清單名稱
 
 tasks-loading = 正在讀取你的工作…
 tasks-no-lists = 你的工作清單會顯示在這裡。
+tasks-search = 搜尋工作
+tasks-search-none = 沒有與搜尋相符的工作。
 tasks-add = 新增工作
 tasks-title-placeholder = 標題
 tasks-add-step = 新增子工作

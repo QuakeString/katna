@@ -17,6 +17,8 @@ tasks-list-name-placeholder = 列表名称
 
 tasks-loading = 正在读取您的任务…
 tasks-no-lists = 您的任务列表会显示在这里。
+tasks-search = 搜索任务
+tasks-search-none = 没有与搜索匹配的任务。
 tasks-add = 添加任务
 tasks-title-placeholder = 标题
 tasks-add-step = 添加子任务

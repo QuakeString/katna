@@ -1594,3 +1594,11 @@ text = """
 Sa Mga Gawain, i-drag ang isang gawain papunta sa ibang listahan para
 ilipat ito roon. Ibinabalik ito ng I-undo.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Hanapin ang iyong mga gawain"
+text = """
+Sa page ng Mga Gawain, hinahanap na ngayon ng search box sa itaas ang
+iyong mga gawain, ang mga tala at subtask ng mga ito, sa halip na ang
+iyong mail.
+"""

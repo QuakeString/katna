@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Nom de la liste
 
 tasks-loading = Lecture de vos tâches…
 tasks-no-lists = Vos listes de tâches s’affichent ici.
+tasks-search = Rechercher dans les tâches
+tasks-search-none = Aucune tâche ne correspond à votre recherche.
 tasks-add = Ajouter une tâche
 tasks-title-placeholder = Titre
 tasks-add-step = Ajouter une sous-tâche

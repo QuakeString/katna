@@ -17,6 +17,8 @@ tasks-list-name-placeholder = စာရင်းအမည်
 
 tasks-loading = သင့်လုပ်ဆောင်စရာများကို ဖတ်နေသည်…
 tasks-no-lists = သင့်လုပ်ဆောင်စရာစာရင်းများ ဤနေရာတွင် ပေါ်လာမည်။
+tasks-search = လုပ်ဆောင်စရာများ ရှာရန်
+tasks-search-none = သင့်ရှာဖွေမှုနှင့် ကိုက်ညီသော လုပ်ဆောင်စရာ မရှိပါ။
 tasks-add = လုပ်ဆောင်စရာ ထည့်ရန်
 tasks-title-placeholder = ခေါင်းစဉ်
 tasks-add-step = လုပ်ဆောင်စရာခွဲ ထည့်ရန်

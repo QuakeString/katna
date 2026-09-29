@@ -1554,3 +1554,10 @@ text = """
 En Tareas, arrastra una tarea a otra lista para moverla allí. Deshacer
 la devuelve a su sitio.
 """
+
+["2026-09-29-1111-tasks-search"]
+title = "Busca en tus tareas"
+text = """
+En la página Tareas, el cuadro de búsqueda de arriba ahora busca en tus
+tareas, sus notas y subtareas, en lugar de en tu correo.
+"""

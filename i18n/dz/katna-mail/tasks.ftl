@@ -17,6 +17,8 @@ tasks-list-name-placeholder = ཐོ་ཡིག་གི་མིང་།
 
 tasks-loading = ཁྱོད་ཀྱི་ལཱ་ཚུ་ལྷག་དོ…
 tasks-no-lists = ཁྱོད་ཀྱི་ལཱ་ཐོ་ཡིག་ཚུ་འདི་ལུ་སྟོནམ་ཨིན།
+tasks-search = ལཱ་ཚུ་འཚོལ།
+tasks-search-none = ཁྱོད་ཀྱི་འཚོལ་ཞིབ་དང་མཐུན་པའི་ལཱ་མིན་འདུག
 tasks-add = ལཱ་ཅིག་ཁ་སྣོན་འབད།
 tasks-title-placeholder = མགོ་མིང་།
 tasks-add-step = ལཱ་ཆུང་ཅིག་ཁ་སྣོན་འབད།

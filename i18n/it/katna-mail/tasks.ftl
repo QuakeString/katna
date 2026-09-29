@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Nome dell’elenco
 
 tasks-loading = Lettura delle tue attività…
 tasks-no-lists = I tuoi elenchi di attività compaiono qui.
+tasks-search = Cerca nelle attività
+tasks-search-none = Nessuna attività corrisponde alla ricerca.
 tasks-add = Aggiungi un’attività
 tasks-title-placeholder = Titolo
 tasks-add-step = Aggiungi una sottoattività

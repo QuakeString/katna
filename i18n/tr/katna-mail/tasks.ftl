@@ -17,6 +17,8 @@ tasks-list-name-placeholder = Liste adı
 
 tasks-loading = Görevleriniz okunuyor…
 tasks-no-lists = Görev listeleriniz burada görünür.
+tasks-search = Görevlerde ara
+tasks-search-none = Aramanızla eşleşen görev yok.
 tasks-add = Görev ekle
 tasks-title-placeholder = Başlık
 tasks-add-step = Alt görev ekle
