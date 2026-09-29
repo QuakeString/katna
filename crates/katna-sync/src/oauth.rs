@@ -42,6 +42,15 @@ pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file"
 /// its tokens come separately ([`TokenSource::access_token_for`]).
 pub const MICROSOFT_FILES: &str = "https://graph.microsoft.com/Files.ReadWrite";
 
+/// Google Calendar: the calendars and their events
+/// ([`crate::calendar::google`]).
+pub const GOOGLE_CALENDAR: &str = "https://www.googleapis.com/auth/calendar";
+
+/// Outlook's calendars, through Microsoft Graph
+/// ([`crate::calendar::graph`]); like [`MICROSOFT_FILES`], its tokens come
+/// separately.
+pub const MICROSOFT_CALENDARS: &str = "https://graph.microsoft.com/Calendars.ReadWrite";
+
 /// Google Contacts, read and written through the People API.
 pub const GOOGLE_CONTACTS: &str = "https://www.googleapis.com/auth/contacts";
 
@@ -113,11 +122,12 @@ impl Provider {
                 },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
-                // large attachments, the contacts, the task lists, and who
-                // signed in (address, name, picture) in the ID token.
+                // large attachments, the calendars, the contacts, the task
+                // lists, and who signed in (address, name, picture) in the ID
+                // token.
                 scope: format!(
-                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CONTACTS} {GOOGLE_TASKS} \
-                     openid email profile"
+                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
+                     {GOOGLE_CONTACTS} {GOOGLE_TASKS} openid email profile"
                 ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",
@@ -138,9 +148,11 @@ impl Provider {
                 scope: "https://outlook.office.com/IMAP.AccessAsUser.All \
                         https://outlook.office.com/SMTP.Send offline_access openid email profile"
                     .into(),
-                // OneDrive, for large attachments, the contacts and To Do,
-                // allowed at the same sign-in.
-                consent: format!("{MICROSOFT_FILES} {MICROSOFT_CONTACTS} {MICROSOFT_TASKS}"),
+                // OneDrive, for large attachments, the calendars, the contacts
+                // and To Do, allowed at the same sign-in.
+                consent: format!(
+                    "{MICROSOFT_FILES} {MICROSOFT_CALENDARS} {MICROSOFT_CONTACTS} {MICROSOFT_TASKS}"
+                ),
                 // Entra registers loopback redirects as `http://localhost`.
                 redirect_host: "localhost",
                 tls,

@@ -14,10 +14,10 @@ katna-crypto.workspace = true
 katna-dav.workspace = true
 katna-import.workspace = true
 katna-store.workspace = true
+jiff.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 katna-meta.workspace = true
-jiff.workspace = true
 
 async-channel.workspace = true
 base64.workspace = true

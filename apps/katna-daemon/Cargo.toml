@@ -17,6 +17,7 @@ katna-import.workspace = true
 katna-search.workspace = true
 katna-org.workspace = true
 katna-dav.workspace = true
+jiff.workspace = true
 katna-dbus.workspace = true
 # Without the "format" feature, whose ICU4X data is large: the few
 # numbers in the daemon's text show as Western digits.

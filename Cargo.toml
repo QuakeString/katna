@@ -63,7 +63,7 @@ fontdb = { version = "0.23", default-features = false, features = ["fs", "memmap
 krilla = { version = "0.8", default-features = false, features = ["simple-text", "raster-images"] }
 # The shaper krilla draws with, to measure lines the same way.
 rustybuzz = "0.20"
-jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
+jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo", "tzdb-bundle-always"] }
 html5ever = "0.40.1"
 levenshtein_automata = "0.2.1"
 mail-parser = "0.11.9"

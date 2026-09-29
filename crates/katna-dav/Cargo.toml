@@ -12,6 +12,7 @@ publish.workspace = true
 base64.workspace = true
 katna-core.workspace = true
 katna-store.workspace = true
+jiff.workspace = true
 
 [lints]
 workspace = true

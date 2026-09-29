@@ -108,6 +108,7 @@ impl MailWindow {
         reduce: bool,
     ) -> (f32, f32) {
         let open = self.config.mail.contact_panel
+            && !self.agenda_open()
             && self.reading
             && self.reader.is_some()
             && self.settings_page.is_none()

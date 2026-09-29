@@ -1201,3 +1201,13 @@ hari tarikh akhir, ulangan dan butiran. Senarai disegerakkan dengan
 Google Tasks dan Microsoft To Do, dan tugasan daripada jam desktop juga
 muncul di sini.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Kenalan anda, dari setiap akaun"
+text = """
+Kenalan pada bar kiri kini menyenaraikan orang yang disimpan dalam akaun
+Gmail dan Outlook anda serta pada pelayan CardDAV, sekali sahaja
+walaupun beberapa akaun menyimpannya, lengkap dengan label, gambar dan
+butirannya. Nama dan gambar mereka juga dipaparkan dalam mel anda dan
+dalam cadangan alamat.
+"""

@@ -256,6 +256,25 @@ pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), Str
         .map_err(|err| describe(&err))
 }
 
+/// Shows or hides calendar `id`'s events (`SetCalendarHidden`).
+pub async fn set_calendar_hidden(
+    connection: &Connection,
+    id: i64,
+    hidden: bool,
+) -> Result<(), String> {
+    connection
+        .call_method(
+            Some(katna_core::ids::DAEMON_BUS_NAME),
+            katna_core::ids::PIM_OBJECT_PATH,
+            Some(katna_core::ids::PIM_INTERFACE),
+            "SetCalendarHidden",
+            &(id, hidden),
+        )
+        .await
+        .map(|_| ())
+        .map_err(|err| describe(&err))
+}
+
 /// Queues an RFC 5322 message from `account` to go out in `delay` seconds.
 /// Returns its outbox ID, for [`Command::UndoSend`].
 pub async fn queue_send(
@@ -878,8 +897,8 @@ pub async fn check_mail(
     Ok(())
 }
 
-/// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`
-/// and `TrackingChanged` signal.
+/// Yields for every `MailChanged`, `AccountsChanged`, `SyncStatusChanged`,
+/// `TrackingChanged` and `CalendarChanged` signal.
 pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
     let pim = PimProxy::new(connection)
         .await
@@ -900,11 +919,16 @@ pub async fn mail_changes(connection: &Connection) -> Result<impl Stream<Item = 
         .receive_tracking_changed()
         .await
         .map_err(|err| describe(&err))?;
+    let calendar = pim
+        .receive_calendar_changed()
+        .await
+        .map_err(|err| describe(&err))?;
     Ok(changes
         .map(|_| ())
         .or(accounts.map(|_| ()))
         .or(status.map(|_| ()))
-        .or(tracking.map(|_| ())))
+        .or(tracking.map(|_| ()))
+        .or(calendar.map(|_| ())))
 }
 
 #[cfg(test)]

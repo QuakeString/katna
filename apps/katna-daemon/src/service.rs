@@ -326,6 +326,14 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
+            async fn set_calendar_hidden(&self, id: i64, hidden: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_calendar_hidden(id, hidden)?)
+            }
+
+            async fn calendar_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
+                Ok(self.daemon.calendar_status()?)
+            }
+
             async fn fetch_image(&self, url: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.fetch_image(&url).await?)
             }
@@ -484,6 +492,9 @@ macro_rules! pim_interface {
             async fn drive_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
+            async fn calendar_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
@@ -545,6 +556,13 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
+            Notice::CalendarChanged => {
+                // The clock shows the events too.
+                if let Err(err) = crate::agenda::changed(&agenda).await {
+                    tracing::warn!(%err, "could not tell the clock");
+                }
+                PimService::calendar_changed(&emitter).await
+            }
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
         };
