@@ -51,21 +51,9 @@ impl Line {
 
 /// Splits vCard text into its cards' lines.
 fn cards(text: &str) -> Vec<Vec<Line>> {
-    // Unfold: a line starting with a space or tab continues the one before.
-    let mut unfolded: Vec<String> = Vec::new();
-    for raw in text.split('\n') {
-        let raw = raw.strip_suffix('\r').unwrap_or(raw);
-        if let Some(rest) = raw.strip_prefix([' ', '\t']) {
-            if let Some(last) = unfolded.last_mut() {
-                last.push_str(rest);
-                continue;
-            }
-        }
-        unfolded.push(raw.to_owned());
-    }
     let mut out = Vec::new();
     let mut current: Option<Vec<Line>> = None;
-    for text in unfolded {
+    for text in unfold(text) {
         let Some(line) = parse_line(&text) else {
             continue;
         };
@@ -80,6 +68,23 @@ fn cards(text: &str) -> Vec<Vec<Line>> {
         }
     }
     out
+}
+
+/// The lines of `text`, unfolded: a line starting with a space or tab
+/// continues the one before.
+fn unfold(text: &str) -> Vec<String> {
+    let mut unfolded: Vec<String> = Vec::new();
+    for raw in text.split('\n') {
+        let raw = raw.strip_suffix('\r').unwrap_or(raw);
+        if let Some(rest) = raw.strip_prefix([' ', '\t'])
+            && let Some(last) = unfolded.last_mut()
+        {
+            last.push_str(rest);
+            continue;
+        }
+        unfolded.push(raw.to_owned());
+    }
+    unfolded
 }
 
 fn parse_line(text: &str) -> Option<Line> {
@@ -458,20 +463,9 @@ fn type_param(kind: &str) -> String {
 /// The lines of the first card in `old` that [`write`] does not own,
 /// unfolded, as they were.
 fn old_lines(old: &str) -> Vec<String> {
-    let mut unfolded: Vec<String> = Vec::new();
-    for raw in old.split('\n') {
-        let raw = raw.strip_suffix('\r').unwrap_or(raw);
-        if let Some(rest) = raw.strip_prefix([' ', '\t']) {
-            if let Some(last) = unfolded.last_mut() {
-                last.push_str(rest);
-                continue;
-            }
-        }
-        unfolded.push(raw.to_owned());
-    }
     let mut out = Vec::new();
     let mut inside = false;
-    for text in unfolded {
+    for text in unfold(old) {
         let Some(line) = parse_line(&text) else {
             continue;
         };

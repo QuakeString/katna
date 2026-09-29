@@ -94,20 +94,25 @@ impl MailWindow {
         if self.app == app {
             return;
         }
+        let from = self.app;
+        self.app = app;
+        if from == App::Contacts || app == App::Contacts {
+            // The search box follows: contacts on this page, mail elsewhere.
+            self.swap_contacts_search(app == App::Contacts, cx);
+        }
         // The name at the top left rolls from the old app's to the new.
-        self.title_from = self.app;
+        self.title_from = from;
         self.title_roll.snap(0.0);
         self.title_roll.set(1.0);
-        self.app = app;
         self.menu = None;
         self.search_panel = None;
-        if app == App::Contacts && !matches!(self.people, Some(People::Loaded(_))) {
-            self.load_people(cx);
+        if app == App::Contacts && !matches!(self.contacts.book, Some(Ok(_))) {
+            self.load_contacts(cx);
         }
         cx.notify();
     }
 
-    fn load_people(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn load_people(&mut self, cx: &mut Context<Self>) {
         self.people = Some(People::Loading);
         let paths = self.paths.clone();
         self.people_task = Some(cx.spawn(async move |this, cx| {
@@ -282,7 +287,7 @@ impl MailWindow {
     /// The page of an app other than Mail.
     pub(super) fn render_app_page(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let body = match self.app {
-            App::Contacts => self.render_contacts(th, cx),
+            App::Contacts => self.render_contacts_page(th, cx),
             app => div()
                 .size_full()
                 .flex()
@@ -352,7 +357,8 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// The people the mail was exchanged with, most first: Frequent.
+    pub(super) fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let people = match &self.people {
             None | Some(People::Loading) => {
                 return placeholder(&tr!("app-contacts-loading"), th);
@@ -373,7 +379,7 @@ impl MailWindow {
             .gap(px(12.0))
             .border_b_1()
             .border_color(rgba(th.divider))
-            .child(div().text_size(px(20.0)).child(tr!("rail-contacts")))
+            .child(div().text_size(px(20.0)).child(tr!("contacts-frequent")))
             .child(
                 div()
                     .text_size(px(13.0))

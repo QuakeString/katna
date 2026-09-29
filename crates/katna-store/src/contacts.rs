@@ -515,6 +515,15 @@ impl Store {
         Ok(())
     }
 
+    /// The cards that have a picture.
+    pub fn contacts_with_photos(&self) -> Result<std::collections::HashSet<i64>> {
+        let mut stmt = self
+            .pim
+            .prepare_cached("SELECT contact_id FROM contact_photo")?;
+        let rows = stmt.query_map([], |row| row.get(0))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
     /// The picture of the first of `ids` that has one.
     pub fn contact_photo(&self, ids: &[i64]) -> Result<Option<Vec<u8>>> {
         let mut stmt = self
@@ -610,9 +619,8 @@ impl Store {
 
         let mut people: Vec<SavedContact> = Vec::new();
         let mut slot: HashMap<usize, usize> = HashMap::new();
-        for i in 0..rows.len() {
+        for (i, row) in rows.iter().enumerate() {
             let r = root(&mut parent, i);
-            let row = &rows[i];
             let at = *slot.entry(r).or_insert_with(|| {
                 people.push(SavedContact {
                     name: row.name.clone(),

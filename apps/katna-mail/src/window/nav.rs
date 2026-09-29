@@ -285,13 +285,13 @@ impl MailWindow {
     /// placeholder, from the keys the shortcut settings give it now.
     fn render_search_hint(&self, th: &Theme, window: &gpui::Window) -> Option<AnyElement> {
         let keys = super::keymap::hint("search", &self.config.shortcuts)?;
-        let placeholder = super::text_width(
-            &tr!("search-mail"),
-            16.0,
-            FontWeight::NORMAL,
-            self.font.as_ref(),
-            window,
-        );
+        let words = if self.app == super::RailApp::Contacts {
+            tr!("contacts-search")
+        } else {
+            tr!("search-mail")
+        };
+        let placeholder =
+            super::text_width(&words, 16.0, FontWeight::NORMAL, self.font.as_ref(), window);
         Some(
             div()
                 .absolute()
@@ -333,6 +333,8 @@ impl MailWindow {
         let panel_open = self.search_panel.is_some();
         // While the Settings page is open the box searches settings.
         let settings = self.settings_page.is_some();
+        // On the Contacts page it finds people, with no mail options.
+        let contacts = self.app == super::RailApp::Contacts;
         // On a phone the box is a pill across the bar, with the menu button
         // and the account picture over its two ends.
         let phone = self.layout.shape.phone;
@@ -365,7 +367,7 @@ impl MailWindow {
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
-            .when(!available && !settings, |d| d.opacity(0.6))
+            .when(!available && !settings && !contacts, |d| d.opacity(0.6))
             // A drag here selects text rather than moving the window.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .child(self.tour_mark(Spot::Search))
@@ -381,7 +383,10 @@ impl MailWindow {
                                 .tooltip(tip(tr!("search"), th))
                                 .on_click(cx.listener(|this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
-                                    if text.is_empty() || this.settings_page.is_some() {
+                                    if text.is_empty()
+                                        || this.settings_page.is_some()
+                                        || this.app == super::RailApp::Contacts
+                                    {
                                         this.focus_search(&FocusSearch, window, cx);
                                     } else {
                                         this.start_search(text, cx);
@@ -414,7 +419,7 @@ impl MailWindow {
                         })),
                 )
             })
-            .when(!settings, |d| {
+            .when(!settings && !contacts, |d| {
                 d.child(
                     icon_button_colored(
                         "search-options",

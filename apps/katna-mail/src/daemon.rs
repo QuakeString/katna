@@ -767,6 +767,18 @@ pub async fn update_changes(connection: &Connection) -> Result<impl Stream<Item 
     Ok(changes.map(|_| ()))
 }
 
+/// Fires when the saved contacts changed.
+pub async fn contacts_changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let changes = pim
+        .receive_contacts_changed()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(changes.map(|_| ()))
+}
+
 /// Asks the daemon about the accounts, which also starts it if D-Bus can.
 /// Returns whether an account still waits for its first sync.
 pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String> {
