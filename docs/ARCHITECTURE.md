@@ -2683,8 +2683,13 @@ away; he can still change them.
 - **Look.** Google Keep: the Notes page of the main window (the rail's
   Notes button) has a side list (Notes, Archive, Trash), a "Take a note…"
   bar with a New list button, and a board of 240 px cards in columns,
-  each card going to the shortest column. Pinned notes come first under
-  "Pinned". Cards take Keep's eleven colors (light and dark). Hovering a
+  each card going to the shortest column by its drawn height, so no row
+  lines up and no gap opens. Pinned notes come first under "Pinned".
+  Dragging a card moves it among the notes of its section: the others
+  glide aside as it passes (they jump when motion is reduced), and
+  dropping it keeps the order (`OrderNotes`, with Ctrl+Z; the order stays
+  on this computer). Cards glide to their new places whenever the board
+  changes. Cards take Keep's eleven colors (light and dark). Hovering a
   card shows its pin and its Archive and Delete buttons; checklist items
   tick right on the card, and ticked ones fold into "+ N ticked items".
   A card opens as a note over the dimmed board (600 px, 15 px corners):
@@ -2706,6 +2711,7 @@ away; he can still change them.
   copies still to delete. Changes are journaled as `note`.
 - **D-Bus.** `SaveNote(NoteItem)` (ID 0 makes a new one on top) returns
   the ID; `TrashNotes(ids, trashed)`; `DeleteNotes(ids)`;
+  `OrderNotes(ids)` puts notes in that order in the places they had;
   `RelabelNotes(ids, old, new)` renames, deletes or adds a label (at
   most 50 characters). Apps read notes from the store.
 - **Sync.** A note of a mail account is kept in that account's `Notes`

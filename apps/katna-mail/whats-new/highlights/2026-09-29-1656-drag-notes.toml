@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drag notes into order"
+text = """
+Drag a note on the Notes board to move it, as in Keep. The other notes glide
+aside to make room, and it stays where you drop it. Ctrl+Z puts it back.
+Cards now sit snugly in their columns, with no gaps under short notes.
+"""

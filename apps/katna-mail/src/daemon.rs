@@ -62,6 +62,8 @@ pub enum Command {
     TrashNotes(Vec<i64>, bool),
     /// Deletes notes for good.
     DeleteNotes(Vec<i64>),
+    /// Puts notes in this order on the board, the first on top.
+    OrderNotes(Vec<i64>),
     /// Takes a label off notes and puts another on (see `RelabelNotes`).
     RelabelNotes(Vec<i64>, String, String),
     /// A change on the Tasks page.
@@ -90,6 +92,7 @@ impl Command {
             Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
+            | Self::OrderNotes(_)
             | Self::RelabelNotes(..) => true,
             Self::Several(commands) => commands.iter().any(Self::touches_notes),
             _ => false,
@@ -159,6 +162,7 @@ impl Command {
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
+            | Self::OrderNotes(_)
             | Self::RelabelNotes(..)
             | Self::Event(_)
             | Self::Several(_)
@@ -272,6 +276,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::SaveNote(note) => pim.save_note(note).await.map(|_| ()),
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
+        Command::OrderNotes(ids) => pim.order_notes(ids).await.map(|_| ()),
         Command::ContactLabels(cards) => {
             for (card, labels) in cards {
                 pim.set_contact_labels(*card, labels)
