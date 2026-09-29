@@ -15,6 +15,7 @@
 
 pub mod compile;
 pub mod contacts;
+mod directory;
 pub mod document;
 mod error;
 mod highlight;
