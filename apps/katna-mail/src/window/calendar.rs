@@ -922,6 +922,8 @@ impl MailWindow {
         if self.event_editor_open() {
             return self.render_event_editor(th, cx);
         }
+        let side = self.render_calendar_side(th, cx);
+        let side = self.page_side(side, SIDE_WIDTH, false, th, cx);
         let page = div()
             .id("calendar-page")
             .key_context(CALENDAR_CONTEXT)
@@ -969,7 +971,7 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_row()
-            .child(self.render_calendar_side(th, cx))
+            .children(side.docked)
             .child(
                 div()
                     .id("calendar-main")
@@ -982,7 +984,8 @@ impl MailWindow {
                     .child(self.render_calendar_bar(th, cx))
                     .child(div().flex_1().min_h_0().child(main)),
             )
-            .children(self.render_event_card(th, cx));
+            .children(self.render_event_card(th, cx))
+            .children(side.drawer);
         div()
             .relative()
             .size_full()
@@ -2630,7 +2633,7 @@ impl MailWindow {
             div()
                 .id("event-card")
                 .occlude()
-                .w(px(CARD_WIDTH))
+                .w(px(CARD_WIDTH.min(self.layout.shape.width - 16.0)))
                 .max_h(px(520.0))
                 .overflow_y_scroll()
                 .p(px(8.0))

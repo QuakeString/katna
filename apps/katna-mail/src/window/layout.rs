@@ -579,6 +579,8 @@ impl MailWindow {
         Some(
             div()
                 .id("drawer-scrim")
+                // A click on it only closes the drawer.
+                .occlude()
                 .absolute()
                 .top_0()
                 .bottom_0()

@@ -104,7 +104,70 @@ pub(super) enum People {
     Failed(String),
 }
 
+/// A page's side column (calendars, lists, labels): docked beside the
+/// page on a desktop, or on a phone or tablet a drawer the menu button
+/// opens over it, as Mail's folders do.
+pub(super) struct PageSide {
+    /// Where the column was: beside the page.
+    pub(super) docked: Option<AnyElement>,
+    /// Last child of the page, which must be `relative`.
+    pub(super) drawer: Option<AnyElement>,
+}
+
 impl MailWindow {
+    /// Places a page's side column, `width` wide. `closes` lets a click on
+    /// it close the drawer, for columns that pick what the page shows.
+    pub(super) fn page_side(
+        &self,
+        side: AnyElement,
+        width: f32,
+        closes: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> PageSide {
+        if self.layout.shape.is_desktop() {
+            return PageSide {
+                docked: Some(side),
+                drawer: None,
+            };
+        }
+        let t = self.layout.drawer_t();
+        if t <= 0.001 {
+            return PageSide {
+                docked: None,
+                drawer: None,
+            };
+        }
+        let panel = div()
+            .id("page-drawer")
+            .occlude()
+            .absolute()
+            .top_0()
+            .bottom_0()
+            .left(px(-width * (1.0 - t)))
+            .w(px(width))
+            .overflow_hidden()
+            .bg(rgba(th.surface))
+            .shadow(crate::widgets::elevation(th, 3.0 * t))
+            .when(closes, |d| {
+                d.on_click(cx.listener(|this, _, _, cx| this.close_drawer(cx)))
+            })
+            .child(side);
+        let drawer = div()
+            .absolute()
+            .top_0()
+            .bottom_0()
+            .left_0()
+            .right_0()
+            .children(self.render_scrim(self.layout.shape.width, cx))
+            .child(panel)
+            .into_any_element();
+        PageSide {
+            docked: None,
+            drawer: Some(drawer),
+        }
+    }
+
     /// Shows page `app`, leaving Settings as picking a folder does.
     pub(super) fn show_page(&mut self, app: App, window: &mut Window, cx: &mut Context<Self>) {
         if self.settings_page.is_some() {
@@ -360,16 +423,18 @@ impl MailWindow {
             App::Tasks => self.render_tasks(th, cx),
             App::Mail | App::Feeds => self.render_coming_soon(th),
         };
+        // Edge to edge on a phone, as Mail's cards are.
+        let shape = self.layout.shape;
         div()
             .flex_1()
             .min_w_0()
             .h_full()
-            .pr(px(16.0))
-            .pb(px(16.0))
+            .pr(px(shape.card_margin()))
+            .pb(px(shape.card_margin()))
             .child(
                 div()
                     .size_full()
-                    .rounded(px(super::PANEL_RADIUS))
+                    .rounded(px(shape.card_radius()))
                     .overflow_hidden()
                     .bg(rgba(th.surface))
                     .child(body),

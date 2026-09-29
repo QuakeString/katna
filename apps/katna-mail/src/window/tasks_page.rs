@@ -1266,15 +1266,19 @@ impl MailWindow {
         };
         let menu = self.render_tasks_menu(th, cx);
         let details = self.render_task_details(th, cx);
+        let side = self.render_tasks_nav(th, cx);
+        let side = self.page_side(side, NAV_WIDTH, true, th, cx);
         div()
             .id("tasks-page")
+            .relative()
             .size_full()
             .flex()
             .flex_row()
             .when_some(page.focus.as_ref(), |d, focus| d.track_focus(focus))
             .on_key_down(cx.listener(Self::tasks_key))
-            .child(self.render_tasks_nav(th, cx))
+            .children(side.docked)
             .child(div().flex_1().min_w_0().h_full().child(body))
+            .children(side.drawer)
             .children(menu)
             .children(details)
             .with_animation(
@@ -1572,10 +1576,15 @@ impl MailWindow {
         th: &Theme,
         rows: gpui::Div,
     ) -> gpui::Stateful<gpui::Div> {
+        // No wider than the page, less the board's margins: on a phone a
+        // card fills it.
+        let shape = self.layout.shape;
+        let side = if shape.is_desktop() { NAV_WIDTH } else { 0.0 };
+        let room = shape.width - shape.rail() - side - shape.card_margin() - 32.0;
         div()
             .id(id)
             .flex_none()
-            .w(px(width))
+            .w(px(width.min(room)))
             .max_h_full()
             .overflow_y_scroll()
             .rounded(px(16.0))

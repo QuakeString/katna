@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendar, Contacts, Tasks and Notes on a phone"
+text = """
+In a narrow window these pages now fit the screen as Mail does: their
+side list opens from the menu button, Contacts shows each name with the
+address under it, and Notes lays two cards across.
+"""

@@ -2319,6 +2319,14 @@ one of three layouts by the width inside the window frame
 | Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose is a square at the top of the app rail, and the top bar shows the Katna mark and the app's name beside the menu button, the name folding away below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
 | Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window (below the top bar with Katna's own frame, whose window buttons sit there). Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
 
+The other apps' pages (Calendar, Contacts, Tasks, Notes) fold the same
+way: on a tablet or phone their side column (calendars, labels, lists)
+becomes a drawer the menu button opens over the dimmed page, and on a
+phone the page is edge to edge. Contacts drops its columns to a name with
+the address under it when the list is narrower than 640 px; Notes lays two
+narrower cards across a phone; Tasks' cards and Calendar's event cards
+never grow wider than the window.
+
 Settings rows put the name beside the controls and wrap on width alone,
 not on the layout: where the controls would get less than 300 px beside
 the name, the name goes above them and both span the row, as in Gmail's
