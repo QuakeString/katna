@@ -1198,3 +1198,13 @@ lapho evulwa: u-Enter uyaphendula, u-Esc uyakhansela, futhi u-Tab uhlala
 ngaphakathi kuwo. Emlayezweni omusha, u-Ctrl+Enter uthumela kunoma
 iyiphi inkambu futhi u-Esc uyawuvala, ugcine okusalungiswa.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Oxhumana nabo bakho, kuwo wonke ama-akhawunti"
+text = """
+Oxhumana nabo ohlangothini lwesobunxele manje uveza abantu abagcinwe
+kuma-akhawunti akho e-Gmail ne-Outlook nakuzinsiza ze-CardDAV, munye
+ngamunye kanye nje noma ngabe ama-akhawunti amaningi awagcina,
+namalebula, izithombe neminingwane yabo. Amagama nezithombe zabo futhi
+ziyavela kumeyili yakho nasezincomweni zamadilesi.
+"""

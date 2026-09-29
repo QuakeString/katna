@@ -1168,3 +1168,13 @@ abrirse: Intro responde, Esc cancela y Tab se queda dentro. En un
 mensaje nuevo, Ctrl+Intro envía desde cualquier campo y Esc lo cierra
 conservando un borrador.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Tus contactos, de todas tus cuentas"
+text = """
+Contactos, en la barra izquierda, ahora muestra a las personas guardadas
+en tus cuentas de Gmail y Outlook y en servidores CardDAV, una sola vez
+aunque varias cuentas las guarden, con etiquetas, fotos y sus datos. Sus
+nombres y fotos también aparecen en tu correo y en las sugerencias de
+direcciones.
+"""

@@ -1173,3 +1173,13 @@ apabila dibuka: Enter menjawab, Esc membatalkan dan Tab kekal di
 dalamnya. Dalam mesej baharu, Ctrl+Enter menghantar dari mana-mana medan
 dan Esc menutupnya sambil menyimpan draf.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Kenalan anda, dari setiap akaun"
+text = """
+Kenalan pada bar kiri kini menyenaraikan orang yang disimpan dalam akaun
+Gmail dan Outlook anda serta pada pelayan CardDAV, sekali sahaja
+walaupun beberapa akaun menyimpannya, lengkap dengan label, gambar dan
+butirannya. Nama dan gambar mereka juga dipaparkan dalam mel anda dan
+dalam cadangan alamat.
+"""

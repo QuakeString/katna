@@ -1153,3 +1153,13 @@ yanıtlar, Esc iptal eder ve Tab kutunun içinde kalır. Yeni bir iletide
 Ctrl+Enter herhangi bir alandan gönderir, Esc ise iletiyi kapatıp bir
 taslak bırakır.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Tüm hesaplarınızdaki kişiler"
+text = """
+Sol çubuktaki Kişiler artık Gmail ve Outlook hesaplarınızda ve CardDAV
+sunucularında kayıtlı kişileri, birkaç hesap onları saklasa bile
+yalnızca bir kez olmak üzere, etiketleri, fotoğrafları ve ayrıntılarıyla
+listeliyor. Adları ve fotoğrafları e-postalarınızda ve adres
+önerilerinde de görünür.
+"""

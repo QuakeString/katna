@@ -1132,3 +1132,12 @@ högerklicksmenyn för det markerade e-postmeddelandet. Dialogrutor tar
 stannar inuti dem. I ett nytt meddelande skickar Ctrl+Retur från vilket
 fält som helst och Esc stänger det och behåller ett utkast.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Dina kontakter, från alla konton"
+text = """
+Kontakter i vänsterfältet listar nu personerna som är sparade i dina
+Gmail- och Outlook-konton och på CardDAV-servrar, en gång var även när
+flera konton har dem, med etiketter, bilder och deras uppgifter. Deras
+namn och bilder visas också i din e-post och i adressförslagen.
+"""

@@ -1126,3 +1126,13 @@ oopgaan: Enter antwoord, Esc kanselleer en Tab bly binne-in hulle. In ’n
 nuwe boodskap stuur Ctrl+Enter vanuit enige veld en Esc maak dit toe,
 met ’n konsep wat bewaar word.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Jou kontakte, uit elke rekening"
+text = """
+Kontakte op die linkerbalk lys nou die mense wat in jou Gmail- en
+Outlook-rekeninge en op CardDAV-bedieners gestoor is, een keer elk selfs
+wanneer verskeie rekeninge hulle hou, met etikette, foto’s en hul
+besonderhede. Hul name en foto’s verskyn ook in jou e-pos en in die
+adresvoorstelle.
+"""

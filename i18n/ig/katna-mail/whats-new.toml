@@ -1124,3 +1124,12 @@ igodo ozugbo ha mepere: Enter na-aza, Esc na-akagbu, Tab na-anọkwa n'ime
 ha. N'ozi ọhụrụ, Ctrl+Enter na-ezipụ site n'ebe ọ bụla, Esc na-emechi
 ya, na-echekwa ndebiri.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Kọntaktị gị, si n'akaụntụ ọ bụla"
+text = """
+Kọntaktị dị n'akụkụ aka ekpe ugbu a na-egosi ndị echekwara n'akaụntụ
+Gmail na Outlook gị na n'sava CardDAV, otu ugboro ọ bụla ọbụlagodi mgbe
+akaụntụ ole na ole nwere ha, yana leebụl, foto na nkọwa ha. Aha na foto
+ha na-apụtakwa n'ozi gị na n'echiche adreesị.
+"""

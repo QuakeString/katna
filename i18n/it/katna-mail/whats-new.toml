@@ -1174,3 +1174,13 @@ quando si aprono: Invio risponde, Esc annulla e Tab resta al loro
 interno. In un nuovo messaggio, Ctrl+Invio invia da qualsiasi campo ed
 Esc lo chiude, conservando una bozza.
 """
+
+["2026-09-29-0352-contacts"]
+title = "I tuoi contatti, da ogni account"
+text = """
+Contatti, nella barra a sinistra, ora elenca le persone salvate nei tuoi
+account Gmail e Outlook e sui server CardDAV, una sola volta anche
+quando più account le conservano, con etichette, foto e dettagli. Anche
+i loro nomi e le loro foto compaiono nella posta e nei suggerimenti
+degli indirizzi.
+"""

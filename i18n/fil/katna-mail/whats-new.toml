@@ -1203,3 +1203,13 @@ Enter, nagka-cancel ang Esc, at nananatili sa loob nila ang Tab. Sa
 bagong mensahe, nagpapadala ang Ctrl+Enter mula sa anumang field at
 isinasara ito ng Esc habang pinananatili ang draft.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Ang iyong mga contact, mula sa bawat account"
+text = """
+Ang Mga Contact sa kaliwang bar ay naglilista na ngayon ng mga taong
+naka-save sa iyong mga Gmail at Outlook account at sa mga CardDAV
+server, isang beses lang kahit maraming account ang may hawak sa kanila,
+kasama ang mga label, larawan, at detalye nila. Lumalabas din ang mga
+pangalan at larawan nila sa iyong mail at sa mga mungkahi ng address.
+"""

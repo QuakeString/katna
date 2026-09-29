@@ -1200,3 +1200,13 @@ touches à leur ouverture : Entrée répond, Échap annule et Tab reste à
 l’intérieur. Dans un nouveau message, Ctrl+Entrée envoie depuis
 n’importe quel champ et Échap le ferme en gardant un brouillon.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Vos contacts, de tous vos comptes"
+text = """
+Contacts, dans la barre de gauche, affiche désormais les personnes
+enregistrées dans vos comptes Gmail et Outlook et sur des serveurs
+CardDAV, une seule fois même si plusieurs comptes les conservent, avec
+libellés, photos et détails. Leurs noms et leurs photos apparaissent
+aussi dans votre courrier et dans les suggestions d’adresses.
+"""

@@ -1187,3 +1187,13 @@ Eingabetaste antwortet, Esc bricht ab, und Tab bleibt in ihnen. In einer
 neuen Nachricht sendet Strg+Eingabetaste aus jedem Feld, und Esc
 schließt sie und behält einen Entwurf.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Ihre Kontakte, aus jedem Konto"
+text = """
+Kontakte in der linken Leiste zeigt jetzt die Personen, die in Ihren
+Gmail- und Outlook-Konten und auf CardDAV-Servern gespeichert sind, jede
+nur einmal, auch wenn mehrere Konten sie enthalten, mit Labels, Bildern
+und ihren Details. Ihre Namen und Bilder erscheinen auch in Ihren
+E-Mails und in den Adressvorschlägen.
+"""

@@ -1125,3 +1125,12 @@ menu, và Enter chọn. Shift+F10 hoặc phím Menu mở menu chuột phải c�
 Tab ở lại bên trong. Trong thư mới, Ctrl+Enter gửi từ bất kỳ trường nào
 và Esc đóng thư, giữ lại một thư nháp.
 """
+
+["2026-09-29-0352-contacts"]
+title = "Danh bạ của bạn, từ mọi tài khoản"
+text = """
+Danh bạ trên thanh bên trái giờ hiển thị những người được lưu trong tài
+khoản Gmail và Outlook của bạn và trên máy chủ CardDAV, mỗi người chỉ
+một lần dù nhiều tài khoản cùng lưu, kèm nhãn, ảnh và chi tiết của họ.
+Tên và ảnh của họ cũng hiện trong thư của bạn và trong gợi ý địa chỉ.
+"""
