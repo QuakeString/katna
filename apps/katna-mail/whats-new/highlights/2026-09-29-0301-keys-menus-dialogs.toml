@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "Menus, dialogs and New Message by keyboard"
+title = "Folders, menus and dialogs by keyboard"
 text = """
-Up and Down move through any menu, and Enter picks. Shift+F10 or the Menu
-key opens the right-click menu of the selected mail. Dialogs take the keys
-when they open: Enter answers, Esc cancels, and Tab stays inside them. In
-a new message, Ctrl+Enter sends from any field and Esc closes it, keeping
-a draft.
+Shift+Tab or F6 reaches the folder pane, where Up and Down open each
+folder and Enter goes to its mail. Up and Down move through any menu,
+and Enter picks. Shift+F10 or the Menu key opens the right-click menu of
+the selected mail. Dialogs take the keys when they open: Enter answers,
+Esc cancels, and Tab stays inside them. In a new message, Ctrl+Enter
+sends from any field and Esc closes it, keeping a draft.
 """

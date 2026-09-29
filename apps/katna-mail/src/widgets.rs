@@ -335,6 +335,18 @@ impl FocusRing for Stateful<Div> {
     }
 }
 
+/// The ring inside the edge of a line that has the keys (the folder
+/// pane's), the same as [`FocusRing`]'s.
+pub fn keys_ring(th: &Theme) -> Vec<BoxShadow> {
+    vec![BoxShadow {
+        color: rgba(th.accent).into(),
+        offset: point(px(0.0), px(0.0)),
+        blur_radius: px(0.0),
+        spread_radius: px(2.0),
+        inset: true,
+    }]
+}
+
 fn ring_style(th: &Theme) -> impl FnOnce(StyleRefinement) -> StyleRefinement + use<> {
     let ring = rgba(th.accent);
     let tint = rgba(fade(th.accent, 0.08));
