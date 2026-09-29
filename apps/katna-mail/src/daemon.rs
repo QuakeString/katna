@@ -184,6 +184,27 @@ pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     }
 }
 
+/// Where one account's calendars, tasks or contacts stand, for the line
+/// under it in a page's side list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AccountState {
+    /// A [`katna_dbus::calendar_state`] (or [`katna_dbus::task_state`]).
+    pub state: String,
+    /// Why, for people; may be empty.
+    pub detail: String,
+    /// The provider it signs in with, when that is OAuth2.
+    pub sign_in: Option<OAuthProvider>,
+}
+
+/// Wakes `account`'s sync (mail, calendars, contacts and tasks) without
+/// waiting.
+pub async fn sync_account_now(connection: &Connection, account: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.sync_now(account).await.map_err(|err| describe(&err))
+}
+
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
     katna_dbus::session()

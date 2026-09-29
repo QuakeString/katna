@@ -183,6 +183,11 @@ pub mod calendar_state {
     pub const NONE: &str = "none";
 }
 
+/// States of an account's task sync, from `TasksStatus`: the same as a
+/// calendar's (a Google sign-in without tasks, a refused password, the
+/// Google Tasks API switched off, a failed sync, no task service).
+pub use calendar_state as task_state;
+
 /// A message waiting to be sent, or recently sent, from `Outbox`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct OutboxItem {
@@ -671,6 +676,11 @@ macro_rules! pim_proxy {
             /// Where each account's calendar sync stands: its ID, a
             /// [`calendar_state`] and a detail for people (may be empty).
             fn calendar_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
+
+            /// Where each account's task sync stands: its ID, a
+            /// [`task_state`] and a detail for people (may be empty).
+            /// Changes come with the agenda's `Changed`.
+            fn tasks_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;
 
             /// Adds, changes, deletes or restores events, or answers an
             /// invitation: `json` is a `katna_store::calendar::EventChange`

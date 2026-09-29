@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every account on the Tasks page"
+text = """
+Every account now shows in the Tasks side panel. When an account's tasks
+can't load, a line under it says why, with one click to fix it: sign in
+again, or try again.
+"""

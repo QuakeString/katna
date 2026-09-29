@@ -3607,6 +3607,20 @@ server error is not.
   Google and `Tasks.ReadWrite` (Graph, asked at sign-in beside OneDrive's)
   for Microsoft. Accounts signed in before Katna asked for them are
   skipped until they sign in again.
+- **Each account's state**: every round keeps where each account's tasks
+  stand (`Pim1.TasksStatus`, the states of `katna_dbus::task_state`, the
+  same as a calendar's): synced; a sign-in without tasks, or a refused
+  password (`needs-sign-in`); the Google Tasks API switched off for
+  Katna's Cloud project (`not-enabled`, from Google's
+  `accessNotConfigured`); a failed sync with the server's words
+  (`error`); or no task service (`none`). Every mail account shows in the
+  Tasks page's side list, also one without lists, and one line under it
+  says why its lists are missing, with the click that fixes it: "Sign in
+  again to show tasks" for an OAuth2 account, else the reason (app
+  password advice for a refused password) and "Try again", which syncs
+  the account now (`SyncNow` wakes the task sync too). The line is
+  `window/account_status.rs`, shared by the pages whose lists come per
+  account; each page gives its own words.
 - **Default list**: new tasks without a list (the desktop clock's) go to
   the first account's default list once it has synced, else to the list
   on this computer. Tasks the clock kept on this computer before any

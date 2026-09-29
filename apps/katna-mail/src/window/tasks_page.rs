@@ -17,7 +17,7 @@ use gpui::{
     KeyDownEvent, MouseButton, Pixels, Point, SharedString, Subscription, Task, Window, anchored,
     deferred, div, ease_out_quint, prelude::*, rgba,
 };
-use katna_core::AccountId;
+use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
@@ -26,6 +26,7 @@ use katna_ui::text_input::{InputEvent, TextInput};
 mod details;
 
 use super::MailWindow;
+use super::account_status::{AccountStatus, Of, Say};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
@@ -126,6 +127,8 @@ pub(super) struct TasksPage {
     query: String,
     /// The mail search's words, kept while the box searches tasks.
     mail_query: Option<String>,
+    /// Where each account's task sync stands, for the line under it.
+    pub(super) accounts: AccountStatus,
 }
 
 /// A task being dragged onto another list: it follows the pointer as a
@@ -613,6 +616,7 @@ impl MailWindow {
     }
 
     fn load_tasks(&mut self, cx: &mut Context<Self>) {
+        self.load_account_status(Of::Tasks, cx);
         let paths = self.paths.clone();
         self.tasks.loading = Some(cx.spawn(async move |this, cx| {
             let board = cx
@@ -1439,53 +1443,77 @@ impl MailWindow {
                     .bg(rgba(th.divider)),
             );
         // Lists by account, Mailspring-style: the address, then its lists.
-        let mut last: Option<Option<AccountId>> = None;
+        // Every account shows, also one whose lists did not come, with the
+        // reason under it.
+        let mut groups: Vec<(Option<AccountId>, String, Vec<&Column>)> = Vec::new();
         for column in page.columns() {
-            if last != Some(column.list.account) {
-                last = Some(column.list.account);
-                let heading = if column.account.is_empty() {
-                    tr!("tasks-on-this-computer")
-                } else {
-                    column.account.clone()
-                };
+            match groups
+                .iter_mut()
+                .find(|(k, _, _)| *k == column.list.account)
+            {
+                Some((_, _, columns)) => columns.push(column),
+                None => groups.push((column.list.account, column.account.clone(), vec![column])),
+            }
+        }
+        // A local account keeps its lists on this computer.
+        let accounts = self
+            .accounts
+            .iter()
+            .filter(|a| a.kind != AccountKind::Local);
+        for account in accounts {
+            if !groups.iter().any(|(k, _, _)| *k == Some(account.id)) {
+                groups.push((Some(account.id), account.address.clone(), Vec::new()));
+            }
+        }
+        for (account, address, columns) in groups {
+            let heading = if address.is_empty() {
+                tr!("tasks-on-this-computer")
+            } else {
+                address
+            };
+            nav = nav.child(
+                div()
+                    .mt(px(12.0))
+                    .mb(px(4.0))
+                    .px(px(24.0))
+                    .text_size(px(12.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .text_color(rgba(th.text_faint))
+                    .truncate()
+                    .child(heading),
+            );
+            let note = account
+                .map(|a| a.0)
+                .filter(|&id| columns.is_empty() || page.accounts.failing(id));
+            nav = nav.children(note.map(|id| self.render_account_status(Of::Tasks, id, th, cx)));
+            for column in columns {
+                let id = column.list.id;
+                let count = open_count(column);
+                let naming_this = page.naming.as_ref().is_some_and(|n| n.list == Some(id));
+                if naming_this {
+                    nav = nav.children(page.naming.as_ref().map(|n| self.naming_row(n, th)));
+                    continue;
+                }
                 nav = nav.child(
-                    div()
-                        .mt(px(12.0))
-                        .mb(px(4.0))
-                        .px(px(24.0))
-                        .text_size(px(12.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_faint))
-                        .truncate()
-                        .child(heading),
+                    row(
+                        format!("tasks-list-{id}").into(),
+                        "list-bulleted",
+                        list_title(column),
+                        page.view == View::List(id),
+                    )
+                    .when(count > 0, |d| {
+                        d.child(
+                            div()
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(katna_i18n::format::number(count as u64)),
+                        )
+                    })
+                    .on_click(
+                        cx.listener(move |this, _, _, cx| this.task_set_view(View::List(id), cx)),
+                    ),
                 );
             }
-            let id = column.list.id;
-            let count = open_count(column);
-            let naming_this = page.naming.as_ref().is_some_and(|n| n.list == Some(id));
-            if naming_this {
-                nav = nav.children(page.naming.as_ref().map(|n| self.naming_row(n, th)));
-                continue;
-            }
-            nav = nav.child(
-                row(
-                    format!("tasks-list-{id}").into(),
-                    "list-bulleted",
-                    list_title(column),
-                    page.view == View::List(id),
-                )
-                .when(count > 0, |d| {
-                    d.child(
-                        div()
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(katna_i18n::format::number(count as u64)),
-                    )
-                })
-                .on_click(
-                    cx.listener(move |this, _, _, cx| this.task_set_view(View::List(id), cx)),
-                ),
-            );
         }
         let new_list = page.naming.as_ref().filter(|n| n.list.is_none());
         nav = nav.children(new_list.map(|n| self.naming_row(n, th)));
@@ -2467,6 +2495,26 @@ impl MailWindow {
                 )
                 .into_any_element(),
         )
+    }
+}
+
+/// What the line under an account in the side list says on this page.
+pub(super) fn say(say: Say<'_>) -> String {
+    match say {
+        Say::SignIn => tr!("tasks-account-sign-in"),
+        Say::SignInRefused { provider } => {
+            tr!("tasks-account-sign-in-refused", provider = provider)
+        }
+        Say::SignedIn { address } => tr!("tasks-account-signed-in", address = address),
+        Say::Refused => tr!("tasks-account-refused"),
+        Say::NotEnabled => tr!("tasks-account-not-enabled"),
+        Say::Error { reason } => tr!("tasks-account-error", reason = reason),
+        Say::Failed => tr!("tasks-account-failed"),
+        Say::None => tr!("tasks-account-none"),
+        Say::Looking => tr!("tasks-account-looking"),
+        Say::TryAgain => tr!("tasks-account-try-again"),
+        Say::TryAgainTooltip => tr!("tasks-account-try-again-tooltip"),
+        Say::Fixing => tr!("tasks-account-fixing"),
     }
 }
 
