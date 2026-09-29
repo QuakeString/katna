@@ -86,13 +86,27 @@ fn due(
                     data.title.clone()
                 },
                 lines: lines(occurrence, to),
-                join_url: data.join_url.clone(),
+                join_url: join_url(data),
                 at,
             });
         }
     }
     alarms.sort_by_key(|a| a.at);
     (alarms, next)
+}
+
+/// Where the event's call is: the calendar's own meeting, else the first
+/// call link written in its place or notes (a Zoom, WhatsApp or Telegram
+/// link pasted in), so Join works for those too.
+fn join_url(data: &katna_store::calendar::EventData) -> String {
+    if !data.join_url.is_empty() {
+        return data.join_url.clone();
+    }
+    katna_core::meeting::find([], [data.location.as_str(), data.description.as_str()], None)
+        .into_iter()
+        .next()
+        .map(|(_, link)| link)
+        .unwrap_or_default()
 }
 
 /// When and where the event is: how soon it starts, as notifications
@@ -272,5 +286,17 @@ mod tests {
         );
         assert!(alarms.is_empty());
         assert_eq!(next, None);
+    }
+
+    #[test]
+    fn join_takes_a_call_link_from_the_notes() {
+        let mut data = EventData {
+            description: "Dial in: https://us02web.zoom.us/j/81234567890?pwd=x thanks".into(),
+            ..EventData::default()
+        };
+        assert_eq!(join_url(&data), "https://us02web.zoom.us/j/81234567890?pwd=x");
+        data.join_url = "https://meet.google.com/abc-defg-hij".into();
+        assert_eq!(join_url(&data), "https://meet.google.com/abc-defg-hij");
+        assert_eq!(join_url(&EventData::default()), "");
     }
 }
