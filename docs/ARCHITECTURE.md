@@ -3362,8 +3362,11 @@ most useful reason is shown. Changes go back the way their calendar came
   Google, Graph and scheduling CalDAV servers put invitations in the
   calendar themselves, so answering is the calendar's own `respond`
   (the whole series for an invitation to one). Until the calendar has it,
-  the card says so. Answering by iMIP mail, for servers that don't
-  schedule, is later.
+  the card says so. An invitation that came to an account without
+  calendars (plain IMAP) is answered by iMIP mail (RFC 6047): a reply to
+  it, from that account, to the organizer, with a `METHOD:REPLY`
+  calendar part holding only the user's `ATTENDEE` and the invitation's
+  UID, times and sequence (`katna_dav::ical::reply_calendar`).
 - Schedule a meeting (a conversation's ⋮ or right-click menu) opens the
   whole event editor on the Calendar page with the subject, without
   `Re:`/`Fwd:`, as the title and everyone in the conversation but the user

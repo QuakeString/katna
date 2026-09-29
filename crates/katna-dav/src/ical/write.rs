@@ -6,6 +6,7 @@
 //! Text is escaped and lines folded at 75 octets; times are written in
 //! their zone with a `VTIMEZONE` for it, whole days as `VALUE=DATE`.
 
+use super::{Component, Property};
 use jiff::Timestamp;
 use jiff::civil::DateTime;
 use jiff::tz::{Offset, TimeZone};
@@ -319,6 +320,94 @@ pub fn write_calendar(events: &[EventData], stamp: i64) -> String {
     out
 }
 
+/// A property as a content line: its name, parameters and value as read.
+fn property_line(prop: &Property) -> String {
+    let mut line = prop.name.clone();
+    for (name, value) in &prop.params {
+        line.push(';');
+        line.push_str(name);
+        line.push('=');
+        line.push_str(&param(value));
+    }
+    line.push(':');
+    line.push_str(&prop.value);
+    line
+}
+
+/// Writes `component` back as read.
+fn write_component(component: &Component, out: &mut String) {
+    fold(&format!("BEGIN:{}", component.name), out);
+    for prop in &component.properties {
+        fold(&property_line(prop), out);
+    }
+    for child in &component.children {
+        write_component(child, out);
+    }
+    fold(&format!("END:{}", component.name), out);
+}
+
+/// The iMIP answer (RFC 6047) of attendee `address` to the invitation
+/// `text` (a `METHOD:REQUEST` calendar): `METHOD:REPLY` with the event's
+/// UID, times, sequence and organizer, and only the attendee, with
+/// `status` (`accepted`, `tentative` or `declined`). `None` when `text`
+/// holds no event or `status` is not an answer.
+pub fn reply_calendar(text: &str, address: &str, status: &str, stamp: i64) -> Option<String> {
+    let partstat = part_stat(status).filter(|p| *p != "NEEDS-ACTION")?;
+    let calendars = crate::ical::components(text);
+    let calendar = calendars.iter().find(|c| c.name == "VCALENDAR")?;
+    let event = calendar.children.iter().find(|c| c.name == "VEVENT")?;
+    let mut out = String::new();
+    out.push_str("BEGIN:VCALENDAR\r\nVERSION:2.0\r\n");
+    fold(&format!("PRODID:{PRODID}"), &mut out);
+    out.push_str("METHOD:REPLY\r\n");
+    for zone in calendar.children.iter().filter(|c| c.name == "VTIMEZONE") {
+        write_component(zone, &mut out);
+    }
+    out.push_str("BEGIN:VEVENT\r\n");
+    const KEPT: &[&str] = &[
+        "UID",
+        "RECURRENCE-ID",
+        "SEQUENCE",
+        "DTSTART",
+        "DTEND",
+        "DURATION",
+        "SUMMARY",
+        "ORGANIZER",
+    ];
+    for prop in event
+        .properties
+        .iter()
+        .filter(|p| KEPT.contains(&p.name.as_str()))
+    {
+        fold(&property_line(prop), &mut out);
+    }
+    fold(
+        &format!("DTSTAMP:{}", time_value(stamp, false, "").1),
+        &mut out,
+    );
+    // The attendee as invited (their name, role), with the answer.
+    let mine = event.properties.iter().find(|p| {
+        p.name == "ATTENDEE" && crate::ical::address(&p.value).eq_ignore_ascii_case(address)
+    });
+    let mut attendee = Property {
+        name: "ATTENDEE".into(),
+        params: mine
+            .map(|p| {
+                p.params
+                    .iter()
+                    .filter(|(name, _)| name != "PARTSTAT" && name != "RSVP")
+                    .cloned()
+                    .collect()
+            })
+            .unwrap_or_default(),
+        value: format!("mailto:{address}"),
+    };
+    attendee.params.push(("PARTSTAT".into(), partstat.into()));
+    fold(&property_line(&attendee), &mut out);
+    out.push_str("END:VEVENT\r\nEND:VCALENDAR\r\n");
+    Some(out)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -332,6 +421,36 @@ mod tests {
             .unwrap()
             .timestamp()
             .as_second()
+    }
+
+    #[test]
+    fn an_answer_names_only_the_user_and_keeps_the_invitation_s_times() {
+        let invitation = "BEGIN:VCALENDAR\r\nMETHOD:REQUEST\r\nBEGIN:VTIMEZONE\r\nTZID:Asia/Kolkata\r\n\
+            BEGIN:STANDARD\r\nDTSTART:19700101T000000\r\nTZOFFSETFROM:+0530\r\nTZOFFSETTO:+0530\r\n\
+            END:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:e4@demo\r\nSEQUENCE:2\r\n\
+            DTSTART;TZID=Asia/Kolkata:20261001T103000\r\nDTEND;TZID=Asia/Kolkata:20261001T113000\r\n\
+            SUMMARY:Design review\r\nLOCATION:Room 4B\r\n\
+            ORGANIZER;CN=Priya Nair:mailto:priya@acme.example\r\n\
+            ATTENDEE;CN=Me;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:Me@Example.org\r\n\
+            ATTENDEE;CN=Rahul:mailto:rahul@example.com\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        let stamp = at("2026-09-29T07:00", "UTC");
+        let reply = reply_calendar(invitation, "me@example.org", "accepted", stamp).unwrap();
+        assert!(reply.contains("METHOD:REPLY\r\n"));
+        assert!(reply.contains("TZID:Asia/Kolkata\r\n"));
+        assert!(reply.contains("SEQUENCE:2\r\n"));
+        assert!(reply.contains("DTSTART;TZID=Asia/Kolkata:20261001T103000\r\n"));
+        assert!(reply.contains("ORGANIZER;CN=Priya Nair:mailto:priya@acme.example\r\n"));
+        assert!(reply.contains(
+            "ATTENDEE;CN=Me;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED:mailto:me@example.org\r\n"
+        ));
+        assert!(!reply.contains("rahul"));
+        assert!(!reply.contains("LOCATION"));
+        let back = parse_events(&reply, &TimeZone::UTC, "me@example.org");
+        assert_eq!(back[0].self_status, "accepted");
+        assert_eq!(
+            reply_calendar(invitation, "me@example.org", "needs_action", stamp),
+            None
+        );
     }
 
     #[test]

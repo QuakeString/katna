@@ -1606,7 +1606,7 @@ impl MailWindow {
                     .as_ref()
                     .and_then(|b| b.invite.as_ref())
                     .filter(|_| !pending)
-                    .map(|invite| self.invite_card(ix, invite, th, cx));
+                    .map(|invite| self.invite_card(ix, id, invite, th, cx));
                 div()
                     .flex()
                     .flex_col()
