@@ -39,8 +39,83 @@ calendar-guests =
        *[other] { $count } gaste
     }
 calendar-guest-answers = { $yes } ja, { $maybe } miskien, { $no } nee, { $waiting } wag
+calendar-organizer = Organiseerder
+calendar-optional = Opsioneel
 calendar-open-web = Maak in die blaaier oop
 calendar-close = Maak toe
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Voeg titel by
+calendar-add-location = Voeg ligging by
+calendar-add-notes = Voeg beskrywing by
+calendar-add-guests = Voeg gaste by
+calendar-remove-guest = Verwyder
+calendar-add-meet = Voeg Google Meet-videogesprek by
+calendar-add-teams = Voeg Teams-vergadering by
+calendar-has-call = Videogesprek bygevoeg
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Heeldag
+calendar-more-options = Meer opsies
+calendar-save = Stoor
+calendar-saved = Geleentheid gestoor
+calendar-deleted = Geleentheid uitgevee
+calendar-discard = Verwerp veranderinge
+calendar-edit = Wysig geleentheid
+calendar-delete = Vee geleentheid uit
+calendar-event-details = Geleentheidbesonderhede
+calendar-busy = Besig
+calendar-free = Beskikbaar
+calendar-cancel = Kanselleer
+calendar-ok = OK
+calendar-read-only = Jy kan nie geleenthede in hierdie kalender verander nie
+calendar-none-editable = Nog geen kalender waarby jy geleenthede kan voeg nie
+calendar-no-such-time = Daardie tyd bestaan nie in jou tydsone nie
+calendar-end-before-start = Die geleentheid eindig voordat dit begin
+calendar-repeat-never = Herhaal nie
+calendar-repeat-daily = Daagliks
+calendar-repeat-weekly = Weekliks op { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Maandeliks op die eerste { $weekday }
+        [2] Maandeliks op die tweede { $weekday }
+        [3] Maandeliks op die derde { $weekday }
+        [4] Maandeliks op die vierde { $weekday }
+       *[other] Maandeliks op die laaste { $weekday }
+    }
+calendar-repeat-yearly = Jaarliks op { $day }
+calendar-repeat-weekdays = Elke weeksdag (Maandag tot Vrydag)
+calendar-repeat-custom = Pasgemaak
+calendar-reminder-none = Geen kennisgewing
+calendar-reminder-at-start = Met die begin
+calendar-reminder-minutes =
+    { $count ->
+        [one] { $count } minuut voor
+       *[other] { $count } minute voor
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] { $count } uur voor
+       *[other] { $count } ure voor
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] { $count } dag voor
+       *[other] { $count } dae voor
+    }
+calendar-scope-edit-title = Wysig herhalende geleentheid
+calendar-scope-delete-title = Vee herhalende geleentheid uit
+calendar-scope-this = Hierdie geleentheid
+calendar-scope-following = Hierdie en volgende geleenthede
+calendar-scope-all = Alle geleenthede
+calendar-scope-respond-title = Antwoord vir ’n herhalende geleentheid
+calendar-going = Gaan jy?
+calendar-answer-yes = Ja
+calendar-answer-no = Nee
+calendar-answer-maybe = Miskien
+calendar-answered-yes = Jy gaan
+calendar-answered-no = Jy gaan nie
+calendar-answered-maybe = Jy gaan dalk
 
 ## The day's agenda beside the mail.
 

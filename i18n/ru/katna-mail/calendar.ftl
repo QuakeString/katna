@@ -41,8 +41,89 @@ calendar-guests =
        *[other] { $count } гостя
     }
 calendar-guest-answers = { $yes } да, { $maybe } возможно, { $no } нет, { $waiting } ожидается ответ
+calendar-organizer = Организатор
+calendar-optional = Необязательный
 calendar-open-web = Открыть в браузере
 calendar-close = Закрыть
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Добавить название
+calendar-add-location = Добавить место
+calendar-add-notes = Добавить описание
+calendar-add-guests = Добавить гостей
+calendar-remove-guest = Удалить
+calendar-add-meet = Добавить видеовстречу Google Meet
+calendar-add-teams = Добавить встречу в Teams
+calendar-has-call = Видеовстреча добавлена
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = Весь день
+calendar-more-options = Другие параметры
+calendar-save = Сохранить
+calendar-saved = Мероприятие сохранено
+calendar-deleted = Мероприятие удалено
+calendar-discard = Не сохранять изменения
+calendar-edit = Изменить мероприятие
+calendar-delete = Удалить мероприятие
+calendar-event-details = Сведения о мероприятии
+calendar-busy = Занят
+calendar-free = Свободен
+calendar-cancel = Отмена
+calendar-ok = ОК
+calendar-read-only = Вы не можете изменять мероприятия в этом календаре
+calendar-none-editable = Пока нет календаря, в который можно добавлять мероприятия
+calendar-no-such-time = Этого времени нет в вашем часовом поясе
+calendar-end-before-start = Мероприятие заканчивается раньше, чем начинается
+calendar-repeat-never = Не повторяется
+calendar-repeat-daily = Ежедневно
+calendar-repeat-weekly = Еженедельно: { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Ежемесячно: { $weekday }, первая неделя
+        [2] Ежемесячно: { $weekday }, вторая неделя
+        [3] Ежемесячно: { $weekday }, третья неделя
+        [4] Ежемесячно: { $weekday }, четвёртая неделя
+       *[other] Ежемесячно: { $weekday }, последняя неделя
+    }
+calendar-repeat-yearly = Ежегодно: { $day }
+calendar-repeat-weekdays = Каждый будний день (с понедельника по пятницу)
+calendar-repeat-custom = Настроить
+calendar-reminder-none = Без уведомления
+calendar-reminder-at-start = В момент начала
+calendar-reminder-minutes =
+    { $count ->
+        [one] За { $count } минуту
+        [few] За { $count } минуты
+        [many] За { $count } минут
+       *[other] За { $count } минуты
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] За { $count } час
+        [few] За { $count } часа
+        [many] За { $count } часов
+       *[other] За { $count } часа
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] За { $count } день
+        [few] За { $count } дня
+        [many] За { $count } дней
+       *[other] За { $count } дня
+    }
+calendar-scope-edit-title = Изменить повторяющееся мероприятие
+calendar-scope-delete-title = Удалить повторяющееся мероприятие
+calendar-scope-this = Это мероприятие
+calendar-scope-following = Это и последующие мероприятия
+calendar-scope-all = Все мероприятия
+calendar-scope-respond-title = Ответ для повторяющегося мероприятия
+calendar-going = Вы придёте?
+calendar-answer-yes = Да
+calendar-answer-no = Нет
+calendar-answer-maybe = Возможно
+calendar-answered-yes = Вы придёте
+calendar-answered-no = Вы не придёте
+calendar-answered-maybe = Возможно, вы придёте
 
 ## The day's agenda beside the mail.
 

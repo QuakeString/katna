@@ -1212,3 +1212,18 @@ text = """
 Asusun da ke shiga da kalmar sirri yanzu suna ajiye ayyukansu a kan sabar wasiƙarsu idan tana ba da CalDAV,
 saboda haka ayyukan kuma suna bayyana a manhajojin sabar da kanta da kuma a waya.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Ƙara da canza taruka"
+text = """
+Danna ko ja a kan kalanda, ko danna C, don ƙara taro. Ja taro don motsa shi ko gefensa na ƙasa don canza tsawonsa,
+sannan ka buɗe shi don canza lokaci, maimaitawa, masu tuni, baƙi ko ƙara kiran Meet ko Teams.
+Ka amsa gayyata da Eh, A'a ko Wataƙila. Janye yana mayar da komai.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kalanda daga ƙarin asusu"
+text = """
+Yanzu Katna yana samun kalandar Yahoo, Zoho, iCloud, Fastmail, GMX da sauran asusu, ko da suna kan wata sabar dabam da ta wasiƙa.
+Yana fara gwada mafi kyawun hanyar kowane asusu, sannan wata hanya idan wannan ta ƙi aiki.
+"""

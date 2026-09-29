@@ -38,8 +38,80 @@ calendar-guests =
        *[other] 게스트 { $count }명
     }
 calendar-guest-answers = 예 { $yes }, 미정 { $maybe }, 아니요 { $no }, 응답 대기 중 { $waiting }
+calendar-organizer = 주최자
+calendar-optional = 선택사항
 calendar-open-web = 브라우저에서 열기
 calendar-close = 닫기
+
+## Adding, changing and deleting events.
+
+calendar-add-title = 제목 추가
+calendar-add-location = 위치 추가
+calendar-add-notes = 설명 추가
+calendar-add-guests = 게스트 추가
+calendar-remove-guest = 삭제
+calendar-add-meet = Google Meet 화상 회의 추가
+calendar-add-teams = Teams 회의 추가
+calendar-has-call = 화상 통화가 추가됨
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = 종일
+calendar-more-options = 옵션 더보기
+calendar-save = 저장
+calendar-saved = 일정을 저장했습니다
+calendar-deleted = 일정을 삭제했습니다
+calendar-discard = 변경사항 삭제
+calendar-edit = 일정 수정
+calendar-delete = 일정 삭제
+calendar-event-details = 일정 세부정보
+calendar-busy = 바쁨
+calendar-free = 한가함
+calendar-cancel = 취소
+calendar-ok = 확인
+calendar-read-only = 이 캘린더의 일정은 수정할 수 없습니다
+calendar-none-editable = 일정을 추가할 수 있는 캘린더가 아직 없습니다
+calendar-no-such-time = 사용 중인 시간대에는 없는 시간입니다
+calendar-end-before-start = 일정이 시작하기 전에 끝납니다
+calendar-repeat-never = 반복 안함
+calendar-repeat-daily = 매일
+calendar-repeat-weekly = 매주 { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] 매월 첫 번째 { $weekday }
+        [2] 매월 두 번째 { $weekday }
+        [3] 매월 세 번째 { $weekday }
+        [4] 매월 네 번째 { $weekday }
+       *[other] 매월 마지막 { $weekday }
+    }
+calendar-repeat-yearly = 매년 { $day }
+calendar-repeat-weekdays = 주중 매일(월요일~금요일)
+calendar-repeat-custom = 맞춤
+calendar-reminder-none = 알림 없음
+calendar-reminder-at-start = 시작 시
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count }분 전
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count }시간 전
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count }일 전
+    }
+calendar-scope-edit-title = 반복 일정 수정
+calendar-scope-delete-title = 반복 일정 삭제
+calendar-scope-this = 이 일정
+calendar-scope-following = 이 일정 및 향후 일정
+calendar-scope-all = 모든 일정
+calendar-scope-respond-title = 반복 일정에 대한 응답
+calendar-going = 참석하시나요?
+calendar-answer-yes = 예
+calendar-answer-no = 아니요
+calendar-answer-maybe = 미정
+calendar-answered-yes = 참석합니다
+calendar-answered-no = 참석하지 않습니다
+calendar-answered-maybe = 참석할 수도 있습니다
 
 ## The day's agenda beside the mail.
 

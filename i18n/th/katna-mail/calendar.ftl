@@ -38,8 +38,80 @@ calendar-guests =
        *[other] แขก { $count } คน
     }
 calendar-guest-answers = ตอบรับ { $yes }, อาจจะ { $maybe }, ปฏิเสธ { $no }, รอการตอบกลับ { $waiting }
+calendar-organizer = ผู้จัด
+calendar-optional = ไม่บังคับ
 calendar-open-web = เปิดในเบราว์เซอร์
 calendar-close = ปิด
+
+## Adding, changing and deleting events.
+
+calendar-add-title = เพิ่มชื่อ
+calendar-add-location = เพิ่มสถานที่
+calendar-add-notes = เพิ่มคำอธิบาย
+calendar-add-guests = เพิ่มแขก
+calendar-remove-guest = นำออก
+calendar-add-meet = เพิ่มการประชุมทางวิดีโอของ Google Meet
+calendar-add-teams = เพิ่มการประชุม Teams
+calendar-has-call = เพิ่มการโทรวิดีโอแล้ว
+calendar-weekday-day = { $weekday } { $day }
+calendar-all-day-box = ตลอดวัน
+calendar-more-options = ตัวเลือกเพิ่มเติม
+calendar-save = บันทึก
+calendar-saved = บันทึกกิจกรรมแล้ว
+calendar-deleted = ลบกิจกรรมแล้ว
+calendar-discard = ทิ้งการเปลี่ยนแปลง
+calendar-edit = แก้ไขกิจกรรม
+calendar-delete = ลบกิจกรรม
+calendar-event-details = รายละเอียดกิจกรรม
+calendar-busy = ไม่ว่าง
+calendar-free = ว่าง
+calendar-cancel = ยกเลิก
+calendar-ok = ตกลง
+calendar-read-only = คุณเปลี่ยนแปลงกิจกรรมในปฏิทินนี้ไม่ได้
+calendar-none-editable = ยังไม่มีปฏิทินที่คุณเพิ่มกิจกรรมได้
+calendar-no-such-time = ไม่มีเวลานั้นในเขตเวลาของคุณ
+calendar-end-before-start = กิจกรรมสิ้นสุดก่อนเริ่ม
+calendar-repeat-never = ไม่เกิดซ้ำ
+calendar-repeat-daily = ทุกวัน
+calendar-repeat-weekly = ทุกสัปดาห์ใน { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] ทุกเดือนใน { $weekday } แรก
+        [2] ทุกเดือนใน { $weekday } ที่สอง
+        [3] ทุกเดือนใน { $weekday } ที่สาม
+        [4] ทุกเดือนใน { $weekday } ที่สี่
+       *[other] ทุกเดือนใน { $weekday } สุดท้าย
+    }
+calendar-repeat-yearly = ทุกปีใน { $day }
+calendar-repeat-weekdays = ทุกวันทำการ (วันจันทร์ถึงวันศุกร์)
+calendar-repeat-custom = กำหนดเอง
+calendar-reminder-none = ไม่มีการแจ้งเตือน
+calendar-reminder-at-start = ตอนเริ่ม
+calendar-reminder-minutes =
+    { $count ->
+       *[other] { $count } นาทีก่อน
+    }
+calendar-reminder-hours =
+    { $count ->
+       *[other] { $count } ชั่วโมงก่อน
+    }
+calendar-reminder-days =
+    { $count ->
+       *[other] { $count } วันก่อน
+    }
+calendar-scope-edit-title = แก้ไขกิจกรรมที่เกิดซ้ำ
+calendar-scope-delete-title = ลบกิจกรรมที่เกิดซ้ำ
+calendar-scope-this = กิจกรรมนี้
+calendar-scope-following = กิจกรรมนี้และกิจกรรมต่อๆ ไป
+calendar-scope-all = กิจกรรมทั้งหมด
+calendar-scope-respond-title = ตอบกิจกรรมที่เกิดซ้ำ
+calendar-going = จะไปไหม
+calendar-answer-yes = ใช่
+calendar-answer-no = ไม่ใช่
+calendar-answer-maybe = อาจจะ
+calendar-answered-yes = คุณจะไป
+calendar-answered-no = คุณจะไม่ไป
+calendar-answered-maybe = คุณอาจจะไป
 
 ## The day's agenda beside the mail.
 

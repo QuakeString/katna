@@ -1199,3 +1199,18 @@ text = """
 Àwọn àkọọ́lẹ̀ tí a fi ọ̀rọ̀ìgbaniwọlé wọlé máa ń tọ́jú iṣẹ́ wọn sórí olupèsè lẹ́tà wọn báyìí nígbà tí ó bá fúnni ní CalDAV,
 nítorí náà iṣẹ́ náà tún máa ń hàn nínú àwọn ohun èlò olupèsè fúnra rẹ̀ àti lórí fóònù.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Fi àwọn ìṣẹ̀lẹ̀ kún kí o sì yí wọn padà"
+text = """
+Tẹ̀ tàbí fà lórí kàlẹ́ńdà, tàbí tẹ C, láti fi ìṣẹ̀lẹ̀ kún. Fa ìṣẹ̀lẹ̀ láti gbé e, tàbí etí ìsàlẹ̀ rẹ̀ láti yí gígùn rẹ̀ padà,
+kí o sì ṣí i láti yí àkókò, ìtúnṣẹlẹ̀, àwọn ìránnilétí, àwọn àlejò padà tàbí láti fi ìpè Meet tàbí Teams kún.
+Fèsì sí àwọn ìpè pẹ̀lú Bẹ́ẹ̀ni, Rárá tàbí Bóyá. Dá padà máa ń dá gbogbo nǹkan padà sí bó ṣe wà.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Kàlẹ́ńdà láti àwọn àkọọ́lẹ̀ púpọ̀ sí i"
+text = """
+Katna ti ń rí àwọn kàlẹ́ńdà Yahoo, Zoho, iCloud, Fastmail, GMX àti àwọn àkọọ́lẹ̀ mìíràn báyìí, kódà nígbà tí wọ́n bá wà lórí olupèsè tí kì í ṣe ti lẹ́tà.
+Ó máa ń gbìyànjú ọ̀nà tó dára jù lọ ti àkọọ́lẹ̀ kọ̀ọ̀kan ná, àti ọ̀nà mìíràn nígbà tí ọ̀nà yẹn bá ti wà ní pípa.
+"""

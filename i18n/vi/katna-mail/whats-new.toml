@@ -1223,3 +1223,22 @@ Các tài khoản đăng nhập bằng mật khẩu giờ đây lưu việc cầ
 máy chủ thư nếu máy chủ đó hỗ trợ CalDAV, nên việc cần làm cũng hiện
 trong các ứng dụng của chính máy chủ và trên điện thoại.
 """
+
+["2026-09-29-0521-calendar-edit"]
+title = "Thêm và thay đổi sự kiện"
+text = """
+Nhấp hoặc kéo trên lịch, hoặc nhấn C, để thêm sự kiện. Kéo một sự kiện
+để di chuyển hoặc kéo cạnh dưới của nó để đổi thời lượng, rồi mở sự kiện
+để đổi giờ, cách lặp lại, lời nhắc và khách hoặc thêm cuộc gọi Meet hoặc
+Teams. Trả lời lời mời bằng Có, Không hoặc Có thể. Hoàn tác sẽ khôi phục
+mọi thứ.
+"""
+
+["2026-09-29-0546-calendar-any-account"]
+title = "Lịch từ nhiều tài khoản hơn"
+text = """
+Katna giờ đây tìm thấy lịch của Yahoo, Zoho, iCloud, Fastmail, GMX và
+các tài khoản khác, ngay cả khi chúng nằm trên máy chủ khác với thư.
+Katna thử cách tốt nhất của từng tài khoản trước và một cách khác khi
+cách đó không dùng được.
+"""
