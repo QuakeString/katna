@@ -38,7 +38,6 @@ calendar-guests =
        *[other] { $count } àlejò
     }
 calendar-guest-answers = bẹ́ẹ̀ni { $yes }, bóyá { $maybe }, rárá { $no }, ń dúró { $waiting }
-calendar-organizer-name = { $name } (olùṣètò)
 calendar-open-web = Ṣí i nínú aṣàwákiri
 calendar-close = Padé
 

@@ -39,7 +39,6 @@ calendar-guests =
        *[other] { $count } እንግዶች
     }
 calendar-guest-answers = { $yes } አዎ፣ { $maybe } ምናልባት፣ { $no } አይ፣ { $waiting } በመጠባበቅ ላይ
-calendar-organizer-name = { $name } (አዘጋጅ)
 calendar-open-web = በአሳሽ ውስጥ ክፈት
 calendar-close = ዝጋ
 
