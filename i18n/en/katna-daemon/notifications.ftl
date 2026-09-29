@@ -71,6 +71,8 @@ notify-event-all-day = All day
 # Its buttons: open the video call, and remind again in 5 minutes.
 notify-event-join = Join
 notify-event-snooze = Snooze 5 min
+# Button on a task's reminder: ticks the task off.
+notify-task-done = Mark as done
 
 ## The buttons of new-mail notifications and reminders
 

@@ -174,19 +174,27 @@ impl NewMailNotices {
         }
     }
 
-    /// Shows the reminder of a calendar event.
+    /// Shows the reminder of a calendar event or a task.
     pub(crate) async fn event_reminder(&self, alarm: Alarm) {
         let sound = self.sound.load(Ordering::Relaxed);
-        match self
-            .notifier
-            .event_reminder(
-                &alarm.title,
-                &alarm.lines,
-                !alarm.join_url.is_empty(),
-                sound,
-            )
-            .await
-        {
+        let shown = match alarm.task {
+            Some(_) => {
+                self.notifier
+                    .task_reminder(&alarm.title, &alarm.lines, sound)
+                    .await
+            }
+            None => {
+                self.notifier
+                    .event_reminder(
+                        &alarm.title,
+                        &alarm.lines,
+                        !alarm.join_url.is_empty(),
+                        sound,
+                    )
+                    .await
+            }
+        };
+        match shown {
             Ok(id) => {
                 self.events.lock().unwrap().insert(id, alarm);
             }
@@ -444,7 +452,7 @@ impl NewMailNotices {
                         continue;
                     };
                     let token = notices.tokens.lock().unwrap().remove(&id);
-                    tracing::info!(id, key, "event reminder action");
+                    tracing::info!(id, key, "reminder action");
                     match key.as_str() {
                         // Only web links, whatever the event says.
                         action::JOIN if alarm.join_url.starts_with("https://") => {
@@ -455,12 +463,33 @@ impl NewMailNotices {
                             alarm.at = unix_now() + alarms::SNOOZE;
                             notices.snoozed.lock().unwrap().push(alarm);
                         }
-                        // The notification itself: the Calendar page.
+                        action::DONE => {
+                            if let Some(task) = alarm.task {
+                                match daemon.set_task_done(task, true) {
+                                    Ok(_) => {
+                                        daemon.wake_task_sync();
+                                        let _ = daemon
+                                            .notices()
+                                            .try_send(crate::daemon::Notice::TasksChanged);
+                                    }
+                                    Err(err) => {
+                                        tracing::warn!(%err, task, "could not tick a task off");
+                                    }
+                                }
+                            }
+                        }
+                        // The notification itself: the Calendar page, or
+                        // Tasks for a task.
                         _ => {
+                            let page = if alarm.task.is_some() {
+                                "tasks"
+                            } else {
+                                "calendar"
+                            };
                             crate::mail_app::run(
                                 &notices.connection,
                                 Some(katna_dbus::app_action::OPEN_PAGE),
-                                vec![Value::from("calendar")],
+                                vec![Value::from(page)],
                                 token,
                             )
                             .await;

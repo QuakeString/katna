@@ -380,6 +380,92 @@ fn fold_all(lines: &[String]) -> String {
     out
 }
 
+/// Where a task's due day starts when it has no time: its reminders count
+/// from this time of day (minutes after midnight), 9 AM, as To Do's do.
+pub const DAY_START: u32 = 9 * 60;
+
+/// When a task is due, as an instant: its due day (`YYYY-MM-DD`) at its
+/// time, or at [`DAY_START`] when it has none, in `zone`.
+pub fn due_at(due: &str, time: Option<u32>, zone: &TimeZone) -> Option<i64> {
+    let day: Date = due.parse().ok()?;
+    let minutes = time.unwrap_or(DAY_START).min(24 * 60 - 1);
+    let time = jiff::civil::Time::new(
+        i8::try_from(minutes / 60).ok()?,
+        i8::try_from(minutes % 60).ok()?,
+        0,
+        0,
+    )
+    .ok()?;
+    day.to_datetime(time)
+        .to_zoned(zone.clone())
+        .ok()
+        .map(|z| z.timestamp().as_second())
+}
+
+/// A reminder at `at` of a task due at `from` (day and time) when the
+/// task is due at `to` instead: as long before (or after) as it was.
+pub fn moved_reminder(
+    at: Option<i64>,
+    from: (&str, Option<u32>),
+    to: (&str, Option<u32>),
+    zone: &TimeZone,
+) -> Option<i64> {
+    let at = at?;
+    match (due_at(from.0, from.1, zone), due_at(to.0, to.1, zone)) {
+        (Some(old), Some(new)) => Some(at - old + new),
+        _ => Some(at),
+    }
+}
+
+/// Where a repeating task goes when it is ticked off: its next due day
+/// after both its due day and `today` (a late tick doesn't bring it back
+/// already late), and its rule with a `COUNT` lowered by the days it used
+/// up. `None` when `rule` doesn't repeat daily or slower, or has ended:
+/// the task is done then.
+pub fn next_due(due: &str, rule: &str, today: Date) -> Option<(String, String)> {
+    let utc = TimeZone::UTC;
+    let parsed = crate::recurrence::Rule::parse(rule, &utc)?;
+    let base: Date = due.parse().unwrap_or(today);
+    let noon = |day: Date| {
+        day.to_datetime(jiff::civil::Time::constant(12, 0, 0, 0))
+            .to_zoned(utc.clone())
+            .ok()
+            .map(|z| z.timestamp())
+    };
+    let first = noon(base)?;
+    let after = noon(base.max(today))?;
+    // Five years is room for any yearly rule, even one on 29 February.
+    let end = noon(
+        base.max(today)
+            .checked_add(jiff::Span::new().years(5))
+            .ok()?,
+    )?;
+    let starts = crate::recurrence::starts(&parsed, first, &utc, first, end, &[], &[]);
+    let (used, next) = starts.iter().enumerate().find(|(_, s)| **s > after)?;
+    let next = next.to_zoned(utc).date().to_string();
+    let rule = match parsed.count {
+        Some(count) => {
+            let left = count.checked_sub(u32::try_from(used).ok()?)?;
+            if left == 0 {
+                return None;
+            }
+            rule.trim()
+                .trim_start_matches("RRULE:")
+                .split(';')
+                .map(|part| match part.split_once('=') {
+                    Some((key, _)) if key.trim().eq_ignore_ascii_case("COUNT") => {
+                        format!("COUNT={left}")
+                    }
+                    _ => part.to_owned(),
+                })
+                .collect::<Vec<_>>()
+                .join(";")
+        }
+        None => rule.to_owned(),
+    };
+    Some((next, rule))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -457,5 +543,77 @@ END:VTODO\r\nEND:VCALENDAR\r\n";
         assert_eq!(again.due_time, Some(9 * 60 + 30));
         assert_eq!(again.parent.as_deref(), Some("r1"));
         assert_eq!(again.remind_at, Some(1_790_900_000));
+    }
+    #[test]
+    fn repeating_tasks_move_to_their_next_day() {
+        let day = |text: &str| text.parse::<Date>().unwrap();
+        let next = |due: &str, rule: &str, today: &str| next_due(due, rule, day(today));
+        // Ticked on time: the next one.
+        assert_eq!(
+            next("2026-09-29", "FREQ=DAILY", "2026-09-29"),
+            Some(("2026-09-30".into(), "FREQ=DAILY".into()))
+        );
+        // Ticked late: the next one after today, not one already late.
+        assert_eq!(
+            next("2026-09-07", "FREQ=WEEKLY", "2026-09-23"),
+            Some(("2026-09-28".into(), "FREQ=WEEKLY".into()))
+        );
+        // Ticked early: the one after its own day.
+        assert_eq!(
+            next("2026-10-31", "FREQ=MONTHLY", "2026-09-29"),
+            Some(("2026-12-31".into(), "FREQ=MONTHLY".into()))
+        );
+        assert_eq!(
+            next("2026-09-29", "FREQ=WEEKLY;BYDAY=MO,TH", "2026-09-29"),
+            Some(("2026-10-01".into(), "FREQ=WEEKLY;BYDAY=MO,TH".into()))
+        );
+        // A count goes down by the days used, and ends.
+        assert_eq!(
+            next("2026-09-29", "FREQ=DAILY;COUNT=3", "2026-09-29"),
+            Some(("2026-09-30".into(), "FREQ=DAILY;COUNT=2".into()))
+        );
+        assert_eq!(
+            next("2026-09-27", "FREQ=DAILY;COUNT=5", "2026-09-29"),
+            Some(("2026-09-30".into(), "FREQ=DAILY;COUNT=2".into()))
+        );
+        assert_eq!(next("2026-09-29", "FREQ=DAILY;COUNT=1", "2026-09-29"), None);
+        assert_eq!(
+            next("2026-09-29", "FREQ=DAILY;UNTIL=20260930", "2026-09-30"),
+            None
+        );
+        // Not a rule Katna repeats: done.
+        assert_eq!(next("2026-09-29", "FREQ=HOURLY", "2026-09-29"), None);
+        assert_eq!(next("2026-09-29", "", "2026-09-29"), None);
+        // No day yet: from today.
+        assert_eq!(
+            next("", "FREQ=DAILY", "2026-09-29"),
+            Some(("2026-09-30".into(), "FREQ=DAILY".into()))
+        );
+    }
+
+    #[test]
+    fn tasks_are_due_at_their_time_or_in_the_morning() {
+        let utc = TimeZone::UTC;
+        assert_eq!(due_at("2026-09-29", Some(0), &utc), Some(1_790_640_000));
+        assert_eq!(
+            due_at("2026-09-29", None, &utc),
+            Some(1_790_640_000 + 9 * 3600)
+        );
+        assert_eq!(due_at("", Some(60), &utc), None);
+        // A reminder an hour before stays an hour before.
+        let at = 1_790_640_000 + 3600;
+        assert_eq!(
+            moved_reminder(
+                Some(at),
+                ("2026-09-29", Some(120)),
+                ("2026-09-30", Some(180)),
+                &utc
+            ),
+            Some(at + 86_400 + 3600)
+        );
+        assert_eq!(
+            moved_reminder(None, ("2026-09-29", None), ("", None), &utc),
+            None
+        );
     }
 }
