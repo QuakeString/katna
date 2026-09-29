@@ -1709,3 +1709,23 @@ hindi ma-load ang mga gawain ng isang account, may linya sa ilalim nito
 na nagsasabi kung bakit, kasama ang isang click para ayusin ito:
 mag-sign in muli, o subukang muli.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Nananatiling nakikita ang mga tanong bago magpadala"
+text = """
+Bumubukas na ngayon sa gitna ng window ang mga tanong gaya ng “Balak mo
+bang mag-attach ng mga file?”, gaano man kahaba ang mensaheng isinusulat
+o ipinapasa mo, kaya hindi na sila natatago sa ibaba ng page. Sumasagot
+ang Enter gamit ang pangunahing button at ibinabalik ka ng Esc sa
+mensahe.
+"""
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Markahan ang mga PDF"
+text = """
+Pindutin ang pen sa PDF viewer para i-highlight, salungguhitan, lagyan
+ng kulot na guhit o ekisan ang text, o gumuhit gamit ang pen, sa kulay
+na pipiliin mo. I-undo gamit ang Ctrl+Z, burahin ang isang marka gamit
+ang pambura, saka i-save ang kopyang may marka. Mananatili ang orihinal
+na attachment gaya ng dati.
+"""

@@ -226,6 +226,12 @@ fn a_server_without_caldav_offers_no_calendars() {
     let (_dir, mut store) = store();
     let err = smol::block_on(dav.sync(&mut store, ACCOUNT, "me@test")).unwrap_err();
     assert!(matches!(err, CalendarError::NotOffered), "{err}");
+    // It says what the server answered.
+    assert!(
+        dav.missing_why().ends_with("answered 404"),
+        "{}",
+        dav.missing_why()
+    );
     let asked = seen.lock().unwrap().len();
     // Not asked again for a while.
     let err = smol::block_on(dav.sync(&mut store, ACCOUNT, "me@test")).unwrap_err();
@@ -308,4 +314,26 @@ fn google_caldav_uses_the_sign_in_and_says_when_it_is_off() {
     let err = smol::block_on(dav.sync(&mut store, ACCOUNT, "me@gmail.com")).unwrap_err();
     assert!(matches!(err, CalendarError::NotEnabled(_)), "{err}");
     assert_eq!(seen.lock().unwrap().len(), 1);
+}
+
+#[test]
+fn a_server_that_names_no_principal_is_asked_for_the_home_itself() {
+    let (origin, _seen) = fake::serve(|request| match (request.method.as_str(), request.route()) {
+        ("PROPFIND", "/.well-known/caldav") => Answer::redirect("/caldav/"),
+        ("PROPFIND", "/caldav/")
+            if String::from_utf8_lossy(&request.body).contains("calendar-home-set") =>
+        {
+            multistatus(&ok(
+                "/caldav/",
+                "<c:calendar-home-set><d:href>/caldav/me/</d:href></c:calendar-home-set>",
+            ))
+        }
+        ("PROPFIND", "/caldav/") => {
+            multistatus(&ok("/caldav/", "<d:displayname>Zoho</d:displayname>"))
+        }
+        _ => Answer::xml(404, ""),
+    });
+    let dav = CalDav::with_origin(&origin, "me", "secret", Tls::insecure_for_local_tests());
+    let home = smol::block_on(dav.home()).unwrap();
+    assert_eq!(home, Some(format!("{origin}/caldav/me/")));
 }

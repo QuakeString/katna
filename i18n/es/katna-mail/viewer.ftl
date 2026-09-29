@@ -16,3 +16,37 @@ viewer-slide = Diapositiva { $number }
 viewer-page = Página
 viewer-page-count = de { $count }
 viewer-go-to-page-tip = Escribe un número de página y pulsa Intro (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = Marcar
+viewer-tool-select = Seleccionar texto
+viewer-tool-highlight = Resaltar
+viewer-tool-underline = Subrayar
+viewer-tool-squiggly = Ondulado
+viewer-tool-strike = Tachar
+viewer-tool-pen = Lápiz
+viewer-tool-eraser = Borrador
+viewer-color-yellow = Amarillo
+viewer-color-green = Verde
+viewer-color-blue = Azul
+viewer-color-pink = Rosa
+viewer-color-orange = Naranja
+viewer-color-red = Rojo
+viewer-color-black = Negro
+viewer-color-purple = Morado
+viewer-marks-undo-tip = Deshacer (Ctrl+Z)
+viewer-marks-redo-tip = Rehacer (Ctrl+Shift+Z)
+viewer-save-marked-tip = Guardar una copia con tus marcas (Ctrl+S)
+viewer-markup-protected = Este PDF está protegido contra cambios, así que no se puede marcar.
+viewer-marks-save-failed = No se ha podido guardar la copia marcada.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = ¿Guardar tus marcas?
+viewer-marks-unsaved-text = Tus marcas en este PDF aún no se han guardado. Van a una copia; el adjunto en sí queda como estaba.
+viewer-marks-discard = Descartar
+viewer-marks-keep = Seguir marcando
+viewer-marks-save = Guardar una copia
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (marcado)

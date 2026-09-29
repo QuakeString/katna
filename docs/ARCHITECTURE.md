@@ -2277,6 +2277,19 @@ desktop's own app stays one click away.
     range, a column letter or row number for all of it; Ctrl+C copies
     them tab-separated (cells with tabs, line breaks or quotes quoted), so
     they paste as cells into other spreadsheets.
+  - **Marking up a PDF.** The pen in the viewer's top bar shows a pill of
+    tools: Select, Highlight, Underline, Squiggle, Strike, Pen and Eraser,
+    five colours each for the markers and the pen, and Undo and Redo
+    (Ctrl+Z, Ctrl+Shift+Z). Text marks are made by selecting text; the
+    pen draws freehand; the eraser removes the mark under it. Marks are
+    kept in points as the page is drawn (`katna_preview::markup`) and Save
+    writes a copy, "<name> (marked).pdf", with them as standard
+    annotations (Highlight, Underline, Squiggly, StrikeOut, Ink), each
+    with its own appearance, added to the end of the original file as an
+    incremental update with `lopdf` (`katna_preview::pdf_marks`), so
+    signatures stay valid. Encrypted or certified PDFs can't be marked.
+    Closing or paging away with unsaved marks asks: Discard, Keep marking,
+    or Save a copy. No redaction.
   - Anything else opens straight in the desktop's default app, and so
     does a file of a previewable type that turns out unreadable (damaged,
     encrypted, Word 6/95; the viewer closes and hands it over, or asks
@@ -3448,7 +3461,13 @@ most useful reason is shown. Changes go back the way their calendar came
   The Calendar page's side list shows every account, also one without
   calendars: one line under it gives that state's reason with its fix
   ("Sign in again to show calendars" for an OAuth2 account missing the
-  calendar scope, else "Try again", which is `SyncNow`).
+  calendar scope, else "Try again", which is `SyncNow` and looks for the
+  calendars from scratch). `none` carries what the server answered
+  ("calendar.zoho.in answered 404"); a Gmail or Outlook account added
+  with a password gets `use-sign-in` (detail: the provider) and "Sign in
+  with Google", since those providers let Katna into calendars only
+  through their own sign-in. A CalDAV server that answers without naming
+  the user's principal is asked for the calendar home itself.
 - How edits flow (`Pim1.EditEvent`, `katna_sync::calendar::edit`): the
   daemon writes the change to `pim.db` at once and says
   `CalendarChanged`, so the app shows it on reload; rows the service

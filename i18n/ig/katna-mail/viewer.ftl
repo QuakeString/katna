@@ -16,3 +16,37 @@ viewer-slide = Slaịdị { $number }
 viewer-page = Peeji
 viewer-page-count = n'ime { $count }
 viewer-go-to-page-tip = Pịnye nọmba peeji wee pịa Enter (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = Tinye akara
+viewer-tool-select = Họrọ ederede
+viewer-tool-highlight = Mee ka ọ pụta ìhè
+viewer-tool-underline = Kpọọ akara n'okpuru
+viewer-tool-squiggly = Akara ebili mmiri
+viewer-tool-strike = Gbachapụ
+viewer-tool-pen = Pen
+viewer-tool-eraser = Ihe nhichapụ
+viewer-color-yellow = Edo
+viewer-color-green = Akwụkwọ ndụ
+viewer-color-blue = Acha anụnụ anụnụ
+viewer-color-pink = Pinki
+viewer-color-orange = Oroma
+viewer-color-red = Uhie
+viewer-color-black = Ojii
+viewer-color-purple = Pọpụl
+viewer-marks-undo-tip = Megharịa (Ctrl+Z)
+viewer-marks-redo-tip = Mee ọzọ (Ctrl+Shift+Z)
+viewer-save-marked-tip = Chekwaa otu mbipụta nwere akara gị (Ctrl+S)
+viewer-markup-protected = E chebere PDF a pụọ na mgbanwe, ya mere enweghị ike itinye akara na ya.
+viewer-marks-save-failed = Enweghị ike ichekwa mbipụta nwere akara ahụ.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = Chekwaa akara gị?
+viewer-marks-unsaved-text = Echekwabeghị akara gị na PDF a. Ha na-aga n'otu mbipụta; mgbakwunye ahụ n'onwe ya ka dị ka ọ dị.
+viewer-marks-discard = Tụfuo
+viewer-marks-keep = Gaa n'ihu na-akara
+viewer-marks-save = Chekwaa mbipụta
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (nwere akara)

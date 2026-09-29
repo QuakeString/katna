@@ -1603,3 +1603,22 @@ Elke rekening wys nou in die Take-sypaneel. As 'n rekening se take nie
 kan laai nie, sê 'n reël daaronder hoekom, met een klik om dit reg te
 maak: meld weer aan, of probeer weer.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Vrae voor stuur bly in sig"
+text = """
+Vrae soos “Wou jy lêers aanheg?” gaan nou in die middel van die venster
+oop, hoe lank die boodskap wat jy skryf of aanstuur ook al is, sodat
+hulle nooit verder onder op die bladsy versteek is nie. Enter antwoord
+met die hoofknoppie en Esc gaan terug na die boodskap.
+"""
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Merk PDF's"
+text = """
+Druk die pen in die PDF-kyker om teks uit te lig, te onderstreep, met 'n
+kronkellyn te merk of deur te haal, of teken met 'n pen, in die kleur
+wat jy kies. Ontdoen met Ctrl+Z, vee 'n merk uit met die uitveër, en
+stoor dan 'n gemerkte kopie. Die oorspronklike aanhegsel bly soos dit
+was.
+"""

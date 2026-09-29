@@ -16,3 +16,37 @@ viewer-slide = 幻灯片 { $number }
 viewer-page = 第
 viewer-page-count = 页，共 { $count } 页
 viewer-go-to-page-tip = 输入页码并按 Enter 键（Ctrl+G）
+
+## Marking up a PDF
+
+viewer-markup-tip = 标注
+viewer-tool-select = 选择文本
+viewer-tool-highlight = 高亮
+viewer-tool-underline = 下划线
+viewer-tool-squiggly = 波浪线
+viewer-tool-strike = 删除线
+viewer-tool-pen = 画笔
+viewer-tool-eraser = 橡皮擦
+viewer-color-yellow = 黄色
+viewer-color-green = 绿色
+viewer-color-blue = 蓝色
+viewer-color-pink = 粉色
+viewer-color-orange = 橙色
+viewer-color-red = 红色
+viewer-color-black = 黑色
+viewer-color-purple = 紫色
+viewer-marks-undo-tip = 撤消（Ctrl+Z）
+viewer-marks-redo-tip = 重做（Ctrl+Shift+Z）
+viewer-save-marked-tip = 保存带标注的副本（Ctrl+S）
+viewer-markup-protected = 此 PDF 受保护，不允许更改，因此无法标注。
+viewer-marks-save-failed = 无法保存带标注的副本。
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = 保存你的标注吗？
+viewer-marks-unsaved-text = 你在此 PDF 上的标注尚未保存。标注会存入一个副本；附件本身保持原样。
+viewer-marks-discard = 放弃
+viewer-marks-keep = 继续标注
+viewer-marks-save = 保存副本
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name }（已标注）

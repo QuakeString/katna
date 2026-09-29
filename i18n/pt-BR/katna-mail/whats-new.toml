@@ -1649,3 +1649,21 @@ Todas as contas agora aparecem no painel lateral de Tarefas. Quando as
 tarefas de uma conta não carregam, uma linha abaixo dela diz o motivo,
 com um clique para resolver: fazer login de novo ou tentar de novo.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "As perguntas antes de enviar ficam à vista"
+text = """
+Perguntas como “Você queria anexar arquivos?” agora abrem no meio da
+janela, não importa o tamanho da mensagem que você está escrevendo ou
+encaminhando, então nunca ficam escondidas mais abaixo na página. Enter
+responde com o botão principal e Esc volta para a mensagem.
+"""
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Marque PDFs"
+text = """
+Pressione a caneta no visualizador de PDF para realçar, sublinhar (reto
+ou ondulado) ou tachar texto, ou desenhar com uma caneta, na cor que
+escolher. Desfaça com Ctrl+Z, apague uma marcação com a borracha e
+depois salve uma cópia marcada. O anexo original fica como estava.
+"""

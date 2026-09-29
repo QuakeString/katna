@@ -470,6 +470,17 @@
       "repository": "https://github.com/tantivy-search/levenshtein-automata"
     },
     {
+      "name": "lopdf",
+      "version": "0.45.0",
+      "description": "A Rust library for PDF document manipulation.",
+      "license": "MIT",
+      "authors": [
+        "Emulator",
+        "Junfeng Liu"
+      ],
+      "repository": "https://github.com/J-F-Liu/lopdf"
+    },
+    {
       "name": "mail-parser",
       "version": "0.11.9",
       "description": "Fast and robust e-mail parsing library for Rust",

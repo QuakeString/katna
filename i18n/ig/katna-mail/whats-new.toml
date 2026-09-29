@@ -1582,3 +1582,15 @@ title = "Akaụntụ ọ bụla na peeji Ọrụ"
 text = """
 Akaụntụ ọ bụla na-egosi ugbu a n'ogwe n'akụkụ nke Ọrụ. Mgbe ọrụ nke akaụntụ enweghị ike ibu, ahịrị dị n'okpuru ya na-akọwa ihe kpatara ya, ya na otu pịa iji dozie ya: banye ọzọ, ma ọ bụ nwaa ọzọ.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Ajụjụ tupu izipu na-anọ n'anya"
+text = """
+Ajụjụ dị ka “Ị bu n'obi ịgbakwunye faịlụ?” na-emepe ugbu a n'etiti windo, n'agbanyeghị ogologo ozi ị na-ede ma ọ bụ na-ezipụ, ya mere ha anaghị ezo n'ala peeji ahụ. Enter na-aza site na bọtịnụ isi, Esc na-akpọghachi gị n'ozi ahụ.
+"""
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Tinye akara na PDF"
+text = """
+Pịa pen dị na onye nlele PDF iji mee ka ederede pụta ìhè, kpọọ akara n'okpuru ya, akara ebili mmiri ma ọ bụ gbachapụ ya, ma ọ bụ see ihe na pen, na agba ị họọrọ. Megharịa na Ctrl+Z, hichapụ akara na ihe nhichapụ, wee chekwaa mbipụta nwere akara. Mgbakwunye mbụ ahụ ka dị ka ọ dị.
+"""

@@ -1690,3 +1690,24 @@ Jedes Konto erscheint jetzt in der Seitenleiste von Aufgaben. Wenn die
 Aufgaben eines Kontos nicht laden, sagt eine Zeile darunter, warum, mit
 einem Klick, der es behebt: erneut anmelden oder erneut versuchen.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Fragen vor dem Senden bleiben im Blick"
+text = """
+Fragen wie „Wollten Sie Dateien anhängen?“ öffnen sich jetzt in der
+Mitte des Fensters, egal wie lang die Nachricht ist, die Sie schreiben
+oder weiterleiten, sodass sie nie weiter unten auf der Seite verborgen
+sind. Eingabe antwortet mit der Hauptschaltfläche, und Esc führt zurück
+zur Nachricht.
+"""
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "PDFs markieren"
+text = """
+Drücken Sie im PDF-Betrachter auf den Stift, um Text hervorzuheben, zu
+unterstreichen, mit einer Wellenlinie zu versehen oder durchzustreichen,
+oder zeichnen Sie mit einem Stift, in der Farbe Ihrer Wahl. Rückgängig
+mit Strg+Z, eine Markierung entfernen Sie mit dem Radierer, dann
+speichern Sie eine markierte Kopie. Der ursprüngliche Anhang bleibt, wie
+er war.
+"""

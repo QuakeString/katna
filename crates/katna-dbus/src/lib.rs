@@ -179,8 +179,14 @@ pub mod calendar_state {
     pub const NOT_ENABLED: &str = "not-enabled";
     /// The last sync failed; the detail says why. It is tried again.
     pub const ERROR: &str = "error";
-    /// The account has no calendars Katna can reach.
+    /// The account has no calendars Katna can reach; the detail says
+    /// what was asked and what it answered (may be empty).
     pub const NONE: &str = "none";
+    /// A mail account signed in with a password at a provider that lets
+    /// Katna in only through its own sign-in (Google, Microsoft): `SignIn`
+    /// with that provider. The detail is the provider
+    /// (`OAuthProvider::as_str`).
+    pub const USE_SIGN_IN: &str = "use-sign-in";
 }
 
 /// Where an account's contacts sync stands, as `ContactsStatus` reports it.

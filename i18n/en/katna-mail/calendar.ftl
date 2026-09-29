@@ -68,6 +68,12 @@ calendar-account-failed = The calendars could not be read.
 # $reason is the server's own words, in English.
 calendar-account-error = The calendars could not be read: { $reason }
 calendar-account-none = No calendars found
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = No calendars found: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } shows calendars only to Katna signed in with { $provider }.
+calendar-account-sign-in-with = Sign in with { $provider }
 calendar-account-looking = Looking for calendars…
 calendar-account-try-again = Try again
 calendar-account-try-again-tooltip = Check this account's calendars again now

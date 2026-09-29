@@ -515,7 +515,7 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn share_with_link_and_send(
+    pub(super) fn share_with_link_and_send(
         &mut self,
         at: Option<jiff::Timestamp>,
         archive: bool,

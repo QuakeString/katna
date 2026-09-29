@@ -1653,3 +1653,23 @@ Setiap akun kini tampil di panel samping Tugas. Jika tugas sebuah akun
 tidak bisa dimuat, baris di bawahnya menjelaskan alasannya, dengan satu
 klik untuk memperbaikinya: masuk lagi, atau coba lagi.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Pertanyaan sebelum mengirim tetap terlihat"
+text = """
+Pertanyaan seperti “Apakah Anda bermaksud melampirkan file?” kini
+terbuka di tengah jendela, sepanjang apa pun pesan yang sedang Anda
+tulis atau teruskan, sehingga tidak pernah tersembunyi lebih jauh di
+bawah halaman. Enter menjawab dengan tombol utama dan Esc kembali ke
+pesan.
+"""
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Tandai PDF"
+text = """
+Tekan pena di penampil PDF untuk menyorot, memberi garis bawah, garis
+bergelombang, atau mencoret teks, atau menggambar dengan pena, dalam
+warna pilihan Anda. Urungkan dengan Ctrl+Z, hapus tanda dengan
+penghapus, lalu simpan salinan bertanda. Lampiran aslinya tetap seperti
+semula.
+"""
