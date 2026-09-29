@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search your events"
+text = """
+On the Calendar page, the search box at the top now finds events by title,
+place, notes or guests, listed by date. Click one to open it on its day;
+Esc takes you back to the results.
+"""

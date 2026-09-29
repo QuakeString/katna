@@ -138,6 +138,9 @@ impl MailWindow {
         if from == App::Notes {
             self.sync_notes_search(cx);
         }
+        if from == App::Calendar {
+            self.swap_calendar_search(false, cx);
+        }
         if from == App::Contacts || app == App::Contacts {
             // The search box follows: contacts on this page, mail elsewhere.
             self.swap_contacts_search(app == App::Contacts, cx);
@@ -152,6 +155,7 @@ impl MailWindow {
             self.load_contacts(cx);
         }
         if app == App::Calendar {
+            self.swap_calendar_search(true, cx);
             self.load_calendar(cx);
         }
         if app == App::Notes {
