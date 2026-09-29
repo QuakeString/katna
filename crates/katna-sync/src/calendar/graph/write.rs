@@ -271,6 +271,8 @@ pub(crate) fn event_body(
         "isAllDay": event.all_day,
         "showAs": if event.kind == EventKind::OutOfOffice {
             "oof"
+        } else if event.kind == EventKind::WorkingLocation {
+            "workingElsewhere"
         } else if event.busy {
             "busy"
         } else {

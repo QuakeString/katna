@@ -240,8 +240,14 @@ pub fn write_event(event: &EventData, stamp: i64, out: &mut String) {
         "TRANSP:{}",
         if event.busy { "OPAQUE" } else { "TRANSPARENT" }
     ));
-    if event.kind == EventKind::OutOfOffice {
-        line("X-MICROSOFT-CDO-BUSYSTATUS:OOF".into());
+    match event.kind {
+        EventKind::OutOfOffice => line("X-MICROSOFT-CDO-BUSYSTATUS:OOF".into()),
+        // CalDAV has no focus time or working location: Katna's own
+        // property keeps them for Katna, others see a plain event.
+        EventKind::Focus | EventKind::WorkingLocation => {
+            line(format!("X-KATNA-KIND:{}", event.kind.as_str()));
+        }
+        EventKind::Default | EventKind::Birthday => {}
     }
     if !event.color.is_empty() {
         line(format!("COLOR:{}", escape(&event.color)));
@@ -389,6 +395,7 @@ mod tests {
             self_status: "accepted".into(),
             join_url: "https://meet.example.com/x".into(),
             reminders: vec![10, 30],
+            kind: EventKind::Focus,
             updated_at: at("2026-09-01T12:00", "UTC"),
             ..EventData::default()
         };
