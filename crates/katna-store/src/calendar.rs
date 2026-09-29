@@ -316,6 +316,65 @@ fn event_row(row: &Row<'_>) -> rusqlite::Result<StoredEvent> {
 /// range asked in local time reaches this far either side.
 const DAY: i64 = 24 * 60 * 60;
 
+/// Replaces the rows under `remote_id` in calendar `calendar` with
+/// `events`, inside transaction `tx`.
+fn write_events(
+    tx: &rusqlite::Transaction<'_>,
+    calendar: i64,
+    remote_id: &str,
+    events: &[EventData],
+) -> Result<()> {
+    tx.execute(
+        "DELETE FROM event WHERE calendar_id = ?1 AND remote_id = ?2",
+        params![calendar, remote_id],
+    )?;
+    {
+        let mut insert = tx.prepare_cached(
+            "INSERT INTO event (calendar_id, remote_id, uid, etag, recurrence_id, status,
+                 title, location, description, start, end, all_day, time_zone, rrule,
+                 exdates, rdates, range_end, busy, kind, color, organizer, organizer_name,
+                 attendees_json, self_status, join_url, reminders, web_link, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15,
+                 ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28)",
+        )?;
+        for event in events {
+            let attendees =
+                serde_json::to_string(&event.attendees).unwrap_or_else(|_| "[]".to_owned());
+            insert.execute(params![
+                calendar,
+                remote_id,
+                event.uid,
+                event.etag,
+                event.recurrence_id,
+                event.status.as_str(),
+                event.title,
+                event.location,
+                event.description,
+                event.start,
+                event.end,
+                event.all_day,
+                event.time_zone,
+                event.rrule,
+                join(&event.exdates),
+                join(&event.rdates),
+                event.range_end,
+                event.busy,
+                event.kind.as_str(),
+                event.color,
+                event.organizer,
+                event.organizer_name,
+                attendees,
+                event.self_status,
+                event.join_url,
+                join(&event.reminders),
+                event.web_link,
+                event.updated_at,
+            ])?;
+        }
+    }
+    Ok(())
+}
+
 impl Store {
     /// Every calendar, by account and then as the service lists them.
     pub fn calendars(&self) -> Result<Vec<Calendar>> {
@@ -450,56 +509,45 @@ impl Store {
         events: &[EventData],
     ) -> Result<()> {
         let tx = self.pim.transaction()?;
-        tx.execute(
-            "DELETE FROM event WHERE calendar_id = ?1 AND remote_id = ?2",
-            params![calendar, remote_id],
-        )?;
-        {
-            let mut insert = tx.prepare_cached(
-                "INSERT INTO event (calendar_id, remote_id, uid, etag, recurrence_id, status,
-                     title, location, description, start, end, all_day, time_zone, rrule,
-                     exdates, rdates, range_end, busy, kind, color, organizer, organizer_name,
-                     attendees_json, self_status, join_url, reminders, web_link, updated_at)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15,
-                     ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28)",
-            )?;
-            for event in events {
-                let attendees =
-                    serde_json::to_string(&event.attendees).unwrap_or_else(|_| "[]".to_owned());
-                insert.execute(params![
-                    calendar,
-                    remote_id,
-                    event.uid,
-                    event.etag,
-                    event.recurrence_id,
-                    event.status.as_str(),
-                    event.title,
-                    event.location,
-                    event.description,
-                    event.start,
-                    event.end,
-                    event.all_day,
-                    event.time_zone,
-                    event.rrule,
-                    join(&event.exdates),
-                    join(&event.rdates),
-                    event.range_end,
-                    event.busy,
-                    event.kind.as_str(),
-                    event.color,
-                    event.organizer,
-                    event.organizer_name,
-                    attendees,
-                    event.self_status,
-                    event.join_url,
-                    join(&event.reminders),
-                    event.web_link,
-                    event.updated_at,
-                ])?;
-            }
+        write_events(&tx, calendar, remote_id, events)?;
+        tx.commit()?;
+        Ok(())
+    }
+
+    /// [`Self::replace_events`] for many remote IDs at once, in one
+    /// transaction: what a sync brings.
+    pub fn replace_events_batch(
+        &mut self,
+        calendar: i64,
+        items: &[(String, Vec<EventData>)],
+    ) -> Result<()> {
+        let tx = self.pim.transaction()?;
+        for (remote_id, events) in items {
+            write_events(&tx, calendar, remote_id, events)?;
         }
         tx.commit()?;
         Ok(())
+    }
+
+    /// The UID of the events stored under `remote_id` in calendar
+    /// `calendar`, if any.
+    pub fn event_uid(&self, calendar: i64, remote_id: &str) -> Result<Option<String>> {
+        Ok(self
+            .pim
+            .prepare_cached(
+                "SELECT uid FROM event WHERE calendar_id = ?1 AND remote_id = ?2 LIMIT 1",
+            )?
+            .query_row(params![calendar, remote_id], |row| row.get(0))
+            .optional()?)
+    }
+
+    /// Deletes the series `uid` of calendar `calendar` with its changed
+    /// occurrences (the series was deleted). Returns how many rows went.
+    pub fn remove_series(&mut self, calendar: i64, uid: &str) -> Result<usize> {
+        Ok(self.pim.execute(
+            "DELETE FROM event WHERE calendar_id = ?1 AND uid = ?2",
+            params![calendar, uid],
+        )?)
     }
 
     /// Deletes every event of calendar `calendar`, before a full sync.

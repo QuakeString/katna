@@ -42,6 +42,15 @@ pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file"
 /// its tokens come separately ([`TokenSource::access_token_for`]).
 pub const MICROSOFT_FILES: &str = "https://graph.microsoft.com/Files.ReadWrite";
 
+/// Google Calendar: the calendars and their events
+/// ([`crate::calendar::google`]).
+pub const GOOGLE_CALENDAR: &str = "https://www.googleapis.com/auth/calendar";
+
+/// Outlook's calendars, through Microsoft Graph
+/// ([`crate::calendar::graph`]); like [`MICROSOFT_FILES`], its tokens come
+/// separately.
+pub const MICROSOFT_CALENDARS: &str = "https://graph.microsoft.com/Calendars.ReadWrite";
+
 /// Largest request the loopback listener reads.
 const MAX_REQUEST: usize = 16 * 1024;
 
@@ -100,9 +109,11 @@ impl Provider {
                 },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
-                // large attachments, and who signed in (address, name,
-                // picture) in the ID token.
-                scope: format!("https://mail.google.com/ {GOOGLE_DRIVE_FILE} openid email profile"),
+                // large attachments, the calendars, and who signed in
+                // (address, name, picture) in the ID token.
+                scope: format!(
+                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} openid email profile"
+                ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",
                 tls,
@@ -122,9 +133,9 @@ impl Provider {
                 scope: "https://outlook.office.com/IMAP.AccessAsUser.All \
                         https://outlook.office.com/SMTP.Send offline_access openid email profile"
                     .into(),
-                // OneDrive, for large attachments, allowed at the same
-                // sign-in.
-                consent: MICROSOFT_FILES.into(),
+                // OneDrive, for large attachments, and the calendars,
+                // allowed at the same sign-in.
+                consent: format!("{MICROSOFT_FILES} {MICROSOFT_CALENDARS}"),
                 // Entra registers loopback redirects as `http://localhost`.
                 redirect_host: "localhost",
                 tls,
