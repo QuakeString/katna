@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Katna Digital Clock, Spanish (español). Machine-drafted; corrections welcome.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: es\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "heading of the tasks list"
+msgid "Tasks"
+msgstr "Tareas"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "placeholder"
+msgid "Add a task"
+msgstr "Añadir una tarea"
+
+#. Translators: %s is a short date such as "3 Oct"
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+#, javascript-format
+msgctxt "placeholder"
+msgid "Add a task for %s"
+msgstr "Añadir una tarea para %s"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Yesterday"
+msgstr "Ayer"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Today"
+msgstr "Hoy"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Tomorrow"
+msgstr "Mañana"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgid "No tasks"
+msgstr "Sin tareas"
+
+# plasma-clock/package/contents/ui/KatnaJoinButton.qml
+msgctxt "@action:button join the event's video call"
+msgid "Join"
+msgstr "Unirse"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Yesterday"
+msgstr "Ayer"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Today"
+msgstr "Hoy"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Tomorrow"
+msgstr "Mañana"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@title heading of the tasks list"
+msgid "Tasks"
+msgstr "Tareas"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder"
+msgid "Add a task"
+msgstr "Añadir una tarea"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder %1 is a short date"
+msgid "Add a task for %1"
+msgstr "Añadir una tarea para %1"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@action:button"
+msgid "Done"
+msgstr "Hecho"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "No tasks"
+msgstr "Sin tareas"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "Katna isn't answering"
+msgstr "Katna no responde"

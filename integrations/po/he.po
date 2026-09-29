@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Katna Digital Clock, Hebrew (עברית). Machine-drafted; corrections welcome.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: he\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "heading of the tasks list"
+msgid "Tasks"
+msgstr "משימות"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "placeholder"
+msgid "Add a task"
+msgstr "הוספת משימה"
+
+#. Translators: %s is a short date such as "3 Oct"
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+#, javascript-format
+msgctxt "placeholder"
+msgid "Add a task for %s"
+msgstr "הוספת משימה ל-%s"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Yesterday"
+msgstr "אתמול"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Today"
+msgstr "היום"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Tomorrow"
+msgstr "מחר"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgid "No tasks"
+msgstr "אין משימות"
+
+# plasma-clock/package/contents/ui/KatnaJoinButton.qml
+msgctxt "@action:button join the event's video call"
+msgid "Join"
+msgstr "הצטרפות"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Yesterday"
+msgstr "אתמול"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Today"
+msgstr "היום"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Tomorrow"
+msgstr "מחר"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@title heading of the tasks list"
+msgid "Tasks"
+msgstr "משימות"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder"
+msgid "Add a task"
+msgstr "הוספת משימה"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder %1 is a short date"
+msgid "Add a task for %1"
+msgstr "הוספת משימה ל-%1"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@action:button"
+msgid "Done"
+msgstr "בוצע"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "No tasks"
+msgstr "אין משימות"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "Katna isn't answering"
+msgstr "Katna לא מגיב"

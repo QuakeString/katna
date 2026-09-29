@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Katna Digital Clock, Nepali (नेपाली). Machine-drafted; corrections welcome.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ne\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "heading of the tasks list"
+msgid "Tasks"
+msgstr "कार्यहरू"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "placeholder"
+msgid "Add a task"
+msgstr "कार्य थप्नुहोस्"
+
+#. Translators: %s is a short date such as "3 Oct"
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+#, javascript-format
+msgctxt "placeholder"
+msgid "Add a task for %s"
+msgstr "%s को लागि कार्य थप्नुहोस्"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Yesterday"
+msgstr "हिजो"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Today"
+msgstr "आज"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgctxt "task due date"
+msgid "Tomorrow"
+msgstr "भोलि"
+
+# gnome-shell-extension/clock@katna.invenia.in/extension.js
+msgid "No tasks"
+msgstr "कुनै कार्य छैन"
+
+# plasma-clock/package/contents/ui/KatnaJoinButton.qml
+msgctxt "@action:button join the event's video call"
+msgid "Join"
+msgstr "सामेल हुनुहोस्"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Yesterday"
+msgstr "हिजो"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Today"
+msgstr "आज"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@label task due date"
+msgid "Tomorrow"
+msgstr "भोलि"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@title heading of the tasks list"
+msgid "Tasks"
+msgstr "कार्यहरू"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder"
+msgid "Add a task"
+msgstr "कार्य थप्नुहोस्"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:placeholder %1 is a short date"
+msgid "Add a task for %1"
+msgstr "%1 को लागि कार्य थप्नुहोस्"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@action:button"
+msgid "Done"
+msgstr "सकियो"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "No tasks"
+msgstr "कुनै कार्य छैन"
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info"
+msgid "Katna isn't answering"
+msgstr "Katna ले जवाफ दिइरहेको छैन"
