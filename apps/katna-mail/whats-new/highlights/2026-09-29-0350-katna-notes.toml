@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna Notes"
+text = """
+Notes on the rail now opens Katna Notes, laid out like Google Keep. Take
+a note or a checklist, give it a color, pin it to the top, and tick items
+right on the board. Notes save as you type; the search box finds them;
+Archive and Trash keep them out of the way, with Undo.
+"""
