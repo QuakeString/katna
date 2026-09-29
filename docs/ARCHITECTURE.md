@@ -2133,8 +2133,8 @@ Gemini or confidential mode):
   items first come closer together (36 px down to 28 px), and only then
   does the menu scroll; a long submenu does the same. The Calendar page
   has right-click menus in the same card (`calendar/menu.rs`): on a free
-  time or day (a new event, focus time or out of office there, and Open
-  day), on an event (details, edit, duplicate, delete, Going?, join,
+  time or day (a new event, a task on the Task tab, focus time or out of
+  office there, and Open day), on an event (details, edit, duplicate, delete, Going?, join,
   email guests, Google's eleven colors and Move to another calendar,
   the browser or the contact) and on a task (details, done, star, Date:
   today, tomorrow, in a week, all day or no date, and delete). Changes
