@@ -1729,3 +1729,12 @@ Kotak carian di bahagian atas mendapat tepi berwarna aksen semasa anda
 menaip di dalamnya, seperti setiap medan lain, dan petunjuk Ctrl+F nya
 beralih ke tepi sehingga anda membiarkannya kosong.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Setiap senarai tugas kelihatan"
+text = """
+“Semua tugasan” kini menunjukkan seberapa banyak senarai bersebelahan
+yang muat dalam tetingkap, dengan lebih banyak baris di bawah, jadi
+setiap senarai boleh dicapai. Senarai baharu menatal ke dalam paparan
+sebaik sahaja anda membuatnya.
+"""

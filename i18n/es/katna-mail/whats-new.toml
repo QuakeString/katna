@@ -1726,3 +1726,11 @@ El cuadro de búsqueda de arriba se marca con un borde de color mientras
 escribes en él, como cualquier otro campo, y su indicación Ctrl+F se
 aparta hasta que lo dejas vacío.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Todas las listas de tareas a la vista"
+text = """
+Todas las tareas muestra ahora tantas listas una al lado de otra como
+caben en la ventana, con más filas debajo, para que se pueda llegar a
+todas. Una lista nueva se desplaza a la vista en cuanto la creas.
+"""

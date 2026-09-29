@@ -1698,3 +1698,11 @@ text = """
 renginde bir kenar alıyor ve Ctrl+F ipucu, kutuyu boş bırakana kadar
 kenara çekiliyor.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Her görev listesi görünürde"
+text = """
+“Tüm görevler” artık pencereye sığdığı kadar listeyi yan yana, altında
+da başka satırlarla gösteriyor; böylece her listeye ulaşılabiliyor. Yeni
+bir liste, oluşturduğunuz anda görünür alana kayıyor.
+"""

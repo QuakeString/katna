@@ -1682,3 +1682,11 @@ Sökrutan högst upp får en accentkant medan du skriver i den, precis som
 alla andra fält, och dess Ctrl+F-tips flyttar undan tills du lämnar den
 tom.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Alla uppgiftslistor syns"
+text = """
+”Alla uppgifter” visar nu så många listor sida vid sida som får plats i
+fönstret, med fler rader nedanför, så att varje lista går att nå. En ny
+lista rullas fram så fort du skapar den.
+"""

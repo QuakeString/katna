@@ -1775,3 +1775,12 @@ Le champ de recherche en haut prend un contour d’accent pendant que vous
 y tapez, comme tous les autres champs, et son indication Ctrl+F s’efface
 jusqu’à ce que vous le laissiez vide.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Toutes les listes de tâches en vue"
+text = """
+Toutes les tâches affiche désormais autant de listes côte à côte que la
+fenêtre en contient, avec d’autres rangées en dessous, pour que chaque
+liste soit accessible. Une nouvelle liste défile à l’écran dès que vous
+la créez.
+"""

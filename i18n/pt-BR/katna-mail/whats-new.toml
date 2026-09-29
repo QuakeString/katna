@@ -1712,3 +1712,11 @@ A caixa de pesquisa no topo ganha uma borda de destaque enquanto você
 digita nela, como todos os outros campos, e a dica Ctrl+F sai do caminho
 até você deixá-la vazia.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Todas as listas de tarefas à vista"
+text = """
+“Todas as tarefas” agora mostra lado a lado quantas listas couberem na
+janela, com mais fileiras abaixo, para que todas as listas possam ser
+alcançadas. Uma lista nova rola para a vista assim que você a cria.
+"""

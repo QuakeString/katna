@@ -1776,3 +1776,12 @@ Nagkakaroon na ng accent na gilid ang search box sa itaas habang
 nagta-type ka rito, gaya ng ibang field, at umaalis sa daan ang Ctrl+F
 na hint nito hanggang iwan mo itong walang laman.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Nakikita ang bawat listahan ng gawain"
+text = """
+Ipinapakita na ngayon ng Lahat ng gawain ang pinakamaraming listahang
+magkakatabi na kasya sa window, may iba pang hilera sa ibaba, kaya
+maaabot ang bawat listahan. Agad na nag-i-scroll papunta sa view ang
+bagong listahan pagkagawa mo nito.
+"""

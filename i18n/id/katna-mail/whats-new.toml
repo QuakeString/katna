@@ -1718,3 +1718,12 @@ Kotak penelusuran di atas kini mendapat tepi aksen saat Anda mengetik di
 dalamnya, seperti kolom lainnya, dan petunjuk Ctrl+F-nya menyingkir
 sampai Anda mengosongkannya.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Setiap daftar tugas terlihat"
+text = """
+Semua tugas kini menampilkan daftar berdampingan sebanyak yang muat di
+jendela, dengan baris lain di bawahnya, sehingga setiap daftar bisa
+dijangkau. Daftar baru langsung bergulir ke tampilan begitu Anda
+membuatnya.
+"""

@@ -1758,3 +1758,11 @@ Das Suchfeld oben bekommt beim Tippen einen farbigen Rand wie jedes
 andere Feld, und sein Hinweis Strg+F tritt zur Seite, bis Sie es leer
 lassen.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Jede Aufgabenliste im Blick"
+text = """
+Alle Aufgaben zeigt jetzt so viele Listen nebeneinander, wie ins Fenster
+passen, mit weiteren Reihen darunter, sodass jede Liste erreichbar ist.
+Eine neue Liste rollt ins Bild, sobald Sie sie anlegen.
+"""

@@ -1660,3 +1660,11 @@ text = """
 Ô tìm kiếm ở trên cùng có viền màu nhấn khi bạn gõ vào, như mọi trường
 khác, và gợi ý Ctrl+F tạm ẩn đi cho đến khi bạn để trống ô.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Mọi danh sách việc cần làm đều trong tầm nhìn"
+text = """
+“Tất cả việc cần làm” giờ hiện nhiều danh sách cạnh nhau nhất có thể vừa
+cửa sổ, cùng thêm các hàng bên dưới, để danh sách nào cũng xem được.
+Danh sách mới sẽ được cuộn vào tầm nhìn ngay khi bạn tạo.
+"""

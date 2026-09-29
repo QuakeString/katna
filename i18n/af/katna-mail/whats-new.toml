@@ -1666,3 +1666,11 @@ text = """
 Die soekkassie bo kry 'n aksentrand terwyl jy daarin tik, soos elke
 ander veld, en sy Ctrl+F-wenk staan opsy totdat jy dit leeg laat.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Elke takelys in sig"
+text = """
+Alle take wys nou soveel lyste langs mekaar as wat in die venster pas,
+met meer rye daaronder, sodat elke lys bereik kan word. 'n Nuwe lys rol
+in sig sodra jy dit maak.
+"""

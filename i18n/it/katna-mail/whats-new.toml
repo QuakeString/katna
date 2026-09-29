@@ -1731,3 +1731,11 @@ La casella di ricerca in alto prende un bordo in colore d'accento mentre
 ci scrivi, come ogni altro campo, e il suo suggerimento Ctrl+F si fa da
 parte finché non la lasci vuota.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Tutti gli elenchi di attività a portata di vista"
+text = """
+«Tutte le attività» ora mostra affiancati tanti elenchi quanti ne
+entrano nella finestra, con altre righe sotto, così ogni elenco è
+raggiungibile. Un nuovo elenco scorre in vista appena lo crei.
+"""

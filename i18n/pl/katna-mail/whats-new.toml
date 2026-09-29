@@ -1705,3 +1705,11 @@ Pole wyszukiwania u góry dostaje obramowanie w kolorze akcentu, gdy w
 nim piszesz, tak jak każde inne pole, a podpowiedź Ctrl+F usuwa się na
 bok, dopóki nie zostawisz go pustego.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Każda lista zadań w zasięgu wzroku"
+text = """
+„Wszystkie zadania” pokazuje teraz obok siebie tyle list, ile mieści się
+w oknie, z kolejnymi rzędami poniżej, więc do każdej listy da się
+dotrzeć. Nowa lista przewija się do widoku, gdy tylko ją utworzysz.
+"""

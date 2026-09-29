@@ -1624,3 +1624,9 @@ title = "Igbe ọchụchọ na-egosi mgbe ọ na-arụ ọrụ"
 text = """
 Igbe ọchụchọ dị n'elu na-enweta ọnụ agba ntụpọ mgbe ị na-ede na ya, dị ka ogige ọ bụla ọzọ, ntụziaka Ctrl+F ya na-ewepụkwa onwe ya ruo mgbe ị hapụrụ ya ka ọ tọgbọ chakoo.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Ndepụta ọrụ ọ bụla n'anya"
+text = """
+“Ọrụ niile” na-egosi ugbu a ọtụtụ ndepụta n'akụkụ ibe ha dị ka windo nwere ike ịnabata, ya na ahịrị ndị ọzọ n'okpuru, ka e wee ruo ndepụta ọ bụla. Ndepụta ọhụrụ na-apụta n'anya ozugbo ị mere ya.
+"""

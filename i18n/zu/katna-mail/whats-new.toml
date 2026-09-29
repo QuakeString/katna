@@ -1773,3 +1773,12 @@ Ibhokisi lokusesha phezulu lithola unqenqema lombala wokugcizelela
 ngenkathi uthayipha kulo, njenganoma iyiphi enye indawo yokubhala, futhi
 isexwayiso salo se-Ctrl+F siyasuka size ulishiye lingenalutho.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Lonke uhlu lwemisebenzi luyabonakala"
+text = """
+I-“Yonke imisebenzi” manje ibonisa izinhlu eziningi eceleni kwelinye
+ngokulingana newindi, nemigqa eyengeziwe ngaphansi, ukuze lonke uhlu
+lufinyeleleke. Uhlu olusha luyaskroleka lubonakale ngokushesha nje uma
+ulwenza.
+"""

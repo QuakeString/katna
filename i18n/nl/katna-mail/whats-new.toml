@@ -1716,3 +1716,11 @@ Het zoekvak bovenaan krijgt een rand in de accentkleur terwijl je erin
 typt, net als elk ander veld, en de hint Ctrl+F gaat opzij totdat je het
 leeg laat.
 """
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Elke takenlijst in beeld"
+text = """
+“Alle taken” toont nu zoveel lijsten naast elkaar als in het venster
+passen, met meer rijen eronder, zodat je elke lijst kunt bereiken. Een
+nieuwe lijst schuift in beeld zodra je hem maakt.
+"""
