@@ -1081,3 +1081,48 @@ Die Opdaterings-venster noem nou elke weergawe se jongste verandering,
 sê waar jou kopie vandaan kom en wanneer Katna laas vir opdaterings
 gekyk het.
 """
+
+["2026-09-29-0213-coffee-button-play"]
+title = "’n Klein toneelstukkie in Koop vir my ’n koffie"
+text = """
+Laat die wyser rus op Koop vir my ’n koffie in Meer oor Katna: dit vra
+vir koffie, tee, pizza, dan vir glad niks, neem genoeë met water en sê
+dankie met ’n paar vonkies. Dit speel elke keer een keer en bly stil met
+verminderde beweging.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "’n Duideliker Opdateringvenster"
+text = """
+’n Lopende balk wys terwyl Katna vir opdaterings soek, en die nuwe
+weergawe val in sy eie kleur op langs die een wat jy het.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Sleutels wat die paneel volg waarin jy is"
+text = """
+Met die gesprek langs die lys beweeg Op en Af nou in die lys en wys elke
+gesprek. Tab of Enter gaan in die gesprek in, waar Op en Af dit rol; Esc
+of Shift+Tab gaan terug na die lys. F6 skakel tussen panele, soos in
+ander e-posprogramme.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Vouers gly oop en toe"
+text = """
+As jy op die pyltjie langs ’n rekening of ’n vouer in die vouerpaneel
+klik, gly wat dit bevat nou oop of toe, met die vouers daaronder wat
+saamgly, in plaas van te spring.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Vouers, kieslyste en dialoë per sleutelbord"
+text = """
+Shift+Tab of F6 bring jou by die vouerpaneel, waar Op en Af elke vouer
+oopmaak en Enter na sy e-pos gaan. Op en Af beweeg deur enige kieslys,
+en Enter kies. Shift+F10 of die Menu-sleutel maak die regsklikkieslys
+van die gekose e-pos oop. Dialoë neem die sleutels oor wanneer hulle
+oopgaan: Enter antwoord, Esc kanselleer en Tab bly binne-in hulle. In ’n
+nuwe boodskap stuur Ctrl+Enter vanuit enige veld en Esc maak dit toe,
+met ’n konsep wat bewaar word.
+"""
