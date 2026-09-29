@@ -17,9 +17,12 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use katna_store::{DbKind, MessageFlags, MessageId, ObjectKind, Store, StoredMessage};
 use serde::{Deserialize, Serialize};
 use tantivy::collector::{Count, TopDocs};
-use tantivy::{DocAddress, Index, IndexReader, IndexWriter, Order, ReloadPolicy, Searcher, Term};
+use tantivy::{
+    DocAddress, Index, IndexReader, IndexSettings, IndexWriter, Order, ReloadPolicy, Searcher, Term,
+};
 
 use crate::compile::{Fuzziness, compile_with};
+use crate::directory;
 use crate::document::{self, MessageText};
 use crate::error::{Error, Result};
 use crate::highlight::Highlighter;
@@ -196,7 +199,11 @@ impl SearchIndex {
             }
         }
         fs::create_dir_all(dir).map_err(|source| io_error(dir, source))?;
-        let index = Index::create_in_dir(dir, schema::build_schema())?;
+        let index = Index::create(
+            directory::open(dir)?,
+            schema::build_schema(),
+            IndexSettings::default(),
+        )?;
         schema::register_tokenizers(index.tokenizers());
         let mut writer: IndexWriter = index.writer_with_num_threads(1, 15_000_000)?;
         commit(
@@ -221,7 +228,7 @@ impl SearchIndex {
     }
 
     fn open_existing(dir: &Path, reload: ReloadPolicy) -> Result<Self> {
-        let index = Index::open_in_dir(dir)?;
+        let index = Index::open(directory::open(dir)?)?;
         let found = read_state(&index)?.schema_version;
         if found != SCHEMA_VERSION {
             return Err(Error::SchemaVersion {
