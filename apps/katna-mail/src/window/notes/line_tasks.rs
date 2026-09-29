@@ -25,13 +25,9 @@ pub(in crate::window) fn note_of_task(link: &str) -> Option<i64> {
     link.strip_prefix(NOTE)?.parse().ok()
 }
 
-/// The text of the unticked checklist line in `body` that byte `cursor`
-/// is on, if it has any.
-fn line_at(body: &str, cursor: usize) -> Option<&str> {
-    let cursor = cursor.min(body.len());
-    let start = body[..cursor].rfind('\n').map_or(0, |ix| ix + 1);
-    let end = body[start..].find('\n').map_or(body.len(), |ix| start + ix);
-    match check_of(&body[start..end]) {
+/// The text of `line` if it is an unticked checklist item with any.
+fn task_text(line: &str) -> Option<&str> {
+    match check_of(line) {
         Some((false, rest)) if !rest.trim().is_empty() => Some(rest.trim()),
         _ => None,
     }
@@ -46,7 +42,8 @@ impl MailWindow {
             return None;
         }
         let area = editor.body.read(cx);
-        line_at(area.text(), area.cursor()).map(str::to_owned)
+        let para = area.doc().para(area.cursor().path)?;
+        task_text(&para.text).map(str::to_owned)
     }
 
     /// Make it a task (a note's toolbar).
@@ -110,16 +107,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_line_under_the_cursor_is_the_task() {
-        let body = "Trip\n☐ book train\n☑ pack\n☐ \nplain";
-        let at = |text: &str| body.find(text).unwrap();
-        assert_eq!(line_at(body, at("train")), Some("book train"));
-        assert_eq!(line_at(body, at("☐ book")), Some("book train"));
-        assert_eq!(line_at(body, at("\n☑")), Some("book train"));
-        assert_eq!(line_at(body, at("pack")), None);
-        assert_eq!(line_at(body, at("☐ \n") + 4), None);
-        assert_eq!(line_at(body, at("Trip")), None);
-        assert_eq!(line_at(body, body.len()), None);
+    fn an_unticked_item_is_a_task() {
+        assert_eq!(task_text("☐ book train "), Some("book train"));
+        assert_eq!(task_text("☑ pack"), None);
+        assert_eq!(task_text("☐ "), None);
+        assert_eq!(task_text("plain"), None);
     }
 
     #[test]

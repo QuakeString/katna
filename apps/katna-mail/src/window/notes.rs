@@ -7,6 +7,7 @@
 //! the way Apple's Notes folder keeps them. Archive and Trash sit in the
 //! list at the left; Trash empties itself after seven days.
 
+mod format;
 mod labels;
 mod line_tasks;
 mod meetings;
@@ -23,7 +24,8 @@ use gpui::{
 use katna_dbus::NoteItem;
 use katna_i18n::tr;
 use katna_store::Note;
-use katna_ui::{InputEvent, TextArea, TextInput, px, unpx};
+use katna_ui::rich::{RichEditor, RichEvent};
+use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
 use super::apps::APP_RAIL_WIDTH;
@@ -128,7 +130,7 @@ struct Editor {
     /// 0 until the new note is first saved.
     id: i64,
     title: Entity<TextInput>,
-    body: Entity<TextArea>,
+    body: Entity<RichEditor>,
     color: i64,
     pinned: bool,
     archived: bool,
@@ -142,6 +144,8 @@ struct Editor {
     palette: bool,
     /// The account row is open.
     places: bool,
+    /// The formatting row is open.
+    format: bool,
     /// The label picker, when open.
     picker: Option<labels::Picker>,
     /// A save is on its way; another waits for it.
@@ -156,7 +160,8 @@ impl Editor {
             id: self.id,
             account: self.account.unwrap_or(0),
             title: self.title.read(cx).text().to_owned(),
-            body: self.body.read(cx).text().to_owned(),
+            body: format::text_of(self.body.read(cx).doc()),
+            html: format::html_of(self.body.read(cx).doc()),
             color: self.color,
             pinned: self.pinned,
             archived: self.archived,
@@ -166,7 +171,7 @@ impl Editor {
     }
 
     fn is_empty(&self, cx: &gpui::App) -> bool {
-        self.title.read(cx).text().trim().is_empty() && self.body.read(cx).text().trim().is_empty()
+        self.title.read(cx).text().trim().is_empty() && self.body.read(cx).is_blank()
     }
 }
 
@@ -182,6 +187,7 @@ fn item_of(note: &Note) -> NoteItem {
         archived: note.archived,
         labels: note.labels.clone(),
         link: note.link.clone().unwrap_or_default(),
+        html: note.html.clone(),
     }
 }
 
@@ -338,16 +344,19 @@ impl MailWindow {
         self.calendar.open = None;
         let accent = rgba(self.theme(window).accent).into();
         let (about_title, about_link) = about.unzip();
-        let (title_text, body_text) = note
-            .map(|n| (n.title.clone(), n.body.clone()))
+        let (title_text, (body_text, body_html)) = note
+            .map(|n| (n.title.clone(), (n.body.clone(), n.html.clone())))
             .unwrap_or_else(|| {
                 (
                     about_title.clone().unwrap_or_default(),
-                    if checklist {
-                        UNTICKED.to_owned()
-                    } else {
-                        String::new()
-                    },
+                    (
+                        if checklist {
+                            UNTICKED.to_owned()
+                        } else {
+                            String::new()
+                        },
+                        String::new(),
+                    ),
                 )
             });
         let title = cx.new(|cx| {
@@ -356,11 +365,13 @@ impl MailWindow {
             input.set_text(title_text, cx);
             input
         });
+        let palette = super::compose::palette(&self.theme(window));
         let body = cx.new(|cx| {
-            let mut area = TextArea::new(tr!("notes-take-a-note"), cx);
-            area.set_accent(accent);
-            let end = body_text.len();
-            area.set_text(body_text, end, cx);
+            let mut area = RichEditor::new(tr!("notes-take-a-note"), cx);
+            area.set_palette(palette);
+            let doc = format::doc_of(&body_text, &body_html);
+            let end = doc.end();
+            area.set_doc(doc, end, cx);
             area
         });
         let on_title =
@@ -377,13 +388,13 @@ impl MailWindow {
                     InputEvent::Cancel => this.close_note(cx),
                 }
             });
-        let on_body = cx.subscribe(&body, |this, _, event: &InputEvent, cx| match event {
-            InputEvent::Changed => this.note_typed(cx),
-            InputEvent::Cancel => this.close_note(cx),
-            InputEvent::Submit => {}
+        let on_body = cx.subscribe(&body, |this, _, event: &RichEvent, cx| match event {
+            RichEvent::Changed => this.note_typed(cx),
+            RichEvent::Cancel => this.close_note(cx),
+            // Make it a task and the formatting row follow the cursor.
+            RichEvent::Selection => cx.notify(),
+            _ => {}
         });
-        // Make it a task follows the cursor from line to line.
-        let on_cursor = cx.observe(&body, |_, _, cx| cx.notify());
         let focus = if note.is_some() || checklist || about_title.is_some() {
             body.focus_handle(cx)
         } else {
@@ -419,10 +430,11 @@ impl MailWindow {
             changed: false,
             palette: false,
             places: false,
+            format: false,
             picker: None,
             saving: false,
             _save: None,
-            _subscriptions: vec![on_title, on_body, on_cursor],
+            _subscriptions: vec![on_title, on_body],
         };
         if let Some(page) = &mut self.notes {
             page.editor = Some(editor);
@@ -1251,14 +1263,26 @@ impl MailWindow {
         }
         let more = lines.len().saturating_sub(CARD_LINES);
         lines.truncate(CARD_LINES);
+        // A formatted note shows its headings, bold, italic and underline.
+        let formatted = format::card_paras(&note.body, &note.html);
         let body = lines.into_iter().map(|(ix, check, text)| {
+            let styled = formatted.as_ref().and_then(|paras| paras.get(ix)).map(|para| {
+                let skip = if check.is_some() { UNTICKED.len() } else { 0 };
+                format::card_line(para, skip)
+            });
+            let scale = styled.as_ref().map_or(1.0, |(_, scale)| *scale);
             let row = div()
                 .flex()
                 .flex_row()
                 .items_start()
                 .gap(px(8.0))
-                .text_size(px(14.0))
-                .line_height(px(20.0));
+                .text_size(px(14.0 * scale))
+                .line_height(px(20.0 * scale));
+            let text = match styled {
+                Some((element, _)) => element,
+                None if text.is_empty() => " ".to_owned().into_any_element(),
+                None => text.into_any_element(),
+            };
             match check {
                 Some(done) => {
                     let item = base.clone();
@@ -1271,6 +1295,9 @@ impl MailWindow {
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 let mut item = item.clone();
+                                if !item.html.is_empty() {
+                                    item.html = format::toggle_html_line(&item.body, &item.html, ix);
+                                }
                                 item.body = toggle_line(&item.body, ix);
                                 this.change_note(item, cx)
                             }))
@@ -1282,11 +1309,7 @@ impl MailWindow {
                     )
                     .child(div().flex_1().min_w_0().child(text))
                 }
-                None => row.child(div().flex_1().min_w_0().child(if text.is_empty() {
-                    " ".to_owned()
-                } else {
-                    text
-                })),
+                None => row.child(div().flex_1().min_w_0().child(text)),
             }
         });
         let footer = |name: &'static str, tip_text: String| {
@@ -1768,6 +1791,7 @@ impl MailWindow {
             )
             .children(places)
             .children(palette)
+            .children(self.render_format_row(th, cx))
             .children(self.render_label_picker(th, cx))
             .child(
                 div()
@@ -1778,6 +1802,22 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(2.0))
+                    .child(tool("format-text", tr!("notes-format")).on_click(cx.listener(
+                        |this, _, window, cx| {
+                            let Some(editor) =
+                                this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                            else {
+                                return;
+                            };
+                            editor.format = !editor.format;
+                            editor.palette = false;
+                            editor.places = false;
+                            editor.picker = None;
+                            let focus = editor.body.focus_handle(cx);
+                            window.focus(&focus, cx);
+                            cx.notify();
+                        },
+                    )))
                     .child(tool("text-color", tr!("notes-color")).on_click(cx.listener(
                         |this, _, _, cx| {
                             if let Some(editor) =
@@ -1803,9 +1843,7 @@ impl MailWindow {
                                 };
                                 let body = editor.body.clone();
                                 body.update(cx, |area, cx| {
-                                    let text = toggle_checklist(area.text());
-                                    let end = text.len();
-                                    area.set_text(text, end, cx);
+                                    area.edit_doc(format::toggle_checklist_doc, cx)
                                 });
                                 window.focus(&body.focus_handle(cx), cx);
                             },

@@ -133,6 +133,9 @@ pub struct NoteItem {
     pub labels: Vec<String>,
     /// The `Message-ID` of the mail the note is about, or empty.
     pub link: String,
+    /// `body` formatted, as HTML with one paragraph per line; empty when
+    /// it has no formatting.
+    pub html: String,
 }
 
 /// A file going up to Google Drive or OneDrive for a message, from

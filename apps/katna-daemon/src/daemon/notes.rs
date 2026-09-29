@@ -47,6 +47,13 @@ impl Daemon {
                 MAX_NOTE_BODY / 1_000
             )));
         }
+        // Markup takes room of its own.
+        if note.html.len() > 4 * MAX_NOTE_BODY {
+            return Err(CommandError::InvalidArgs(format!(
+                "a note is at most {} kB",
+                MAX_NOTE_BODY / 1_000
+            )));
+        }
         if note.labels.len() > MAX_NOTE_LABELS {
             return Err(CommandError::InvalidArgs(format!(
                 "a note has at most {MAX_NOTE_LABELS} labels"
@@ -66,6 +73,7 @@ impl Daemon {
             account_id,
             title: note.title.trim_end().to_owned(),
             body: note.body,
+            html: note.html,
             color: note.color.clamp(0, 99),
             pinned: note.pinned,
             archived: note.archived,
