@@ -306,9 +306,10 @@ impl CalDav {
     /// What the server refusing a request (401 or 403) means.
     fn refused(&self, status: u16, body: &[u8]) -> CalendarError {
         match (&self.auth, status) {
-            (Auth::Basic(_), _) => CalendarError::Failed(Error::Rejected(
-                "the CalDAV server refused the password".into(),
-            )),
+            // A new password, or an app password, lets Katna in.
+            (Auth::Basic(_), _) => {
+                CalendarError::NeedsSignIn("the CalDAV server refused the password".into())
+            }
             (Auth::Bearer(_), 401) => {
                 CalendarError::NeedsSignIn("Google refused the sign-in for CalDAV".into())
             }

@@ -270,6 +270,8 @@ pub struct Daemon {
     updates: crate::updates::Updates,
     /// Has task sync run a round soon.
     task_sync_wake: (Sender<()>, Receiver<()>),
+    /// Each account's last task sync result, for the Tasks page.
+    tasks_status: Mutex<HashMap<AccountId, tasks::Status>>,
 }
 
 /// A refresh token that replaced the account's old one.
@@ -329,6 +331,7 @@ impl Daemon {
             scheduler: OnceLock::new(),
             updates: crate::updates::Updates::default(),
             task_sync_wake: async_channel::bounded(1),
+            tasks_status: Mutex::default(),
         });
         Ok((daemon, receiver))
     }
@@ -653,6 +656,7 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::AccountsChanged);
         self.start_account(&account).await;
         self.wake_calendars();
+        self.wake_task_sync();
         Ok(account.id)
     }
 
@@ -860,6 +864,7 @@ impl Daemon {
             self.tokens.lock().unwrap().remove(&id);
         }
         self.start_account(&account).await;
+        self.wake_task_sync();
         Ok(())
     }
 
@@ -1005,6 +1010,7 @@ impl Daemon {
         }
         self.wake_calendars();
         self.wake_contacts();
+        self.wake_task_sync();
         Ok(())
     }
 

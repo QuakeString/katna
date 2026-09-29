@@ -384,6 +384,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.contacts_status()?)
             }
 
+            async fn tasks_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
+                Ok(self.daemon.tasks_status()?)
+            }
+
             async fn edit_event(&self, json: String) -> fdo::Result<i64> {
                 Ok(self.daemon.edit_event(&json)?)
             }
