@@ -28,6 +28,24 @@ contacts-label-renamed = Label renamed to { $name }
 contacts-label-deleted = Deleted label { $name }
 contacts-label-no-email = Nobody on this label has an email address
 # Under the labels: tools for the whole address book, as in Google Contacts.
+# The column's list of mail accounts, each with the people saved in it.
+contacts-accounts = Accounts
+# The line under an account whose contacts did not come: why, and the one
+# click that fixes it.
+contacts-account-sign-in = Sign in again to show contacts
+contacts-account-signed-in = Signed in to { $address } again. Getting your contacts…
+contacts-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your contacts.
+contacts-account-password = The server did not accept the password. Yahoo, iCloud, Zoho and others need an app password.
+contacts-account-change-password = Change password
+contacts-account-change-password-tooltip = Open Settings > Accounts
+contacts-account-failed = The contacts could not be read.
+# $reason is the server's own words, in English.
+contacts-account-error = The contacts could not be read: { $reason }
+contacts-account-none = No address book found
+contacts-account-looking = Looking for contacts…
+contacts-account-try-again = Try again
+contacts-account-try-again-tooltip = Check this account's contacts again now
+contacts-account-fixing = Working on it…
 contacts-manage = Fix and manage
 # Suggested duplicates, as in Google Contacts.
 contacts-merge = Merge and fix

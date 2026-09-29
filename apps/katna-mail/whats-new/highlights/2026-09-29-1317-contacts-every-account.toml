@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every account in Contacts"
+text = """
+Contacts now lists all your accounts under Accounts, with how many people
+each holds; click one to see only its people. When an account's contacts
+can't load, a line under it says why, with the one click that fixes it,
+such as "Sign in again to show contacts" or "Try again".
+"""

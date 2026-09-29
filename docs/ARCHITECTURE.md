@@ -1018,6 +1018,16 @@ mail's print preview). A person's page prints them alone and shows them as
 a QR code of their vCard, without notes or picture (addresses and links are
 dropped when it would not fit), which a phone's camera saves.
 
+The column also lists every mail account under Accounts, with how many
+people are saved in it (a click lists only those). The daemon keeps where
+each account's contacts sync stands (`Pim1.ContactsStatus()`, a
+`contacts_state`: ok, needs-sign-in, error or none, sending
+`ContactsChanged` when one changes); an account whose contacts did not
+come shows one line under it with why and its fix: "Sign in again to show
+contacts" (OAuth2 without the contacts scopes), Change password (a server
+that refused the password; many need an app password), or Try again
+(`SyncNow`), as the Calendar does.
+
 Saved people's birthdays show on the Calendar and the agenda as a
 Birthdays calendar made on this computer (id -1, read-only, never stored):
 a yearly whole-day event per person, built from the cards each time the

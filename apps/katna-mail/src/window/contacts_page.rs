@@ -59,6 +59,8 @@ pub(super) enum View {
     /// Suggested duplicates ([`super::contacts_merge`]).
     Merge,
     Label(String),
+    /// The people saved in one account ([`super::contacts_accounts`]).
+    Account(i64),
 }
 
 /// A line of the list: a heading or a person.
@@ -114,6 +116,8 @@ pub(super) struct ContactsPage {
     pub(super) saving_others: BTreeSet<i64>,
     /// A person shown as a QR code.
     pub(super) qr: Option<super::contacts_share::QrShare>,
+    /// Where each account's contacts sync stands.
+    pub(super) accounts: super::contacts_accounts::AccountStatus,
 }
 
 pub(super) struct Open {
@@ -145,6 +149,7 @@ impl MailWindow {
     }
 
     pub(super) fn load_contacts(&mut self, cx: &mut Context<Self>) {
+        self.load_contacts_status(cx);
         let paths = self.paths.clone();
         self.contacts.load = Some(cx.spawn(async move |this, cx| {
             let book = cx
@@ -660,6 +665,7 @@ impl MailWindow {
                         ),
                 )
             }))
+            .child(self.contacts_accounts_nav(book, th, cx))
             .child(self.contacts_manage_nav(book, th, cx))
             .into_any_element()
     }
@@ -785,6 +791,21 @@ impl MailWindow {
         )
     }
 
+    /// Whether `person` is listed in the view: on its label, or saved in
+    /// its account.
+    pub(super) fn in_view(&self, person: &SavedContact) -> bool {
+        match &self.contacts.view {
+            View::Label(name) => self
+                .person_labels(person.ids.first().copied(), &person.labels)
+                .contains(name),
+            View::Account(id) => person
+                .accounts
+                .iter()
+                .any(|a| a.is_some_and(|a| a.0 == *id)),
+            _ => true,
+        }
+    }
+
     /// The people of the view that match `query`, starred first.
     fn contacts_list(
         &self,
@@ -793,18 +814,11 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let label = match &self.contacts.view {
-            View::Label(name) => Some(name.clone()),
-            _ => None,
-        };
         let shown: Vec<usize> = visible(&book.people, &self.contacts.hidden)
             .into_iter()
             .filter(|&ix| {
                 let p = &book.people[ix];
-                label.as_ref().is_none_or(|l| {
-                    self.person_labels(p.ids.first().copied(), &p.labels)
-                        .contains(l)
-                }) && (query.is_empty() || matches(p, query))
+                self.in_view(p) && (query.is_empty() || matches(p, query))
             })
             .collect();
         if shown.is_empty() {
@@ -874,6 +888,32 @@ impl MailWindow {
             }),
         )
         .size_full();
+        let label = match &self.contacts.view {
+            View::Label(name) => Some(name.clone()),
+            _ => None,
+        };
+        // An account's people are headed by its address.
+        let account = match &self.contacts.view {
+            View::Account(id) => self
+                .accounts
+                .iter()
+                .find(|a| a.id.0 == *id)
+                .map(|a| a.address.clone()),
+            _ => None,
+        };
+        let account_title = account.map(|address| {
+            div()
+                .flex_none()
+                .h(px(48.0))
+                .mx(px(16.0))
+                .px(px(8.0))
+                .flex()
+                .items_center()
+                .text_size(px(20.0))
+                .text_color(rgba(th.text))
+                .truncate()
+                .child(address)
+        });
         let title = label.map(|name| {
             let email = name.clone();
             div()
@@ -920,6 +960,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .children(title)
+            .children(account_title)
             .children(header)
             .child(div().flex_1().min_h_0().child(list))
             .into_any_element()

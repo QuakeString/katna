@@ -272,11 +272,16 @@ impl MailWindow {
 
     /// Writes the people on screen (everyone, or the label in view) to a
     /// vCard file the user picks.
-    /// The label on show, if one is, and the cards of each person listed
-    /// under it (everyone saved without one).
+    /// The label or account on show, if one is, and the cards of each
+    /// person listed under it (everyone saved without one).
     pub(super) fn people_on_show(&self) -> (Option<String>, Vec<Vec<i64>>) {
         let label = match &self.contacts.view {
             View::Label(name) => Some(name.clone()),
+            View::Account(id) => self
+                .accounts
+                .iter()
+                .find(|a| a.id.0 == *id)
+                .map(|a| a.address.clone()),
             _ => None,
         };
         let Some(Ok(book)) = &self.contacts.book else {
@@ -285,12 +290,7 @@ impl MailWindow {
         let people = visible(&book.people, &self.contacts.hidden)
             .into_iter()
             .map(|ix| &book.people[ix])
-            .filter(|p| {
-                label.as_ref().is_none_or(|l| {
-                    self.person_labels(p.ids.first().copied(), &p.labels)
-                        .contains(l)
-                })
-            })
+            .filter(|p| self.in_view(p))
             .filter(|p| !p.ids.is_empty())
             .map(|p| p.ids.clone())
             .collect();
