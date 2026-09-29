@@ -1302,3 +1302,10 @@ làm việc, như trong Google Calendar: chọn ở phía trên các mốc giờ
 Google và Outlook nhận ra chúng đúng như bản chất, và trong Katna chúng
 hiển thị với biểu tượng riêng.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Việc cần làm ngay trên thư"
+text = """
+Thư bạn đã chuyển thành việc cần làm giờ hiển thị ngày đến hạn của việc
+đó trong danh sách, màu đỏ khi đã quá hạn. Nhấp vào để mở việc cần làm.
+"""

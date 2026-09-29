@@ -1377,3 +1377,11 @@ sein, wie in Google Calendar: Wählen Sie es über den Zeiten aus. Google
 und Outlook erkennen sie als das, was sie sind, und in Katna erscheinen
 sie mit eigenem Symbol.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Aufgaben zu Ihren Mails"
+text = """
+Eine Mail, aus der Sie eine Aufgabe gemacht haben, zeigt in der Liste
+jetzt das Fälligkeitsdatum der Aufgabe, in Rot, sobald sie überfällig
+ist. Ein Klick öffnet die Aufgabe.
+"""

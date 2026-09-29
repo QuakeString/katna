@@ -1346,3 +1346,10 @@ kerja, seperti di Google Calendar: pilih di atas waktunya. Google dan
 Outlook mengenalinya sebagaimana adanya, dan di Katna semuanya tampil
 dengan ikonnya sendiri.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Tugas pada email Anda"
+text = """
+Email yang Anda jadikan tugas kini menampilkan hari jatuh tempo tugas di
+daftar, dengan warna merah jika terlambat. Klik untuk membuka tugas.
+"""

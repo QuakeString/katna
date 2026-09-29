@@ -1293,3 +1293,10 @@ text = """
 Tukio jipya sasa linaweza kuwa Muda wa kuzingatia, Nje ya ofisi au Mahali pa kazi, kama katika Google Calendar: chagua juu ya nyakati.
 Google na Outlook huviona kama vilivyo, na katika Katna vinaonekana kwa aikoni yake yenyewe.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Majukumu kwenye barua yako"
+text = """
+Barua uliyoibadilisha kuwa jukumu sasa inaonyesha siku ya mwisho ya jukumu kwenye orodha, kwa rangi nyekundu likishachelewa.
+Ibofye ili kufungua jukumu.
+"""

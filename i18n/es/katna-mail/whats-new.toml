@@ -1355,3 +1355,11 @@ oficina o Ubicación de trabajo, como en Google Calendar: elígelo encima
 de las horas. Google y Outlook los reconocen tal como son, y en Katna se
 muestran con su propio icono.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Tareas en tu correo"
+text = """
+Un correo que convertiste en tarea ahora muestra en la lista el día de
+vencimiento de la tarea, en rojo cuando está atrasada. Haz clic para
+abrir la tarea.
+"""

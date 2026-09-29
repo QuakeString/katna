@@ -1393,3 +1393,11 @@ Lokasyon ng trabaho, tulad sa Google Calendar: piliin ito sa itaas ng
 mga oras. Nakikilala ito ng Google at Outlook kung ano talaga ito, at
 may sarili itong icon sa Katna.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Mga gawain sa iyong mail"
+text = """
+Ang mail na ginawa mong gawain ay nagpapakita na ngayon ng takdang araw
+ng gawain sa listahan, na pula kapag huli na. I-click ito para buksan
+ang gawain.
+"""

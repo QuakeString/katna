@@ -1337,3 +1337,11 @@ lub Miejscem pracy, tak jak w Google Calendar: wybierz to nad godzinami.
 Google i Outlook rozpoznają je jako to, czym są, a w Katna mają własną
 ikonę.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Zadania przy poczcie"
+text = """
+Wiadomość, z której utworzono zadanie, pokazuje teraz na liście termin
+zadania, na czerwono, gdy jest po terminie. Kliknij go, aby otworzyć
+zadanie.
+"""

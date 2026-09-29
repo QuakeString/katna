@@ -1387,3 +1387,10 @@ Indawo yokusebenza, njengaku-Google Calendar: khetha ngaphezu
 kwezikhathi. I-Google ne-Outlook zibabona njengoba injalo, futhi
 ku-Katna baboniswa nesithonjana sabo.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Imisebenzi kumeyili"
+text = """
+Imeyili oyenze umsebenzi manje ibonisa usuku lokuphela komsebenziohlwini,
+ngokubomvu uma sekuphelelwe yisikhathi. Chofoza kuyo ukuvula umsebenzi.
+"""

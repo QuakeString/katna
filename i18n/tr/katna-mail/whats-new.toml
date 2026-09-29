@@ -1334,3 +1334,10 @@ dışında veya Çalışma konumu olabilir: saatlerin üstünden seçin. Google
 ve Outlook bunları gerçekte ne iseler öyle görür, Katna’da ise kendi
 simgeleriyle görünürler.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Postanızda görevler"
+text = """
+Görev haline getirdiğiniz bir posta artık listede görevin bitiş gününü
+gösterir, gecikince kırmızı olarak. Görevi açmak için tıklayın.
+"""

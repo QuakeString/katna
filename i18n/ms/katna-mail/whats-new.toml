@@ -1359,3 +1359,11 @@ kerja, seperti dalam Google Calendar: pilihnya di atas waktu. Google dan
 Outlook mengenalinya sebagaimana adanya, dan dalam Katna semuanya
 dipaparkan dengan ikonnya sendiri.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Tugas pada e-mel anda"
+text = """
+E-mel yang anda jadikan tugas kini memaparkan hari tarikh akhir tugas
+dalam senarai, berwarna merah apabila lewat. Klik padanya untuk membuka
+tugas.
+"""

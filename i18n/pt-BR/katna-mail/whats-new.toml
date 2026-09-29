@@ -1344,3 +1344,11 @@ trabalho, como no Google Calendar: escolha acima dos horários. O Google
 e o Outlook os reconhecem pelo que são, e no Katna eles aparecem com um
 ícone próprio.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Tarefas nos seus e-mails"
+text = """
+Um e-mail que você transformou em tarefa agora mostra na lista o dia de
+vencimento da tarefa, em vermelho quando estiver atrasada. Clique nele
+para abrir a tarefa.
+"""

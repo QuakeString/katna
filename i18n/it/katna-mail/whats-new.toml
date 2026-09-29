@@ -1359,3 +1359,11 @@ Luogo di lavoro, come in Google Calendar: sceglilo sopra gli orari.
 Google e Outlook li riconoscono per quello che sono e in Katna vengono
 mostrati con una propria icona.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Attività sulle tue e-mail"
+text = """
+Un'e-mail che hai trasformato in attività ora mostra nell'elenco il
+giorno di scadenza dell'attività, in rosso se è in ritardo. Fai clic per
+aprire l'attività.
+"""

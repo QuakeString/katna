@@ -1314,3 +1314,11 @@ En ny händelse kan nu vara Fokustid, Frånvaro eller en Arbetsplats, som
 i Google Calendar: välj det ovanför tiderna. Google och Outlook ser dem
 som vad de är, och i Katna visas de med en egen ikon.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Uppgifter i din e-post"
+text = """
+Ett mejl som du har gjort till en uppgift visar nu uppgiftens
+förfallodag i listan, i rött när den är försenad. Klicka på den för att
+öppna uppgiften.
+"""

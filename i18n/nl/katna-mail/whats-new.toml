@@ -1346,3 +1346,11 @@ zijn, zoals in Google Calendar: kies het boven de tijden. Google en
 Outlook zien ze voor wat ze zijn en in Katna verschijnen ze met een
 eigen pictogram.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Taken bij je mail"
+text = """
+Een mail die je in een taak hebt omgezet, toont in de lijst nu de
+vervaldag van de taak, in rood als die te laat is. Klik erop om de taak
+te openen.
+"""

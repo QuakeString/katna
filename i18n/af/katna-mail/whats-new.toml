@@ -1303,3 +1303,10 @@ text = """
 wees, soos in Google Calendar: kies dit bo die tye. Google en Outlook
 sien dit vir wat dit is, en in Katna verskyn dit met sy eie ikoon.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Take by jou e-pos"
+text = """
+'n E-pos wat jy in 'n taak omskep het, wys nou die taak se sperdatum in
+die lys, in rooi as dit laat is. Klik daarop om die taak oop te maak.
+"""

@@ -1391,3 +1391,11 @@ Calendar : choisissez-le au-dessus des horaires. Google et Outlook les
 reconnaissent pour ce qu’ils sont, et Katna les affiche avec leur propre
 icône.
 """
+
+["2026-09-29-0704-task-chips"]
+title = "Des tâches sur vos e-mails"
+text = """
+Un e-mail que vous avez transformé en tâche affiche désormais dans la
+liste le jour d'échéance de la tâche, en rouge une fois en retard.
+Cliquez dessus pour ouvrir la tâche.
+"""
