@@ -1229,6 +1229,16 @@ clicar com o botão direito em um e-mail. A tarefa usa o assunto do
 e-mail, e o chip E-mail em Tarefas abre o e-mail de novo.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Sua agenda, ao lado do seu e-mail"
+text = """
+Agenda mostra suas agendas do Google, da Microsoft e outras por dia,
+semana, mês ou como programação, com os atalhos do Google Agenda. O botão
+de agenda à direita do seu e-mail abre a agenda do dia, com Participar
+para as chamadas. Entre novamente em uma conta para permitir que o Katna
+leia a agenda dela.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Criar e editar contatos"
 text = """

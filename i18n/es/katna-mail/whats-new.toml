@@ -1237,6 +1237,16 @@ el botón derecho en un correo. La tarea toma el asunto del correo, y su
 etiqueta Correo en Tareas vuelve a abrirlo.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Tu calendario, junto a tu correo"
+text = """
+Calendario muestra tus calendarios de Google, Microsoft y otros por día,
+semana, mes o como agenda, con los atajos de Google Calendar. El botón de
+calendario a la derecha de tu correo abre la agenda del día, con «Unirse»
+para las llamadas. Vuelve a iniciar sesión en una cuenta para que Katna
+pueda leer su calendario.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Crear y editar contactos"
 text = """

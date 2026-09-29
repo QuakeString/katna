@@ -1201,6 +1201,14 @@ Bonyeza Shift+T, kama kwenye Gmail, au bofya kulia barua na uchague Ongeza kweny
 Jukumu huchukua mada ya barua, na chipu yake ya Barua kwenye Majukumu hufungua barua hiyo tena.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Kalenda yako, kando ya barua zako"
+text = """
+Kalenda huonyesha kalenda zako za Google, Microsoft na nyinginezo kwa siku, wiki, mwezi au kama ratiba, ukitumia vitufe vya Google Calendar.
+Kitufe cha kalenda upande wa kulia wa barua zako hufungua ratiba ya siku, kikiwa na Jiunge kwa simu za mkutano.
+Ingia tena kwenye akaunti ili Katna isome kalenda yake.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Kuunda na kubadilisha anwani"
 text = """

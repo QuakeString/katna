@@ -1271,6 +1271,16 @@ kapag nag-right-click ka sa isang mail. Kinukuha ng gawain ang paksa ng
 mail, at muling binubuksan ng chip nitong Mail sa Mga Gawain ang mail.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Ang iyong kalendaryo, katabi ng iyong mail"
+text = """
+Ipinapakita ng Kalendaryo ang iyong mga kalendaryo sa Google, Microsoft
+at iba pa ayon sa araw, linggo, buwan o bilang iskedyul, gamit ang mga
+key ng Google Calendar. Binubuksan ng button ng kalendaryo sa kanan ng
+iyong mail ang agenda ng araw, na may Sumali para sa mga tawag. Mag-sign
+in muli sa isang account para mabasa ng Katna ang kalendaryo nito.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Gumawa at magbago ng mga contact"
 text = """

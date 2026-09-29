@@ -1229,6 +1229,16 @@ mengeklik kanan email. Tugas memakai subjek email, dan chip Email di
 Tugas membuka kembali email tersebut.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Kalender Anda, di samping email"
+text = """
+Kalender menampilkan kalender Google, Microsoft, dan lainnya menurut
+hari, minggu, bulan, atau sebagai jadwal, dengan pintasan Google
+Kalender. Tombol kalender di sebelah kanan email Anda membuka agenda hari
+itu, dengan Gabung untuk panggilan. Masuk lagi ke sebuah akun agar Katna
+dapat membaca kalendernya.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Buat dan ubah kontak"
 text = """

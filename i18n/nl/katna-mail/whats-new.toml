@@ -1228,6 +1228,16 @@ de rechtermuisknop op een e-mail klikt. De taak neemt het onderwerp van
 de e-mail over en de chip E-mail in Taken opent de e-mail weer.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Je agenda, naast je e-mail"
+text = """
+Agenda toont je Google-, Microsoft- en andere agenda’s per dag, week,
+maand of als schema, met de sneltoetsen van Google Agenda. De agendaknop
+rechts van je e-mail opent de agenda van de dag, met Deelnemen voor
+gesprekken. Meld je opnieuw aan bij een account zodat Katna de agenda
+ervan kan lezen.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Contacten maken en bewerken"
 text = """

@@ -1269,6 +1269,16 @@ faisant un clic droit sur un message. La tâche reprend l’objet du
 message, et sa pastille Courrier dans Tâches rouvre le message.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Votre calendrier, à côté de vos e-mails"
+text = """
+Calendrier affiche vos calendriers Google, Microsoft et autres par jour,
+semaine, mois ou sous forme de planning, avec les raccourcis de Google
+Agenda. Le bouton de calendrier à droite de vos e-mails ouvre l’agenda du
+jour, avec « Participer » pour les appels. Reconnectez-vous à un compte
+pour que Katna puisse lire son calendrier.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Créer et modifier des contacts"
 text = """

@@ -1241,6 +1241,16 @@ facendo clic con il pulsante destro su un’email. L’attività prende
 l’oggetto dell’email e il suo chip Posta in Attività la riapre.
 """
 
+["2026-09-29-0412-calendar"]
+title = "Il tuo calendario, accanto alla posta"
+text = """
+Calendario mostra i tuoi calendari Google, Microsoft e altri per giorno,
+settimana, mese o come agenda, con le scorciatoie di Google Calendar. Il
+pulsante del calendario a destra della posta apre l’agenda del giorno, con
+«Partecipa» per le chiamate. Accedi di nuovo a un account per permettere a
+Katna di leggerne il calendario.
+"""
+
 ["2026-09-29-0442-contacts-edit"]
 title = "Creare e modificare i contatti"
 text = """
