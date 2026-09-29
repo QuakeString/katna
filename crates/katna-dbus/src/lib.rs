@@ -621,6 +621,11 @@ macro_rules! pim_proxy {
             /// gives such a link its own address).
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
 
+            /// A new video call link from the mail service of `account`
+            /// (Google Meet for Gmail), or an empty string when it has no
+            /// meetings Katna may make; Katna Mail then makes a Jitsi link.
+            fn meeting_link(&self, account: i64) -> zbus::Result<String>;
+
             /// Shows or hides the events of calendar `id` (the store's
             /// `calendar.id`) everywhere: the Calendar page, the agenda and
             /// the desktop's clock. Sends `CalendarChanged`.

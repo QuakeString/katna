@@ -6002,6 +6002,7 @@ dependencies = [
  "emojis",
  "fontdb",
  "futures-lite",
+ "getrandom 0.3.4",
  "gpui-pre",
  "gpui-pre-platform",
  "harper-core",

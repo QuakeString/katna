@@ -48,6 +48,7 @@ mod error;
 #[cfg(test)]
 mod fake_http;
 pub mod imap;
+pub mod meet;
 pub mod methods;
 pub mod net;
 pub mod notes;

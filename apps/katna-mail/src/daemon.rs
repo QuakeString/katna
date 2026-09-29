@@ -908,6 +908,17 @@ pub async fn drive_share_with_link(
         .map_err(|err| describe(&err))
 }
 
+/// A new video call link from the mail service of `account`; empty when
+/// it has none Katna may make.
+pub async fn meeting_link(connection: &Connection, account: i64) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.meeting_link(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Yields the ID of each Drive upload that moves on.
 pub async fn drive_changes(connection: &Connection) -> Result<impl Stream<Item = i64>, String> {
     let pim = PimProxy::new(connection)

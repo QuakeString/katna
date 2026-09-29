@@ -39,6 +39,7 @@ pub struct Config {
     pub feedback: Feedback,
     pub updates: Updates,
     pub contacts: ContactsConfig,
+    pub meetings: Meetings,
 }
 
 /// The Contacts page's own choices.
@@ -49,6 +50,24 @@ pub struct ContactsConfig {
     /// cards (`"12,40"`), so they are not suggested again.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub dismissed_duplicates: Vec<String>,
+}
+
+/// Video calls started from Katna Mail (`docs/ARCHITECTURE.md` §18.2).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Meetings {
+    /// Where new Jitsi Meet rooms go, for accounts whose mail service has
+    /// no meetings of its own; read through
+    /// [`crate::meeting::jitsi_server`].
+    pub jitsi_server: String,
+}
+
+impl Default for Meetings {
+    fn default() -> Self {
+        Self {
+            jitsi_server: crate::meeting::JITSI_DEFAULT.to_owned(),
+        }
+    }
 }
 
 /// Settings > General > Updates, and About's Update button

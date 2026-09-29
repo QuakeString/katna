@@ -181,6 +181,8 @@ struct Body {
     opened: Option<Arc<Vec<u8>>>,
     /// The invitation (or answer, or cancellation) the message carries.
     invite: Option<Arc<invite::Invite>>,
+    /// The video call links in it, for Join buttons.
+    calls: Vec<(katna_core::meeting::Service, String)>,
 }
 
 impl Body {
@@ -1607,6 +1609,11 @@ impl MailWindow {
                     .and_then(|b| b.invite.as_ref())
                     .filter(|_| !pending)
                     .map(|invite| self.invite_card(ix, id, invite, th, cx));
+                let calls = part
+                    .body
+                    .as_ref()
+                    .filter(|_| !pending)
+                    .and_then(|b| self.call_links(ix, &b.calls, th));
                 div()
                     .flex()
                     .flex_col()
@@ -1628,6 +1635,7 @@ impl MailWindow {
                     }))
                     .children(banner)
                     .children(invite)
+                    .children(calls)
                     .children(translation)
                     .child({
                         // Selection follows the order messages are shown in.
@@ -1945,6 +1953,7 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             sealed: None,
             opened: None,
             invite: None,
+            calls: Vec::new(),
         };
     };
     match katna_crypto::protection(&raw) {
@@ -1976,6 +1985,14 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
     let remote = doc.as_ref().map(rich::remote_urls).unwrap_or_default();
     let svgs = doc.as_ref().map(rich::carried_svgs).unwrap_or_default();
     let authenticated = !remote.is_empty() && katna_render::sender_authenticated(raw);
+    let invite = invite::invite(raw);
+    // An invitation's card has its own Join.
+    let calls = if invite.is_some() {
+        Vec::new()
+    } else {
+        let links = doc.as_ref().map(rich::links).unwrap_or_default();
+        katna_core::meeting::find(links, [view.body.as_str()], None)
+    };
     Body {
         view: Some(view),
         blocks,
@@ -1987,7 +2004,8 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         security,
         sealed: None,
         opened: None,
-        invite: invite::invite(raw),
+        invite,
+        calls,
     }
 }
 
