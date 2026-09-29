@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes on a mail"
+text = """
+Right-click a mail, or open its ⋮ menu, and pick Add a note: a note titled
+with the subject opens over the mail. Its notes show under the subject
+whenever you open that mail again, and a note's Mail chip takes you back to
+the mail.
+"""

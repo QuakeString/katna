@@ -1239,3 +1239,42 @@ CardDAV, une seule fois même si plusieurs comptes les conservent, avec
 libellés, photos et détails. Leurs noms et leurs photos apparaissent
 aussi dans votre courrier et dans les suggestions d’adresses.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notes"
+text = """
+Notes dans la barre latérale ouvre désormais Katna Notes, présenté comme
+Google Keep. Créez une note ou une liste de contrôle, donnez-lui une
+couleur, épinglez-la en haut et cochez les éléments directement sur le
+tableau. Les notes s’enregistrent au fil de la frappe ; la zone de
+recherche les retrouve ; les archives et la corbeille les mettent de
+côté, avec possibilité d’annuler.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Vos notes sur tous vos appareils"
+text = """
+Les notes sont désormais rangées dans le dossier Notes de votre compte
+de messagerie, là où les Notes de l’iPhone et du Mac gardent les leurs.
+Elles vous suivent ainsi sur vos autres appareils et en reviennent. Le
+nom du compte sous une note indique où elle est conservée ; cliquez
+dessus pour la déplacer, ou gardez-la uniquement sur cet ordinateur.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Ajouter un message aux tâches"
+text = """
+Appuyez sur Maj+T, comme dans Gmail, ou choisissez Ajouter aux tâches en
+faisant un clic droit sur un message. La tâche reprend l’objet du
+message, et sa pastille Courrier dans Tâches rouvre le message.
+"""
+
+["2026-09-29-0412-calendar"]
+title = "Votre calendrier, à côté de vos e-mails"
+text = """
+Calendrier affiche vos calendriers Google, Microsoft et autres par jour,
+semaine, mois ou sous forme de planning, avec les raccourcis de Google
+Agenda. Le bouton de calendrier à droite de vos e-mails ouvre l’agenda du
+jour, avec « Participer » pour les appels. Reconnectez-vous à un compte
+pour que Katna puisse lire son calendrier.
+"""

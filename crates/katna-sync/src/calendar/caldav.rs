@@ -52,7 +52,7 @@ const PRINCIPAL: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 const HOME: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav"><d:prop><c:calendar-home-set/></d:prop></d:propfind>"#;
 
-const CALENDARS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
+pub(crate) const CALENDARS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:a="http://apple.com/ns/ical/">
 <d:prop><d:resourcetype/><d:displayname/><a:calendar-color/><c:supported-calendar-component-set/><cs:getctag/><d:sync-token/><d:current-user-privilege-set/></d:prop>
 </d:propfind>"#;
@@ -99,31 +99,31 @@ pub struct CalDav {
 
 /// One property of a multistatus answer.
 #[derive(Debug, Default, Clone)]
-struct Prop {
+pub(crate) struct Prop {
     /// Local name.
     name: String,
     text: String,
     /// Local names of every element inside.
-    inside: Vec<String>,
+    pub(crate) inside: Vec<String>,
     /// Every `href` inside.
     hrefs: Vec<String>,
     /// The `name` of every `comp` inside.
-    comps: Vec<String>,
+    pub(crate) comps: Vec<String>,
 }
 
 /// One `response` of a multistatus answer, with its found properties.
 #[derive(Debug, Default, Clone)]
-struct DavResponse {
-    href: String,
+pub(crate) struct DavResponse {
+    pub(crate) href: String,
     props: Vec<Prop>,
 }
 
 impl DavResponse {
-    fn prop(&self, name: &str) -> Option<&Prop> {
+    pub(crate) fn prop(&self, name: &str) -> Option<&Prop> {
         self.props.iter().find(|p| p.name == name)
     }
 
-    fn text(&self, name: &str) -> Option<&str> {
+    pub(crate) fn text(&self, name: &str) -> Option<&str> {
         self.prop(name)
             .map(|p| p.text.trim())
             .filter(|t| !t.is_empty())
@@ -209,7 +209,7 @@ fn origin(url: &str) -> &str {
 }
 
 /// The path (and query) of `href`, which may be a whole URL.
-fn path(href: &str) -> &str {
+pub(crate) fn path(href: &str) -> &str {
     if href.starts_with("http://") || href.starts_with("https://") {
         let rest = &href[origin(href).len()..];
         if rest.is_empty() { "/" } else { rest }
@@ -218,7 +218,7 @@ fn path(href: &str) -> &str {
     }
 }
 
-fn xml_escape(text: &str) -> String {
+pub(crate) fn xml_escape(text: &str) -> String {
     text.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -335,7 +335,7 @@ impl CalDav {
 
     /// `href` from an answer to `base` as a whole URL; `None` if the
     /// password may not go there.
-    fn absolute(&self, base: &str, href: &str) -> Option<String> {
+    pub(crate) fn absolute(&self, base: &str, href: &str) -> Option<String> {
         let url = if href.starts_with("http://") || href.starts_with("https://") {
             href.to_owned()
         } else if href.starts_with('/') {
@@ -392,9 +392,38 @@ impl CalDav {
         Err(Error::Protocol("CalDAV: too many redirects".into()))
     }
 
+    /// Sends `method` to `url` (no redirects followed) with `headers` and
+    /// `body` (content type and bytes): for writes.
+    pub(crate) async fn request(
+        &self,
+        method: &str,
+        url: &str,
+        headers: &[(&str, &str)],
+        body: Option<(&str, &[u8])>,
+    ) -> Result<Reply> {
+        if !self.trusted(url) {
+            return Err(Error::Protocol(format!("CalDAV led elsewhere: {url}")));
+        }
+        let mut retried = false;
+        loop {
+            let authorization = self.authorization().await?;
+            let mut all = vec![("Authorization", authorization.as_str())];
+            all.extend_from_slice(headers);
+            let reply = http::exchange_limited(
+                method, url, &all, body, None, &self.tls, TIMEOUT, MAX_ANSWER,
+            )
+            .await?;
+            if reply.status == 401 && !retried && self.retry_refused() {
+                retried = true;
+                continue;
+            }
+            return Ok(reply);
+        }
+    }
+
     /// A PROPFIND or REPORT: the multistatus answer, `None` when the
     /// server has no such thing (404, 405, 501…).
-    async fn dav(
+    pub(crate) async fn dav(
         &self,
         method: &str,
         url: &str,
@@ -414,7 +443,7 @@ impl CalDav {
 
     /// The calendar home, found now or before; `None` when the server has
     /// no CalDAV.
-    async fn home(&self) -> std::result::Result<Option<String>, CalendarError> {
+    pub(crate) async fn home(&self) -> std::result::Result<Option<String>, CalendarError> {
         match &*self.found.lock().unwrap() {
             Found::Home(home) => return Ok(Some(home.clone())),
             Found::Missing(when) if when.elapsed() < RETRY_DISCOVERY => return Ok(None),

@@ -36,6 +36,7 @@ shortcut-move-to = یہاں منتقل کریں
 shortcut-mark-read = بطور پڑھا ہوا نشان زد کریں
 shortcut-mark-unread = بطور ناخواندہ نشان زد کریں
 shortcut-star = ستارہ لگائیں یا ہٹائیں
+shortcut-add-to-tasks = کاموں میں شامل کریں
 shortcut-important = بطور اہم نشان زد کریں
 shortcut-not-important = بطور غیر اہم نشان زد کریں
 shortcut-check = گفتگو پر نشان لگائیں

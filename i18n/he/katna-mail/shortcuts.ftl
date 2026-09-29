@@ -36,6 +36,7 @@ shortcut-move-to = העברה אל
 shortcut-mark-read = סימון כנקראה
 shortcut-mark-unread = סימון כלא נקראה
 shortcut-star = הוספה או הסרה של כוכב
+shortcut-add-to-tasks = הוספה למשימות
 shortcut-important = סימון כחשובה
 shortcut-not-important = סימון כלא חשובה
 shortcut-check = סימון השיחה

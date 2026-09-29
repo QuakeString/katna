@@ -1242,3 +1242,41 @@ server, isang beses lang kahit maraming account ang may hawak sa kanila,
 kasama ang mga label, larawan, at detalye nila. Lumalabas din ang mga
 pangalan at larawan nila sa iyong mail at sa mga mungkahi ng address.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Mga Tala"
+text = """
+Ang Mga Tala sa gilid ay nagbubukas na ngayon ng Katna Mga Tala, na
+hango ang ayos sa Google Keep. Magtala o gumawa ng checklist, bigyan ito
+ng kulay, i-pin sa itaas, at i-tick ang mga item mismo sa board.
+Awtomatikong nase-save ang mga tala habang nagta-type ka; nahahanap sila
+ng search box; inaalis sila sa daan ng Archive at Trash, na may Undo.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Mga Tala sa bawat device"
+text = """
+Nasa folder na ng Mga Tala ng iyong mail account ang mga tala, kung saan
+din itinatago ng Notes sa iPhone at Mac ang kanila, kaya sumusunod ang
+mga ito sa iba mong device at bumabalik mula roon. Ipinapakita ng
+pangalan ng account sa ilalim ng tala kung saan ito nakatago; i-click
+ito para ilipat ang tala, o itago ito sa computer na ito lang.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Magdagdag ng mail sa Mga Gawain"
+text = """
+Pindutin ang Shift+T, tulad sa Gmail, o piliin ang Idagdag sa Mga Gawain
+kapag nag-right-click ka sa isang mail. Kinukuha ng gawain ang paksa ng
+mail, at muling binubuksan ng chip nitong Mail sa Mga Gawain ang mail.
+"""
+
+["2026-09-29-0412-calendar"]
+title = "Ang iyong kalendaryo, katabi ng iyong mail"
+text = """
+Ipinapakita ng Kalendaryo ang iyong mga kalendaryo sa Google, Microsoft
+at iba pa ayon sa araw, linggo, buwan o bilang iskedyul, gamit ang mga
+key ng Google Calendar. Binubuksan ng button ng kalendaryo sa kanan ng
+iyong mail ang agenda ng araw, na may Sumali para sa mga tawag. Mag-sign
+in muli sa isang account para mabasa ng Katna ang kalendaryo nito.
+"""

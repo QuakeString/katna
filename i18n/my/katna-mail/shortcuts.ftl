@@ -36,6 +36,7 @@ shortcut-move-to = သို့ ရွှေ့ရန်
 shortcut-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
 shortcut-mark-unread = မဖတ်ရသေးအဖြစ် မှတ်ရန်
 shortcut-star = ကြယ်ပွင့်တပ်ရန် သို့မဟုတ် ဖြုတ်ရန်
+shortcut-add-to-tasks = လုပ်ဆောင်စရာများသို့ ထည့်ရန်
 shortcut-important = အရေးကြီးအဖြစ် မှတ်ရန်
 shortcut-not-important = အရေးမကြီးအဖြစ် မှတ်ရန်
 shortcut-check = စကားဝိုင်းကို အမှန်ခြစ်ရန်

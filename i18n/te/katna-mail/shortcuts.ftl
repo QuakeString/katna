@@ -36,6 +36,7 @@ shortcut-move-to = దీనికి తరలించండి
 shortcut-mark-read = చదివినట్లు గుర్తు పెట్టండి
 shortcut-mark-unread = చదవనట్లు గుర్తు పెట్టండి
 shortcut-star = నక్షత్రం ఉంచండి లేదా తీసివేయండి
+shortcut-add-to-tasks = టాస్క్‌లకు జోడించండి
 shortcut-important = ముఖ్యమైనదిగా గుర్తు పెట్టండి
 shortcut-not-important = ముఖ్యమైనది కాదని గుర్తు పెట్టండి
 shortcut-check = సంభాషణను ఎంచుకోండి

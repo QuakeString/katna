@@ -34,6 +34,9 @@ pub enum Command {
     /// Puts back the quoted message just removed from a reply. The app does
     /// this itself; the daemon never sees it.
     RestoreQuote,
+    /// Brings back the saved contacts just deleted (by their first card).
+    /// The Contacts page does this itself; the daemon never sees it.
+    RestoreContacts(Vec<i64>),
     /// Has the daemon read the settings file again.
     ReloadConfig,
     /// These, one after the other: an undo that moves mail back to
@@ -120,6 +123,7 @@ impl Command {
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
+            | Self::RestoreContacts(_)
             | Self::ReloadConfig
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
@@ -212,7 +216,9 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::SaveNote(note) => pim.save_note(note).await.map(|_| ()),
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
-        Command::ReopenDraft | Command::RestoreQuote => return Ok(()),
+        Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
+            return Ok(());
+        }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
         Command::Several(commands) => {
@@ -236,6 +242,31 @@ pub async fn save_template(
     pim.save_template(template)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Saves `card` over saved card `contact`, or as a new card in address
+/// book `book` (0: this computer) when `contact` is 0. Returns its id.
+pub async fn save_contact(
+    connection: &Connection,
+    contact: i64,
+    book: i64,
+    card: &katna_core::contact::Card,
+) -> Result<i64, String> {
+    let json = serde_json::to_string(card).map_err(|err| err.to_string())?;
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.save_contact(contact, book, &json)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes saved cards `ids`, from their accounts too.
+pub async fn delete_contacts(connection: &Connection, ids: &[i64]) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_contacts(ids).await.map_err(|err| describe(&err))
 }
 
 /// Saves a note (a new one when its ID is 0). Returns its ID.

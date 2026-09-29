@@ -36,6 +36,7 @@ shortcut-move-to = ਇੱਥੇ ਭੇਜੋ
 shortcut-mark-read = ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 shortcut-mark-unread = ਅਣਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 shortcut-star = ਤਾਰਾ ਲਗਾਓ ਜਾਂ ਹਟਾਓ
+shortcut-add-to-tasks = ਕਾਰਜਾਂ ਵਿੱਚ ਜੋੜੋ
 shortcut-important = ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 shortcut-not-important = ਗੈਰ-ਮਹੱਤਵਪੂਰਨ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 shortcut-check = ਗੱਲਬਾਤ ’ਤੇ ਨਿਸ਼ਾਨ ਲਗਾਓ

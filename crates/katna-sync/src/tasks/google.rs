@@ -273,6 +273,7 @@ impl GoogleTasks {
                     tasks: Vec::new(),
                     all: false,
                     state: state.map(str::to_owned),
+                    steps_of: Vec::new(),
                 });
             }
             let answer: Tasks = parse(&reply, "reading tasks")?;
@@ -286,6 +287,7 @@ impl GoogleTasks {
             tasks,
             all: updated_min.is_none(),
             state: Some(started.to_string()),
+            steps_of: Vec::new(),
         })
     }
 

@@ -180,3 +180,115 @@ fn microsoft_reads_pages_and_categories() {
     assert_eq!(bilal.groups, ["Partners"]);
     assert_eq!(sync.groups.unwrap()[0].name, "Partners");
 }
+
+#[test]
+fn google_creates_updates_and_deletes() {
+    let (api, seen) = serve(|req, _| {
+        match (req.method.as_str(), req.path.as_str()) {
+        ("POST", p) if p.starts_with("/v1/people:createContact") => (
+            200,
+            vec![],
+            r#"{"resourceName":"people/c9","etag":"n1","names":[{"displayName":"Asha Rao"}],
+               "emailAddresses":[{"value":"asha@rao.in","type":"home"}]}"#
+                .into(),
+        ),
+        ("PATCH", p) if p.starts_with("/v1/people/c9:updateContact") => (
+            200,
+            vec![],
+            r#"{"resourceName":"people/c9","etag":"n2","names":[{"displayName":"Asha R. Rao"}],
+               "memberships":[{"contactGroupMembership":{"contactGroupResourceName":"contactGroups/starred"}}]}"#
+                .into(),
+        ),
+        ("DELETE", "/v1/people/c9:deleteContact") => (200, vec![], "{}".into()),
+        ("DELETE", _) => (404, vec![], "{}".into()),
+        _ => (400, vec![], "{}".into()),
+    }
+    });
+    let google = google(&api, GOOGLE_CONTACTS);
+    let mut card = Card {
+        name: Name {
+            given: "Asha".into(),
+            family: "Rao".into(),
+            ..Name::default()
+        },
+        emails: vec![Typed::new("asha@rao.in", "home")],
+        birthday: "--03-14".into(),
+        ..Card::default()
+    };
+    let made = smol::block_on(google.save(None, None, &card)).unwrap();
+    assert_eq!(made.remote_id, "people/c9");
+    assert_eq!(made.etag.as_deref(), Some("n1"));
+    card.name.middle = "R.".into();
+    let changed = smol::block_on(google.save(Some("people/c9"), Some("n1"), &card)).unwrap();
+    assert_eq!(changed.etag.as_deref(), Some("n2"));
+    assert!(changed.starred, "the star Google keeps comes back");
+    smol::block_on(google.delete("people/c9")).unwrap();
+    smol::block_on(google.delete("people/gone")).unwrap();
+
+    let requests = seen.lock().unwrap().clone();
+    let create: serde_json::Value = serde_json::from_slice(&requests[0].body).unwrap();
+    assert_eq!(create["names"][0]["givenName"], "Asha");
+    assert_eq!(create["emailAddresses"][0]["type"], "home");
+    assert_eq!(create["birthdays"][0]["date"]["month"], 3);
+    assert!(create["birthdays"][0]["date"].get("year").is_none());
+    let update: serde_json::Value = serde_json::from_slice(&requests[1].body).unwrap();
+    assert_eq!(update["etag"], "n1");
+    assert!(requests[1].path.contains("updatePersonFields=names,"));
+    let fields = requests[1]
+        .path
+        .split("updatePersonFields=")
+        .nth(1)
+        .unwrap();
+    let fields = fields.split('&').next().unwrap();
+    assert!(
+        !fields.contains("memberships"),
+        "labels stay as Google has them"
+    );
+}
+
+#[test]
+fn microsoft_creates_updates_and_deletes() {
+    let (api, seen) = serve(|req, _| match req.method.as_str() {
+        "POST" | "PATCH" => (
+            201,
+            vec![],
+            r#"{"id":"m9","changeKey":"k9","displayName":"Asha Rao","categories":["Friends"]}"#
+                .into(),
+        ),
+        _ => (204, vec![], String::new()),
+    });
+    let tokens = TokenSource::new(provider(OAuthProvider::Microsoft), "rt".into(), None)
+        .with_access_token_for(MICROSOFT_CONTACTS, "gt-1".into(), Duration::from_secs(3600));
+    let ms = MicrosoftContacts::with_api(Arc::new(tokens), Tls::insecure_for_local_tests(), &api);
+    let card = Card {
+        name: Name {
+            given: "Asha".into(),
+            family: "Rao".into(),
+            ..Name::default()
+        },
+        phones: vec![
+            Typed::new("+91 1", "mobile"),
+            Typed::new("+91 2", "work"),
+            Typed::new("+91 3", "home"),
+        ],
+        birthday: "1990-03-14".into(),
+        ..Card::default()
+    };
+    let made = smol::block_on(ms.save(None, &card)).unwrap();
+    assert_eq!(made.remote_id, "m9");
+    assert_eq!(made.groups, ["Friends"]);
+    smol::block_on(ms.save(Some("m9"), &card)).unwrap();
+    smol::block_on(ms.delete("m9")).unwrap();
+    let requests = seen.lock().unwrap().clone();
+    assert_eq!(requests[0].method, "POST");
+    assert_eq!(requests[0].path, "/me/contacts");
+    assert_eq!(requests[1].method, "PATCH");
+    assert_eq!(requests[1].path, "/me/contacts/m9");
+    assert_eq!(requests[2].method, "DELETE");
+    let body: serde_json::Value = serde_json::from_slice(&requests[0].body).unwrap();
+    assert_eq!(body["mobilePhone"], "+91 1");
+    assert_eq!(body["businessPhones"][0], "+91 2");
+    assert_eq!(body["homePhones"][0], "+91 3");
+    assert_eq!(body["birthday"], "1990-03-14T11:59:00Z");
+    assert!(body.get("categories").is_none());
+}

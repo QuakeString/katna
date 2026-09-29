@@ -36,6 +36,7 @@ shortcut-move-to = Bugharịa gaa
 shortcut-mark-read = Kaa akara dị ka agụrụ
 shortcut-mark-unread = Kaa akara dị ka a gụghị
 shortcut-star = Tinye ma ọ bụ wepụ kpakpando
+shortcut-add-to-tasks = Tinye na Ọrụ
 shortcut-important = Kaa akara dị ka ọ dị mkpa
 shortcut-not-important = Kaa akara dị ka ọ dịghị mkpa
 shortcut-check = Kaa akara na mkparịta ụka

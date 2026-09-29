@@ -1169,3 +1169,41 @@ Gmail- och Outlook-konton och på CardDAV-servrar, en gång var även när
 flera konton har dem, med etiketter, bilder och deras uppgifter. Deras
 namn och bilder visas också i din e-post och i adressförslagen.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Anteckningar"
+text = """
+Anteckningar i sidofältet öppnar nu Katna Anteckningar, upplagt som
+Google Keep. Skriv en anteckning eller en checklista, ge den en färg,
+fäst den överst och bocka av objekt direkt på tavlan. Anteckningar
+sparas medan du skriver; sökrutan hittar dem; Arkiv och Papperskorgen
+håller dem ur vägen, med Ångra.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Anteckningar på alla enheter"
+text = """
+Anteckningar ligger nu i mappen Anteckningar på ditt e-postkonto, där
+Anteckningar på iPhone och Mac förvarar sina, så de följer med dig till
+dina andra enheter och kommer tillbaka därifrån. Kontots namn under en
+anteckning visar var den sparas; klicka på det för att flytta
+anteckningen, eller behåll den bara på den här datorn.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Lägg till ett e-postmeddelande i Uppgifter"
+text = """
+Tryck på Skift+T, som i Gmail, eller välj Lägg till i Uppgifter när du
+högerklickar på ett e-postmeddelande. Uppgiften får meddelandets ämne,
+och dess E-post-chip i Uppgifter öppnar meddelandet igen.
+"""
+
+["2026-09-29-0412-calendar"]
+title = "Din kalender, bredvid din e-post"
+text = """
+Kalender visar dina Google-, Microsoft- och andra kalendrar per dag,
+vecka, månad eller som schema, med Google Kalenders kortkommandon.
+Kalenderknappen till höger om din e-post öppnar dagens agenda, med Anslut
+för samtal. Logga in på ett konto igen så att Katna kan läsa dess
+kalender.
+"""

@@ -378,6 +378,7 @@ menu-pin = ඉහළට අමුණන්න
 menu-unpin = ඇමිණීම ඉවත් කරන්න
 menu-snooze = කල් දමන්න
 menu-unsnooze = කල් දැමීම ඉවත් කරන්න
+menu-add-to-tasks = කාර්යයන් වෙත එක් කරන්න
 menu-print-all = සියල්ල මුද්‍රණය කරන්න
 menu-new-window = නව කවුළුවක විවෘත කරන්න
 menu-move-to = වෙත ගෙන යන්න

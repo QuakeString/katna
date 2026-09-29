@@ -25,7 +25,7 @@ pub mod google;
 pub mod graph;
 
 #[cfg(test)]
-mod fake;
+pub(crate) mod fake;
 
 /// Largest answer a calendar request reads: a page of 2500 Google events
 /// or a CalDAV multiget.

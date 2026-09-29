@@ -36,6 +36,7 @@ shortcut-move-to = Переместить в
 shortcut-mark-read = Отметить как прочитанное
 shortcut-mark-unread = Отметить как непрочитанное
 shortcut-star = Пометить или снять пометку
+shortcut-add-to-tasks = Добавить в Задачи
 shortcut-important = Отметить как важное
 shortcut-not-important = Отметить как неважное
 shortcut-check = Выбрать цепочку

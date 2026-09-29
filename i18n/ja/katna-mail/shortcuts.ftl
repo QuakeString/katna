@@ -36,6 +36,7 @@ shortcut-move-to = 移動
 shortcut-mark-read = 既読にする
 shortcut-mark-unread = 未読にする
 shortcut-star = スターを付ける/外す
+shortcut-add-to-tasks = タスクに追加
 shortcut-important = 重要マークを付ける
 shortcut-not-important = 重要ではないとマーク
 shortcut-check = スレッドを選択

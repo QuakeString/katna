@@ -378,6 +378,7 @@ menu-pin = I-pin sa itaas
 menu-unpin = I-unpin
 menu-snooze = I-snooze
 menu-unsnooze = I-unsnooze
+menu-add-to-tasks = Idagdag sa Mga Gawain
 menu-print-all = I-print lahat
 menu-new-window = Buksan sa bagong window
 menu-move-to = Ilipat sa

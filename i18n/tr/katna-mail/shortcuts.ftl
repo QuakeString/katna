@@ -36,6 +36,7 @@ shortcut-move-to = Taşı
 shortcut-mark-read = Okundu olarak işaretle
 shortcut-mark-unread = Okunmadı olarak işaretle
 shortcut-star = Yıldız ekle veya kaldır
+shortcut-add-to-tasks = Görevlere ekle
 shortcut-important = Önemli olarak işaretle
 shortcut-not-important = Önemli değil olarak işaretle
 shortcut-check = İleti dizisini seç

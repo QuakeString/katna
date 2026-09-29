@@ -36,6 +36,8 @@ tasks-details = ព័ត៌មានលម្អិត
 tasks-delete = លុប
 tasks-move-to = ផ្លាស់ទីទៅ { $list }
 tasks-from-mail = សំបុត្រ
+tasks-open-mail = បើកសំបុត្រ
+tasks-no-subject = (គ្មានប្រធានបទ)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = បានបញ្ចប់កិច្ចការ
 tasks-toast-deleted = បានលុបកិច្ចការ
+tasks-toast-added = { $count ->
+   *[other] បានបន្ថែមកិច្ចការ { $count }
+}
+tasks-mail-gone = សំបុត្រនោះលែងមាននៅទីនេះទៀតហើយ។
 tasks-toast-list-deleted = បានលុបបញ្ជី
 tasks-toast-moved = បានផ្លាស់ទីទៅ { $list }

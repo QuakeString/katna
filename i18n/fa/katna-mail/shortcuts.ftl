@@ -36,6 +36,7 @@ shortcut-move-to = انتقال به
 shortcut-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده
 shortcut-mark-unread = علامت‌گذاری به‌عنوان خوانده‌نشده
 shortcut-star = افزودن یا برداشتن ستاره
+shortcut-add-to-tasks = افزودن به کارها
 shortcut-important = علامت‌گذاری به‌عنوان مهم
 shortcut-not-important = علامت‌گذاری به‌عنوان غیرمهم
 shortcut-check = علامت زدن مکالمه

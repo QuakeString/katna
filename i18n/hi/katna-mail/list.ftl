@@ -378,6 +378,7 @@ menu-pin = सबसे ऊपर पिन करें
 menu-unpin = अनपिन करें
 menu-snooze = स्नूज़ करें
 menu-unsnooze = स्नूज़ हटाएं
+menu-add-to-tasks = टास्क में जोड़ें
 menu-print-all = सभी प्रिंट करें
 menu-new-window = नई विंडो में खोलें
 menu-move-to = इसमें ले जाएं

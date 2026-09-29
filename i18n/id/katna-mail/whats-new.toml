@@ -1200,3 +1200,41 @@ Gmail dan Outlook Anda serta di server CardDAV, sekali saja meski
 beberapa akun menyimpannya, lengkap dengan label, foto, dan detailnya.
 Nama dan foto mereka juga muncul di email Anda dan di saran alamat.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Catatan"
+text = """
+Catatan di bilah samping kini membuka Katna Catatan, dengan tata letak
+seperti Google Keep. Buat catatan atau daftar periksa, beri warna,
+sematkan di bagian atas, dan centang item langsung di papan. Catatan
+tersimpan saat Anda mengetik; kotak penelusuran menemukannya; Arsip dan
+Sampah menyingkirkannya dari tampilan, dengan Urungkan.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Catatan di setiap perangkat"
+text = """
+Catatan kini disimpan di folder Catatan pada akun email Anda, tempat
+Catatan di iPhone dan Mac menyimpan catatannya, sehingga catatan
+mengikuti Anda ke perangkat lain dan kembali dari sana. Nama akun di
+bawah catatan menunjukkan tempat penyimpanannya; klik untuk memindahkan
+catatan, atau simpan hanya di komputer ini.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Tambahkan email ke Tugas"
+text = """
+Tekan Shift+T, seperti di Gmail, atau pilih Tambahkan ke Tugas saat Anda
+mengeklik kanan email. Tugas memakai subjek email, dan chip Email di
+Tugas membuka kembali email tersebut.
+"""
+
+["2026-09-29-0412-calendar"]
+title = "Kalender Anda, di samping email"
+text = """
+Kalender menampilkan kalender Google, Microsoft, dan lainnya menurut
+hari, minggu, bulan, atau sebagai jadwal, dengan pintasan Google
+Kalender. Tombol kalender di sebelah kanan email Anda membuka agenda hari
+itu, dengan Gabung untuk panggilan. Masuk lagi ke sebuah akun agar Katna
+dapat membaca kalendernya.
+"""

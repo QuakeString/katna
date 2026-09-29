@@ -326,7 +326,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let body = match self.app {
-            App::Contacts => self.render_contacts_page(th, cx),
+            App::Contacts => self.render_contacts_page(th, window, cx),
             App::Calendar => self.render_calendar_page(th, cx),
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),

@@ -37,6 +37,8 @@ tasks-details = Maelezo
 tasks-delete = Futa
 tasks-move-to = Hamishia { $list }
 tasks-from-mail = Barua
+tasks-open-mail = Fungua barua
+tasks-no-subject = (hakuna mada)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Jukumu limekamilika
 tasks-toast-deleted = Jukumu limefutwa
+tasks-toast-added = { $count ->
+    [one] Imeongezwa kwenye Majukumu
+   *[other] Majukumu { $count } yameongezwa
+}
+tasks-mail-gone = Barua hiyo haipo hapa tena.
 tasks-toast-list-deleted = Orodha imefutwa
 tasks-toast-moved = Limehamishiwa { $list }

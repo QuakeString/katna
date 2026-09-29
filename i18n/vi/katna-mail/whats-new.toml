@@ -1160,3 +1160,40 @@ khoản Gmail và Outlook của bạn và trên máy chủ CardDAV, mỗi ngư�
 một lần dù nhiều tài khoản cùng lưu, kèm nhãn, ảnh và chi tiết của họ.
 Tên và ảnh của họ cũng hiện trong thư của bạn và trong gợi ý địa chỉ.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Ghi chú"
+text = """
+Ghi chú trên thanh bên giờ mở Katna Ghi chú, bố cục giống Google Keep.
+Tạo ghi chú hoặc danh sách kiểm tra, chọn màu, ghim lên đầu và đánh dấu
+các mục ngay trên bảng. Ghi chú được lưu khi bạn gõ; hộp tìm kiếm sẽ tìm
+thấy chúng; Lưu trữ và Thùng rác giúp cất chúng đi, có thể Hoàn tác.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Ghi chú trên mọi thiết bị"
+text = """
+Ghi chú giờ nằm trong thư mục Ghi chú của tài khoản thư, nơi Ghi chú
+trên iPhone và Mac cũng lưu ghi chú của chúng, nên ghi chú đi theo bạn
+sang các thiết bị khác và quay lại từ đó. Tên tài khoản bên dưới ghi chú
+cho biết nơi lưu; nhấp vào đó để chuyển ghi chú, hoặc chỉ giữ trên máy
+tính này.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Thêm thư vào Việc cần làm"
+text = """
+Nhấn Shift+T, như trong Gmail, hoặc chọn Thêm vào Việc cần làm khi nhấp
+chuột phải vào một thư. Việc cần làm lấy tiêu đề của thư, và thẻ Thư của
+nó trong Việc cần làm sẽ mở lại thư.
+"""
+
+["2026-09-29-0412-calendar"]
+title = "Lịch của bạn, ngay cạnh thư"
+text = """
+Lịch hiển thị lịch Google, Microsoft và các lịch khác của bạn theo
+ngày, tuần, tháng hoặc dưới dạng lịch biểu, với các phím tắt của Google
+Calendar. Nút lịch ở bên phải thư của bạn mở chương trình trong ngày, có
+nút Tham gia cho các cuộc gọi. Hãy đăng nhập lại vào tài khoản để Katna
+có thể đọc lịch của tài khoản đó.
+"""

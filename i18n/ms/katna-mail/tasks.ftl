@@ -36,6 +36,8 @@ tasks-details = Butiran
 tasks-delete = Padam
 tasks-move-to = Alih ke { $list }
 tasks-from-mail = Mel
+tasks-open-mail = Buka mel
+tasks-no-subject = (tiada subjek)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Tugasan selesai
 tasks-toast-deleted = Tugasan dipadam
+tasks-toast-added = { $count ->
+   *[other] { $count } tugasan ditambahkan
+}
+tasks-mail-gone = Mel itu tidak lagi ada di sini.
 tasks-toast-list-deleted = Senarai dipadam
 tasks-toast-moved = Dialihkan ke { $list }

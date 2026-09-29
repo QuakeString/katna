@@ -649,14 +649,52 @@ impl Store {
         Ok(())
     }
 
-    /// Task `id`, as it was at `stamp`, stays on this computer only: the
-    /// service has no place for it (a step of a To Do task).
-    pub fn task_kept_here(&mut self, id: i64, stamp: i64) -> Result<()> {
+    /// Marks the steps of list `list` that never reached the service to
+    /// be sent: To Do steps were once kept on this computer only.
+    pub fn resend_unsent_steps(&mut self, list: i64) -> Result<()> {
         self.pim.execute(
-            "UPDATE task SET dirty = (updated_at != ?2) WHERE id = ?1",
-            params![id, stamp],
+            "UPDATE task SET dirty = 1
+             WHERE list_id = ?1 AND parent_id IS NOT NULL AND remote_id IS NULL
+               AND dirty = 0 AND deleted = 0",
+            [list],
         )?;
         Ok(())
+    }
+
+    /// Deletes the steps of list `list` under the tasks whose service IDs
+    /// are `parents` that `tasks` doesn't hold: the service read all of
+    /// those tasks' steps, so the others went there. Steps changed here and
+    /// not yet sent stay. Returns whether any went.
+    pub fn drop_unlisted_steps(
+        &mut self,
+        list: i64,
+        parents: &[String],
+        tasks: &[RemoteTask],
+    ) -> Result<bool> {
+        if parents.is_empty() {
+            return Ok(false);
+        }
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let mut changed = 0;
+        for parent in parents {
+            let steps: Vec<(i64, String)> = tx
+                .prepare_cached(
+                    "SELECT s.id, s.remote_id FROM task s JOIN task p ON p.id = s.parent_id
+                     WHERE s.list_id = ?1 AND p.remote_id = ?2
+                       AND s.remote_id IS NOT NULL AND s.dirty = 0",
+                )?
+                .query_map(params![list, parent], |row| Ok((row.get(0)?, row.get(1)?)))?
+                .collect::<rusqlite::Result<_>>()?;
+            for (id, remote) in steps {
+                if !tasks.iter().any(|t| t.remote_id == remote && !t.deleted) {
+                    changed += tx.execute("DELETE FROM task WHERE id = ?1", [id])?;
+                }
+            }
+        }
+        tx.commit()?;
+        Ok(changed > 0)
     }
 
     /// Forgets task `id` for good: its deletion reached the service, or

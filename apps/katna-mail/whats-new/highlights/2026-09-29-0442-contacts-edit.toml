@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Create and change contacts"
+text = """
+Create contact on the Contacts page adds someone to the account you pick,
+and Edit on a contact's page changes them there too. Delete has an Undo,
+and Google and Outlook keep deleted contacts in their trash for a while.
+"""

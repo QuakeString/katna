@@ -378,6 +378,7 @@ menu-pin = Bovenaan vastzetten
 menu-unpin = Losmaken
 menu-snooze = Snoozen
 menu-unsnooze = Snooze opheffen
+menu-add-to-tasks = Toevoegen aan Taken
 menu-print-all = Alles afdrukken
 menu-new-window = Openen in nieuw venster
 menu-move-to = Verplaatsen naar

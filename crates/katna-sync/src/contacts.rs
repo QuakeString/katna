@@ -39,6 +39,10 @@ const PAGE: u32 = 500;
 const PERSON_FIELDS: &str = "names,nicknames,emailAddresses,phoneNumbers,addresses,\
 organizations,birthdays,urls,biographies,photos,memberships,metadata";
 
+/// The fields Katna writes; memberships (labels, the star) are left alone.
+const UPDATE_FIELDS: &str = "names,nicknames,emailAddresses,phoneNumbers,addresses,\
+organizations,birthdays,urls,biographies";
+
 /// Google's group of starred contacts.
 const STARRED: &str = "contactGroups/starred";
 
@@ -74,13 +78,17 @@ impl GoogleContacts {
     }
 
     async fn get(&self, url: &str) -> Result<Reply> {
+        self.send("GET", url, None).await
+    }
+
+    async fn send(&self, method: &str, url: &str, json: Option<&[u8]>) -> Result<Reply> {
         loop {
             let token = format!("Bearer {}", self.tokens.access_token().await?);
             let reply = http::exchange_limited(
-                "GET",
+                method,
                 url,
                 &[("Authorization", token.as_str())],
-                None,
+                json.map(|body| ("application/json", body)),
                 None,
                 &self.tls,
                 TIMEOUT,
@@ -110,6 +118,54 @@ impl GoogleContacts {
             sync.groups_complete = true;
             sync
         })
+    }
+
+    /// Saves `card` as a new contact, or over `remote_id` last read with
+    /// `etag`; returns the contact as Google keeps it. Labels and the star
+    /// stay as they are.
+    pub async fn save(
+        &self,
+        remote_id: Option<&str>,
+        etag: Option<&str>,
+        card: &Card,
+    ) -> Result<SyncedContact> {
+        let mut person = person_json(card);
+        let (method, url) = match remote_id {
+            Some(id) => {
+                person["etag"] = serde_json::Value::from(etag.unwrap_or_default());
+                (
+                    "PATCH",
+                    format!(
+                        "{}/v1/{id}:updateContact?updatePersonFields={UPDATE_FIELDS}\
+                         &personFields={PERSON_FIELDS}",
+                        self.api
+                    ),
+                )
+            }
+            None => (
+                "POST",
+                format!(
+                    "{}/v1/people:createContact?personFields={PERSON_FIELDS}",
+                    self.api
+                ),
+            ),
+        };
+        let body = person.to_string();
+        let reply = self.send(method, &url, Some(body.as_bytes())).await?;
+        check(&reply, "saving a contact")?;
+        let person: Person = parse(&reply.body)?;
+        Ok(person.into_synced())
+    }
+
+    /// Deletes contact `remote_id`; Google keeps it in its Trash for 30
+    /// days. One already gone is fine.
+    pub async fn delete(&self, remote_id: &str) -> Result<()> {
+        let url = format!("{}/v1/{remote_id}:deleteContact", self.api);
+        let reply = self.send("DELETE", &url, None).await?;
+        if reply.status == 404 {
+            return Ok(());
+        }
+        check(&reply, "deleting a contact")
     }
 
     /// The user's own labels (not Google's system groups).
@@ -465,6 +521,10 @@ impl MicrosoftContacts {
     }
 
     async fn get(&self, url: &str) -> Result<Reply> {
+        self.send("GET", url, None).await
+    }
+
+    async fn send(&self, method: &str, url: &str, json: Option<&[u8]>) -> Result<Reply> {
         let mut retried = false;
         loop {
             let token = format!(
@@ -472,10 +532,10 @@ impl MicrosoftContacts {
                 self.tokens.access_token_for(MICROSOFT_CONTACTS).await?
             );
             let reply = http::exchange_limited(
-                "GET",
+                method,
                 url,
                 &[("Authorization", token.as_str())],
-                None,
+                json.map(|body| ("application/json", body)),
                 None,
                 &self.tls,
                 TIMEOUT,
@@ -489,6 +549,36 @@ impl MicrosoftContacts {
             }
             return Ok(reply);
         }
+    }
+
+    /// Saves `card` as a new contact, or over `remote_id`; returns the
+    /// contact as Microsoft keeps it. Categories stay as they are.
+    pub async fn save(&self, remote_id: Option<&str>, card: &Card) -> Result<SyncedContact> {
+        let body = graph_json(card).to_string();
+        let reply = match remote_id {
+            Some(id) => {
+                let url = format!("{}/me/contacts/{id}", self.api);
+                self.send("PATCH", &url, Some(body.as_bytes())).await?
+            }
+            None => {
+                let url = format!("{}/me/contacts", self.api);
+                self.send("POST", &url, Some(body.as_bytes())).await?
+            }
+        };
+        check(&reply, "saving a contact")?;
+        let contact: GraphContact = parse(&reply.body)?;
+        Ok(contact.into_synced())
+    }
+
+    /// Deletes contact `remote_id` (to the account's Deleted Items). One
+    /// already gone is fine.
+    pub async fn delete(&self, remote_id: &str) -> Result<()> {
+        let url = format!("{}/me/contacts/{remote_id}", self.api);
+        let reply = self.send("DELETE", &url, None).await?;
+        if reply.status == 404 {
+            return Ok(());
+        }
+        check(&reply, "deleting a contact")
     }
 
     /// Reads every contact of the main folder. Categories are the labels.
@@ -659,6 +749,151 @@ impl GraphContact {
             photo: None,
         }
     }
+}
+
+/// Splits `YYYY-MM-DD` or `--MM-DD` into year (0 when unknown), month and
+/// day.
+fn birthday_parts(text: &str) -> Option<(u32, u32, u32)> {
+    let (year, rest) = match text.strip_prefix("--") {
+        Some(rest) => (0, rest),
+        None => {
+            let (year, rest) = text.split_once('-')?;
+            (year.parse().ok()?, rest)
+        }
+    };
+    let (month, day) = rest.split_once('-')?;
+    let day: String = day.chars().take_while(char::is_ascii_digit).collect();
+    let (month, day) = (month.parse().ok()?, day.parse().ok()?);
+    (1..=12).contains(&month).then_some((year, month, day))
+}
+
+/// `card` as a People API person, with every field Katna writes, empty
+/// ones as empty lists so they are cleared.
+fn person_json(card: &Card) -> serde_json::Value {
+    use serde_json::{Value as J, json};
+    let typed = |list: &[Typed]| -> J {
+        list.iter()
+            .map(|t| json!({"value": t.value, "type": t.kind}))
+            .collect()
+    };
+    let n = &card.name;
+    let names = if n.given.is_empty() && n.family.is_empty() && n.middle.is_empty() {
+        if n.full.is_empty() {
+            json!([])
+        } else {
+            json!([{"unstructuredName": n.full}])
+        }
+    } else {
+        json!([{
+            "givenName": n.given,
+            "middleName": n.middle,
+            "familyName": n.family,
+            "honorificPrefix": n.prefix,
+            "honorificSuffix": n.suffix,
+        }])
+    };
+    let organizations =
+        if card.organization.is_empty() && card.department.is_empty() && card.title.is_empty() {
+            json!([])
+        } else {
+            json!([{"name": card.organization, "department": card.department, "title": card.title}])
+        };
+    let birthdays = match birthday_parts(&card.birthday) {
+        Some((year, month, day)) if year > 0 => {
+            json!([{"date": {"year": year, "month": month, "day": day}}])
+        }
+        Some((_, month, day)) => json!([{"date": {"month": month, "day": day}}]),
+        None if card.birthday.is_empty() => json!([]),
+        None => json!([{"text": card.birthday}]),
+    };
+    json!({
+        "names": names,
+        "nicknames": if card.nickname.is_empty() { json!([]) } else { json!([{"value": card.nickname}]) },
+        "emailAddresses": typed(&card.emails),
+        "phoneNumbers": typed(&card.phones),
+        "addresses": card.addresses.iter().map(|a| json!({
+            "type": a.kind,
+            "streetAddress": a.street,
+            "city": a.city,
+            "region": a.region,
+            "postalCode": a.postcode,
+            "country": a.country,
+        })).collect::<J>(),
+        "organizations": organizations,
+        "birthdays": birthdays,
+        "urls": typed(&card.urls),
+        "biographies": if card.note.is_empty() {
+            json!([])
+        } else {
+            json!([{"value": card.note, "contentType": "TEXT_PLAIN"}])
+        },
+    })
+}
+
+/// `card` as a Graph contact. Graph has one mobile phone, business and
+/// home phones, and a home, business and other address.
+fn graph_json(card: &Card) -> serde_json::Value {
+    use serde_json::{Value as J, json};
+    let n = &card.name;
+    let mut mobile = String::new();
+    let mut business: Vec<&str> = Vec::new();
+    let mut home: Vec<&str> = Vec::new();
+    for phone in &card.phones {
+        match phone.kind.as_str() {
+            "mobile" if mobile.is_empty() => mobile = phone.value.clone(),
+            "home" => home.push(&phone.value),
+            _ => business.push(&phone.value),
+        }
+    }
+    let address = |kind: &str| -> J {
+        card.addresses
+            .iter()
+            .find(|a| match kind {
+                "home" => a.kind == "home",
+                "work" => a.kind == "work",
+                _ => a.kind != "home" && a.kind != "work",
+            })
+            .map_or_else(
+                || json!({}),
+                |a| {
+                    json!({
+                        "street": a.street,
+                        "city": a.city,
+                        "state": a.region,
+                        "postalCode": a.postcode,
+                        "countryOrRegion": a.country,
+                    })
+                },
+            )
+    };
+    let birthday = match birthday_parts(&card.birthday) {
+        Some((year, month, day)) if year > 0 => {
+            J::from(format!("{year:04}-{month:02}-{day:02}T11:59:00Z"))
+        }
+        _ => J::Null,
+    };
+    json!({
+        "displayName": card.display_name(),
+        "givenName": n.given,
+        "middleName": n.middle,
+        "surname": n.family,
+        "title": n.prefix,
+        "generation": n.suffix,
+        "nickName": card.nickname,
+        "emailAddresses": card.emails.iter().map(|e| json!({"address": e.value, "name": card.display_name()})).collect::<J>(),
+        "mobilePhone": mobile,
+        "businessPhones": business,
+        "homePhones": home,
+        "homeAddress": address("home"),
+        "businessAddress": address("work"),
+        "otherAddress": address("other"),
+        "companyName": card.organization,
+        "department": card.department,
+        "jobTitle": card.title,
+        "birthday": birthday,
+        "businessHomePage": card.urls.first().map_or("", |u| u.value.as_str()),
+        "personalNotes": card.note,
+    })
 }
 
 fn parse<'a, T: Deserialize<'a>>(body: &'a [u8]) -> Result<T> {

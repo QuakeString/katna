@@ -483,6 +483,7 @@ menu-pin = Закрепить вверху
 menu-unpin = Открепить
 menu-snooze = Отложить
 menu-unsnooze = Вернуть сейчас
+menu-add-to-tasks = Добавить в Задачи
 menu-print-all = Распечатать все
 menu-new-window = Открыть в новом окне
 menu-move-to = Переместить в

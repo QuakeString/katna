@@ -1,0 +1,75 @@
+# Katna Mail, Amharic (አማርኛ): the Notes page.
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Side list and search
+
+notes-view-notes = ማስታወሻዎች
+notes-view-archive = ማህደር
+notes-view-trash = መጣያ
+notes-search = ማስታወሻዎችን ፈልግ
+notes-loading = ማስታወሻዎችዎን በመክፈት ላይ…
+
+## Board
+
+notes-take-a-note = ማስታወሻ ይያዙ…
+notes-new-list = አዲስ ዝርዝር
+notes-pinned = የተሰኩ
+notes-others = ሌሎች
+notes-empty = የሚያክሏቸው ማስታወሻዎች እዚህ ይታያሉ
+notes-archive-empty = በማህደር የተቀመጡ ማስታወሻዎችዎ እዚህ ይታያሉ
+notes-trash-empty = በመጣያ ውስጥ ምንም ማስታወሻ የለም
+notes-none-found = ተዛማጅ ማስታወሻ አልተገኘም
+notes-trash-note = በመጣያ ውስጥ ያሉ ማስታወሻዎች ከ7 ቀናት በኋላ ይሰረዛሉ።
+notes-empty-trash = መጣያውን ባዶ አድርግ
+notes-ticked = { $count ->
+    [one] + { $count } ምልክት የተደረገበት ንጥል
+   *[other] + { $count } ምልክት የተደረገባቸው ንጥሎች
+}
+
+## A note's buttons
+
+notes-pin = ማስታወሻ ሰካ
+notes-unpin = የማስታወሻ ስካታን አንሳ
+notes-archive = በማህደር አስቀምጥ
+notes-unarchive = ከማህደር አውጣ
+notes-delete = ማስታወሻ ሰርዝ
+notes-restore = እነበረበት መልስ
+notes-delete-forever = ለዘለቄታው ሰርዝ
+notes-color = የጀርባ አማራጮች
+notes-checkboxes = አመልካች ሳጥኖችን አሳይ ወይም ደብቅ
+notes-close = ዝጋ
+
+## The open note
+
+notes-title = ርዕስ
+notes-edited = የተስተካከለው { $date }
+notes-on-this-computer = በዚህ ኮምፒውተር ላይ
+notes-where = ይህ ማስታወሻ የሚቀመጥበት
+
+## Colors (tooltips)
+
+notes-color-none = ቀለም የለም
+notes-color-coral = ኮራል
+notes-color-peach = ፒች
+notes-color-sand = አሸዋ
+notes-color-mint = ሚንት
+notes-color-sage = ሴጅ
+notes-color-fog = ጭጋግ
+notes-color-storm = ማዕበል
+notes-color-dusk = ምሽት
+notes-color-blossom = አበባ
+notes-color-clay = ሸክላ
+notes-color-chalk = ጠመኔ
+
+## Messages at the foot of the window
+
+notes-archived = ማስታወሻ በማህደር ተቀምጧል
+notes-unarchived = ማስታወሻ ከማህደር ወጥቷል
+notes-trashed = ማስታወሻ ወደ መጣያ ተወስዷል
+notes-restored = ማስታወሻ እነበረበት ተመልሷል
+notes-empty-discarded = ባዶ ማስታወሻ ተጥሏል
+notes-deleted-forever = { $count ->
+    [one] ማስታወሻ ለዘለቄታው ተሰርዟል
+   *[other] { $count } ማስታወሻዎች ለዘለቄታው ተሰርዘዋል
+}

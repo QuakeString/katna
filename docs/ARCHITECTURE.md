@@ -954,8 +954,20 @@ laid out like Google Contacts: Contacts, Frequent (the people from the
 mail) and the labels at the left, a list with Name, Email, Phone, Job
 title & company and Labels, and a contact's page with tinted cards
 (details, the accounts that keep it, notes) and Email, Mail and Call
-buttons. Creating, editing and deleting contacts, Other contacts, merge
-and import/export follow in the next phases of the study.
+buttons.
+
+Changes go to the account first (`SaveContact`, `DeleteContacts` on
+D-Bus): People API `createContact` / `updateContact` (with the card's
+etag; labels and the star left alone) / `deleteContact`, Graph `POST` /
+`PATCH` / `DELETE /me/contacts`, and CardDAV `PUT` (`If-None-Match: *` for
+a new card, `If-Match` with the ETag for a change, so a change made
+elsewhere is not overwritten; the old vCard's other properties are kept)
+and `DELETE`. What the service answers is saved in `pim.db`. A new contact
+goes to the book picked under "Save to" (an account, or this computer); a
+person kept in several accounts is changed in the first one. Delete hides
+the person and waits for its Undo to go before it is sent; Google and
+Outlook keep deleted contacts in their trash. Other contacts, merge and
+import/export follow in the next phases of the study.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -2603,9 +2615,16 @@ away; he can still change them.
   (Workspace only) and OneNote (work and school accounts only) have no
   API for personal accounts, so the Notes folder is the mail service's
   own feature that every IMAP account has.
-- **Later.** Notes on a conversation ("Add a note", §13.7), meeting notes
-  from an event, a checklist line made a task, labels, formatting,
-  pictures.
+- **On a mail.** Add a note (the mail's right-click and ⋮ menus) opens a
+  new note over the mail, titled with the conversation's subject and
+  keeping its newest message's `Message-ID` in `link`. The notes whose
+  `link` is any message of the open conversation show as small cards
+  under its subject, each opening over the mail, with "Add a note" after
+  them. A note with a link has a Mail chip (on its card and in the open
+  note) that opens the mail again. Gmail has no key for Keep, so there
+  is none.
+- **Later.** Meeting notes from an event, a checklist line made a task,
+  labels, formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -3325,8 +3344,10 @@ most useful reason is shown. Changes go back the way their calendar came
 
 Tasks live in each account's own task service, so they show on the
 phone and in the web apps: Google Tasks for Google accounts, Microsoft
-To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
-(not built yet), and lists kept on this computer.
+To Do (Graph) for Microsoft accounts, to-dos (`VTODO`) on the CalDAV
+server of an account with a password, and lists kept on this computer.
+Google's and Microsoft's CalDAV servers keep no to-dos, so their accounts
+use their own APIs only.
 
 - **Store** (`pim.db` v5, `katna_store::tasks`): `task_list` (an
   account's list, or one on this computer) and `task`. A change made in
@@ -3338,13 +3359,24 @@ To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
   level of subtasks. A due time, reminders, repeat and the star are kept
   in `pim.db` only. To Do keeps reminders, repeat (mapped to and from an
   RFC 5545 `RRULE`) and importance (the star); its due is a day too, so the
-  time stays in Katna there as well. To Do's steps (checklist items) are
-  not synced yet: steps made in Katna stay in Katna.
+  time stays in Katna there as well. Steps of a To Do task are its
+  checklist items (ID `task|item` in `pim.db`), which keep only a title
+  and a tick. The delta holds no steps, so each task it brings has its
+  steps read again, and steps of that task not among them are dropped.
+  CalDAV keeps it all, the due time too (written in UTC); a step is a
+  to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
+  server's own text of the to-do (`katna_dav::todo`), so categories,
+  attachments, other alarms and a client's own fields stay.
 - **Sync** (`katna_sync::tasks`, run by the daemon's `daemon/tasks.rs`):
   every 5 minutes, and 2 seconds after a change in Katna. Each round sends
   list changes, takes the service's lists, then per list sends task
   changes and pulls: Google by `updatedMin` (everything once a day), To Do
-  by its delta link. A change made in Katna and not yet sent wins over the
+  by its delta link, CalDAV by the list's `getctag` and then the etags of
+  its to-dos (only changed ones are downloaded; the list's sync state
+  keeps each to-do's etag and `UID`, so a missing one is a deletion). The
+  CalDAV server is found the way its calendars are (§18) and kept between
+  rounds; a collection that holds to-dos is a list, the first holding
+  only to-dos the default. A change made in Katna and not yet sent wins over the
   service's. Busy or failing services (429, 5xx) wait for the next round;
   a refused change is logged and left dirty.
 - **Sign-in**: the scopes are `https://www.googleapis.com/auth/tasks` for

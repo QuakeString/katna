@@ -259,6 +259,19 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_template(id)?)
             }
 
+            async fn save_contact(
+                &self,
+                contact: i64,
+                book: i64,
+                card: String,
+            ) -> fdo::Result<i64> {
+                Ok(self.daemon.save_contact(contact, book, &card).await?)
+            }
+
+            async fn delete_contacts(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.delete_contacts(&ids).await?)
+            }
+
             async fn save_note(&self, note: NoteItem) -> fdo::Result<i64> {
                 Ok(self.daemon.save_note(note)?)
             }

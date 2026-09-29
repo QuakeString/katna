@@ -36,6 +36,7 @@ shortcut-move-to = Flytta till
 shortcut-mark-read = Markera som läst
 shortcut-mark-unread = Markera som oläst
 shortcut-star = Lägg till eller ta bort stjärna
+shortcut-add-to-tasks = Lägg till i Uppgifter
 shortcut-important = Markera som viktigt
 shortcut-not-important = Markera som inte viktigt
 shortcut-check = Bocka för konversationen

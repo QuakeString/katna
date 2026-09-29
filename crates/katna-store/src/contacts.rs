@@ -183,6 +183,20 @@ pub struct StoredCard {
     pub labels: Vec<String>,
 }
 
+/// A saved card as the daemon needs it to write a change back.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ContactRef {
+    pub id: i64,
+    pub book: AddressBook,
+    pub remote_id: String,
+    pub etag: Option<String>,
+    pub card: Card,
+    pub raw: Option<String>,
+    pub starred: bool,
+    /// Its labels, by their `remote_id`.
+    pub groups: Vec<String>,
+}
+
 /// A label with how many people have it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ContactLabel {
@@ -725,6 +739,72 @@ impl Store {
             })
         })?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The address book `id`.
+    pub fn address_book(&self, id: i64) -> Result<Option<AddressBook>> {
+        Ok(self.address_books()?.into_iter().find(|b| b.id == id))
+    }
+
+    /// The book on this computer, made the first time it is wanted.
+    pub fn local_address_book(&self) -> Result<i64> {
+        self.ensure_address_book(None, BookSource::Local, "", "")
+    }
+
+    /// Card `id` with its book, for writing a change back.
+    pub fn contact_ref(&self, id: i64) -> Result<Option<ContactRef>> {
+        let found = self
+            .pim
+            .prepare_cached(
+                "SELECT book_id, remote_id, etag, card_json, raw, starred FROM contact
+                 WHERE id = ?1",
+            )?
+            .query_row([id], |row| {
+                Ok((
+                    row.get::<_, i64>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, Option<String>>(2)?,
+                    row.get::<_, String>(3)?,
+                    row.get::<_, Option<String>>(4)?,
+                    row.get::<_, bool>(5)?,
+                ))
+            })
+            .optional()?;
+        let Some((book, remote_id, etag, json, raw, starred)) = found else {
+            return Ok(None);
+        };
+        let Some(book) = self.address_book(book)? else {
+            return Ok(None);
+        };
+        let card = serde_json::from_str(&json)
+            .map_err(|e| Error::InvalidData(format!("contact {id}: {e}")))?;
+        let groups = self
+            .pim
+            .prepare_cached(
+                "SELECT g.remote_id FROM contact_group_member m
+                 JOIN contact_group g ON g.id = m.group_id WHERE m.contact_id = ?1",
+            )?
+            .query_map([id], |row| row.get(0))?
+            .collect::<rusqlite::Result<_>>()?;
+        Ok(Some(ContactRef {
+            id,
+            book,
+            remote_id,
+            etag,
+            card,
+            raw,
+            starred,
+            groups,
+        }))
+    }
+
+    /// The id of the card `remote_id` in `book`.
+    pub fn contact_id(&self, book: i64, remote_id: &str) -> Result<Option<i64>> {
+        Ok(self
+            .pim
+            .prepare_cached("SELECT id FROM contact WHERE book_id = ?1 AND remote_id = ?2")?
+            .query_row(params![book, remote_id], |row| row.get(0))
+            .optional()?)
     }
 
     /// Every saved address with the name saved for it: for the address

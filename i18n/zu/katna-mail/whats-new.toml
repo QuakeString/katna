@@ -1238,3 +1238,41 @@ ngamunye kanye nje noma ngabe ama-akhawunti amaningi awagcina,
 namalebula, izithombe neminingwane yabo. Amagama nezithombe zabo futhi
 ziyavela kumeyili yakho nasezincomweni zamadilesi.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Amanothi e-Katna"
+text = """
+Amanothi ebha eseceleni manje avula Amanothi e-Katna, ahlelwe njenge-Google
+Keep. Bhala inothi noma uhlu lokuhlola, uliphe umbala, lipheke phezulu,
+bese uphawula izinto ngqo ebhodini. Amanothi ayagcinwa njengoba ubhala;
+ibhokisi lokusesha liwatholayo; Ingobo yomlando noDoti kuwasusa endleleni,
+nokuhlehlisa uma kudingeka.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Amanothi kuwo wonke amadivayisi"
+text = """
+Amanothi manje ahlala kufolda ye-Notes ye-akhawunti yakho yemeyili, lapho
+i-Notes ye-iPhone ne-Mac igcina khona eyayo, ngakho alandela kwamanye
+amadivayisi akho futhi abuye kuwo. Igama le-akhawunti engaphansi kwenothi
+libonisa lapho ligcinwe khona; liqhafaze ukuze uthuthele inothi, noma
+uligcine kule khompyutha kuphela.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Engeza imeyili Kumisebenzi"
+text = """
+Cindezela u-Shift+T, njenge-Gmail, noma ukhethe Engeza Kumisebenzi uma
+uchofoza imeyili ngakwesokudla. Umsebenzi uthatha isihloko semeyili, futhi
+i-chip yayo yeMeyili kuMisebenzi ivula futhi leyo meyili.
+"""
+
+["2026-09-29-0412-calendar"]
+title = "Ikhalenda lakho, eduze kwemeyili yakho"
+text = """
+Ikhalenda libonisa amakhalenda akho e-Google, e-Microsoft nawamanye
+ngosuku, ngeviki, ngenyanga noma njengohlelo, ngokhiye be-Google
+Calendar. Inkinobho yekhalenda ngakwesokudla semeyili ivula uhlelo
+losuku, nenkinobho ethi Joyina yamakholi. Ngena futhi ku-akhawunti ukuze
+i-Katna ifunde ikhalenda layo.
+"""

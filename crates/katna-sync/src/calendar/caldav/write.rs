@@ -13,12 +13,8 @@ use katna_store::{
     calendar::{Calendar, EventData, Pending},
 };
 
-use super::{CalDav, CalendarError, MAX_ANSWER, TIMEOUT, origin};
-use crate::{
-    Error, Result,
-    autoconfig::http::{self, Reply},
-    calendar::edit::Step,
-};
+use super::{CalDav, CalendarError, origin};
+use crate::{Error, Result, autoconfig::http::Reply, calendar::edit::Step};
 
 impl CalDav {
     /// The URL of resource `href` (a path) of `calendar`: on the host the
@@ -38,24 +34,7 @@ impl CalDav {
         headers: &[(&str, &str)],
         body: Option<(&str, &[u8])>,
     ) -> Result<Reply> {
-        if !self.trusted(url) {
-            return Err(Error::Protocol(format!("CalDAV led elsewhere: {url}")));
-        }
-        let mut retried = false;
-        loop {
-            let authorization = self.authorization().await?;
-            let mut all = vec![("Authorization", authorization.as_str())];
-            all.extend_from_slice(headers);
-            let reply = http::exchange_limited(
-                method, url, &all, body, None, &self.tls, TIMEOUT, MAX_ANSWER,
-            )
-            .await?;
-            if reply.status == 401 && !retried && self.retry_refused() {
-                retried = true;
-                continue;
-            }
-            return Ok(reply);
-        }
+        self.request(method, url, headers, body).await
     }
 
     /// What the server's answer to a write means.

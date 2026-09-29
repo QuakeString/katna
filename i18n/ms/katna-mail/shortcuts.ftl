@@ -36,6 +36,7 @@ shortcut-move-to = Alih ke
 shortcut-mark-read = Tandai sebagai dibaca
 shortcut-mark-unread = Tandai sebagai belum dibaca
 shortcut-star = Tambah atau alih keluar bintang
+shortcut-add-to-tasks = Tambah pada Tugas
 shortcut-important = Tandai sebagai penting
 shortcut-not-important = Tandai sebagai tidak penting
 shortcut-check = Tandakan perbualan

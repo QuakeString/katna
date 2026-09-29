@@ -37,6 +37,8 @@ tasks-details = Mga detalye
 tasks-delete = I-delete
 tasks-move-to = Ilipat sa { $list }
 tasks-from-mail = Mail
+tasks-open-mail = Buksan ang mail
+tasks-no-subject = (walang paksa)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Tapos na ang gawain
 tasks-toast-deleted = Na-delete ang gawain
+tasks-toast-added = { $count ->
+    [one] Naidagdag sa Mga Gawain
+   *[other] Naidagdag ang { $count } gawain
+}
+tasks-mail-gone = Wala na rito ang mail na iyon.
 tasks-toast-list-deleted = Na-delete ang listahan
 tasks-toast-moved = Inilipat sa { $list }

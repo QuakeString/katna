@@ -36,6 +36,7 @@ shortcut-move-to = Skuif na
 shortcut-mark-read = Merk as gelees
 shortcut-mark-unread = Merk as ongelees
 shortcut-star = Voeg ster by of verwyder dit
+shortcut-add-to-tasks = Voeg by Take
 shortcut-important = Merk as belangrik
 shortcut-not-important = Merk as nie belangrik nie
 shortcut-check = Merk die gesprek

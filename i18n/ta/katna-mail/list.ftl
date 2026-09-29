@@ -378,6 +378,7 @@ menu-pin = மேலே பின் செய்
 menu-unpin = பின்னை அகற்று
 menu-snooze = உறக்கநிலையில் வை
 menu-unsnooze = உறக்கநிலையை நீக்கு
+menu-add-to-tasks = பணிகளில் சேர்
 menu-print-all = அனைத்தையும் அச்சிடு
 menu-new-window = புதிய சாளரத்தில் திற
 menu-move-to = இதற்கு நகர்த்து

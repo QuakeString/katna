@@ -36,6 +36,7 @@ shortcut-move-to = ལུ་སྤོ
 shortcut-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ
 shortcut-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ
 shortcut-star = སྐར་མ་བཀལ་ ཡང་ན་བཏོན
+shortcut-add-to-tasks = ལཱ་ནང་ཁ་སྣོན་འབད།
 shortcut-important = གལ་ཅན་སྦེ་རྟགས་བཀལ
 shortcut-not-important = གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ
 shortcut-check = གླེང་མོལ་ལུ་ཞིབ་རྟགས་བཀལ

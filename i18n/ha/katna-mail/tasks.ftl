@@ -37,6 +37,8 @@ tasks-details = Bayanai
 tasks-delete = Share
 tasks-move-to = Mayar zuwa { $list }
 tasks-from-mail = Wasiƙu
+tasks-open-mail = Buɗe wasiƙar
+tasks-no-subject = (babu jigo)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = An kammala aikin
 tasks-toast-deleted = An share aikin
+tasks-toast-added = { $count ->
+    [one] An ƙara a Ayyuka
+   *[other] An ƙara ayyuka { $count }
+}
+tasks-mail-gone = Wannan wasiƙar ba ta nan kuma.
 tasks-toast-list-deleted = An share jerin
 tasks-toast-moved = An mayar zuwa { $list }
