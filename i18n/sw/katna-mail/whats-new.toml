@@ -1574,3 +1574,12 @@ Kila akaunti sasa inaonekana kwenye paneli ya pembeni ya Majukumu.
 Majukumu ya akaunti yasipopakia, mstari chini yake unaeleza sababu,
 pamoja na mbofyo mmoja wa kurekebisha: ingia tena, au jaribu tena.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Maswali kabla ya kutuma yanabaki yakionekana"
+text = """
+Maswali kama “Ulikusudia kuambatisha faili?” sasa hufunguka katikati ya
+dirisha, bila kujali urefu wa ujumbe unaoandika au kusambaza, kwa hivyo
+hayafichwi kamwe chini zaidi kwenye ukurasa. Enter hujibu kwa kitufe
+kikuu na Esc hurudi kwenye ujumbe.
+"""

@@ -1543,3 +1543,12 @@ iṣẹ́ àkáǹtì kan kò bá lè ṣí, ìlà kan nísàlẹ̀ rẹ̀ ń s�
 kan ṣoṣo láti yanjú rẹ̀: wọlé lẹ́ẹ̀kan sí i, tàbí gbìyànjú lẹ́ẹ̀kan sí
 i.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Àwọn ìbéèrè kí o tó fi ránṣẹ́ máa ń hàn"
+text = """
+Àwọn ìbéèrè bí “Ṣé o fẹ́ so àwọn fáìlì mọ́ ọn ni?” ti ń ṣí ní àárín
+fèrèsé báyìí, bó ti wù kí lẹ́tà tí ò ń kọ tàbí tí ò ń fi ránṣẹ́ síwájú
+gùn tó, nítorí náà wọn kò ní farapamọ́ sísàlẹ̀ ojú ewé mọ́. Enter ń
+dáhùn pẹ̀lú bọ́tìnnì àkọ́kọ́, Esc sì ń padà sí lẹ́tà náà.
+"""

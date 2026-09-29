@@ -1663,3 +1663,12 @@ Todas las cuentas aparecen ahora en el panel lateral de Tareas. Cuando
 las tareas de una cuenta no pueden cargarse, una línea debajo dice por
 qué, con un clic para arreglarlo: volver a iniciar sesión o reintentar.
 """
+
+["2026-09-29-1404-compose-dialogs-in-view"]
+title = "Las preguntas antes de enviar quedan a la vista"
+text = """
+Preguntas como «¿Querías adjuntar archivos?» ahora se abren en el centro
+de la ventana, por largo que sea el mensaje que escribes o reenvías, así
+que nunca quedan escondidas más abajo en la página. Enter responde con
+el botón principal y Esc vuelve al mensaje.
+"""
