@@ -146,6 +146,8 @@ struct Editor {
     places: bool,
     /// The formatting row is open.
     format: bool,
+    /// A new note from the "Take a note" bar, shown in the bar's place.
+    in_bar: bool,
     /// The label picker, when open.
     picker: Option<labels::Picker>,
     /// A save is on its way; another waits for it.
@@ -344,6 +346,7 @@ impl MailWindow {
         self.calendar.open = None;
         let accent = rgba(self.theme(window).accent).into();
         let (about_title, about_link) = about.unzip();
+        let in_bar = note.is_none() && about_link.is_none();
         let (title_text, (body_text, body_html)) = note
             .map(|n| (n.title.clone(), (n.body.clone(), n.html.clone())))
             .unwrap_or_else(|| {
@@ -431,6 +434,7 @@ impl MailWindow {
             palette: false,
             places: false,
             format: false,
+            in_bar,
             picker: None,
             saving: false,
             _save: None,
@@ -1012,7 +1016,13 @@ impl MailWindow {
 
         let query = self.search.read(cx).text().trim().to_lowercase();
         let board = self.render_board(th, &query, window, cx);
-        let editor = self.render_editor(th, window, cx);
+        // A new note opens in place of the "Take a note" bar, as in Keep;
+        // a saved one opens over the page.
+        let editor = if self.new_note_inline() {
+            None
+        } else {
+            self.render_editor(th, false, window, cx)
+        };
         let dialog = self.render_labels_dialog(th, window, cx);
         div()
             .relative()
@@ -1043,10 +1053,14 @@ impl MailWindow {
             Some(Err(err)) => return placeholder(err, th),
             Some(Ok(notes)) => notes.clone(),
         };
+        // A new note being written in the bar's place joins the board when
+        // it closes, as in Keep.
+        let writing = page.editor.as_ref().filter(|e| e.in_bar).map(|e| e.id);
         let shown: Vec<&Note> = notes
             .iter()
             .filter(|n| {
-                view.shows(n)
+                Some(n.id) != writing
+                    && view.shows(n)
                     && matches(n, query)
                     && label.as_ref().is_none_or(|l| n.labels.contains(l))
             })
@@ -1079,7 +1093,7 @@ impl MailWindow {
             .flex()
             .flex_col();
         if view == NotesView::Notes {
-            body = body.child(self.render_take_note(th, cx));
+            body = body.child(self.render_take_note(th, window, cx));
         }
         if view == NotesView::Trash {
             let ids: Vec<i64> = shown.iter().map(|n| n.id).collect();
@@ -1191,51 +1205,71 @@ impl MailWindow {
     }
 
     /// Keep's "Take a note…" bar, with a new list at its right.
-    fn render_take_note(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        div()
+    /// Whether the open note is a new one from the "Take a note" bar, which
+    /// opens in the bar's place rather than over the page.
+    fn new_note_inline(&self) -> bool {
+        self.notes.as_ref().is_some_and(|page| {
+            page.view == NotesView::Notes && page.editor.as_ref().is_some_and(|e| e.in_bar)
+        })
+    }
+
+    fn render_take_note(
+        &self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let row = div()
             .flex()
             .flex_row()
             .justify_center()
             .pt(px(32.0))
-            .pb(px(24.0))
-            .child(
-                div()
-                    .id("notes-take")
-                    .w_full()
-                    .max_w(px(EDITOR_WIDTH))
-                    .h(px(48.0))
-                    .pl(px(16.0))
-                    .pr(px(4.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .bg(rgba(th.surface))
-                    .border_1()
-                    .border_color(rgba(th.divider))
-                    .shadow(elevation(th, 1.0))
-                    .cursor_text()
-                    .on_click(cx.listener(|this, _, window, cx| {
+            .pb(px(24.0));
+        if self.new_note_inline()
+            && let Some(card) = self.render_editor(th, true, window, cx)
+        {
+            return row.child(card).into_any_element();
+        }
+        row.child(
+            div()
+                .id("notes-take")
+                .w_full()
+                .max_w(px(EDITOR_WIDTH))
+                .h(px(48.0))
+                .pl(px(16.0))
+                .pr(px(4.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .rounded(px(8.0))
+                .bg(rgba(th.surface))
+                .border_1()
+                .border_color(rgba(th.divider))
+                .shadow(elevation(th, 1.0))
+                .cursor_text()
+                .on_click(
+                    cx.listener(|this, _, window, cx| {
                         this.open_note(None, false, None, window, cx)
-                    }))
-                    .child(
-                        div()
-                            .flex_1()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("notes-take-a-note")),
-                    )
-                    .child(
-                        icon_button("notes-new-list", "checkbox-checked", 22.0, th)
-                            .tooltip(tip(tr!("notes-new-list"), th))
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                cx.stop_propagation();
-                                this.open_note(None, true, None, window, cx)
-                            })),
-                    ),
-            )
-            .into_any_element()
+                    }),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .text_size(px(15.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("notes-take-a-note")),
+                )
+                .child(
+                    icon_button("notes-new-list", "checkbox-checked", 22.0, th)
+                        .tooltip(tip(tr!("notes-new-list"), th))
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.open_note(None, true, None, window, cx)
+                        })),
+                ),
+        )
+        .into_any_element()
     }
 
     fn render_card(&self, note: &Note, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -1515,9 +1549,12 @@ impl MailWindow {
     }
 
     /// The open note, over a dimmed board.
+    /// The open note: `inline` in the board's flow, otherwise centred over
+    /// the page on a scrim.
     pub(super) fn render_editor(
         &self,
         th: &Theme,
+        inline: bool,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
@@ -1674,9 +1711,12 @@ impl MailWindow {
             .id("note-editor")
             .occlude()
             .relative()
-            .w(px(
-                EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
-            ))
+            .when(inline, |d| d.w_full().max_w(px(EDITOR_WIDTH)))
+            .when(!inline, |d| {
+                d.w(px(
+                    EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
+                ))
+            })
             .max_h(px(vh * 0.7))
             .flex()
             .flex_col()
@@ -1917,6 +1957,13 @@ impl MailWindow {
                             .child(tr!("notes-close")),
                     ),
             );
+        if inline {
+            // Clicking anywhere else on the page closes it, as in Keep.
+            return Some(
+                card.on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_note(cx)))
+                    .into_any_element(),
+            );
+        }
         Some(
             div()
                 .id("note-editor-scrim")
