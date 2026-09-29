@@ -79,3 +79,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Leyo meyili ayisekho lapha.
 tasks-toast-list-deleted = Uhlu lususiwe
 tasks-toast-moved = Kuhanjiswe ku-{ $list }
+tasks-toast-rescheduled = Umsebenzi uhlelwe kabusha

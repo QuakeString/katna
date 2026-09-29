@@ -13,3 +13,6 @@ viewer-document-unreadable = ይህ ሰነድ ሊነበብ አልቻለም።
 viewer-slides-unreadable = እነዚህ ስላይዶች ሊነበቡ አልቻሉም።
 viewer-no-preview = ቅድመ እይታ የለም
 viewer-slide = ስላይድ { $number }
+viewer-page = ገጽ
+viewer-page-count = ከ { $count }
+viewer-go-to-page-tip = የገጽ ቁጥር ይተይቡና Enter ይጫኑ (Ctrl+G)

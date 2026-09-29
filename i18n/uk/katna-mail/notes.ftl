@@ -70,6 +70,16 @@ notes-mail = Пошта
 notes-open-mail = Відкрити лист
 notes-open-note = Відкрити нотатку
 
+## Meeting notes
+
+notes-meeting-take = Вести нотатки зустрічі
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Учасники: { $names }
+notes-meeting-notes = Нотатки
+notes-meeting-actions = Завдання
+notes-event = Подія
+notes-open-event = Відкрити подію
+
 ## Colors (tooltips)
 
 notes-color-none = Без кольору

@@ -13,3 +13,6 @@ viewer-document-unreadable = 이 문서를 읽을 수 없습니다.
 viewer-slides-unreadable = 이 슬라이드를 읽을 수 없습니다.
 viewer-no-preview = 미리보기를 사용할 수 없음
 viewer-slide = 슬라이드 { $number }
+viewer-page = 페이지
+viewer-page-count = / { $count }
+viewer-go-to-page-tip = 페이지 번호를 입력하고 Enter 키를 누르세요 (Ctrl+G)

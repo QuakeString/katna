@@ -1298,3 +1298,38 @@ text = """
 Ìpè tó dé àkọọ́lẹ̀ tí kò ní kàlẹ́ńdà báyìí ní Bẹ́ẹ̀ni, Rárá àti Bóyá pẹ̀lú:
 ìdáhùn rẹ ń lọ sí ọ̀dọ̀ olùṣètò nípasẹ̀ ìmeèlì, kàlẹ́ńdà rẹ̀ sì ń fi àmì sí i.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Àkọsílẹ̀ ìpàdé"
+text = """
+Ṣí ìṣẹ̀lẹ̀ kan lórí Kàlẹ́ńdà kí o sì yan Ṣe àkọsílẹ̀ ìpàdé: àkọsílẹ̀ tó ní orúkọ ìṣẹ̀lẹ̀ náà yóò ṣí, pẹ̀lú àwọn tó wá àti ibi fún àwọn ohun tí a máa ṣe.
+Káàdì ìṣẹ̀lẹ̀ náà ń ṣàkójọ àwọn àkọsílẹ̀ rẹ̀, àmì Ìṣẹ̀lẹ̀ tó wà lára àkọsílẹ̀ sì máa mú ọ padà sí ọjọ́ náà.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Lọ tààrà sí ojú ìwé PDF"
+text = """
+Nọ́mbà ojú ìwé tó wà lábẹ́ PDF ti di àpótí báyìí:
+Tẹ̀ ẹ́ tàbí tẹ Ctrl+G, tẹ nọ́mbà ojú ìwé, lẹ́yìn náà tẹ Enter láti fò lọ síbẹ̀.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Àwọn iṣẹ́ lórí kàlẹ́ńdà"
+text = """
+Àwọn iṣẹ́ tí ó ní ọjọ́ ìparí báyìí máa ń hàn lórí Kàlẹ́ńdà, ní àkókò wọn tàbí pẹ̀lú àwọn ìṣẹ̀lẹ̀ gbogbo ọjọ́.
+O lè sàmì sí wọn bí ti parí níbẹ̀, tẹ̀ láti ṣí ọ̀kan, tàbí fà á lọ sí ọjọ́ tàbí àkókò mìíràn láti fi àkókò yẹn pamọ́ fún un.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Àwọn ìránnilétí fún àwọn ìṣẹ̀lẹ̀ rẹ"
+text = """
+Àwọn ìṣẹ̀lẹ̀ máa ń rán ọ létí pẹ̀lú ìwifúnni báyìí, àní nígbà tí Katna bá wà ní títìpa.
+Darapọ̀ ń ṣí ìpè fídíò, Sún síwájú ní ìṣẹ́jú 5 sì ń rán ọ létí lẹ́ẹ̀kan sí i lẹ́yìn ìṣẹ́jú márùn-ún.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Dàpọ̀ àwọn olùbásọ̀rọ̀ tó jọra, gbé wọlé àti gbé jáde"
+text = """
+Àwọn olùbásọ̀rọ̀ ní Àtúnṣe àti ìṣàkóso báyìí: Dàpọ̀ àti àtúnṣe ń wá àwọn ènìyàn tí a fipamọ́ lẹ́ẹ̀mejì (orúkọ tàbí nọ́ńbà fóònù kan náà) ó sì ń dà wọ́n pọ̀ pẹ̀lú títẹ̀ ẹ̀ẹ̀kan, pẹ̀lú Dá padà.
+Gbé wọlé ń mú àwọn ènìyàn wá láti fáìlì vCard, ó ń fi àwọn tí a ti fipamọ́ sílẹ̀, Gbé jáde sì ń fi gbogbo wọn, tàbí àmì kan, pamọ́ bí fáìlì vCard.
+"""

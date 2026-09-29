@@ -1429,3 +1429,48 @@ Isimemo esafika ku-akhawunti engenalo ikhalenda manje sinakho Yebo, Cha
 noma Mhlawumbe: impendulo yakho iya kumhleli ngeposi, futhi ikhalenda
 lakhe liyayimaka.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Amanothi omhlangano"
+text = """
+Vula umcimbi kuKhalenda bese ukhetha Thatha amanothi omhlangano:
+kuvuleka inothi elinesihloko somcimbi, selilungele ukuthi ngubani
+ozokuza nendawo yezinto zokwenza. Ikhadi lomcimbi lidwebe amanothi alo,
+futhi i-chip Yomcimbi yenothi ikubuyisela osukwini.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Yiya ngokuqondile ekhasini le-PDF"
+text = """
+Inombolo yekhasi engaphansi kwe-PDF manje iyibhokisi: chofoza kuyo noma
+ucindezele Ctrl+G, thayipha ikhasi bese ucindezela u-Enter ukuze uye
+lapho ngokuqondile.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Imisebenzi kukhalenda"
+text = """
+Imisebenzi enosuku lokuphela manje iyavela kuKhalenda, ngesikhathi sayo
+noma kanye nemicimbi yosuku lonke. Yiphawule lapho, chofoza ukuze uvule
+owodwa, noma uyihudulele kolunye usuku noma isikhathi ukuze ubekele
+isikhathi salo msebenzi eceleni.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Izikhumbuzo zemicimbi yakho"
+text = """
+Imicimbi manje iyakukhumbuza ngesaziso, ngisho noma iKatna ivaliwe.
+Joyina ivula ucingo lwevidiyo, futhi Libazisa likukhumbuza futhi ngemva
+kwemizuzu emihlanu.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Hlanganisa okuphindiwe, ngenisa futhi uthumele oxhumana nabo"
+text = """
+Oxhumana nabo sinakho manje Lungisa futhi uphathe: Hlanganisa futhi
+ulungise ithola abantu abagcinwe kabili (igama noma inombolo yefoni
+efanayo) bese ibahlanganisa ngokuchofoza kanye, kanye ne-Hlehlisa.
+Ngenisa ilethe abantu kufayela le-vCard ishiye noma ubani osegciniwe
+kakade, futhi Thumela igcina wonke umuntu, noma ilebula, njengefayela
+le-vCard.
+"""

@@ -25,6 +25,45 @@ contacts-label-removed = Kususwe ku-{ $name }
 contacts-label-renamed = Ilebula lifakwe igama elisha elithi { $name }
 contacts-label-deleted = Kususiwe ilebula { $name }
 contacts-label-no-email = Akekho kule lebula onekheli le-imeyili
+contacts-manage = Lungisa futhi uphathe
+contacts-merge = Hlanganisa futhi ulungise
+contacts-merge-about = { $count ->
+    [one] Iziphakamiso ezingu-{ $count }: oxhumana nabo ababukeka njengomuntu oyedwa
+   *[other] Iziphakamiso ezingu-{ $count }: oxhumana nabo ababukeka njengomuntu oyedwa
+}
+contacts-merge-none = Awekho amaduplicate. Oxhumana nabo abanegama noma inombolo yefoni efanayo bavela lapha.
+contacts-merge-count = { $count ->
+    [one] Oxhumana nabo abangu-{ $count }
+   *[other] Oxhumana nabo abangu-{ $count }
+}
+contacts-merge-all = Hlanganisa bonke
+contacts-merge-button = Hlanganisa
+contacts-merge-dismiss = Cashisa
+contacts-merged = { $count ->
+    [1] Oxhumana nabo bahlanganisiwe
+    [one] Ukuhlanganisa okungu-{ $count } kuqediwe
+   *[other] Ukuhlanganisa okungu-{ $count } kuqediwe
+}
+contacts-import = Ngenisa
+contacts-export = Thumela
+contacts-import-title = Ngenisa oxhumana nabo kufayela le-vCard
+contacts-imported = { $count ->
+    [one] Kungeniswe oxhumana nabo abangu-{ $count } ku-{ $place }
+   *[other] Kungeniswe oxhumana nabo abangu-{ $count } ku-{ $place }
+}
+contacts-imported-some = { $count ->
+    [one] Kungeniswe oxhumana nabo abangu-{ $count } ku-{ $place }; abangu-{ $skipped } abagcinwe kakade bashiywe
+   *[other] Kungeniswe oxhumana nabo abangu-{ $count } ku-{ $place }; abangu-{ $skipped } abagcinwe kakade bashiywe
+}
+contacts-import-none = Akukho oxhumana nabo otholakele ku-{ $name }
+contacts-import-all-saved = Wonke umuntu ku-{ $name } usegciniwe kakade
+contacts-import-failed = Ayikwazanga ukufunda i-{ $name }: { $error }
+contacts-exported = { $count ->
+    [one] Kuthunyelwe oxhumana nabo abangu-{ $count } ku-{ $path }
+   *[other] Kuthunyelwe oxhumana nabo abangu-{ $count } ku-{ $path }
+}
+contacts-export-none = Akukho oxhumana nabo okufanele bathunyelwe
+contacts-export-failed = Ayikwazanga ukuthumela oxhumana nabo: { $error }
 contacts-create = Dala oxhumana naye
 
 ## Search and the list

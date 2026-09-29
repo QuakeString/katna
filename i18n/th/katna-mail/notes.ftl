@@ -67,6 +67,16 @@ notes-mail = อีเมล
 notes-open-mail = เปิดอีเมล
 notes-open-note = เปิดโน้ต
 
+## Meeting notes
+
+notes-meeting-take = จดโน้ตการประชุม
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = ผู้เข้าร่วม: { $names }
+notes-meeting-notes = โน้ต
+notes-meeting-actions = รายการที่ต้องดำเนินการ
+notes-event = กิจกรรม
+notes-open-event = เปิดกิจกรรม
+
 ## Colors (tooltips)
 
 notes-color-none = ไม่มีสี

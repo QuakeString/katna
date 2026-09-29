@@ -17,6 +17,23 @@ notify-tracking-clicked = { $who } روی پیوندی در «{ $subject }» ک�
 notify-update-ready = Katna Mail را می‌توان به‌روزرسانی کرد
 notify-update-ready-body = نسخهٔ { $version } بارگیری شده است. به‌روزرسانی آن را نصب می‌کند و Katna Mail را دوباره راه‌اندازی می‌کند.
 notify-update = به‌روزرسانی
+notify-event-now = اکنون
+notify-event-in-minutes = { $count ->
+    [one] { $count } دقیقه دیگر
+   *[other] { $count } دقیقه دیگر
+}
+notify-event-in-hours = { $count ->
+    [one] { $count } ساعت دیگر
+   *[other] { $count } ساعت دیگر
+}
+notify-event-in-days = { $count ->
+    [1] فردا
+    [one] { $count } روز دیگر
+   *[other] { $count } روز دیگر
+}
+notify-event-all-day = تمام روز
+notify-event-join = پیوستن
+notify-event-snooze = تعویق 5 دقیقه‌ای
 
 ## Its buttons
 

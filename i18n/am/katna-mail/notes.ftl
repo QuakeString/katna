@@ -68,6 +68,16 @@ notes-mail = ደብዳቤ
 notes-open-mail = ደብዳቤውን ክፈት
 notes-open-note = ማስታወሻውን ክፈት
 
+## Meeting notes
+
+notes-meeting-take = የስብሰባ ማስታወሻ ያዝ
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = ተሳታፊዎች፡ { $names }
+notes-meeting-notes = ማስታወሻዎች
+notes-meeting-actions = የድርጊት ንጥሎች
+notes-event = ክስተት
+notes-open-event = ክስተቱን ክፈት
+
 ## Colors (tooltips)
 
 notes-color-none = ቀለም የለም

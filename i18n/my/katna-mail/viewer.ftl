@@ -13,3 +13,6 @@ viewer-document-unreadable = ဤစာရွက်စာတမ်းကို �
 viewer-slides-unreadable = ဤဆလိုက်များကို ဖတ်၍ မရပါ။
 viewer-no-preview = အစမ်းကြည့်ရှုမှု မရနိုင်ပါ
 viewer-slide = ဆလိုက် { $number }
+viewer-page = စာမျက်နှာ
+viewer-page-count = / { $count }
+viewer-go-to-page-tip = စာမျက်နှာနံပါတ် ရိုက်ထည့်ပြီး Enter နှိပ်ပါ (Ctrl+G)

@@ -77,3 +77,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ထိုမေးလ် ဤနေရာတွင် မရှိတော့ပါ။
 tasks-toast-list-deleted = စာရင်း ဖျက်ပြီးပါပြီ
 tasks-toast-moved = { $list } သို့ ရွှေ့ပြီးပါပြီ
+tasks-toast-rescheduled = လုပ်ဆောင်စရာကို အချိန်ပြောင်းပြီးပါပြီ

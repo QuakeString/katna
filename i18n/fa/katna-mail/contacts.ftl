@@ -25,6 +25,40 @@ contacts-label-removed = از { $name } حذف شد
 contacts-label-renamed = نام برچسب به { $name } تغییر کرد
 contacts-label-deleted = برچسب { $name } حذف شد
 contacts-label-no-email = هیچ‌کس در این برچسب نشانی ایمیل ندارد
+contacts-manage = اصلاح و مدیریت
+contacts-merge = ادغام و اصلاح
+contacts-merge-about = { $count ->
+    [one] { $count } پیشنهاد: مخاطبانی که به نظر یک نفر هستند
+   *[other] { $count } پیشنهاد: مخاطبانی که به نظر یک نفر هستند
+}
+contacts-merge-none = مورد تکراری وجود ندارد. مخاطبانی که نام یا شماره تلفن یکسان دارند اینجا نشان داده می‌شوند.
+contacts-merge-count = { $count ->
+   *[other] { $count } مخاطب
+}
+contacts-merge-all = ادغام همه
+contacts-merge-button = ادغام
+contacts-merge-dismiss = رد کردن
+contacts-merged = { $count ->
+    [1] مخاطبین ادغام شدند
+   *[other] { $count } ادغام انجام شد
+}
+contacts-import = وارد کردن
+contacts-export = صادر کردن
+contacts-import-title = وارد کردن مخاطبین از فایل vCard
+contacts-imported = { $count ->
+   *[other] { $count } مخاطب در { $place } وارد شد
+}
+contacts-imported-some = { $count ->
+   *[other] { $count } مخاطب در { $place } وارد شد؛ { $skipped } مخاطبِ ازقبل‌ذخیره‌شده کنار گذاشته شد
+}
+contacts-import-none = مخاطبی در { $name } پیدا نشد
+contacts-import-all-saved = همه افراد { $name } از قبل ذخیره شده‌اند
+contacts-import-failed = خواندن { $name } ممکن نشد: { $error }
+contacts-exported = { $count ->
+   *[other] { $count } مخاطب به { $path } صادر شد
+}
+contacts-export-none = مخاطبی برای صادر کردن وجود ندارد
+contacts-export-failed = صادر کردن مخاطبین ممکن نشد: { $error }
 contacts-create = ایجاد مخاطب
 
 ## Search and the list

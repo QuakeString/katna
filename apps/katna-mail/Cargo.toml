@@ -27,6 +27,7 @@ katna-i18n = { workspace = true, features = ["format"] }
 gpui.workspace = true
 gpui-platform.workspace = true
 async-channel.workspace = true
+getrandom.workspace = true
 zbus.workspace = true
 jiff.workspace = true
 futures-lite.workspace = true
@@ -38,6 +39,7 @@ mail-parser.workspace = true
 fontdb.workspace = true
 serde_json.workspace = true
 url.workspace = true
+qrcodegen.workspace = true
 
 # XDG desktop portals (print dialog, "Open with"): Linux only.
 [target.'cfg(not(windows))'.dependencies]

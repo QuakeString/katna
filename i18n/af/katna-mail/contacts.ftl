@@ -25,6 +25,45 @@ contacts-label-removed = Van { $name } verwyder
 contacts-label-renamed = Etiket hernoem na { $name }
 contacts-label-deleted = Etiket { $name } is uitgevee
 contacts-label-no-email = Niemand op hierdie etiket het ’n e-posadres nie
+contacts-manage = Regstel en bestuur
+contacts-merge = Voeg saam en regstel
+contacts-merge-about = { $count ->
+    [one] { $count } voorstel: kontakte wat lyk soos dieselfde persoon
+   *[other] { $count } voorstelle: kontakte wat lyk soos dieselfde persoon
+}
+contacts-merge-none = Geen duplikate nie. Kontakte met dieselfde naam of foonnommer verskyn hier.
+contacts-merge-count = { $count ->
+    [one] { $count } kontak
+   *[other] { $count } kontakte
+}
+contacts-merge-all = Voeg almal saam
+contacts-merge-button = Voeg saam
+contacts-merge-dismiss = Verwerp
+contacts-merged = { $count ->
+    [1] Kontakte saamgevoeg
+    [one] { $count } samevoeging voltooi
+   *[other] { $count } samevoegings voltooi
+}
+contacts-import = Voer in
+contacts-export = Voer uit
+contacts-import-title = Voer kontakte in vanaf ’n vCard-lêer
+contacts-imported = { $count ->
+    [one] { $count } kontak in { $place } ingevoer
+   *[other] { $count } kontakte in { $place } ingevoer
+}
+contacts-imported-some = { $count ->
+    [one] { $count } kontak in { $place } ingevoer; { $skipped } reeds gestoor, weggelaat
+   *[other] { $count } kontakte in { $place } ingevoer; { $skipped } reeds gestoor, weggelaat
+}
+contacts-import-none = Geen kontakte in { $name } gevind nie
+contacts-import-all-saved = Almal in { $name } is reeds gestoor
+contacts-import-failed = Kon nie { $name } lees nie: { $error }
+contacts-exported = { $count ->
+    [one] { $count } kontak na { $path } uitgevoer
+   *[other] { $count } kontakte na { $path } uitgevoer
+}
+contacts-export-none = Geen kontakte om uit te voer nie
+contacts-export-failed = Kon nie kontakte uitvoer nie: { $error }
 contacts-create = Skep kontak
 
 ## Search and the list

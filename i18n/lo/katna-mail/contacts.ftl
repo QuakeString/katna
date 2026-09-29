@@ -25,6 +25,39 @@ contacts-label-removed = ເອົາອອກຈາກ { $name } ແລ້ວ
 contacts-label-renamed = ປ່ຽນຊື່ປ້າຍກຳກັບເປັນ { $name } ແລ້ວ
 contacts-label-deleted = ລຶບປ້າຍກຳກັບ { $name } ແລ້ວ
 contacts-label-no-email = ບໍ່ມີໃຜໃນປ້າຍກຳກັບນີ້ທີ່ມີທີ່ຢູ່ອີເມວ
+contacts-manage = ແກ້ໄຂ ແລະ ຈັດການ
+contacts-merge = ລວມ ແລະ ແກ້ໄຂ
+contacts-merge-about = { $count ->
+   *[other] ຄຳແນະນຳ { $count } ລາຍການ: ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ເບິ່ງຄືຄົນດຽວກັນ
+}
+contacts-merge-none = ບໍ່ມີລາຍການຊ້ຳກັນ. ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ມີຊື່ ຫຼື ເບີໂທລະສັບດຽວກັນຈະສະແດງຢູ່ບ່ອນນີ້.
+contacts-merge-count = { $count ->
+   *[other] ລາຍຊື່ຜູ້ຕິດຕໍ່ { $count } ລາຍການ
+}
+contacts-merge-all = ລວມທັງໝົດ
+contacts-merge-button = ລວມ
+contacts-merge-dismiss = ປິດ
+contacts-merged = { $count ->
+    [1] ລວມລາຍຊື່ຜູ້ຕິດຕໍ່ແລ້ວ
+   *[other] ລວມແລ້ວ { $count } ລາຍການ
+}
+contacts-import = ນຳເຂົ້າ
+contacts-export = ສົ່ງອອກ
+contacts-import-title = ນຳເຂົ້າລາຍຊື່ຜູ້ຕິດຕໍ່ຈາກໄຟລ໌ vCard
+contacts-imported = { $count ->
+   *[other] ນຳເຂົ້າລາຍຊື່ຜູ້ຕິດຕໍ່ { $count } ລາຍການໄປຍັງ { $place } ແລ້ວ
+}
+contacts-imported-some = { $count ->
+   *[other] ນຳເຂົ້າລາຍຊື່ຜູ້ຕິດຕໍ່ { $count } ລາຍການໄປຍັງ { $place } ແລ້ວ ຂ້າມ { $skipped } ລາຍການທີ່ບັນທຶກໄວ້ແລ້ວ
+}
+contacts-import-none = ບໍ່ພົບລາຍຊື່ຜູ້ຕິດຕໍ່ໃນ { $name }
+contacts-import-all-saved = ທຸກຄົນໃນ { $name } ຖືກບັນທຶກໄວ້ແລ້ວ
+contacts-import-failed = ອ່ານ { $name } ບໍ່ໄດ້: { $error }
+contacts-exported = { $count ->
+   *[other] ສົ່ງອອກລາຍຊື່ຜູ້ຕິດຕໍ່ { $count } ລາຍການໄປຍັງ { $path } ແລ້ວ
+}
+contacts-export-none = ບໍ່ມີລາຍຊື່ຜູ້ຕິດຕໍ່ໃຫ້ສົ່ງອອກ
+contacts-export-failed = ສົ່ງອອກລາຍຊື່ຜູ້ຕິດຕໍ່ບໍ່ໄດ້: { $error }
 contacts-create = ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່
 
 ## Search and the list

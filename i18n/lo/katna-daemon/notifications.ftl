@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } ຄລິກລິ້ງໃນ { $subject } �
 notify-update-ready = ອັບເດດ Katna Mail ໄດ້ແລ້ວ
 notify-update-ready-body = ດາວໂຫຼດເວີຊັນ { $version } ແລ້ວ. ກົດອັບເດດເພື່ອຕິດຕັ້ງ ແລະ ເລີ່ມ Katna Mail ໃໝ່.
 notify-update = ອັບເດດ
+notify-event-now = ຕອນນີ້
+notify-event-in-minutes = { $count ->
+   *[other] ໃນອີກ { $count } ນາທີ
+}
+notify-event-in-hours = { $count ->
+   *[other] ໃນອີກ { $count } ຊົ່ວໂມງ
+}
+notify-event-in-days = { $count ->
+    [1] ມື້ອື່ນ
+   *[other] ໃນອີກ { $count } ມື້
+}
+notify-event-all-day = ຕະຫຼອດມື້
+notify-event-join = ເຂົ້າຮ່ວມ
+notify-event-snooze = ເລື່ອນເວລາ 5 ນາທີ
 
 ## The buttons of new-mail notifications and reminders
 

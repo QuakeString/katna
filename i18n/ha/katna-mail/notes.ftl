@@ -68,6 +68,16 @@ notes-mail = Wasiƙu
 notes-open-mail = Buɗe wasiƙar
 notes-open-note = Buɗe bayanin
 
+## Meeting notes
+
+notes-meeting-take = Ɗauki bayanan taro
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Mahalarta: { $names }
+notes-meeting-notes = Bayanai
+notes-meeting-actions = Abubuwan da za a yi
+notes-event = Taron
+notes-open-event = Buɗe taron
+
 ## Colors (tooltips)
 
 notes-color-none = Babu launi

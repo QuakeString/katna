@@ -25,6 +25,39 @@ contacts-label-removed = { $name } から削除しました
 contacts-label-renamed = ラベル名を { $name } に変更しました
 contacts-label-deleted = ラベル { $name } を削除しました
 contacts-label-no-email = このラベルに、メールアドレスのある人はいません
+contacts-manage = 修正と管理
+contacts-merge = 統合と修正
+contacts-merge-about = { $count ->
+   *[other] { $count } 件の候補: 同一人物とみられる連絡先
+}
+contacts-merge-none = 重複はありません。名前や電話番号が同じ連絡先がここに表示されます。
+contacts-merge-count = { $count ->
+   *[other] { $count } 件の連絡先
+}
+contacts-merge-all = すべて統合
+contacts-merge-button = 統合
+contacts-merge-dismiss = 無視
+contacts-merged = { $count ->
+    [1] 連絡先を統合しました
+   *[other] { $count } 件を統合しました
+}
+contacts-import = インポート
+contacts-export = エクスポート
+contacts-import-title = vCard ファイルから連絡先をインポート
+contacts-imported = { $count ->
+   *[other] { $place } に { $count } 件の連絡先をインポートしました
+}
+contacts-imported-some = { $count ->
+   *[other] { $place } に { $count } 件の連絡先をインポートしました。保存済みの { $skipped } 件は除外しました
+}
+contacts-import-none = { $name } に連絡先が見つかりません
+contacts-import-all-saved = { $name } のユーザーはすべて保存済みです
+contacts-import-failed = { $name } を読み込めませんでした: { $error }
+contacts-exported = { $count ->
+   *[other] { $path } に { $count } 件の連絡先をエクスポートしました
+}
+contacts-export-none = エクスポートする連絡先がありません
+contacts-export-failed = 連絡先をエクスポートできませんでした: { $error }
 contacts-create = 連絡先を作成
 
 ## Search and the list

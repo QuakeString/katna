@@ -68,6 +68,16 @@ notes-mail = E-post
 notes-open-mail = Öppna e-postmeddelandet
 notes-open-note = Öppna anteckningen
 
+## Meeting notes
+
+notes-meeting-take = Anteckna mötet
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Deltagare: { $names }
+notes-meeting-notes = Anteckningar
+notes-meeting-actions = Åtgärder
+notes-event = Händelse
+notes-open-event = Öppna händelsen
+
 ## Colors (tooltips)
 
 notes-color-none = Ingen färg

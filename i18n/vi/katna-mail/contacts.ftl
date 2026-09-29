@@ -25,6 +25,39 @@ contacts-label-removed = Đã xóa khỏi { $name }
 contacts-label-renamed = Đã đổi tên nhãn thành { $name }
 contacts-label-deleted = Đã xóa nhãn { $name }
 contacts-label-no-email = Không ai trong nhãn này có địa chỉ email
+contacts-manage = Sửa và quản lý
+contacts-merge = Hợp nhất và sửa
+contacts-merge-about = { $count ->
+   *[other] { $count } đề xuất: các liên hệ trông giống cùng một người
+}
+contacts-merge-none = Không có liên hệ trùng lặp. Các liên hệ có cùng tên hoặc số điện thoại sẽ xuất hiện ở đây.
+contacts-merge-count = { $count ->
+   *[other] { $count } liên hệ
+}
+contacts-merge-all = Hợp nhất tất cả
+contacts-merge-button = Hợp nhất
+contacts-merge-dismiss = Bỏ qua
+contacts-merged = { $count ->
+    [1] Đã hợp nhất các liên hệ
+   *[other] Đã hoàn tất { $count } lần hợp nhất
+}
+contacts-import = Nhập
+contacts-export = Xuất
+contacts-import-title = Nhập liên hệ từ tệp vCard
+contacts-imported = { $count ->
+   *[other] Đã nhập { $count } liên hệ vào { $place }
+}
+contacts-imported-some = { $count ->
+   *[other] Đã nhập { $count } liên hệ vào { $place }; bỏ qua { $skipped } liên hệ đã lưu
+}
+contacts-import-none = Không tìm thấy liên hệ nào trong { $name }
+contacts-import-all-saved = Mọi người trong { $name } đều đã được lưu
+contacts-import-failed = Không thể đọc { $name }: { $error }
+contacts-exported = { $count ->
+   *[other] Đã xuất { $count } liên hệ sang { $path }
+}
+contacts-export-none = Không có liên hệ nào để xuất
+contacts-export-failed = Không thể xuất liên hệ: { $error }
 contacts-create = Tạo người liên hệ
 
 ## Search and the list

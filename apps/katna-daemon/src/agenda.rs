@@ -375,11 +375,7 @@ macro_rules! agenda_interface {
                 done: bool,
             ) -> fdo::Result<()> {
                 let row = task_id(&id)?;
-                let found = self
-                    .daemon
-                    .store()
-                    .set_task_done(row, done)
-                    .map_err(CommandError::from)?;
+                let found = self.daemon.set_task_done(row, done)?;
                 if !found {
                     return Err(fdo::Error::UnknownObject(format!("no task {id}")));
                 }

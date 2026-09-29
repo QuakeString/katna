@@ -13,3 +13,6 @@ viewer-document-unreadable = Dit document kan niet worden gelezen.
 viewer-slides-unreadable = Deze dia’s kunnen niet worden gelezen.
 viewer-no-preview = Geen voorbeeld beschikbaar
 viewer-slide = Dia { $number }
+viewer-page = Pagina
+viewer-page-count = van { $count }
+viewer-go-to-page-tip = Typ een paginanummer en druk op Enter (Ctrl+G)

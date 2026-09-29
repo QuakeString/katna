@@ -13,3 +13,6 @@ viewer-document-unreadable = Le dokhumenti ayikwazanga ukufundwa.
 viewer-slides-unreadable = Lawa maslayidi awakwazanga ukufundwa.
 viewer-no-preview = Akukho ukubuka kuqala
 viewer-slide = Islayidi { $number }
+viewer-page = Ikhasi
+viewer-page-count = kwangu-{ $count }
+viewer-go-to-page-tip = Thayipha inombolo yekhasi bese ucindezela u-Enter (Ctrl+G)

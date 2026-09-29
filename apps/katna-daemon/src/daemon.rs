@@ -52,6 +52,7 @@ mod contact_labels;
 mod contacts;
 mod contacts_import;
 mod drive;
+mod meet;
 mod notes;
 mod other_contacts;
 mod reminders;

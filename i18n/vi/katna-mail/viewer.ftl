@@ -13,3 +13,6 @@ viewer-document-unreadable = Không thể đọc tài liệu này.
 viewer-slides-unreadable = Không thể đọc các trang chiếu này.
 viewer-no-preview = Không có bản xem trước
 viewer-slide = Trang chiếu { $number }
+viewer-page = Trang
+viewer-page-count = trên { $count }
+viewer-go-to-page-tip = Nhập số trang rồi nhấn Enter (Ctrl+G)

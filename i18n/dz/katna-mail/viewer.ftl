@@ -13,3 +13,6 @@ viewer-document-unreadable = ཡིག་ཆ་འདི་ ལྷག་མ་�
 viewer-slides-unreadable = བརྙན་ཤོག་འདི་ཚུ་ ལྷག་མ་ཚུགས།
 viewer-no-preview = སྔོན་ལྟ་མིན་འདུག
 viewer-slide = བརྙན་ཤོག་ { $number }
+viewer-page = ཤོག་ལེབ
+viewer-page-count = { $count } ལས་
+viewer-go-to-page-tip = ཤོག་ལེབ་ཨང་བཙུགས་ཏེ་ Enter ཨེབ་ (Ctrl+G)

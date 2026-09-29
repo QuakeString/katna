@@ -21,6 +21,26 @@ notify-tracking-clicked = קישור בהודעה { $subject } נפתח אצל {
 notify-update-ready = אפשר לעדכן את Katna Mail
 notify-update-ready-body = גרסה { $version } הורדה. עדכון מתקין אותה ומפעיל מחדש את Katna Mail.
 notify-update = עדכון
+notify-event-now = עכשיו
+notify-event-in-minutes = { $count ->
+    [one] בעוד { $count } דקה
+    [two] בעוד { $count } דקות
+   *[other] בעוד { $count } דקות
+}
+notify-event-in-hours = { $count ->
+    [one] בעוד { $count } שעה
+    [two] בעוד { $count } שעות
+   *[other] בעוד { $count } שעות
+}
+notify-event-in-days = { $count ->
+    [1] מחר
+    [one] בעוד { $count } יום
+    [two] בעוד { $count } ימים
+   *[other] בעוד { $count } ימים
+}
+notify-event-all-day = כל היום
+notify-event-join = הצטרפות
+notify-event-snooze = השהיה ל-5 דקות
 
 ## Its buttons
 

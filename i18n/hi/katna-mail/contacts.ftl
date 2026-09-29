@@ -25,6 +25,45 @@ contacts-label-removed = { $name } से हटाया गया
 contacts-label-renamed = लेबल का नाम बदलकर { $name } किया गया
 contacts-label-deleted = लेबल { $name } मिटाया गया
 contacts-label-no-email = इस लेबल पर किसी का ईमेल पता नहीं है
+contacts-manage = ठीक करें और प्रबंधित करें
+contacts-merge = मर्ज करें और ठीक करें
+contacts-merge-about = { $count ->
+    [one] { $count } सुझाव: ऐसे संपर्क जो एक ही व्यक्ति के लगते हैं
+   *[other] { $count } सुझाव: ऐसे संपर्क जो एक ही व्यक्ति के लगते हैं
+}
+contacts-merge-none = कोई डुप्लिकेट नहीं। समान नाम या फ़ोन नंबर वाले संपर्क यहाँ दिखेंगे।
+contacts-merge-count = { $count ->
+    [one] { $count } संपर्क
+   *[other] { $count } संपर्क
+}
+contacts-merge-all = सभी मर्ज करें
+contacts-merge-button = मर्ज करें
+contacts-merge-dismiss = खारिज करें
+contacts-merged = { $count ->
+    [1] संपर्क मर्ज हो गए
+    [one] { $count } मर्ज पूरे हुए
+   *[other] { $count } मर्ज पूरे हुए
+}
+contacts-import = इंपोर्ट करें
+contacts-export = एक्सपोर्ट करें
+contacts-import-title = vCard फ़ाइल से संपर्क इंपोर्ट करें
+contacts-imported = { $count ->
+    [one] { $place } में { $count } संपर्क इंपोर्ट किए गए
+   *[other] { $place } में { $count } संपर्क इंपोर्ट किए गए
+}
+contacts-imported-some = { $count ->
+    [one] { $place } में { $count } संपर्क इंपोर्ट किए गए; पहले से सहेजे होने के कारण { $skipped } छोड़ दिए गए
+   *[other] { $place } में { $count } संपर्क इंपोर्ट किए गए; पहले से सहेजे होने के कारण { $skipped } छोड़ दिए गए
+}
+contacts-import-none = { $name } में कोई संपर्क नहीं मिला
+contacts-import-all-saved = { $name } में सभी लोग पहले से सहेजे हुए हैं
+contacts-import-failed = { $name } पढ़ा नहीं जा सका: { $error }
+contacts-exported = { $count ->
+    [one] { $path } में { $count } संपर्क एक्सपोर्ट किए गए
+   *[other] { $path } में { $count } संपर्क एक्सपोर्ट किए गए
+}
+contacts-export-none = एक्सपोर्ट करने के लिए कोई संपर्क नहीं
+contacts-export-failed = संपर्क एक्सपोर्ट नहीं किए जा सके: { $error }
 contacts-create = संपर्क बनाएं
 
 ## Search and the list

@@ -13,3 +13,6 @@ viewer-document-unreadable = Enweghị ike ịgụ akwụkwọ a.
 viewer-slides-unreadable = Enweghị ike ịgụ slaịdị ndị a.
 viewer-no-preview = Enweghị nlele
 viewer-slide = Slaịdị { $number }
+viewer-page = Peeji
+viewer-page-count = n'ime { $count }
+viewer-go-to-page-tip = Pịnye nọmba peeji wee pịa Enter (Ctrl+G)

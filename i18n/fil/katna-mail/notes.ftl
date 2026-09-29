@@ -68,6 +68,16 @@ notes-mail = Mail
 notes-open-mail = Buksan ang mail
 notes-open-note = Buksan ang tala
 
+## Meeting notes
+
+notes-meeting-take = Gumawa ng tala ng pulong
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Mga dadalo: { $names }
+notes-meeting-notes = Mga tala
+notes-meeting-actions = Mga aksyon
+notes-event = Event
+notes-open-event = Buksan ang event
+
 ## Colors (tooltips)
 
 notes-color-none = Walang kulay

@@ -492,6 +492,16 @@
       "repository": "https://github.com/linux-credentials/oo7"
     },
     {
+      "name": "qrcodegen",
+      "version": "1.8.0",
+      "description": "High-quality QR Code generator library",
+      "license": "MIT",
+      "authors": [
+        "Project Nayuki"
+      ],
+      "repository": "https://github.com/nayuki/QR-Code-generator"
+    },
+    {
       "name": "quick-xml",
       "version": "0.41.0",
       "description": "High performance xml reader and writer",

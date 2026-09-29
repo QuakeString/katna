@@ -17,6 +17,20 @@ notify-tracking-clicked = { $who } ti tẹ ìjápọ̀ kan nínú { $subject }
 notify-update-ready = A lè ṣe ìmúdójúìwọ̀n Katna Mail
 notify-update-ready-body = A ti gba ẹ̀yà { $version } sílẹ̀. Ìmúdójúìwọ̀n ń fi í sórí ẹrọ tí ó sì tún Katna Mail bẹ̀rẹ̀.
 notify-update = Ìmúdójúìwọ̀n
+notify-event-now = Báyìí
+notify-event-in-minutes = { $count ->
+   *[other] Lẹ́yìn ìṣẹ́jú { $count }
+}
+notify-event-in-hours = { $count ->
+   *[other] Lẹ́yìn wákàtí { $count }
+}
+notify-event-in-days = { $count ->
+    [1] Ọ̀la
+   *[other] Lẹ́yìn ọjọ́ { $count }
+}
+notify-event-all-day = Ní gbogbo ọjọ́
+notify-event-join = Darapọ̀
+notify-event-snooze = Sún síwájú ní ìṣẹ́jú 5
 
 ## Its buttons
 

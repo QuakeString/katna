@@ -43,7 +43,8 @@ pub struct Task {
     pub done_at: Option<i64>,
     /// The service's order within the list: compared as text.
     pub position: String,
-    /// The Message-ID (no angle brackets) of the mail it was made from.
+    /// The Message-ID (no angle brackets) of the mail it was made from, or
+    /// `note:<id>` for a task made from a note's checklist line.
     pub mail: String,
 }
 
