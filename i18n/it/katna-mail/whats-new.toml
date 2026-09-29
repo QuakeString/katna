@@ -1793,3 +1793,11 @@ La scheda del nuovo evento ha una scheda Attività, come in Google Calendar.
 Fai clic su un orario, scegli Attività, e titolo, giorno e ora diventano
 un’attività nell’elenco che scegli, con una descrizione se vuoi.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Aggiungi un’attività dal Calendario"
+text = """
+Fai clic destro su un orario o un giorno libero nel Calendario e scegli
+Attività per aggiungere lì un’attività. La scheda del nuovo evento si apre
+sulla scheda Attività con quel giorno e quell’ora già inseriti.
+"""

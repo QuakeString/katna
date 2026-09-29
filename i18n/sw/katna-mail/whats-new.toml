@@ -1700,3 +1700,11 @@ Kadi ya tukio jipya ina kichupo cha Jukumu, kama katika Google Calendar.
 Bofya muda, chagua Jukumu, na kichwa, siku na muda vinakuwa jukumu
 kwenye orodha unayochagua, pamoja na maelezo ukipenda.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Ongeza jukumu kutoka Kalenda"
+text = """
+Bofya kulia muda au siku iliyo wazi kwenye Kalenda na uchague Jukumu
+ili kuongeza jukumu hapo. Kadi ya tukio jipya inafunguka kwenye
+kichupo cha Jukumu ikiwa na siku na muda huo vimeshajazwa.
+"""

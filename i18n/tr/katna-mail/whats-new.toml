@@ -1761,3 +1761,11 @@ Yeni etkinlik kartında, Google Takvim'deki gibi bir Görev sekmesi var.
 Bir saate tıklayın, Görev'i seçin; başlık, gün ve saat, seçtiğiniz
 listede bir görev olur, isterseniz bir açıklamayla birlikte.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Takvim'den görev ekleyin"
+text = """
+Oraya görev eklemek için Takvim'de boş bir saate ya da güne sağ
+tıklayıp Görev'i seçin. Yeni etkinlik kartı, o gün ve saat
+doldurulmuş olarak Görev sekmesinde açılır.
+"""

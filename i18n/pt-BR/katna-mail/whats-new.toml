@@ -1774,3 +1774,11 @@ O cartão de novo evento tem uma guia Tarefa, como no Google Agenda.
 Clique em um horário, escolha Tarefa, e o título, o dia e a hora viram
 uma tarefa na lista que você escolher, com uma descrição se quiser.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Adicionar uma tarefa pela Agenda"
+text = """
+Clique com o botão direito em um horário ou dia livre na Agenda e
+escolha Tarefa para adicionar ali uma tarefa. O cartão de novo evento
+abre na guia Tarefa com esse dia e essa hora já preenchidos.
+"""
