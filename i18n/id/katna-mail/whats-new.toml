@@ -1781,3 +1781,11 @@ Kartu acara baru kini punya tab Tugas, seperti di Google Calendar. Klik
 suatu waktu, pilih Tugas, lalu judul, hari, dan waktunya menjadi tugas
 di daftar yang Anda pilih, dengan deskripsi jika mau.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tambahkan tugas dari Kalender"
+text = """
+Klik kanan waktu atau hari yang kosong di Kalender dan pilih Tugas
+untuk menambahkan tugas di sana. Kartu acara baru terbuka di tab
+Tugasnya dengan hari dan waktu itu sudah terisi.
+"""

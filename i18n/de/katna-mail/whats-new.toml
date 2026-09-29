@@ -1824,3 +1824,12 @@ Calendar. Klicken Sie auf eine Zeit, wählen Sie „Aufgabe“, und Titel,
 Tag und Uhrzeit werden zu einer Aufgabe in der Liste Ihrer Wahl, auf
 Wunsch mit einer Beschreibung.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Eine Aufgabe aus dem Kalender anlegen"
+text = """
+Klicken Sie im Kalender mit der rechten Maustaste auf eine freie Zeit
+oder einen Tag und wählen Sie „Aufgabe“, um dort eine Aufgabe anzulegen.
+Die Karte für einen neuen Termin öffnet sich im Tab „Aufgabe“, mit
+diesem Tag und dieser Uhrzeit schon eingetragen.
+"""

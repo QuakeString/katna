@@ -1727,3 +1727,11 @@ Die kaart vir 'n nuwe geleentheid het 'n Taak-oortjie, soos in Google
 Calendar. Klik op 'n tyd, kies Taak, en die titel, dag en tyd word 'n
 taak in die lys wat jy kies, met 'n beskrywing as jy wil.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Voeg 'n taak uit die Kalender by"
+text = """
+Regsklik op 'n vrye tyd of dag op die Kalender en kies Taak om daar 'n
+taak by te voeg. Die kaart vir 'n nuwe geleentheid gaan oop op sy
+Taak-oortjie met daardie dag en tyd reeds ingevul.
+"""

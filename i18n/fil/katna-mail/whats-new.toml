@@ -1840,3 +1840,11 @@ May tab na Gawain ang card ng bagong event, gaya sa Google Calendar.
 Mag-click ng oras, piliin ang Gawain, at magiging gawain ang pamagat,
 araw at oras sa listahang pipiliin mo, may paglalarawan kung gusto mo.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Magdagdag ng gawain mula sa Calendar"
+text = """
+Mag-right-click sa bakanteng oras o araw sa Kalendaryo at piliin ang
+Gawain para magdagdag doon ng gawain. Bubukas ang card ng bagong event
+sa tab na Gawain nito na nakalagay na ang araw at oras na iyon.
+"""

@@ -1744,3 +1744,11 @@ Kortet för ny händelse har en flik Uppgift, som i Google Kalender.
 Klicka på en tid, välj Uppgift, så blir titeln, dagen och tiden en
 uppgift i den lista du väljer, med en beskrivning om du vill.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Lägg till en uppgift från Kalender"
+text = """
+Högerklicka på en ledig tid eller dag i Kalender och välj Uppgift för
+att lägga till en uppgift där. Kortet för ny händelse öppnas på fliken
+Uppgift med den dagen och tiden redan ifyllda.
+"""

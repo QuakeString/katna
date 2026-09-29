@@ -1792,3 +1792,11 @@ Kad acara baharu ada tab Tugasan, seperti dalam Google Calendar. Klik satu
 masa, pilih Tugasan, dan tajuk, hari serta masa menjadi tugasan dalam
 senarai yang anda pilih, dengan keterangan jika anda mahu.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tambah tugasan dari Kalendar"
+text = """
+Klik kanan masa atau hari yang lapang pada Kalendar dan pilih Tugasan untuk
+menambah tugasan di situ. Kad acara baharu dibuka pada tab Tugasannya
+dengan hari dan masa itu sudah diisi.
+"""

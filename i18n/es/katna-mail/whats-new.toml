@@ -1789,3 +1789,11 @@ Calendar. Haz clic en una hora, elige Tarea, y el título, el día y la
 hora se convierten en una tarea en la lista que elijas, con una
 descripción si quieres.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Añadir una tarea desde el Calendario"
+text = """
+Haz clic derecho en una hora o un día libre del Calendario y elige
+Tarea para añadir allí una tarea. La tarjeta de evento nuevo se abre en
+su pestaña Tarea con ese día y esa hora ya puestos.
+"""

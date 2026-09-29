@@ -1766,3 +1766,11 @@ Karta nowego wydarzenia ma zakładkę Zadanie, jak w Kalendarzu Google. Kliknij
 godzinę, wybierz Zadanie, a tytuł, dzień i godzina staną się zadaniem na
 wybranej liście, z opisem, jeśli chcesz.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Dodawaj zadania z Kalendarza"
+text = """
+Kliknij prawym przyciskiem wolny czas lub dzień w Kalendarzu i wybierz
+Zadanie, aby dodać tam zadanie. Karta nowego wydarzenia otworzy się na
+zakładce Zadanie z tym dniem i godziną już wpisanymi.
+"""

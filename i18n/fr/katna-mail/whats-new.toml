@@ -1842,3 +1842,11 @@ Calendar. Cliquez sur une heure, choisissez Tâche, et le titre, le jour
 et l’heure deviennent une tâche dans la liste de votre choix, avec une
 description si vous le souhaitez.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Ajouter une tâche depuis l’agenda"
+text = """
+Faites un clic droit sur une heure ou un jour libre du Calendrier et
+choisissez Tâche pour y ajouter une tâche. La fiche de nouvel événement
+s’ouvre sur son onglet Tâche, avec ce jour et cette heure déjà remplis.
+"""

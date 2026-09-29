@@ -1779,3 +1779,11 @@ De kaart voor een nieuwe afspraak heeft een tabblad Taak, zoals in Google
 Agenda. Klik op een tijd, kies Taak, en de titel, dag en tijd worden een
 taak in de lijst die je kiest, met een beschrijving als je wilt.
 """
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Een taak toevoegen vanuit de agenda"
+text = """
+Klik met rechts op een vrij tijdstip of een vrije dag in de Agenda en kies
+Taak om daar een taak toe te voegen. De kaart voor een nieuwe afspraak
+opent op het tabblad Taak, met die dag en tijd al ingevuld.
+"""
