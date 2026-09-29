@@ -8,6 +8,12 @@
 //! goes through the accounts in turn with its own store connection, apart
 //! from the mail workers, and says `CalendarChanged` (and the clock's
 //! `Changed`) only when something changed.
+//!
+//! Changes made in the apps (`EditEvent`) are written to the store at
+//! once ([`katna_sync::calendar::edit::apply`]) and then sent to the
+//! calendar's service by another task, one after the other, with the
+//! services the sync uses (never while it syncs). When a service refuses a
+//! change, its calendar syncs again, which undoes the change here.
 
 use std::{
     collections::HashMap,
@@ -19,9 +25,15 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
 use katna_dbus::calendar_state;
-use katna_store::{Mode, Store};
+use katna_store::{Mode, Store, calendar::EventChange};
 use katna_sync::{
-    calendar::{CalendarError, caldav::CalDav, google::GoogleCalendar, graph::GraphCalendar},
+    calendar::{
+        CalendarError,
+        caldav::CalDav,
+        edit::{self, Applied, EditError, Remote},
+        google::GoogleCalendar,
+        graph::GraphCalendar,
+    },
     net::Tls,
 };
 
@@ -39,6 +51,11 @@ pub(crate) struct Calendars {
     wake: (Sender<()>, Receiver<()>),
     /// Each account's last result: a [`calendar_state`] and a detail.
     status: Mutex<HashMap<AccountId, (&'static str, String)>>,
+    /// The accounts' services, for the sync and for sending changes; held
+    /// by one of them at a time.
+    services: smol::lock::Mutex<Services>,
+    /// Changes written to the store, to send to their services.
+    changes: (Sender<Applied>, Receiver<Applied>),
 }
 
 impl Default for Calendars {
@@ -46,6 +63,8 @@ impl Default for Calendars {
         Self {
             wake: async_channel::bounded(1),
             status: Mutex::default(),
+            services: smol::lock::Mutex::default(),
+            changes: async_channel::unbounded(),
         }
     }
 }
@@ -63,6 +82,14 @@ impl Service {
             Self::Google(google) => google.sync(store, account.id).await,
             Self::Microsoft(graph) => graph.sync(store, account.id, &account.address).await,
             Self::CalDav(dav) => dav.sync(store, account.id, &account.address).await,
+        }
+    }
+
+    fn remote(&self) -> Remote<'_> {
+        match self {
+            Self::Google(google) => Remote::Google(google),
+            Self::Microsoft(graph) => Remote::Microsoft(graph),
+            Self::CalDav(dav) => Remote::CalDav(dav),
         }
     }
 }
@@ -120,9 +147,107 @@ impl Daemon {
         }
     }
 
-    /// Starts the calendar sync.
+    /// Adds, changes or deletes events as `json` (an [`EventChange`])
+    /// says: in the store at once, then on the calendar's service. Returns
+    /// the event row added or changed, or 0.
+    pub fn edit_event(&self, json: &str) -> Result<i64, CommandError> {
+        let change: EventChange = serde_json::from_str(json)
+            .map_err(|err| CommandError::InvalidArgs(format!("not an event change: {err}")))?;
+        let applied = {
+            let mut store = self.store();
+            edit::apply(&mut store, &change, unix_now()).map_err(|err| match err {
+                EditError::Invalid(message) => CommandError::InvalidArgs(message),
+                EditError::Store(err) => err.into(),
+            })?
+        };
+        let id = applied.id;
+        tracing::info!(id, steps = applied.steps.len(), "event changed");
+        let _ = self.notices.try_send(Notice::CalendarChanged);
+        if !applied.steps.is_empty() {
+            let _ = self.calendars.changes.0.try_send(applied);
+        }
+        Ok(id)
+    }
+
+    /// Starts the calendar sync, and sending changes made here. Changes
+    /// that weren't sent before the daemon last stopped are given up (the
+    /// first sync brings back what the services have), and a calendar on
+    /// this computer is made when there is none.
     pub(super) fn start_calendars(self: &Arc<Self>) {
+        {
+            let mut store = self.store();
+            match store.forget_pending_events(None) {
+                Ok(calendars) if !calendars.is_empty() => {
+                    tracing::warn!(?calendars, "event changes not sent before; syncing again");
+                }
+                Ok(_) => {}
+                Err(err) => tracing::warn!(%err, "could not look for unsent event changes"),
+            }
+            match store.add_local_calendar_if_none() {
+                Ok(Some(id)) => tracing::info!(calendar = id, "made a calendar on this computer"),
+                Ok(None) => {}
+                Err(err) => tracing::warn!(%err, "could not make a calendar on this computer"),
+            }
+        }
         smol::spawn(run(Arc::downgrade(self), self.calendars.wake.1.clone())).detach();
+        smol::spawn(send_changes(
+            Arc::downgrade(self),
+            self.calendars.changes.1.clone(),
+        ))
+        .detach();
+    }
+
+    /// The service of `account`, made again when what it depends on
+    /// changed. `Err` says why there is none.
+    async fn service<'a>(
+        &self,
+        services: &'a mut Services,
+        account: &Account,
+    ) -> Result<Option<&'a Service>, String> {
+        match self.calendar_service(account).await? {
+            Some((key, service)) => {
+                let keep = services
+                    .get(&account.id)
+                    .is_some_and(|(old, _)| *old == key);
+                if !keep {
+                    services.insert(account.id, (key, service));
+                }
+                Ok(Some(&services[&account.id].1))
+            }
+            None => {
+                services.remove(&account.id);
+                Ok(None)
+            }
+        }
+    }
+
+    /// Sends the steps of `applied` to their calendars' services, in order.
+    async fn send_change(&self, store: &mut Store, applied: &Applied) -> Result<(), String> {
+        for step in &applied.steps {
+            let calendar = store
+                .calendar(step.calendar())
+                .map_err(|err| err.to_string())?
+                .ok_or("the calendar is gone")?;
+            let Some(account) = calendar.account else {
+                continue;
+            };
+            let account = self
+                .store()
+                .accounts()
+                .map_err(|err| err.to_string())?
+                .into_iter()
+                .find(|a| a.id == account)
+                .ok_or("the account is gone")?;
+            let mut services = self.calendars.services.lock().await;
+            let service = self
+                .service(&mut services, &account)
+                .await?
+                .ok_or("the account has no calendars Katna can reach")?;
+            edit::push(&service.remote(), store, &calendar, step)
+                .await
+                .map_err(|err| err.to_string())?;
+        }
+        Ok(())
     }
 
     /// Where `account`'s calendars come from, and what that depends on;
@@ -176,20 +301,9 @@ impl Daemon {
         services: &mut Services,
         account: &Account,
     ) -> ((&'static str, String), bool) {
-        let service = match self.calendar_service(account).await {
-            Ok(Some((key, service))) => {
-                let keep = services
-                    .get(&account.id)
-                    .is_some_and(|(old, _)| *old == key);
-                if !keep {
-                    services.insert(account.id, (key, service));
-                }
-                &services[&account.id].1
-            }
-            Ok(None) => {
-                services.remove(&account.id);
-                return ((calendar_state::NONE, String::new()), false);
-            }
+        let service = match self.service(services, account).await {
+            Ok(Some(service)) => service,
+            Ok(None) => return ((calendar_state::NONE, String::new()), false),
             Err(detail) => return ((calendar_state::ERROR, detail), false),
         };
         match service.sync(store, account).await {
@@ -212,7 +326,6 @@ impl Daemon {
 /// Syncs every account's calendars, then waits for the next round or a
 /// wake-up, until the daemon goes away.
 async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
-    let mut services = Services::new();
     let mut store: Option<Store> = None;
     let mut delay = FIRST_DELAY;
     loop {
@@ -243,8 +356,61 @@ async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
                 }
             },
         };
+        let mut services = daemon.calendars.services.lock().await;
         daemon.sync_all_calendars(store, &mut services).await;
     }
+}
+
+/// Sends each change made here to its calendar's service, until the
+/// daemon goes away. A change a service refused is given up: its calendar
+/// syncs again, bringing back what the service has.
+async fn send_changes(daemon: Weak<Daemon>, changes: Receiver<Applied>) {
+    let mut store: Option<Store> = None;
+    while let Ok(applied) = changes.recv().await {
+        let Some(daemon) = daemon.upgrade() else {
+            return;
+        };
+        let store = match &mut store {
+            Some(store) => store,
+            None => match Store::open(&daemon.paths, Mode::ReadWrite) {
+                Ok(opened) => store.insert(opened),
+                Err(err) => {
+                    tracing::warn!(%err, "no store to send event changes from");
+                    daemon.give_up_change(None, &applied);
+                    continue;
+                }
+            },
+        };
+        match daemon.send_change(store, &applied).await {
+            Ok(()) => {
+                if let Err(err) = store.events_pushed(&applied.rows) {
+                    tracing::warn!(%err, "could not mark event changes sent");
+                }
+            }
+            Err(err) => {
+                tracing::warn!(id = applied.id, %err, "the calendar refused an event change");
+                daemon.give_up_change(Some(store), &applied);
+            }
+        }
+    }
+}
+
+impl Daemon {
+    /// Gives up sending `applied`: its calendars sync again.
+    fn give_up_change(&self, store: Option<&mut Store>, applied: &Applied) {
+        let forgot = match store {
+            Some(store) => store.forget_pending_events(Some(&applied.rows)),
+            None => self.store().forget_pending_events(Some(&applied.rows)),
+        };
+        if let Err(err) = forgot {
+            tracing::warn!(%err, "could not give up an event change");
+        }
+        self.wake_calendars();
+    }
+}
+
+fn unix_now() -> i64 {
+    jiff::Timestamp::now().as_second()
 }
 
 impl Daemon {

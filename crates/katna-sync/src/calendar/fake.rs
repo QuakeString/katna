@@ -49,12 +49,14 @@ impl Seen {
     }
 }
 
-/// An answer: status, content type, body and a `Location`, if any.
+/// An answer: status, content type, body, and a `Location` and an
+/// `ETag`, if any.
 pub struct Answer {
     pub status: u16,
     pub kind: &'static str,
     pub body: String,
     pub location: Option<String>,
+    pub etag: Option<String>,
 }
 
 impl Answer {
@@ -64,6 +66,7 @@ impl Answer {
             kind: "application/json",
             body: body.into(),
             location: None,
+            etag: None,
         }
     }
 
@@ -73,6 +76,7 @@ impl Answer {
             kind: "application/xml; charset=utf-8",
             body: body.into(),
             location: None,
+            etag: None,
         }
     }
 
@@ -82,6 +86,19 @@ impl Answer {
             kind: "text/plain",
             body: String::new(),
             location: Some(to.to_owned()),
+            etag: None,
+        }
+    }
+
+    /// An empty answer with status `status` and an `ETag`, as a CalDAV
+    /// server answers a PUT.
+    pub fn stored(status: u16, etag: Option<&str>) -> Self {
+        Self {
+            status,
+            kind: "text/plain",
+            body: String::new(),
+            location: None,
+            etag: etag.map(str::to_owned),
         }
     }
 }
@@ -133,8 +150,13 @@ fn write_answer(stream: &mut TcpStream, answer: &Answer) {
         .as_ref()
         .map(|l| format!("Location: {l}\r\n"))
         .unwrap_or_default();
+    let etag = answer
+        .etag
+        .as_ref()
+        .map(|e| format!("ETag: {e}\r\n"))
+        .unwrap_or_default();
     let text = format!(
-        "HTTP/1.1 {} X\r\nContent-Type: {}\r\n{location}\
+        "HTTP/1.1 {} X\r\nContent-Type: {}\r\n{location}{etag}\
          Content-Length: {}\r\nConnection: close\r\n\r\n{}",
         answer.status,
         answer.kind,

@@ -769,5 +769,7 @@ fn check(reply: &Reply, doing: &str) -> std::result::Result<(), CalendarError> {
     ))))
 }
 
+pub(crate) mod write;
+
 #[cfg(test)]
 mod tests;

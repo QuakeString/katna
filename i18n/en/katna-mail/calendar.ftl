@@ -46,9 +46,83 @@ calendar-guests =
        *[other] { $count } guests
     }
 calendar-guest-answers = { $yes } yes, { $maybe } maybe, { $no } no, { $waiting } waiting
-calendar-organizer-name = { $name } (organizer)
+calendar-organizer = Organizer
+calendar-optional = Optional
 calendar-open-web = Open in the browser
 calendar-close = Close
+
+## Adding, changing and deleting events.
+
+calendar-add-title = Add title
+calendar-add-location = Add location
+calendar-add-notes = Add description
+calendar-add-guests = Add guests
+calendar-remove-guest = Remove
+calendar-add-meet = Add Google Meet video call
+calendar-add-teams = Add Teams meeting
+calendar-has-call = Video call added
+calendar-weekday-day = { $weekday }, { $day }
+calendar-all-day-box = All day
+calendar-more-options = More options
+calendar-save = Save
+calendar-saved = Event saved
+calendar-deleted = Event deleted
+calendar-discard = Discard changes
+calendar-edit = Edit event
+calendar-delete = Delete event
+calendar-event-details = Event details
+calendar-busy = Busy
+calendar-free = Free
+calendar-cancel = Cancel
+calendar-ok = OK
+calendar-read-only = You can't change events in this calendar
+calendar-none-editable = No calendar you can add events to yet
+calendar-no-such-time = That time doesn't exist in your time zone
+calendar-end-before-start = The event ends before it starts
+calendar-repeat-never = Does not repeat
+calendar-repeat-daily = Daily
+calendar-repeat-weekly = Weekly on { $weekday }
+calendar-repeat-monthly =
+    { $nth ->
+        [1] Monthly on the first { $weekday }
+        [2] Monthly on the second { $weekday }
+        [3] Monthly on the third { $weekday }
+        [4] Monthly on the fourth { $weekday }
+       *[other] Monthly on the last { $weekday }
+    }
+calendar-repeat-yearly = Annually on { $day }
+calendar-repeat-weekdays = Every weekday (Monday to Friday)
+calendar-repeat-custom = Custom
+calendar-reminder-none = No notification
+calendar-reminder-at-start = At the start
+calendar-reminder-minutes =
+    { $count ->
+        [one] 1 minute before
+       *[other] { $count } minutes before
+    }
+calendar-reminder-hours =
+    { $count ->
+        [one] 1 hour before
+       *[other] { $count } hours before
+    }
+calendar-reminder-days =
+    { $count ->
+        [one] 1 day before
+       *[other] { $count } days before
+    }
+calendar-scope-edit-title = Edit recurring event
+calendar-scope-delete-title = Delete recurring event
+calendar-scope-this = This event
+calendar-scope-following = This and following events
+calendar-scope-all = All events
+calendar-scope-respond-title = Answer for a recurring event
+calendar-going = Going?
+calendar-answer-yes = Yes
+calendar-answer-no = No
+calendar-answer-maybe = Maybe
+calendar-answered-yes = You're going
+calendar-answered-no = You're not going
+calendar-answered-maybe = You might go
 
 ## The day's agenda beside the mail.
 

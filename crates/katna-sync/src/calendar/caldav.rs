@@ -77,6 +77,9 @@ pub struct CalDav {
     authorization: String,
     tls: Tls,
     found: Mutex<Found>,
+    /// Each calendar's URL (by its remote ID) as the last sync found it,
+    /// for sending changes.
+    urls: Mutex<HashMap<String, String>>,
 }
 
 /// One property of a multistatus answer.
@@ -227,6 +230,7 @@ impl CalDav {
             authorization: format!("Basic {}", STANDARD.encode(format!("{user}:{password}"))),
             tls,
             found: Mutex::new(Found::Unknown),
+            urls: Mutex::default(),
         }
     }
 
@@ -435,6 +439,10 @@ impl CalDav {
             })
             .collect();
 
+        *self.urls.lock().unwrap() = calendars
+            .iter()
+            .map(|(calendar, url, _)| (calendar.remote_id.clone(), url.clone()))
+            .collect();
         let mut changed = false;
         let before = store.calendars()?;
         let mut ids = Vec::new();
@@ -558,6 +566,8 @@ impl CalDav {
         Ok(true)
     }
 }
+
+mod write;
 
 #[cfg(test)]
 mod tests;
