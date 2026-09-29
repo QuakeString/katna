@@ -90,6 +90,19 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Esc on the page while a set is being named puts the box away.
+    pub(super) fn cancel_calendar_set(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        if self.calendar.naming_set.is_none() {
+            return false;
+        }
+        self.finish_calendar_set(false, window, cx);
+        true
+    }
+
     fn finish_calendar_set(&mut self, save: bool, window: &mut Window, cx: &mut Context<Self>) {
         let Some(naming) = self.calendar.naming_set.take() else {
             return;
@@ -172,6 +185,18 @@ impl MailWindow {
             });
         let naming = self.calendar.naming_set.as_ref().map(|naming| {
             div()
+                // A click elsewhere with no name typed puts the box away,
+                // as Esc does; a typed name waits for Enter.
+                .on_mouse_down_out(cx.listener(|this, _, window, cx| {
+                    let empty = this
+                        .calendar
+                        .naming_set
+                        .as_ref()
+                        .is_some_and(|n| n.input.read(cx).text().trim().is_empty());
+                    if empty {
+                        this.finish_calendar_set(false, window, cx);
+                    }
+                }))
                 .h(px(36.0))
                 .px(px(12.0))
                 .flex()

@@ -1675,3 +1675,13 @@ finestra, per quanto lungo sia il messaggio che stai scrivendo o
 inoltrando, così non restano mai nascoste più in basso nella pagina.
 Invio risponde con il pulsante principale ed Esc torna al messaggio.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Annota i PDF"
+text = """
+Premi la penna nel visualizzatore PDF per evidenziare, sottolineare,
+sottolineare con un'onda o barrare il testo, o per disegnare con una
+penna, nel colore che scegli. Annulla con Ctrl+Z, cancella un segno con
+la gomma, poi salva una copia annotata. L'allegato originale resta
+com'era.
+"""

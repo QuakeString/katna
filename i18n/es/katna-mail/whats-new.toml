@@ -1672,3 +1672,12 @@ de la ventana, por largo que sea el mensaje que escribes o reenvías, así
 que nunca quedan escondidas más abajo en la página. Enter responde con
 el botón principal y Esc vuelve al mensaje.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Marca los PDF"
+text = """
+Pulsa el lápiz en el visor de PDF para resaltar, subrayar, marcar con
+ondulado o tachar texto, o dibujar con un lápiz, en el color que elijas.
+Deshaz con Ctrl+Z, borra una marca con el borrador y luego guarda una
+copia marcada. El adjunto original queda como estaba.
+"""

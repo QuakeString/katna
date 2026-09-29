@@ -1607,3 +1607,12 @@ dù thư bạn đang viết hay chuyển tiếp dài đến đâu, nên chúng k
 giờ bị khuất ở phía dưới trang. Enter trả lời bằng nút chính và Esc quay
 lại thư.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Đánh dấu PDF"
+text = """
+Nhấn vào cây bút trong trình xem PDF để tô sáng, gạch chân, gạch lượn
+sóng hoặc gạch ngang văn bản, hoặc vẽ bằng bút, với màu bạn chọn. Hoàn
+tác bằng Ctrl+Z, xóa một dấu bằng tẩy, rồi lưu một bản sao đã đánh dấu.
+Tệp đính kèm gốc vẫn giữ nguyên.
+"""

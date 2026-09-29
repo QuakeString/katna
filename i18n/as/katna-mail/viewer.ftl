@@ -16,3 +16,37 @@ viewer-slide = স্লাইড { $number }
 viewer-page = পৃষ্ঠা
 viewer-page-count = { $count }ৰ ভিতৰত
 viewer-go-to-page-tip = পৃষ্ঠাৰ নম্বৰ লিখি Enter টিপক (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = চিহ্নিত কৰক
+viewer-tool-select = পাঠ বাছক
+viewer-tool-highlight = হাইলাইট
+viewer-tool-underline = অধোৰেখা
+viewer-tool-squiggly = ঢৌখেলুৱা ৰেখা
+viewer-tool-strike = কাটি দিয়া
+viewer-tool-pen = কলম
+viewer-tool-eraser = ইৰেজাৰ
+viewer-color-yellow = হালধীয়া
+viewer-color-green = সেউজীয়া
+viewer-color-blue = নীলা
+viewer-color-pink = গোলাপী
+viewer-color-orange = কমলা
+viewer-color-red = ৰঙা
+viewer-color-black = ক'লা
+viewer-color-purple = বেঙুনীয়া
+viewer-marks-undo-tip = আনডু কৰক (Ctrl+Z)
+viewer-marks-redo-tip = পুনৰ কৰক (Ctrl+Shift+Z)
+viewer-save-marked-tip = আপোনাৰ চিহ্নসহ এটা কপি ছেভ কৰক (Ctrl+S)
+viewer-markup-protected = এই PDF-টো সলনিৰ পৰা সুৰক্ষিত, সেয়েহে ইয়াত চিহ্ন দিব নোৱাৰি।
+viewer-marks-save-failed = চিহ্নিত কপিটো ছেভ কৰিব পৰা নগ'ল।
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = আপোনাৰ চিহ্নবোৰ ছেভ কৰিবনে?
+viewer-marks-unsaved-text = এই PDF-ত আপোনাৰ চিহ্নবোৰ এতিয়াও ছেভ কৰা হোৱা নাই। সেইবোৰ এটা কপিত যায়; সংলগ্নকটো নিজে আগৰ দৰেই থাকে।
+viewer-marks-discard = বাতিল কৰক
+viewer-marks-keep = চিহ্ন দি থাকক
+viewer-marks-save = কপি ছেভ কৰক
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (চিহ্নিত)

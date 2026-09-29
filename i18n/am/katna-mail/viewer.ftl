@@ -16,3 +16,37 @@ viewer-slide = ስላይድ { $number }
 viewer-page = ገጽ
 viewer-page-count = ከ { $count }
 viewer-go-to-page-tip = የገጽ ቁጥር ይተይቡና Enter ይጫኑ (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = ምልክት አድርግ
+viewer-tool-select = ጽሑፍ ምረጥ
+viewer-tool-highlight = አድምቅ
+viewer-tool-underline = ከስር አስምር
+viewer-tool-squiggly = ሞገዳማ መስመር
+viewer-tool-strike = በመሃል ሰርዝ
+viewer-tool-pen = እስክሪብቶ
+viewer-tool-eraser = መደምሰሻ
+viewer-color-yellow = ቢጫ
+viewer-color-green = አረንጓዴ
+viewer-color-blue = ሰማያዊ
+viewer-color-pink = ሮዝ
+viewer-color-orange = ብርቱካናማ
+viewer-color-red = ቀይ
+viewer-color-black = ጥቁር
+viewer-color-purple = ሐምራዊ
+viewer-marks-undo-tip = ቀልብስ (Ctrl+Z)
+viewer-marks-redo-tip = ድገም (Ctrl+Shift+Z)
+viewer-save-marked-tip = ምልክቶችዎን የያዘ ቅጂ አስቀምጥ (Ctrl+S)
+viewer-markup-protected = ይህ PDF ከለውጦች የተጠበቀ ነው፣ ስለዚህ ምልክት ሊደረግበት አይችልም።
+viewer-marks-save-failed = ምልክት የተደረገበትን ቅጂ ማስቀመጥ አልተቻለም።
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = ምልክቶችዎ ይቀመጡ?
+viewer-marks-unsaved-text = በዚህ PDF ላይ ያደረጓቸው ምልክቶች ገና አልተቀመጡም። ወደ ቅጂ ይገባሉ፤ አባሪው ራሱ እንደነበረ ይቆያል።
+viewer-marks-discard = አስወግድ
+viewer-marks-keep = ምልክት ማድረግ ቀጥል
+viewer-marks-save = ቅጂ አስቀምጥ
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (ምልክት የተደረገበት)

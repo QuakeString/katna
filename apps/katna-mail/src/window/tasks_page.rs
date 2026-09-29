@@ -1211,6 +1211,20 @@ impl MailWindow {
     // --- Keys ----------------------------------------------------------------
 
     fn tasks_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
+        // Esc with the focus away from an empty new task or list name
+        // box puts it away, as Esc in the box does.
+        if event.keystroke.key == "escape" && !event.keystroke.modifiers.modified() {
+            if self.tasks.naming.is_some() {
+                self.task_finish_naming(false, window, cx);
+                cx.stop_propagation();
+                return;
+            }
+            if self.tasks.adding.is_some() {
+                self.task_finish_adding(false, window, cx);
+                cx.stop_propagation();
+                return;
+            }
+        }
         if self.tasks.adding.is_some()
             || self.tasks.editing.is_some()
             || self.tasks.naming.is_some()
@@ -1460,7 +1474,7 @@ impl MailWindow {
                 let count = open_count(column);
                 let naming_this = page.naming.as_ref().is_some_and(|n| n.list == Some(id));
                 if naming_this {
-                    nav = nav.children(page.naming.as_ref().map(|n| self.naming_row(n, th)));
+                    nav = nav.children(page.naming.as_ref().map(|n| self.naming_row(n, th, cx)));
                     continue;
                 }
                 nav = nav.child(
@@ -1485,7 +1499,7 @@ impl MailWindow {
             }
         }
         let new_list = page.naming.as_ref().filter(|n| n.list.is_none());
-        nav = nav.children(new_list.map(|n| self.naming_row(n, th)));
+        nav = nav.children(new_list.map(|n| self.naming_row(n, th, cx)));
         // A new list goes to the account of the list in view, else the
         // first account's.
         let account = match page.view {
@@ -1513,8 +1527,20 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn naming_row(&self, naming: &Naming, th: &Theme) -> AnyElement {
+    fn naming_row(&self, naming: &Naming, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         div()
+            // A click elsewhere with no name typed puts the box away, as
+            // Esc does; a typed name waits for Enter.
+            .on_mouse_down_out(cx.listener(|this, _, window, cx| {
+                let empty = this
+                    .tasks
+                    .naming
+                    .as_ref()
+                    .is_some_and(|n| n.input.read(cx).text().trim().is_empty());
+                if empty {
+                    this.task_finish_naming(false, window, cx);
+                }
+            }))
             .mx(px(8.0))
             .h(px(40.0))
             .px(px(16.0))
@@ -1967,6 +1993,17 @@ impl MailWindow {
             Some((label, typed.repeat.is_some()))
         });
         div()
+            // A click elsewhere with nothing typed puts the new task away.
+            .on_mouse_down_out(cx.listener(|this, _, window, cx| {
+                let empty = this
+                    .tasks
+                    .adding
+                    .as_ref()
+                    .is_some_and(|a| a.input.read(cx).text().trim().is_empty());
+                if empty {
+                    this.task_finish_adding(false, window, cx);
+                }
+            }))
             .min_h(px(44.0))
             .pl(px(if step { 48.0 } else { 16.0 }))
             .pr(px(16.0))
@@ -2494,6 +2531,9 @@ pub(super) fn say(say: Say<'_>) -> String {
         Say::Error { reason } => tr!("tasks-account-error", reason = reason),
         Say::Failed => tr!("tasks-account-failed"),
         Say::None => tr!("tasks-account-none"),
+        Say::NoneWhy { reason } => tr!("tasks-account-none-why", reason = reason),
+        Say::UseSignIn { provider } => tr!("tasks-account-use-sign-in", provider = provider),
+        Say::SignInWith { provider } => tr!("tasks-account-sign-in-with", provider = provider),
         Say::Looking => tr!("tasks-account-looking"),
         Say::TryAgain => tr!("tasks-account-try-again"),
         Say::TryAgainTooltip => tr!("tasks-account-try-again-tooltip"),

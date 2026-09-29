@@ -1583,3 +1583,13 @@ dirisha, bila kujali urefu wa ujumbe unaoandika au kusambaza, kwa hivyo
 hayafichwi kamwe chini zaidi kwenye ukurasa. Enter hujibu kwa kitufe
 kikuu na Esc hurudi kwenye ujumbe.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "Weka alama kwenye PDF"
+text = """
+Bonyeza kalamu katika kitazamaji cha PDF ili kuangazia, kupigia mstari,
+kupigia mstari wa mawimbi au kukata maandishi kwa mstari, au kuchora kwa
+kalamu, kwa rangi unayochagua. Tendua kwa Ctrl+Z, futa alama kwa
+kifutio, kisha uhifadhi nakala yenye alama. Kiambatisho asili kinabaki
+kama kilivyokuwa.
+"""

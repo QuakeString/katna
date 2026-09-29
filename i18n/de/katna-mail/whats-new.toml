@@ -1700,3 +1700,14 @@ oder weiterleiten, sodass sie nie weiter unten auf der Seite verborgen
 sind. Eingabe antwortet mit der Hauptschaltfläche, und Esc führt zurück
 zur Nachricht.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "PDFs markieren"
+text = """
+Drücken Sie im PDF-Betrachter auf den Stift, um Text hervorzuheben, zu
+unterstreichen, mit einer Wellenlinie zu versehen oder durchzustreichen,
+oder zeichnen Sie mit einem Stift, in der Farbe Ihrer Wahl. Rückgängig
+mit Strg+Z, eine Markierung entfernen Sie mit dem Radierer, dann
+speichern Sie eine markierte Kopie. Der ursprüngliche Anhang bleibt, wie
+er war.
+"""
