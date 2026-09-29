@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Focus time, out of office and where you work"
+text = """
+A new event can now be Focus time, Out of office or a Working location,
+as in Google Calendar: pick it above the times. Google and Outlook see
+them for what they are, and they show with their own icon in Katna.
+"""
