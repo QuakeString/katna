@@ -8,7 +8,10 @@
 //! list at the left; Trash empties itself after seven days.
 
 mod labels;
+mod line_tasks;
 mod meetings;
+
+pub(super) use line_tasks::note_of_task;
 
 use std::rc::Rc;
 use std::time::Duration;
@@ -379,6 +382,8 @@ impl MailWindow {
             InputEvent::Cancel => this.close_note(cx),
             InputEvent::Submit => {}
         });
+        // Make it a task follows the cursor from line to line.
+        let on_cursor = cx.observe(&body, |_, _, cx| cx.notify());
         let focus = if note.is_some() || checklist || about_title.is_some() {
             body.focus_handle(cx)
         } else {
@@ -417,7 +422,7 @@ impl MailWindow {
             picker: None,
             saving: false,
             _save: None,
-            _subscriptions: vec![on_title, on_body],
+            _subscriptions: vec![on_title, on_body, on_cursor],
         };
         if let Some(page) = &mut self.notes {
             page.editor = Some(editor);
@@ -1806,6 +1811,11 @@ impl MailWindow {
                             },
                         )),
                     )
+                    .when(self.task_line(cx).is_some(), |d| {
+                        d.child(tool("tasks", tr!("notes-make-task")).on_click(
+                            cx.listener(|this, _, window, cx| this.make_line_task(window, cx)),
+                        ))
+                    })
                     .when(id != 0, |d| {
                         let note = Note {
                             id,

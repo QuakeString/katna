@@ -103,6 +103,7 @@ compose-tool-remove-link = Link verwijderen
 ## More options
 
 compose-tool-full-screen = Standaard volledig scherm
+compose-tool-video-call = Een videogesprek toevoegen
 compose-tool-label = Label
 compose-tool-label-coming = Labels op verzonden e-mail komen binnenkort. Geef het bericht een label in Verzonden zodra het verstuurd is.
 compose-tool-plain-mode = Modus platte tekst

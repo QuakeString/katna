@@ -1435,3 +1435,39 @@ title = "Gabungkan pendua, import dan eksport kenalan"
 text = """
 Kenalan kini mempunyai Betulkan dan urus: Gabung dan betulkan mencari orang yang disimpan dua kali (nama atau nombor telefon yang sama) dan menggabungkan mereka dengan satu klik, lengkap dengan Buat asal. Import membawa masuk orang daripada fail vCard dan meninggalkan sesiapa yang sudah disimpan, manakala Eksport menyimpan semua orang, atau satu label, sebagai fail vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Hari lahir dalam kalendar, kenalan sebagai kod QR"
+text = """
+Hari lahir kenalan anda kini dipaparkan dalam Kalendar, dalam kalendar Hari lahir yang boleh anda nyahtanda. Halaman kenalan boleh memaparkannya sebagai kod QR yang disimpan oleh kamera telefon, dan mencetaknya; Cetak di bawah Betulkan dan urus mencetak semua orang yang dipaparkan. Import kini turut membaca fail CSV daripada Google Kenalan dan Outlook, dan KRunner serta carian GNOME menemui kenalan tersimpan anda.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Ketumpatan Kalendar dan zon waktu kedua"
+text = """
+Butang Pilihan dalam Kalendar menetapkan ketinggian jam (Responsif kepada skrin anda, Selesa atau Padat) dan menambah zon waktu kedua di sebelah zon waktu anda, untuk orang yang anda temui di luar negara.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Mulakan panggilan video daripada e-mel"
+text = """
+Klik kanan pada perbualan, atau buka ⋮, dan pilih Mulakan panggilan video: panggilan dibuka, bersama e-mel baharu yang membawa pautannya kepada semua orang dalam perbualan. Akaun Gmail menggunakan Google Meet; akaun lain mendapat bilik Jitsi Meet. E-mel yang mempunyai pautan panggilan Meet, Teams, Zoom, Webex, Jitsi, WhatsApp atau Telegram kini memaparkan butang Sertai.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Jadikan baris senarai semak sebagai tugas"
+text = """
+Letakkan kursor pada baris senarai semak dalam nota dan pilih Jadikan tugas: baris itu masuk ke tugas anda. Cip Nota pada halaman Tugas membuka nota itu semula.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Anak tetingkap yang anda gunakan menonjol"
+text = """
+Di sebelah senarai, hanya anak tetingkap yang menerima papan kekunci mengekalkan bayangnya; senarai, perbualan atau panel kenalan yang tidak anda gunakan surut dengan tepi yang lebih pudar, dan perubahan itu mengikuti anda dengan lembut apabila anda mengklik.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Peringatan tugasan dan ulangan"
+text = """
+Buka tugasan dan pilih Ingatkan saya: pada masanya, sejam atau sehari sebelum. Peringatan muncul walaupun Katna ditutup, dengan Tandakan sebagai selesai dan Tunda. Menandakan tugasan berulang sebagai selesai kini membawanya kembali pada hari seterusnya.
+"""

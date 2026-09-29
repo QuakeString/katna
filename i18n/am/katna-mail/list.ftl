@@ -382,6 +382,7 @@ menu-snooze = አሸልብ
 menu-unsnooze = ማሸለብ ሰርዝ
 menu-add-to-tasks = ወደ ተግባራት አክል
 menu-schedule-meeting = ስብሰባ መርሐግብር አውጣ
+menu-start-call = የቪዲዮ ጥሪ ጀምር
 menu-add-note = ማስታወሻ አክል
 menu-print-all = ሁሉንም አትም
 menu-new-window = በአዲስ መስኮት ክፈት

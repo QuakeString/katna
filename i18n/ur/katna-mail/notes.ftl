@@ -78,6 +78,10 @@ notes-meeting-actions = کرنے کے کام
 notes-event = ایونٹ
 notes-open-event = ایونٹ کھولیں
 
+## Tasks
+
+notes-make-task = کام بنائیں
+
 ## Colors (tooltips)
 
 notes-color-none = کوئی رنگ نہیں

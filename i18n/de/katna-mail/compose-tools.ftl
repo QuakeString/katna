@@ -103,6 +103,7 @@ compose-tool-remove-link = Link entfernen
 ## More options
 
 compose-tool-full-screen = Standardmäßig im Vollbild
+compose-tool-video-call = Videoanruf hinzufügen
 compose-tool-label = Label
 compose-tool-label-coming = Labels für gesendete E-Mails kommen bald. Versehen Sie die Nachricht nach dem Senden unter „Gesendet“ mit einem Label.
 compose-tool-plain-mode = Nur-Text-Modus

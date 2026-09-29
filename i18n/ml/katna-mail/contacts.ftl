@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ഇമ്പോർട്ട് ചെയ്യുക
 contacts-export = എക്‌സ്‌പോർട്ട് ചെയ്യുക
-contacts-import-title = vCard ഫയലിൽ നിന്ന് കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്യുക
+contacts-import-file = vCard അല്ലെങ്കിൽ CSV ഫയലിൽ നിന്ന് കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്യുക
 contacts-imported = { $count ->
     [one] { $place }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്തു
    *[other] { $place }-ലേക്ക് { $count } കോൺടാക്റ്റുകൾ ഇമ്പോർട്ട് ചെയ്തു
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = എക്‌സ്‌പോർട്ട് ചെയ്യാൻ കോൺടാക്റ്റുകളില്ല
 contacts-export-failed = കോൺടാക്റ്റുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനായില്ല: { $error }
+contacts-print = പ്രിന്റ് ചെയ്യുക
+contacts-print-title = കോൺടാക്റ്റുകൾ
+contacts-print-none = പ്രിന്റ് ചെയ്യാൻ കോൺടാക്റ്റുകളില്ല
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = ജന്മദിനം: { $day }
+contacts-print-nickname = വിളിപ്പേര്: { $name }
 contacts-create = കോൺടാക്റ്റ് സൃഷ്ടിക്കുക
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = അനുവദിക്കുക
 contacts-back = കോൺടാക്റ്റുകളിലേക്ക് മടങ്ങുക
 contacts-edit = എഡിറ്റ് ചെയ്യുക
 contacts-delete = ഇല്ലാതാക്കുക
+contacts-qr = QR കോഡായി പങ്കിടുക
+contacts-qr-about = കോൺടാക്റ്റ് സേവ് ചെയ്യാൻ ഇത് ഫോണിന്റെ ക്യാമറ ഉപയോഗിച്ച് സ്കാൻ ചെയ്യുക.
+contacts-qr-too-long = QR കോഡിൽ ഉൾക്കൊള്ളിക്കാൻ ഈ കോൺടാക്റ്റിൽ വളരെയധികം വിവരങ്ങളുണ്ട്.
+contacts-qr-done = കഴിഞ്ഞു
 contacts-deleted = { $name } ഇല്ലാതാക്കി
 contacts-added = { $name } കോൺടാക്റ്റുകളിലേക്ക് ചേർത്തു
 contacts-find-mail = മെയിൽ

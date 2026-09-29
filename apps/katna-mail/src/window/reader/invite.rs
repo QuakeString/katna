@@ -97,7 +97,8 @@ impl Invite {
         }
         let event = &self.event;
         let (from, to) = (event.start - AROUND, event.end.max(event.start) + AROUND);
-        let look = match read(paths, from, to, tz) {
+        // Birthdays take no time.
+        let look = match read(paths, from, to, tz, false) {
             Ok((calendars, occurrences)) => {
                 let (found, others): (Vec<_>, Vec<_>) = occurrences
                     .into_iter()

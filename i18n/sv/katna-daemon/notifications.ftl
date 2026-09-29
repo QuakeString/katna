@@ -37,6 +37,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Heldag
 notify-event-join = Anslut
 notify-event-snooze = Snooza 5 min
+notify-task-done = Markera som klar
 
 ## Its buttons
 

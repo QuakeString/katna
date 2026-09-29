@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = Cả ngày
 notify-event-join = Tham gia
 notify-event-snooze = Báo lại sau 5 phút
+notify-task-done = Đánh dấu là đã hoàn thành
 notify-open = Mở
 notify-reply-all = Trả lời tất cả
 notify-mark-read = Đánh dấu là đã đọc

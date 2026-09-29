@@ -157,6 +157,9 @@ pub(super) struct SettingsPage {
     /// (`general.search_triggers`).
     triggers: Entity<TextInput>,
     _triggers: Subscription,
+    /// Where new Jitsi Meet rooms go (`meetings.jitsi_server`).
+    jitsi: Entity<TextInput>,
+    _jitsi: Subscription,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -220,6 +223,7 @@ impl MailWindow {
         let scroll = ScrollHandle::new();
         let accent = rgba(self.theme(window).accent).into();
         let words = self.config.general.search_triggers.join(", ");
+        let server = self.config.meetings.jitsi_server.clone();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -231,6 +235,18 @@ impl MailWindow {
                 if *event == InputEvent::Changed {
                     let text = input.read(cx).text().to_owned();
                     this.set_search_triggers(&text, cx);
+                }
+            });
+            let jitsi = cx.new(|cx| {
+                let mut input = TextInput::new(katna_core::meeting::JITSI_DEFAULT, cx);
+                input.set_text(server, cx);
+                input.set_accent(accent);
+                input
+            });
+            let jitsi_subscription = cx.subscribe(&jitsi, |this, input, event: &InputEvent, cx| {
+                if *event == InputEvent::Changed {
+                    let text = input.read(cx).text().to_owned();
+                    this.set_jitsi_server(&text, cx);
                 }
             });
             SettingsPage {
@@ -254,6 +270,8 @@ impl MailWindow {
                 mail_app: None,
                 triggers,
                 _triggers: subscription,
+                jitsi,
+                _jitsi: jitsi_subscription,
             }
         });
         page.mail_app = opens_mail_links();
@@ -624,6 +642,12 @@ impl MailWindow {
                 ),
             )
             .child(self.row(
+                tr!("settings-general-video-calls"),
+                Some(&tr!("settings-general-video-calls-detail")),
+                self.jitsi_server_field(th, cx),
+                th,
+            ))
+            .child(self.row(
                 tr!("settings-general-offline"),
                 Some(&tr!("settings-general-offline-detail")),
                 self.offline_choice(th, cx),
@@ -706,6 +730,43 @@ impl MailWindow {
                     .child(div().flex_1().child(input)),
             )
             .into_any_element()
+    }
+
+    /// The Jitsi Meet server for new video calls, in a field.
+    fn jitsi_server_field(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(page) = &self.settings_page else {
+            return div().into_any_element();
+        };
+        let input = page.jitsi.clone();
+        let focus = input.focus_handle(cx);
+        control_column(240.0)
+            .child(
+                field_box("page-jitsi-server", th)
+                    .h(px(40.0))
+                    .flex()
+                    .items_center()
+                    .on_click(move |_, window, cx| window.focus(&focus, cx))
+                    .child(div().flex_1().child(input)),
+            )
+            .into_any_element()
+    }
+
+    /// Saves the Jitsi Meet server once typing pauses.
+    fn set_jitsi_server(&mut self, text: &str, cx: &mut Context<Self>) {
+        let text = text.trim().to_owned();
+        if text == self.config.meetings.jitsi_server {
+            return;
+        }
+        self.config.meetings.jitsi_server = text;
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(SAVE_DELAY).await;
+            this.update(cx, |this, _| this.save_config()).ok();
+        });
+        if let Some(page) = &mut self.settings_page {
+            page.save = Some(task);
+        } else {
+            task.detach();
+        }
     }
 
     /// Saves new trigger words once typing pauses, and tells the daemon,

@@ -1001,18 +1001,31 @@ contacts, leaving out anyone saved since; Add to contacts copies one with
 `copyOtherContactToMyContactsGroup` (`SaveOtherContact`) and has an Undo.
 Outlook and CardDAV have no such list.
 
-"Fix and manage" at the foot of the column has Merge and fix, Import and
-Export. Merge and fix suggests people who look like the same person (the
+"Fix and manage" at the foot of the column has Merge and fix, Import,
+Export and Print. Merge and fix suggests people who look like the same person (the
 same name, or a phone number ending in the same ten digits; people who
 share an address are one person already). Merging combines their cards
 (the first card's name, then every address, number, link and label the
 others add) and keeps one card per address book, deleting the rest there;
 the Undo writes the old cards back. Dismissed suggestions are kept in the
-settings file (`[contacts] dismissed_duplicates`). Import reads vCard files
-in the app and saves the new people with their categories as labels in
+settings file (`[contacts] dismissed_duplicates`). Import reads vCard files,
+and CSV files as Google Contacts, Outlook and Thunderbird export them (each
+column known by its heading), in the app and saves the new people with their categories as labels in
 the account in view (`ImportContacts`, with an Undo), leaving out anyone
 already saved; Export writes the people on screen (everyone or a label) as
-one vCard 3.0 file.
+one vCard 3.0 file, and Print prints them (their name, job and details, in
+mail's print preview). A person's page prints them alone and shows them as
+a QR code of their vCard, without notes or picture (addresses and links are
+dropped when it would not fit), which a phone's camera saves.
+
+Saved people's birthdays show on the Calendar and the agenda as a
+Birthdays calendar made on this computer (id -1, read-only, never stored):
+a yearly whole-day event per person, built from the cards each time the
+calendar is read, leaving out one a mail service's own calendar already has
+(a birthday event that day with their first name). Unticking it is kept in
+the settings (`[contacts] hide_birthdays`); a click opens the person's page.
+KRunner and GNOME search suggest saved people too, with their saved names
+(`ContactBook::with_saved`), read again when contacts change.
 
 ## 9. Background service (`katna-daemon`)
 
@@ -2688,7 +2701,13 @@ away; he can still change them.
   Its `link` is `event:<start>:<UID>`, so each occurrence of a repeating
   event has its own notes. Such a note has an Event chip that opens the
   Calendar's Day view on that day.
-- **Later.** A checklist line made a task, formatting, pictures.
+- **Tasks from checklist lines.** "Make it a task" in a note's toolbar,
+  shown while the cursor is on an unticked checklist line of a saved note,
+  adds the line to the default task list. The task keeps `note:<id>` where
+  a task made from a mail keeps its Message-ID (the field stays on this
+  computer), so its Note chip on the Tasks page opens the note; Undo takes
+  the task back.
+- **Later.** Formatting, pictures.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -2819,7 +2838,8 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   reminder (at most a minute, so edits count) and keeps up to when it
   looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats
   none; reminders missed while the computer was off show only when they
-  fell due in the last ten minutes. Snoozes live in memory.
+  fell due in the last ten minutes. Snoozes live in memory. Tasks'
+  reminders come through the same loop (§18.1).
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -2901,6 +2921,7 @@ Served by the daemon, pure Rust, from the same search index.
 | Email | subject, sender, text (confident matches only, or with a `mail:` prefix) | Open, reply all |
 | Organization | name, alias | Open organization view |
 | Event | title, attendees, location | Open event |
+| Task | title, details (open tasks) | Open the task |
 
 As built (`apps/katna-daemon/src/desktop_search.rs`): people come from the
 addresses in the mail (the recipient-suggestion `ContactBook`, read in the
@@ -2916,6 +2937,12 @@ are Reply all on mail, Copy address (through Klipper) and Find mail on
 people. GNOME's "search in app" opens Katna Mail with the words in its
 search box (app action `search`). Organization results come with Phase 2.
 Answers take a few milliseconds on 60,000 messages.
+
+Open tasks (§18.1) come up too, under Tasks, when every word starts a word
+of their title or details: at most three, those due first first, between
+people and mail, with the list they are in. Enter opens Katna Mail on the
+Tasks page with the task's details (app action `open-page` with
+`tasks:<id>`, which a task's reminder uses too).
 
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
@@ -3525,7 +3552,53 @@ server error is not.
   and Schedule list them with the events. Its circle ticks it off, a
   click opens it over the Calendar, and dragging it to another day, time
   or the whole-day row moves its due day and time (a quarter hour at a
-  time, with Undo), blocking that time for it.
+  time, with Undo), blocking that time for it. A reminder moves with it.
+- **Reminders**: the task's details offer Don't remind, At the time (on
+  the day at 9 AM for a task without a time), An hour before (with a
+  time) and The day before; a time set elsewhere (To Do) shows as itself
+  and stays unless another is picked. `task.remind_at` is an instant.
+  The daemon's reminder loop (§15.1, `daemon/alarms.rs`) also reads open
+  tasks and shows a "Katna Tasks" notification at `remind_at`: the title
+  and the first line of its details, with Open (the Tasks page), Mark as
+  done and Snooze 5 min (`category=x-katna.task`). For Google Tasks the
+  reminder lives on this computer only (decision 3 of the study).
+- **Repeating tasks**: ticking one off moves it to its next day after
+  both its due day and today, and it stays open (Google Tasks, CalDAV and
+  lists on this computer; `katna_dav::todo::next_due`, done by the
+  daemon's `set_task_done` so the clock and notifications do it too). A
+  `COUNT` goes down by the days used; an ended rule ticks it off. Its
+  reminder moves with it. To Do makes the next one itself, so there the
+  task is ticked off as usual. The toast names the next day, and Undo
+  puts the day back.
+
+### 18.2 Video calls
+
+Calls stay with the services people already use (study 2026-09-29; the
+owner chose links now, and a call window inside Katna maybe later). Katna
+makes and finds call links; the call itself opens in the browser or the
+service's own app (`xdg-open`, or Windows' default). No Katna Server, no
+media code, nothing added to startup.
+
+- **Start a video call** (a conversation's right-click and ⋮ menus) and
+  **Add a video call** (compose's More menu). A Gmail account signed in
+  with scope `meetings.space.created` gets a Google Meet space from the
+  Meet REST API (`spaces.create`, `katna_sync::meet`, over D-Bus
+  `MeetingLink`); any other account, or a Gmail one signed in before Katna
+  asked for Meet, gets a Jitsi Meet room made in Katna Mail with 16 random
+  characters in its name, on the server in Settings > General > Video
+  calls (`meetings.jitsi_server`, `https://meet.jit.si` by default).
+  Start a video call opens the call and a new mail with its link to
+  everyone in the conversation, from its account; Add a video call puts
+  the link at the cursor. Teams links for Microsoft accounts come through
+  Schedule a meeting (§18) only: Graph's `onlineMeetings` needs a
+  permission personal accounts can't grant.
+- **Join**: a mail with a call link (in its HTML links or written out) of
+  Google Meet, Teams, Zoom, Webex, Jitsi Meet (`meet.jit.si`, `8x8.vc`),
+  WhatsApp (`call.whatsapp.com`) or Telegram (`t.me/call/`, group video
+  chats) shows a Join button per call, at most three, above its text
+  (`katna_core::meeting`). Invitations skip it: their card has Join.
+  WhatsApp and Telegram have no way for other apps to make calls, so their
+  links are only joined.
 
 ## 19. Security and privacy
 

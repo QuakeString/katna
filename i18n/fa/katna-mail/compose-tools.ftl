@@ -103,6 +103,7 @@ compose-tool-remove-link = حذف پیوند
 ## More options
 
 compose-tool-full-screen = تمام‌صفحه به‌طور پیش‌فرض
+compose-tool-video-call = افزودن تماس تصویری
 compose-tool-label = برچسب
 compose-tool-label-coming = برچسب‌گذاری ایمیل ارسالی به‌زودی می‌آید. پس از ارسال، پیام را در «ارسال‌شده» برچسب بزنید.
 compose-tool-plain-mode = حالت متن ساده

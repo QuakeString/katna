@@ -103,6 +103,7 @@ compose-tool-remove-link = Вилучити посилання
 ## More options
 
 compose-tool-full-screen = Типово на весь екран
+compose-tool-video-call = Додати відеодзвінок
 compose-tool-label = Мітка
 compose-tool-label-coming = Мітки для надісланих листів з’являться незабаром. Позначте лист міткою в папці «Надіслані», коли його буде надіслано.
 compose-tool-plain-mode = Режим звичайного тексту

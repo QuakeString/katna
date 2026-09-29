@@ -149,6 +149,34 @@ impl TasksPage {
         }
     }
 
+    fn task_mut(&mut self, id: i64) -> Option<&mut TaskItem> {
+        match &mut self.board {
+            Some(Ok(board)) => board
+                .columns
+                .iter_mut()
+                .flat_map(|c| c.tasks.iter_mut())
+                .find(|t| t.id == id),
+            _ => None,
+        }
+    }
+
+    /// Where `task` goes when it is ticked off, as the daemon moves it: its
+    /// next due day and rule, if it repeats. Not in To Do, which makes the
+    /// next one itself.
+    fn next_due(&self, task: &TaskItem) -> Option<(String, String)> {
+        if task.parent.is_some() || task.repeat.is_empty() || task.done_at.is_some() {
+            return None;
+        }
+        if self
+            .columns()
+            .iter()
+            .any(|c| c.list.id == task.list && c.to_do)
+        {
+            return None;
+        }
+        katna_dav::todo::next_due(&task.due, &task.repeat, today())
+    }
+
     /// The open tasks shown, in order, for keys to move through.
     fn shown(&self) -> Vec<i64> {
         let mut shown = Vec::new();
@@ -214,6 +242,16 @@ impl TasksPage {
     }
 }
 
+/// A day and month, with the year when it isn't this one.
+fn day_text(day: jiff::civil::Date, today: jiff::civil::Date) -> String {
+    let at = day.to_datetime(jiff::civil::Time::midnight());
+    if day.year() == today.year() {
+        katna_i18n::format::day_month(at)
+    } else {
+        katna_i18n::format::day_month_year(at)
+    }
+}
+
 /// A due day as the page shows it: "Today", "Tomorrow", a weekday this
 /// week, else the day and month; with the time if it has one. The flag
 /// says it is past.
@@ -226,7 +264,7 @@ fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)
         1 => tr!("tasks-due-tomorrow"),
         -1 => tr!("tasks-due-yesterday"),
         2..=6 => katna_i18n::format::weekday(at),
-        _ => katna_i18n::format::day_month(at),
+        _ => day_text(day, today),
     };
     if let Some(minutes) = task.due_time {
         let time = jiff::civil::Time::new(
@@ -302,6 +340,7 @@ impl MailWindow {
                 .iter()
                 .flat_map(|c| c.tasks.iter())
                 .filter(|t| t.done_at.is_none() && !t.mail.is_empty())
+                .filter(|t| super::notes::note_of_task(&t.mail).is_none())
                 .collect();
             // Undated last, each key keeping the first it gets.
             tasks.sort_by_key(|t| (t.due.is_empty(), t.due.clone(), t.due_time));
@@ -420,11 +459,71 @@ impl MailWindow {
 
     // --- Changes -----------------------------------------------------------
 
+    /// Opens task `id`'s details, once the tasks are read if they aren't
+    /// yet (Katna Mail started from the desktop's search or a reminder).
+    pub(super) fn task_open_when_read(
+        &mut self,
+        id: i64,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.tasks.board.is_some() {
+            self.task_open_details(id, window, cx);
+            return;
+        }
+        cx.spawn_in(window, async move |this, cx| {
+            // At most a few seconds: reading tasks takes milliseconds.
+            for _ in 0..100 {
+                cx.background_executor()
+                    .timer(std::time::Duration::from_millis(50))
+                    .await;
+                let read = this
+                    .update_in(cx, |this, window, cx| {
+                        let read = this.tasks.board.is_some();
+                        if read {
+                            this.task_open_details(id, window, cx);
+                        }
+                        read
+                    })
+                    .unwrap_or(true);
+                if read {
+                    break;
+                }
+            }
+        })
+        .detach();
+    }
+
     pub(super) fn task_toggle_done(&mut self, id: i64, cx: &mut Context<Self>) {
         let Some(task) = self.tasks.task(id) else {
             return;
         };
         let done = !self.tasks.done(task);
+        // A repeating task moves to its next day and stays open.
+        if done && let Some((due, repeat)) = self.tasks.next_due(task) {
+            let old = task.clone();
+            let remind_at = katna_dav::todo::moved_reminder(
+                old.remind_at,
+                (&old.due, old.due_time),
+                (&due, old.due_time),
+                &jiff::tz::TimeZone::system(),
+            );
+            let date = due
+                .parse::<jiff::civil::Date>()
+                .map(|d| day_text(d, today()))
+                .unwrap_or_default();
+            // Shown at once; the store follows.
+            if let Some(shown) = self.tasks.task_mut(id) {
+                shown.due = due;
+                shown.repeat = repeat;
+                shown.remind_at = remind_at;
+            }
+            let text = tr!("tasks-toast-next", date = date);
+            let undo = TaskCommand::Edit(id, TaskEdit::all_of(&old));
+            self.send_task(TaskCommand::SetDone(id, true), Some(text), Some(undo), cx);
+            cx.notify();
+            return;
+        }
         self.tasks.pending.entry(id).or_default().done = Some(done);
         if self.tasks.picked == Some(id) && done {
             self.tasks.picked = None;
@@ -465,11 +564,21 @@ impl MailWindow {
         if task.due == due && task.due_time == time {
             return;
         }
+        // A reminder moves with it, as long before as it was.
+        let remind_at = task.remind_at.map(|_| {
+            katna_dav::todo::moved_reminder(
+                task.remind_at,
+                (&task.due, task.due_time),
+                (&due, time),
+                &jiff::tz::TimeZone::system(),
+            )
+        });
         let undo = TaskCommand::Edit(
             id,
             TaskEdit {
                 due: Some(task.due.clone()),
                 due_time: Some(task.due_time),
+                remind_at: remind_at.map(|_| task.remind_at),
                 ..TaskEdit::default()
             },
         );
@@ -478,6 +587,7 @@ impl MailWindow {
             TaskEdit {
                 due: Some(due),
                 due_time: Some(time),
+                remind_at,
                 ..TaskEdit::default()
             },
         );
@@ -1653,7 +1763,32 @@ impl MailWindow {
                 any = true;
                 chips = chips.child(icon("refresh", th.text_faint, 14.0));
             }
-            if !task.mail.is_empty() {
+            if let Some(note) = super::notes::note_of_task(&task.mail) {
+                any = true;
+                chips = chips.child(
+                    div()
+                        .id(("task-note", id as usize))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .tooltip(tip(tr!("tasks-open-note"), th))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.open_task_note(note, window, cx)
+                        }))
+                        .h(px(24.0))
+                        .px(px(8.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(4.0))
+                        .rounded(px(8.0))
+                        .bg(rgba(th.chip))
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(icon("notes", th.text_dim, 14.0))
+                        .child(tr!("tasks-from-note")),
+                );
+            } else if !task.mail.is_empty() {
                 any = true;
                 let header = task.mail.clone();
                 chips = chips.child(

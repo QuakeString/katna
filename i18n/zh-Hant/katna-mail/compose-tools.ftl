@@ -103,6 +103,7 @@ compose-tool-remove-link = 移除連結
 ## More options
 
 compose-tool-full-screen = 預設為全螢幕
+compose-tool-video-call = 新增視訊通話
 compose-tool-label = 標籤
 compose-tool-label-coming = 即將支援為寄出的郵件加上標籤。郵件寄出後，可在「寄件備份」中為它加上標籤。
 compose-tool-plain-mode = 純文字模式

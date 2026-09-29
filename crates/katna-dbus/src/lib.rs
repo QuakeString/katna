@@ -331,7 +331,7 @@ pub mod app_action {
     pub const INSTALL_UPDATE: &str = "install-update";
     /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
     /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
-    /// `contacts`, `tasks`, `notes`).
+    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task.
     pub const OPEN_PAGE: &str = "open-page";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
@@ -620,6 +620,11 @@ macro_rules! pim_proxy {
             /// Returns the links to put in the message, in order (OneDrive
             /// gives such a link its own address).
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
+
+            /// A new video call link from the mail service of `account`
+            /// (Google Meet for Gmail), or an empty string when it has no
+            /// meetings Katna may make; Katna Mail then makes a Jitsi link.
+            fn meeting_link(&self, account: i64) -> zbus::Result<String>;
 
             /// Shows or hides the events of calendar `id` (the store's
             /// `calendar.id`) everywhere: the Calendar page, the agenda and

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! A task's details in a dialog, as Google Tasks' task editor: the title,
-//! details (notes), a due day on a month grid, a time and how it repeats.
+//! details (notes), a due day on a month grid, a time, how it repeats and
+//! when it reminds.
 //! Save sends only what changed; Ctrl+Z puts the task back as it was.
 
 use gpui::{
@@ -73,6 +74,66 @@ impl Repeat {
     }
 }
 
+/// When a task reminds, as the dialog offers it: counted from its due day
+/// at its time, or at 9 AM when it has none.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Remind {
+    Off,
+    OnTime,
+    HourBefore,
+    DayBefore,
+    /// A time from the service the dialog has no button for; kept as it
+    /// is unless another is picked.
+    At(i64),
+}
+
+impl Remind {
+    fn of(task: &katna_store::tasks::Task) -> Self {
+        let Some(at) = task.remind_at else {
+            return Self::Off;
+        };
+        let zone = jiff::tz::TimeZone::system();
+        let due = katna_dav::todo::due_at(&task.due, task.due_time, &zone);
+        match due.map(|due| at - due) {
+            Some(0) => Self::OnTime,
+            Some(-3600) => Self::HourBefore,
+            Some(-86_400) => Self::DayBefore,
+            _ => Self::At(at),
+        }
+    }
+
+    /// The reminder's time for a task due on `day` at `time`.
+    fn at(self, day: Option<Date>, time: Option<u32>) -> Option<i64> {
+        let offset = match self {
+            Self::Off => return None,
+            Self::At(at) => return Some(at),
+            Self::OnTime => 0,
+            Self::HourBefore => -3600,
+            Self::DayBefore => -86_400,
+        };
+        let zone = jiff::tz::TimeZone::system();
+        katna_dav::todo::due_at(&day?.to_string(), time, &zone).map(|due| due + offset)
+    }
+
+    fn label(self, timed: bool) -> String {
+        match self {
+            Self::Off => tr!("tasks-remind-off"),
+            Self::OnTime if timed => tr!("tasks-remind-on-time"),
+            Self::OnTime => tr!(
+                "tasks-remind-morning",
+                time = schedule::clock(time_of(katna_dav::todo::DAY_START))
+            ),
+            Self::HourBefore => tr!("tasks-remind-hour-before"),
+            Self::DayBefore => tr!("tasks-remind-day-before"),
+            Self::At(at) => jiff::Timestamp::from_second(at)
+                .map(|t| {
+                    format::day_month_time(t.to_zoned(jiff::tz::TimeZone::system()).datetime())
+                })
+                .unwrap_or_default(),
+        }
+    }
+}
+
 /// The open dialog.
 pub(super) struct Details {
     id: i64,
@@ -83,6 +144,7 @@ pub(super) struct Details {
     month: Date,
     day: Option<Date>,
     repeat: Repeat,
+    remind: Remind,
     focus: FocusHandle,
     /// The window's size when opened, to center the dialog in.
     viewport: Size<Pixels>,
@@ -170,6 +232,7 @@ impl MailWindow {
             month: day.unwrap_or_else(today),
             day,
             repeat: Repeat::from_rule(&task.repeat),
+            remind: Remind::of(&task),
             focus: cx.focus_handle(),
             viewport: window.viewport_size(),
             _subscriptions: subscriptions,
@@ -217,12 +280,15 @@ impl MailWindow {
             );
             return;
         };
-        // A time or a repeat needs a day: today, unless one is picked.
+        // A time, a repeat or a reminder needs a day: today, unless one
+        // is picked.
+        let dated = !matches!(details.remind, Remind::Off | Remind::At(_));
         let day = details
             .day
-            .or_else(|| (time.is_some() || details.repeat != Repeat::Never).then(today));
+            .or_else(|| (time.is_some() || details.repeat != Repeat::Never || dated).then(today));
         let due = day.map(|d| d.to_string()).unwrap_or_default();
         let due_time = day.and(time).map(minutes_of);
+        let remind_at = details.remind.at(day, due_time);
         let repeat = if day.is_some() {
             details.repeat.rule()
         } else {
@@ -234,6 +300,7 @@ impl MailWindow {
             due: (due != task.due).then_some(due),
             due_time: (due_time != task.due_time).then_some(due_time),
             repeat: (repeat != task.repeat).then_some(repeat),
+            remind_at: (remind_at != task.remind_at).then_some(remind_at),
             ..TaskEdit::default()
         };
         self.task_close_details(window, cx);
@@ -263,6 +330,9 @@ impl MailWindow {
             if let Some(repeat) = &edit.repeat {
                 shown.repeat = repeat.clone();
             }
+            if let Some(remind_at) = edit.remind_at {
+                shown.remind_at = remind_at;
+            }
         }
         self.send_task(TaskCommand::Edit(id, edit), None, None, cx);
         // Ctrl+Z puts every field back.
@@ -278,7 +348,22 @@ impl MailWindow {
                 details.month = day;
             } else {
                 details.repeat = Repeat::Never;
+                if !matches!(details.remind, Remind::At(_)) {
+                    details.remind = Remind::Off;
+                }
             }
+        }
+        cx.notify();
+    }
+
+    fn task_details_remind(&mut self, remind: Remind, cx: &mut Context<Self>) {
+        if let Some(details) = &mut self.tasks.details {
+            if !matches!(remind, Remind::Off | Remind::At(_)) && details.day.is_none() {
+                let day = today();
+                details.day = Some(day);
+                details.month = day;
+            }
+            details.remind = remind;
         }
         cx.notify();
     }
@@ -498,10 +583,9 @@ impl MailWindow {
         if let Repeat::Other(_) = details.repeat {
             choices.push(details.repeat.clone());
         }
-        let repeats = choices.into_iter().enumerate().map(|(ix, repeat)| {
-            let on = repeat == details.repeat;
+        let chip = |id: &'static str, ix: usize, on: bool, text: String| {
             div()
-                .id(("task-details-repeat", ix))
+                .id((id, ix))
                 .focus_ring(th)
                 .h(px(32.0))
                 .px(px(12.0))
@@ -523,10 +607,37 @@ impl MailWindow {
                             .hover(|s| s.bg(rgba(th.hover)))
                     }
                 })
-                .child(repeat.label())
-                .on_click(
-                    cx.listener(move |this, _, _, cx| this.task_details_repeat(repeat.clone(), cx)),
-                )
+                .child(text)
+        };
+        let repeats = choices.into_iter().enumerate().map(|(ix, repeat)| {
+            chip(
+                "task-details-repeat",
+                ix,
+                repeat == details.repeat,
+                repeat.label(),
+            )
+            .on_click(
+                cx.listener(move |this, _, _, cx| this.task_details_repeat(repeat.clone(), cx)),
+            )
+        });
+        // "An hour before" only when the task has a time.
+        let timed = !details.time.read(cx).text().trim().is_empty();
+        let mut reminds = vec![Remind::Off, Remind::OnTime];
+        if timed || details.remind == Remind::HourBefore {
+            reminds.push(Remind::HourBefore);
+        }
+        reminds.push(Remind::DayBefore);
+        if let Remind::At(_) = details.remind {
+            reminds.push(details.remind);
+        }
+        let reminds = reminds.into_iter().enumerate().map(|(ix, remind)| {
+            chip(
+                "task-details-remind",
+                ix,
+                remind == details.remind,
+                remind.label(timed),
+            )
+            .on_click(cx.listener(move |this, _, _, cx| this.task_details_remind(remind, cx)))
         });
         let when = div()
             .flex_1()
@@ -544,6 +655,15 @@ impl MailWindow {
                     .flex_wrap()
                     .gap(px(8.0))
                     .children(repeats),
+            )
+            .child(div().mt(px(20.0)).child(label(tr!("tasks-remind"))))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(8.0))
+                    .children(reminds),
             );
         // Side by side when there is room, else one above the other.
         let side_by_side = width >= 7.0 * DAY + 48.0 + 24.0 + 200.0;

@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = దిగుమతి చేయండి
 contacts-export = ఎగుమతి చేయండి
-contacts-import-title = vCard ఫైల్ నుండి కాంటాక్ట్‌లను దిగుమతి చేయండి
+contacts-import-file = vCard లేదా CSV ఫైల్ నుండి కాంటాక్ట్‌లను దిగుమతి చేయండి
 contacts-imported = { $count ->
     [one] { $place }లో { $count } కాంటాక్ట్‌లు దిగుమతి అయ్యాయి
    *[other] { $place }లో { $count } కాంటాక్ట్‌లు దిగుమతి అయ్యాయి
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ఎగుమతి చేయడానికి కాంటాక్ట్‌లు లేవు
 contacts-export-failed = కాంటాక్ట్‌లను ఎగుమతి చేయడం సాధ్యం కాలేదు: { $error }
+contacts-print = ప్రింట్ చేయండి
+contacts-print-title = కాంటాక్ట్‌లు
+contacts-print-none = ప్రింట్ చేయడానికి కాంటాక్ట్‌లు లేవు
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = పుట్టినరోజు: { $day }
+contacts-print-nickname = ముద్దుపేరు: { $name }
 contacts-create = కాంటాక్ట్‌ను సృష్టించండి
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = అనుమతించండి
 contacts-back = కాంటాక్ట్‌లకు తిరిగి వెళ్లండి
 contacts-edit = ఎడిట్ చేయండి
 contacts-delete = తొలగించండి
+contacts-qr = QR కోడ్‌గా షేర్ చేయండి
+contacts-qr-about = కాంటాక్ట్‌ను సేవ్ చేయడానికి దీన్ని ఫోన్ కెమెరాతో స్కాన్ చేయండి.
+contacts-qr-too-long = QR కోడ్‌లో ఇమడడానికి ఈ కాంటాక్ట్‌లో చాలా ఎక్కువ వివరాలు ఉన్నాయి.
+contacts-qr-done = పూర్తయింది
 contacts-deleted = { $name } తొలగించబడింది
 contacts-added = { $name }ను కాంటాక్ట్‌లకు జోడించారు
 contacts-find-mail = మెయిల్

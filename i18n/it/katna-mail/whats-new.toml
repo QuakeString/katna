@@ -1434,3 +1434,39 @@ title = "Unisci i duplicati, importa ed esporta i contatti"
 text = """
 Contatti ha “Correggi e gestisci”: “Unisci e correggi” trova le persone salvate due volte (stesso nome o numero di telefono) e le unisce con un clic, con la possibilità di annullare. “Importa” aggiunge persone da un file vCard escludendo quelle già salvate, ed “Esporta” salva tutti, o un’etichetta, in un file vCard.
 """
+
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Compleanni nel calendario, contatti come codici QR"
+text = """
+I compleanni dei tuoi contatti ora compaiono nel Calendario, in un calendario «Compleanni» che puoi deselezionare. La pagina di un contatto può mostrarlo come codice QR che la fotocamera di un telefono salva, e stamparlo; «Stampa» sotto «Correggi e gestisci» stampa tutte le persone visualizzate. L’importazione ora legge anche i file CSV di Google Contatti e Outlook, e KRunner e la ricerca di GNOME trovano i tuoi contatti salvati.
+"""
+
+["2026-09-29-0830-calendar-density-time-zones"]
+title = "Densità del Calendario e secondo fuso orario"
+text = """
+Il pulsante Opzioni del Calendario imposta l'altezza delle ore (Adattiva allo schermo, Comoda o Compatta) e aggiunge un secondo fuso orario accanto al tuo, per le persone che incontri all'estero.
+"""
+
+["2026-09-29-0809-video-calls"]
+title = "Avvia una videochiamata da una mail"
+text = """
+Fai clic con il pulsante destro su una conversazione, oppure apri ⋮, e scegli Avvia una videochiamata: la chiamata si apre e una nuova mail con il suo link viene inviata a tutti i partecipanti alla conversazione. Gli account Gmail usano Google Meet; gli altri ricevono una stanza Jitsi Meet. Le mail con un link a una chiamata Meet, Teams, Zoom, Webex, Jitsi, WhatsApp o Telegram ora mostrano un pulsante Partecipa.
+"""
+
+["2026-09-29-0815-note-line-task"]
+title = "Trasforma una riga di elenco in un’attività"
+text = """
+Metti il cursore su una riga di elenco in una nota e scegli Trasforma in attività: la riga passa alle tue attività. Il suo chip Nota nella pagina Attività riapre la nota.
+"""
+
+["2026-09-29-0836-active-pane-stands-out"]
+title = "Il riquadro in cui ti trovi risalta"
+text = """
+Accanto all’elenco, solo il riquadro che riceve la tastiera mantiene la sua ombra; l’elenco, la conversazione o il pannello del contatto che non usi si abbassa con un bordo più tenue, e il cambio ti segue con dolcezza mentre fai clic.
+"""
+
+["2026-09-29-0840-task-reminders"]
+title = "Promemoria e ripetizioni delle attività"
+text = """
+Apri un'attività e scegli Ricordamelo: all'ora dell'attività, un'ora o un giorno prima. Il promemoria appare anche quando Katna è chiuso, con Segna come completata e Posticipa. Completando un'attività ricorrente, ora ritorna il giorno successivo previsto.
+"""

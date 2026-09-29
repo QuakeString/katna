@@ -103,6 +103,7 @@ compose-tool-remove-link = Quitar enlace
 ## More options
 
 compose-tool-full-screen = Pantalla completa de forma predeterminada
+compose-tool-video-call = Añadir una videollamada
 compose-tool-label = Etiqueta
 compose-tool-label-coming = Pronto podrás etiquetar el correo enviado. Mientras tanto, etiqueta el mensaje en Enviados cuando haya salido.
 compose-tool-plain-mode = Modo de texto sin formato

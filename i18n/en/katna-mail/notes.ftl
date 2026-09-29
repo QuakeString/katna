@@ -99,6 +99,11 @@ notes-meeting-actions = Action items
 notes-event = Event
 notes-open-event = Open the event
 
+## Tasks
+
+# In a note's toolbar: a task made from the checklist line the cursor is on.
+notes-make-task = Make it a task
+
 ## Colors (tooltips)
 
 notes-color-none = No color

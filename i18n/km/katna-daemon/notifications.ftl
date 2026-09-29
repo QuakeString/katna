@@ -33,6 +33,7 @@ notify-event-in-days = { $count ->
 notify-event-all-day = ពេញមួយថ្ងៃ
 notify-event-join = ចូលរួម
 notify-event-snooze = ពន្យារពេល 5 នាទី
+notify-task-done = សម្គាល់ថាបានធ្វើរួច
 
 ## The buttons of new-mail notifications and reminders
 

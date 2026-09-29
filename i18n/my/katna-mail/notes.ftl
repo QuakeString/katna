@@ -77,6 +77,10 @@ notes-meeting-actions = လုပ်ဆောင်ရန်များ
 notes-event = ဖြစ်ရပ်
 notes-open-event = ဖြစ်ရပ်ကို ဖွင့်ရန်
 
+## Tasks
+
+notes-make-task = လုပ်ဆောင်စရာအဖြစ် ပြုလုပ်ရန်
+
 ## Colors (tooltips)
 
 notes-color-none = အရောင်မရှိ

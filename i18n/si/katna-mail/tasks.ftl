@@ -42,6 +42,9 @@ tasks-delete = මකන්න
 tasks-move-to = { $list } වෙත ගෙන යන්න
 tasks-from-mail = තැපැල්
 tasks-open-mail = තැපැල් විවෘත කරන්න
+tasks-from-note = සටහන
+tasks-open-note = සටහන විවෘත කරන්න
+tasks-note-gone = එම සටහන තවදුරටත් මෙහි නැත.
 tasks-no-subject = (විෂයක් නැත)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = සතිපතා
 tasks-repeat-monthly = මාසිකව
 tasks-repeat-yearly = වාර්ෂිකව
 tasks-repeat-other = අභිරුචි
+tasks-remind = මට මතක් කරන්න
+tasks-remind-off = මතක් කරන්න එපා
+tasks-remind-on-time = එම වේලාවේදී
+tasks-remind-morning = එදින, { $time }
+tasks-remind-hour-before = පැයකට පෙර
+tasks-remind-day-before = දවසකට පෙර
 tasks-cancel = අවලංගු කරන්න
 tasks-save = සුරකින්න
 tasks-not-a-time = “{ $text }” වේලාවක් නොවේ, උදාහරණයක් ලෙස { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = කාර්යය සම්පූර්ණ කළා
+tasks-toast-next = අවසන්. ඊළඟ එක { $date } දින
 tasks-toast-deleted = කාර්යය මකා දමන ලදී
 tasks-toast-added = { $count ->
     [one] කාර්යයන් වෙත එක් කරන ලදී

@@ -81,6 +81,8 @@ settings-general-sending-detail = How long a sent message waits, so it can be ta
 # A switch under the undo-send choice.
 settings-general-sent-sound = Sound when mail is sent
 settings-general-sent-sound-detail = A short sound plays once a message has gone out.
+settings-general-video-calls = Video calls
+settings-general-video-calls-detail = Start a video call uses Google Meet for Gmail accounts. Other accounts get a Jitsi Meet room on this server; anyone with the link can join.
 settings-general-offline = Offline mail
 settings-general-offline-detail = Recent mail is downloaded whole, to read without a connection. Older mail downloads when you open it.
 # A choice of how much mail is kept for offline reading.
@@ -311,6 +313,7 @@ settings-general-confirm-delete-summary = Ask before moving several conversation
 settings-general-reply-button-summary = The reply button beside each message replies to everyone
 settings-general-remote-images-summary = Always show the images of every message
 settings-general-sending-summary = Undo send: how long a sent message waits, so it can be taken back
+settings-general-video-calls-summary = The Jitsi Meet server for new video calls from accounts without Google Meet
 settings-general-offline-summary = How many days of recent mail are downloaded whole, to read without a connection
 settings-general-notifications-summary = New-mail notifications and their sound
 settings-general-updates-summary = Download new versions of Katna by themselves

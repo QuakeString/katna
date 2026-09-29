@@ -45,7 +45,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Leta
 contacts-export = Hamisha
-contacts-import-title = Leta anwani kutoka faili ya vCard
+contacts-import-file = Leta anwani kutoka faili ya vCard au CSV
 contacts-imported = { $count ->
    *[other] Umeleta anwani { $count } kwenye { $place }
 }
@@ -60,6 +60,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Hakuna anwani za kuhamisha
 contacts-export-failed = Imeshindwa kuhamisha anwani: { $error }
+contacts-print = Chapisha
+contacts-print-title = Anwani
+contacts-print-none = Hakuna anwani za kuchapisha
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Siku ya kuzaliwa: { $day }
+contacts-print-nickname = Jina la utani: { $name }
 contacts-create = Unda anwani
 
 ## Search and the list
@@ -94,6 +100,10 @@ contacts-allow-button = Ruhusu
 contacts-back = Rudi kwenye anwani
 contacts-edit = Hariri
 contacts-delete = Futa
+contacts-qr = Shiriki kama msimbo wa QR
+contacts-qr-about = Changanua hii kwa kamera ya simu ili kuhifadhi anwani.
+contacts-qr-too-long = Anwani hii ina maelezo mengi mno kutoshea kwenye msimbo wa QR.
+contacts-qr-done = Nimemaliza
 contacts-deleted = Imefutwa: { $name }
 contacts-added = Imeongezwa kwenye anwani: { $name }
 contacts-find-mail = Barua

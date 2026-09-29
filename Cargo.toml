@@ -63,6 +63,8 @@ fontdb = { version = "0.23", default-features = false, features = ["fs", "memmap
 krilla = { version = "0.8", default-features = false, features = ["simple-text", "raster-images"] }
 # The shaper krilla draws with, to measure lines the same way.
 rustybuzz = "0.20"
+# A contact shared as a QR code: no dependencies of its own.
+qrcodegen = "1.8"
 jiff = { version = "0.2.37", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo", "tzdb-bundle-always"] }
 html5ever = "0.40.1"
 levenshtein_automata = "0.2.1"

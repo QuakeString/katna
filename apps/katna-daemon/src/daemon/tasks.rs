@@ -19,7 +19,9 @@ use std::{
 
 use async_channel::Receiver;
 use futures_lite::FutureExt;
+use jiff::tz::TimeZone;
 use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
+use katna_store::tasks::TaskFields;
 use katna_sync::{
     Error,
     calendar::caldav::CalDav,
@@ -28,7 +30,7 @@ use katna_sync::{
     tasks::{TaskService, caldav::DavTasks, google::GoogleTasks, graph::ToDo, sync_account},
 };
 
-use super::{Daemon, Notice};
+use super::{CommandError, Daemon, Notice};
 
 /// How often the service's changes are fetched.
 const EVERY: Duration = Duration::from_secs(5 * 60);
@@ -57,6 +59,59 @@ impl Daemon {
     /// Has task sync run a round soon: a task changed in Katna.
     pub(crate) fn wake_task_sync(&self) {
         let _ = self.task_sync_wake.0.try_send(());
+    }
+
+    /// Ticks task `id` off (or back on when `done` is false). A task that
+    /// repeats moves to its next day instead and stays open, its reminder
+    /// with it, except in To Do, which makes the next one itself. Returns
+    /// whether the task was found.
+    pub(crate) fn set_task_done(&self, id: i64, done: bool) -> Result<bool, CommandError> {
+        let mut store = self.store();
+        let Some(task) = store.task(id)? else {
+            return Ok(false);
+        };
+        if done && task.done_at.is_none() && task.parent.is_none() && !task.repeat.is_empty() {
+            let account = store
+                .task_lists()?
+                .into_iter()
+                .find(|l| l.id == task.list)
+                .and_then(|l| l.account);
+            let to_do = match account {
+                Some(account) => {
+                    store.account_settings(account)?.and_then(|s| s.oauth)
+                        == Some(OAuthProvider::Microsoft)
+                }
+                None => false,
+            };
+            let zone = TimeZone::system();
+            let today = jiff::Timestamp::now().to_zoned(zone.clone()).date();
+            if !to_do
+                && let Some((due, repeat)) =
+                    katna_dav::todo::next_due(&task.due, &task.repeat, today)
+            {
+                let remind_at = katna_dav::todo::moved_reminder(
+                    task.remind_at,
+                    (&task.due, task.due_time),
+                    (&due, task.due_time),
+                    &zone,
+                );
+                tracing::info!(id, due, "repeating task moved to its next day");
+                return Ok(store.edit_task(
+                    id,
+                    &TaskFields {
+                        title: task.title,
+                        notes: task.notes,
+                        due,
+                        due_time: task.due_time,
+                        remind_at,
+                        repeat,
+                        starred: task.starred,
+                        mail: task.mail,
+                    },
+                )?);
+            }
+        }
+        Ok(store.set_task_done(id, done)?)
     }
 
     /// `account`'s task service the way `method`, and what it depends on

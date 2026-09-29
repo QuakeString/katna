@@ -42,6 +42,9 @@ tasks-delete = Radera
 tasks-move-to = Flytta till { $list }
 tasks-from-mail = E-post
 tasks-open-mail = Öppna e-postmeddelandet
+tasks-from-note = Anteckning
+tasks-open-note = Öppna anteckningen
+tasks-note-gone = Den anteckningen finns inte längre.
 tasks-no-subject = (inget ämne)
 
 ## The details dialog
@@ -57,6 +60,12 @@ tasks-repeat-weekly = Varje vecka
 tasks-repeat-monthly = Varje månad
 tasks-repeat-yearly = Varje år
 tasks-repeat-other = Anpassad
+tasks-remind = Påminn mig
+tasks-remind-off = Påminn inte
+tasks-remind-on-time = När det är dags
+tasks-remind-morning = Samma dag, { $time }
+tasks-remind-hour-before = En timme före
+tasks-remind-day-before = Dagen före
 tasks-cancel = Avbryt
 tasks-save = Spara
 tasks-not-a-time = ”{ $text }” är ingen tid, till exempel { $example }.
@@ -71,6 +80,7 @@ tasks-due-at = { $day }, { $time }
 ## Notes at the bottom
 
 tasks-toast-done = Uppgiften är slutförd
+tasks-toast-next = Klart. Nästa är den { $date }
 tasks-toast-deleted = Uppgiften har raderats
 tasks-toast-added = { $count ->
     [one] Har lagts till i Uppgifter

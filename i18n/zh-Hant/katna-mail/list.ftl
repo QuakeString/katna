@@ -232,6 +232,7 @@ menu-snooze = 延後
 menu-unsnooze = 取消延後
 menu-add-to-tasks = 新增至工作
 menu-schedule-meeting = 安排會議
+menu-start-call = 開始視訊通話
 menu-add-note = 新增記事
 menu-print-all = 全部列印
 menu-new-window = 在新視窗中開啟

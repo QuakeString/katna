@@ -77,6 +77,10 @@ notes-meeting-actions = Ihe a ga-eme
 notes-event = Ihe omume
 notes-open-event = Mepee ihe omume
 
+## Tasks
+
+notes-make-task = Mee ya ọrụ
+
 ## Colors (tooltips)
 
 notes-color-none = Enweghị agba

@@ -78,6 +78,10 @@ notes-meeting-actions = የድርጊት ንጥሎች
 notes-event = ክስተት
 notes-open-event = ክስተቱን ክፈት
 
+## Tasks
+
+notes-make-task = ተግባር አድርገው
+
 ## Colors (tooltips)
 
 notes-color-none = ቀለም የለም
