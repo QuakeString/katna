@@ -50,6 +50,10 @@ pub struct ContactsConfig {
     /// cards (`"12,40"`), so they are not suggested again.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub dismissed_duplicates: Vec<String>,
+    /// Their birthdays are left off the Calendar (its Birthdays calendar
+    /// unticked).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub hide_birthdays: bool,
 }
 
 /// Video calls started from Katna Mail (`docs/ARCHITECTURE.md` §18.2).

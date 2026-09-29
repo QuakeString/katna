@@ -373,9 +373,13 @@ impl Finder {
 
     fn read_book(&self) {
         let started = Instant::now();
-        let read = Store::open(&self.paths, Mode::ReadOnly)
-            .and_then(|store| store.correspondents())
-            .map(ContactBook::new);
+        let read = Store::open(&self.paths, Mode::ReadOnly).and_then(|store| {
+            let rows = store.correspondents()?;
+            // Saved contacts' names, and saved people never written to;
+            // an older store without contacts still answers.
+            let saved = store.saved_names().unwrap_or_default();
+            Ok(ContactBook::with_saved(rows, saved))
+        });
         let mut book = lock(&self.book);
         book.reading = false;
         book.read_at = Some(Instant::now());

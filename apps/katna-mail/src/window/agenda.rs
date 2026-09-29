@@ -119,10 +119,11 @@ impl MailWindow {
             midnight(day.tomorrow().unwrap_or(day), &tz),
         );
         let paths = self.paths.clone();
+        let birthdays = !self.config.contacts.hide_birthdays;
         self.agenda.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
                 .await;
             this.update(cx, |this, cx| {
                 match read {
