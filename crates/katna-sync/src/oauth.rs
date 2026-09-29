@@ -68,6 +68,10 @@ pub const GOOGLE_OTHER_CONTACTS: &str = "https://www.googleapis.com/auth/contact
 /// Google Tasks: the account's task lists, synced with Katna Tasks.
 pub const GOOGLE_TASKS: &str = "https://www.googleapis.com/auth/tasks";
 
+/// Google Meet, limited to the meeting spaces Katna itself made: for
+/// "Start a video call" ([`crate::meet`]).
+pub const GOOGLE_MEET: &str = "https://www.googleapis.com/auth/meetings.space.created";
+
 /// Microsoft To Do, through Microsoft Graph: the account's task lists.
 /// Like [`MICROSOFT_FILES`], its tokens come separately.
 pub const MICROSOFT_TASKS: &str = "https://graph.microsoft.com/Tasks.ReadWrite";
@@ -131,12 +135,13 @@ impl Provider {
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
                 // large attachments, the calendars, the contacts (People
-                // API, other contacts, CardDAV), the task lists, and who
-                // signed in (address, name, picture) in the ID token.
+                // API, other contacts, CardDAV), the task lists, the
+                // meetings Katna makes, and who signed in (address, name,
+                // picture) in the ID token.
                 scope: format!(
                     "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
                      {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} \
-                     {GOOGLE_TASKS} openid email profile"
+                     {GOOGLE_TASKS} {GOOGLE_MEET} openid email profile"
                 ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",

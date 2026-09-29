@@ -50,6 +50,7 @@ mod calendar;
 mod contact_labels;
 mod contacts;
 mod drive;
+mod meet;
 mod notes;
 mod other_contacts;
 mod reminders;

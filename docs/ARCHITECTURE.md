@@ -3473,6 +3473,35 @@ server error is not.
   The window reads the tasks from the start and maps each `task.mail` to
   its line (the one due first wins) whenever tasks or mail change.
 
+### 18.2 Video calls
+
+Calls stay with the services people already use (study 2026-09-29; the
+owner chose links now, and a call window inside Katna maybe later). Katna
+makes and finds call links; the call itself opens in the browser or the
+service's own app (`xdg-open`, or Windows' default). No Katna Server, no
+media code, nothing added to startup.
+
+- **Start a video call** (a conversation's right-click and ⋮ menus) and
+  **Add a video call** (compose's More menu). A Gmail account signed in
+  with scope `meetings.space.created` gets a Google Meet space from the
+  Meet REST API (`spaces.create`, `katna_sync::meet`, over D-Bus
+  `MeetingLink`); any other account, or a Gmail one signed in before Katna
+  asked for Meet, gets a Jitsi Meet room made in Katna Mail with 16 random
+  characters in its name, on the server in Settings > General > Video
+  calls (`meetings.jitsi_server`, `https://meet.jit.si` by default).
+  Start a video call opens the call and a new mail with its link to
+  everyone in the conversation, from its account; Add a video call puts
+  the link at the cursor. Teams links for Microsoft accounts come through
+  Schedule a meeting (§18) only: Graph's `onlineMeetings` needs a
+  permission personal accounts can't grant.
+- **Join**: a mail with a call link (in its HTML links or written out) of
+  Google Meet, Teams, Zoom, Webex, Jitsi Meet (`meet.jit.si`, `8x8.vc`),
+  WhatsApp (`call.whatsapp.com`) or Telegram (`t.me/call/`, group video
+  chats) shows a Join button per call, at most three, above its text
+  (`katna_core::meeting`). Invitations skip it: their card has Join.
+  WhatsApp and Telegram have no way for other apps to make calls, so their
+  links are only joined.
+
 ## 19. Security and privacy
 
 - TLS only via `rustls`; no plain-text auth without an explicit warning.

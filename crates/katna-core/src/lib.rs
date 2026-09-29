@@ -12,6 +12,7 @@ pub mod error;
 pub mod ids;
 pub mod image;
 pub mod logging;
+pub mod meeting;
 pub mod paths;
 pub mod sentry;
 pub mod subject;

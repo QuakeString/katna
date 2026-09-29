@@ -2201,6 +2201,10 @@ impl MailWindow {
                     cx.notify();
                 })),
             )
+            .child(
+                tool_item("more-video-call", "video", &tr!("compose-tool-video-call"), th)
+                    .on_click(cx.listener(|this, _, window, cx| this.add_video_call(window, cx))),
+            )
             .child(menu_divider(th))
             .child(label_item)
             .child(menu_divider(th))
@@ -2230,6 +2234,33 @@ impl MailWindow {
                 .on_click(cx.listener(|this, _, window, cx| this.toggle_spell_check(window, cx))),
             )
             .into_any_element()
+    }
+
+    /// Puts a new video call's link in the message at the cursor: the
+    /// sending account's own Google Meet, else a Jitsi Meet room.
+    fn add_video_call(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(c) = &mut self.compose else {
+            return;
+        };
+        c.popup = None;
+        let kind = c.kind;
+        let account = c
+            .from
+            .or_else(|| self.compose_account(kind).map(|a| a.id));
+        let link = self.new_call_link(account);
+        cx.notify();
+        cx.spawn_in(window, async move |this, cx| {
+            let link = link.await;
+            this.update_in(cx, |this, window, cx| {
+                this.edit_body(window, cx, |editor, cx| {
+                    editor.insert(&tr!("meeting-join-line"), cx);
+                    editor.insert(" ", cx);
+                    editor.set_link("", &link, cx);
+                });
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Plain text mode on or off. Turning it on asks first when it would

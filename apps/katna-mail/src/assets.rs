@@ -151,6 +151,7 @@ icons!(
     "tune",
     "undo",
     "unread",
+    "video",
     "warning",
     "window-restore",
     "work",

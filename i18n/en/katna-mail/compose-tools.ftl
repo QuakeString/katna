@@ -122,6 +122,8 @@ compose-tool-remove-link = Remove link
 
 # When on, new messages open full screen.
 compose-tool-full-screen = Default to full screen
+# Puts a new video call's link (Google Meet, or Jitsi Meet) in the message.
+compose-tool-video-call = Add a video call
 compose-tool-label = Label
 compose-tool-label-coming = Labels on sent mail are coming soon. Label the message in Sent once it is out.
 compose-tool-plain-mode = Plain text mode
