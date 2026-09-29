@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your next meetings with them"
+text = """
+The contact panel beside a conversation now shows your next meetings with
+that person. Click one to open it in the Calendar.
+"""

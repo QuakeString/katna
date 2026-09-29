@@ -2151,7 +2151,10 @@ Gemini or confidential mode):
   six newest files, which open the conversation or the viewer; and the
   open tasks made from mail they take part in (the task's mail or another
   message of its conversation, `contact_on_mail`), with a tick to complete
-  one and a click to open it on the Tasks page. Everything
+  one and a click to open it on the Tasks page; and the next three
+  meetings they organise or are invited to within 60 days (not
+  cancelled, not declined; a series shows its next time once), which
+  open on the Calendar's day view with the event's card. Everything
   is local (`katna_store::Store::contact_*`); outside data (LinkedIn, X,
   company facts) is left for the Katna Server plan. It shows only while
   the list and reader keep 900 px (600 px with the reader alone), never on
