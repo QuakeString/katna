@@ -484,6 +484,7 @@ menu-unpin = Відкріпити
 menu-snooze = Відкласти
 menu-unsnooze = Скасувати відкладення
 menu-add-to-tasks = Додати до Завдань
+menu-schedule-meeting = Запланувати зустріч
 menu-add-note = Додати нотатку
 menu-print-all = Надрукувати все
 menu-new-window = Відкрити в новому вікні

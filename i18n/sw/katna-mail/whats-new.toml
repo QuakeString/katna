@@ -1272,3 +1272,17 @@ text = """
 Majukumu sasa yanasawazishwa pia na Yahoo, Zoho, iCloud, Fastmail na akaunti nyingine ambazo majukumu yake yako kwenye seva tofauti na ya barua.
 Katna hujaribu njia bora ya kila akaunti kwanza na hukumbuka ile inayofanya kazi.
 """
+
+["2026-09-29-0651-schedule-meeting"]
+title = "Panga mkutano kutoka kwa barua"
+text = """
+Bofya-kulia mazungumzo, au fungua ⋮, kisha chagua Panga mkutano: tukio jipya hufunguka kwenye ukurasa wa Kalenda
+likiwa na mada kama kichwa chake na kila mtu kwenye mazungumzo kama mgeni.
+"""
+
+["2026-09-29-0705-running-late"]
+title = "Umechelewa? Waambie wote kwa mbofyo mmoja"
+text = """
+Tukio lenye wageni sasa lina Tuma barua pepe kwa wageni, na kuanzia saa moja kabla halijaanza, Nimechelewa:
+barua kwa kila mtu, kutoka akaunti ya kalenda hiyo, tayari kutumwa.
+"""
