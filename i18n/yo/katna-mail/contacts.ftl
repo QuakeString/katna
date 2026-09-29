@@ -25,6 +25,39 @@ contacts-label-removed = A yọ kúrò nínú { $name }
 contacts-label-renamed = A tún àmì náà sọ orúkọ { $name }
 contacts-label-deleted = A pa àmì { $name } rẹ́
 contacts-label-no-email = Kò sí ẹni tó ní àdírẹ́sì ìmeèlì nínú àmì yìí
+contacts-manage = Àtúnṣe àti ìṣàkóso
+contacts-merge = Dàpọ̀ àti àtúnṣe
+contacts-merge-about = { $count ->
+   *[other] Àbá { $count }: àwọn olùbásọ̀rọ̀ tó dàbí ẹni kan náà
+}
+contacts-merge-none = Kò sí àwọn tó jọra. Àwọn olùbásọ̀rọ̀ tó ní orúkọ tàbí nọ́ńbà fóònù kan náà yóò hàn níbí.
+contacts-merge-count = { $count ->
+   *[other] Àwọn olùbásọ̀rọ̀ { $count }
+}
+contacts-merge-all = Dàpọ̀ gbogbo wọn
+contacts-merge-button = Dàpọ̀
+contacts-merge-dismiss = Kọ̀ sílẹ̀
+contacts-merged = { $count ->
+    [1] A ti dàpọ̀ àwọn olùbásọ̀rọ̀
+   *[other] A ti ṣe ìdàpọ̀ { $count }
+}
+contacts-import = Gbé wọlé
+contacts-export = Gbé jáde
+contacts-import-title = Gbé àwọn olùbásọ̀rọ̀ wọlé láti fáìlì vCard
+contacts-imported = { $count ->
+   *[other] A gbé olùbásọ̀rọ̀ { $count } wọlé sí { $place }
+}
+contacts-imported-some = { $count ->
+   *[other] A gbé olùbásọ̀rọ̀ { $count } wọlé sí { $place }; a fi { $skipped } tí a ti fipamọ́ sílẹ̀
+}
+contacts-import-none = A kò rí olùbásọ̀rọ̀ kankan nínú { $name }
+contacts-import-all-saved = Gbogbo ènìyàn inú { $name } ni a ti fipamọ́ tán
+contacts-import-failed = A kò lè ka { $name }: { $error }
+contacts-exported = { $count ->
+   *[other] A gbé olùbásọ̀rọ̀ { $count } jáde sí { $path }
+}
+contacts-export-none = Kò sí olùbásọ̀rọ̀ láti gbé jáde
+contacts-export-failed = A kò lè gbé àwọn olùbásọ̀rọ̀ jáde: { $error }
 contacts-create = Ṣẹ̀dá olùbásọ̀rọ̀
 
 ## Search and the list

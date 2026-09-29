@@ -1343,3 +1343,37 @@ text = """
 ook Ja, Nee en Miskien: jou antwoord gaan per e-pos na die
 organiseerder, en sy kalender merk dit.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Vergadernotas"
+text = """
+Maak ’n geleentheid in die Kalender oop en kies Neem vergadernotas: ’n
+nota met die geleentheid se titel gaan oop, met wie kom en ’n plek vir
+aksiepunte. Die geleentheid se kaart lys sy notas, en ’n nota se
+Geleentheid-merker neem jou terug na die dag.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Gaan reguit na ’n PDF-bladsy"
+text = """
+Die bladsynommer onder ’n PDF is nou ’n blokkie: klik daarop of druk
+Ctrl+G, tik ’n bladsy en druk Enter om soontoe te spring.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Take in die kalender"
+text = """
+Take met ’n sperdatum verskyn nou in die Kalender, op hul tyd of by die dag se heeldaggebeurtenisse. Merk hulle daar as klaar, klik om een oop te maak, of sleep dit na ’n ander dag of tyd om daardie tyd vir die taak te reserveer.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Herinnerings vir jou geleenthede"
+text = """
+Geleenthede herinner jou nou met ’n kennisgewing, selfs wanneer Katna toe is. Sluit aan maak die video-oproep oop, en Sluimer 5 min herinner jou oor vyf minute weer.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Voeg duplikate saam, voer kontakte in en uit"
+text = """
+Kontakte het nou Regstel en bestuur: Voeg saam en regstel vind mense wat twee keer gestoor is (dieselfde naam of foonnommer) en voeg hulle met een klik saam, met Ontdoen. Voer in bring mense in vanaf ’n vCard-lêer en laat diegene weg wat reeds gestoor is, en Voer uit stoor almal, of een etiket, as ’n vCard-lêer.
+"""

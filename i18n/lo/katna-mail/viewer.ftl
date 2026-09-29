@@ -13,3 +13,6 @@ viewer-document-unreadable = ບໍ່ສາມາດອ່ານເອກະສ
 viewer-slides-unreadable = ບໍ່ສາມາດອ່ານສະໄລ້ເຫຼົ່ານີ້ໄດ້.
 viewer-no-preview = ບໍ່ມີຕົວຢ່າງ
 viewer-slide = ສະໄລ້ { $number }
+viewer-page = ໜ້າ
+viewer-page-count = ຈາກ { $count }
+viewer-go-to-page-tip = ພິມເລກໜ້າແລ້ວກົດ Enter (Ctrl+G)

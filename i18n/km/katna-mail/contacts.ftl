@@ -25,6 +25,39 @@ contacts-label-removed = បានយកចេញពី { $name }
 contacts-label-renamed = បានប្តូរឈ្មោះស្លាកទៅ { $name }
 contacts-label-deleted = បានលុបស្លាក { $name }
 contacts-label-no-email = គ្មាននរណាម្នាក់នៅក្នុងស្លាកនេះមានអាសយដ្ឋានអ៊ីមែលទេ
+contacts-manage = ជួសជុល និងគ្រប់គ្រង
+contacts-merge = បញ្ចូលគ្នា និងជួសជុល
+contacts-merge-about = { $count ->
+   *[other] ការណែនាំ { $count }៖ ទំនាក់ទំនងដែលមើលទៅដូចជាមនុស្សតែម្នាក់
+}
+contacts-merge-none = គ្មានទំនាក់ទំនងស្ទួនទេ។ ទំនាក់ទំនងដែលមានឈ្មោះ ឬលេខទូរសព្ទដូចគ្នានឹងបង្ហាញនៅទីនេះ។
+contacts-merge-count = { $count ->
+   *[other] ទំនាក់ទំនង { $count }
+}
+contacts-merge-all = បញ្ចូលទាំងអស់
+contacts-merge-button = បញ្ចូលគ្នា
+contacts-merge-dismiss = មិនអើពើ
+contacts-merged = { $count ->
+    [1] បានបញ្ចូលទំនាក់ទំនងគ្នា
+   *[other] បានបញ្ចូលគ្នា { $count } ដង
+}
+contacts-import = នាំចូល
+contacts-export = នាំចេញ
+contacts-import-title = នាំចូលទំនាក់ទំនងពីឯកសារ vCard
+contacts-imported = { $count ->
+   *[other] បាននាំចូលទំនាក់ទំនង { $count } ទៅ { $place }
+}
+contacts-imported-some = { $count ->
+   *[other] បាននាំចូលទំនាក់ទំនង { $count } ទៅ { $place }; រំលងទំនាក់ទំនង { $skipped } ដែលបានរក្សាទុករួចហើយ
+}
+contacts-import-none = រកមិនឃើញទំនាក់ទំនងនៅក្នុង { $name } ទេ
+contacts-import-all-saved = មនុស្សទាំងអស់នៅក្នុង { $name } ត្រូវបានរក្សាទុករួចហើយ
+contacts-import-failed = មិនអាចអាន { $name } បានទេ៖ { $error }
+contacts-exported = { $count ->
+   *[other] បាននាំចេញទំនាក់ទំនង { $count } ទៅ { $path }
+}
+contacts-export-none = គ្មានទំនាក់ទំនងសម្រាប់នាំចេញទេ
+contacts-export-failed = មិនអាចនាំចេញទំនាក់ទំនងបានទេ៖ { $error }
 contacts-create = បង្កើតទំនាក់ទំនង
 
 ## Search and the list

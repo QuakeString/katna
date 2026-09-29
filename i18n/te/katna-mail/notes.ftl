@@ -68,6 +68,16 @@ notes-mail = మెయిల్
 notes-open-mail = మెయిల్‌ను తెరవండి
 notes-open-note = గమనికను తెరవండి
 
+## Meeting notes
+
+notes-meeting-take = మీటింగ్ గమనిక రాయండి
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = హాజరయ్యేవారు: { $names }
+notes-meeting-notes = గమనికలు
+notes-meeting-actions = చర్య అంశాలు
+notes-event = ఈవెంట్
+notes-open-event = ఈవెంట్‌ను తెరవండి
+
 ## Colors (tooltips)
 
 notes-color-none = రంగు లేదు

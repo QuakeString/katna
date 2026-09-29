@@ -13,3 +13,6 @@ viewer-document-unreadable = இந்த ஆவணத்தைப் படி�
 viewer-slides-unreadable = இந்த ஸ்லைடுகளைப் படிக்க முடியவில்லை.
 viewer-no-preview = முன்னோட்டம் இல்லை
 viewer-slide = ஸ்லைடு { $number }
+viewer-page = பக்கம்
+viewer-page-count = / { $count }
+viewer-go-to-page-tip = பக்க எண்ணை உள்ளிட்டு Enter அழுத்தவும் (Ctrl+G)

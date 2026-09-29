@@ -25,6 +25,45 @@ contacts-label-removed = { $name } ਵਿੱਚੋਂ ਹਟਾਇਆ ਗਿਆ
 contacts-label-renamed = ਲੇਬਲ ਦਾ ਨਾਮ ਬਦਲ ਕੇ { $name } ਕੀਤਾ ਗਿਆ
 contacts-label-deleted = ਲੇਬਲ { $name } ਮਿਟਾਇਆ ਗਿਆ
 contacts-label-no-email = ਇਸ ਲੇਬਲ ਉੱਤੇ ਕਿਸੇ ਦਾ ਵੀ ਈਮੇਲ ਪਤਾ ਨਹੀਂ ਹੈ
+contacts-manage = ਠੀਕ ਕਰੋ ਅਤੇ ਪ੍ਰਬੰਧਿਤ ਕਰੋ
+contacts-merge = ਮਿਲਾਓ ਅਤੇ ਠੀਕ ਕਰੋ
+contacts-merge-about = { $count ->
+    [one] { $count } ਸੁਝਾਅ: ਇੱਕੋ ਵਿਅਕਤੀ ਵਰਗੇ ਲੱਗਦੇ ਸੰਪਰਕ
+   *[other] { $count } ਸੁਝਾਅ: ਇੱਕੋ ਵਿਅਕਤੀ ਵਰਗੇ ਲੱਗਦੇ ਸੰਪਰਕ
+}
+contacts-merge-none = ਕੋਈ ਡੁਪਲੀਕੇਟ ਨਹੀਂ। ਇੱਕੋ ਨਾਮ ਜਾਂ ਫ਼ੋਨ ਨੰਬਰ ਵਾਲੇ ਸੰਪਰਕ ਇੱਥੇ ਦਿਸਣਗੇ।
+contacts-merge-count = { $count ->
+    [one] { $count } ਸੰਪਰਕ
+   *[other] { $count } ਸੰਪਰਕ
+}
+contacts-merge-all = ਸਭ ਨੂੰ ਮਿਲਾਓ
+contacts-merge-button = ਮਿਲਾਓ
+contacts-merge-dismiss = ਖਾਰਜ ਕਰੋ
+contacts-merged = { $count ->
+    [1] ਸੰਪਰਕ ਮਿਲਾਏ ਗਏ
+    [one] { $count } ਮਿਲਾਨ ਪੂਰੇ ਹੋਏ
+   *[other] { $count } ਮਿਲਾਨ ਪੂਰੇ ਹੋਏ
+}
+contacts-import = ਆਯਾਤ ਕਰੋ
+contacts-export = ਨਿਰਯਾਤ ਕਰੋ
+contacts-import-title = vCard ਫ਼ਾਈਲ ਤੋਂ ਸੰਪਰਕ ਆਯਾਤ ਕਰੋ
+contacts-imported = { $count ->
+    [one] { $place } ਵਿੱਚ { $count } ਸੰਪਰਕ ਆਯਾਤ ਕੀਤੇ ਗਏ
+   *[other] { $place } ਵਿੱਚ { $count } ਸੰਪਰਕ ਆਯਾਤ ਕੀਤੇ ਗਏ
+}
+contacts-imported-some = { $count ->
+    [one] { $place } ਵਿੱਚ { $count } ਸੰਪਰਕ ਆਯਾਤ ਕੀਤੇ ਗਏ; ਪਹਿਲਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ { $skipped } ਛੱਡ ਦਿੱਤੇ ਗਏ
+   *[other] { $place } ਵਿੱਚ { $count } ਸੰਪਰਕ ਆਯਾਤ ਕੀਤੇ ਗਏ; ਪਹਿਲਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ { $skipped } ਛੱਡ ਦਿੱਤੇ ਗਏ
+}
+contacts-import-none = { $name } ਵਿੱਚ ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ ਮਿਲਿਆ
+contacts-import-all-saved = { $name } ਵਿੱਚ ਹਰ ਕੋਈ ਪਹਿਲਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹੈ
+contacts-import-failed = { $name } ਪੜ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: { $error }
+contacts-exported = { $count ->
+    [one] { $path } ਵਿੱਚ { $count } ਸੰਪਰਕ ਨਿਰਯਾਤ ਕੀਤੇ ਗਏ
+   *[other] { $path } ਵਿੱਚ { $count } ਸੰਪਰਕ ਨਿਰਯਾਤ ਕੀਤੇ ਗਏ
+}
+contacts-export-none = ਨਿਰਯਾਤ ਕਰਨ ਲਈ ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ
+contacts-export-failed = ਸੰਪਰਕ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕੇ: { $error }
 contacts-create = ਸੰਪਰਕ ਬਣਾਓ
 
 ## Search and the list

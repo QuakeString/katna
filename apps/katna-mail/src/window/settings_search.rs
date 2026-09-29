@@ -120,6 +120,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
+        "settings-general-video-calls",
+        "settings-general-video-calls-summary",
+        "video call meeting jitsi meet conference server zoom teams whatsapp telegram join",
+    ),
+    entry(
+        Section::General,
         "settings-general-offline",
         "settings-general-offline-summary",
         "offline download sync days cache disk storage",

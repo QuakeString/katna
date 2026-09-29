@@ -72,6 +72,16 @@ notes-mail = البريد
 notes-open-mail = فتح الرسالة
 notes-open-note = فتح الملاحظة
 
+## Meeting notes
+
+notes-meeting-take = تدوين ملاحظات الاجتماع
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = الحضور: { $names }
+notes-meeting-notes = الملاحظات
+notes-meeting-actions = بنود العمل
+notes-event = حدث
+notes-open-event = فتح الحدث
+
 ## Colors (tooltips)
 
 notes-color-none = بلا لون

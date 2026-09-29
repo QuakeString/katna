@@ -13,3 +13,6 @@ viewer-document-unreadable = خواندن این سند ممکن نشد.
 viewer-slides-unreadable = خواندن این اسلایدها ممکن نشد.
 viewer-no-preview = پیش‌نمایشی در دسترس نیست
 viewer-slide = اسلاید { $number }
+viewer-page = صفحه
+viewer-page-count = از { $count }
+viewer-go-to-page-tip = شمارهٔ صفحه را بنویسید و Enter بزنید (Ctrl+G)

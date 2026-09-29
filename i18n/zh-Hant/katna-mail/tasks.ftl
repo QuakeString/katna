@@ -77,3 +77,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = 這封郵件已不存在。
 tasks-toast-list-deleted = 清單已刪除
 tasks-toast-moved = 已移至 { $list }
+tasks-toast-rescheduled = 工作已重新安排

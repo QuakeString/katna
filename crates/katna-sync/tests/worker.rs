@@ -4,7 +4,7 @@
 
 mod common;
 
-use std::time::Duration;
+use std::{future::Future, time::Duration};
 
 use async_channel::Receiver;
 use async_io::Timer;
@@ -35,15 +35,30 @@ fn config() -> WorkerConfig {
 struct Running {
     events: Receiver<Event>,
     handle: Handle,
-    task: smol::Task<()>,
+    /// Gets `()` when the worker returns; closes without it if it panicked.
+    done: Receiver<()>,
     _tmp: tempfile::TempDir,
+}
+
+/// Runs a worker on a thread of its own. The tests run in parallel and
+/// smol's shared executor has one thread, so a worker spawned there holds
+/// up every other test's worker while its database calls block (a slow
+/// disk on Windows CI, or a lock another handle holds), taking them past
+/// their timeouts.
+fn spawn(worker: impl Future<Output = ()> + Send + 'static) -> Receiver<()> {
+    let (done_tx, done) = async_channel::bounded(1);
+    std::thread::spawn(move || {
+        smol::block_on(worker);
+        let _ = done_tx.try_send(());
+    });
+    done
 }
 
 fn start(server: &FakeServer, config: WorkerConfig) -> Running {
     let (tmp, store, account) = common::store();
     let (events_tx, events) = async_channel::unbounded();
     let (handle, control) = worker::control();
-    let task = smol::spawn(worker::run(
+    let done = spawn(worker::run(
         server.clone(),
         store,
         account,
@@ -54,7 +69,7 @@ fn start(server: &FakeServer, config: WorkerConfig) -> Running {
     Running {
         events,
         handle,
-        task,
+        done,
         _tmp: tmp,
     }
 }
@@ -92,12 +107,14 @@ impl Running {
 
     async fn stop(self) {
         drop(self.handle);
-        self.task
+        self.done
+            .recv()
             .or(async {
                 Timer::after(Duration::from_secs(5)).await;
                 panic!("worker did not stop");
             })
-            .await;
+            .await
+            .expect("worker panicked");
     }
 }
 
@@ -282,7 +299,7 @@ fn downloads_bodies_and_fetches_on_request() {
     };
     let (events_tx, events) = async_channel::unbounded();
     let (handle, control) = worker::control();
-    let task = smol::spawn(worker::run(
+    let done = spawn(worker::run(
         server.clone(),
         store,
         account,
@@ -293,7 +310,7 @@ fn downloads_bodies_and_fetches_on_request() {
     let worker = Running {
         events,
         handle,
-        task,
+        done,
         _tmp: tmp,
     };
     smol::block_on(async {
@@ -356,7 +373,7 @@ fn a_longer_offline_window_downloads_older_mail_at_once() {
     let (tmp, store, account) = common::store();
     let (events_tx, events) = async_channel::unbounded();
     let (handle, control) = worker::control();
-    let task = smol::spawn(worker::run(
+    let done = spawn(worker::run(
         server.clone(),
         store,
         account,
@@ -367,7 +384,7 @@ fn a_longer_offline_window_downloads_older_mail_at_once() {
     let worker = Running {
         events,
         handle,
-        task,
+        done,
         _tmp: tmp,
     };
     smol::block_on(async {
@@ -416,7 +433,7 @@ fn metered_network_waits_with_bodies() {
     let (events_tx, events) = async_channel::unbounded();
     let (handle, control) = worker::control();
     handle.set_metered(true);
-    let task = smol::spawn(worker::run(
+    let done = spawn(worker::run(
         server.clone(),
         store,
         account,
@@ -427,7 +444,7 @@ fn metered_network_waits_with_bodies() {
     let worker = Running {
         events,
         handle,
-        task,
+        done,
         _tmp: tmp,
     };
     smol::block_on(async {

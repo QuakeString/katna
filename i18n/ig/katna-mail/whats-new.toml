@@ -1341,3 +1341,46 @@ Oku bịara n'akaụntụ na-enweghị kalịnda nwere Ee, Mba na Ikekwe ugbu a:
 azịza gị na-aga n'aka onye nhazi site na ozi, kalịnda ya ga-akaritekwa
 ya.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Ndetu nzuko"
+text = """
+Meghee ihe omume na Kalịnda wee họrọ Dee ndetu nzuko: ndetu nwere aha
+ihe omume ga-emepe, ya na ndị bịara na ebe maka ihe a ga-eme dị njikere.
+Kaadị ihe omume na-egosi ndetu ya, chip Ihe omume nke ndetu na-eduga gị
+azụ n'ụbọchị ahụ.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Gaa ozugbo na peeji PDF"
+text = """
+Nọmba peeji dị n'okpuru PDF bụ igbe ugbu a: pịa ya ma ọ bụ pịa Ctrl+G,
+pịnye peeji wee pịa Enter ka i gaa ebe ahụ ozugbo.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Ọrụ n’elu kalịnda"
+text = """
+Ọrụ ndị nwere ụbọchị e kwesịrị ime ha na-apụta ugbu a n’elu Kalịnda,
+n’oge ha ma ọ bụ n’akụkụ ihe omume ụbọchị niile nke ụbọchị ahụ. Kaa
+akara na ha n’ebe ahụ, pịa ka i meghee otu, ma ọ bụ dọkpụrụ ya gaa
+ụbọchị ma ọ bụ oge ọzọ iji chekwaa oge ahụ maka ya.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Ihe ncheta maka ihe omume gị"
+text = """
+Ihe omume na-echetara gị ugbu a site n’ọkwa, ọbụlagodi mgbe Katna
+emechiri. Sonye na-emepe oku vidiyo, Yigharịa na-echetara gị ọzọ mgbe
+nkeji ise gasịrị.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Jikọta ihe myirịta, bubata ma bupụ kọntaktị"
+text = """
+Kọntaktị nwere Dozie ma jikwaa ugbu a: Jikọta ma dozie chọtara ndị
+echekwara ugboro abụọ (otu aha ma ọ bụ otu ọnụọgụ ekwentị) ma jikọta ha
+n'otu pịa, yana Megharịa. Bubata na-ebubata ndị si na faịlụ vCard ma
+hapụ onye ọ bụla echekwarala, Bupụ na-echekwa mmadụ niile, ma ọ bụ otu
+leebụl, dị ka faịlụ vCard.
+"""

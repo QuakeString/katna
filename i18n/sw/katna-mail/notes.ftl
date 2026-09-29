@@ -68,6 +68,16 @@ notes-mail = Barua
 notes-open-mail = Fungua barua
 notes-open-note = Fungua dokezo
 
+## Meeting notes
+
+notes-meeting-take = Andika madokezo ya mkutano
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Waliohudhuria: { $names }
+notes-meeting-notes = Madokezo
+notes-meeting-actions = Hatua za kuchukua
+notes-event = Tukio
+notes-open-event = Fungua tukio
+
 ## Colors (tooltips)
 
 notes-color-none = Bila rangi

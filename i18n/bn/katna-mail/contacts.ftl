@@ -25,6 +25,45 @@ contacts-label-removed = { $name } থেকে সরানো হয়েছ�
 contacts-label-renamed = লেবেলের নাম পাল্টে { $name } করা হয়েছে
 contacts-label-deleted = লেবেল { $name } মুছে ফেলা হয়েছে
 contacts-label-no-email = এই লেবেলে কারও ইমেল ঠিকানা নেই
+contacts-manage = ঠিক করুন এবং পরিচালনা করুন
+contacts-merge = মার্জ করুন ও ঠিক করুন
+contacts-merge-about = { $count ->
+    [one] { $count }টি পরামর্শ: যে পরিচিতিগুলি একই ব্যক্তির বলে মনে হচ্ছে
+   *[other] { $count }টি পরামর্শ: যে পরিচিতিগুলি একই ব্যক্তির বলে মনে হচ্ছে
+}
+contacts-merge-none = কোনো ডুপ্লিকেট নেই। একই নাম বা ফোন নম্বরের পরিচিতি এখানে দেখা যাবে।
+contacts-merge-count = { $count ->
+    [one] { $count }টি পরিচিতি
+   *[other] { $count }টি পরিচিতি
+}
+contacts-merge-all = সব মার্জ করুন
+contacts-merge-button = মার্জ করুন
+contacts-merge-dismiss = বাতিল করুন
+contacts-merged = { $count ->
+    [1] পরিচিতি মার্জ হয়েছে
+    [one] { $count }টি মার্জ সম্পন্ন
+   *[other] { $count }টি মার্জ সম্পন্ন
+}
+contacts-import = ইমপোর্ট করুন
+contacts-export = এক্সপোর্ট করুন
+contacts-import-title = vCard ফাইল থেকে পরিচিতি ইমপোর্ট করুন
+contacts-imported = { $count ->
+    [one] { $place }-এ { $count }টি পরিচিতি ইমপোর্ট করা হয়েছে
+   *[other] { $place }-এ { $count }টি পরিচিতি ইমপোর্ট করা হয়েছে
+}
+contacts-imported-some = { $count ->
+    [one] { $place }-এ { $count }টি পরিচিতি ইমপোর্ট করা হয়েছে; আগে থেকেই সংরক্ষিত থাকায় { $skipped }টি বাদ দেওয়া হয়েছে
+   *[other] { $place }-এ { $count }টি পরিচিতি ইমপোর্ট করা হয়েছে; আগে থেকেই সংরক্ষিত থাকায় { $skipped }টি বাদ দেওয়া হয়েছে
+}
+contacts-import-none = { $name }-এ কোনো পরিচিতি পাওয়া যায়নি
+contacts-import-all-saved = { $name }-এর সবাই আগে থেকেই সংরক্ষিত আছেন
+contacts-import-failed = { $name } পড়া যায়নি: { $error }
+contacts-exported = { $count ->
+    [one] { $path }-এ { $count }টি পরিচিতি এক্সপোর্ট করা হয়েছে
+   *[other] { $path }-এ { $count }টি পরিচিতি এক্সপোর্ট করা হয়েছে
+}
+contacts-export-none = এক্সপোর্ট করার মতো কোনো পরিচিতি নেই
+contacts-export-failed = পরিচিতি এক্সপোর্ট করা যায়নি: { $error }
 contacts-create = পরিচিতি তৈরি করুন
 
 ## Search and the list

@@ -20,6 +20,23 @@ notify-tracking-clicked = { $who } በ{ $subject } ውስጥ ያለ አገናኝ
 notify-update-ready = Katna Mail ሊዘምን ይችላል
 notify-update-ready-body = ስሪት { $version } ወርዷል። ዘምን የሚለው ይጭነዋል እና Katna Mailን እንደገና ያስጀምረዋል።
 notify-update = አዘምን
+notify-event-now = አሁን
+notify-event-in-minutes = { $count ->
+    [one] በ{ $count } ደቂቃ ውስጥ
+   *[other] በ{ $count } ደቂቃ ውስጥ
+}
+notify-event-in-hours = { $count ->
+    [one] በ{ $count } ሰዓት ውስጥ
+   *[other] በ{ $count } ሰዓት ውስጥ
+}
+notify-event-in-days = { $count ->
+    [1] ነገ
+    [one] በ{ $count } ቀን ውስጥ
+   *[other] በ{ $count } ቀን ውስጥ
+}
+notify-event-all-day = ቀኑን ሙሉ
+notify-event-join = ተቀላቀል
+notify-event-snooze = ለ5 ደቂቃ አሸልብ
 
 ## Its buttons
 

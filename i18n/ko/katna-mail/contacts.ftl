@@ -25,6 +25,39 @@ contacts-label-removed = { $name }에서 삭제됨
 contacts-label-renamed = 라벨 이름이 { $name }(으)로 변경됨
 contacts-label-deleted = 라벨 { $name } 삭제됨
 contacts-label-no-email = 이 라벨에는 이메일 주소가 있는 사람이 없습니다
+contacts-manage = 수정 및 관리
+contacts-merge = 병합 및 수정
+contacts-merge-about = { $count ->
+   *[other] 제안 { $count }개: 동일한 사람으로 보이는 연락처
+}
+contacts-merge-none = 중복 항목이 없습니다. 이름이나 전화번호가 같은 연락처가 여기에 표시됩니다.
+contacts-merge-count = { $count ->
+   *[other] 연락처 { $count }개
+}
+contacts-merge-all = 모두 병합
+contacts-merge-button = 병합
+contacts-merge-dismiss = 무시
+contacts-merged = { $count ->
+    [1] 연락처를 병합했습니다
+   *[other] { $count }건 병합 완료
+}
+contacts-import = 가져오기
+contacts-export = 내보내기
+contacts-import-title = vCard 파일에서 연락처 가져오기
+contacts-imported = { $count ->
+   *[other] 연락처 { $count }개를 { $place }에 가져왔습니다
+}
+contacts-imported-some = { $count ->
+   *[other] 연락처 { $count }개를 { $place }에 가져왔습니다. 이미 저장된 { $skipped }개는 제외했습니다
+}
+contacts-import-none = { $name }에서 연락처를 찾을 수 없습니다
+contacts-import-all-saved = { $name }의 모든 사용자가 이미 저장되어 있습니다
+contacts-import-failed = { $name }을(를) 읽을 수 없습니다: { $error }
+contacts-exported = { $count ->
+   *[other] 연락처 { $count }개를 { $path }(으)로 내보냈습니다
+}
+contacts-export-none = 내보낼 연락처가 없습니다
+contacts-export-failed = 연락처를 내보낼 수 없습니다: { $error }
 contacts-create = 연락처 만들기
 
 ## Search and the list

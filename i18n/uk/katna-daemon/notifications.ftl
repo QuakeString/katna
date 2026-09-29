@@ -24,6 +24,29 @@ notify-tracking-clicked = { $who } переходить за посилання�
 notify-update-ready = Katna Mail можна оновити
 notify-update-ready-body = Версію { $version } завантажено. Оновлення встановить її й перезапустить Katna Mail.
 notify-update = Оновити
+notify-event-now = Зараз
+notify-event-in-minutes = { $count ->
+    [one] Через { $count } хвилину
+    [few] Через { $count } хвилини
+    [many] Через { $count } хвилин
+   *[other] Через { $count } хвилини
+}
+notify-event-in-hours = { $count ->
+    [one] Через { $count } годину
+    [few] Через { $count } години
+    [many] Через { $count } годин
+   *[other] Через { $count } години
+}
+notify-event-in-days = { $count ->
+    [1] Завтра
+    [one] Через { $count } день
+    [few] Через { $count } дні
+    [many] Через { $count } днів
+   *[other] Через { $count } дня
+}
+notify-event-all-day = Увесь день
+notify-event-join = Приєднатися
+notify-event-snooze = Відкласти на 5 хв
 notify-open = Відкрити
 notify-reply-all = Відповісти всім
 notify-mark-read = Позначити як прочитане

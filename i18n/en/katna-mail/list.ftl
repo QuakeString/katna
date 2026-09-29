@@ -431,6 +431,9 @@ menu-add-to-tasks = Add to Tasks
 # Opens a new calendar event from the conversation: its subject as the
 # title and its people as guests.
 menu-schedule-meeting = Schedule a meeting
+# Opens a video call now (Google Meet, or Jitsi Meet) and a new mail with
+# its link to everyone in the conversation.
+menu-start-call = Start a video call
 # Makes a note about the mail (Katna Notes), opened over it.
 menu-add-note = Add a note
 # Prints every message of the open conversation.

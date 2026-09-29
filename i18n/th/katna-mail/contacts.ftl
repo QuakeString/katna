@@ -25,6 +25,39 @@ contacts-label-removed = นำออกจาก { $name } แล้ว
 contacts-label-renamed = เปลี่ยนชื่อป้ายกำกับเป็น { $name } แล้ว
 contacts-label-deleted = ลบป้ายกำกับ { $name } แล้ว
 contacts-label-no-email = ไม่มีใครในป้ายกำกับนี้ที่มีที่อยู่อีเมล
+contacts-manage = แก้ไขและจัดการ
+contacts-merge = รวมและแก้ไข
+contacts-merge-about = { $count ->
+   *[other] คำแนะนำ { $count } รายการ: รายชื่อติดต่อที่ดูเหมือนเป็นบุคคลเดียวกัน
+}
+contacts-merge-none = ไม่มีรายการซ้ำ รายชื่อติดต่อที่มีชื่อหรือหมายเลขโทรศัพท์เดียวกันจะแสดงที่นี่
+contacts-merge-count = { $count ->
+   *[other] รายชื่อติดต่อ { $count } รายการ
+}
+contacts-merge-all = รวมทั้งหมด
+contacts-merge-button = รวม
+contacts-merge-dismiss = ปิด
+contacts-merged = { $count ->
+    [1] รวมรายชื่อติดต่อแล้ว
+   *[other] รวมแล้ว { $count } รายการ
+}
+contacts-import = นำเข้า
+contacts-export = ส่งออก
+contacts-import-title = นำเข้ารายชื่อติดต่อจากไฟล์ vCard
+contacts-imported = { $count ->
+   *[other] นำเข้ารายชื่อติดต่อ { $count } รายการไปยัง { $place } แล้ว
+}
+contacts-imported-some = { $count ->
+   *[other] นำเข้ารายชื่อติดต่อ { $count } รายการไปยัง { $place } แล้ว ข้ามรายชื่อที่บันทึกไว้แล้ว { $skipped } รายการ
+}
+contacts-import-none = ไม่พบรายชื่อติดต่อใน { $name }
+contacts-import-all-saved = ทุกคนใน { $name } ถูกบันทึกไว้แล้ว
+contacts-import-failed = อ่าน { $name } ไม่ได้: { $error }
+contacts-exported = { $count ->
+   *[other] ส่งออกรายชื่อติดต่อ { $count } รายการไปยัง { $path } แล้ว
+}
+contacts-export-none = ไม่มีรายชื่อติดต่อให้ส่งออก
+contacts-export-failed = ส่งออกรายชื่อติดต่อไม่ได้: { $error }
 contacts-create = สร้างรายชื่อติดต่อ
 
 ## Search and the list

@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } đã nhấp vào một liên kết trong { $s
 notify-update-ready = Có thể cập nhật Katna Mail
 notify-update-ready-body = Phiên bản { $version } đã được tải xuống. Cập nhật sẽ cài đặt nó và khởi động lại Katna Mail.
 notify-update = Cập nhật
+notify-event-now = Bây giờ
+notify-event-in-minutes = { $count ->
+   *[other] Sau { $count } phút
+}
+notify-event-in-hours = { $count ->
+   *[other] Sau { $count } giờ
+}
+notify-event-in-days = { $count ->
+    [1] Ngày mai
+   *[other] Sau { $count } ngày
+}
+notify-event-all-day = Cả ngày
+notify-event-join = Tham gia
+notify-event-snooze = Báo lại sau 5 phút
 notify-open = Mở
 notify-reply-all = Trả lời tất cả
 notify-mark-read = Đánh dấu là đã đọc

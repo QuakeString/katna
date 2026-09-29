@@ -79,3 +79,4 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Wala na rito ang mail na iyon.
 tasks-toast-list-deleted = Na-delete ang listahan
 tasks-toast-moved = Inilipat sa { $list }
+tasks-toast-rescheduled = Na-reschedule ang gawain

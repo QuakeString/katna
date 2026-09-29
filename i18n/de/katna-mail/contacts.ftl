@@ -25,6 +25,45 @@ contacts-label-removed = Aus „{ $name }“ entfernt
 contacts-label-renamed = Label umbenannt in „{ $name }“
 contacts-label-deleted = Label „{ $name }“ gelöscht
 contacts-label-no-email = Niemand mit diesem Label hat eine E-Mail-Adresse
+contacts-manage = Korrigieren und verwalten
+contacts-merge = Zusammenführen und korrigieren
+contacts-merge-about = { $count ->
+    [one] { $count } Vorschlag: Kontakte, die wie dieselbe Person aussehen
+   *[other] { $count } Vorschläge: Kontakte, die wie dieselbe Person aussehen
+}
+contacts-merge-none = Keine Duplikate. Kontakte mit demselben Namen oder derselben Telefonnummer erscheinen hier.
+contacts-merge-count = { $count ->
+    [one] { $count } Kontakt
+   *[other] { $count } Kontakte
+}
+contacts-merge-all = Alle zusammenführen
+contacts-merge-button = Zusammenführen
+contacts-merge-dismiss = Ablehnen
+contacts-merged = { $count ->
+    [1] Kontakte zusammengeführt
+    [one] { $count } Zusammenführung durchgeführt
+   *[other] { $count } Zusammenführungen durchgeführt
+}
+contacts-import = Importieren
+contacts-export = Exportieren
+contacts-import-title = Kontakte aus einer vCard-Datei importieren
+contacts-imported = { $count ->
+    [one] { $count } Kontakt in { $place } importiert
+   *[other] { $count } Kontakte in { $place } importiert
+}
+contacts-imported-some = { $count ->
+    [one] { $count } Kontakt in { $place } importiert; { $skipped } bereits gespeichert, ausgelassen
+   *[other] { $count } Kontakte in { $place } importiert; { $skipped } bereits gespeichert, ausgelassen
+}
+contacts-import-none = Keine Kontakte in { $name } gefunden
+contacts-import-all-saved = Alle Personen in { $name } sind bereits gespeichert
+contacts-import-failed = { $name } konnte nicht gelesen werden: { $error }
+contacts-exported = { $count ->
+    [one] { $count } Kontakt nach { $path } exportiert
+   *[other] { $count } Kontakte nach { $path } exportiert
+}
+contacts-export-none = Keine Kontakte zum Exportieren
+contacts-export-failed = Kontakte konnten nicht exportiert werden: { $error }
 contacts-create = Kontakt erstellen
 
 ## Search and the list

@@ -20,6 +20,22 @@ notify-tracking-clicked = { $who } heeft op een link in { $subject } geklikt
 notify-update-ready = Katna Mail kan worden bijgewerkt
 notify-update-ready-body = Versie { $version } is gedownload. Bijwerken installeert deze en herstart Katna Mail.
 notify-update = Bijwerken
+notify-event-now = Nu
+notify-event-in-minutes = { $count ->
+    [one] Over { $count } minuut
+   *[other] Over { $count } minuten
+}
+notify-event-in-hours = { $count ->
+   *[other] Over { $count } uur
+}
+notify-event-in-days = { $count ->
+    [1] Morgen
+    [one] Over { $count } dag
+   *[other] Over { $count } dagen
+}
+notify-event-all-day = Hele dag
+notify-event-join = Deelnemen
+notify-event-snooze = 5 min snoozen
 
 ## Its buttons
 

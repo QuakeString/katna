@@ -13,3 +13,6 @@ viewer-document-unreadable = Dokumen ini tidak dapat dibaca.
 viewer-slides-unreadable = Slide ini tidak dapat dibaca.
 viewer-no-preview = Pratinjau tidak tersedia
 viewer-slide = Slide { $number }
+viewer-page = Halaman
+viewer-page-count = dari { $count }
+viewer-go-to-page-tip = Ketik nomor halaman lalu tekan Enter (Ctrl+G)

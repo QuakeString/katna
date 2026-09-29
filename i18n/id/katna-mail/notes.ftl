@@ -67,6 +67,16 @@ notes-mail = Email
 notes-open-mail = Buka email
 notes-open-note = Buka catatan
 
+## Meeting notes
+
+notes-meeting-take = Buat catatan rapat
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Peserta: { $names }
+notes-meeting-notes = Catatan
+notes-meeting-actions = Item tindakan
+notes-event = Acara
+notes-open-event = Buka acara
+
 ## Colors (tooltips)
 
 notes-color-none = Tanpa warna

@@ -152,6 +152,7 @@ icons!(
     "undo",
     "unread",
     "upload",
+    "video",
     "warning",
     "window-restore",
     "work",

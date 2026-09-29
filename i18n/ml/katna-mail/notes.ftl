@@ -68,6 +68,16 @@ notes-mail = മെയിൽ
 notes-open-mail = മെയിൽ തുറക്കുക
 notes-open-note = കുറിപ്പ് തുറക്കുക
 
+## Meeting notes
+
+notes-meeting-take = മീറ്റിംഗ് കുറിപ്പ് എടുക്കൂ
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = പങ്കെടുക്കുന്നവർ: { $names }
+notes-meeting-notes = കുറിപ്പുകൾ
+notes-meeting-actions = ചെയ്യേണ്ട കാര്യങ്ങൾ
+notes-event = ഇവന്റ്
+notes-open-event = ഇവന്റ് തുറക്കുക
+
 ## Colors (tooltips)
 
 notes-color-none = നിറമില്ല

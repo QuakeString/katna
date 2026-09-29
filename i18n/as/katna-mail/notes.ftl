@@ -68,6 +68,16 @@ notes-mail = মেইল
 notes-open-mail = মেইল খোলক
 notes-open-note = টোকা খোলক
 
+## Meeting notes
+
+notes-meeting-take = বৈঠকৰ টোকা লওক
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = উপস্থিত থকা: { $names }
+notes-meeting-notes = টোকা
+notes-meeting-actions = কাৰ্য তালিকা
+notes-event = ইভেণ্ট
+notes-open-event = ইভেণ্ট খোলক
+
 ## Colors (tooltips)
 
 notes-color-none = কোনো ৰং নাই

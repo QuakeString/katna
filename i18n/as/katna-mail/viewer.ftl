@@ -13,3 +13,6 @@ viewer-document-unreadable = এই নথিখন পঢ়িব পৰা �
 viewer-slides-unreadable = এই স্লাইডবোৰ পঢ়িব পৰা নগ'ল।
 viewer-no-preview = কোনো পূৰ্বদৰ্শন উপলব্ধ নহয়
 viewer-slide = স্লাইড { $number }
+viewer-page = পৃষ্ঠা
+viewer-page-count = { $count }ৰ ভিতৰত
+viewer-go-to-page-tip = পৃষ্ঠাৰ নম্বৰ লিখি Enter টিপক (Ctrl+G)

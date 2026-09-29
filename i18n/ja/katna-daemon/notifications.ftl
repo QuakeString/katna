@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } が「{ $subject }」のリンクをクリッ
 notify-update-ready = Katna Mail を更新できます
 notify-update-ready-body = バージョン { $version } のダウンロードが完了しました。更新するとインストールされ、Katna Mail が再起動します。
 notify-update = 更新
+notify-event-now = 今
+notify-event-in-minutes = { $count ->
+   *[other] { $count } 分後
+}
+notify-event-in-hours = { $count ->
+   *[other] { $count } 時間後
+}
+notify-event-in-days = { $count ->
+    [1] 明日
+   *[other] { $count } 日後
+}
+notify-event-all-day = 終日
+notify-event-join = 参加
+notify-event-snooze = 5 分後に再通知
 
 ## The buttons of new-mail notifications and reminders
 

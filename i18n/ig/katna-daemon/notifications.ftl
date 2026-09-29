@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } pịrị njikọ dị na { $subject }
 notify-update-ready = Enwere ike imelite Katna Mail
 notify-update-ready-body = Ụdị { $version } abudatala. Imelite na-awụnye ya wee malitegharịa Katna Mail.
 notify-update = Melite
+notify-event-now = Ugbu a
+notify-event-in-minutes = { $count ->
+   *[other] N’ime nkeji { $count }
+}
+notify-event-in-hours = { $count ->
+   *[other] N’ime awa { $count }
+}
+notify-event-in-days = { $count ->
+    [1] Echi
+   *[other] N’ime ụbọchị { $count }
+}
+notify-event-all-day = Ụbọchị niile
+notify-event-join = Sonye
+notify-event-snooze = Yigharịa nkeji 5
 
 ## Its buttons
 

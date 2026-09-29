@@ -368,6 +368,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
+            async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
+                Ok(self.daemon.meeting_link(AccountId(account)).await?)
+            }
+
             async fn set_calendar_hidden(&self, id: i64, hidden: bool) -> fdo::Result<()> {
                 Ok(self.daemon.set_calendar_hidden(id, hidden)?)
             }

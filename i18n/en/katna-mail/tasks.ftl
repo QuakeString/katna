@@ -53,6 +53,11 @@ tasks-move-to = Move to { $list }
 # A chip on a task made from a mail.
 tasks-from-mail = Mail
 tasks-open-mail = Open the mail
+# A chip on a task made from a note's checklist line.
+tasks-from-note = Note
+tasks-open-note = Open the note
+# The note a task was made from is no longer here (deleted).
+tasks-note-gone = That note isn't here any more.
 # The title of a task made from a mail with no subject.
 tasks-no-subject = (no subject)
 

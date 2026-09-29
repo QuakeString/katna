@@ -25,6 +25,45 @@ contacts-label-removed = Togs bort från { $name }
 contacts-label-renamed = Etiketten bytte namn till { $name }
 contacts-label-deleted = Etiketten { $name } raderades
 contacts-label-no-email = Ingen med den här etiketten har en e-postadress
+contacts-manage = Åtgärda och hantera
+contacts-merge = Sammanfoga och åtgärda
+contacts-merge-about = { $count ->
+    [one] { $count } förslag: kontakter som verkar vara samma person
+   *[other] { $count } förslag: kontakter som verkar vara samma person
+}
+contacts-merge-none = Inga dubbletter. Kontakter med samma namn eller telefonnummer visas här.
+contacts-merge-count = { $count ->
+    [one] { $count } kontakt
+   *[other] { $count } kontakter
+}
+contacts-merge-all = Sammanfoga alla
+contacts-merge-button = Sammanfoga
+contacts-merge-dismiss = Avvisa
+contacts-merged = { $count ->
+    [1] Kontakter sammanfogade
+    [one] { $count } sammanfogning klar
+   *[other] { $count } sammanfogningar klara
+}
+contacts-import = Importera
+contacts-export = Exportera
+contacts-import-title = Importera kontakter från en vCard-fil
+contacts-imported = { $count ->
+    [one] { $count } kontakt importerades till { $place }
+   *[other] { $count } kontakter importerades till { $place }
+}
+contacts-imported-some = { $count ->
+    [one] { $count } kontakt importerades till { $place }; { $skipped } redan sparade, utelämnades
+   *[other] { $count } kontakter importerades till { $place }; { $skipped } redan sparade, utelämnades
+}
+contacts-import-none = Inga kontakter hittades i { $name }
+contacts-import-all-saved = Alla i { $name } är redan sparade
+contacts-import-failed = Det gick inte att läsa { $name }: { $error }
+contacts-exported = { $count ->
+    [one] { $count } kontakt exporterades till { $path }
+   *[other] { $count } kontakter exporterades till { $path }
+}
+contacts-export-none = Inga kontakter att exportera
+contacts-export-failed = Det gick inte att exportera kontakterna: { $error }
 contacts-create = Skapa kontakt
 
 ## Search and the list

@@ -1341,3 +1341,37 @@ Lời mời gửi đến một tài khoản không có lịch giờ cũng có C�
 thể: câu trả lời của bạn được gửi đến người tổ chức qua email, và lịch
 của họ ghi nhận nó.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Ghi chú cuộc họp"
+text = """
+Mở một sự kiện trong Lịch rồi chọn Ghi chú cuộc họp: một ghi chú mang
+tiêu đề của sự kiện sẽ mở ra, có sẵn người tham dự và chỗ cho các việc
+cần làm. Thẻ của sự kiện liệt kê các ghi chú của nó, và chip Sự kiện
+trong ghi chú đưa bạn quay lại ngày đó.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Đi thẳng tới một trang PDF"
+text = """
+Số trang bên dưới tệp PDF nay là một ô nhập: nhấp vào đó hoặc nhấn
+Ctrl+G, nhập số trang rồi nhấn Enter để chuyển tới đó.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Tác vụ trên lịch"
+text = """
+Tác vụ có ngày đến hạn giờ hiển thị trên Lịch, đúng giờ của chúng hoặc cùng các sự kiện cả ngày. Đánh dấu hoàn tất ngay tại đó, nhấp để mở một tác vụ, hoặc kéo sang ngày hay giờ khác để dành khoảng thời gian đó cho tác vụ.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Nhắc nhở cho sự kiện của bạn"
+text = """
+Sự kiện giờ sẽ nhắc bạn bằng thông báo, kể cả khi Katna đã đóng. Tham gia sẽ mở cuộc gọi video, còn Báo lại sau 5 phút sẽ nhắc bạn lại sau năm phút.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Hợp nhất liên hệ trùng lặp, nhập và xuất liên hệ"
+text = """
+Danh bạ giờ có Sửa và quản lý: Hợp nhất và sửa tìm những người được lưu hai lần (cùng tên hoặc số điện thoại) và hợp nhất họ chỉ bằng một cú nhấp, kèm Hoàn tác. Nhập đưa người từ tệp vCard vào và bỏ qua những ai đã được lưu, còn Xuất lưu tất cả mọi người, hoặc một nhãn, thành tệp vCard.
+"""

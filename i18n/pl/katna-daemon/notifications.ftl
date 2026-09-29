@@ -22,6 +22,29 @@ notify-tracking-clicked = Link kliknięty przez { $who }: { $subject }
 notify-update-ready = Katna Mail można zaktualizować
 notify-update-ready-body = Wersja { $version } jest pobrana. Aktualizacja instaluje ją i uruchamia ponownie Katna Mail.
 notify-update = Aktualizuj
+notify-event-now = Teraz
+notify-event-in-minutes = { $count ->
+    [one] Za { $count } minutę
+    [few] Za { $count } minuty
+    [many] Za { $count } minut
+   *[other] Za { $count } minuty
+}
+notify-event-in-hours = { $count ->
+    [one] Za { $count } godzinę
+    [few] Za { $count } godziny
+    [many] Za { $count } godzin
+   *[other] Za { $count } godziny
+}
+notify-event-in-days = { $count ->
+    [1] Jutro
+    [one] Za { $count } dzień
+    [few] Za { $count } dni
+    [many] Za { $count } dni
+   *[other] Za { $count } dnia
+}
+notify-event-all-day = Cały dzień
+notify-event-join = Dołącz
+notify-event-snooze = Drzemka 5 min
 
 ## Its buttons
 

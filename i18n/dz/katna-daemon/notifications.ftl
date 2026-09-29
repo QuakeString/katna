@@ -19,6 +19,20 @@ notify-tracking-clicked = { $who } གིས་ { $subject } ནང་གི་�
 notify-update-ready = Katna Mail དུས་མཐུན་བཟོ་བཏུབ།
 notify-update-ready-body = ཐོན་རིམ་ { $version } ཕབ་ལེན་འབད་ཡོད། དུས་མཐུན་བཟོ་ནི་གིས་དེ་གཞི་བཙུགས་འབད་དེ་ Katna Mail་ལོག་འགོ་བཙུགས་འབདཝ་ཨིན།
 notify-update = དུས་མཐུན་བཟོ།
+notify-event-now = ད་ལྟོ
+notify-event-in-minutes = { $count ->
+   *[other] སྐར་མ་ { $count } ནང་
+}
+notify-event-in-hours = { $count ->
+   *[other] ཆུ་ཚོད་ { $count } ནང་
+}
+notify-event-in-days = { $count ->
+    [1] ནངས་པ
+   *[other] ཉིནམ་ { $count } ནང་
+}
+notify-event-all-day = ཉིན་མོ་ཧྲིལ་བུ
+notify-event-join = ཚུད་གནང་
+notify-event-snooze = སྐར་མ་ 5 ཤུལ་མར་བཞགཔ
 
 ## Its buttons
 

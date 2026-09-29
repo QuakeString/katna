@@ -13,3 +13,6 @@ viewer-document-unreadable = මෙම ලේඛනය කියවිය නො
 viewer-slides-unreadable = මෙම ස්ලයිඩ කියවිය නොහැකි විය.
 viewer-no-preview = පෙරදසුනක් නොමැත
 viewer-slide = ස්ලයිඩය { $number }
+viewer-page = පිටුව
+viewer-page-count = { $count } න්
+viewer-go-to-page-tip = පිටු අංකය ටයිප් කර Enter ඔබන්න (Ctrl+G)

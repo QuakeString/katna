@@ -67,6 +67,16 @@ notes-mail = Mel
 notes-open-mail = Buka mel
 notes-open-note = Buka nota
 
+## Meeting notes
+
+notes-meeting-take = Buat nota mesyuarat
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Peserta: { $names }
+notes-meeting-notes = Nota
+notes-meeting-actions = Item tindakan
+notes-event = Acara
+notes-open-event = Buka acara
+
 ## Colors (tooltips)
 
 notes-color-none = Tiada warna

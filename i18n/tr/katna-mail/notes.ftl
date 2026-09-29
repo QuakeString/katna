@@ -68,6 +68,16 @@ notes-mail = Posta
 notes-open-mail = E-postayı aç
 notes-open-note = Notu aç
 
+## Meeting notes
+
+notes-meeting-take = Toplantı notları al
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Katılımcılar: { $names }
+notes-meeting-notes = Notlar
+notes-meeting-actions = Eylem öğeleri
+notes-event = Etkinlik
+notes-open-event = Etkinliği aç
+
 ## Colors (tooltips)
 
 notes-color-none = Renk yok

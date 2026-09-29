@@ -69,6 +69,16 @@ notes-mail = Posta
 notes-open-mail = Apri l’email
 notes-open-note = Apri la nota
 
+## Meeting notes
+
+notes-meeting-take = Prendi appunti riunione
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = Partecipanti: { $names }
+notes-meeting-notes = Appunti
+notes-meeting-actions = Azioni da svolgere
+notes-event = Evento
+notes-open-event = Apri l’evento
+
 ## Colors (tooltips)
 
 notes-color-none = Nessun colore

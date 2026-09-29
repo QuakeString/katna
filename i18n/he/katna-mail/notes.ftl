@@ -69,6 +69,16 @@ notes-mail = אימייל
 notes-open-mail = פתיחת האימייל
 notes-open-note = פתיחת ההערה
 
+## Meeting notes
+
+notes-meeting-take = רישום הערות לפגישה
+notes-meeting-title = { $title } · { $date }
+notes-meeting-attendees = משתתפים: { $names }
+notes-meeting-notes = הערות
+notes-meeting-actions = פריטי פעולה
+notes-event = אירוע
+notes-open-event = פתיחת האירוע
+
 ## Colors (tooltips)
 
 notes-color-none = ללא צבע

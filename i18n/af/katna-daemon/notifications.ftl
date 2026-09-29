@@ -22,6 +22,22 @@ notify-tracking-clicked = { $who } het op 'n skakel in { $subject } geklik
 notify-update-ready = Katna Mail kan opgedateer word
 notify-update-ready-body = Weergawe { $version } is afgelaai. Opdateer installeer dit en herbegin Katna Mail.
 notify-update = Opdateer
+notify-event-now = Nou
+notify-event-in-minutes = { $count ->
+    [one] Oor { $count } minuut
+   *[other] Oor { $count } minute
+}
+notify-event-in-hours = { $count ->
+   *[other] Oor { $count } uur
+}
+notify-event-in-days = { $count ->
+    [1] Môre
+    [one] Oor { $count } dag
+   *[other] Oor { $count } dae
+}
+notify-event-all-day = Heeldag
+notify-event-join = Sluit aan
+notify-event-snooze = Sluimer 5 min
 notify-open = Maak oop
 notify-reply-all = Antwoord almal
 notify-mark-read = Merk as gelees

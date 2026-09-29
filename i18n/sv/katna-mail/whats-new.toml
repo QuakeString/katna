@@ -1354,3 +1354,37 @@ En inbjudan som kom till ett konto utan kalender har nu också Ja, Nej
 och Kanske: ditt svar skickas till arrangören med e-post, och
 arrangörens kalender registrerar det.
 """
+
+["2026-09-29-0710-meeting-notes"]
+title = "Mötesanteckningar"
+text = """
+Öppna en händelse i Kalendern och välj Anteckna mötet: en anteckning med
+händelsens titel öppnas, med deltagarna och plats för åtgärder.
+Händelsens kort listar dess anteckningar, och chipet Händelse i en
+anteckning tar dig tillbaka till dagen.
+"""
+
+["2026-09-29-0751-go-to-pdf-page"]
+title = "Gå direkt till en PDF-sida"
+text = """
+Sidnumret under en PDF är nu en ruta: klicka på den eller tryck på
+Ctrl+G, skriv en sida och tryck på Retur för att hoppa dit.
+"""
+
+["2026-09-29-0715-tasks-on-calendar"]
+title = "Uppgifter i kalendern"
+text = """
+Uppgifter med förfallodag visas nu i Kalendern, vid sin tid eller bland dagens heldagshändelser. Bocka av dem där, klicka för att öppna en eller dra den till en annan dag eller tid för att reservera den tiden åt den.
+"""
+
+["2026-09-29-0756-event-reminders"]
+title = "Påminnelser för dina händelser"
+text = """
+Händelser påminner dig nu med en avisering, även när Katna är stängt. Anslut öppnar videosamtalet och Snooza 5 min påminner dig igen om fem minuter.
+"""
+
+["2026-09-29-0758-contacts-merge-import"]
+title = "Sammanfoga dubbletter, importera och exportera kontakter"
+text = """
+Kontakter har Åtgärda och hantera: Sammanfoga och åtgärda hittar personer som sparats två gånger (samma namn eller telefonnummer) och sammanfogar dem med ett klick, med Ångra. Importera hämtar personer från en vCard-fil och utelämnar dem som redan finns, och Exportera sparar alla, eller en etikett, som en vCard-fil.
+"""

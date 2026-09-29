@@ -13,3 +13,6 @@ viewer-document-unreadable = อ่านเอกสารนี้ไม่ไ
 viewer-slides-unreadable = อ่านสไลด์เหล่านี้ไม่ได้
 viewer-no-preview = ไม่มีตัวอย่าง
 viewer-slide = สไลด์ { $number }
+viewer-page = หน้า
+viewer-page-count = จาก { $count }
+viewer-go-to-page-tip = พิมพ์หมายเลขหน้าแล้วกด Enter (Ctrl+G)

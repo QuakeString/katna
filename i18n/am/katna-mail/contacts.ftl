@@ -25,6 +25,43 @@ contacts-label-removed = ከ{ $name } ተወግዷል
 contacts-label-renamed = መሰየሚያው ወደ { $name } ተቀይሯል
 contacts-label-deleted = መሰየሚያ { $name } ተሰርዟል
 contacts-label-no-email = በዚህ መሰየሚያ ውስጥ የኢሜይል አድራሻ ያለው ማንም የለም
+contacts-manage = አስተካክል እና አስተዳድር
+contacts-merge = አዋህድ እና አስተካክል
+contacts-merge-about = { $count ->
+   *[other] { $count } ጥቆማ፦ አንድ ሰው የሚመስሉ እውቂያዎች
+}
+contacts-merge-none = ምንም የተባዛ የለም። ተመሳሳይ ስም ወይም ስልክ ቁጥር ያላቸው እውቂያዎች እዚህ ይታያሉ።
+contacts-merge-count = { $count ->
+    [one] { $count } እውቂያ
+   *[other] { $count } እውቂያዎች
+}
+contacts-merge-all = ሁሉንም አዋህድ
+contacts-merge-button = አዋህድ
+contacts-merge-dismiss = አሰናብት
+contacts-merged = { $count ->
+    [1] እውቂያዎች ተዋህደዋል
+   *[other] { $count } ውህደቶች ተጠናቅቀዋል
+}
+contacts-import = አስመጣ
+contacts-export = ወደ ውጭ ላክ
+contacts-import-title = እውቂያዎችን ከ vCard ፋይል አስመጣ
+contacts-imported = { $count ->
+    [one] { $count } እውቂያ ወደ { $place } ተመጥቷል
+   *[other] { $count } እውቂያዎች ወደ { $place } ተመጥተዋል
+}
+contacts-imported-some = { $count ->
+    [one] { $count } እውቂያ ወደ { $place } ተመጥቷል፤ ቀድሞ የተቀመጡ { $skipped } ተዘልለዋል
+   *[other] { $count } እውቂያዎች ወደ { $place } ተመጥተዋል፤ ቀድሞ የተቀመጡ { $skipped } ተዘልለዋል
+}
+contacts-import-none = በ{ $name } ውስጥ ምንም እውቂያ አልተገኘም
+contacts-import-all-saved = በ{ $name } ውስጥ ያሉ ሁሉም ሰዎች አስቀድመው ተቀምጠዋል
+contacts-import-failed = { $name }ን ማንበብ አልተቻለም፦ { $error }
+contacts-exported = { $count ->
+    [one] { $count } እውቂያ ወደ { $path } ተልኳል
+   *[other] { $count } እውቂያዎች ወደ { $path } ተልከዋል
+}
+contacts-export-none = ወደ ውጭ የሚላክ እውቂያ የለም
+contacts-export-failed = እውቂያዎችን ወደ ውጭ መላክ አልተቻለም፦ { $error }
 contacts-create = እውቂያ ፍጠር
 
 ## Search and the list

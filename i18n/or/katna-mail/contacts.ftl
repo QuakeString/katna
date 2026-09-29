@@ -25,6 +25,45 @@ contacts-label-removed = { $name }ରୁ ହଟାଗଲା
 contacts-label-renamed = ଲେବଲର ନାମ ବଦଳାଇ { $name } କରାଗଲା
 contacts-label-deleted = ଲେବଲ { $name } ଡିଲିଟ ହେଲା
 contacts-label-no-email = ଏହି ଲେବଲରେ କାହାରି ଇମେଲ ଠିକଣା ନାହିଁ
+contacts-manage = ଠିକ୍ କରନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ
+contacts-merge = ମିଶାନ୍ତୁ ଏବଂ ଠିକ୍ କରନ୍ତୁ
+contacts-merge-about = { $count ->
+    [one] { $count }ଟି ପରାମର୍ଶ: ଏକା ବ୍ୟକ୍ତିଙ୍କ ପରି ଦେଖାଯାଉଥିବା ଯୋଗାଯୋଗ
+   *[other] { $count }ଟି ପରାମର୍ଶ: ଏକା ବ୍ୟକ୍ତିଙ୍କ ପରି ଦେଖାଯାଉଥିବା ଯୋଗାଯୋଗ
+}
+contacts-merge-none = କୌଣସି ଡୁପ୍ଲିକେଟ୍ ନାହିଁ। ସମାନ ନାମ କିମ୍ବା ଫୋନ୍ ନମ୍ବର ଥିବା ଯୋଗାଯୋଗ ଏଠାରେ ଦେଖାଯିବ।
+contacts-merge-count = { $count ->
+    [one] { $count }ଟି ଯୋଗାଯୋଗ
+   *[other] { $count }ଟି ଯୋଗାଯୋଗ
+}
+contacts-merge-all = ସବୁ ମିଶାନ୍ତୁ
+contacts-merge-button = ମିଶାନ୍ତୁ
+contacts-merge-dismiss = ଖାରଜ କରନ୍ତୁ
+contacts-merged = { $count ->
+    [1] ଯୋଗାଯୋଗ ମିଶାଗଲା
+    [one] { $count }ଟି ମିଶ୍ରଣ ସମାପ୍ତ
+   *[other] { $count }ଟି ମିଶ୍ରଣ ସମାପ୍ତ
+}
+contacts-import = ଆମଦାନି କରନ୍ତୁ
+contacts-export = ରପ୍ତାନି କରନ୍ତୁ
+contacts-import-title = vCard ଫାଇଲରୁ ଯୋଗାଯୋଗ ଆମଦାନି କରନ୍ତୁ
+contacts-imported = { $count ->
+    [one] { $place }ରେ { $count }ଟି ଯୋଗାଯୋଗ ଆମଦାନି ହେଲା
+   *[other] { $place }ରେ { $count }ଟି ଯୋଗାଯୋଗ ଆମଦାନି ହେଲା
+}
+contacts-imported-some = { $count ->
+    [one] { $place }ରେ { $count }ଟି ଯୋଗାଯୋଗ ଆମଦାନି ହେଲା; ଆଗରୁ ସେଭ୍ ହୋଇଥିବା { $skipped }ଟି ଛାଡ଼ି ଦିଆଗଲା
+   *[other] { $place }ରେ { $count }ଟି ଯୋଗାଯୋଗ ଆମଦାନି ହେଲା; ଆଗରୁ ସେଭ୍ ହୋଇଥିବା { $skipped }ଟି ଛାଡ଼ି ଦିଆଗଲା
+}
+contacts-import-none = { $name }ରେ କୌଣସି ଯୋଗାଯୋଗ ମିଳିଲା ନାହିଁ
+contacts-import-all-saved = { $name }ର ସମସ୍ତେ ଆଗରୁ ସେଭ୍ ହୋଇସାରିଛନ୍ତି
+contacts-import-failed = { $name } ପଢ଼ାଗଲା ନାହିଁ: { $error }
+contacts-exported = { $count ->
+    [one] { $path }ରେ { $count }ଟି ଯୋଗାଯୋଗ ରପ୍ତାନି ହେଲା
+   *[other] { $path }ରେ { $count }ଟି ଯୋଗାଯୋଗ ରପ୍ତାନି ହେଲା
+}
+contacts-export-none = ରପ୍ତାନି ପାଇଁ କୌଣସି ଯୋଗାଯୋଗ ନାହିଁ
+contacts-export-failed = ଯୋଗାଯୋଗ ରପ୍ତାନି କରାଗଲା ନାହିଁ: { $error }
 contacts-create = ଯୋଗାଯୋଗ ତିଆରି କରନ୍ତୁ
 
 ## Search and the list

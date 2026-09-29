@@ -25,6 +25,49 @@ contacts-label-removed = הוסר מ-{ $name }
 contacts-label-renamed = שם התווית שונה ל-{ $name }
 contacts-label-deleted = התווית { $name } נמחקה
 contacts-label-no-email = לאף אחד בתווית הזו אין כתובת אימייל
+contacts-manage = תיקון וניהול
+contacts-merge = מיזוג ותיקון
+contacts-merge-about = { $count ->
+   *[other] { $count } הצעות: אנשי קשר שנראים כמו אותו אדם
+}
+contacts-merge-none = אין כפילויות. אנשי קשר עם אותו שם או מספר טלפון יופיעו כאן.
+contacts-merge-count = { $count ->
+    [one] { $count } איש קשר
+    [two] { $count } אנשי קשר
+   *[other] { $count } אנשי קשר
+}
+contacts-merge-all = מיזוג הכול
+contacts-merge-button = מיזוג
+contacts-merge-dismiss = התעלמות
+contacts-merged = { $count ->
+    [1] אנשי הקשר מוזגו
+    [one] בוצע מיזוג { $count }
+    [two] בוצעו { $count } מיזוגים
+   *[other] בוצעו { $count } מיזוגים
+}
+contacts-import = ייבוא
+contacts-export = ייצוא
+contacts-import-title = ייבוא אנשי קשר מקובץ vCard
+contacts-imported = { $count ->
+    [one] יובא { $count } איש קשר אל { $place }
+    [two] יובאו { $count } אנשי קשר אל { $place }
+   *[other] יובאו { $count } אנשי קשר אל { $place }
+}
+contacts-imported-some = { $count ->
+    [one] יובא { $count } איש קשר אל { $place }; { $skipped } שכבר שמורים לא נכללו
+    [two] יובאו { $count } אנשי קשר אל { $place }; { $skipped } שכבר שמורים לא נכללו
+   *[other] יובאו { $count } אנשי קשר אל { $place }; { $skipped } שכבר שמורים לא נכללו
+}
+contacts-import-none = לא נמצאו אנשי קשר ב-{ $name }
+contacts-import-all-saved = כל האנשים ב-{ $name } כבר שמורים
+contacts-import-failed = לא ניתן לקרוא את { $name }: { $error }
+contacts-exported = { $count ->
+    [one] יוצא { $count } איש קשר אל { $path }
+    [two] יוצאו { $count } אנשי קשר אל { $path }
+   *[other] יוצאו { $count } אנשי קשר אל { $path }
+}
+contacts-export-none = אין אנשי קשר לייצוא
+contacts-export-failed = לא ניתן לייצא אנשי קשר: { $error }
 contacts-create = יצירת איש קשר
 
 ## Search and the list

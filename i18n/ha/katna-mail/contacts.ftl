@@ -25,6 +25,45 @@ contacts-label-removed = An cire daga { $name }
 contacts-label-renamed = An sake wa lakabin suna: { $name }
 contacts-label-deleted = An share lakabin { $name }
 contacts-label-no-email = Babu wanda ke da adireshin imel a wannan lakabin
+contacts-manage = Gyara da sarrafa
+contacts-merge = Haɗa da gyara
+contacts-merge-about = { $count ->
+    [one] Shawara { $count }: lambobin sadarwa da suke kama da mutum ɗaya
+   *[other] Shawarwari { $count }: lambobin sadarwa da suke kama da mutum ɗaya
+}
+contacts-merge-none = Babu kwafi. Lambobin sadarwa masu suna ko lambar waya iri ɗaya suna bayyana a nan.
+contacts-merge-count = { $count ->
+    [one] Lambar sadarwa { $count }
+   *[other] Lambobin sadarwa { $count }
+}
+contacts-merge-all = Haɗa duka
+contacts-merge-button = Haɗa
+contacts-merge-dismiss = Yi watsi
+contacts-merged = { $count ->
+    [1] An haɗa lambobin sadarwa
+    [one] An yi haɗewa { $count }
+   *[other] An yi haɗe-haɗe { $count }
+}
+contacts-import = Shigo da
+contacts-export = Fitar da
+contacts-import-title = Shigo da lambobin sadarwa daga fayil na vCard
+contacts-imported = { $count ->
+    [one] An shigo da lambar sadarwa { $count } cikin { $place }
+   *[other] An shigo da lambobin sadarwa { $count } cikin { $place }
+}
+contacts-imported-some = { $count ->
+    [one] An shigo da lambar sadarwa { $count } cikin { $place }; an bar { $skipped } da aka riga aka ajiye
+   *[other] An shigo da lambobin sadarwa { $count } cikin { $place }; an bar { $skipped } da aka riga aka ajiye
+}
+contacts-import-none = Ba a sami lambar sadarwa a cikin { $name } ba
+contacts-import-all-saved = Kowa a cikin { $name } an riga an ajiye shi
+contacts-import-failed = Ba a iya karanta { $name } ba: { $error }
+contacts-exported = { $count ->
+    [one] An fitar da lambar sadarwa { $count } zuwa { $path }
+   *[other] An fitar da lambobin sadarwa { $count } zuwa { $path }
+}
+contacts-export-none = Babu lambobin sadarwa da za a fitar
+contacts-export-failed = Ba a iya fitar da lambobin sadarwa ba: { $error }
 contacts-create = Ƙirƙiri lambar sadarwa
 
 ## Search and the list
