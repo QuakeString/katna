@@ -2005,7 +2005,6 @@ impl MailWindow {
                     .children(self.render_floating_format_bar(th, width - 24.0, cx))
                     .child(self.render_compose_actions(th, width, cx))
                     .child(self.render_drop_target(th))
-                    .children(self.render_compose_dialog(th, cx))
             });
 
         Some(match mode {
@@ -2351,8 +2350,7 @@ impl MailWindow {
                             .child(self.render_compose_actions(th, card_width.max(320.0), cx)),
                     ),
             )
-            .child(self.render_drop_target(th))
-            .children(self.render_compose_dialog(th, cx));
+            .child(self.render_drop_target(th));
         Some(
             div()
                 .flex()

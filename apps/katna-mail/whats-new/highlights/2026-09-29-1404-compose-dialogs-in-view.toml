@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Questions before sending stay in view"
+text = """
+Questions such as "Did you mean to attach files?" now open in the middle of
+the window, however long the message you are writing or forwarding is, so
+they are never hidden further down the page. Enter answers with the main
+button and Esc goes back to the message.
+"""

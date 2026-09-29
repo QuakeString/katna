@@ -10,15 +10,15 @@
 use std::rc::Rc;
 
 use gpui::{
-    Anchor, AnyElement, Bounds, Context, DispatchPhase, Div, Entity, Focusable, FontWeight, Hsla,
-    MouseButton, MouseMoveEvent, Pixels, Point, SharedString, Stateful, Subscription, Window,
-    anchored, canvas, deferred, div, point, prelude::*, rgba,
+    Anchor, AnyElement, Bounds, Context, DispatchPhase, Div, Entity, FocusHandle, Focusable,
+    FontWeight, Hsla, MouseButton, MouseMoveEvent, Pixels, Point, SharedString, Stateful,
+    Subscription, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_i18n::{format, tr};
-use katna_ui::px;
 use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
+use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
 use super::checks::{Passed, SendCheck};
@@ -134,6 +134,9 @@ pub(in crate::window) struct Dialog {
     grid: (usize, usize),
     /// The name to save the message under as a template.
     pub(super) template_name: Entity<TextInput>,
+    /// Holds the keys while a dialog without a field is open, so Enter
+    /// and Esc answer it rather than type into the message.
+    focus: FocusHandle,
 }
 
 impl Dialog {
@@ -157,6 +160,7 @@ impl Dialog {
             day: today,
             grid: (0, 0),
             template_name: input(tr!("compose-tool-template-name"), cx),
+            focus: cx.focus_handle(),
         }
     }
 
@@ -191,6 +195,16 @@ impl Dialog {
         }
         subscriptions
     }
+}
+
+/// The widest a compose dialog gets.
+const DIALOG_MAX_WIDTH: f32 = 600.0;
+/// The corners of the compose dialogs.
+const DIALOG_RADIUS: f32 = 16.0;
+
+/// Whether `popup` is a dialog with a text field, which has the keys.
+fn has_field(popup: &Popup) -> bool {
+    matches!(popup, Popup::Link | Popup::PickTime | Popup::SaveTemplate)
 }
 
 #[derive(Clone, Copy)]
@@ -2374,14 +2388,18 @@ impl MailWindow {
 
     // Dialogs over the message.
 
-    /// The link, date and time, and plain text dialogs, over the message.
+    /// The compose dialogs (link, date and time, send checks, …), centred
+    /// in the window whatever the message's length or scroll, so a long
+    /// quoted forward never pushes one out of sight.
     pub(super) fn render_compose_dialog(
         &self,
         th: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
-        let card = match compose.popup.as_ref()? {
+        let popup = compose.popup.as_ref()?;
+        let card = match popup {
             Popup::Link => self.render_link_dialog(th, cx),
             Popup::PickTime => self.render_time_picker(th, cx),
             Popup::PlainText => self.render_plain_dialog(th, cx),
@@ -2403,8 +2421,34 @@ impl MailWindow {
             }
             _ => return None,
         };
+        // The dialogs with a field keep the keys in it (its Enter and Esc
+        // are the dialog's); the others take them here.
+        let focus = compose.dialog.focus.clone();
+        if !has_field(popup) && !focus.is_focused(window) {
+            window.focus(&focus, cx);
+        }
+        let viewport = window.viewport_size();
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         Some(
             div()
+                .id("compose-dialog-scrim")
+                .track_focus(&focus)
+                .on_key_down(cx.listener(|this, event: &gpui::KeyDownEvent, window, cx| {
+                    let stroke = &event.keystroke;
+                    if stroke.modifiers.modified() {
+                        return;
+                    }
+                    match stroke.key.as_str() {
+                        "escape" => {
+                            cx.stop_propagation();
+                            this.close_popup(window, cx);
+                        }
+                        "enter" if this.answer_compose_dialog(window, cx) => {
+                            cx.stop_propagation();
+                        }
+                        _ => {}
+                    }
+                }))
                 .absolute()
                 .top_0()
                 .left_0()
@@ -2413,9 +2457,59 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .bg(rgba(0x0000_0040))
-                .child(div().id("compose-dialog").occlude().child(card))
+                .child(
+                    div()
+                        .id("compose-dialog")
+                        .occlude()
+                        .max_w(px(DIALOG_MAX_WIDTH.min(vw - 32.0)))
+                        .max_h(px(vh * 0.7))
+                        .overflow_y_scroll()
+                        .rounded(px(DIALOG_RADIUS))
+                        .child(card),
+                )
                 .into_any_element(),
         )
+    }
+
+    /// The dialog over the main window: over the whole window, not inside
+    /// the message, so it stays in sight however long the message is. The
+    /// popped-out message shows its own in its window.
+    pub(in crate::window) fn render_docked_compose_dialog(
+        &self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        if compose.mode == Mode::Window || compose.closing {
+            return None;
+        }
+        self.render_compose_dialog(th, window, cx)
+    }
+
+    /// Enter on a dialog without a field: its main button.
+    fn answer_compose_dialog(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        let Some(popup) = self.compose.as_ref().and_then(|c| c.popup.clone()) else {
+            return false;
+        };
+        match popup {
+            Popup::PlainText => self.make_plain(window, cx),
+            Popup::SendCheck {
+                check,
+                at,
+                archive,
+                passed,
+            } => self.send_compose(at, archive, passed.with(check), window, cx),
+            Popup::DriveShare {
+                at,
+                archive,
+                passed,
+                ..
+            } => self.share_with_link_and_send(at, archive, passed, window, cx),
+            Popup::BadAddress { field, .. } => self.fix_bad_address(field, window, cx),
+            _ => return false,
+        }
+        true
     }
 
     pub(super) fn dialog_buttons(
@@ -2456,10 +2550,11 @@ impl MailWindow {
     pub(super) fn dialog_card(th: &Theme, width: f32, title: impl Into<SharedString>) -> gpui::Div {
         div()
             .w(px(width))
+            .max_w_full()
             .p(px(24.0))
             .flex()
             .flex_col()
-            .rounded(px(16.0))
+            .rounded(px(DIALOG_RADIUS))
             .bg(rgba(th.menu))
             .shadow(crate::widgets::elevation(th, 3.0))
             .text_color(rgba(th.text))
