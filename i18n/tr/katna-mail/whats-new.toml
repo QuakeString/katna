@@ -1100,3 +1100,56 @@ gösterdiğiniz bir gönderenin resimleri artık yalnızca e-posta
 sağlayıcınız iletinin gerçekten o gönderenden geldiğini doğruladığında
 yüklenir.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Sürümünüz hakkında daha fazlası"
+text = """
+Güncellemeler penceresi artık her sürümün son değişikliğini, kopyanızın
+nereden geldiğini ve Katna'nın güncellemeleri en son ne zaman
+denetlediğini gösteriyor.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Bana bir kahve ısmarla düğmesinde küçük bir oyun"
+text = """
+Fare imlecini Katna hakkında penceresindeki Bana bir kahve ısmarla
+düğmesinin üzerinde tutun: düğme kahve, çay, pizza ister, sonra hiçbir
+şey istemez, suya razı olur ve birkaç kıvılcımla teşekkür eder. Her
+seferinde bir kez oynar, hareket azaltıldığında ise durağan kalır.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Daha anlaşılır Güncellemeler penceresi"
+text = """
+Katna güncellemeleri denetlerken hareketli bir çubuk görünür ve yeni
+sürüm, sahip olduğunuz sürümün yanında kendi rengiyle öne çıkar.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Bulunduğunuz bölmeyi izleyen tuşlar"
+text = """
+Konuşma listenin yanındayken Yukarı ve Aşağı artık listede ilerler ve
+her konuşmayı gösterir. Tab veya Enter konuşmaya girer, orada Yukarı ve
+Aşağı onu kaydırır; Esc veya Shift+Tab listeye geri döner. F6 diğer
+posta uygulamalarındaki gibi bölmeler arasında geçiş yapar.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Klasörler kayarak açılıp kapanır"
+text = """
+Klasör bölmesinde bir hesabın veya klasörün yanındaki oka tıklamak artık
+içindekileri kayarak açar veya kapatır, alttaki klasörler de sıçramak
+yerine onunla birlikte kayar.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Klasörler, menüler ve iletişim kutuları klavyeyle"
+text = """
+Shift+Tab veya F6 klasör bölmesine götürür; orada Yukarı ve Aşağı her
+klasörü açar, Enter ise postalarına geçer. Yukarı ve Aşağı her menüde
+gezinir, Enter seçer. Shift+F10 veya Menü tuşu seçili postanın sağ tık
+menüsünü açar. İletişim kutuları açıldığında tuşları devralır: Enter
+yanıtlar, Esc iptal eder ve Tab kutunun içinde kalır. Yeni bir iletide
+Ctrl+Enter herhangi bir alandan gönderir, Esc ise iletiyi kapatıp bir
+taslak bırakır.
+"""

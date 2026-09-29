@@ -1070,3 +1070,57 @@ ahụ na-ekwu, adreesị ọ na-emeghe n'ezie ga-egosi n'ala paịn
 zitere ị na-egosi mgbe niile ga-ebu ugbu a naanị mgbe onye na-
 enye gị ozi email kwadoro na ozi ahụ sitere n'aka ya n'ezie.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Ihe ndị ọzọ banyere build gị"
+text = """
+Windo Mmelite ugbu a na-ekwu maka mgbanwe kachasị ọhụrụ nke
+ụdị ọ bụla, na-ekwu ebe kọpị gị si bịa na oge ikpeazụ Katna
+lelere imelite ndị dị.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Obere egwuregwu na Zụtara m kọfị"
+text = """
+Debe ntụaka n'elu Zụtara m kọfị na Maka Katna: ọ na-arịọ kọfị, mgbe ahụ
+tii, pizza, mgbe ahụ ọ dịghị ihe ọ bụla, ọ na-anabata mmiri, ma na-ekele
+gị site n'ụfọdụ ihe na-egbuke egbuke. Ọ na-egwu otu ugboro oge ọ bụla,
+ma na-anọ jụụ mgbe a belatara mmegharị.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Windo Melite nke doro anya karịa"
+text = """
+Ogwe na-agba ọsọ na-egosi mgbe Katna na-elele imelite, ma ụdị ọhụrụ
+na-eguzo ọtọ n'agba nke ya n'akụkụ nke ị nwere.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Igodo na-eso paịn ị nọ na ya"
+text = """
+Mgbe mkparịta ụka mepere n'akụkụ ndepụta ahụ, akara akụ elu na ala
+na-agagharị ugbu a na ndepụta ma na-egosi mkparịta ụka ọ bụla. Tab ma ọ
+bụ Enter na-abanye n'ime mkparịta ụka, ebe akara akụ elu na ala
+na-ebugharị ya; Esc ma ọ bụ Shift+Tab na-ekpọghachi gị na ndepụta. F6
+na-agagharị n'etiti paịn, dị ka ọ dị n'ngwa ozi ndị ọzọ.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Folda na-emepe ma na-emechi nke ọma"
+text = """
+Ịpị akara akụ dị n'akụkụ akaụntụ ma ọ bụ folda n'ime paịn folda ugbu a
+na-emepe ma ọ bụ na-emechi ihe ọ nwere n'ụzọ na-esi nwayọọ, ọ bụghị
+ịgbagwoju, ebe folda ndị dị n'okpuru na-esoro na-aga.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Folda, menu na igbe mkparịta ụka site n'igodo"
+text = """
+Shift+Tab ma ọ bụ F6 na-eru paịn folda, ebe akara akụ elu na ala
+na-emepe folda ọ bụla, Enter na-ebugakwa gị n'ozi ya. Akara akụ elu na
+ala na-agagharị n'menu ọ bụla, Enter na-ahọrọ. Shift+F10 ma ọ bụ igodo
+Menu na-emepe menu pịa-aka-nri nke ozi ahọrọ. Igbe mkparịta ụka na-anara
+igodo ozugbo ha mepere: Enter na-aza, Esc na-akagbu, Tab na-anọkwa n'ime
+ha. N'ozi ọhụrụ, Ctrl+Enter na-ezipụ site n'ebe ọ bụla, Esc na-emechi
+ya, na-echekwa ndebiri.
+"""

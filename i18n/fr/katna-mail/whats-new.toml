@@ -1144,3 +1144,59 @@ dont vous affichez toujours les images ne se chargent désormais que
 lorsque votre fournisseur de messagerie confirme que le message provient
 bien de lui.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Plus de détails sur votre version"
+text = """
+La fenêtre « Mises à jour » indique désormais la dernière modification
+de chaque version, l’origine de votre copie et la date de la dernière
+recherche de mises à jour par Katna.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Une petite scène sur « Offrez-moi un café »"
+text = """
+Laissez le pointeur sur « Offrez-moi un café » dans « À propos de Katna
+» : le bouton demande un café, un thé, une pizza, puis plus rien du
+tout, se contente d’eau et vous remercie avec quelques étincelles. La
+scène se joue une fois à chaque fois et reste immobile si les animations
+sont réduites.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Une fenêtre de mise à jour plus claire"
+text = """
+Une barre défile pendant que Katna cherche des mises à jour, et la
+nouvelle version ressort dans sa propre couleur à côté de celle que vous
+avez.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Des touches qui suivent le volet où vous êtes"
+text = """
+Quand la conversation s’affiche à côté de la liste, Haut et Bas se
+déplacent maintenant dans la liste et affichent chaque conversation. Tab
+ou Entrée entre dans la conversation, où Haut et Bas la font défiler ;
+Échap ou Maj+Tab revient à la liste. F6 passe d’un volet à l’autre,
+comme dans d’autres applications de messagerie.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Les dossiers se déploient et se replient en douceur"
+text = """
+Un clic sur la flèche à côté d’un compte ou d’un dossier dans le volet
+des dossiers déploie ou replie maintenant son contenu en douceur, les
+dossiers en dessous glissant avec lui, au lieu de sauter.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Dossiers, menus et boîtes de dialogue au clavier"
+text = """
+Maj+Tab ou F6 mène au volet des dossiers, où Haut et Bas ouvrent chaque
+dossier et Entrée passe à ses messages. Haut et Bas parcourent n’importe
+quel menu, et Entrée choisit. Maj+F10 ou la touche Menu ouvre le menu du
+clic droit du message sélectionné. Les boîtes de dialogue prennent les
+touches à leur ouverture : Entrée répond, Échap annule et Tab reste à
+l’intérieur. Dans un nouveau message, Ctrl+Entrée envoie depuis
+n’importe quel champ et Échap le ferme en gardant un brouillon.
+"""

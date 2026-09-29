@@ -1147,3 +1147,59 @@ link. Ang mga larawan mula sa nagpadalang palagi mong ipinapakita ang
 mga larawan ay ilo-load na ngayon lamang kapag kinumpirma ng iyong mail
 provider na talagang galing sa kanya ang mensahe.
 """
+
+["2026-09-29-0120-update-build-details"]
+title = "Higit pa tungkol sa iyong build"
+text = """
+Ipinapakita na ngayon ng window na Mga Update ang pinakabagong pagbabago
+ng bawat bersyon, kung saan galing ang iyong kopya, at kung kailan
+huling tumingin ang Katna ng mga update.
+"""
+
+["2026-09-29-0213-coffee-button-play"]
+title = "Munting dula sa Ilibre ako ng kape"
+text = """
+Ipatong ang pointer sa Ilibre ako ng kape sa Tungkol sa Katna: hihingi
+ito ng kape, tsaa, pizza, tapos wala na talaga, magkakasya sa tubig at
+magpapasalamat na may kaunting kislap. Minsan lang ito tumutugtog sa
+bawat pagkakataon at hindi gagalaw kung binawasan mo ang galaw.
+"""
+
+["2026-09-29-0215-update-checking-bar"]
+title = "Mas malinaw na Update window"
+text = """
+May gumagalaw na bar habang tumitingin ang Katna ng mga update, at
+namumukod ang bagong bersyon sa sarili nitong kulay sa tabi ng bersyong
+mayroon ka.
+"""
+
+["2026-09-29-0231-keys-beside-the-list"]
+title = "Mga key na sumusunod sa pane na kinaroroonan mo"
+text = """
+Kapag nasa tabi ng listahan ang usapan, gumagalaw na ngayon ang Up at
+Down sa listahan at ipinapakita ang bawat usapan. Papasok sa usapan ang
+Tab o Enter, kung saan ini-scroll ito ng Up at Down; babalik sa listahan
+ang Esc o Shift+Tab. Lumilipat ang F6 sa pagitan ng mga pane, tulad sa
+ibang mail app.
+"""
+
+["2026-09-29-0258-folders-slide-open"]
+title = "Dumudulas na bumubukas at sumasara ang mga folder"
+text = """
+Kapag kinlik ang arrow sa tabi ng account o folder sa pane ng folder,
+dumudulas na ngayong bumubukas o sumasara ang laman nito, at sumasabay
+ang mga folder sa ibaba, sa halip na tumalon.
+"""
+
+["2026-09-29-0301-keys-menus-dialogs"]
+title = "Mga folder, menu at dialog gamit ang keyboard"
+text = """
+Dinadala ka ng Shift+Tab o F6 sa pane ng folder, kung saan binubuksan ng
+Up at Down ang bawat folder at pumupunta ang Enter sa mail nito.
+Gumagalaw ang Up at Down sa anumang menu, at pumipili ang Enter.
+Binubuksan ng Shift+F10 o ng Menu key ang right-click menu ng napiling
+mail. Kinukuha ng mga dialog ang mga key pagbukas nila: sumasagot ang
+Enter, nagka-cancel ang Esc, at nananatili sa loob nila ang Tab. Sa
+bagong mensahe, nagpapadala ang Ctrl+Enter mula sa anumang field at
+isinasara ito ng Esc habang pinananatili ang draft.
+"""
