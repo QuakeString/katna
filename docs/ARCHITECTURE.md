@@ -2160,6 +2160,11 @@ Gemini or confidential mode):
   the list and reader keep 900 px (600 px with the reader alone), never on
   tablets and phones or in a conversation window; a button on the reader
   toolbar turns it off (`mail.contact_panel`).
+- **Day's agenda.** A Calendar button on the top bar, beside the language
+  button (the Mail page of a desktop window only), opens a card at the
+  right of the mail with one day's events, as Gmail's side panel has it
+  (`window/agenda.rs`, `mail.agenda_panel`). It and the contact panel
+  take turns.
 - **Not there yet.** Drafts are not saved (closing a written message
   discards it and says so). Labels on a message being written and
   calendar invitations wait for their features.
