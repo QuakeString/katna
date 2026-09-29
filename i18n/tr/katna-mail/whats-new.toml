@@ -1153,3 +1153,20 @@ yanıtlar, Esc iptal eder ve Tab kutunun içinde kalır. Yeni bir iletide
 Ctrl+Enter herhangi bir alandan gönderir, Esc ise iletiyi kapatıp bir
 taslak bırakır.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Masaüstü saatinizde görevler"
+text = """
+Görev eklemek ve görevleri işaretlemek için saate tıklayın. Plasma'da
+saate sağ tıklayıp Alternatifleri Göster'i seçerek Katna Sayısal Saat'i
+seçebilirsiniz. GNOME'da bir sonraki oturum açışınızdan itibaren saatin
+takviminin altında bir Görevler kartı görünür.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Klavyeden ve görev çubuğundan sayfalar"
+text = """
+Ctrl+1 ile Ctrl+5, Outlook'taki gibi Posta, Takvim, Kişiler, Görevler ve
+Notlar arasında geçiş yapar; Git menüsü de bunları listeler. Takvim'i ya
+da Kişiler'i hemen açmak için görev çubuğunda Katna Mail'e sağ tıklayın.
+"""

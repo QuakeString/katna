@@ -1174,3 +1174,22 @@ quando si aprono: Invio risponde, Esc annulla e Tab resta al loro
 interno. In un nuovo messaggio, Ctrl+Invio invia da qualsiasi campo ed
 Esc lo chiude, conservando una bozza.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Le attività nell'orologio del desktop"
+text = """
+Fai clic sull'orologio per aggiungere un'attività e spuntare quelle
+completate. In Plasma, fai clic con il tasto destro sull'orologio e
+scegli Mostra alternative per selezionare Orologio digitale Katna. In
+GNOME, dal prossimo accesso una scheda Attività compare sotto il
+calendario dell'orologio.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Pagine da tastiera e dalla barra delle applicazioni"
+text = """
+Ctrl+1 e Ctrl+5 passano tra Posta, Calendario, Contatti, Attività e
+Note, come in Outlook, e anche il menu Vai le elenca. Fai clic con il
+tasto destro su Katna Mail nella barra delle applicazioni per aprire
+subito Calendario o Contatti.
+"""

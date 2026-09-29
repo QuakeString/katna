@@ -1125,3 +1125,20 @@ menu, và Enter chọn. Shift+F10 hoặc phím Menu mở menu chuột phải c�
 Tab ở lại bên trong. Trong thư mới, Ctrl+Enter gửi từ bất kỳ trường nào
 và Esc đóng thư, giữ lại một thư nháp.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Việc cần làm ngay trong đồng hồ màn hình nền"
+text = """
+Bấm vào đồng hồ để thêm việc cần làm và đánh dấu các việc đã xong. Trong
+Plasma, bấm chuột phải vào đồng hồ và chọn Hiện các lựa chọn thay thế để
+chọn Đồng hồ số Katna. Trong GNOME, thẻ Việc cần làm sẽ hiện bên dưới
+lịch của đồng hồ từ lần đăng nhập tiếp theo.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Chuyển trang bằng bàn phím và từ thanh tác vụ"
+text = """
+Ctrl+1 đến Ctrl+5 chuyển giữa Thư, Lịch, Danh bạ, Việc cần làm và Ghi
+chú, như trong Outlook, và menu Đi tới cũng liệt kê chúng. Bấm chuột
+phải vào Katna Mail trên thanh tác vụ để mở ngay Lịch hoặc Danh bạ.
+"""

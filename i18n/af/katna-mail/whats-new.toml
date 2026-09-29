@@ -1126,3 +1126,20 @@ oopgaan: Enter antwoord, Esc kanselleer en Tab bly binne-in hulle. In ’n
 nuwe boodskap stuur Ctrl+Enter vanuit enige veld en Esc maak dit toe,
 met ’n konsep wat bewaar word.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Take in jou lessenaarhorlosie"
+text = """
+Klik op die horlosie om 'n taak by te voeg en take af te merk. Regsklik
+in Plasma op die horlosie en kies Wys alternatiewe om Katna digitale
+horlosie te kies. In GNOME verskyn 'n Take-kaart onder die horlosie se
+kalender vanaf jou volgende aanmelding.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Bladsye per sleutelbord en vanaf die taakbalk"
+text = """
+Ctrl+1 tot Ctrl+5 skakel tussen E-pos, Kalender, Kontakte, Take en
+Notas, soos in Outlook, en die Gaan-kieslys lys hulle ook. Regsklik op
+Katna Mail in die taakbalk om Kalender of Kontakte dadelik oop te maak.
+"""

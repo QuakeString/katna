@@ -1198,3 +1198,22 @@ lapho evulwa: u-Enter uyaphendula, u-Esc uyakhansela, futhi u-Tab uhlala
 ngaphakathi kuwo. Emlayezweni omusha, u-Ctrl+Enter uthumela kunoma
 iyiphi inkambu futhi u-Esc uyawuvala, ugcine okusalungiswa.
 """
+
+["2026-09-29-0309-clock-tasks"]
+title = "Imisebenzi ewashini lakho le-desktop"
+text = """
+Chofoza iwashi ukuze ungeze umsebenzi futhi ushaye uphawu emisebenzini
+eqediwe. Ku-Plasma, chofoza ngakwesokudla iwashi bese ukhetha Bonisa
+Okunye ukuze ukhethe Katna Iwashi Ledijithali. Ku-GNOME, ikhadi
+Lemisebenzi liyavela ngaphansi kwekhalenda lewashi kusukela ekungeneni
+kwakho okulandelayo.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Amakhasi ngekhibhodi nasebhareni lomsebenzi"
+text = """
+U-Ctrl+1 kuya ku-Ctrl+5 ushintsha phakathi kwe-Imeyili, Ikhalenda,
+Oxhumana nabo, Imisebenzi kanye Namanothi, njenge-Outlook, futhi imenyu
+ethi Hamba iyakuveza. Chofoza ngakwesokudla i-Katna Mail ebhareni
+lomsebenzi ukuze uvule Ikhalenda noma Oxhumana nabo ngokushesha.
+"""
