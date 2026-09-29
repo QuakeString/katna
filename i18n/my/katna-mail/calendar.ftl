@@ -9,11 +9,16 @@ calendar-view-week = အပတ်
 calendar-view-month = လ
 calendar-view-year = နှစ်
 calendar-view-schedule = အချိန်ဇယား
+calendar-view-days =
+    { $count ->
+       *[other] { $count } ရက်
+    }
 calendar-options = ရွေးချယ်စရာများ
 calendar-density = သိပ်သည်းဆ
 calendar-density-responsive = သင့်ဖန်သားပြင်နှင့် လိုက်လျောညီထွေ
 calendar-density-comfortable = သက်တောင့်သက်သာ
 calendar-density-compact = ကျစ်လစ်
+calendar-custom-days = စိတ်ကြိုက် မြင်ကွင်း
 calendar-second-zone = ဒုတိယ အချိန်ဇုန်
 calendar-zone-none = မရှိ
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = နောက်
 calendar-title-months = { $first } – { $last }
 calendar-loading = ဖွင့်နေသည်…
 calendar-read-failed = ပြက္ခဒိန်ကို ဖတ်၍မရပါ- { $error }
+calendar-sets = ပြက္ခဒိန် အစုများ
+calendar-set-add = ပြသထားသော ပြက္ခဒိန်များကို အစုအဖြစ် သိမ်းရန်
+calendar-set-name = အစု၏ အမည်
+calendar-set-remove = အစုကို ဖယ်ရှားရန်
 calendar-local = ဤကွန်ပျူတာ
 calendar-account-gone = ဖယ်ရှားထားသော အကောင့်
 calendar-birthdays = မွေးနေ့များ

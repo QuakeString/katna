@@ -9,11 +9,16 @@ calendar-view-week = 周
 calendar-view-month = 月
 calendar-view-year = 年
 calendar-view-schedule = 日程
+calendar-view-days =
+    { $count ->
+       *[other] { $count } 天
+    }
 calendar-options = 设置
 calendar-density = 信息密度
 calendar-density-responsive = 根据屏幕自动调整
 calendar-density-comfortable = 舒适
 calendar-density-compact = 紧凑
+calendar-custom-days = 自定义视图
 calendar-second-zone = 辅助时区
 calendar-zone-none = 无
 calendar-zone = { $zone } （{ $offset }）
@@ -36,6 +41,10 @@ calendar-next-period = 更晚
 calendar-title-months = { $first } – { $last }
 calendar-loading = 正在加载…
 calendar-read-failed = 无法读取日历：{ $error }
+calendar-sets = 日历组
+calendar-set-add = 将显示的日历保存为组
+calendar-set-name = 组名称
+calendar-set-remove = 移除组
 calendar-local = 此计算机
 calendar-account-gone = 已移除的账号
 calendar-birthdays = 生日

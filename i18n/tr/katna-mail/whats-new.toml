@@ -1482,3 +1482,11 @@ Takvim’in seçeneklerindeki Boş zamanları paylaş, önümüzdeki iş
 günlerinde ne zaman müsait olduğunuzu listeleyen, herkese göndermeye
 hazır bir ileti başlatır.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Takvim kümeleri"
+text = """
+Gösterdiğiniz takvimleri, Takvim kümeleri’nin yanındaki + ile “İş” veya
+“Aile” gibi bir küme olarak kaydedin. Bir kümeye tek tıklama, onun
+takvimlerini gösterir ve diğerlerini gizler.
+"""

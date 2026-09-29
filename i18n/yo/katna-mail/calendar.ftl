@@ -9,11 +9,16 @@ calendar-view-week = Ọ̀sẹ̀
 calendar-view-month = Oṣù
 calendar-view-year = Ọdún
 calendar-view-schedule = Àtòjọ àkókò
+calendar-view-days =
+    { $count ->
+       *[other] ọjọ́ { $count }
+    }
 calendar-options = Àwọn àṣàyàn
 calendar-density = Ìwọ̀n ìkọ̀pọ̀
 calendar-density-responsive = Ó ń bá ojú-ìwé rẹ mu
 calendar-density-comfortable = Ìtura
 calendar-density-compact = Kékeré ṣinṣin
+calendar-custom-days = Ìwòye àdáni
 calendar-second-zone = Agbègbè àkókò kejì
 calendar-zone-none = Kò sí
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +41,10 @@ calendar-next-period = Lẹ́yìn
 calendar-title-months = { $first } – { $last }
 calendar-loading = Ń gbéwọlé…
 calendar-read-failed = A kò lè ka kàlẹ́ńdà náà: { $error }
+calendar-sets = Àwọn àkójọ kàlẹ́ńdà
+calendar-set-add = Fi àwọn kàlẹ́ńdà tó ń hàn pamọ́ gẹ́gẹ́ bí àkójọ kan
+calendar-set-name = Orúkọ àkójọ náà
+calendar-set-remove = Yọ àkójọ kúrò
 calendar-local = Kọ̀ǹpútà yìí
 calendar-account-gone = Àkọọ́lẹ̀ tí a yọ kúrò
 calendar-birthdays = Àwọn ọjọ́ ìbí

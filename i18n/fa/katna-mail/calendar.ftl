@@ -9,11 +9,17 @@ calendar-view-week = هفته
 calendar-view-month = ماه
 calendar-view-year = سال
 calendar-view-schedule = برنامه
+calendar-view-days =
+    { $count ->
+        [one] { $count } روز
+       *[other] { $count } روز
+    }
 calendar-options = گزینه‌ها
 calendar-density = تراکم
 calendar-density-responsive = متناسب با صفحه‌نمایش شما
 calendar-density-comfortable = راحت
 calendar-density-compact = فشرده
+calendar-custom-days = نمای سفارشی
 calendar-second-zone = منطقه زمانی دوم
 calendar-zone-none = هیچ
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = بعدی
 calendar-title-months = { $first } – { $last }
 calendar-loading = در حال بارگیری…
 calendar-read-failed = خواندن تقویم ممکن نشد: { $error }
+calendar-sets = مجموعه‌های تقویم
+calendar-set-add = ذخیره تقویم‌های نمایش‌داده‌شده به‌عنوان مجموعه
+calendar-set-name = نام مجموعه
+calendar-set-remove = حذف مجموعه
 calendar-local = این رایانه
 calendar-account-gone = حساب حذف‌شده
 calendar-birthdays = تولدها

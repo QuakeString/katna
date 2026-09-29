@@ -1452,3 +1452,11 @@ text = """
 Deel vrye tye in Kalender se opsies begin 'n boodskap wat lys wanneer jy
 in die volgende werksdae vry is, gereed om aan enigiemand te stuur.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Kalenderstelle"
+text = """
+Stoor die kalenders wat jy wys as ’n stel, soos “Werk” of “Gesin”, met
++ langs Kalenderstelle. Een klik op ’n stel wys sy kalenders en
+versteek die res.
+"""

@@ -9,11 +9,17 @@ calendar-view-week = आठवडा
 calendar-view-month = महिना
 calendar-view-year = वर्ष
 calendar-view-schedule = शेड्यूल
+calendar-view-days =
+    { $count ->
+        [one] { $count } दिवस
+       *[other] { $count } दिवस
+    }
 calendar-options = पर्याय
 calendar-density = घनता
 calendar-density-responsive = तुमच्या स्क्रीननुसार
 calendar-density-comfortable = आरामदायी
 calendar-density-compact = कॉम्पॅक्ट
+calendar-custom-days = सानुकूल दृश्य
 calendar-second-zone = दुसरा टाइम झोन
 calendar-zone-none = काहीही नाही
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = नंतरचे
 calendar-title-months = { $first } – { $last }
 calendar-loading = लोड होत आहे…
 calendar-read-failed = कॅलेंडर वाचता आले नाही: { $error }
+calendar-sets = कॅलेंडर संच
+calendar-set-add = दाखवलेली कॅलेंडर संच म्हणून जतन करा
+calendar-set-name = संचाचे नाव
+calendar-set-remove = संच काढा
 calendar-local = हा संगणक
 calendar-account-gone = काढलेले खाते
 calendar-birthdays = वाढदिवस

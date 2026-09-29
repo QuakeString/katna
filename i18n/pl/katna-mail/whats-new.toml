@@ -1488,3 +1488,11 @@ Udostępnij wolne terminy w opcjach Kalendarza tworzy wiadomość z listą
 terminów, w których jesteś wolny w najbliższych dniach roboczych, gotową
 do wysłania komukolwiek.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Zestawy kalendarzy"
+text = """
+Zapisz widoczne kalendarze jako zestaw, np. „Praca” lub „Rodzina”, za
+pomocą + obok Zestawy kalendarzy. Jedno kliknięcie zestawu pokazuje jego
+kalendarze i ukrywa pozostałe.
+"""

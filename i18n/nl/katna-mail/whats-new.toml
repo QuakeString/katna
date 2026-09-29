@@ -1497,3 +1497,11 @@ Vrije tijden delen in de opties van Agenda start een bericht met daarin
 wanneer je de komende werkdagen vrij bent, klaar om naar iedereen te
 sturen.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Agendagroepen"
+text = """
+Sla de agenda’s die je toont op als groep, zoals "Werk" of "Gezin",
+met + naast Agendagroepen. Eén klik op een groep toont de agenda’s ervan
+en verbergt de rest.
+"""

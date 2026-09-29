@@ -1545,3 +1545,11 @@ Ang Ibahagi ang mga libreng oras sa mga opsyon ng Kalendaryo ay
 magsisimula ng mensaheng naglilista kung kailan ka libre sa susunod na
 mga araw ng trabaho, handang ipadala kaninuman.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Mga set ng kalendaryo"
+text = """
+I-save bilang set ang mga kalendaryong ipinapakita mo, gaya ng “Trabaho”
+o “Pamilya”, gamit ang + sa tabi ng Mga set ng kalendaryo. Isang click sa
+isang set ang magpapakita ng mga kalendaryo nito at magtatago sa iba.
+"""

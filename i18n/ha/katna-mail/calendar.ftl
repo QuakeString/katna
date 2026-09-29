@@ -9,11 +9,17 @@ calendar-view-week = Mako
 calendar-view-month = Wata
 calendar-view-year = Shekara
 calendar-view-schedule = Jadawali
+calendar-view-days =
+    { $count ->
+        [one] rana { $count }
+       *[other] kwanaki { $count }
+    }
 calendar-options = Zaɓuka
 calendar-density = Yawa
 calendar-density-responsive = Yana daidaita da allonka
 calendar-density-comfortable = Mai sauƙi
 calendar-density-compact = Matsatsi
+calendar-custom-days = Kallon na musamman
 calendar-second-zone = Yankin lokaci na biyu
 calendar-zone-none = Babu
 calendar-zone = { $zone } ({ $offset })
@@ -36,6 +42,10 @@ calendar-next-period = Na gaba
 calendar-title-months = { $first } – { $last }
 calendar-loading = Ana lodawa…
 calendar-read-failed = Ba a iya karanta kalanda ba: { $error }
+calendar-sets = Rukunin kalanda
+calendar-set-add = Ajiye kalandun da ake nunawa a matsayin rukuni
+calendar-set-name = Sunan rukunin
+calendar-set-remove = Cire rukuni
 calendar-local = Wannan kwamfutar
 calendar-account-gone = Asusun da aka cire
 calendar-birthdays = Ranakun haihuwa

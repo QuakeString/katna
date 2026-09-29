@@ -1447,3 +1447,11 @@ text = """
 Chia sẻ giờ rảnh trong các tùy chọn của Lịch sẽ mở một thư liệt kê lúc
 bạn rảnh trong vài ngày làm việc tới, sẵn sàng gửi cho bất kỳ ai.
 """
+
+["2026-09-29-0952-calendar-sets"]
+title = "Bộ lịch"
+text = """
+Lưu các lịch bạn đang hiển thị thành một bộ, như “Công việc” hoặc “Gia
+đình”, bằng nút + cạnh Bộ lịch. Một cú nhấp vào một bộ sẽ hiện các lịch
+của bộ đó và ẩn phần còn lại.
+"""
