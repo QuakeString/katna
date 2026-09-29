@@ -290,6 +290,9 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.cycle_panes(true, window, cx) {
+            return;
+        }
         window.focus_next(cx);
         if let Some(page) = &self.settings_page {
             page.stops.reveal_focus();
@@ -303,6 +306,9 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.cycle_panes(false, window, cx) {
+            return;
+        }
         window.focus_prev(cx);
         if let Some(page) = &self.settings_page {
             page.stops.reveal_focus();

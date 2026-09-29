@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Keys that follow the pane you're in"
+text = """
+With the conversation beside the list, Up and Down now move in the list
+and show each conversation. Tab or Enter goes into the conversation, where
+Up and Down scroll it; Esc or Shift+Tab goes back to the list. F6 moves
+between panes, as in other mail apps.
+"""

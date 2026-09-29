@@ -140,7 +140,10 @@ impl MailWindow {
                 .child(fade_in(body, self.card_seq))
                 .into_any_element()
         };
-        let reading_context = self.reading && (two_pane_reading || self.split());
+        // Beside a conversation, the list keeps its own keys: Up and Down
+        // move in it, and the conversation has the keys once it is clicked,
+        // or Tab or Enter goes to it.
+        let reading_context = self.reading && !self.split();
         let (radius, outline) = (
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
@@ -1425,11 +1428,13 @@ impl MailWindow {
         let cursor = self.selected == Some(ix);
         let checked = self.checked.contains(&key);
         let open = self.split() && self.reader.as_ref().is_some_and(|r| r.key == key);
+        // The cursor is grey while the conversation beside has the keys.
+        let keys_here = !self.reader_keys;
         let unread = row.as_ref().is_some_and(|r| r.unread);
         let background = if checked {
             th.checked_row
         } else if open {
-            mix(th.surface, th.accent, 0.12)
+            mix(th.surface, th.accent, if keys_here { 0.12 } else { 0.07 })
         } else if unread {
             th.surface
         } else {
@@ -1507,7 +1512,7 @@ impl MailWindow {
                     .left_0()
                     .w(px(3.0))
                     .rounded_r(px(2.0))
-                    .bg(rgba(th.accent))
+                    .bg(rgba(if keys_here { th.accent } else { th.text_faint }))
                     .with_spring(
                         ("row-cursor", ix),
                         SpringAnimation::new(motion::SLIDE).to(if cursor { 1.0 } else { 0.0 }),

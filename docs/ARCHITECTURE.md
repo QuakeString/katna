@@ -1604,6 +1604,15 @@ Gemini or confidential mode):
   the list takes the whole card until a message is opened; the message then
   slides in on the right, and the divider between them can be dragged
   (the share is saved). With two panes the message replaces the list.
+  With three panes the keys follow the pane that has them: the list keeps
+  them when a line is clicked, so Up and Down move in it and show each
+  conversation beside it; Tab or Enter gives them to the conversation,
+  where Up and Down scroll, and Esc (or U, Backspace) and Shift+Tab give
+  them back. Tab and Shift+Tab (or F6 and Shift+F6, which also leave a
+  field) go round the search box, the list and the
+  open conversation. The list's cursor turns grey and the conversation's
+  edge takes a faint accent while the conversation has the keys. Esc in
+  the list closes the conversation beside it.
 - **Conversations.** The list shows one line per conversation by default
   (senders, a count, the newest subject and snippet); a setting shows
   single messages instead.
