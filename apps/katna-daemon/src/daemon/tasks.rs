@@ -29,6 +29,7 @@ use katna_sync::{
     calendar::caldav::CalDav,
     methods::{self, Data, Method},
     net::Tls,
+    oauth::Provider,
     tasks::{TaskService, caldav::DavTasks, google::GoogleTasks, graph::ToDo, sync_account},
 };
 
@@ -120,24 +121,37 @@ impl Daemon {
 
     /// `account`'s task service the way `method`, and what it depends on
     /// (a key that changes with a new sign-in, the server or the
-    /// password); `None` when that way has none.
+    /// password); `Ok(None)` when that way has none, an error when its
+    /// sign-in can't be used.
     async fn new_task_service(
         &self,
         account: &Account,
         method: Method,
-    ) -> Option<(String, TaskService)> {
+    ) -> katna_sync::Result<Option<(String, TaskService)>> {
+        Ok(self.new_task_service_of(account, method).await?.flatten())
+    }
+
+    async fn new_task_service_of(
+        &self,
+        account: &Account,
+        method: Method,
+    ) -> katna_sync::Result<Option<Option<(String, TaskService)>>> {
         if account.kind != AccountKind::Imap {
-            return None;
+            return Ok(None);
         }
-        let settings = self.store().account_settings(account.id).ok()??;
+        let Some(settings) = self.store().account_settings(account.id).ok().flatten() else {
+            return Ok(None);
+        };
         if let Some(provider) = settings.oauth {
             let tokens = self
                 .oauth_tokens(account.id, provider)
                 .await
-                .map_err(|err| tracing::debug!(account = account.id.0, %err, "no tokens for tasks"))
-                .ok()?;
+                .map_err(|err| {
+                    tracing::debug!(account = account.id.0, %err, "no tokens for tasks");
+                    Error::Auth(err)
+                })?;
             let key = format!("{provider:?} {:p}", Arc::as_ptr(&tokens));
-            let tls = Tls::system().ok()?;
+            let tls = Tls::system().map_err(|err| Error::Tls(err.to_string()))?;
             // Google's CalDAV keeps no to-dos, so its tasks come only from
             // Google Tasks, as To Do's come only from Graph.
             let service = match (provider, method) {
@@ -147,16 +161,22 @@ impl Daemon {
                 (OAuthProvider::Microsoft, Method::Api) => {
                     TaskService::Microsoft(ToDo::new(tokens, tls))
                 }
-                (_, Method::Dav) => return None,
+                (_, Method::Dav) => return Ok(None),
             };
-            return Some((key, service));
+            return Ok(Some(Some((key, service))));
         }
         if method != Method::Dav {
-            return None;
+            return Ok(None);
         }
-        let server = settings.imap?;
-        let password = self.secrets.password(account.id).await.ok()??;
-        let (_, tls) = super::endpoint(&server).ok()?;
+        let Some(server) = settings.imap else {
+            return Ok(None);
+        };
+        let Some(password) = self.secrets.password(account.id).await.ok().flatten() else {
+            return Ok(None);
+        };
+        let Ok((_, tls)) = super::endpoint(&server) else {
+            return Ok(None);
+        };
         let key = format!(
             "caldav {} {} {} {} {password}",
             account.address, server.host, server.username, server.accept_invalid_certs
@@ -168,7 +188,7 @@ impl Daemon {
             &password,
             tls,
         );
-        Some((key, TaskService::CalDav(DavTasks::new(dav))))
+        Ok(Some(Some((key, TaskService::CalDav(DavTasks::new(dav))))))
     }
 
     /// `account`'s task service the way `method`, if it has one (kept in
@@ -181,42 +201,66 @@ impl Daemon {
         account: &Account,
         method: Method,
         known: &'a mut Services,
-    ) -> Option<(&'a TaskService, katna_sync::Result<bool>)> {
-        let (key, service) = self.new_task_service(account, method).await?;
+    ) -> katna_sync::Result<Option<(&'a TaskService, katna_sync::Result<bool>)>> {
+        let Some((key, service)) = self.new_task_service(account, method).await? else {
+            return Ok(None);
+        };
         let at = (account.id, method);
         if known.get(&at).is_none_or(|(old, _)| *old != key) {
             known.insert(at, (key, service));
         }
         let service = &known[&at].1;
         let allowed = service.allowed().await;
-        Some((service, allowed))
+        Ok(Some((service, allowed)))
     }
 
     /// Syncs `account`'s tasks, the best way first and the others when it
     /// is not available. Returns what its side list line shows, and
     /// whether anything changed.
     async fn sync_account_tasks(&self, account: &Account, known: &mut Services) -> (Status, bool) {
-        let provider = match self.store().account_settings(account.id) {
-            Ok(settings) => settings.and_then(|s| s.oauth),
+        let settings = match self.store().account_settings(account.id) {
+            Ok(settings) => settings.unwrap_or_default(),
             Err(err) => return ((task_state::ERROR, err.to_string()), false),
         };
+        let provider = settings.oauth;
+        // Google and Microsoft let Katna into tasks only through their own
+        // sign-in, not with a mail password.
+        if account.kind == AccountKind::Imap
+            && provider.is_none()
+            && let Some(own) = settings
+                .imap
+                .as_ref()
+                .and_then(|imap| Provider::for_imap_host(&imap.host))
+        {
+            return ((task_state::USE_SIGN_IN, own.as_str().to_owned()), false);
+        }
         let now = super::unix_now();
         let order = methods::order(&self.store(), account.id, Data::Tasks, provider, now);
         // What to show when no way works: the most useful reason.
         let mut shown = (task_state::NONE, String::new());
         for method in order {
-            let Some((service, allowed)) = self.task_service(account, method, known).await else {
-                continue;
-            };
-            let result = match allowed {
-                Ok(true) => sync_account(service, &self.store, account.id).await,
+            let result = match self.task_service(account, method, known).await {
+                Ok(None) => continue,
+                // Its sign-in can't be used.
+                Err(err) => Err(err),
+                Ok(Some((service, Ok(true)))) => {
+                    sync_account(service, &self.store, account.id).await
+                }
                 // Signed in before Katna asked for tasks.
-                Ok(false) if provider.is_some() => Err(Error::Auth(
+                Ok(Some((_, Ok(false)))) if provider.is_some() => Err(Error::Auth(
                     "the sign-in did not allow Katna into its tasks".into(),
                 )),
-                // No CalDAV on the server.
-                Ok(false) => continue,
-                Err(err) => Err(err),
+                // No CalDAV on the server: say what it answered.
+                Ok(Some((service, Ok(false)))) => {
+                    if shown.0 == task_state::NONE
+                        && shown.1.is_empty()
+                        && let TaskService::CalDav(dav) = service
+                    {
+                        shown.1 = dav.missing_why();
+                    }
+                    continue;
+                }
+                Ok(Some((_, Err(err)))) => Err(err),
             };
             let status = match result {
                 Ok(changed) => {

@@ -3678,6 +3678,9 @@ server error is not.
   Starred, Today (as in To Do's My Day and TickTick) gathers the open
   tasks due today or before from every list: Overdue first, then Today,
   by day and time. A task added there goes to the default list, due today.
+  All tasks puts as many lists side by side as the window fits, then
+  more rows below that scroll down (one list per row on a phone), so no
+  list is out of reach; a list just made is scrolled into view.
 - **From mail**: Add to Tasks (Shift+T, as in Gmail, and in the mail's
   right-click and ⋮ menus) makes a task in the default list titled with the
   conversation's subject, keeping the newest message's `Message-ID` in
