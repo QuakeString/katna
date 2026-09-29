@@ -1233,6 +1233,16 @@ Tasks at Microsoft To Do, at lumalabas din dito ang mga gawain mula sa
 orasan ng desktop.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Ang iyong mga contact, mula sa bawat account"
+text = """
+Ang Mga Contact sa kaliwang bar ay naglilista na ngayon ng mga taong
+naka-save sa iyong mga Gmail at Outlook account at sa mga CardDAV
+server, isang beses lang kahit maraming account ang may hawak sa kanila,
+kasama ang mga label, larawan, at detalye nila. Lumalabas din ang mga
+pangalan at larawan nila sa iyong mail at sa mga mungkahi ng address.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Mga Tala"
 text = """

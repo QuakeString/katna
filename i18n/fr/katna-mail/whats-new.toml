@@ -1230,6 +1230,16 @@ Google Tasks et Microsoft To Do, et les tâches de l’horloge du bureau
 s’affichent aussi ici.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Vos contacts, de tous vos comptes"
+text = """
+Contacts, dans la barre de gauche, affiche désormais les personnes
+enregistrées dans vos comptes Gmail et Outlook et sur des serveurs
+CardDAV, une seule fois même si plusieurs comptes les conservent, avec
+libellés, photos et détails. Leurs noms et leurs photos apparaissent
+aussi dans votre courrier et dans les suggestions d’adresses.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Notes"
 text = """

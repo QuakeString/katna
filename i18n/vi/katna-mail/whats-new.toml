@@ -1152,6 +1152,15 @@ lại và chi tiết. Các danh sách đồng bộ với Google Tasks và Micros
 Do, và việc cần làm từ đồng hồ trên máy tính cũng hiện ở đây.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Danh bạ của bạn, từ mọi tài khoản"
+text = """
+Danh bạ trên thanh bên trái giờ hiển thị những người được lưu trong tài
+khoản Gmail và Outlook của bạn và trên máy chủ CardDAV, mỗi người chỉ
+một lần dù nhiều tài khoản cùng lưu, kèm nhãn, ảnh và chi tiết của họ.
+Tên và ảnh của họ cũng hiện trong thư của bạn và trong gợi ý địa chỉ.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Ghi chú"
 text = """

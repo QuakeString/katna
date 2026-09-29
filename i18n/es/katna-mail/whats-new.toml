@@ -1198,6 +1198,16 @@ Google Tasks y Microsoft To Do, y las tareas del reloj del escritorio
 también aparecen aquí.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Tus contactos, de todas tus cuentas"
+text = """
+Contactos, en la barra izquierda, ahora muestra a las personas guardadas
+en tus cuentas de Gmail y Outlook y en servidores CardDAV, una sola vez
+aunque varias cuentas las guarden, con etiquetas, fotos y sus datos. Sus
+nombres y fotos también aparecen en tu correo y en las sugerencias de
+direcciones.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Notas"
 text = """

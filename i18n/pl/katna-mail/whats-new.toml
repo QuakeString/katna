@@ -1180,6 +1180,15 @@ powtarzaniem i szczegółami. Listy synchronizują się z Google Tasks i
 Microsoft To Do, a zadania z zegara na pulpicie też pojawiają się tutaj.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Twoje kontakty ze wszystkich kont"
+text = """
+Kontakty na lewym pasku pokazują teraz osoby zapisane na Twoich kontach
+Gmail i Outlook oraz na serwerach CardDAV, każdą tylko raz, nawet jeśli
+przechowuje ją kilka kont, wraz z etykietami, zdjęciami i szczegółami.
+Ich nazwy i zdjęcia widać także w poczcie i w podpowiedziach adresów.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Notatki"
 text = """

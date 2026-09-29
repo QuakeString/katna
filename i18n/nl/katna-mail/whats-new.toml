@@ -1191,6 +1191,15 @@ details. Lijsten worden gesynchroniseerd met Google Tasks en Microsoft
 To Do, en taken van de bureaubladklok verschijnen hier ook.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Je contacten, uit elk account"
+text = """
+Contacten in de balk links toont nu de mensen die zijn opgeslagen in je
+Gmail- en Outlook-accounts en op CardDAV-servers, elk één keer, ook als
+meerdere accounts ze bewaren, met labels, foto’s en hun gegevens. Hun
+namen en foto’s verschijnen ook in je e-mail en in de adressuggesties.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Notities"
 text = """

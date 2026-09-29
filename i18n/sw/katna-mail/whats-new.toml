@@ -1172,6 +1172,14 @@ zikiwa na majukumu madogo, nyota, siku za kukamilisha, marudio na maelezo. Orodh
 na Microsoft To Do, na majukumu kutoka saa ya eneo-kazi pia yanaonekana hapa.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Anwani zako, kutoka kwa kila akaunti"
+text = """
+Anwani kwenye reli ya kushoto sasa huorodhesha watu waliohifadhiwa kwenye akaunti zako za Gmail na Outlook na kwenye seva za CardDAV,
+mara moja kila mmoja hata akaunti kadhaa zikiwahifadhi, pamoja na lebo, picha na maelezo yao.
+Majina na picha zao pia huonekana kwenye barua zako na kwenye mapendekezo ya anwani.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Madokezo"
 text = """

@@ -1151,6 +1151,15 @@ nmegharị na nkọwa. Ndepụta na-ejikọ na Google Tasks na Microsoft
 To Do, ọrụ sitere na elekere kọmputa ga-apụtakwa ebe a.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Kọntaktị gị, si n'akaụntụ ọ bụla"
+text = """
+Kọntaktị dị n'akụkụ aka ekpe ugbu a na-egosi ndị echekwara n'akaụntụ
+Gmail na Outlook gị na n'sava CardDAV, otu ugboro ọ bụla ọbụlagodi mgbe
+akaụntụ ole na ole nwere ha, yana leebụl, foto na nkọwa ha. Aha na foto
+ha na-apụtakwa n'ozi gị na n'echiche adreesị.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Ndetu Katna"
 text = """

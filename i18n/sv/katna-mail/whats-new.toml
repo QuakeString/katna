@@ -1161,6 +1161,15 @@ och Microsoft To Do, och uppgifter från skrivbordsklockan visas också
 här.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Dina kontakter, från alla konton"
+text = """
+Kontakter i vänsterfältet listar nu personerna som är sparade i dina
+Gmail- och Outlook-konton och på CardDAV-servrar, en gång var även när
+flera konton har dem, med etiketter, bilder och deras uppgifter. Deras
+namn och bilder visas också i din e-post och i adressförslagen.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Anteckningar"
 text = """

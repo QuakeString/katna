@@ -1180,6 +1180,16 @@ günleri, tekrarlar ve ayrıntılarla. Listeler Google Tasks ve Microsoft
 To Do ile eşitlenir, masaüstü saatindeki görevler de burada görünür.
 """
 
+["2026-09-29-0352-contacts"]
+title = "Tüm hesaplarınızdaki kişiler"
+text = """
+Sol çubuktaki Kişiler artık Gmail ve Outlook hesaplarınızda ve CardDAV
+sunucularında kayıtlı kişileri, birkaç hesap onları saklasa bile
+yalnızca bir kez olmak üzere, etiketleri, fotoğrafları ve ayrıntılarıyla
+listeliyor. Adları ve fotoğrafları e-postalarınızda ve adres
+önerilerinde de görünür.
+"""
+
 ["2026-09-29-0350-katna-notes"]
 title = "Katna Notlar"
 text = """
