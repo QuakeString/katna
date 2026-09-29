@@ -1401,3 +1401,33 @@ title = "Vikumbusho na marudio ya majukumu"
 text = """
 Fungua jukumu na uchague Nikumbushe: wakati huo, saa moja au siku moja kabla. Kikumbusho huonekana hata Katna ikiwa imefungwa, chenye vitufe vya Weka alama kuwa imekamilika na Ahirisha. Ukiweka alama kuwa jukumu linalojirudia limekamilika, sasa hurudi siku yake inayofuata.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Tafuta majukumu kutoka kwenye eneo-kazi"
+text = """
+Andika maneno machache ya jukumu kwenye utafutaji wa KRunner au GNOME nalo litaonekana chini ya Majukumu. Bonyeza Enter na Katna italifungua, tayari kuhaririwa.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Ongeza matukio na majukumu kutoka saa ya eneo-kazi"
+text = """
+Kwenye Saa ya Kidijitali ya Katna, bofya kulia siku katika mwezi ili kuongeza jukumu au tukio kwa siku hiyo; tukio hufunguka kwenye Kalenda ya Katna. Kubofya mojawapo ya matukio yako hufungua Kalenda kwenye siku hiyo.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Andika tukio kwa mstari mmoja"
+text = """
+Andika "Chakula cha mchana na Anita Ijumaa saa 7 mchana katika Cafe Mocha" au "Mkutano mfupi kila siku ya kazi 3:30 asubuhi" kama kichwa cha tukio jipya, na Kalenda hujaza siku, saa, marudio na mahali unapoandika.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Tazama mwaka mzima"
+text = """
+Kalenda ina mwonekano wa Mwaka: miezi yote kumi na miwili kwa pamoja, yenye nukta chini ya siku zenye matukio. Bonyeza Y, kisha ubofye siku ili kuifungua.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Shiriki nyakati zako zisizo na shughuli"
+text = """
+Shiriki nyakati zisizo na shughuli katika chaguo za Kalenda huanzisha barua inayoorodhesha nyakati ambazo huna shughuli katika siku zijazo za kazi, tayari kutumwa kwa yeyote.
+"""

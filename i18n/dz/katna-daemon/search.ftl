@@ -3,8 +3,10 @@
 # Corrections welcome: see i18n/README.md.
 search-category-mail = གློག་འཕྲིན
 search-category-people = མི་ཚུ
+search-category-tasks = ལཱ་ཚུ
 search-mail-from = { $sender } ལས
 search-no-subject = (དོན་ཚན་མེད)
+search-task-in = { $list } ནང་
 search-reply-all = ཆ་མཉམ་ལུ་ལན་སློག
 search-copy-address = ཁ་བྱང་འདྲ་བཤུས་རྐྱབ།
 search-find-mail = གློག་འཕྲིན་འཚོལ།

@@ -1437,3 +1437,34 @@ Ncheta ahụ na-apụta ọbụna mgbe Katna emechiri, yana Maa ka emechara na Y
 Ọ bụrụ na ị maa ọrụ na-emegharị ka emechara, ọ na-alọghachi n'ụbọchị ya
 na-esote.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Chọta ọrụ site na desktọọpụ"
+text = """
+Pịnye ụfọdụ okwu nke ọrụ na ọchụchọ KRunner ma ọ bụ GNOME, ọ ga-apụta n’okpuru Ọrụ.
+Pịa Enter, Katna ga-emeghe ya ka i dezie ya.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Tinye ihe omume na ọrụ site n'elekere desktọọpụ"
+text = """
+Na Katna Elekere Dijitalụ, pịa aka nri n'ụbọchị dị n'ọnwa iji tinye ọrụ ma ọ bụ ihe omume maka ụbọchị ahụ; ihe omume ahụ na-emeghe na Kalịnda Katna. Ịpị otu n'ime ihe omume gị na-emeghe Kalịnda n'ụbọchị ya.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Pịnye ihe omume n'otu ahịrị"
+text = """
+Pịnye "Nri ehihie na Anita Fraịde elekere 1 ehihie na Cafe Mocha" ma ọ bụ "Standup kwa ụbọchị ọrụ 9:30" dị ka aha ihe omume ọhụrụ, Kalịnda ga-ejupụta ụbọchị, oge, ugboro ugboro na ebe ka ị na-ede.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Hụ afọ niile"
+text = """
+Kalịnda nwere ọhụhụ Afọ: ọnwa iri na abụọ niile n'otu oge, yana ntụpọ n'okpuru ụbọchị ndị nwere ihe omume. Pịa Y, wee pịa ụbọchị ka i meghee ya.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Kesaa oge ị nwere"
+text = """
+Ịhọrọ Kesaa oge ị nwere na nhọrọ Kalịnda na-amalite ozi na-edepụta mgbe ị nwere oge n'ụbọchị ọrụ ndị na-abịa, nke dị njikere izipụ onye ọ bụla.
+"""

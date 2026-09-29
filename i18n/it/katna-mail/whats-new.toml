@@ -1470,3 +1470,42 @@ title = "Promemoria e ripetizioni delle attività"
 text = """
 Apri un'attività e scegli Ricordamelo: all'ora dell'attività, un'ora o un giorno prima. Il promemoria appare anche quando Katna è chiuso, con Segna come completata e Posticipa. Completando un'attività ricorrente, ora ritorna il giorno successivo previsto.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Trova le attività dal desktop"
+text = """
+Digita qualche parola di un'attività in KRunner o nella ricerca di GNOME e comparirà sotto Attività. Premi Invio e Katna la apre, pronta per essere modificata.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Aggiungi eventi e attività dall'orologio del desktop"
+text = """
+In Katna Digital Clock, fai clic con il tasto destro su un giorno del
+mese per aggiungere un'attività o un evento per quel giorno; l'evento si
+apre nel Calendario di Katna. Facendo clic su uno dei tuoi eventi, il
+Calendario si apre su quel giorno.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Scrivi un evento in una riga"
+text = """
+Scrivi «Pranzo con Anita venerdì alle 13 al Cafe Mocha» o «Riunione ogni
+giorno feriale alle 9:30» come titolo di un nuovo evento, e il
+Calendario compila giorno, ora, ripetizione e luogo mentre scrivi.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Guarda tutto l'anno"
+text = """
+Il Calendario ha una vista Anno: tutti e dodici i mesi insieme, con un
+punto sotto i giorni che hanno eventi. Premi Y e fai clic su un giorno
+per aprirlo.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Condividi i tuoi orari liberi"
+text = """
+Condividi orari liberi, nelle opzioni del Calendario, avvia un messaggio
+che elenca quando sei libero nei prossimi giorni lavorativi, pronto da
+inviare a chiunque.
+"""

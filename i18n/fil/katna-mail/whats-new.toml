@@ -1506,3 +1506,42 @@ title = "Mga paalala at pag-uulit ng gawain"
 text = """
 Magbukas ng gawain at piliin ang Paalalahanan ako: sa oras mismo, isang oras o isang araw bago. Lalabas ang paalala kahit sarado ang Katna, kasama ang Markahan bilang tapos na at I-snooze. Kapag minarkahan mong tapos na ang umuulit na gawain, babalik na ito sa susunod nitong araw.
 """
+
+["2026-09-29-0849-tasks-in-desktop-search"]
+title = "Maghanap ng mga gawain mula sa desktop"
+text = """
+Mag-type ng ilang salita ng isang gawain sa KRunner o sa paghahanap ng GNOME at lalabas ito sa ilalim ng Mga Gawain. Pindutin ang Enter at bubuksan ito ng Katna, handa nang i-edit.
+"""
+
+["2026-09-29-0832-clock-day-menu"]
+title = "Magdagdag ng mga event at gawain mula sa orasan ng desktop"
+text = """
+Sa Katna Digital Clock, i-right-click ang isang araw sa buwan para
+magdagdag ng gawain o event para sa araw na iyon; magbubukas ang event
+sa Kalendaryo ng Katna. Kapag nag-click ka sa isa sa mga event mo,
+bubukas ang Kalendaryo sa araw nito.
+"""
+
+["2026-09-29-0855-type-an-event"]
+title = "Mag-type ng event sa isang linya"
+text = """
+I-type ang “Lunch kasama si Anita Biyernes 1pm sa Cafe Mocha” o “Standup
+tuwing araw ng trabaho 9:30” bilang pamagat ng bagong event, at pupunan
+ng Kalendaryo ang araw, oras, pag-uulit at lugar habang nagta-type ka.
+"""
+
+["2026-09-29-0915-year-view"]
+title = "Tingnan ang buong taon"
+text = """
+May Taon na tanaw ang Kalendaryo: sabay-sabay ang labindalawang buwan,
+may tuldok sa ilalim ng mga araw na may event. Pindutin ang Y, at
+i-click ang isang araw para buksan ito.
+"""
+
+["2026-09-29-0930-share-free-times"]
+title = "Ibahagi ang iyong mga libreng oras"
+text = """
+Ang Ibahagi ang mga libreng oras sa mga opsyon ng Kalendaryo ay
+magsisimula ng mensaheng naglilista kung kailan ka libre sa susunod na
+mga araw ng trabaho, handang ipadala kaninuman.
+"""
