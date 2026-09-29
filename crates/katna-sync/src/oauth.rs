@@ -42,6 +42,12 @@ pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file"
 /// its tokens come separately ([`TokenSource::access_token_for`]).
 pub const MICROSOFT_FILES: &str = "https://graph.microsoft.com/Files.ReadWrite";
 
+/// Google Contacts, read and written through the People API.
+pub const GOOGLE_CONTACTS: &str = "https://www.googleapis.com/auth/contacts";
+
+/// Outlook contacts, through Microsoft Graph, like [`MICROSOFT_FILES`].
+pub const MICROSOFT_CONTACTS: &str = "https://graph.microsoft.com/Contacts.ReadWrite";
+
 /// Largest request the loopback listener reads.
 const MAX_REQUEST: usize = 16 * 1024;
 
@@ -100,9 +106,12 @@ impl Provider {
                 },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
-                // large attachments, and who signed in (address, name,
-                // picture) in the ID token.
-                scope: format!("https://mail.google.com/ {GOOGLE_DRIVE_FILE} openid email profile"),
+                // large attachments, the contacts, and who signed in
+                // (address, name, picture) in the ID token.
+                scope: format!(
+                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CONTACTS} \
+                     openid email profile"
+                ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",
                 tls,
@@ -122,9 +131,9 @@ impl Provider {
                 scope: "https://outlook.office.com/IMAP.AccessAsUser.All \
                         https://outlook.office.com/SMTP.Send offline_access openid email profile"
                     .into(),
-                // OneDrive, for large attachments, allowed at the same
-                // sign-in.
-                consent: MICROSOFT_FILES.into(),
+                // OneDrive, for large attachments, and the contacts,
+                // allowed at the same sign-in.
+                consent: format!("{MICROSOFT_FILES} {MICROSOFT_CONTACTS}"),
                 // Entra registers loopback redirects as `http://localhost`.
                 redirect_host: "localhost",
                 tls,
@@ -639,6 +648,15 @@ impl TokenSource {
     /// Starts with an access token from a sign-in that just happened.
     pub fn with_access_token(self, token: String, expires_in: Duration) -> Self {
         *self.access.lock().unwrap() = Some((token, Instant::now() + expires_in));
+        self
+    }
+
+    /// Starts with an access token for `scope`, another resource's.
+    pub fn with_access_token_for(self, scope: &str, token: String, expires_in: Duration) -> Self {
+        self.others
+            .lock()
+            .unwrap()
+            .insert(scope.to_owned(), (token, Instant::now() + expires_in));
         self
     }
 
