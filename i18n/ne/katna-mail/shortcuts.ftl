@@ -36,6 +36,7 @@ shortcut-move-to = यहाँ सार्नुहोस्
 shortcut-mark-read = पढिएको भनी चिन्ह लगाउनुहोस्
 shortcut-mark-unread = नपढिएको भनी चिन्ह लगाउनुहोस्
 shortcut-star = तारा लगाउनुहोस् वा हटाउनुहोस्
+shortcut-add-to-tasks = कार्यमा थप्नुहोस्
 shortcut-important = महत्त्वपूर्ण भनी चिन्ह लगाउनुहोस्
 shortcut-not-important = महत्त्वपूर्ण होइन भनी चिन्ह लगाउनुहोस्
 shortcut-check = वार्तालापमा टिक लगाउनुहोस्

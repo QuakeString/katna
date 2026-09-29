@@ -36,6 +36,7 @@ shortcut-move-to = نقل إلى
 shortcut-mark-read = وضع علامة «مقروءة»
 shortcut-mark-unread = وضع علامة «غير مقروءة»
 shortcut-star = إضافة نجمة أو إزالتها
+shortcut-add-to-tasks = إضافة إلى المهام
 shortcut-important = وضع علامة «مهمة»
 shortcut-not-important = وضع علامة «غير مهمة»
 shortcut-check = تحديد المحادثة

@@ -1171,3 +1171,24 @@ Bonyeza Ctrl+4 au chagua Majukumu upande wa kushoto: orodha zote kando kwa kando
 zikiwa na majukumu madogo, nyota, siku za kukamilisha, marudio na maelezo. Orodha husawazishwa na Google Tasks
 na Microsoft To Do, na majukumu kutoka saa ya eneo-kazi pia yanaonekana hapa.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Madokezo"
+text = """
+Chagua Madokezo kwenye upau wa kando ili kufungua Katna Madokezo, yaliyopangwa kama Google Keep. Andika dokezo au orodha ya kukagua, lipe rangi, liambatishe juu, na uteue vipengee moja kwa moja kwenye ubao.
+Madokezo huhifadhiwa unapoandika; kisanduku cha kutafuta hulipata; Kumbukumbu na Tupio huyaweka kando, pamoja na Tendua.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Madokezo kwenye kila kifaa"
+text = """
+Madokezo sasa yanakaa kwenye folda ya Madokezo ya akaunti yako ya barua, mahali ambapo Notes za iPhone na Mac huhifadhi yake, kwa hivyo yanakufuata hadi kwenye vifaa vyako vingine na kurudi kutoka huko.
+Jina la akaunti chini ya dokezo linaonyesha mahali lilipohifadhiwa; libofye ili kuhamisha dokezo, au liweke kwenye kompyuta hii pekee.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Ongeza barua kwenye Majukumu"
+text = """
+Bonyeza Shift+T, kama kwenye Gmail, au bofya kulia barua na uchague Ongeza kwenye Majukumu.
+Jukumu huchukua mada ya barua, na chipu yake ya Barua kwenye Majukumu hufungua barua hiyo tena.
+"""

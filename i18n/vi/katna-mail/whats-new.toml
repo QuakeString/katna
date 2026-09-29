@@ -1151,3 +1151,30 @@ nhau như trong Google Tasks, với việc phụ, dấu sao, ngày đến hạn,
 lại và chi tiết. Các danh sách đồng bộ với Google Tasks và Microsoft To
 Do, và việc cần làm từ đồng hồ trên máy tính cũng hiện ở đây.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Ghi chú"
+text = """
+Ghi chú trên thanh bên giờ mở Katna Ghi chú, bố cục giống Google Keep.
+Tạo ghi chú hoặc danh sách kiểm tra, chọn màu, ghim lên đầu và đánh dấu
+các mục ngay trên bảng. Ghi chú được lưu khi bạn gõ; hộp tìm kiếm sẽ tìm
+thấy chúng; Lưu trữ và Thùng rác giúp cất chúng đi, có thể Hoàn tác.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Ghi chú trên mọi thiết bị"
+text = """
+Ghi chú giờ nằm trong thư mục Ghi chú của tài khoản thư, nơi Ghi chú
+trên iPhone và Mac cũng lưu ghi chú của chúng, nên ghi chú đi theo bạn
+sang các thiết bị khác và quay lại từ đó. Tên tài khoản bên dưới ghi chú
+cho biết nơi lưu; nhấp vào đó để chuyển ghi chú, hoặc chỉ giữ trên máy
+tính này.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Thêm thư vào Việc cần làm"
+text = """
+Nhấn Shift+T, như trong Gmail, hoặc chọn Thêm vào Việc cần làm khi nhấp
+chuột phải vào một thư. Việc cần làm lấy tiêu đề của thư, và thẻ Thư của
+nó trong Việc cần làm sẽ mở lại thư.
+"""

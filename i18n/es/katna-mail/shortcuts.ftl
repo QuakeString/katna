@@ -36,6 +36,7 @@ shortcut-move-to = Mover a
 shortcut-mark-read = Marcar como leído
 shortcut-mark-unread = Marcar como no leído
 shortcut-star = Añadir o quitar estrella
+shortcut-add-to-tasks = Añadir a Tareas
 shortcut-important = Marcar como importante
 shortcut-not-important = Marcar como no importante
 shortcut-check = Marcar la conversación

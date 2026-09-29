@@ -378,6 +378,7 @@ menu-pin = Bandika juu
 menu-unpin = Bandua
 menu-snooze = Ahirisha
 menu-unsnooze = Acha kuahirisha
+menu-add-to-tasks = Ongeza kwenye Majukumu
 menu-print-all = Chapisha zote
 menu-new-window = Fungua katika dirisha jipya
 menu-move-to = Hamishia

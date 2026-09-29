@@ -36,6 +36,7 @@ shortcut-move-to = इसमें ले जाएं
 shortcut-mark-read = पढ़ा गया के रूप में मार्क करें
 shortcut-mark-unread = नहीं पढ़ा गया के रूप में मार्क करें
 shortcut-star = तारांकित करें या तारांकन हटाएं
+shortcut-add-to-tasks = टास्क में जोड़ें
 shortcut-important = ज़रूरी के रूप में मार्क करें
 shortcut-not-important = ज़रूरी नहीं के रूप में मार्क करें
 shortcut-check = बातचीत चुनें

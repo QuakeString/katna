@@ -378,6 +378,7 @@ menu-pin = മുകളിൽ പിൻ ചെയ്യുക
 menu-unpin = അൺപിൻ ചെയ്യുക
 menu-snooze = സ്‌നൂസ് ചെയ്യുക
 menu-unsnooze = സ്‌നൂസ് ഒഴിവാക്കുക
+menu-add-to-tasks = ടാസ്‌ക്കുകളിലേക്ക് ചേർക്കുക
 menu-print-all = എല്ലാം പ്രിന്റ് ചെയ്യുക
 menu-new-window = പുതിയ വിൻഡോയിൽ തുറക്കുക
 menu-move-to = ഇതിലേക്ക് നീക്കുക

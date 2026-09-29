@@ -37,6 +37,8 @@ tasks-details = Imininingwane
 tasks-delete = Susa
 tasks-move-to = Hambisa ku-{ $list }
 tasks-from-mail = Imeyili
+tasks-open-mail = Vula imeyili
+tasks-no-subject = (asikho isihloko)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Umsebenzi uqediwe
 tasks-toast-deleted = Umsebenzi ususiwe
+tasks-toast-added = { $count ->
+    [one] Kwengezwe Kumisebenzi
+   *[other] Imisebenzi engu-{ $count } yengeziwe
+}
+tasks-mail-gone = Leyo meyili ayisekho lapha.
 tasks-toast-list-deleted = Uhlu lususiwe
 tasks-toast-moved = Kuhanjiswe ku-{ $list }

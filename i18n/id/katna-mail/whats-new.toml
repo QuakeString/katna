@@ -1191,3 +1191,31 @@ seperti di Google Tasks, lengkap dengan subtugas, bintang, hari jatuh
 tempo, pengulangan, dan detail. Daftar disinkronkan dengan Google Tasks
 dan Microsoft To Do, dan tugas dari jam desktop juga muncul di sini.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Catatan"
+text = """
+Catatan di bilah samping kini membuka Katna Catatan, dengan tata letak
+seperti Google Keep. Buat catatan atau daftar periksa, beri warna,
+sematkan di bagian atas, dan centang item langsung di papan. Catatan
+tersimpan saat Anda mengetik; kotak penelusuran menemukannya; Arsip dan
+Sampah menyingkirkannya dari tampilan, dengan Urungkan.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Catatan di setiap perangkat"
+text = """
+Catatan kini disimpan di folder Catatan pada akun email Anda, tempat
+Catatan di iPhone dan Mac menyimpan catatannya, sehingga catatan
+mengikuti Anda ke perangkat lain dan kembali dari sana. Nama akun di
+bawah catatan menunjukkan tempat penyimpanannya; klik untuk memindahkan
+catatan, atau simpan hanya di komputer ini.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "Tambahkan email ke Tugas"
+text = """
+Tekan Shift+T, seperti di Gmail, atau pilih Tambahkan ke Tugas saat Anda
+mengeklik kanan email. Tugas memakai subjek email, dan chip Email di
+Tugas membuka kembali email tersebut.
+"""

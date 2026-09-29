@@ -378,6 +378,7 @@ menu-pin = Maƙala a sama
 menu-unpin = Cire maƙalawa
 menu-snooze = Jinkirta
 menu-unsnooze = Soke jinkiri
+menu-add-to-tasks = Ƙara a Ayyuka
 menu-print-all = Buga duka
 menu-new-window = Buɗe a sabuwar taga
 menu-move-to = Matsar zuwa

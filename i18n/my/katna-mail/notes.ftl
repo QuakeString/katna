@@ -1,0 +1,73 @@
+# Katna Mail, Burmese (မြန်မာ): the Notes page.
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Side list and search
+
+notes-view-notes = မှတ်စုများ
+notes-view-archive = မော်ကွန်း
+notes-view-trash = အမှိုက်ပုံး
+notes-search = မှတ်စုများ ရှာရန်
+notes-loading = သင့်မှတ်စုများကို ဖွင့်နေသည်…
+
+## Board
+
+notes-take-a-note = မှတ်စုရေးရန်…
+notes-new-list = စာရင်းအသစ်
+notes-pinned = ပင်ထိုးထားသည်
+notes-others = အခြား
+notes-empty = သင်ထည့်သော မှတ်စုများ ဤနေရာတွင် ပေါ်လာမည်
+notes-archive-empty = မော်ကွန်းတင်ထားသော မှတ်စုများ ဤနေရာတွင် ပေါ်လာမည်
+notes-trash-empty = အမှိုက်ပုံးထဲတွင် မှတ်စုမရှိပါ
+notes-none-found = ကိုက်ညီသော မှတ်စု မရှိပါ
+notes-trash-note = အမှိုက်ပုံးထဲရှိ မှတ်စုများကို 7 ရက်အကြာတွင် ဖျက်ပါမည်။
+notes-empty-trash = အမှိုက်ပုံးကို ရှင်းရန်
+notes-ticked = { $count ->
+   *[other] + အမှန်ခြစ်ထားသော အချက် { $count } ခု
+}
+
+## A note's buttons
+
+notes-pin = မှတ်စုကို ပင်ထိုးရန်
+notes-unpin = မှတ်စုကို ပင်ဖြုတ်ရန်
+notes-archive = မော်ကွန်းတင်ရန်
+notes-unarchive = မော်ကွန်းမှ ပြန်ထုတ်ရန်
+notes-delete = မှတ်စု ဖျက်ရန်
+notes-restore = ပြန်ယူရန်
+notes-delete-forever = အပြီးဖျက်ရန်
+notes-color = နောက်ခံ ရွေးစရာများ
+notes-checkboxes = အမှန်ခြစ်ဘောက်စ်များ ပြရန်/ဖျောက်ရန်
+notes-close = ပိတ်ရန်
+
+## The open note
+
+notes-title = ခေါင်းစဉ်
+notes-edited = { $date } တွင် ပြင်ထားသည်
+notes-on-this-computer = ဤကွန်ပျူတာတွင်
+notes-where = ဤမှတ်စုကို သိမ်းထားရာနေရာ
+
+## Colors (tooltips)
+
+notes-color-none = အရောင်မရှိ
+notes-color-coral = ကော်ရယ်
+notes-color-peach = မက်မွန်ရောင်
+notes-color-sand = သဲရောင်
+notes-color-mint = ပူစီနံရောင်
+notes-color-sage = စိမ်းမှိန်ရောင်
+notes-color-fog = မြူရောင်
+notes-color-storm = မုန်တိုင်းရောင်
+notes-color-dusk = ညနေခင်းရောင်
+notes-color-blossom = ပန်းရောင်
+notes-color-clay = ရွှံ့ရောင်
+notes-color-chalk = မြေဖြူရောင်
+
+## Messages at the foot of the window
+
+notes-archived = မှတ်စုကို မော်ကွန်းတင်ပြီးပါပြီ
+notes-unarchived = မှတ်စုကို မော်ကွန်းမှ ပြန်ထုတ်ပြီးပါပြီ
+notes-trashed = မှတ်စုကို အမှိုက်ပုံးသို့ ရွှေ့ပြီးပါပြီ
+notes-restored = မှတ်စုကို ပြန်ယူပြီးပါပြီ
+notes-empty-discarded = မှတ်စုအလွတ်ကို ပယ်ပစ်ပြီးပါပြီ
+notes-deleted-forever = { $count ->
+   *[other] မှတ်စု { $count } ခုကို အပြီးဖျက်ပြီးပါပြီ
+}

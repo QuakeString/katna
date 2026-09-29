@@ -378,6 +378,7 @@ menu-pin = Speld bo vas
 menu-unpin = Ontspeld
 menu-snooze = Sluimer
 menu-unsnooze = Ontsluimer
+menu-add-to-tasks = Voeg by Take
 menu-print-all = Druk alles
 menu-new-window = Maak oop in nuwe venster
 menu-move-to = Skuif na

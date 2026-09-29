@@ -228,6 +228,7 @@ menu-pin = ปักหมุดไว้ด้านบน
 menu-unpin = เลิกปักหมุด
 menu-snooze = เลื่อนเวลา
 menu-unsnooze = ยกเลิกการเลื่อนเวลา
+menu-add-to-tasks = เพิ่มในงาน
 menu-print-all = พิมพ์ทั้งหมด
 menu-new-window = เปิดในหน้าต่างใหม่
 menu-move-to = ย้ายไปที่

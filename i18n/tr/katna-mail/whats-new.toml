@@ -1179,3 +1179,31 @@ Tasks’taki gibi tüm listeler yan yana; alt görevler, yıldızlar, bitiş
 günleri, tekrarlar ve ayrıntılarla. Listeler Google Tasks ve Microsoft
 To Do ile eşitlenir, masaüstü saatindeki görevler de burada görünür.
 """
+
+["2026-09-29-0350-katna-notes"]
+title = "Katna Notlar"
+text = """
+Kenar çubuğundaki Notlar artık Google Keep gibi düzenlenmiş Katna
+Notlar’ı açıyor. Bir not ya da kontrol listesi oluşturun, renk verin, en
+üste sabitleyin ve öğeleri doğrudan panoda işaretleyin. Notlar siz
+yazdıkça kaydedilir; arama kutusu onları bulur; Arşiv ve Çöp kutusu
+onları yoldan çeker, Geri al ile.
+"""
+
+["2026-09-29-0412-notes-sync"]
+title = "Notlar her cihazda"
+text = """
+Notlar artık e-posta hesabınızın Notlar klasöründe duruyor; iPhone ve
+Mac Notlar da kendi notlarını orada tutar. Böylece diğer cihazlarınıza
+sizinle gelir ve oralardan geri döner. Bir notun altındaki hesap adı
+notun nerede saklandığını gösterir; notu taşımak için ona tıklayın veya
+notu yalnızca bu bilgisayarda tutun.
+"""
+
+["2026-09-29-0451-add-mail-to-tasks"]
+title = "E-postayı Görevlere ekleme"
+text = """
+Gmail’deki gibi Shift+T tuşlarına basın ya da bir e-postaya sağ tıklayıp
+Görevlere ekle’yi seçin. Görev e-postanın konusunu alır ve Görevler’deki
+Posta etiketi e-postayı yeniden açar.
+"""

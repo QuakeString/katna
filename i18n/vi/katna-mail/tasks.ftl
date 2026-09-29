@@ -36,6 +36,8 @@ tasks-details = Chi tiết
 tasks-delete = Xóa
 tasks-move-to = Chuyển đến { $list }
 tasks-from-mail = Thư
+tasks-open-mail = Mở thư
+tasks-no-subject = (không có tiêu đề)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Đã hoàn thành việc cần làm
 tasks-toast-deleted = Đã xóa việc cần làm
+tasks-toast-added = { $count ->
+   *[other] Đã thêm { $count } việc cần làm
+}
+tasks-mail-gone = Thư đó không còn ở đây nữa.
 tasks-toast-list-deleted = Đã xóa danh sách
 tasks-toast-moved = Đã chuyển đến { $list }

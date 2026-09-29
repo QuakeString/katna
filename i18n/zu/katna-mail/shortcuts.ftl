@@ -36,6 +36,7 @@ shortcut-move-to = Hambisa ku-
 shortcut-mark-read = Maka njengokufundiwe
 shortcut-mark-unread = Maka njengokungafundiwe
 shortcut-star = Faka noma susa inkanyezi
+shortcut-add-to-tasks = Engeza Kumisebenzi
 shortcut-important = Maka njengokubalulekile
 shortcut-not-important = Maka njengokungabalulekile
 shortcut-check = Thikha ingxoxo

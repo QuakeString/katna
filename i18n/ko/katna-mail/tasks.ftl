@@ -36,6 +36,8 @@ tasks-details = 세부정보
 tasks-delete = 삭제
 tasks-move-to = { $list }(으)로 이동
 tasks-from-mail = 메일
+tasks-open-mail = 메일 열기
+tasks-no-subject = (제목 없음)
 
 ## The details dialog
 
@@ -65,5 +67,9 @@ tasks-due-at = { $day } { $time }
 
 tasks-toast-done = 할 일을 완료했습니다
 tasks-toast-deleted = 할 일을 삭제했습니다
+tasks-toast-added = { $count ->
+   *[other] 할 일 { $count }개를 추가했습니다
+}
+tasks-mail-gone = 해당 메일이 더 이상 없습니다.
 tasks-toast-list-deleted = 목록을 삭제했습니다
 tasks-toast-moved = { $list }(으)로 이동했습니다

@@ -228,6 +228,7 @@ menu-pin = Lẹ̀ mọ́ òkè
 menu-unpin = Yọ kúrò ní òkè
 menu-snooze = Sún síwájú
 menu-unsnooze = Mú padà báyìí
+menu-add-to-tasks = Fi kún Iṣẹ́
 menu-print-all = Tẹ gbogbo rẹ̀ jáde
 menu-new-window = Ṣí ní fèrèsé tuntun
 menu-move-to = Gbé lọ sí

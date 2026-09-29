@@ -36,6 +36,7 @@ shortcut-move-to = Verplaatsen naar
 shortcut-mark-read = Markeren als gelezen
 shortcut-mark-unread = Markeren als ongelezen
 shortcut-star = Ster toevoegen of verwijderen
+shortcut-add-to-tasks = Toevoegen aan Taken
 shortcut-important = Markeren als belangrijk
 shortcut-not-important = Markeren als niet belangrijk
 shortcut-check = Gesprek aanvinken

@@ -36,6 +36,7 @@ shortcut-move-to = Déplacer vers
 shortcut-mark-read = Marquer comme lu
 shortcut-mark-unread = Marquer comme non lu
 shortcut-star = Ajouter ou supprimer le suivi
+shortcut-add-to-tasks = Ajouter aux tâches
 shortcut-important = Marquer comme important
 shortcut-not-important = Marquer comme non important
 shortcut-check = Cocher la conversation

@@ -36,6 +36,7 @@ shortcut-move-to = येथे हलवा
 shortcut-mark-read = वाचलेले म्हणून खूण करा
 shortcut-mark-unread = न वाचलेले म्हणून खूण करा
 shortcut-star = तारांकित करा किंवा तारांकन काढा
+shortcut-add-to-tasks = कार्यांमध्ये जोडा
 shortcut-important = महत्त्वाचे म्हणून खूण करा
 shortcut-not-important = महत्त्वाचे नाही म्हणून खूण करा
 shortcut-check = संभाषणावर टिक करा

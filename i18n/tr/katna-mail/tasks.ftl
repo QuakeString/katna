@@ -37,6 +37,8 @@ tasks-details = Ayrıntılar
 tasks-delete = Sil
 tasks-move-to = { $list } listesine taşı
 tasks-from-mail = Posta
+tasks-open-mail = E-postayı aç
+tasks-no-subject = (konu yok)
 
 ## The details dialog
 
@@ -66,5 +68,10 @@ tasks-due-at = { $day }, { $time }
 
 tasks-toast-done = Görev tamamlandı
 tasks-toast-deleted = Görev silindi
+tasks-toast-added = { $count ->
+    [one] Görevlere eklendi
+   *[other] { $count } görev eklendi
+}
+tasks-mail-gone = Bu e-posta artık burada değil.
 tasks-toast-list-deleted = Liste silindi
 tasks-toast-moved = { $list } listesine taşındı

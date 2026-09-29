@@ -36,6 +36,7 @@ shortcut-move-to = 移至
 shortcut-mark-read = 標示為已讀取
 shortcut-mark-unread = 標示為未讀取
 shortcut-star = 加上或移除星號
+shortcut-add-to-tasks = 新增至工作
 shortcut-important = 標示為重要
 shortcut-not-important = 標示為不重要
 shortcut-check = 勾選會話群組
