@@ -50,6 +50,28 @@ notify-update-ready-body = Version { $version } is downloaded. Update installs i
 # Its button: shows the update in Katna Mail, ready to install.
 notify-update = Update
 
+## Reminders of calendar events
+
+# Under the event's title: how soon it starts.
+notify-event-now = Now
+notify-event-in-minutes = { $count ->
+    [one] In 1 minute
+   *[other] In { $count } minutes
+}
+notify-event-in-hours = { $count ->
+    [one] In 1 hour
+   *[other] In { $count } hours
+}
+notify-event-in-days = { $count ->
+    [one] Tomorrow
+   *[other] In { $count } days
+}
+# For an event that lasts all day.
+notify-event-all-day = All day
+# Its buttons: open the video call, and remind again in 5 minutes.
+notify-event-join = Join
+notify-event-snooze = Snooze 5 min
+
 ## The buttons of new-mail notifications and reminders
 
 notify-open = Open

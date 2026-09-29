@@ -105,7 +105,7 @@ fn minutes_of(time: Time) -> u32 {
 }
 
 impl MailWindow {
-    pub(super) fn task_open_details(
+    pub(in crate::window) fn task_open_details(
         &mut self,
         id: i64,
         window: &mut Window,
@@ -179,7 +179,10 @@ impl MailWindow {
 
     fn task_close_details(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         self.tasks.details = None;
-        if let Some(focus) = &self.tasks.focus {
+        // Back to the page it was opened on: Tasks, or the Calendar.
+        if self.app == super::super::apps::App::Calendar {
+            window.focus(&self.calendar.focus, cx);
+        } else if let Some(focus) = &self.tasks.focus {
             window.focus(focus, cx);
         }
         cx.notify();
@@ -302,7 +305,7 @@ impl MailWindow {
 
     // --- Drawing -------------------------------------------------------------
 
-    pub(super) fn render_task_details(
+    pub(in crate::window) fn render_task_details(
         &self,
         th: &Theme,
         cx: &mut Context<Self>,

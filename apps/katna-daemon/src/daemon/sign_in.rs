@@ -338,7 +338,7 @@ async fn save_picture(daemon: Weak<Daemon>, account: AccountId, url: String, tls
 /// Opens `url` in the default browser: through the desktop portal, else
 /// `xdg-open`.
 #[cfg(unix)]
-async fn open_in_browser(url: &str) {
+pub(crate) async fn open_in_browser(url: &str) {
     let portal = async {
         let connection = zbus::Connection::session().await?;
         connection
@@ -366,7 +366,7 @@ async fn open_in_browser(url: &str) {
 /// Opens `url` in the default browser. `rundll32` takes the URL as one
 /// argument, where `cmd /c start` would split it at every `&`.
 #[cfg(windows)]
-async fn open_in_browser(url: &str) {
+pub(crate) async fn open_in_browser(url: &str) {
     spawn_opener(
         std::process::Command::new("rundll32")
             .arg("url.dll,FileProtocolHandler")
