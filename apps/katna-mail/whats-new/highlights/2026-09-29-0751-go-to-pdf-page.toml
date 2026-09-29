@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Go straight to a PDF page"
+text = """
+The page number under a PDF is now a box: click it or press Ctrl+G, type
+a page and press Enter to jump there.
+"""

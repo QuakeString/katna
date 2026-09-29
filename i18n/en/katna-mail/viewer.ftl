@@ -16,3 +16,9 @@ viewer-slides-unreadable = These slides could not be read.
 viewer-no-preview = No preview available
 # Above each slide of a presentation. $number: the slide's number.
 viewer-slide = Slide { $number }
+# In the pill under a PDF, before the box with the page number on show,
+# which can be changed to go to another page.
+viewer-page = Page
+# After that box. $count: the PDF's number of pages.
+viewer-page-count = of { $count }
+viewer-go-to-page-tip = Type a page number and press Enter (Ctrl+G)
