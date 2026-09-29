@@ -171,10 +171,7 @@ impl TasksPage {
 
     /// The open tasks due before `today` and on it, from every list, each
     /// with its list: by day, then by time (those without one last).
-    fn due_now(
-        &self,
-        today: jiff::civil::Date,
-    ) -> (Vec<Placed<'_>>, Vec<Placed<'_>>) {
+    fn due_now(&self, today: jiff::civil::Date) -> (Vec<Placed<'_>>, Vec<Placed<'_>>) {
         let mut found: Vec<(jiff::civil::Date, &Column, &TaskItem)> = self
             .columns()
             .iter()
