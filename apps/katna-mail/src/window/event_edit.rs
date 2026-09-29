@@ -1504,7 +1504,8 @@ impl MailWindow {
             div()
                 .id("event-draft")
                 .occlude()
-                .w(px(QUICK_WIDTH))
+                // A phone's window, less a margin at each side.
+                .w(px(QUICK_WIDTH.min(self.layout.shape.width - 16.0)))
                 .p(px(8.0))
                 .pb(px(16.0))
                 .flex()
