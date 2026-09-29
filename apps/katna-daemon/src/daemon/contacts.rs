@@ -325,6 +325,14 @@ pub(super) async fn card_dav(
         // Google's CardDAV server takes the account's sign-in.
         Some(OAuthProvider::Google) => {
             let tokens = daemon.oauth_tokens(account, OAuthProvider::Google).await?;
+            // A sign-in from before Katna asked for it cannot use it.
+            if !tokens
+                .has_scope(katna_sync::oauth::GOOGLE_CARDDAV)
+                .await
+                .map_err(|e| e.to_string())?
+            {
+                return Ok(None);
+            }
             let token = tokens.access_token().await.map_err(|e| e.to_string())?;
             return Ok(Some(CardDav::bearer(&token, tls)));
         }

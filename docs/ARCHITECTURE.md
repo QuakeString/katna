@@ -941,7 +941,8 @@ and IMAP domains, read with `sync-collection` and `addressbook-multiget`
 (`katna_sync::{contacts, carddav}`; vCard 3.0/4.0 in `katna_dav::vcard`).
 Each account tries its best way first and the others when that one is not
 available (`katna_sync::methods`, `Data::Contacts`): a Google sign-in uses
-the People API, then Google's CardDAV server with the same token; Outlook
+the People API, then Google's CardDAV server with the same token (scope
+`carddav`, CardDAV API enabled in the Cloud project); Outlook
 has only Graph; a password account has CardDAV. The way that worked is
 remembered and replaces the account's address books from any other way.
 The daemon syncs 20 s after start, every 15 minutes, on Sync now and after
