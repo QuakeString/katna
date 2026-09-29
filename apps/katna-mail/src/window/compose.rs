@@ -664,6 +664,44 @@ impl Existing {
 }
 
 impl MailWindow {
+    /// Starts a reply to message `id` of the open conversation with `file`
+    /// attached (a marked copy from the viewer). A reply already being
+    /// written to the conversation gets the file instead.
+    pub(super) fn reply_with_file(
+        &mut self,
+        id: MessageId,
+        file: &katna_render::AttachmentFile,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::Reply, Some(id), window, cx);
+        let open = self.reader.as_ref().map(|r| r.key);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        let answers = compose.kind != Kind::New
+            && (compose.source == Some(id) || open.is_some() && compose.answering == open);
+        if !answers {
+            return;
+        }
+        if compose.used_bytes(cx) + file.bytes.len() > attach::MAX_TOTAL {
+            let problem = tr!(
+                "compose-file-too-large",
+                name = file.name.clone(),
+                limit = format::size(attach::MAX_TOTAL as u64)
+            );
+            self.show_snackbar(problem, None, cx);
+            return;
+        }
+        compose.attachments.push(Attachment {
+            name: file.name.clone(),
+            mime: file.mime.clone(),
+            data: Arc::new(file.bytes.clone()),
+        });
+        compose.attach_scroll.scroll_to_bottom();
+        cx.notify();
+    }
+
     /// Opens the compose window. `source` picks the message a reply or
     /// forward starts from; by default the newest of the open conversation.
     pub(super) fn open_compose(

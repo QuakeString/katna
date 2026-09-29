@@ -106,6 +106,9 @@ pub(super) struct Files {
     restore: Option<FocusHandle>,
     /// The viewer shows the attachments of a decrypted message.
     viewer_encrypted: bool,
+    /// The open conversation's message the viewer shows, which a marked
+    /// copy can be sent back to in a reply.
+    viewer_message: Option<MessageId>,
     _viewer_events: Option<Subscription>,
 }
 
@@ -691,7 +694,7 @@ impl MailWindow {
             self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
             return;
         };
-        self.show_viewer(raw, encrypted, items, index, window, cx);
+        self.show_viewer(raw, encrypted, items, index, Some(id), window, cx);
     }
 
     /// Opens an attachment chip of the message list in the viewer, with
@@ -734,7 +737,7 @@ impl MailWindow {
             self.open_elsewhere(file.message, index, &name, open_in == OpenIn::Ask, cx);
             return;
         }
-        self.show_viewer(raw, encrypted, items, index, window, cx);
+        self.show_viewer(raw, encrypted, items, index, None, window, cx);
     }
 
     /// Where a click opens `item`: as Default apps says for its type; a
@@ -749,20 +752,24 @@ impl MailWindow {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn show_viewer(
         &mut self,
         raw: Arc<Vec<u8>>,
         encrypted: bool,
         items: Vec<Item>,
         index: usize,
+        message: Option<MessageId>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         self.close_viewer(window, cx);
         self.files.restore = window.focused(cx);
         self.files.viewer_encrypted = encrypted;
+        self.files.viewer_message = message;
         let th = self.theme(window);
-        let viewer = cx.new(|cx| Viewer::new(raw, items, index, th, window, cx));
+        let reply = message.is_some();
+        let viewer = cx.new(|cx| Viewer::new(raw, items, index, reply, th, window, cx));
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer);
         cx.notify();
@@ -791,6 +798,13 @@ impl MailWindow {
                 let ask = group(kind).is_some_and(|g| self.config.mail.open.get(g) == OpenIn::Ask);
                 self.close_viewer(window, cx);
                 self.open_attachment_with(file.clone(), ask, encrypted, cx)
+            }
+            ViewerEvent::Reply(file) => {
+                let message = self.files.viewer_message;
+                self.close_viewer(window, cx);
+                if let Some(id) = message {
+                    self.reply_with_file(id, file, window, cx);
+                }
             }
         }
     }

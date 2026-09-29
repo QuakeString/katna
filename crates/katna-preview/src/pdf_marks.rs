@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Writes marks into a copy of a PDF as standard annotations (Highlight,
-//! Underline, Squiggly, StrikeOut, Ink), each with its own appearance so
+//! Underline, Squiggly, StrikeOut, Ink, Text for sticky notes, FreeText
+//! for text boxes), each with its own appearance so
 //! every reader draws it the same way. The copy is the original file
 //! byte for byte with the changes added at its end (an incremental
 //! update), which keeps digital signatures valid. Uses `lopdf`; hayro
@@ -12,7 +13,7 @@ use std::fmt::Write as _;
 
 use lopdf::{Dictionary, IncrementalDocument, Object, ObjectId, Stream, StringFormat};
 
-use crate::markup::{Kind, Mark, PEN_WIDTH, Shape};
+use crate::markup::{Kind, LINE_HEIGHT, Mark, PEN_WIDTH, Quad, Shape, wrap};
 
 /// Why marks cannot be saved into a PDF.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -133,13 +134,14 @@ fn geometry(mark: &Mark, t: &Transform) -> Vec<Draw> {
     };
     match &mark.shape {
         Shape::Ink(points) => vec![line(points.clone(), PEN_WIDTH)],
+        Shape::Note { .. } | Shape::Box { .. } => Vec::new(),
         Shape::Text { quads, .. } => quads
             .iter()
             .map(|q| {
                 let h = (q.bottom - q.top).max(1.0);
                 let width = (h * 0.07).max(0.6);
                 match mark.kind {
-                    Kind::Highlight | Kind::Ink => Draw::Fill(
+                    Kind::Highlight | Kind::Ink | Kind::Note | Kind::FreeText => Draw::Fill(
                         [
                             (q.left, q.top),
                             (q.right, q.top),
@@ -172,6 +174,9 @@ fn annotation(
     t: &Transform,
     n: usize,
 ) -> Option<ObjectId> {
+    if mark.kind.typed() {
+        return typed(doc, page, mark, t, n);
+    }
     let draws = geometry(mark, t);
     // The bounds of everything drawn, with room for the lines' width.
     let (mut x0, mut y0, mut x1, mut y1) = (f64::MAX, f64::MAX, f64::MIN, f64::MIN);
@@ -237,6 +242,8 @@ fn annotation(
             Kind::Squiggly => "Squiggly",
             Kind::StrikeOut => "StrikeOut",
             Kind::Ink => "Ink",
+            Kind::Note => "Text",
+            Kind::FreeText => "FreeText",
         },
     );
     annot.set("Rect", rect());
@@ -285,8 +292,167 @@ fn annotation(
             border.set("W", real(f64::from(PEN_WIDTH)));
             annot.set("BS", border);
         }
+        Shape::Note { .. } | Shape::Box { .. } => {}
     }
     Some(doc.add_object(annot))
+}
+
+/// The page-space box around `q` (in points as drawn).
+fn page_rect(t: &Transform, q: &Quad) -> (f64, f64, f64, f64) {
+    let corners = [
+        (q.left, q.top),
+        (q.right, q.top),
+        (q.left, q.bottom),
+        (q.right, q.bottom),
+    ]
+    .map(|p| map(t, p));
+    let xs = corners.map(|c| c.0);
+    let ys = corners.map(|c| c.1);
+    let min = |v: [f64; 4]| v.into_iter().fold(f64::MAX, f64::min);
+    let max = |v: [f64; 4]| v.into_iter().fold(f64::MIN, f64::max);
+    (min(xs), min(ys), max(xs), max(ys))
+}
+
+/// A sticky note (Text) or a text box (FreeText).
+fn typed(
+    doc: &mut lopdf::Document,
+    page: ObjectId,
+    mark: &Mark,
+    t: &Transform,
+    n: usize,
+) -> Option<ObjectId> {
+    let frame = mark.shape.frame()?;
+    let text = mark.shape.typed_text()?;
+    let (x0, y0, x1, y1) = page_rect(t, &frame);
+    let rect = || vec![real(x0), real(y0), real(x1), real(y1)];
+    let [r, g, b] = mark.color;
+    let mut content = String::new();
+    let mut form = Dictionary::new();
+    form.set("Type", "XObject");
+    form.set("Subtype", "Form");
+    form.set("BBox", rect());
+    let mut annot = Dictionary::new();
+    annot.set("Type", "Annot");
+    annot.set("Rect", rect());
+    annot.set("P", page);
+    annot.set("NM", Object::string_literal(format!("katna-{n}")));
+    annot.set("Contents", text_string(text));
+    match &mark.shape {
+        Shape::Note { .. } => {
+            // A square of the note's colour with three lines of "text".
+            let (w, h) = (x1 - x0, y1 - y0);
+            let _ = writeln!(
+                content,
+                "{r:.3} {g:.3} {b:.3} rg 0.25 0.25 0.25 RG 0.8 w {:.2} {:.2} {:.2} {:.2} re B",
+                x0 + 1.0,
+                y0 + 1.0,
+                w - 2.0,
+                h - 2.0
+            );
+            content.push_str("0.3 0.3 0.3 RG 1.2 w\n");
+            for f in [0.3, 0.5, 0.7] {
+                let y = y1 - h * f;
+                let _ = writeln!(
+                    content,
+                    "{:.2} {y:.2} m {:.2} {y:.2} l S",
+                    x0 + w * 0.25,
+                    x1 - w * 0.25
+                );
+            }
+            annot.set("Subtype", "Text");
+            annot.set("Name", "Comment");
+            annot.set("Open", false);
+            annot.set(
+                "C",
+                vec![real(f64::from(r)), real(f64::from(g)), real(f64::from(b))],
+            );
+            // Printed, and the same size and way up at any zoom.
+            annot.set("F", 4 | 8 | 16);
+        }
+        Shape::Box {
+            at, width, size, ..
+        } => {
+            let size = *size;
+            let _ = writeln!(content, "BT /Helv {size:.2} Tf {r:.3} {g:.3} {b:.3} rg");
+            for (ix, line) in wrap(text, *width, size).iter().enumerate() {
+                let baseline = at.1 + size * LINE_HEIGHT * ix as f32 + size * 0.9;
+                let (ex, ey) = map(t, (at.0, baseline));
+                // Upright as the page is shown: the text's up is the
+                // screen's up, whatever the page's rotation.
+                let _ = writeln!(
+                    content,
+                    "{:.4} {:.4} {:.4} {:.4} {ex:.2} {ey:.2} Tm ({}) Tj",
+                    t[0],
+                    t[1],
+                    -t[2],
+                    -t[3],
+                    win_ansi(line)
+                );
+            }
+            content.push_str("ET\n");
+            let mut font = Dictionary::new();
+            font.set("Type", "Font");
+            font.set("Subtype", "Type1");
+            font.set("BaseFont", "Helvetica");
+            font.set("Encoding", "WinAnsiEncoding");
+            let mut fonts = Dictionary::new();
+            fonts.set("Helv", font);
+            let mut resources = Dictionary::new();
+            resources.set("Font", fonts);
+            form.set("Resources", resources);
+            annot.set("Subtype", "FreeText");
+            annot.set(
+                "DA",
+                Object::string_literal(format!("/Helv {size:.2} Tf {r:.3} {g:.3} {b:.3} rg")),
+            );
+            let mut border = Dictionary::new();
+            border.set("W", 0);
+            annot.set("BS", border);
+            annot.set("F", 4);
+        }
+        _ => return None,
+    }
+    let appearance = doc.add_object(Stream::new(form, content.into_bytes()));
+    let mut ap = Dictionary::new();
+    ap.set("N", appearance);
+    annot.set("AP", ap);
+    Some(doc.add_object(annot))
+}
+
+/// `text` for a PDF string in Helvetica's WinAnsi encoding, escaped;
+/// characters it lacks become "?".
+fn win_ansi(text: &str) -> String {
+    let mut out = String::new();
+    for c in text.chars() {
+        let byte = match c {
+            ' '..='~' => c as u32,
+            '\u{a0}'..='\u{ff}' => c as u32,
+            '€' => 0x80,
+            '‚' => 0x82,
+            '„' => 0x84,
+            '…' => 0x85,
+            '‘' => 0x91,
+            '’' => 0x92,
+            '“' => 0x93,
+            '”' => 0x94,
+            '•' => 0x95,
+            '–' => 0x96,
+            '—' => 0x97,
+            '™' => 0x99,
+            _ => u32::from(b'?'),
+        };
+        match byte {
+            0x28 | 0x29 | 0x5c => {
+                out.push('\\');
+                out.push(byte as u8 as char);
+            }
+            0x20..=0x7e => out.push(byte as u8 as char),
+            _ => {
+                let _ = write!(out, "\\{byte:03o}");
+            }
+        }
+    }
+    out
 }
 
 fn path(out: &mut String, points: &[(f64, f64)]) {
@@ -315,5 +481,16 @@ fn text_string(text: &str) -> Object {
             bytes.extend_from_slice(&unit.to_be_bytes());
         }
         Object::String(bytes, StringFormat::Hexadecimal)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::win_ansi;
+
+    #[test]
+    fn text_box_strings_are_escaped() {
+        assert_eq!(win_ansi("a (b) \\ c"), "a \\(b\\) \\\\ c");
+        assert_eq!(win_ansi("café – 日"), "caf\\351 \\226 ?");
     }
 }

@@ -297,6 +297,26 @@ mod tests {
                 color: [1.0, 0.0, 0.0],
                 shape: Shape::Ink(vec![(300.0, 300.0), (400.0, 350.0)]),
             },
+            Mark {
+                page: 0,
+                kind: Kind::Note,
+                color: [0.2, 0.8, 0.2],
+                shape: Shape::Note {
+                    at: (500.0, 100.0),
+                    text: "Check this".into(),
+                },
+            },
+            Mark {
+                page: 0,
+                kind: Kind::FreeText,
+                color: [0.0, 0.0, 1.0],
+                shape: Shape::Box {
+                    at: (100.0, 500.0),
+                    width: 200.0,
+                    size: 24.0,
+                    text: "MMMM MMMM".into(),
+                },
+            },
         ];
         let copy = doc.with_marks(&marks).unwrap();
         // An incremental update: the original, then the changes.
@@ -320,7 +340,15 @@ mod tests {
                 dict.get(b"Subtype").unwrap().as_name().unwrap().to_vec()
             })
             .collect();
-        assert_eq!(kinds, [b"Highlight".to_vec(), b"Ink".to_vec()]);
+        assert_eq!(
+            kinds,
+            [
+                b"Highlight".to_vec(),
+                b"Ink".to_vec(),
+                b"Text".to_vec(),
+                b"FreeText".to_vec()
+            ]
+        );
         // The highlight sits on the text in the page's own coordinates:
         // the baseline at 700 pt from the bottom.
         let highlight = saved
@@ -347,6 +375,17 @@ mod tests {
         );
         let red = pixel(350, 325);
         assert!(red[0] > 200 && red[1] < 80, "{red:?}");
+        // The note's green square, and the text box's blue letters.
+        let green = pixel(503, 108);
+        assert!(green[1] > 180 && green[0] < 100, "{green:?}");
+        let blue = (100..300)
+            .flat_map(|x| (500..530).map(move |y| (x, y)))
+            .filter(|&(x, y)| {
+                let p = pixel(x, y);
+                p[2] > 200 && p[0] < 80
+            })
+            .count();
+        assert!(blue > 50, "{blue}");
     }
 
     #[test]

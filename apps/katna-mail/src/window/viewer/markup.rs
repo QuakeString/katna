@@ -2,9 +2,12 @@
 
 //! Marking up a PDF in the attachment viewer. "Mark up" in the top bar
 //! puts a pill of tools under it: select text, highlight, underline,
-//! squiggle, strike through, pen and eraser, five colours, and undo and
-//! redo. The text tools mark what a drag (or a double or triple click)
-//! selects; the pen draws; the eraser removes the marks it touches.
+//! squiggle, strike through, pen, sticky note, text box and eraser, five
+//! colours, and undo and redo. The text tools mark what a drag (or a
+//! double or triple click) selects; the pen draws; a click with the note
+//! or text tool places one and opens it for typing (Ctrl+Enter or a click
+//! elsewhere finishes, Escape drops the change); clicking a note or a
+//! text box opens it again; the eraser removes the marks it touches.
 //!
 //! Marks are drawn over the page's picture and go into a file only when
 //! saving: Save then writes a copy with them as standard PDF annotations
@@ -19,14 +22,17 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, Bounds, Context, CursorStyle, DispatchPhase, FontWeight, MouseButton,
-    MouseMoveEvent, MouseUpEvent, PathBuilder, Pixels, Point, Rgba, SharedString, Stateful, Task,
-    Window, canvas, div, prelude::*, rgba,
+    AnyElement, Bounds, Context, CursorStyle, DispatchPhase, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PathBuilder, Pixels, Point, Rgba,
+    SharedString, Stateful, Subscription, Task, Window, canvas, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
-use katna_preview::markup::{Kind, Mark, Marks, PEN_WIDTH, Quad, Shape};
+use katna_preview::markup::{
+    Kind, LINE_HEIGHT, Mark, Marks, NOTE_SIZE, PEN_WIDTH, Quad, Shape, TEXT_SIZE, TEXT_WIDTH, wrap,
+};
 use katna_preview::pdf::SaveError;
 use katna_render::AttachmentFile;
+use katna_ui::{InputEvent, TextArea};
 use katna_ui::{Ripple, px, unpx};
 
 use super::{BAR_HEIGHT, Content, HOVER, INK, INK_DIM, PILL, PdfView, Viewer, ViewerEvent};
@@ -70,7 +76,7 @@ pub(super) enum Tool {
 }
 
 /// The tools in the pill: the tool, its icon and its name's id.
-const TOOLS: [(Tool, &str, &str, &str); 7] = [
+const TOOLS: [(Tool, &str, &str, &str); 9] = [
     (
         Tool::Select,
         "viewer-tool-select",
@@ -108,6 +114,18 @@ const TOOLS: [(Tool, &str, &str, &str); 7] = [
         "viewer-tool-pen",
     ),
     (
+        Tool::Mark(Kind::Note),
+        "viewer-tool-note",
+        "notes",
+        "viewer-tool-note",
+    ),
+    (
+        Tool::Mark(Kind::FreeText),
+        "viewer-tool-text",
+        "format-text",
+        "viewer-tool-text",
+    ),
+    (
         Tool::Eraser,
         "viewer-tool-eraser",
         "eraser",
@@ -122,6 +140,21 @@ pub(super) enum Leave {
     Show(usize),
 }
 
+/// A note or a text box open for typing.
+struct Typing {
+    page: usize,
+    kind: Kind,
+    /// Its top left, in points.
+    at: (f32, f32),
+    /// A text box's width, in points.
+    width: f32,
+    color: [f32; 3],
+    /// The mark it changes, or none for a new one.
+    editing: Option<usize>,
+    area: Entity<TextArea>,
+    _events: Subscription,
+}
+
 pub(super) struct Markup {
     /// The pill of tools is out.
     on: bool,
@@ -130,7 +163,7 @@ pub(super) struct Markup {
     /// while selecting or erasing, so the pill keeps its size.
     last: Kind,
     /// Each kind of mark's colour: a place in its palette.
-    colors: [usize; 5],
+    colors: [usize; 7],
     pub(super) marks: Marks,
     /// A pen stroke being drawn: its page and points.
     stroke: Option<(usize, Vec<(f32, f32)>)>,
@@ -146,6 +179,10 @@ pub(super) struct Markup {
     ask: Option<Leave>,
     /// Where each page was on screen at the last frame.
     spots: Rc<RefCell<HashMap<usize, Bounds<Pixels>>>>,
+    /// The note or text box being typed.
+    typing: Option<Typing>,
+    /// Typing ended: the viewer takes the keys back at the next frame.
+    refocus: bool,
 }
 
 impl Markup {
@@ -154,7 +191,7 @@ impl Markup {
             on: false,
             tool: Tool::Select,
             last: Kind::Highlight,
-            colors: [0; 5],
+            colors: [0; 7],
             marks: Marks::default(),
             stroke: None,
             erasing: false,
@@ -164,7 +201,19 @@ impl Markup {
             _saving: None,
             ask: None,
             spots: Rc::default(),
+            typing: None,
+            refocus: false,
         }
+    }
+
+    /// A note or a text box is open for typing: the keys are its.
+    pub(super) fn typing(&self) -> bool {
+        self.typing.is_some()
+    }
+
+    /// Whether the viewer should take the keys back, once.
+    pub(super) fn take_refocus(&mut self) -> bool {
+        std::mem::take(&mut self.refocus)
     }
 
     /// The question about unsaved marks is on screen.
@@ -172,11 +221,15 @@ impl Markup {
         self.ask.is_some()
     }
 
-    /// The pen or the eraser is in use: the pages take the pointer.
+    /// The pen, the note or text tool or the eraser is in use: the pages
+    /// take the pointer.
     pub(super) fn drawing(&self) -> bool {
         self.on
             && self.allowed == Some(Ok(()))
-            && matches!(self.tool, Tool::Mark(Kind::Ink) | Tool::Eraser)
+            && matches!(
+                self.tool,
+                Tool::Mark(Kind::Ink | Kind::Note | Kind::FreeText) | Tool::Eraser
+            )
     }
 }
 
@@ -187,11 +240,13 @@ fn slot(kind: Kind) -> usize {
         Kind::Squiggly => 2,
         Kind::StrikeOut => 3,
         Kind::Ink => 4,
+        Kind::Note => 5,
+        Kind::FreeText => 6,
     }
 }
 
 fn palette(kind: Kind) -> &'static [(&'static str, u32); 5] {
-    if kind == Kind::Highlight {
+    if matches!(kind, Kind::Highlight | Kind::Note) {
         &MARKERS
     } else {
         &INKS
@@ -226,6 +281,7 @@ impl Viewer {
         let Some(doc) = self.pdf().map(|pdf| pdf.doc.clone()) else {
             return;
         };
+        self.finish_typing(true, cx);
         let m = &mut self.markup;
         m.on = !m.on;
         m.failed = false;
@@ -250,6 +306,7 @@ impl Viewer {
     }
 
     fn set_tool(&mut self, tool: Tool, cx: &mut Context<Self>) {
+        self.finish_typing(true, cx);
         self.markup.tool = tool;
         if let Tool::Mark(kind) = tool {
             self.markup.last = kind;
@@ -273,6 +330,7 @@ impl Viewer {
 
     /// Undoes the last mark made or removed, if the marks have any.
     pub(super) fn undo_mark(&mut self, cx: &mut Context<Self>) -> bool {
+        self.finish_typing(true, cx);
         let done = self.markup.marks.undo();
         if done {
             cx.notify();
@@ -281,6 +339,7 @@ impl Viewer {
     }
 
     pub(super) fn redo_mark(&mut self, cx: &mut Context<Self>) -> bool {
+        self.finish_typing(true, cx);
         let done = self.markup.marks.redo();
         if done {
             cx.notify();
@@ -381,13 +440,20 @@ impl Viewer {
             .map(|(page, _)| *page)
     }
 
-    /// A press on `page` with the pen or the eraser: whether it was taken.
+    /// A press on `page` with the pen, the note or text tool or the
+    /// eraser: whether it was taken. A press while typing only finishes
+    /// the typing.
     pub(super) fn press_page(
         &mut self,
         page: usize,
         at: Point<Pixels>,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> bool {
+        if self.markup.typing.is_some() {
+            self.finish_typing(true, cx);
+            return true;
+        }
         let Some(tool) = self.marking() else {
             return false;
         };
@@ -395,6 +461,36 @@ impl Viewer {
             return false;
         };
         match tool {
+            Tool::Mark(kind) if kind.typed() => {
+                let z = self.pdf().map_or(1.0, |pdf| pdf.z);
+                let (w, h) = self.pdf().map_or((0.0, 0.0), |pdf| pdf.doc.page_size(page));
+                let hit = self
+                    .markup
+                    .marks
+                    .at(page, point.0, point.1, 2.0 / z)
+                    .filter(|&ix| self.markup.marks.list()[ix].kind == kind);
+                match hit {
+                    Some(ix) => self.open_typed(ix, window, cx),
+                    None if kind == Kind::Note => {
+                        let half = NOTE_SIZE / 2.0;
+                        let at = (
+                            (point.0 - half).clamp(0.0, (w - NOTE_SIZE).max(0.0)),
+                            (point.1 - half).clamp(0.0, (h - NOTE_SIZE).max(0.0)),
+                        );
+                        let color = self.color_of(kind);
+                        self.start_typing(page, kind, at, 0.0, color, None, "", window, cx);
+                    }
+                    None => {
+                        let width = TEXT_WIDTH.min(w - point.0 - 4.0).max(40.0);
+                        let at = (
+                            point.0.min((w - width).max(0.0)),
+                            (point.1 - TEXT_SIZE * LINE_HEIGHT / 2.0).max(0.0),
+                        );
+                        let color = self.color_of(kind);
+                        self.start_typing(page, kind, at, width, color, None, "", window, cx);
+                    }
+                }
+            }
             Tool::Mark(Kind::Ink) => self.markup.stroke = Some((page, vec![point])),
             Tool::Eraser => {
                 self.markup.erasing = true;
@@ -405,6 +501,267 @@ impl Viewer {
         self.text.clear();
         cx.notify();
         true
+    }
+
+    /// Opens note or text box `ix` for typing.
+    fn open_typed(&mut self, ix: usize, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(mark) = self.markup.marks.list().get(ix).cloned() else {
+            return;
+        };
+        let (at, width, text) = match &mark.shape {
+            Shape::Note { at, text } => (*at, 0.0, text.clone()),
+            Shape::Box {
+                at, width, text, ..
+            } => (*at, *width, text.clone()),
+            _ => return,
+        };
+        self.start_typing(
+            mark.page,
+            mark.kind,
+            at,
+            width,
+            mark.color,
+            Some(ix),
+            &text,
+            window,
+            cx,
+        );
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn start_typing(
+        &mut self,
+        page: usize,
+        kind: Kind,
+        at: (f32, f32),
+        width: f32,
+        color: [f32; 3],
+        editing: Option<usize>,
+        text: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let placeholder = if kind == Kind::Note {
+            tr!("viewer-note-placeholder")
+        } else {
+            tr!("viewer-text-placeholder")
+        };
+        let text = text.to_owned();
+        let accent = self.th.accent;
+        let area = cx.new(|cx| {
+            let mut area = TextArea::new(placeholder, cx);
+            area.set_accent(rgba(accent).into());
+            let end = text.len();
+            area.set_text(text, end, cx);
+            area
+        });
+        let _events = cx.subscribe_in(&area, window, |this, _, event, _, cx| match event {
+            InputEvent::Submit => this.finish_typing(true, cx),
+            InputEvent::Cancel => this.finish_typing(false, cx),
+            InputEvent::Changed => cx.notify(),
+        });
+        window.focus(&area.read(cx).focus_handle(cx), cx);
+        self.text.clear();
+        self.markup.typing = Some(Typing {
+            page,
+            kind,
+            at,
+            width,
+            color,
+            editing,
+            area,
+            _events,
+        });
+        cx.notify();
+    }
+
+    /// Closes the note or text box being typed, keeping what was typed
+    /// when `keep`: an empty one goes.
+    pub(super) fn finish_typing(&mut self, keep: bool, cx: &mut Context<Self>) {
+        let Some(typing) = self.markup.typing.take() else {
+            return;
+        };
+        self.markup.refocus = true;
+        cx.notify();
+        if !keep {
+            return;
+        }
+        let text = typing.area.read(cx).text().trim_end().to_owned();
+        let shape = match typing.kind {
+            Kind::Note => Shape::Note {
+                at: typing.at,
+                text: text.clone(),
+            },
+            _ => Shape::Box {
+                at: typing.at,
+                width: typing.width,
+                size: TEXT_SIZE,
+                text: text.clone(),
+            },
+        };
+        let mark = Mark {
+            page: typing.page,
+            kind: typing.kind,
+            color: typing.color,
+            shape,
+        };
+        let marks = &mut self.markup.marks;
+        match (typing.editing, text.trim().is_empty()) {
+            (Some(ix), true) => marks.remove(ix),
+            (Some(ix), false) => marks.replace(ix, mark),
+            (None, false) => marks.add(mark),
+            (None, true) => {}
+        }
+    }
+
+    /// Removes the note or text box being typed.
+    fn delete_typing(&mut self, cx: &mut Context<Self>) {
+        if let Some(ix) = self.markup.typing.take().and_then(|t| t.editing) {
+            self.markup.marks.remove(ix);
+        }
+        self.markup.refocus = true;
+        cx.notify();
+    }
+
+    /// The notes and text boxes on `page`, over its picture, and the one
+    /// being typed. A click on one opens it, unless erasing.
+    pub(super) fn page_typed(&self, page: usize, z: f32, cx: &Context<Self>) -> Vec<AnyElement> {
+        let editing = self.markup.typing.as_ref().and_then(|t| t.editing);
+        let can_open = self.markup.allowed == Some(Ok(())) && self.markup.tool != Tool::Eraser;
+        let mut out = Vec::new();
+        for (ix, mark) in self.markup.marks.list().iter().enumerate() {
+            if mark.page != page || !mark.kind.typed() || Some(ix) == editing {
+                continue;
+            }
+            let color = paint_color(mark.color, 1.0);
+            let open = cx.listener(move |this, _: &MouseDownEvent, window, cx| {
+                this.finish_typing(true, cx);
+                this.open_typed(ix, window, cx);
+                cx.stop_propagation();
+            });
+            let element = match &mark.shape {
+                Shape::Note { at, text } => note_icon(*at, z, color)
+                    .id(("viewer-note", ix))
+                    .tooltip(tip(text.clone(), &self.th)),
+                Shape::Box {
+                    at,
+                    width,
+                    size,
+                    text,
+                } => div()
+                    .id(("viewer-text-box", ix))
+                    .absolute()
+                    .left(px(at.0 * z))
+                    .top(px(at.1 * z))
+                    .w(px(width * z))
+                    .flex()
+                    .flex_col()
+                    .text_size(px(size * z))
+                    .line_height(px(size * LINE_HEIGHT * z))
+                    .text_color(color)
+                    .children(
+                        wrap(text, *width, *size)
+                            .into_iter()
+                            .map(|line| div().whitespace_nowrap().child(line)),
+                    ),
+                _ => continue,
+            };
+            out.push(
+                element
+                    .when(can_open, |d| {
+                        d.cursor_pointer().on_mouse_down(MouseButton::Left, open)
+                    })
+                    .into_any_element(),
+            );
+        }
+        if let Some(typing) = self.markup.typing.as_ref().filter(|t| t.page == page) {
+            let color = paint_color(typing.color, 1.0);
+            let stop =
+                |_: &MouseDownEvent, _: &mut Window, cx: &mut gpui::App| cx.stop_propagation();
+            if typing.kind == Kind::Note {
+                out.push(note_icon(typing.at, z, color).into_any_element());
+                let button = |id: &'static str, label: String| {
+                    div()
+                        .id(id)
+                        .px(px(10.0))
+                        .py(px(4.0))
+                        .rounded_full()
+                        .cursor_pointer()
+                        .text_size(px(13.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .hover(|s| s.bg(rgba(0x0000001a)))
+                        .child(label)
+                };
+                out.push(
+                    div()
+                        .id("viewer-note-card")
+                        .absolute()
+                        .left(px((typing.at.0 + NOTE_SIZE) * z + 6.0))
+                        .top(px(typing.at.1 * z))
+                        .w(px(260.0))
+                        .p(px(12.0))
+                        .flex()
+                        .flex_col()
+                        .gap(px(8.0))
+                        .rounded(px(10.0))
+                        .bg(rgba(0xfffbe6ff))
+                        .border_1()
+                        .border_color(rgba(0x0000001f))
+                        .shadow_lg()
+                        .cursor_text()
+                        .text_size(px(14.0))
+                        .line_height(px(20.0))
+                        .text_color(rgba(0x202124ff))
+                        .on_mouse_down(MouseButton::Left, stop)
+                        .child(div().min_h(px(60.0)).child(typing.area.clone()))
+                        .child(
+                            div()
+                                .flex()
+                                .flex_row()
+                                .justify_end()
+                                .gap(px(4.0))
+                                .text_color(rgba(0x3c4043ff))
+                                .child(
+                                    button("viewer-note-delete", tr!("viewer-note-delete"))
+                                        .on_click(
+                                            cx.listener(|this, _, _, cx| this.delete_typing(cx)),
+                                        ),
+                                )
+                                .child(
+                                    button("viewer-note-done", tr!("viewer-note-done"))
+                                        // The card is light in both themes.
+                                        .text_color(rgba(0x1a73e8ff))
+                                        .on_click(cx.listener(|this, _, _, cx| {
+                                            this.finish_typing(true, cx)
+                                        })),
+                                ),
+                        )
+                        .into_any_element(),
+                );
+            } else {
+                out.push(
+                    div()
+                        .id("viewer-text-typing")
+                        .absolute()
+                        .left(px(typing.at.0 * z - 3.0))
+                        .top(px(typing.at.1 * z - 3.0))
+                        .w(px(typing.width * z + 6.0))
+                        .p(px(2.0))
+                        .rounded(px(3.0))
+                        .border_1()
+                        .border_color(rgba(self.th.accent))
+                        .bg(rgba(0xffffffcc))
+                        .cursor_text()
+                        .text_size(px(TEXT_SIZE * z))
+                        .line_height(px(TEXT_SIZE * LINE_HEIGHT * z))
+                        .text_color(color)
+                        .on_mouse_down(MouseButton::Left, stop)
+                        .child(typing.area.clone())
+                        .into_any_element(),
+                );
+            }
+        }
+        out
     }
 
     fn erase_at(&mut self, page: usize, (x, y): (f32, f32)) {
@@ -544,6 +901,7 @@ impl Viewer {
     /// Leaves the PDF (closing the viewer, or showing another
     /// attachment), asking first when there are unsaved marks.
     pub(super) fn leave(&mut self, to: Leave, cx: &mut Context<Self>) {
+        self.finish_typing(true, cx);
         if self.pdf().is_some() && self.markup.marks.unsaved() {
             self.markup.ask = Some(to);
             cx.notify();
@@ -580,6 +938,17 @@ impl Viewer {
     /// Saves a copy of the PDF with the marks (through the window's save
     /// dialog), then does `then`.
     pub(super) fn save_marked(&mut self, then: Option<Leave>, cx: &mut Context<Self>) {
+        self.write_marked(false, then, cx);
+    }
+
+    /// Starts a reply to the message with a copy of the PDF with the
+    /// marks attached.
+    pub(super) fn reply_marked(&mut self, cx: &mut Context<Self>) {
+        self.write_marked(true, None, cx);
+    }
+
+    fn write_marked(&mut self, reply: bool, then: Option<Leave>, cx: &mut Context<Self>) {
+        self.finish_typing(true, cx);
         let (Some(pdf), Some(file)) = (self.pdf(), self.file.clone()) else {
             return;
         };
@@ -595,11 +964,16 @@ impl Viewer {
                     Ok(bytes) => {
                         this.markup.marks.saved();
                         this.markup.failed = false;
-                        cx.emit(ViewerEvent::Save(Arc::new(AttachmentFile {
+                        let marked = Arc::new(AttachmentFile {
                             name: marked_name(&file.name),
                             mime: file.mime.clone(),
                             bytes,
-                        })));
+                        });
+                        cx.emit(if reply {
+                            ViewerEvent::Reply(marked)
+                        } else {
+                            ViewerEvent::Save(marked)
+                        });
                         if let Some(to) = then {
                             this.go(to, cx);
                         }
@@ -918,19 +1292,42 @@ fn marked_name(name: &str) -> String {
     format!("{}.pdf", tr!("viewer-marked-name", name = stem.to_owned()))
 }
 
+/// A sticky note's icon at `at` (points), `z` pixels per point.
+fn note_icon(at: (f32, f32), z: f32, color: Rgba) -> gpui::Div {
+    let size = NOTE_SIZE * z;
+    div()
+        .absolute()
+        .left(px(at.0 * z))
+        .top(px(at.1 * z))
+        .size(px(size))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(3.0 * z))
+        .bg(color)
+        .border_1()
+        .border_color(rgba(0x00000059))
+        .shadow_sm()
+        .child(icon("notes", 0x3c4043ff, size * 0.7))
+}
+
 fn paint_mark(window: &mut Window, mark: &Mark, z: f32, at: &dyn Fn((f32, f32)) -> Point<Pixels>) {
     let color = paint_color(mark.color, 1.0);
     match &mark.shape {
+        // Drawn as elements, with their text (see `page_typed`).
+        Shape::Note { .. } | Shape::Box { .. } => {}
         Shape::Ink(points) => paint_line(window, points, PEN_WIDTH * z, color, at),
         Shape::Text { quads, .. } => {
             for q in quads {
                 let h = (q.bottom - q.top).max(1.0);
                 let width = (h * 0.07).max(0.6);
                 match mark.kind {
-                    Kind::Highlight | Kind::Ink => window.paint_quad(gpui::fill(
-                        Bounds::from_corners(at((q.left, q.top)), at((q.right, q.bottom))),
-                        paint_color(mark.color, HIGHLIGHT_ALPHA),
-                    )),
+                    Kind::Highlight | Kind::Ink | Kind::Note | Kind::FreeText => {
+                        window.paint_quad(gpui::fill(
+                            Bounds::from_corners(at((q.left, q.top)), at((q.right, q.bottom))),
+                            paint_color(mark.color, HIGHLIGHT_ALPHA),
+                        ))
+                    }
                     Kind::Underline => {
                         let y = q.bottom - h * 0.1;
                         paint_line(window, &[(q.left, y), (q.right, y)], width * z, color, at);
