@@ -37,6 +37,17 @@ pub struct Config {
     pub experimental: Experimental,
     pub feedback: Feedback,
     pub updates: Updates,
+    pub contacts: ContactsConfig,
+}
+
+/// The Contacts page's own choices.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ContactsConfig {
+    /// Merge and fix suggestions dismissed, each by its people's first
+    /// cards (`"12,40"`), so they are not suggested again.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub dismissed_duplicates: Vec<String>,
 }
 
 /// Settings > General > Updates, and About's Update button
