@@ -5,6 +5,8 @@ contact-panel-show = Nuna bayanan lambar sadarwa
 contact-panel-hide = Ɓoye bayanan lambar sadarwa
 contact-email = Aika imel
 contact-search = Bincika saƙo da su
+contact-add-to-contacts = Ƙara cikin lambobin sadarwa
+contact-open-contact = Buɗe lambar sadarwa
 contact-messages = { $count ->
     [one] saƙo { $count }
    *[other] saƙonni { $count }

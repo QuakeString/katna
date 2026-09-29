@@ -1256,3 +1256,45 @@ text = """
 Ìṣẹ̀lẹ̀ tó ní àlejò báyìí ní Fi lẹ́tà ránṣẹ́ sí àwọn àlejò, àti láti wákàtí kan ṣáájú ìbẹ̀rẹ̀, Mo ń pẹ́:
 lẹ́tà sí gbogbo ènìyàn, láti àkáǹtì kàlẹ́ńdà náà, tó ṣetán láti fi ránṣẹ́.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Àwọn àmì olùbásọ̀rọ̀"
+text = """
+Àmì lórí ojú-ìwé olùbásọ̀rọ̀ ń tan àmì tàbí pa á, tàbí ṣẹ̀dá tuntun, ⋮ tó wà ní ẹ̀gbẹ́ àmì sì ń tún orúkọ rẹ̀ ṣe, pa á rẹ́ tàbí kọ̀wé sí gbogbo ẹni tó wà nínú rẹ̀.
+Àwọn àmì ń bá Google Contacts àti Outlook rìn pọ̀, gbogbo àyípadà sì ní Undo.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Fi kún àwọn olùbásọ̀rọ̀ láti Mail"
+text = """
+Pánẹ́ẹ̀lì olùbásọ̀rọ̀ tó wà ní ẹ̀gbẹ́ ìjíròrò ní Fi kún àwọn olùbásọ̀rọ̀ fún ẹni tí o kò tíì fipamọ́: ìkọlù kan ń fi orúkọ àti àdírẹ́sì rẹ̀ pamọ́, pẹ̀lú fóònù, akọlé iṣẹ́ àti ilé-iṣẹ́ láti ibuwọ́lù rẹ̀, pẹ̀lú Undo.
+Fún ẹni tí a ti fipamọ́, bọ́tìnì kan náà ń ṣí i ní ojú-ìwé Àwọn olùbásọ̀rọ̀.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Àkókò ìfọkànsìn, Kò sí ní ọ́fíìsì àti Ibi iṣẹ́"
+text = """
+Ìṣẹ̀lẹ̀ tuntun lè jẹ́ Àkókò ìfọkànsìn, Kò sí ní ọ́fíìsì tàbí Ibi iṣẹ́ báyìí, bí ní Google Calendar: yàn án lókè àwọn àkókò.
+Google àti Outlook rí wọn bí wọ́n ṣe jẹ́, wọ́n sì ń hàn pẹ̀lú àmì tiwọn ní Katna.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Àwọn iṣẹ́ lórí lẹ́tà rẹ"
+text = """
+Lẹ́tà tí o sọ di iṣẹ́ báyìí ń fi ọjọ́ ìparí iṣẹ́ náà hàn nínú àkójọ, ní pupa tó bá ti pẹ́.
+Tẹ̀ ẹ́ láti ṣí iṣẹ́ náà.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Àwọn olùbásọ̀rọ̀ mìíràn"
+text = """
+Àwọn olùbásọ̀rọ̀ báyìí ní Àwọn olùbásọ̀rọ̀ mìíràn: àwọn tí o ti fi ìmeèlì ránṣẹ́ sí láti Gmail ṣùgbọ́n tí o kò fipamọ́ rí, gẹ́gẹ́ bí Gmail ṣe ń pa wọ́n mọ́.
+Fi ẹnikẹ́ni pamọ́ pẹ̀lú títẹ̀ ẹ̀ẹ̀kan, pẹ̀lú Dá padà, tàbí bẹ̀rẹ̀ ìmeèlì sí wọn.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Fèsì sí ìpè láti àkọọ́lẹ̀ èyíkéyìí"
+text = """
+Ìpè tó dé àkọọ́lẹ̀ tí kò ní kàlẹ́ńdà báyìí ní Bẹ́ẹ̀ni, Rárá àti Bóyá pẹ̀lú:
+ìdáhùn rẹ ń lọ sí ọ̀dọ̀ olùṣètò nípasẹ̀ ìmeèlì, kàlẹ́ńdà rẹ̀ sì ń fi àmì sí i.
+"""

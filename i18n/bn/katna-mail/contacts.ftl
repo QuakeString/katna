@@ -6,7 +6,25 @@
 
 contacts-all = পরিচিতি
 contacts-frequent = ঘন ঘন
+contacts-other = অন্যান্য পরিচিতি
+contacts-other-about = যাঁদের আপনি Gmail থেকে মেল পাঠিয়েছেন কিন্তু সেভ করেননি
+contacts-other-email = ইমেল পাঠান
+contacts-other-empty = অন্য কোনো পরিচিতি নেই। Gmail থেকে যাঁদের মেল পাঠান কিন্তু সেভ করেন না, তাঁরা এখানে দেখা যায়।
+contacts-other-allow = অন্যান্য পরিচিতি দেখতে আপনার Gmail অ্যাকাউন্টে আবার সাইন ইন করুন এবং Katna-কে সেগুলি দেখার অনুমতি দিন।
 contacts-labels = লেবেল
+contacts-label-options = লেবেল বিকল্প
+contacts-label-rename = লেবেলের নাম পরিবর্তন করুন
+contacts-label-email = সবাইকে মেল পাঠান
+contacts-label-delete = লেবেল মুছুন
+contacts-label-new = নতুন লেবেল
+contacts-label-name = লেবেলের নাম
+contacts-label-button = লেবেল
+contacts-label-menu = এইভাবে লেবেল দিন:
+contacts-label-added = { $name }-এ যোগ করা হয়েছে
+contacts-label-removed = { $name } থেকে সরানো হয়েছে
+contacts-label-renamed = লেবেলের নাম পাল্টে { $name } করা হয়েছে
+contacts-label-deleted = লেবেল { $name } মুছে ফেলা হয়েছে
+contacts-label-no-email = এই লেবেলে কারও ইমেল ঠিকানা নেই
 contacts-create = পরিচিতি তৈরি করুন
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = পরিচিতিতে ফিরে যান
 contacts-edit = সম্পাদনা করুন
 contacts-delete = মুছুন
 contacts-deleted = { $name } মুছে ফেলা হয়েছে
+contacts-added = { $name }-কে পরিচিতিতে যোগ করা হয়েছে
 contacts-find-mail = মেল
 contacts-details = যোগাযোগের বিবরণ
 contacts-saved-in = যেখানে সেভ করা

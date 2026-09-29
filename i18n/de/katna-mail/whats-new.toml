@@ -1366,3 +1366,56 @@ Ein Termin mit Gästen hat jetzt E-Mail an Gäste und ab einer Stunde vor
 dem Beginn Ich verspäte mich: eine E-Mail an alle, vom Konto dieses
 Kalenders, versandfertig.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Labels für Kontakte"
+text = """
+Label auf der Seite eines Kontakts setzt Labels oder erstellt ein neues,
+und über ⋮ neben einem Label benennen Sie es um, löschen es oder
+schreiben allen darin. Labels bleiben mit Google Contacts und Outlook
+abgeglichen, und jede Änderung lässt sich mit Rückgängig zurücknehmen.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Aus der E-Mail zu Kontakten hinzufügen"
+text = """
+Das Kontaktfeld neben einer Unterhaltung bietet Zu Kontakten hinzufügen
+für jemanden, den Sie nicht gespeichert haben: Ein Klick speichert Name,
+Adresse sowie Telefon, Position und Firma aus der Signatur, mit
+Rückgängig. Bei einem gespeicherten Kontakt öffnet dieselbe Schaltfläche
+ihn auf der Seite Kontakte.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Fokuszeit, Abwesenheit und Arbeitsort"
+text = """
+Ein neuer Termin kann jetzt Fokuszeit, Abwesend oder ein Arbeitsort
+sein, wie in Google Calendar: Wählen Sie es über den Zeiten aus. Google
+und Outlook erkennen sie als das, was sie sind, und in Katna erscheinen
+sie mit eigenem Symbol.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Aufgaben zu Ihren Mails"
+text = """
+Eine Mail, aus der Sie eine Aufgabe gemacht haben, zeigt in der Liste
+jetzt das Fälligkeitsdatum der Aufgabe, in Rot, sobald sie überfällig
+ist. Ein Klick öffnet die Aufgabe.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Weitere Kontakte"
+text = """
+Kontakte hat jetzt Weitere Kontakte: Personen, denen Sie aus Gmail
+geschrieben, aber nie gespeichert haben, so wie Gmail sie aufbewahrt.
+Speichern Sie jede Person mit einem Klick, mit Rückgängig, oder
+schreiben Sie ihr direkt eine Mail.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Einladungen von jedem Konto beantworten"
+text = """
+Eine Einladung, die bei einem Konto ohne Kalender eingegangen ist, hat
+jetzt ebenfalls Ja, Nein und Vielleicht: Ihre Antwort geht per E-Mail an
+den Organisator, und dessen Kalender vermerkt sie.
+"""

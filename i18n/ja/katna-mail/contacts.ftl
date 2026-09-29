@@ -6,7 +6,25 @@
 
 contacts-all = 連絡先
 contacts-frequent = よく使う連絡先
+contacts-other = その他の連絡先
+contacts-other-about = Gmail でメールを送ったが保存していない相手
+contacts-other-email = メールを送信
+contacts-other-empty = その他の連絡先はありません。Gmail でメールを送ったが保存していない相手がここに表示されます。
+contacts-other-allow = その他の連絡先を表示するには、Gmail アカウントに再度ログインして、Katna による表示を許可してください。
 contacts-labels = ラベル
+contacts-label-options = ラベルのオプション
+contacts-label-rename = ラベル名を変更
+contacts-label-email = 全員にメールを送信
+contacts-label-delete = ラベルを削除
+contacts-label-new = 新しいラベル
+contacts-label-name = ラベル名
+contacts-label-button = ラベル
+contacts-label-menu = ラベルを付ける:
+contacts-label-added = { $name } に追加しました
+contacts-label-removed = { $name } から削除しました
+contacts-label-renamed = ラベル名を { $name } に変更しました
+contacts-label-deleted = ラベル { $name } を削除しました
+contacts-label-no-email = このラベルに、メールアドレスのある人はいません
 contacts-create = 連絡先を作成
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = 連絡先に戻る
 contacts-edit = 編集
 contacts-delete = 削除
 contacts-deleted = { $name } を削除しました
+contacts-added = { $name } を連絡先に追加しました
 contacts-find-mail = メール
 contacts-details = 連絡先の詳細
 contacts-saved-in = 保存先

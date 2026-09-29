@@ -6,7 +6,25 @@
 
 contacts-all = እውቂያዎች
 contacts-frequent = ተደጋጋሚ
+contacts-other = ሌሎች እውቂያዎች
+contacts-other-about = ከGmail ኢሜይል የላካችኋቸው ግን ያላስቀመጣችኋቸው ሰዎች
+contacts-other-email = ኢሜይል ላክ
+contacts-other-empty = ሌሎች እውቂያዎች የሉም። ከGmail ኢሜይል የሚልኩላቸው ግን የማያስቀምጧቸው ሰዎች እዚህ ይታያሉ።
+contacts-other-allow = ሌሎች እውቂያዎችን ለማየት እንደገና ወደ የGmail መለያዎ ይግቡ እና Katna እንዲያያቸው ይፍቀዱ።
 contacts-labels = መሰየሚያዎች
+contacts-label-options = የመሰየሚያ አማራጮች
+contacts-label-rename = መሰየሚያን ዳግም ሰይም
+contacts-label-email = ለሁሉም ኢሜይል ላክ
+contacts-label-delete = መሰየሚያን ሰርዝ
+contacts-label-new = አዲስ መሰየሚያ
+contacts-label-name = የመሰየሚያ ስም
+contacts-label-button = መሰየሚያ
+contacts-label-menu = በመሰየሚያ ሰይም:
+contacts-label-added = ወደ { $name } ታክሏል
+contacts-label-removed = ከ{ $name } ተወግዷል
+contacts-label-renamed = መሰየሚያው ወደ { $name } ተቀይሯል
+contacts-label-deleted = መሰየሚያ { $name } ተሰርዟል
+contacts-label-no-email = በዚህ መሰየሚያ ውስጥ የኢሜይል አድራሻ ያለው ማንም የለም
 contacts-create = እውቂያ ፍጠር
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = ወደ እውቂያዎች ተመለስ
 contacts-edit = አርትዕ
 contacts-delete = ሰርዝ
 contacts-deleted = { $name } ተሰርዟል
+contacts-added = { $name } ወደ እውቂያዎች ታክሏል
 contacts-find-mail = ደብዳቤ
 contacts-details = የእውቂያ ዝርዝሮች
 contacts-saved-in = የተቀመጠው በ

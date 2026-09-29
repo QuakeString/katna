@@ -1377,3 +1377,55 @@ i-imeyili, futhi kusukela ihora ngaphambi kokuba uqale,
 Ngiyephuza: imeyili eya kubo bonke, isuka ku-akhawunti
 yekhalenda, ilungele ukuthunyelwa.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Amalebula oxhumana nabo"
+text = """
+Ilebula ekhasini loxhumana naye livula futhi livale amalebula noma lenze
+elisha, futhi u-⋮ eduze kwelebula ulinika igama elisha, uyalisusa noma
+abhalele bonke abakulo imeyili. Amalebula ahambisana ne-Google Contacts
+ne-Outlook, futhi ushintsho ngalunye lunenkinobho ethi Hlehlisa.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Engeza koxhumana nabo ku-Imeyili"
+text = """
+Iphaneli yoxhumana naye eceleni kwengxoxo inenkinobho ethi Engeza
+koxhumana nabo yomuntu ongamgcinanga: ngokuchofoza okukodwa igama lakhe,
+ikheli, nocingo, isihloko nenkampani esesignesha yakhe kuyagcinwa,
+kunenkinobho ethi Hlehlisa. Kumuntu osegciniwe, inkinobho efanayo imvula
+ekhasini elithi Oxhumana nabo.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Isikhathi sokugxila, ukungabikho ehhovisi nendawo osebenzela kuyo"
+text = """
+Manje umcimbi omusha ungaba Isikhathi sokugxila, Ngingekho ehhovisi noma
+Indawo yokusebenza, njengaku-Google Calendar: khetha ngaphezu
+kwezikhathi. I-Google ne-Outlook zibabona njengoba injalo, futhi
+ku-Katna baboniswa nesithonjana sabo.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Imisebenzi kumeyili"
+text = """
+Imeyili oyenze umsebenzi manje ibonisa usuku lokuphela komsebenziohlwini,
+ngokubomvu uma sekuphelelwe yisikhathi. Chofoza kuyo ukuvula umsebenzi.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Abanye oxhumana nabo"
+text = """
+Oxhumana nabo manje banabo Abanye oxhumana nabo: abantu obabhalele
+nge-Gmail kodwa ongabalondolozanga, njengoba i-Gmail ibagcina. Londoloza
+noma ubani ngokuchofoza kanye, nge-Hlehlisa, noma uqale ukubhalela
+imeyili.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Phendula izimemo ezivela ku-akhawunti ngayinye"
+text = """
+Isimemo esafika ku-akhawunti engenalo ikhalenda manje sinakho Yebo, Cha
+noma Mhlawumbe: impendulo yakho iya kumhleli ngeposi, futhi ikhalenda
+lakhe liyayimaka.
+"""

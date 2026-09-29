@@ -5,6 +5,8 @@ contact-panel-show = የእውቂያ ዝርዝሮችን አሳይ
 contact-panel-hide = የእውቂያ ዝርዝሮችን ደብቅ
 contact-email = ኢሜይል ላክ
 contact-search = ከእነሱ ጋር ደብዳቤ ፈልግ
+contact-add-to-contacts = ወደ እውቂያዎች አክል
+contact-open-contact = እውቂያ ክፈት
 contact-messages = { $count ->
     [one] { $count } መልዕክት
    *[other] { $count } መልዕክቶች

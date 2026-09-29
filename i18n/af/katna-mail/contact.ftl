@@ -5,6 +5,8 @@ contact-panel-show = Wys kontakbesonderhede
 contact-panel-hide = Versteek kontakbesonderhede
 contact-email = Stuur e-pos
 contact-search = Soek e-pos met hulle
+contact-add-to-contacts = Voeg by kontakte
+contact-open-contact = Maak kontak oop
 contact-messages = { $count ->
     [one] { $count } boodskap
    *[other] { $count } boodskappe

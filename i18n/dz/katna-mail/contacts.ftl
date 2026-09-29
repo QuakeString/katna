@@ -6,7 +6,25 @@
 
 contacts-all = འབྲེལ་བ་ཚུ
 contacts-frequent = ཆེས་མང་སྤྱོད་མི
+contacts-other = འབྲེལ་བ་གཞན་ཚུ
+contacts-other-about = ཁྱོད་ཀྱིས་ Gmail ལས་ གློག་འཕྲིན་བཏང་ཡོདཔ་ད་ ཉར་ཚགས་མ་འབད་མི་ཚུ
+contacts-other-email = གློག་འཕྲིན་གཏང་།
+contacts-other-empty = འབྲེལ་བ་གཞན་མིན་འདུག ཁྱོད་ཀྱིས་ Gmail ལས་ གློག་འཕྲིན་གཏངམ་ད་ ཉར་ཚགས་མ་འབད་མི་ཚུ་ འདི་ཁ་ན་ མཐོང་ནི་ཨིན།
+contacts-other-allow = འབྲེལ་བ་གཞན་ཚུ་བལྟ་ནིའི་དོན་ལུ་ ཁྱོད་ཀྱི་ Gmail ཨེཀསེབ་ལུ་ ལོག་ནང་བསྒྱུར་འབད་ཞིནམ་ལས་ Katna ལུ་ དེ་ཚུ་བལྟ་ནིའི་གནང་བ་བྱིན།
 contacts-labels = ཁ་ཡིག་ཚུ
+contacts-label-options = ཁ་ཡིག་གི་གདམ་ཁ་ཚུ
+contacts-label-rename = ཁ་ཡིག་གི་མིང་བསྐྱར་མཚན་བཏགས།
+contacts-label-email = ཆ་མཉམ་ལུ་གློག་འཕྲིན་གཏང་།
+contacts-label-delete = ཁ་ཡིག་བཏོན་གཏང་།
+contacts-label-new = ཁ་ཡིག་གསར་པ
+contacts-label-name = ཁ་ཡིག་གི་མིང་
+contacts-label-button = ཁ་ཡིག
+contacts-label-menu = འདི་བཟུམ་སྦེ་ཁ་ཡིག་བཏགས།
+contacts-label-added = { $name } ནང་ཁ་སྐོང་འབད་ཡི།
+contacts-label-removed = { $name } ལས་བསུབས་ཡི།
+contacts-label-renamed = ཁ་ཡིག་གི་མིང་ { $name } ལུ་སྒྱུར་ཡི།
+contacts-label-deleted = ཁ་ཡིག་ { $name } བཏོན་གཏང་ཡི།
+contacts-label-no-email = ཁ་ཡིག་འདི་ལུ་ཡོད་མི་སུ་ལུ་ཡང་གློག་འཕྲིན་ཁ་བྱང་མིན་འདུག
 contacts-create = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = འབྲེལ་བ་ཚུ་ལུ་ལོག་འགྱ�
 contacts-edit = ཞུན་དག་འབད།
 contacts-delete = བཏོན་གཏང་།
 contacts-deleted = { $name } བཏོན་གཏང་ཡི།
+contacts-added = { $name } འབྲེལ་བ་ཚུ་ནང་ཁ་སྐོང་འབད་ཡི།
 contacts-find-mail = གློག་འཕྲིན
 contacts-details = འབྲེལ་བའི་ཕྲ་ཞིབ།
 contacts-saved-in = ཉར་ཚགས་འབད་ཡོད་སའི་ས་ཁོངས།

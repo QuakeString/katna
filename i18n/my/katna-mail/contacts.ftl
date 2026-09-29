@@ -6,7 +6,25 @@
 
 contacts-all = အဆက်အသွယ်များ
 contacts-frequent = မကြာခဏ
+contacts-other = အခြားအဆက်အသွယ်များ
+contacts-other-about = Gmail မှ မေးလ်ပို့ဖူးသော်လည်း မသိမ်းထားသူများ
+contacts-other-email = အီးမေးလ်ပို့ရန်
+contacts-other-empty = အခြားအဆက်အသွယ် မရှိပါ။ Gmail မှ မေးလ်ပို့ဖူးသော်လည်း မသိမ်းထားသူများကို ဤနေရာတွင် ပြပါမည်။
+contacts-other-allow = အခြားအဆက်အသွယ်များကို ကြည့်ရန် သင့် Gmail အကောင့်သို့ ထပ်မံဝင်ပြီး Katna ကြည့်ခွင့်ပြုပါ။
 contacts-labels = အညွှန်းများ
+contacts-label-options = အညွှန်း ရွေးချယ်စရာများ
+contacts-label-rename = အညွှန်းအမည် ပြောင်းရန်
+contacts-label-email = လူတိုင်းထံ မေးလ်ပို့ရန်
+contacts-label-delete = အညွှန်း ဖျက်ရန်
+contacts-label-new = အညွှန်းအသစ်
+contacts-label-name = အညွှန်းအမည်
+contacts-label-button = အညွှန်း
+contacts-label-menu = အညွှန်းတပ်ရန်:
+contacts-label-added = { $name } သို့ ထည့်ပြီးပါပြီ
+contacts-label-removed = { $name } မှ ဖယ်ရှားပြီးပါပြီ
+contacts-label-renamed = အညွှန်းအမည်ကို { $name } သို့ ပြောင်းပြီးပါပြီ
+contacts-label-deleted = အညွှန်း { $name } ကို ဖျက်ပြီးပါပြီ
+contacts-label-no-email = ဤအညွှန်းရှိ မည်သူမျှ မေးလ်လိပ်စာ မရှိပါ
 contacts-create = အဆက်အသွယ် ဖန်တီးရန်
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = အဆက်အသွယ်များသို့ ပြန်
 contacts-edit = တည်းဖြတ်ရန်
 contacts-delete = ဖျက်ရန်
 contacts-deleted = { $name } ကို ဖျက်ပြီးပါပြီ
+contacts-added = { $name } ကို အဆက်အသွယ်များသို့ ထည့်ပြီးပါပြီ
 contacts-find-mail = မေးလ်
 contacts-details = အဆက်အသွယ် အသေးစိတ်
 contacts-saved-in = သိမ်းဆည်းထားရာ

@@ -5,6 +5,8 @@ contact-panel-show = إظهار تفاصيل جهة الاتصال
 contact-panel-hide = إخفاء تفاصيل جهة الاتصال
 contact-email = إرسال بريد
 contact-search = بحث في البريد معهم
+contact-add-to-contacts = إضافة إلى جهات الاتصال
+contact-open-contact = فتح جهة الاتصال
 contact-messages = { $count ->
     [zero] { $count } رسالة
     [one] رسالة واحدة

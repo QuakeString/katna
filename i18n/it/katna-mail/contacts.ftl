@@ -6,7 +6,25 @@
 
 contacts-all = Contatti
 contacts-frequent = Frequenti
+contacts-other = Altri contatti
+contacts-other-about = Persone a cui hai scritto da Gmail ma che non hai salvato
+contacts-other-email = Invia e-mail
+contacts-other-empty = Nessun altro contatto. Le persone a cui scrivi da Gmail senza salvarle compaiono qui.
+contacts-other-allow = Per vedere gli altri contatti, accedi di nuovo al tuo account Gmail e consenti a Katna di vederli.
 contacts-labels = Etichette
+contacts-label-options = Opzioni etichetta
+contacts-label-rename = Rinomina etichetta
+contacts-label-email = Scrivi a tutti
+contacts-label-delete = Elimina etichetta
+contacts-label-new = Nuova etichetta
+contacts-label-name = Nome etichetta
+contacts-label-button = Etichetta
+contacts-label-menu = Etichetta come:
+contacts-label-added = Aggiunto a { $name }
+contacts-label-removed = Rimosso da { $name }
+contacts-label-renamed = Etichetta rinominata in { $name }
+contacts-label-deleted = Etichetta eliminata: { $name }
+contacts-label-no-email = Nessuno con questa etichetta ha un indirizzo email
 contacts-create = Crea contatto
 
 ## Search and the list
@@ -44,6 +62,7 @@ contacts-back = Torna ai contatti
 contacts-edit = Modifica
 contacts-delete = Elimina
 contacts-deleted = Eliminato: { $name }
+contacts-added = { $name } aggiunto ai contatti
 contacts-find-mail = Posta
 contacts-details = Dettagli del contatto
 contacts-saved-in = Salvato in

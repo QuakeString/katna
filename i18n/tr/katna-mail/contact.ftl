@@ -5,6 +5,8 @@ contact-panel-show = Kişi ayrıntılarını göster
 contact-panel-hide = Kişi ayrıntılarını gizle
 contact-email = E-posta gönder
 contact-search = Onunla yazışmaları ara
+contact-add-to-contacts = Kişilere ekle
+contact-open-contact = Kişiyi aç
 contact-messages = { $count ->
     [one] { $count } ileti
    *[other] { $count } ileti

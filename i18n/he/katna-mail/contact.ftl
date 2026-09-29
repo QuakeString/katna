@@ -5,6 +5,8 @@ contact-panel-show = הצגת פרטי איש הקשר
 contact-panel-hide = הסתרת פרטי איש הקשר
 contact-email = שליחת אימייל
 contact-search = חיפוש דואר איתם
+contact-add-to-contacts = הוספה לאנשי הקשר
+contact-open-contact = פתיחת איש הקשר
 contact-messages = { $count ->
     [one] הודעה אחת
    *[other] { $count } הודעות

@@ -1344,3 +1344,55 @@ Un evento con invitados ahora tiene Enviar correo a los invitados y,
 desde una hora antes de que empiece, Llegaré tarde: un correo para
 todos, desde la cuenta de ese calendario, listo para enviar.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Etiquetas de contactos"
+text = """
+Etiqueta en la página de un contacto activa o desactiva etiquetas o crea
+una nueva, y el ⋮ junto a una etiqueta la renombra, la elimina o escribe
+a todos los que la tienen. Las etiquetas se mantienen sincronizadas con
+Google Contacts y Outlook, y cada cambio tiene un Deshacer.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Añadir a contactos desde el correo"
+text = """
+El panel de contacto junto a una conversación tiene Añadir a contactos
+para alguien que no has guardado: un clic guarda su nombre, su dirección
+y el teléfono, el cargo y la empresa de su firma, con Deshacer. Si ya
+está guardado, el mismo botón lo abre en la página Contactos.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Tiempo de concentración, ausencia y ubicación de trabajo"
+text = """
+Ahora un evento nuevo puede ser Tiempo de concentración, Fuera de la
+oficina o Ubicación de trabajo, como en Google Calendar: elígelo encima
+de las horas. Google y Outlook los reconocen tal como son, y en Katna se
+muestran con su propio icono.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Tareas en tu correo"
+text = """
+Un correo que convertiste en tarea ahora muestra en la lista el día de
+vencimiento de la tarea, en rojo cuando está atrasada. Haz clic para
+abrir la tarea.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Otros contactos"
+text = """
+Contactos ahora tiene Otros contactos: personas a las que has escrito
+desde Gmail pero nunca has guardado, tal como Gmail las conserva. Guarda
+a cualquiera con un clic, con Deshacer, o empieza un correo para esa
+persona.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Responde a invitaciones desde cualquier cuenta"
+text = """
+Una invitación que llegó a una cuenta sin calendario ahora también tiene
+Sí, No y Quizás: tu respuesta se envía al organizador por correo y su
+calendario la registra.
+"""

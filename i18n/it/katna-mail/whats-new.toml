@@ -1348,3 +1348,55 @@ Un evento con ospiti ora ha Invia e-mail agli ospiti e, da un’ora prima
 dell’inizio, Sono in ritardo: una e-mail a tutti, dall’account di quel
 calendario, pronta da inviare.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Etichette dei contatti"
+text = """
+Il pulsante Etichetta nella pagina di un contatto attiva e disattiva le
+etichette o ne crea una nuova, e il ⋮ accanto a un'etichetta la
+rinomina, la elimina o scrive a tutti quelli che ne fanno parte. Le
+etichette restano allineate con Google Contacts e Outlook, e ogni
+modifica ha un Annulla.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Aggiungi ai contatti dalla posta"
+text = """
+Il riquadro del contatto accanto a una conversazione ha Aggiungi ai
+contatti per chi non hai salvato: un clic salva nome, indirizzo e
+telefono, qualifica e azienda della firma, con Annulla. Per chi è già
+salvato, lo stesso pulsante lo apre nella pagina Contatti.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Tempo di concentrazione, fuori sede e luogo di lavoro"
+text = """
+Un nuovo evento può ora essere Tempo di concentrazione, Fuori sede o
+Luogo di lavoro, come in Google Calendar: sceglilo sopra gli orari.
+Google e Outlook li riconoscono per quello che sono e in Katna vengono
+mostrati con una propria icona.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Attività sulle tue e-mail"
+text = """
+Un'e-mail che hai trasformato in attività ora mostra nell'elenco il
+giorno di scadenza dell'attività, in rosso se è in ritardo. Fai clic per
+aprire l'attività.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Altri contatti"
+text = """
+Contatti ora ha Altri contatti: le persone a cui hai scritto da Gmail ma
+che non hai mai salvato, così come le conserva Gmail. Salva chiunque con
+un clic, con Annulla, oppure scrivigli subito.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Rispondi agli inviti da qualsiasi account"
+text = """
+Un invito arrivato su un account senza calendario ora ha anche Sì, No e
+Forse: la tua risposta arriva all’organizzatore via e-mail e il suo
+calendario la registra.
+"""

@@ -6,7 +6,25 @@
 
 contacts-all = Mga Contact
 contacts-frequent = Madalas
+contacts-other = Iba pang contact
+contacts-other-about = Mga taong na-email mo mula sa Gmail pero hindi mo pa nase-save
+contacts-other-email = Magpadala ng email
+contacts-other-empty = Walang iba pang contact. Lalabas dito ang mga taong ine-email mo mula sa Gmail pero hindi mo sine-save.
+contacts-other-allow = Para makita ang iba pang contact, mag-sign in ulit sa iyong Gmail account at payagan ang Katna na makita ang mga ito.
 contacts-labels = Mga Label
+contacts-label-options = Mga opsyon ng label
+contacts-label-rename = Palitan ang pangalan ng label
+contacts-label-email = I-email ang lahat
+contacts-label-delete = I-delete ang label
+contacts-label-new = Bagong label
+contacts-label-name = Pangalan ng label
+contacts-label-button = Label
+contacts-label-menu = I-label bilang:
+contacts-label-added = Naidagdag sa { $name }
+contacts-label-removed = Naalis sa { $name }
+contacts-label-renamed = Pinalitan ang pangalan ng label sa { $name }
+contacts-label-deleted = Na-delete ang label na { $name }
+contacts-label-no-email = Walang may email address sa label na ito
 contacts-create = Gumawa ng contact
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = Bumalik sa mga contact
 contacts-edit = I-edit
 contacts-delete = I-delete
 contacts-deleted = Na-delete: { $name }
+contacts-added = Naidagdag ang { $name } sa mga contact
 contacts-find-mail = Mail
 contacts-details = Mga detalye ng contact
 contacts-saved-in = Naka-save sa

@@ -5,6 +5,8 @@ contact-panel-show = Показати відомості про контакт
 contact-panel-hide = Сховати відомості про контакт
 contact-email = Написати листа
 contact-search = Знайти листування зі співрозмовником
+contact-add-to-contacts = Додати до контактів
+contact-open-contact = Відкрити контакт
 contact-messages = { $count ->
     [one] { $count } лист
     [few] { $count } листи

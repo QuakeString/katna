@@ -6,7 +6,25 @@
 
 contacts-all = Àwọn olùbásọ̀rọ̀
 contacts-frequent = Àwọn tí a máa ń kàn sí
+contacts-other = Àwọn olùbásọ̀rọ̀ mìíràn
+contacts-other-about = Àwọn tí o ti fi ìmeèlì ránṣẹ́ sí láti Gmail ṣùgbọ́n tí o kò tíì fipamọ́
+contacts-other-email = Fi ìmeèlì ránṣẹ́
+contacts-other-empty = Kò sí àwọn olùbásọ̀rọ̀ mìíràn. Àwọn tí o fi ìmeèlì ránṣẹ́ sí láti Gmail ṣùgbọ́n tí o kò fipamọ́ yóò hàn níbí.
+contacts-other-allow = Láti rí àwọn olùbásọ̀rọ̀ mìíràn, tún wọlé sí àkọọ́lẹ̀ Gmail rẹ kí o sì jẹ́ kí Katna rí wọn.
 contacts-labels = Àwọn àmì
+contacts-label-options = Àwọn àṣàyàn àmì
+contacts-label-rename = Tún orúkọ àmì ṣe
+contacts-label-email = Fi ìmeèlì ránṣẹ́ sí gbogbo wọn
+contacts-label-delete = Pa àmì rẹ́
+contacts-label-new = Àmì tuntun
+contacts-label-name = Orúkọ àmì
+contacts-label-button = Àmì
+contacts-label-menu = Fi àmì sí:
+contacts-label-added = A fi kún { $name }
+contacts-label-removed = A yọ kúrò nínú { $name }
+contacts-label-renamed = A tún àmì náà sọ orúkọ { $name }
+contacts-label-deleted = A pa àmì { $name } rẹ́
+contacts-label-no-email = Kò sí ẹni tó ní àdírẹ́sì ìmeèlì nínú àmì yìí
 contacts-create = Ṣẹ̀dá olùbásọ̀rọ̀
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = Padà sí àwọn olùbásọ̀rọ̀
 contacts-edit = Ṣàtúnṣe
 contacts-delete = Pa rẹ́
 contacts-deleted = A pa { $name } rẹ́
+contacts-added = A fi { $name } kún àwọn olùbásọ̀rọ̀
 contacts-find-mail = Lẹ́tà
 contacts-details = Àlàyé olùbásọ̀rọ̀
 contacts-saved-in = A fipamọ́ sí

@@ -6,7 +6,25 @@
 
 contacts-all = Контакти
 contacts-frequent = Часто використовувані
+contacts-other = Інші контакти
+contacts-other-about = Люди, яким ви писали з Gmail, але яких не зберегли
+contacts-other-email = Написати листа
+contacts-other-empty = Інших контактів немає. Люди, яким ви пишете з Gmail, але яких не зберігаєте, з’являться тут.
+contacts-other-allow = Щоб побачити інші контакти, знову увійдіть в обліковий запис Gmail і дозвольте Katna їх переглядати.
 contacts-labels = Мітки
+contacts-label-options = Параметри мітки
+contacts-label-rename = Перейменувати мітку
+contacts-label-email = Написати всім
+contacts-label-delete = Видалити мітку
+contacts-label-new = Нова мітка
+contacts-label-name = Назва мітки
+contacts-label-button = Мітка
+contacts-label-menu = Позначити міткою:
+contacts-label-added = Додано до мітки «{ $name }»
+contacts-label-removed = Вилучено з мітки «{ $name }»
+contacts-label-renamed = Мітку перейменовано на «{ $name }»
+contacts-label-deleted = Мітку «{ $name }» видалено
+contacts-label-no-email = Ніхто з цією міткою не має адреси електронної пошти
 contacts-create = Створити контакт
 
 ## Search and the list
@@ -46,6 +64,7 @@ contacts-back = Назад до контактів
 contacts-edit = Змінити
 contacts-delete = Видалити
 contacts-deleted = Видалено: { $name }
+contacts-added = Контакт { $name } додано
 contacts-find-mail = Пошта
 contacts-details = Контактні дані
 contacts-saved-in = Збережено в

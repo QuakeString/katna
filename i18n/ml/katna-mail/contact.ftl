@@ -5,6 +5,8 @@ contact-panel-show = കോൺടാക്റ്റ് വിശദാംശങ�
 contact-panel-hide = കോൺടാക്റ്റ് വിശദാംശങ്ങൾ മറയ്ക്കുക
 contact-email = മെയിൽ അയയ്ക്കുക
 contact-search = ഇവരുമായുള്ള മെയിൽ തിരയുക
+contact-add-to-contacts = കോൺടാക്റ്റുകളിലേക്ക് ചേർക്കുക
+contact-open-contact = കോൺടാക്റ്റ് തുറക്കുക
 contact-messages = { $count ->
     [one] { $count } സന്ദേശം
    *[other] { $count } സന്ദേശങ്ങൾ

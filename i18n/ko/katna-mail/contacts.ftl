@@ -6,7 +6,25 @@
 
 contacts-all = 연락처
 contacts-frequent = 자주 연락하는 사람
+contacts-other = 기타 연락처
+contacts-other-about = Gmail에서 메일을 보냈지만 저장하지 않은 사람
+contacts-other-email = 이메일 보내기
+contacts-other-empty = 기타 연락처가 없습니다. Gmail에서 메일을 보냈지만 저장하지 않은 사람이 여기에 표시됩니다.
+contacts-other-allow = 기타 연락처를 보려면 Gmail 계정에 다시 로그인하고 Katna가 볼 수 있도록 허용하세요.
 contacts-labels = 라벨
+contacts-label-options = 라벨 옵션
+contacts-label-rename = 라벨 이름 바꾸기
+contacts-label-email = 모두에게 메일 보내기
+contacts-label-delete = 라벨 삭제
+contacts-label-new = 새 라벨
+contacts-label-name = 라벨 이름
+contacts-label-button = 라벨
+contacts-label-menu = 라벨 지정:
+contacts-label-added = { $name }에 추가됨
+contacts-label-removed = { $name }에서 삭제됨
+contacts-label-renamed = 라벨 이름이 { $name }(으)로 변경됨
+contacts-label-deleted = 라벨 { $name } 삭제됨
+contacts-label-no-email = 이 라벨에는 이메일 주소가 있는 사람이 없습니다
 contacts-create = 연락처 만들기
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = 연락처로 돌아가기
 contacts-edit = 수정
 contacts-delete = 삭제
 contacts-deleted = { $name } 삭제됨
+contacts-added = { $name } 연락처에 추가됨
 contacts-find-mail = 메일
 contacts-details = 연락처 세부정보
 contacts-saved-in = 저장 위치

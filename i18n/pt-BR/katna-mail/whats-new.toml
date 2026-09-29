@@ -1333,3 +1333,55 @@ Um evento com convidados agora tem Enviar e-mail aos convidados e, a
 partir de uma hora antes do início, Vou me atrasar: um e-mail para
 todos, da conta dessa agenda, pronto para enviar.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Marcadores de contatos"
+text = """
+Marcador na página de um contato ativa e desativa marcadores ou cria um
+novo, e o ⋮ ao lado de um marcador o renomeia, o exclui ou escreve para
+todos que o têm. Os marcadores ficam sincronizados com o Google Contacts
+e o Outlook, e toda alteração tem um Desfazer.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Adicionar aos contatos pelo e-mail"
+text = """
+O painel do contato ao lado de uma conversa tem Adicionar aos contatos
+para quem você ainda não salvou: um clique salva o nome, o endereço e o
+telefone, o cargo e a empresa da assinatura, com Desfazer. Para quem já
+está salvo, o mesmo botão o abre na página Contatos.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Tempo de foco, ausência e local de trabalho"
+text = """
+Agora um novo evento pode ser Tempo de foco, Ausente ou Local de
+trabalho, como no Google Calendar: escolha acima dos horários. O Google
+e o Outlook os reconhecem pelo que são, e no Katna eles aparecem com um
+ícone próprio.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Tarefas nos seus e-mails"
+text = """
+Um e-mail que você transformou em tarefa agora mostra na lista o dia de
+vencimento da tarefa, em vermelho quando estiver atrasada. Clique nele
+para abrir a tarefa.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Outros contatos"
+text = """
+Contatos agora tem Outros contatos: pessoas para quem você enviou
+e-mails pelo Gmail, mas nunca salvou, como o Gmail as guarda. Salve
+qualquer pessoa com um clique, com Desfazer, ou comece um e-mail para
+ela.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Responda a convites de qualquer conta"
+text = """
+Um convite que chegou a uma conta sem agenda agora também tem Sim, Não e
+Talvez: sua resposta vai para o organizador por e-mail e a agenda dele a
+registra.
+"""

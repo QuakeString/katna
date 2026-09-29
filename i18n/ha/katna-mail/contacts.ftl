@@ -6,7 +6,25 @@
 
 contacts-all = Lambobin sadarwa
 contacts-frequent = Masu yawa
+contacts-other = Sauran lambobin sadarwa
+contacts-other-about = Mutanen da ka aika wa imel daga Gmail amma ba ka adana su ba
+contacts-other-email = Aika imel
+contacts-other-empty = Babu sauran lambobin sadarwa. Mutanen da ka aika wa imel daga Gmail amma ba ka adana su ba suna bayyana a nan.
+contacts-other-allow = Don ganin sauran lambobin sadarwa, sake shiga asusun Gmail ɗinka kuma ka ƙyale Katna ta gan su.
 contacts-labels = Lakabobi
+contacts-label-options = Zaɓuɓɓukan lakabi
+contacts-label-rename = Sake sunan lakabi
+contacts-label-email = Aika imel ga kowa
+contacts-label-delete = Share lakabi
+contacts-label-new = Sabon lakabi
+contacts-label-name = Sunan lakabi
+contacts-label-button = Lakabi
+contacts-label-menu = Sanya lakabi:
+contacts-label-added = An ƙara zuwa { $name }
+contacts-label-removed = An cire daga { $name }
+contacts-label-renamed = An sake wa lakabin suna: { $name }
+contacts-label-deleted = An share lakabin { $name }
+contacts-label-no-email = Babu wanda ke da adireshin imel a wannan lakabin
 contacts-create = Ƙirƙiri lambar sadarwa
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = Koma zuwa lambobin sadarwa
 contacts-edit = Gyara
 contacts-delete = Share
 contacts-deleted = An share { $name }
+contacts-added = An ƙara { $name } cikin lambobin sadarwa
 contacts-find-mail = Wasiƙu
 contacts-details = Bayanan lamba
 contacts-saved-in = An adana a

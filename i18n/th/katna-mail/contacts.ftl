@@ -6,7 +6,25 @@
 
 contacts-all = รายชื่อติดต่อ
 contacts-frequent = ที่ติดต่อบ่อย
+contacts-other = รายชื่อติดต่ออื่นๆ
+contacts-other-about = ผู้ที่คุณเคยส่งอีเมลหาจาก Gmail แต่ไม่ได้บันทึกไว้
+contacts-other-email = ส่งอีเมล
+contacts-other-empty = ไม่มีรายชื่อติดต่ออื่นๆ ผู้ที่คุณส่งอีเมลหาจาก Gmail แต่ไม่ได้บันทึกไว้จะแสดงที่นี่
+contacts-other-allow = หากต้องการดูรายชื่อติดต่ออื่นๆ ให้ลงชื่อเข้าใช้บัญชี Gmail อีกครั้งและอนุญาตให้ Katna ดูรายชื่อเหล่านั้น
 contacts-labels = ป้ายกำกับ
+contacts-label-options = ตัวเลือกป้ายกำกับ
+contacts-label-rename = เปลี่ยนชื่อป้ายกำกับ
+contacts-label-email = ส่งอีเมลถึงทุกคน
+contacts-label-delete = ลบป้ายกำกับ
+contacts-label-new = ป้ายกำกับใหม่
+contacts-label-name = ชื่อป้ายกำกับ
+contacts-label-button = ป้ายกำกับ
+contacts-label-menu = ติดป้ายกำกับเป็น:
+contacts-label-added = เพิ่มใน { $name } แล้ว
+contacts-label-removed = นำออกจาก { $name } แล้ว
+contacts-label-renamed = เปลี่ยนชื่อป้ายกำกับเป็น { $name } แล้ว
+contacts-label-deleted = ลบป้ายกำกับ { $name } แล้ว
+contacts-label-no-email = ไม่มีใครในป้ายกำกับนี้ที่มีที่อยู่อีเมล
 contacts-create = สร้างรายชื่อติดต่อ
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = กลับไปที่รายชื่อติดต่�
 contacts-edit = แก้ไข
 contacts-delete = ลบ
 contacts-deleted = ลบ { $name } แล้ว
+contacts-added = เพิ่ม { $name } ในรายชื่อติดต่อแล้ว
 contacts-find-mail = อีเมล
 contacts-details = รายละเอียดผู้ติดต่อ
 contacts-saved-in = บันทึกไว้ใน

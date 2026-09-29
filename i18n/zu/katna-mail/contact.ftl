@@ -5,6 +5,8 @@ contact-panel-show = Bonisa imininingwane yoxhumana naye
 contact-panel-hide = Fihla imininingwane yoxhumana naye
 contact-email = Thumela imeyili
 contact-search = Sesha imeyili yabo
+contact-add-to-contacts = Engeza koxhumana nabo
+contact-open-contact = Vula oxhumana naye
 contact-messages = { $count ->
     [one] Umlayezo ongu-{ $count }
    *[other] Imilayezo engu-{ $count }

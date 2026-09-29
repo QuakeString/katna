@@ -1334,3 +1334,55 @@ Acara dengan tamu kini memiliki Kirim email ke tamu dan, mulai satu jam
 sebelum acara dimulai, Saya terlambat: email untuk semua orang, dari
 akun kalender tersebut, siap dikirim.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Label kontak"
+text = """
+Label di halaman kontak mencentang dan membatalkan label atau membuat
+yang baru, dan ⋮ di samping label mengganti namanya, menghapusnya, atau
+menulis ke semua orang di dalamnya. Label tetap selaras dengan Google
+Contacts dan Outlook, dan setiap perubahan bisa di-Urungkan.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Tambahkan ke kontak dari email"
+text = """
+Panel kontak di samping percakapan memiliki Tambahkan ke kontak untuk
+orang yang belum Anda simpan: satu klik menyimpan nama, alamat, serta
+telepon, jabatan, dan perusahaan dari tanda tangannya, dengan Urungkan.
+Untuk orang yang sudah tersimpan, tombol yang sama membukanya di halaman
+Kontak.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Waktu fokus, di luar kantor, dan lokasi kerja"
+text = """
+Acara baru kini bisa berupa Waktu fokus, Di luar kantor, atau Lokasi
+kerja, seperti di Google Calendar: pilih di atas waktunya. Google dan
+Outlook mengenalinya sebagaimana adanya, dan di Katna semuanya tampil
+dengan ikonnya sendiri.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Tugas pada email Anda"
+text = """
+Email yang Anda jadikan tugas kini menampilkan hari jatuh tempo tugas di
+daftar, dengan warna merah jika terlambat. Klik untuk membuka tugas.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Kontak lainnya"
+text = """
+Kontak kini punya Kontak lainnya: orang yang pernah Anda kirimi email
+dari Gmail tetapi tidak pernah disimpan, seperti yang disimpan Gmail.
+Simpan siapa saja dengan satu klik, dengan Urungkan, atau langsung mulai
+email untuk mereka.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Jawab undangan dari akun mana pun"
+text = """
+Undangan yang masuk ke akun tanpa kalender kini juga punya Ya, Tidak,
+dan Mungkin: jawaban Anda dikirim ke penyelenggara lewat email, dan
+kalender mereka mencatatnya.
+"""

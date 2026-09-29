@@ -1381,3 +1381,57 @@ May Mag-mail sa mga bisita na ngayon ang kaganapang may mga bisita at,
 mula isang oras bago ito magsimula, Mahuhuli ako: isang mail sa lahat,
 mula sa account ng kalendaryong iyon, handa nang ipadala.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Mga label ng contact"
+text = """
+Ang Label sa pahina ng isang contact ay nagmamarka at nag-aalis ng mga
+label o gumagawa ng bago, at ang ⋮ sa tabi ng isang label ay nagpapalit
+ng pangalan nito, nagde-delete nito o nagsusulat sa lahat ng nasa loob
+nito. Nananatiling naka-sync ang mga label sa Google Contacts at
+Outlook, at may I-undo ang bawat pagbabago.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Idagdag sa mga contact mula sa mail"
+text = """
+Ang panel ng contact sa tabi ng isang usapan ay may Idagdag sa mga
+contact para sa taong hindi mo pa nase-save: isang click ang magse-save
+ng pangalan, address, at telepono, titulo at kumpanya mula sa lagda
+nila, kasama ang I-undo. Para sa taong naka-save na, binubuksan sila ng
+parehong button sa pahina ng Mga Contact.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Focus time, wala sa opisina at lokasyon ng trabaho"
+text = """
+Ang bagong event ay maaari nang maging Focus time, Wala sa opisina o
+Lokasyon ng trabaho, tulad sa Google Calendar: piliin ito sa itaas ng
+mga oras. Nakikilala ito ng Google at Outlook kung ano talaga ito, at
+may sarili itong icon sa Katna.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Mga gawain sa iyong mail"
+text = """
+Ang mail na ginawa mong gawain ay nagpapakita na ngayon ng takdang araw
+ng gawain sa listahan, na pula kapag huli na. I-click ito para buksan
+ang gawain.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Iba pang contact"
+text = """
+May Iba pang contact na ang Mga Contact: mga taong na-email mo mula sa
+Gmail pero hindi mo pa nase-save, gaya ng pag-iingat ng Gmail sa kanila.
+I-save ang sinuman sa isang click, may I-undo, o magsimula agad ng email
+sa kanila.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Sagutin ang mga imbitasyon mula sa anumang account"
+text = """
+Ang imbitasyong dumating sa account na walang kalendaryo ay may Oo,
+Hindi, at Baka na rin: ipapadala ang sagot mo sa organizer sa
+pamamagitan ng email, at minamarkahan ito ng kalendaryo nila.
+"""

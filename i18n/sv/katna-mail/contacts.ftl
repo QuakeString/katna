@@ -6,7 +6,25 @@
 
 contacts-all = Kontakter
 contacts-frequent = Ofta kontaktade
+contacts-other = Övriga kontakter
+contacts-other-about = Personer du har mejlat från Gmail men inte sparat
+contacts-other-email = Skicka e-post
+contacts-other-empty = Inga övriga kontakter. Personer du mejlar från Gmail men inte sparar visas här.
+contacts-other-allow = Om du vill se övriga kontakter loggar du in på ditt Gmail-konto igen och tillåter Katna att se dem.
 contacts-labels = Etiketter
+contacts-label-options = Etikettalternativ
+contacts-label-rename = Byt namn på etikett
+contacts-label-email = Skicka e-post till alla
+contacts-label-delete = Radera etikett
+contacts-label-new = Ny etikett
+contacts-label-name = Etikettnamn
+contacts-label-button = Etikett
+contacts-label-menu = Etikettera som:
+contacts-label-added = Lades till i { $name }
+contacts-label-removed = Togs bort från { $name }
+contacts-label-renamed = Etiketten bytte namn till { $name }
+contacts-label-deleted = Etiketten { $name } raderades
+contacts-label-no-email = Ingen med den här etiketten har en e-postadress
 contacts-create = Skapa kontakt
 
 ## Search and the list
@@ -42,6 +60,7 @@ contacts-back = Tillbaka till kontakter
 contacts-edit = Redigera
 contacts-delete = Radera
 contacts-deleted = { $name } raderades
+contacts-added = { $name } lades till i kontakter
 contacts-find-mail = E-post
 contacts-details = Kontaktuppgifter
 contacts-saved-in = Sparad i

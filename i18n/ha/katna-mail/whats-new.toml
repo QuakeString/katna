@@ -1269,3 +1269,45 @@ text = """
 Taron da ke da baƙi yanzu yana da Aika wa baƙi wasiƙa, kuma daga awa ɗaya kafin farawa, Ina makara:
 wasiƙa ga kowa, daga asusun kalandar, a shirye don aikawa.
 """
+
+["2026-09-29-0607-contact-labels"]
+title = "Lakabobi na lambobin sadarwa"
+text = """
+Lakabi a shafin lambar sadarwa yana kunna ko kashe lakabobi ko ƙirƙirar sabo, kuma ⋮ da ke kusa da lakabi yana sake masa suna, share shi ko rubuta wa kowa da ke ciki.
+Lakabobi suna daidaita da Google Contacts da Outlook, kuma kowane canji yana da Warware.
+"""
+
+["2026-09-29-0640-add-to-contacts"]
+title = "Ƙara cikin lambobin sadarwa daga Wasiƙa"
+text = """
+Allon lambar sadarwa kusa da tattaunawa yana da Ƙara cikin lambobin sadarwa ga wanda ba ka adana ba tukuna: danna sau ɗaya yana adana sunansa, adireshinsa, da wayar, matsayi da kamfani daga sa hannunsa, tare da Warware.
+Ga wanda aka adana, maɓallin ɗaya yana buɗe shi a shafin Lambobin sadarwa.
+"""
+
+["2026-09-29-0720-focus-time"]
+title = "Lokacin mai da hankali, Ba a ofis da Wurin aiki"
+text = """
+Sabon taron yanzu zai iya zama Lokacin mai da hankali, Ba a ofis ko Wurin aiki, kamar a Google Calendar: zaɓe shi a saman lokutan.
+Google da Outlook suna gane su yadda suke, kuma a Katna suna bayyana da nasu gunki.
+"""
+
+["2026-09-29-0704-task-chips"]
+title = "Ayyuka a kan wasiƙarka"
+text = """
+Wasiƙar da ka mayar aiki yanzu tana nuna ranar ƙarshen aikin a cikin jerin, da ja idan ya ɗauki lokaci.
+Danna shi don buɗe aikin.
+"""
+
+["2026-09-29-0638-other-contacts"]
+title = "Sauran lambobin sadarwa"
+text = """
+Lambobin sadarwa yanzu suna da Sauran lambobin sadarwa: mutanen da ka aika wa imel daga Gmail amma ba ka taɓa adana su ba, yadda Gmail ke riƙe su.
+Ka adana kowa da danna ɗaya, tare da Janye, ko ka fara rubuta masa imel.
+"""
+
+["2026-09-29-0745-answer-by-mail"]
+title = "Amsa gayyata daga kowane asusu"
+text = """
+Gayyatar da ta zo asusun da ba shi da kalanda yanzu tana da Eh, A'a da Wataƙila ma:
+amsarka tana tafiya wurin mai shiryawa ta imel, kuma kalandarsa tana yi mata alama.
+"""

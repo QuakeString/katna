@@ -6,7 +6,25 @@
 
 contacts-all = Danh bạ
 contacts-frequent = Thường xuyên
+contacts-other = Danh bạ khác
+contacts-other-about = Những người bạn đã gửi email từ Gmail nhưng chưa lưu
+contacts-other-email = Gửi email
+contacts-other-empty = Không có danh bạ khác. Những người bạn gửi email từ Gmail nhưng không lưu sẽ hiện ở đây.
+contacts-other-allow = Để xem danh bạ khác, hãy đăng nhập lại tài khoản Gmail và cho phép Katna xem chúng.
 contacts-labels = Nhãn
+contacts-label-options = Tùy chọn nhãn
+contacts-label-rename = Đổi tên nhãn
+contacts-label-email = Gửi email cho tất cả
+contacts-label-delete = Xóa nhãn
+contacts-label-new = Nhãn mới
+contacts-label-name = Tên nhãn
+contacts-label-button = Gắn nhãn
+contacts-label-menu = Gắn nhãn là:
+contacts-label-added = Đã thêm vào { $name }
+contacts-label-removed = Đã xóa khỏi { $name }
+contacts-label-renamed = Đã đổi tên nhãn thành { $name }
+contacts-label-deleted = Đã xóa nhãn { $name }
+contacts-label-no-email = Không ai trong nhãn này có địa chỉ email
 contacts-create = Tạo người liên hệ
 
 ## Search and the list
@@ -40,6 +58,7 @@ contacts-back = Quay lại danh bạ
 contacts-edit = Sửa
 contacts-delete = Xóa
 contacts-deleted = Đã xóa { $name }
+contacts-added = Đã thêm { $name } vào danh bạ
 contacts-find-mail = Thư
 contacts-details = Thông tin liên hệ
 contacts-saved-in = Đã lưu trong
