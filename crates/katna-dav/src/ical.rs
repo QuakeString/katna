@@ -586,6 +586,10 @@ pub fn event(component: &Component, fallback: &TimeZone, self_address: &str) -> 
         "OOF" => data.kind = EventKind::OutOfOffice,
         _ => {}
     }
+    let own = EventKind::parse(&component.text("X-KATNA-KIND").to_ascii_lowercase());
+    if matches!(own, EventKind::Focus | EventKind::WorkingLocation) {
+        data.kind = own;
+    }
     if let Some(rule) = component.property("RRULE")
         && recurrence_id.is_none()
     {

@@ -3360,6 +3360,14 @@ most useful reason is shown. Changes go back the way their calendar came
   to its end, Running late: a new mail to the other guests from the
   calendar's account, with a short "running late" line (Google Calendar's
   Email guests and Running late).
+- Event kinds: a new event can be Focus time, Out of office or a Working
+  location (tabs above its times, as Google's; fixed once made, as Google
+  fixes `eventType`). Google gets the event type and its properties
+  (Do not disturb, declining new invitations while out, a custom place);
+  when Google refuses the type (not every account or calendar has it),
+  the event is saved plain. Graph gets `showAs` `oof` or
+  `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
+  Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month and Schedule, like Google
   Calendar, with calendars grouped by account; the week starts as the

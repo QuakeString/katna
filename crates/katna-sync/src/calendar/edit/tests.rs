@@ -12,7 +12,7 @@ use std::time::Duration;
 use katna_core::{AccountId, OAuthProvider, Paths};
 use katna_store::{
     Mode,
-    calendar::{CalendarAccess, NewCalendar},
+    calendar::{CalendarAccess, EventKind, NewCalendar},
 };
 use serde_json::Value;
 
@@ -567,6 +567,46 @@ fn fake_google() -> (String, Arc<Mutex<Vec<Seen>>>) {
             _ => Answer::json(404, r#"{"error":{"message":"no"}}"#),
         }
     })
+}
+
+#[test]
+fn google_focus_time_falls_back_to_a_plain_event_when_refused() {
+    let (api, seen) = fake::serve(|request| {
+        let body = json(request);
+        if body["eventType"] == "focusTime" {
+            return Answer::json(
+                400,
+                r#"{"error":{"code":400,"message":"Focus time events cannot be created on this calendar."}}"#,
+            );
+        }
+        let id = body["id"].as_str().unwrap().to_owned();
+        Answer::json(200, format!(r#"{{"id":"{id}","etag":"\"new\""}}"#))
+    });
+    let client = google(&api);
+    let remote = Remote::Google(&client);
+    let (_dir, mut store) = store();
+    let cal = calendar(
+        &mut store,
+        CalendarSource::Google,
+        Some(1),
+        "me@test",
+        CalendarAccess::Owner,
+    );
+    let mut focus = edit("Focus time", start(), start() + 7200, "");
+    focus.kind = EventKind::Focus;
+    let added = add(&mut store, cal, focus);
+    push_all(&remote, &mut store, &added);
+    let sent = taken(&seen);
+    assert_eq!(sent.len(), 2);
+    let typed = json(&sent[0]);
+    assert_eq!(typed["eventType"], "focusTime");
+    assert_eq!(typed["focusTimeProperties"]["chatStatus"], "doNotDisturb");
+    let plain = json(&sent[1]);
+    assert!(plain.get("eventType").is_none());
+    assert_eq!(plain["summary"], "Focus time");
+    let saved = data(&store, added.id);
+    assert_eq!(saved.etag.as_deref(), Some("\"new\""));
+    assert_eq!(saved.kind, EventKind::Focus);
 }
 
 #[test]

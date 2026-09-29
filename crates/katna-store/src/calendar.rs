@@ -134,7 +134,10 @@ impl EventStatus {
 }
 
 /// What kind of time an event is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize,
+)]
+#[serde(rename_all = "snake_case")]
 pub enum EventKind {
     #[default]
     Default,
@@ -153,6 +156,10 @@ impl EventKind {
             Self::WorkingLocation => "working_location",
             Self::Birthday => "birthday",
         }
+    }
+
+    pub fn is_default(&self) -> bool {
+        *self == Self::Default
     }
 
     pub fn parse(text: &str) -> Self {
@@ -269,6 +276,10 @@ pub struct EventEdit {
     /// Asks the service to add a video call (Google Meet, Teams).
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub add_call: bool,
+    /// Focus time, out of office or a working location; set when the
+    /// event is made.
+    #[serde(default, skip_serializing_if = "EventKind::is_default")]
+    pub kind: EventKind,
 }
 
 fn busy_default() -> bool {
@@ -292,6 +303,7 @@ impl EventEdit {
             reminders: event.reminders.clone(),
             attendees: event.attendees.clone(),
             add_call: false,
+            kind: event.kind,
         }
     }
 
@@ -309,6 +321,7 @@ impl EventEdit {
         event.color = self.color.clone();
         event.reminders = self.reminders.clone();
         event.attendees = self.attendees.clone();
+        event.kind = self.kind;
     }
 }
 

@@ -22,12 +22,12 @@ use jiff::{ToSpan, Zoned};
 use katna_core::Paths;
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
-use katna_store::calendar::{Calendar, EventStatus};
+use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
 use katna_ui::px;
 
 use super::MailWindow;
-use super::event_edit::{Draft, ScopeAsk};
+use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{icon, icon_button, outlined_button, raised, tip};
 
@@ -1435,9 +1435,19 @@ impl MailWindow {
                     .when(!short, |d| {
                         d.child(
                             div()
-                                .font_weight(FontWeight::MEDIUM)
-                                .when(declined, |d| d.line_through())
-                                .child(title),
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(4.0))
+                                .children(kind_icon(data.kind).map(|name| icon(name, text, 12.0)))
+                                .child(
+                                    div()
+                                        .min_w_0()
+                                        .truncate()
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .when(declined, |d| d.line_through())
+                                        .child(title),
+                                ),
                         )
                         .child(div().text_color(rgba(th.text_dim)).child(time))
                         .when(
@@ -2070,6 +2080,10 @@ impl MailWindow {
                         ),
                 )
             })
+            .when_some(
+                kind_icon(data.kind).filter(|_| data.kind != EventKind::Birthday),
+                |d, name| d.child(line(name, kind_label(data.kind))),
+            )
             .when(!data.location.is_empty(), |d| {
                 d.child(line("pin", data.location.clone()))
             })
