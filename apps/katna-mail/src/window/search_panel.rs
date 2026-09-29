@@ -864,11 +864,11 @@ impl MailWindow {
                                 }
                                 cx.notify();
                             }))
-                            .child(if attachment {
-                                icon("checkbox-checked", th.accent, 20.0)
-                            } else {
-                                icon("checkbox", th.text_dim, 20.0)
-                            })
+                            .child(crate::widgets::checkbox(
+                                "search-attachment-box",
+                                crate::widgets::Check::from(attachment),
+                                th,
+                            ))
                             .child(tr!("search-has-attachment")),
                     )
                     .children(types),

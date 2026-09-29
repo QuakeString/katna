@@ -227,10 +227,10 @@ impl MailWindow {
                 .on_click(
                     cx.listener(move |this, _, _, cx| this.toggle_note_label(label.clone(), cx)),
                 )
-                .child(icon(
-                    if on { "checkbox-checked" } else { "checkbox" },
-                    th.text_dim,
-                    18.0,
+                .child(crate::widgets::checkbox(
+                    ("note-label-box", ix),
+                    crate::widgets::Check::from(on),
+                    th,
                 ))
                 .child(div().flex_1().min_w_0().truncate().child(name))
         });

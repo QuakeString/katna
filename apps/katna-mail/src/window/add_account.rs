@@ -921,18 +921,10 @@ impl MailWindow {
                                 }
                                 cx.notify();
                             }))
-                            .child(icon(
-                                if dialog.show_password {
-                                    "checkbox-checked"
-                                } else {
-                                    "checkbox"
-                                },
-                                if dialog.show_password {
-                                    th.accent
-                                } else {
-                                    th.text_dim
-                                },
-                                20.0,
+                            .child(crate::widgets::checkbox(
+                                "add-account-show-password-box",
+                                crate::widgets::Check::from(dialog.show_password),
+                                th,
                             ))
                             .child(tr!("add-account-show-password")),
                     )
