@@ -1501,3 +1501,42 @@ Salve as agendas que você está exibindo como um conjunto, como
 “Trabalho” ou “Família”, com + ao lado de Conjuntos de agendas. Um
 clique em um conjunto mostra as agendas dele e oculta as demais.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Digite uma tarefa em uma linha"
+text = """
+Adicione uma tarefa como “Ligar para o banco amanhã às 15h” ou “Regar as
+plantas toda segunda às 8h”, e Tarefas define o dia, o horário e a
+repetição para você, mostrando o que entendeu enquanto você digita.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Agenda em uma janela estreita"
+text = """
+Em uma janela estreita, a Agenda mantém Hoje e as datas na barra e
+coloca as visualizações em um só menu. Os horários dos eventos não
+quebram mais no meio da palavra, e Tab alcança todos os botões e
+agendas.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Tarefas com a pessoa, ao lado dos e-mails dela"
+text = """
+O painel de contato ao lado de uma conversa agora lista suas tarefas
+abertas criadas a partir de e-mails com essa pessoa. Marque uma para
+concluí-la ou clique nela para abri-la em Tarefas.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Suas próximas reuniões com a pessoa"
+text = """
+O painel de contato ao lado de uma conversa agora mostra suas próximas
+reuniões com essa pessoa. Clique em uma para abri-la na Agenda.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Arraste uma tarefa para outra lista"
+text = """
+Em Tarefas, arraste uma tarefa para outra lista para movê-la para lá.
+Desfazer a coloca de volta.
+"""

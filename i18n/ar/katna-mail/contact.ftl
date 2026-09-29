@@ -28,5 +28,7 @@ contact-conversations = المحادثات الأخيرة
 contact-more = المزيد
 contact-less = أقل
 contact-files = الملفات
+contact-tasks = المهام
+contact-meetings = الاجتماعات القادمة
 contact-people = في هذه المحادثة
 contact-local-only = من بريدك على هذا الكمبيوتر فقط

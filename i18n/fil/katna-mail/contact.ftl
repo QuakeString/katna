@@ -24,5 +24,7 @@ contact-conversations = Mga kamakailang pag-uusap
 contact-more = Higit pa
 contact-less = Mas kaunti
 contact-files = Mga file
+contact-tasks = Mga Gawain
+contact-meetings = Mga paparating na meeting
 contact-people = Sa pag-uusap na ito
 contact-local-only = Mula lang sa mail mo sa computer na ito

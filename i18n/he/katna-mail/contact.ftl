@@ -24,5 +24,7 @@ contact-conversations = שיחות אחרונות
 contact-more = עוד
 contact-less = פחות
 contact-files = קבצים
+contact-tasks = משימות
+contact-meetings = פגישות קרובות
 contact-people = בשיחה הזו
 contact-local-only = רק מהדואר שבמחשב הזה

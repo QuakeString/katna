@@ -24,5 +24,7 @@ contact-conversations = මෑත සංවාද
 contact-more = තවත්
 contact-less = අඩුව
 contact-files = ගොනු
+contact-tasks = කාර්යයන්
+contact-meetings = ඉදිරි රැස්වීම්
 contact-people = මෙම සංවාදයේ
 contact-local-only = මෙම පරිගණකයේ ඇති ඔබගේ තැපෑලෙන් පමණි

@@ -1553,3 +1553,45 @@ Enregistrez les calendriers affichés comme groupe, par exemple « Travail »
 ou « Famille », avec le + à côté de Groupes de calendriers. Un clic sur
 un groupe affiche ses calendriers et masque les autres.
 """
+
+["2026-09-29-0947-tasks-typed-quick-add"]
+title = "Saisir une tâche en une ligne"
+text = """
+Ajoutez une tâche comme « Appeler la banque demain 15h » ou « Arroser
+les plantes chaque lundi 8h », et Tâches règle le jour, l’heure et la
+répétition à votre place, en montrant ce qu’il a compris au fil de la
+frappe.
+"""
+
+["2026-09-29-1028-calendar-narrow-windows"]
+title = "Le Calendrier dans une fenêtre étroite"
+text = """
+Dans une fenêtre étroite, le Calendrier garde Aujourd’hui et les dates
+dans sa barre et regroupe les vues dans un seul menu. Les heures des
+événements ne se coupent plus au milieu d’un mot, et Tab atteint chaque
+bouton et chaque calendrier.
+"""
+
+["2026-09-29-1039-contact-panel-tasks"]
+title = "Ses tâches, à côté de ses messages"
+text = """
+Les détails du contact, à côté d’une conversation, listent désormais vos
+tâches ouvertes créées à partir de messages échangés avec cette
+personne. Cochez-en une pour la terminer, ou cliquez dessus pour
+l’ouvrir dans Tâches.
+"""
+
+["2026-09-29-1046-contact-panel-meetings"]
+title = "Vos prochaines réunions avec cette personne"
+text = """
+Les détails du contact, à côté d’une conversation, affichent désormais
+vos prochaines réunions avec cette personne. Cliquez sur l’une d’elles
+pour l’ouvrir dans le Calendrier.
+"""
+
+["2026-09-29-1051-tasks-drag-to-list"]
+title = "Glisser une tâche vers une autre liste"
+text = """
+Dans Tâches, faites glisser une tâche sur une autre liste pour l’y
+déplacer. Annuler la remet à sa place.
+"""

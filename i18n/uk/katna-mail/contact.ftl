@@ -26,5 +26,7 @@ contact-conversations = Нещодавні ланцюжки
 contact-more = Ще
 contact-less = Згорнути
 contact-files = Файли
+contact-tasks = Завдання
+contact-meetings = Найближчі зустрічі
 contact-people = У цьому ланцюжку
 contact-local-only = Лише з вашої пошти на цьому комп’ютері

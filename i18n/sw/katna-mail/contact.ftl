@@ -24,5 +24,7 @@ contact-conversations = Mazungumzo ya hivi karibuni
 contact-more = Zaidi
 contact-less = Chache
 contact-files = Faili
+contact-tasks = Majukumu
+contact-meetings = Mikutano ijayo
 contact-people = Katika mazungumzo haya
 contact-local-only = Kutoka kwenye barua zako kwenye kompyuta hii pekee
