@@ -27,7 +27,7 @@ use katna_ui::unpx;
 use super::compose::{Kind, SentCard};
 use super::list::separator;
 use super::rich::{self, Painter};
-use super::{MailWindow, Menu, SelectNext, SelectPrevious};
+use super::{MailWindow, Menu, READER_CONTEXT, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
@@ -752,8 +752,11 @@ impl MailWindow {
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
+        let keys = self.reader_keys;
         div()
             .id("reader-card")
+            .key_context(READER_CONTEXT)
+            .track_focus(&self.reader_focus)
             .size_full()
             .flex()
             .flex_col()
@@ -763,9 +766,38 @@ impl MailWindow {
             .bg(rgba(th.surface))
             .shadow(card_shadow(th, outline))
             .p(px(outline))
+            .on_action(cx.listener(Self::reader_back))
+            .on_action(cx.listener(Self::select_next))
+            .on_action(cx.listener(Self::select_previous))
+            .on_action(cx.listener(Self::scroll_down))
+            .on_action(cx.listener(Self::scroll_up))
+            .on_action(cx.listener(Self::scroll_page_down))
+            .on_action(cx.listener(Self::scroll_page_up))
+            .on_action(cx.listener(Self::archive))
+            .on_action(cx.listener(Self::delete))
+            .on_action(cx.listener(Self::report_spam))
+            .on_action(cx.listener(Self::mark_read))
+            .on_action(cx.listener(Self::mark_unread))
+            .on_action(cx.listener(Self::toggle_star))
+            .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::mark_not_important))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
             .children(card_outline(th, radius, outline))
+            // Which pane has the keys: a faint accent edge on this one.
+            .when(keys, |d| {
+                d.child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .right_0()
+                        .bottom_0()
+                        .rounded(px(radius))
+                        .border_1()
+                        .border_color(rgba(fade(th.accent, 0.5))),
+                )
+            })
             .into_any_element()
     }
 
