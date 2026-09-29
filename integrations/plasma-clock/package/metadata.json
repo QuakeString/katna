@@ -1,0 +1,35 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Katna",
+                "Website": "https://katna.invenia.in"
+            },
+            {
+                "Name": "Martin Klapetek",
+                "Email": "mklapetek@kde.org"
+            }
+        ],
+        "BugReportUrl": "https://github.com/QuakeString/katna/issues",
+        "Category": "Date and Time",
+        "Description": "Plasma's Digital Clock with your Katna events and tasks",
+        "FormFactors": [
+            "tablet",
+            "handset",
+            "desktop"
+        ],
+        "Icon": "in.invenia.katna.Mail",
+        "License": "GPL-2.0+",
+        "Name": "Katna Digital Clock",
+        "Website": "https://katna.invenia.in",
+        "Id": "in.invenia.katna.digitalclock",
+        "Version": "1.0"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.time",
+        "org.kde.plasma.date"
+    ]
+}

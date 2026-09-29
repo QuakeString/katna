@@ -1,11 +1,11 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 27 September 2026, through PR #222). Companion to
+> Status: **v0.2** (updated 29 September 2026, through PR #277). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
 
-## 0. Where we are (28 September 2026)
+## 0. Where we are (29 September 2026)
 
 ✅ marks a task merged to `main`, with its pull requests. ◐ marks a task
 that is partly done; the table says what is left. Rows without a mark have
@@ -22,28 +22,41 @@ Mail that the phases did not name.
   and automatic translation (Phase 7);
   local crash reports and opt-in sending; the language framework and most
   of the UI translated; reading and sending encrypted mail.
-- **Merged since the last refresh:** who opened a sent message, in a
-  popover from an eye beside the star (#210); calling and copying a phone
-  number in the contact panel (#211); a floating folder pane with a notch
-  (#212); hiding or removing the quoted mail in a reply (#213); no storage
-  bar for unlimited quotas (#214); address suggestions in Search options
-  (#215) and Search options that fit small windows (#219); the main menu
-  behind ☰ in the account card (#216); tray and notification clicks that
-  bring the window forward and open the mail (#217); a send countdown
-  ring, a sent toast and sound, and a reply that stays in place (#220);
-  replies sent from the conversation's own account (#221); translations
-  (#218, #222).
-- **In progress:** testing Katna on a Windows 11 virtual machine.
+- **Merged since the last refresh:** updating Katna from the app, from
+  Help > Check for Updates or a notification, with a retry and an Update
+  window, and minisign-signed packages (#232, #242, #262, #270, #271,
+  #272); the security audit's findings fixed and a warning before using an
+  unencrypted server (#251, #260, #263); files over 25 MB sent as Google
+  Drive or OneDrive links (#252, #256); a faster start with the first list
+  read at once and GPUI list paging (#258, #264, #266, #269); keys that
+  follow the focused pane, folders that slide, and the keyboard in the
+  folder pane, menus and dialogs (#273, #275, #276); compose below the top
+  bar with recipients that use the full width, fold and scroll (#239,
+  #241, #246, #254); Activity without opens and clicks and with an account
+  picker (#225, #248); tracking for signed, encrypted and plain-text mail
+  (#227); the owner's round logo (#229); softer contact panel cards and
+  the panel for one's own mail (#230, #255); a tighter window shadow
+  (#231); a tidier reply box (#226); a search box shortcut and floating
+  folders (#224); the start menu line (#238); What's new showing only the
+  newest (#240); search bar blur (#243); scrolling the account picture to
+  switch accounts (#245); a narrow reader toolbar (#249); folder pane
+  right-click (#257); shorter What's new and About dialogs (#259); the
+  coffee button's play (#274); `arch-latest` updated in place and always
+  finished (#233, #235); a sturdier sync test (#277); translations (#228,
+  #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268).
+- **In progress:** Katna Calendar as a page of the Katna window (Phase 6,
+  decided 29 September 2026), then Katna Tasks; studies of Katna Notes and
+  Katna Contacts; the Katna Digital Clock for Plasma and GNOME with a task
+  list (#278, open); testing Katna on a Windows 11 virtual machine.
 - **Next:** usage statistics, feedback form and debug-file upload (C.3,
-  C.6, C.7); right-to-left layout (L.2, L.3); the release track before any
-  public release. Organizations (Phase 2) comes later.
+  C.6, C.7); right-to-left layout (L.2, L.3); the rest of the release
+  track before any public release. Organizations (Phase 2) comes later.
 - **Size:** the owner raised the daemon's budget from 20 MiB to 50 MB
   (27 September 2026).
 - **Needs from the owner:** the Google and Microsoft OAuth2 client IDs as
   GitHub secrets (the sign-in buttons stay hidden until then), and a
   code-signing certificate for Windows.
-- **Later:** Organizations (Phase 2), Katna Calendar (Phase 6), Contacts,
-  Tasks, Notes, Feeds, phones, notes on mail, Workspace, own crash server,
+- **Later:** Organizations (Phase 2), Feeds, phones, notes on mail, Workspace, own crash server,
   a server check that recipient addresses exist.
 
 ## 1. Working principles
@@ -324,6 +337,15 @@ belong to Phase 3 tasks above; this track records them so none is lost.
 | D.47 Open from tray and notifications ✅ | Clicking the tray or a notification brings the window forward and opens the mail (#217) |
 | D.48 Sending feedback ✅ | A countdown ring on Send, a sent toast and sound, the reply staying in place and a simpler reply head (#220) |
 | D.49 Reply from the right account ✅ | A reply starts from the account the conversation is in (#221) |
+| D.50 Update from the app ✅ | Help > Check for Updates and an update notification install the new package (pkexec), with a retry and an Update window (#232, #242, #262, #271, #272); only minisign-signed packages install (#270) |
+| D.51 Security audit ✅ | The audit's high findings (#251) and the rest (#260) fixed; a warning before using a server without encryption (#263) |
+| D.52 Large files ✅ | Files over 25 MB go as a Google Drive (#252) or OneDrive (#256) link |
+| D.53 Faster start ✅ | Katna account loading bar (#258), a faster start (#264), the first list read at startup (#266), GPUI list paging (#269) |
+| D.54 Keyboard ✅ | Keys follow the focused pane (#273); folder pane, menus and dialogs by keyboard with industry-standard keys (#276); folders slide (#275); folder pane right-click (#257) |
+| D.55 Compose sheet ✅ | Compose below the top bar (#239); closing a popped-out compose frees Reply (#241); recipients use the full width, fold (#246) and scroll (#254); a tidier reply box (#226) |
+| D.56 Activity and tracking ✅ | Opens and clicks moved out of Activity (#225); an account picker (#248); tracking for signed, encrypted and plain-text mail (#227) |
+| D.57 Look ✅ | The owner's round logo (#229); softer contact panel cards (#230) and the panel for one's own mail (#255); a tighter window shadow (#231); search bar blur (#243); a narrow reader toolbar (#249); shorter What's new and About dialogs (#259); What's new shows only the newest (#240); the coffee button's play (#274) |
+| D.58 Small conveniences ✅ | A search box shortcut and floating folders (#224); the start menu line (#238); scrolling the account picture switches accounts (#245) |
 
 Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 (#56), scheduled send (#53), the badge count with one account (#61), the
@@ -332,8 +354,10 @@ place on Plasma 6.7 Wayland (#105).
 
 ### Release track — update channels and safe updates (before the first public release)
 
-Planned 26 September 2026 (#39) and **not started** apart from the
-daemon's restart after updates (#65): the basic apps come first.
+Planned 26 September 2026 (#39). Done so far: the daemon's restart after
+updates (#65), updating the Arch package from the app (#232, #242, #262,
+#271, #272) and minisign-signed packages that the app checks before
+installing (#270; part of U.9 and U.10).
 The design is `ARCHITECTURE.md` §21.2. Until this track is done, only the
 nightly `arch-latest` build exists and it is for testers. It must be done
 before Katna is offered as a stable release or on Flathub. U.2 and U.3 are
@@ -431,7 +455,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222, #228, #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
@@ -568,23 +592,54 @@ against Stalwart, Dovecot and Gmail, with integration tests.
 Later, not scheduled yet: notes on mail and the Workspace view
 (`ARCHITECTURE.md` §13.7). Workspace builds on snooze from this phase.
 
-### Phase 6 — Katna Calendar and Plasma calendar (≈ 14 weeks)
+### Phase 6 — Katna Calendar, Tasks, Notes and Contacts
+
+Reshaped 29 September 2026 after the calendar and tasks study
+(Google Calendar, Proton, Outlook, Fantastical, Notion Calendar, Morgen,
+Thunderbird, Merkuro, Google Tasks, To Do, Todoist, TickTick, Things). The
+owner's decisions, taken as the study recommended:
+
+1. **Pages, not programs.** Calendar, Tasks, Notes and Contacts are pages
+   of the Katna window, on the app rail beside Mail, each with its own
+   menu entry and icon that opens straight to that page. One GPUI
+   program: instant switching, a shared side panel, about 20 MB less
+   memory than a second program. This replaces the separate
+   `katna-calendar` app in `ARCHITECTURE.md`.
+2. **Each service's own calendar.** Google Calendar API for Gmail accounts
+   (Meet links, focus time, out of office, working location, labels;
+   Google sends invitations), Microsoft Graph for Microsoft accounts,
+   CalDAV for the rest, local calendars without an account. This follows
+   the feature rule and replaces "CalDAV only".
+3. **Gmail tasks in Google Tasks.** Due time, reminders and repeat, which
+   the Google Tasks API cannot hold, are kept on this computer; Microsoft
+   To Do through Graph; VTODO over CalDAV.
+4. **Calendar before Tasks.**
+5. **Week start from the language setting**, with a choice in Settings.
+6. **No booking pages.** "Share free times" pastes free slots into a mail
+   instead; Katna Server stays with tracking, translation and accounts.
+
+Look: Google Calendar's week grid, pale Create button, one-step create
+popover and density setting; calendars grouped by account with colors
+(Mailspring, Morgen); tasks dragged onto the grid to block time (Morgen).
 
 | Task | Deliverable |
 |---|---|
-| 6.1 `katna-dav` | CalDAV/CardDAV discovery and sync in the daemon; contacts/organizations sync via CardDAV |
-| 6.2 Calendar core | `calcard` parsing, recurrence expansion (`rrule`), exceptions, time zones (`jiff`), alarms as notifications; property tests + fuzzing |
-| 6.3 Invitations | iTIP/iMIP: accept/decline from Katna Mail, send invitations |
-| 6.4 Katna Calendar app | Day/week/month/agenda views, event editor, organization filter |
-| 6.5 Plasma events plugin | C++ `CalendarEventsPlugin` → daemon; Katna Calendar as `text/calendar` handler |
-| 6.6 Katna Clock | Fork of `applets/digital-clock`: renames, `X-Plasma-Provides`, quick-add, click/right-click actions, drag to reschedule |
-| 6.7 Upstream proposals | Merge requests to Plasma: "Add…" with date, click event to open, plugin action hook |
-| 6.8 Packaging | `katna-plasma-integration` for .deb and AUR; CI against Arch's Plasma and Kubuntu 26.04's Plasma |
+| 6.1 See it (Katna Calendar thread) | Page switcher on the app rail and in the menus; calendar tables in `katna-store`; daemon sync through Google Calendar API, Microsoft Graph and CalDAV (`katna-dav`), and local calendars; `calcard` parsing, recurrence with exceptions (`rrule`), time zones (`jiff`); Week, Day, Month and Schedule views, read-only, with account groups and colors; agenda side panel in Katna Mail; events in the Plasma clock |
+| 6.2 Change it (Katna Calendar thread) | Create popover (press C, or click or drag on the grid) and full editor; drag to move and resize; repeat rules and exceptions; Undo and Ctrl+Z; reminder notifications with Join and Snooze; density, second time zone, keyboard shortcuts |
+| 6.3 Meetings (Katna Calendar thread) | Invitation card in the reader with Yes, Maybe, No and the day around it; replies through Google or Graph, else iMIP mail; guests and busy times (freeBusy, getSchedule); Meet and Teams links; Schedule meeting from a conversation; running-late mail; focus time, out of office, working location |
+| 6.4 Tasks (Katna Tasks thread) | Google Tasks, To Do and CalDAV task sync with local extras; Tasks page and Today view; Add to tasks from mail (Shift+T) with the link back; task chips in the mail list; tasks on the calendar and drag to block time |
+| 6.5 Polish | Typed quick add for events and tasks, calendar sets, Year view, share free times as text, birthdays, holidays, events in KRunner and GNOME search |
+| 6.6 Katna Digital Clock ◐ #278 (open) | Plasma: an alternative to the digital clock with Plasma's calendar and a task list under the day; GNOME: a Tasks card under the calendar; events once 6.1 syncs them; installed by the Arch package, and by `katna-plasma-integration` for .deb later |
+| 6.7 Katna Notes (study, then build) | Study of note apps first; the build rows follow the owner's decisions |
+| 6.8 Katna Contacts (study, then build) | Study of contact apps first (Google People API, Graph contacts, CardDAV); the build rows follow the owner's decisions |
+| 6.9 Upstream proposals | Merge requests to Plasma: "Add…" with date, click event to open, plugin action hook |
 
-**Done when:** events sync with Google, Nextcloud and Fastmail; recurring
-events with exceptions and time zones match a reference test set; events
-appear in the stock Plasma clock; events can be added and edited from
-Katna Clock.
+**Done when:** on the Katna window's Calendar page, events from Gmail,
+a Microsoft account and a CalDAV server (Nextcloud or Fastmail) sync both
+ways; recurring events with exceptions and time zones match a reference
+test set; an invitation answered from Katna Mail reaches the organizer; a
+Gmail task made in Katna appears in Google Tasks on the phone; and the app
+stays within its size budget.
 
 ### Phase 7 — Katna Server (≈ 8 weeks)
 

@@ -15,6 +15,7 @@ use zbus::zvariant::Type;
 
 pub use zbus;
 
+pub mod agenda;
 mod session;
 pub use session::session;
 
