@@ -95,6 +95,7 @@ impl MailWindow {
         cx.spawn_in(window, async move |this, cx| {
             let link = link.await;
             this.update_in(cx, |this, window, cx| {
+                this.hide_snackbar(cx);
                 cx.open_url(&link);
                 let to = people
                     .into_iter()
