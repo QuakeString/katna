@@ -133,14 +133,19 @@ fn pushing_clears_dirty_unless_changed_again() {
     };
     assert!(store.edit_task(id, &fields).unwrap());
     store
-        .task_pushed(id, pending.stamp, &remote("T1", "draft the memo"))
+        .task_pushed(id, pending.stamp, &remote("T1", "draft the memo"), true)
         .unwrap();
     let again = store.pending_tasks(list).unwrap();
     assert_eq!(again.len(), 1);
     assert_eq!(again[0].remote_id.as_deref(), Some("T1"));
 
     store
-        .task_pushed(id, again[0].stamp, &remote("T1", "draft the memo today"))
+        .task_pushed(
+            id,
+            again[0].stamp,
+            &remote("T1", "draft the memo today"),
+            true,
+        )
         .unwrap();
     assert!(store.pending_tasks(list).unwrap().is_empty());
 }
@@ -211,7 +216,7 @@ fn local_edits_win_until_sent_and_extras_stay() {
     let pending = store.pending_tasks(list).unwrap().remove(0);
     assert_eq!(pending.task.title, "pay rent");
     store
-        .task_pushed(id, pending.stamp, &remote("A", "pay rent"))
+        .task_pushed(id, pending.stamp, &remote("A", "pay rent"), true)
         .unwrap();
 
     // Google keeps no time or star; they stay here.
@@ -337,4 +342,209 @@ fn new_tasks_go_on_top_and_new_steps_at_the_end() {
         titles(&store.tasks_in(1).unwrap()),
         ["passport", "trip", "trains", "hotel"]
     );
+}
+
+#[test]
+fn a_place_between_two_sorts_between_them() {
+    let cases = [
+        ("", Some("00000000000000000001")),
+        ("00000000000000000001", Some("00000000000000000002")),
+        ("00000000000000000001", Some("00000000000000000009")),
+        ("00000000000000000009", None),
+        ("", None),
+        ("0999", Some("1")),
+        ("15", Some("151")),
+    ];
+    for (low, high) in cases {
+        let mid = between(low, high).unwrap();
+        assert!(mid.as_str() > low, "{mid} after {low}");
+        if let Some(high) = high {
+            assert!(mid.as_str() < high, "{mid} before {high}");
+        }
+        assert!(!mid.ends_with('0'), "{mid}");
+    }
+    // Always room for another between.
+    let mut high = "00000000000000000002".to_owned();
+    for _ in 0..40 {
+        let mid = between("00000000000000000001", Some(&high)).unwrap();
+        assert!(mid.as_str() > "00000000000000000001" && mid < high);
+        high = mid;
+    }
+    assert_eq!(between("5", Some("5")), None);
+    assert_eq!(between("6", Some("5")), None);
+    assert_eq!(between("", Some("00")), None);
+}
+
+fn add(store: &mut Store, list: i64, parent: Option<i64>, title: &str) -> i64 {
+    let fields = TaskFields {
+        title: title.into(),
+        ..TaskFields::default()
+    };
+    store.add_task_to(list, parent, &fields).unwrap()
+}
+
+#[test]
+fn dragging_puts_a_task_where_it_was_let_go() {
+    let (_dir, mut store) = store();
+    let c = add(&mut store, 1, None, "c");
+    let step = add(&mut store, 1, Some(c), "c1");
+    let b = add(&mut store, 1, None, "b");
+    let a = add(&mut store, 1, None, "a");
+    assert_eq!(titles(&store.tasks_in(1).unwrap()), ["a", "b", "c", "c1"]);
+    // Down, after c (its step stays with c).
+    assert!(store.place_task(a, 1, Some(c)).unwrap());
+    assert_eq!(titles(&store.tasks_in(1).unwrap()), ["b", "c", "c1", "a"]);
+    // Up to the top.
+    assert!(store.place_task(c, 1, None).unwrap());
+    assert_eq!(titles(&store.tasks_in(1).unwrap()), ["c", "c1", "b", "a"]);
+    // A new task still goes on top.
+    add(&mut store, 1, None, "new");
+    assert_eq!(
+        titles(&store.tasks_in(1).unwrap()),
+        ["new", "c", "c1", "b", "a"]
+    );
+    // Steps are not dragged; a list on this computer sends nothing.
+    assert!(!store.place_task(step, 1, None).unwrap());
+    assert!(store.pending_tasks(1).unwrap().is_empty());
+
+    // Into another list, between two of its tasks.
+    let home = store.add_task_list(None, "Home").unwrap();
+    let y = add(&mut store, home, None, "y");
+    let x = add(&mut store, home, None, "x");
+    assert!(store.place_task(b, home, Some(x)).unwrap());
+    assert_eq!(titles(&store.tasks_in(home).unwrap()), ["x", "b", "y"]);
+    assert_eq!(titles(&store.tasks_in(1).unwrap()), ["new", "c", "c1", "a"]);
+    // Undo puts it back where it was.
+    assert!(store.place_task(b, 1, Some(c)).unwrap());
+    assert_eq!(
+        titles(&store.tasks_in(1).unwrap()),
+        ["new", "c", "c1", "b", "a"]
+    );
+    assert!(store.place_task(y, home, None).unwrap());
+    assert_eq!(titles(&store.tasks_in(home).unwrap()), ["y", "x"]);
+}
+
+fn google_account(store: &mut Store, address: &str) -> AccountId {
+    let id = account(store, address);
+    let settings = katna_core::AccountSettings {
+        oauth: Some(OAuthProvider::Google),
+        ..katna_core::AccountSettings::default()
+    };
+    store.set_account_settings(id, &settings).unwrap();
+    id
+}
+
+fn placed(id: &str, title: &str, position: &str) -> RemoteTask {
+    RemoteTask {
+        position: position.into(),
+        ..remote(id, title)
+    }
+}
+
+#[test]
+fn a_task_dragged_in_a_google_list_moves_there_too() {
+    let (_dir, mut store) = store();
+    let work = google_account(&mut store, "work@example.test");
+    let list = gmail_list(&mut store, work);
+    let pulled = [
+        placed("A", "a", "00000000000000000001"),
+        placed("B", "b", "00000000000000000002"),
+        placed("C", "c", "00000000000000000003"),
+    ];
+    store.sync_tasks(list, &pulled, true).unwrap();
+    let id = |store: &Store, title: &str| {
+        store
+            .tasks_in(list)
+            .unwrap()
+            .into_iter()
+            .find(|t| t.title == title)
+            .unwrap()
+            .id
+    };
+    let (a, b, c) = (id(&store, "a"), id(&store, "b"), id(&store, "c"));
+    assert!(store.place_task(c, list, Some(a)).unwrap());
+    assert_eq!(titles(&store.tasks_in(list).unwrap()), ["a", "c", "b"]);
+    // Only the dragged one changed, and only its place.
+    let pending = store.pending_tasks(list).unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].task.id, c);
+    assert!(!pending[0].edited);
+    assert_eq!(pending[0].place, Some(Place::After("A".into())));
+    // Changed again before it went: both go.
+    let fields = TaskFields {
+        title: "see".into(),
+        ..TaskFields::default()
+    };
+    store.edit_task(c, &fields).unwrap();
+    let pending = store.pending_tasks(list).unwrap().remove(0);
+    assert!(pending.edited);
+    assert_eq!(pending.place, Some(Place::After("A".into())));
+    // A pull meanwhile doesn't undo it.
+    store.sync_tasks(list, &pulled, true).unwrap();
+    assert_eq!(titles(&store.tasks_in(list).unwrap()), ["a", "see", "b"]);
+    // Google's own position once it went.
+    let moved = placed("C", "see", "000000000000000000015");
+    store.task_pushed(c, pending.stamp, &moved, true).unwrap();
+    assert!(store.pending_tasks(list).unwrap().is_empty());
+    assert_eq!(store.task(c).unwrap().unwrap().position, moved.position);
+
+    // First: no task before it there.
+    assert!(store.place_task(b, list, None).unwrap());
+    assert_eq!(titles(&store.tasks_in(list).unwrap()), ["b", "a", "see"]);
+    let pending = store.pending_tasks(list).unwrap().remove(0);
+    assert_eq!(pending.place, Some(Place::First));
+    // Sent but not placed yet: it stays marked, where it is here.
+    store
+        .task_pushed(b, pending.stamp, &placed("B", "b", "9"), false)
+        .unwrap();
+    let pending = store.pending_tasks(list).unwrap().remove(0);
+    assert_eq!(pending.place, Some(Place::First));
+    assert!(!pending.edited);
+    assert_eq!(titles(&store.tasks_in(list).unwrap()), ["b", "a", "see"]);
+
+    // After a task not on Google yet: it waits for it.
+    let new = add(&mut store, list, None, "new");
+    assert!(store.place_task(a, list, Some(new)).unwrap());
+    let waiting = store
+        .pending_tasks(list)
+        .unwrap()
+        .into_iter()
+        .find(|p| p.task.id == a)
+        .unwrap();
+    assert_eq!(waiting.place, Some(Place::Waiting));
+}
+
+#[test]
+fn another_services_order_is_kept_here() {
+    let (_dir, mut store) = store();
+    // A CalDAV account: its server keeps no order.
+    let dav = account(&mut store, "me@example.test");
+    let list = gmail_list(&mut store, dav);
+    store
+        .sync_tasks(list, &[remote("A", "a"), remote("B", "b")], true)
+        .unwrap();
+    let first: Vec<String> = store
+        .tasks_in(list)
+        .unwrap()
+        .into_iter()
+        .map(|t| t.title)
+        .collect();
+    let last = store.tasks_in(list).unwrap()[1].id;
+    assert!(store.place_task(last, list, None).unwrap());
+    let flipped = vec![first[1].clone(), first[0].clone()];
+    assert_eq!(titles(&store.tasks_in(list).unwrap()), flipped);
+    assert!(store.pending_tasks(list).unwrap().is_empty());
+    // Changed on the server, which gives no place: the order stays.
+    let changed = [
+        RemoteTask {
+            etag: "new-a".into(),
+            ..remote("A", "a")
+        },
+        RemoteTask {
+            etag: "new-b".into(),
+            ..remote("B", "b")
+        },
+    ];
+    assert!(store.sync_tasks(list, &changed, true).unwrap());
+    assert_eq!(titles(&store.tasks_in(list).unwrap()), flipped);
 }

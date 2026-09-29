@@ -17,7 +17,7 @@ use std::sync::Mutex;
 use katna_core::AccountId;
 use katna_store::{
     Store,
-    tasks::{PendingTask, RemoteTask, RemoteTaskList, Task},
+    tasks::{PendingTask, Place, RemoteTask, RemoteTaskList, Task},
 };
 
 use crate::{Error, Result, autoconfig::http::Reply};
@@ -122,6 +122,17 @@ impl TaskService {
         }
     }
 
+    /// Moves task `id` right after task `after` of `list`, or first, where
+    /// the service keeps the order (Google Tasks). `Ok(None)` when it
+    /// keeps none, or no longer has the task.
+    async fn place(&self, list: &str, id: &str, after: Option<&str>) -> Result<Option<RemoteTask>> {
+        match self {
+            Self::Google(service) => service.place(list, id, after).await,
+            // To Do and CalDAV keep no order Katna can set: it stays here.
+            Self::Microsoft(_) | Self::CalDav(_) => Ok(None),
+        }
+    }
+
     async fn delete(&self, list: &str, id: &str) -> Result<()> {
         match self {
             Self::Google(service) => service.delete(list, id).await,
@@ -214,27 +225,48 @@ async fn push(
             // Its task is not on the service yet; next round.
             return Ok(());
         }
-        let remote = match &pending.remote_id {
+        let insert = || service.insert(list, &pending.task, pending.parent_remote.as_deref());
+        let mut remote = match &pending.remote_id {
+            // Only its place changed: nothing else to send.
+            Some(remote) if !pending.edited => RemoteTask {
+                remote_id: remote.clone(),
+                etag: pending.etag.clone().unwrap_or_default(),
+                ..RemoteTask::default()
+            },
             Some(remote) => match service.update(list, remote, &pending.task).await? {
                 Some(done) => done,
                 // Deleted on the service while changed here: the change
                 // brings it back.
-                None => {
-                    service
-                        .insert(list, &pending.task, pending.parent_remote.as_deref())
-                        .await?
-                }
+                None => insert().await?,
             },
-            None => {
-                service
-                    .insert(list, &pending.task, pending.parent_remote.as_deref())
-                    .await?
+            None => insert().await?,
+        };
+        // Dragged to a new place here: after the task before it there.
+        let placed = match &pending.place {
+            None => true,
+            Some(Place::Waiting) => false,
+            Some(place) => {
+                let after = match place {
+                    Place::After(after) => Some(after.as_str()),
+                    _ => None,
+                };
+                match service.place(list, &remote.remote_id, after).await {
+                    Ok(Some(moved)) => remote = moved,
+                    Ok(None) => {}
+                    // The task before it went meanwhile: the next pull
+                    // shows where Google put it.
+                    Err(Error::Rejected(err)) => {
+                        tracing::warn!(id, %err, "the task service refused a new place");
+                    }
+                    Err(err) => return Err(err),
+                }
+                true
             }
         };
         store
             .lock()
             .unwrap()
-            .task_pushed(id, pending.stamp, &remote)?;
+            .task_pushed(id, pending.stamp, &remote, placed)?;
         Ok(())
     };
     match sent.await {

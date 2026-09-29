@@ -3673,7 +3673,7 @@ server error is not.
   account's list synced move to that list once.
 - **The Tasks page** (`window/tasks_page.rs`) is a page of the mail
   window, laid out like Google Tasks. It reads `pim.db` read-only and
-  sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, the
+  sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, `PlaceTask`, the
   list calls), then reads again on `Changed`. Beside All tasks and
   Starred, Today (as in To Do's My Day and TickTick) gathers the open
   tasks due today or before from every list: Overdue first, then Today,
@@ -3717,10 +3717,32 @@ server error is not.
   a step's task and a task's matching steps; lists with none found hide
   in All tasks. The mail search's words come back on leaving the page,
   as with Notes and Contacts.
-- **Drag to another list**: an open task (not a step) drags onto another
-  list's card, which outlines itself while the task is over it; the drop
-  is the same move as "Move to", with its toast and Undo. Order within a
-  list is the service's and does not change by drag yet.
+- **Drag and drop**, as in Google Tasks: an open task (not a step) drags
+  up or down its own list, or into another list's card (outlined while
+  the task is over it), in All tasks and in a list shown alone. It leaves
+  its place as it lifts, and the list under the pointer opens a gap where
+  it would land (150 ms, easing in and out), which follows the pointer
+  between the tasks there (each task's row with its steps reports where
+  it is drawn during the drag); the gap it leaves closes as the new one
+  opens. Let go, it lands in the gap at once (the store follows) with a
+  toast ("Task moved", or "Moved to …") and Undo, which puts it back
+  after the task it was after; let go over no list, nothing changes.
+  Done tasks and steps stay where they are. `PlaceTask(id, list,
+  after)` (`Store::place_task`) puts it right after `after`, or first:
+  - **Google Tasks** keeps the order. The task takes a position between
+    its neighbours' (`tasks::between`: digits, compared as text as
+    Google's are) and bit 2 of `task.dirty` (moved; bit 1 is a change of
+    its fields), so no schema change was needed. Sync sends `tasks.move`
+    with `previous` (the service's ID of the task before it here; none:
+    first) and keeps Google's own position from the answer; a change of
+    its fields goes too only when there is one. From another list it is
+    first the delete there and the insert here, then the move. When the
+    task before it is not on Google yet the move waits a round.
+  - **CalDAV, To Do and lists on this computer** keep no order Katna can
+    set (Katna does not write `X-APPLE-SORT-ORDER`; Graph has no order
+    for tasks), so the order is kept in `pim.db` only: the list's tasks
+    are numbered anew and nothing is sent. A service's answer or pull
+    without a position leaves the one here.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the

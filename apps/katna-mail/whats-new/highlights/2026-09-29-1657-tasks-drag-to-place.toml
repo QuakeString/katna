@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drag tasks where you want them"
+text = """
+Drag a task up or down its list, or into another list, and the tasks
+there slide aside to show where it will land. Google Tasks keeps the new
+order on your phone too, and Undo puts the task back.
+"""
