@@ -445,6 +445,12 @@ impl Store {
         contact::files(&self.mail, email, limit)
     }
 
+    /// Which of the mails `headers` (`Message-ID`s, as tasks keep them)
+    /// `email` takes part in, in their conversation.
+    pub fn contact_on_mail(&self, email: &str, headers: &[String]) -> Result<Vec<String>> {
+        contact::on_mail(&self.mail, email, headers)
+    }
+
     /// The `limit` newest messages from `email` whose body is stored, one
     /// per server copy, newest first.
     pub fn messages_from(&self, email: &str, limit: usize) -> Result<Vec<MessageId>> {

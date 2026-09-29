@@ -118,6 +118,37 @@ pub(super) struct TasksPage {
     /// The open task made from each mail line's mail, for its chip in the
     /// mail list.
     from_mail: HashMap<EntryKey, i64>,
+    /// The mails (`Message-ID`s) of open tasks made from mail, sorted, for
+    /// the contact panel's Tasks.
+    pub(super) open_mails: Vec<String>,
+}
+
+/// A task being dragged onto another list: it follows the pointer as a
+/// lifted card, as in Google Tasks.
+#[derive(Clone)]
+struct TaskDragged {
+    id: i64,
+    list: i64,
+    title: String,
+    th: Theme,
+}
+
+impl Render for TaskDragged {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let th = &self.th;
+        div()
+            .w(px(CARD_WIDTH - 32.0))
+            .py(px(10.0))
+            .px(px(16.0))
+            .rounded(px(8.0))
+            .bg(rgba(th.surface))
+            .shadow(crate::widgets::elevation(th, 3.0))
+            .text_size(px(14.0))
+            .line_height(px(20.0))
+            .text_color(rgba(th.text))
+            .truncate()
+            .child(self.title.clone())
+    }
 }
 
 impl TasksPage {
@@ -305,7 +336,7 @@ fn day_text(day: jiff::civil::Date, today: jiff::civil::Date) -> String {
 /// A due day as the page shows it: "Today", "Tomorrow", a weekday this
 /// week, else the day and month; with the time if it has one. The flag
 /// says it is past.
-fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)> {
+pub(super) fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)> {
     let day: jiff::civil::Date = task.due.parse().ok()?;
     let days = (day - today).get_days();
     let at = day.to_datetime(jiff::civil::Time::midnight());
@@ -334,7 +365,7 @@ fn due_label(task: &TaskItem, today: jiff::civil::Date) -> Option<(String, bool)
     Some((label, past))
 }
 
-fn today() -> jiff::civil::Date {
+pub(super) fn today() -> jiff::civil::Date {
     jiff::Zoned::now().date()
 }
 
@@ -407,6 +438,40 @@ impl MailWindow {
             }
         }
         self.tasks.from_mail = from_mail;
+        let mut open_mails: Vec<String> = match &self.tasks.board {
+            Some(Ok(board)) => board
+                .columns
+                .iter()
+                .flat_map(|c| c.tasks.iter())
+                .filter(|t| t.done_at.is_none() && !t.mail.is_empty())
+                .filter(|t| super::notes::note_of_task(&t.mail).is_none())
+                .map(|t| t.mail.clone())
+                .collect(),
+            _ => Vec::new(),
+        };
+        open_mails.sort_unstable();
+        open_mails.dedup();
+        // The contact panel reads whose they are again.
+        if open_mails != self.tasks.open_mails {
+            self.tasks.open_mails = open_mails;
+            self.contact.forget_profiles();
+        }
+    }
+
+    /// The open tasks made from `mails`, due first first, and whether each
+    /// is ticked, counting ticks not yet read back.
+    pub(super) fn tasks_of_mails(&self, mails: &[String]) -> Vec<(&TaskItem, bool)> {
+        let Some(Ok(board)) = &self.tasks.board else {
+            return Vec::new();
+        };
+        let mut tasks: Vec<&TaskItem> = board
+            .columns
+            .iter()
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| t.done_at.is_none() && mails.contains(&t.mail))
+            .collect();
+        tasks.sort_by_key(|t| (t.due.is_empty(), t.due.clone(), t.due_time));
+        tasks.into_iter().map(|t| (t, self.tasks.done(t))).collect()
     }
 
     /// The chip on a mail line with an open task made from its mail: the
@@ -1391,6 +1456,7 @@ impl MailWindow {
                 .size_full()
                 .p(px(16.0))
                 .flex()
+                .items_start()
                 .justify_center()
                 .children(
                     columns
@@ -1403,7 +1469,16 @@ impl MailWindow {
         }
     }
 
-    fn card_frame(&self, id: SharedString, width: f32, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    /// A card of tasks, `width` wide, that scrolls once taller than the
+    /// page. `rows` keep their heights: in a column that scrolls, a flex
+    /// column would squeeze them first.
+    fn card_frame(
+        &self,
+        id: SharedString,
+        width: f32,
+        th: &Theme,
+        rows: gpui::Div,
+    ) -> gpui::Stateful<gpui::Div> {
         // No wider than the page, less the board's margins: on a phone a
         // card fills it.
         let shape = self.layout.shape;
@@ -1415,13 +1490,11 @@ impl MailWindow {
             .w(px(width.min(room)))
             .max_h_full()
             .overflow_y_scroll()
-            .pb(px(8.0))
-            .flex()
-            .flex_col()
             .rounded(px(16.0))
             .bg(rgba(if th.dark { th.read_row } else { th.surface }))
             .border_1()
             .border_color(rgba(th.divider))
+            .child(rows.flex_none().pb(px(8.0)).flex().flex_col())
     }
 
     fn render_starred(
@@ -1443,22 +1516,28 @@ impl MailWindow {
             .size_full()
             .p(px(16.0))
             .flex()
+            .items_start()
             .justify_center()
             .child(
-                self.card_frame("tasks-starred-card".into(), SINGLE_WIDTH, th)
-                    .child(card_heading(tr!("tasks-starred"), th))
-                    .when(empty, |d| {
-                        d.child(
-                            div()
-                                .py(px(32.0))
-                                .px(px(24.0))
-                                .text_center()
-                                .text_size(px(14.0))
-                                .text_color(rgba(th.text_faint))
-                                .child(tr!("tasks-starred-empty")),
-                        )
-                    })
-                    .children(rows),
+                self.card_frame(
+                    "tasks-starred-card".into(),
+                    SINGLE_WIDTH,
+                    th,
+                    div()
+                        .child(card_heading(tr!("tasks-starred"), th))
+                        .when(empty, |d| {
+                            d.child(
+                                div()
+                                    .py(px(32.0))
+                                    .px(px(24.0))
+                                    .text_center()
+                                    .text_size(px(14.0))
+                                    .text_color(rgba(th.text_faint))
+                                    .child(tr!("tasks-starred-empty")),
+                            )
+                        })
+                        .children(rows),
+                ),
             )
             .into_any_element()
     }
@@ -1516,47 +1595,53 @@ impl MailWindow {
             .size_full()
             .p(px(16.0))
             .flex()
+            .items_start()
             .justify_center()
             .child(
-                self.card_frame("tasks-today-card".into(), SINGLE_WIDTH, th)
-                    .child(card_heading(tr!("tasks-today"), th))
-                    .child(
-                        div()
-                            .px(px(20.0))
-                            .mt(px(-8.0))
-                            .mb(px(4.0))
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(date),
-                    )
-                    .child(add)
-                    .when(empty, |d| {
-                        d.child(
+                self.card_frame(
+                    "tasks-today-card".into(),
+                    SINGLE_WIDTH,
+                    th,
+                    div()
+                        .child(card_heading(tr!("tasks-today"), th))
+                        .child(
                             div()
-                                .py(px(24.0))
-                                .px(px(24.0))
-                                .flex()
-                                .flex_col()
-                                .items_center()
-                                .gap(px(8.0))
-                                .text_center()
-                                .child(icon("check-circle", th.text_faint, 40.0))
-                                .child(
-                                    div()
-                                        .text_size(px(14.0))
-                                        .text_color(rgba(th.text_dim))
-                                        .child(tr!("tasks-today-empty")),
-                                ),
+                                .px(px(20.0))
+                                .mt(px(-8.0))
+                                .mb(px(4.0))
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(date),
                         )
-                    })
-                    .when(has_overdue, |d| {
-                        d.child(section(tr!("tasks-overdue"), th.error))
-                            .children(overdue_rows)
-                            .when(!due_rows.is_empty(), |d| {
-                                d.child(section(tr!("tasks-due-today"), th.text_dim))
-                            })
-                    })
-                    .children(due_rows),
+                        .child(add)
+                        .when(empty, |d| {
+                            d.child(
+                                div()
+                                    .py(px(24.0))
+                                    .px(px(24.0))
+                                    .flex()
+                                    .flex_col()
+                                    .items_center()
+                                    .gap(px(8.0))
+                                    .text_center()
+                                    .child(icon("check-circle", th.text_faint, 40.0))
+                                    .child(
+                                        div()
+                                            .text_size(px(14.0))
+                                            .text_color(rgba(th.text_dim))
+                                            .child(tr!("tasks-today-empty")),
+                                    ),
+                            )
+                        })
+                        .when(has_overdue, |d| {
+                            d.child(section(tr!("tasks-overdue"), th.error))
+                                .children(overdue_rows)
+                                .when(!due_rows.is_empty(), |d| {
+                                    d.child(section(tr!("tasks-due-today"), th.text_dim))
+                                })
+                        })
+                        .children(due_rows),
+                ),
             )
             .into_any_element()
     }
@@ -1659,78 +1744,99 @@ impl MailWindow {
                 }))
                 .into_any_element(),
         };
-        self.card_frame(format!("tasks-card-{id}").into(), width, th)
-            .child(heading)
-            .when(!column.account.is_empty() && page.view != View::All, |d| {
-                d.child(
-                    div()
-                        .px(px(20.0))
-                        .mt(px(-8.0))
-                        .mb(px(4.0))
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(column.account.clone()),
-                )
-            })
-            .child(add)
-            .when(empty, |d| {
-                d.child(
-                    div()
-                        .py(px(24.0))
-                        .px(px(24.0))
-                        .flex()
-                        .flex_col()
-                        .items_center()
-                        .gap(px(8.0))
-                        .text_center()
-                        .child(icon("check-circle", th.text_faint, 40.0))
-                        .child(
-                            div()
-                                .text_size(px(14.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(tr!("tasks-empty")),
-                        ),
-                )
-            })
-            .children(open_rows)
-            .when(done_count > 0, |d| {
-                d.child(
-                    div()
-                        .id(("tasks-done-fold", id as usize))
-                        .mt(px(4.0))
-                        .h(px(40.0))
-                        .px(px(16.0))
-                        .flex()
-                        .flex_row()
-                        .items_center()
-                        .gap(px(12.0))
-                        .border_t_1()
-                        .border_color(rgba(th.divider))
-                        .cursor_pointer()
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .hover(|s| s.bg(rgba(th.hover)))
-                        .child(icon(
-                            if done_open {
-                                "chevron-down"
-                            } else {
-                                "chevron-right"
-                            },
-                            th.text_dim,
-                            20.0,
-                        ))
-                        .child(tr!("tasks-completed", count = done_count as u64))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            if !this.tasks.open_done.remove(&id) {
-                                this.tasks.open_done.insert(id);
-                            }
-                            cx.notify();
-                        })),
-                )
-            })
-            .children(done_rows)
-            .into_any_element()
+        self.card_frame(
+            format!("tasks-card-{id}").into(),
+            width,
+            th,
+            div()
+                .child(heading)
+                .when(!column.account.is_empty() && page.view != View::All, |d| {
+                    d.child(
+                        div()
+                            .px(px(20.0))
+                            .mt(px(-8.0))
+                            .mb(px(4.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(column.account.clone()),
+                    )
+                })
+                .child(add)
+                .when(empty, |d| {
+                    d.child(
+                        div()
+                            .py(px(24.0))
+                            .px(px(24.0))
+                            .flex()
+                            .flex_col()
+                            .items_center()
+                            .gap(px(8.0))
+                            .text_center()
+                            .child(icon("check-circle", th.text_faint, 40.0))
+                            .child(
+                                div()
+                                    .text_size(px(14.0))
+                                    .text_color(rgba(th.text_dim))
+                                    .child(tr!("tasks-empty")),
+                            ),
+                    )
+                })
+                .children(open_rows)
+                .when(done_count > 0, |d| {
+                    d.child(
+                        div()
+                            .id(("tasks-done-fold", id as usize))
+                            .mt(px(4.0))
+                            .h(px(40.0))
+                            .px(px(16.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(12.0))
+                            .border_t_1()
+                            .border_color(rgba(th.divider))
+                            .cursor_pointer()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.text_dim))
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .child(icon(
+                                if done_open {
+                                    "chevron-down"
+                                } else {
+                                    "chevron-right"
+                                },
+                                th.text_dim,
+                                20.0,
+                            ))
+                            .child(tr!("tasks-completed", count = done_count as u64))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if !this.tasks.open_done.remove(&id) {
+                                    this.tasks.open_done.insert(id);
+                                }
+                                cx.notify();
+                            })),
+                    )
+                })
+                .children(done_rows),
+        )
+        // Another list's task dropped here moves to this list.
+        .drag_over::<TaskDragged>({
+            let accent = th.accent;
+            move |style, dragged, _, _| {
+                if dragged.list == id {
+                    style
+                } else {
+                    style.border_color(rgba(accent))
+                }
+            }
+        })
+        .on_drop(cx.listener(move |this, dragged: &TaskDragged, _, cx| {
+            if dragged.list != id {
+                this.move_task_to(dragged.id, id, cx);
+            }
+        }))
+        .into_any_element()
     }
 
     fn adding_row(
@@ -2011,6 +2117,18 @@ impl MailWindow {
                     .children(chips),
             )
             .when(!done, |d| d.child(star))
+            // An open task, not a step, drags onto another list.
+            .when(!done && task.parent.is_none() && editing.is_none(), |d| {
+                d.on_drag(
+                    TaskDragged {
+                        id,
+                        list: task.list,
+                        title: task.title.clone(),
+                        th: *th,
+                    },
+                    |drag, _, _, cx| cx.new(|_| drag.clone()),
+                )
+            })
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
                     if event.click_count() >= 2 {
@@ -2283,7 +2401,7 @@ fn card_heading(title: String, th: &Theme) -> gpui::Div {
 
 /// The round tick of a task: an empty ring, a check on hover, and a
 /// filled disc with a check once done.
-fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
+pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
     let ring = div()
         .size(px(20.0))
         .flex()

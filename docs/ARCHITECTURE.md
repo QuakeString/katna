@@ -2148,7 +2148,13 @@ Gemini or confidential mode):
   never in quoted text); their time of day from the UTC offset of their
   latest `Date` header; the mail exchanged over all accounts (server
   copies counted once by `Message-ID`); the five newest conversations and
-  six newest files, which open the conversation or the viewer. Everything
+  six newest files, which open the conversation or the viewer; and the
+  open tasks made from mail they take part in (the task's mail or another
+  message of its conversation, `contact_on_mail`), with a tick to complete
+  one and a click to open it on the Tasks page; and the next three
+  meetings they organise or are invited to within 60 days (not
+  cancelled, not declined; a series shows its next time once), which
+  open on the Calendar's day view with the event's card. Everything
   is local (`katna_store::Store::contact_*`); outside data (LinkedIn, X,
   company facts) is left for the Katna Server plan. It shows only while
   the list and reader keep 900 px (600 px with the reader alone), never on
@@ -3620,6 +3626,10 @@ server error is not.
   plants every Monday 8am"); a repeat without a day starts on its first
   day from today. Tasks have no place, so "at …" stays in the title, and
   a title that is only such words ("tomorrow") stays as typed.
+- **Drag to another list**: an open task (not a step) drags onto another
+  list's card, which outlines itself while the task is over it; the drop
+  is the same move as "Move to", with its toast and Undo. Order within a
+  list is the service's and does not change by drag yet.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the

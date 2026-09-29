@@ -49,6 +49,10 @@ contact-conversations = Recent conversations
 contact-more = More
 contact-less = Less
 contact-files = Files
+# Open tasks made from mail with them.
+contact-tasks = Tasks
+# Their next meetings (organizer or guest), soonest first.
+contact-meetings = Upcoming meetings
 # The other people of the open conversation; a click shows one of them.
 contact-people = In this conversation
 # How the panel's details were found, at its foot.
