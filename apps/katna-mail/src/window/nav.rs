@@ -4,17 +4,15 @@
 //! navigation with the folders, which folds away, and Compose, which sits
 //! over the folders and moves into the app rail when they fold.
 
-use std::ops::Range;
-
 use std::f32::consts::FRAC_PI_2;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, ElementId, FontWeight, MouseButton, MouseDownEvent,
-    PathBuilder, SharedString, SpringAnimation, Transformation, canvas, div, point, prelude::*,
-    radians, rgba, svg, uniform_list,
+    AnimationExt, AnyElement, Context, ElementId, FontWeight, ListAlignment, ListState,
+    MouseButton, MouseDownEvent, PathBuilder, SharedString, SpringAnimation, Transformation,
+    canvas, div, list, point, prelude::*, radians, rgba, svg,
 };
 use katna_ui::Ripple;
-use katna_ui::motion::{self, lerp};
+use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 
 use super::apps::APP_RAIL_WIDTH;
@@ -560,19 +558,16 @@ impl MailWindow {
         let head = (skip > 0).then(|| self.render_nav_row(0, th, cx));
         let compose_room =
             super::COMPOSE_NAV_ROOM * reserve.min(1.0) * self.compose_shown.value().clamp(0.0, 1.0);
-        let list = uniform_list(
-            "navigation",
-            self.nav_rows.len() - skip,
-            cx.processor(move |this, range: Range<usize>, window, cx| {
+        let list = list(
+            self.nav_list.clone(),
+            cx.processor(move |this, ix: usize, window, cx| {
                 let th = this.theme(window);
-                range
-                    .map(|ix| this.render_nav_row(ix + skip, &th, cx))
-                    .collect::<Vec<_>>()
+                this.render_nav_item(ix, &th, cx)
             }),
         )
-        .track_scroll(&self.nav_scroll)
         .w(px(NAV_WIDTH))
         .flex_1()
+        .min_h_0()
         .pb(px(16.0));
         // Floating, it stands clear of the rail and the top bar.
         let gap = if drawer { 0.0 } else { FLOAT_GAP * float };
@@ -1007,8 +1002,10 @@ impl MailWindow {
                 )
             })
             .children(chevron);
+        // Named by the line rather than its place, which moves as lines
+        // above fold or open.
         let row = row.with_spring(
-            ("nav-selected", ix),
+            ElementId::Name(format!("nav-selected:{key}").into()),
             SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
             {
                 let bg = th.nav_selected;
@@ -1135,8 +1132,187 @@ impl MailWindow {
         if !self.expanded.remove(key) {
             self.expanded.insert(key.to_owned());
         }
-        self.rebuild_nav();
+        self.fold_nav();
         cx.notify();
+    }
+
+    /// Item `ix` of the folder pane's list: a line, or the lines sliding
+    /// open or shut in a group that grows or shrinks.
+    fn render_nav_item(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(item) = self.nav_items.get(ix) else {
+            return div().into_any_element();
+        };
+        let (start, end) = (item.start, (item.start + item.len).min(self.nav_rows.len()));
+        let Some(fold) = self.nav_fold.as_ref().filter(|f| f.start == start) else {
+            return self.render_nav_row(start, th, cx);
+        };
+        let t = fold.t.clamp(0.0, 1.0);
+        div()
+            .h(px(NAV_ROW_HEIGHT * (end - start) as f32 * t))
+            .overflow_hidden()
+            .opacity(t)
+            .child(
+                div()
+                    // The lines glide down from under the one above them
+                    // as the group grows.
+                    .mt(px(-NAV_ROW_HEIGHT * FOLD_GLIDE * (1.0 - t)))
+                    .children((start..end).map(|ix| self.render_nav_row(ix, th, cx))),
+            )
+            .into_any_element()
+    }
+
+    /// Brings the folder pane's list up to date with its lines, telling it
+    /// only what changed so it keeps its place.
+    pub(super) fn sync_nav_list(&mut self) {
+        if self.nav_synced != self.nav_rev {
+            self.nav_synced = self.nav_rev;
+            let skip = usize::from(self.nav_header() > 0.0);
+            let mut items = Vec::with_capacity(self.nav_rows.len());
+            let mut ix = skip;
+            while ix < self.nav_rows.len() {
+                let len = match &self.nav_fold {
+                    Some(fold) if fold.start == ix => fold.len.max(1),
+                    _ => 1,
+                };
+                items.push(NavItem {
+                    start: ix,
+                    len,
+                    row: self.nav_rows[ix].clone(),
+                });
+                ix += len;
+            }
+            let old = &self.nav_items;
+            let prefix = old.iter().zip(&items).take_while(|(a, b)| a == b).count();
+            let suffix = old
+                .iter()
+                .rev()
+                .zip(items.iter().rev())
+                .take_while(|(a, b)| a == b)
+                .count()
+                .min(old.len().min(items.len()) - prefix);
+            if prefix + suffix < old.len().max(items.len()) {
+                self.nav_list
+                    .splice(prefix..old.len() - suffix, items.len() - prefix - suffix);
+            }
+            self.nav_items = items;
+        }
+        // The group sliding open or shut changes its height every frame.
+        if let Some(fold) = &self.nav_fold
+            && let Some(ix) = self.nav_items.iter().position(|i| i.start == fold.start)
+        {
+            self.nav_list.remeasure_items(ix..ix + 1);
+        }
+    }
+
+    /// Shows the folder pane's lines after an arrow folds or opens a line:
+    /// what it holds slides open or shut.
+    pub(super) fn fold_nav(&mut self) {
+        let before = std::mem::take(&mut self.nav_rows);
+        let after = self.nav_rows_now();
+        self.nav_fold = None;
+        self.nav_rev += 1;
+        match fold_between(&before, &after) {
+            Some((start, len, true)) => {
+                self.nav_rows = after;
+                self.nav_fold = Some(Fold::new(start, len, 0.0, 1.0));
+            }
+            // The lines stay until they have slid shut.
+            Some((start, len, false)) => {
+                let mut rows = after[..start].to_vec();
+                rows.extend_from_slice(&before[start..start + len]);
+                rows.extend_from_slice(&after[start..]);
+                self.nav_rows = rows;
+                self.nav_fold = Some(Fold::new(start, len, 1.0, 0.0));
+            }
+            None => self.nav_rows = after,
+        }
+    }
+
+    /// Moves the sliding lines on; once shut they go.
+    pub(super) fn tick_nav_fold(&mut self, window: &gpui::Window, reduce: bool) {
+        let Some(fold) = &mut self.nav_fold else {
+            return;
+        };
+        fold.t = fold.shown.tick(window, reduce);
+        if fold.shown.settled() {
+            let shut = fold.shown.target() == 0.0;
+            self.nav_fold = None;
+            self.nav_rev += 1;
+            if shut {
+                self.nav_rows = self.nav_rows_now();
+            }
+        }
+    }
+}
+
+/// An item of the folder pane's list: line `start`, or with `len` over 1
+/// the lines sliding open or shut from there. Two are the same while their
+/// lines are, wherever they start.
+pub(super) struct NavItem {
+    start: usize,
+    len: usize,
+    row: sidebar::Row,
+}
+
+impl PartialEq for NavItem {
+    fn eq(&self, other: &Self) -> bool {
+        self.len == other.len && self.row == other.row
+    }
+}
+
+/// A new list for the folder pane.
+pub(super) fn nav_list() -> ListState {
+    ListState::new(0, ListAlignment::Top, px(NAV_ROW_HEIGHT * 8.0))
+}
+
+/// How far, in lines, the lines sliding open glide down as they come.
+const FOLD_GLIDE: f32 = 0.5;
+
+/// Lines of the folder pane sliding open or shut under the line whose
+/// arrow was pressed.
+pub(super) struct Fold {
+    /// Where the lines start in the pane's lines, and how many there are.
+    start: usize,
+    len: usize,
+    /// How much of them shows, from 0 to 1.
+    shown: Spring,
+    t: f32,
+}
+
+impl Fold {
+    fn new(start: usize, len: usize, from: f32, to: f32) -> Self {
+        let mut shown = Spring::new(motion::SMOOTH, from);
+        shown.set(to);
+        Self {
+            start,
+            len,
+            shown,
+            t: from,
+        }
+    }
+}
+
+/// What changed between the pane's lines `before` and `after` when one
+/// line folded or opened: where the lines under it start, how many there
+/// are, and whether they are showing (true) or going. `None` when the
+/// change is not one line folding or opening.
+fn fold_between(before: &[sidebar::Row], after: &[sidebar::Row]) -> Option<(usize, usize, bool)> {
+    let shorter = before.len().min(after.len());
+    let prefix = before.iter().zip(after).take_while(|(a, b)| a == b).count();
+    // The line whose arrow turned changed, so it is never in the suffix.
+    let suffix = before
+        .iter()
+        .rev()
+        .zip(after.iter().rev())
+        .take_while(|(a, b)| a == b)
+        .count()
+        .min(shorter.saturating_sub(prefix + 1));
+    let gone = before.len() - prefix - suffix;
+    let came = after.len() - prefix - suffix;
+    match (gone, came) {
+        (1, n) if n > 1 => Some((prefix + 1, n - 1, true)),
+        (n, 1) if n > 1 => Some((prefix + 1, n - 1, false)),
+        _ => None,
     }
 }
 
@@ -1224,5 +1400,43 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
             account: Some(*account),
         }),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn folder(key: &str, expanded: bool) -> sidebar::Row {
+        sidebar::Row::Folder {
+            key: key.to_owned(),
+            depth: 0,
+            label: key.to_owned(),
+            role: Role::Other,
+            folder: None,
+            unread: 0,
+            has_children: expanded,
+            expanded,
+        }
+    }
+
+    #[test]
+    fn folding_finds_the_lines_under_the_arrow() {
+        let shut = [folder("a", false), folder("b", false), folder("z", false)];
+        let open = [
+            folder("a", false),
+            folder("b", true),
+            folder("b/1", false),
+            folder("b/2", false),
+            folder("z", false),
+        ];
+        assert_eq!(fold_between(&shut, &open), Some((2, 2, true)));
+        assert_eq!(fold_between(&open, &shut), Some((2, 2, false)));
+        // The last line opening, with nothing under it.
+        assert_eq!(fold_between(&shut[..2], &open[..4]), Some((2, 2, true)));
+        // Anything else changes at once.
+        assert_eq!(fold_between(&shut, &shut), None);
+        let renamed = [folder("a", false), folder("c", false), folder("z", false)];
+        assert_eq!(fold_between(&shut, &renamed), None);
     }
 }

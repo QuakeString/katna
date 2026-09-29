@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Folders slide open and shut"
+text = """
+Clicking the arrow beside an account or a folder in the folder pane now
+slides what it holds open or shut, with the folders below gliding along,
+instead of jumping.
+"""

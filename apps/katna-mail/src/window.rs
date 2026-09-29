@@ -80,8 +80,8 @@ use std::time::{Duration, Instant};
 use futures_lite::StreamExt;
 use gpui::{
     AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, MouseButton,
-    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun,
-    UniformListScrollHandle, WeakEntity, Window, actions, div, prelude::*, rgba,
+    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun, WeakEntity,
+    Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -116,6 +116,8 @@ actions!(
         SelectPrevious,
         FocusNext,
         FocusPrevious,
+        NextPane,
+        PreviousPane,
         SelectFirst,
         SelectLast,
         PageDown,
@@ -645,6 +647,12 @@ pub struct MailWindow {
     /// Phone, tablet or desktop, by the window's width.
     layout: layout::Layout,
     list_focus: FocusHandle,
+    /// The conversation beside the list (three panes): Up and Down scroll
+    /// it while it has the keys, and move in the list while the list has.
+    reader_focus: FocusHandle,
+    /// Whether the conversation beside the list has the keys, as of this
+    /// frame: the list's cursor dims and the pane's outline lights.
+    reader_keys: bool,
     /// The whole window: where the menu bar's actions start when the
     /// keyboard focus is on something no longer drawn.
     window_focus: FocusHandle,
@@ -654,7 +662,14 @@ pub struct MailWindow {
     files_menu: Option<EntryKey>,
     /// Layout and line height the list's lines were measured for.
     list_shape: (bool, u32),
-    nav_scroll: UniformListScrollHandle,
+    nav_list: gpui::ListState,
+    nav_items: Vec<nav::NavItem>,
+    /// Bumped when the folder pane's lines change; `nav_synced` is what
+    /// its list last showed.
+    nav_rev: u64,
+    nav_synced: u64,
+    /// Lines of the folder pane sliding open or shut.
+    nav_fold: Option<nav::Fold>,
     reader_scroll: ScrollHandle,
     tz: TimeZone,
     _subscriptions: Vec<Subscription>,
@@ -862,11 +877,17 @@ impl MailWindow {
             desktop_colors,
             layout: layout::Layout::new(),
             list_focus: cx.focus_handle(),
+            reader_focus: cx.focus_handle(),
+            reader_keys: false,
             window_focus: cx.focus_handle(),
             list_state: lines::Lines::new(),
             files_menu: None,
             list_shape: (false, 0),
-            nav_scroll: UniformListScrollHandle::new(),
+            nav_list: nav::nav_list(),
+            nav_items: Vec::new(),
+            nav_rev: 1,
+            nav_synced: 0,
+            nav_fold: None,
             reader_scroll: ScrollHandle::new(),
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
@@ -978,6 +999,11 @@ impl MailWindow {
     fn split(&self) -> bool {
         let shape = &self.layout.shape;
         self.config.mail.reading_pane == ReadingPane::Right && shape.size.splits(shape.width)
+    }
+
+    /// Whether a conversation is open beside the list.
+    fn pane_open(&self) -> bool {
+        self.split() && self.reading && self.reader.is_some()
     }
 
     fn save_config(&mut self) {
@@ -1113,6 +1139,13 @@ impl MailWindow {
 
     /// With one account the folders stand alone, without an account heading.
     fn rebuild_nav(&mut self) {
+        self.nav_fold = None;
+        self.nav_rev += 1;
+        self.nav_rows = self.nav_rows_now();
+    }
+
+    /// The lines the folder pane shows now.
+    fn nav_rows_now(&self) -> Vec<sidebar::Row> {
         let only = self.shown_account();
         // With one account on show its folders stand alone, never folded.
         let single = only.is_some() || self.tree.accounts.len() == 1;
@@ -1173,7 +1206,7 @@ impl MailWindow {
                 },
             );
         }
-        self.nav_rows = rows;
+        rows
     }
 
     /// The folder the list shows; `None` for search results.
@@ -1442,7 +1475,69 @@ impl MailWindow {
     fn open_message(&mut self, _: &OpenMessage, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(ix) = self.selected {
             self.open(ix, window, cx);
+            // Beside the list, Up and Down already show each conversation;
+            // Enter goes into the one shown, to scroll and act on it.
+            if self.pane_open() {
+                window.focus(&self.reader_focus, cx);
+            }
         }
+    }
+
+    /// Esc (or U, Backspace) in the conversation beside the list: the keys
+    /// go back to the list, and the conversation stays shown.
+    fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
+        window.focus(&self.list_focus, cx);
+        cx.notify();
+    }
+
+    /// F6: the next pane from anywhere, a field included, as in Outlook,
+    /// Thunderbird and KDE's apps.
+    fn next_pane(&mut self, _: &NextPane, window: &mut Window, cx: &mut Context<Self>) {
+        if !self.cycle_panes(true, window, cx) && self.settings_page.is_none() {
+            self.focus_list(&FocusList, window, cx);
+        }
+    }
+
+    /// Shift+F6: the pane before.
+    fn previous_pane(&mut self, _: &PreviousPane, window: &mut Window, cx: &mut Context<Self>) {
+        if !self.cycle_panes(false, window, cx) && self.settings_page.is_none() {
+            self.focus_list(&FocusList, window, cx);
+        }
+    }
+
+    /// Tab and Shift+Tab between the search box, the list and the
+    /// conversation beside it, as a desktop mail app moves between its
+    /// panes. `false` when the keys are elsewhere (a field, a dialog,
+    /// Settings), where Tab goes to the next field or button.
+    fn cycle_panes(&mut self, forward: bool, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        if self.settings_page.is_some() || self.mail.is_err() {
+            return false;
+        }
+        let search = self.search.focus_handle(cx);
+        let pane_open = self.pane_open();
+        let at = if search.is_focused(window) {
+            0
+        } else if self.list_focus.is_focused(window) {
+            1
+        } else if pane_open
+            && (self.reader_focus.is_focused(window) || self.text.focus.is_focused(window))
+        {
+            2
+        } else {
+            return false;
+        };
+        let count = if pane_open { 3 } else { 2 };
+        match if forward {
+            (at + 1) % count
+        } else {
+            (at + count - 1) % count
+        } {
+            0 => self.focus_search(&FocusSearch, window, cx),
+            1 => self.focus_list(&FocusList, window, cx),
+            _ => window.focus(&self.reader_focus, cx),
+        }
+        cx.notify();
+        true
     }
 
     fn close_message(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
@@ -2839,8 +2934,9 @@ impl Render for MailWindow {
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
             .set(if search_focused { 1.0 } else { 0.0 });
-        let pane_open = self.split() && self.reading && self.reader.is_some();
+        let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
+        self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);
         self.settings_spring
             .set(if self.settings_open { 1.0 } else { 0.0 });
         self.search_panel_spring
@@ -2858,6 +2954,8 @@ impl Render for MailWindow {
         self.search_panel_spring.tick(window, reduce);
         self.tab_spring.tick(window, reduce);
         self.tick_reorder(window, reduce, cx);
+        self.tick_nav_fold(window, reduce);
+        self.sync_nav_list();
         // Forget the closed conversation once its pane has slid away.
         if !self.reading
             && self.reader.is_some()
@@ -3198,6 +3296,8 @@ impl Render for MailWindow {
         let frame = frame
             .on_action(cx.listener(Self::focus_next))
             .on_action(cx.listener(Self::focus_previous))
+            .on_action(cx.listener(Self::next_pane))
+            .on_action(cx.listener(Self::previous_pane))
             .on_action(cx.listener(Self::focus_search))
             .on_action(cx.listener(Self::focus_list))
             .on_action(cx.listener(Self::toggle_navigation))
