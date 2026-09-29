@@ -8,6 +8,8 @@
 //! store up to when it looked, so a restart neither repeats reminders nor
 //! brings back ones long past: those missed while the computer was off
 //! show only when they fell due in the last few minutes.
+//!
+//! Tasks' reminders come the same way, with Mark as done and Snooze.
 
 use std::{collections::HashSet, sync::Weak, time::Duration};
 
@@ -17,6 +19,7 @@ use katna_i18n::tr;
 use katna_store::{
     Store,
     calendar::{Calendar, EventStatus},
+    tasks::Task,
 };
 
 use super::{Daemon, unix_now};
@@ -45,6 +48,9 @@ pub(crate) struct Alarm {
     pub join_url: String,
     /// When it is shown: the start less the reminder.
     pub at: i64,
+    /// The task it is about, for a task's reminder; `key` is then the
+    /// task's row and its reminder time.
+    pub task: Option<i64>,
 }
 
 /// The reminders due in `(from, to]` of `occurrences`, soonest first, and
@@ -88,6 +94,7 @@ fn due(
                 lines: lines(occurrence, to),
                 join_url: join_url(data),
                 at,
+                task: None,
             });
         }
     }
@@ -136,8 +143,56 @@ fn lines(occurrence: &Occurrence, now: i64) -> Vec<String> {
     lines
 }
 
-/// Reads the reminders due in `(from, to]` and the next one's time.
+/// The reminders of open tasks due in `(from, to]`, soonest first, and
+/// the time of the next one after `to`.
+fn tasks_due(tasks: &[Task], from: i64, to: i64) -> (Vec<Alarm>, Option<i64>) {
+    let mut alarms = Vec::new();
+    let mut next: Option<i64> = None;
+    for task in tasks.iter().filter(|t| t.done_at.is_none()) {
+        let Some(at) = task.remind_at else { continue };
+        if at > to {
+            next = Some(next.map_or(at, |n| n.min(at)));
+        } else if at > from {
+            alarms.push(Alarm {
+                key: (task.id, at),
+                title: if task.title.trim().is_empty() {
+                    tr!("notify-no-subject")
+                } else {
+                    task.title.trim().to_owned()
+                },
+                // The first line of its details, if it has any.
+                lines: task
+                    .notes
+                    .lines()
+                    .map(str::trim)
+                    .find(|l| !l.is_empty())
+                    .map(String::from)
+                    .into_iter()
+                    .collect(),
+                join_url: String::new(),
+                at,
+                task: Some(task.id),
+            });
+        }
+    }
+    alarms.sort_by_key(|a| a.at);
+    (alarms, next)
+}
+
+/// Reads the reminders due in `(from, to]` and the next one's time:
+/// events', then tasks'.
 fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
+    let (mut alarms, next) = read_events(store, from, to, tz);
+    let tasks = store.tasks(to).unwrap_or_else(|err| {
+        tracing::warn!(%err, "reminders: cannot read tasks");
+        Vec::new()
+    });
+    let (task_alarms, task_next) = tasks_due(&tasks, from, to);
+    alarms.extend(task_alarms);
+    (alarms, next.into_iter().chain(task_next).min())
+}
+
+fn read_events(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
     let calendars = store.calendars().unwrap_or_default();
     let rows = match store.event_rows_in_range(from, to + AHEAD) {
         Ok(rows) => rows,
@@ -181,7 +236,10 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
             .map(|n| n.snoozed_due(now))
             .unwrap_or_default();
         for alarm in alarms.into_iter().chain(snoozed) {
-            tracing::info!(event = alarm.key.0, "event reminder");
+            match alarm.task {
+                Some(task) => tracing::info!(task, "task reminder"),
+                None => tracing::info!(event = alarm.key.0, "event reminder"),
+            }
             if let Some(notices) = &notices {
                 notices.event_reminder(alarm).await;
             }
@@ -257,6 +315,41 @@ mod tests {
         assert_eq!(alarms.len(), 1);
         assert_eq!(alarms[0].key, (2, start + 3600));
         assert_eq!(next, None);
+    }
+
+    #[test]
+    fn open_tasks_remind_once() {
+        let at = 1_800_000_000;
+        let task = |id: i64, remind_at: Option<i64>, done_at: Option<i64>| Task {
+            id,
+            list: 1,
+            parent: None,
+            title: format!("Task {id}"),
+            notes: "\n  Call before noon\nsecond line".into(),
+            due: String::new(),
+            due_time: None,
+            remind_at,
+            repeat: String::new(),
+            starred: false,
+            done_at,
+            position: String::new(),
+            mail: String::new(),
+        };
+        let tasks = [
+            task(1, Some(at), None),
+            task(2, Some(at + 600), None),
+            task(3, Some(at), Some(at - 60)),
+            task(4, None, None),
+        ];
+        let (alarms, next) = tasks_due(&tasks, at - 60, at);
+        assert_eq!(alarms.len(), 1);
+        assert_eq!(alarms[0].task, Some(1));
+        assert_eq!(alarms[0].title, "Task 1");
+        assert_eq!(alarms[0].lines, ["Call before noon"]);
+        assert_eq!(next, Some(at + 600));
+        // Not again in the next look.
+        let (alarms, _) = tasks_due(&tasks, at, at + 60);
+        assert!(alarms.is_empty());
     }
 
     #[test]
