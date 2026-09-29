@@ -18,7 +18,7 @@
 //! change, its calendar syncs again, which undoes the change here.
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     sync::{Arc, Mutex, Weak},
     time::Duration,
 };
@@ -41,6 +41,7 @@ use katna_sync::{
     },
     methods::{self, Data, Method},
     net::Tls,
+    oauth::Provider,
 };
 
 use super::{CommandError, Daemon, Notice};
@@ -62,6 +63,9 @@ pub(crate) struct Calendars {
     services: smol::lock::Mutex<Services>,
     /// Changes written to the store, to send to their services.
     changes: (Sender<Applied>, Receiver<Applied>),
+    /// Accounts to look for again from scratch next round ("Try again"),
+    /// not waiting out a server found without calendars.
+    recheck: Mutex<HashSet<AccountId>>,
 }
 
 impl Default for Calendars {
@@ -71,6 +75,7 @@ impl Default for Calendars {
             status: Mutex::default(),
             services: smol::lock::Mutex::default(),
             changes: async_channel::unbounded(),
+            recheck: Mutex::default(),
         }
     }
 }
@@ -88,6 +93,14 @@ impl Service {
             Self::Google(google) => google.sync(store, account.id).await,
             Self::Microsoft(graph) => graph.sync(store, account.id, &account.address).await,
             Self::CalDav(dav) => dav.sync(store, account.id, &account.address).await,
+        }
+    }
+
+    /// Why the service found no calendars, for people.
+    fn missing_why(&self) -> String {
+        match self {
+            Self::CalDav(dav) => dav.missing_why(),
+            _ => String::new(),
         }
     }
 
@@ -109,6 +122,12 @@ impl Daemon {
     /// Has the calendar sync go through every account now.
     pub(crate) fn wake_calendars(&self) {
         let _ = self.calendars.wake.0.try_send(());
+    }
+
+    /// Looks for `accounts`' calendars again from scratch, now.
+    pub(crate) fn recheck_calendars(&self, accounts: impl IntoIterator<Item = AccountId>) {
+        self.calendars.recheck.lock().unwrap().extend(accounts);
+        self.wake_calendars();
     }
 
     /// Where each account's calendar sync stands.
@@ -334,10 +353,25 @@ impl Daemon {
         services: &mut Services,
         account: &Account,
     ) -> ((&'static str, String), bool) {
-        let provider = match self.store().account_settings(account.id) {
-            Ok(settings) => settings.and_then(|s| s.oauth),
+        let settings = match self.store().account_settings(account.id) {
+            Ok(settings) => settings.unwrap_or_default(),
             Err(err) => return ((calendar_state::ERROR, err.to_string()), false),
         };
+        let provider = settings.oauth;
+        // Google and Microsoft let Katna into calendars only through their
+        // own sign-in, not with a mail password.
+        if account.kind == AccountKind::Imap
+            && provider.is_none()
+            && let Some(own) = settings
+                .imap
+                .as_ref()
+                .and_then(|imap| Provider::for_imap_host(&imap.host))
+        {
+            return (
+                (calendar_state::USE_SIGN_IN, own.as_str().to_owned()),
+                false,
+            );
+        }
         let now = unix_now();
         // What to show when no way works: the most useful reason.
         let mut shown = (calendar_state::NONE, String::new());
@@ -354,7 +388,7 @@ impl Daemon {
                 }
                 Err(CalendarError::NeedsSignIn(detail)) => (calendar_state::NEEDS_SIGN_IN, detail),
                 Err(CalendarError::NotEnabled(detail)) => (calendar_state::NOT_ENABLED, detail),
-                Err(CalendarError::NotOffered) => (calendar_state::NONE, String::new()),
+                Err(CalendarError::NotOffered) => (calendar_state::NONE, service.missing_why()),
                 // The network or the server: not a reason to go another way.
                 Err(CalendarError::Failed(err)) => {
                     tracing::warn!(account = %account.id, ?method, %err, "calendar sync failed");
@@ -470,7 +504,8 @@ impl Daemon {
                 return;
             }
         };
-        services.retain(|(id, _), _| accounts.iter().any(|a| a.id == *id));
+        let recheck = std::mem::take(&mut *self.calendars.recheck.lock().unwrap());
+        services.retain(|(id, _), _| accounts.iter().any(|a| a.id == *id) && !recheck.contains(id));
         let mut changed = false;
         // Calendars of accounts removed while the daemon was away.
         if let Ok(calendars) = store.calendars() {

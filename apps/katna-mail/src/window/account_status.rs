@@ -38,7 +38,10 @@ impl AccountStatus {
         self.status.get(&id).is_some_and(|s| {
             matches!(
                 s.state.as_str(),
-                task_state::NEEDS_SIGN_IN | task_state::NOT_ENABLED | task_state::ERROR
+                task_state::NEEDS_SIGN_IN
+                    | task_state::USE_SIGN_IN
+                    | task_state::NOT_ENABLED
+                    | task_state::ERROR
             )
         })
     }
@@ -78,6 +81,19 @@ pub(super) enum Say<'a> {
     Failed,
     /// The account has nothing Katna can reach.
     None,
+    /// The same, with what the server answered (in English).
+    NoneWhy {
+        reason: &'a str,
+    },
+    /// A password account at a provider that lets Katna in only through
+    /// its own sign-in (Google, Microsoft).
+    UseSignIn {
+        provider: &'a str,
+    },
+    /// The button that signs in with that provider.
+    SignInWith {
+        provider: &'a str,
+    },
     /// Not synced yet.
     Looking,
     TryAgain,
@@ -189,7 +205,7 @@ impl MailWindow {
             .map(|a| a.address.clone())
             .unwrap_or_default();
         let page = self.account_status(of);
-        let provider = page.status.get(&id).and_then(|s| s.sign_in);
+        let provider = page.status.get(&id).and_then(AccountState::provider);
         if fix == Fix::None || !page.busy.insert(id) {
             return;
         }
@@ -248,13 +264,20 @@ impl MailWindow {
         let state = status.map_or(task_state::OK, |s| s.state.as_str());
         let detail = status.map_or("", |s| s.detail.as_str());
         let signs_in = status.is_some_and(|s| s.sign_in.is_some());
+        let provider = status
+            .and_then(AccountState::provider)
+            .map_or("", |p| p.name());
         let (text, fix) = match state {
             task_state::NEEDS_SIGN_IN if signs_in => (String::new(), Fix::SignIn),
+            task_state::USE_SIGN_IN if !provider.is_empty() => {
+                (of.say(Say::UseSignIn { provider }), Fix::SignIn)
+            }
             task_state::NEEDS_SIGN_IN => (of.say(Say::Refused), Fix::Password),
             task_state::NOT_ENABLED => (of.say(Say::NotEnabled), Fix::TryAgain),
             task_state::ERROR if detail.is_empty() => (of.say(Say::Failed), Fix::TryAgain),
             task_state::ERROR => (of.say(Say::Error { reason: detail }), Fix::TryAgain),
-            task_state::NONE => (of.say(Say::None), Fix::None),
+            task_state::NONE if detail.is_empty() => (of.say(Say::None), Fix::TryAgain),
+            task_state::NONE => (of.say(Say::NoneWhy { reason: detail }), Fix::TryAgain),
             _ => (of.say(Say::Looking), Fix::None),
         };
         let action = match fix {
@@ -267,13 +290,14 @@ impl MailWindow {
             ),
             _ => {
                 let (label, hint) = match fix {
-                    Fix::SignIn => {
-                        let provider = status.and_then(|s| s.sign_in).map_or("", |p| p.name());
-                        (
-                            of.say(Say::SignIn),
-                            katna_i18n::tr!("sign-in-again-tooltip", provider = provider),
-                        )
-                    }
+                    Fix::SignIn => (
+                        if signs_in {
+                            of.say(Say::SignIn)
+                        } else {
+                            of.say(Say::SignInWith { provider })
+                        },
+                        katna_i18n::tr!("sign-in-again-tooltip", provider = provider),
+                    ),
                     Fix::Password => (
                         of.say(Say::ChangePassword),
                         of.say(Say::ChangePasswordTooltip),
@@ -301,7 +325,7 @@ impl MailWindow {
             }
         };
         // A sign-in's button says it all; the others say why first.
-        let text = (fix != Fix::SignIn).then_some(text);
+        let text = (!text.is_empty()).then_some(text);
         div()
             .pl(px(of.inset()))
             .pr(px(of.inset().min(16.0)))

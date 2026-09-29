@@ -68,8 +68,8 @@ enum Found {
     Unknown,
     /// The calendar home's URL.
     Home(String),
-    /// No CalDAV, as of then.
-    Missing(Instant),
+    /// No CalDAV, as of then, and why, for people.
+    Missing(Instant, String),
 }
 
 /// How requests prove who the user is.
@@ -431,14 +431,35 @@ impl CalDav {
         depth: &str,
         body: &str,
     ) -> std::result::Result<Option<(String, Vec<DavResponse>)>, CalendarError> {
+        Ok(self.dav_or_status(method, url, depth, body).await?.ok())
+    }
+
+    /// As [`Self::dav`], with the status of an answer that is not one.
+    async fn dav_or_status(
+        &self,
+        method: &str,
+        url: &str,
+        depth: &str,
+        body: &str,
+    ) -> std::result::Result<std::result::Result<(String, Vec<DavResponse>), u16>, CalendarError>
+    {
         let (url, reply) = self.send(method, url, depth, body).await?;
         match reply.status {
-            207 => Ok(Some((url, multistatus(&reply.body)?))),
+            207 => Ok(Ok((url, multistatus(&reply.body)?))),
             401 | 403 => Err(self.refused(reply.status, &reply.body)),
             status if status >= 500 && status != 501 => Err(CalendarError::Failed(
                 Error::Rejected(format!("CalDAV server answered {status}")),
             )),
-            _ => Ok(None),
+            status => Ok(Err(status)),
+        }
+    }
+
+    /// Why discovery found no CalDAV, for people; empty when it did or
+    /// has not looked yet.
+    pub fn missing_why(&self) -> String {
+        match &*self.found.lock().unwrap() {
+            Found::Missing(_, why) => why.clone(),
+            _ => String::new(),
         }
     }
 
@@ -447,7 +468,7 @@ impl CalDav {
     pub(crate) async fn home(&self) -> std::result::Result<Option<String>, CalendarError> {
         match &*self.found.lock().unwrap() {
             Found::Home(home) => return Ok(Some(home.clone())),
-            Found::Missing(when) if when.elapsed() < RETRY_DISCOVERY => return Ok(None),
+            Found::Missing(when, _) if when.elapsed() < RETRY_DISCOVERY => return Ok(None),
             _ => {}
         }
         let found = match self.discover().await {
@@ -455,26 +476,42 @@ impl CalDav {
             // No web server, or not one that speaks DAV.
             Err(CalendarError::Failed(err)) if !matches!(err, Error::Rejected(_)) => {
                 tracing::debug!(%err, "no CalDAV");
-                None
+                Err(err.to_string())
             }
             Err(err) => return Err(err),
         };
         *self.found.lock().unwrap() = match &found {
-            Some(home) => Found::Home(home.clone()),
-            None => Found::Missing(Instant::now()),
+            Ok(home) => Found::Home(home.clone()),
+            Err(why) => {
+                tracing::info!(why, "no CalDAV found");
+                Found::Missing(Instant::now(), why.clone())
+            }
         };
-        Ok(found)
+        Ok(found.ok())
     }
 
-    async fn discover(&self) -> std::result::Result<Option<String>, CalendarError> {
+    /// The calendar home, or why there is none (for people).
+    async fn discover(
+        &self,
+    ) -> std::result::Result<std::result::Result<String, String>, CalendarError> {
+        let unsaid = |url: &str| format!("{} did not say where the calendars are", host(url));
+        // The first reason is the one kept: the provider's own server
+        // comes first.
+        let mut why: Option<String> = None;
         let mut principal = None;
+        // A server that speaks DAV without naming the user's principal.
+        let mut answered = None;
         for url in &self.starts {
-            let (at, responses) = match self.dav("PROPFIND", url, "0", PRINCIPAL).await {
-                Ok(Some(found)) => found,
-                Ok(None) => continue,
+            let (at, responses) = match self.dav_or_status("PROPFIND", url, "0", PRINCIPAL).await {
+                Ok(Ok(found)) => found,
+                Ok(Err(status)) => {
+                    why.get_or_insert_with(|| format!("{} answered {status}", host(url)));
+                    continue;
+                }
                 // Nothing there, or not a DAV server: the next place.
                 Err(CalendarError::Failed(err)) if !matches!(err, Error::Rejected(_)) => {
                     tracing::debug!(%url, %err, "no CalDAV here");
+                    why.get_or_insert_with(|| format!("{}: {err}", host(url)));
                     continue;
                 }
                 Err(err) => return Err(err),
@@ -486,17 +523,25 @@ impl CalDav {
                 principal = self.absolute(&at, &href);
                 break;
             }
+            why.get_or_insert_with(|| unsaid(url));
+            answered.get_or_insert(at);
         }
-        let Some(principal) = principal else {
-            return Ok(None);
+        // Asking where it answered for the home is the older way.
+        let Some(principal) = principal.or(answered) else {
+            return Ok(Err(why.unwrap_or_else(|| "no server to ask".into())));
         };
-        let Some((at, responses)) = self.dav("PROPFIND", &principal, "0", HOME).await? else {
-            return Ok(None);
+        let (at, responses) = match self
+            .dav_or_status("PROPFIND", &principal, "0", HOME)
+            .await?
+        {
+            Ok(found) => found,
+            Err(status) => return Ok(Err(format!("{} answered {status}", host(&principal)))),
         };
         Ok(responses
             .iter()
             .find_map(|r| r.prop("calendar-home-set")?.hrefs.first().cloned())
-            .and_then(|href| self.absolute(&at, &href)))
+            .and_then(|href| self.absolute(&at, &href))
+            .ok_or_else(|| unsaid(&principal)))
     }
 
     /// Brings `account`'s calendars and their events into `store`;

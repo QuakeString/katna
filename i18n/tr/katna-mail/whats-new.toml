@@ -1644,3 +1644,12 @@ ilettiğiniz ileti ne kadar uzun olursa olsun pencerenin ortasında
 açılıyor, böylece hiçbir zaman sayfanın aşağısında gizli kalmıyor. Enter
 ana düğmeyle yanıtlıyor, Esc iletiye geri dönüyor.
 """
+
+["2026-09-29-1530-mark-up-pdfs"]
+title = "PDF'leri işaretleyin"
+text = """
+PDF görüntüleyicide kaleme basarak metni vurgulayın, altını düz ya da
+dalgalı çizin, üstünü çizin veya seçtiğiniz renkte kalemle çizim yapın.
+Ctrl+Z ile geri alın, bir işareti silgiyle silin, sonra işaretli bir
+kopya kaydedin. Asıl ek olduğu gibi kalır.
+"""

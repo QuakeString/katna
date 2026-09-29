@@ -572,9 +572,12 @@ impl MailWindow {
     fn close_calendar_event(
         &mut self,
         _: &CalendarCloseEvent,
-        _: &mut Window,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.cancel_calendar_set(window, cx) {
+            return;
+        }
         let card = self.calendar.open.take().is_some();
         // Esc goes back to search results put away.
         let search = &mut self.calendar.search;
@@ -3120,6 +3123,9 @@ pub(super) fn say(say: Say<'_>) -> String {
         Say::Error { reason } => tr!("calendar-account-error", reason = reason),
         Say::Failed => tr!("calendar-account-failed"),
         Say::None => tr!("calendar-account-none"),
+        Say::NoneWhy { reason } => tr!("calendar-account-none-why", reason = reason),
+        Say::UseSignIn { provider } => tr!("calendar-account-use-sign-in", provider = provider),
+        Say::SignInWith { provider } => tr!("calendar-account-sign-in-with", provider = provider),
         Say::Looking => tr!("calendar-account-looking"),
         Say::TryAgain => tr!("calendar-account-try-again"),
         Say::TryAgainTooltip => tr!("calendar-account-try-again-tooltip"),

@@ -16,3 +16,37 @@ viewer-slide = Слайд { $number }
 viewer-page = Страница
 viewer-page-count = из { $count }
 viewer-go-to-page-tip = Введите номер страницы и нажмите Enter (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = Пометки
+viewer-tool-select = Выделить текст
+viewer-tool-highlight = Маркер
+viewer-tool-underline = Подчеркнуть
+viewer-tool-squiggly = Волнистая линия
+viewer-tool-strike = Зачеркнуть
+viewer-tool-pen = Перо
+viewer-tool-eraser = Ластик
+viewer-color-yellow = Жёлтый
+viewer-color-green = Зелёный
+viewer-color-blue = Синий
+viewer-color-pink = Розовый
+viewer-color-orange = Оранжевый
+viewer-color-red = Красный
+viewer-color-black = Чёрный
+viewer-color-purple = Фиолетовый
+viewer-marks-undo-tip = Отменить (Ctrl+Z)
+viewer-marks-redo-tip = Повторить (Ctrl+Shift+Z)
+viewer-save-marked-tip = Сохранить копию с пометками (Ctrl+S)
+viewer-markup-protected = Этот PDF защищён от изменений, поэтому на нём нельзя делать пометки.
+viewer-marks-save-failed = Не удалось сохранить копию с пометками.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = Сохранить пометки?
+viewer-marks-unsaved-text = Ваши пометки в этом PDF ещё не сохранены. Они попадут в копию, а само вложение останется без изменений.
+viewer-marks-discard = Отбросить
+viewer-marks-keep = Продолжить
+viewer-marks-save = Сохранить копию
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (с пометками)
