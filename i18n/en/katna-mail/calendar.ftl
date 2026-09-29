@@ -7,6 +7,7 @@ calendar-today-tip = Go to today
 calendar-view-day = Day
 calendar-view-week = Week
 calendar-view-month = Month
+calendar-view-year = Year
 calendar-view-schedule = Schedule
 # The gear at the right of the calendar bar, and its menu.
 calendar-options = Options
@@ -24,6 +25,8 @@ calendar-previous-week = Previous week
 calendar-next-week = Next week
 calendar-previous-month = Previous month
 calendar-next-month = Next month
+calendar-previous-year = Previous year
+calendar-next-year = Next year
 calendar-previous-period = Earlier
 calendar-next-period = Later
 # The title when the days shown cross two months: "September – October 2026".

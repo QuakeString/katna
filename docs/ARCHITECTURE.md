@@ -3430,8 +3430,9 @@ most useful reason is shown. Changes go back the way their calendar came
   `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
   Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
 - Alarms fire from the daemon as notifications (§15.1).
-- Views: Day, Week (the default), Month and Schedule, like Google
-  Calendar, with calendars grouped by account; the week starts as the
+- Views: Day, Week (the default), Month, Year (Y or 5: twelve small
+  months with a dot under days with events; a day opens Day, a month's
+  name opens Month) and Schedule, like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings.
 - The bar's options button (⚙ in Google, a tune icon here, beside the
   app's own gear) has Density and Second time zone (`[calendar]` in

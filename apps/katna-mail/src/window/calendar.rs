@@ -43,6 +43,7 @@ gpui::actions!(
         CalendarDayView,
         CalendarWeekView,
         CalendarMonthView,
+        CalendarYearView,
         CalendarScheduleView,
         CalendarCloseEvent,
         CalendarCreateEvent,
@@ -69,6 +70,8 @@ pub(super) fn bindings() -> Vec<KeyBinding> {
         KeyBinding::new("2", CalendarWeekView, c),
         KeyBinding::new("m", CalendarMonthView, c),
         KeyBinding::new("3", CalendarMonthView, c),
+        KeyBinding::new("y", CalendarYearView, c),
+        KeyBinding::new("5", CalendarYearView, c),
         KeyBinding::new("a", CalendarScheduleView, c),
         KeyBinding::new("4", CalendarScheduleView, c),
         KeyBinding::new("escape", CalendarCloseEvent, c),
@@ -97,6 +100,8 @@ const ALL_DAY_LINE: f32 = 24.0;
 const MONTH_LINE: f32 = 22.0;
 /// The small month's days.
 const MINI_DAY: f32 = 28.0;
+/// A day in Year's small months.
+const YEAR_DAY: f32 = 32.0;
 /// How many days Schedule lists at once.
 const SCHEDULE_DAYS: i64 = 60;
 /// The event card's width.
@@ -131,17 +136,25 @@ pub(super) enum CalView {
     Day,
     Week,
     Month,
+    Year,
     Schedule,
 }
 
 impl CalView {
-    const ALL: [Self; 4] = [Self::Day, Self::Week, Self::Month, Self::Schedule];
+    const ALL: [Self; 5] = [
+        Self::Day,
+        Self::Week,
+        Self::Month,
+        Self::Year,
+        Self::Schedule,
+    ];
 
     fn label(self) -> String {
         tr!(match self {
             Self::Day => "calendar-view-day",
             Self::Week => "calendar-view-week",
             Self::Month => "calendar-view-month",
+            Self::Year => "calendar-view-year",
             Self::Schedule => "calendar-view-schedule",
         })
     }
@@ -241,7 +254,7 @@ impl CalendarPage {
         let (first, end) = self.days();
         if (first..end).contains(&today) {
             today
-        } else if self.view == CalView::Month {
+        } else if matches!(self.view, CalView::Month | CalView::Year) {
             self.day
         } else {
             first
@@ -268,6 +281,10 @@ impl CalendarPage {
                 let first = Self::week_start(self.day.first_of_month());
                 (first, first.checked_add(42.days()).unwrap_or(first))
             }
+            CalView::Year => {
+                let first = self.day.first_of_year();
+                (first, first.checked_add(1.year()).unwrap_or(first))
+            }
             CalView::Schedule => (
                 self.day,
                 self.day
@@ -283,13 +300,14 @@ impl CalendarPage {
             CalView::Day => by.days(),
             CalView::Week => (7 * by).days(),
             CalView::Month => by.months(),
+            CalView::Year => by.years(),
             CalView::Schedule => (SCHEDULE_DAYS * by).days(),
         };
         if let Ok(day) = self.day.checked_add(span) {
-            self.day = if self.view == CalView::Month {
-                day.first_of_month()
-            } else {
-                day
+            self.day = match self.view {
+                CalView::Month => day.first_of_month(),
+                CalView::Year => day.first_of_year(),
+                _ => day,
             };
             self.mini = self.day.first_of_month();
         }
@@ -752,6 +770,7 @@ impl MailWindow {
             match self.calendar.view {
                 CalView::Day | CalView::Week => self.render_time_grid(th, cx),
                 CalView::Month => self.render_month(th, cx),
+                CalView::Year => self.render_year(th, cx),
                 CalView::Schedule => self.render_schedule(th, cx),
             }
         };
@@ -773,6 +792,9 @@ impl MailWindow {
             }))
             .on_action(cx.listener(|this, _: &CalendarMonthView, _, cx| {
                 this.set_calendar_view(CalView::Month, cx)
+            }))
+            .on_action(cx.listener(|this, _: &CalendarYearView, _, cx| {
+                this.set_calendar_view(CalView::Year, cx)
             }))
             .on_action(cx.listener(|this, _: &CalendarScheduleView, _, cx| {
                 this.set_calendar_view(CalView::Schedule, cx)
@@ -827,6 +849,7 @@ impl MailWindow {
         let title = match page.view {
             CalView::Day => format::day_month_year(page.day.to_datetime(Time::midnight())),
             CalView::Month => format::month_year(page.day),
+            CalView::Year => format::year(page.day.year()),
             CalView::Week | CalView::Schedule => {
                 if first.year() == last.year() && first.month() == last.month() {
                     format::month_year(first)
@@ -849,6 +872,7 @@ impl MailWindow {
             CalView::Day => ("calendar-previous-day", "calendar-next-day"),
             CalView::Week => ("calendar-previous-week", "calendar-next-week"),
             CalView::Month => ("calendar-previous-month", "calendar-next-month"),
+            CalView::Year => ("calendar-previous-year", "calendar-next-year"),
             CalView::Schedule => ("calendar-previous-period", "calendar-next-period"),
         };
         let views = CalView::ALL.into_iter().map(|view| {
@@ -1004,8 +1028,7 @@ impl MailWindow {
                 let is_today = day == today;
                 let picked = day == page.day;
                 let in_month = day.month() == page.mini.month();
-                let on_show = page.view != CalView::Month
-                    && page.view != CalView::Schedule
+                let on_show = matches!(page.view, CalView::Day | CalView::Week)
                     && day >= shown_first
                     && day < shown_end;
                 div()
@@ -1840,6 +1863,140 @@ impl MailWindow {
     }
 
     /// The Month view: six weeks of days with their events.
+    /// Year: the twelve months side by side, as small months; a dot
+    /// under days with events, and a day opens in Day.
+    fn render_year(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let tz = self.tz.clone();
+        let today = Zoned::now().with_time_zone(tz.clone()).date();
+        let year = self.calendar.day.first_of_year();
+        let mut busy: HashMap<Date, u32> = HashMap::new();
+        for occurrence in self.shown_occurrences() {
+            let first = civil(occurrence.start, &tz).date();
+            let last = civil((occurrence.end - 1).max(occurrence.start), &tz).date();
+            let color = self.event_color(&occurrence);
+            let mut day = first;
+            while day <= last {
+                busy.entry(day).or_insert(color);
+                match day.tomorrow() {
+                    Ok(next) => day = next,
+                    Err(_) => break,
+                }
+            }
+        }
+        let head = format::weekdays_short();
+        let months = (0..12)
+            .filter_map(|m| year.checked_add(m.months()).ok())
+            .map(|month| {
+                let first = CalendarPage::week_start(month);
+                let head = head.iter().map(|(_, name)| {
+                    div()
+                        .w(px(YEAR_DAY))
+                        .h(px(20.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .text_size(px(11.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_faint))
+                        .child(name.chars().take(1).collect::<String>())
+                });
+                let weeks = (0..6).map(|week| {
+                    div().flex().flex_row().children((0..7).map(|ix| {
+                        let day = first.checked_add((week * 7 + ix).days()).unwrap_or(first);
+                        let cell = div().w(px(YEAR_DAY)).h(px(YEAR_DAY));
+                        if day.month() != month.month() || day.year() != month.year() {
+                            return cell.into_any_element();
+                        }
+                        let is_today = day == today;
+                        let dot = busy.get(&day).copied();
+                        cell.id(SharedString::from(format!("year-{day}")))
+                            .relative()
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .cursor_pointer()
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.open_calendar_day(day, Some(CalView::Day), cx)
+                            }))
+                            .child(
+                                div()
+                                    .size(px(YEAR_DAY - 4.0))
+                                    .flex()
+                                    .items_center()
+                                    .justify_center()
+                                    .rounded_full()
+                                    .text_size(px(12.0))
+                                    .when(is_today, |d| {
+                                        d.bg(rgba(th.accent))
+                                            .text_color(rgba(th.on_accent))
+                                            .font_weight(FontWeight::BOLD)
+                                    })
+                                    .when(!is_today, |d| {
+                                        d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
+                                    })
+                                    .child(format::number(day.day() as u64)),
+                            )
+                            .when_some(dot.filter(|_| !is_today), |d, color| {
+                                d.child(
+                                    div()
+                                        .absolute()
+                                        .bottom(px(1.0))
+                                        .left(px(YEAR_DAY / 2.0 - 2.0))
+                                        .size(px(4.0))
+                                        .rounded_full()
+                                        .bg(rgba(color)),
+                                )
+                            })
+                            .into_any_element()
+                    }))
+                });
+                div()
+                    .id(SharedString::from(format!("year-month-{month}")))
+                    .flex_none()
+                    .p(px(12.0))
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .id(SharedString::from(format!("year-title-{month}")))
+                            .pl(px(8.0))
+                            .pb(px(8.0))
+                            .text_size(px(15.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(
+                                if month.year() == today.year() && month.month() == today.month() {
+                                    th.accent
+                                } else {
+                                    th.text
+                                },
+                            ))
+                            .cursor_pointer()
+                            .hover(|s| s.underline())
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.open_calendar_day(month, Some(CalView::Month), cx)
+                            }))
+                            .child(format::month_name(month.month())),
+                    )
+                    .child(div().flex().flex_row().children(head))
+                    .children(weeks)
+            });
+        div()
+            .id("calendar-year")
+            .size_full()
+            .overflow_y_scroll()
+            .p(px(16.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .justify_center()
+                    .gap(px(8.0))
+                    .children(months),
+            )
+            .into_any_element()
+    }
+
     fn render_month(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let (first, _) = self.calendar.days();
         let tz = self.tz.clone();
