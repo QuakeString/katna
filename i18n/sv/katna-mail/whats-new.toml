@@ -1133,6 +1133,24 @@ stannar inuti dem. I ett nytt meddelande skickar Ctrl+Retur från vilket
 fält som helst och Esc stänger det och behåller ett utkast.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Uppgifter i skrivbordsklockan"
+text = """
+Klicka på klockan för att lägga till en uppgift och bocka av uppgifter.
+I Plasma högerklickar du på klockan och väljer Visa alternativ för att
+välja Katna digitalklocka. I GNOME visas ett Uppgifter-kort under
+klockans kalender från och med nästa inloggning.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Sidor med tangentbordet och från aktivitetsfältet"
+text = """
+Ctrl+1 till Ctrl+5 växlar mellan E-post, Kalender, Kontakter, Uppgifter
+och Anteckningar, som i Outlook, och menyn Gå listar dem också.
+Högerklicka på Katna Mail i aktivitetsfältet för att öppna Kalender
+eller Kontakter direkt.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Dina kontakter, från alla konton"
 text = """

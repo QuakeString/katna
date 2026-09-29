@@ -1164,6 +1164,24 @@ erbinnen. In een nieuw bericht verzendt Ctrl+Enter vanuit elk veld en
 sluit Esc het, waarbij een concept bewaard blijft.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Taken in je bureaubladklok"
+text = """
+Klik op de klok om een taak toe te voegen en taken af te vinken. Klik in
+Plasma met de rechtermuisknop op de klok en kies Alternatieven tonen om
+Katna digitale klok te kiezen. In GNOME verschijnt vanaf je volgende
+aanmelding een Taken-kaart onder de kalender van de klok.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Pagina's met het toetsenbord en vanaf de taakbalk"
+text = """
+Met Ctrl+1 tot Ctrl+5 schakel je tussen E-mail, Agenda, Contacten, Taken
+en Notities, net als in Outlook, en het menu Ga toont ze ook. Klik met
+de rechtermuisknop op Katna Mail in de taakbalk om meteen Agenda of
+Contacten te openen.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Je contacten, uit elk account"
 text = """

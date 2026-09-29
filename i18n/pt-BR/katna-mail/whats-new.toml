@@ -1162,6 +1162,25 @@ dentro deles. Em uma nova mensagem, Ctrl+Enter envia de qualquer campo e
 Esc a fecha, mantendo um rascunho.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Tarefas no relógio da sua área de trabalho"
+text = """
+Clique no relógio para adicionar uma tarefa e marcar tarefas como
+concluídas. No Plasma, clique com o botão direito no relógio e escolha
+Mostrar alternativas para selecionar Relógio digital do Katna. No GNOME,
+um cartão de Tarefas aparece abaixo do calendário do relógio a partir do
+seu próximo login.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Páginas pelo teclado e pela barra de tarefas"
+text = """
+Ctrl+1 a Ctrl+5 alternam entre E-mail, Agenda, Contatos, Tarefas e
+Notas, como no Outlook, e o menu Ir também as lista. Clique com o botão
+direito em Katna Mail na barra de tarefas para abrir Agenda ou Contatos
+diretamente.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Seus contatos, de todas as contas"
 text = """

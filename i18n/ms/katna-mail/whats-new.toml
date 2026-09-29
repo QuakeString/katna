@@ -1174,6 +1174,24 @@ dalamnya. Dalam mesej baharu, Ctrl+Enter menghantar dari mana-mana medan
 dan Esc menutupnya sambil menyimpan draf.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Tugas dalam jam desktop anda"
+text = """
+Klik jam untuk menambah tugas dan menanda tugas yang siap. Dalam Plasma,
+klik kanan jam dan pilih Tunjukkan Alternatif untuk memilih Jam Digital
+Katna. Dalam GNOME, kad Tugas muncul di bawah kalendar jam bermula log
+masuk anda yang seterusnya.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Halaman melalui papan kekunci dan dari bar tugas"
+text = """
+Ctrl+1 hingga Ctrl+5 bertukar antara Mel, Kalendar, Kenalan, Tugas dan
+Nota, seperti dalam Outlook, dan menu Pergi turut menyenaraikannya. Klik
+kanan Katna Mail pada bar tugas untuk terus membuka Kalendar atau
+Kenalan.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Kenalan anda, dari setiap akaun"
 text = """

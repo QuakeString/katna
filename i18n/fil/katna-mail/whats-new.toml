@@ -1204,6 +1204,25 @@ bagong mensahe, nagpapadala ang Ctrl+Enter mula sa anumang field at
 isinasara ito ng Esc habang pinananatili ang draft.
 """
 
+["2026-09-29-0309-clock-tasks"]
+title = "Mga gawain sa desktop clock mo"
+text = """
+I-click ang orasan para magdagdag ng gawain at i-tsek ang mga natapos.
+Sa Plasma, i-right-click ang orasan at piliin ang Ipakita ang mga
+Alternatibo para piliin ang Katna Digital Clock. Sa GNOME, may lalabas
+na card ng Mga Gawain sa ilalim ng kalendaryo ng orasan simula sa
+susunod mong pag-sign in.
+"""
+
+["2026-09-29-0329-pages-by-keyboard"]
+title = "Mga pahina gamit ang keyboard at mula sa taskbar"
+text = """
+Ang Ctrl+1 hanggang Ctrl+5 ay nagpapalipat-lipat sa Mail, Kalendaryo,
+Mga Contact, Mga Gawain, at Mga Tala, tulad sa Outlook, at nakalista rin
+ang mga ito sa menu na Pumunta. I-right-click ang Katna Mail sa taskbar
+para direktang buksan ang Kalendaryo o Mga Contact.
+"""
+
 ["2026-09-29-0352-contacts"]
 title = "Ang iyong mga contact, mula sa bawat account"
 text = """
