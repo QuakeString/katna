@@ -3482,7 +3482,10 @@ most useful reason is shown. Changes go back the way their calendar came
   name opens Month), Schedule and a custom view (X or 6: 2 to 7 days
   from the day picked, 4 by default, chosen in the options menu as
   `custom_days`), like Google Calendar, with calendars grouped by account; the week starts as the
-  language says, with a choice in Settings.
+  language says, with a choice in Settings. Below 1000 px for the bar,
+  the view buttons fold into one button with a menu, as Google's do, so
+  Today, the arrows and the dates stay; every control in the bar and the
+  side column takes Tab.
 - The bar's options button (⚙ in Google, a tune icon here, beside the
   app's own gear) has Density and Second time zone (`[calendar]` in
   `config.toml`). Density: Responsive (default; an hour is a twelfth of

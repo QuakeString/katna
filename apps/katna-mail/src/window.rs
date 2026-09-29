@@ -373,6 +373,8 @@ enum Menu {
     CalendarOptions,
     /// The second time zones to choose from.
     CalendarZones,
+    /// The views, when the bar is too narrow for their buttons.
+    CalendarViews,
 }
 
 /// A change the user asks for on some lines of the list.

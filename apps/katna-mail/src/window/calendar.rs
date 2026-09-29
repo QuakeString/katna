@@ -36,7 +36,7 @@ mod sets;
 mod tasks;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
+    FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
 };
 
 gpui::actions!(
@@ -109,6 +109,8 @@ const RESPONSIVE_HOURS: (f32, f32) = (40.0, 72.0);
 const GUTTER: f32 = 64.0;
 /// A line of the whole-day row.
 const ALL_DAY_LINE: f32 = 24.0;
+/// Below this width the calendar bar folds its view buttons into a menu.
+const COMPACT_BAR: f32 = 1000.0;
 /// A line of an event in a month's day.
 const MONTH_LINE: f32 = 22.0;
 /// The small month's days.
@@ -226,6 +228,8 @@ pub(super) struct CalendarPage {
     error: Option<String>,
     task: Option<Task<()>>,
     grid_scroll: ScrollHandle,
+    /// Where the bar and the views are, as last drawn: how wide they are.
+    main_bounds: ScrollHandle,
     /// The grid was scrolled to the morning since it last appeared.
     scrolled: bool,
     /// How tall an hour of the grid is, as last drawn.
@@ -259,6 +263,7 @@ impl CalendarPage {
             error: None,
             task: None,
             grid_scroll: ScrollHandle::new(),
+            main_bounds: ScrollHandle::new(),
             scrolled: false,
             hour: HOUR_HEIGHT,
             open: None,
@@ -838,6 +843,26 @@ impl MailWindow {
         )
     }
 
+    /// The views, in the narrow bar's menu.
+    pub(super) fn calendar_views_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let page = &self.calendar;
+        menu(th)
+            .min_w(px(180.0))
+            .children(CalView::ALL.into_iter().map(|view| {
+                checked_item(
+                    ("calendar-views-item", view as usize),
+                    &view.label(page.custom_days),
+                    view == page.view,
+                    th,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.menu = None;
+                    this.set_calendar_view(view, cx);
+                    cx.notify();
+                }))
+            }))
+    }
+
     pub(super) fn open_calendar_on(&mut self, day: Date, cx: &mut Context<Self>) {
         self.open_calendar_day(day, Some(CalView::Day), cx);
     }
@@ -931,6 +956,8 @@ impl MailWindow {
             .child(self.render_calendar_side(th, cx))
             .child(
                 div()
+                    .id("calendar-main")
+                    .track_scroll(&self.calendar.main_bounds)
                     .flex_1()
                     .min_w_0()
                     .h_full()
@@ -984,6 +1011,11 @@ impl MailWindow {
                 ("calendar-previous-period", "calendar-next-period")
             }
         };
+        // Too narrow for a button per view (with Today, the arrows and
+        // the title beside them): one button with the views in a menu, as
+        // Google Calendar does.
+        let width = katna_ui::unpx(page.main_bounds.bounds().size.width);
+        let compact = width > 0.0 && width < COMPACT_BAR;
         let views = CalView::ALL.into_iter().map(|view| {
             let on = view == page.view;
             div()
@@ -1004,6 +1036,7 @@ impl MailWindow {
                     d.text_color(rgba(th.text_dim))
                         .hover(|s| s.bg(rgba(th.hover)))
                 })
+                .focus_ring(th)
                 .on_click(cx.listener(move |this, _, _, cx| this.set_calendar_view(view, cx)))
                 .child(view.label(page.custom_days))
         });
@@ -1019,6 +1052,7 @@ impl MailWindow {
             .border_color(rgba(th.divider))
             .child(
                 outlined_button("calendar-today", tr!("calendar-today"), th)
+                    .focus_ring(th)
                     .tooltip(tip(tr!("calendar-today-tip"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.calendar_today(&CalendarToday, window, cx)
@@ -1030,6 +1064,7 @@ impl MailWindow {
                     .flex_row()
                     .child(
                         icon_button("calendar-previous", "chevron-left", 22.0, th)
+                            .focus_ring(th)
                             .tooltip(tip(tr!(previous), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.calendar_previous(&CalendarPrevious, window, cx)
@@ -1037,6 +1072,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button("calendar-next", "chevron-right", 22.0, th)
+                            .focus_ring(th)
                             .tooltip(tip(tr!(next), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.calendar_next(&CalendarNext, window, cx)
@@ -1060,21 +1096,56 @@ impl MailWindow {
                         .child(tr!("calendar-loading")),
                 )
             })
-            .child(
-                div()
-                    .flex_none()
-                    .p(px(2.0))
-                    .flex()
-                    .flex_row()
-                    .gap(px(2.0))
-                    .rounded_full()
-                    .border_1()
-                    .border_color(rgba(fade(th.text_faint, 0.5)))
-                    .children(views),
-            )
+            .when(!compact, |d| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .p(px(2.0))
+                        .flex()
+                        .flex_row()
+                        .gap(px(2.0))
+                        .rounded_full()
+                        .border_1()
+                        .border_color(rgba(fade(th.text_faint, 0.5)))
+                        .children(views),
+                )
+            })
+            .when(compact, |d| {
+                d.child(
+                    self.with_menu(
+                        div()
+                            .id("calendar-views")
+                            .flex_none()
+                            .h(px(36.0))
+                            .pl(px(16.0))
+                            .pr(px(10.0))
+                            .flex()
+                            .items_center()
+                            .gap(px(4.0))
+                            .rounded_full()
+                            .border_1()
+                            .border_color(rgba(fade(th.text_faint, 0.5)))
+                            .text_size(px(13.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.text))
+                            .cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .focus_ring(th)
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.toggle_menu(Menu::CalendarViews, cx)
+                            }))
+                            .child(page.view.label(page.custom_days))
+                            .child(icon("drop-down", th.text_dim, 20.0)),
+                        Menu::CalendarViews,
+                        th,
+                        cx,
+                    ),
+                )
+            })
             .child(
                 self.with_menu(
                     icon_button("calendar-options", "tune", 22.0, th)
+                        .focus_ring(th)
                         .when(self.menu.is_none(), |d| {
                             d.tooltip(tip(tr!("calendar-options"), th))
                         })
@@ -1258,6 +1329,7 @@ impl MailWindow {
                     .rounded(px(8.0))
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
+                    .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.toggle_calendar(id, cx)))
                     .child(
                         div()
@@ -1509,8 +1581,7 @@ impl MailWindow {
                             .text_size(px(12.0))
                             .font_weight(FontWeight::MEDIUM)
                             .cursor_pointer()
-                            .truncate()
-                            .child(title),
+                            .child(div().min_w_0().truncate().child(title)),
                     )
                     .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                         this.open_calendar_event(open.clone(), event.position(), cx)
@@ -1888,7 +1959,7 @@ impl MailWindow {
                                         .child(title),
                                 ),
                         )
-                        .child(div().text_color(rgba(th.text_dim)).child(time))
+                        .child(div().truncate().text_color(rgba(th.text_dim)).child(time))
                         .when(
                             !data.location.is_empty() && height > 60.0,
                             |d| {
@@ -2170,6 +2241,7 @@ impl MailWindow {
                         .flex_row()
                         .items_center()
                         .gap(px(6.0))
+                        .overflow_hidden()
                         .rounded(px(4.0))
                         .text_size(px(12.0))
                         .cursor_pointer()
@@ -2195,7 +2267,7 @@ impl MailWindow {
                                         .child(format::time(civil(occurrence.start, &tz))),
                                 )
                         })
-                        .child(div().truncate().child(title))
+                        .child(div().min_w_0().truncate().child(title))
                         .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                             this.open_calendar_event(open.clone(), event.position(), cx)
                         }))

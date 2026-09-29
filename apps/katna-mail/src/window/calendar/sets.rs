@@ -15,7 +15,7 @@ use katna_ui::text_input::{InputEvent, TextInput};
 
 use super::super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, tip};
+use crate::widgets::{FocusRing, icon, icon_button, tip};
 
 /// A new set's name being typed.
 pub(in crate::window) struct Naming {
@@ -135,6 +135,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .when(on, |d| d.bg(rgba(th.nav_selected)))
                     .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                    .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.apply_calendar_set(ix, cx)))
                     .child(icon(
                         "calendar",
@@ -202,6 +203,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button("calendar-set-add", "add", 20.0, th)
+                            .focus_ring(th)
                             .tooltip(tip(tr!("calendar-set-add"), th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.start_calendar_set(window, cx)
