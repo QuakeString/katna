@@ -51,6 +51,7 @@ mod reminders;
 
 pub use reminders::{SNOOZED, is_snoozed_path};
 mod sign_in;
+mod tasks;
 
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;
@@ -97,6 +98,8 @@ pub enum Notice {
     UpdateChanged,
     /// A Google Drive upload moved on.
     DriveChanged(i64),
+    /// Task sync brought changes from a task service.
+    TasksChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -241,6 +244,8 @@ pub struct Daemon {
     scheduler: OnceLock<katna_meta::Waker>,
     /// Checks for, and downloads, new versions of Katna.
     updates: crate::updates::Updates,
+    /// Has task sync run a round soon.
+    task_sync_wake: (Sender<()>, Receiver<()>),
 }
 
 /// A refresh token that replaced the account's old one.
@@ -295,6 +300,7 @@ impl Daemon {
             translation_languages: Default::default(),
             scheduler: OnceLock::new(),
             updates: crate::updates::Updates::default(),
+            task_sync_wake: async_channel::bounded(1),
         });
         Ok((daemon, receiver))
     }
@@ -364,6 +370,11 @@ impl Daemon {
         ))
         .detach();
         smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
+        smol::spawn(tasks::run(
+            Arc::downgrade(self),
+            self.task_sync_wake.1.clone(),
+        ))
+        .detach();
         Ok(())
     }
 

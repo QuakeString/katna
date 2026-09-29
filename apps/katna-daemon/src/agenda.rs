@@ -3,10 +3,13 @@
 //! Events and tasks for the desktop's clock: `in.invenia.katna.Agenda1`
 //! (wire format in [`katna_dbus::agenda`]).
 //!
-//! Tasks are Katna's own, kept in `pim.db`. There are no events until
-//! Katna syncs calendars (Phase 6); the clock then shows the day's events
-//! from its other sources and the tasks.
+//! Tasks are those of every list in `pim.db`: the accounts' own (Google
+//! Tasks, To Do), synced by the daemon, and the ones on this computer. A
+//! task added here goes to the first account's default list once one has
+//! synced. There are no events until Katna syncs calendars (Phase 6); the
+//! clock then shows the day's events from its other sources and the tasks.
 
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use katna_core::{Paths, ids};
@@ -150,7 +153,8 @@ fn value(value: Value<'_>) -> OwnedValue {
     OwnedValue::try_from(value).expect("no file descriptors")
 }
 
-fn wire(task: Task) -> Item {
+fn wire(task: Task, lists: &HashMap<i64, String>) -> Item {
+    let list = lists.get(&task.list).cloned().unwrap_or_default();
     Item::from([
         (
             task::ID.to_owned(),
@@ -160,14 +164,20 @@ fn wire(task: Task) -> Item {
         (task::NOTES.to_owned(), value(task.notes.into())),
         (task::DUE.to_owned(), value(task.due.into())),
         (task::DONE.to_owned(), value(task.done_at.is_some().into())),
-        (task::LIST.to_owned(), value(String::new().into())),
+        (task::LIST.to_owned(), value(list.into())),
     ])
 }
 
 impl AgendaService {
     fn task_list(&self) -> Result<Vec<Item>, CommandError> {
-        let tasks = self.daemon.store().tasks(now() - DONE_SHOWN_SECS)?;
-        Ok(tasks.into_iter().map(wire).collect())
+        let store = self.daemon.store();
+        let lists: HashMap<i64, String> = store
+            .task_lists()?
+            .into_iter()
+            .map(|list| (list.id, list.title))
+            .collect();
+        let tasks = store.tasks(now() - DONE_SHOWN_SECS)?;
+        Ok(tasks.into_iter().map(|task| wire(task, &lists)).collect())
     }
 }
 
@@ -197,6 +207,7 @@ macro_rules! agenda_interface {
                     .add_task(&title, due)
                     .map_err(CommandError::from)?;
                 tracing::info!(id, "task added");
+                self.daemon.wake_task_sync();
                 Self::changed(&emitter).await?;
                 Ok(format!("{TASK_ID}{id}"))
             }
@@ -216,6 +227,7 @@ macro_rules! agenda_interface {
                 if !found {
                     return Err(fdo::Error::UnknownObject(format!("no task {id}")));
                 }
+                self.daemon.wake_task_sync();
                 Self::changed(&emitter).await?;
                 Ok(())
             }
@@ -235,6 +247,7 @@ macro_rules! agenda_interface {
                     return Err(fdo::Error::UnknownObject(format!("no task {id}")));
                 }
                 tracing::info!(id = row, "task deleted");
+                self.daemon.wake_task_sync();
                 Self::changed(&emitter).await?;
                 Ok(())
             }
@@ -245,7 +258,7 @@ macro_rules! agenda_interface {
             }
 
             #[zbus(signal)]
-            async fn changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+            pub(crate) async fn changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
