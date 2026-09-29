@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Type an event in one line"
+text = """
+Type "Lunch with Anita Friday 1pm at Cafe Mocha" as a new event's title
+and Calendar fills in the day, the time and the place as you type.
+"""

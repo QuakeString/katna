@@ -59,6 +59,7 @@ mod onboarding;
 mod popovers;
 mod print;
 mod print_preview;
+mod quick_add;
 mod reader;
 mod remote;
 mod reply_row;
