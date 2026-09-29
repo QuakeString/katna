@@ -1420,6 +1420,12 @@ text = """
 Contatos tem “Corrigir e gerenciar”: “Mesclar e corrigir” encontra pessoas salvas duas vezes (com o mesmo nome ou número de telefone) e as mescla com um clique, com a opção de desfazer. “Importar” traz pessoas de um arquivo vCard, ignorando quem já está salvo, e “Exportar” salva todo mundo, ou um marcador, em um arquivo vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Aniversários na agenda, contatos como códigos QR"
+text = """
+Os aniversários dos seus contatos agora aparecem na Agenda, em uma agenda "Aniversários" que você pode desmarcar. A página de um contato pode mostrá-lo como um código QR que a câmera de um celular salva, e imprimi-lo; "Imprimir" em "Corrigir e gerenciar" imprime todas as pessoas exibidas. A importação agora também lê arquivos CSV do Google Contatos e do Outlook, e o KRunner e a busca do GNOME encontram seus contatos salvos.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Densidade da Agenda e segundo fuso horário"
 text = """

@@ -1435,6 +1435,12 @@ text = """
 Contatti ha “Correggi e gestisci”: “Unisci e correggi” trova le persone salvate due volte (stesso nome o numero di telefono) e le unisce con un clic, con la possibilità di annullare. “Importa” aggiunge persone da un file vCard escludendo quelle già salvate, ed “Esporta” salva tutti, o un’etichetta, in un file vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Compleanni nel calendario, contatti come codici QR"
+text = """
+I compleanni dei tuoi contatti ora compaiono nel Calendario, in un calendario «Compleanni» che puoi deselezionare. La pagina di un contatto può mostrarlo come codice QR che la fotocamera di un telefono salva, e stamparlo; «Stampa» sotto «Correggi e gestisci» stampa tutte le persone visualizzate. L’importazione ora legge anche i file CSV di Google Contatti e Outlook, e KRunner e la ricerca di GNOME trovano i tuoi contatti salvati.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Densità del Calendario e secondo fuso orario"
 text = """

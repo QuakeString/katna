@@ -29,6 +29,8 @@ calendar-loading = កំពុងផ្ទុក…
 calendar-read-failed = មិនអាចអានប្រតិទិនបានទេ៖ { $error }
 calendar-local = កុំព្យូទ័រនេះ
 calendar-account-gone = គណនីដែលបានដកចេញ
+calendar-birthdays = ថ្ងៃកំណើត
+calendar-birthday-of = ថ្ងៃកំណើតរបស់ { $name }
 calendar-empty-title = មិនទាន់មានប្រតិទិនទេ
 calendar-empty-text = ប្រតិទិនពីគណនី Google និង Microsoft របស់អ្នកនឹងបង្ហាញនៅទីនេះ នៅពេលបានធ្វើសមកាលកម្ម ព្រមទាំងប្រតិទិនពីម៉ាស៊ីនមេផ្សេងទៀតដែលគាំទ្រ CalDAV។
 calendar-schedule-empty = គ្មានកម្មវិធីគ្រោងទុកក្នុងរយៈពេល 2 ខែខាងមុខទេ។
@@ -53,6 +55,7 @@ calendar-guest-answers = បាទ/ចាស { $yes }, ប្រហែល { $may
 calendar-organizer = អ្នករៀបចំ
 calendar-optional = ស្រេចចិត្ត
 calendar-open-web = បើកក្នុងកម្មវិធីរុករក
+calendar-open-contact = បើកទំនាក់ទំនង
 calendar-close = បិទ
 
 ## Adding, changing and deleting events.

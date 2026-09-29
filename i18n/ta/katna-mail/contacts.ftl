@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = இறக்குமதி செய்
 contacts-export = ஏற்றுமதி செய்
-contacts-import-title = vCard கோப்பிலிருந்து தொடர்புகளை இறக்குமதி செய்
+contacts-import-file = vCard அல்லது CSV கோப்பிலிருந்து தொடர்புகளை இறக்குமதி செய்
 contacts-imported = { $count ->
     [one] { $place } இல் { $count } தொடர்புகள் இறக்குமதி செய்யப்பட்டன
    *[other] { $place } இல் { $count } தொடர்புகள் இறக்குமதி செய்யப்பட்டன
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ஏற்றுமதி செய்ய தொடர்புகள் இல்லை
 contacts-export-failed = தொடர்புகளை ஏற்றுமதி செய்ய முடியவில்லை: { $error }
+contacts-print = அச்சிடு
+contacts-print-title = தொடர்புகள்
+contacts-print-none = அச்சிட தொடர்புகள் இல்லை
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = பிறந்தநாள்: { $day }
+contacts-print-nickname = செல்லப்பெயர்: { $name }
 contacts-create = தொடர்பை உருவாக்கு
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = அனுமதி
 contacts-back = தொடர்புகளுக்குத் திரும்பு
 contacts-edit = திருத்து
 contacts-delete = நீக்கு
+contacts-qr = QR குறியீடாகப் பகிர்
+contacts-qr-about = தொடர்பைச் சேமிக்க, இதை ஃபோனின் கேமராவால் ஸ்கேன் செய்.
+contacts-qr-too-long = QR குறியீட்டில் அடங்க இந்தத் தொடர்பில் விவரங்கள் மிக அதிகமாக உள்ளன.
+contacts-qr-done = முடிந்தது
 contacts-deleted = { $name } நீக்கப்பட்டது
 contacts-added = { $name } தொடர்புகளில் சேர்க்கப்பட்டது
 contacts-find-mail = அஞ்சல்

@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Shigo da
 contacts-export = Fitar da
-contacts-import-title = Shigo da lambobin sadarwa daga fayil na vCard
+contacts-import-file = Shigo da lambobin sadarwa daga fayil na vCard ko CSV
 contacts-imported = { $count ->
     [one] An shigo da lambar sadarwa { $count } cikin { $place }
    *[other] An shigo da lambobin sadarwa { $count } cikin { $place }
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Babu lambobin sadarwa da za a fitar
 contacts-export-failed = Ba a iya fitar da lambobin sadarwa ba: { $error }
+contacts-print = Buga
+contacts-print-title = Lambobin sadarwa
+contacts-print-none = Babu lambobin sadarwa da za a buga
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Ranar haihuwa: { $day }
+contacts-print-nickname = Sunan barkwanci: { $name }
 contacts-create = Ƙirƙiri lambar sadarwa
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = Ƙyale
 contacts-back = Koma zuwa lambobin sadarwa
 contacts-edit = Gyara
 contacts-delete = Share
+contacts-qr = Raba a matsayin lambar QR
+contacts-qr-about = Duba wannan da kyamarar waya don ajiye lambar sadarwa.
+contacts-qr-too-long = Wannan lambar sadarwa tana da bayanai da yawa da ba za su shiga cikin lambar QR ba.
+contacts-qr-done = An gama
 contacts-deleted = An share { $name }
 contacts-added = An ƙara { $name } cikin lambobin sadarwa
 contacts-find-mail = Wasiƙu

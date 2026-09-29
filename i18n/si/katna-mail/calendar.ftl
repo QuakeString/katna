@@ -29,6 +29,8 @@ calendar-loading = පූරණය වෙමින්…
 calendar-read-failed = දින දර්ශනය කියවීමට නොහැකි විය: { $error }
 calendar-local = මෙම පරිගණකයේ
 calendar-account-gone = ඉවත් කළ ගිණුම
+calendar-birthdays = උපන්දින
+calendar-birthday-of = { $name }ගේ උපන්දිනය
 calendar-empty-title = තවම දින දර්ශන නැත
 calendar-empty-text = ඔබේ Google සහ Microsoft ගිණුම්වල දින දර්ශන, සහ CalDAV සපයන වෙනත් සේවාදායකවල දින දර්ශන සමමුහූර්ත වූ පසු Katna ඒවා මෙහි පෙන්වයි.
 calendar-schedule-empty = ඉදිරි මාස දෙකට කිසිවක් සැලසුම් කර නැත.
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } ඔව්, { $maybe } සමහරවිට, {
 calendar-organizer = සංවිධායක
 calendar-optional = විකල්ප
 calendar-open-web = බ්‍රව්සරයේ විවෘත කරන්න
+calendar-open-contact = සම්බන්ධතාව විවෘත කරන්න
 calendar-close = වසන්න
 
 ## Adding, changing and deleting events.

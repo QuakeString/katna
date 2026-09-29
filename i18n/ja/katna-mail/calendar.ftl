@@ -29,6 +29,8 @@ calendar-loading = 読み込み中…
 calendar-read-failed = カレンダーを読み込めませんでした: { $error }
 calendar-local = このコンピューター
 calendar-account-gone = 削除されたアカウント
+calendar-birthdays = 誕生日
+calendar-birthday-of = { $name }さんの誕生日
 calendar-empty-title = カレンダーはまだありません
 calendar-empty-text = Google や Microsoft アカウントのカレンダーは同期が完了するとここに表示されます。CalDAV に対応する他のサーバーのカレンダーも表示されます。
 calendar-schedule-empty = 今後 2 か月間の予定はありません。
@@ -53,6 +55,7 @@ calendar-guest-answers = はい { $yes }、未定 { $maybe }、いいえ { $no }
 calendar-organizer = 主催者
 calendar-optional = 任意
 calendar-open-web = ブラウザで開く
+calendar-open-contact = 連絡先を開く
 calendar-close = 閉じる
 
 ## Adding, changing and deleting events.

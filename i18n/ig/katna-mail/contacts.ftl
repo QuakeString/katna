@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Bubata
 contacts-export = Bupụ
-contacts-import-title = Bubata kọntaktị site na faịlụ vCard
+contacts-import-file = Bubata kọntaktị site na faịlụ vCard ma ọ bụ CSV
 contacts-imported = { $count ->
    *[other] E bubatara kọntaktị { $count } na { $place }
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Enweghị kọntaktị ị ga-ebupụ
 contacts-export-failed = Enweghị ike ibupụ kọntaktị: { $error }
+contacts-print = Bipụta
+contacts-print-title = Kọntaktị
+contacts-print-none = Enweghị kọntaktị ị ga-ebipụta
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Ụbọchị ọmụmụ: { $day }
+contacts-print-nickname = Aha ọkpụkpọ: { $name }
 contacts-create = Mepụta kọntaktị
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = Kwe
 contacts-back = Laghachi na kọntaktị
 contacts-edit = Dezie
 contacts-delete = Hichapụ
+contacts-qr = Kekọrịta dị ka koodu QR
+contacts-qr-about = Were igwefoto foonu nyochaa nke a ka ịchekwa kọntaktị ahụ.
+contacts-qr-too-long = Kọntaktị a nwere nkọwa dị ukwuu nke koodu QR nweghị ike ijide.
+contacts-qr-done = Emechala
 contacts-deleted = Ehichapụla { $name }
 contacts-added = Agbakwunyere { $name } na kọntaktị
 contacts-find-mail = Ozi

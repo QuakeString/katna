@@ -29,6 +29,8 @@ calendar-loading = Na-ebugo…
 calendar-read-failed = Enweghị ike ịgụ kalịnda: { $error }
 calendar-local = Na kọmputa a
 calendar-account-gone = Akaụntụ e wepụrụ
+calendar-birthdays = Ụbọchị ọmụmụ
+calendar-birthday-of = Ụbọchị ọmụmụ { $name }
 calendar-empty-title = Enwebeghị kalịnda
 calendar-empty-text = Katna na-egosi kalịnda akaụntụ Google na Microsoft gị ebe a ozugbo e mekọrịtara ha, yana nke sava ndị ọzọ na-enye CalDAV.
 calendar-schedule-empty = Ọ nweghị ihe e mere atụmatụ n'ime ọnwa abụọ na-abịa.
@@ -53,6 +55,7 @@ calendar-guest-answers = { $yes } ee, { $maybe } ikekwe, { $no } mba, { $waiting
 calendar-organizer = Onye nhazi
 calendar-optional = Nhọrọ
 calendar-open-web = Mepe na ihe nchọgharị
+calendar-open-contact = Meghee kọntaktị
 calendar-close = Mechie
 
 ## Adding, changing and deleting events.

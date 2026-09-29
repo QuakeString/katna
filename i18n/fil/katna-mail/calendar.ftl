@@ -29,6 +29,8 @@ calendar-loading = Naglo-load…
 calendar-read-failed = Hindi nabasa ang kalendaryo: { $error }
 calendar-local = Sa computer na ito
 calendar-account-gone = Inalis na account
+calendar-birthdays = Mga kaarawan
+calendar-birthday-of = Kaarawan ni { $name }
 calendar-empty-title = Wala pang kalendaryo
 calendar-empty-text = Ipinapakita rito ng Katna ang mga kalendaryo ng iyong mga Google at Microsoft account kapag na-sync na ang mga ito, pati ang sa iba pang server na may CalDAV.
 calendar-schedule-empty = Walang nakaplano sa susunod na dalawang buwan.
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } oo, { $maybe } baka, { $no } hindi, { $waiting
 calendar-organizer = Organizer
 calendar-optional = Opsyonal
 calendar-open-web = Buksan sa browser
+calendar-open-contact = Buksan ang contact
 calendar-close = Isara
 
 ## Adding, changing and deleting events.

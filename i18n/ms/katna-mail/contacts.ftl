@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Import
 contacts-export = Eksport
-contacts-import-title = Import kenalan daripada fail vCard
+contacts-import-file = Import kenalan daripada fail vCard atau CSV
 contacts-imported = { $count ->
    *[other] { $count } kenalan diimport ke { $place }
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Tiada kenalan untuk dieksport
 contacts-export-failed = Tidak dapat mengeksport kenalan: { $error }
+contacts-print = Cetak
+contacts-print-title = Kenalan
+contacts-print-none = Tiada kenalan untuk dicetak
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Hari lahir: { $day }
+contacts-print-nickname = Nama panggilan: { $name }
 contacts-create = Cipta kenalan
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = Benarkan
 contacts-back = Kembali ke kenalan
 contacts-edit = Edit
 contacts-delete = Padam
+contacts-qr = Kongsi sebagai kod QR
+contacts-qr-about = Imbas ini dengan kamera telefon untuk menyimpan kenalan.
+contacts-qr-too-long = Kenalan ini mempunyai terlalu banyak butiran untuk dimuatkan dalam kod QR.
+contacts-qr-done = Selesai
 contacts-deleted = { $name } dipadam
 contacts-added = { $name } ditambahkan pada kenalan
 contacts-find-mail = Mel

@@ -46,7 +46,7 @@ contacts-merged = { $count ->
 }
 contacts-import = I-import
 contacts-export = I-export
-contacts-import-title = Mag-import ng mga contact mula sa vCard file
+contacts-import-file = Mag-import ng mga contact mula sa vCard o CSV file
 contacts-imported = { $count ->
     [one] { $count } contact ang na-import sa { $place }
    *[other] { $count } contact ang na-import sa { $place }
@@ -64,6 +64,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Walang mga contact na ie-export
 contacts-export-failed = Hindi ma-export ang mga contact: { $error }
+contacts-print = I-print
+contacts-print-title = Mga Contact
+contacts-print-none = Walang contact na ipi-print
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Kaarawan: { $day }
+contacts-print-nickname = Palayaw: { $name }
 contacts-create = Gumawa ng contact
 
 ## Search and the list
@@ -98,6 +104,10 @@ contacts-allow-button = Payagan
 contacts-back = Bumalik sa mga contact
 contacts-edit = I-edit
 contacts-delete = I-delete
+contacts-qr = I-share bilang QR code
+contacts-qr-about = I-scan ito gamit ang camera ng telepono para ma-save ang contact.
+contacts-qr-too-long = Masyadong marami ang detalye ng contact na ito para magkasya sa QR code.
+contacts-qr-done = Tapos na
 contacts-deleted = Na-delete: { $name }
 contacts-added = Naidagdag ang { $name } sa mga contact
 contacts-find-mail = Mail

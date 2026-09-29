@@ -29,6 +29,8 @@ calendar-loading = جارٍ التحميل…
 calendar-read-failed = تعذّرت قراءة التقويم: { $error }
 calendar-local = هذا الكمبيوتر
 calendar-account-gone = حساب محذوف
+calendar-birthdays = أعياد الميلاد
+calendar-birthday-of = عيد ميلاد { $name }
 calendar-empty-title = لا توجد تقاويم بعد
 calendar-empty-text = تظهر هنا تقاويم حساباتك على Google وMicrosoft بعد مزامنتها، وكذلك تقاويم الخوادم الأخرى التي تدعم CalDAV.
 calendar-schedule-empty = لا شيء مخطط له خلال الشهرين القادمين.
@@ -58,6 +60,7 @@ calendar-guest-answers = { $yes } نعم، { $maybe } ربما، { $no } لا، 
 calendar-organizer = المنظِّم
 calendar-optional = اختياري
 calendar-open-web = فتح في المتصفح
+calendar-open-contact = فتح جهة الاتصال
 calendar-close = إغلاق
 
 ## Adding, changing and deleting events.

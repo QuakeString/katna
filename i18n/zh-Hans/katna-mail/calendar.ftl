@@ -29,6 +29,8 @@ calendar-loading = 正在加载…
 calendar-read-failed = 无法读取日历：{ $error }
 calendar-local = 此计算机
 calendar-account-gone = 已移除的账号
+calendar-birthdays = 生日
+calendar-birthday-of = { $name }的生日
 calendar-empty-title = 还没有日历
 calendar-empty-text = 您 Google 和 Microsoft 账号的日历同步后会显示在这里，其他支持 CalDAV 的服务器上的日历也一样。
 calendar-schedule-empty = 接下来两个月没有任何安排。
@@ -53,6 +55,7 @@ calendar-guest-answers = { $yes } 人参加，{ $maybe } 人可能参加，{ $no
 calendar-organizer = 组织者
 calendar-optional = 可选
 calendar-open-web = 在浏览器中打开
+calendar-open-contact = 打开联系人
 calendar-close = 关闭
 
 ## Adding, changing and deleting events.

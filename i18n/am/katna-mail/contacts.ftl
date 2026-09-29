@@ -44,7 +44,7 @@ contacts-merged = { $count ->
 }
 contacts-import = አስመጣ
 contacts-export = ወደ ውጭ ላክ
-contacts-import-title = እውቂያዎችን ከ vCard ፋይል አስመጣ
+contacts-import-file = እውቂያዎችን ከ vCard ወይም CSV ፋይል አስመጣ
 contacts-imported = { $count ->
     [one] { $count } እውቂያ ወደ { $place } ተመጥቷል
    *[other] { $count } እውቂያዎች ወደ { $place } ተመጥተዋል
@@ -62,6 +62,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = ወደ ውጭ የሚላክ እውቂያ የለም
 contacts-export-failed = እውቂያዎችን ወደ ውጭ መላክ አልተቻለም፦ { $error }
+contacts-print = አትም
+contacts-print-title = እውቂያዎች
+contacts-print-none = ለማተም ምንም እውቂያ የለም
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = ልደት፦ { $day }
+contacts-print-nickname = ቅጽል ስም፦ { $name }
 contacts-create = እውቂያ ፍጠር
 
 ## Search and the list
@@ -96,6 +102,10 @@ contacts-allow-button = ፍቀድ
 contacts-back = ወደ እውቂያዎች ተመለስ
 contacts-edit = አርትዕ
 contacts-delete = ሰርዝ
+contacts-qr = እንደ QR ኮድ አጋራ
+contacts-qr-about = እውቂያውን ለማስቀመጥ በስልክ ካሜራ ይቃኙት።
+contacts-qr-too-long = ይህ እውቂያ በQR ኮድ ውስጥ ለመግባት በጣም ብዙ ዝርዝሮች አሉት።
+contacts-qr-done = ተጠናቀቀ
 contacts-deleted = { $name } ተሰርዟል
 contacts-added = { $name } ወደ እውቂያዎች ታክሏል
 contacts-find-mail = ደብዳቤ

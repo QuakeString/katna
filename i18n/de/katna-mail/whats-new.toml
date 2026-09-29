@@ -1456,6 +1456,12 @@ text = """
 Unter „Korrigieren und verwalten“ in Kontakte findet „Zusammenführen und korrigieren“ doppelt gespeicherte Personen (mit demselben Namen oder derselben Telefonnummer) und führt sie mit einem Klick zusammen, mit „Rückgängig“. „Importieren“ holt Personen aus einer vCard-Datei und lässt bereits gespeicherte aus, und „Exportieren“ speichert alle oder ein Label als vCard-Datei.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Geburtstage im Kalender, Kontakte als QR-Codes"
+text = """
+Die Geburtstage Ihrer Kontakte erscheinen jetzt im Kalender, in einem Kalender „Geburtstage“, den Sie abwählen können. Die Seite eines Kontakts kann ihn als QR-Code anzeigen, den die Kamera eines Smartphones speichert, und ihn drucken; „Drucken“ unter „Korrigieren und verwalten“ druckt alle angezeigten Personen. Der Import liest jetzt auch CSV-Dateien aus Google Kontakte und Outlook, und KRunner und die GNOME-Suche finden Ihre gespeicherten Kontakte.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Kalender: Zeitzonen und Dichte"
 text = """

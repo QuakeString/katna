@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Nhập
 contacts-export = Xuất
-contacts-import-title = Nhập liên hệ từ tệp vCard
+contacts-import-file = Nhập liên hệ từ tệp vCard hoặc CSV
 contacts-imported = { $count ->
    *[other] Đã nhập { $count } liên hệ vào { $place }
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Không có liên hệ nào để xuất
 contacts-export-failed = Không thể xuất liên hệ: { $error }
+contacts-print = In
+contacts-print-title = Danh bạ
+contacts-print-none = Không có liên hệ nào để in
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = Sinh nhật: { $day }
+contacts-print-nickname = Biệt danh: { $name }
 contacts-create = Tạo người liên hệ
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = Cho phép
 contacts-back = Quay lại danh bạ
 contacts-edit = Sửa
 contacts-delete = Xóa
+contacts-qr = Chia sẻ dưới dạng mã QR
+contacts-qr-about = Quét mã này bằng camera điện thoại để lưu liên hệ.
+contacts-qr-too-long = Liên hệ này có quá nhiều thông tin để vừa trong mã QR.
+contacts-qr-done = Xong
 contacts-deleted = Đã xóa { $name }
 contacts-added = Đã thêm { $name } vào danh bạ
 contacts-find-mail = Thư

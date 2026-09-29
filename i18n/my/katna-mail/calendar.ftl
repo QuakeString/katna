@@ -29,6 +29,8 @@ calendar-loading = ဖွင့်နေသည်…
 calendar-read-failed = ပြက္ခဒိန်ကို ဖတ်၍မရပါ- { $error }
 calendar-local = ဤကွန်ပျူတာ
 calendar-account-gone = ဖယ်ရှားထားသော အကောင့်
+calendar-birthdays = မွေးနေ့များ
+calendar-birthday-of = { $name } ၏ မွေးနေ့
 calendar-empty-title = ပြက္ခဒိန် မရှိသေးပါ
 calendar-empty-text = သင်၏ Google နှင့် Microsoft အကောင့်များ၏ ပြက္ခဒိန်များကို ထပ်တူပြုပြီးသည်နှင့် ဤနေရာတွင် ပြပါမည်။ CalDAV ပံ့ပိုးသော အခြားဆာဗာများ၏ ပြက္ခဒိန်များလည်း ပါဝင်ပါသည်။
 calendar-schedule-empty = လာမည့် ၂ လအတွင်း စီစဉ်ထားသည် မရှိပါ။
@@ -53,6 +55,7 @@ calendar-guest-answers = ဟုတ်ကဲ့ { $yes }၊ ဖြစ်နို
 calendar-organizer = စီစဉ်သူ
 calendar-optional = ရွေးချယ်နိုင်သည်
 calendar-open-web = ဘရောက်ဇာတွင် ဖွင့်ရန်
+calendar-open-contact = အဆက်အသွယ် ဖွင့်ရန်
 calendar-close = ပိတ်ရန်
 
 ## Adding, changing and deleting events.

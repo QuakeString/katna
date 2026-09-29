@@ -29,6 +29,8 @@ calendar-loading = در حال بارگیری…
 calendar-read-failed = خواندن تقویم ممکن نشد: { $error }
 calendar-local = این رایانه
 calendar-account-gone = حساب حذف‌شده
+calendar-birthdays = تولدها
+calendar-birthday-of = تولد { $name }
 calendar-empty-title = هنوز تقویمی وجود ندارد
 calendar-empty-text = تقویم‌های حساب‌های Google و Microsoft شما پس از همگام‌سازی اینجا نمایش داده می‌شوند، همچنین تقویم‌های سرورهای دیگری که از CalDAV پشتیبانی می‌کنند.
 calendar-schedule-empty = برای دو ماه آینده چیزی برنامه‌ریزی نشده است.
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } بله، { $maybe } شاید، { $no } خیر�
 calendar-organizer = برگزارکننده
 calendar-optional = اختیاری
 calendar-open-web = باز کردن در مرورگر
+calendar-open-contact = باز کردن مخاطب
 calendar-close = بستن
 
 ## Adding, changing and deleting events.

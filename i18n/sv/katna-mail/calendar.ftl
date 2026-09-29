@@ -29,6 +29,8 @@ calendar-loading = Läser in …
 calendar-read-failed = Kalendern kunde inte läsas: { $error }
 calendar-local = Den här datorn
 calendar-account-gone = Borttaget konto
+calendar-birthdays = Födelsedagar
+calendar-birthday-of = Födelsedag för { $name }
 calendar-empty-title = Inga kalendrar ännu
 calendar-empty-text = Katna visar här kalendrarna för dina Google- och Microsoft-konton när de har synkroniserats, och kalendrar från andra servrar som erbjuder CalDAV.
 calendar-schedule-empty = Inget planerat de kommande två månaderna.
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } kanske, { $no } nej, { $waiting
 calendar-organizer = Arrangör
 calendar-optional = Valfri
 calendar-open-web = Öppna i webbläsaren
+calendar-open-contact = Öppna kontakt
 calendar-close = Stäng
 
 ## Adding, changing and deleting events.

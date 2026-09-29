@@ -29,6 +29,8 @@ calendar-loading = Caricamento in corso…
 calendar-read-failed = Impossibile leggere il calendario: { $error }
 calendar-local = Questo computer
 calendar-account-gone = Account rimosso
+calendar-birthdays = Compleanni
+calendar-birthday-of = Compleanno di { $name }
 calendar-empty-title = Ancora nessun calendario
 calendar-empty-text = Katna mostra qui i calendari dei tuoi account Google e Microsoft non appena sono sincronizzati, e quelli di altri server che offrono CalDAV.
 calendar-schedule-empty = Niente in programma per i prossimi due mesi.
@@ -55,6 +57,7 @@ calendar-guest-answers = { $yes } sì, { $maybe } forse, { $no } no, { $waiting 
 calendar-organizer = Organizzatore
 calendar-optional = Facoltativo
 calendar-open-web = Apri nel browser
+calendar-open-contact = Apri contatto
 calendar-close = Chiudi
 
 ## Adding, changing and deleting events.

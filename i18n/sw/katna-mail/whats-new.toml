@@ -1364,6 +1364,14 @@ Anwani sasa zina Rekebisha na udhibiti: Unganisha na urekebishe hutafuta watu wa
 Leta huingiza watu kutoka faili ya vCard, ikiwaacha wale waliohifadhiwa tayari, na Hamisha huhifadhi kila mtu, au lebo moja, kama faili ya vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Siku za kuzaliwa kwenye kalenda, anwani kama misimbo ya QR"
+text = """
+Siku za kuzaliwa za anwani zako sasa zinaonekana kwenye Kalenda, katika kalenda ya Siku za kuzaliwa unayoweza kuiondolea tiki.
+Ukurasa wa anwani unaweza kuzionyesha kama msimbo wa QR ambao kamera ya simu huhifadhi, na kuzichapisha; Chapisha chini ya Rekebisha na udhibiti huchapisha kila mtu anayeonyeshwa.
+Leta sasa husoma pia faili za CSV kutoka Anwani za Google na Outlook, na KRunner na utafutaji wa GNOME hupata anwani zako zilizohifadhiwa.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Msongamano wa Kalenda na saa za eneo la pili"
 text = """

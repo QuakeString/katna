@@ -1413,6 +1413,12 @@ text = """
 W Kontaktach jest teraz „Napraw i zarządzaj”: „Scal i napraw” znajduje osoby zapisane dwukrotnie (o tej samej nazwie lub tym samym numerze telefonu) i scala je jednym kliknięciem, z opcją „Cofnij”. „Importuj” wczytuje osoby z pliku vCard, pomijając te już zapisane, a „Eksportuj” zapisuje wszystkich lub jedną etykietę do pliku vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Urodziny w kalendarzu, kontakty jako kody QR"
+text = """
+Urodziny Twoich kontaktów są teraz widoczne w Kalendarzu, w kalendarzu Urodziny, który można odznaczyć. Strona kontaktu może pokazać go jako kod QR, który zapisuje aparat telefonu, oraz go wydrukować; „Drukuj” w sekcji „Napraw i zarządzaj” drukuje wszystkie widoczne osoby. Import wczytuje teraz także pliki CSV z Kontaktów Google i Outlooka, a KRunner i wyszukiwarka GNOME znajdują zapisane kontakty.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Gęstość Kalendarza i druga strefa czasowa"
 text = """

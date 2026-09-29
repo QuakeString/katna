@@ -1409,6 +1409,12 @@ text = """
 Kişiler artık Düzelt ve yönet aracına sahip: Birleştir ve düzelt, iki kez kaydedilmiş kişileri (aynı ad veya telefon numarası) bulur ve tek tıkla birleştirir, Geri al ile de işlemi geri alabilirsiniz. İçe aktar, kişileri bir vCard dosyasından getirir ve zaten kayıtlı olanları atlar, Dışa aktar ise herkesi ya da bir etiketi vCard dosyası olarak kaydeder.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Takvimde doğum günleri, QR kodu olarak kişiler"
+text = """
+Kişilerinizin doğum günleri artık Takvim’de, işaretini kaldırabileceğiniz bir Doğum günleri takviminde görünür. Bir kişinin sayfası onu bir telefonun kamerasıyla kaydedilen QR koduna dönüştürebilir ve yazdırabilir; “Düzelt ve yönet” altındaki “Yazdır” görünen herkesi yazdırır. İçe aktarma artık Google Kişiler ve Outlook’tan gelen CSV dosyalarını da okur, KRunner ve GNOME araması da kayıtlı kişilerinizi bulur.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Takvim yoğunluğu ve ikinci saat dilimi"
 text = """

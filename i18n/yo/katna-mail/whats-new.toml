@@ -1334,6 +1334,14 @@ text = """
 Gbé wọlé ń mú àwọn ènìyàn wá láti fáìlì vCard, ó ń fi àwọn tí a ti fipamọ́ sílẹ̀, Gbé jáde sì ń fi gbogbo wọn, tàbí àmì kan, pamọ́ bí fáìlì vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Àwọn ọjọ́ ìbí lórí kàlẹ́ńdà, àwọn olùbásọ̀rọ̀ bí kóòdù QR"
+text = """
+Àwọn ọjọ́ ìbí àwọn olùbásọ̀rọ̀ rẹ ti hàn lórí Kàlẹ́ńdà báyìí, nínú kàlẹ́ńdà Àwọn ọjọ́ ìbí tí o lè yọ àmì rẹ̀ kúrò.
+Ojú-ìwé olùbásọ̀rọ̀ lè fi wọ́n hàn bí kóòdù QR tí kámẹ́rà fóònù ń fipamọ́, kí ó sì tẹ̀ wọ́n jáde; Tẹ̀jáde lábẹ́ Àtúnṣe àti ìṣàkóso ń tẹ̀ gbogbo ẹni tó wà lórí ìfihàn jáde.
+Gbé wọlé ti ń ka àwọn fáìlì CSV láti Àwọn olùbásọ̀rọ̀ Google àti Outlook pẹ̀lú báyìí, KRunner àti àwárí GNOME sì ń rí àwọn olùbásọ̀rọ̀ rẹ tí a fipamọ́.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Ìwọ̀n ìkọ̀pọ̀ Kàlẹ́ńdà àti agbègbè àkókò kejì"
 text = """

@@ -29,6 +29,8 @@ calendar-loading = Memuatkan…
 calendar-read-failed = Kalendar tidak dapat dibaca: { $error }
 calendar-local = Pada komputer ini
 calendar-account-gone = Akaun yang dialih keluar
+calendar-birthdays = Hari lahir
+calendar-birthday-of = Hari lahir { $name }
 calendar-empty-title = Belum ada kalendar
 calendar-empty-text = Katna memaparkan kalendar akaun Google dan Microsoft anda di sini setelah disegerakkan, serta kalendar daripada pelayan lain yang menawarkan CalDAV.
 calendar-schedule-empty = Tiada rancangan untuk dua bulan akan datang.
@@ -53,6 +55,7 @@ calendar-guest-answers = { $yes } ya, { $maybe } mungkin, { $no } tidak, { $wait
 calendar-organizer = Penganjur
 calendar-optional = Tidak wajib
 calendar-open-web = Buka dalam pelayar
+calendar-open-contact = Buka kenalan
 calendar-close = Tutup
 
 ## Adding, changing and deleting events.

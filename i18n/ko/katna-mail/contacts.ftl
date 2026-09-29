@@ -43,7 +43,7 @@ contacts-merged = { $count ->
 }
 contacts-import = 가져오기
 contacts-export = 내보내기
-contacts-import-title = vCard 파일에서 연락처 가져오기
+contacts-import-file = vCard 또는 CSV 파일에서 연락처 가져오기
 contacts-imported = { $count ->
    *[other] 연락처 { $count }개를 { $place }에 가져왔습니다
 }
@@ -58,6 +58,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = 내보낼 연락처가 없습니다
 contacts-export-failed = 연락처를 내보낼 수 없습니다: { $error }
+contacts-print = 인쇄
+contacts-print-title = 연락처
+contacts-print-none = 인쇄할 연락처가 없습니다
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = 생일: { $day }
+contacts-print-nickname = 닉네임: { $name }
 contacts-create = 연락처 만들기
 
 ## Search and the list
@@ -90,6 +96,10 @@ contacts-allow-button = 허용
 contacts-back = 연락처로 돌아가기
 contacts-edit = 수정
 contacts-delete = 삭제
+contacts-qr = QR 코드로 공유
+contacts-qr-about = 휴대전화 카메라로 스캔하여 연락처를 저장하세요.
+contacts-qr-too-long = 이 연락처는 세부 정보가 너무 많아 QR 코드에 담을 수 없습니다.
+contacts-qr-done = 완료
 contacts-deleted = { $name } 삭제됨
 contacts-added = { $name } 연락처에 추가됨
 contacts-find-mail = 메일

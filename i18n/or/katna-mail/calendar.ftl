@@ -29,6 +29,8 @@ calendar-loading = ଲୋଡ୍ ହେଉଛି…
 calendar-read-failed = କ୍ୟାଲେଣ୍ଡର ପଢ଼ାଯାଇପାରିଲା ନାହିଁ: { $error }
 calendar-local = ଏହି କମ୍ପ୍ୟୁଟରରେ
 calendar-account-gone = ହଟାଯାଇଥିବା ଖାତା
+calendar-birthdays = ଜନ୍ମଦିନ
+calendar-birthday-of = { $name }ଙ୍କ ଜନ୍ମଦିନ
 calendar-empty-title = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି କ୍ୟାଲେଣ୍ଡର ନାହିଁ
 calendar-empty-text = Katna ଆପଣଙ୍କ Google ଓ Microsoft ଖାତାର କ୍ୟାଲେଣ୍ଡର, ଏବଂ CalDAV ଦେଉଥିବା ଅନ୍ୟ ସର୍ଭରର କ୍ୟାଲେଣ୍ଡର ସିଙ୍କ ହେଲେ ଏଠାରେ ଦେଖାଏ।
 calendar-schedule-empty = ଆସନ୍ତା ଦୁଇ ମାସରେ କିଛି ଯୋଜନା ନାହିଁ।
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } ହଁ, { $maybe } ହୁଏତ, { $no } ନ�
 calendar-organizer = ଆୟୋଜକ
 calendar-optional = ଐଚ୍ଛିକ
 calendar-open-web = ବ୍ରାଉଜରରେ ଖୋଲନ୍ତୁ
+calendar-open-contact = ଯୋଗାଯୋଗ ଖୋଲନ୍ତୁ
 calendar-close = ବନ୍ଦ କରନ୍ତୁ
 
 ## Adding, changing and deleting events.

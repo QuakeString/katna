@@ -29,6 +29,8 @@ calendar-loading = Laden…
 calendar-read-failed = De agenda kon niet worden gelezen: { $error }
 calendar-local = Deze computer
 calendar-account-gone = Verwijderd account
+calendar-birthdays = Verjaardagen
+calendar-birthday-of = Verjaardag van { $name }
 calendar-empty-title = Nog geen agenda’s
 calendar-empty-text = Katna toont hier de agenda’s van je Google- en Microsoft-accounts zodra ze zijn gesynchroniseerd, en die van andere servers die CalDAV bieden.
 calendar-schedule-empty = Er staat niets gepland voor de komende twee maanden.
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } misschien, { $no } nee, { $wait
 calendar-organizer = Organisator
 calendar-optional = Optioneel
 calendar-open-web = Openen in de browser
+calendar-open-contact = Contact openen
 calendar-close = Sluiten
 
 ## Adding, changing and deleting events.

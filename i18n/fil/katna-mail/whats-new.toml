@@ -1471,6 +1471,12 @@ text = """
 May Ayusin at pamahalaan na ang Mga Contact: hinahanap ng Pagsamahin at ayusin ang mga taong dalawang beses na-save (parehong pangalan o numero ng telepono) at pinagsasama sila sa isang click, may I-undo. Nagdadala ang I-import ng mga tao mula sa vCard file at hindi isinasama ang mga naka-save na, at sine-save ng I-export ang lahat, o isang label, bilang vCard file.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Mga kaarawan sa kalendaryo, mga contact bilang QR code"
+text = """
+Makikita na ngayon sa Kalendaryo ang mga kaarawan ng iyong mga contact, sa kalendaryong Mga kaarawan na maaari mong alisan ng check. Maipapakita ng pahina ng contact ang contact bilang QR code na sine-save ng camera ng telepono, at maipi-print ito; ang I-print sa ilalim ng Ayusin at pamahalaan ay nagpi-print ng lahat ng nakikita. Nababasa na rin ng pag-import ang mga CSV file mula sa Google Contacts at Outlook, at nahahanap ng KRunner at ng paghahanap ng GNOME ang iyong mga naka-save na contact.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Densidad ng Kalendaryo at pangalawang time zone"
 text = """

@@ -29,6 +29,8 @@ calendar-loading = ལྷག་དོ…
 calendar-read-failed = ཟླ་ཐོ་ལྷག་མ་ཚུགས་: { $error }
 calendar-local = གློག་ཀླད་འདི་གུ
 calendar-account-gone = བཏོན་ཡོད་པའི་རྩིས་ཐོ
+calendar-birthdays = སྐྱེས་ཚེས
+calendar-birthday-of = { $name } གི་སྐྱེས་ཚེས
 calendar-empty-title = ད་ལྟོ་ཡང་ ཟླ་ཐོ་མེདཔ
 calendar-empty-text = ཁྱོད་ཀྱི་ Google དང་ Microsoft རྩིས་ཐོ་ཚུ་གི་ཟླ་ཐོ་དང་ CalDAV བྱིན་མི་ ཞབས་ཞུ་གཞན་ཚུ་གི་ཟླ་ཐོ་ཚུ་ མཉམ་བསྡུར་འབད་ཞིན་ཏེ་ Katna གིས་ འདིར་སྟོནམ་ཨིན།
 calendar-schedule-empty = ཟླ་བ་གཉིས་ཀྱི་ནང་ འཆར་གཞི་ག་ཅི་ཡང་མིན་འདུག
@@ -53,6 +55,7 @@ calendar-guest-answers = { $yes } ཨིན, { $maybe } འོང་སྲིད
 calendar-organizer = སྒྲིག་འཛིན་པ
 calendar-optional = གདམ་ཁ།
 calendar-open-web = བརྡ་འཚོལ་ཆས་ནང་ཁ་ཕྱེ
+calendar-open-contact = འབྲེལ་བ་ཁ་ཕྱེ།
 calendar-close = ཁ་བསྡམས།
 
 ## Adding, changing and deleting events.

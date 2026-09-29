@@ -52,7 +52,7 @@ contacts-merged = { $count ->
 }
 contacts-import = Импортировать
 contacts-export = Экспортировать
-contacts-import-title = Импорт контактов из файла vCard
+contacts-import-file = Импорт контактов из файла vCard или CSV
 contacts-imported = { $count ->
     [one] Импортирован { $count } контакт в { $place }
     [few] Импортировано { $count } контакта в { $place }
@@ -76,6 +76,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = Нет контактов для экспорта
 contacts-export-failed = Не удалось экспортировать контакты: { $error }
+contacts-print = Печать
+contacts-print-title = Контакты
+contacts-print-none = Нет контактов для печати
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = День рождения: { $day }
+contacts-print-nickname = Псевдоним: { $name }
 contacts-create = Создать контакт
 
 ## Search and the list
@@ -114,6 +120,10 @@ contacts-allow-button = Разрешить
 contacts-back = Назад к контактам
 contacts-edit = Изменить
 contacts-delete = Удалить
+contacts-qr = Поделиться в виде QR-кода
+contacts-qr-about = Отсканируйте код камерой телефона, чтобы сохранить контакт.
+contacts-qr-too-long = У этого контакта слишком много данных для QR-кода.
+contacts-qr-done = Готово
 contacts-deleted = Удалено: { $name }
 contacts-added = Контакт { $name } добавлен
 contacts-find-mail = Почта

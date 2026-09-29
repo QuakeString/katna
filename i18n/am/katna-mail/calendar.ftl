@@ -29,6 +29,8 @@ calendar-loading = በመጫን ላይ…
 calendar-read-failed = ቀን መቁጠሪያውን ማንበብ አልተቻለም፦ { $error }
 calendar-local = ይህ ኮምፒውተር
 calendar-account-gone = የተወገደ መለያ
+calendar-birthdays = ልደቶች
+calendar-birthday-of = የ{ $name } ልደት
 calendar-empty-title = እስካሁን ምንም ቀን መቁጠሪያ የለም
 calendar-empty-text = የGoogle እና የMicrosoft መለያዎችዎ ቀን መቁጠሪያዎች ከተመሳሰሉ በኋላ እዚህ ይታያሉ፤ CalDAV የሚደግፉ ሌሎች አገልጋዮችም እንዲሁ።
 calendar-schedule-empty = በሚቀጥሉት ሁለት ወራት ውስጥ የታቀደ ምንም ነገር የለም።
@@ -54,6 +56,7 @@ calendar-guest-answers = { $yes } አዎ፣ { $maybe } ምናልባት፣ { $no 
 calendar-organizer = አዘጋጅ
 calendar-optional = አማራጭ
 calendar-open-web = በአሳሽ ውስጥ ክፈት
+calendar-open-contact = እውቂያ ክፈት
 calendar-close = ዝጋ
 
 ## Adding, changing and deleting events.

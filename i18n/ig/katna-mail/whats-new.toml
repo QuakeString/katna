@@ -1385,6 +1385,17 @@ hapụ onye ọ bụla echekwarala, Bupụ na-echekwa mmadụ niile, ma ọ bụ
 leebụl, dị ka faịlụ vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Ụbọchị ọmụmụ na Kalịnda, kọntaktị dị ka koodu QR"
+text = """
+Ụbọchị ọmụmụ kọntaktị gị na-egosi ugbu a na Kalịnda, na kalịnda Ụbọchị
+ọmụmụ ị nwere ike wepụ akara ya. Ibe kọntaktị nwere ike igosi kọntaktị
+ahụ dị ka koodu QR igwefoto foonu na-echekwa, ma bipụta ya; Bipụta
+n'okpuru Dozie ma jikwaa na-ebipụta onye ọ bụla e gosiri. Bubata ugbu a
+na-agụkwa faịlụ CSV sitere na Google Contacts na Outlook, KRunner na
+nchọta GNOME na-achọtakwa kọntaktị ị chekwara.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Njupụta kalịnda na mpaghara oge nke abụọ"
 text = """

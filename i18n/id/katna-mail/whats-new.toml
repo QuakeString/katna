@@ -1421,6 +1421,12 @@ text = """
 Kontak kini punya Perbaiki dan kelola: Gabungkan dan perbaiki menemukan orang yang tersimpan dua kali (nama atau nomor telepon yang sama) dan menggabungkannya dengan sekali klik, lengkap dengan Urungkan. Impor membawa orang dari file vCard dan melewati yang sudah tersimpan, sedangkan Ekspor menyimpan semua orang, atau satu label, sebagai file vCard.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Ulang tahun di kalender, kontak sebagai kode QR"
+text = """
+Ulang tahun kontak Anda kini tampil di Kalender, dalam kalender Ulang tahun yang dapat Anda hapus centangnya. Halaman kontak dapat menampilkannya sebagai kode QR yang disimpan oleh kamera ponsel, dan mencetaknya; Cetak di bawah Perbaiki dan kelola mencetak semua orang yang tampil. Impor kini juga membaca file CSV dari Google Kontak dan Outlook, dan KRunner serta pencarian GNOME menemukan kontak tersimpan Anda.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Kepadatan Kalender dan zona waktu kedua"
 text = """

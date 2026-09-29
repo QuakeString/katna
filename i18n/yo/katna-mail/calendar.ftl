@@ -29,6 +29,8 @@ calendar-loading = Ń gbéwọlé…
 calendar-read-failed = A kò lè ka kàlẹ́ńdà náà: { $error }
 calendar-local = Kọ̀ǹpútà yìí
 calendar-account-gone = Àkọọ́lẹ̀ tí a yọ kúrò
+calendar-birthdays = Àwọn ọjọ́ ìbí
+calendar-birthday-of = Ọjọ́ ìbí { $name }
 calendar-empty-title = Kò tíì sí kàlẹ́ńdà kankan
 calendar-empty-text = Katna ń fi àwọn kàlẹ́ńdà àkọọ́lẹ̀ Google àti Microsoft rẹ hàn níbí nígbà tí a bá ti mú wọn bá ara wọn mu, pẹ̀lú ti àwọn olupín mìíràn tó ń ṣe atìlẹ́yìn CalDAV.
 calendar-schedule-empty = Kò sí ohun tí a ṣètò fún oṣù méjì tó ń bọ̀.
@@ -53,6 +55,7 @@ calendar-guest-answers = bẹ́ẹ̀ni { $yes }, bóyá { $maybe }, rárá { $no
 calendar-organizer = Olùṣètò
 calendar-optional = Àṣàyàn
 calendar-open-web = Ṣí i nínú aṣàwákiri
+calendar-open-contact = Ṣí olùbásọ̀rọ̀
 calendar-close = Padé
 
 ## Adding, changing and deleting events.

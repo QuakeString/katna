@@ -29,6 +29,8 @@ calendar-loading = Inapakia…
 calendar-read-failed = Kalenda haikuweza kusomwa: { $error }
 calendar-local = Kompyuta hii
 calendar-account-gone = Akaunti iliyoondolewa
+calendar-birthdays = Siku za kuzaliwa
+calendar-birthday-of = Siku ya kuzaliwa ya { $name }
 calendar-empty-title = Bado hakuna kalenda
 calendar-empty-text = Katna huonyesha hapa kalenda za akaunti zako za Google na Microsoft zikishasawazishwa, pamoja na za seva nyingine zinazotumia CalDAV.
 calendar-schedule-empty = Hakuna kilichopangwa kwa miezi miwili ijayo.
@@ -54,6 +56,7 @@ calendar-guest-answers = ndiyo { $yes }, labda { $maybe }, hapana { $no }, wanas
 calendar-organizer = Mwandalizi
 calendar-optional = Hiari
 calendar-open-web = Fungua kwenye kivinjari
+calendar-open-contact = Fungua anwani
 calendar-close = Funga
 
 ## Adding, changing and deleting events.

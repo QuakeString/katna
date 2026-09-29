@@ -1389,6 +1389,12 @@ text = """
 Kontakter har Åtgärda och hantera: Sammanfoga och åtgärda hittar personer som sparats två gånger (samma namn eller telefonnummer) och sammanfogar dem med ett klick, med Ångra. Importera hämtar personer från en vCard-fil och utelämnar dem som redan finns, och Exportera sparar alla, eller en etikett, som en vCard-fil.
 """
 
+["2026-09-29-0835-contacts-birthdays-qr-print"]
+title = "Födelsedagar i kalendern, kontakter som QR-koder"
+text = """
+Dina kontakters födelsedagar visas nu i Kalender, i en kalender som heter Födelsedagar och som du kan bocka ur. En kontakts sida kan visa kontakten som en QR-kod som en telefons kamera sparar, och skriva ut den; Skriv ut under Åtgärda och hantera skriver ut alla som visas. Importen läser nu också CSV-filer från Google Kontakter och Outlook, och KRunner och GNOME-sökning hittar dina sparade kontakter.
+"""
+
 ["2026-09-29-0830-calendar-density-time-zones"]
 title = "Kalenderns täthet och en andra tidszon"
 text = """

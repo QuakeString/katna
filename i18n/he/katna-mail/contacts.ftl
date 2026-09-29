@@ -47,7 +47,7 @@ contacts-merged = { $count ->
 }
 contacts-import = ייבוא
 contacts-export = ייצוא
-contacts-import-title = ייבוא אנשי קשר מקובץ vCard
+contacts-import-file = ייבוא אנשי קשר מקובץ vCard או CSV
 contacts-imported = { $count ->
     [one] יובא { $count } איש קשר אל { $place }
     [two] יובאו { $count } אנשי קשר אל { $place }
@@ -68,6 +68,12 @@ contacts-exported = { $count ->
 }
 contacts-export-none = אין אנשי קשר לייצוא
 contacts-export-failed = לא ניתן לייצא אנשי קשר: { $error }
+contacts-print = הדפסה
+contacts-print-title = אנשי קשר
+contacts-print-none = אין אנשי קשר להדפסה
+contacts-print-typed = { $value } ({ $kind })
+contacts-print-birthday = יום הולדת: { $day }
+contacts-print-nickname = כינוי: { $name }
 contacts-create = יצירת איש קשר
 
 ## Search and the list
@@ -104,6 +110,10 @@ contacts-allow-button = אפשר
 contacts-back = חזרה לאנשי הקשר
 contacts-edit = עריכה
 contacts-delete = מחיקה
+contacts-qr = שיתוף כקוד QR
+contacts-qr-about = סרקו את הקוד במצלמת הטלפון כדי לשמור את איש הקשר.
+contacts-qr-too-long = לאיש קשר זה יש יותר מדי פרטים ואי אפשר להכניס אותם לקוד QR.
+contacts-qr-done = בוצע
 contacts-deleted = איש הקשר { $name } נמחק
 contacts-added = { $name } נוסף לאנשי הקשר
 contacts-find-mail = אימייל
