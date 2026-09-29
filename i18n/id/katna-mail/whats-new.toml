@@ -1744,3 +1744,14 @@ Catatan lain bergeser memberi ruang, dan catatan itu tetap di tempat
 Anda melepaskannya. Ctrl+Z mengembalikannya. Kartu kini tersusun rapat
 di kolomnya, tanpa celah di bawah catatan pendek.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Klik kanan di Kalender"
+text = """
+Klik kanan waktu atau hari yang kosong untuk menambahkan acara, waktu
+fokus, atau di luar kantor di sana. Klik kanan acara untuk mengeditnya,
+menduplikatnya, menghapusnya, menjawab, bergabung, mengirim email ke
+tamu, memberinya warna, atau memindahkannya ke kalender lain, dan klik
+kanan tugas untuk mencentangnya, memberinya bintang, memberinya hari
+lain, atau menghapusnya. Urungkan membatalkan perubahan.
+"""

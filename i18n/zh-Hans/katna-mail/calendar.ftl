@@ -119,6 +119,29 @@ calendar-discard = 放弃更改
 calendar-edit = 修改活动
 calendar-delete = 删除活动
 calendar-event-details = 活动详情
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = 新建活动
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = 打开这一天
+calendar-menu-duplicate = 复制
+calendar-menu-color = 颜色
+# The event takes its calendar's color.
+calendar-menu-color-calendar = 日历颜色
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = 一周后
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = 番茄红
+calendar-color-flamingo = 火烈鸟粉
+calendar-color-tangerine = 橘黄
+calendar-color-banana = 香蕉黄
+calendar-color-sage = 鼠尾草绿
+calendar-color-basil = 罗勒绿
+calendar-color-peacock = 孔雀蓝
+calendar-color-blueberry = 蓝莓蓝
+calendar-color-lavender = 薰衣草紫
+calendar-color-grape = 葡萄紫
+calendar-color-graphite = 石墨灰
 calendar-kind-event = 活动
 calendar-kind-focus = 专注时间
 calendar-kind-out-of-office = 外出

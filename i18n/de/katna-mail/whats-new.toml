@@ -1784,3 +1784,15 @@ zu machen, und sie bleibt dort, wo Sie sie ablegen. Strg+Z legt sie
 zurück. Karten sitzen jetzt dicht in ihren Spalten, ohne Lücken unter
 kurzen Notizen.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Rechtsklick im Kalender"
+text = """
+Klicken Sie mit der rechten Maustaste auf eine freie Zeit oder einen
+Tag, um dort einen Termin, eine Fokuszeit oder eine Abwesenheit
+anzulegen. Ein Rechtsklick auf einen Termin bearbeitet, dupliziert,
+löscht oder beantwortet ihn, tritt ihm bei, schreibt den Gästen, färbt
+ihn ein oder verschiebt ihn in einen anderen Kalender; auf eine Aufgabe
+hakt er sie ab, markiert sie mit einem Stern, gibt ihr einen anderen Tag
+oder löscht sie. Rückgängig nimmt eine Änderung zurück.
+"""

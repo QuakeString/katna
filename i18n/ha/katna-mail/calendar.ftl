@@ -121,6 +121,29 @@ calendar-discard = Watsar da canje-canje
 calendar-edit = Gyara taron
 calendar-delete = Share taron
 calendar-event-details = Bayanan taron
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Sabon taro
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Buɗe ranar
+calendar-menu-duplicate = Kwafi
+calendar-menu-color = Launi
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Launin kalanda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Bayan mako ɗaya
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tumatir
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Lemu
+calendar-color-banana = Ayaba
+calendar-color-sage = Sage
+calendar-color-basil = Daidoya
+calendar-color-peacock = Dawisu
+calendar-color-blueberry = Bulubari
+calendar-color-lavender = Lavanda
+calendar-color-grape = Inabi
+calendar-color-graphite = Toka
 calendar-kind-event = Taron
 calendar-kind-focus = Lokacin mai da hankali
 calendar-kind-out-of-office = Ba a ofis

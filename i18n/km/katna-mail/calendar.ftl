@@ -119,6 +119,29 @@ calendar-discard = បោះបង់ការផ្លាស់ប្តូរ
 calendar-edit = កែសម្រួលព្រឹត្តិការណ៍
 calendar-delete = លុបព្រឹត្តិការណ៍
 calendar-event-details = ព័ត៌មានលម្អិតនៃព្រឹត្តិការណ៍
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = ព្រឹត្តិការណ៍ថ្មី
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = បើកថ្ងៃ
+calendar-menu-duplicate = ចម្លង
+calendar-menu-color = ពណ៌
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ពណ៌ប្រតិទិន
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = ក្នុងមួយសប្ដាហ៍
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ប៉េងប៉ោះ
+calendar-color-flamingo = ហ្វ្លាមីងហ្គោ
+calendar-color-tangerine = ក្រូចខ្វិច
+calendar-color-banana = ចេក
+calendar-color-sage = សេច
+calendar-color-basil = ម្រះព្រៅ
+calendar-color-peacock = ក្ងោក
+calendar-color-blueberry = ប៊្លូបឺរី
+calendar-color-lavender = ឡាវេនឌ័រ
+calendar-color-grape = ទំពាំងបាយជូរ
+calendar-color-graphite = ក្រាហ្វីត
 calendar-kind-event = ព្រឹត្តិការណ៍
 calendar-kind-focus = ពេលផ្តោតអារម្មណ៍
 calendar-kind-out-of-office = ចេញពីការិយាល័យ

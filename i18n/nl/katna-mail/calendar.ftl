@@ -121,6 +121,29 @@ calendar-discard = Wijzigingen negeren
 calendar-edit = Afspraak bewerken
 calendar-delete = Afspraak verwijderen
 calendar-event-details = Afspraakdetails
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Nieuwe afspraak
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Dag openen
+calendar-menu-duplicate = Dupliceren
+calendar-menu-color = Kleur
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Agendakleur
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Over een week
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomaat
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandarijn
+calendar-color-banana = Banaan
+calendar-color-sage = Salie
+calendar-color-basil = Basilicum
+calendar-color-peacock = Pauw
+calendar-color-blueberry = Bosbes
+calendar-color-lavender = Lavendel
+calendar-color-grape = Druif
+calendar-color-graphite = Grafiet
 calendar-kind-event = Afspraak
 calendar-kind-focus = Focustijd
 calendar-kind-out-of-office = Niet op kantoor

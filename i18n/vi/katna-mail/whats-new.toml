@@ -1685,3 +1685,14 @@ ghi chú khác lướt sang bên để nhường chỗ, và ghi chú nằm lại
 bạn thả. Ctrl+Z đưa nó về chỗ cũ. Các thẻ giờ xếp khít trong cột, không
 còn khoảng trống dưới các ghi chú ngắn.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Nhấp chuột phải trong Lịch"
+text = """
+Nhấp chuột phải vào một khoảng thời gian hoặc ngày trống để thêm sự
+kiện, thời gian tập trung hoặc thời gian vắng mặt tại đó. Nhấp chuột
+phải vào một sự kiện để chỉnh sửa, tạo bản sao, xóa, trả lời, tham gia,
+gửi thư cho khách, đổi màu hoặc chuyển sang lịch khác, và vào một việc
+cần làm để đánh dấu hoàn thành, gắn dấu sao, dời sang ngày khác hoặc
+xóa. Hoàn tác sẽ hoàn lại một thay đổi.
+"""

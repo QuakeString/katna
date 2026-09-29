@@ -121,6 +121,29 @@ calendar-discard = পরিবর্তন বাতিল করুন
 calendar-edit = ইভেন্ট সম্পাদনা করুন
 calendar-delete = ইভেন্ট মুছুন
 calendar-event-details = ইভেন্টের বিবরণ
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = নতুন ইভেন্ট
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = দিনটি খুলুন
+calendar-menu-duplicate = ডুপ্লিকেট করুন
+calendar-menu-color = রং
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ক্যালেন্ডারের রং
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = এক সপ্তাহ পরে
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = টমেটো
+calendar-color-flamingo = ফ্ল্যামিঙ্গো
+calendar-color-tangerine = কমলালেবু
+calendar-color-banana = কলা
+calendar-color-sage = সেজ
+calendar-color-basil = তুলসী
+calendar-color-peacock = ময়ূর
+calendar-color-blueberry = ব্লুবেরি
+calendar-color-lavender = ল্যাভেন্ডার
+calendar-color-grape = আঙুর
+calendar-color-graphite = গ্রাফাইট
 calendar-kind-event = ইভেন্ট
 calendar-kind-focus = ফোকাস টাইম
 calendar-kind-out-of-office = অফিসের বাইরে

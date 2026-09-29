@@ -129,6 +129,29 @@ calendar-discard = تجاهل التغييرات
 calendar-edit = تعديل الحدث
 calendar-delete = حذف الحدث
 calendar-event-details = تفاصيل الحدث
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = حدث جديد
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = فتح اليوم
+calendar-menu-duplicate = تكرار
+calendar-menu-color = اللون
+# The event takes its calendar's color.
+calendar-menu-color-calendar = لون التقويم
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = بعد أسبوع
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = طماطم
+calendar-color-flamingo = فلامنغو
+calendar-color-tangerine = يوسفي
+calendar-color-banana = موز
+calendar-color-sage = مريمية
+calendar-color-basil = ريحان
+calendar-color-peacock = طاووس
+calendar-color-blueberry = توت أزرق
+calendar-color-lavender = خزامى
+calendar-color-grape = عنب
+calendar-color-graphite = غرافيت
 calendar-kind-event = حدث
 calendar-kind-focus = وقت التركيز
 calendar-kind-out-of-office = خارج المكتب

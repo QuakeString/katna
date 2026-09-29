@@ -1707,3 +1707,14 @@ Keep. De andra anteckningarna glider undan för att ge plats, och den
 stannar där du släpper den. Ctrl+Z lägger tillbaka den. Korten sitter nu
 tätt i sina kolumner, utan luckor under korta anteckningar.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Högerklicka i Kalender"
+text = """
+Högerklicka på en ledig tid eller dag för att lägga till en händelse,
+fokustid eller frånvaro där. Högerklicka på en händelse för att
+redigera, duplicera, radera, svara, ansluta, skicka e-post till
+gästerna, färga den eller flytta den till en annan kalender, och på en
+uppgift för att bocka av den, stjärnmärka den, ge den en annan dag eller
+radera den. Ångra tar tillbaka en ändring.
+"""

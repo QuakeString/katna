@@ -119,6 +119,29 @@ calendar-discard = ทิ้งการเปลี่ยนแปลง
 calendar-edit = แก้ไขกิจกรรม
 calendar-delete = ลบกิจกรรม
 calendar-event-details = รายละเอียดกิจกรรม
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = กิจกรรมใหม่
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = เปิดวัน
+calendar-menu-duplicate = ทำสำเนา
+calendar-menu-color = สี
+# The event takes its calendar's color.
+calendar-menu-color-calendar = สีของปฏิทิน
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = ในอีก 1 สัปดาห์
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = มะเขือเทศ
+calendar-color-flamingo = นกฟลามิงโก
+calendar-color-tangerine = ส้มแทนเจอรีน
+calendar-color-banana = กล้วย
+calendar-color-sage = เสจ
+calendar-color-basil = โหระพา
+calendar-color-peacock = นกยูง
+calendar-color-blueberry = บลูเบอร์รี่
+calendar-color-lavender = ลาเวนเดอร์
+calendar-color-grape = องุ่น
+calendar-color-graphite = แกรไฟต์
 calendar-kind-event = กิจกรรม
 calendar-kind-focus = เวลาโฟกัส
 calendar-kind-out-of-office = ไม่อยู่ที่ทำงาน

@@ -121,6 +121,29 @@ calendar-discard = වෙනස්කම් ඉවත ලන්න
 calendar-edit = සිදුවීම සංස්කරණය කරන්න
 calendar-delete = සිදුවීම මකන්න
 calendar-event-details = සිදුවීමේ විස්තර
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = නව සිදුවීම
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = දිනය විවෘත කරන්න
+calendar-menu-duplicate = අනුපිටපත් කරන්න
+calendar-menu-color = වර්ණය
+# The event takes its calendar's color.
+calendar-menu-color-calendar = දින දර්ශන වර්ණය
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = සතියකින්
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = තක්කාලි
+calendar-color-flamingo = ෆ්ලෙමිංගෝ
+calendar-color-tangerine = නාරං
+calendar-color-banana = කෙසෙල්
+calendar-color-sage = සේජ්
+calendar-color-basil = බැසිල්
+calendar-color-peacock = මොනරා
+calendar-color-blueberry = බ්ලූබෙරි
+calendar-color-lavender = ලැවෙන්ඩර්
+calendar-color-grape = මිදි
+calendar-color-graphite = මිනිරන්
 calendar-kind-event = සිදුවීම
 calendar-kind-focus = අවධාන කාලය
 calendar-kind-out-of-office = කාර්යාලයෙන් පිටත

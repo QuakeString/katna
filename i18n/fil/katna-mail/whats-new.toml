@@ -1803,3 +1803,14 @@ nananatili ito kung saan mo ito binitawan. Ibinabalik ito ng Ctrl+Z.
 Siksik na ngayon ang mga card sa kanilang mga column, walang puwang sa
 ilalim ng maiikling tala.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Right-click sa Kalendaryo"
+text = """
+Mag-right-click sa bakanteng oras o araw para magdagdag doon ng event,
+focus time o wala sa opisina. Mag-right-click sa isang event para
+i-edit, i-duplicate, i-delete, sagutin, sumali, i-email ang mga bisita,
+kulayan ito o ilipat sa ibang kalendaryo, at sa isang gawain para i-tsek
+ito, lagyan ng star, bigyan ng ibang araw o i-delete. Ibinabalik ng
+I-undo ang isang pagbabago.
+"""

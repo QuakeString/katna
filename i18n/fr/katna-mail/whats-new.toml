@@ -1802,3 +1802,15 @@ elle reste là où vous la déposez. Ctrl+Z la remet en place. Les cartes
 s’ajustent désormais dans leurs colonnes, sans vide sous les notes
 courtes.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clic droit dans le Calendrier"
+text = """
+Faites un clic droit sur une heure ou un jour libre pour y ajouter un
+événement, un temps de concentration ou une absence du bureau. Un clic
+droit sur un événement permet de le modifier, le dupliquer, le
+supprimer, y répondre, le rejoindre, écrire aux invités, le colorer ou
+le déplacer vers un autre calendrier, et sur une tâche de la cocher, la
+suivre, lui donner un autre jour ou la supprimer. Annuler revient sur
+une modification.
+"""

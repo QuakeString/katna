@@ -1751,3 +1751,14 @@ demás notas se apartan para hacerle sitio, y se queda donde la sueltas.
 Ctrl+Z la devuelve. Las tarjetas ahora encajan en sus columnas, sin
 huecos bajo las notas cortas.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clic derecho en el Calendario"
+text = """
+Haz clic derecho en una hora o un día libre para añadir allí un evento,
+tiempo de concentración o fuera de la oficina. Haz clic derecho en un
+evento para editarlo, duplicarlo, eliminarlo, responder, unirte,
+escribir a los invitados, darle un color o moverlo a otro calendario, y
+en una tarea para marcarla como hecha, destacarla, darle otro día o
+eliminarla. Deshacer revierte un cambio.
+"""

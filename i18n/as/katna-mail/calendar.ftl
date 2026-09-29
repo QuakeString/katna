@@ -121,6 +121,29 @@ calendar-discard = সলনিবোৰ বাতিল কৰক
 calendar-edit = ইভেণ্ট সম্পাদনা কৰক
 calendar-delete = ইভেণ্ট মচক
 calendar-event-details = ইভেণ্টৰ বিৱৰণ
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = নতুন ইভেণ্ট
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = দিনটো খোলক
+calendar-menu-duplicate = প্ৰতিলিপি কৰক
+calendar-menu-color = ৰং
+# The event takes its calendar's color.
+calendar-menu-color-calendar = কেলেণ্ডাৰৰ ৰং
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = এসপ্তাহ পিছত
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = বিলাহী
+calendar-color-flamingo = ফ্লেমিংগো
+calendar-color-tangerine = কমলা
+calendar-color-banana = কল
+calendar-color-sage = ছেজ
+calendar-color-basil = তুলসী
+calendar-color-peacock = ময়ূৰ
+calendar-color-blueberry = ব্লুবেৰী
+calendar-color-lavender = লেভেণ্ডাৰ
+calendar-color-grape = আঙুৰ
+calendar-color-graphite = গ্ৰেফাইট
 calendar-kind-event = ইভেণ্ট
 calendar-kind-focus = ফোকাছ সময়
 calendar-kind-out-of-office = অফিছৰ বাহিৰত

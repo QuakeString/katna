@@ -1755,3 +1755,14 @@ Nota lain meluncur ke tepi untuk memberi ruang, dan ia kekal di tempat
 anda melepaskannya. Ctrl+Z mengembalikannya. Kad kini tersusun rapat
 dalam lajurnya, tanpa ruang kosong di bawah nota pendek.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Klik kanan pada Kalendar"
+text = """
+Klik kanan masa atau hari yang lapang untuk menambah acara, masa fokus
+atau di luar pejabat di situ. Klik kanan acara untuk mengedit, menduakan,
+memadam, menjawab, menyertai, menghantar e-mel kepada tetamu, mewarnakan
+atau mengalihkannya ke kalendar lain, dan tugas untuk menandainya selesai,
+membintanginya, memberinya hari lain atau memadamnya. Buat asal mengembalikan
+perubahan.
+"""

@@ -1737,3 +1737,14 @@ outras notas deslizam para abrir espaço, e ela fica onde você a soltar.
 Ctrl+Z a coloca de volta. Os cartões agora se encaixam bem nas colunas,
 sem vãos sob notas curtas.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clique com o botão direito na Agenda"
+text = """
+Clique com o botão direito em um horário ou dia livre para adicionar ali
+um evento, um tempo de foco ou uma ausência. Clique com o botão direito
+em um evento para editar, duplicar, excluir, responder, participar,
+enviar e-mail aos convidados, mudar a cor ou movê-lo para outra agenda,
+e em uma tarefa para marcá-la como concluída, adicionar estrela, dar
+outro dia a ela ou excluí-la. Desfazer reverte uma alteração.
+"""

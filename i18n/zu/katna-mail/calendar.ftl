@@ -121,6 +121,29 @@ calendar-discard = Lahla izinguquko
 calendar-edit = Hlela umcimbi
 calendar-delete = Susa umcimbi
 calendar-event-details = Imininingwane yomcimbi
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Umcimbi omusha
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Vula usuku
+calendar-menu-duplicate = Yenza ikhophi
+calendar-menu-color = Umbala
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Umbala wekhalenda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Emva kwesonto
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Utamatisi
+calendar-color-flamingo = I-Flamingo
+calendar-color-tangerine = I-Tangerine
+calendar-color-banana = Ubhanana
+calendar-color-sage = I-Sage
+calendar-color-basil = I-Basil
+calendar-color-peacock = Ipigogo
+calendar-color-blueberry = I-Blueberry
+calendar-color-lavender = I-Lavender
+calendar-color-grape = Igilebhisi
+calendar-color-graphite = I-Graphite
 calendar-kind-event = Umcimbi
 calendar-kind-focus = Isikhathi sokugxila
 calendar-kind-out-of-office = Ngingekho ehhovisi
