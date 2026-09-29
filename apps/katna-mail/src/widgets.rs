@@ -573,7 +573,8 @@ pub fn switch(t: f32, th: &Theme) -> AnyElement {
 pub enum Check {
     Off,
     On,
-    /// Some of what it stands for, as the list's select-all box shows.
+    /// Some of what it stands for, as the list's select-all box shows: a
+    /// smaller square inside the edge.
     Partial,
 }
 
@@ -586,6 +587,8 @@ impl Check {
 /// The box of a checkbox: 18 px with a 2 px edge, which sits with a 20 px
 /// [`radio`] ring at the same weight, as Material draws the pair.
 const CHECK_BOX: f32 = 18.0;
+/// The square of a partly checked box: 2 px clear of the edge all round.
+const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 4.0;
 
 /// A checkbox in the accent colour. Its tick draws itself in when checked
 /// and wipes back out when cleared; `id` keys that motion, so give each box
@@ -613,8 +616,13 @@ pub fn checkbox_tinted(id: impl Into<ElementId>, on: bool, color: u32, th: &Them
 
 fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> AnyElement {
     let tick = tick_color(fill, th);
-    let partial = state == Check::Partial;
-    let target = if state == Check::Off { 0.0 } else { 1.0 };
+    // One spring runs clear (0), partly (1) and checked (2), so any change
+    // between the three moves through the ones between.
+    let target = match state {
+        Check::Off => 0.0,
+        Check::Partial => 1.0,
+        Check::On => 2.0,
+    };
     // A slot the size of a radio button, so rows of both line up.
     div()
         .size(px(20.0))
@@ -625,13 +633,39 @@ fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> A
         .child(div().size(px(CHECK_BOX)).flex_none().with_spring(
             id,
             gpui::SpringAnimation::new(katna_ui::motion::SMOOTH).to(target),
-            move |d, t: f32| {
-                let t = t.clamp(0.0, 1.0);
+            move |d, v: f32| {
+                // How far the edge has taken its colour, and how far the box
+                // has filled and the tick has drawn.
+                let edge = v.clamp(0.0, 1.0);
+                let full = (v - 1.0).clamp(0.0, 1.0);
+                // Partly checked is a smaller square inside the edge, with a
+                // gap between them; checking grows it to fill the box.
+                let inner = lerp(PARTIAL_SQUARE, CHECK_BOX - 4.0, full) * edge;
                 d.rounded(px(3.0))
                     .border_2()
-                    .border_color(rgba(crate::theme::mix(rest, fill, t)))
-                    .when(t > 0.001, |d| d.bg(rgba(fade(fill, t))))
-                    .child(check_mark(t, partial, tick))
+                    .border_color(rgba(crate::theme::mix(rest, fill, edge)))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .relative()
+                    .when(inner > 0.1, |d| {
+                        d.child(
+                            div()
+                                .size(px(inner))
+                                .flex_none()
+                                .rounded(px(lerp(1.0, 0.0, full)))
+                                .bg(rgba(fill)),
+                        )
+                    })
+                    .when(full > 0.001, |d| d.bg(rgba(fade(fill, full))))
+                    .child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                            .child(check_mark(full, tick)),
+                    )
             },
         ))
         .into_any_element()
@@ -651,15 +685,11 @@ fn tick_color(fill: u32, th: &Theme) -> u32 {
     }
 }
 
-/// The tick (or a checkbox's dash) drawn from its start to `t` of its
-/// length, inside the box's 2 px edge.
-fn check_mark(t: f32, partial: bool, color: u32) -> impl IntoElement {
+/// The tick drawn from its start to `t` of its length, inside the box's
+/// 2 px edge.
+fn check_mark(t: f32, color: u32) -> impl IntoElement {
     // Points in the box, less its edge, whose sides are 14 px.
-    let points: &'static [(f32, f32)] = if partial {
-        &[(2.5, 7.0), (11.5, 7.0)]
-    } else {
-        &[(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)]
-    };
+    let points: &'static [(f32, f32)] = &[(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)];
     // The tick starts once the box has begun to fill.
     let drawn = ((t - 0.25) / 0.75).clamp(0.0, 1.0);
     canvas(
