@@ -1294,28 +1294,7 @@ impl MailWindow {
         let row = |id: SharedString, icon_name: &'static str, label: String, on: bool| {
             super::nav::side_row(id, icon_name, label, on, th)
         };
-        let create = div()
-            .id("tasks-create")
-            .ml(px(8.0))
-            .mt(px(8.0))
-            .mb(px(12.0))
-            .h(px(56.0))
-            .pl(px(16.0))
-            .pr(px(20.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(16.0))
-            .bg(rgba(th.compose))
-            .text_color(rgba(th.compose_text))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::MEDIUM)
-            .cursor_pointer()
-            .shadow(crate::widgets::elevation(th, 1.0))
-            .hover(|s| s.shadow(crate::widgets::elevation(th, 2.0)))
-            .child(icon("add", th.compose_text, 24.0))
-            .child(tr!("tasks-create"))
+        let create = super::nav::side_create_button("tasks-create", "add", tr!("tasks-create"), th)
             .on_click(cx.listener(|this, _, window, cx| {
                 let list = match this.tasks.view {
                     View::List(id) => Some(id),
@@ -1356,7 +1335,7 @@ impl MailWindow {
             .overflow_y_scroll()
             .flex()
             .flex_col()
-            .child(div().child(create))
+            .child(div().flex().child(create))
             .child(
                 row(
                     "tasks-all".into(),

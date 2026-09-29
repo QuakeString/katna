@@ -46,6 +46,50 @@ const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
 
+/// The button at the top of a page's side panel (Create contact, Create
+/// task), in the size, shape and colours of Mail's Compose over the
+/// folders: only its icon and word change. Wrap it in a flex `div` so a
+/// column does not stretch it.
+pub(super) fn side_create_button(
+    id: &'static str,
+    icon_name: &str,
+    label: String,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .relative()
+        .flex_none()
+        .ml(px(NAV_ROW_INSET))
+        .mt(px(super::COMPOSE_TOP))
+        .mb(px(super::COMPOSE_NAV_ROOM
+            - super::COMPOSE_TOP
+            - super::COMPOSE_HEIGHT))
+        .h(px(super::COMPOSE_HEIGHT))
+        .pl(px(16.0))
+        .pr(px(24.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .overflow_hidden()
+        .rounded(px(super::COMPOSE_RADIUS))
+        .bg(rgba(th.compose))
+        .text_color(rgba(th.compose_text))
+        .hover(|s| s.shadow(elevation(th, 1.5)))
+        .cursor_pointer()
+        .child(Ripple::new(id, rgba(th.ripple)).rounded(super::COMPOSE_RADIUS))
+        .child(icon(icon_name, th.compose_text, 24.0))
+        .child(
+            div()
+                .flex_none()
+                .pl(px(12.0))
+                .text_size(px(super::COMPOSE_TEXT_SIZE))
+                .font_weight(FontWeight::MEDIUM)
+                .whitespace_nowrap()
+                .child(label),
+        )
+}
+
 /// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
 /// shape of Mail's folders: a full pill inset from both edges of the pane,
 /// with its icon and label where a folder's are. Add a count or other end
