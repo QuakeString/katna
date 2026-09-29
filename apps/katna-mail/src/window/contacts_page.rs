@@ -84,7 +84,7 @@ pub(super) struct ContactsPage {
     /// Pictures of saved people by their first card, `None` while loading
     /// or when there is none; and by lower-case address, the key to use.
     photos: HashMap<i64, Option<Arc<RenderImage>>>,
-    by_email: HashMap<String, i64>,
+    pub(super) by_email: HashMap<String, i64>,
     has_photo: BTreeSet<i64>,
     wanted: RefCell<BTreeSet<i64>>,
     /// The form of a contact being made or changed.
@@ -101,6 +101,8 @@ pub(super) struct ContactsPage {
     pub(super) label_dialog: Option<LabelDialog>,
     /// Labels of people as just changed, by first card, until read back.
     pub(super) shown_labels: HashMap<i64, Vec<String>>,
+    /// Addresses being added from Mail.
+    pub(super) adding: BTreeSet<String>,
 }
 
 pub(super) struct Open {
@@ -204,6 +206,13 @@ impl MailWindow {
         self.saved_photo_of(key)
     }
 
+    /// Whether `email` is saved as a contact.
+    pub(super) fn is_saved_contact(&self, email: &str) -> bool {
+        self.contacts
+            .by_email
+            .contains_key(&email.trim().to_lowercase())
+    }
+
     fn saved_photo_of(&self, key: i64) -> Option<Arc<RenderImage>> {
         if !self.contacts.has_photo.contains(&key) {
             return None;
@@ -263,6 +272,10 @@ impl MailWindow {
             return super::remote::logo(photo, size);
         }
         self.person_avatar(&person.name, &email, size)
+    }
+
+    pub(super) fn open_saved_contact(&mut self, person: SavedContact, cx: &mut Context<Self>) {
+        self.open_contact(person, cx);
     }
 
     fn open_contact(&mut self, person: SavedContact, cx: &mut Context<Self>) {

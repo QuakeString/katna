@@ -369,7 +369,17 @@ impl MailWindow {
             );
 
         let phone = profile.as_ref().and_then(|p| p.card.phone.clone());
-        let actions = self.contact_actions(email, phone, th, cx);
+        let mut actions = self.contact_actions(email, phone, th, cx);
+        // Their address book entry: open it, or save them in one click.
+        if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
+            actions = actions.child(self.contact_save_button(
+                email,
+                name.clone(),
+                profile.as_ref().map(|p| p.card.clone()),
+                th,
+                cx,
+            ));
+        }
 
         // Each section is a faintly tinted card, as in Google Contacts.
         let mut sections: Vec<AnyElement> = Vec::new();
@@ -501,6 +511,54 @@ impl MailWindow {
                 button("contact-call-button", "phone", tr!("contact-call"))
                     .on_click(move |_, _, cx| cx.open_url(&dial))
             }))
+    }
+
+    /// Add to contacts for someone not saved yet; Open contact for
+    /// someone saved.
+    fn contact_save_button(
+        &self,
+        email: &str,
+        name: Option<String>,
+        signature: Option<profile::Card>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let (bg, bg_hover) = action_tint(th);
+        let saved = self.is_saved_contact(email);
+        let adding = self.contacts.adding.contains(&email.trim().to_lowercase());
+        let (glyph, label) = if saved {
+            ("contacts", tr!("contact-open-contact"))
+        } else {
+            ("person-add", tr!("contact-add-to-contacts"))
+        };
+        let email = email.to_owned();
+        div()
+            .id("contact-save")
+            .relative()
+            .overflow_hidden()
+            .size(px(40.0))
+            .flex_none()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .bg(rgba(bg))
+            .tooltip(tip(label, th))
+            .when(adding, |d| d.opacity(0.5))
+            .when(!adding, |d| {
+                d.cursor_pointer()
+                    .hover(move |s| s.bg(rgba(bg_hover)))
+                    .child(Ripple::new(("contact-save", 0usize), rgba(th.ripple)).centered())
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        if this.is_saved_contact(&email) {
+                            this.show_saved_contact(&email, cx);
+                        } else {
+                            this.add_to_contacts(&email, name.clone(), signature.clone(), cx);
+                        }
+                    }))
+            })
+            .child(icon(glyph, th.accent, 20.0))
+            .into_any_element()
     }
 
     /// Phone, title and company, and their time of day.

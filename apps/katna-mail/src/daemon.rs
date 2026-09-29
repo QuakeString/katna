@@ -42,6 +42,8 @@ pub enum Command {
     ContactLabels(Vec<(i64, Vec<String>)>),
     /// Renames a contact label; an empty new name takes it away.
     RenameContactLabel(String, String),
+    /// Deletes saved cards: the Undo of Add to contacts.
+    DeleteContacts(Vec<i64>),
     /// Has the daemon read the settings file again.
     ReloadConfig,
     /// These, one after the other: an undo that moves mail back to
@@ -129,6 +131,7 @@ impl Command {
             | Self::RestoreContacts(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
+            | Self::DeleteContacts(_)
             | Self::ReloadConfig
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
@@ -229,6 +232,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             return Ok(());
         }
         Command::RenameContactLabel(old, new) => pim.rename_contact_label(old, new).await,
+        Command::DeleteContacts(ids) => pim.delete_contacts(ids).await,
         Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
             return Ok(());
         }

@@ -61,6 +61,7 @@ contacts-edit = Edit
 contacts-delete = Delete
 # $name: the person's name.
 contacts-deleted = Deleted { $name }
+contacts-added = Added { $name } to contacts
 contacts-find-mail = Mail
 contacts-details = Contact details
 contacts-saved-in = Saved in
