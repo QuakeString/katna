@@ -51,6 +51,7 @@ mod contact_labels;
 mod contacts;
 mod drive;
 mod notes;
+mod other_contacts;
 mod reminders;
 
 pub use reminders::{SNOOZED, is_snoozed_path};

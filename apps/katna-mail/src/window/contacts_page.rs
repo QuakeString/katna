@@ -51,6 +51,8 @@ pub(super) enum View {
     Contacts,
     /// The people the mail was exchanged with most ([`super::apps`]).
     Frequent,
+    /// Google's other contacts ([`super::contacts_other`]).
+    Other,
     Label(String),
 }
 
@@ -103,6 +105,8 @@ pub(super) struct ContactsPage {
     pub(super) shown_labels: HashMap<i64, Vec<String>>,
     /// Addresses being added from Mail.
     pub(super) adding: BTreeSet<String>,
+    /// Other contacts being saved, hidden meanwhile.
+    pub(super) saving_others: BTreeSet<i64>,
 }
 
 pub(super) struct Open {
@@ -149,6 +153,7 @@ impl MailWindow {
                     Ok((book, with_photos)) => {
                         let page = &mut this.contacts;
                         page.shown_labels.clear();
+                        page.saving_others.clear();
                         page.by_email.clear();
                         for person in &book.people {
                             let Some(&first) = person.ids.first() else {
@@ -411,6 +416,10 @@ impl MailWindow {
             editor
         } else if self.contacts.view == View::Frequent && query.is_empty() {
             self.render_contacts(th, cx)
+        } else if let (View::Other, None, Some(book)) =
+            (&self.contacts.view, &self.contacts.open, &book)
+        {
+            self.render_other_contacts(book, &query, th, cx)
         } else if let Some(open) = &self.contacts.open {
             let person = open.person.clone();
             let cards = open.cards.clone();
@@ -511,6 +520,11 @@ impl MailWindow {
                     cx.listener(move |this, _, _, cx| this.set_contacts_view(view.clone(), cx)),
                 )
         };
+        // Shown for Google accounts: ones with other contacts, or asked to
+        // allow them.
+        let others = book
+            .filter(|b| !b.others.is_empty() || !b.others_blocked.is_empty())
+            .map(|b| self.other_count(b));
         // Counted in people, as the list shows them, not saved cards.
         let labels: Vec<(String, usize)> = book
             .map(|b| {
@@ -554,6 +568,16 @@ impl MailWindow {
                 View::Frequent,
                 cx,
             ))
+            .when(others.is_some(), |d| {
+                d.child(item(
+                    ("contacts-nav", 2),
+                    "person-add",
+                    tr!("contacts-other"),
+                    others.filter(|&n| n > 0),
+                    View::Other,
+                    cx,
+                ))
+            })
             .when(!labels.is_empty(), |d| {
                 d.child(
                     div()

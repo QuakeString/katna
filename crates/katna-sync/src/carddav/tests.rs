@@ -198,6 +198,16 @@ fn wrong_password_is_an_auth_error() {
 }
 
 #[test]
+fn bearer_sends_the_token() {
+    let (base, seen) = serve(|_, _| (401, vec![], String::new()));
+    let dav = CardDav::bearer("at-1", Tls::insecure_for_local_tests());
+    let found = smol::block_on(dav.discover(&[format!("{base}/.well-known/carddav")]));
+    assert!(matches!(found, Err(Error::Auth(_))));
+    let seen = seen.lock().unwrap();
+    assert_eq!(seen[0].header("Authorization"), Some("Bearer at-1"));
+}
+
+#[test]
 fn start_urls_know_providers_and_domains() {
     let urls = start_urls(None, "me@fastmail.com", Some("imap.fastmail.com"));
     assert_eq!(urls[0], "https://carddav.fastmail.com/.well-known/carddav");
