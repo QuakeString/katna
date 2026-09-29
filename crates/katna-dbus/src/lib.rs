@@ -293,6 +293,10 @@ pub mod app_action {
     /// Show the downloaded update, ready to install (the Update button of
     /// the notification that an update is ready).
     pub const INSTALL_UPDATE: &str = "install-update";
+    /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
+    /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
+    /// `contacts`, `tasks`, `notes`).
+    pub const OPEN_PAGE: &str = "open-page";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -306,6 +310,7 @@ pub mod app_action {
             INSTALL_UPDATE => Some("--update"),
             REPLY_ALL => Some("--reply-all"),
             SEARCH => Some("--search"),
+            OPEN_PAGE => Some("--page"),
             _ => None,
         }
     }
@@ -317,7 +322,7 @@ pub mod app_action {
 
     /// Whether `action`'s parameter is text.
     pub fn takes_text(action: &str) -> bool {
-        action == SEARCH
+        matches!(action, SEARCH | OPEN_PAGE)
     }
 }
 

@@ -21,7 +21,7 @@ impl MailWindow {
             app: if self.app == RailApp::Mail {
                 String::new()
             } else {
-                self.app.icon().to_owned()
+                self.app.key().to_owned()
             },
             folder: self.folder.map(|folder| folder.0),
             unified: self.unified.map(|(view, _)| view.key().to_owned()),
@@ -77,7 +77,7 @@ impl MailWindow {
                 .filter(|&id| self.tree.accounts.iter().any(|a| a.id == id));
             self.open_unified(unified, account, cx);
         }
-        if let Some(app) = RailApp::ALL.into_iter().find(|app| app.icon() == view.app) {
+        if let Some(app) = RailApp::from_key(&view.app) {
             self.open_app(app, cx);
             self.title_from = app;
             self.title_roll.snap(1.0);

@@ -48,7 +48,7 @@ use katna_ui::scale::desktop_px;
 
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY | --compose | --inbox | --settings |
-                  --message ID | --reply-all ID]
+                  --message ID | --reply-all ID | --page PAGE]
        katna-mail --background
 
 When Katna Mail is already running, it comes to the front and does what
@@ -61,6 +61,8 @@ Options:
   --open           Open the first conversation of the list
   --compose        Start a new message
   --inbox          Show the Inbox
+  --page PAGE      Show a page of the window: mail, calendar, contacts,
+                   tasks or notes
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all
@@ -100,6 +102,10 @@ fn main() -> ExitCode {
             },
             Some("--search") => match args.next().and_then(|q| q.into_string().ok()) {
                 Some(query) => request = Some(instance::Request::Search(query)),
+                None => return usage_error(),
+            },
+            Some("--page") => match args.next().and_then(|page| page.into_string().ok()) {
+                Some(page) => request = Some(instance::Request::Page(page)),
                 None => return usage_error(),
             },
             Some("--open") => open_first = true,
@@ -142,8 +148,12 @@ fn main() -> ExitCode {
             _ => return usage_error(),
         }
     }
-    // A search wins over opening the first conversation.
-    let open_first = open_first && !matches!(request, Some(instance::Request::Search(_)));
+    // A search or a page wins over opening the first conversation.
+    let open_first = open_first
+        && !matches!(
+            request,
+            Some(instance::Request::Search(_) | instance::Request::Page(_))
+        );
     // A private data directory gets a window of its own.
     let single = data_dir.is_none();
     let paths = match data_dir {
