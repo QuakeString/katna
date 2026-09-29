@@ -1259,3 +1259,13 @@ che scegli, e Modifica, nella pagina di un contatto, la modifica lì.
 Elimina ha un Annulla, e Google e Outlook conservano per un po’ i
 contatti eliminati nel loro cestino.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Note su un’email"
+text = """
+Fai clic con il tasto destro su un’email, oppure apri il suo menu ⋮, e
+scegli Aggiungi una nota: sopra l’email si apre una nota con l’oggetto
+come titolo. Le sue note compaiono sotto l’oggetto ogni volta che
+riapri quell’email, e l’etichetta Posta di una nota ti riporta
+all’email.
+"""

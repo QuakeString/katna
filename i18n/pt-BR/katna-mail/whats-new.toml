@@ -1247,3 +1247,13 @@ escolher, e Editar, na página de um contato, altera a pessoa também lá.
 Excluir tem um Desfazer, e o Google e o Outlook guardam os contatos
 excluídos na lixeira por algum tempo.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notas sobre um e-mail"
+text = """
+Clique com o botão direito em um e-mail, ou abra o menu ⋮ dele, e
+escolha Adicionar uma nota: uma nota com o assunto como título abre
+sobre o e-mail. As notas aparecem sob o assunto sempre que você abre
+esse e-mail de novo, e a etiqueta E-mail de uma nota leva você de
+volta ao e-mail.
+"""

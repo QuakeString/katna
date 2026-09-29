@@ -229,6 +229,7 @@ menu-unpin = ပင်ဖြုတ်ရန်
 menu-snooze = ခဏဆိုင်းရန်
 menu-unsnooze = ခဏဆိုင်းခြင်း ပယ်ရန်
 menu-add-to-tasks = လုပ်ဆောင်စရာများသို့ ထည့်ရန်
+menu-add-note = မှတ်စု ထည့်ရန်
 menu-print-all = အားလုံးကို ပုံနှိပ်ရန်
 menu-new-window = ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်
 menu-move-to = သို့ ရွှေ့ရန်

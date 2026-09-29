@@ -1255,3 +1255,12 @@ elijas, y Editar, en la página de un contacto, lo modifica también allí.
 Eliminar tiene un Deshacer, y Google y Outlook conservan los contactos
 eliminados en su papelera durante un tiempo.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notas sobre un correo"
+text = """
+Haz clic derecho en un correo, o abre su menú ⋮, y elige Añadir una
+nota: se abre sobre el correo una nota con el asunto como título. Sus
+notas aparecen bajo el asunto cada vez que vuelves a abrir ese correo,
+y la etiqueta Correo de una nota te lleva de vuelta al correo.
+"""

@@ -47,6 +47,12 @@ notes-edited = Düzenlenme: { $date }
 notes-on-this-computer = Bu bilgisayarda
 notes-where = Bu notun saklandığı yer
 
+## A note about a mail
+
+notes-mail = Posta
+notes-open-mail = E-postayı aç
+notes-open-note = Notu aç
+
 ## Colors (tooltips)
 
 notes-color-none = Renk yok
@@ -69,6 +75,7 @@ notes-unarchived = Not arşivden çıkarıldı
 notes-trashed = Not çöp kutusuna taşındı
 notes-restored = Not geri yüklendi
 notes-empty-discarded = Boş not atıldı
+notes-mail-gone = Bu e-posta artık burada değil
 notes-deleted-forever = { $count ->
     [one] Not kalıcı olarak silindi
    *[other] { $count } not kalıcı olarak silindi

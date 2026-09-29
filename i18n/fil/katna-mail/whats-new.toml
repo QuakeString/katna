@@ -1290,3 +1290,13 @@ nagbabago rin sa kanila roon. May I-undo ang I-delete, at pansamantalang
 itinatago ng Google at Outlook ang mga na-delete na contact sa kanilang
 trash.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Mga tala sa isang mail"
+text = """
+Mag-right-click sa isang mail, o buksan ang ⋮ menu nito, at piliin ang
+Magdagdag ng tala: may bubukas na tala sa ibabaw ng mail na ang
+pamagat ay ang subject. Lalabas ang mga tala nito sa ilalim ng subject
+tuwing bubuksan mo ulit ang mail na iyon, at ibinabalik ka ng chip na
+Mail ng isang tala sa mail.
+"""

@@ -47,6 +47,12 @@ notes-edited = සංස්කරණය කළේ: { $date }
 notes-on-this-computer = මෙම පරිගණකයේ
 notes-where = මෙම සටහන තබා ඇත්තේ කොහේද
 
+## A note about a mail
+
+notes-mail = තැපැල්
+notes-open-mail = තැපැල් විවෘත කරන්න
+notes-open-note = සටහන විවෘත කරන්න
+
 ## Colors (tooltips)
 
 notes-color-none = වර්ණයක් නැත
@@ -69,6 +75,7 @@ notes-unarchived = සටහන සංරක්ෂණයෙන් ඉවත් �
 notes-trashed = සටහන කුණු කූඩයට ගෙන යන ලදී
 notes-restored = සටහන ප්‍රතිසාධනය කරන ලදී
 notes-empty-discarded = හිස් සටහන ඉවත දමන ලදී
+notes-mail-gone = එම තැපැල් තවදුරටත් මෙහි නැත
 notes-deleted-forever = { $count ->
     [one] සටහන සදහටම මකා දමන ලදී
    *[other] සටහන් { $count }ක් සදහටම මකා දමන ලදී

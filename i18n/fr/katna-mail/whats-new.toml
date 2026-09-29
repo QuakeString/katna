@@ -1287,3 +1287,13 @@ vous choisissez, et Modifier, sur la page d’un contact, le change là
 aussi. Supprimer propose Annuler, et Google et Outlook conservent
 quelque temps les contacts supprimés dans leur corbeille.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notes sur un message"
+text = """
+Faites un clic droit sur un message, ou ouvrez son menu ⋮, et
+choisissez Ajouter une note : une note dont le titre est l’objet
+s’ouvre par-dessus le message. Ses notes s’affichent sous l’objet
+chaque fois que vous rouvrez ce message, et la pastille Courrier d’une
+note vous ramène au message.
+"""

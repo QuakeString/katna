@@ -46,6 +46,12 @@ notes-edited = Edezigharịrị: { $date }
 notes-on-this-computer = Na kọmputa a
 notes-where = Ebe echekwara ndetu a
 
+## A note about a mail
+
+notes-mail = Ozi
+notes-open-mail = Mepee ozi
+notes-open-note = Mepee ndetu
+
 ## Colors (tooltips)
 
 notes-color-none = Enweghị agba
@@ -68,6 +74,7 @@ notes-unarchived = Wepụrụ ndetu n'ebe nchekwa
 notes-trashed = Bugara ndetu na ihe mkpofu
 notes-restored = Weghachiri ndetu
 notes-empty-discarded = Tụfuru ndetu efu
+notes-mail-gone = Ozi ahụ anọghịzi ebe a
 notes-deleted-forever = { $count ->
    *[other] Ehichapụla ndetu { $count } ruo mgbe ebighị ebi
 }

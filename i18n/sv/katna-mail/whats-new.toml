@@ -1216,3 +1216,13 @@ väljer, och Redigera på en kontakts sida ändrar kontakten där också.
 Radera har en Ångra, och Google och Outlook sparar raderade kontakter i
 sin papperskorg en tid.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Anteckningar om ett e-postmeddelande"
+text = """
+Högerklicka på ett e-postmeddelande, eller öppna dess meny ⋮, och välj
+Lägg till en anteckning: en anteckning med ämnet som rubrik öppnas
+över meddelandet. Anteckningarna visas under ämnet varje gång du
+öppnar meddelandet igen, och etiketten E-post på en anteckning tar dig
+tillbaka till meddelandet.
+"""

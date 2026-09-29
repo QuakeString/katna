@@ -46,6 +46,12 @@ notes-edited = Àtúnṣe { $date }
 notes-on-this-computer = Lórí kọ̀ǹpútà yìí
 notes-where = Ibi tí a tọ́jú àkọsílẹ̀ yìí sí
 
+## A note about a mail
+
+notes-mail = Lẹ́tà
+notes-open-mail = Ṣí lẹ́tà
+notes-open-note = Ṣí àkọsílẹ̀ náà
+
 ## Colors (tooltips)
 
 notes-color-none = Kò sí àwọ̀
@@ -68,6 +74,7 @@ notes-unarchived = A ti yọ àkọsílẹ̀ kúrò nínú ibi ìpamọ́
 notes-trashed = A gbé àkọsílẹ̀ lọ sí Àpótí ìdọ̀tí
 notes-restored = A ti dá àkọsílẹ̀ padà
 notes-empty-discarded = A ti pa àkọsílẹ̀ òfo tì
+notes-mail-gone = Lẹ́tà yẹn kò sí níbí mọ́
 notes-deleted-forever = { $count ->
    *[other] A pa àkọsílẹ̀ { $count } rẹ́ títí láé
 }

@@ -1236,3 +1236,12 @@ kişinin sayfasındaki Düzenle ise onu orada da değiştirir. Sil işleminin
 bir Geri al seçeneği vardır ve Google ile Outlook silinen kişileri bir
 süre çöp kutularında tutar.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Bir e-postaya not"
+text = """
+Bir e-postaya sağ tıklayın ya da ⋮ menüsünü açın ve Not ekle’yi seçin:
+konusu başlık olan bir not e-postanın üzerinde açılır. Notlar, o
+e-postayı her yeniden açtığınızda konunun altında görünür ve bir notun
+Posta etiketi sizi e-postaya geri götürür.
+"""

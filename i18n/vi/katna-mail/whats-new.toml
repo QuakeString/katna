@@ -1206,3 +1206,12 @@ chọn, còn Sửa trên trang của một liên hệ cũng thay đổi họ nga
 Xóa có Hoàn tác, và Google cùng Outlook giữ các liên hệ đã xóa trong
 thùng rác của họ một thời gian.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Ghi chú về một thư"
+text = """
+Nhấp chuột phải vào một thư, hoặc mở menu ⋮ của thư, rồi chọn Thêm ghi
+chú: một ghi chú lấy chủ đề làm tiêu đề sẽ mở ra phía trên thư. Các
+ghi chú hiện dưới chủ đề mỗi khi bạn mở lại thư đó, và nhãn Thư của
+ghi chú đưa bạn quay lại thư.
+"""

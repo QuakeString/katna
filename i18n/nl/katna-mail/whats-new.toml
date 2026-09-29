@@ -1247,3 +1247,13 @@ wijzig je diegene ook daar. Verwijderen heeft een Ongedaan maken, en
 Google en Outlook bewaren verwijderde contacten nog een tijdje in hun
 prullenbak.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notities bij een e-mail"
+text = """
+Klik met de rechtermuisknop op een e-mail, of open het menu ⋮ ervan,
+en kies Notitie toevoegen: boven de e-mail opent een notitie met het
+onderwerp als titel. De notities staan onder het onderwerp telkens
+wanneer u die e-mail opnieuw opent, en met het label E-mail van een
+notitie gaat u terug naar de e-mail.
+"""

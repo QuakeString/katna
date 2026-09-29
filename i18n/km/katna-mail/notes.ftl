@@ -46,6 +46,12 @@ notes-edited = បានកែនៅ { $date }
 notes-on-this-computer = នៅលើកុំព្យូទ័រនេះ
 notes-where = កន្លែងរក្សាទុកកំណត់ចំណាំនេះ
 
+## A note about a mail
+
+notes-mail = សំបុត្រ
+notes-open-mail = បើកសំបុត្រ
+notes-open-note = បើកកំណត់ចំណាំ
+
 ## Colors (tooltips)
 
 notes-color-none = គ្មានពណ៌
@@ -68,6 +74,7 @@ notes-unarchived = បានដកកំណត់ចំណាំចេញពី�
 notes-trashed = បានផ្លាស់ទីកំណត់ចំណាំទៅធុងសម្រាម
 notes-restored = បានស្ដារកំណត់ចំណាំឡើងវិញ
 notes-empty-discarded = បានលះបង់កំណត់ចំណាំទទេ
+notes-mail-gone = សំបុត្រនោះលែងមាននៅទីនេះទៀតហើយ
 notes-deleted-forever = { $count ->
    *[other] បានលុបកំណត់ចំណាំ { $count } ជាអចិន្ត្រៃយ៍
 }

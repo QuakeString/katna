@@ -1276,3 +1276,13 @@ Kontakts ändern Sie ihn ebenfalls dort. Löschen lässt sich mit
 Rückgängig zurücknehmen, und Google und Outlook bewahren gelöschte
 Kontakte noch eine Zeit lang in ihrem Papierkorb auf.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notizen zu einer E-Mail"
+text = """
+Klicken Sie mit der rechten Maustaste auf eine E-Mail oder öffnen Sie
+ihr Menü ⋮ und wählen Sie Notiz hinzufügen: Eine Notiz mit dem Betreff
+als Titel öffnet sich über der E-Mail. Ihre Notizen erscheinen unter
+dem Betreff, wenn Sie die E-Mail wieder öffnen, und das Chip E-Mail
+einer Notiz führt Sie zurück zur E-Mail.
+"""

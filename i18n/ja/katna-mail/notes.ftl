@@ -46,6 +46,12 @@ notes-edited = 編集日: { $date }
 notes-on-this-computer = このコンピューター
 notes-where = メモの保存先
 
+## A note about a mail
+
+notes-mail = メール
+notes-open-mail = メールを開く
+notes-open-note = メモを開く
+
 ## Colors (tooltips)
 
 notes-color-none = 色なし
@@ -68,6 +74,7 @@ notes-unarchived = メモのアーカイブを解除しました
 notes-trashed = メモをゴミ箱に移動しました
 notes-restored = メモを復元しました
 notes-empty-discarded = 空のメモを破棄しました
+notes-mail-gone = そのメールは見つかりません
 notes-deleted-forever = { $count ->
    *[other] { $count } 件のメモを完全に削除しました
 }

@@ -47,6 +47,12 @@ notes-edited = ಸಂಪಾದಿಸಲಾಗಿದೆ: { $date }
 notes-on-this-computer = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ
 notes-where = ಈ ಟಿಪ್ಪಣಿಯನ್ನು ಎಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ
 
+## A note about a mail
+
+notes-mail = ಮೇಲ್
+notes-open-mail = ಮೇಲ್ ತೆರೆಯಿರಿ
+notes-open-note = ಟಿಪ್ಪಣಿ ತೆರೆಯಿರಿ
+
 ## Colors (tooltips)
 
 notes-color-none = ಬಣ್ಣವಿಲ್ಲ
@@ -69,6 +75,7 @@ notes-unarchived = ಟಿಪ್ಪಣಿಯನ್ನು ಆರ್ಕೈವ್‌
 notes-trashed = ಟಿಪ್ಪಣಿಯನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ
 notes-restored = ಟಿಪ್ಪಣಿಯನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ
 notes-empty-discarded = ಖಾಲಿ ಟಿಪ್ಪಣಿಯನ್ನು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ
+notes-mail-gone = ಆ ಮೇಲ್ ಈಗ ಇಲ್ಲಿಲ್ಲ
 notes-deleted-forever = { $count ->
     [one] ಟಿಪ್ಪಣಿಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗಿದೆ
    *[other] { $count } ಟಿಪ್ಪಣಿಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗಿದೆ

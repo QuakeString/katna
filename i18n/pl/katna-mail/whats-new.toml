@@ -1236,3 +1236,13 @@ Edytuj na stronie kontaktu zmienia ją także tam. Usuń ma opcję Cofnij, a
 Google i Outlook przez pewien czas przechowują usunięte kontakty w
 koszu.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Notatki do wiadomości"
+text = """
+Kliknij wiadomość prawym przyciskiem myszy albo otwórz jej menu ⋮ i
+wybierz Dodaj notatkę: nad wiadomością otworzy się notatka z tematem
+jako tytułem. Notatki wiadomości widać pod tematem za każdym razem,
+gdy otworzysz ją ponownie, a znacznik Poczta na notatce przenosi z
+powrotem do wiadomości.
+"""

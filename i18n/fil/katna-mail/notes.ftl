@@ -47,6 +47,12 @@ notes-edited = Na-edit { $date }
 notes-on-this-computer = Sa computer na ito
 notes-where = Kung saan itinatago ang talang ito
 
+## A note about a mail
+
+notes-mail = Mail
+notes-open-mail = Buksan ang mail
+notes-open-note = Buksan ang tala
+
 ## Colors (tooltips)
 
 notes-color-none = Walang kulay
@@ -69,6 +75,7 @@ notes-unarchived = Na-unarchive ang tala
 notes-trashed = Inilipat ang tala sa Trash
 notes-restored = Na-restore ang tala
 notes-empty-discarded = Itinapon ang walang lamang tala
+notes-mail-gone = Wala na rito ang mail na iyon
 notes-deleted-forever = { $count ->
     [one] Permanenteng na-delete ang tala
    *[other] Permanenteng na-delete ang { $count } tala

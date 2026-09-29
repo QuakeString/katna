@@ -1247,3 +1247,12 @@ pilih, dan Edit di halaman kontak mengubahnya di sana juga. Hapus punya
 Urungkan, dan Google serta Outlook menyimpan kontak yang dihapus di
 tempat sampahnya untuk sementara waktu.
 """
+
+["2026-09-29-0538-notes-on-mail"]
+title = "Catatan pada email"
+text = """
+Klik kanan sebuah email, atau buka menu ⋮-nya, lalu pilih Tambahkan
+catatan: catatan berjudul subjek email terbuka di atas email.
+Catatannya tampil di bawah subjek setiap kali Anda membuka email itu
+lagi, dan label Email pada catatan membawa Anda kembali ke email.
+"""
