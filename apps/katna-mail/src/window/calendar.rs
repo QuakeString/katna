@@ -843,6 +843,22 @@ impl MailWindow {
         )
     }
 
+    /// Shows `occurrence`'s day in the Calendar with its card open, from
+    /// outside the Calendar page (the contact panel's meetings).
+    pub(super) fn open_calendar_occurrence(
+        &mut self,
+        occurrence: Occurrence,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let day = civil(occurrence.start, &self.tz).date();
+        self.show_page(super::apps::App::Calendar, window, cx);
+        self.open_calendar_day(day, Some(CalView::Day), cx);
+        let size = window.viewport_size();
+        let at = gpui::point(size.width / 2.0, size.height / 3.0);
+        self.open_calendar_event(occurrence, at, cx);
+    }
+
     /// The views, in the narrow bar's menu.
     pub(super) fn calendar_views_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
         let page = &self.calendar;

@@ -2,11 +2,16 @@
 
 //! What the contact panel shows about one person, read from the local
 //! mail only: the mail exchanged, recent conversations and files, open
-//! tasks made from mail with them, their phone, title and company from
-//! their signatures, and their UTC offset from the `Date` headers of their
-//! mail. Nothing is looked up online.
+//! tasks made from mail with them, the next meetings they are in, their
+//! phone, title and company from their signatures, and their UTC offset
+//! from the `Date` headers of their mail. Nothing is looked up online.
 
+use std::collections::HashSet;
+
+use jiff::tz::TimeZone;
 use katna_core::Paths;
+use katna_dav::Occurrence;
+use katna_store::calendar::{EventData, EventStatus, StoredEvent};
 use katna_store::{ContactConversation, ContactFile, ContactSummary, MessageId, Mode, Store};
 use mail_parser::MessageParser;
 
@@ -33,6 +38,9 @@ pub struct Profile {
     pub offset: Option<i32>,
     /// The mails of open tasks (`Message-ID`s) they take part in.
     pub task_mails: Vec<String>,
+    /// The next meetings they are in (organizer or guest), soonest first:
+    /// the next occurrence of each.
+    pub meetings: Vec<Occurrence>,
 }
 
 /// What their signature says.
@@ -87,6 +95,7 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
             break;
         }
     }
+    let meetings = meetings(&store, &email, unix_now(), &TimeZone::system());
     Ok(Profile {
         summary,
         conversations,
@@ -94,7 +103,68 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
         card,
         offset,
         task_mails,
+        meetings,
     })
+}
+
+/// Meetings shown at most, and how far ahead they are looked for.
+const MEETINGS: usize = 3;
+const MEETING_DAYS: i64 = 60;
+
+/// The next meetings with `email` from `now`: events not cancelled that
+/// they organize or are a guest of, the next occurrence of each.
+fn meetings(store: &Store, email: &str, now: i64, tz: &TimeZone) -> Vec<Occurrence> {
+    let to = now.saturating_add(MEETING_DAYS * 24 * 3600);
+    let Ok(rows) = store.event_rows_in_range(now, to) else {
+        return Vec::new();
+    };
+    upcoming_with(rows, email, now, to, tz)
+}
+
+fn upcoming_with(
+    rows: Vec<StoredEvent>,
+    email: &str,
+    now: i64,
+    to: i64,
+    tz: &TimeZone,
+) -> Vec<Occurrence> {
+    let with = |data: &EventData| {
+        data.organizer.eq_ignore_ascii_case(email)
+            || data
+                .attendees
+                .iter()
+                .any(|a| a.email.eq_ignore_ascii_case(email))
+    };
+    // Only their events, with their changed occurrences.
+    let uids: HashSet<String> = rows
+        .iter()
+        .filter(|row| with(&row.data))
+        .map(|row| row.data.uid.clone())
+        .collect();
+    if uids.is_empty() {
+        return Vec::new();
+    }
+    let rows = rows
+        .into_iter()
+        .filter(|row| uids.contains(&row.data.uid))
+        .collect();
+    let mut seen = HashSet::new();
+    katna_dav::occurrences(rows, now, to, tz)
+        .into_iter()
+        .filter(|o| {
+            let data = &o.event.data;
+            o.end > now
+                && data.status != EventStatus::Cancelled
+                && data.self_status != "declined"
+                && with(data)
+        })
+        .filter(|o| seen.insert(o.event.data.uid.clone()))
+        .take(MEETINGS)
+        .collect()
+}
+
+fn unix_now() -> i64 {
+    jiff::Timestamp::now().as_second()
 }
 
 fn raw(store: &Store, id: MessageId) -> Option<Vec<u8>> {
@@ -475,6 +545,47 @@ pub fn offset_label(minutes: i32) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use katna_store::calendar::Attendee;
+
+    #[test]
+    fn meetings_with_them_next_first() {
+        let hour = 3600;
+        let now = 1_790_000_000;
+        let event = |id: i64, uid: &str, start: i64, rrule: &str, guest: &str| StoredEvent {
+            id,
+            calendar_id: 1,
+            data: EventData {
+                uid: uid.to_owned(),
+                title: uid.to_owned(),
+                start,
+                end: start + hour,
+                rrule: rrule.to_owned(),
+                organizer: "me@example.org".to_owned(),
+                attendees: vec![Attendee {
+                    email: guest.to_owned(),
+                    ..Default::default()
+                }],
+                ..Default::default()
+            },
+        };
+        let rows = vec![
+            // Weekly with Ada, the first one past: the next shows once.
+            event(
+                1,
+                "weekly",
+                now - 2 * hour,
+                "FREQ=WEEKLY",
+                "Ada@Example.org",
+            ),
+            event(2, "review", now + 5 * hour, "", "ada@example.org"),
+            event(3, "other", now + hour, "", "bob@example.org"),
+        ];
+        let tz = TimeZone::UTC;
+        let found = upcoming_with(rows, "ada@example.org", now, now + 30 * 24 * hour, &tz);
+        let titles: Vec<&str> = found.iter().map(|o| o.event.data.title.as_str()).collect();
+        assert_eq!(titles, ["review", "weekly"]);
+        assert_eq!(found[1].start, now - 2 * hour + 7 * 24 * hour);
+    }
 
     #[test]
     fn dash_dash_signature() {
