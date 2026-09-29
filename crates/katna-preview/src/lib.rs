@@ -14,8 +14,10 @@
 pub mod avatar;
 pub mod document;
 pub mod glance;
+pub mod markup;
 mod ole;
 pub mod pdf;
+mod pdf_marks;
 mod pdf_text;
 pub mod picture;
 pub mod sheet;

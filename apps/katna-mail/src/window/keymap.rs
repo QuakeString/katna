@@ -449,6 +449,15 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
     ] {
         bindings.push(KeyBinding::new("ctrl-z", gpui::NoAction, Some(context)));
     }
+    // In the attachment viewer, Ctrl+Z and redo are about the marks made
+    // on a PDF; the viewer takes them itself.
+    for keys in ["ctrl-z", "ctrl-shift-z", "ctrl-y"] {
+        bindings.push(KeyBinding::new(
+            keys,
+            gpui::NoAction,
+            Some(super::viewer::KEY_CONTEXT),
+        ));
+    }
     cx.bind_keys(bindings);
     katna_ui::text_input::bind_keys(cx);
     katna_ui::text_area::bind_keys(cx);

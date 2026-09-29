@@ -22,3 +22,37 @@ viewer-page = Page
 # After that box. $count: the PDF's number of pages.
 viewer-page-count = of { $count }
 viewer-go-to-page-tip = Type a page number and press Enter (Ctrl+G)
+
+## Marking up a PDF
+
+viewer-markup-tip = Mark up
+viewer-tool-select = Select text
+viewer-tool-highlight = Highlight
+viewer-tool-underline = Underline
+viewer-tool-squiggly = Squiggle
+viewer-tool-strike = Strike through
+viewer-tool-pen = Pen
+viewer-tool-eraser = Eraser
+viewer-color-yellow = Yellow
+viewer-color-green = Green
+viewer-color-blue = Blue
+viewer-color-pink = Pink
+viewer-color-orange = Orange
+viewer-color-red = Red
+viewer-color-black = Black
+viewer-color-purple = Purple
+viewer-marks-undo-tip = Undo (Ctrl+Z)
+viewer-marks-redo-tip = Redo (Ctrl+Shift+Z)
+viewer-save-marked-tip = Save a copy with your marks (Ctrl+S)
+viewer-markup-protected = This PDF is protected against changes, so it can't be marked up.
+viewer-marks-save-failed = The marked copy could not be saved.
+# Asked when closing a PDF, or moving to another attachment, with marks
+# that are not saved yet.
+viewer-marks-unsaved-title = Save your marks?
+viewer-marks-unsaved-text = Your marks on this PDF are not saved yet. They go into a copy; the attachment itself stays as it was.
+viewer-marks-discard = Discard
+viewer-marks-keep = Keep marking
+viewer-marks-save = Save a copy
+# The name of the copy of a PDF with marks, before ".pdf". $name: the
+# attachment's name without ".pdf".
+viewer-marked-name = { $name } (marked)
