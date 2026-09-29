@@ -39,6 +39,10 @@ pub struct Pull {
     pub all: bool,
     /// Where the next pull starts.
     pub state: Option<String>,
+    /// Tasks whose steps [`Self::tasks`] holds every one of, when the
+    /// service reads steps apart from their tasks (To Do); steps of these
+    /// that it doesn't hold went on the service.
+    pub steps_of: Vec<String>,
 }
 
 /// An answer that says the item is gone (deleted on the service).
@@ -91,18 +95,11 @@ impl TaskService {
         }
     }
 
-    /// Adds `task` to `list`; `None` when this service keeps no such task
-    /// (a step of a To Do task: those stay in Katna for now).
-    async fn insert(
-        &self,
-        list: &str,
-        task: &Task,
-        parent: Option<&str>,
-    ) -> Result<Option<RemoteTask>> {
+    /// Adds `task` to `list`, as a step of `parent` when it has one.
+    async fn insert(&self, list: &str, task: &Task, parent: Option<&str>) -> Result<RemoteTask> {
         match self {
-            Self::Google(service) => service.insert(list, task, parent).await.map(Some),
-            Self::Microsoft(_) if task.parent.is_some() => Ok(None),
-            Self::Microsoft(service) => service.insert(list, task).await.map(Some),
+            Self::Google(service) => service.insert(list, task, parent).await,
+            Self::Microsoft(service) => service.insert(list, task, parent).await,
         }
     }
 
@@ -166,13 +163,18 @@ pub async fn sync_account(
     let known = store.lock().unwrap().account_task_lists(account)?;
     for (list, remote) in known {
         let Some(remote) = remote else { continue };
-        let pending = store.lock().unwrap().pending_tasks(list)?;
+        let pending = {
+            let mut store = store.lock().unwrap();
+            store.resend_unsent_steps(list)?;
+            store.pending_tasks(list)?
+        };
         for task in pending {
             push(service, store, &remote, task).await?;
         }
         let state = store.lock().unwrap().task_list_sync_state(list)?;
         let pull = service.pull(&remote, state.as_deref()).await?;
         let mut store = store.lock().unwrap();
+        changed |= store.drop_unlisted_steps(list, &pull.steps_of, &pull.tasks)?;
         changed |= store.sync_tasks(list, &pull.tasks, pull.all)?;
         store.set_task_list_sync_state(list, pull.state.as_deref())?;
     }
@@ -202,7 +204,7 @@ async fn push(
         }
         let remote = match &pending.remote_id {
             Some(remote) => match service.update(list, remote, &pending.task).await? {
-                Some(done) => Some(done),
+                Some(done) => done,
                 // Deleted on the service while changed here: the change
                 // brings it back.
                 None => {
@@ -217,11 +219,10 @@ async fn push(
                     .await?
             }
         };
-        let mut store = store.lock().unwrap();
-        match remote {
-            Some(remote) => store.task_pushed(id, pending.stamp, &remote)?,
-            None => store.task_kept_here(id, pending.stamp)?,
-        }
+        store
+            .lock()
+            .unwrap()
+            .task_pushed(id, pending.stamp, &remote)?;
         Ok(())
     };
     match sent.await {

@@ -5,9 +5,10 @@
 //!
 //! To Do keeps a task's title, notes, due day, whether it is done, a
 //! reminder, repeat and importance (the star), so those come from To Do
-//! ([`RemoteTask::extras`]). Its steps (checklist items) are not synced
-//! yet: steps made in Katna stay in Katna. A pull follows the list's
-//! delta link, so only changes come after the first.
+//! ([`RemoteTask::extras`]). Steps are To Do's checklist items: a step's
+//! ID here is `task|item`, and To Do keeps only its title and whether it
+//! is ticked. A pull follows the list's delta link, so only changes come
+//! after the first; each changed task's steps are read again with it.
 
 use std::{sync::Arc, time::Duration};
 
@@ -94,6 +95,57 @@ struct Item {
     #[serde(rename = "reminderDateTime")]
     reminder: Option<DateTimeZone>,
     recurrence: Option<Value>,
+}
+
+/// A task's checklist item: a step.
+#[derive(Deserialize, Default)]
+struct Check {
+    id: String,
+    #[serde(rename = "displayName", default)]
+    name: String,
+    #[serde(rename = "isChecked", default)]
+    checked: bool,
+    #[serde(rename = "checkedDateTime")]
+    checked_at: Option<String>,
+}
+
+/// Joins a task's and a checklist item's IDs into a step's ID. Graph's
+/// IDs are base64, so they never hold `|`.
+fn step_id(task: &str, item: &str) -> String {
+    format!("{task}|{item}")
+}
+
+/// The task and the checklist item of a step's ID; `None` for a task's.
+fn split_step(id: &str) -> Option<(&str, &str)> {
+    id.split_once('|')
+}
+
+/// Checklist item `check`, the `index`th of task `task`, as a step. A
+/// step just sent takes `usize::MAX`: last, until the next pull places it.
+fn step(task: &str, index: usize, check: Check) -> RemoteTask {
+    let done_at = check
+        .checked
+        .then(|| check.checked_at.as_deref().and_then(unix).unwrap_or(0));
+    RemoteTask {
+        remote_id: step_id(task, &check.id),
+        parent: Some(task.to_owned()),
+        deleted: false,
+        // To Do has no etag for a checklist item; what it keeps will do.
+        etag: format!("{index}:{}:{}", check.checked, check.name),
+        title: check.name,
+        notes: String::new(),
+        due: String::new(),
+        done_at,
+        position: format!("{index:08}"),
+        extras: None,
+    }
+}
+
+/// A step as a checklist item's request body.
+fn check_body(task: &Task) -> Vec<u8> {
+    json!({ "displayName": task.title, "isChecked": task.done_at.is_some() })
+        .to_string()
+        .into_bytes()
 }
 
 /// Unix seconds of Graph's `dateTime` (no zone of its own) in UTC.
@@ -469,6 +521,7 @@ impl ToDo {
                     tasks: Vec::new(),
                     all: false,
                     state: state.map(str::to_owned),
+                    steps_of: Vec::new(),
                 });
             }
             let page: Page<Item> = parse(&reply, "reading tasks")?;
@@ -476,17 +529,74 @@ impl ToDo {
             match (page.next, page.delta) {
                 (Some(next), _) => url = next,
                 (None, delta) => {
+                    // The steps of each task that came, all of them: the
+                    // delta holds none.
+                    let mut steps_of = Vec::new();
+                    let mut steps = Vec::new();
+                    for task in &tasks {
+                        if !task.deleted {
+                            match self.steps(list, &task.remote_id).await? {
+                                Some(found) => steps.extend(found),
+                                // Gone meanwhile: the next pull says so.
+                                None => continue,
+                            }
+                        }
+                        steps_of.push(task.remote_id.clone());
+                    }
+                    tasks.extend(steps);
                     return Ok(Pull {
                         tasks,
                         all,
                         state: delta,
+                        steps_of,
                     });
                 }
             }
         }
     }
 
-    pub async fn insert(&self, list: &str, task: &Task) -> Result<RemoteTask> {
+    fn checks_url(&self, list: &str, task: &str) -> String {
+        format!("{}/{}/checklistItems", self.tasks_url(list), segment(task))
+    }
+
+    /// Task `task`'s steps; `None` when To Do no longer has the task.
+    async fn steps(&self, list: &str, task: &str) -> Result<Option<Vec<RemoteTask>>> {
+        let mut url = self.checks_url(list, task);
+        let mut checks = Vec::new();
+        loop {
+            let reply = self.call("GET", &url, None).await?;
+            if gone(&reply) {
+                return Ok(None);
+            }
+            let page: Page<Check> = parse(&reply, "reading steps")?;
+            checks.extend(page.value);
+            match page.next {
+                Some(next) => url = next,
+                None => break,
+            }
+        }
+        Ok(Some(
+            checks
+                .into_iter()
+                .enumerate()
+                .map(|(index, check)| step(task, index, check))
+                .collect(),
+        ))
+    }
+
+    /// Adds `task` to `list`, as a step of `parent` when it has one.
+    pub async fn insert(
+        &self,
+        list: &str,
+        task: &Task,
+        parent: Option<&str>,
+    ) -> Result<RemoteTask> {
+        if let Some(parent) = parent {
+            let url = self.checks_url(list, parent);
+            let reply = self.call("POST", &url, Some(&check_body(task))).await?;
+            let check: Check = parse(&reply, "adding a step")?;
+            return Ok(step(parent, usize::MAX, check));
+        }
         let reply = self
             .call("POST", &self.tasks_url(list), Some(&body(task)))
             .await?;
@@ -494,8 +604,17 @@ impl ToDo {
         Ok(item.into())
     }
 
-    /// Changes task `id`; `None` when To Do no longer has it.
+    /// Changes task or step `id`; `None` when To Do no longer has it.
     pub async fn update(&self, list: &str, id: &str, task: &Task) -> Result<Option<RemoteTask>> {
+        if let Some((parent, item)) = split_step(id) {
+            let url = format!("{}/{}", self.checks_url(list, parent), segment(item));
+            let reply = self.call("PATCH", &url, Some(&check_body(task))).await?;
+            if gone(&reply) {
+                return Ok(None);
+            }
+            let check: Check = parse(&reply, "changing a step")?;
+            return Ok(Some(step(parent, usize::MAX, check)));
+        }
         let url = format!("{}/{}", self.tasks_url(list), segment(id));
         let reply = self.call("PATCH", &url, Some(&body(task))).await?;
         if gone(&reply) {
@@ -506,7 +625,12 @@ impl ToDo {
     }
 
     pub async fn delete(&self, list: &str, id: &str) -> Result<()> {
-        let url = format!("{}/{}", self.tasks_url(list), segment(id));
+        let url = match split_step(id) {
+            Some((parent, item)) => {
+                format!("{}/{}", self.checks_url(list, parent), segment(item))
+            }
+            None => format!("{}/{}", self.tasks_url(list), segment(id)),
+        };
         let reply = self.call("DELETE", &url, None).await?;
         if gone(&reply) {
             return Ok(());

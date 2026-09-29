@@ -3180,8 +3180,10 @@ To Do (Graph) for Microsoft accounts, VTODO over CalDAV for the rest
   level of subtasks. A due time, reminders, repeat and the star are kept
   in `pim.db` only. To Do keeps reminders, repeat (mapped to and from an
   RFC 5545 `RRULE`) and importance (the star); its due is a day too, so the
-  time stays in Katna there as well. To Do's steps (checklist items) are
-  not synced yet: steps made in Katna stay in Katna.
+  time stays in Katna there as well. Steps of a To Do task are its
+  checklist items (ID `task|item` in `pim.db`), which keep only a title
+  and a tick. The delta holds no steps, so each task it brings has its
+  steps read again, and steps of that task not among them are dropped.
 - **Sync** (`katna_sync::tasks`, run by the daemon's `daemon/tasks.rs`):
   every 5 minutes, and 2 seconds after a change in Katna. Each round sends
   list changes, takes the service's lists, then per list sends task
