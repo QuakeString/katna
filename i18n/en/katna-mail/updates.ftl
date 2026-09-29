@@ -15,6 +15,12 @@ update-dialog-installed = Installed
 update-dialog-new = New version
 # $date: when the version was built, such as "28 September 2026, 21:16".
 update-dialog-built = Built { $date }
+# The newest change in a build: the first line of its commit, in English.
+update-dialog-latest-change = Latest change: { $title }
+# Where the installed build came from.
+update-dialog-source-arch = Arch package, nightly channel
+# Under "Katna Mail is up to date"; $ago is like "5 minutes ago".
+update-dialog-checked = Checked { $ago }
 # $commit: the version's commit, such as "1ef4594"; opens it on GitHub.
 update-dialog-commit = Commit { $commit }
 # $size: such as "39 MB".

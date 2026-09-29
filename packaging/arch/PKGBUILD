@@ -42,6 +42,7 @@ optdepends=(
   'hunspell-en_us: spell check while writing mail (or another hunspell dictionary)'
   'noto-fonts: letters of Indic, Thai, Khmer, Lao, Burmese, Tibetan, Ethiopic, Arabic and Hebrew mail and translations'
   'noto-fonts-cjk: Chinese, Japanese and Korean mail and translations'
+  'noto-fonts-emoji: colour emoji in mail and in the app'
 )
 provides=('katna')
 conflicts=('katna')
@@ -85,6 +86,9 @@ build() {
   # When its commit was made (Unix seconds), for the Update dialog.
   KATNA_BUILT="$(git log -1 --format=%ct)"
   export KATNA_BUILT
+  # Its first line, the build's newest change.
+  KATNA_TITLE="$(git log -1 --format=%s)"
+  export KATNA_TITLE
   # Katna updates itself from the arch-latest release, with pacman
   # (katna_core::update::Package).
   export KATNA_PACKAGE=arch

@@ -18,6 +18,10 @@ pub const VERSION: &str = match option_env!("KATNA_VERSION") {
     None => env!("CARGO_PKG_VERSION"),
 };
 
+/// The first line of this build's commit (`KATNA_TITLE`): its newest
+/// change, for the Update dialog.
+pub const TITLE: Option<&str> = option_env!("KATNA_TITLE");
+
 /// When this build's commit was made (Unix seconds), if the package said
 /// (`KATNA_BUILT`).
 pub fn built() -> Option<i64> {
