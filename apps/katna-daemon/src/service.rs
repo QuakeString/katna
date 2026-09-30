@@ -396,6 +396,27 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_calendar_hidden(id, hidden)?)
             }
 
+            async fn add_calendar(
+                &self,
+                account: i64,
+                name: String,
+                color: String,
+            ) -> fdo::Result<i64> {
+                Ok(self.daemon.add_calendar(account, &name, &color).await?)
+            }
+
+            async fn rename_calendar(&self, id: i64, name: String) -> fdo::Result<()> {
+                Ok(self.daemon.rename_calendar(id, &name).await?)
+            }
+
+            async fn set_calendar_color(&self, id: i64, color: String) -> fdo::Result<String> {
+                Ok(self.daemon.set_calendar_color(id, &color).await?)
+            }
+
+            async fn delete_calendar(&self, id: i64, delete: bool) -> fdo::Result<()> {
+                Ok(self.daemon.delete_calendar(id, delete).await?)
+            }
+
             async fn calendar_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
                 Ok(self.daemon.calendar_status()?)
             }

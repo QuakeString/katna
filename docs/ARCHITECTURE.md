@@ -2173,7 +2173,18 @@ Gemini or confidential mode):
   the browser or the contact) and on a task (details, done, star, Date:
   today, tomorrow, in a week, all day or no date, and delete). Changes
   go through the same paths as the event card and the Tasks page, so a
-  repeating event asks which occurrences and each change has Undo. The "select all
+  repeating event asks which occurrences and each change has Undo. In
+  the side panel (`calendar/side_menu.rs`) a calendar's menu has Show
+  only this, Color, Rename and Delete (Remove from list for one shared
+  with the person), and an account heading's has New calendar, Show or
+  Hide all and Account settings. These change the calendar on the
+  account's service first, by its best method (Google Calendar API
+  `calendars` and `calendarList`, Microsoft Graph `/me/calendars` with
+  the nearest Outlook colour, CalDAV `MKCALENDAR`, `PROPPATCH` and
+  `DELETE`, Zoho's `calendars` for one's own), and only then in the store
+  (`katna_sync::calendar::manage`, the daemon's `calendar/manage.rs`);
+  what a service can't do shows dimmed with a short reason. Rename and
+  colour have Undo; delete asks first. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.

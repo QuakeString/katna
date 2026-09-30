@@ -25,6 +25,7 @@ pub mod caldav;
 pub mod edit;
 pub mod google;
 pub mod graph;
+pub mod manage;
 pub mod zoho;
 
 #[cfg(test)]

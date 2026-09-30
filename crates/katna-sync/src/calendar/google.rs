@@ -659,6 +659,7 @@ fn check(reply: &Reply, doing: &str) -> std::result::Result<(), CalendarError> {
     ))))
 }
 
+mod calendars;
 mod write;
 
 #[cfg(test)]

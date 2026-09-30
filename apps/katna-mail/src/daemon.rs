@@ -70,6 +70,8 @@ pub enum Command {
     RelabelNotes(Vec<i64>, String, String),
     /// A change on the Tasks page.
     Task(Box<crate::tasks::TaskCommand>),
+    /// A change to a calendar itself (`Pim1.RenameCalendar` and the like).
+    Calendar(CalendarEdit),
 }
 
 /// A saved card to write, for [`Command::WriteCards`].
@@ -168,7 +170,8 @@ impl Command {
             | Self::RelabelNotes(..)
             | Self::Event(_)
             | Self::Several(_)
-            | Self::Task(_) => {
+            | Self::Task(_)
+            | Self::Calendar(_) => {
                 return None;
             }
         })
@@ -326,6 +329,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
+        Command::Calendar(edit) => return edit_calendar(connection, edit).await.map(|_| ()),
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
@@ -446,6 +450,33 @@ pub async fn set_calendar_hidden(
         .await
         .map(|_| ())
         .map_err(|err| describe(&err))
+}
+
+/// A calendar change on a calendar itself, sent to its service first.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CalendarEdit {
+    /// A new calendar in account (0: this computer), with a name and a
+    /// colour.
+    Add(i64, String, String),
+    Rename(i64, String),
+    Recolor(i64, String),
+    /// Deleted for everyone (`true`) or taken off the person's list.
+    Delete(i64, bool),
+}
+
+/// Sends `edit` (`AddCalendar`, `RenameCalendar`, `SetCalendarColor`,
+/// `DeleteCalendar`). Returns the new calendar's ID, or 0.
+pub async fn edit_calendar(connection: &Connection, edit: &CalendarEdit) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let done = match edit {
+        CalendarEdit::Add(account, name, color) => pim.add_calendar(*account, name, color).await,
+        CalendarEdit::Rename(id, name) => pim.rename_calendar(*id, name).await.map(|()| 0),
+        CalendarEdit::Recolor(id, color) => pim.set_calendar_color(*id, color).await.map(|_| 0),
+        CalendarEdit::Delete(id, delete) => pim.delete_calendar(*id, *delete).await.map(|()| 0),
+    };
+    done.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for a change to the calendar. Returns the ID of the
