@@ -189,6 +189,19 @@ impl Store {
             .map(|mut found| found.pop())
     }
 
+    /// Unties the tracking of outbox entry `outbox_id` from it: outbox IDs
+    /// are used again once the outbox is empty, and a new entry must not
+    /// take over the tracking (and the sent copies) of an old one. The
+    /// old tracking keeps its events; it gets an ID no entry has.
+    pub fn detach_tracking(&mut self, outbox_id: i64) -> Result<()> {
+        self.check_writable()?;
+        self.pim.execute(
+            "UPDATE tracked_message SET outbox_id = -id WHERE outbox_id = ?1",
+            params![outbox_id],
+        )?;
+        Ok(())
+    }
+
     /// The tracking of the sent message with `Message-ID` `message_id`
     /// (without angle brackets).
     pub fn tracking_for_message(&self, message_id: &str) -> Result<Option<TrackedMessage>> {
