@@ -111,10 +111,13 @@ pub fn init(config_filter: &str) -> Result<()> {
 /// font file, or one per slightly malformed IMAP response Gmail sends
 /// ("Rectified missing `text`"). The search index logs every commit and
 /// every file its merges delete, dozens of lines a minute, which buried
-/// everything else in the journal; its warnings still show.
+/// everything else in the journal; its warnings still show. The
+/// certificate verifier logs a refused certificate as an error without the
+/// server's name; `katna_sync::net` logs it again with the name.
 const QUIET: &[(&str, &str)] = &[
     ("fontdb", "error"),
     ("imap_codec", "error"),
+    ("rustls_platform_verifier", "off"),
     ("tantivy", "warn"),
 ];
 
@@ -147,7 +150,7 @@ mod tests {
         let filter = build_filter("warn,katna_sync=debug", None).unwrap();
         assert_eq!(
             filter.to_string(),
-            "katna_sync=debug,imap_codec=error,tantivy=warn,fontdb=error,warn"
+            "rustls_platform_verifier=off,katna_sync=debug,imap_codec=error,tantivy=warn,fontdb=error,warn"
         );
     }
 
@@ -156,7 +159,7 @@ mod tests {
         let filter = build_filter("info,fontdb=debug", None).unwrap();
         assert_eq!(
             filter.to_string(),
-            "imap_codec=error,tantivy=warn,fontdb=debug,info"
+            "rustls_platform_verifier=off,imap_codec=error,tantivy=warn,fontdb=debug,info"
         );
         let filter = build_filter("info", Some("debug")).unwrap();
         assert_eq!(filter.to_string(), "debug");
@@ -169,7 +172,7 @@ mod tests {
         let filter = build_filter("warn", Some("  ")).unwrap();
         assert_eq!(
             filter.to_string(),
-            "imap_codec=error,tantivy=warn,fontdb=error,warn"
+            "rustls_platform_verifier=off,imap_codec=error,tantivy=warn,fontdb=error,warn"
         );
     }
 
