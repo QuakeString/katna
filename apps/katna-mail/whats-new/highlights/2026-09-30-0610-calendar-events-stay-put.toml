@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Events stay where they are"
+text = """
+Clicking an event or task in the Calendar and then changing the view no
+longer leaves it following the pointer. An event now moves only while you
+hold the button down and drag it, and changing the view or page, pressing
+Esc or opening its card puts it back unchanged.
+"""

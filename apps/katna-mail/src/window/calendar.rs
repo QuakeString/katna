@@ -196,6 +196,9 @@ pub(super) struct OpenEvent {
     pub(super) at: Point<Pixels>,
 }
 
+/// How far the pointer goes, pressed, before an event moves with it.
+const DRAG_START: f32 = 4.0;
+
 /// An event being dragged to another time or day, or its end to another
 /// time.
 pub(super) struct EventDrag {
@@ -543,6 +546,7 @@ impl MailWindow {
 
     fn calendar_moved(&mut self, cx: &mut Context<Self>) {
         self.calendar.open = None;
+        self.cancel_calendar_drags();
         // Moving on puts search results away; Esc brings them back.
         self.calendar.search.away = true;
         self.load_calendar(cx);
@@ -584,6 +588,7 @@ impl MailWindow {
         if self.cancel_calendar_set(window, cx) {
             return;
         }
+        self.cancel_calendar_drags();
         let card = self.calendar.open.take().is_some();
         // Esc goes back to search results put away.
         let search = &mut self.calendar.search;
@@ -1807,9 +1812,15 @@ impl MailWindow {
         div()
             .id("calendar-days")
             .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
-                if this.calendar.task_drag.is_some() {
-                    this.drag_task_to(event.position, cx);
+                if this.calendar.task_drag.is_none() {
+                    return;
                 }
+                if event.pressed_button != Some(MouseButton::Left) {
+                    this.cancel_calendar_drags();
+                    cx.notify();
+                    return;
+                }
+                this.drag_task_to(event.position, cx);
             }))
             .on_mouse_up(
                 MouseButton::Left,
@@ -1865,9 +1876,16 @@ impl MailWindow {
                 div()
                     .id("calendar-grid")
                     .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
-                        if this.calendar.drag.is_some() {
-                            this.drag_event_to(event.position, cx);
+                        if this.calendar.drag.is_none() {
+                            return;
                         }
+                        // The button came up where the grid didn't hear it.
+                        if event.pressed_button != Some(MouseButton::Left) {
+                            this.cancel_calendar_drags();
+                            cx.notify();
+                            return;
+                        }
+                        this.drag_event_to(event.position, cx);
                     }))
                     .on_mouse_up(
                         MouseButton::Left,
@@ -2094,6 +2112,14 @@ impl MailWindow {
         block.into_any_element()
     }
 
+    /// Puts down an event or task picked up and not dropped, where it
+    /// was: nothing is saved. Returns whether one was.
+    pub(super) fn cancel_calendar_drags(&mut self) -> bool {
+        let event = self.calendar.drag.take().is_some();
+        let task = self.calendar.task_drag.take().is_some();
+        event || task
+    }
+
     fn start_event_drag(&mut self, occurrence: Occurrence, at: Point<Pixels>, resize: bool) {
         self.calendar.drag = Some(EventDrag {
             occurrence,
@@ -2116,6 +2142,10 @@ impl MailWindow {
         };
         let dy = katna_ui::unpx(at.y - drag.origin.y);
         let dx = katna_ui::unpx(at.x - drag.origin.x);
+        // A press that wobbles is still a click.
+        if !drag.moved && dx.hypot(dy) < DRAG_START {
+            return;
+        }
         let minutes = ((dy / self.calendar.hour * 60.0 / 15.0).round() as i64) * 15;
         let days = if drag.resize || width <= 0.0 {
             0
@@ -2635,6 +2665,8 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         cx.stop_propagation();
+        // The press that opened it picked the event up; it isn't dragged.
+        self.cancel_calendar_drags();
         self.calendar.open = Some(OpenEvent { occurrence, at });
         // Its card lists the event's meeting notes.
         self.notes_page(cx);

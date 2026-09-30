@@ -165,6 +165,8 @@ impl MailWindow {
                 {
                     return;
                 }
+                // The press that opens it picked it up; it isn't dragged.
+                this.cancel_calendar_drags();
                 this.task_open_details(task_id, window, cx);
             }))
             .child(circle)
