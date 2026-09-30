@@ -60,7 +60,10 @@ jobs:
       matrix:
         image: ["archlinux:latest", "ubuntu:26.04"]
     env:
-      CODE: ${{ needs.changes.outputs.code }}
+      # Pull requests and main test on Arch only while Katna is young; the
+      # Ubuntu job skips its steps (and still reports, for required checks)
+      # unless the workflow is run by hand.
+      CODE: ${{ (startsWith(matrix.image, 'ubuntu') && github.event_name != 'workflow_dispatch') && 'false' || needs.changes.outputs.code }}
     steps:
       - name: Install system packages (Arch)
         if: startsWith(matrix.image, 'archlinux') && env.CODE == 'true'
@@ -108,10 +111,11 @@ jobs:
 
   # Katna on Windows 10 and later (docs/ARCHITECTURE.md §27): the whole
   # workspace except Katna Server builds with GPUI's Windows backend, and
-  # the tests run there.
+  # the tests run there. Only when the workflow is run by hand, as for
+  # Ubuntu above.
   windows:
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.code == 'true'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

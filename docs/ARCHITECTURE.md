@@ -4922,7 +4922,10 @@ removes. Setup starts PowerShell and icacls by their full System32 paths
 and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
 Downloads are never run or loaded as administrator.
 
-CI builds Setup.exe on every main push into a `windows-latest`
-pre-release, as it does the Arch package. Without a code-signing
+CI builds Setup.exe into a `windows-latest` pre-release when the owner
+runs the Windows package workflow by hand on `main` (Actions > Windows
+package > Run workflow); while Katna is young, pushes and pull requests
+test on Arch only, and the Windows and Ubuntu CI jobs also run only by
+hand. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.
