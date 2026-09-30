@@ -71,6 +71,7 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
             Item("desktop-menu-page-contacts", "katna_mail::ShowContacts"),
             Item("desktop-menu-page-tasks", "katna_mail::ShowTasks"),
             Item("desktop-menu-page-notes", "katna_mail::ShowNotes"),
+            Item("desktop-menu-page-files", "katna_mail::ShowFiles"),
             Separator,
             Item("desktop-menu-next", "katna_mail::SelectNext"),
             Item("desktop-menu-previous", "katna_mail::SelectPrevious"),
@@ -299,6 +300,7 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            Request::Attach { from, paths } => self.open_with_files(from, paths, window, cx),
             // The app may reopen on another page: the mail is on Mail.
             Request::ShowMessage(id) => {
                 self.show_page(RailApp::Mail, window, cx);

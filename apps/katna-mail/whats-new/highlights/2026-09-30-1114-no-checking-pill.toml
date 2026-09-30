@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "No more checking pill"
+text = """
+"Checking for new mail…" no longer pops up over the list. The turning
+arrows on the refresh button and on each account's inbox already show that
+mail is being checked, and a failed check still says what went wrong.
+"""

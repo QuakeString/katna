@@ -180,6 +180,14 @@ lto = "fat"
 codegen-units = 1
 strip = true
 
+# Windows test builds (Windows package run with "Full build" off): thin LTO
+# and parallel code generation build much faster, for a slightly
+# bigger and slower Katna.
+[profile.quick]
+inherits = "release"
+lto = "thin"
+codegen-units = 16
+
 # Katna Mail keeps its function names (not line tables), so crash reports
 # and `coredumpctl` stacks are readable (docs/ARCHITECTURE.md §19.2): about
 # 8 MB within its budget. The daemon cannot afford it and stays stripped.

@@ -66,6 +66,7 @@ shortcut-page-calendar = Calendar
 shortcut-page-contacts = Contacts
 shortcut-page-tasks = Tasks
 shortcut-page-notes = Notes
+shortcut-page-files = Files
 shortcut-search = Search mail
 # Shows or hides the folder pane on the left.
 shortcut-navigation = Show or fold the menu

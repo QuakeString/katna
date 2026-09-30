@@ -84,6 +84,7 @@ fn run() -> ExitCode {
             Ok(secrets) => secrets,
             Err(err) => return fail(err),
         };
+        let bus = connection.clone();
         let instance =
             match Instance::start(paths, secrets, WorkerConfig::default(), connection).await {
                 Ok(instance) => instance,
@@ -101,7 +102,12 @@ fn run() -> ExitCode {
             tracing::info!(?signal, "stopping");
         }
         .or(async {
-            let _ = updated.set(update::replaced().await);
+            let binary = update::replaced().await;
+            if update::restart_by_systemd(&bus).await {
+                // Its SIGTERM stops this one above.
+                std::future::pending::<()>().await;
+            }
+            let _ = updated.set(binary);
         });
         let ended = instance.serve(stop).await;
         if let (Ended::Stopped, Some(binary)) = (ended, updated.get()) {

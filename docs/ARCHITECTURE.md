@@ -1098,8 +1098,16 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
 - Updates: a package update replaces the binary while the old one runs.
   Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced
-  it shuts down gracefully and `exec`s the new binary (same PID, so systemd
-  keeps tracking it). No `systemctl --user restart` after an update.
+  it asks systemd (`RestartUnit` on the service it runs as) to restart it,
+  which stops it with SIGTERM and starts the new binary. Without systemd it
+  shuts down gracefully and `exec`s the new binary. It used to `exec` under
+  systemd too, but shutting down releases the bus name, systemd stops a
+  `Type=dbus` service that loses its name, and its SIGTERM got lost in the
+  exec, so 90 s later systemd killed the new daemon and its whole group.
+  No `systemctl --user restart` after an update.
+- A Katna Mail the daemon starts (tray, notification, search) moves to its
+  own `app-in.invenia.katna.Mail-<pid>.scope` (`StartTransientUnit`), so the
+  daemon stopping or restarting never closes its windows.
 
 ### 9.2.1 What runs today (Phase 1)
 
@@ -1283,8 +1291,13 @@ parses the HTML body with `html5ever` (browser-grade error recovery) and
 walks it once into a small layout tree (`katna_render::html::Document`):
 paragraphs of styled runs (bold, italic, underline, strike, colors,
 monospace, links), headings, lists, quotes, `<pre>`, rules, boxes with
-background, padding, border, radius and width, table rows as rows of cells,
-button-like inline boxes, and images. Only inline `style` attributes and
+background, padding, border (all round, or a top or bottom divider),
+radius and width, table rows as rows of cells, button-like inline boxes,
+and images. As in a browser, a table cell is never narrower than its
+longest word or image (estimated from the font size, or its whole line
+under `nowrap`), and the rows of one table with the same number of cells
+share their columns' widths, so `width="1%"` columns hold their headings
+on one line and line up. Only inline `style` attributes and
 presentational attributes are read; `<style>` sheets are ignored. The walk
 is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
 unknown elements never reach the tree, hidden preheaders are dropped, link
@@ -2173,7 +2186,18 @@ Gemini or confidential mode):
   the browser or the contact) and on a task (details, done, star, Date:
   today, tomorrow, in a week, all day or no date, and delete). Changes
   go through the same paths as the event card and the Tasks page, so a
-  repeating event asks which occurrences and each change has Undo. The "select all
+  repeating event asks which occurrences and each change has Undo. In
+  the side panel (`calendar/side_menu.rs`) a calendar's menu has Show
+  only this, Color, Rename and Delete (Remove from list for one shared
+  with the person), and an account heading's has New calendar, Show or
+  Hide all and Account settings. These change the calendar on the
+  account's service first, by its best method (Google Calendar API
+  `calendars` and `calendarList`, Microsoft Graph `/me/calendars` with
+  the nearest Outlook colour, CalDAV `MKCALENDAR`, `PROPPATCH` and
+  `DELETE`, Zoho's `calendars` for one's own), and only then in the store
+  (`katna_sync::calendar::manage`, the daemon's `calendar/manage.rs`);
+  what a service can't do shows dimmed with a short reason. Rename and
+  colour have Undo; delete asks first. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.
@@ -2404,6 +2428,23 @@ desktop's own app stays one click away.
   the file instead. Save writes where the user chooses.
 - Not yet: text search in PDFs, printing, pictures inside documents,
   old Word files and slides.
+- **Files page** (the attachment library, from the HEY study's Files):
+  the last app of the rail (after Feeds, Ctrl+7, `--page files`) shows
+  every named attachment of every account as the cards above, newest
+  first under month headings, or as a list. It reads the attachment lists
+  sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
+  schema change, no server, works offline. Mail in Trash or Spam is left
+  out, a file sent again (same name and size) shows once, and pictures
+  under 12 KB (signature logos) are skipped; it reads at most 20,000
+  files. The side column (a drawer and chips on a phone) narrows it to a
+  kind of file, an account, or received or sent; chips pick a sender, a
+  time and the order; the top bar's search box matches names, subjects
+  and senders. A click opens a file as the list's chips do (downloading
+  its mail first); the hover panel, the right-click menu and the viewer
+  (opened from this page) offer **Show the mail**, and the menu also
+  opens the mail in a new window, forwards the file in a new mail, and
+  shows the sender's files. Thumbnails are made in the background only
+  for cards on show whose mail is downloaded, and at most 96 are kept.
 
 ### 13.9 Window sizes
 
@@ -3024,6 +3065,18 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   set it (`katna_platform::mimeapps`, in the user's `mimeapps.list` and any
   desktop-specific list that names another app). Plasma and GNOME read
   these files. Under Flatpak this needs the OpenURI portal instead (later).
+- **Send with Katna Mail** in the file managers' right-click menus on files
+  and folders runs `katna-mail --attach [--from ADDRESS] FILE…`: a new
+  message with them attached, a folder as a zip of it; a running app gets
+  it as the `attach` action, and files arriving within two seconds join the
+  same message (Explorer starts one process per file). With several mail
+  accounts the entry is a submenu of them (`katna_platform::file_menus`).
+  Dolphin: the package's service menu in `/usr/share/kio/servicemenus`,
+  and the daemon's copy with the submenu in the user's
+  `~/.local/share/kio/servicemenus` (same name, so it wins) while there are
+  several accounts. GNOME Files: a nautilus-python extension that reads
+  `send-menu.json`, which the daemon writes in Katna's data folder. The
+  daemon rewrites both at start and when accounts change.
 - **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
   Message, Settings, Help) with `com.canonical.dbusmenu` at
   `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their
@@ -3908,6 +3961,13 @@ media code, nothing added to startup.
   `text<https://…>` as `text`) without the rules of underscores
   (`calendar/description.rs`); only the details scroll, the title and
   Going? stay in sight.
+- An event Gmail made from a mail (its description links to
+  `mail.google.com/mail?extsrc=cal&plid=…`, an id only Gmail reads) gets
+  Open the mail on its card: Katna searches its own index for the event's
+  title and place words in the year of mail before the event's day,
+  keeps a hit in the event's account, and opens it; with no hit, Gmail's
+  link opens in the browser (`calendar/from_mail.rs`). A task made from a
+  mail keeps its `Message-ID` and opens the mail from its card as well.
 
 ## 19. Security and privacy
 
@@ -4911,6 +4971,7 @@ menu.
 | SNI tray, badge on the launcher | notification-area icon with the same menu and the unread count drawn on it (`tray-icon` on a `winit` loop). A taskbar overlay badge needs COM calls the workspace's `unsafe_code = "forbid"` rules out, so it waits for a safe wrapper |
 | freedesktop notifications | toasts, under the AppUserModelID Setup registers: the daemon serves `org.freedesktop.Notifications` on Katna's bus itself (`katna_platform::toasts`), so `katna-notify` is unchanged |
 | XDG mimeapps (mailto) | `Katna.Mailto` under `HKCU\Software\Classes`, with Capabilities so Katna is listed in Settings > Default apps. Windows only lets people pick the default there, so Katna's "Make default" opens that page |
+| file manager menus (§15.2) | Explorer's `*\shell\KatnaMail.Send` and `Directory\shell\KatnaMail.Send` under `HKCU\Software\Classes`, one entry from Setup, rewritten by the daemon with an `ExtendedSubCommandsKey` submenu when there are several accounts. Windows 11 shows it under Show more options (its short menu needs a packaged app's `IExplorerCommand`); Setup also puts Katna Mail in Send to |
 | print portal | the PDF opens in the default PDF app to print from there |
 | "Open with" portal | Windows' Open with dialog |
 | KRunner, GNOME search | no third-party results in Start search; a PowerToys Run plugin later |
@@ -4919,8 +4980,9 @@ menu.
 ### 27.2 Setup
 
 Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
-Katna's look: one rounded window with its own shadow and close button (the
-same on Windows 10, which draws windows square, and 11), the logo, the
+Katna's look: one window with its own close button, whose shadow, border
+and corners Windows draws (round on Windows 11, square on Windows 10; a
+see-through window with a card drawn inside showed as a grey box), the logo, the
 choices, Install, a progress bar and Open Katna, light or dark as Windows
 is set. The choices: install for just me (the default, into
 `%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
@@ -4954,10 +5016,15 @@ removes. Setup starts PowerShell and icacls by their full System32 paths
 and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
 Downloads are never run or loaded as administrator.
 
-CI builds Setup.exe into a `windows-latest` pre-release when the owner
-runs the Windows package workflow by hand on `main` (Actions > Windows
-package > Run workflow); while Katna is young, pushes and pull requests
-test on Arch only, and the Windows and Ubuntu CI jobs also run only by
-hand. Without a code-signing
+Arch Linux is the primary platform: its CI (`ci.yml`) alone gates pull
+requests and the Arch package. Ubuntu and Windows are secondary: after
+each push to `main` the Secondary workflow (`secondary.yml`) runs their
+tests beside Arch without blocking it, a newer push cancelling an older
+run, and once the Windows tests pass it builds Setup.exe with the faster
+`quick` profile (thin LTO) and publishes it as the `windows-latest`
+pre-release. The Windows package workflow can also be run by hand
+(Actions > Windows package > Run workflow; tick Full build for the
+`release` profile). A Claude thread follows Secondary's results and fixes
+what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.

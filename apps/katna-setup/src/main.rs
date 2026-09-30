@@ -58,8 +58,14 @@ const VERSION: &str = katna_core::crash::VERSION;
 
 /// The window's card, and the clear margin around it its shadow falls in.
 const CARD: (f32, f32) = (580.0, 520.0);
-const MARGIN: f32 = 24.0;
+const MARGIN: f32 = if WINDOWS_FRAME { 0.0 } else { 24.0 };
 const RADIUS: f32 = 16.0;
+
+/// On Windows the card is the whole window, and Windows draws its shadow,
+/// border and, on Windows 11, round corners. A see-through window there
+/// shows as a grey box behind the card, with Windows' own border and
+/// shadow around that box instead.
+const WINDOWS_FRAME: bool = cfg!(windows);
 
 /// What the command line asks for.
 #[derive(Debug, Default)]
@@ -199,7 +205,11 @@ fn main() -> ExitCode {
                 appears_transparent: true,
                 ..Default::default()
             }),
-            window_background: WindowBackgroundAppearance::Transparent,
+            window_background: if WINDOWS_FRAME {
+                WindowBackgroundAppearance::Opaque
+            } else {
+                WindowBackgroundAppearance::Transparent
+            },
             app_id: Some(katna_core::ids::MAIL_APP_ID.to_owned()),
             is_resizable: false,
             ..Default::default()
@@ -497,27 +507,29 @@ impl Render for Setup {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(RADIUS))
-            .border_1()
-            .border_color(c.outline)
             .bg(c.page)
             .text_color(c.text)
-            .shadow(vec![
-                BoxShadow {
-                    color: rgba(0x0000002e).into(),
-                    offset: point(px(0.0), px(8.0)),
-                    blur_radius: px(24.0),
-                    spread_radius: px(0.0),
-                    inset: false,
-                },
-                BoxShadow {
-                    color: rgba(0x0000001f).into(),
-                    offset: point(px(0.0), px(1.0)),
-                    blur_radius: px(4.0),
-                    spread_radius: px(0.0),
-                    inset: false,
-                },
-            ])
+            .when(!WINDOWS_FRAME, |card| {
+                card.rounded(px(RADIUS))
+                    .border_1()
+                    .border_color(c.outline)
+                    .shadow(vec![
+                        BoxShadow {
+                            color: rgba(0x0000002e).into(),
+                            offset: point(px(0.0), px(8.0)),
+                            blur_radius: px(24.0),
+                            spread_radius: px(0.0),
+                            inset: false,
+                        },
+                        BoxShadow {
+                            color: rgba(0x0000001f).into(),
+                            offset: point(px(0.0), px(1.0)),
+                            blur_radius: px(4.0),
+                            spread_radius: px(0.0),
+                            inset: false,
+                        },
+                    ])
+            })
             .p(px(32.0))
             .child(drag_area())
             .child(

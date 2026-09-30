@@ -105,6 +105,8 @@ pub(super) enum ViewerEvent {
     Unreadable(Arc<AttachmentFile>),
     /// Reply to the message with this file (a marked copy) attached.
     Reply(Arc<AttachmentFile>),
+    /// Show the mail the file came with (opened from the Files page).
+    ShowMail,
 }
 
 pub(super) struct Viewer {
@@ -158,6 +160,8 @@ pub(super) struct Viewer {
     /// The viewer shows the open conversation's message, so a marked copy
     /// can go in a reply to it.
     can_reply: bool,
+    /// Offers Show the mail: opened from the Files page, away from it.
+    pub(super) can_show_mail: bool,
     pub(super) th: Theme,
 }
 
@@ -279,6 +283,7 @@ impl Viewer {
             pinch_zoom: 0.0,
             markup: Markup::new(),
             can_reply,
+            can_show_mail: false,
             th,
         };
         this.show(current, cx);
@@ -1349,6 +1354,17 @@ impl Render for Viewer {
                         self.file.is_some() && matches!(self.content, Content::Pdf(_)),
                         |d| d.child(self.markup_button(&th, cx)),
                     )
+                    .when(self.can_show_mail, |d| {
+                        d.child(
+                            bar_button_tip(
+                                "viewer-show-mail",
+                                "mail",
+                                tr!("files-show-mail").into(),
+                                &th,
+                            )
+                            .on_click(cx.listener(|_, _, _, cx| cx.emit(ViewerEvent::ShowMail))),
+                        )
+                    })
                     .when(self.file.is_some(), |d| {
                         let save = if self.saves_marks() {
                             bar_button_tip(

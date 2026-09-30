@@ -47,6 +47,7 @@ mod detached;
 mod download;
 mod event_edit;
 mod feedback_page;
+mod files_page;
 mod katna_account;
 mod keymap;
 mod labels;
@@ -182,6 +183,7 @@ actions!(
         ShowContacts,
         ShowTasks,
         ShowNotes,
+        ShowFiles,
         OpenSettings,
         ShowShortcuts,
         ShowWhatsNew,
@@ -472,6 +474,8 @@ pub struct MailWindow {
     contacts: contacts_page::ContactsPage,
     /// The Tasks page.
     tasks: tasks_page::TasksPage,
+    /// The Files page: every attachment in one place.
+    library: files_page::Library,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
     /// How far text in a pill goes up to look centred in it, per pixel
@@ -831,6 +835,7 @@ impl MailWindow {
             people_task: None,
             contacts: Default::default(),
             tasks: Default::default(),
+            library: Default::default(),
             font,
             pill_text_lift: 0.0,
             mail: Mail::open(&paths),
@@ -2069,7 +2074,13 @@ impl MailWindow {
                     }
                     Listing::Search { .. } => (Vec::new(), None),
                 };
+                let open = self.kept_open_line(&listing, &entries);
                 self.entries = entries;
+                // The open conversation stays where it was until it closes,
+                // as in webmail, though reading it took it out of the list.
+                if let Some((at, entry)) = open {
+                    self.entries.insert(at.min(self.entries.len()), entry);
+                }
                 self.reset_list(true);
                 if let Some(unread) = unread {
                     self.category_unread = unread;
@@ -2151,6 +2162,10 @@ impl MailWindow {
         }
         if self.app == RailApp::Tasks {
             self.on_tasks_search(search, event, window, cx);
+            return;
+        }
+        if self.app == RailApp::Files {
+            self.on_files_search(search, event, window, cx);
             return;
         }
         match event {
@@ -2562,6 +2577,24 @@ impl MailWindow {
         self.send(command, done, undo.clone(), false, cx);
         cx.notify();
         undo
+    }
+
+    /// The open conversation's line and where it is, when the list
+    /// `listing` is about to get `entries` without it: a list of unread
+    /// mail loses the conversation that opening it marked read.
+    fn kept_open_line(&self, listing: &Listing, entries: &[Entry]) -> Option<(usize, Entry)> {
+        let Listing::Unified { view, .. } = listing else {
+            return None;
+        };
+        if view.filter() == Default::default() || !self.reading || self.detached {
+            return None;
+        }
+        let key = self.reader.as_ref()?.key;
+        if entries.iter().any(|e| e.key == key) {
+            return None;
+        }
+        let at = self.entries.iter().position(|e| e.key == key)?;
+        Some((at, self.entries[at]))
     }
 
     /// Takes lines out of the list, keeping the cursor on the next one.
@@ -3429,7 +3462,6 @@ impl Render for MailWindow {
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
-        let checking_pill = self.render_checking_pill(&th);
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -3466,7 +3498,6 @@ impl Render for MailWindow {
             .children(add_account)
             .children(context_menu)
             .children(nav_menu)
-            .children(checking_pill)
             .children(snooze_menu)
             .children(danger)
             .children(delete_ask)
@@ -3571,6 +3602,9 @@ impl Render for MailWindow {
             }))
             .on_action(cx.listener(|this, _: &ShowNotes, window, cx| {
                 this.show_page(RailApp::Notes, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowFiles, window, cx| {
+                this.show_page(RailApp::Files, window, cx)
             }))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))

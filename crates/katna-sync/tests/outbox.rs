@@ -588,6 +588,48 @@ fn keyring() -> Option<tempfile::TempDir> {
 }
 
 #[test]
+fn a_reused_outbox_id_does_not_take_an_old_tracking() {
+    let (tmp, mut store, account) = setup();
+    // An old tracked message, every copy sent, under the ID the outbox
+    // gives out again once it is empty.
+    let (id, _) = queue_tracked(&mut store, account, HTML_MESSAGE);
+    for recipient in store.tracking_for_outbox(id).unwrap().unwrap().recipients {
+        store
+            .tracked_copy_sent(&recipient.tracking_id, now())
+            .unwrap();
+    }
+    let message = store.outbox_entry(id).unwrap().unwrap().message;
+    let mut batch = store.mail_batch().unwrap();
+    batch.forget_outgoing(message).unwrap();
+    batch.commit().unwrap();
+    let raw = String::from_utf8_lossy(HTML_MESSAGE)
+        .replace("<m@example.org>", "<new@example.org>")
+        .replace("Proposal v2", "Proposal v3");
+    let again = outbox::queue_with(&mut store, account, raw.as_bytes(), 0, now(), true).unwrap();
+    assert_eq!(again, id);
+    // No tracking server here: the new message goes out untracked, to
+    // everyone, instead of to nobody.
+    let smtp = FakeSmtp {
+        tracking: Some((TEST_SERVER.into(), "t".into())),
+        ..FakeSmtp::default()
+    };
+    run_until(&smtp, &tmp, config(3), SendState::Sent);
+    let received = smtp.received.lock().unwrap();
+    assert_eq!(received.len(), 1);
+    assert_eq!(
+        received[0].to,
+        ["bob@example.org", "carol@example.org", "dave@example.org"]
+    );
+    assert!(received[0].message.contains("Proposal v3"));
+    assert!(store.tracking_for_outbox(id).unwrap().is_none());
+    let old = store
+        .tracking_for_message("m@example.org")
+        .unwrap()
+        .unwrap();
+    assert!(old.outbox_id < 0);
+}
+
+#[test]
 fn signed_and_encrypted_mail_is_tracked_per_copy() {
     let Some(home) = keyring() else { return };
     let gnupg = katna_crypto::Gnupg::new().with_home(home.path());

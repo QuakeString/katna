@@ -4,10 +4,17 @@ name: Windows package
 # `windows-latest` pre-release with the new KatnaSetup.exe, so Windows users
 # install and update Katna without building it (packaging/windows/README.md).
 
-# Only when run by hand (Actions > Windows package > Run workflow) while
-# Katna is young; run on main, it publishes as before.
+# Secondary (secondary.yml) runs it after each push to main once the
+# Windows tests pass; it can also be run by hand (Actions > Windows package
+# > Run workflow). Run on main, it publishes.
 on:
   workflow_dispatch:
+    inputs:
+      full:
+        description: "Full build: smallest, fastest Katna, but much slower to build"
+        type: boolean
+        default: false
+  workflow_call:
 
 concurrency:
   group: windows-package-${{ github.ref }}
@@ -36,6 +43,15 @@ jobs:
           path: target/dbus
           key: windows-dbus-${{ hashFiles('ci/windows-dbus.ps1') }}
       - name: Build Katna Setup
+        env:
+          # "Sign in with Google/Microsoft/Zoho" (katna_core::ids), as for the
+          # Arch package; unset hides the buttons.
+          KATNA_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_ID }}
+          KATNA_GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_SECRET }}
+          KATNA_MICROSOFT_OAUTH_CLIENT_ID: ${{ secrets.KATNA_MICROSOFT_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_ID: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
+          KATNA_PROFILE: ${{ inputs.full && 'release' || 'quick' }}
         run: ci/windows-package.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

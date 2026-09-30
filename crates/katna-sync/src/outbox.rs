@@ -883,8 +883,15 @@ async fn prepare_tracking<O: Outgoing>(
         return Ok(None);
     };
     let base = client.server().base().to_owned();
+    let parsed = katna_import::parse_message(raw).unwrap_or_default();
     if let Some(message) = store.tracking_for_outbox(entry.id)? {
-        return Ok(Some(TrackingPlan { base, message }));
+        // A retry of this message; an old entry's tracking where the
+        // outbox gave its ID out again.
+        if parsed.message_id.as_deref() == Some(message.message_id.as_str()) {
+            return Ok(Some(TrackingPlan { base, message }));
+        }
+        tracing::info!(id = entry.id, "an old message's tracking had this ID");
+        store.detach_tracking(entry.id)?;
     }
     let untracked = |why: &str| {
         tracing::info!(id = entry.id, why, "sending untracked");
@@ -902,7 +909,6 @@ async fn prepare_tracking<O: Outgoing>(
     if envelope.to.len() > MAX_TRACKED_RECIPIENTS {
         return untracked("too many recipients");
     }
-    let parsed = katna_import::parse_message(raw).unwrap_or_default();
     let Some(message_id) = parsed.message_id.clone() else {
         return untracked("no Message-ID");
     };

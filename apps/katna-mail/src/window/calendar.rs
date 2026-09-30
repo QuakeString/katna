@@ -36,9 +36,11 @@ use menu::CalTarget;
 mod birthdays;
 mod description;
 mod free;
+mod from_mail;
 pub(super) mod menu;
 mod search;
 mod sets;
+mod side_menu;
 mod tasks;
 mod year_peek;
 use crate::theme::{Theme, fade, mix};
@@ -255,6 +257,8 @@ pub(super) struct CalendarPage {
     pub(super) focus: FocusHandle,
     /// A new calendar set's name being typed.
     naming_set: Option<sets::Naming>,
+    /// A calendar's name being typed in the side panel.
+    naming: Option<side_menu::Naming>,
     /// The top bar's search box, finding events.
     pub(super) search: search::Search,
     /// Where each account's calendar sync stands.
@@ -289,6 +293,7 @@ impl CalendarPage {
             ask: None,
             focus: cx.focus_handle(),
             naming_set: None,
+            naming: None,
             search: search::Search::default(),
             accounts: AccountStatus::default(),
             peek: year_peek::YearPeek::default(),
@@ -587,7 +592,7 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if self.cancel_calendar_set(window, cx) {
+        if self.cancel_calendar_set(window, cx) || self.cancel_calendar_naming(window, cx) {
             return;
         }
         self.cancel_calendar_drags();
@@ -1381,8 +1386,12 @@ impl MailWindow {
                 }
                 _ => None,
             };
+            let naming = self.calendar.naming.as_ref();
             let rows = calendars.into_iter().map(|calendar| {
                 let id = calendar.id;
+                if let Some(naming) = naming.filter(|n| n.what == side_menu::NameFor::Rename(id)) {
+                    return self.render_calendar_naming(naming, th, cx);
+                }
                 let shown = !self.calendar_hidden(id);
                 let color = parse_color(&calendar.color).unwrap_or(DEFAULT_COLOR);
                 div()
@@ -1399,6 +1408,10 @@ impl MailWindow {
                     .hover(|s| s.bg(rgba(th.hover)))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.toggle_calendar(id, cx)))
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Calendar(id), cx),
+                    )
                     .child(crate::widgets::checkbox_tinted(
                         ("calendar-box", id as usize),
                         shown,
@@ -1414,7 +1427,11 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(calendar_name(calendar)),
                     )
+                    .into_any_element()
             });
+            let new_here = naming
+                .filter(|n| n.what == side_menu::NameFor::New(account))
+                .map(|n| self.render_calendar_naming(n, th, cx));
             div()
                 .flex()
                 .flex_col()
@@ -1436,6 +1453,10 @@ impl MailWindow {
                             }
                             cx.notify();
                         }))
+                        .on_mouse_down(
+                            MouseButton::Right,
+                            self.calendar_menu_on(CalTarget::Account(account), cx),
+                        )
                         .child(
                             div()
                                 .flex_1()
@@ -1453,7 +1474,7 @@ impl MailWindow {
                         )),
                 )
                 .children(note)
-                .when(!folded, |d| d.children(rows))
+                .when(!folded, |d| d.children(rows).children(new_here))
         });
         div()
             .flex()
@@ -2792,6 +2813,8 @@ impl MailWindow {
             None => (!data.join_url.is_empty()).then(|| (None, data.join_url.clone())),
         };
         let web = data.web_link.clone();
+        // An event Gmail made from a mail opens that mail.
+        let gmail = from_mail::gmail_link(&data.description).map(|link| (link, occurrence.clone()));
         let editable = self.can_edit(occurrence);
         let emails = !self.other_guests(occurrence).is_empty();
         // A saved contact's birthday opens their contact page.
@@ -2862,6 +2885,15 @@ impl MailWindow {
                                 if let Some(card) = birthday_of {
                                     this.open_birthday_contact(card, window, cx);
                                 }
+                            })),
+                    )
+                })
+                .when_some(gmail, |d, (link, occurrence)| {
+                    d.child(
+                        icon_button("event-mail", "inbox", 20.0, th)
+                            .tooltip(tip(tr!("calendar-open-mail"), th))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.open_event_mail(&occurrence, link.clone(), window, cx)
                             })),
                     )
                 })

@@ -94,6 +94,8 @@ impl MailWindow {
         }
         if let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) {
             editor.changed = false;
+            // It takes the card's place at once.
+            editor.fade = false;
         }
         cx.notify();
     }

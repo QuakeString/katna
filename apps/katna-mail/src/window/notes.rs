@@ -17,6 +17,7 @@ pub(super) use line_tasks::note_of_task;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use gpui::{
@@ -182,10 +183,19 @@ impl Render for NoDragImage {
     }
 }
 
+/// Notes opened so far, numbering each opening.
+static OPENINGS: AtomicUsize = AtomicUsize::new(0);
+
 /// The note open over the board.
 struct Editor {
     /// 0 until the new note is first saved.
     id: i64,
+    /// Which opening this is, so its fade runs once: the first save
+    /// gives the note its id without fading it in again.
+    opening: usize,
+    /// Fades in over the page; not in place of an event's card, which
+    /// would leave a frame with neither.
+    fade: bool,
     title: Entity<TextInput>,
     body: Entity<RichEditor>,
     color: i64,
@@ -461,6 +471,8 @@ impl MailWindow {
             let mut input = TextInput::new(tr!("notes-title"), cx);
             input.set_accent(accent);
             input.set_text(title_text, cx);
+            // A long title shows its start; typing goes to the text.
+            input.caret_to_start(cx);
             input
         });
         let palette = super::compose::palette(&self.theme(window));
@@ -502,6 +514,8 @@ impl MailWindow {
         let view = self.notes.as_ref().map_or(NotesView::Notes, |p| p.view);
         let editor = Editor {
             id: note.map_or(0, |n| n.id),
+            opening: OPENINGS.fetch_add(1, Ordering::Relaxed),
+            fade: true,
             title,
             body,
             color: note.map_or(0, |n| n.color),
@@ -1858,6 +1872,7 @@ impl MailWindow {
         let bg = note_color(editor.color, th).unwrap_or(th.surface);
         let vh = unpx(window.viewport_size().height);
         let id = editor.id;
+        let (opening, fades) = (editor.opening, editor.fade);
         let pinned = editor.pinned;
         let archived = editor.archived;
         let item = editor.item(cx);
@@ -2275,10 +2290,10 @@ impl MailWindow {
                 .on_click(cx.listener(|this, _, _, cx| this.close_note(cx)))
                 .child(card)
                 .with_animation(
-                    ("note-editor-in", id as usize),
+                    ("note-editor-in", opening),
                     gpui::Animation::new(Duration::from_millis(180))
                         .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t),
+                    move |el, t| el.opacity(if fades { t } else { 1.0 }),
                 )
                 .into_any_element(),
         )

@@ -8,6 +8,7 @@
 //! No GPUI here.
 
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 use async_channel::{Receiver, Sender};
 use futures_lite::future;
@@ -36,6 +37,12 @@ pub enum Request {
     /// Open this message in the mail window: `open-message` when it starts
     /// the app, as the new window is the place for it.
     ShowMessage(i64),
+    /// A new message with these files attached (`app_action::ATTACH`), sent
+    /// from the account with the address `from` if one is given.
+    Attach {
+        from: Option<String>,
+        paths: Vec<PathBuf>,
+    },
 }
 
 impl Request {
@@ -72,6 +79,26 @@ impl Request {
                 message: Some(id),
             } if name == app_action::OPEN_MESSAGE => Self::ShowMessage(id),
             other => other,
+        }
+    }
+
+    /// `app_action::ATTACH`'s parameters: the address, then the paths.
+    fn attach_params(&self) -> Option<Vec<String>> {
+        let Self::Attach { from, paths } = self else {
+            return None;
+        };
+        let mut params = vec![from.clone().unwrap_or_default()];
+        params.extend(paths.iter().map(|p| p.to_string_lossy().into_owned()));
+        Some(params)
+    }
+
+    /// The request `app_action::ATTACH`'s parameters stand for.
+    fn from_attach_params(params: Vec<String>) -> Self {
+        let mut params = params.into_iter();
+        let from = params.next().filter(|from| !from.is_empty());
+        Self::Attach {
+            from,
+            paths: params.map(PathBuf::from).collect(),
         }
     }
 
@@ -130,6 +157,14 @@ impl Application {
         platform_data: HashMap<String, OwnedValue>,
     ) {
         keep_activation_token(&platform_data);
+        if action_name == app_action::ATTACH {
+            let params = parameter
+                .into_iter()
+                .filter_map(|value| String::try_from(value).ok())
+                .collect();
+            let _ = self.requests.try_send(Request::from_attach_params(params));
+            return;
+        }
         if app_action::takes_text(&action_name) {
             if let Some(text) = parameter
                 .into_iter()
@@ -271,6 +306,19 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
                 )
                 .await
         }
+        Some(attach @ Request::Attach { .. }) => {
+            let texts = attach.attach_params().unwrap_or_default();
+            let params: Vec<Value<'_>> = texts.iter().map(|t| Value::from(t.as_str())).collect();
+            connection
+                .call_method(
+                    app,
+                    path,
+                    interface,
+                    "ActivateAction",
+                    &(app_action::ATTACH, params, platform),
+                )
+                .await
+        }
         Some(Request::Search(text)) => {
             let params = vec![Value::from(text.as_str())];
             connection
@@ -354,5 +402,28 @@ mod tests {
             Some(request("reply-all"))
         );
         assert_eq!(Request::for_message("--inbox", 42), None);
+    }
+
+    #[test]
+    fn attach_parameters_round_trip() {
+        let request = Request::Attach {
+            from: Some("kay@example.com".to_owned()),
+            paths: vec![
+                "/home/kay/Quote.pdf".into(),
+                "/home/kay/Garden plans".into(),
+            ],
+        };
+        let params = request.attach_params().unwrap();
+        assert_eq!(params[0], "kay@example.com");
+        assert_eq!(Request::from_attach_params(params), request);
+
+        let usual = Request::Attach {
+            from: None,
+            paths: vec!["/tmp/a.txt".into()],
+        };
+        assert_eq!(
+            Request::from_attach_params(usual.attach_params().unwrap()),
+            usual
+        );
     }
 }

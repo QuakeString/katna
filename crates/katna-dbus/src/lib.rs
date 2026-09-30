@@ -373,6 +373,11 @@ pub mod app_action {
     /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, and
     /// the Calendar takes a day too ([`calendar_page`]).
     pub const OPEN_PAGE: &str = "open-page";
+    /// Start a new message with files attached ("Send with Katna Mail" in
+    /// a file manager); the parameters are texts (`s`): the address to
+    /// send from (empty for the usual one), then the files' full paths.
+    /// Folders go as zips.
+    pub const ATTACH: &str = "attach";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -387,6 +392,7 @@ pub mod app_action {
             REPLY_ALL => Some("--reply-all"),
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
+            ATTACH => Some("--attach"),
             _ => None,
         }
     }
@@ -718,6 +724,26 @@ macro_rules! pim_proxy {
             /// `calendar.id`) everywhere: the Calendar page, the agenda and
             /// the desktop's clock. Sends `CalendarChanged`.
             fn set_calendar_hidden(&self, id: i64, hidden: bool) -> zbus::Result<()>;
+
+            /// Adds a calendar named `name` in `color` (`#rrggbb`, or empty
+            /// for the service's pick) to `account`, on its service, or to
+            /// this computer (0). Returns its `calendar.id`. Fails with the
+            /// service's reason when it refuses.
+            fn add_calendar(&self, account: i64, name: &str, color: &str) -> zbus::Result<i64>;
+
+            /// Renames calendar `id`, on its service first.
+            fn rename_calendar(&self, id: i64, name: &str) -> zbus::Result<()>;
+
+            /// Gives calendar `id` colour `color` (`#rrggbb`), on its service
+            /// first. Returns the colour it got: an Outlook calendar takes
+            /// the nearest of Outlook's.
+            fn set_calendar_color(&self, id: i64, color: &str) -> zbus::Result<String>;
+
+            /// Deletes calendar `id` with its events (`delete`), or takes one
+            /// shared with the person off their list, on its service first.
+            /// Only Google tells the two apart; other services delete one's
+            /// own calendar and unsubscribe from someone else's either way.
+            fn delete_calendar(&self, id: i64, delete: bool) -> zbus::Result<()>;
 
             /// Where each account's calendar sync stands: its ID, a
             /// [`calendar_state`] and a detail for people (may be empty).

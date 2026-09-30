@@ -1201,3 +1201,52 @@ fn pop3_downloads_what_imap_delivered() {
         });
     }
 }
+
+#[test]
+#[ignore = "needs the dev/compose.yaml servers"]
+fn radicale_calendars_are_made_renamed_recoloured_and_deleted() {
+    use katna_core::{AccountId, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::calendar::{caldav::CalDav, edit::Remote, manage};
+
+    smol::block_on(async {
+        let origin = format!("http://127.0.0.1:{}", port("KATNA_RADICALE_PORT", 5232));
+        let dav = CalDav::with_origin(&origin, USER, PASSWORD, tls());
+        let remote = Remote::CalDav(&dav);
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = AccountId(1);
+        let name = unique("katna-test-calendar");
+        let made = manage::add(&remote, &name, "#d50000").await.unwrap();
+        dav.sync(&mut store, account, USER).await.unwrap();
+        let find = |store: &Store, remote_id: &str| {
+            store
+                .calendars()
+                .unwrap()
+                .into_iter()
+                .find(|c| c.remote_id == remote_id)
+        };
+        let listed = find(&store, &made.remote_id).expect("the new calendar is listed");
+        assert_eq!(
+            (listed.name.as_str(), listed.color.as_str()),
+            (name.as_str(), "#d50000")
+        );
+
+        let renamed = format!("{name}-renamed");
+        manage::rename(&remote, &listed, &renamed).await.unwrap();
+        manage::recolor(&remote, &listed, "#33b679").await.unwrap();
+        dav.sync(&mut store, account, USER).await.unwrap();
+        let listed = find(&store, &made.remote_id).unwrap();
+        assert_eq!(
+            (listed.name.as_str(), listed.color.as_str()),
+            (renamed.as_str(), "#33b679")
+        );
+
+        manage::remove(&remote, &listed, true).await.unwrap();
+        dav.sync(&mut store, account, USER).await.unwrap();
+        assert!(
+            find(&store, &made.remote_id).is_none(),
+            "the calendar is gone"
+        );
+    });
+}
