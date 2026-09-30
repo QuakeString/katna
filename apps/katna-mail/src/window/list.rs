@@ -1636,7 +1636,14 @@ impl MailWindow {
                 .cursor_pointer()
                 .when(ix != self.tab, |d| d.hover(|s| s.bg(rgba(th.hover))))
                 .when(label < 0.5, |d| d.tooltip(tip(tab.label(), th)))
-                .on_click(cx.listener(move |this, _, _, cx| this.open_tab(ix, cx)))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    // The open tab goes back to its top, as its folder does.
+                    if this.tab == ix {
+                        this.glide_list_to_top(cx);
+                    } else {
+                        this.open_tab(ix, cx);
+                    }
+                }))
                 .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)).rounded(TAB_HEIGHT / 2.0))
                 .child(icon(tab.icon, color, TAB_ICON))
                 .when(label > 0.001, |d| {

@@ -1458,6 +1458,8 @@ impl MailWindow {
         if self.tab == tab {
             return;
         }
+        // Another tab opens at its top, without the last one's glide.
+        self.layout.stop_glide();
         self.tab = tab;
         // No fade: the tab's lines replace the last ones in the same frame,
         // as the indicator slides over.
