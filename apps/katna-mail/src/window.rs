@@ -97,9 +97,9 @@ use std::time::{Duration, Instant};
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, MouseButton,
-    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun, WeakEntity,
-    Window, actions, div, prelude::*, rgba,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListOffset,
+    MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun,
+    WeakEntity, Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -364,6 +364,18 @@ enum Listing {
     },
 }
 
+/// What the list showed when a search started: back when the search is
+/// cancelled without a result opened.
+#[derive(Debug, Clone)]
+struct BeforeSearch {
+    listing: Listing,
+    /// The open conversation.
+    open: Option<EntryKey>,
+    /// The line the cursor was on.
+    selected: Option<EntryKey>,
+    top: ListOffset,
+}
+
 /// An open popup menu.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Menu {
@@ -455,6 +467,7 @@ pub struct MailWindow {
     undo_reopens: Vec<(Command, EntryKey)>,
     /// The conversation to open once an undo brings it back to the list.
     reopen_after_undo: Option<EntryKey>,
+    before_search: Option<BeforeSearch>,
     /// The app whose name rolls away at the top left, and how far the
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
@@ -825,6 +838,7 @@ impl MailWindow {
             agenda: agenda::AgendaPanel::new(),
             undo_reopens: Vec::new(),
             reopen_after_undo: None,
+            before_search: None,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
@@ -1503,6 +1517,10 @@ impl MailWindow {
         }
         if !self.reading && !self.split() {
             self.card_seq += 1;
+        }
+        // A result opened: cancelling the search no longer goes back.
+        if matches!(self.listing, Some(Listing::Search { .. })) {
+            self.before_search = None;
         }
         self.selected = Some(ix);
         self.reading = true;
@@ -2218,7 +2236,9 @@ impl MailWindow {
             self.search_task = None;
             if matches!(self.listing, Some(Listing::Search { .. })) {
                 self.open_listed(cx);
+                self.restore_before_search(cx);
             }
+            self.before_search = None;
             return;
         }
         let Some(index) = self.mail.as_mut().ok().and_then(Mail::index) else {
@@ -2244,6 +2264,53 @@ impl MailWindow {
         }));
     }
 
+    /// Keeps what the list shows as a search replaces it, before the
+    /// results take the lines and the open conversation.
+    fn save_before_search(&mut self) {
+        let Some(listing) = self.listing.clone() else {
+            return;
+        };
+        let key = |ix: usize| self.entries.get(ix).map(|e| e.key);
+        self.before_search = Some(BeforeSearch {
+            listing,
+            open: self
+                .reading
+                .then(|| self.reader.as_ref().map(|r| r.key))
+                .flatten(),
+            selected: self.selected.and_then(key),
+            top: self.list_state.logical_scroll_top(),
+        });
+    }
+
+    /// A search cancelled with no result opened: the list goes back to
+    /// where it was, with the conversation that was open open again. The
+    /// list is listed again first (`open_listed`).
+    fn restore_before_search(&mut self, cx: &mut Context<Self>) {
+        let Some(before) = self.before_search.take() else {
+            return;
+        };
+        // Another folder picked meanwhile keeps its own place.
+        if self.listing.as_ref() != Some(&before.listing) {
+            return;
+        }
+        let at = |key: Option<EntryKey>| {
+            key.and_then(|key| self.entries.iter().position(|e| e.key == key))
+        };
+        if let Some(ix) = at(before.selected) {
+            self.selected = Some(ix);
+        }
+        self.list_state.scroll_to(before.top);
+        if let Some(ix) = at(before.open) {
+            if !self.reading && !self.split() {
+                self.card_seq += 1;
+            }
+            self.selected = Some(ix);
+            self.reading = true;
+            self.load_reader(ix, cx);
+        }
+        cx.notify();
+    }
+
     fn show_results(
         &mut self,
         query: String,
@@ -2260,6 +2327,9 @@ impl MailWindow {
                     }
                 }
                 let first = !matches!(self.listing, Some(Listing::Search { .. }));
+                if first {
+                    self.save_before_search();
+                }
                 // The same search again, after the mail changed: keep the
                 // cursor, the ticks and the open conversation.
                 let again = matches!(
