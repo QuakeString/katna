@@ -16,7 +16,8 @@ pub enum Error {
     Io(#[from] io::Error),
 
     /// The TLS handshake failed, for example on an untrusted certificate.
-    #[error("TLS: {0}")]
+    /// The text names the server and reads as a reason on its own.
+    #[error("{0}")]
     Tls(String),
 
     /// The server refused the user name or password.

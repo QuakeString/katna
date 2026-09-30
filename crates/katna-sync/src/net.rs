@@ -56,9 +56,9 @@ impl Tls {
         let provider = Arc::new(ring::default_provider());
         let config = ClientConfig::builder_with_provider(provider)
             .with_safe_default_protocol_versions()
-            .map_err(|e| Error::Tls(e.to_string()))?
+            .map_err(|e| Error::Tls(format!("TLS setup: {e}")))?
             .with_platform_verifier()
-            .map_err(|e| Error::Tls(e.to_string()))?
+            .map_err(|e| Error::Tls(format!("TLS setup: {e}")))?
             .with_no_client_auth();
         Ok(Self::from_config(config, false))
     }
@@ -292,11 +292,14 @@ impl Conn {
             // to a local address for a check and a public one after it.
             check_unverified_peer(&self.host, tcp.peer_addr()?.ip())?;
         }
-        let name =
-            ServerName::try_from(self.host.clone()).map_err(|e| Error::Tls(e.to_string()))?;
+        let name = ServerName::try_from(self.host.clone())
+            .map_err(|e| Error::Tls(format!("{}: not a server name: {e}", self.host)))?;
         let connector = self.tls.connector.clone();
         let tls = with_timeout(CONNECT_TIMEOUT, async {
-            connector.connect(name, tcp).await.map_err(tls_error)
+            connector
+                .connect(name, tcp)
+                .await
+                .map_err(|err| tls_error(&self.host, err))
         })
         .await
         .map_err(|err| match err {
@@ -306,6 +309,18 @@ impl Conn {
                 limit.as_secs()
             )),
             err => err,
+        })
+        .inspect_err(|err| {
+            // Sites a message names (pictures, images) are not the user's
+            // servers: not worth a warning.
+            if let Error::Tls(error) = err {
+                match self.reach {
+                    Reach::Any => tracing::warn!(host = self.host, %error, "TLS handshake failed"),
+                    Reach::Public => {
+                        tracing::debug!(host = self.host, %error, "TLS handshake failed")
+                    }
+                }
+            }
         })?;
         tracing::debug!(host = self.host, "TLS established");
         self.stream = Some(Stream::Tls(Box::new(tls)));
@@ -438,10 +453,53 @@ async fn with_timeout<T>(
 
 /// rustls reports certificate problems as `InvalidData` I/O errors; keep
 /// them apart from network failures.
-fn tls_error(err: io::Error) -> Error {
-    match err.kind() {
-        io::ErrorKind::InvalidData => Error::Tls(err.to_string()),
-        _ => Error::Io(err),
+/// A failed handshake with `host`, which it names: people see it as the
+/// account's reason line, and the log shows which server it was.
+fn tls_error(host: &str, err: io::Error) -> Error {
+    if err.kind() != io::ErrorKind::InvalidData {
+        return Error::Io(err);
+    }
+    let error = match err
+        .get_ref()
+        .and_then(|e| e.downcast_ref::<rustls::Error>())
+    {
+        Some(rustls::Error::InvalidCertificate(problem)) => certificate_problem(host, problem),
+        _ => format!("the secure connection to {host} failed: {err}"),
+    };
+    Error::Tls(error)
+}
+
+/// What is wrong with `host`'s certificate, and who can fix it.
+fn certificate_problem(host: &str, problem: &rustls::CertificateError) -> String {
+    use rustls::CertificateError as E;
+    let day = |time: &UnixTime| {
+        jiff::Timestamp::from_second(time.as_secs() as i64)
+            .map(|t| t.strftime("%Y-%m-%d").to_string())
+            .unwrap_or_default()
+    };
+    match problem {
+        E::ExpiredContext { not_after, .. } => format!(
+            "{host}'s security certificate expired on {} (UTC); the provider has to renew it",
+            day(not_after)
+        ),
+        E::Expired => {
+            format!("{host}'s security certificate has expired; the provider has to renew it")
+        }
+        E::NotValidYet | E::NotValidYetContext { .. } => format!(
+            "{host}'s security certificate is not valid yet; check this computer's date and time"
+        ),
+        E::NotValidForName | E::NotValidForNameContext { .. } => format!(
+            "{host}'s security certificate is for another name; check the server name in the \
+             account's settings"
+        ),
+        E::UnknownIssuer => format!(
+            "{host}'s security certificate is not from an authority this computer trusts; \
+             the provider has to fix it"
+        ),
+        E::Revoked => {
+            format!("{host}'s security certificate was revoked; the provider has to replace it")
+        }
+        other => format!("{host}'s security certificate was refused ({other:?})"),
     }
 }
 
@@ -605,6 +663,35 @@ mod tests {
             // The default reaches it, as tests and local servers need.
             Conn::new(tls).connect_tcp("127.0.0.1", port).await.unwrap();
         });
+    }
+
+    #[test]
+    fn refused_certificates_name_the_server_and_who_fixes_it() {
+        use rustls::CertificateError as E;
+        // 2026-09-14 08:24:52 UTC, as in a real report.
+        let expired = E::ExpiredContext {
+            time: UnixTime::since_unix_epoch(Duration::from_secs(1_790_796_501)),
+            not_after: UnixTime::since_unix_epoch(Duration::from_secs(1_789_374_292)),
+        };
+        assert_eq!(
+            certificate_problem("imap.example.org", &expired),
+            "imap.example.org's security certificate expired on 2026-09-14 (UTC); \
+             the provider has to renew it"
+        );
+        let other_name = certificate_problem("mail.example.org", &E::NotValidForName);
+        assert!(other_name.starts_with("mail.example.org's"), "{other_name}");
+        assert!(other_name.contains("server name"), "{other_name}");
+        let wrapped = io::Error::new(
+            io::ErrorKind::InvalidData,
+            rustls::Error::InvalidCertificate(E::UnknownIssuer),
+        );
+        let err = tls_error("smtp.example.org", wrapped);
+        assert!(matches!(err, Error::Tls(_)), "{err}");
+        assert!(
+            err.to_string()
+                .starts_with("smtp.example.org's security certificate"),
+            "{err}"
+        );
     }
 
     #[test]

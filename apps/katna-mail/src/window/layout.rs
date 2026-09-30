@@ -483,6 +483,9 @@ impl MailWindow {
         if shape.bottom_bar() <= 0.01 {
             return None;
         }
+        // The names under the icons follow the setting the rail's follow;
+        // without them the icons sit in the middle of the bar.
+        let labels = self.config.mail.app_labels;
         let items = RailApp::ALL.into_iter().map(|app| {
             let on = self.app == app;
             div()
@@ -490,12 +493,11 @@ impl MailWindow {
                 .flex_1()
                 .min_w_0()
                 .h(px(BOTTOM_BAR_HEIGHT))
-                .pt(px(12.0))
                 .flex()
                 .flex_col()
                 .items_center()
-                .gap(px(4.0))
                 .cursor_pointer()
+                .when(!labels, |d| d.tooltip(tip(app.label(), th)))
                 .group("bottom-app")
                 .on_click(cx.listener(move |this, _, window, cx| {
                     this.close_drawer(cx);
@@ -546,13 +548,31 @@ impl MailWindow {
                         .max_w_full()
                         .truncate()
                         .text_size(px(12.0))
+                        .line_height(px(16.0))
                         .font_weight(if on {
                             FontWeight::BOLD
                         } else {
                             FontWeight::MEDIUM
                         })
                         .text_color(rgba(if on { th.text } else { th.text_dim }))
-                        .child(app.label()),
+                        .child(app.label())
+                        .with_spring(
+                            ("bottom-label", app as usize),
+                            SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
+                            |el, s: f32| {
+                                let s = s.clamp(0.0, 1.0);
+                                el.h(px(16.0 * s)).opacity(s)
+                            },
+                        ),
+                )
+                .with_spring(
+                    ("bottom-room", app as usize),
+                    SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
+                    |el, s: f32| {
+                        let s = s.clamp(0.0, 1.0);
+                        // The icon's pill alone is centered (32 of 72).
+                        el.pt(px(lerp(20.0, 12.0, s))).gap(px(4.0 * s))
+                    },
                 )
         });
         // It rises from under the window's edge.

@@ -75,7 +75,9 @@ impl Pop3Client {
 
         if endpoint.security == Security::StartTls {
             if !client.has("STLS") {
-                return Err(Error::Tls("the server does not offer STLS".into()));
+                return Err(Error::Tls(
+                    "the server does not offer a secure connection (STLS)".into(),
+                ));
             }
             client.command("STLS").await?;
             if client.pos < client.pending.len() {
