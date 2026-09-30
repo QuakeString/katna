@@ -36,7 +36,7 @@
 
 ## Why I built Katna
 
-For about eight years, KMail was the mail app I loved most. It looked
+For about ten years, KMail was the mail app I loved most. It looked
 native on my desktop and I could shape it exactly the way I wanted. But it
 kept breaking for me, and it still does today. I tried Thunderbird, but
 its mail search never found what I was looking for. Then I tried
