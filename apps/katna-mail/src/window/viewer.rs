@@ -30,9 +30,9 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EventEmitter, FocusHandle, Focusable,
-    FontWeight, ImageSource, KeyDownEvent, MouseButton, MouseDownEvent, ObjectFit, RenderImage,
-    ScrollHandle, SharedString, Subscription, Task, Window, div, ease_out_quint, img, prelude::*,
-    rgba, uniform_list,
+    FontWeight, ImageSource, KeyDownEvent, MouseButton, MouseDownEvent, MouseUpEvent, ObjectFit,
+    Pixels, Point, RenderImage, ScrollHandle, SharedString, Subscription, Task, Window, div,
+    ease_out_quint, img, prelude::*, rgba, uniform_list,
 };
 use katna_i18n::tr;
 use katna_preview::image::{Frame, RgbaImage};
@@ -71,6 +71,8 @@ const BAR_CONTROLS_PDF: f32 = 900.0;
 const BAR_CONTROLS: f32 = 640.0;
 /// Below this width the foot pill drops the word "Page" to fit a phone.
 const COMPACT_CONTROLS: f32 = 440.0;
+/// A press and release further apart than this is a drag, not a click.
+const CLICK_SLOP: f32 = 5.0;
 const LINE_SCROLL: f32 = 48.0;
 
 // The viewer is dark in light and dark themes alike, like a photo viewer.
@@ -141,6 +143,9 @@ pub(super) struct Viewer {
     went: Option<(usize, f32)>,
     /// Marks made on a PDF, and the tools for them.
     markup: Markup,
+    /// Where the left button went down on the dim space around the file:
+    /// letting go there (not a drag) closes the viewer.
+    backdrop: Option<Point<Pixels>>,
     /// The viewer shows the open conversation's message, so a marked copy
     /// can go in a reply to it.
     can_reply: bool,
@@ -260,6 +265,7 @@ impl Viewer {
             _goto,
             goto_click: false,
             went: None,
+            backdrop: None,
             markup: Markup::new(),
             can_reply,
             th,
@@ -507,6 +513,16 @@ impl Viewer {
         }
     }
 
+    /// Whether a click on the space around the file may close the viewer:
+    /// not while a menu, a question or a note being typed is open (the
+    /// click closes those instead).
+    fn may_close_by_click(&self) -> bool {
+        self.text.menu.is_none()
+            && self.sheet_view().is_none_or(|view| view.menu.is_none())
+            && !self.markup.asking()
+            && !self.markup.typing()
+    }
+
     /// Turns the PDF's pages a quarter turn, keeping the page on show.
     /// Pages already drawn are turned at once; marks turn with them.
     fn rotate(&mut self, clockwise: bool, cx: &mut Context<Self>) {
@@ -740,6 +756,11 @@ impl Viewer {
     }
 }
 
+/// A press on the file itself: not one on the space around it.
+fn on_paper(this: &mut Viewer, _: &MouseDownEvent, _: &mut Window, _: &mut Context<Viewer>) {
+    this.backdrop = None;
+}
+
 /// `image` (drawn BGRA) turned a quarter turn.
 fn turn_bitmap(image: &Arc<RenderImage>, clockwise: bool) -> Arc<RenderImage> {
     let size = image.size(0);
@@ -911,6 +932,7 @@ impl Render for Viewer {
                     let kind = item.as_ref().map(|i| i.kind).unwrap_or(Kind::Other);
                     centered(
                         div()
+                            .capture_any_mouse_down(cx.listener(on_paper))
                             .w(px(360.0))
                             .p(px(28.0))
                             .flex()
@@ -949,7 +971,7 @@ impl Render for Viewer {
                 }
                 Content::Bitmap(image, (w, h)) => {
                     let (w, h) = picture_size(*w, *h, window.scale_factor(), vw, vh, zoom);
-                    self.picture(img(ImageSource::Render(image.clone())), w, h)
+                    self.picture(img(ImageSource::Render(image.clone())), w, h, cx)
                 }
                 Content::Drawn(image, size) => {
                     let (w, h) = match size {
@@ -959,7 +981,7 @@ impl Render for Viewer {
                             (side, side)
                         }
                     };
-                    self.picture(img(ImageSource::Image(image.clone())), w, h)
+                    self.picture(img(ImageSource::Image(image.clone())), w, h, cx)
                 }
                 Content::Text(lines, cut) => {
                     let lines = lines.clone();
@@ -970,6 +992,7 @@ impl Render for Viewer {
                     let marker = self.text.marker(&th);
                     let page = select::selectable(
                         div()
+                            .capture_any_mouse_down(cx.listener(on_paper))
                             .w(px(width))
                             .h_full()
                             .rounded(px(8.0))
@@ -1046,6 +1069,7 @@ impl Render for Viewer {
                                 .w(px(w))
                                 .h(px(h))
                                 .bg(rgba(0xffffffff))
+                                .capture_any_mouse_down(cx.listener(on_paper))
                                 .shadow(vec![gpui::BoxShadow {
                                     color: rgba(0x00000080).into(),
                                     offset: gpui::point(px(0.0), px(2.0)),
@@ -1301,6 +1325,22 @@ impl Render for Viewer {
             .track_focus(&self.focus)
             .key_context(KEY_CONTEXT)
             .on_key_down(cx.listener(Self::on_key))
+            // Paper (a page, the picture) forgets a press first seen here,
+            // so only the dim space around the file closes the viewer.
+            .capture_any_mouse_down(cx.listener(|this, event: &MouseDownEvent, _, _| {
+                this.backdrop = (event.button == MouseButton::Left && this.may_close_by_click())
+                    .then_some(event.position);
+            }))
+            .capture_any_mouse_up(cx.listener(|this, event: &MouseUpEvent, _, cx| {
+                if let Some(at) = this.backdrop.take()
+                    && event.button == MouseButton::Left
+                    && unpx(event.position.x - at.x).hypot(unpx(event.position.y - at.y))
+                        < CLICK_SLOP
+                    && this.may_close_by_click()
+                {
+                    this.close(cx);
+                }
+            }))
             .absolute()
             .top_0()
             .left_0()
@@ -1465,7 +1505,7 @@ impl Viewer {
 impl Viewer {
     /// A picture `w` × `h` logical pixels, centered, scrolling when zoomed
     /// past the window.
-    fn picture(&self, image: gpui::Img, w: f32, h: f32) -> AnyElement {
+    fn picture(&self, image: gpui::Img, w: f32, h: f32, cx: &mut Context<Self>) -> AnyElement {
         div()
             .id("viewer-picture")
             .size_full()
@@ -1483,6 +1523,7 @@ impl Viewer {
                     .px(px(80.0))
                     .child(
                         image
+                            .capture_any_mouse_down(cx.listener(on_paper))
                             .flex_none()
                             .w(px(w))
                             .h(px(h))
