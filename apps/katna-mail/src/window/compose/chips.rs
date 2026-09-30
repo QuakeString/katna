@@ -330,7 +330,7 @@ impl Render for ChipDrag {
             .rounded_full()
             .border_1()
             .border_color(rgba(if self.valid { th.divider } else { th.error }))
-            .bg(rgba(th.surface))
+            .bg(rgba(th.raised))
             .shadow(elevation(th, 3.0))
             .text_size(px(14.0))
             .text_color(rgba(if self.valid { th.text } else { th.error }))

@@ -427,13 +427,15 @@ impl TabStops {
     }
 }
 
-/// Material-style elevation: `level` 0 is flat, 3 floats well above.
+/// Material-style elevation: `level` 0 is flat, 3 floats well above. In
+/// dark colors, where a shadow barely shows, a faint light edge
+/// ([`Theme::rim`]) outlines it too; it fades in over the first level.
 pub fn elevation(th: &Theme, level: f32) -> Vec<BoxShadow> {
     if level <= 0.001 {
         return Vec::new();
     }
     let t = (level / 3.0).min(1.0);
-    vec![
+    let mut shadows = vec![
         BoxShadow {
             color: rgba(fade(th.shadow, 0.9 * t)).into(),
             offset: point(px(0.0), px(1.0)),
@@ -448,7 +450,18 @@ pub fn elevation(th: &Theme, level: f32) -> Vec<BoxShadow> {
             spread_radius: px(level / 2.0),
             inset: false,
         },
-    ]
+    ];
+    // Last, so the shadows do not darken it.
+    if th.rim & 0xff != 0 {
+        shadows.push(BoxShadow {
+            color: rgba(fade(th.rim, level.min(1.0))).into(),
+            offset: point(px(0.0), px(0.0)),
+            blur_radius: px(0.0),
+            spread_radius: px(1.0),
+            inset: false,
+        });
+    }
+    shadows
 }
 
 pub fn placeholder(text: &str, th: &Theme) -> AnyElement {

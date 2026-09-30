@@ -44,8 +44,17 @@ pub struct Theme {
     pub important: u32,
     /// Rows the user ticked.
     pub checked_row: u32,
-    /// Menus and dropdowns.
+    /// Menus and dropdowns. In dark colors a step lighter than
+    /// [`Theme::raised`], as they sit highest.
     pub menu: u32,
+    /// Things that float over the cards: floating buttons, dialogs,
+    /// popovers. In light colors the card's white, lifted by its shadow; in
+    /// dark colors, where a shadow barely shows, a step lighter than the
+    /// cards.
+    pub raised: u32,
+    /// A faint light edge around raised things in dark colors
+    /// (`widgets::elevation`); transparent in light colors.
+    pub rim: u32,
     /// Floating panels (menus, popovers) are frosted glass: `menu`,
     /// translucent, over a blur of this many device pixels of what is
     /// behind. 0 keeps them opaque ([`Theme::frosted`]).
@@ -84,6 +93,25 @@ impl Theme {
     pub fn frosted(self, radius: f32) -> Self {
         Self {
             frost: radius.round().max(1.0) as u32,
+            ..self
+        }
+    }
+
+    /// For what is drawn on a raised surface (a dialog, the Compose
+    /// window): its cards are [`Theme::raised`], and the fills measured
+    /// from the card (fields, chips, switches) are lifted with it. The
+    /// same theme in light colors, whose raised surfaces are the cards'.
+    pub fn lifted(self) -> Self {
+        if !self.dark || self.raised == self.surface {
+            return self;
+        }
+        let ink = |alpha: f32| over(fade(self.text, alpha), self.raised);
+        Self {
+            surface: self.raised,
+            read_row: self.raised,
+            search_focused: ink(0.1),
+            chip: ink(0.1),
+            switch_off: ink(0.18),
             ..self
         }
     }
@@ -172,7 +200,9 @@ impl Theme {
             star: base.star,
             important: base.important,
             checked_row: mix(surface, accent, if dark { 0.3 } else { 0.2 }),
-            menu: if dark { ink(0.06) } else { surface },
+            menu: if dark { ink(MENU_LIFT) } else { surface },
+            raised: if dark { ink(RAISED_LIFT) } else { surface },
+            rim: if dark { fade(text, RIM) } else { 0x00000000 },
             frost: 0,
             switch_off: ink(0.18),
             tabs,
@@ -184,6 +214,13 @@ impl Theme {
         }
     }
 }
+
+/// How much of the text color lifts raised surfaces over the cards in
+/// dark colors ([`Theme::raised`]), menus a step more ([`Theme::menu`]),
+/// and how strong their light edge is ([`Theme::rim`]).
+const RAISED_LIFT: f32 = 0.10;
+const MENU_LIFT: f32 = 0.13;
+const RIM: f32 = 0.13;
 
 fn opaque(color: u32) -> u32 {
     color | 0xff
@@ -283,6 +320,8 @@ const LIGHT: Theme = Theme {
     important: 0x0b57d0ff,
     checked_row: 0xc2dbffff,
     menu: 0xffffffff,
+    raised: 0xffffffff,
+    rim: 0x00000000,
     frost: 0,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
@@ -317,7 +356,11 @@ const DARK: Theme = Theme {
     // The same blue as Gmail's marker, which reads on dark too.
     important: 0x0b57d0ff,
     checked_row: 0x004a77ff,
-    menu: 0x2d2f33ff,
+    // `surface` lifted by RAISED_LIFT and MENU_LIFT of `text`; the rim is
+    // RIM of `text`.
+    menu: 0x383a3dff,
+    raised: 0x333537ff,
+    rim: 0xe3e3e321,
     frost: 0,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
@@ -451,6 +494,36 @@ mod tests {
             assert!(contrast(th.on_accent, th.accent) >= 3.0);
             assert!(contrast(th.nav_selected_text, th.nav_selected) >= 4.5);
         }
+    }
+
+    #[test]
+    fn raised_surfaces_stand_out_in_dark() {
+        use katna_platform::colors::parse_kdeglobals;
+
+        let (breeze_dark, _) = parse_kdeglobals(
+            "[Colors:Window]\nBackgroundNormal=32,35,38\nForegroundNormal=252,252,252\n\
+             [Colors:View]\nBackgroundNormal=20,22,24\nForegroundNormal=252,252,252\n",
+        );
+        let breeze = Theme::from_scheme(&breeze_dark);
+        for th in [DARK, breeze] {
+            // Lighter than the cards and the page, menus lighter again.
+            assert!(luminance(th.raised) > luminance(th.surface) + 0.01);
+            assert!(luminance(th.raised) > luminance(th.page));
+            assert!(luminance(th.menu) > luminance(th.raised));
+            assert_ne!(th.rim & 0xff, 0);
+            let lifted = th.lifted();
+            assert_eq!(lifted.surface, th.raised);
+            assert!(luminance(lifted.search_focused) > luminance(lifted.surface));
+        }
+        // Katna's own dark palette follows the same rule as a scheme.
+        let ink = |alpha: f32| over(fade(DARK.text, alpha), DARK.surface);
+        assert_eq!(DARK.raised, ink(RAISED_LIFT));
+        assert_eq!(DARK.menu, ink(MENU_LIFT));
+        assert_eq!(DARK.rim, fade(DARK.text, RIM));
+        // Light colors are left as they were: shadows show there.
+        assert_eq!(LIGHT.raised, LIGHT.surface);
+        assert_eq!(LIGHT.rim, 0);
+        assert_eq!(LIGHT.lifted(), LIGHT);
     }
 
     #[test]

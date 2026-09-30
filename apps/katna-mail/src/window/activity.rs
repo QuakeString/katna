@@ -954,6 +954,8 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let report = self.activity_report.as_ref()?;
         let list = &report.list;
         let viewport = window.viewport_size();

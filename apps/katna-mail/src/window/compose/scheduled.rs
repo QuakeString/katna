@@ -369,7 +369,7 @@ impl MailWindow {
                         .flex_col()
                         .rounded(px(16.0))
                         .overflow_hidden()
-                        .bg(rgba(th.surface))
+                        .bg(rgba(th.raised))
                         .shadow(elevation(th, 3.0))
                         .child(
                             div()
