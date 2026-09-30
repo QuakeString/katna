@@ -14,7 +14,6 @@ tab-other = أخرى
 tab-inbox = البريد الوارد
 tab-newsletters = النشرات الإخبارية
 tab-notifications = الإشعارات
-tab-new = { $count } جديدة
 tab-provider-other = يفرزها Katna
 
 ## Mail list: toolbar

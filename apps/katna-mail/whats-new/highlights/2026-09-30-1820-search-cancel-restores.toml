@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Cancel a search, get your mail back"
+text = """
+Escape or clearing the search box now goes back to where you were: the same
+folder, the same place in the list and the mail you had open. Open a result
+instead and the search takes over as before.
+"""

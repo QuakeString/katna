@@ -39,7 +39,7 @@ use super::{
 };
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
 mod templates;
@@ -2113,6 +2113,9 @@ impl MailWindow {
             .as_ref()
             .and_then(|p| p.recording.as_ref());
         let changed = !config.keys.is_empty();
+        let phone = self.layout.shape.phone > 0.5;
+        // Faint lines between the shortcuts, so the keys stand out.
+        let row_line = fade(th.divider, 0.35);
         let groups = Group::ALL.map(|group| {
             let rows =
                 SHORTCUTS
@@ -2152,6 +2155,8 @@ impl MailWindow {
                         });
                         let adding = recording_here.is_some_and(|r| r.replace.is_none());
                         div()
+                            .id(("shortcut-row", n))
+                            .group("shortcut-row")
                             .relative()
                             .children(self.flash_mark(&s.title(), th))
                             .min_h(px(44.0))
@@ -2163,7 +2168,7 @@ impl MailWindow {
                             .gap_x(px(12.0))
                             .gap_y(px(4.0))
                             .border_b_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(row_line))
                             .child(
                                 div()
                                     .w(px(SHORTCUT_LABEL_WIDTH))
@@ -2195,6 +2200,14 @@ impl MailWindow {
                                 icon_button(("key-add", n), "add", 18.0, th)
                                     .map(|d| self.page_control(d, th, cx))
                                     .size(px(32.0))
+                                    // Shown on the row the pointer is over, or
+                                    // while it has the keyboard focus; always
+                                    // on a phone, which has no pointer.
+                                    .when(!adding && !phone, |d| {
+                                        d.opacity(0.0)
+                                            .group_hover("shortcut-row", |s| s.opacity(1.0))
+                                            .focus(|s| s.opacity(1.0))
+                                    })
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         this.start_recording(name, None, cx)
                                     })),

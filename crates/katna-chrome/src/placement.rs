@@ -5,7 +5,7 @@
 //! through GPUI's window bounds; the place through the compositor's session
 //! on Wayland and an exact position on X11 (`katna_ui::native::restore_placement`).
 
-use gpui::{App, Bounds, Pixels, Window, WindowBounds, WindowOptions, point, size};
+use gpui::{App, Bounds, Pixels, Size, Window, WindowBounds, WindowOptions, point, size};
 use katna_core::window::WindowState;
 use katna_ui::px;
 use katna_ui::scale::desktop_px;
@@ -50,6 +50,11 @@ pub fn restore_window(
         frame.height + px(2.0 * margin),
     );
     let mut bounds = Bounds::centered(None, surface, cx);
+    // A size saved on a bigger screen, or from before Windows' title bar
+    // was left room for, shrinks to fit.
+    if let Some(area) = windows_work_area(cx) {
+        bounds = Bounds::centered_at(area.center(), fit(surface, area.size).0);
+    }
     if let Some((x, y)) = state.position
         && on_a_display(point(desktop_px(x), desktop_px(y)), cx)
     {
@@ -60,6 +65,50 @@ pub fn restore_window(
     } else {
         WindowBounds::Windowed(bounds)
     });
+}
+
+/// Where a new window with a `surface` this big opens, centred on the main
+/// display. On Windows a window that would not fit with its title bar opens
+/// maximized, so its buttons are never off the screen; elsewhere the
+/// desktop fits it.
+pub(crate) fn fitted(surface: Size<Pixels>, cx: &App) -> WindowBounds {
+    let Some(area) = windows_work_area(cx) else {
+        return WindowBounds::Windowed(Bounds::centered(None, surface, cx));
+    };
+    let (size, maximize) = fit(surface, area.size);
+    let bounds = Bounds::centered_at(area.center(), size);
+    if maximize {
+        WindowBounds::Maximized(bounds)
+    } else {
+        WindowBounds::Windowed(bounds)
+    }
+}
+
+/// The main display's area for windows, without the taskbar, on Windows.
+fn windows_work_area(cx: &App) -> Option<Bounds<Pixels>> {
+    if !cfg!(windows) {
+        return None;
+    }
+    cx.primary_display().map(|display| display.visible_bounds())
+}
+
+/// `wanted` if it fits in `work_area` with Windows' title bar and borders
+/// around it; otherwise a size that does, and whether to open maximized.
+fn fit(wanted: Size<Pixels>, work_area: Size<Pixels>) -> (Size<Pixels>, bool) {
+    // Room Windows adds around the bounds GPUI opens a window at, which
+    // are its inside: the borders, and the title bar with them.
+    let room = size(
+        (work_area.width - desktop_px(16.0)).max(MIN_WINDOW_SIZE.width),
+        (work_area.height - desktop_px(48.0)).max(MIN_WINDOW_SIZE.height),
+    );
+    if wanted.width <= room.width && wanted.height <= room.height {
+        return (wanted, false);
+    }
+    let restored = size(
+        (room.width * 0.9).max(MIN_WINDOW_SIZE.width),
+        (room.height * 0.9).max(MIN_WINDOW_SIZE.height),
+    );
+    (restored, true)
 }
 
 /// Whether the top of a window whose frame starts at `origin` would be on
@@ -113,5 +162,32 @@ impl Placement {
             service: run,
             view: Default::default(),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use katna_ui::scale::desktop_px;
+
+    use super::*;
+
+    fn at(width: f32, height: f32) -> Size<Pixels> {
+        size(desktop_px(width), desktop_px(height))
+    }
+
+    #[test]
+    fn a_window_that_fits_keeps_its_size() {
+        assert_eq!(
+            fit(at(1280.0, 800.0), at(1920.0, 1040.0)),
+            (at(1280.0, 800.0), false)
+        );
+    }
+
+    #[test]
+    fn a_window_too_big_for_the_screen_opens_maximized() {
+        // 1280 × 800 with a 48 px taskbar: 752 px high, less the title bar.
+        let (restored, maximize) = fit(at(1280.0, 800.0), at(1280.0, 752.0));
+        assert!(maximize);
+        assert!(restored.width <= desktop_px(1264.0) && restored.height <= desktop_px(704.0));
     }
 }

@@ -676,64 +676,12 @@ impl MailWindow {
         .max(NAV_WIDTH)
     }
 
-    /// The top of the drawer of a phone or tablet: the app's name and, on a
-    /// phone, the inbox tabs.
-    pub(super) fn render_drawer_head(
-        &self,
-        th: &Theme,
-        cx: &mut Context<Self>,
-    ) -> Option<AnyElement> {
+    /// The top of the drawer of a phone or tablet: the app's name.
+    pub(super) fn render_drawer_head(&self, th: &Theme) -> Option<AnyElement> {
         let shape = self.layout.shape;
         if shape.is_desktop() || !self.layout.drawer {
             return None;
         }
-        let tabs = (shape.is_phone() && self.shows_tabs()).then(|| {
-            let rows = self.tabs.iter().enumerate().map(|(ix, tab)| {
-                let on = ix == self.tab;
-                let tint = th.tabs[tab.color];
-                let unread: u64 = tab
-                    .categories
-                    .iter()
-                    .filter_map(|c| self.category_unread.get(c))
-                    .sum();
-                drawer_row(("drawer-tab", ix), on, th)
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.layout.drawer = false;
-                        this.open_tab(ix, cx);
-                        cx.notify();
-                    }))
-                    .child(icon(tab.icon, if on { tint } else { th.text }, 20.0))
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .pl(px(18.0))
-                            .truncate()
-                            .child(tab.label()),
-                    )
-                    .when(unread > 0 && ix != 0, |d| {
-                        d.child(
-                            div()
-                                .flex_none()
-                                .px(px(8.0))
-                                .rounded_full()
-                                .bg(rgba(tint))
-                                .text_color(rgba(th.on_accent))
-                                .text_size(px(11.0))
-                                .line_height(px(18.0))
-                                .child(katna_i18n::tr!("nav-tab-new", count = unread)),
-                        )
-                    })
-            });
-            div()
-                .flex()
-                .flex_col()
-                .pb(px(8.0))
-                .mb(px(8.0))
-                .border_b_1()
-                .border_color(rgba(th.divider))
-                .children(rows)
-        });
         Some(
             div()
                 .flex_none()
@@ -752,7 +700,6 @@ impl MailWindow {
                         .child(icon("mail", th.accent, 24.0))
                         .child("Katna Mail"),
                 )
-                .children(tabs)
                 .into_any_element(),
         )
     }

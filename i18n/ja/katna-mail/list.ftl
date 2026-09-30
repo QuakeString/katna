@@ -14,7 +14,6 @@ tab-other = その他
 tab-inbox = 受信トレイ
 tab-newsletters = ニュースレター
 tab-notifications = 通知
-tab-new = 新着 { $count } 件
 tab-provider-other = Katna が分類
 
 ## Mail list: toolbar

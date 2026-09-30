@@ -16,14 +16,6 @@ nav-account-unnamed = الحساب { $number }
 nav-all-accounts = كل الحسابات
 nav-expand = إظهار المجلدات
 nav-collapse = إخفاء المجلدات
-nav-tab-new = { $count ->
-    [zero] { $count } جديدة
-    [one] { $count } جديدة
-    [two] { $count } جديدة
-    [few] { $count } جديدة
-    [many] { $count } جديدة
-   *[other] { $count } جديدة
-}
 storage-used = مُستخدَم { $percent }٪ من { $total }
 storage-used-detail = { $address }: مُستخدَم { $used } من { $total }
 

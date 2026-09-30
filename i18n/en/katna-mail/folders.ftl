@@ -16,6 +16,27 @@ nav-folder-new = Create new folder
 # The folder pane's right-click menu. Checks the account the folder is in,
 # or every account from All Accounts.
 nav-menu-check-mail = Check for new mail
+# The same, on an account's inbox under All Accounts.
+nav-menu-check-inbox = Check this inbox
+# On an account's heading or its row under All Accounts: shown when the
+# account's sign-in stopped working; opens the provider's sign-in page.
+nav-menu-sign-in-again = Sign in again
+# Opens a new message sent from this account.
+nav-menu-new-mail = New mail from this account
+# Opens Settings > Accounts.
+nav-menu-account-settings = Account settings
+# The account on top of that menu, under its address: how its sync stands.
+# $ago: how long ago it last checked, such as “2 minutes ago”.
+nav-account-checked = In sync · checked { $ago }
+nav-account-in-sync = In sync
+nav-account-connecting = Connecting…
+nav-account-offline = Offline, trying again
+# $provider: Google or Microsoft.
+nav-account-signed-out = { $provider } sign-in expired
+nav-account-password-refused = Password refused
+# Under the account's storage bar. $used and $total: sizes such as “1.2 GB”
+# and “5 GB”.
+nav-account-storage = { $used } of { $total } used
 # Makes a folder inside the one right-clicked.
 nav-menu-new-subfolder = New folder inside
 # Gmail: makes a label nested under the one right-clicked.
@@ -30,11 +51,6 @@ nav-all-accounts = All Accounts
 # Tooltips of the arrow beside an account's name and beside "All Accounts".
 nav-expand = Show folders
 nav-collapse = Hide folders
-# The badge of an inbox tab in a phone's drawer: how many new messages it has.
-nav-tab-new = { $count ->
-    [one] { $count } new
-   *[other] { $count } new
-}
 # Under the bar at the foot of the folder pane: how full the account's
 # mail storage is. $percent: a whole number such as “34”; $total: the
 # account's storage, such as “15 GB”.

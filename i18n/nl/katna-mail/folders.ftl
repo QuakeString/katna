@@ -16,10 +16,6 @@ nav-account-unnamed = Account { $number }
 nav-all-accounts = Alle accounts
 nav-expand = Mappen tonen
 nav-collapse = Mappen verbergen
-nav-tab-new = { $count ->
-    [one] { $count } nieuw
-   *[other] { $count } nieuw
-}
 storage-used = { $percent }% van { $total } gebruikt
 storage-used-detail = { $address }: { $used } van { $total } gebruikt
 

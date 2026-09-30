@@ -73,8 +73,10 @@ mod fallback {
         None
     }
 
+    /// Windows' compositor blurs what is behind a window that asks for
+    /// it (GPUI's `WindowBackgroundAppearance::Blurred`).
     pub fn compositor_blur() -> bool {
-        false
+        true
     }
 
     pub fn set_client_corner_radius(_radius: f32) {}

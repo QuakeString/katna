@@ -16,7 +16,6 @@ nav-account-unnamed = គណនី { $number }
 nav-all-accounts = គណនីទាំងអស់
 nav-expand = បង្ហាញថត
 nav-collapse = លាក់ថត
-nav-tab-new = ថ្មី { $count }
 storage-used = បានប្រើ { $percent }% នៃ { $total }
 storage-used-detail = { $address }៖ បានប្រើ { $used } នៃ { $total }
 

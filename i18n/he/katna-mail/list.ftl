@@ -14,7 +14,6 @@ tab-other = אחר
 tab-inbox = דואר נכנס
 tab-newsletters = ניוזלטרים
 tab-notifications = התראות
-tab-new = { $count } חדשות
 tab-provider-other = ממוין על ידי Katna
 
 ## Mail list: toolbar

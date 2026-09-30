@@ -14,7 +14,6 @@ tab-other = دیگر
 tab-inbox = ان باکس
 tab-newsletters = نیوز لیٹرز
 tab-notifications = اطلاعات
-tab-new = { $count } نئے
 tab-provider-other = Katna کی ترتیب
 
 ## Mail list: toolbar

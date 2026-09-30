@@ -16,10 +16,6 @@ nav-account-unnamed = അക്കൗണ്ട് { $number }
 nav-all-accounts = എല്ലാ അക്കൗണ്ടുകളും
 nav-expand = ഫോൾഡറുകൾ കാണിക്കുക
 nav-collapse = ഫോൾഡറുകൾ മറയ്ക്കുക
-nav-tab-new = { $count ->
-    [one] { $count } പുതിയത്
-   *[other] { $count } പുതിയവ
-}
 storage-used = { $total }-ൽ { $percent }% ഉപയോഗിച്ചു
 storage-used-detail = { $address }: { $total }-ൽ { $used } ഉപയോഗിച്ചു
 

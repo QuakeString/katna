@@ -16,10 +16,6 @@ nav-account-unnamed = অ্যাকাউন্ট { $number }
 nav-all-accounts = সব অ্যাকাউন্ট
 nav-expand = ফোল্ডার দেখান
 nav-collapse = ফোল্ডার লুকান
-nav-tab-new = { $count ->
-    [one] { $count }টি নতুন
-   *[other] { $count }টি নতুন
-}
 storage-used = { $total }-এর { $percent }% ব্যবহৃত
 storage-used-detail = { $address }: { $total }-এর { $used } ব্যবহৃত
 

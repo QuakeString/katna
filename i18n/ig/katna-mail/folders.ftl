@@ -16,7 +16,6 @@ nav-account-unnamed = Akaụntụ { $number }
 nav-all-accounts = Akaụntụ niile
 nav-expand = Gosi folda
 nav-collapse = Zoo folda
-nav-tab-new = { $count } ọhụrụ
 storage-used = Ejirila { $percent }% nke { $total }
 storage-used-detail = { $address }: ejirila { $used } nke { $total }
 

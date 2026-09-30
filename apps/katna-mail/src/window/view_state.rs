@@ -74,6 +74,7 @@ impl MailWindow {
             if view.tab < self.tabs.len() {
                 self.open_tab(view.tab, cx);
                 self.tab_spring.snap(view.tab as f32);
+                self.tab_slide = (view.tab, view.tab);
             }
         } else if let Some(unified) = unified
             && self.shows_unified()

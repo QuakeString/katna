@@ -560,6 +560,10 @@ macro_rules! pim_proxy {
             /// Syncs every folder of `account` now (0: every account).
             fn sync_now(&self, account: i64) -> zbus::Result<()>;
 
+            /// Syncs only folder `folder` now (with its account's inbox).
+            /// `SyncStatusChanged` follows for its account when done.
+            fn sync_folder(&self, folder: i64) -> zbus::Result<()>;
+
             /// Downloads the full message `message` if it is not stored yet.
             /// Returns once it is in the store (`MailChanged` follows).
             fn fetch_body(&self, message: i64) -> zbus::Result<()>;

@@ -14,7 +14,6 @@ tab-other = Ndị ọzọ
 tab-inbox = Igbe ozi mbata
 tab-newsletters = Akwụkwọ akụkọ
 tab-notifications = Ọkwa
-tab-new = { $count } ọhụrụ
 tab-provider-other = Katna haziri ya
 
 ## Mail list: toolbar

@@ -760,6 +760,11 @@ Free text that matches an organization name or alias is expanded to
    metadata is already local, so results render and rank instantly.
 3. Messages found on the server are downloaded and indexed.
 
+Results replace the list and close the open conversation. The list, its
+scroll place, the cursor and the open conversation are kept as the search
+starts: cancelling it (Escape or clearing the box) with no result opened
+brings them back; opening a result drops them.
+
 ### 7.4 Ranking
 
 BM25 plus boosts: subject match, recency, people you reply to often,
@@ -1464,6 +1469,12 @@ GPUI global):
   header bar, as far from the window's side as from its top. Switching keeps the window's size on screen. Where the desktop never
   draws frames (GNOME on Wayland) the choice is replaced by a note.
   `KATNA_DECORATIONS=auto|server|client` still overrides it, for testing.
+  On Windows GPUI fixes the title bar when a window opens, so the choice
+  applies to windows opened after it (Settings says so): `katna` hides
+  Windows' title bar (`TitlebarOptions::appears_transparent`) and the top
+  bar's empty space and window buttons become Windows' caption and buttons
+  (`WindowControlArea`), so Windows moves, snaps and maximizes the window;
+  Windows keeps drawing the corners, shadow and resize edges.
 - *Blurred background*: the window's page color becomes translucent
   (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
   search box is 40 % glass over it with a faint edge and turns solid while
@@ -1473,7 +1484,9 @@ GPUI global):
   The blur region is the frame less its rounded corners; the CSD shadow is
   painted only outside the frame, so it cannot darken the window. Cards
   and dialogs stay opaque, so text keeps its contrast. Offered only where
-  the compositor can blur (`gpui_linux::compositor_blur`); elsewhere the
+  the compositor can blur (`gpui_linux::compositor_blur`; always on
+  Windows, through GPUI's `WindowBackgroundAppearance::Blurred`, the
+  acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
 - The same switch frosts floating panels in every window: menus (the
@@ -1510,6 +1523,11 @@ window as on the first start.
 - X11: the window opens exactly at its old position (user-specified
   position, static gravity). KWin adds the CSD shadow margin itself on X11,
   so the saved frame is asked for as is.
+- Windows: GPUI's bounds are the inside of the window and Windows adds
+  its title bar and borders around them, so sizes are fitted to the main
+  display's work area less 16 × 48 px. A first window that does not fit
+  (1280 × 800 on a small screen) opens maximized; a saved size that does
+  not fit shrinks, centred.
 
 ### 13.2 Look and feel
 
@@ -2286,8 +2304,12 @@ desktop's own app stays one click away.
   Thumbnails are made in the background from the stored raw message and
   freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
-  top bar (the window's own controls stay usable): a dark page with a bar
-  naming the file, "Open with another app" and Save; arrows (and ←/→) go
+  top bar (the window's own controls stay usable): with frosted menus on,
+  the window shows blurred under a dark veil and the viewer's bar (a
+  shade darker), its controls pill, foot pill and markup pill are frosted
+  too; the file shows below the bar, never under it; with frost off, a
+  plain darker veil. The bar names the file, "Open with another app" and
+  Save; arrows (and ←/→) go
   through the message's other attachments, the viewer staying open: the
   file on show stays until the next one is ready (a PDF with its first
   page drawn) and they swap in one frame, or "Opening…" shows after
@@ -2895,7 +2917,7 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Search | `Search(query, limit) → results` (used by KRunner, GNOME search, apps) |
 | Calendar | `EventsInRange(start, end) → events`, `CreateEvent(ical)`, `UpdateEvent(uid, ical)`, `DeleteEvent(uid)` |
 | Contacts / orgs | `FindContacts(text)`, `Organizations()` |
-| Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
+| Sync | `SyncNow(account?)`, `SyncFolder(folder)` (only that folder, for a folder's "Check for new mail"), `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
@@ -5021,8 +5043,8 @@ Downloads are never run or loaded as administrator.
 Arch Linux is the primary platform: its CI (`ci.yml`) alone gates pull
 requests and the Arch package. Ubuntu and Windows are secondary: after
 each push to `main` the Secondary workflow (`secondary.yml`) runs their
-tests beside Arch without blocking it, a newer push cancelling an older
-run, and once the Windows tests pass it builds Setup.exe with the faster
+tests beside Arch without blocking it (a run always finishes, and only the
+newest push that arrived meanwhile runs next), and once the Windows tests pass it builds Setup.exe with the faster
 `quick` profile (thin LTO) and publishes it as the `windows-latest`
 pre-release. The Windows package workflow can also be run by hand
 (Actions > Windows package > Run workflow; tick Full build for the

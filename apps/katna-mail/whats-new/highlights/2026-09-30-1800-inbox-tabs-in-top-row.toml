@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Inbox tabs in the top row"
+text = """
+Primary, Promotions, Social and the other inbox tabs now sit in a pill bar
+in the list's top row, each with a coloured count of its unread mail. The
+highlight slides to the tab you pick, and clicking the open tab takes its
+list back to the top. When the list is narrow the bar takes a row of its
+own and shows icons, keeping the open tab's name; on a phone it sits in the
+list's bar, with Refresh in the More menu.
+"""

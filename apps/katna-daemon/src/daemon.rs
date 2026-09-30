@@ -1075,6 +1075,36 @@ impl Daemon {
         Ok(())
     }
 
+    /// Syncs only `folder` now (its account keeps its inbox in sync too),
+    /// for "Check for new mail" on one folder. An account not running,
+    /// for example after a missing password, starts and syncs everything.
+    pub async fn sync_folder(self: &Arc<Self>, folder: FolderId) -> Result<(), CommandError> {
+        let owner = {
+            let store = self.store();
+            let mut owner = None;
+            for account in store.accounts()? {
+                if store.folders(account.id)?.iter().any(|f| f.id == folder) {
+                    owner = Some(account);
+                    break;
+                }
+            }
+            owner
+        };
+        let Some(account) = owner else {
+            return Err(CommandError::UnknownFolder(folder.0));
+        };
+        self.secrets.ask_again();
+        let running = self
+            .workers()
+            .get(&account.id)
+            .map(|running| running.handle.sync_folder(folder))
+            .is_some();
+        if !running {
+            self.start_account(&account).await;
+        }
+        Ok(())
+    }
+
     /// The network came back or the machine woke up: every worker drops
     /// its connection, which may be dead, and connects again at once.
     /// (Mail the outbox could not send is tried again every 30 s anyway.)

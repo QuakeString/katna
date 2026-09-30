@@ -742,7 +742,7 @@ impl MailWindow {
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
                 this.hover_navigation(Hover::Panel, *hovered, cx)
             }))
-            .children(self.render_drawer_head(th, cx))
+            .children(self.render_drawer_head(th))
             .child(div().flex_none().h(px(compose_room)))
             .children(head)
             .child(list)
@@ -813,7 +813,7 @@ impl MailWindow {
             sidebar::Row::AllAccounts { expanded } => self.render_heading(
                 ix,
                 tr!("nav-all-accounts"),
-                (*expanded, self.checking_mail()),
+                (*expanded, self.checking_all()),
                 th,
                 cx,
             ),
@@ -889,7 +889,12 @@ impl MailWindow {
                         selected: self.listing == listing,
                         bold: true,
                         chevron: Some(*expanded),
-                        checking: *view == Unified::Inbox && self.checking_mail(),
+                        checking: (*view == Unified::Inbox && self.checking_all())
+                            || self
+                                .tree
+                                .unified_folders(*view, None)
+                                .into_iter()
+                                .any(|f| self.checking_folder(f)),
                     },
                     th,
                     cx,
@@ -924,7 +929,8 @@ impl MailWindow {
                         // Addresses are long; the count tells of new mail.
                         bold: false,
                         chevron: None,
-                        checking: *view == Unified::Inbox && self.checking_account(*account),
+                        checking: (*view == Unified::Inbox && self.checking_account(*account))
+                            || folder.is_some_and(|f| self.checking_folder(f)),
                     },
                     th,
                     cx,
@@ -964,10 +970,11 @@ impl MailWindow {
                         bold: true,
                         chevron: has_children.then_some(*expanded),
                         // New mail lands in the inbox.
-                        checking: *role == Role::Inbox
-                            && folder
-                                .and_then(|f| self.tree.account_of(f))
-                                .is_some_and(|a| self.checking_account(a)),
+                        checking: folder.is_some_and(|f| self.checking_folder(f))
+                            || *role == Role::Inbox
+                                && folder
+                                    .and_then(|f| self.tree.account_of(f))
+                                    .is_some_and(|a| self.checking_account(a)),
                     },
                     th,
                     cx,
@@ -1001,14 +1008,17 @@ impl MailWindow {
             .cursor_pointer()
             .rounded_full()
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
-            .tooltip(tip(
-                if expanded {
-                    tr!("nav-collapse")
-                } else {
-                    tr!("nav-expand")
-                },
-                th,
-            ))
+            // Not over its own right-click menu.
+            .when(self.nav_menu.is_none(), |d| {
+                d.tooltip(tip(
+                    if expanded {
+                        tr!("nav-collapse")
+                    } else {
+                        tr!("nav-expand")
+                    },
+                    th,
+                ))
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
             .on_mouse_down(
                 MouseButton::Right,
@@ -1065,9 +1075,16 @@ impl MailWindow {
             th.text
         };
         let bold = bold && (selected || unread > 0);
+        // A folded line's arrow shows only while the pointer is over the
+        // line, as the list's stars do; an open line keeps its arrow, and
+        // so do the keys' line and a phone, which has no pointer.
+        let arrow_rests = !self.nav_cursor_on(ix) && !self.layout.shape.is_phone();
         let chevron = chevron.map(|expanded| {
             div()
                 .id(("nav-chevron", ix))
+                .when(arrow_rests && !expanded, |d| {
+                    d.opacity(0.0).group_hover(NAV_PILL, |s| s.opacity(1.0))
+                })
                 .absolute()
                 // In the pill's rounded end, centred on it, so its hover
                 // circle keeps an even gap to the pill's edge.
@@ -1089,6 +1106,7 @@ impl MailWindow {
         // label stay where they were.
         let row = div()
             .id(("nav-row", ix))
+            .group(NAV_PILL)
             .relative()
             .h(px(NAV_ROW_HEIGHT))
             .w(px(NAV_WIDTH - NAV_ROW_END - NAV_ROW_INSET))
@@ -1553,6 +1571,8 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
 
 /// The key context of the folder pane while it has the keys.
 const NAV_CONTEXT: &str = "Navigation";
+/// The hover group of a folder's line, for its arrow.
+const NAV_PILL: &str = "nav-pill";
 
 /// The folder pane by keyboard, as in Thunderbird, Outlook and KDE's
 /// apps: F6 or Tab gives it the keys; Up and Down go through its lines and

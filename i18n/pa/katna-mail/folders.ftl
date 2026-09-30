@@ -16,10 +16,6 @@ nav-account-unnamed = ਖਾਤਾ { $number }
 nav-all-accounts = ਸਾਰੇ ਖਾਤੇ
 nav-expand = ਫੋਲਡਰ ਦਿਖਾਓ
 nav-collapse = ਫੋਲਡਰ ਲੁਕਾਓ
-nav-tab-new = { $count ->
-    [one] { $count } ਨਵਾਂ
-   *[other] { $count } ਨਵੇਂ
-}
 storage-used = { $total } ਵਿੱਚੋਂ { $percent }% ਵਰਤਿਆ ਗਿਆ
 storage-used-detail = { $address }: { $total } ਵਿੱਚੋਂ { $used } ਵਰਤਿਆ ਗਿਆ
 
