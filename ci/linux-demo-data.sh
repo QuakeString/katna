@@ -12,7 +12,8 @@
 set -eu
 
 bindir=$1
-out=$2
+mkdir -p "$(dirname "$2")"
+out=$(cd "$(dirname "$2")" && pwd)/$(basename "$2")
 root=$(cd "$(dirname "$0")/.." && pwd)
 work=$(mktemp -d)
 
