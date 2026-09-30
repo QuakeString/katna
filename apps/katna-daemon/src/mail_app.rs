@@ -6,10 +6,16 @@
 
 use std::collections::HashMap;
 use std::process::Command;
+use std::time::Duration;
+
+use futures_lite::FutureExt;
 
 use katna_core::ids;
 use katna_dbus::app_action;
 use zbus::zvariant::Value;
+
+/// How long a running Katna Mail has to answer the tray.
+const ANSWER_WITHIN: Duration = Duration::from_secs(5);
 
 /// Runs `action` (see [`app_action`]) with `params` in Katna Mail, or just
 /// raises its window for `None`. `token` lets the window take focus on
@@ -32,33 +38,48 @@ pub(crate) async fn run(
     }
     let interface = Some("org.freedesktop.Application");
     let path = ids::MAIL_OBJECT_PATH;
-    let called = match action {
-        Some(action) => {
-            connection
-                .call_method(
-                    Some(ids::MAIL_APP_ID),
-                    path,
-                    interface,
-                    "ActivateAction",
-                    &(action, params, platform),
-                )
-                .await
-        }
-        None => {
-            connection
-                .call_method(
-                    Some(ids::MAIL_APP_ID),
-                    path,
-                    interface,
-                    "Activate",
-                    &platform,
-                )
-                .await
+    let call = async {
+        match action {
+            Some(action) => {
+                connection
+                    .call_method(
+                        Some(ids::MAIL_APP_ID),
+                        path,
+                        interface,
+                        "ActivateAction",
+                        &(action, params, platform),
+                    )
+                    .await
+            }
+            None => {
+                connection
+                    .call_method(
+                        Some(ids::MAIL_APP_ID),
+                        path,
+                        interface,
+                        "Activate",
+                        &platform,
+                    )
+                    .await
+            }
         }
     };
+    // A Katna Mail that hangs must not keep the tray from answering the
+    // next click: those wait for this one.
+    let called = async { Some(call.await) }
+        .or(async {
+            smol::Timer::after(ANSWER_WITHIN).await;
+            None
+        })
+        .await;
     match called {
-        Ok(_) => return true,
-        Err(err) => tracing::debug!(%err, ?action, "Katna Mail is not running"),
+        Some(Ok(_)) => return true,
+        Some(Err(err)) => tracing::debug!(%err, ?action, "Katna Mail is not running"),
+        // Another copy would only hand over to the one that hangs.
+        None => {
+            tracing::warn!(?action, "Katna Mail did not answer the tray");
+            return false;
+        }
     }
     if action == Some(app_action::QUIT) {
         return false;
