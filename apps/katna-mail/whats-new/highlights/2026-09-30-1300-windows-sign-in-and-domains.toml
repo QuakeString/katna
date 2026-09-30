@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Sign in with Google on Windows"
+text = """
+Katna for Windows now offers Sign in with Google and Zoho, as it does on
+Linux, and knows who hosts mail on your own domain, such as a Google
+Workspace address, when you add the account.
+"""

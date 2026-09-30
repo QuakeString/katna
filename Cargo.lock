@@ -6296,6 +6296,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tracing",
  "tracing-subscriber",
+ "winreg 0.56.0",
 ]
 
 [[package]]
