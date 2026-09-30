@@ -33,6 +33,7 @@ desktop-menu-page-calendar = _Calendar
 desktop-menu-page-contacts = C_ontacts
 desktop-menu-page-tasks = Tas_ks
 desktop-menu-page-notes = No_tes
+desktop-menu-page-files = _Files
 desktop-menu-next = _Next Conversation
 desktop-menu-previous = _Previous Conversation
 desktop-menu-message = _Message

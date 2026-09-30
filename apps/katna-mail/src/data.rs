@@ -1324,6 +1324,33 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
 }
 
+/// The files of the Files page, newest first; see
+/// [`katna_store::LibraryFile`]. Opens its own connection, for a
+/// background thread.
+pub fn library(paths: &Paths, limit: usize) -> Result<Vec<katna_store::LibraryFile>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.library_files(limit))
+        .map_err(|err| katna_i18n::tr!("files-load-failed", error = err.to_string()))
+}
+
+/// The raw messages of `ids` whose bodies are stored, for thumbnails made
+/// in the background. Opens its own connection.
+pub fn raw_messages(paths: &Paths, ids: &[MessageId]) -> HashMap<MessageId, Vec<u8>> {
+    let Ok(store) = Store::open(paths, Mode::ReadOnly) else {
+        return HashMap::new();
+    };
+    let Ok(messages) = store.messages_by_id(ids) else {
+        return HashMap::new();
+    };
+    messages
+        .into_iter()
+        .filter_map(|m| {
+            let raw = store.blobs().get(&m.blob_hash?).ok()??;
+            Some((m.id, raw))
+        })
+        .collect()
+}
+
 /// Every note, pinned first. Opens its own connection, for a background
 /// thread.
 pub fn notes(paths: &Paths) -> Result<Vec<katna_store::Note>, String> {

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every file in one place"
+text = """
+The new Files page, at the bottom of the app bar, shows every attachment from every account, newest first. Narrow it to pictures, PDFs or documents, to one account, to a person or a time, or search by name, sender or subject. Right-click a file for more, and Show the mail takes you to the mail it came with.
+"""

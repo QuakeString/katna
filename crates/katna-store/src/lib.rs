@@ -17,6 +17,7 @@ pub mod error;
 mod gmail_merge;
 pub mod insights;
 pub mod journal;
+mod library;
 pub mod mail;
 mod mail_read;
 mod mail_view;
@@ -54,6 +55,7 @@ pub use gmail_merge::Adopted;
 pub use insights::{Insights, Partner, Replies};
 pub use journal::{Change, ChangeOp, ObjectKind};
 pub use katna_core::MailCategory;
+pub use library::LibraryFile;
 pub use mail::{
     Added, FolderId, MailBatch, MessageFlags, MessageId, NewMessage, NewParticipant,
     ParticipantRole, ThreadId,
@@ -443,6 +445,12 @@ impl Store {
     /// name and size once.
     pub fn contact_files(&self, email: &str, limit: usize) -> Result<Vec<ContactFile>> {
         contact::files(&self.mail, email, limit)
+    }
+
+    /// The `limit` newest named attachments of all accounts, for the
+    /// Files page; see [`LibraryFile`].
+    pub fn library_files(&self, limit: usize) -> Result<Vec<LibraryFile>> {
+        library::files(&self.mail, &self.accounts()?, limit)
     }
 
     /// Which of the mails `headers` (`Message-ID`s, as tasks keep them)
