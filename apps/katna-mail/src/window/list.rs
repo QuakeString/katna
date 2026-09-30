@@ -24,7 +24,7 @@ use katna_ui::px;
 const ROW_LIFT: SpringConfig = SpringConfig::new(500.0, 44.7, 1.0);
 /// How strongly a tick box, star or marker that is off shows while the
 /// pointer is not over its line.
-const OFF_REST: f32 = 0.45;
+const OFF_REST: f32 = 0.3;
 /// How long the quick actions of a line take to fade in.
 const ACTIONS_IN: Duration = Duration::from_millis(160);
 /// The attachment chips under a line: their line's extra height, their
