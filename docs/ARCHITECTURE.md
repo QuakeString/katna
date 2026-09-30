@@ -1464,6 +1464,12 @@ GPUI global):
   header bar, as far from the window's side as from its top. Switching keeps the window's size on screen. Where the desktop never
   draws frames (GNOME on Wayland) the choice is replaced by a note.
   `KATNA_DECORATIONS=auto|server|client` still overrides it, for testing.
+  On Windows GPUI fixes the title bar when a window opens, so the choice
+  applies to windows opened after it (Settings says so): `katna` hides
+  Windows' title bar (`TitlebarOptions::appears_transparent`) and the top
+  bar's empty space and window buttons become Windows' caption and buttons
+  (`WindowControlArea`), so Windows moves, snaps and maximizes the window;
+  Windows keeps drawing the corners, shadow and resize edges.
 - *Blurred background*: the window's page color becomes translucent
   (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the search
   bar's fill takes the same alpha) and the compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
@@ -1471,7 +1477,9 @@ GPUI global):
   The blur region is the frame less its rounded corners; the CSD shadow is
   painted only outside the frame, so it cannot darken the window. Cards
   and dialogs stay opaque, so text keeps its contrast. Offered only where
-  the compositor can blur (`gpui_linux::compositor_blur`); elsewhere the
+  the compositor can blur (`gpui_linux::compositor_blur`; always on
+  Windows, through GPUI's `WindowBackgroundAppearance::Blurred`, the
+  acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
 - The same switch frosts floating panels in every window: menus (the
@@ -1508,6 +1516,11 @@ window as on the first start.
 - X11: the window opens exactly at its old position (user-specified
   position, static gravity). KWin adds the CSD shadow margin itself on X11,
   so the saved frame is asked for as is.
+- Windows: GPUI's bounds are the inside of the window and Windows adds
+  its title bar and borders around them, so sizes are fitted to the main
+  display's work area less 16 × 48 px. A first window that does not fit
+  (1280 × 800 on a small screen) opens maximized; a saved size that does
+  not fit shrinks, centred.
 
 ### 13.2 Look and feel
 

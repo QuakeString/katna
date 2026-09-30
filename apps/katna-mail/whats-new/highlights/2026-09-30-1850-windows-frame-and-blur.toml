@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna's frame and blur on Windows"
+text = """
+On Windows, Katna Mail now opens inside the screen, maximized when the
+screen is small. Settings > Experimental can blur what is behind the window,
+and Katna's own frame turns the top bar into the title bar the next time
+you open Katna Mail.
+"""
