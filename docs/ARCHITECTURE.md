@@ -5019,8 +5019,8 @@ Downloads are never run or loaded as administrator.
 Arch Linux is the primary platform: its CI (`ci.yml`) alone gates pull
 requests and the Arch package. Ubuntu and Windows are secondary: after
 each push to `main` the Secondary workflow (`secondary.yml`) runs their
-tests beside Arch without blocking it, a newer push cancelling an older
-run, and once the Windows tests pass it builds Setup.exe with the faster
+tests beside Arch without blocking it (a run always finishes, and only the
+newest push that arrived meanwhile runs next), and once the Windows tests pass it builds Setup.exe with the faster
 `quick` profile (thin LTO) and publishes it as the `windows-latest`
 pre-release. The Windows package workflow can also be run by hand
 (Actions > Windows package > Run workflow; tick Full build for the
