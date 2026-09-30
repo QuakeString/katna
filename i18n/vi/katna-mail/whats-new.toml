@@ -1730,3 +1730,20 @@ Nhấp chuột phải vào một khoảng thời gian hoặc ngày trống trong
 chọn Việc cần làm để thêm việc cần làm tại đó. Thẻ sự kiện mới mở ở
 thẻ Việc cần làm với ngày và giờ đó đã được điền sẵn.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Lịch thử lại sau khi máy chủ phản hồi chậm"
+text = """
+Khi máy chủ lịch của một tài khoản không phản hồi kịp, Lịch giờ sẽ báo
+như vậy, cùng việc kết nối hay bước bắt tay bảo mật bị treo, thay vì
+"Không tìm thấy lịch nào". Lịch thử lại trong vòng vài phút thay vì vài
+giờ.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Tệp của liên hệ hiện tiến trình tải xuống"
+text = """
+Một tệp trong bảng liên hệ mà thư của nó chưa có trên máy tính này giờ
+sẽ đầy dần khi đang tải xuống, giống tệp đính kèm trong danh sách, rồi
+mở ra.
+"""

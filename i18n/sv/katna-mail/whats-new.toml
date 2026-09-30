@@ -1752,3 +1752,20 @@ Högerklicka på en ledig tid eller dag i Kalender och välj Uppgift för
 att lägga till en uppgift där. Kortet för ny händelse öppnas på fliken
 Uppgift med den dagen och tiden redan ifyllda.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendrar försöker igen efter en långsam server"
+text = """
+När ett kontos kalenderserver inte svarar i tid säger Kalender nu det,
+och om det var anslutningen eller den säkra handskakningen som fastnade,
+i stället för "Inga kalendrar hittades". Den försöker igen inom några
+minuter i stället för timmar.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kontaktens filer visar nedladdningen"
+text = """
+En fil i kontaktpanelen vars e-post inte finns på den här datorn än
+fylls nu medan den laddas ned, som bilagorna i listan gör, och öppnas
+sedan.
+"""

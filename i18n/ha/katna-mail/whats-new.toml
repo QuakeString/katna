@@ -1631,3 +1631,20 @@ Danna dama a kan lokaci ko rana mara komai a Kalanda kuma zaɓi Aiki
 don ƙara aiki a wurin. Katin sabon taro zai buɗe a shafin Aiki tare da
 waccan rana da lokacin a cike.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Ana sake neman kalandoji bayan sabar mai jinkiri"
+text = """
+Idan sabar kalanda ta wani asusu ba ta amsa a kan lokaci ba, Kalanda
+yanzu tana faɗin haka, da ko haɗin ne ko musayar tsaro ce ta tsaya,
+maimakon “Ba a sami kalanda ba”. Tana sake gwadawa cikin mintuna
+maimakon awanni.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Fayilolin tuntuɓa suna nuna saukewarsu"
+text = """
+Fayil a fanel na tuntuɓa wanda wasiƙarsa ba ta wannan kwamfuta tukuna
+yanzu yana cika yayin da ake saukewa, kamar haɗe-haɗe a jerin, sannan
+ya buɗe.
+"""

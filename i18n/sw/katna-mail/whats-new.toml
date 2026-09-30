@@ -1708,3 +1708,18 @@ Bofya kulia muda au siku iliyo wazi kwenye Kalenda na uchague Jukumu
 ili kuongeza jukumu hapo. Kadi ya tukio jipya inafunguka kwenye
 kichupo cha Jukumu ikiwa na siku na muda huo vimeshajazwa.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalenda hutafuta tena baada ya seva ya polepole"
+text = """
+Seva ya kalenda ya akaunti isipojibu kwa wakati, Kalenda sasa inasema
+hivyo, na kama muunganisho au kupeana mkono kwa usalama ndiko
+kulikokwama, badala ya "Hakuna kalenda zilizopatikana". Inajaribu tena
+ndani ya dakika chache badala ya saa.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Faili za mwasiliani zinaonyesha upakuaji wake"
+text = """
+Faili katika kidirisha cha mwasiliani ambayo barua yake bado haiko kwenye kompyuta hii sasa hujaa inapopakuliwa, kama viambatisho kwenye orodha vinavyofanya, kisha hufunguka.
+"""

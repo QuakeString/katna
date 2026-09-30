@@ -1833,3 +1833,20 @@ oder einen Tag und wählen Sie „Aufgabe“, um dort eine Aufgabe anzulegen.
 Die Karte für einen neuen Termin öffnet sich im Tab „Aufgabe“, mit
 diesem Tag und dieser Uhrzeit schon eingetragen.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalender suchen nach einem langsamen Server erneut"
+text = """
+Wenn der Kalenderserver eines Kontos nicht rechtzeitig antwortet, sagt
+der Kalender das jetzt, und ob die Verbindung oder der sichere
+Handshake hängen blieb, statt „Keine Kalender gefunden“. Er versucht
+es innerhalb von Minuten erneut statt erst nach Stunden.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Dateien eines Kontakts zeigen ihren Download"
+text = """
+Eine Datei in den Kontaktdetails, deren Mail noch nicht auf diesem
+Computer ist, füllt sich jetzt beim Herunterladen, wie Anhänge in der
+Liste, und öffnet sich dann.
+"""

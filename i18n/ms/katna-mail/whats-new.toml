@@ -1800,3 +1800,20 @@ Klik kanan masa atau hari yang lapang pada Kalendar dan pilih Tugasan untuk
 menambah tugasan di situ. Kad acara baharu dibuka pada tab Tugasannya
 dengan hari dan masa itu sudah diisi.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendar mencari semula selepas pelayan yang perlahan"
+text = """
+Apabila pelayan kalendar sesuatu akaun tidak menjawab dalam masa,
+Kalendar kini memberitahunya, dan sama ada sambungan atau jabat tangan
+selamat yang tersekat, bukannya "Tiada kalendar ditemui". Ia cuba lagi
+dalam beberapa minit, bukan beberapa jam.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Fail kenalan menunjukkan muat turunnya"
+text = """
+Fail dalam panel kenalan yang melnya belum ada pada komputer ini kini
+terisi semasa dimuat turun, seperti lampiran dalam senarai, kemudian
+dibuka.
+"""

@@ -1787,3 +1787,20 @@ Klik met rechts op een vrij tijdstip of een vrije dag in de Agenda en kies
 Taak om daar een taak toe te voegen. De kaart voor een nieuwe afspraak
 opent op het tabblad Taak, met die dag en tijd al ingevuld.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Agenda’s opnieuw zoeken na een trage server"
+text = """
+Als de agendaserver van een account niet op tijd antwoordt, zegt de Agenda
+dat nu, en of de verbinding of de beveiligde handshake bleef hangen, in
+plaats van ‘Geen agenda’s gevonden’. Hij probeert het binnen enkele minuten
+opnieuw in plaats van na uren.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Bestanden van een contact tonen hun download"
+text = """
+Een bestand in het contactpaneel waarvan de e-mail nog niet op deze
+computer staat, loopt nu vol terwijl het wordt gedownload, zoals bijlagen
+in de lijst doen, en gaat daarna open.
+"""
