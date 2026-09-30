@@ -145,6 +145,28 @@ fn google_without_the_scope_asks_to_allow() {
 }
 
 #[test]
+fn google_with_people_api_off_names_it() {
+    let (api, _) = serve(|_, _| {
+        (
+            403,
+            vec![],
+            r#"{"error":{"code":403,"message":"People API has not been used in project 1 before or it is disabled.","status":"PERMISSION_DENIED","details":[{"reason":"SERVICE_DISABLED","metadata":{"serviceTitle":"People API","activationUrl":"https://console.developers.google.com/apis/api/people.googleapis.com/overview?project=1"}}]}}"#.into(),
+        )
+    });
+    let google = google(&api, "https://www.googleapis.com/auth/contacts");
+    match smol::block_on(google.sync(None)) {
+        Err(Error::NotEnabled(detail)) => assert_eq!(
+            katna_core::api_off::parse(&detail),
+            Some((
+                "People API",
+                "https://console.developers.google.com/apis/api/people.googleapis.com/overview?project=1"
+            ))
+        ),
+        other => panic!("{:?}", other.map(|_| ())),
+    }
+}
+
+#[test]
 fn microsoft_reads_pages_and_categories() {
     let (api, _) = serve(|req, base| {
         if req.path.contains("skip=1") {

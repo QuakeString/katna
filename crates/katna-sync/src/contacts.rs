@@ -1108,6 +1108,9 @@ fn check(reply: &Reply, doing: &str) -> Result<()> {
     if (200..300).contains(&reply.status) {
         return Ok(());
     }
+    if let Some(off) = crate::google_api::switched_off(reply.status, &reply.body) {
+        return Err(off);
+    }
     let body = String::from_utf8_lossy(&reply.body);
     let scope = body.contains("ACCESS_TOKEN_SCOPE_INSUFFICIENT")
         || body.contains("insufficientPermissions")
@@ -1115,7 +1118,11 @@ fn check(reply: &Reply, doing: &str) -> Result<()> {
     if reply.status == 401 || (reply.status == 403 && scope) {
         return Err(Error::Auth(format!("contacts refused while {doing}")));
     }
-    let message: String = body.chars().take(300).collect();
+    // Google's and Microsoft's answers explain in `error.message`.
+    let said = serde_json::from_slice::<serde_json::Value>(&reply.body)
+        .ok()
+        .and_then(|v| v["error"]["message"].as_str().map(str::to_owned));
+    let message: String = said.as_deref().unwrap_or(&body).chars().take(300).collect();
     Err(Error::Rejected(format!(
         "contacts, {doing}: status {}: {message}",
         reply.status

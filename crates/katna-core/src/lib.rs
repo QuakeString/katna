@@ -4,6 +4,7 @@
 //! Katna components. See `docs/ARCHITECTURE.md` §3 and §5.
 
 pub mod account;
+pub mod api_off;
 pub mod category;
 pub mod config;
 pub mod contact;

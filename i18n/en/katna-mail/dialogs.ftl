@@ -289,6 +289,13 @@ sign-in-again-tooltip = Open the { $provider } sign-in page in your browser
 # In place of the button while the browser page is open.
 sign-in-again-waiting = Waiting for your browser…
 sign-in-again-close = Close
+# Under an account in Calendar, Tasks or Contacts, and on a Drive file in a
+# message, when Google has one of its APIs (People API, Google Drive API…)
+# switched off in the Google Cloud project Katna signs in with.
+google-api-off = { $api } is turned off in Katna's Google Cloud project.
+# Opens Google's page that turns the API on.
+google-api-turn-on = Turn on
+google-api-turn-on-tooltip = Open Google Cloud to turn on { $api }, then press Try again
 # Shown briefly after signing in again. $address: the account's email address.
 sign-in-again-done = Signed in to { $address } again. Getting your mail…
 

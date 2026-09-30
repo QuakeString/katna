@@ -161,6 +161,8 @@ async fn sync_account(
     let mut dav_refused: Option<String> = None;
     // What the server answered when no address book was found.
     let mut missing = String::new();
+    // Why the service's own API is switched off for Katna.
+    let mut off: Option<String> = None;
     for method in order {
         let changed = match (method, provider) {
             (Method::Api, Some(provider)) => {
@@ -173,6 +175,12 @@ async fn sync_account(
                             OAuthProvider::Microsoft | OAuthProvider::Zoho => BookSource::Microsoft,
                         };
                         refused = Some((source, why));
+                        None
+                    }
+                    // Switched off in Katna's Google Cloud project:
+                    // CardDAV may still be on.
+                    Err(SyncError::NotEnabled(why)) => {
+                        off = Some(why);
                         None
                     }
                     // The network or the service: not a reason to go another way.
@@ -240,7 +248,10 @@ async fn sync_account(
             Ok((changed, (contacts_state::NEEDS_SIGN_IN, why)))
         }
         (None, Some(why)) => Ok((others, (contacts_state::NEEDS_SIGN_IN, why))),
-        (None, None) => Ok((others, (contacts_state::NONE, missing))),
+        (None, None) => match off {
+            Some(why) => Ok((others, (contacts_state::NOT_ENABLED, why))),
+            None => Ok((others, (contacts_state::NONE, missing))),
+        },
     }
 }
 
