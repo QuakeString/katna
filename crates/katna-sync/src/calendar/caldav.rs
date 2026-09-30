@@ -35,7 +35,12 @@ use crate::{
     oauth::TokenSource,
 };
 
-const TIMEOUT: Duration = Duration::from_secs(2 * 60);
+const TIMEOUT: Duration = if cfg!(test) {
+    // Tests' stalled servers give up quickly.
+    Duration::from_secs(2)
+} else {
+    Duration::from_secs(2 * 60)
+};
 
 /// A server that offered no calendars is asked again after this long.
 const RETRY_DISCOVERY: Duration = Duration::from_secs(6 * 60 * 60);
@@ -473,8 +478,15 @@ impl CalDav {
         }
         let found = match self.discover().await {
             Ok(found) => found,
-            // No web server, or not one that speaks DAV.
-            Err(CalendarError::Failed(err)) if !matches!(err, Error::Rejected(_)) => {
+            // No web server, or not one that speaks DAV. A server that
+            // could not be reached in time is not known to have none: the
+            // next round looks again.
+            Err(CalendarError::Failed(err))
+                if !matches!(
+                    err,
+                    Error::Rejected(_) | Error::Unreachable(_) | Error::Timeout(_)
+                ) =>
+            {
                 tracing::debug!(%err, "no CalDAV");
                 Err(err.to_string())
             }
@@ -501,11 +513,27 @@ impl CalDav {
         let mut principal = None;
         // A server that speaks DAV without naming the user's principal.
         let mut answered = None;
+        // Whether any server answered at all, and the first that could not
+        // be reached in time.
+        let mut reached = false;
+        let mut unreachable = None;
         for url in &self.starts {
             let (at, responses) = match self.dav_or_status("PROPFIND", url, "0", PRINCIPAL).await {
                 Ok(Ok(found)) => found,
                 Ok(Err(status)) => {
+                    reached = true;
                     why.get_or_insert_with(|| format!("{} answered {status}", host(url)));
+                    continue;
+                }
+                Err(CalendarError::Failed(Error::Unreachable(err))) => {
+                    tracing::debug!(%url, %err, "CalDAV server not reached");
+                    unreachable.get_or_insert(err);
+                    continue;
+                }
+                Err(CalendarError::Failed(Error::Timeout(limit))) => {
+                    let err = format!("{} did not answer within {}s", host(url), limit.as_secs());
+                    tracing::debug!(%url, %err, "CalDAV server not reached");
+                    unreachable.get_or_insert(err);
                     continue;
                 }
                 // Nothing there, or not a DAV server: the next place.
@@ -516,6 +544,7 @@ impl CalDav {
                 }
                 Err(err) => return Err(err),
             };
+            reached = true;
             let href = responses
                 .iter()
                 .find_map(|r| r.prop("current-user-principal")?.hrefs.first().cloned());
@@ -528,6 +557,11 @@ impl CalDav {
         }
         // Asking where it answered for the home is the older way.
         let Some(principal) = principal.or(answered) else {
+            // The provider's server stalled: say so, and look again soon,
+            // rather than calling the account one without calendars.
+            if let (false, Some(err)) = (reached, unreachable) {
+                return Err(CalendarError::Failed(Error::Unreachable(err)));
+            }
             return Ok(Err(why.unwrap_or_else(|| "no server to ask".into())));
         };
         let (at, responses) = match self
