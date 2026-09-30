@@ -10,6 +10,14 @@
   home on KDE Plasma and GNOME. An alternative to KDE PIM.
 </p>
 
+> [!WARNING]
+> **Katna is at a very early stage of development. Please do not use it in
+> production, or for any mail you cannot afford to lose.**
+> It changes every day and will break often; an update can undo what worked
+> the day before. There are no versioned releases yet. If you try it anyway,
+> use it with great caution, on an account you can spare, and keep your own
+> backups.
+
 <p align="center">
   <a href="https://github.com/QuakeString/katna/actions/workflows/ci.yml"><img src="https://github.com/QuakeString/katna/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/QuakeString/katna/releases/tag/arch-latest"><img src="https://github.com/QuakeString/katna/actions/workflows/arch-package.yml/badge.svg" alt="Arch package"></a>
@@ -25,10 +33,6 @@
 <p align="center">
   <img src="docs/screenshots/desktop-light-dark.webp" alt="Katna Mail on a desktop-sized window, half in the light theme and half in the dark theme, with a conversation open beside the list">
 </p>
-
-> **Status: early development.** Katna Mail is usable day to day on real
-> accounts, but things change fast and there are no versioned releases yet.
-> A prebuilt Arch Linux package follows every change on `main`.
 
 ## A personal project
 
@@ -117,6 +121,9 @@ Notes and Feeds are planned; they already have a place in the app, marked
 ## Install
 
 ### Arch Linux
+
+Please read the warning at the top of this page first: Katna is not ready
+for everyday use yet.
 
 CI builds a package on every push to `main` and publishes it on the
 [`arch-latest`](https://github.com/QuakeString/katna/releases/tag/arch-latest)
