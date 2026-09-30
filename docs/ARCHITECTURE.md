@@ -3881,6 +3881,13 @@ media code, nothing added to startup.
   (`katna_core::meeting`). Invitations skip it: their card has Join.
   WhatsApp and Telegram have no way for other apps to make calls, so their
   links are only joined.
+- An event's card joins the same way: its own conference link, else the
+  first call link in its place or description (a Teams invitation read
+  over CalDAV or from mail), as "Join with <service>" at the top. The
+  description shows its web addresses as links (Outlook's
+  `text<https://…>` as `text`) without the rules of underscores
+  (`calendar/description.rs`); only the details scroll, the title and
+  Going? stay in sight.
 
 ## 19. Security and privacy
 

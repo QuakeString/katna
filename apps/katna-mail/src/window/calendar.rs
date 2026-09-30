@@ -13,8 +13,9 @@ use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
-    KeyBinding, MouseButton, Pixels, Point, ScrollHandle, SharedString, Task, Window, anchored,
-    canvas, deferred, div, ease_out_quint, prelude::*, rgba,
+    HighlightStyle, InteractiveText, KeyBinding, MouseButton, Pixels, Point, ScrollHandle,
+    SharedString, StyledText, Task, UnderlineStyle, Window, anchored, canvas, deferred, div,
+    ease_out_quint, prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
@@ -33,6 +34,7 @@ use super::{MailWindow, Menu, MenuKey};
 use menu::CalTarget;
 
 mod birthdays;
+mod description;
 mod free;
 pub(super) mod menu;
 mod search;
@@ -2676,6 +2678,49 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// An event's description, tidied, its web addresses links.
+    fn render_event_description(&self, text: &str, th: &Theme) -> AnyElement {
+        let (text, links) = description::tidy(text);
+        let style = HighlightStyle {
+            color: Some(rgba(th.accent).into()),
+            underline: Some(UnderlineStyle {
+                thickness: px(1.0),
+                ..UnderlineStyle::default()
+            }),
+            ..HighlightStyle::default()
+        };
+        let styled = StyledText::new(text)
+            .with_highlights(links.iter().map(|(range, _)| (range.clone(), style)));
+        let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
+        let body =
+            InteractiveText::new("event-description", styled).on_click(ranges, move |ix, _, cx| {
+                if let Some(url) = urls.get(ix) {
+                    cx.open_url(url);
+                }
+            });
+        div()
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(16.0))
+            .child(
+                div()
+                    .flex_none()
+                    .pt(px(1.0))
+                    .child(icon("notes", th.text_dim, 20.0)),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text))
+                    .child(body),
+            )
+            .into_any_element()
+    }
+
     /// The card of the event clicked: when, where, the call to join, who
     /// comes and what it says.
     fn render_event_card(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
@@ -2732,7 +2777,20 @@ impl MailWindow {
         };
         let guests = data.attendees.len();
         let answers = |status: &str| data.attendees.iter().filter(|a| a.status == status).count();
-        let join = data.join_url.clone();
+        // The call to join: the event's own, else a link in its place or
+        // description (a Teams invitation read from mail or CalDAV).
+        let jitsi = katna_core::meeting::jitsi_host(&self.config.meetings.jitsi_server);
+        let calls = katna_core::meeting::find(
+            [data.join_url.as_str()]
+                .into_iter()
+                .filter(|l| !l.is_empty()),
+            [data.location.as_str(), data.description.as_str()],
+            jitsi.as_deref(),
+        );
+        let join = match calls.first() {
+            Some((service, link)) => Some((Some(*service), link.clone())),
+            None => (!data.join_url.is_empty()).then(|| (None, data.join_url.clone())),
+        };
         let web = data.web_link.clone();
         let editable = self.can_edit(occurrence);
         let emails = !self.other_guests(occurrence).is_empty();
@@ -2757,9 +2815,9 @@ impl MailWindow {
                 .occlude()
                 .w(px(CARD_WIDTH.min(self.layout.shape.width - 16.0)))
                 .max_h(px(520.0))
-                .overflow_y_scroll()
+                .overflow_hidden()
                 .p(px(8.0))
-                .pb(px(20.0))
+                .pb(px(12.0))
                 .flex()
                 .flex_col()
                 .gap(px(12.0)),
@@ -2877,18 +2935,46 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(14.0))
-            .when(!join.is_empty(), |d| {
-                let url = join.clone();
+            .when_some(join, |d, (service, url)| {
+                let label = match service {
+                    Some(service) => tr!(
+                        "calendar-join-with",
+                        service = super::meeting::service_name(service)
+                    ),
+                    None => tr!("calendar-join"),
+                };
+                let shown = url
+                    .split_once("://")
+                    .map_or(url.as_str(), |(_, rest)| rest)
+                    .to_owned();
+                let open = url.clone();
                 d.child(
                     div()
                         .flex()
                         .flex_row()
                         .gap(px(16.0))
                         .items_center()
-                        .child(icon("event", th.text_dim, 20.0))
+                        .child(icon("video", th.text_dim, 20.0))
                         .child(
-                            crate::widgets::filled_button("event-join", tr!("calendar-join"), th)
-                                .on_click(move |_, _, cx| cx.open_url(&url)),
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .items_start()
+                                .gap(px(4.0))
+                                .child(
+                                    crate::widgets::filled_button("event-join", label, th)
+                                        .on_click(move |_, _, cx| cx.open_url(&open)),
+                                )
+                                .child(
+                                    div()
+                                        .w_full()
+                                        .truncate()
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(shown),
+                                ),
                         ),
                 )
             })
@@ -2995,8 +3081,7 @@ impl MailWindow {
                 )
             })
             .when(!data.description.is_empty(), |d| {
-                let text: String = data.description.chars().take(1200).collect();
-                d.child(line("notes", text))
+                d.child(self.render_event_description(&data.description, th))
             })
             // Nothing to take notes of on a birthday.
             .when(data.kind != EventKind::Birthday, |d| {
@@ -3005,7 +3090,17 @@ impl MailWindow {
             .when_some(calendar, |d, calendar| {
                 d.child(line("calendar", calendar_name(calendar)))
             });
-        card = card.child(body);
+        // Only the details scroll: the title above and the answers
+        // below stay in sight.
+        card = card.child(
+            div()
+                .id("event-card-body")
+                .flex_1()
+                .min_h_0()
+                .overflow_y_scroll()
+                .pb(px(8.0))
+                .child(body),
+        );
         let me = data.attendees.iter().find(|a| a.is_self);
         let invited = editable && me.is_some_and(|a| !a.organizer);
         let mine = if data.self_status.is_empty() {
@@ -3036,7 +3131,7 @@ impl MailWindow {
             };
             card = card.child(
                 div()
-                    .mt(px(4.0))
+                    .flex_none()
                     .pt(px(12.0))
                     .px(px(16.0))
                     .border_t_1()

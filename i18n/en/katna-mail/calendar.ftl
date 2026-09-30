@@ -106,6 +106,8 @@ calendar-more = { $count } more
 calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Repeats
 calendar-join = Join
+# The Join button of a call found in an event: "Join with Microsoft Teams".
+calendar-join-with = Join with { $service }
 # Opens a new mail to the event's guests.
 calendar-email-guests = Email guests
 # Opens a new mail telling the event's guests the user is late.
