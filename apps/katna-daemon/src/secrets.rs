@@ -384,7 +384,25 @@ mod keyring {
     impl Keyring {
         pub async fn new() -> Result<Self, Error> {
             Ok(Self {
-                inner: oo7::Keyring::new().await?,
+                inner: match oo7::Keyring::new().await {
+                    Ok(keyring) => keyring,
+                    // In a Snap (or a Flatpak) oo7 asks the secret portal
+                    // first and gives up if no portal service runs at all;
+                    // the Secret Service itself (the Snap's
+                    // password-manager-service plug) still does, as oo7
+                    // does when the portal is merely missing its Secret part.
+                    Err(oo7::Error::File(err)) => {
+                        tracing::info!("no secret portal ({err}); using the Secret Service");
+                        let service = oo7::dbus::Service::new().await.map_err(oo7::Error::from)?;
+                        oo7::Keyring::DBus(
+                            service
+                                .default_collection()
+                                .await
+                                .map_err(oo7::Error::from)?,
+                        )
+                    }
+                    Err(err) => return Err(err.into()),
+                },
                 connection: zbus::Connection::session().await?,
                 prompt: Mutex::new(()),
                 declined: AtomicBool::new(false),
