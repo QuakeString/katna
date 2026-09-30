@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tables in mail read properly"
+text = """
+Tables in mail, such as the job list in a GitHub Actions notification, keep their columns side by side and line them up from row to row, instead of breaking a heading one letter per line. Divider lines between parts of a message now show too.
+"""
