@@ -228,7 +228,12 @@ impl MailWindow {
     /// the name: the old one rolls down and out, the new one down into
     /// its place. A narrow tablet folds the words away, so the search box
     /// keeps its room.
-    fn render_title(&self, th: &Theme, label: f32, (brand, name): (f32, f32)) -> AnyElement {
+    pub(super) fn render_title(
+        &self,
+        th: &Theme,
+        label: f32,
+        (brand, name): (f32, f32),
+    ) -> AnyElement {
         let roll = self.title_roll.value();
         let word = |app: super::RailApp, top: f32, opacity: f32| {
             div()

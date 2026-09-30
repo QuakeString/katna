@@ -3,7 +3,8 @@
 //! The first start: a few pages that fill the window until the first
 //! account is added. Welcome says what Katna is; Account checks the
 //! background service and adds the account; Look picks the layout and
-//! colors; Share asks whether to send crash reports (`share_ask`); Ready
+//! colors; Katna account offers a Katna account and what it turns on,
+//! or Skip; Share asks whether to send crash reports (`share_ask`); Ready
 //! offers the tour of the window (`tour`).
 
 use std::time::Duration;
@@ -22,12 +23,16 @@ use super::settings::Change;
 use super::{MailWindow, PANEL_RADIUS, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon};
+use crate::widgets::{elevation, filled_button, icon};
 
 /// How long a page takes to slide in.
 const PAGE_IN: Duration = Duration::from_millis(360);
 const CARD_WIDTH: f32 = 600.0;
 const CARD_HEIGHT: f32 = 620.0;
+/// The scrim over the window behind the pages: light, so the window
+/// shows through.
+const SCRIM_LIGHT: u32 = 0x0000_0029;
+const SCRIM_DARK: u32 = 0x0000_0052;
 
 /// Ease out with a little overshoot, for things that pop in.
 fn ease_out_back(t: f32) -> f32 {
@@ -41,15 +46,17 @@ pub(super) enum Step {
     Welcome,
     Account,
     Look,
+    Katna,
     Share,
     Ready,
 }
 
 impl Step {
-    const ALL: [Step; 5] = [
+    const ALL: [Step; 6] = [
         Step::Welcome,
         Step::Account,
         Step::Look,
+        Step::Katna,
         Step::Share,
         Step::Ready,
     ];
@@ -72,6 +79,9 @@ pub(super) struct Onboarding {
     /// The last move went forward, so the page comes in from the right.
     forward: bool,
     service: Service,
+    /// On the Katna account page: `None` shows what an account brings,
+    /// `Some(create)` the form to create one or sign in.
+    katna_form: Option<bool>,
     _check: Option<Task<()>>,
 }
 
@@ -79,6 +89,7 @@ impl Onboarding {
     pub(super) fn new() -> Self {
         Self {
             step: Step::Welcome,
+            katna_form: None,
             forward: true,
             service: Service::Checking,
             _check: None,
@@ -98,6 +109,7 @@ impl MailWindow {
         };
         onboarding.forward = step.index() >= onboarding.step.index();
         onboarding.step = step;
+        onboarding.katna_form = None;
         if step == Step::Account {
             self.check_service(cx);
         }
@@ -135,6 +147,20 @@ impl MailWindow {
         }));
     }
 
+    /// Shows the Katna account form, to create one or to sign in.
+    pub(super) fn onboarding_katna_form(&mut self, form: Option<bool>, cx: &mut Context<Self>) {
+        if let Some(onboarding) = &mut self.onboarding {
+            onboarding.forward = form.is_some();
+            onboarding.katna_form = form;
+            cx.notify();
+        }
+    }
+
+    /// Signed in to a Katna account: on to the crash reports.
+    pub(super) fn onboarding_katna_done(&mut self, cx: &mut Context<Self>) {
+        self.onboarding_step(Step::Share, cx);
+    }
+
     /// The first account is in: on to the look.
     pub(super) fn onboarding_account_added(&mut self, cx: &mut Context<Self>) {
         if self
@@ -170,34 +196,66 @@ impl MailWindow {
         };
         let step = onboarding.step;
         let forward = onboarding.forward;
+        let katna_form = onboarding.katna_form;
+        let phone = self.layout.shape.is_phone();
         let reduce = cx.reduce_motion();
         let (body, actions) = match step {
             Step::Welcome => self.welcome_page(th, cx),
             Step::Account => self.account_page(th, window, cx),
             Step::Look => self.look_page(th, cx),
+            Step::Katna => match katna_form {
+                // Already signed in on this computer: say so.
+                None if !self.katna_signed_in() => self.katna_offer_page(th, cx),
+                None => {
+                    let (body, main) = self.katna_onboarding_form(false, th, window, cx);
+                    (body, actions_row(None, main))
+                }
+                Some(create) => {
+                    let (body, main) = self.katna_onboarding_form(create, th, window, cx);
+                    let back = text_button("onboarding-katna-back", tr!("onboarding-back"), th)
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.onboarding_katna_form(None, cx)),
+                        )
+                        .into_any_element();
+                    (body, actions_row(Some(back), main))
+                }
+            },
             Step::Share => self.share_page(th, cx),
             Step::Ready => self.ready_page(th, cx),
         };
+        // The page scrolls when it does not fit; its buttons stay put.
         let page = div()
             .flex_1()
+            .min_h_0()
             .flex()
             .flex_col()
             .gap(px(24.0))
             .child(
                 div()
+                    .id(("onboarding-body", step.index()))
                     .flex_1()
-                    .flex()
-                    .flex_col()
-                    .justify_center()
-                    .child(body),
+                    .min_h_0()
+                    .overflow_y_scroll()
+                    .child(
+                        div()
+                            .flex_none()
+                            .min_h_full()
+                            .flex()
+                            .flex_col()
+                            .justify_center()
+                            .child(body),
+                    ),
             )
-            .child(actions);
+            .child(div().flex_none().child(actions));
         let page = if reduce {
             page.into_any_element()
         } else {
             let from = if forward { 32.0 } else { -32.0 };
             page.with_animation(
-                ("onboarding-page", step.index()),
+                (
+                    "onboarding-page",
+                    step.index() * 3 + katna_form.map_or(0, |c| 1 + c as usize),
+                ),
                 Animation::new(PAGE_IN).with_easing(ease_out_quint()),
                 move |el, t| el.opacity(t).ml(px(from * (1.0 - t))),
             )
@@ -207,28 +265,71 @@ impl MailWindow {
             .id("onboarding-card")
             .w(px(CARD_WIDTH))
             .max_w_full()
-            // The same height on every page, so the card does not jump.
-            .h(px(CARD_HEIGHT))
+            // The same height on every page, so the card does not jump;
+            // all the room there is on a phone.
+            .map(|d| {
+                if phone {
+                    d.h_full()
+                } else {
+                    d.h(px(CARD_HEIGHT))
+                }
+            })
             .max_h_full()
-            .overflow_y_scroll()
-            .px(px(48.0))
+            .overflow_hidden()
+            .px(px(if phone { 24.0 } else { 48.0 }))
             .pt(px(28.0))
-            .pb(px(32.0))
+            .pb(px(if phone { 24.0 } else { 32.0 }))
             .flex()
             .flex_col()
             .gap(px(28.0))
             .rounded(px(PANEL_RADIUS))
             .bg(rgba(th.surface))
+            .shadow(elevation(th, 3.0))
             .child(step_dots(step, th))
             .child(page);
-        div()
+        // The window as it will be shows through a light, blurred scrim,
+        // rather than an empty dark page.
+        let scrim = div()
+            .id("onboarding-scrim")
+            .absolute()
+            .top_0()
+            .left_0()
             .size_full()
-            .px(px(16.0))
-            .pb(px(16.0))
-            .flex()
-            .items_center()
-            .justify_center()
-            .child(card)
+            .occlude()
+            .map(|d| {
+                let fill = if th.dark { SCRIM_DARK } else { SCRIM_LIGHT };
+                if th.frost == 0 {
+                    d.bg(rgba(fill))
+                } else {
+                    d.child(katna_ui::frost::glass(
+                        rgba(fill).into(),
+                        px(0.0),
+                        th.frost as f32,
+                    ))
+                }
+            });
+        div()
+            .relative()
+            .size_full()
+            .child(self.render_skeleton(th, cx))
+            .child(scrim)
+            .child(
+                div()
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .size_full()
+                    .px(px(16.0))
+                    .pb(px(16.0))
+                    // Above a phone's apps along the bottom.
+                    .when(phone, |d| {
+                        d.pt(px(8.0)).pb(px(super::layout::BOTTOM_BAR_HEIGHT + 8.0))
+                    })
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .child(card),
+            )
             .into_any_element()
     }
 
@@ -484,8 +585,110 @@ impl MailWindow {
         let actions = actions_row(
             None,
             filled_button("onboarding-look-done", tr!("onboarding-continue"), th)
-                .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Share, cx))),
+                .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Katna, cx))),
         );
+        (body.into_any_element(), actions)
+    }
+
+    /// What a Katna account turns on, with Create account, I have an
+    /// account, and Skip.
+    fn katna_offer_page(&self, th: &Theme, cx: &mut Context<Self>) -> (AnyElement, AnyElement) {
+        let body = div()
+            .flex()
+            .flex_col()
+            .items_center()
+            .gap(px(12.0))
+            .child(crate::widgets::katna_mark(48.0))
+            .child(title(tr!("onboarding-katna-title"), th))
+            .child(lead(&tr!("onboarding-katna-lead"), th))
+            .child(
+                div()
+                    .pt(px(8.0))
+                    .w_full()
+                    .flex()
+                    .flex_col()
+                    .gap(px(14.0))
+                    .child(feature(
+                        "read-receipt",
+                        tr!("onboarding-katna-receipts-title"),
+                        tr!("onboarding-katna-receipts-text"),
+                        th,
+                    ))
+                    .child(feature(
+                        "link",
+                        tr!("onboarding-katna-links-title"),
+                        tr!("onboarding-katna-links-text"),
+                        th,
+                    ))
+                    .child(feature(
+                        "activity",
+                        tr!("onboarding-katna-activity-title"),
+                        tr!("onboarding-katna-activity-text"),
+                        th,
+                    ))
+                    .child(feature(
+                        "translate",
+                        tr!("onboarding-katna-translate-title"),
+                        tr!("onboarding-katna-translate-text"),
+                        th,
+                    )),
+            )
+            .child(
+                div()
+                    .pt(px(6.0))
+                    .w_full()
+                    .flex()
+                    .flex_row()
+                    .justify_center()
+                    .items_start()
+                    .gap(px(6.0))
+                    .text_size(px(12.0))
+                    .line_height(px(17.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(
+                        div()
+                            .flex_none()
+                            .pt(px(1.0))
+                            .child(icon("lock", th.text_faint, 14.0)),
+                    )
+                    .child(div().min_w_0().child(tr!("onboarding-katna-private"))),
+            );
+        let have = text_button("onboarding-katna-have", tr!("katna-have-account"), th)
+            .on_click(cx.listener(|this, _, _, cx| this.onboarding_katna_form(Some(false), cx)));
+        let create = filled_button("onboarding-katna-create", tr!("katna-create"), th)
+            .on_click(cx.listener(|this, _, _, cx| this.onboarding_katna_form(Some(true), cx)));
+        let skip = text_button("onboarding-katna-skip", tr!("onboarding-skip"), th)
+            .on_click(cx.listener(|this, _, _, cx| this.onboarding_step(Step::Share, cx)));
+        // A phone has no room for three buttons in a row: Create account
+        // across the card, the other two under it.
+        let actions = if self.layout.shape.is_phone() {
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(8.0))
+                .child(create.w_full().justify_center())
+                .child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .justify_center()
+                        .gap(px(8.0))
+                        .child(skip)
+                        .child(have),
+                )
+                .into_any_element()
+        } else {
+            actions_row(
+                Some(skip.into_any_element()),
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .child(have)
+                    .child(create),
+            )
+        };
         (body.into_any_element(), actions)
     }
 

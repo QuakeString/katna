@@ -16,6 +16,9 @@ katna-sign-in = Sign in
 katna-sign-in-detail = Sign in on each computer where you want the online features.
 katna-create = Create account
 katna-create-detail = Use an address you can read: we mail you a code to confirm it.
+# First start: the form's heading after "Create account" or "I have an account".
+katna-onboarding-create-title = Create your Katna account
+katna-onboarding-sign-in-title = Sign in to Katna
 # Link from "Create account" back to signing in.
 katna-have-account = I have an account
 katna-forgot = Forgot password?
