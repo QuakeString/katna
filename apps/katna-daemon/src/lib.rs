@@ -21,6 +21,7 @@ mod on_demand;
 pub mod secrets;
 pub mod service;
 pub mod system;
+mod systemd;
 mod threads;
 mod tracking;
 pub mod translate;

@@ -102,7 +102,7 @@ pub(crate) async fn run(
             .env("XDG_ACTIVATION_TOKEN", token)
             .env("DESKTOP_STARTUP_ID", token);
     }
-    spawn(command);
+    spawn(connection, command).await;
     false
 }
 
@@ -137,7 +137,7 @@ pub(crate) async fn open_mailto(
             .env("XDG_ACTIVATION_TOKEN", token)
             .env("DESKTOP_STARTUP_ID", token);
     }
-    spawn(command);
+    spawn(connection, command).await;
     false
 }
 
@@ -154,10 +154,13 @@ fn mail_program() -> std::path::PathBuf {
         .unwrap_or(name)
 }
 
-fn spawn(mut command: Command) {
+async fn spawn(connection: &zbus::Connection, mut command: Command) {
     match command.spawn() {
-        // Reaped on its own thread, so it leaves no zombie behind.
         Ok(mut child) => {
+            if let Err(err) = crate::systemd::move_to_own_scope(connection, child.id()).await {
+                tracing::debug!(%err, "Katna Mail stays in katna-daemon's group");
+            }
+            // Reaped on its own thread, so it leaves no zombie behind.
             std::thread::spawn(move || child.wait());
         }
         Err(err) => tracing::warn!(%err, "could not start katna-mail"),
