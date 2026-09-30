@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Colourful folder icons"
+text = """
+The folder pane's icons now have colours that say what each folder holds:
+Unread blue, Starred yellow, Important amber, Sent green, Spam red, Drafts
+purple, and Inbox in your desktop's accent. Mail counts sit in small, faint
+pills.
+"""

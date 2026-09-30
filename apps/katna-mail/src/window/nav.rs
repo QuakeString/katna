@@ -1136,7 +1136,15 @@ impl MailWindow {
                 }),
             )
             .child(Ripple::new(("nav-ripple", ix), rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
-            .child(icon(icon_name, text, 20.0))
+            .child(icon(
+                icon_name,
+                if selected {
+                    text
+                } else {
+                    folder_icon_color(icon_name, th)
+                },
+                20.0,
+            ))
             .child(
                 div()
                     .flex_1()
@@ -1157,13 +1165,21 @@ impl MailWindow {
                         )),
                 )
             })
+            // The count sits in a tight, faint pill of the line's own text
+            // color.
             .when(unread > 0, |d| {
                 d.child(
-                    div()
-                        .flex_none()
-                        .pl(px(8.0))
-                        .text_size(px(12.0))
-                        .child(format::thousands(unread)),
+                    div().flex_none().pl(px(8.0)).child(
+                        div()
+                            .h(px(18.0))
+                            .px(px(6.0))
+                            .flex()
+                            .items_center()
+                            .rounded_full()
+                            .bg(rgba(fade(text, 0.08)))
+                            .text_size(px(12.0))
+                            .child(format::thousands(unread)),
+                    ),
                 )
             })
             .children(chevron);
@@ -1528,6 +1544,23 @@ fn unified_icon(view: Unified) -> &'static str {
         Unified::Starred => "star",
         Unified::Important => "important",
         _ => view.role().map_or("label", role_icon),
+    }
+}
+
+/// The color of a folder pane icon, from what the icon stands for.
+fn folder_icon_color(icon: &str, th: &Theme) -> u32 {
+    let colors = &th.folder_icons;
+    match icon {
+        "inbox" => th.accent,
+        "unread" => colors.unread,
+        "star" => colors.starred,
+        "important" => colors.important,
+        "sent" => colors.sent,
+        "all-mail" => colors.all_mail,
+        "junk" => colors.spam,
+        "drafts" => colors.drafts,
+        "schedule" => colors.scheduled,
+        _ => th.text_dim,
     }
 }
 

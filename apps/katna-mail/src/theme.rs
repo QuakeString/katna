@@ -62,6 +62,8 @@ pub struct Theme {
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
+    /// The folder pane's icons for special folders and views.
+    pub folder_icons: FolderIcons,
     pub chip: u32,
     pub snackbar: u32,
     pub snackbar_text: u32,
@@ -69,6 +71,21 @@ pub struct Theme {
     pub error: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
+}
+
+/// The colors of the folder pane's icons, each saying what its folder
+/// holds; the inbox takes the accent, and Trash, Archive and the user's
+/// own folders keep the dimmed text color.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct FolderIcons {
+    pub unread: u32,
+    pub starred: u32,
+    pub important: u32,
+    pub sent: u32,
+    pub all_mail: u32,
+    pub spam: u32,
+    pub drafts: u32,
+    pub scheduled: u32,
 }
 
 impl Theme {
@@ -206,6 +223,7 @@ impl Theme {
             frost: 0,
             switch_off: ink(0.18),
             tabs,
+            folder_icons: base.folder_icons,
             chip: ink(0.1),
             snackbar: base.snackbar,
             snackbar_text: base.snackbar_text,
@@ -325,6 +343,16 @@ const LIGHT: Theme = Theme {
     frost: 0,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
+    folder_icons: FolderIcons {
+        unread: 0x1a73e8ff,
+        starred: 0xe8a600ff,
+        important: 0xe37400ff,
+        sent: 0x188038ff,
+        all_mail: 0x5c6bc0ff,
+        spam: 0xd93025ff,
+        drafts: 0x9334e6ff,
+        scheduled: 0x00897bff,
+    },
     chip: 0xe1e3e1ff,
     snackbar: 0x313033ff,
     snackbar_text: 0xf4eff4ff,
@@ -364,6 +392,16 @@ const DARK: Theme = Theme {
     frost: 0,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
+    folder_icons: FolderIcons {
+        unread: 0x8ab4f8ff,
+        starred: 0xfdd663ff,
+        important: 0xfcad70ff,
+        sent: 0x81c995ff,
+        all_mail: 0x9fa8daff,
+        spam: 0xf28b82ff,
+        drafts: 0xd7aefbff,
+        scheduled: 0x80cbc4ff,
+    },
     chip: 0x3c3f43ff,
     snackbar: 0xe3e3e3ff,
     snackbar_text: 0x1f1f1fff,
