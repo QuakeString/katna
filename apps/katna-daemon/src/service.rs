@@ -160,6 +160,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sync_now(account).await?)
             }
 
+            async fn sync_folder(&self, folder: i64) -> fdo::Result<()> {
+                Ok(self.daemon.sync_folder(FolderId(folder)).await?)
+            }
+
             async fn fetch_body(&self, message: i64) -> fdo::Result<()> {
                 Ok(self.daemon.fetch_body(MessageId(message)).await?)
             }

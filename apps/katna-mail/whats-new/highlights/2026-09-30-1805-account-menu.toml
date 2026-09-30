@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Account info in the right-click menu"
+text = """
+Right-click an account's name in the folder list, or its inbox under All
+Accounts, to see its address, whether it is in sync and when it was last
+checked, and how much storage it uses. From there you can check that inbox,
+write a new mail from that account, open its settings, or sign in again when
+the sign-in has expired.
+"""

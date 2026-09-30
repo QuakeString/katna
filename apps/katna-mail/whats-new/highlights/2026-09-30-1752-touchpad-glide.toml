@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Touchpad flicks glide"
+text = """
+A quick two-finger flick on a touchpad keeps scrolling and slows down, like
+in other apps. Touch the touchpad again to stop it. On Wayland.
+"""

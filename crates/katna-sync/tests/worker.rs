@@ -754,3 +754,54 @@ fn reconnect_drops_the_connection_and_connects_at_once() {
         worker.stop().await;
     });
 }
+
+#[test]
+fn sync_folder_syncs_only_that_folder() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.create("Lists", 1);
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+        let folder = |path: &str| {
+            worker
+                .store()
+                .folders(katna_core::AccountId(1))
+                .unwrap()
+                .into_iter()
+                .find(|f| f.path == path)
+                .unwrap()
+                .id
+        };
+        let (archive, lists) = (folder("Archive"), folder("Lists"));
+
+        Timer::after(Duration::from_millis(50)).await;
+        server.clear_log();
+        server.deliver("Archive", "filed");
+        server.deliver("Lists", "digest");
+        worker.handle.sync_folder(archive);
+        let Event::Synced(reports) = worker.next().await else {
+            panic!("expected Synced");
+        };
+        assert_eq!(reports.len(), 1, "{reports:?}");
+        assert_eq!((reports[0].path.as_str(), reports[0].added), ("Archive", 1));
+        let log = server.log();
+        assert!(!log.contains(&"LIST".to_owned()), "{log:?}");
+        assert!(!log.iter().any(|c| c.contains("Lists")), "{log:?}");
+
+        // Nothing new still says the check is done.
+        worker.handle.sync_folder(archive);
+        let Event::Synced(reports) = worker.next().await else {
+            panic!("expected Synced");
+        };
+        assert!(reports.is_empty(), "{reports:?}");
+
+        // Lists was left alone until asked for.
+        worker.handle.sync_folder(lists);
+        let event = worker.next().await;
+        assert_eq!(added(&event), 1, "{event:?}");
+        worker.stop().await;
+    });
+}
