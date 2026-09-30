@@ -16,12 +16,6 @@ nav-account-unnamed = Обліковий запис { $number }
 nav-all-accounts = Усі облікові записи
 nav-expand = Показати папки
 nav-collapse = Сховати папки
-nav-tab-new = { $count ->
-    [one] { $count } новий
-    [few] { $count } нові
-    [many] { $count } нових
-   *[other] { $count } нового
-}
 storage-used = Використано { $percent }% із { $total }
 storage-used-detail = { $address }: використано { $used } із { $total }
 

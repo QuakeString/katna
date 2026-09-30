@@ -16,7 +16,6 @@ nav-account-unnamed = Àkáǹtì { $number }
 nav-all-accounts = Gbogbo àkáǹtì
 nav-expand = Fi àwọn fódà hàn
 nav-collapse = Fi àwọn fódà pamọ́
-nav-tab-new = { $count } tuntun
 storage-used = A ti lo { $percent }% nínú { $total }
 storage-used-detail = { $address }: a ti lo { $used } nínú { $total }
 

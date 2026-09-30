@@ -14,7 +14,6 @@ tab-other = Iba pa
 tab-inbox = Inbox
 tab-newsletters = Mga Newsletter
 tab-notifications = Mga Notification
-tab-new = { $count } bago
 tab-provider-other = inayos ng Katna
 
 ## Mail list: toolbar

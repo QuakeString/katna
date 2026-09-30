@@ -16,10 +16,6 @@ nav-account-unnamed = Rekening { $number }
 nav-all-accounts = Alle rekeninge
 nav-expand = Wys vouers
 nav-collapse = Versteek vouers
-nav-tab-new = { $count ->
-    [one] { $count } nuut
-   *[other] { $count } nuut
-}
 storage-used = { $percent }% van { $total } gebruik
 storage-used-detail = { $address }: { $used } van { $total } gebruik
 

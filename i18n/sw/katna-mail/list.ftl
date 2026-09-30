@@ -14,7 +14,6 @@ tab-other = Nyingine
 tab-inbox = Kikasha
 tab-newsletters = Majarida
 tab-notifications = Arifa
-tab-new = { $count } mpya
 tab-provider-other = zimepangwa na Katna
 
 ## Mail list: toolbar

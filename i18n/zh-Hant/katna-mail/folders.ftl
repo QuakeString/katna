@@ -16,7 +16,6 @@ nav-account-unnamed = 帳戶 { $number }
 nav-all-accounts = 所有帳戶
 nav-expand = 顯示資料夾
 nav-collapse = 隱藏資料夾
-nav-tab-new = { $count } 封新郵件
 storage-used = 已使用 { $total } 中的 { $percent }%
 storage-used-detail = { $address }：已使用 { $total } 中的 { $used }
 

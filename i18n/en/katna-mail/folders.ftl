@@ -51,11 +51,6 @@ nav-all-accounts = All Accounts
 # Tooltips of the arrow beside an account's name and beside "All Accounts".
 nav-expand = Show folders
 nav-collapse = Hide folders
-# The badge of an inbox tab in a phone's drawer: how many new messages it has.
-nav-tab-new = { $count ->
-    [one] { $count } new
-   *[other] { $count } new
-}
 # Under the bar at the foot of the folder pane: how full the account's
 # mail storage is. $percent: a whole number such as “34”; $total: the
 # account's storage, such as “15 GB”.

@@ -16,7 +16,6 @@ nav-account-unnamed = 账号 { $number }
 nav-all-accounts = 所有账号
 nav-expand = 显示文件夹
 nav-collapse = 隐藏文件夹
-nav-tab-new = { $count } 封新邮件
 storage-used = 已使用 { $total } 中的 { $percent }%
 storage-used-detail = { $address }：已使用 { $total } 中的 { $used }
 

@@ -14,7 +14,6 @@ tab-other = Lainnya
 tab-inbox = Kotak Masuk
 tab-newsletters = Buletin
 tab-notifications = Notifikasi
-tab-new = { $count } baru
 tab-provider-other = diurutkan oleh Katna
 
 ## Mail list: toolbar
