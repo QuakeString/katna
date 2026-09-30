@@ -1098,8 +1098,16 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
 - Updates: a package update replaces the binary while the old one runs.
   Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced
-  it shuts down gracefully and `exec`s the new binary (same PID, so systemd
-  keeps tracking it). No `systemctl --user restart` after an update.
+  it asks systemd (`RestartUnit` on the service it runs as) to restart it,
+  which stops it with SIGTERM and starts the new binary. Without systemd it
+  shuts down gracefully and `exec`s the new binary. It used to `exec` under
+  systemd too, but shutting down releases the bus name, systemd stops a
+  `Type=dbus` service that loses its name, and its SIGTERM got lost in the
+  exec, so 90 s later systemd killed the new daemon and its whole group.
+  No `systemctl --user restart` after an update.
+- A Katna Mail the daemon starts (tray, notification, search) moves to its
+  own `app-in.invenia.katna.Mail-<pid>.scope` (`StartTransientUnit`), so the
+  daemon stopping or restarting never closes its windows.
 
 ### 9.2.1 What runs today (Phase 1)
 
