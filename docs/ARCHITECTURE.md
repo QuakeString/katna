@@ -3511,7 +3511,10 @@ most useful reason is shown. Changes go back the way their calendar came
   skipped, otherwise the etags of its `VEVENT`s are compared with the
   store and only changed ones fetched by `calendar-multiget`
   (`katna_dav::ical` reads them). A server without CalDAV is asked again
-  after 6 hours. Each account's state (`ok`, `needs-sign-in`,
+  after 6 hours; one that took no connection, stalled in the TLS
+  handshake or didn't answer in time is not taken for one without
+  CalDAV: the account shows `error` with which step stalled
+  (`katna_sync::Error::Unreachable`), and the next round asks again. Each account's state (`ok`, `needs-sign-in`,
   `not-enabled`, `error`, `none`) is `CalendarStatus()` on `Pim1`;
   `CalendarChanged()` (and the clock's `Agenda1.Changed()`) says when to
   read again; `SetCalendarHidden(id, hidden)` ticks calendars on and off.

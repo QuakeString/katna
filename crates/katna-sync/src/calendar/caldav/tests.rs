@@ -240,6 +240,33 @@ fn a_server_without_caldav_offers_no_calendars() {
 }
 
 #[test]
+fn a_stalled_server_is_asked_again_and_named() {
+    // Takes connections and never answers.
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let origin = format!("http://127.0.0.1:{}", listener.local_addr().unwrap().port());
+    let taken = Arc::new(Mutex::new(Vec::new()));
+    let held = taken.clone();
+    std::thread::spawn(move || {
+        for stream in listener.incoming() {
+            held.lock().unwrap().push(stream.unwrap());
+        }
+    });
+    let dav = CalDav::with_origin(&origin, "me", "secret", Tls::insecure_for_local_tests());
+    let (_dir, mut store) = store();
+    let err = smol::block_on(dav.sync(&mut store, ACCOUNT, "me@test")).unwrap_err();
+    // Not "no calendars": the server was not reached, and says so.
+    let CalendarError::Failed(Error::Unreachable(why)) = err else {
+        panic!("{err}");
+    };
+    assert_eq!(why, "127.0.0.1 did not answer within 2s");
+    assert_eq!(dav.missing_why(), "");
+    // Asked again on the next round, not hours later.
+    let asked = taken.lock().unwrap().len();
+    let _ = smol::block_on(dav.sync(&mut store, ACCOUNT, "me@test"));
+    assert!(taken.lock().unwrap().len() > asked);
+}
+
+#[test]
 fn the_password_goes_only_to_the_accounts_domain() {
     let dav = CalDav::new(
         "imap.example.com",
