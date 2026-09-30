@@ -29,7 +29,7 @@ use katna_ui::px;
 use katna_ui::unpx;
 
 use super::super::select::{self, Key, Marker, MenuAct};
-use super::{BAR_HEIGHT, Content, Viewer, ZOOMS};
+use super::{Content, Viewer, ZOOMS};
 use crate::theme::Theme;
 use crate::widgets::ScaledEdge;
 
@@ -508,7 +508,7 @@ impl Viewer {
         div()
             .id("viewer-sheet-panel")
             .absolute()
-            .top(px(BAR_HEIGHT + 8.0))
+            .top(px(8.0))
             .bottom(px(80.0))
             .left(px(margin))
             .right(px(margin))
@@ -549,7 +549,7 @@ impl Viewer {
         let viewer = cx.entity().downgrade();
         select::selectable(div(), None, cx)
             .size_full()
-            .pt(px(BAR_HEIGHT + 8.0))
+            .pt(px(8.0))
             .child(
                 list(view.state.clone(), move |ix, _, _| {
                     // Slides are pages of their own, each under its label.

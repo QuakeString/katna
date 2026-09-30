@@ -65,7 +65,7 @@ static OPENED: AtomicUsize = AtomicUsize::new(0);
 const PAGE_GAP: f32 = 16.0;
 /// Pages this far from the screen keep their bitmaps.
 const KEEP_PAGES: usize = 2;
-const BAR_HEIGHT: f32 = 64.0;
+const BAR_HEIGHT: f32 = 54.0;
 /// From this width the page box, zoom and turning sit in the top bar; the
 /// first for a PDF, the second for zoom alone.
 const BAR_CONTROLS_PDF: f32 = 900.0;
@@ -82,11 +82,19 @@ const PINCH_STEP: f32 = 0.12;
 const LINE_SCROLL: f32 = 48.0;
 
 // The viewer is dark in light and dark themes alike, like a photo viewer.
-// The window shows faintly through its backdrop, or blurred when menus
-// are frosted (Settings > Experimental).
-const SCRIM: u32 = 0x0c0d0ecc;
-const SCRIM_FROSTED: u32 = 0x0c0d0e99;
-const BAR: u32 = 0x161718f0;
+// When menus are frosted (Settings > Experimental) the window shows
+// blurred under a dark veil, a little darker under the top bar, and the
+// control pills blur the page under them. Without blur the window shows
+// faintly through a darker veil.
+const SCRIM: u32 = 0x0c0d0eb8;
+const SCRIM_FROSTED: u32 = 0x0c0d0e73;
+const BAR: u32 = 0x202124e6;
+const BAR_FROSTED: u32 = 0x0c0d0e59;
+const PILL_FROSTED: u32 = 0x2d2f31d9;
+/// The page box, zoom and turning sit on a pill this tall in the top bar,
+/// and a little taller at the foot.
+const PILL_HEIGHT: f32 = 40.0;
+const FOOT_PILL_HEIGHT: f32 = 44.0;
 const INK: u32 = 0xffffffff;
 const INK_DIM: u32 = 0xffffffb3;
 const HOVER: u32 = 0xffffff1f;
@@ -243,6 +251,7 @@ impl Viewer {
         let goto = cx.new(|cx| {
             let mut input = TextInput::new("", cx);
             input.set_accent(rgba(th.accent).into());
+            input.set_centered(true);
             input
         });
         let _goto = cx.subscribe_in(&goto, window, |this, _, event, window, cx| match event {
@@ -961,6 +970,21 @@ fn fit_step() -> usize {
 }
 
 /// A round button on the dark bar.
+/// Paints `el` with `plain`, or when frosted (`blur` > 0) with `frosted`
+/// over a blur of what is behind, corners of `radius`. Call it before
+/// adding children, which must draw over the glass.
+fn glassy<E: Styled + ParentElement>(el: E, plain: u32, frosted: u32, radius: f32, blur: u32) -> E {
+    if blur == 0 {
+        el.bg(rgba(plain))
+    } else {
+        el.child(katna_ui::frost::glass(
+            rgba(frosted).into(),
+            px(radius),
+            blur as f32,
+        ))
+    }
+}
+
 fn bar_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::Div> {
     bar_button_tip(id, name, tooltip_for(id).into(), th)
 }
@@ -1123,7 +1147,7 @@ impl Render for Viewer {
                         .size_full()
                         .flex()
                         .justify_center()
-                        .pt(px(BAR_HEIGHT + 8.0))
+                        .pt(px(8.0))
                         .pb(px(80.0))
                         .child(
                             page.child(
@@ -1241,7 +1265,7 @@ impl Render for Viewer {
                         .flex_col()
                         .when(!wide, |d| d.items_center())
                         .gap(px(PAGE_GAP))
-                        .pt(px(BAR_HEIGHT + 8.0))
+                        .pt(px(8.0))
                         .pb(px(96.0))
                         .px(px(16.0))
                         .children(pages)
@@ -1272,7 +1296,12 @@ impl Render for Viewer {
             } else {
                 BAR_CONTROLS
             };
-        let controls = zoomable.then(|| self.controls(pages, zoom, goto_focused, &th, cx));
+        let pill = if in_bar {
+            PILL_HEIGHT
+        } else {
+            FOOT_PILL_HEIGHT
+        };
+        let controls = zoomable.then(|| self.controls(pages, zoom, goto_focused, pill, &th, cx));
         let (bar_controls, foot_controls) = if in_bar {
             (controls, None)
         } else {
@@ -1301,7 +1330,7 @@ impl Render for Viewer {
             .items_center()
             .gap(px(12.0))
             .occlude()
-            .bg(rgba(BAR))
+            .map(|el| glassy(el, BAR, BAR_FROSTED, 0.0, self.th.frost))
             .child(
                 side_group(true)
                     .child(
@@ -1403,14 +1432,7 @@ impl Render for Viewer {
                 .right_0()
                 .flex()
                 .justify_center()
-                .child(
-                    controls
-                        .occlude()
-                        .h(px(44.0))
-                        .px(px(6.0))
-                        .rounded_full()
-                        .bg(rgba(PILL)),
-                )
+                .child(controls.occlude())
         });
 
         let side = |button: gpui::Stateful<gpui::Div>, left: bool| {
@@ -1465,18 +1487,19 @@ impl Render for Viewer {
             .left_0()
             .size_full()
             .occlude()
-            .map(|el| {
-                if self.th.frost == 0 {
-                    el.bg(rgba(SCRIM))
-                } else {
-                    el.child(katna_ui::frost::glass(
-                        rgba(SCRIM_FROSTED).into(),
-                        px(0.0),
-                        self.th.frost as f32,
-                    ))
-                }
-            })
-            .child(body)
+            .map(|el| glassy(el, SCRIM, SCRIM_FROSTED, 0.0, self.th.frost))
+            // The file shows below the bar, so the bar only ever frosts the
+            // blurred window, never a bright page scrolled under it.
+            .child(
+                div()
+                    .absolute()
+                    .top(px(BAR_HEIGHT))
+                    .left_0()
+                    .right_0()
+                    .bottom_0()
+                    .overflow_hidden()
+                    .child(body),
+            )
             .child(select::follow_drags(cx))
             .child(self.follow_zoom(cx))
             .child(self.follow_cell_drags(cx))
@@ -1504,6 +1527,7 @@ impl Viewer {
         pages: Option<(usize, usize)>,
         zoom: f32,
         goto_focused: bool,
+        height: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
@@ -1518,7 +1542,12 @@ impl Viewer {
         };
         div()
             .id("viewer-controls")
+            .relative()
             .flex_none()
+            .h(px(height))
+            .px(px(6.0))
+            .rounded_full()
+            .map(|el| glassy(el, PILL, PILL_FROSTED, height / 2.0, th.frost))
             .flex()
             .flex_row()
             .items_center()
@@ -1638,7 +1667,7 @@ impl Viewer {
                     .flex()
                     .items_center()
                     .justify_center()
-                    .pt(px(BAR_HEIGHT + 8.0))
+                    .pt(px(8.0))
                     .pb(px(88.0))
                     .px(px(80.0))
                     .child(
@@ -1767,7 +1796,7 @@ mod tests {
         );
         // A large one shrinks to the room, keeping its shape.
         let (w, h) = picture_size(4000, 3000, 1.0, 1600.0, 1000.0, 1.0);
-        assert!(w <= 1440.0 && h <= 1000.0 - BAR_HEIGHT - 104.0);
+        assert!(w <= 1440.0 && h <= 1000.0 - BAR_HEIGHT - 104.0 + 0.01);
         assert!((w / h - 4.0 / 3.0).abs() < 0.01);
         // Zoom scales the fitted size.
         assert_eq!(

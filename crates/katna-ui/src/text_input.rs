@@ -117,6 +117,8 @@ pub struct TextInput {
     is_selecting: bool,
     /// Draws a dot for each character, for passwords.
     masked: bool,
+    /// Text shorter than the box sits in its middle.
+    centered: bool,
     grammar: Option<Arc<dyn GrammarCheck>>,
     /// The underline of grammar mistakes.
     grammar_color: Hsla,
@@ -157,6 +159,7 @@ impl TextInput {
             scroll_x: px(0.0),
             is_selecting: false,
             masked: false,
+            centered: false,
             grammar: None,
             grammar_color: gpui::blue(),
             grammar_found: None,
@@ -430,6 +433,12 @@ impl TextInput {
 
     pub fn set_placeholder(&mut self, placeholder: impl Into<SharedString>) {
         self.placeholder = placeholder.into();
+    }
+
+    /// Centres text shorter than the box, for short fields such as a page
+    /// number.
+    pub fn set_centered(&mut self, centered: bool) {
+        self.centered = centered;
     }
 
     /// Color of the cursor and (translucent) of the selection.
@@ -975,6 +984,11 @@ impl Element for TextElement {
         }
         if line.width - scroll_x < width {
             scroll_x = (line.width - width).max(px(0.0));
+        }
+        // Centred text scrolls "left" by a negative amount, so clicks and the
+        // cursor follow it without anything else changing.
+        if input.centered && line.width < width {
+            scroll_x = (line.width - width) / 2.0;
         }
         let left = bounds.left() - scroll_x;
 
