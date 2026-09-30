@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tracked mail arrives again"
+text = """
+Mail sent with tracking on could show in Sent without reaching anyone.
+It now goes out to every recipient. Mail lost this way needs sending again.
+"""
