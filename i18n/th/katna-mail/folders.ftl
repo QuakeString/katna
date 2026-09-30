@@ -16,7 +16,6 @@ nav-account-unnamed = บัญชี { $number }
 nav-all-accounts = ทุกบัญชี
 nav-expand = แสดงโฟลเดอร์
 nav-collapse = ซ่อนโฟลเดอร์
-nav-tab-new = ใหม่ { $count } รายการ
 storage-used = ใช้ไป { $percent }% จาก { $total }
 storage-used-detail = { $address }: ใช้ไป { $used } จาก { $total }
 

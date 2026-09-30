@@ -16,11 +16,6 @@ nav-account-unnamed = חשבון { $number }
 nav-all-accounts = כל החשבונות
 nav-expand = הצגת תיקיות
 nav-collapse = הסתרת תיקיות
-nav-tab-new = { $count ->
-    [one] { $count } חדשה
-    [two] { $count } חדשות
-   *[other] { $count } חדשות
-}
 storage-used = { $percent }% מתוך { $total } בשימוש
 storage-used-detail = { $address }: { $used } מתוך { $total } בשימוש
 

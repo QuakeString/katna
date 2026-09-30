@@ -14,7 +14,6 @@ tab-other = Okunye
 tab-inbox = Ibhokisi lokungenayo
 tab-newsletters = Izincwadi zezindaba
 tab-notifications = Izaziso
-tab-new = { $count } okusha
 tab-provider-other = kuhlelwe yi-Katna
 
 ## Mail list: toolbar

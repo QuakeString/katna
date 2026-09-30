@@ -14,7 +14,6 @@ tab-other = ሌሎች
 tab-inbox = ገቢ መልዕክት ሳጥን
 tab-newsletters = ጋዜጣዎች
 tab-notifications = ማሳወቂያዎች
-tab-new = { $count } አዲስ
 tab-provider-other = በKatna የተደረደሩ
 
 ## Mail list: toolbar

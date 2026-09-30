@@ -16,7 +16,6 @@ nav-account-unnamed = အကောင့် { $number }
 nav-all-accounts = အကောင့်အားလုံး
 nav-expand = ဖိုင်တွဲများ ပြရန်
 nav-collapse = ဖိုင်တွဲများ ဝှက်ရန်
-nav-tab-new = အသစ် { $count }
 storage-used = { $total } အနက် { $percent }% သုံးထားသည်
 storage-used-detail = { $address }- { $total } အနက် { $used } သုံးထားသည်
 

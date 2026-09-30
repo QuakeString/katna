@@ -16,10 +16,6 @@ nav-account-unnamed = حساب { $number }
 nav-all-accounts = همهٔ حساب‌ها
 nav-expand = نمایش پوشه‌ها
 nav-collapse = پنهان کردن پوشه‌ها
-nav-tab-new = { $count ->
-    [one] { $count } جدید
-   *[other] { $count } جدید
-}
 storage-used = { $percent }٪ از { $total } استفاده شده
 storage-used-detail = { $address }: { $used } از { $total } استفاده شده
 

@@ -14,7 +14,6 @@ tab-other = અન્ય
 tab-inbox = ઇનબૉક્સ
 tab-newsletters = ન્યૂઝલેટર
 tab-notifications = નોટિફિકેશન
-tab-new = { $count } નવા
 tab-provider-other = Katna દ્વારા ગોઠવેલા
 
 ## Mail list: toolbar

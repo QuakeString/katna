@@ -50,8 +50,35 @@ use crate::widgets::{
     menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 
-const TAB_HEIGHT: f32 = 56.0;
-const TAB_MAX_WIDTH: f32 = 240.0;
+/// The inbox tabs' pill bar: its height and inset, and each tab's height,
+/// padding (with labels, and icons only), icon, gaps and text; the counts'
+/// badges; and the room the list's top row keeps for its buttons on the
+/// left (more with lines ticked) and its "1–50 of N" and arrows on the
+/// right, and a row of its own's padding.
+const TABS_HEIGHT: f32 = 36.0;
+const TABS_INSET: f32 = 3.0;
+const TAB_HEIGHT: f32 = TABS_HEIGHT - 2.0 * TABS_INSET;
+const TAB_PAD: f32 = 10.0;
+const TAB_PAD_ICONS: f32 = 9.0;
+const TAB_ICON: f32 = 16.0;
+const TAB_GAP: f32 = 5.0;
+const TAB_SPACING: f32 = 2.0;
+const TAB_TEXT: f32 = 13.0;
+const BADGE_HEIGHT: f32 = 18.0;
+const BADGE_PAD: f32 = 6.0;
+const BADGE_TEXT: f32 = 11.0;
+const TOP_ROW_LEFT: f32 = 152.0;
+const TOP_ROW_LEFT_CHECKED: f32 = 340.0;
+const TOP_ROW_RIGHT: f32 = 185.0;
+const TABS_ROW_PAD: f32 = 12.0;
+
+/// Where the inbox tabs go (see [`MailWindow::tabs_fit`]).
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum TabsFit {
+    TopRow,
+    Row,
+    Icons,
+}
 
 /// What Read, Unread, Starred or Unstarred in the select menu ticked: the
 /// matching lines on screen, then, from the banner's link, every matching
@@ -206,9 +233,23 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> (AnyElement, AnyElement) {
-        // A phone has the tabs in its drawer.
-        let tabs =
-            (self.shows_tabs() && !self.layout.shape.is_phone()).then(|| self.render_tabs(th, cx));
+        // The inbox tabs have a row of their own when the top row has no
+        // room for them.
+        let tabs = self
+            .shows_tabs()
+            .then(|| self.tabs_fit())
+            .filter(|fit| *fit != TabsFit::TopRow)
+            .map(|fit| {
+                div()
+                    .flex_none()
+                    .h(px(TOOLBAR_HEIGHT))
+                    .px(px(TABS_ROW_PAD))
+                    .flex()
+                    .items_center()
+                    .border_b_1()
+                    .border_color(rgba(th.divider))
+                    .child(self.render_tabs(fit, th, cx))
+            });
         let banner = self.render_select_banner(th, cx);
         let list = self.render_list(th, cx);
         // A phone's toolbar slides up out of sight as the list moves on.
@@ -505,6 +546,13 @@ impl MailWindow {
         let at_end = self.visible.end >= count;
         if phone {
             return bar.child(div().flex_1()).into_any_element();
+        }
+        if self.shows_tabs() && self.tabs_fit() == TabsFit::TopRow {
+            bar = bar.child(div().flex_none().pl(px(12.0)).child(self.render_tabs(
+                TabsFit::TopRow,
+                th,
+                cx,
+            )));
         }
         bar.child(
             div()
@@ -1363,92 +1411,244 @@ impl MailWindow {
 
     // Tabs
 
-    fn render_tabs(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let count = self.tabs.len().max(1);
-        let width = (self.list_width() / count as f32).min(TAB_MAX_WIDTH);
-        let at = self.tab_spring.value();
-        let selected = self.tab;
-        let color = self
+    /// Measures the inbox tabs' labels and unread counts in the window's
+    /// font, for the pill bar to lay them out and slide between them.
+    pub(super) fn measure_tabs(&mut self, window: &gpui::Window) {
+        let sizes = self
             .tabs
-            .get(selected)
-            .map_or(th.accent, |t| th.tabs[t.color]);
+            .iter()
+            .map(|tab| {
+                let label = super::text_width(
+                    &tab.label(),
+                    TAB_TEXT,
+                    FontWeight::MEDIUM,
+                    self.font.as_ref(),
+                    window,
+                );
+                let unread = self.tab_unread(tab);
+                let badge = if unread == 0 {
+                    0.0
+                } else {
+                    let number = format::thousands(unread);
+                    let text = super::text_width(
+                        &number,
+                        BADGE_TEXT,
+                        FontWeight::BOLD,
+                        self.font.as_ref(),
+                        window,
+                    );
+                    (text + 2.0 * BADGE_PAD).max(BADGE_HEIGHT)
+                };
+                (label, badge)
+            })
+            .collect();
+        self.tab_sizes = sizes;
+    }
+
+    /// The unread mail of a tab's categories.
+    fn tab_unread(&self, tab: &crate::tabs::Tab) -> u64 {
+        tab.categories
+            .iter()
+            .filter_map(|c| self.category_unread.get(c))
+            .sum()
+    }
+
+    /// How open tab `ix` looks, 0 to 1, with the highlight `at` tabs
+    /// along: the tab it slides to turns on as the one it left turns off,
+    /// over the whole slide, and the tabs it passes stay as they are.
+    fn tab_on(&self, ix: usize, at: f32) -> f32 {
+        let (from, to) = self.tab_slide;
+        let done = if from == to {
+            1.0
+        } else {
+            ((at - from as f32) / (to as f32 - from as f32)).clamp(0.0, 1.0)
+        };
+        if ix == to {
+            done
+        } else if ix == from {
+            1.0 - done
+        } else {
+            0.0
+        }
+    }
+
+    /// How much tab `ix` shows its label and its badge, 0 to 1, with the
+    /// highlight `at` tabs along: the open tab's label, the others'
+    /// badges, so the bar changes smoothly as the highlight slides.
+    fn tab_shares(&self, ix: usize, fit: TabsFit, at: f32) -> (f32, f32) {
+        let on = self.tab_on(ix, at);
+        let label = if fit == TabsFit::Icons { on } else { 1.0 };
+        // The first tab, Primary, has no count, as in Gmail.
+        let badge = if ix == 0 { 0.0 } else { 1.0 - on };
+        (label, badge)
+    }
+
+    /// Tab `ix`'s width in the pill bar.
+    fn tab_width(&self, ix: usize, fit: TabsFit, at: f32) -> f32 {
+        let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
+        let (label, badge) = self.tab_shares(ix, fit, at);
+        let pad = if fit == TabsFit::Icons {
+            TAB_PAD_ICONS
+        } else {
+            TAB_PAD
+        };
+        let badge = if badge_w > 0.0 { badge } else { 0.0 };
+        2.0 * pad + TAB_ICON + (TAB_GAP + label_w) * label + (TAB_GAP + badge_w) * badge
+    }
+
+    /// The pill bar's width with every label and count showing.
+    fn tabs_full_width(&self) -> f32 {
+        let at = self.tab as f32;
+        (0..self.tabs.len())
+            .map(|ix| self.tab_width(ix, TabsFit::TopRow, at))
+            .sum::<f32>()
+            + 2.0 * TABS_INSET
+            + TAB_SPACING * self.tabs.len().saturating_sub(1) as f32
+    }
+
+    /// Where the inbox tabs go for the list's width: in the list's top
+    /// row while they fit there with their labels, else in a row of their
+    /// own, with labels while they fit, else with icons and counts.
+    pub(super) fn tabs_fit(&self) -> TabsFit {
+        let width = self.list_width();
+        let full = self.tabs_full_width();
+        let left = if self.checked.is_empty() {
+            TOP_ROW_LEFT
+        } else {
+            TOP_ROW_LEFT_CHECKED
+        };
+        if !self.layout.shape.is_phone() && full <= width - left - TOP_ROW_RIGHT {
+            TabsFit::TopRow
+        } else if full <= width - 2.0 * TABS_ROW_PAD {
+            TabsFit::Row
+        } else {
+            TabsFit::Icons
+        }
+    }
+
+    /// The inbox tabs as a pill bar; the open tab's highlight slides from
+    /// tab to tab.
+    pub(super) fn render_tabs(
+        &self,
+        fit: TabsFit,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let at = self
+            .tab_spring
+            .value()
+            .clamp(0.0, self.tabs.len().saturating_sub(1) as f32);
+        let widths: Vec<f32> = (0..self.tabs.len())
+            .map(|ix| self.tab_width(ix, fit, at))
+            .collect();
+        let lefts: Vec<f32> = widths
+            .iter()
+            .scan(TABS_INSET, |x, w| {
+                let left = *x;
+                *x += w + TAB_SPACING;
+                Some(left)
+            })
+            .collect();
+        // Between two tabs the highlight takes a share of each.
+        let (from, frac) = (at.floor() as usize, at.fract());
+        let to = (from + 1).min(self.tabs.len().saturating_sub(1));
+        let (hl_left, hl_width) = match (lefts.get(from), lefts.get(to)) {
+            (Some(&a), Some(&b)) => (lerp(a, b, frac), lerp(widths[from], widths[to], frac)),
+            _ => (TABS_INSET, 0.0),
+        };
         let tabs = self.tabs.iter().enumerate().map(|(ix, tab)| {
-            let on = ix == selected;
-            let tint = th.tabs[tab.color];
-            let unread: u64 = tab
-                .categories
-                .iter()
-                .filter_map(|c| self.category_unread.get(c))
-                .sum();
-            let compact = width < 150.0;
+            let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
+            let (label, badge) = self.tab_shares(ix, fit, at);
+            let on = self.tab_on(ix, at);
+            let color = mix(th.text_dim, th.nav_selected_text, on);
+            let pad = if fit == TabsFit::Icons {
+                TAB_PAD_ICONS
+            } else {
+                TAB_PAD
+            };
+            let unread = self.tab_unread(tab);
             div()
                 .id(("tab", ix))
                 .relative()
-                .overflow_hidden()
                 .flex_none()
-                .w(px(width))
+                .w(px(widths[ix]))
                 .h(px(TAB_HEIGHT))
-                .pl(px(if compact { 12.0 } else { 16.0 }))
-                .pr(px(8.0))
+                .px(px(pad))
                 .flex()
                 .flex_row()
                 .items_center()
-                .gap(px(if compact { 10.0 } else { 16.0 }))
-                .text_size(px(14.0))
+                .overflow_hidden()
+                .rounded_full()
+                .text_size(px(TAB_TEXT))
                 .font_weight(FontWeight::MEDIUM)
-                .text_color(rgba(if on { tint } else { th.text_dim }))
+                .text_color(rgba(color))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .when(ix != self.tab, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                .when(label < 0.5, |d| d.tooltip(tip(tab.label(), th)))
                 .on_click(cx.listener(move |this, _, _, cx| this.open_tab(ix, cx)))
-                .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)).rounded(0.0))
-                .child(icon(tab.icon, if on { tint } else { th.text_dim }, 20.0))
-                .when(width >= 116.0, |d| {
+                .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)).rounded(TAB_HEIGHT / 2.0))
+                .child(icon(tab.icon, color, TAB_ICON))
+                .when(label > 0.001, |d| {
                     d.child(
                         div()
-                            .flex()
-                            .flex_col()
-                            .items_start()
-                            .min_w_0()
-                            .child(div().truncate().child(tab.label()))
-                            .when(unread > 0 && !on && ix != 0, |d| {
-                                d.child(
-                                    div()
-                                        .mt(px(2.0))
-                                        .px(px(6.0))
-                                        .rounded_full()
-                                        .bg(rgba(tint))
-                                        .text_color(rgba(th.on_accent))
-                                        .text_size(px(11.0))
-                                        .line_height(px(16.0))
-                                        .truncate()
-                                        .child(tr!("tab-new", count = unread)),
-                                )
-                            }),
+                            .flex_none()
+                            .w(px((TAB_GAP + label_w) * label))
+                            .pl(px(TAB_GAP))
+                            .overflow_hidden()
+                            .whitespace_nowrap()
+                            .opacity(label)
+                            .child(tab.label()),
                     )
                 })
-                .when(width < 116.0, |d| d.justify_center().pl(px(8.0)))
+                .when(badge > 0.001 && badge_w > 0.0, |d| {
+                    d.child(
+                        div()
+                            .flex_none()
+                            .w(px((TAB_GAP + badge_w) * badge))
+                            .pl(px(TAB_GAP))
+                            .overflow_hidden()
+                            .opacity(badge)
+                            .child(
+                                div()
+                                    .w(px(badge_w))
+                                    .h(px(BADGE_HEIGHT))
+                                    .flex()
+                                    .items_center()
+                                    .justify_center()
+                                    .rounded_full()
+                                    .bg(rgba(th.tabs[tab.color]))
+                                    .text_color(rgba(th.on_accent))
+                                    .text_size(px(BADGE_TEXT))
+                                    .font_weight(FontWeight::BOLD)
+                                    .child(format::thousands(unread)),
+                            ),
+                    )
+                })
         });
         div()
             .relative()
             .flex_none()
-            .h(px(TAB_HEIGHT))
+            .h(px(TABS_HEIGHT))
+            .p(px(TABS_INSET))
             .flex()
             .flex_row()
-            .border_b_1()
-            .border_color(rgba(th.divider))
-            .children(tabs)
-            .child(self.tour_mark(super::tour::Spot::Tabs))
-            // The indicator slides to the open tab.
+            .items_center()
+            .gap(px(TAB_SPACING))
+            .rounded_full()
+            .bg(rgba(th.search))
+            // The open tab's highlight, under the tabs.
             .child(
                 div()
                     .absolute()
-                    .bottom_0()
-                    .left(px(at * width + 8.0))
-                    .w(px(width - 16.0))
-                    .h(px(3.0))
-                    .rounded_t(px(3.0))
-                    .bg(rgba(color)),
+                    .top(px(TABS_INSET))
+                    .left(px(hl_left))
+                    .w(px(hl_width))
+                    .h(px(TAB_HEIGHT))
+                    .rounded_full()
+                    .bg(rgba(th.nav_selected)),
             )
+            .children(tabs)
+            .child(self.tour_mark(super::tour::Spot::Tabs))
             .into_any_element()
     }
 

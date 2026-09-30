@@ -16,10 +16,6 @@ nav-account-unnamed = Asusu { $number }
 nav-all-accounts = Dukkan asusu
 nav-expand = Nuna folda
 nav-collapse = Ɓoye folda
-nav-tab-new = { $count ->
-    [one] { $count } sabo
-   *[other] { $count } sababbi
-}
 storage-used = An yi amfani da { $percent }% na { $total }
 storage-used-detail = { $address }: an yi amfani da { $used } na { $total }
 

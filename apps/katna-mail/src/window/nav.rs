@@ -735,7 +735,7 @@ impl MailWindow {
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
                 this.hover_navigation(Hover::Panel, *hovered, cx)
             }))
-            .children(self.render_drawer_head(th, cx))
+            .children(self.render_drawer_head(th))
             .child(div().flex_none().h(px(compose_room)))
             .children(head)
             .child(list)

@@ -14,7 +14,6 @@ tab-other = အခြား
 tab-inbox = ဝင်စာ
 tab-newsletters = သတင်းလွှာများ
 tab-notifications = အကြောင်းကြားချက်များ
-tab-new = အသစ် { $count }
 tab-provider-other = Katna က စီထားသည်
 
 ## Mail list: toolbar

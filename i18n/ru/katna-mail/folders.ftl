@@ -16,12 +16,6 @@ nav-account-unnamed = Аккаунт { $number }
 nav-all-accounts = Все аккаунты
 nav-expand = Показать папки
 nav-collapse = Скрыть папки
-nav-tab-new = { $count ->
-    [one] { $count } новое
-    [few] { $count } новых
-    [many] { $count } новых
-   *[other] { $count } новых
-}
 storage-used = Занято { $percent } % из { $total }
 storage-used-detail = { $address }: занято { $used } из { $total }
 

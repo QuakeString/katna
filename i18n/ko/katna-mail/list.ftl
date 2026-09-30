@@ -14,7 +14,6 @@ tab-other = 기타
 tab-inbox = 받은편지함
 tab-newsletters = 뉴스레터
 tab-notifications = 알림
-tab-new = 새 메일 { $count }개
 tab-provider-other = Katna에서 분류
 
 ## Mail list: toolbar
