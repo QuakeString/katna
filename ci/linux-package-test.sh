@@ -12,6 +12,8 @@
 # KATNA_DEMO, a tarball from ci/linux-demo-data.sh, Katna starts with its
 # made-up mail, unpacked into KATNA_DATA_HOME and KATNA_CONFIG_HOME (by
 # default ~/.local/share and ~/.config; a Flatpak or Snap keeps its own).
+# It runs in its own dbus-run-session unless KATNA_TEST_SESSION=1 says the
+# session bus it has will do (a Snap needs a real systemd user session).
 # Needs Xvfb, dbus-run-session, gnome-keyring-daemon, xwininfo and
 # ImageMagick.
 set -eu

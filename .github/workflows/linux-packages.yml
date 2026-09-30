@@ -205,7 +205,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            flatpak flatpak-builder dbus-daemon gnome-keyring imagemagick x11-utils xvfb
+            flatpak flatpak-builder dbus-daemon gnome-keyring imagemagick librsvg2-common \
+            x11-utils xvfb
           flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
       - name: Build the Flatpak
         run: |
@@ -259,7 +260,17 @@ jobs:
           sudo snap install snapcraft --classic
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            dbus-daemon gnome-keyring imagemagick x11-utils xvfb
+            dbus-daemon dbus-user-session gnome-keyring imagemagick x11-utils xvfb
+          # snap run puts each app in a systemd scope, so the test runs in
+          # a real user session (systemd --user and its bus) rather than
+          # dbus-run-session's bare bus.
+          sudo loginctl enable-linger "$USER"
+          uid=$(id -u)
+          for _ in $(seq 30); do
+            [ -S "/run/user/$uid/bus" ] && break
+            sleep 1
+          done
+          ls -l "/run/user/$uid/bus"
       - name: Build the Snap
         run: |
           cp katna-linux-x86_64.tar.gz packaging/snap/
@@ -284,6 +295,8 @@ jobs:
             sudo snap connect "katna:${pair%%:*}" "katna:${pair#*:}" || true
           done
           snap connections katna
+          export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
           # Makes the snap's own home folder, where the demo data goes.
           snap run katna.katnactl --help > /dev/null
           mkdir shots
@@ -291,6 +304,7 @@ jobs:
           KATNA_DEMO=$PWD/demo-data.tar.gz \
           KATNA_DATA_HOME=~/snap/katna/current/.local/share \
           KATNA_CONFIG_HOME=~/snap/katna/current/.config \
+          KATNA_TEST_SESSION=1 \
             ci/linux-package-test.sh shots/snap-ubuntu.png
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
