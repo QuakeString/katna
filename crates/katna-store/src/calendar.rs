@@ -17,6 +17,8 @@ pub enum CalendarSource {
     Google,
     Microsoft,
     CalDav,
+    /// Zoho Calendar's REST API.
+    Zoho,
     Local,
 }
 
@@ -26,6 +28,7 @@ impl CalendarSource {
             Self::Google => "google",
             Self::Microsoft => "microsoft",
             Self::CalDav => "caldav",
+            Self::Zoho => "zoho",
             Self::Local => "local",
         }
     }
@@ -35,6 +38,7 @@ impl CalendarSource {
             "google" => Self::Google,
             "microsoft" => Self::Microsoft,
             "caldav" => Self::CalDav,
+            "zoho" => Self::Zoho,
             _ => Self::Local,
         }
     }

@@ -193,6 +193,15 @@ async fn addresses(host: &str, port: u16, reach: Reach) -> Result<Vec<SocketAddr
     Ok(public)
 }
 
+/// `host`, with `port` when it isn't HTTPS's, for people.
+fn shown(host: &str, port: u16) -> String {
+    if port == 443 {
+        host.to_owned()
+    } else {
+        format!("{host} port {port}")
+    }
+}
+
 /// Connects to the first address of `host` that `reach` allows and that
 /// answers.
 async fn connect_to(host: &str, port: u16, reach: Reach) -> Result<TcpStream> {
@@ -253,7 +262,8 @@ impl Conn {
             .await
             .map_err(|err| match err {
                 Error::Timeout(limit) => Error::Unreachable(format!(
-                    "{host} did not take a connection within {}s",
+                    "{} did not take a connection within {}s",
+                    shown(host, port),
                     limit.as_secs()
                 )),
                 err => err,
