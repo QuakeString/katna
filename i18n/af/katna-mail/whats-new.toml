@@ -1735,3 +1735,20 @@ Regsklik op 'n vrye tyd of dag op die Kalender en kies Taak om daar 'n
 taak by te voeg. Die kaart vir 'n nuwe geleentheid gaan oop op sy
 Taak-oortjie met daardie dag en tyd reeds ingevul.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalenders kyk weer ná 'n stadige bediener"
+text = """
+Wanneer 'n rekening se kalenderbediener nie betyds antwoord nie, sê die
+Kalender dit nou, en of die verbinding of die veilige handdruk gehaper
+het, in plaas van “Geen kalenders gevind nie”. Dit probeer binne
+minute weer eerder as ná ure.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kontaklêers wys hul aflaai"
+text = """
+'n Lêer in die kontakpaneel waarvan die e-pos nog nie op hierdie rekenaar
+is nie, vul nou terwyl dit afgelaai word, soos aanhegsels in die lys, en
+maak dan oop.
+"""

@@ -1848,3 +1848,20 @@ Mag-right-click sa bakanteng oras o araw sa Kalendaryo at piliin ang
 Gawain para magdagdag doon ng gawain. Bubukas ang card ng bagong event
 sa tab na Gawain nito na nakalagay na ang araw at oras na iyon.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Muling hinahanap ang mga kalendaryo pagkatapos ng mabagal na server"
+text = """
+Kapag hindi sumagot sa oras ang calendar server ng isang account,
+sinasabi na ito ng Kalendaryo, at kung ang koneksyon o ang secure na
+handshake ang natigil, sa halip na “Walang nakitang kalendaryo”.
+Muli itong sumusubok sa loob ng ilang minuto sa halip na ilang oras.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Ipinapakita ng mga file ng contact ang pag-download nila"
+text = """
+Ang file sa card ng contact na wala pa sa computer na ito ang mail ay
+napupuno na ngayon habang nagda-download, gaya ng mga attachment sa
+listahan, saka nagbubukas.
+"""

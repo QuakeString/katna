@@ -1782,3 +1782,20 @@ Clique com o botão direito em um horário ou dia livre na Agenda e
 escolha Tarefa para adicionar ali uma tarefa. O cartão de novo evento
 abre na guia Tarefa com esse dia e essa hora já preenchidos.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "As agendas tentam de novo após um servidor lento"
+text = """
+Quando o servidor de agenda de uma conta não responde a tempo, a Agenda
+agora avisa, e diz se foi a conexão ou o handshake seguro que travou,
+em vez de "Nenhuma agenda encontrada". Ela tenta de novo em minutos, e
+não em horas.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Arquivos do contato mostram o download"
+text = """
+Um arquivo no painel de contato cujo e-mail ainda não está neste
+computador agora se preenche enquanto é baixado, como fazem os anexos
+na lista, e depois abre.
+"""

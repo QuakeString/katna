@@ -1797,3 +1797,20 @@ Haz clic derecho en una hora o un día libre del Calendario y elige
 Tarea para añadir allí una tarea. La tarjeta de evento nuevo se abre en
 su pestaña Tarea con ese día y esa hora ya puestos.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Los calendarios se vuelven a buscar tras un servidor lento"
+text = """
+Cuando el servidor de calendarios de una cuenta no responde a tiempo,
+el Calendario ahora lo dice, y si se atascó la conexión o el protocolo
+de seguridad, en lugar de “No se han encontrado calendarios”. Vuelve
+a intentarlo en minutos en vez de horas.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Los archivos del contacto muestran su descarga"
+text = """
+Un archivo de los detalles del contacto cuyo correo aún no está en este
+ordenador ahora se va llenando mientras se descarga, como los adjuntos
+de la lista, y luego se abre.
+"""

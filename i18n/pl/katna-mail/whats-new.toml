@@ -1774,3 +1774,20 @@ Kliknij prawym przyciskiem wolny czas lub dzień w Kalendarzu i wybierz
 Zadanie, aby dodać tam zadanie. Karta nowego wydarzenia otworzy się na
 zakładce Zadanie z tym dniem i godziną już wpisanymi.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendarze szukane ponownie po wolnym serwerze"
+text = """
+Gdy serwer kalendarzy konta nie odpowie na czas, Kalendarz mówi to teraz
+wprost, a także czy utknęło połączenie, czy bezpieczne uzgadnianie, zamiast
+„Nie znaleziono kalendarzy”. Ponawia próbę w ciągu kilku minut, a nie
+godzin.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Pliki kontaktu pokazują pobieranie"
+text = """
+Plik w panelu kontaktu, którego wiadomości nie ma jeszcze na tym
+komputerze, wypełnia się teraz podczas pobierania, tak jak załączniki na
+liście, a potem się otwiera.
+"""

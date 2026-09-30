@@ -1769,3 +1769,19 @@ Oraya görev eklemek için Takvim'de boş bir saate ya da güne sağ
 tıklayıp Görev'i seçin. Yeni etkinlik kartı, o gün ve saat
 doldurulmuş olarak Görev sekmesinde açılır.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Yavaş bir sunucudan sonra takvimler yeniden aranır"
+text = """
+Bir hesabın takvim sunucusu zamanında yanıt vermediğinde, Takvim artık
+"Takvim bulunamadı" yerine bunu söylüyor ve takılanın bağlantı mı yoksa
+güvenli el sıkışma mı olduğunu belirtiyor. Saatler yerine birkaç dakika
+içinde yeniden deniyor.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kişi dosyaları indirmeyi gösteriyor"
+text = """
+Kişi panelinde, e-postası henüz bu bilgisayarda olmayan bir dosya artık
+listedeki ekler gibi indirilirken dolar, ardından açılır.
+"""
