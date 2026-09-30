@@ -9,7 +9,6 @@ add-account-looking = מחפשים את שרתי הדואר של { $address }…
 add-account-address-intro = מזינים את כתובת האימייל, ו־Katna מוצאת את השרתים.
 add-account-servers-title = הגדרות שרת
 add-account-servers-intro = השרתים שדרכם Katna קוראת ושולחת דואר עבור { $address }.
-add-account-password-title = הזנת הסיסמה
 add-account-signing-in = מתחברים…
 add-account-browser-title = ממשיכים בדפדפן
 add-account-browser-intro = Katna פתחה את דף ההתחברות של { $provider } בדפדפן. יש להתחבר שם ולאשר ל־Katna לקרוא ולשלוח את הדואר שלך, ואז לחזור לכאן.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] שרתים: { $servers }, לפי ניחוש; כדאי לבדוק אותם אם ההתחברות נכשלת.
 }
 add-account-servers-entered = שרתים: { $servers }, כפי שהוזנו.
-add-account-or = או
 add-account-sign-in-with = התחברות עם { $provider }
 add-account-sign-in-instead = התחברות עם { $provider } במקום זאת
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = התחברות עם { $provider } במקום זא�
 add-account-servers-button = הגדרות שרת
 add-account-back = חזרה
 add-account-add = הוספת חשבון
-add-account-next = הבא
 add-account-cancel = ביטול
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = יש להזין כתובת אימייל כמו { $
 add-account-not-found = Katna לא הצליחה למצוא את השרתים של { $address }, ולכן מילאה את השמות הנפוצים. כדאי לבדוק אותם מול ספק הדואר.
 add-account-password-empty = יש להזין את הסיסמה.
 add-account-name-is-password = השם זהה לסיסמה. יש להקליד שם את השם שלך, כפי שאנשים אמורים לראות אותו.
-add-account-added = { $address } נוסף. מורידים את הדואר שלך…
 add-account-app-password-refused = { $provider } דחה את הסיסמה. נדרשת סיסמה לאפליקציה, ולא הסיסמה שבה משתמשים באתר.
 add-account-password-refused = השרת דחה את הסיסמה. כדאי לבדוק אותה ולנסות שוב.
 add-account-sign-in-refused = { $provider } לא הכניס את Katna. יש לנסות שוב ולאשר גישה לדואר שלך.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] העותק הזה של Katna עדיין לא יכול להתחבר לחשבונות Google.
    *[other] הספק הזה מאפשר להתחבר רק בדף שלו, ו־Katna עדיין לא יכולה לעשות זאת עבורו.
 }
-add-account-signed-in = התחברת עם { $provider }. מביאים את הדואר שלך…
 
 ## The account menu (from the account button on the top bar)
 

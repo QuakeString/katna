@@ -192,6 +192,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Accounts,
+        "accounts-pop3-row",
+        "accounts-pop3-row-detail",
+        "pop pop3 leave keep copy server download delete remove days",
+    ),
+    entry(
+        Section::Accounts,
         "accounts-delete-all-row",
         "accounts-delete-all-row-detail",
         "reset wipe erase remove everything",

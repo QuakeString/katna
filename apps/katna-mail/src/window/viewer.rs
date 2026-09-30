@@ -29,10 +29,11 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Entity, EventEmitter, FocusHandle, Focusable,
-    FontWeight, ImageSource, KeyDownEvent, MouseButton, MouseDownEvent, ObjectFit, RenderImage,
-    ScrollHandle, SharedString, Subscription, Task, Window, div, ease_out_quint, img, prelude::*,
-    rgba, uniform_list,
+    Animation, AnimationExt, AnyElement, Context, DispatchPhase, Entity, EventEmitter, FocusHandle,
+    Focusable, FontWeight, ImageSource, KeyDownEvent, MouseButton, MouseDownEvent, MouseUpEvent,
+    ObjectFit, PinchEvent, Pixels, Point, RenderImage, ScrollDelta, ScrollHandle, ScrollWheelEvent,
+    SharedString, Subscription, Task, Window, div, ease_out_quint, img, prelude::*, rgba,
+    uniform_list,
 };
 use katna_i18n::tr;
 use katna_preview::image::{Frame, RgbaImage};
@@ -71,6 +72,13 @@ const BAR_CONTROLS_PDF: f32 = 900.0;
 const BAR_CONTROLS: f32 = 640.0;
 /// Below this width the foot pill drops the word "Page" to fit a phone.
 const COMPACT_CONTROLS: f32 = 440.0;
+/// A press and release further apart than this is a drag, not a click.
+const CLICK_SLOP: f32 = 5.0;
+/// Ctrl + wheel: one zoom step per notch, or per this many pixels of a
+/// touchpad's smooth scroll.
+const WHEEL_STEP: f32 = 50.0;
+/// A pinch opening or closing this much (0.1 is 10 %) is one zoom step.
+const PINCH_STEP: f32 = 0.12;
 const LINE_SCROLL: f32 = 48.0;
 
 // The viewer is dark in light and dark themes alike, like a photo viewer.
@@ -141,6 +149,12 @@ pub(super) struct Viewer {
     went: Option<(usize, f32)>,
     /// Marks made on a PDF, and the tools for them.
     markup: Markup,
+    /// Where the left button went down on the dim space around the file:
+    /// letting go there (not a drag) closes the viewer.
+    backdrop: Option<Point<Pixels>>,
+    /// Ctrl + wheel and pinch movement not yet a whole zoom step.
+    wheel_zoom: f32,
+    pinch_zoom: f32,
     /// The viewer shows the open conversation's message, so a marked copy
     /// can go in a reply to it.
     can_reply: bool,
@@ -260,6 +274,9 @@ impl Viewer {
             _goto,
             goto_click: false,
             went: None,
+            backdrop: None,
+            wheel_zoom: 0.0,
+            pinch_zoom: 0.0,
             markup: Markup::new(),
             can_reply,
             th,
@@ -495,16 +512,126 @@ impl Viewer {
     }
 
     fn set_zoom(&mut self, step: usize, cx: &mut Context<Self>) {
+        self.zoom_at(step, None, cx);
+    }
+
+    /// Zooms to `step`, keeping what is under `at` (a window position; the
+    /// top left when none) in place on a PDF or picture.
+    fn zoom_at(&mut self, step: usize, at: Option<Point<Pixels>>, cx: &mut Context<Self>) {
         let step = step.min(ZOOMS.len() - 1);
         if step != self.zoom {
-            // Keep the same part of a PDF on screen.
             let ratio = ZOOMS[step] / ZOOMS[self.zoom];
             let offset = self.scroll.offset();
+            let view = self.scroll.bounds();
+            let (px_, py_) = at.filter(|at| view.contains(at)).map_or((0.0, 0.0), |at| {
+                (unpx(at.x - view.origin.x), unpx(at.y - view.origin.y))
+            });
+            // The point under the pointer is `p - offset` into the file;
+            // after zooming it is `ratio` times further in.
+            let keep = |p: f32, offset: Pixels| p * (1.0 - ratio) + unpx(offset) * ratio;
             self.zoom = step;
-            self.scroll
-                .set_offset(gpui::point(offset.x * ratio, offset.y * ratio));
+            self.scroll.set_offset(gpui::point(
+                px(keep(px_, offset.x)),
+                px(keep(py_, offset.y)),
+            ));
             cx.notify();
         }
+    }
+
+    /// Ctrl + mouse wheel (or a touchpad's smooth scroll) zooms in steps,
+    /// around the pointer. Whether the wheel was taken.
+    fn wheel(&mut self, event: &ScrollWheelEvent, cx: &mut Context<Self>) -> bool {
+        if !event.modifiers.control || !self.zoomable() {
+            return false;
+        }
+        let dy = match event.delta {
+            // One notch is one step, however many lines it scrolls.
+            ScrollDelta::Lines(delta) => delta.y.clamp(-1.0, 1.0) * WHEEL_STEP,
+            ScrollDelta::Pixels(delta) => unpx(delta.y),
+        };
+        // A turn the other way starts afresh.
+        if dy * self.wheel_zoom < 0.0 {
+            self.wheel_zoom = 0.0;
+        }
+        self.wheel_zoom += dy;
+        let steps = (self.wheel_zoom / WHEEL_STEP).trunc();
+        if steps != 0.0 {
+            self.wheel_zoom -= steps * WHEEL_STEP;
+            let step = (self.zoom as isize + steps as isize).clamp(0, ZOOMS.len() as isize - 1);
+            self.zoom_at(step as usize, Some(event.position), cx);
+        }
+        true
+    }
+
+    /// A touchpad pinch zooms in steps, around the fingers.
+    fn pinch(&mut self, event: &PinchEvent, cx: &mut Context<Self>) {
+        if !self.zoomable() {
+            return;
+        }
+        if event.delta * self.pinch_zoom < 0.0 {
+            self.pinch_zoom = 0.0;
+        }
+        self.pinch_zoom += event.delta;
+        let steps = (self.pinch_zoom / PINCH_STEP).trunc();
+        if steps != 0.0 {
+            self.pinch_zoom -= steps * PINCH_STEP;
+            let step = (self.zoom as isize + steps as isize).clamp(0, ZOOMS.len() as isize - 1);
+            self.zoom_at(step as usize, Some(event.position), cx);
+        }
+    }
+
+    /// Whether the file on show zooms.
+    fn zoomable(&self) -> bool {
+        matches!(
+            self.content,
+            Content::Pdf(_)
+                | Content::Bitmap(..)
+                | Content::Drawn(..)
+                | Content::Text(..)
+                | Content::Sheet(_)
+                | Content::Document(_)
+        )
+    }
+
+    /// Listens for Ctrl + wheel and pinches before the file scrolls.
+    fn follow_zoom(&self, cx: &mut Context<Self>) -> impl IntoElement {
+        let this = cx.entity().downgrade();
+        gpui::canvas(
+            |_, _, _| {},
+            move |_, _, window, _| {
+                let wheel = this.clone();
+                window.on_mouse_event(move |event: &ScrollWheelEvent, phase, _, cx| {
+                    if phase != DispatchPhase::Capture {
+                        return;
+                    }
+                    let taken = wheel
+                        .update(cx, |this, cx| this.wheel(event, cx))
+                        .unwrap_or(false);
+                    if taken {
+                        cx.stop_propagation();
+                    }
+                });
+                let pinch = this.clone();
+                window.on_mouse_event(move |event: &PinchEvent, phase, _, cx| {
+                    if phase == DispatchPhase::Capture {
+                        pinch.update(cx, |this, cx| this.pinch(event, cx)).ok();
+                        cx.stop_propagation();
+                    }
+                });
+            },
+        )
+        .absolute()
+        .size_0()
+    }
+
+    /// Whether a click on the space around the file may close the viewer:
+    /// not while a menu, a question or a note being typed is open (the
+    /// click closes those instead).
+    fn may_close_by_click(&self) -> bool {
+        self.text.menu.is_none()
+            && self.sheet_view().is_none_or(|view| view.menu.is_none())
+            && !self.markup.asking()
+            && !self.markup.typing()
     }
 
     /// Turns the PDF's pages a quarter turn, keeping the page on show.
@@ -740,6 +867,11 @@ impl Viewer {
     }
 }
 
+/// A press on the file itself: not one on the space around it.
+fn on_paper(this: &mut Viewer, _: &MouseDownEvent, _: &mut Window, _: &mut Context<Viewer>) {
+    this.backdrop = None;
+}
+
 /// `image` (drawn BGRA) turned a quarter turn.
 fn turn_bitmap(image: &Arc<RenderImage>, clockwise: bool) -> Arc<RenderImage> {
     let size = image.size(0);
@@ -911,6 +1043,7 @@ impl Render for Viewer {
                     let kind = item.as_ref().map(|i| i.kind).unwrap_or(Kind::Other);
                     centered(
                         div()
+                            .capture_any_mouse_down(cx.listener(on_paper))
                             .w(px(360.0))
                             .p(px(28.0))
                             .flex()
@@ -949,7 +1082,7 @@ impl Render for Viewer {
                 }
                 Content::Bitmap(image, (w, h)) => {
                     let (w, h) = picture_size(*w, *h, window.scale_factor(), vw, vh, zoom);
-                    self.picture(img(ImageSource::Render(image.clone())), w, h)
+                    self.picture(img(ImageSource::Render(image.clone())), w, h, cx)
                 }
                 Content::Drawn(image, size) => {
                     let (w, h) = match size {
@@ -959,7 +1092,7 @@ impl Render for Viewer {
                             (side, side)
                         }
                     };
-                    self.picture(img(ImageSource::Image(image.clone())), w, h)
+                    self.picture(img(ImageSource::Image(image.clone())), w, h, cx)
                 }
                 Content::Text(lines, cut) => {
                     let lines = lines.clone();
@@ -970,6 +1103,7 @@ impl Render for Viewer {
                     let marker = self.text.marker(&th);
                     let page = select::selectable(
                         div()
+                            .capture_any_mouse_down(cx.listener(on_paper))
                             .w(px(width))
                             .h_full()
                             .rounded(px(8.0))
@@ -1046,6 +1180,7 @@ impl Render for Viewer {
                                 .w(px(w))
                                 .h(px(h))
                                 .bg(rgba(0xffffffff))
+                                .capture_any_mouse_down(cx.listener(on_paper))
                                 .shadow(vec![gpui::BoxShadow {
                                     color: rgba(0x00000080).into(),
                                     offset: gpui::point(px(0.0), px(2.0)),
@@ -1123,15 +1258,7 @@ impl Render for Viewer {
             }
         }
 
-        let zoomable = matches!(
-            self.content,
-            Content::Pdf(_)
-                | Content::Bitmap(..)
-                | Content::Drawn(..)
-                | Content::Text(..)
-                | Content::Sheet(_)
-                | Content::Document(_)
-        );
+        let zoomable = self.zoomable();
         // Wide enough: pages, zoom and turning sit in the middle of the top
         // bar, off the page. Narrower (a phone), they float at the foot.
         let in_bar = self.frame.0
@@ -1301,6 +1428,22 @@ impl Render for Viewer {
             .track_focus(&self.focus)
             .key_context(KEY_CONTEXT)
             .on_key_down(cx.listener(Self::on_key))
+            // Paper (a page, the picture) forgets a press first seen here,
+            // so only the dim space around the file closes the viewer.
+            .capture_any_mouse_down(cx.listener(|this, event: &MouseDownEvent, _, _| {
+                this.backdrop = (event.button == MouseButton::Left && this.may_close_by_click())
+                    .then_some(event.position);
+            }))
+            .capture_any_mouse_up(cx.listener(|this, event: &MouseUpEvent, _, cx| {
+                if let Some(at) = this.backdrop.take()
+                    && event.button == MouseButton::Left
+                    && unpx(event.position.x - at.x).hypot(unpx(event.position.y - at.y))
+                        < CLICK_SLOP
+                    && this.may_close_by_click()
+                {
+                    this.close(cx);
+                }
+            }))
             .absolute()
             .top_0()
             .left_0()
@@ -1319,6 +1462,7 @@ impl Render for Viewer {
             })
             .child(body)
             .child(select::follow_drags(cx))
+            .child(self.follow_zoom(cx))
             .child(self.follow_cell_drags(cx))
             .child(self.follow_marking(cx))
             .child(top_bar)
@@ -1465,7 +1609,7 @@ impl Viewer {
 impl Viewer {
     /// A picture `w` × `h` logical pixels, centered, scrolling when zoomed
     /// past the window.
-    fn picture(&self, image: gpui::Img, w: f32, h: f32) -> AnyElement {
+    fn picture(&self, image: gpui::Img, w: f32, h: f32, cx: &mut Context<Self>) -> AnyElement {
         div()
             .id("viewer-picture")
             .size_full()
@@ -1483,6 +1627,7 @@ impl Viewer {
                     .px(px(80.0))
                     .child(
                         image
+                            .capture_any_mouse_down(cx.listener(on_paper))
                             .flex_none()
                             .w(px(w))
                             .h(px(h))

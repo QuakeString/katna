@@ -9,7 +9,6 @@ add-account-looking = { $address } のメールサーバーを探しています
 add-account-address-intro = メールアドレスを入力してください。Katna がサーバーを見つけます。
 add-account-servers-title = サーバー設定
 add-account-servers-intro = Katna が { $address } のメールを読み書きするサーバーです。
-add-account-password-title = パスワードを入力
 add-account-signing-in = サインインしています…
 add-account-browser-title = ブラウザーで続行
 add-account-browser-intro = Katna がブラウザーで { $provider } のサインイン ページを開きました。そこでサインインし、Katna にメールの読み取りと送信を許可してから、ここに戻ってください。
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] サーバー: { $servers }（推測です。サインインできない場合は確認してください）
 }
 add-account-servers-entered = サーバー: { $servers }（入力どおり）
-add-account-or = または
 add-account-sign-in-with = { $provider } でサインイン
 add-account-sign-in-instead = 代わりに { $provider } でサインイン
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = 代わりに { $provider } でサインイン
 add-account-servers-button = サーバー設定
 add-account-back = 戻る
 add-account-add = アカウントを追加
-add-account-next = 次へ
 add-account-cancel = キャンセル
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example } のようなメールアドレスを�
 add-account-not-found = { $address } のサーバーが見つからなかったため、Katna は一般的な名前を入力しました。プロバイダーに確認してください。
 add-account-password-empty = パスワードを入力してください。
 add-account-name-is-password = 名前がパスワードと同じです。ここには、相手に表示される名前を入力してください。
-add-account-added = { $address } を追加しました。メールを取得しています…
 add-account-app-password-refused = { $provider } がパスワードを拒否しました。ウェブで使うパスワードではなく、アプリ パスワードが必要です。
 add-account-password-refused = サーバーがパスワードを拒否しました。確認して、もう一度お試しください。
 add-account-sign-in-refused = { $provider } が Katna のアクセスを許可しませんでした。もう一度試して、メールへのアクセスを許可してください。
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] この Katna では、まだ Google アカウントにサインインできません。
    *[other] このプロバイダーは自社のページでのサインインしか認めていませんが、Katna はまだこれに対応していません。
 }
-add-account-signed-in = { $provider } でサインインしました。メールを取得しています…
 
 ## The account menu (from the account button on the top bar)
 

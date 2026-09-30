@@ -10,7 +10,9 @@ use std::collections::HashMap;
 use futures_lite::{Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
-use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state, state};
+use katna_dbus::{
+    NewImapAccount, NewPop3Account, OutboxItem, PimProxy, ServerSpec, flag, send_state, state,
+};
 use katna_store::{FolderId, MessageId};
 
 /// A change to send to the daemon.
@@ -68,6 +70,8 @@ pub enum Command {
     RelabelNotes(Vec<i64>, String, String),
     /// A change on the Tasks page.
     Task(Box<crate::tasks::TaskCommand>),
+    /// A change to a calendar itself (`Pim1.RenameCalendar` and the like).
+    Calendar(CalendarEdit),
 }
 
 /// A saved card to write, for [`Command::WriteCards`].
@@ -166,7 +170,8 @@ impl Command {
             | Self::RelabelNotes(..)
             | Self::Event(_)
             | Self::Several(_)
-            | Self::Task(_) => {
+            | Self::Task(_)
+            | Self::Calendar(_) => {
                 return None;
             }
         })
@@ -324,6 +329,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
+        Command::Calendar(edit) => return edit_calendar(connection, edit).await.map(|_| ()),
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
@@ -444,6 +450,33 @@ pub async fn set_calendar_hidden(
         .await
         .map(|_| ())
         .map_err(|err| describe(&err))
+}
+
+/// A calendar change on a calendar itself, sent to its service first.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CalendarEdit {
+    /// A new calendar in account (0: this computer), with a name and a
+    /// colour.
+    Add(i64, String, String),
+    Rename(i64, String),
+    Recolor(i64, String),
+    /// Deleted for everyone (`true`) or taken off the person's list.
+    Delete(i64, bool),
+}
+
+/// Sends `edit` (`AddCalendar`, `RenameCalendar`, `SetCalendarColor`,
+/// `DeleteCalendar`). Returns the new calendar's ID, or 0.
+pub async fn edit_calendar(connection: &Connection, edit: &CalendarEdit) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let done = match edit {
+        CalendarEdit::Add(account, name, color) => pim.add_calendar(*account, name, color).await,
+        CalendarEdit::Rename(id, name) => pim.rename_calendar(*id, name).await.map(|()| 0),
+        CalendarEdit::Recolor(id, color) => pim.set_calendar_color(*id, color).await.map(|_| 0),
+        CalendarEdit::Delete(id, delete) => pim.delete_calendar(*id, *delete).await.map(|()| 0),
+    };
+    done.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for a change to the calendar. Returns the ID of the
@@ -630,7 +663,11 @@ pub async fn discard_draft(
 /// What the daemon found for an address.
 #[derive(Debug, Clone)]
 pub struct Found {
+    /// The IMAP and SMTP servers; an empty host was not found.
     pub account: NewImapAccount,
+    /// The POP3 server; an empty host was not found. There is always an
+    /// IMAP or a POP3 server.
+    pub pop3: ServerSpec,
     /// Where: `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
     pub source: String,
     /// The provider to sign in to in the browser, if the servers are
@@ -645,12 +682,13 @@ pub async fn discover(connection: &Connection, address: &str) -> Result<Found, S
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    let (account, source, sign_in, password) = pim
+    let (account, pop3, source, sign_in, password) = pim
         .discover_account(address)
         .await
         .map_err(|err| describe(&err))?;
     Ok(Found {
         account,
+        pop3,
         source,
         sign_in: sign_in.parse().ok(),
         password,
@@ -873,6 +911,41 @@ pub async fn add_account(
     pim.add_imap_account(account, password)
         .await
         .map_err(|err| add_error(&err))
+}
+
+/// Checks the password with the POP3 server and adds the account.
+/// Returns its ID.
+pub async fn add_pop3_account(
+    connection: &Connection,
+    account: &NewPop3Account,
+    password: &str,
+) -> Result<i64, AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.add_pop3_account(account, password)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Sets what a POP3 account does with mail on the server (see
+/// `NewPop3Account`).
+pub async fn set_pop3_keep(
+    connection: &Connection,
+    account: i64,
+    keep: katna_core::Pop3Keep,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_pop3_keep(
+        account,
+        keep.leave_on_server,
+        keep.days.unwrap_or(0),
+        keep.delete_with_local,
+    )
+    .await
+    .map_err(|err| describe(&err))
 }
 
 fn add_error(err: &katna_dbus::zbus::Error) -> AddError {

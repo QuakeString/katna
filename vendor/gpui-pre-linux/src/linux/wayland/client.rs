@@ -528,7 +528,13 @@ pub(crate) enum PendingActivation {
 
 impl WaylandClientState {
     fn consume_startup_activation_token(&mut self, surface: &wl_surface::WlSurface) {
-        let Some(startup_activation_token) = self.startup_activation_token.take() else {
+        // Else a token another app passed for the click that opens this
+        // window (Katna): a notification's Open or Reply all.
+        let Some(startup_activation_token) = self
+            .startup_activation_token
+            .take()
+            .or_else(crate::linux::take_activation_token)
+        else {
             return;
         };
         let Some(activation) = self.globals.activation.as_ref() else {

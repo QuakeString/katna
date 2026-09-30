@@ -9,7 +9,6 @@ add-account-looking = { $address } க்கான அஞ்சல் சர்�
 add-account-address-intro = உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடுங்கள். Katna உங்களுக்காகச் சர்வர்களைக் கண்டறியும்.
 add-account-servers-title = சர்வர் அமைப்புகள்
 add-account-servers-intro = { $address } க்கான அஞ்சலை Katna எங்கே படிக்கிறது, எங்கிருந்து அனுப்புகிறது.
-add-account-password-title = உங்கள் கடவுச்சொல்லை உள்ளிடுங்கள்
 add-account-signing-in = உள்நுழைகிறது…
 add-account-browser-title = உங்கள் உலாவியில் தொடருங்கள்
 add-account-browser-intro = Katna உங்கள் உலாவியில் { $provider } உள்நுழைவுப் பக்கத்தைத் திறந்துள்ளது. அங்கே உள்நுழைந்து, உங்கள் அஞ்சலைப் படிக்கவும் அனுப்பவும் Katna-வை அனுமதியுங்கள், பிறகு இங்கே திரும்புங்கள்.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] சர்வர்கள்: { $servers }, ஊகிக்கப்பட்டவை; உள்நுழைவு தோல்வியடைந்தால் அவற்றைச் சரிபாருங்கள்.
 }
 add-account-servers-entered = சர்வர்கள்: { $servers }, உள்ளிட்டபடி.
-add-account-or = அல்லது
 add-account-sign-in-with = { $provider } மூலம் உள்நுழை
 add-account-sign-in-instead = பதிலாக { $provider } மூலம் உள்நுழை
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = பதிலாக { $provider } மூலம் �
 add-account-servers-button = சர்வர் அமைப்புகள்
 add-account-back = பின்செல்
 add-account-add = கணக்கைச் சேர்
-add-account-next = அடுத்து
 add-account-cancel = ரத்துசெய்
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example } போன்ற மின்னஞ்
 add-account-not-found = { $address } க்கான சர்வர்களை Katna ஆல் கண்டறிய முடியவில்லை, எனவே வழக்கமான பெயர்களை நிரப்பியுள்ளது. உங்கள் வழங்குநரிடம் அவற்றைச் சரிபாருங்கள்.
 add-account-password-empty = கடவுச்சொல்லை உள்ளிடுங்கள்.
 add-account-name-is-password = பெயரும் கடவுச்சொல்லும் ஒன்றாக உள்ளன. அதற்குப் பதிலாக, மற்றவர்கள் பார்க்க வேண்டியபடி உங்கள் பெயரை அங்கே உள்ளிடுங்கள்.
-add-account-added = { $address } சேர்க்கப்பட்டது. உங்கள் அஞ்சலைப் பெறுகிறது…
 add-account-app-password-refused = { $provider } கடவுச்சொல்லை ஏற்கவில்லை. அதற்கு ஆப் கடவுச்சொல் தேவை, இணையத்தில் நீங்கள் பயன்படுத்துவது அல்ல.
 add-account-password-refused = சர்வர் கடவுச்சொல்லை ஏற்கவில்லை. அதைச் சரிபார்த்து மீண்டும் முயலுங்கள்.
 add-account-sign-in-refused = { $provider } Katna-வை உள்ளே அனுமதிக்கவில்லை. மீண்டும் முயன்று, உங்கள் அஞ்சலை அணுக அனுமதியுங்கள்.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna-வின் இந்த நகலால் இன்னும் Google கணக்குகளில் உள்நுழைய முடியாது.
    *[other] இந்த வழங்குநர் அதன் சொந்தப் பக்கத்தில் மட்டுமே உள்நுழைய அனுமதிக்கிறது; அதற்காக Katna-வால் இன்னும் அதைச் செய்ய முடியாது.
 }
-add-account-signed-in = { $provider } மூலம் உள்நுழைந்தது. உங்கள் அஞ்சலைப் பெறுகிறது…
 
 ## The account menu (from the account button on the top bar)
 

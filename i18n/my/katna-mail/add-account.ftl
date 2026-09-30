@@ -9,7 +9,6 @@ add-account-looking = { $address } ၏ မေးလ်ဆာဗာများ�
 add-account-address-intro = သင့်အီးမေးလ်လိပ်စာကို ထည့်ပါ။ Katna က ဆာဗာများကို ရှာပေးမည်။
 add-account-servers-title = ဆာဗာ ဆက်တင်များ
 add-account-servers-intro = { $address } အတွက် Katna မေးလ် ဖတ်ပြီး ပို့သည့်နေရာ။
-add-account-password-title = သင့်စကားဝှက်ကို ထည့်ပါ
 add-account-signing-in = ဝင်ရောက်နေသည်…
 add-account-browser-title = သင့်ဘရောက်ဇာတွင် ဆက်လုပ်ပါ
 add-account-browser-intro = Katna သည် { $provider } ဝင်ရောက်ရန် စာမျက်နှာကို သင့်ဘရောက်ဇာတွင် ဖွင့်ထားသည်။ ထိုနေရာတွင် ဝင်ရောက်ပြီး သင့်မေးလ်ကို ဖတ်ရန်နှင့် ပို့ရန် Katna ကို ခွင့်ပြုပါ၊ ထို့နောက် ဤနေရာသို့ ပြန်လာပါ။
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] ဆာဗာများ- { $servers }၊ ခန့်မှန်းထားသည်။ ဝင်ရောက်မှု မအောင်မြင်ပါက စစ်ဆေးပါ။
 }
 add-account-servers-entered = ဆာဗာများ- { $servers }၊ ထည့်သွင်းထားသည့်အတိုင်း။
-add-account-or = သို့မဟုတ်
 add-account-sign-in-with = { $provider } ဖြင့် ဝင်ရောက်ရန်
 add-account-sign-in-instead = ၎င်းအစား { $provider } ဖြင့် ဝင်ရောက်ရန်
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = ၎င်းအစား { $provider } ဖြင�
 add-account-servers-button = ဆာဗာ ဆက်တင်များ
 add-account-back = နောက်သို့
 add-account-add = အကောင့်ထည့်ရန်
-add-account-next = ရှေ့သို့
 add-account-cancel = မလုပ်တော့ပါ
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example } ကဲ့သို့ အီးမေ
 add-account-not-found = Katna သည် { $address } အတွက် ဆာဗာများကို ရှာမတွေ့သဖြင့် ပုံမှန်အမည်များကို ဖြည့်ထားသည်။ သင့်ဝန်ဆောင်မှုပေးသူနှင့် စစ်ဆေးပါ။
 add-account-password-empty = စကားဝှက်ကို ထည့်ပါ။
 add-account-name-is-password = အမည်သည် စကားဝှက်နှင့် တူနေသည်။ ထိုနေရာတွင် လူများ မြင်စေလိုသည့်အတိုင်း သင့်အမည်ကို ရိုက်ထည့်ပါ။
-add-account-added = { $address } ကို ထည့်ပြီးပါပြီ။ သင့်မေးလ်ကို ရယူနေသည်…
 add-account-app-password-refused = { $provider } က စကားဝှက်ကို ငြင်းပယ်သည်။ ဝဘ်ပေါ်တွင် သုံးသော စကားဝှက် မဟုတ်ဘဲ အက်ပ်စကားဝှက် လိုအပ်သည်။
 add-account-password-refused = ဆာဗာက စကားဝှက်ကို ငြင်းပယ်သည်။ စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။
 add-account-sign-in-refused = { $provider } က Katna ကို ဝင်ခွင့်မပေးပါ။ ထပ်စမ်းကြည့်ပြီး သင့်မေးလ်ကို အသုံးပြုခွင့် ပေးပါ။
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] ဤ Katna မိတ္တူသည် Google အကောင့်များသို့ မဝင်ရောက်နိုင်သေးပါ။
    *[other] ဤဝန်ဆောင်မှုပေးသူသည် ၎င်း၏ ကိုယ်ပိုင် စာမျက်နှာတွင်သာ ဝင်ရောက်ခွင့်ပြုပြီး Katna က ၎င်းအတွက် ထိုသို့ မလုပ်နိုင်သေးပါ။
 }
-add-account-signed-in = { $provider } ဖြင့် ဝင်ရောက်ပြီးပါပြီ။ သင့်မေးလ်ကို ရယူနေသည်…
 
 ## The account menu (from the account button on the top bar)
 

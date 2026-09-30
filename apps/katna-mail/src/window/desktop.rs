@@ -299,6 +299,11 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            // The app may reopen on another page: the mail is on Mail.
+            Request::ShowMessage(id) => {
+                self.show_page(RailApp::Mail, window, cx);
+                self.show_message(MessageId(id), window, cx);
+            }
             // `calendar:<day>` shows that day on the Calendar page (with
             // `:new`, a new event on it); `tasks:<id>` opens that task.
             Request::Page(page) => {
@@ -350,15 +355,13 @@ impl MailWindow {
                         self.run_action("katna_mail::ToggleSettings", window, cx);
                     }
                 }
-                app_action::OPEN_MESSAGE => {
+                // From a notification: in a window of its own, in front
+                // (the click's activation token raises it); this one stays
+                // behind, on whatever page it shows.
+                app_action::OPEN_MESSAGE | app_action::REPLY_ALL => {
                     if let Some(id) = message {
-                        self.show_message(MessageId(id), window, cx);
-                    }
-                }
-                app_action::REPLY_ALL => {
-                    if let Some(id) = message {
-                        // In a window of its own; this one stays behind.
-                        self.reply_all_in_window(MessageId(id), cx);
+                        let reply_all = name == app_action::REPLY_ALL;
+                        self.message_in_window(MessageId(id), reply_all, cx);
                         return;
                     }
                 }

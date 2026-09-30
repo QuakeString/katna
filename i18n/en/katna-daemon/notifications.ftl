@@ -83,3 +83,15 @@ notify-mark-read = Mark as read
 # On a notification about several messages.
 notify-mark-all-read = Mark all as read
 notify-archive = Archive
+
+## After Archive on a notification: a short note in the same place
+
+# Its title. Under it, the subject of the archived message.
+notify-archived = Archived
+# Under the title when several messages were archived.
+notify-archived-count = { $count ->
+    [one] { $count } message moved out of the inbox
+   *[other] { $count } messages moved out of the inbox
+}
+# Its button: puts the mail back in the inbox.
+notify-undo = Undo

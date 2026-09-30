@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A new Add account, and POP3"
+text = """
+Adding an account starts with your provider: Google, Yahoo, iCloud, Zoho,
+Fastmail, GMX, Yandex or any other. Katna says what the provider needs
+first, shows each step while it connects, and ends with what it set up.
+POP3 accounts work too, and Settings > Accounts chooses how long their
+mail stays on the server.
+"""

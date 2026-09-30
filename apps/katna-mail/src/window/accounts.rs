@@ -16,7 +16,7 @@ use gpui::{
     deferred, div, prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
-use katna_core::{Account, AccountId, AccountKind, Config};
+use katna_core::{Account, AccountId, AccountKind, Config, Pop3Keep};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
@@ -31,6 +31,75 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, ScaledEdge, elevation, icon};
 
 const WIDTH: f32 = 500.0;
+
+/// Days a POP3 account keeps mail on the server when first asked to
+/// remove it after some days, and the steps of the buttons beside it.
+const DEFAULT_DAYS: u32 = 14;
+const DAY_STEPS: [u32; 9] = [1, 3, 7, 14, 30, 60, 90, 180, 365];
+
+/// The next step up or down from `days`, if there is one.
+fn step_days(days: u32, up: bool) -> Option<u32> {
+    if up {
+        DAY_STEPS.into_iter().find(|d| *d > days)
+    } else {
+        DAY_STEPS.into_iter().rev().find(|d| *d < days)
+    }
+}
+
+/// What a POP3 account does with mail on the server, as Settings offers
+/// it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Pop3Choice {
+    /// Removed once deleted for good in Katna (the default).
+    WithKatna,
+    AfterDownload,
+    AfterDays,
+    Never,
+}
+
+impl Pop3Choice {
+    fn of(keep: Pop3Keep) -> Self {
+        if !keep.leave_on_server {
+            Self::AfterDownload
+        } else if keep.days.is_some() {
+            Self::AfterDays
+        } else if keep.delete_with_local {
+            Self::WithKatna
+        } else {
+            Self::Never
+        }
+    }
+
+    fn keep(self, days: u32) -> Pop3Keep {
+        match self {
+            Self::WithKatna => Pop3Keep::default(),
+            Self::AfterDownload => Pop3Keep {
+                leave_on_server: false,
+                days: None,
+                delete_with_local: false,
+            },
+            Self::AfterDays => Pop3Keep {
+                leave_on_server: true,
+                days: Some(days.max(1)),
+                delete_with_local: true,
+            },
+            Self::Never => Pop3Keep {
+                leave_on_server: true,
+                days: None,
+                delete_with_local: false,
+            },
+        }
+    }
+
+    fn id(self) -> &'static str {
+        match self {
+            Self::WithKatna => "pop3-with-katna",
+            Self::AfterDownload => "pop3-at-once",
+            Self::AfterDays => "pop3-after-days",
+            Self::Never => "pop3-never",
+        }
+    }
+}
 
 /// A question before deleting.
 pub(super) struct Danger {
@@ -168,6 +237,15 @@ impl Reorder {
 
 enum What {
     RemoveAccount(Account),
+    /// Deleting a calendar (`delete`), or taking one shared with the
+    /// person off their list, on its account's service (`account`, its
+    /// address; empty for this computer).
+    Calendar {
+        id: i64,
+        name: String,
+        account: String,
+        delete: bool,
+    },
     DeleteAll {
         typed: Entity<TextInput>,
         _subscription: Subscription,
@@ -181,6 +259,8 @@ enum Done {
     DeletedAll,
     /// Messages that lost their body, and bytes deleted.
     CacheReset(u64, u64),
+    /// A calendar went: its name, and whether it was deleted.
+    Calendar(String, bool),
 }
 
 impl MailWindow {
@@ -303,6 +383,7 @@ impl MailWindow {
                 list,
                 th,
             ))
+            .children(self.pop3_section(th, cx))
             .child(self.row(
                 tr!("accounts-delete-all-row"),
                 Some(tr!("accounts-delete-all-row-detail").as_str()),
@@ -310,6 +391,170 @@ impl MailWindow {
                 th,
             ))
             .into_any_element()
+    }
+
+    /// What each POP3 account does with mail on the server once it is
+    /// downloaded; only with a POP3 account.
+    fn pop3_section(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let accounts: Vec<Account> = self
+            .accounts
+            .iter()
+            .filter(|a| a.kind == AccountKind::Pop3)
+            .cloned()
+            .collect();
+        if accounts.is_empty() {
+            return None;
+        }
+        let several = accounts.len() > 1;
+        let mut pane = div().flex().flex_col().gap(px(16.0));
+        for (ix, account) in accounts.iter().enumerate() {
+            let keep = self.pop3_keep_of(account.id);
+            let now = Pop3Choice::of(keep);
+            let days = keep.days.unwrap_or(DEFAULT_DAYS);
+            let id = account.id;
+            let option = |choice: Pop3Choice, label: String| {
+                let on = now == choice;
+                self.page_control(div().id((choice.id(), ix)), th, cx)
+                    .relative()
+                    .overflow_hidden()
+                    .min_h(px(40.0))
+                    .py(px(8.0))
+                    .px(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(14.0))
+                    .rounded(px(8.0))
+                    .text_size(px(14.0))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.set_pop3_keep(id, choice.keep(days), cx)
+                    }))
+                    .child(super::settings::animated_radio(
+                        (choice.id(), ix + 1000),
+                        on,
+                        th,
+                    ))
+                    .child(div().flex_1().min_w_0().child(label))
+            };
+            let stepper = |dir: &'static str, to: Option<u32>| {
+                let button = crate::widgets::icon_button(
+                    (dir, ix),
+                    if dir == "pop3-days-less" {
+                        "remove"
+                    } else {
+                        "add"
+                    },
+                    18.0,
+                    th,
+                )
+                .tooltip(crate::widgets::tip(
+                    if dir == "pop3-days-less" {
+                        tr!("accounts-pop3-days-less")
+                    } else {
+                        tr!("accounts-pop3-days-more")
+                    },
+                    th,
+                ));
+                match to.filter(|_| now == Pop3Choice::AfterDays) {
+                    Some(to) => button
+                        .map(|d| self.page_control(d, th, cx))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.set_pop3_keep(id, Pop3Choice::AfterDays.keep(to), cx)
+                        })),
+                    None => button.opacity(0.3).cursor_default(),
+                }
+            };
+            let after_days = div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .items_center()
+                .gap(px(4.0))
+                .child(div().flex_1().min_w(px(200.0)).child(option(
+                    Pop3Choice::AfterDays,
+                    tr!("accounts-pop3-after-days", count = days),
+                )))
+                .child(stepper("pop3-days-less", step_days(days, false)))
+                .child(stepper("pop3-days-more", step_days(days, true)));
+            pane = pane.child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(2.0))
+                    .when(several, |d| {
+                        d.child(
+                            div()
+                                .pb(px(4.0))
+                                .text_size(px(13.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .text_color(rgba(th.text_dim))
+                                .child(account.address.clone()),
+                        )
+                    })
+                    .child(option(
+                        Pop3Choice::WithKatna,
+                        tr!("accounts-pop3-with-katna"),
+                    ))
+                    .child(option(
+                        Pop3Choice::AfterDownload,
+                        tr!("accounts-pop3-at-once"),
+                    ))
+                    .child(after_days)
+                    .child(option(Pop3Choice::Never, tr!("accounts-pop3-never"))),
+            );
+        }
+        Some(
+            self.row(
+                tr!("accounts-pop3-row"),
+                Some(tr!("accounts-pop3-row-detail").as_str()),
+                pane,
+                th,
+            )
+            .into_any_element(),
+        )
+    }
+
+    /// A POP3 account's choice: the one just made, else the store's.
+    fn pop3_keep_of(&self, id: AccountId) -> Pop3Keep {
+        self.pop3_keep.get(&id).copied().unwrap_or_else(|| {
+            self.mail
+                .as_ref()
+                .map(|mail| mail.pop3_keep(id))
+                .unwrap_or_default()
+        })
+    }
+
+    fn set_pop3_keep(&mut self, id: AccountId, keep: Pop3Keep, cx: &mut Context<Self>) {
+        if self.pop3_keep_of(id) == keep {
+            return;
+        }
+        self.pop3_keep.insert(id, keep);
+        cx.notify();
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::set_pop3_keep(&connection, id.0, keep).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Err(err) = result {
+                    tracing::warn!(%err, "POP3 choice not saved");
+                    this.pop3_keep.remove(&id);
+                    this.show_snackbar(err, None, cx);
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// One account in Settings > Accounts: a handle to drag it, its
@@ -846,6 +1091,27 @@ impl MailWindow {
         .detach();
     }
 
+    /// Asks before deleting calendar `id` (`delete`), or taking it off the
+    /// person's list, on the service of `account` (empty: this computer).
+    pub(super) fn ask_calendar_removal(
+        &mut self,
+        id: i64,
+        name: String,
+        account: String,
+        delete: bool,
+        cx: &mut Context<Self>,
+    ) {
+        self.ask(
+            What::Calendar {
+                id,
+                name,
+                account,
+                delete,
+            },
+            cx,
+        );
+    }
+
     fn ask(&mut self, what: What, cx: &mut Context<Self>) {
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
@@ -932,7 +1198,13 @@ impl MailWindow {
         danger.error = None;
         let remove = match &danger.what {
             What::RemoveAccount(account) => Some(account.clone()),
-            What::DeleteAll { .. } | What::ResetCache => None,
+            What::DeleteAll { .. } | What::ResetCache | What::Calendar { .. } => None,
+        };
+        let calendar = match &danger.what {
+            What::Calendar {
+                id, name, delete, ..
+            } => Some((*id, name.clone(), *delete)),
+            _ => None,
         };
         let reset = matches!(danger.what, What::ResetCache);
         let connection = self.daemon.clone();
@@ -944,6 +1216,12 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
+                    if let Some((id, name, delete)) = calendar {
+                        let edit = daemon::CalendarEdit::Delete(id, delete);
+                        return daemon::edit_calendar(&connection, &edit)
+                            .await
+                            .map(|_| Done::Calendar(name, delete));
+                    }
                     match remove {
                         Some(account) => daemon::remove_account(&connection, account.id.0)
                             .await
@@ -967,6 +1245,7 @@ impl MailWindow {
                         Done::Removed(account) => this.account_removed(&account, cx),
                         Done::DeletedAll => this.all_data_deleted(cx),
                         Done::CacheReset(messages, bytes) => this.cache_reset(messages, bytes, cx),
+                        Done::Calendar(name, delete) => this.calendar_removed(&name, delete, cx),
                     }
                 }
                 Err(err) => {
@@ -1108,6 +1387,30 @@ impl MailWindow {
                         },
                     )
                 }
+                What::Calendar {
+                    name,
+                    account,
+                    delete: true,
+                    ..
+                } => {
+                    let mut items = vec![tr!("calendar-delete-events")];
+                    // One on this computer is shared with no one.
+                    if !account.is_empty() {
+                        items.push(tr!("calendar-delete-shared"));
+                    }
+                    (
+                        tr!("calendar-delete-title", name = name.as_str()),
+                        tr!("calendar-delete-confirm"),
+                        tr!("calendar-deleting"),
+                        items,
+                    )
+                }
+                What::Calendar { name, .. } => (
+                    tr!("calendar-remove-title", name = name.as_str()),
+                    tr!("calendar-remove-confirm"),
+                    tr!("calendar-removing"),
+                    vec![tr!("calendar-remove-events")],
+                ),
                 What::DeleteAll { .. } => (
                     tr!("accounts-delete-all-title"),
                     tr!("accounts-delete-all-confirm"),
@@ -1121,9 +1424,12 @@ impl MailWindow {
                 ),
             };
         let reset = matches!(danger.what, What::ResetCache);
+        // Taking a shared calendar off the list loses nothing: its owner
+        // keeps it.
+        let unlist = matches!(danger.what, What::Calendar { delete: false, .. });
         // Resetting deletes nothing that cannot be downloaded again, so it
         // is not red.
-        let tone = if reset { th.accent } else { th.error };
+        let tone = if reset || unlist { th.accent } else { th.error };
         let warning = div()
             .mt(px(20.0))
             .p(px(16.0))
@@ -1139,10 +1445,11 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .font_weight(FontWeight::SEMIBOLD)
                     .text_color(rgba(tone))
-                    .child(if reset {
-                        tr!("reset-cache-deleted")
-                    } else {
-                        tr!("accounts-deleted-heading")
+                    .child(match &danger.what {
+                        What::ResetCache => tr!("reset-cache-deleted"),
+                        What::Calendar { delete: true, .. } => tr!("calendar-delete-heading"),
+                        What::Calendar { .. } => tr!("calendar-remove-heading"),
+                        _ => tr!("accounts-deleted-heading"),
                     }),
             )
             .children(items.into_iter().map(|item| {
@@ -1155,7 +1462,7 @@ impl MailWindow {
                     .child(div().text_color(rgba(tone)).child("\u{2022}"))
                     .child(div().flex_1().min_w_0().child(item))
             }))
-            .when(!reset, |d| {
+            .when(!reset && !unlist, |d| {
                 d.child(
                     div()
                         .pt(px(4.0))
@@ -1188,6 +1495,15 @@ impl MailWindow {
                             tr!("accounts-server-local")
                         }
                         What::RemoveAccount(_) => tr!("accounts-server-remove"),
+                        What::Calendar { account, .. } if account.is_empty() => {
+                            tr!("calendar-delete-local")
+                        }
+                        What::Calendar {
+                            account,
+                            delete: true,
+                            ..
+                        } => tr!("calendar-delete-server", account = account.as_str()),
+                        What::Calendar { .. } => tr!("calendar-remove-server"),
                     }),
             );
         let confirm = match &danger.what {
@@ -1225,7 +1541,7 @@ impl MailWindow {
                         ),
                 )
             }
-            What::RemoveAccount(_) | What::ResetCache => None,
+            What::RemoveAccount(_) | What::ResetCache | What::Calendar { .. } => None,
         };
         let error = danger.error.clone().map(|err| {
             div()
@@ -1253,6 +1569,8 @@ impl MailWindow {
                     .bg(rgba(fade(tone, 0.14)))
                     .child(if reset {
                         icon("refresh", tone, 28.0)
+                    } else if unlist {
+                        icon("remove", tone, 28.0)
                     } else {
                         icon("warning", tone, 28.0)
                     }),
@@ -1298,7 +1616,7 @@ impl MailWindow {
                     .child(
                         {
                             let label = if busy { busy_text } else { action };
-                            if reset {
+                            if reset || unlist {
                                 crate::widgets::filled_button("danger-confirm", label, th)
                             } else {
                                 danger_button("danger-confirm", label, true, th)

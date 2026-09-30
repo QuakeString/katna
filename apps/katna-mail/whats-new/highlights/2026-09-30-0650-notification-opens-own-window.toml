@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notifications open the mail in front"
+text = """
+Clicking a new-mail notification opens that mail in a window of its own,
+in front, whatever Katna shows at the time. Reply all opens it with the
+reply ready to type. Archive puts the mail away without opening anything
+and says so in a short note with Undo.
+"""

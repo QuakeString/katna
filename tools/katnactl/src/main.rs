@@ -172,9 +172,9 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             [address] => {
                 let address = address.clone();
                 with_daemon(|pim| async move {
-                    let (account, source, sign_in, password) =
+                    let (account, pop3, source, sign_in, password) =
                         pim.discover_account(&address).await?;
-                    print_discovered(&account, &source);
+                    print_discovered(&account, &pop3, &source);
                     if !sign_in.is_empty() {
                         let or = if password { "or " } else { "only " };
                         println!("  sign in {or}with `katnactl sign-in {sign_in} {address}`");
@@ -647,8 +647,9 @@ fn add_imap(args: &[String]) -> Result<()> {
             let mut found = None;
             let slot = &mut found;
             with_daemon(|pim| async move {
-                let (account, source, sign_in, password) = pim.discover_account(&lookup).await?;
-                print_discovered(&account, &source);
+                let (account, pop3, source, sign_in, password) =
+                    pim.discover_account(&lookup).await?;
+                print_discovered(&account, &pop3, &source);
                 if !password {
                     return Err(error(format!(
                         "{lookup} takes no password; use `katnactl sign-in {sign_in} {lookup}`"
@@ -772,7 +773,7 @@ fn add_pop3(args: &[String]) -> Result<()> {
     })
 }
 
-fn print_discovered(account: &NewImapAccount, source: &str) {
+fn print_discovered(account: &NewImapAccount, pop3: &ServerSpec, source: &str) {
     let show = |spec: &ServerSpec| match spec.host.as_str() {
         "" => "not found".to_owned(),
         host => format!(
@@ -782,6 +783,9 @@ fn print_discovered(account: &NewImapAccount, source: &str) {
     };
     println!("found via {source}:");
     println!("  IMAP  {}", show(&account.imap));
+    if !pop3.host.is_empty() {
+        println!("  POP3  {}", show(pop3));
+    }
     println!("  SMTP  {}", show(&account.smtp));
 }
 

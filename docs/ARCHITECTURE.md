@@ -516,8 +516,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   forget those UIDLs and the ones the server no longer lists. A broken
   session therefore never loses mail or deletes what is not stored. The
   client has `TOP`; partial download of very large messages (header first,
-  body on request) is a later option. Discovery does not look for POP3
-  servers yet, so `AddPop3Account` needs the server.
+  body on request) is a later option. Discovery reports a POP3 server
+  beside IMAP; Add account takes POP3 only when there is no IMAP server,
+  or when the user picks it under Server settings. `SetPop3Keep` changes
+  what stays on the server later (Settings > Accounts, "Mail on the
+  server").
 - **Gmail / Microsoft:** OAuth2 (`katna_sync::oauth`, daemon
   `daemon/sign_in.rs`, D-Bus `SignIn`): the installed-app flow with PKCE
   (RFC 7636) and a loopback redirect (RFC 8252). The daemon listens on a
@@ -585,10 +588,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   Yahoo, iCloud and Fastmail. Then the provider's own `config-v1.1.xml`
   (`https://autoconfig.DOMAIN/…` and `https://DOMAIN/.well-known/…`) and
   Thunderbird's ISPDB, fetched at once; the provider's file wins. Then DNS
-  SRV (`_imaps`, `_imap`, `_submissions`, `_submission`; RFC 6186 and
-  8314), then the ISPDB entry of the MX host's domain (hosted mail such as
-  Google Workspace), then probing `imap.`, `mail.` and `smtp.DOMAIN` on
-  993/143 and 465/587 for a mail greeting. Files come only over HTTPS; TLS
+  SRV (`_imaps`, `_imap`, `_pop3s`, `_pop3`, `_submissions`,
+  `_submission`; RFC 6186 and 8314), then the ISPDB entry of the MX host's
+  domain (hosted mail such as Google Workspace), then probing `imap.`,
+  `pop.`, `pop3.`, `mail.` and `smtp.DOMAIN` on 993/143, 995/110 and
+  465/587 for a mail greeting. POP3 servers are kept beside IMAP
+  (`Discovered::pop3`); IMAP stays the default when both exist. Files come only over HTTPS; TLS
   beats STARTTLS beats plain, and a cleartext server is only taken when
   the file offers nothing else (logged as a warning; the dialog shows the
   security). DNS answers are not authenticated, so an SRV record is only
@@ -2027,21 +2032,26 @@ Gemini or confidential mode):
   Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
   message the server refuses for good raises a snackbar
   (`OutboxChanged`).
-- **Adding an account.** A dialog shaped like a web sign-in
-  (`window/add_account.rs`): the address first; the daemon looks for the
-  servers (`DiscoverAccount`, §6), and the next step asks for the password
-  under a chip with the address, with "Show password", an optional name
-  for the From line and where the servers were found. Gmail, Yahoo, iCloud
-  and AOL addresses get a note that they need an app password. When
-  nothing is found, or from "Server settings", the servers are entered by
-  hand: host, port and SSL/TLS, STARTTLS or none for IMAP and SMTP, and
-  the username. `AddImapAccount` checks the login before saving; a refused
-  password is shown under the field. When this build has the client IDs,
-  "Sign in with Google" and "Sign in with Microsoft" sit under the address
-  field, and a Gmail password step offers "Sign in with Google instead";
-  for Microsoft's own addresses discovery leads straight there. Signing in
-  shows "Continue in your browser" while the daemon waits for the
-  provider's page (`SignIn`; Back or Cancel ends it with `CancelSignIn`). An
+- **Adding an account.** A dialog in steps (`window/add_account.rs`),
+  shaped after Mailspring's and Thunderbird's. First a grid of provider
+  tiles (`window/mail_providers.rs`): Google, Microsoft (only when this
+  build has its client ID), Yahoo, iCloud, Zoho, Fastmail, GMX, Yandex and
+  "Other mail" for any IMAP or POP3 server, each with its own mark. Google
+  and Microsoft sign in in the browser (`SignIn`; "Continue in your
+  browser" until the provider's page answers, Back or Cancel ends it with
+  `CancelSignIn`). The others lead to one form: name for the From line,
+  address and password with "Show password", and a help box saying what
+  the provider needs first (an app password, or IMAP turned on for GMX)
+  with a link to its page. Add account looks for the servers
+  (`DiscoverAccount`, §6) and checks the login, showing each stage with a
+  spinner. When nothing is found, or from "Server settings", the servers
+  are entered by hand: IMAP or POP3 for incoming mail, then host, port,
+  SSL/TLS, STARTTLS or none, and the username, for incoming and SMTP.
+  `AddImapAccount` or `AddPop3Account` checks the login before saving; a
+  refused password is shown under the field. The last step shows what was
+  set up (receiving and sending servers, and for POP3 what stays on the
+  server) with "Add another account"; a Zoho account is offered "Sign in
+  with Zoho" there for its tasks and calendars. An
   OAuth2 account whose sign-in stopped working shows a note at the bottom
   of the window with "Sign in" (`window/sign_in_again.rs`). It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
@@ -2163,7 +2173,18 @@ Gemini or confidential mode):
   the browser or the contact) and on a task (details, done, star, Date:
   today, tomorrow, in a week, all day or no date, and delete). Changes
   go through the same paths as the event card and the Tasks page, so a
-  repeating event asks which occurrences and each change has Undo. The "select all
+  repeating event asks which occurrences and each change has Undo. In
+  the side panel (`calendar/side_menu.rs`) a calendar's menu has Show
+  only this, Color, Rename and Delete (Remove from list for one shared
+  with the person), and an account heading's has New calendar, Show or
+  Hide all and Account settings. These change the calendar on the
+  account's service first, by its best method (Google Calendar API
+  `calendars` and `calendarList`, Microsoft Graph `/me/calendars` with
+  the nearest Outlook colour, CalDAV `MKCALENDAR`, `PROPPATCH` and
+  `DELETE`, Zoho's `calendars` for one's own), and only then in the store
+  (`katna_sync::calendar::manage`, the daemon's `calendar/manage.rs`);
+  what a service can't do shows dimmed with a short reason. Rename and
+  colour have Undo; delete asks first. The "select all
   on screen" banner no longer blinks (it depends on what was ticked, not on
   how many lines fit), inbox tabs switch without a fade, and the reading
   pane choices in quick settings play a small demo under the pointer.
@@ -2256,13 +2277,17 @@ desktop's own app stays one click away.
   file on show stays until the next one is ready (a PDF with its first
   page drawn) and they swap in one frame, or "Opening…" shows after
   300 ms if it takes longer; the viewer fades in only when it opens. The
-  middle of the top bar zooms (−/+/0, 25 %–400 %, 100 % fits the window)
+  middle of the top bar zooms (−/+/0, Ctrl + mouse wheel or a touchpad
+  pinch around the pointer, 25 %–400 %, 100 % fits the window)
   and shows a PDF's page as "Page [n] of N": typing a number in the box
   (click it or Ctrl+G) and Enter goes to that page, Escape leaves the
   box. A PDF also turns a quarter turn either way (Ctrl+R, Ctrl+Shift+R):
   every page turns, the page on show stays, marks turn with it, and a
   marked copy is saved turned (`/Rotate`). Too narrow for the bar (a
-  phone), these float in a pill at the foot instead. Escape closes the viewer. It is dark in light and dark themes alike.
+  phone), these float in a pill at the foot instead. A click on the dim
+  space around the file closes the viewer, as in Gmail; a click on the
+  page, a control or the bar, or a drag, does not (nor while a menu, the
+  unsaved-marks question or a note being typed is open). Escape closes the viewer. It is dark in light and dark themes alike.
   - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
     Only pages on screen (and one either side) are drawn, at the zoom and
     the screen's scale, one at a time on a background thread; pages far
@@ -2843,11 +2868,13 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
 (id, kind, name, address, state, detail, last sync, OAuth2 provider),
-`DiscoverAccount(address) → (account, source, provider, password works)`,
+`DiscoverAccount(address) → (account, POP3 server, source, provider,
+password works)` (an empty POP3 host when there is none),
 `SignIn(provider, id, address) → id` (OAuth2 in the browser; adds the
 account, or signs one in again), `CancelSignIn() → b`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
-leave-on-server, days to keep, and delete-with-local),
+leave-on-server, days to keep, and delete-with-local), `SetPop3Keep(id,
+leave on server, days, delete with local)`,
 `SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
 goes back to the name the account's own sent mail uses, which a name-less
 account also takes after its first sync), `RemoveAccount(id) → b`,
@@ -3630,8 +3657,11 @@ most useful reason is shown. Changes go back the way their calendar came
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
-  months with a dot under days with events; a day opens Day, a month's
-  name opens Month), Schedule and a custom view (X or 6: 2 to 7 days
+  months with a dot under days with events or tasks; a day opens Day, a
+  month's name opens Month; resting the pointer on a dotted day, or
+  tapping it on a phone, shows its events and tasks in a popover with a
+  notch pointing at it, `calendar/year_peek.rs`, placed as the search's
+  date popover is by `window/notched.rs`), Schedule and a custom view (X or 6: 2 to 7 days
   from the day picked, 4 by default, chosen in the options menu as
   `custom_days`), like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings. Below 1000 px for the bar,
@@ -3882,6 +3912,20 @@ media code, nothing added to startup.
   (`katna_core::meeting`). Invitations skip it: their card has Join.
   WhatsApp and Telegram have no way for other apps to make calls, so their
   links are only joined.
+- An event's card joins the same way: its own conference link, else the
+  first call link in its place or description (a Teams invitation read
+  over CalDAV or from mail), as "Join with <service>" at the top. The
+  description shows its web addresses as links (Outlook's
+  `text<https://…>` as `text`) without the rules of underscores
+  (`calendar/description.rs`); only the details scroll, the title and
+  Going? stay in sight.
+- An event Gmail made from a mail (its description links to
+  `mail.google.com/mail?extsrc=cal&plid=…`, an id only Gmail reads) gets
+  Open the mail on its card: Katna searches its own index for the event's
+  title and place words in the year of mail before the event's day,
+  keeps a hit in the event's account, and opens it; with no hit, Gmail's
+  link opens in the browser (`calendar/from_mail.rs`). A task made from a
+  mail keeps its `Message-ID` and opens the mail from its card as well.
 
 ## 19. Security and privacy
 

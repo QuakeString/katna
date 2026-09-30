@@ -9,7 +9,6 @@ add-account-looking = Mencari server email untuk { $address }…
 add-account-address-intro = Masukkan alamat email Anda. Katna akan menemukan servernya untuk Anda.
 add-account-servers-title = Setelan server
 add-account-servers-intro = Tempat Katna membaca dan mengirim email untuk { $address }.
-add-account-password-title = Masukkan sandi Anda
 add-account-signing-in = Masuk…
 add-account-browser-title = Lanjutkan di browser Anda
 add-account-browser-intro = Katna membuka halaman masuk { $provider } di browser Anda. Masuklah di sana dan izinkan Katna membaca dan mengirim email Anda, lalu kembali ke sini.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Server: { $servers }, hasil tebakan; periksa jika gagal masuk.
 }
 add-account-servers-entered = Server: { $servers }, sesuai yang dimasukkan.
-add-account-or = atau
 add-account-sign-in-with = Masuk dengan { $provider }
 add-account-sign-in-instead = Masuk dengan { $provider } saja
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Masuk dengan { $provider } saja
 add-account-servers-button = Setelan server
 add-account-back = Kembali
 add-account-add = Tambahkan akun
-add-account-next = Berikutnya
 add-account-cancel = Batal
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Masukkan alamat email seperti { $example }.
 add-account-not-found = Katna tidak dapat menemukan server untuk { $address }, jadi Katna mengisi nama yang umum. Periksa dengan penyedia Anda.
 add-account-password-empty = Masukkan sandi.
 add-account-name-is-password = Nama sama dengan sandi. Ketik nama Anda di sana, seperti yang akan dilihat orang lain.
-add-account-added = { $address } ditambahkan. Mengambil email Anda…
 add-account-app-password-refused = { $provider } menolak sandi. Diperlukan sandi aplikasi, bukan sandi yang Anda gunakan di web.
 add-account-password-refused = Server menolak sandi. Periksa sandi, lalu coba lagi.
 add-account-sign-in-refused = { $provider } tidak mengizinkan Katna masuk. Coba lagi, dan izinkan akses ke email Anda.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Salinan Katna ini belum dapat masuk ke akun Google.
    *[other] Penyedia ini hanya mengizinkan masuk di halamannya sendiri, yang belum dapat dilakukan Katna untuknya.
 }
-add-account-signed-in = Sudah masuk dengan { $provider }. Mengambil email Anda…
 
 ## The account menu (from the account button on the top bar)
 

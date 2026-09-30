@@ -5,10 +5,10 @@
 use std::sync::Arc;
 
 use async_channel::Receiver;
-use katna_core::{AccountId, ids};
+use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
     AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    NoteItem, OutboxItem, TemplateItem, UpdateStatus, flag,
+    NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag,
 };
 use katna_store::{FolderId, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -86,14 +86,15 @@ macro_rules! pim_interface {
             async fn discover_account(
                 &self,
                 address: String,
-            ) -> fdo::Result<(NewImapAccount, String, String, bool)> {
-                let (account, found) = self.daemon.discover_account(&address).await?;
+            ) -> fdo::Result<(NewImapAccount, ServerSpec, String, String, bool)> {
+                let (account, pop3, found) = self.daemon.discover_account(&address).await?;
                 let sign_in = found
                     .oauth
                     .map(|p| p.as_str().to_owned())
                     .unwrap_or_default();
                 Ok((
                     account,
+                    pop3,
                     found.source.as_str().to_owned(),
                     sign_in,
                     found.password,
@@ -124,6 +125,21 @@ macro_rules! pim_interface {
 
             async fn rename_account(&self, account: i64, name: String) -> fdo::Result<()> {
                 Ok(self.daemon.rename_account(AccountId(account), &name)?)
+            }
+
+            async fn set_pop3_keep(
+                &self,
+                account: i64,
+                leave_on_server: bool,
+                keep_days: u32,
+                delete_with_local: bool,
+            ) -> fdo::Result<()> {
+                let keep = Pop3Keep {
+                    leave_on_server,
+                    days: (keep_days > 0).then_some(keep_days),
+                    delete_with_local,
+                };
+                Ok(self.daemon.set_pop3_keep(AccountId(account), keep).await?)
             }
 
             async fn remove_account(&self, account: i64) -> fdo::Result<bool> {
@@ -378,6 +394,27 @@ macro_rules! pim_interface {
 
             async fn set_calendar_hidden(&self, id: i64, hidden: bool) -> fdo::Result<()> {
                 Ok(self.daemon.set_calendar_hidden(id, hidden)?)
+            }
+
+            async fn add_calendar(
+                &self,
+                account: i64,
+                name: String,
+                color: String,
+            ) -> fdo::Result<i64> {
+                Ok(self.daemon.add_calendar(account, &name, &color).await?)
+            }
+
+            async fn rename_calendar(&self, id: i64, name: String) -> fdo::Result<()> {
+                Ok(self.daemon.rename_calendar(id, &name).await?)
+            }
+
+            async fn set_calendar_color(&self, id: i64, color: String) -> fdo::Result<String> {
+                Ok(self.daemon.set_calendar_color(id, &color).await?)
+            }
+
+            async fn delete_calendar(&self, id: i64, delete: bool) -> fdo::Result<()> {
+                Ok(self.daemon.delete_calendar(id, delete).await?)
             }
 
             async fn calendar_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {

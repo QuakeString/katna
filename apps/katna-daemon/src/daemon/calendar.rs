@@ -49,6 +49,8 @@ use katna_sync::{
 
 use super::{CommandError, Daemon, Notice};
 
+mod manage;
+
 /// How often calendars sync.
 const INTERVAL: Duration = Duration::from_secs(5 * 60);
 

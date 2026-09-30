@@ -9,7 +9,6 @@ add-account-looking = Поиск почтовых серверов для { $add
 add-account-address-intro = Введите адрес электронной почты. Katna сама найдёт серверы.
 add-account-servers-title = Настройки сервера
 add-account-servers-intro = Где Katna получает и отправляет почту для { $address }.
-add-account-password-title = Введите пароль
 add-account-signing-in = Вход…
 add-account-browser-title = Продолжите в браузере
 add-account-browser-intro = В браузере открыта страница входа { $provider }. Войдите там и разрешите Katna читать и отправлять вашу почту, затем вернитесь сюда.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Серверы: { $servers }, угаданы; проверьте их, если войти не удастся.
 }
 add-account-servers-entered = Серверы: { $servers }, введены вручную.
-add-account-or = или
 add-account-sign-in-with = Войти через { $provider }
 add-account-sign-in-instead = Вместо этого войти через { $provider }
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Вместо этого войти через { $p
 add-account-servers-button = Настройки сервера
 add-account-back = Назад
 add-account-add = Добавить аккаунт
-add-account-next = Далее
 add-account-cancel = Отмена
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Введите адрес электронной �
 add-account-not-found = Katna не удалось найти серверы для { $address }, поэтому подставлены обычные имена. Уточните их у своего провайдера.
 add-account-password-empty = Введите пароль.
 add-account-name-is-password = Имя совпадает с паролем. Введите там своё имя — так, как его должны видеть другие.
-add-account-added = { $address } добавлен. Получение почты…
 add-account-app-password-refused = { $provider } не принял пароль. Нужен пароль приложения, а не тот, что вы используете на сайте.
 add-account-password-refused = Сервер не принял пароль. Проверьте его и попробуйте снова.
 add-account-sign-in-refused = { $provider } не впустил Katna. Попробуйте снова и разрешите доступ к почте.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Эта копия Katna пока не умеет входить в аккаунты Google.
    *[other] Этот провайдер разрешает вход только на своей странице, а для него Katna этого пока не умеет.
 }
-add-account-signed-in = Вход через { $provider } выполнен. Получаем почту…
 
 ## The account menu (from the account button on the top bar)
 

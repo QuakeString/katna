@@ -9,7 +9,8 @@
 //! - on an event: its details, edit, duplicate and delete, Going? (Yes, No,
 //!   Maybe), join the call, email the guests, its color and calendar, and
 //!   the browser or the contact;
-//! - on a task: its details, done, star, another day and delete.
+//! - on a task: its details, done, star, another day and delete;
+//! - in the side panel, on a calendar or an account (`side_menu.rs`).
 //!
 //! Changes say so with Undo, as the same changes made elsewhere do.
 
@@ -41,6 +42,10 @@ pub(in crate::window) enum CalTarget {
     Event(Box<Occurrence>),
     /// A task, by its id.
     Task(i64),
+    /// A calendar in the side panel.
+    Calendar(i64),
+    /// An account's heading in the side panel (`None`: this computer).
+    Account(Option<i64>),
 }
 
 impl CalTarget {
@@ -50,18 +55,20 @@ impl CalTarget {
             CalTarget::Slot { day, time } => format!("slot-{day}-{time:?}"),
             CalTarget::Event(o) => format!("event-{}-{}", o.event.id, o.start),
             CalTarget::Task(id) => format!("task-{id}"),
+            CalTarget::Calendar(id) => format!("calendar-{id}"),
+            CalTarget::Account(id) => format!("account-{id:?}"),
         }
     }
 }
 
 /// Google Calendar's event colors, in its order.
-const COLORS: [&str; 11] = [
+pub(super) const COLORS: [&str; 11] = [
     "#d50000", "#e67c73", "#f4511e", "#f6bf26", "#33b679", "#0b8043", "#039be5", "#3f51b5",
     "#7986cb", "#8e24aa", "#616161",
 ];
 
 /// The name of color `ix` of [`COLORS`], as Google Calendar calls it.
-fn color_name(ix: usize) -> String {
+pub(super) fn color_name(ix: usize) -> String {
     match ix {
         0 => tr!("calendar-color-tomato"),
         1 => tr!("calendar-color-flamingo"),
@@ -78,7 +85,7 @@ fn color_name(ix: usize) -> String {
 }
 
 /// A dot of `color` in place of an icon.
-fn dot(color: u32) -> AnyElement {
+pub(super) fn dot(color: u32) -> AnyElement {
     div()
         .size(px(14.0))
         .rounded_full()
@@ -87,7 +94,7 @@ fn dot(color: u32) -> AnyElement {
 }
 
 /// A tick for the choice in force, else room for one.
-fn tick(on: bool, th: &Theme) -> AnyElement {
+pub(super) fn tick(on: bool, th: &Theme) -> AnyElement {
     if on {
         icon("check", th.accent, 20.0)
     } else {
@@ -136,6 +143,9 @@ impl MailWindow {
             self.context_item(id, name, label, rh, th, cx)
         };
         match target {
+            CalTarget::Calendar(_) | CalTarget::Account(_) => {
+                return self.side_menu_rows(target, rh, th, cx);
+            }
             CalTarget::Slot { day, time } => {
                 let (day, time) = (*day, *time);
                 let new = |kind: Option<EventKind>| {
@@ -353,6 +363,7 @@ impl MailWindow {
     ) -> Rows {
         let mut rows = Rows::new(rh);
         match (target, sub) {
+            (CalTarget::Calendar(id), Sub::Color) => return self.side_color_rows(*id, rh, th, cx),
             (CalTarget::Event(occurrence), Sub::Answer) => {
                 let data = &occurrence.event.data;
                 let me = data.attendees.iter().find(|a| a.is_self);

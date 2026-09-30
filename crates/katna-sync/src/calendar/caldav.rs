@@ -771,6 +771,7 @@ impl CalDav {
     }
 }
 
+mod calendars;
 mod write;
 
 #[cfg(test)]

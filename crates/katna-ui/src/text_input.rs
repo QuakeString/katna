@@ -357,6 +357,15 @@ impl TextInput {
         }
     }
 
+    /// Puts the cursor at the start, showing the text from its beginning:
+    /// a long title opened to read, not to type at its end.
+    pub fn caret_to_start(&mut self, cx: &mut Context<Self>) {
+        self.selected_range = 0..0;
+        self.selection_reversed = false;
+        self.scroll_x = px(0.0);
+        cx.notify();
+    }
+
     /// Shows a dot for each character instead of the text, and keeps the
     /// text off the clipboard: for passwords.
     pub fn set_masked(&mut self, masked: bool, cx: &mut Context<Self>) {
