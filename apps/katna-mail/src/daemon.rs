@@ -735,6 +735,19 @@ pub async fn signed_out(
         .collect())
 }
 
+/// Where account `id`'s mail sync stands, or `None` if there is no such
+/// account.
+pub async fn account_status(
+    connection: &Connection,
+    id: katna_core::AccountId,
+) -> Result<Option<katna_dbus::AccountStatus>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    Ok(accounts.into_iter().find(|a| a.id == id.0))
+}
+
 /// Where each account's calendar sync stands, by account.
 pub async fn calendar_status(
     connection: &Connection,
