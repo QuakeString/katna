@@ -634,6 +634,9 @@ pub struct MailWindow {
     pane_hover: Option<ReadingPane>,
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
+    /// How far the inbox tabs have folded to fit their room (see
+    /// `tabs_fold_target`), gliding between steps.
+    tab_fold: Spring,
     /// The tab the indicator last left and the one it goes to, so only
     /// those two change their label and count as it slides past others.
     tab_slide: (usize, usize),
@@ -935,6 +938,7 @@ impl MailWindow {
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
+            tab_fold: Spring::new(motion::SMOOTH, 0.0),
             tab_slide: (0, 0),
             tab_sizes: Vec::new(),
             snackbar: None,
@@ -3360,6 +3364,9 @@ impl Render for MailWindow {
         let (agenda_room, agenda_target) = self.tick_agenda(available, window, reduce);
         let available = (available - contact_room - agenda_room).max(200.0);
         self.cards_width = available;
+        // The inbox tabs fold to fit the list's new width.
+        self.tab_fold.set(self.tabs_fold_target());
+        self.tab_fold.tick(window, reduce);
         let reader_width = if self.split() {
             ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
         } else {
