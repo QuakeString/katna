@@ -204,13 +204,31 @@ pub struct AccountState {
 
 impl AccountState {
     /// The provider to sign in with to fix it: the account's own, or the
-    /// one a password account has to switch to (`USE_SIGN_IN`).
+    /// one a password account has to sign in with (`USE_SIGN_IN`, whose
+    /// detail is `provider` or `provider: why the other way failed`).
     pub fn provider(&self) -> Option<OAuthProvider> {
         self.sign_in.or_else(|| {
             (self.state == katna_dbus::calendar_state::USE_SIGN_IN)
-                .then(|| self.detail.parse().ok())
+                .then(|| self.use_sign_in().0.parse().ok())
                 .flatten()
         })
+    }
+
+    /// Why the other way failed, when `USE_SIGN_IN` says (in English).
+    pub fn use_sign_in_why(&self) -> &str {
+        if self.state == katna_dbus::calendar_state::USE_SIGN_IN {
+            self.use_sign_in().1
+        } else {
+            ""
+        }
+    }
+
+    fn use_sign_in(&self) -> (&str, &str) {
+        self.detail
+            .split_once(':')
+            .map_or((self.detail.as_str(), ""), |(provider, why)| {
+                (provider.trim(), why.trim())
+            })
     }
 }
 

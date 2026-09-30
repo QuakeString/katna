@@ -318,6 +318,27 @@ impl GoogleTasks {
         Ok(Some(item.into()))
     }
 
+    /// Moves task `id` (a task, not a subtask) right after task `after`
+    /// of `list`, or first (`tasks.move` with `previous`); `None` when
+    /// Google no longer has it.
+    pub async fn place(
+        &self,
+        list: &str,
+        id: &str,
+        after: Option<&str>,
+    ) -> Result<Option<RemoteTask>> {
+        let mut path = format!("lists/{}/tasks/{}/move", segment(list), segment(id));
+        if let Some(after) = after {
+            path.push_str(&format!("?{}", form_encode(&[("previous", after)])));
+        }
+        let reply = self.call("POST", &path, None).await?;
+        if gone(&reply) {
+            return Ok(None);
+        }
+        let item: Item = parse(&reply, "moving a task")?;
+        Ok(Some(item.into()))
+    }
+
     pub async fn delete(&self, list: &str, id: &str) -> Result<()> {
         let path = format!("lists/{}/tasks/{}", segment(list), segment(id));
         let reply = self.call("DELETE", &path, None).await?;
@@ -342,8 +363,6 @@ struct FailureError {
     status: String,
     #[serde(default)]
     errors: Vec<Reason>,
-    #[serde(default)]
-    details: Vec<Reason>,
 }
 
 #[derive(Deserialize)]
@@ -357,23 +376,10 @@ struct Reason {
 /// asks to sign in again ([`Error::Auth`]); anything else is Google's own
 /// message.
 fn failure(reply: &Reply, doing: &str) -> Error {
-    let failure: Failure = serde_json::from_slice(&reply.body).unwrap_or_default();
-    let disabled = failure
-        .error
-        .errors
-        .iter()
-        .chain(&failure.error.details)
-        .any(|r| {
-            matches!(
-                r.reason.as_str(),
-                "accessNotConfigured" | "SERVICE_DISABLED"
-            )
-        });
-    if reply.status == 403 && disabled {
-        return Error::NotEnabled(
-            "the Google Tasks API is not enabled for Katna's Google Cloud project".into(),
-        );
+    if let Some(off) = crate::google_api::switched_off(reply.status, &reply.body) {
+        return off;
     }
+    let failure: Failure = serde_json::from_slice(&reply.body).unwrap_or_default();
     let scope = failure.error.status == "PERMISSION_DENIED"
         || failure.error.errors.iter().any(|r| {
             matches!(

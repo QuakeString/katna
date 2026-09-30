@@ -119,10 +119,37 @@ calendar-discard = 捨棄變更
 calendar-edit = 編輯活動
 calendar-delete = 刪除活動
 calendar-event-details = 活動詳細資料
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = 新增活動
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = 開啟這一天
+calendar-menu-duplicate = 複製
+calendar-menu-color = 顏色
+# The event takes its calendar's color.
+calendar-menu-color-calendar = 日曆顏色
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = 一週後
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = 番茄紅
+calendar-color-flamingo = 火鶴粉
+calendar-color-tangerine = 橘黃
+calendar-color-banana = 香蕉黃
+calendar-color-sage = 鼠尾草綠
+calendar-color-basil = 羅勒綠
+calendar-color-peacock = 孔雀藍
+calendar-color-blueberry = 藍莓藍
+calendar-color-lavender = 薰衣草紫
+calendar-color-grape = 葡萄紫
+calendar-color-graphite = 石墨灰
 calendar-kind-event = 活動
+calendar-kind-task = 工作
 calendar-kind-focus = 專注時間
 calendar-kind-out-of-office = 不在辦公室
 calendar-kind-working-location = 工作地點
+calendar-task-added = 已新增工作
+calendar-task-added-to = 已將工作新增至 { $list }
+calendar-task-list-local = 這部電腦
 calendar-working-home = 家
 calendar-busy = 忙碌
 calendar-free = 有空

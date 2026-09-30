@@ -122,4 +122,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = لم تعد هذه الرسالة موجودة هنا.
 tasks-toast-list-deleted = تم حذف القائمة
 tasks-toast-moved = تم النقل إلى { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = تم نقل المهمة
 tasks-toast-rescheduled = أُعيدت جدولة المهمة

@@ -26,6 +26,8 @@ viewer-tool-underline = 下划线
 viewer-tool-squiggly = 波浪线
 viewer-tool-strike = 删除线
 viewer-tool-pen = 画笔
+viewer-tool-note = 便笺
+viewer-tool-text = 文本框
 viewer-tool-eraser = 橡皮擦
 viewer-color-yellow = 黄色
 viewer-color-green = 绿色
@@ -38,6 +40,12 @@ viewer-color-purple = 紫色
 viewer-marks-undo-tip = 撤消（Ctrl+Z）
 viewer-marks-redo-tip = 重做（Ctrl+Shift+Z）
 viewer-save-marked-tip = 保存带标注的副本（Ctrl+S）
+viewer-reply-marked-tip = 回复并附上带标注的副本
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = 写一条便笺
+viewer-text-placeholder = 在此输入
+viewer-note-done = 完成
+viewer-note-delete = 删除
 viewer-markup-protected = 此 PDF 受保护，不允许更改，因此无法标注。
 viewer-marks-save-failed = 无法保存带标注的副本。
 # Asked when closing a PDF, or moving to another attachment, with marks

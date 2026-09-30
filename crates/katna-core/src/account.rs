@@ -115,6 +115,25 @@ pub struct AccountSettings {
     /// the Secret Service then keeps the refresh token.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub oauth: Option<OAuthProvider>,
+    /// A sign-in beside the account's own, for services its mail login
+    /// does not reach (Zoho's tasks and calendars for a Zoho Mail account
+    /// that logs in with a password). The Secret Service keeps its refresh
+    /// token apart from the password.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub linked: Option<LinkedSignIn>,
+}
+
+/// A sign-in linked to an account ([`AccountSettings::linked`]).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LinkedSignIn {
+    pub provider: OAuthProvider,
+    /// The provider's sign-in server of the user's data centre, which
+    /// refreshes the tokens (Zoho: `https://accounts.zoho.in`).
+    pub accounts_server: String,
+    /// Where the provider's APIs answer for this user (Zoho:
+    /// `https://www.zohoapis.in`); empty when it did not say.
+    #[serde(default)]
+    pub api_domain: String,
 }
 
 /// A provider Katna signs in to with OAuth2 (`docs/ARCHITECTURE.md` §6.4).
@@ -125,16 +144,24 @@ pub enum OAuthProvider {
     Google,
     /// Outlook.com, Hotmail and Microsoft 365.
     Microsoft,
+    /// Zoho's tasks and calendars. Only a linked sign-in
+    /// ([`AccountSettings::linked`]): Zoho lets only its "self client" apps
+    /// log in to IMAP with OAuth2, so Zoho Mail keeps its password.
+    Zoho,
 }
 
 impl OAuthProvider {
-    pub const ALL: [Self; 2] = [Self::Google, Self::Microsoft];
+    pub const ALL: [Self; 3] = [Self::Google, Self::Microsoft, Self::Zoho];
+
+    /// The providers an account can log in to mail with.
+    pub const MAIL: [Self; 2] = [Self::Google, Self::Microsoft];
 
     /// Stable name used in settings and on D-Bus.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Google => "google",
             Self::Microsoft => "microsoft",
+            Self::Zoho => "zoho",
         }
     }
 
@@ -143,6 +170,7 @@ impl OAuthProvider {
         match self {
             Self::Google => "Google",
             Self::Microsoft => "Microsoft",
+            Self::Zoho => "Zoho",
         }
     }
 
@@ -152,6 +180,7 @@ impl OAuthProvider {
         match self {
             Self::Google => crate::ids::GOOGLE_OAUTH_CLIENT_ID,
             Self::Microsoft => crate::ids::MICROSOFT_OAUTH_CLIENT_ID,
+            Self::Zoho => crate::ids::ZOHO_OAUTH_CLIENT_ID,
         }
     }
 
@@ -174,7 +203,7 @@ impl FromStr for OAuthProvider {
         Self::ALL
             .into_iter()
             .find(|provider| provider.as_str() == s)
-            .ok_or_else(|| format!("unknown sign-in provider {s:?} (google or microsoft)"))
+            .ok_or_else(|| format!("unknown sign-in provider {s:?} (google, microsoft or zoho)"))
     }
 }
 

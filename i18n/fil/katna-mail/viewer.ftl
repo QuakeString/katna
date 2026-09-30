@@ -26,6 +26,8 @@ viewer-tool-underline = Salungguhitan
 viewer-tool-squiggly = Kulot na guhit
 viewer-tool-strike = Ekisan
 viewer-tool-pen = Pen
+viewer-tool-note = Sticky note
+viewer-tool-text = Text box
 viewer-tool-eraser = Pambura
 viewer-color-yellow = Dilaw
 viewer-color-green = Berde
@@ -38,6 +40,12 @@ viewer-color-purple = Lila
 viewer-marks-undo-tip = I-undo (Ctrl+Z)
 viewer-marks-redo-tip = I-redo (Ctrl+Shift+Z)
 viewer-save-marked-tip = I-save ang kopya na may mga marka mo (Ctrl+S)
+viewer-reply-marked-tip = Sumagot gamit ang kopyang may marka
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Sumulat ng note
+viewer-text-placeholder = Mag-type dito
+viewer-note-done = Tapos na
+viewer-note-delete = I-delete
 viewer-markup-protected = Protektado ang PDF na ito laban sa mga pagbabago, kaya hindi ito mamarkahan.
 viewer-marks-save-failed = Hindi ma-save ang kopyang may marka.
 # Asked when closing a PDF, or moving to another attachment, with marks

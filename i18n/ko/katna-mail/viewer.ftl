@@ -26,6 +26,8 @@ viewer-tool-underline = 밑줄
 viewer-tool-squiggly = 물결 밑줄
 viewer-tool-strike = 취소선
 viewer-tool-pen = 펜
+viewer-tool-note = 스티커 메모
+viewer-tool-text = 텍스트 상자
 viewer-tool-eraser = 지우개
 viewer-color-yellow = 노란색
 viewer-color-green = 초록색
@@ -38,6 +40,12 @@ viewer-color-purple = 보라색
 viewer-marks-undo-tip = 실행취소(Ctrl+Z)
 viewer-marks-redo-tip = 다시 실행(Ctrl+Shift+Z)
 viewer-save-marked-tip = 표시한 사본 저장(Ctrl+S)
+viewer-reply-marked-tip = 표시한 사본으로 답장
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = 메모 작성
+viewer-text-placeholder = 여기에 입력
+viewer-note-done = 완료
+viewer-note-delete = 삭제
 viewer-markup-protected = 이 PDF는 변경이 금지되어 있어 표시할 수 없습니다.
 viewer-marks-save-failed = 표시한 사본을 저장할 수 없습니다.
 # Asked when closing a PDF, or moving to another attachment, with marks

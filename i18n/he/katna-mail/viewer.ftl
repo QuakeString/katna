@@ -26,6 +26,8 @@ viewer-tool-underline = קו תחתון
 viewer-tool-squiggly = קו גלי
 viewer-tool-strike = קו חוצה
 viewer-tool-pen = עט
+viewer-tool-note = פתק דביק
+viewer-tool-text = תיבת טקסט
 viewer-tool-eraser = מחק
 viewer-color-yellow = צהוב
 viewer-color-green = ירוק
@@ -38,6 +40,12 @@ viewer-color-purple = סגול
 viewer-marks-undo-tip = ביטול (Ctrl+Z)
 viewer-marks-redo-tip = ביצוע מחדש (Ctrl+Shift+Z)
 viewer-save-marked-tip = שמירת עותק עם הסימונים שלך (Ctrl+S)
+viewer-reply-marked-tip = תשובה עם העותק המסומן
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = כתיבת פתק
+viewer-text-placeholder = הקלדה כאן
+viewer-note-done = סיום
+viewer-note-delete = מחיקה
 viewer-markup-protected = קובץ ה־PDF הזה מוגן מפני שינויים, ולכן אי אפשר לסמן עליו.
 viewer-marks-save-failed = לא ניתן היה לשמור את העותק המסומן.
 # Asked when closing a PDF, or moving to another attachment, with marks

@@ -1663,3 +1663,106 @@ Madokezo mengine huteleza kando kutoa nafasi, nalo hubaki pale
 unapoliachilia. Ctrl+Z hulirudisha. Kadi sasa hukaa vizuri kwenye safu
 zake, bila mapengo chini ya madokezo mafupi.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Bofya kulia kwenye Kalenda"
+text = """
+Bofya kulia muda au siku iliyo wazi ili kuongeza tukio, muda wa
+kuzingatia au muda wa kuwa nje ya ofisi hapo. Bofya kulia tukio ili
+kulihariri, kulinakili, kulifuta, kujibu, kujiunga, kutuma barua pepe
+kwa wageni, kulipa rangi au kulihamishia kalenda nyingine, na kazi ili
+kuiwekea alama ya kukamilika, kuiwekea nyota, kuipa siku nyingine au
+kuifuta. Tendua hurudisha badiliko.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Madokezo na maandishi kwenye PDF"
+text = """
+Kuweka alama kwenye PDF sasa kuna vidokezo vya kubandika na visanduku
+vya maandishi: bofya ukurasa, andika, kisha bonyeza Ctrl+Enter. Weka
+kiashiria juu ya dokezo ili kulisoma, au libofye ili kulibadilisha.
+Jibu hutuma nakala yako yenye alama moja kwa moja katika jibu la ujumbe.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Buruta majukumu unapoyataka"
+text = """
+Buruta jukumu juu au chini kwenye orodha yake, au hadi orodha nyingine,
+na majukumu yaliyopo huteleza kando kuonyesha litakapotua. Google Tasks
+huhifadhi mpangilio mpya kwenye simu yako pia, na Tendua hulirudisha
+jukumu.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Ongeza jukumu kutoka Kalenda"
+text = """
+Kadi ya tukio jipya ina kichupo cha Jukumu, kama katika Google Calendar.
+Bofya muda, chagua Jukumu, na kichwa, siku na muda vinakuwa jukumu
+kwenye orodha unayochagua, pamoja na maelezo ukipenda.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Ongeza jukumu kutoka Kalenda"
+text = """
+Bofya kulia muda au siku iliyo wazi kwenye Kalenda na uchague Jukumu
+ili kuongeza jukumu hapo. Kadi ya tukio jipya inafunguka kwenye
+kichupo cha Jukumu ikiwa na siku na muda huo vimeshajazwa.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalenda hutafuta tena baada ya seva ya polepole"
+text = """
+Seva ya kalenda ya akaunti isipojibu kwa wakati, Kalenda sasa inasema
+hivyo, na kama muunganisho au kupeana mkono kwa usalama ndiko
+kulikokwama, badala ya "Hakuna kalenda zilizopatikana". Inajaribu tena
+ndani ya dakika chache badala ya saa.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Faili za mwasiliani zinaonyesha upakuaji wake"
+text = """
+Faili katika kidirisha cha mwasiliani ambayo barua yake bado haiko kwenye kompyuta hii sasa hujaa inapopakuliwa, kama viambatisho kwenye orodha vinavyofanya, kisha hufunguka.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Barua za akaunti mpya zinaonekana zinapowasili"
+text = """
+Baada ya kuongeza akaunti, kikasha chake hupakuliwa kwanza na hujaa
+ukiwa unatazama, badala ya kubaki kwenye “Inaleta barua zako…” hadi kila
+folda ikamilike. Folda nyingine hujaa kwa njia hiyo hiyo.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Visanduku vya kuteua vinalingana na aikoni"
+text = """
+Visanduku vya kuteua sasa ni vidogo kidogo, vya ukubwa sawa na aikoni za
+nyota na lebo zilizo kando yake katika orodha ya barua. Bado ni rahisi
+kuvibofya kama awali, na tiki bado hujichora.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalenda za Zoho kupitia muunganisho wa Zoho wenyewe"
+text = """
+Zoho hutoa kalenda kwa programu nyingine kupitia mlango ambao mitandao
+mingi huuzuia, kwa hivyo baada ya Ingia kwa Zoho, Kalenda huzisoma
+kupitia API ya Zoho yenyewe badala yake. Matukio yako ya Zoho
+yanaonekana kando ya kalenda zako nyingine; kuyabadilisha kutoka Katna
+kutakuja baadaye.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Majukumu ya Zoho"
+text = """
+Ingia kwa Zoho kwenye akaunti ya Zoho na majukumu yake ya Zoho ToDo
+yanaonekana kwenye Majukumu, pande zote mbili: ongeza, hariri, weka
+alama au futa jukumu kwenye Katna nalo hubadilika kwenye Zoho pia.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Tiki hukaa katikati kwa ukubwa wowote"
+text = """
+Kiwango cha ukubwa katika Mipangilio > Mwonekano kikiwa juu ya 100%,
+tiki ya kisanduku cha kuteua ilikaa juu kidogo na kushoto. Kingo za
+visanduku vya kuteua na vitufe vya mviringo sasa hukua pamoja na kiwango,
+hivyo tiki hukaa katikati kwa kila ukubwa.
+"""

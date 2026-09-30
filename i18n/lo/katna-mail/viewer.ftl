@@ -26,6 +26,8 @@ viewer-tool-underline = ຂີດກ້ອງ
 viewer-tool-squiggly = ຂີດກ້ອງແບບຄື້ນ
 viewer-tool-strike = ຂີດຂ້າ
 viewer-tool-pen = ປາກກາ
+viewer-tool-note = ບັນທຶກຕິດ
+viewer-tool-text = ກ່ອງຂໍ້ຄວາມ
 viewer-tool-eraser = ຢາງລຶບ
 viewer-color-yellow = ເຫຼືອງ
 viewer-color-green = ຂຽວ
@@ -38,6 +40,12 @@ viewer-color-purple = ມ່ວງ
 viewer-marks-undo-tip = ຍ້ອນກັບ (Ctrl+Z)
 viewer-marks-redo-tip = ເຮັດຊ້ຳ (Ctrl+Shift+Z)
 viewer-save-marked-tip = ບັນທຶກສຳເນົາພ້ອມເຄື່ອງໝາຍຂອງທ່ານ (Ctrl+S)
+viewer-reply-marked-tip = ຕອບກັບດ້ວຍສຳເນົາທີ່ໝາຍໄວ້
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ຂຽນບັນທຶກ
+viewer-text-placeholder = ພິມບ່ອນນີ້
+viewer-note-done = ສຳເລັດ
+viewer-note-delete = ລຶບ
 viewer-markup-protected = PDF ນີ້ຖືກປ້ອງກັນການປ່ຽນແປງ ຈຶ່ງບໍ່ສາມາດໝາຍໄດ້.
 viewer-marks-save-failed = ບໍ່ສາມາດບັນທຶກສຳເນົາທີ່ໝາຍໄວ້ໄດ້.
 # Asked when closing a PDF, or moving to another attachment, with marks

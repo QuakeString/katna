@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Contact files show their download"
+text = """
+A file in the contact panel whose mail isn't on this computer yet now
+fills while it downloads, as attachment chips in the list do, then opens.
+"""

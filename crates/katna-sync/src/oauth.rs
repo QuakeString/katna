@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! OAuth2 sign-in for Google and Microsoft accounts
+//! OAuth2 sign-in for Google, Microsoft and Zoho accounts
 //! (`docs/ARCHITECTURE.md` §6.4): the installed-app flow with PKCE
 //! (RFC 7636) and a loopback redirect (RFC 8252). The browser shows the
 //! provider's own sign-in page; its answer comes back to a one-shot HTTP
@@ -18,7 +18,7 @@ use std::{
 use async_net::{TcpListener, TcpStream};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use futures_lite::{AsyncReadExt, AsyncWriteExt, FutureExt};
-use katna_core::{OAuthProvider, Security, Server};
+use katna_core::{LinkedSignIn, OAuthProvider, Security, Server};
 use serde::Deserialize;
 
 use crate::{
@@ -32,6 +32,9 @@ const TOKEN_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// An access token is renewed this long before it runs out.
 const EXPIRY_MARGIN: Duration = Duration::from_secs(120);
+
+/// Gmail over IMAP and SMTP. Google's consent page lets people untick it.
+pub const GOOGLE_MAIL: &str = "https://mail.google.com/";
 
 /// Google Drive, limited to the files Katna itself put there: for
 /// attachments too large to send by mail.
@@ -76,6 +79,126 @@ pub const GOOGLE_MEET: &str = "https://www.googleapis.com/auth/meetings.space.cr
 /// Like [`MICROSOFT_FILES`], its tokens come separately.
 pub const MICROSOFT_TASKS: &str = "https://graph.microsoft.com/Tasks.ReadWrite";
 
+/// Zoho Mail's tasks (Zoho ToDo's), through the Zoho Mail API.
+pub const ZOHO_TASKS: &str = "ZohoMail.tasks.ALL";
+
+/// The Zoho Mail accounts of who signed in: the `accountId` and `zuid`
+/// some Zoho Mail task calls take.
+pub const ZOHO_MAIL_ACCOUNTS: &str = "ZohoMail.accounts.READ";
+
+/// Zoho Calendar: the calendars and their events.
+pub const ZOHO_CALENDAR: &str = "ZohoCalendar.calendar.ALL,ZohoCalendar.event.ALL";
+
+/// Who signed in to Zoho: its address and name, from
+/// `/oauth/user/info` (Zoho gives no ID token).
+pub const ZOHO_PROFILE: &str = "AaaServer.profile.READ";
+
+/// The loopback port Zoho sends the browser back to. Zoho takes only the
+/// redirect URIs registered in its API Console, port and all, so it
+/// cannot be any free port as with Google and Microsoft.
+pub const ZOHO_REDIRECT_PORT: u16 = 53710;
+
+/// Zoho's data centres: where `location` (as Zoho's sign-in answer names
+/// it) keeps its accounts, and the mail domains that live there. An
+/// account's tokens come only from its own data centre.
+pub const ZOHO_DATA_CENTRES: [(&str, &str, &[&str]); 8] = [
+    (
+        "us",
+        "https://accounts.zoho.com",
+        &["zoho.com", "zohomail.com"],
+    ),
+    (
+        "eu",
+        "https://accounts.zoho.eu",
+        &["zoho.eu", "zohomail.eu"],
+    ),
+    (
+        "in",
+        "https://accounts.zoho.in",
+        &["zoho.in", "zohomail.in"],
+    ),
+    (
+        "au",
+        "https://accounts.zoho.com.au",
+        &["zoho.com.au", "zohomail.com.au"],
+    ),
+    (
+        "jp",
+        "https://accounts.zoho.jp",
+        &["zoho.jp", "zohomail.jp"],
+    ),
+    (
+        "ca",
+        "https://accounts.zohocloud.ca",
+        &["zohocloud.ca", "zohomail.ca"],
+    ),
+    (
+        "sa",
+        "https://accounts.zoho.sa",
+        &["zoho.sa", "zohomail.sa"],
+    ),
+    (
+        "uk",
+        "https://accounts.zoho.uk",
+        &["zoho.uk", "zohomail.uk"],
+    ),
+];
+
+/// The Zoho data centre of a mail domain or server host
+/// (`imap.zoho.in`, `ada@zohomail.eu`), if it is one of Zoho's.
+pub fn zoho_accounts_server(host_or_address: &str) -> Option<&'static str> {
+    let host = host_or_address
+        .rsplit('@')
+        .next()
+        .unwrap_or_default()
+        .trim_end_matches('.')
+        .to_ascii_lowercase();
+    // Longest domain first, so `zoho.com.au` is not taken for `zoho.com`.
+    let mut best: Option<(&str, usize)> = None;
+    for (_, server, domains) in ZOHO_DATA_CENTRES {
+        for domain in domains {
+            let under = host == *domain
+                || host
+                    .strip_suffix(domain)
+                    .is_some_and(|rest| rest.ends_with('.'));
+            if under && best.is_none_or(|(_, len)| domain.len() > len) {
+                best = Some((server, domain.len()));
+            }
+        }
+    }
+    best.map(|(server, _)| server)
+}
+
+/// Whether a mail server host (`imappro.zoho.in`) or address is Zoho's.
+pub fn is_zoho_host(host_or_address: &str) -> bool {
+    zoho_accounts_server(host_or_address).is_some()
+}
+
+/// The Zoho Mail API of a linked Zoho sign-in's data centre:
+/// `https://mail.zoho.in/api` for `https://accounts.zoho.in`.
+/// `KATNA_ZOHO_API_URL` stands in for it under test.
+pub fn zoho_mail_api(linked: &LinkedSignIn) -> String {
+    if let Some(url) = http::test_url("KATNA_ZOHO_API_URL") {
+        return url;
+    }
+    let server = linked.accounts_server.trim_end_matches('/');
+    let server = if is_zoho_accounts_server(server) {
+        server
+    } else {
+        "https://accounts.zoho.com"
+    };
+    format!("{}/api", server.replacen("://accounts.", "://mail.", 1))
+}
+
+/// Whether `server` is one of Zoho's sign-in servers: the code and the
+/// client secret go only there, whatever the browser was sent back with.
+fn is_zoho_accounts_server(server: &str) -> bool {
+    let server = server.trim_end_matches('/');
+    ZOHO_DATA_CENTRES
+        .iter()
+        .any(|(_, known, _)| *known == server)
+}
+
 /// Largest request the loopback listener reads.
 const MAX_REQUEST: usize = 16 * 1024;
 
@@ -94,7 +217,7 @@ pub struct Provider {
     /// tokens come separately (Microsoft Graph); empty for Google.
     pub consent: String,
     /// Host name of the loopback redirect, as registered with the
-    /// provider.
+    /// provider; `host:port` when the provider takes only one port.
     pub redirect_host: &'static str,
     pub tls: Tls,
 }
@@ -117,6 +240,7 @@ impl Provider {
         let test_tokens = match kind {
             OAuthProvider::Google => http::test_url("KATNA_GOOGLE_TOKEN_URL"),
             OAuthProvider::Microsoft => http::test_url("KATNA_MICROSOFT_TOKEN_URL"),
+            OAuthProvider::Zoho => http::test_url("KATNA_ZOHO_TOKEN_URL"),
         };
         if !kind.available() && test_tokens.is_none() {
             return None;
@@ -139,7 +263,7 @@ impl Provider {
                 // meetings Katna makes, and who signed in (address, name,
                 // picture) in the ID token.
                 scope: format!(
-                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
+                    "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
                      {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} \
                      {GOOGLE_TASKS} {GOOGLE_MEET} openid email profile"
                 ),
@@ -171,7 +295,47 @@ impl Provider {
                 redirect_host: "localhost",
                 tls,
             },
+            OAuthProvider::Zoho => Self {
+                kind,
+                // Zoho sends the user on to their own data centre and
+                // names it in its answer ([`SignIn::finish`]).
+                auth_url: "https://accounts.zoho.com/oauth/v2/auth".into(),
+                token_url: test_tokens
+                    .unwrap_or_else(|| "https://accounts.zoho.com/oauth/v2/token".into()),
+                client_id: if kind.available() {
+                    kind.client_id().into()
+                } else {
+                    "katna-test".into()
+                },
+                client_secret: katna_core::ids::ZOHO_OAUTH_CLIENT_SECRET.into(),
+                // Zoho's scopes are separated by commas. Calendar comes at
+                // the same sign-in as the tasks, so it needs no second one.
+                scope: format!("{ZOHO_TASKS},{ZOHO_MAIL_ACCOUNTS},{ZOHO_CALENDAR},{ZOHO_PROFILE}"),
+                consent: String::new(),
+                // The one port registered with Zoho: [`ZOHO_REDIRECT_PORT`].
+                redirect_host: "localhost:53710",
+                tls,
+            },
         })
+    }
+
+    /// The same provider at the sign-in server of another of its data
+    /// centres (Zoho). A token server under test stays.
+    pub fn at_accounts_server(mut self, server: &str) -> Self {
+        let server = server.trim_end_matches('/');
+        self.auth_url = format!("{server}/oauth/v2/auth");
+        if !self.token_url.starts_with("http://") {
+            self.token_url = format!("{server}/oauth/v2/token");
+        }
+        self
+    }
+
+    /// The sign-in server the tokens come from: the token URL without its
+    /// path.
+    pub fn accounts_server(&self) -> &str {
+        self.token_url
+            .strip_suffix("/oauth/v2/token")
+            .unwrap_or(&self.token_url)
     }
 
     /// The IMAP and SMTP servers of the provider's accounts.
@@ -191,6 +355,12 @@ impl Provider {
             OAuthProvider::Microsoft => (
                 server("outlook.office365.com", 993, Security::Tls),
                 server("smtp.office365.com", 587, Security::StartTls),
+            ),
+            // Only a linked sign-in: Zoho Mail keeps its own servers and
+            // password. These are its US data centre's.
+            OAuthProvider::Zoho => (
+                server("imap.zoho.com", 993, Security::Tls),
+                server("smtp.zoho.com", 465, Security::Tls),
             ),
         }
     }
@@ -231,6 +401,11 @@ pub struct Grant {
     pub identity: Option<Identity>,
     /// The scopes granted, when the provider says (Google does).
     pub scope: Option<String>,
+    /// The sign-in server of the user's data centre, which refreshes the
+    /// tokens (Zoho; `None` for the others).
+    pub accounts_server: Option<String>,
+    /// Where the provider's APIs answer for this user (Zoho).
+    pub api_domain: Option<String>,
 }
 
 impl fmt::Debug for Grant {
@@ -253,6 +428,8 @@ struct TokenAnswer {
     id_token: Option<String>,
     #[serde(default)]
     scope: Option<String>,
+    #[serde(default)]
+    api_domain: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -312,16 +489,21 @@ async fn token_request<'a>(
     }
     let (status, body) =
         http::post_form(&provider.token_url, form, &provider.tls, TOKEN_TIMEOUT).await?;
-    if status == 200 {
-        let answer: TokenAnswer = serde_json::from_slice(&body)
-            .map_err(|err| Error::Protocol(format!("token answer: {err}")))?;
+    // Zoho answers a refusal with 200 and an error, so only an answer
+    // with a token is one.
+    let answer = (status == 200)
+        .then(|| serde_json::from_slice::<TokenAnswer>(&body).ok())
+        .flatten();
+    if let Some(answer) = answer {
         return Ok(Grant {
             access_token: answer.access_token,
             refresh_token: answer.refresh_token.filter(|t| !t.is_empty()),
-            // Both providers give an hour; assume less if they say nothing.
+            // The providers give an hour; assume less if they say nothing.
             expires_in: Duration::from_secs(answer.expires_in.unwrap_or(600)),
             identity: answer.id_token.as_deref().and_then(identity),
             scope: answer.scope,
+            accounts_server: None,
+            api_domain: answer.api_domain.filter(|d| d.starts_with("https://")),
         });
     }
     let name = provider.kind.name();
@@ -331,7 +513,12 @@ async fn token_request<'a>(
         Ok(answer)
             if matches!(
                 answer.error.as_str(),
-                "invalid_grant" | "invalid_client" | "unauthorized_client" | "invalid_scope"
+                "invalid_grant"
+                    | "invalid_client"
+                    | "unauthorized_client"
+                    | "invalid_scope"
+                    // Zoho's word for a revoked or unknown refresh token.
+                    | "invalid_code"
             ) =>
         {
             Err(Error::Auth(format!(
@@ -349,6 +536,9 @@ async fn token_request<'a>(
             "{name} token endpoint: {status} {}",
             answer.error
         ))),
+        Err(_) if status == 200 => Err(Error::Protocol(format!(
+            "{name} token endpoint: no token in its answer"
+        ))),
         Err(_) => Err(Error::Protocol(format!(
             "{name} token endpoint answered {status}"
         ))),
@@ -363,7 +553,8 @@ pub async fn refresh(provider: &Provider, refresh_token: &str) -> Result<Grant> 
     ];
     // Google refuses scopes the grant lacks, as accounts signed in before
     // Drive was asked for do; without any it grants what the sign-in did.
-    if provider.kind != OAuthProvider::Google {
+    // Zoho takes none.
+    if provider.kind == OAuthProvider::Microsoft {
         form.push(("scope", &provider.scope));
     }
     token_request(provider, &mut form).await
@@ -424,16 +615,32 @@ impl SignIn {
     /// provider's sign-in page. `login_hint` (an address, or empty) fills
     /// in the account there.
     pub async fn start(provider: &Provider, login_hint: &str) -> Result<Self> {
-        let v4 = TcpListener::bind(("127.0.0.1", 0)).await?;
+        // A provider that takes one registered port names it.
+        let (host, fixed) = match provider.redirect_host.rsplit_once(':') {
+            Some((host, port)) => (host, port.parse().unwrap_or(0)),
+            None => (provider.redirect_host, 0),
+        };
+        let v4 = TcpListener::bind(("127.0.0.1", fixed))
+            .await
+            .map_err(|err| {
+                if fixed == 0 {
+                    Error::from(err)
+                } else {
+                    Error::Protocol(format!(
+                        "port {fixed}, where {} sends the browser back, is taken: {err}",
+                        provider.kind.name()
+                    ))
+                }
+            })?;
         let port = v4.local_addr()?.port();
         let mut listeners = vec![v4];
         // Browsers may try `localhost` on IPv6 first.
-        if provider.redirect_host == "localhost"
+        if host == "localhost"
             && let Ok(v6) = TcpListener::bind(("::1", port)).await
         {
             listeners.push(v6);
         }
-        let redirect_uri = format!("http://{}:{port}/", provider.redirect_host);
+        let redirect_uri = format!("http://{host}:{port}/");
         let state = random(16)?;
         let verifier = random(48)?;
         let scope = if provider.consent.is_empty() {
@@ -454,7 +661,7 @@ impl SignIn {
         match provider.kind {
             // A refresh token every time, also when the user signed in
             // before.
-            OAuthProvider::Google => {
+            OAuthProvider::Google | OAuthProvider::Zoho => {
                 query.push(("access_type", "offline"));
                 query.push(("prompt", "consent"));
             }
@@ -482,7 +689,7 @@ impl SignIn {
     /// trades the code for tokens. Waits as long as it takes; drop the
     /// future to give up.
     pub async fn finish(self, provider: &Provider, pages: &Pages) -> Result<Grant> {
-        let code = loop {
+        let (code, server) = loop {
             let mut stream = accept(&self.listeners).await?;
             let Some(query) = read_request(&mut stream).await else {
                 respond(&mut stream, "404 Not Found", "").await;
@@ -502,8 +709,20 @@ impl SignIn {
                 continue;
             }
             if let Some(code) = param("code").filter(|c| !c.is_empty()) {
+                // Zoho names the data centre that keeps the account; the
+                // code is good only there.
+                let server = param("accounts-server");
+                if let Some(server) = &server
+                    && !is_zoho_accounts_server(server)
+                {
+                    respond(&mut stream, "200 OK", &pages.failed).await;
+                    return Err(Error::Protocol(format!(
+                        "{} sent the browser back from an unknown server {server}",
+                        provider.kind.name()
+                    )));
+                }
                 respond(&mut stream, "200 OK", &pages.signed_in).await;
-                break code;
+                break (code, server);
             }
             respond(&mut stream, "200 OK", &pages.failed).await;
             let error = param("error").unwrap_or_else(|| "no code".into());
@@ -531,7 +750,23 @@ impl SignIn {
         if !provider.consent.is_empty() {
             form.push(("scope", provider.scope.as_str()));
         }
-        let grant = token_request(provider, &mut form).await?;
+        let at_server = match (&server, provider.kind) {
+            (Some(server), OAuthProvider::Zoho) => {
+                Some(provider.clone().at_accounts_server(server))
+            }
+            _ => None,
+        };
+        let provider = at_server.as_ref().unwrap_or(provider);
+        let mut grant = token_request(provider, &mut form).await?;
+        if provider.kind == OAuthProvider::Zoho {
+            grant.accounts_server = Some(match &server {
+                Some(server) => server.trim_end_matches('/').to_owned(),
+                None => provider.accounts_server().to_owned(),
+            });
+            if grant.identity.is_none() {
+                grant.identity = zoho_identity(provider, &grant.access_token).await;
+            }
+        }
         if grant.refresh_token.is_none() {
             return Err(Error::Protocol(format!(
                 "{} gave no refresh token",
@@ -546,6 +781,39 @@ impl SignIn {
         }
         Ok(grant)
     }
+}
+
+#[derive(Deserialize)]
+struct ZohoUser {
+    #[serde(default, rename = "Email")]
+    email: String,
+    #[serde(default, rename = "Display_Name")]
+    display_name: String,
+}
+
+/// Who signed in to Zoho, which gives no ID token: its user info.
+async fn zoho_identity(provider: &Provider, access_token: &str) -> Option<Identity> {
+    let url = format!("{}/oauth/user/info", provider.accounts_server());
+    let auth = format!("Zoho-oauthtoken {access_token}");
+    let (status, body) = http::request(
+        "GET",
+        &url,
+        &[("Authorization", &auth)],
+        None,
+        &provider.tls,
+        TOKEN_TIMEOUT,
+    )
+    .await
+    .inspect_err(|err| tracing::info!(%err, "no Zoho user info"))
+    .ok()?;
+    let user: ZohoUser = (status == 200)
+        .then(|| serde_json::from_slice(&body).ok())
+        .flatten()?;
+    user.email.contains('@').then(|| Identity {
+        email: user.email,
+        name: user.display_name,
+        picture: String::new(),
+    })
 }
 
 async fn accept(listeners: &[TcpListener]) -> Result<TcpStream> {

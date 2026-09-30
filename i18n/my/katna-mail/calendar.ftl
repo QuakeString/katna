@@ -119,10 +119,37 @@ calendar-discard = ပြောင်းလဲမှုများ ပယ်ရ
 calendar-edit = ဖြစ်ရပ် တည်းဖြတ်ရန်
 calendar-delete = ဖြစ်ရပ် ဖျက်ရန်
 calendar-event-details = ဖြစ်ရပ် အသေးစိတ်
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = ဖြစ်ရပ်အသစ်
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ရက်ကို ဖွင့်ရန်
+calendar-menu-duplicate = ပွားရန်
+calendar-menu-color = အရောင်
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ပြက္ခဒိန် အရောင်
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = တစ်ပတ်အတွင်း
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ခရမ်းချဉ်သီး
+calendar-color-flamingo = ကြိုးကြာနီ
+calendar-color-tangerine = လိမ္မော်သီး
+calendar-color-banana = ငှက်ပျောသီး
+calendar-color-sage = ဆေ့ချ်
+calendar-color-basil = ပင်စိမ်း
+calendar-color-peacock = ဒေါင်း
+calendar-color-blueberry = ဘလူးဘယ်ရီ
+calendar-color-lavender = လာဗင်ဒါ
+calendar-color-grape = စပျစ်သီး
+calendar-color-graphite = ဂရပ်ဖိုက်
 calendar-kind-event = ဖြစ်ရပ်
+calendar-kind-task = လုပ်ဆောင်စရာ
 calendar-kind-focus = အာရုံစူးစိုက်ချိန်
 calendar-kind-out-of-office = ရုံးပြင်ပ
 calendar-kind-working-location = အလုပ်လုပ်ရာနေရာ
+calendar-task-added = လုပ်ဆောင်စရာ ထည့်ပြီးပါပြီ
+calendar-task-added-to = { $list } သို့ လုပ်ဆောင်စရာ ထည့်ပြီးပါပြီ
+calendar-task-list-local = ဤကွန်ပျူတာပေါ်တွင်
 calendar-working-home = အိမ်
 calendar-busy = အလုပ်များ
 calendar-free = အားလပ်

@@ -1691,3 +1691,106 @@ notas gly opsy om plek te maak, en dit bly waar jy dit los. Ctrl+Z sit
 dit terug. Kaarte sit nou styf in hul kolomme, sonder gapings onder kort
 notas.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Regsklik op die Kalender"
+text = """
+Regsklik op 'n vrye tyd of dag om daar 'n geleentheid, fokustyd of uit
+die kantoor by te voeg. Regsklik op 'n geleentheid om dit te wysig, te
+dupliseer, uit te vee, te beantwoord, aan te sluit, die gaste te e-pos,
+dit 'n kleur te gee of na 'n ander kalender te skuif, en op 'n taak om
+dit af te merk, 'n ster te gee, 'n ander dag te gee of uit te vee.
+Ontdoen neem 'n verandering terug.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notas en teks op PDF's"
+text = """
+Wanneer jy 'n PDF merk, is daar nou plaknotas en teksblokkies: klik op
+die bladsy, tik, en druk Ctrl+Enter. Beweeg oor 'n nota om dit te lees,
+of klik daarop om dit te verander. Antwoord stuur jou gemerkte kopie
+direk terug in 'n antwoord op die boodskap.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Sleep take waar jy hulle wil hê"
+text = """
+Sleep 'n taak op of af in sy lys, of na 'n ander lys, en die take daar
+skuif opsy om te wys waar dit sal land. Google Tasks hou die nuwe
+volgorde ook op jou foon, en Ontdoen sit die taak terug.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Voeg 'n taak uit die Kalender by"
+text = """
+Die kaart vir 'n nuwe geleentheid het 'n Taak-oortjie, soos in Google
+Calendar. Klik op 'n tyd, kies Taak, en die titel, dag en tyd word 'n
+taak in die lys wat jy kies, met 'n beskrywing as jy wil.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Voeg 'n taak uit die Kalender by"
+text = """
+Regsklik op 'n vrye tyd of dag op die Kalender en kies Taak om daar 'n
+taak by te voeg. Die kaart vir 'n nuwe geleentheid gaan oop op sy
+Taak-oortjie met daardie dag en tyd reeds ingevul.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalenders kyk weer ná 'n stadige bediener"
+text = """
+Wanneer 'n rekening se kalenderbediener nie betyds antwoord nie, sê die
+Kalender dit nou, en of die verbinding of die veilige handdruk gehaper
+het, in plaas van “Geen kalenders gevind nie”. Dit probeer binne
+minute weer eerder as ná ure.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kontaklêers wys hul aflaai"
+text = """
+'n Lêer in die kontakpaneel waarvan die e-pos nog nie op hierdie rekenaar
+is nie, vul nou terwyl dit afgelaai word, soos aanhegsels in die lys, en
+maak dan oop.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "'n Nuwe rekening se e-pos wys soos dit aankom"
+text = """
+Nadat jy 'n rekening bygevoeg het, word sy Inkassie eerste afgelaai en
+vul dit terwyl jy kyk, in plaas daarvan om op “Kry tans jou e-pos…” te
+bly totdat elke vouer klaar is. Ander vouers vul op dieselfde manier.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Merkblokkies gelyk met die ikone"
+text = """
+Merkblokkies is 'n bietjie kleiner, so groot soos die ster- en etiketikone
+langsaan in die e-poslys. Hulle is net so maklik om te klik, en die
+regmerkie teken homself steeds in.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-kalenders oor Zoho se eie verbinding"
+text = """
+Zoho bedien kalenders aan ander toepassings op 'n poort wat baie
+netwerke blokkeer, dus lees Kalender hulle ná Meld aan met Zoho eerder
+deur Zoho se eie API. Jou Zoho-geleenthede wys langs jou ander
+kalenders; om hulle uit Katna te verander, kom later.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-take"
+text = """
+Meld aan met Zoho op 'n Zoho-rekening en sy Zoho ToDo-take wys in
+Take, albei rigtings: voeg 'n taak by, wysig, merk as voltooi of vee
+dit uit in Katna, en dit verander ook in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Regmerkies in die middel by enige grootte"
+text = """
+Met Instellings > Voorkoms > Skalering bo 100%, het 'n merkblokkie se
+regmerkie effens bo en links gesit. Die rande van merkblokkies en ronde
+knoppies groei nou saam met die skaal, sodat die regmerkie by elke grootte
+in die middel sit.
+"""

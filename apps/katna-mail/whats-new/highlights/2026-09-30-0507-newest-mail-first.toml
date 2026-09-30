@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Newest mail comes first"
+text = """
+When you add an account, Katna Mail now downloads your most recent mail
+first and then works back to older mail, so today's messages show at the
+top of the inbox right away. If the download is interrupted, it picks up
+the older mail next time.
+"""

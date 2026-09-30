@@ -121,10 +121,37 @@ calendar-discard = Değişiklikleri at
 calendar-edit = Etkinliği düzenle
 calendar-delete = Etkinliği sil
 calendar-event-details = Etkinlik ayrıntıları
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Yeni etkinlik
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Günü aç
+calendar-menu-duplicate = Çoğalt
+calendar-menu-color = Renk
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Takvim rengi
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Bir hafta sonra
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Domates
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandalina
+calendar-color-banana = Muz
+calendar-color-sage = Adaçayı
+calendar-color-basil = Fesleğen
+calendar-color-peacock = Tavus kuşu
+calendar-color-blueberry = Yaban mersini
+calendar-color-lavender = Lavanta
+calendar-color-grape = Üzüm
+calendar-color-graphite = Grafit
 calendar-kind-event = Etkinlik
+calendar-kind-task = Görev
 calendar-kind-focus = Odaklanma zamanı
 calendar-kind-out-of-office = Ofis dışında
 calendar-kind-working-location = Çalışma konumu
+calendar-task-added = Görev eklendi
+calendar-task-added-to = Görev { $list } listesine eklendi
+calendar-task-list-local = Bu bilgisayarda
 calendar-working-home = Ev
 calendar-busy = Meşgul
 calendar-free = Müsait

@@ -26,6 +26,8 @@ viewer-tool-underline = Onderstreep
 viewer-tool-squiggly = Kronkellyn
 viewer-tool-strike = Deurhaal
 viewer-tool-pen = Pen
+viewer-tool-note = Plaknota
+viewer-tool-text = Teksblokkie
 viewer-tool-eraser = Uitveër
 viewer-color-yellow = Geel
 viewer-color-green = Groen
@@ -38,6 +40,12 @@ viewer-color-purple = Pers
 viewer-marks-undo-tip = Ontdoen (Ctrl+Z)
 viewer-marks-redo-tip = Herdoen (Ctrl+Shift+Z)
 viewer-save-marked-tip = Stoor 'n kopie met jou merke (Ctrl+S)
+viewer-reply-marked-tip = Antwoord met die gemerkte kopie
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Skryf 'n nota
+viewer-text-placeholder = Tik hier
+viewer-note-done = Klaar
+viewer-note-delete = Vee uit
 viewer-markup-protected = Hierdie PDF is teen veranderinge beskerm, dus kan dit nie gemerk word nie.
 viewer-marks-save-failed = Die gemerkte kopie kon nie gestoor word nie.
 # Asked when closing a PDF, or moving to another attachment, with marks

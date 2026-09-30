@@ -26,6 +26,8 @@ viewer-tool-underline = अधोरेखन
 viewer-tool-squiggly = लहरी रेषा
 viewer-tool-strike = खोडा
 viewer-tool-pen = पेन
+viewer-tool-note = चिकट टीप
+viewer-tool-text = मजकूर बॉक्स
 viewer-tool-eraser = खोडरबर
 viewer-color-yellow = पिवळा
 viewer-color-green = हिरवा
@@ -38,6 +40,12 @@ viewer-color-purple = जांभळा
 viewer-marks-undo-tip = पूर्ववत करा (Ctrl+Z)
 viewer-marks-redo-tip = पुन्हा करा (Ctrl+Shift+Z)
 viewer-save-marked-tip = तुमच्या खुणांसह प्रत सेव्ह करा (Ctrl+S)
+viewer-reply-marked-tip = खुणा केलेल्या प्रतीसह उत्तर द्या
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = टीप लिहा
+viewer-text-placeholder = येथे टाइप करा
+viewer-note-done = झाले
+viewer-note-delete = हटवा
 viewer-markup-protected = ही PDF बदलांपासून संरक्षित आहे, त्यामुळे तिच्यावर खुणा करता येणार नाहीत.
 viewer-marks-save-failed = खुणा केलेली प्रत सेव्ह करता आली नाही.
 # Asked when closing a PDF, or moving to another attachment, with marks

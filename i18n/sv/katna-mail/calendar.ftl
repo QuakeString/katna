@@ -121,10 +121,37 @@ calendar-discard = Ignorera ändringar
 calendar-edit = Redigera händelse
 calendar-delete = Radera händelse
 calendar-event-details = Händelseinformation
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Ny händelse
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Öppna dag
+calendar-menu-duplicate = Duplicera
+calendar-menu-color = Färg
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Kalenderfärg
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Om en vecka
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomat
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandarin
+calendar-color-banana = Banan
+calendar-color-sage = Salvia
+calendar-color-basil = Basilika
+calendar-color-peacock = Påfågel
+calendar-color-blueberry = Blåbär
+calendar-color-lavender = Lavendel
+calendar-color-grape = Vindruva
+calendar-color-graphite = Grafit
 calendar-kind-event = Händelse
+calendar-kind-task = Uppgift
 calendar-kind-focus = Fokustid
 calendar-kind-out-of-office = Frånvaro
 calendar-kind-working-location = Arbetsplats
+calendar-task-added = Uppgiften har lagts till
+calendar-task-added-to = Uppgiften har lagts till i { $list }
+calendar-task-list-local = På den här datorn
 calendar-working-home = Hemma
 calendar-busy = Upptagen
 calendar-free = Ledig

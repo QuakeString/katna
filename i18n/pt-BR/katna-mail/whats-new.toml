@@ -1737,3 +1737,108 @@ outras notas deslizam para abrir espaço, e ela fica onde você a soltar.
 Ctrl+Z a coloca de volta. Os cartões agora se encaixam bem nas colunas,
 sem vãos sob notas curtas.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clique com o botão direito na Agenda"
+text = """
+Clique com o botão direito em um horário ou dia livre para adicionar ali
+um evento, um tempo de foco ou uma ausência. Clique com o botão direito
+em um evento para editar, duplicar, excluir, responder, participar,
+enviar e-mail aos convidados, mudar a cor ou movê-lo para outra agenda,
+e em uma tarefa para marcá-la como concluída, adicionar estrela, dar
+outro dia a ela ou excluí-la. Desfazer reverte uma alteração.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notas e texto em PDFs"
+text = """
+Marcar um PDF agora tem notas adesivas e caixas de texto: clique na
+página, digite e pressione Ctrl+Enter. Passe o cursor sobre uma nota
+para lê-la ou clique nela para alterá-la. Responder envia sua cópia
+marcada direto em uma resposta à mensagem.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Arraste tarefas para onde quiser"
+text = """
+Arraste uma tarefa para cima ou para baixo na lista, ou para outra
+lista, e as tarefas ali deslizam para mostrar onde ela vai ficar. O
+Google Tasks mantém a nova ordem no seu celular também, e Desfazer
+coloca a tarefa de volta.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Adicionar uma tarefa pela Agenda"
+text = """
+O cartão de novo evento tem uma guia Tarefa, como no Google Agenda.
+Clique em um horário, escolha Tarefa, e o título, o dia e a hora viram
+uma tarefa na lista que você escolher, com uma descrição se quiser.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Adicionar uma tarefa pela Agenda"
+text = """
+Clique com o botão direito em um horário ou dia livre na Agenda e
+escolha Tarefa para adicionar ali uma tarefa. O cartão de novo evento
+abre na guia Tarefa com esse dia e essa hora já preenchidos.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "As agendas tentam de novo após um servidor lento"
+text = """
+Quando o servidor de agenda de uma conta não responde a tempo, a Agenda
+agora avisa, e diz se foi a conexão ou o handshake seguro que travou,
+em vez de "Nenhuma agenda encontrada". Ela tenta de novo em minutos, e
+não em horas.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Arquivos do contato mostram o download"
+text = """
+Um arquivo no painel de contato cujo e-mail ainda não está neste
+computador agora se preenche enquanto é baixado, como fazem os anexos
+na lista, e depois abre.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Os e-mails de uma nova conta aparecem à medida que chegam"
+text = """
+Depois que você adiciona uma conta, a caixa de entrada dela é baixada
+primeiro e vai se preenchendo enquanto você acompanha, em vez de ficar
+em “Buscando seus e-mails…” até que todas as pastas terminem. As outras
+pastas se preenchem da mesma forma.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Caixas de seleção alinhadas aos ícones"
+text = """
+As caixas de seleção estão um pouco menores, do mesmo tamanho dos ícones
+de estrela e de marcador ao lado delas na lista de e-mails. Continuam tão
+fáceis de clicar quanto antes, e a marca ainda se desenha.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Agendas do Zoho pela conexão do próprio Zoho"
+text = """
+O Zoho oferece agendas a outros apps numa porta que muitas redes
+bloqueiam, por isso, depois de fazer login com o Zoho, a Agenda as lê
+pela API do próprio Zoho. Seus eventos do Zoho aparecem ao lado das suas
+outras agendas; alterá-los pelo Katna vem depois.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tarefas do Zoho"
+text = """
+Faça login com o Zoho numa conta do Zoho e as tarefas do Zoho ToDo dela
+aparecem em Tarefas, nos dois sentidos: adicione, edite, marque ou
+exclua uma tarefa no Katna e ela muda no Zoho também.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Marcas no centro em qualquer tamanho"
+text = """
+Com a Escala em Configurações > Aparência acima de 100%, a marca de uma
+caixa de seleção ficava um pouco para cima e para a esquerda. As bordas
+das caixas de seleção e dos botões redondos agora crescem com a escala,
+então a marca fica centralizada em qualquer tamanho.
+"""

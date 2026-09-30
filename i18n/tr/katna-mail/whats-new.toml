@@ -1723,3 +1723,108 @@ notlar yer açmak için kayarak kenara çekiliyor ve not bıraktığınız yerde
 kalıyor. Ctrl+Z onu geri koyar. Kartlar artık sütunlarına sıkıca
 oturuyor; kısa notların altında boşluk kalmıyor.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Takvim'de sağ tıklama"
+text = """
+Oraya etkinlik, odaklanma zamanı veya ofis dışında zamanı eklemek için
+boş bir saate ya da güne sağ tıklayın. Bir etkinliği düzenlemek,
+çoğaltmak, silmek, yanıtlamak, katılmak, konuklara posta göndermek,
+rengini değiştirmek veya başka bir takvime taşımak için etkinliğe; bir
+görevi tamamlandı olarak işaretlemek, yıldızlamak, başka bir güne almak
+veya silmek için göreve sağ tıklayın. Geri al, bir değişikliği geri
+alır.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "PDF'lerde notlar ve metin"
+text = """
+PDF işaretlerken artık yapışkan notlar ve metin kutuları var: sayfaya
+tıklayın, yazın ve Ctrl+Enter'a basın. Bir notu okumak için üzerine
+gelin, değiştirmek için tıklayın. Yanıtla, işaretli kopyanızı doğrudan
+ileti yanıtında geri gönderir.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Görevleri istediğiniz yere sürükleyin"
+text = """
+Bir görevi listesinde yukarı veya aşağı ya da başka bir listeye
+sürükleyin; oradaki görevler nereye yerleşeceğini göstermek için kenara
+kayar. Google Tasks yeni sırayı telefonunuzda da korur, Geri al ise
+görevi eski yerine koyar.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Takvim'den görev ekleyin"
+text = """
+Yeni etkinlik kartında, Google Takvim'deki gibi bir Görev sekmesi var.
+Bir saate tıklayın, Görev'i seçin; başlık, gün ve saat, seçtiğiniz
+listede bir görev olur, isterseniz bir açıklamayla birlikte.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Takvim'den görev ekleyin"
+text = """
+Oraya görev eklemek için Takvim'de boş bir saate ya da güne sağ
+tıklayıp Görev'i seçin. Yeni etkinlik kartı, o gün ve saat
+doldurulmuş olarak Görev sekmesinde açılır.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Yavaş bir sunucudan sonra takvimler yeniden aranır"
+text = """
+Bir hesabın takvim sunucusu zamanında yanıt vermediğinde, Takvim artık
+"Takvim bulunamadı" yerine bunu söylüyor ve takılanın bağlantı mı yoksa
+güvenli el sıkışma mı olduğunu belirtiyor. Saatler yerine birkaç dakika
+içinde yeniden deniyor.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kişi dosyaları indirmeyi gösteriyor"
+text = """
+Kişi panelinde, e-postası henüz bu bilgisayarda olmayan bir dosya artık
+listedeki ekler gibi indirilirken dolar, ardından açılır.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Yeni bir hesabın postaları geldikçe görünür"
+text = """
+Bir hesap ekledikten sonra, tüm klasörler bitene kadar “Postalarınız
+alınıyor…” ekranında kalmak yerine önce gelen kutusu iner ve siz
+izlerken dolar. Diğer klasörler de aynı şekilde dolar.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Onay kutuları simgelerle aynı hizada"
+text = """
+Onay kutuları biraz küçüldü; posta listesinde yanlarındaki yıldız ve
+etiket simgeleriyle aynı boyutta. Tıklaması eskisi kadar kolay ve işaret
+hâlâ kendini çiziyor.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho takvimleri Zoho'nun kendi bağlantısıyla"
+text = """
+Zoho, takvimleri diğer uygulamalara birçok ağın engellediği bir bağlantı
+noktasından sunuyor; bu yüzden Zoho ile oturum açtıktan sonra Takvim
+onları Zoho'nun kendi API'si üzerinden okuyor. Zoho etkinlikleriniz
+diğer takvimlerinizin yanında görünüyor; bunları Katna'dan değiştirmek
+daha sonra gelecek.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho görevleri"
+text = """
+Bir Zoho hesabında Zoho ile oturum açın; hesabın Zoho ToDo görevleri
+Görevler'de iki yönlü görünür: Katna'da bir görevi ekleyin, düzenleyin,
+işaretleyin ya da silin, Zoho'da da değişir.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "İşaret her boyutta ortada"
+text = """
+Ayarlar > Görünüm'deki Ölçekleme %100'ün üzerindeyken onay kutusunun
+işareti biraz yukarıda ve solda duruyordu. Onay kutularının ve yuvarlak
+düğmelerin kenarları artık ölçekle birlikte büyüyor; böylece işaret her
+boyutta ortada.
+"""

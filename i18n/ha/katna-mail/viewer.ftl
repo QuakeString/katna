@@ -26,6 +26,8 @@ viewer-tool-underline = Ja layi a ƙasa
 viewer-tool-squiggly = Layi mai lanƙwasa
 viewer-tool-strike = Ja layi a tsakiya
 viewer-tool-pen = Alƙalami
+viewer-tool-note = Takarda mai manne
+viewer-tool-text = Akwatin rubutu
 viewer-tool-eraser = Magogi
 viewer-color-yellow = Rawaya
 viewer-color-green = Kore
@@ -38,6 +40,12 @@ viewer-color-purple = Shunayya
 viewer-marks-undo-tip = Janye (Ctrl+Z)
 viewer-marks-redo-tip = Maimaita (Ctrl+Shift+Z)
 viewer-save-marked-tip = Ajiye kwafi tare da alamominka (Ctrl+S)
+viewer-reply-marked-tip = Amsa da kwafin da aka yi wa alama
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Rubuta bayani
+viewer-text-placeholder = Rubuta a nan
+viewer-note-done = An gama
+viewer-note-delete = Share
 viewer-markup-protected = An kare wannan PDF daga canje-canje, don haka ba za a iya yi masa alama ba.
 viewer-marks-save-failed = Ba a iya ajiye kwafin da aka yi wa alama ba.
 # Asked when closing a PDF, or moving to another attachment, with marks

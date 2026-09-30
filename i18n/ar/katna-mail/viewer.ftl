@@ -26,6 +26,8 @@ viewer-tool-underline = تسطير
 viewer-tool-squiggly = خط متموج
 viewer-tool-strike = يتوسطه خط
 viewer-tool-pen = قلم
+viewer-tool-note = ملاحظة لاصقة
+viewer-tool-text = مربع نص
 viewer-tool-eraser = ممحاة
 viewer-color-yellow = أصفر
 viewer-color-green = أخضر
@@ -38,6 +40,12 @@ viewer-color-purple = بنفسجي
 viewer-marks-undo-tip = تراجع (Ctrl+Z)
 viewer-marks-redo-tip = إعادة (Ctrl+Shift+Z)
 viewer-save-marked-tip = حفظ نسخة مع علاماتك (Ctrl+S)
+viewer-reply-marked-tip = الرد بالنسخة المعلَّمة
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = اكتب ملاحظة
+viewer-text-placeholder = اكتب هنا
+viewer-note-done = تم
+viewer-note-delete = حذف
 viewer-markup-protected = ملف PDF هذا محمي من التغييرات، لذا لا يمكن وضع علامات عليه.
 viewer-marks-save-failed = تعذّر حفظ النسخة المعلَّمة.
 # Asked when closing a PDF, or moving to another attachment, with marks

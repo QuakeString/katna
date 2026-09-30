@@ -119,10 +119,37 @@ calendar-discard = ຖິ້ມການປ່ຽນແປງ
 calendar-edit = ແກ້ໄຂເຫດການ
 calendar-delete = ລຶບເຫດການ
 calendar-event-details = ລາຍລະອຽດເຫດການ
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = ເຫດການໃໝ່
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ເປີດມື້
+calendar-menu-duplicate = ສຳເນົາ
+calendar-menu-color = ສີ
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ສີປະຕິທິນ
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = ໃນອີກໜຶ່ງອາທິດ
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ໝາກເລັ່ນ
+calendar-color-flamingo = ນົກຟລາມິງໂກ
+calendar-color-tangerine = ໝາກກ້ຽງ
+calendar-color-banana = ກ້ວຍ
+calendar-color-sage = ເສດ
+calendar-color-basil = ໂຫລະພາ
+calendar-color-peacock = ນົກຍູງ
+calendar-color-blueberry = ບລູເບີຣີ
+calendar-color-lavender = ລາເວນເດີ
+calendar-color-grape = ອະງຸ່ນ
+calendar-color-graphite = ກຣາໄຟທ໌
 calendar-kind-event = ເຫດການ
+calendar-kind-task = ໜ້າວຽກ
 calendar-kind-focus = ເວລາໂຟກັສ
 calendar-kind-out-of-office = ບໍ່ຢູ່ຫ້ອງການ
 calendar-kind-working-location = ສະຖານທີ່ເຮັດວຽກ
+calendar-task-added = ເພີ່ມໜ້າວຽກແລ້ວ
+calendar-task-added-to = ເພີ່ມໜ້າວຽກໃສ່ { $list } ແລ້ວ
+calendar-task-list-local = ໃນຄອມພິວເຕີນີ້
 calendar-working-home = ເຮືອນ
 calendar-busy = ບໍ່ຫວ່າງ
 calendar-free = ຫວ່າງ

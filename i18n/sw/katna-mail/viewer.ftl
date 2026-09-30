@@ -26,6 +26,8 @@ viewer-tool-underline = Pigia mstari
 viewer-tool-squiggly = Mstari wa mawimbi
 viewer-tool-strike = Kata kwa mstari
 viewer-tool-pen = Kalamu
+viewer-tool-note = Kidokezo cha kubandika
+viewer-tool-text = Kisanduku cha maandishi
 viewer-tool-eraser = Kifutio
 viewer-color-yellow = Njano
 viewer-color-green = Kijani
@@ -38,6 +40,12 @@ viewer-color-purple = Zambarau
 viewer-marks-undo-tip = Tendua (Ctrl+Z)
 viewer-marks-redo-tip = Rudia (Ctrl+Shift+Z)
 viewer-save-marked-tip = Hifadhi nakala yenye alama zako (Ctrl+S)
+viewer-reply-marked-tip = Jibu kwa nakala yenye alama
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Andika dokezo
+viewer-text-placeholder = Andika hapa
+viewer-note-done = Nimemaliza
+viewer-note-delete = Futa
 viewer-markup-protected = PDF hii imelindwa dhidi ya mabadiliko, kwa hivyo haiwezi kuwekewa alama.
 viewer-marks-save-failed = Nakala yenye alama haikuweza kuhifadhiwa.
 # Asked when closing a PDF, or moving to another attachment, with marks

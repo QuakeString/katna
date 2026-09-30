@@ -47,6 +47,7 @@ pub mod engine;
 mod error;
 #[cfg(test)]
 mod fake_http;
+mod google_api;
 pub mod imap;
 pub mod meet;
 pub mod methods;

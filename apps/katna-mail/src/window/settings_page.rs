@@ -40,7 +40,7 @@ use super::{
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
-use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button, tip};
+use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
 mod templates;
 
@@ -2729,7 +2729,7 @@ fn recording_chip(recording: Option<&Recording>, th: &Theme) -> Div {
         .flex()
         .items_center()
         .rounded(px(6.0))
-        .border_2()
+        .border_px(2.0)
         .border_color(rgba(th.accent))
         .text_size(px(13.0))
         .text_color(rgba(th.accent))

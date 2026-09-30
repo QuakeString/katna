@@ -175,7 +175,9 @@ pub mod calendar_state {
     /// was signed in before Katna asked): `SignIn` again.
     pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
     /// The provider has its calendar API switched off for Katna (Google
-    /// Calendar API not enabled in Katna's Google Cloud project).
+    /// Calendar API not enabled in Katna's Google Cloud project). The
+    /// detail names the API and the page that turns it on
+    /// (`katna_core::api_off`), or says why in words.
     pub const NOT_ENABLED: &str = "not-enabled";
     /// The last sync failed; the detail says why. It is tried again.
     pub const ERROR: &str = "error";
@@ -196,6 +198,11 @@ pub mod contacts_state {
     /// The account's sign-in or password did not let Katna into its
     /// contacts: sign in again (OAuth2), or check the password.
     pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
+    /// The provider has its contacts API switched off for Katna (People
+    /// API not enabled in Katna's Google Cloud project). The detail names
+    /// the API and the page that turns it on (`katna_core::api_off`), or
+    /// says why in words.
+    pub const NOT_ENABLED: &str = "not-enabled";
     /// The last sync failed; the detail says why. It is tried again.
     pub const ERROR: &str = "error";
     /// A mail account signed in with a password at a provider that lets
@@ -494,7 +501,9 @@ macro_rules! pim_proxy {
             /// address, if any) in again. `address` fills in the provider's
             /// page (may be empty). Returns once the browser comes back (at
             /// most ten minutes), with the account's ID. `AuthFailed` when
-            /// the user did not allow access.
+            /// the user did not allow access. `zoho` needs `account`: it
+            /// links Zoho's tasks and calendars to it, and its mail keeps
+            /// its password.
             fn sign_in(&self, provider: &str, account: i64, address: &str) -> zbus::Result<i64>;
 
             /// Ends a `SignIn` still waiting for the browser. Returns

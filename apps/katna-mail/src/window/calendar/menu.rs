@@ -138,24 +138,27 @@ impl MailWindow {
         match target {
             CalTarget::Slot { day, time } => {
                 let (day, time) = (*day, *time);
-                let new = |kind: EventKind| {
+                let new = |kind: Option<EventKind>| {
                     cx.listener(move |this: &mut Self, _: &ClickEvent, window, cx| {
                         this.calendar_new_at(day, time, kind, window, cx)
                     })
                 };
                 rows.item(
                     item("cal-new-event", "event", tr!("calendar-menu-new-event"))
-                        .on_click(new(EventKind::Default)),
+                        .on_click(new(Some(EventKind::Default))),
+                );
+                rows.item(
+                    item("cal-new-task", "tasks", tr!("calendar-kind-task")).on_click(new(None)),
                 );
                 if time.is_some() {
                     rows.item(
                         item("cal-new-focus", "headphones", tr!("calendar-kind-focus"))
-                            .on_click(new(EventKind::Focus)),
+                            .on_click(new(Some(EventKind::Focus))),
                     );
                 }
                 rows.item(
                     item("cal-new-away", "flight", tr!("calendar-kind-out-of-office"))
-                        .on_click(new(EventKind::OutOfOffice)),
+                        .on_click(new(Some(EventKind::OutOfOffice))),
                 );
                 if self.calendar.view != CalView::Day || self.calendar.day != day {
                     rows.rule(th);
@@ -521,12 +524,12 @@ impl MailWindow {
     }
 
     /// A new event of `kind` at `time` on `day`, or that whole day, in the
-    /// small card where the menu was.
+    /// small card where the menu was; no kind opens the card on its Task tab.
     fn calendar_new_at(
         &mut self,
         day: Date,
         time: Option<Time>,
-        kind: EventKind,
+        kind: Option<EventKind>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
@@ -534,8 +537,10 @@ impl MailWindow {
             return;
         };
         self.start_new_event(day, time, time.is_none(), at, window, cx);
-        if kind != EventKind::Default {
-            self.set_draft_kind(kind, cx);
+        match kind {
+            None => self.set_draft_task(true, window, cx),
+            Some(EventKind::Default) => {}
+            Some(kind) => self.set_draft_kind(kind, cx),
         }
     }
 }

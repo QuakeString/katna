@@ -275,7 +275,18 @@ impl MailWindow {
         let provider = status
             .and_then(AccountState::provider)
             .map_or("", |p| p.name());
+        // What the other way ran into, under a sign-in line.
+        let why = status.map_or("", AccountState::use_sign_in_why);
+        // A Google API switched off in Katna's Google Cloud project: its
+        // name, and the page that turns it on.
+        let off = (state == task_state::NOT_ENABLED)
+            .then(|| katna_core::api_off::parse(detail))
+            .flatten();
         let (text, fix) = match state {
+            task_state::NOT_ENABLED if off.is_some() => (
+                katna_i18n::tr!("google-api-off", api = off.map_or("", |(api, _)| api)),
+                Fix::TryAgain,
+            ),
             task_state::NEEDS_SIGN_IN if signs_in => (String::new(), Fix::SignIn),
             task_state::USE_SIGN_IN if !provider.is_empty() => {
                 (of.say(Say::UseSignIn { provider }), Fix::SignIn)
@@ -332,6 +343,39 @@ impl MailWindow {
                 )
             }
         };
+        let turn_on = off.filter(|_| !page.busy.contains(&id)).map(|(api, url)| {
+            let url = url.to_owned();
+            div()
+                .id(SharedString::from(format!(
+                    "{}-account-turn-on-{id}",
+                    of.name()
+                )))
+                .cursor_pointer()
+                .rounded(px(4.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.accent))
+                .hover(|s| s.underline())
+                .tooltip(tip(
+                    katna_i18n::tr!("google-api-turn-on-tooltip", api = api),
+                    th,
+                ))
+                .on_click(move |_, _, cx| cx.open_url(&url))
+                .child(katna_i18n::tr!("google-api-turn-on"))
+                .into_any_element()
+        });
+        let action = match turn_on {
+            Some(turn_on) => Some(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(12.0))
+                    .child(turn_on)
+                    .children(action)
+                    .into_any_element(),
+            ),
+            None => action,
+        };
         // A sign-in's button says it all; the others say why first.
         let text = (!text.is_empty()).then_some(text);
         div()
@@ -345,6 +389,14 @@ impl MailWindow {
             .line_height(px(18.0))
             .text_color(rgba(th.text_faint))
             .children(text)
+            .when(!why.is_empty(), |d| {
+                d.child(
+                    div()
+                        .text_size(px(12.0))
+                        .line_height(px(16.0))
+                        .child(why.to_owned()),
+                )
+            })
             .children(action)
             .into_any_element()
     }

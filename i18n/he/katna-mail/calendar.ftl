@@ -123,10 +123,37 @@ calendar-discard = מחיקת השינויים
 calendar-edit = עריכת אירוע
 calendar-delete = מחיקת אירוע
 calendar-event-details = פרטי האירוע
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = אירוע חדש
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = פתיחת היום
+calendar-menu-duplicate = שכפול
+calendar-menu-color = צבע
+# The event takes its calendar's color.
+calendar-menu-color-calendar = צבע היומן
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = בעוד שבוע
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = עגבנייה
+calendar-color-flamingo = פלמינגו
+calendar-color-tangerine = קלמנטינה
+calendar-color-banana = בננה
+calendar-color-sage = מרווה
+calendar-color-basil = בזיליקום
+calendar-color-peacock = טווס
+calendar-color-blueberry = אוכמנית
+calendar-color-lavender = לבנדר
+calendar-color-grape = ענבים
+calendar-color-graphite = גרפיט
 calendar-kind-event = אירוע
+calendar-kind-task = משימה
 calendar-kind-focus = זמן ריכוז
 calendar-kind-out-of-office = מחוץ למשרד
 calendar-kind-working-location = מיקום עבודה
+calendar-task-added = המשימה נוספה
+calendar-task-added-to = המשימה נוספה אל { $list }
+calendar-task-list-local = במחשב הזה
 calendar-working-home = בית
 calendar-busy = עסוק
 calendar-free = פנוי

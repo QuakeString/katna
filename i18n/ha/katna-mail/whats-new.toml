@@ -1588,3 +1588,98 @@ title = "Ja bayanai don tsara su"
 text = """
 Ja bayani a kan allon Bayanai don matsar da shi, kamar a Keep. Sauran bayanai suna zamewa gefe don ba da wuri, kuma yana zama inda ka sake shi. Ctrl+Z yana mayar da shi. Katuna yanzu suna zaune daidai a cikin ginshiƙansu, ba tare da gibi a ƙarƙashin gajerun bayanai ba.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Danna dama a Kalanda"
+text = """
+Danna dama a kan lokaci ko rana mara komai don ƙara taro, lokacin mai da
+hankali ko ba a ofis a wurin. Danna dama a kan taro don gyara shi, kwafa
+shi, share shi, amsa, shiga, aika wa baƙi imel, ba shi launi ko matsar
+da shi zuwa wata kalanda, kuma a kan aiki don kammala shi, sa masa
+tauraro, ba shi wata rana ko share shi. Janyewa na mayar da canji.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Bayanai da rubutu a kan PDF"
+text = """
+Yin alama a PDF yanzu yana da takardu masu manne da akwatunan rubutu:
+danna shafin, rubuta, sannan danna Ctrl+Enter. Sa mai nuni a kan bayani
+don karanta shi, ko danna shi don canza shi. Amsa na aika kwafinka da
+aka yi wa alama kai tsaye cikin amsa ga saƙon.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Ja ayyuka zuwa inda kake so"
+text = """
+Ja aiki sama ko ƙasa a jerinsa, ko zuwa wani jeri, kuma ayyukan da ke
+can za su matsa gefe don nuna inda zai sauka. Google Tasks yana riƙe
+sabon tsarin a wayarka ma, kuma Janyewa na mayar da aikin.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Ƙara aiki daga Kalanda"
+text = """
+Katin sabon taro yana da shafin Aiki, kamar a Google Calendar. Danna
+lokaci, zaɓi Aiki, kuma take, rana da lokaci za su zama aiki a jerin da
+ka zaɓa, tare da bayani idan kana so.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Ƙara aiki daga Kalanda"
+text = """
+Danna dama a kan lokaci ko rana mara komai a Kalanda kuma zaɓi Aiki
+don ƙara aiki a wurin. Katin sabon taro zai buɗe a shafin Aiki tare da
+waccan rana da lokacin a cike.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Ana sake neman kalandoji bayan sabar mai jinkiri"
+text = """
+Idan sabar kalanda ta wani asusu ba ta amsa a kan lokaci ba, Kalanda
+yanzu tana faɗin haka, da ko haɗin ne ko musayar tsaro ce ta tsaya,
+maimakon “Ba a sami kalanda ba”. Tana sake gwadawa cikin mintuna
+maimakon awanni.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Fayilolin tuntuɓa suna nuna saukewarsu"
+text = """
+Fayil a fanel na tuntuɓa wanda wasiƙarsa ba ta wannan kwamfuta tukuna
+yanzu yana cika yayin da ake saukewa, kamar haɗe-haɗe a jerin, sannan
+ya buɗe.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Wasiƙun sabon asusu suna bayyana yayin da suke isowa"
+text = """
+Bayan kun ƙara asusu, Akwatin saƙonsa yana saukowa da farko kuma yana
+cika yayin da kuke kallo, maimakon tsayawa a kan “Ana samo wasiƙunku…”
+har sai kowace folda ta gama. Sauran folda suna cika haka ma.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Akwatunan zaɓi daidai da gumaka"
+text = """
+Akwatunan zaɓi sun ɗan ƙanƙanta, girmansu daidai da gumakan tauraro da lakabi da ke kusa da su a jerin wasiƙu. Suna da sauƙin dannawa kamar dā, kuma alamarsu tana ci gaba da zana kanta.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalandojin Zoho ta haɗin Zoho na kansa"
+text = """
+Zoho yana ba wa sauran manhajoji kalandoji ta wata tashar port da hanyoyin sadarwa da yawa ke toshewa, don haka bayan Shiga da Zoho, Kalanda yana karanta su ta API na Zoho na kansa maimakon haka. Tarukan Zoho naka suna bayyana kusa da sauran kalandojinka; canza su daga Katna zai zo daga baya.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Ayyukan Zoho"
+text = """
+Shiga da Zoho a kan asusun Zoho, kuma ayyukansa na Zoho ToDo suna bayyana a Ayyuka, ta hanyoyi biyu: ƙara, gyara, yi alamar an kammala ko share wani aiki a Katna kuma zai canza a Zoho ma.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Alamar tana tsakiya a kowane girma"
+text = """
+Idan Saituna > Bayyanar > Girman nuni ya wuce 100%, alamar akwatin zaɓi
+tana ɗan hawa sama da hagu. Gefunan akwatunan zaɓi da maɓallan zagaye
+yanzu suna girma tare da girman nuni, don haka alamar tana tsakiya a
+kowane girma.
+"""

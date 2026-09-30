@@ -1751,3 +1751,109 @@ demás notas se apartan para hacerle sitio, y se queda donde la sueltas.
 Ctrl+Z la devuelve. Las tarjetas ahora encajan en sus columnas, sin
 huecos bajo las notas cortas.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clic derecho en el Calendario"
+text = """
+Haz clic derecho en una hora o un día libre para añadir allí un evento,
+tiempo de concentración o fuera de la oficina. Haz clic derecho en un
+evento para editarlo, duplicarlo, eliminarlo, responder, unirte,
+escribir a los invitados, darle un color o moverlo a otro calendario, y
+en una tarea para marcarla como hecha, destacarla, darle otro día o
+eliminarla. Deshacer revierte un cambio.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notas y texto en los PDF"
+text = """
+Al marcar un PDF ahora tienes notas adhesivas y cuadros de texto: haz
+clic en la página, escribe y pulsa Ctrl+Enter. Pasa el puntero sobre una
+nota para leerla o haz clic en ella para cambiarla. Responder envía tu
+copia marcada directamente en una respuesta al mensaje.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Arrastra las tareas adonde quieras"
+text = """
+Arrastra una tarea hacia arriba o hacia abajo en su lista, o a otra
+lista, y las tareas de allí se apartan para mostrar dónde quedará.
+Google Tasks conserva el nuevo orden también en tu teléfono, y Deshacer
+devuelve la tarea a su sitio.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Añadir una tarea desde el Calendario"
+text = """
+La tarjeta de evento nuevo tiene una pestaña Tarea, como en Google
+Calendar. Haz clic en una hora, elige Tarea, y el título, el día y la
+hora se convierten en una tarea en la lista que elijas, con una
+descripción si quieres.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Añadir una tarea desde el Calendario"
+text = """
+Haz clic derecho en una hora o un día libre del Calendario y elige
+Tarea para añadir allí una tarea. La tarjeta de evento nuevo se abre en
+su pestaña Tarea con ese día y esa hora ya puestos.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Los calendarios se vuelven a buscar tras un servidor lento"
+text = """
+Cuando el servidor de calendarios de una cuenta no responde a tiempo,
+el Calendario ahora lo dice, y si se atascó la conexión o el protocolo
+de seguridad, en lugar de “No se han encontrado calendarios”. Vuelve
+a intentarlo en minutos en vez de horas.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Los archivos del contacto muestran su descarga"
+text = """
+Un archivo de los detalles del contacto cuyo correo aún no está en este
+ordenador ahora se va llenando mientras se descarga, como los adjuntos
+de la lista, y luego se abre.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "El correo de una cuenta nueva aparece a medida que llega"
+text = """
+Después de añadir una cuenta, su bandeja de Recibidos se descarga
+primero y se va llenando ante tus ojos, en vez de quedarse en «Obteniendo
+tu correo…» hasta que termine cada carpeta. Las demás carpetas se llenan
+de la misma forma.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Casillas a la altura de los iconos"
+text = """
+Las casillas son un poco más pequeñas, del mismo tamaño que los iconos de
+estrella y etiqueta de al lado en la lista de correo. Son igual de fáciles
+de pulsar, y su marca se sigue dibujando.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Calendarios de Zoho por la conexión propia de Zoho"
+text = """
+Zoho ofrece los calendarios a otras apps por un puerto que muchas redes
+bloquean, así que tras Iniciar sesión con Zoho, Calendario los lee por
+la API propia de Zoho. Tus eventos de Zoho aparecen junto a tus otros
+calendarios; cambiarlos desde Katna llegará más adelante.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tareas de Zoho"
+text = """
+Inicia sesión con Zoho en una cuenta de Zoho y sus tareas de Zoho ToDo
+aparecen en Tareas, en ambos sentidos: añade, edita, marca como
+completada o elimina una tarea en Katna y también cambia en Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Marcas centradas a cualquier tamaño"
+text = """
+Con Ajustes > Apariencia > Escala por encima del 100 %, la marca de una
+casilla quedaba un poco arriba y a la izquierda. Los bordes de las
+casillas y los botones redondos crecen ahora con la escala, así que la
+marca queda centrada a cualquier tamaño.
+"""

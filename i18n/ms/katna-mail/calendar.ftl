@@ -119,10 +119,37 @@ calendar-discard = Buang perubahan
 calendar-edit = Edit acara
 calendar-delete = Padam acara
 calendar-event-details = Butiran acara
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Acara baharu
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Buka hari
+calendar-menu-duplicate = Pendua
+calendar-menu-color = Warna
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Warna kalendar
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Dalam seminggu
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomato
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Tangerin
+calendar-color-banana = Pisang
+calendar-color-sage = Sage
+calendar-color-basil = Selasih
+calendar-color-peacock = Merak
+calendar-color-blueberry = Beri biru
+calendar-color-lavender = Lavender
+calendar-color-grape = Anggur
+calendar-color-graphite = Grafit
 calendar-kind-event = Acara
+calendar-kind-task = Tugasan
 calendar-kind-focus = Masa fokus
 calendar-kind-out-of-office = Di luar pejabat
 calendar-kind-working-location = Lokasi kerja
+calendar-task-added = Tugasan ditambah
+calendar-task-added-to = Tugasan ditambah ke { $list }
+calendar-task-list-local = Pada komputer ini
 calendar-working-home = Rumah
 calendar-busy = Sibuk
 calendar-free = Terluang

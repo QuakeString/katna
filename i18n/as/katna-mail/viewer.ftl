@@ -26,6 +26,8 @@ viewer-tool-underline = অধোৰেখা
 viewer-tool-squiggly = ঢৌখেলুৱা ৰেখা
 viewer-tool-strike = কাটি দিয়া
 viewer-tool-pen = কলম
+viewer-tool-note = ষ্টিকী নোট
+viewer-tool-text = টেক্সট বাকচ
 viewer-tool-eraser = ইৰেজাৰ
 viewer-color-yellow = হালধীয়া
 viewer-color-green = সেউজীয়া
@@ -38,6 +40,12 @@ viewer-color-purple = বেঙুনীয়া
 viewer-marks-undo-tip = আনডু কৰক (Ctrl+Z)
 viewer-marks-redo-tip = পুনৰ কৰক (Ctrl+Shift+Z)
 viewer-save-marked-tip = আপোনাৰ চিহ্নসহ এটা কপি ছেভ কৰক (Ctrl+S)
+viewer-reply-marked-tip = চিহ্নিত কপিটোৰে উত্তৰ দিয়ক
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = এটা নোট লিখক
+viewer-text-placeholder = ইয়াত টাইপ কৰক
+viewer-note-done = হ'ল
+viewer-note-delete = মচক
 viewer-markup-protected = এই PDF-টো সলনিৰ পৰা সুৰক্ষিত, সেয়েহে ইয়াত চিহ্ন দিব নোৱাৰি।
 viewer-marks-save-failed = চিহ্নিত কপিটো ছেভ কৰিব পৰা নগ'ল।
 # Asked when closing a PDF, or moving to another attachment, with marks

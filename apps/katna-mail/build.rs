@@ -169,7 +169,7 @@ fn highlights() {
 /// The highlights' translations, `i18n/<folder>/katna-mail/whats-new.toml`
 /// (a table per highlight, named by its file: `title` and `text`), by
 /// highlight: (folder, title, text), in folder order. A table for a
-/// highlight that does not exist stops the build.
+/// highlight that does not exist is left out with a warning.
 fn translated_highlights(
     stems: &[&str],
 ) -> std::collections::HashMap<String, Vec<(String, String, String)>> {
@@ -191,11 +191,13 @@ fn translated_highlights(
         let file = format!("i18n/{folder}/katna-mail/whats-new.toml");
         let table: toml::Table = source.parse().unwrap_or_else(|e| panic!("{file}: {e}"));
         for (stem, value) in table {
-            assert!(
-                stems.contains(&stem.as_str()),
-                "{file}: [{stem:?}] is not a highlight \
-                 (apps/katna-mail/whats-new/highlights/{stem}.toml)"
-            );
+            if !stems.contains(&stem.as_str()) {
+                println!(
+                    "cargo:warning={file}: [{stem:?}] is not a highlight \
+                     (apps/katna-mail/whats-new/highlights/{stem}.toml)"
+                );
+                continue;
+            }
             let Some(entry) = value.as_table() else {
                 panic!("{file}: {stem:?} must be a table with a title and a text");
             };

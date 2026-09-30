@@ -26,6 +26,8 @@ viewer-tool-underline = Підкреслити
 viewer-tool-squiggly = Хвиляста лінія
 viewer-tool-strike = Закреслити
 viewer-tool-pen = Перо
+viewer-tool-note = Нотатка
+viewer-tool-text = Текстове поле
 viewer-tool-eraser = Гумка
 viewer-color-yellow = Жовтий
 viewer-color-green = Зелений
@@ -38,6 +40,12 @@ viewer-color-purple = Фіолетовий
 viewer-marks-undo-tip = Скасувати (Ctrl+Z)
 viewer-marks-redo-tip = Повторити (Ctrl+Shift+Z)
 viewer-save-marked-tip = Зберегти копію з позначками (Ctrl+S)
+viewer-reply-marked-tip = Відповісти з копією з позначками
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Напишіть нотатку
+viewer-text-placeholder = Введіть текст
+viewer-note-done = Готово
+viewer-note-delete = Видалити
 viewer-markup-protected = Цей PDF захищено від змін, тому на ньому не можна робити позначки.
 viewer-marks-save-failed = Не вдалося зберегти копію з позначками.
 # Asked when closing a PDF, or moving to another attachment, with marks

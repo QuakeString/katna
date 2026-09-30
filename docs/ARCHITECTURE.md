@@ -386,8 +386,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   D-Bus signals.
 - **Level-1 sync (`katna_sync::engine`):** per folder, SELECT with
   CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
-  HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
-  by chunk), and compare UID lists only when the message count does not add
+  HIGHESTMODSEQ, fetch headers of new UIDs newest first in chunks of 500
+  going back in time (committed chunk by chunk; the UID ranges still missing
+  are saved in the folder's sync state, so a cut-off first sync fills in the
+  older mail next time), and compare UID lists only when the message count does not add
   up. Servers with QRESYNC (Stalwart and Dovecot here; Gmail has none) get
   `ENABLE QRESYNC` after login: the flag fetch then carries the
   `VANISHED` modifier, so the expunges since the stored HIGHESTMODSEQ come
@@ -555,6 +557,28 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   in. Tests use a local fake OAuth server and a fake IMAP server, never a
   real provider. App passwords keep working for Gmail; setting a password on
   an OAuth2 account (`SetPassword`) switches it back to the password.
+- **Zoho** (tasks and calendars; `AccountSettings::linked`,
+  `daemon/linked.rs`): a sign-in linked to an account, not its mail login,
+  because Zoho lets only "self client" apps use XOAUTH2 for IMAP, so Zoho
+  Mail keeps its password. `SignIn("zoho", account)` asks at once for
+  `ZohoMail.tasks.ALL` (Zoho Mail's Tasks API, which Zoho ToDo serves),
+  `ZohoMail.accounts.READ` (the Mail `accountId` and `zuid` task calls take),
+  `ZohoCalendar.calendar.ALL` and `ZohoCalendar.event.ALL`, and
+  `AaaServer.profile.READ` (who signed in, from `/oauth/user/info`; Zoho
+  gives no ID token). Zoho scopes are separated by commas. Zoho takes
+  only registered redirect URIs, port included, so its loopback is the
+  fixed `http://localhost:53710/` (as rclone registers its own). It starts at the data centre of the
+  account's mail host or domain (`accounts.zoho.com`, `.eu`, `.in`,
+  `.com.au`, `.jp`, `.sa`, `.uk`, `zohocloud.ca`). Zoho sends every other
+  user on and names their `accounts-server` in the answer: the code goes
+  there, but only if it is one of those servers. The account keeps that
+  server and the `api_domain` of the token answer. Zoho answers a refused
+  token with 200 and `invalid_code`, which counts as signing in again.
+  The refresh token is a Secret Service item of its own
+  (`linked-account` attribute, so a password lookup never finds it).
+  `Daemon::linked_tokens` hands it to the tasks and calendar syncs. The
+  client ID and secret come from `KATNA_ZOHO_OAUTH_CLIENT_ID` and
+  `KATNA_ZOHO_OAUTH_CLIENT_SECRET` at build time.
 - **Account setup** (task 1.2, `katna_sync::autoconfig`, D-Bus
   `DiscoverAccount`): the user gives an address and the daemon finds the
   servers, in Thunderbird's order. First built-in settings for Gmail,
@@ -2133,8 +2157,8 @@ Gemini or confidential mode):
   items first come closer together (36 px down to 28 px), and only then
   does the menu scroll; a long submenu does the same. The Calendar page
   has right-click menus in the same card (`calendar/menu.rs`): on a free
-  time or day (a new event, focus time or out of office there, and Open
-  day), on an event (details, edit, duplicate, delete, Going?, join,
+  time or day (a new event, a task on the Task tab, focus time or out of
+  office there, and Open day), on an event (details, edit, duplicate, delete, Going?, join,
   email guests, Google's eleven colors and Move to another calendar,
   the browser or the contact) and on a task (details, done, star, Date:
   today, tomorrow, in a week, all day or no date, and delete). Changes
@@ -3451,7 +3475,8 @@ account and kind (`meta` rows, object `account`, plugin
 which the best way goes first again. A new sign-in forgets it. Network or
 server errors never switch ways. Google sign-ins: the Google API, then
 Google's CalDAV/CardDAV with the same token. Microsoft sign-ins: Graph
-(Outlook.com has no CalDAV). Password accounts: CalDAV/CardDAV looked for
+(Outlook.com has no CalDAV). Password accounts linked to a Zoho sign-in:
+Zoho Calendar's API for calendars, then CalDAV. Password accounts: CalDAV/CardDAV looked for
 on the provider's known server (Yahoo, Zoho by region, iCloud, Fastmail,
 mailbox.org, Posteo, GMX, web.de, Yandex, AOL; by mail domain or IMAP host), then
 `.well-known` on the mail domain, the IMAP server's domain and the IMAP
@@ -3484,13 +3509,31 @@ most useful reason is shown. Changes go back the way their calendar came
   that refuses the expansion shows its series without changed
   occurrences). Scope `https://graph.microsoft.com/Calendars.ReadWrite`,
   consented at sign-in beside `Files.ReadWrite`, its tokens separate.
+  **Zoho** (`calendar::zoho`, accounts linked to a Zoho sign-in, scope
+  `ZOHO_CALENDAR`): Zoho's CalDAV answers only on port 543, which many
+  networks block, so calendars come from Zoho Calendar's REST API
+  (`calendar.zoho.<dc>/api/v1`, the data centre of the sign-in's
+  accounts server, on port 443). `/calendars` lists them with a `ctag`;
+  a calendar whose `ctag` didn't change today is skipped, otherwise its
+  events are read with `byinstance=true` in 31-day ranges (Zoho's limit)
+  from about 3 months back to a year ahead, each occurrence a row of its
+  own, and written where their etag changed. Source `zoho` (pim.db v12,
+  which widens `calendar.source`'s CHECK in place so events are kept).
+  Read-only for now: a change to a Zoho event is refused and undone. A
+  password Zoho account whose calendars don't sync shows `use-sign-in`
+  (detail `zoho`, or `zoho: <why CalDAV failed>`) until it is linked, and
+  after, when the Zoho sign-in is refused, so its line offers "Sign in
+  with Zoho" rather than a password change.
   **CalDAV** (password accounts, and Google's fallback): found from the
   places above, with the IMAP password (or Google's token) over TLS; a
   calendar whose `getctag`/`sync-token` didn't change is
   skipped, otherwise the etags of its `VEVENT`s are compared with the
   store and only changed ones fetched by `calendar-multiget`
   (`katna_dav::ical` reads them). A server without CalDAV is asked again
-  after 6 hours. Each account's state (`ok`, `needs-sign-in`,
+  after 6 hours; one that took no connection, stalled in the TLS
+  handshake or didn't answer in time is not taken for one without
+  CalDAV: the account shows `error` with which step stalled
+  (`katna_sync::Error::Unreachable`), and the next round asks again. Each account's state (`ok`, `needs-sign-in`,
   `not-enabled`, `error`, `none`) is `CalendarStatus()` on `Pim1`;
   `CalendarChanged()` (and the clock's `Agenda1.Changed()`) says when to
   read again; `SetCalendarHidden(id, hidden)` ticks calendars on and off.
@@ -3575,6 +3618,12 @@ most useful reason is shown. Changes go back the way their calendar came
   the event is saved plain. Graph gets `showAs` `oof` or
   `workingElsewhere`; CalDAV `X-MICROSOFT-CDO-BUSYSTATUS:OOF`, or
   Katna's `X-KATNA-KIND` for the other two, which Katna reads back.
+- The small new-event card also has a Task tab (Google's): the title,
+  start day and time (none when all day), description and a repeat typed
+  into the title make a task due then, in a task list picked on the card
+  (the default list of the calendar's account at first). It goes to the
+  daemon as the Tasks page's Add does. With no calendar to add events to
+  but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events; a day opens Day, a month's
@@ -3635,10 +3684,11 @@ most useful reason is shown. Changes go back the way their calendar came
 
 Tasks live in each account's own task service, so they show on the
 phone and in the web apps: Google Tasks for Google accounts, Microsoft
-To Do (Graph) for Microsoft accounts, to-dos (`VTODO`) on the CalDAV
-server of an account with a password, and lists kept on this computer.
-Google's and Microsoft's CalDAV servers keep no to-dos, so their accounts
-use their own APIs only. Tasks go through the same ways and remembered
+To Do (Graph) for Microsoft accounts, Zoho Mail's tasks (the Zoho Mail
+Tasks API) for accounts signed in with Zoho, to-dos (`VTODO`) on the
+CalDAV server of an account with a password, and lists kept on this
+computer. Google's, Microsoft's and Zoho's CalDAV servers keep no to-dos,
+so their accounts use their own APIs only. Tasks go through the same ways and remembered
 choice as calendars (§18, `katna_sync::methods`, `Data::Tasks`): a way
 whose sign-in refuses Katna is passed over for the next; a network or
 server error is not.
@@ -3661,11 +3711,30 @@ server error is not.
   to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
+- **Zoho** (`katna_sync::tasks::zoho`, `https://mail.zoho.<dc>/api/tasks`,
+  header `Zoho-oauthtoken`) goes through the Zoho sign-in linked to the
+  password account (`AccountSettings::linked`, `daemon/linked.rs`); the
+  mail stays on its password. Zoho keeps title, description (notes), a
+  due day (`DD/MM/YYYY`), done and one level of subtasks (steps); its
+  priority, reminder and repeat are not mapped, so the star, reminders
+  and repeat stay in Katna as with Google. Its personal tasks (`me`) are
+  the default list and each group with tasks is a list (`group:<zgid>`).
+  Zoho makes no lists of one's own: a list made in Katna stays on this
+  computer (refused and logged each round), and a Zoho list renamed or
+  deleted in Katna is not sent, so the next round brings it back. Each
+  field has its own `PUT` in Zoho's reference, so a change reads the task
+  and sends only what differs. A Zoho account (`oauth::is_zoho_host`)
+  without the linked sign-in shows `USE_SIGN_IN` ("Sign in with Zoho")
+  and keeps its lists on this computer; a linked sign-in that stops
+  working shows the same, not the password's "Change password".
+  `USE_SIGN_IN`'s detail is `provider` or `provider: why the other way
+  failed`, and the side list shows that reason in small type under it.
 - **Sync** (`katna_sync::tasks`, run by the daemon's `daemon/tasks.rs`):
   every 5 minutes, and 2 seconds after a change in Katna. Each round sends
   list changes, takes the service's lists, then per list sends task
   changes and pulls: Google by `updatedMin` (everything once a day), To Do
-  by its delta link, CalDAV by the list's `getctag` and then the etags of
+  by its delta link, Zoho by reading every task of the list (it has no
+  changes feed; subtasks are read for tasks that have some), CalDAV by the list's `getctag` and then the etags of
   its to-dos (only changed ones are downloaded; the list's sync state
   keeps each to-do's etag and `UID`, so a missing one is a deletion). The
   CalDAV server is found the way its calendars are (§18, so Yahoo, Zoho,
@@ -3676,8 +3745,11 @@ server error is not.
   a refused change is logged and left dirty.
 - **Sign-in**: the scopes are `https://www.googleapis.com/auth/tasks` for
   Google and `Tasks.ReadWrite` (Graph, asked at sign-in beside OneDrive's)
-  for Microsoft. Accounts signed in before Katna asked for them are
-  skipped until they sign in again.
+  for Microsoft, and `ZohoMail.tasks.ALL` for Zoho (a linked sign-in
+  beside a mail password). Accounts signed in before Katna asked for them are
+  skipped until they sign in again. Zoho's token answers may not name
+  their scopes, so Zoho's sign-in is checked with one small read, and a
+  401 or `INVALID_OAUTHSCOPE` means it doesn't allow tasks.
 - **Each account's state**: every round keeps where each account's tasks
   stand (`Pim1.TasksStatus`, the states of `katna_dbus::task_state`, the
   same as a calendar's): synced; a sign-in without tasks, or a refused
@@ -3699,7 +3771,7 @@ server error is not.
   account's list synced move to that list once.
 - **The Tasks page** (`window/tasks_page.rs`) is a page of the mail
   window, laid out like Google Tasks. It reads `pim.db` read-only and
-  sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, the
+  sends changes over `Agenda1` (`AddTaskTo`, `EditTask`, `MoveTask`, `PlaceTask`, the
   list calls), then reads again on `Changed`. Beside All tasks and
   Starred, Today (as in To Do's My Day and TickTick) gathers the open
   tasks due today or before from every list: Overdue first, then Today,
@@ -3743,10 +3815,32 @@ server error is not.
   a step's task and a task's matching steps; lists with none found hide
   in All tasks. The mail search's words come back on leaving the page,
   as with Notes and Contacts.
-- **Drag to another list**: an open task (not a step) drags onto another
-  list's card, which outlines itself while the task is over it; the drop
-  is the same move as "Move to", with its toast and Undo. Order within a
-  list is the service's and does not change by drag yet.
+- **Drag and drop**, as in Google Tasks: an open task (not a step) drags
+  up or down its own list, or into another list's card (outlined while
+  the task is over it), in All tasks and in a list shown alone. It leaves
+  its place as it lifts, and the list under the pointer opens a gap where
+  it would land (150 ms, easing in and out), which follows the pointer
+  between the tasks there (each task's row with its steps reports where
+  it is drawn during the drag); the gap it leaves closes as the new one
+  opens. Let go, it lands in the gap at once (the store follows) with a
+  toast ("Task moved", or "Moved to …") and Undo, which puts it back
+  after the task it was after; let go over no list, nothing changes.
+  Done tasks and steps stay where they are. `PlaceTask(id, list,
+  after)` (`Store::place_task`) puts it right after `after`, or first:
+  - **Google Tasks** keeps the order. The task takes a position between
+    its neighbours' (`tasks::between`: digits, compared as text as
+    Google's are) and bit 2 of `task.dirty` (moved; bit 1 is a change of
+    its fields), so no schema change was needed. Sync sends `tasks.move`
+    with `previous` (the service's ID of the task before it here; none:
+    first) and keeps Google's own position from the answer; a change of
+    its fields goes too only when there is one. From another list it is
+    first the delete there and the insert here, then the move. When the
+    task before it is not on Google yet the move waits a round.
+  - **CalDAV, To Do and lists on this computer** keep no order Katna can
+    set (Katna does not write `X-APPLE-SORT-ORDER`; Graph has no order
+    for tasks), so the order is kept in `pim.db` only: the list's tasks
+    are numbered anew and nothing is sent. A service's answer or pull
+    without a position leaves the one here.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the
@@ -4830,7 +4924,10 @@ removes. Setup starts PowerShell and icacls by their full System32 paths
 and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
 Downloads are never run or loaded as administrator.
 
-CI builds Setup.exe on every main push into a `windows-latest`
-pre-release, as it does the Arch package. Without a code-signing
+CI builds Setup.exe into a `windows-latest` pre-release when the owner
+runs the Windows package workflow by hand on `main` (Actions > Windows
+package > Run workflow); while Katna is young, pushes and pull requests
+test on Arch only, and the Windows and Ubuntu CI jobs also run only by
+hand. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.

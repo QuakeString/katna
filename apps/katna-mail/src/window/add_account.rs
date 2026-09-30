@@ -30,7 +30,7 @@ use super::MenuKey;
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, avatar, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, ScaledEdge, avatar, elevation, filled_button, icon, raised};
 
 const WIDTH: f32 = 448.0;
 const MENU_WIDTH: f32 = 340.0;
@@ -824,7 +824,7 @@ impl MailWindow {
                         cx,
                     )))
                     .children(error.clone().map(|error| error_line(error, th)));
-                let providers: Vec<OAuthProvider> = OAuthProvider::ALL
+                let providers: Vec<OAuthProvider> = OAuthProvider::MAIL
                     .into_iter()
                     .filter(|p| p.available())
                     .collect();
@@ -1256,7 +1256,7 @@ impl MailWindow {
             .rounded(px(4.0))
             .map(|d| {
                 if focused || error {
-                    d.border_2()
+                    d.border_px(2.0)
                 } else {
                     d.border_1()
                 }

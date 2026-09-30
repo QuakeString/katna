@@ -209,6 +209,13 @@ pub enum TaskCommand {
         steps: Vec<Task>,
     },
     Move(i64, i64),
+    /// Puts a task in list `list` (its own or another) right after task
+    /// `after`, or first: where it was dragged to.
+    Place {
+        id: i64,
+        list: i64,
+        after: Option<i64>,
+    },
     /// Adds a task ([`TaskCommand::Add`]), then gives it these fields: what
     /// typed quick add found beyond a due day.
     AddThen(Box<TaskCommand>, TaskEdit),
@@ -317,6 +324,10 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
             return result.map(row).map_err(|err| describe(&err));
         }
         TaskCommand::Move(id, list) => agenda.move_task(&wire_id(*id), *list).await,
+        TaskCommand::Place { id, list, after } => {
+            let after = after.map(wire_id).unwrap_or_default();
+            agenda.place_task(&wire_id(*id), *list, &after).await
+        }
         TaskCommand::AddList(account, title) => {
             let account = account.map_or(0, |a| a.0);
             return agenda

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A new account's mail shows as it arrives"
+text = """
+After you add an account, its inbox downloads first and fills in while you
+watch, instead of staying on "Getting your mail…" until every folder is
+done. Other folders fill in the same way.
+"""

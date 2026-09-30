@@ -26,6 +26,8 @@ viewer-tool-underline = ከስር አስምር
 viewer-tool-squiggly = ሞገዳማ መስመር
 viewer-tool-strike = በመሃል ሰርዝ
 viewer-tool-pen = እስክሪብቶ
+viewer-tool-note = ተለጣፊ ማስታወሻ
+viewer-tool-text = የጽሑፍ ሳጥን
 viewer-tool-eraser = መደምሰሻ
 viewer-color-yellow = ቢጫ
 viewer-color-green = አረንጓዴ
@@ -38,6 +40,12 @@ viewer-color-purple = ሐምራዊ
 viewer-marks-undo-tip = ቀልብስ (Ctrl+Z)
 viewer-marks-redo-tip = ድገም (Ctrl+Shift+Z)
 viewer-save-marked-tip = ምልክቶችዎን የያዘ ቅጂ አስቀምጥ (Ctrl+S)
+viewer-reply-marked-tip = ምልክት በተደረገበት ቅጂ መልስ
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ማስታወሻ ይጻፉ
+viewer-text-placeholder = እዚህ ይተይቡ
+viewer-note-done = ተጠናቋል
+viewer-note-delete = ሰርዝ
 viewer-markup-protected = ይህ PDF ከለውጦች የተጠበቀ ነው፣ ስለዚህ ምልክት ሊደረግበት አይችልም።
 viewer-marks-save-failed = ምልክት የተደረገበትን ቅጂ ማስቀመጥ አልተቻለም።
 # Asked when closing a PDF, or moving to another attachment, with marks

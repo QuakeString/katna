@@ -119,10 +119,37 @@ calendar-discard = 변경사항 삭제
 calendar-edit = 일정 수정
 calendar-delete = 일정 삭제
 calendar-event-details = 일정 세부정보
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = 새 일정
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = 날짜 열기
+calendar-menu-duplicate = 복제
+calendar-menu-color = 색상
+# The event takes its calendar's color.
+calendar-menu-color-calendar = 캘린더 색상
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = 1주 후
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = 토마토
+calendar-color-flamingo = 플라밍고
+calendar-color-tangerine = 귤
+calendar-color-banana = 바나나
+calendar-color-sage = 세이지
+calendar-color-basil = 바질
+calendar-color-peacock = 공작
+calendar-color-blueberry = 블루베리
+calendar-color-lavender = 라벤더
+calendar-color-grape = 포도
+calendar-color-graphite = 흑연
 calendar-kind-event = 일정
+calendar-kind-task = 할 일
 calendar-kind-focus = 집중 시간
 calendar-kind-out-of-office = 부재중
 calendar-kind-working-location = 근무 위치
+calendar-task-added = 할 일을 추가했습니다
+calendar-task-added-to = { $list }에 할 일을 추가했습니다
+calendar-task-list-local = 이 컴퓨터
 calendar-working-home = 집
 calendar-busy = 바쁨
 calendar-free = 한가함

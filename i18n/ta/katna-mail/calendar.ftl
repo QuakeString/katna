@@ -121,10 +121,37 @@ calendar-discard = மாற்றங்களை நிராகரி
 calendar-edit = நிகழ்வைத் திருத்து
 calendar-delete = நிகழ்வை நீக்கு
 calendar-event-details = நிகழ்வு விவரங்கள்
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = புதிய நிகழ்வு
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = நாளைத் திற
+calendar-menu-duplicate = நகலெடு
+calendar-menu-color = நிறம்
+# The event takes its calendar's color.
+calendar-menu-color-calendar = கேலண்டர் நிறம்
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = ஒரு வாரத்தில்
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = தக்காளி
+calendar-color-flamingo = ஃபிளமிங்கோ
+calendar-color-tangerine = டேஞ்சரின்
+calendar-color-banana = வாழைப்பழம்
+calendar-color-sage = சேஜ்
+calendar-color-basil = துளசி
+calendar-color-peacock = மயில்
+calendar-color-blueberry = புளூபெர்ரி
+calendar-color-lavender = லாவெண்டர்
+calendar-color-grape = திராட்சை
+calendar-color-graphite = கிராஃபைட்
 calendar-kind-event = நிகழ்வு
+calendar-kind-task = பணி
 calendar-kind-focus = ஃபோகஸ் நேரம்
 calendar-kind-out-of-office = அலுவலகத்தில் இல்லை
 calendar-kind-working-location = பணியிடம்
+calendar-task-added = பணி சேர்க்கப்பட்டது
+calendar-task-added-to = { $list } பட்டியலில் பணி சேர்க்கப்பட்டது
+calendar-task-list-local = இந்தக் கணினியில்
 calendar-working-home = வீடு
 calendar-busy = பிஸி
 calendar-free = ஃப்ரீ

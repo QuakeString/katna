@@ -4,6 +4,7 @@
 //! Katna components. See `docs/ARCHITECTURE.md` §3 and §5.
 
 pub mod account;
+pub mod api_off;
 pub mod category;
 pub mod config;
 pub mod contact;
@@ -21,7 +22,8 @@ pub mod update;
 pub mod window;
 
 pub use account::{
-    Account, AccountId, AccountKind, AccountSettings, OAuthProvider, Pop3Keep, Security, Server,
+    Account, AccountId, AccountKind, AccountSettings, LinkedSignIn, OAuthProvider, Pop3Keep,
+    Security, Server,
 };
 pub use category::{MailCategory, MailFacts, classify};
 pub use config::Config;

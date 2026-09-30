@@ -161,6 +161,8 @@ async fn sync_account(
     let mut dav_refused: Option<String> = None;
     // What the server answered when no address book was found.
     let mut missing = String::new();
+    // Why the service's own API is switched off for Katna.
+    let mut off: Option<String> = None;
     for method in order {
         let changed = match (method, provider) {
             (Method::Api, Some(provider)) => {
@@ -169,9 +171,16 @@ async fn sync_account(
                     Err(SyncError::Auth(why)) => {
                         let source = match provider {
                             OAuthProvider::Google => BookSource::Google,
-                            OAuthProvider::Microsoft => BookSource::Microsoft,
+                            // Zoho is never an account's own sign-in.
+                            OAuthProvider::Microsoft | OAuthProvider::Zoho => BookSource::Microsoft,
                         };
                         refused = Some((source, why));
+                        None
+                    }
+                    // Switched off in Katna's Google Cloud project:
+                    // CardDAV may still be on.
+                    Err(SyncError::NotEnabled(why)) => {
+                        off = Some(why);
                         None
                     }
                     // The network or the service: not a reason to go another way.
@@ -239,7 +248,10 @@ async fn sync_account(
             Ok((changed, (contacts_state::NEEDS_SIGN_IN, why)))
         }
         (None, Some(why)) => Ok((others, (contacts_state::NEEDS_SIGN_IN, why))),
-        (None, None) => Ok((others, (contacts_state::NONE, missing))),
+        (None, None) => match off {
+            Some(why) => Ok((others, (contacts_state::NOT_ENABLED, why))),
+            None => Ok((others, (contacts_state::NONE, missing))),
+        },
     }
 }
 
@@ -258,6 +270,8 @@ async fn sync_api(
     let source = match provider {
         OAuthProvider::Google => BookSource::Google,
         OAuthProvider::Microsoft => BookSource::Microsoft,
+        // Never an account's own sign-in; no contacts come from Zoho.
+        OAuthProvider::Zoho => return Ok(false),
     };
     let found = match provider {
         OAuthProvider::Google => {
@@ -275,6 +289,7 @@ async fn sync_api(
             }
             microsoft.sync().await?
         }
+        OAuthProvider::Zoho => return Ok(false),
     };
     let failed = |e: String| SyncError::Protocol(e);
     let book = daemon
@@ -422,7 +437,7 @@ pub(super) async fn card_dav(
             let token = tokens.access_token().await.map_err(|e| e.to_string())?;
             return Ok(Some(CardDav::bearer(&token, tls)));
         }
-        Some(OAuthProvider::Microsoft) => return Ok(None),
+        Some(OAuthProvider::Microsoft | OAuthProvider::Zoho) => return Ok(None),
         None => {}
     }
     let Some(password) = daemon

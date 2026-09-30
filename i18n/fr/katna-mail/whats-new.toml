@@ -1802,3 +1802,112 @@ elle reste là où vous la déposez. Ctrl+Z la remet en place. Les cartes
 s’ajustent désormais dans leurs colonnes, sans vide sous les notes
 courtes.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Clic droit dans le Calendrier"
+text = """
+Faites un clic droit sur une heure ou un jour libre pour y ajouter un
+événement, un temps de concentration ou une absence du bureau. Un clic
+droit sur un événement permet de le modifier, le dupliquer, le
+supprimer, y répondre, le rejoindre, écrire aux invités, le colorer ou
+le déplacer vers un autre calendrier, et sur une tâche de la cocher, la
+suivre, lui donner un autre jour ou la supprimer. Annuler revient sur
+une modification.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notes et texte sur les PDF"
+text = """
+L’annotation d’un PDF propose désormais des notes adhésives et des zones
+de texte : cliquez sur la page, tapez votre texte et appuyez sur
+Ctrl+Enter. Pointez sur une note pour la lire, ou cliquez dessus pour la
+modifier. Répondre renvoie directement votre copie annotée dans une
+réponse au message.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Glissez les tâches où vous voulez"
+text = """
+Faites glisser une tâche vers le haut ou le bas de sa liste, ou dans une
+autre liste : les tâches s’écartent pour montrer où elle va se placer.
+Google Tasks garde aussi le nouvel ordre sur votre téléphone, et Annuler
+remet la tâche à sa place.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Ajouter une tâche depuis l’agenda"
+text = """
+La fiche de nouvel événement a un onglet Tâche, comme dans Google
+Calendar. Cliquez sur une heure, choisissez Tâche, et le titre, le jour
+et l’heure deviennent une tâche dans la liste de votre choix, avec une
+description si vous le souhaitez.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Ajouter une tâche depuis l’agenda"
+text = """
+Faites un clic droit sur une heure ou un jour libre du Calendrier et
+choisissez Tâche pour y ajouter une tâche. La fiche de nouvel événement
+s’ouvre sur son onglet Tâche, avec ce jour et cette heure déjà remplis.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Les calendriers sont recherchés à nouveau après un serveur lent"
+text = """
+Quand le serveur de calendriers d’un compte ne répond pas à temps, le
+Calendrier le dit désormais, et précise si c’est la connexion ou
+l’échange sécurisé qui a bloqué, au lieu de « Aucun calendrier
+trouvé ». Il réessaie en quelques minutes plutôt qu’en quelques heures.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Les fichiers du contact montrent leur téléchargement"
+text = """
+Un fichier des détails du contact dont le message n’est pas encore sur
+cet ordinateur se remplit désormais pendant son téléchargement, comme
+les pièces jointes de la liste, puis s’ouvre.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Le courrier d’un nouveau compte s’affiche à son arrivée"
+text = """
+Après l’ajout d’un compte, sa Boîte de réception se télécharge en
+premier et se remplit sous vos yeux, au lieu de rester sur « Récupération
+de vos messages… » jusqu’à ce que chaque dossier soit terminé. Les autres
+dossiers se remplissent de la même façon.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Des cases à la hauteur des icônes"
+text = """
+Les cases à cocher sont un peu plus petites, de la taille des icônes
+d’étoile et de libellé voisines dans la liste des messages. Elles restent
+aussi faciles à cliquer, et leur coche se dessine toujours.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Les calendriers Zoho par la connexion propre à Zoho"
+text = """
+Zoho fournit les calendriers aux autres applications sur un port que
+bloquent beaucoup de réseaux, donc après Se connecter avec Zoho,
+Calendrier les lit plutôt par l’API propre à Zoho. Vos événements Zoho
+s’affichent à côté de vos autres calendriers ; les modifier depuis Katna
+viendra plus tard.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Les tâches Zoho"
+text = """
+Connectez-vous avec Zoho sur un compte Zoho et ses tâches Zoho ToDo
+s’affichent dans Tâches, dans les deux sens : ajoutez, modifiez, cochez
+ou supprimez une tâche dans Katna, et elle change aussi dans Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Des coches centrées à toutes les tailles"
+text = """
+Avec Paramètres > Apparence > Mise à l’échelle au-delà de 100 %, la coche
+d’une case se plaçait un peu en haut à gauche. Les bords des cases à
+cocher et des boutons ronds suivent désormais l’échelle, et la coche est
+centrée à toutes les tailles.
+"""

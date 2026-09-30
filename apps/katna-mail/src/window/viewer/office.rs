@@ -31,6 +31,7 @@ use katna_ui::unpx;
 use super::super::select::{self, Key, Marker, MenuAct};
 use super::{BAR_HEIGHT, Content, Viewer, ZOOMS};
 use crate::theme::Theme;
+use crate::widgets::ScaledEdge;
 
 // Paper colors, the same in light and dark themes, like a printed page.
 const PAPER: u32 = 0xffffffff;
@@ -423,7 +424,7 @@ impl Viewer {
                                         // spreadsheets show the active cell.
                                         .when(anchor == Some((ix, column)), |d| {
                                             d.bg(rgba(PAPER))
-                                                .border_2()
+                                                .border_px(2.0)
                                                 .border_color(rgba(accent))
                                                 .px(px(5.0))
                                         })

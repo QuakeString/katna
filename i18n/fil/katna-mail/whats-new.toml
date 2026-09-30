@@ -1803,3 +1803,110 @@ nananatili ito kung saan mo ito binitawan. Ibinabalik ito ng Ctrl+Z.
 Siksik na ngayon ang mga card sa kanilang mga column, walang puwang sa
 ilalim ng maiikling tala.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Right-click sa Kalendaryo"
+text = """
+Mag-right-click sa bakanteng oras o araw para magdagdag doon ng event,
+focus time o wala sa opisina. Mag-right-click sa isang event para
+i-edit, i-duplicate, i-delete, sagutin, sumali, i-email ang mga bisita,
+kulayan ito o ilipat sa ibang kalendaryo, at sa isang gawain para i-tsek
+ito, lagyan ng star, bigyan ng ibang araw o i-delete. Ibinabalik ng
+I-undo ang isang pagbabago.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Mga note at text sa mga PDF"
+text = """
+May sticky note at text box na ngayon kapag nagmamarka ng PDF: i-click
+ang page, mag-type, at pindutin ang Ctrl+Enter. I-hover ang note para
+basahin ito, o i-click ito para baguhin. Ipinapadala ng Sumagot ang
+kopya mong may marka pabalik sa isang sagot sa mensahe.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "I-drag ang mga gawain kung saan mo gusto"
+text = """
+I-drag ang isang gawain pataas o pababa sa listahan nito, o sa ibang
+listahan, at uusog ang mga gawain doon para ipakita kung saan ito
+lalapag. Pinapanatili rin ng Google Tasks ang bagong ayos sa phone mo,
+at ibinabalik ng I-undo ang gawain.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Magdagdag ng gawain mula sa Calendar"
+text = """
+May tab na Gawain ang card ng bagong event, gaya sa Google Calendar.
+Mag-click ng oras, piliin ang Gawain, at magiging gawain ang pamagat,
+araw at oras sa listahang pipiliin mo, may paglalarawan kung gusto mo.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Magdagdag ng gawain mula sa Calendar"
+text = """
+Mag-right-click sa bakanteng oras o araw sa Kalendaryo at piliin ang
+Gawain para magdagdag doon ng gawain. Bubukas ang card ng bagong event
+sa tab na Gawain nito na nakalagay na ang araw at oras na iyon.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Muling hinahanap ang mga kalendaryo pagkatapos ng mabagal na server"
+text = """
+Kapag hindi sumagot sa oras ang calendar server ng isang account,
+sinasabi na ito ng Kalendaryo, at kung ang koneksyon o ang secure na
+handshake ang natigil, sa halip na “Walang nakitang kalendaryo”.
+Muli itong sumusubok sa loob ng ilang minuto sa halip na ilang oras.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Ipinapakita ng mga file ng contact ang pag-download nila"
+text = """
+Ang file sa card ng contact na wala pa sa computer na ito ang mail ay
+napupuno na ngayon habang nagda-download, gaya ng mga attachment sa
+listahan, saka nagbubukas.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Lumalabas ang mail ng bagong account habang dumarating"
+text = """
+Pagkatapos mong magdagdag ng account, unang nagda-download ang Inbox
+nito at napupuno habang nanonood ka, sa halip na manatili sa “Kinukuha
+ang iyong mail…” hanggang matapos ang bawat folder. Ganoon din napupuno
+ang ibang mga folder.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Mga checkbox na kapantay ng mga icon"
+text = """
+Medyo mas maliit na ang mga checkbox, kasinlaki ng mga icon ng star at
+label sa tabi nito sa listahan ng mail. Kasindali pa rin itong i-click, at
+kusa pa ring iginuguhit ang tsek.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Mga kalendaryo ng Zoho sa sariling koneksyon ng Zoho"
+text = """
+Ibinibigay ng Zoho ang mga kalendaryo sa ibang app sa isang port na
+bina-block ng maraming network, kaya pagkatapos ng Mag-sign in gamit ang
+Zoho, binabasa na lang ng Kalendaryo ang mga ito sa sariling API ng
+Zoho. Lumalabas ang mga event mo sa Zoho sa tabi ng iba mong kalendaryo;
+darating sa ibang pagkakataon ang pagbabago sa mga ito mula sa Katna.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Mga gawain sa Zoho"
+text = """
+Mag-sign in gamit ang Zoho sa isang Zoho account at lalabas ang mga
+gawain nito sa Zoho ToDo sa Mga Gawain, sa magkabilang direksyon:
+magdagdag, mag-edit, markahang tapos na o i-delete ang isang gawain sa
+Katna at magbabago rin ito sa Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Nasa gitna ang tsek sa anumang laki"
+text = """
+Kapag lampas sa 100% ang Mga setting > Hitsura > Scaling, medyo pataas at
+pakaliwa ang tsek ng checkbox. Lumalaki na ngayon kasabay ng scale ang mga
+gilid ng checkbox at bilog na button, kaya nasa gitna ang tsek sa bawat
+laki.
+"""

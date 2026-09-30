@@ -6,7 +6,8 @@
 //! 1. Connect. On failure, wait and try again, doubling the wait each time
 //!    up to [`WorkerConfig::retry_max`]. A refused password is not retried
 //!    on its own: it would only lock the account on many servers.
-//! 2. Sync every folder ([`engine::sync_account`]), then download the bodies
+//! 2. Sync every folder, the inbox first ([`engine::sync_account_live`],
+//!    with [`Event::Stored`] as mail is stored), then download the bodies
 //!    of messages in the offline window ([`bodies::download_bodies`]).
 //! 3. Loop: send queued changes ([`ops::replay`]), bring the inbox and its
 //!    bodies up to date, then wait on it with IDLE until the server reports
@@ -151,6 +152,9 @@ pub enum Event {
     Connected,
     /// A sync changed something, or a full sync finished.
     Synced(Vec<FolderReport>),
+    /// A full sync stored the folder list, or this many new messages, and
+    /// goes on: the mail can show before [`Event::Synced`].
+    Stored(usize),
     /// Bodies of this many messages were downloaded.
     BodiesStored(usize),
     /// Queued changes were sent. Failed ones were undone in the store.
@@ -708,7 +712,10 @@ async fn session<B: MailBackend>(
             let _ = events.try_send(Event::ChangesSent(report));
         }
         if full || last_full.elapsed() >= config.full_sync_interval {
-            let reports = engine::sync_account(backend, store, account).await?;
+            let reports = engine::sync_account_live(backend, store, account, |added| {
+                let _ = events.try_send(Event::Stored(added));
+            })
+            .await?;
             record_quota(backend, store, account, events).await?;
             let _ = events.try_send(Event::Synced(reports));
             *synced = true;

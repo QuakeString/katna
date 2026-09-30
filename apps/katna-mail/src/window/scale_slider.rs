@@ -18,7 +18,7 @@ use katna_ui::px;
 use super::MailWindow;
 use super::settings::Change;
 use crate::theme::Theme;
-use crate::widgets::outlined_button;
+use crate::widgets::{ScaledEdge, outlined_button};
 
 /// The range, in percent, and the step.
 pub(super) const MIN: u16 = 75;
@@ -140,7 +140,7 @@ impl MailWindow {
                             .size(px(KNOB))
                             .rounded_full()
                             .bg(rgba(th.accent))
-                            .border_2()
+                            .border_px(2.0)
                             .border_color(rgba(th.surface)),
                     )
                     .child(

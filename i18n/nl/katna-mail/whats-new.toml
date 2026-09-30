@@ -1741,3 +1741,109 @@ in Keep. De andere notities schuiven opzij om plaats te maken, en hij
 blijft waar je hem loslaat. Ctrl+Z zet hem terug. Kaarten sluiten nu
 netjes aan in hun kolommen, zonder gaten onder korte notities.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Rechtsklikken in de Agenda"
+text = """
+Klik met rechts op een vrij tijdstip of een vrije dag om daar een afspraak,
+focustijd of niet op kantoor toe te voegen. Klik met rechts op een afspraak
+om hem te bewerken, dupliceren, verwijderen, beantwoorden, deel te nemen,
+de gasten te e-mailen, een kleur te geven of naar een andere agenda te
+verplaatsen, en op een taak om hem af te vinken, een ster te geven, een
+andere dag te geven of te verwijderen. Ongedaan maken draait een wijziging
+terug.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notities en tekst op pdf's"
+text = """
+Aantekeningen maken op een pdf kan nu ook met plaknotities en tekstvakken:
+klik op de pagina, typ en druk op Ctrl+Enter. Wijs een notitie aan om hem te
+lezen, of klik erop om hem te wijzigen. Beantwoorden stuurt je kopie met
+aantekeningen meteen terug in een antwoord op het bericht.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Sleep taken waar je ze wilt hebben"
+text = """
+Sleep een taak omhoog of omlaag in de lijst, of naar een andere lijst, en de
+taken daar schuiven opzij om te laten zien waar hij terechtkomt. Google
+Tasks bewaart de nieuwe volgorde ook op je telefoon, en Ongedaan maken zet
+de taak terug.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Een taak toevoegen vanuit de agenda"
+text = """
+De kaart voor een nieuwe afspraak heeft een tabblad Taak, zoals in Google
+Agenda. Klik op een tijd, kies Taak, en de titel, dag en tijd worden een
+taak in de lijst die je kiest, met een beschrijving als je wilt.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Een taak toevoegen vanuit de agenda"
+text = """
+Klik met rechts op een vrij tijdstip of een vrije dag in de Agenda en kies
+Taak om daar een taak toe te voegen. De kaart voor een nieuwe afspraak
+opent op het tabblad Taak, met die dag en tijd al ingevuld.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Agenda’s opnieuw zoeken na een trage server"
+text = """
+Als de agendaserver van een account niet op tijd antwoordt, zegt de Agenda
+dat nu, en of de verbinding of de beveiligde handshake bleef hangen, in
+plaats van ‘Geen agenda’s gevonden’. Hij probeert het binnen enkele minuten
+opnieuw in plaats van na uren.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Bestanden van een contact tonen hun download"
+text = """
+Een bestand in het contactpaneel waarvan de e-mail nog niet op deze
+computer staat, loopt nu vol terwijl het wordt gedownload, zoals bijlagen
+in de lijst doen, en gaat daarna open.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "E-mail van een nieuw account verschijnt terwijl hij binnenkomt"
+text = """
+Nadat je een account hebt toegevoegd, wordt eerst de Inbox gedownload en
+loopt die vol terwijl je kijkt, in plaats van op ‘Je e-mail ophalen…’ te
+blijven staan tot elke map klaar is. Andere mappen vullen zich op dezelfde
+manier.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Selectievakjes op één lijn met de pictogrammen"
+text = """
+Selectievakjes zijn iets kleiner, even groot als de ster- en
+labelpictogrammen ernaast in de e-maillijst. Ze zijn net zo makkelijk aan
+te klikken en het vinkje tekent zich nog steeds.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-agenda’s via Zoho’s eigen verbinding"
+text = """
+Zoho levert agenda’s aan andere apps via een poort die veel netwerken
+blokkeren, dus na “Aanmelden met Zoho” leest Agenda ze in plaats daarvan
+via Zoho’s eigen API. Je Zoho-afspraken staan naast je andere agenda’s;
+ze vanuit Katna wijzigen komt later.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-taken"
+text = """
+Kies “Aanmelden met Zoho” bij een Zoho-account en de taken uit Zoho ToDo
+verschijnen in Taken, in beide richtingen: voeg in Katna een taak toe,
+bewerk, vink af of verwijder hem, en hij verandert ook in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Vinkjes in het midden bij elke grootte"
+text = """
+Met Instellingen > Weergave > Schaal boven 100% stond het vinkje van een
+selectievakje iets naar linksboven. De randen van selectievakjes en
+ronde knoppen groeien nu mee met de schaal, zodat het vinkje bij elke
+grootte in het midden staat.
+"""

@@ -114,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Barua hiyo haipo hapa tena.
 tasks-toast-list-deleted = Orodha imefutwa
 tasks-toast-moved = Limehamishiwa { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Jukumu limehamishwa
 tasks-toast-rescheduled = Kazi imepangwa upya

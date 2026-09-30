@@ -1642,3 +1642,83 @@ title = "Dọrọ ndetu ka ị hazie ha"
 text = """
 Dọrọ ndetu na bọọdụ Ndetu iji bugharịa ya, dị ka na Keep. Ndetu ndị ọzọ na-amịfe n'akụkụ iji nye ohere, ọ na-anọkwa ebe ị tụbara ya. Ctrl+Z na-eweghachi ya. Kaadị na-anọ ugbu a nke ọma n'ogidi ha, na-enweghị oghere n'okpuru ndetu dị mkpụmkpụ.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Pịa aka nri na Kalịnda"
+text = """
+Pịa aka nri n'oge efu ma ọ bụ ụbọchị iji tinye ihe omume, oge nlekwasị anya ma ọ bụ n'èzí ọfịs n'ebe ahụ. Pịa aka nri n'ihe omume iji dezie, mepụta oyiri, hichapụ, zaa, sonye, zipụ ndị ọbịa email, nye ya agba ma ọ bụ bugara ya na kalịnda ọzọ, na n'ọrụ iji kaa ya dị ka emechara, tinye ya kpakpando, nye ya ụbọchị ọzọ ma ọ bụ hichapụ ya. Mwepu na-eweghachi mgbanwe.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Ndetu na ederede na PDF"
+text = """
+Ịtinye akara na PDF ugbu a nwere ndetu nrapado na igbe ederede: pịa peeji ahụ, pịnye, ma pịa Ctrl+Enter. Bugharịa ntụaka n'elu ndetu iji gụọ ya, ma ọ bụ pịa ya iji gbanwee ya. Zaa na-eziga mbipụta gị nwere akara ozugbo n'ime nzaghachi na ozi ahụ.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Dọrọ ọrụ ebe ị chọrọ ha"
+text = """
+Dọrọ ọrụ elu ma ọ bụ ala na ndepụta ya, ma ọ bụ banye n'ndepụta ọzọ, ọrụ ndị nọ ebe ahụ ga-esebe n'akụkụ iji gosi ebe ọ ga-adakwasị. Google Tasks na-edebe usoro ọhụrụ ahụ na ekwentị gị kwa, ma Mebie na-eweghachi ọrụ ahụ.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tinye ọrụ site na Kalịnda"
+text = """
+Kaadị ihe omume ọhụrụ nwere taabụ Ọrụ, dịka na Google Calendar. Pịa oge, họrọ Ọrụ, ma isiokwu, ụbọchị na oge ga-aghọ ọrụ n'ndepụta ị họọrọ, ya na nkọwa ma ọ bụrụ na ị chọrọ.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tinye ọrụ site na Kalịnda"
+text = """
+Pịa aka nri n'oge efu ma ọ bụ ụbọchị na Kalịnda ma họrọ Ọrụ iji tinye ọrụ n'ebe ahụ. Kaadị ihe omume ọhụrụ na-emepe na taabụ Ọrụ ya, ya na ụbọchị na oge ahụ ejupụtara.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalịnda na-achọ ọzọ mgbe sava dị nwayọ"
+text = """
+Mgbe sava kalịnda nke akaụntụ azaghị n'oge, Kalịnda na-ekwu nke a ugbu a, na ma njikọ ahụ ma ọ bụ nkwekọrịta echekwara kwụsịrị, kama "Ahụghị kalịnda ọ bụla". Ọ na-anwa ọzọ n'ime nkeji ole na ole kama ọtụtụ awa.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Faịlụ kọntaktị na-egosi ibudata ha"
+text = """
+Faịlụ dị na panel kọntaktị nke ozi ya na-adịbeghị na kọmputa a na-ejupụta
+ugbu a ka ọ na-ebudata, dịka mgbakwunye ndị dị na ndepụta na-eme, wee meghee.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Ozi akaụntụ ọhụrụ na-apụta ka ọ na-abata"
+text = """
+Mgbe ị tinyere akaụntụ, igbe ozi mbata ya na-ebudata mbụ ma na-ejupụta ka
+ị na-ele, kama ịnọgide na "Na-enweta ozi gị…" ruo mgbe folda niile gwụrụ.
+Folda ndị ọzọ na-ejupụta n'otu ụzọ ahụ.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Igbe nlele kwụ otu ọkwa na akara ngosi"
+text = """
+Igbe nlele dị ntakịrị ugbu a, otu nha dị ka akara ngosi kpakpando na leebụl dị n'akụkụ ha na ndepụta ozi. Ọ ka dị mfe ịpị ha, akara ya ka na-esekwa onwe ya.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalịnda Zoho site n'njikọ nke Zoho n'onwe ya"
+text = """
+Zoho na-enye ngwa ndị ọzọ kalịnda site n'ọdụ (port) nke ọtụtụ netwọk
+na-egbochi, ya mere mgbe “Banye na Zoho” gasịrị, Kalịnda na-agụ ha site
+na API nke Zoho n'onwe ya kama. Ihe omume Zoho gị na-egosi n'akụkụ kalịnda
+gị ndị ọzọ; ịgbanwe ha site na Katna ga-abịa ma emechaa.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Ọrụ Zoho"
+text = """
+Banye na Zoho n'akaụntụ Zoho, ọrụ Zoho ToDo ya na-egosikwa na Ọrụ,
+n'ụzọ abụọ: tinye, dezie, kaa akara ma ọ bụ hichapụ ọrụ na Katna, ọ
+na-agbanwekwa na Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Akara na-anọ n'etiti n'nha ọ bụla"
+text = """
+Mgbe Ntọala > Ọdịdị > Nha karịrị 100%, akara igbe nlele na-anọ ntakịrị n'elu na n'aka ekpe. Nsọtụ igbe nlele na bọtịnụ gburugburu na-eso nha ahụ ebuwanye ibu ugbu a, ya mere akara ya na-anọ n'etiti n'nha ọ bụla.
+"""

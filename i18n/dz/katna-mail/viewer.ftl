@@ -26,6 +26,8 @@ viewer-tool-underline = འོག་ཐིག
 viewer-tool-squiggly = རླབས་ཐིག
 viewer-tool-strike = བར་ཐིག
 viewer-tool-pen = སྨྱུ་གུ
+viewer-tool-note = སྦྱར་ཡིག་ཟིན་བྲིས།
+viewer-tool-text = ཡིག་འབྲུ་སྒྲོམ།
 viewer-tool-eraser = ཀྲ་བཤལ།
 viewer-color-yellow = སེར་པོ
 viewer-color-green = ལྗང་ཁུ
@@ -38,6 +40,12 @@ viewer-color-purple = རྒྱ་སྨུག
 viewer-marks-undo-tip = འབད་བཤོལ། (Ctrl+Z)
 viewer-marks-redo-tip = ལོག་འབད། (Ctrl+Shift+Z)
 viewer-save-marked-tip = ཁྱོད་ཀྱི་རྟགས་ཚུ་དང་གཅིག་ཁར་ འདྲ་བཤུས་ཅིག་སྲུང་། (Ctrl+S)
+viewer-reply-marked-tip = རྟགས་བཀལ་ཡོད་པའི་འདྲ་བཤུས་དང་གཅིག་ཁར་ ལན་སློག
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ཟིན་བྲིས་ཅིག་བྲིས།
+viewer-text-placeholder = ནཱ་ལུ་ ཡིག་དཔར་རྐྱབས།
+viewer-note-done = འབད་ཚར་ཡི།
+viewer-note-delete = བཏོན་གཏང་།
 viewer-markup-protected = PDF འདི་ བསྒྱུར་བཅོས་ལས་ ཉེན་སྐྱོབ་འབད་དེ་ཡོདཔ་ལས་ རྟགས་བཀལ་མི་ཚུགས།
 viewer-marks-save-failed = རྟགས་བཀལ་ཡོད་པའི་འདྲ་བཤུས་ སྲུང་མ་ཚུགས།
 # Asked when closing a PDF, or moving to another attachment, with marks

@@ -76,7 +76,10 @@ pub(super) fn drive_provider(window: &MailWindow, account: AccountId) -> Option<
 pub(super) fn drive_note(provider: OAuthProvider, name: String, limit: String) -> String {
     match provider {
         OAuthProvider::Google => tr!("compose-drive-note", name = name, limit = limit),
-        OAuthProvider::Microsoft => tr!("compose-onedrive-note", name = name, limit = limit),
+        // Only Google and Microsoft accounts keep large files.
+        OAuthProvider::Microsoft | OAuthProvider::Zoho => {
+            tr!("compose-onedrive-note", name = name, limit = limit)
+        }
     }
 }
 
@@ -578,48 +581,72 @@ impl MailWindow {
                 .hover(|s| s.bg(rgba(th.hover)))
                 .child(label)
         };
-        let detail: AnyElement =
-            match &file.state {
-                DriveState::Uploading => {
-                    let percent = (file.sent * 100).checked_div(file.size).unwrap_or(0);
-                    div()
-                        .flex_none()
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("compose-drive-uploading", percent = percent))
-                        .into_any_element()
-                }
-                DriveState::Done { .. } => div()
+        let detail: AnyElement = match &file.state {
+            DriveState::Uploading => {
+                let percent = (file.sent * 100).checked_div(file.size).unwrap_or(0);
+                div()
                     .flex_none()
                     .text_color(rgba(th.text_dim))
-                    .child(tr!(
-                        "compose-attachment-size",
-                        size = format::size(file.size)
-                    ))
-                    .into_any_element(),
-                DriveState::NeedsPermission => {
-                    let (label, why) = if file.onedrive {
-                        (
-                            tr!("compose-onedrive-allow"),
-                            tr!("compose-onedrive-allow-tip"),
-                        )
-                    } else {
-                        (tr!("compose-drive-allow"), tr!("compose-drive-allow-tip"))
-                    };
-                    action("drive-allow", label)
-                        .tooltip(tip(why, th))
-                        .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
-                        .into_any_element()
-                }
-                DriveState::Failed(error) => {
-                    let path = file.path.clone();
+                    .child(tr!("compose-drive-uploading", percent = percent))
+                    .into_any_element()
+            }
+            DriveState::Done { .. } => div()
+                .flex_none()
+                .text_color(rgba(th.text_dim))
+                .child(tr!(
+                    "compose-attachment-size",
+                    size = format::size(file.size)
+                ))
+                .into_any_element(),
+            DriveState::NeedsPermission => {
+                let (label, why) = if file.onedrive {
+                    (
+                        tr!("compose-onedrive-allow"),
+                        tr!("compose-onedrive-allow-tip"),
+                    )
+                } else {
+                    (tr!("compose-drive-allow"), tr!("compose-drive-allow-tip"))
+                };
+                action("drive-allow", label)
+                    .tooltip(tip(why, th))
+                    .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
+                    .into_any_element()
+            }
+            DriveState::Failed(error) => {
+                let path = file.path.clone();
+                // The Drive API switched off in Katna's Google Cloud
+                // project: say which, and offer the page that turns
+                // it on.
+                let off = katna_core::api_off::parse(error);
+                let why = match off {
+                    Some((api, _)) => tr!("google-api-off", api = api),
+                    None => error.clone(),
+                };
+                let retry =
                     action("drive-retry", tr!("compose-drive-retry"))
-                        .tooltip(tip(error.clone(), th))
+                        .tooltip(tip(why, th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.start_drive_upload(path.clone(), cx)
-                        }))
-                        .into_any_element()
+                        }));
+                match off {
+                    Some((api, url)) => {
+                        let url = url.to_owned();
+                        div()
+                            .flex_none()
+                            .flex()
+                            .flex_row()
+                            .child(
+                                action("drive-turn-on", tr!("google-api-turn-on"))
+                                    .tooltip(tip(tr!("google-api-turn-on-tooltip", api = api), th))
+                                    .on_click(move |_, _, cx| cx.open_url(&url)),
+                            )
+                            .child(retry)
+                            .into_any_element()
+                    }
+                    None => retry.into_any_element(),
                 }
-            };
+            }
+        };
         let progress = match file.state {
             DriveState::Uploading if file.size > 0 => {
                 Some((file.sent as f32 / file.size as f32).clamp(0.02, 1.0))

@@ -1707,3 +1707,106 @@ Keep. De andra anteckningarna glider undan för att ge plats, och den
 stannar där du släpper den. Ctrl+Z lägger tillbaka den. Korten sitter nu
 tätt i sina kolumner, utan luckor under korta anteckningar.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Högerklicka i Kalender"
+text = """
+Högerklicka på en ledig tid eller dag för att lägga till en händelse,
+fokustid eller frånvaro där. Högerklicka på en händelse för att
+redigera, duplicera, radera, svara, ansluta, skicka e-post till
+gästerna, färga den eller flytta den till en annan kalender, och på en
+uppgift för att bocka av den, stjärnmärka den, ge den en annan dag eller
+radera den. Ångra tar tillbaka en ändring.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Anteckningar och text i PDF-filer"
+text = """
+När du märker upp en PDF finns nu fästisar och textrutor: klicka på
+sidan, skriv och tryck på Ctrl+Enter. Håll pekaren över en anteckning
+för att läsa den, eller klicka på den för att ändra den. Svara skickar
+den uppmärkta kopian direkt tillbaka i ett svar på meddelandet.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Dra uppgifter dit du vill ha dem"
+text = """
+Dra en uppgift uppåt eller nedåt i listan, eller till en annan lista,
+och uppgifterna där glider undan för att visa var den hamnar. Google
+Tasks behåller den nya ordningen på telefonen också, och Ångra lägger
+tillbaka uppgiften.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Lägg till en uppgift från Kalender"
+text = """
+Kortet för ny händelse har en flik Uppgift, som i Google Kalender.
+Klicka på en tid, välj Uppgift, så blir titeln, dagen och tiden en
+uppgift i den lista du väljer, med en beskrivning om du vill.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Lägg till en uppgift från Kalender"
+text = """
+Högerklicka på en ledig tid eller dag i Kalender och välj Uppgift för
+att lägga till en uppgift där. Kortet för ny händelse öppnas på fliken
+Uppgift med den dagen och tiden redan ifyllda.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendrar försöker igen efter en långsam server"
+text = """
+När ett kontos kalenderserver inte svarar i tid säger Kalender nu det,
+och om det var anslutningen eller den säkra handskakningen som fastnade,
+i stället för "Inga kalendrar hittades". Den försöker igen inom några
+minuter i stället för timmar.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kontaktens filer visar nedladdningen"
+text = """
+En fil i kontaktpanelen vars e-post inte finns på den här datorn än
+fylls nu medan den laddas ned, som bilagorna i listan gör, och öppnas
+sedan.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Ett nytt kontos e-post visas allt eftersom den kommer in"
+text = """
+När du har lagt till ett konto hämtas dess inkorg först och fylls på
+medan du tittar, i stället för att stå på ”Hämtar din e-post…” tills
+alla mappar är klara. Andra mappar fylls på på samma sätt.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kryssrutorna ligger i nivå med ikonerna"
+text = """
+Kryssrutorna är lite mindre, lika stora som stjärn- och etikettikonerna
+bredvid dem i e-postlistan. De är lika lätta att klicka på som förut, och
+bocken ritas fortfarande fram.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-kalendrar via Zohos egen anslutning"
+text = """
+Zoho delar kalendrar med andra appar på en port som många nätverk
+blockerar, så efter Logga in med Zoho läser Kalender dem via Zohos eget
+API i stället. Dina Zoho-händelser visas bredvid dina andra kalendrar;
+att ändra dem från Katna kommer senare.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-uppgifter"
+text = """
+Logga in med Zoho på ett Zoho-konto så visas dess uppgifter i Zoho ToDo
+i Uppgifter, åt båda hållen: lägg till, redigera, bocka av eller ta bort
+en uppgift i Katna så ändras den i Zoho också.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Bocken hamnar i mitten i alla storlekar"
+text = """
+Med Skalning i Inställningar > Utseende över 100 % hamnade bocken i en
+kryssruta lite upp och till vänster. Kanterna på kryssrutor och runda
+knappar växer nu med skalan, så bocken hamnar i mitten i alla storlekar.
+"""

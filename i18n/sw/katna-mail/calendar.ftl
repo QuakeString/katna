@@ -121,10 +121,37 @@ calendar-discard = Tupa mabadiliko
 calendar-edit = Hariri tukio
 calendar-delete = Futa tukio
 calendar-event-details = Maelezo ya tukio
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Tukio jipya
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Fungua siku
+calendar-menu-duplicate = Nakili
+calendar-menu-color = Rangi
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Rangi ya kalenda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Baada ya wiki moja
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Nyanya
+calendar-color-flamingo = Heroe
+calendar-color-tangerine = Chenza
+calendar-color-banana = Ndizi
+calendar-color-sage = Kijani kijivu
+calendar-color-basil = Mrehani
+calendar-color-peacock = Tausi
+calendar-color-blueberry = Beri ya buluu
+calendar-color-lavender = Lavenda
+calendar-color-grape = Zabibu
+calendar-color-graphite = Grafiti
 calendar-kind-event = Tukio
+calendar-kind-task = Jukumu
 calendar-kind-focus = Muda wa kuzingatia
 calendar-kind-out-of-office = Nje ya ofisi
 calendar-kind-working-location = Mahali pa kazi
+calendar-task-added = Jukumu limeongezwa
+calendar-task-added-to = Jukumu limeongezwa kwenye { $list }
+calendar-task-list-local = Kwenye kompyuta hii
 calendar-working-home = Nyumbani
 calendar-busy = Ana shughuli
 calendar-free = Yuko huru

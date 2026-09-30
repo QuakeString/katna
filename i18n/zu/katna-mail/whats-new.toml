@@ -1799,3 +1799,110 @@ Amanothi amanye ashelela eceleni ukuze enze isikhala, futhi lihlala
 lapho ulibeka khona. I-Ctrl+Z iyalibuyisela. Amakhadi manje ahlala kahle
 emakholamu awo, engenazo izikhala ngaphansi kwamanothi amafushane.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Chofoza kwesokudla kuKhalenda"
+text = """
+Chofoza kwesokudla isikhathi noma usuku olungenalutho ukuze wengeze
+lapho umcimbi, isikhathi sokugxila noma isikhathi sokungabi sehhovisi.
+Chofoza kwesokudla umcimbi ukuze uwuhlele, wenze ikhophi, uwususe,
+uphendule, ujoyine, uthumele izihambeli i-imeyili, uwunike umbala noma
+uwuhambise kwenye ikhalenda, bese uchofoza umsebenzi ukuze uwumake
+njengoqediwe, uwunike inkanyezi, uwunike olunye usuku noma uwususe.
+Hlehlisa ibuyisela emuva ushintsho.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Amanothi nombhalo kuma-PDF"
+text = """
+Ukumaka i-PDF manje kunamanothi anamathelayo namabhokisi ombhalo:
+chofoza ikhasi, thayipha, bese ucindezela u-Ctrl+Enter. Beka isikhombi
+phezu kwenothi ukuze ulifunde, noma ulichofoze ukuze ulishintshe.
+Phendula ithumela ikhophi yakho emakiwe ngqo iphindele empendulweni
+yomlayezo.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Hudula imisebenzi lapho uyifuna khona"
+text = """
+Hudula umsebenzi phezulu noma phansi ohlwini lwawo, noma uwuse kolunye
+uhlu, bese imisebenzi ekhona ishelela eceleni ukukhombisa lapho
+uzohlala khona. I-Google Tasks igcina uhlelo olusha nakufoni yakho,
+futhi u-Hlehlisa ubuyisela umsebenzi.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Engeza umsebenzi kusuka kuKhalenda"
+text = """
+Ikhadi lomcimbi omusha linethebhu ethi Umsebenzi, njengaku-Google
+Calendar. Chofoza isikhathi, khetha Umsebenzi, bese isihloko, usuku
+nesikhathi kuba umsebenzi ohlwini olukhethayo, kanye nencazelo uma
+uthanda.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Engeza umsebenzi kusuka kuKhalenda"
+text = """
+Chofoza kwesokudla isikhathi noma usuku olungenalutho kuKhalenda bese
+ukhetha Umsebenzi ukuze wengeze umsebenzi lapho. Ikhadi lomcimbi omusha
+livuleka kuthebhu yalo ethi Umsebenzi, lolo suku nesikhathi sekugcwalisiwe.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Amakhalenda aphinda abheke ngemva kweseva ehamba kancane"
+text = """
+Uma iseva yekhalenda ye-akhawunti ingaphenduli ngesikhathi, iKhalenda
+manje iyakusho lokho, nokuthi kwaba ukuxhumana noma ukuxhawulana
+okuvikelekile okubambekile, esikhundleni sokuthi "Awekho amakhalenda
+atholakele". Iphinda izame emizuzwini embalwa esikhundleni samahora.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Amafayela oxhumana naye abonisa ukulandwa kwawo"
+text = """
+Ifayela kuphaneli yoxhumana naye i-imeyili yalo engakabi kule khompyutha manje liyagcwala ngenkathi lilandwa, njengoba kwenza okunamathiselwe ohlwini, bese liyavuleka.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Imeyili ye-akhawunti entsha ivela njengoba ifika"
+text = """
+Ngemva kokwengeza i-akhawunti, ibhokisi layo lokungenayo lilandwa kuqala
+futhi ligcwala ubukele, esikhundleni sokuhlala ku-“Kulandwa imeyili
+yakho…” kuze kuqedwe wonke amafolda. Amanye amafolda agcwala ngendlela
+efanayo.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Amabhokisi okuhlola alingana nezithonjana"
+text = """
+Amabhokisi okuhlola manje amancane kancane, alingana nezithonjana
+zenkanyezi nezelebula eziseduze kwawo ohlwini lweposi. Asalula
+ukuwachofoza njengakuqala, futhi umaki usazidweba.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Amakhalenda e-Zoho ngoxhumano lwe-Zoho uqobo"
+text = """
+I-Zoho inikeza amakhalenda kwezinye izinhlelo zokusebenza ngembobo
+evinjwa amanethiwekhi amaningi, ngakho ngemuva kokuthi Ngena nge-Zoho,
+iKhalenda iwafunda nge-API ye-Zoho uqobo esikhundleni salokho. Imicimbi
+yakho ye-Zoho ivela eduze kwamanye amakhalenda akho; ukuyishintsha
+ku-Katna kuzofika kamuva.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Imisebenzi ye-Zoho"
+text = """
+Ngena nge-Zoho ku-akhawunti ye-Zoho futhi imisebenzi yayo ye-Zoho ToDo
+ivela ku-Imisebenzi, ngazo zombili izindlela: engeza, hlela, maka noma
+susa umsebenzi ku-Katna futhi uyashintsha naku-Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Umaki uhlala phakathi nendawo kunoma yimuphi usayizi"
+text = """
+Uma Ukukala ku-Izilungiselelo > Ukubukeka kungaphezu kuka-100%, umaki
+webhokisi lokuhlola wawuhlala phezulu kancane nangakwesobunxele. Imiphetho
+yamabhokisi okuhlola nezinkinobho eziyindilinga manje ikhula
+nesilinganiso, ngakho umaki uhlala phakathi nendawo kuwo wonke usayizi.
+"""

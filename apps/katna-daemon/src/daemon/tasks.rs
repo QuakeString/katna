@@ -21,7 +21,7 @@ use std::{
 use async_channel::Receiver;
 use futures_lite::FutureExt;
 use jiff::tz::TimeZone;
-use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
+use katna_core::{Account, AccountId, AccountKind, AccountSettings, OAuthProvider};
 use katna_dbus::task_state;
 use katna_store::tasks::TaskFields;
 use katna_sync::{
@@ -29,8 +29,11 @@ use katna_sync::{
     calendar::caldav::CalDav,
     methods::{self, Data, Method},
     net::Tls,
-    oauth::Provider,
-    tasks::{TaskService, caldav::DavTasks, google::GoogleTasks, graph::ToDo, sync_account},
+    oauth::{self, Provider},
+    tasks::{
+        TaskService, caldav::DavTasks, google::GoogleTasks, graph::ToDo, sync_account,
+        zoho::ZohoTasks,
+    },
 };
 
 use super::{CommandError, Daemon, Notice};
@@ -162,8 +165,34 @@ impl Daemon {
                     TaskService::Microsoft(ToDo::new(tokens, tls))
                 }
                 (_, Method::Dav) => return Ok(None),
+                // Never an account's own sign-in.
+                (OAuthProvider::Zoho, _) => return Ok(None),
             };
             return Ok(Some(Some((key, service))));
+        }
+        // Zoho keeps no to-dos in CalDAV: its tasks come through the Zoho
+        // sign-in linked to the password account.
+        if let Some(linked) = settings.linked.as_ref()
+            && linked.provider == OAuthProvider::Zoho
+        {
+            if method != Method::Api {
+                return Ok(None);
+            }
+            let (tokens, linked) = self
+                .linked_tokens(account.id)
+                .await
+                .map_err(|err| {
+                    tracing::debug!(account = account.id.0, %err, "no Zoho tokens for tasks");
+                    Error::Auth(err)
+                })?
+                .ok_or_else(|| Error::Auth("Zoho asks to sign in again".into()))?;
+            let key = format!("zoho {:p}", Arc::as_ptr(&tokens));
+            let tls = Tls::system().map_err(|err| Error::Tls(err.to_string()))?;
+            let api = oauth::zoho_mail_api(&linked);
+            return Ok(Some(Some((
+                key,
+                TaskService::Zoho(ZohoTasks::new(tokens, tls, &api)),
+            ))));
         }
         if method != Method::Dav {
             return Ok(None);
@@ -223,17 +252,11 @@ impl Daemon {
             Err(err) => return ((task_state::ERROR, err.to_string()), false),
         };
         let provider = settings.oauth;
-        // Google and Microsoft let Katna into tasks only through their own
-        // sign-in, not with a mail password.
-        if account.kind == AccountKind::Imap
-            && provider.is_none()
-            && let Some(own) = settings
-                .imap
-                .as_ref()
-                .and_then(|imap| Provider::for_imap_host(&imap.host))
-        {
-            return ((task_state::USE_SIGN_IN, own.as_str().to_owned()), false);
+        if let Some(status) = sign_in_first(account, &settings) {
+            return (status, false);
         }
+        let linked = settings.linked.as_ref().map(|l| l.provider);
+        let provider = provider.or(linked);
         let now = super::unix_now();
         let order = methods::order(&self.store(), account.id, Data::Tasks, provider, now);
         // What to show when no way works: the most useful reason.
@@ -287,6 +310,14 @@ impl Daemon {
                 shown = status;
             }
         }
+        // A linked sign-in that stopped working is fixed by signing in
+        // with it again, not by the account's own password.
+        if shown.0 == task_state::NEEDS_SIGN_IN
+            && settings.oauth.is_none()
+            && let Some(linked) = linked
+        {
+            shown = (task_state::USE_SIGN_IN, linked.as_str().to_owned());
+        }
         (shown, false)
     }
 
@@ -297,6 +328,20 @@ impl Daemon {
             return false;
         };
         let mut changed = false;
+        // The lines that need no network first.
+        for account in &accounts {
+            let settings = self.store().account_settings(account.id);
+            if let Ok(settings) = settings
+                && let Some(status) = sign_in_first(account, &settings.unwrap_or_default())
+            {
+                let old = self
+                    .tasks_status
+                    .lock()
+                    .unwrap()
+                    .insert(account.id, status.clone());
+                changed |= old.as_ref() != Some(&status);
+            }
+        }
         for account in accounts {
             if self.closing() {
                 break;
@@ -344,6 +389,40 @@ impl Daemon {
     }
 }
 
+/// What a password account shows before any sync, when its tasks come
+/// only through a provider's own sign-in: Google's and Microsoft's, and
+/// Zoho's linked one. It needs no network, so every account's line shows
+/// at once, not after the slower accounts ahead of it in a round.
+fn sign_in_first(account: &Account, settings: &AccountSettings) -> Option<Status> {
+    // Google and Microsoft let Katna into tasks only through their own
+    // sign-in, not with a mail password.
+    if account.kind == AccountKind::Imap
+        && settings.oauth.is_none()
+        && let Some(own) = settings
+            .imap
+            .as_ref()
+            .and_then(|imap| Provider::for_imap_host(&imap.host))
+    {
+        return Some((task_state::USE_SIGN_IN, own.as_str().to_owned()));
+    }
+    let linked = settings.linked.as_ref().map(|l| l.provider);
+    // Nor does Zoho, whose CalDAV keeps no to-dos: its tasks need the
+    // Zoho sign-in linked to the account.
+    if account.kind == AccountKind::Imap
+        && settings.oauth.is_none()
+        && linked.is_none()
+        && (oauth::is_zoho_host(&account.address)
+            || settings
+                .imap
+                .as_ref()
+                .is_some_and(|imap| oauth::is_zoho_host(&imap.host)))
+    {
+        let zoho = OAuthProvider::Zoho.as_str().to_owned();
+        return Some((task_state::USE_SIGN_IN, zoho));
+    }
+    None
+}
+
 /// Runs task sync until the daemon goes.
 pub(crate) async fn run(daemon: Weak<Daemon>, wakes: Receiver<()>) {
     let mut known = Services::new();
@@ -369,5 +448,64 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wakes: Receiver<()>) {
         if daemon.sync_tasks(&mut known).await {
             let _ = daemon.notices().try_send(Notice::TasksChanged);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use katna_core::{Security, Server};
+
+    use super::*;
+
+    fn account(address: &str) -> Account {
+        Account {
+            id: AccountId(1),
+            kind: AccountKind::Imap,
+            display_name: String::new(),
+            address: address.into(),
+        }
+    }
+
+    fn imap(host: &str) -> AccountSettings {
+        AccountSettings {
+            imap: Some(Server {
+                host: host.into(),
+                port: 993,
+                security: Security::Tls,
+                username: String::new(),
+                accept_invalid_certs: false,
+            }),
+            ..AccountSettings::default()
+        }
+    }
+
+    /// A Zoho-hosted address on its own domain is known by its server.
+    #[test]
+    fn password_accounts_that_need_a_sign_in_say_so_first() {
+        let zoho = Some((task_state::USE_SIGN_IN, "zoho".to_owned()));
+        assert_eq!(
+            sign_in_first(&account("mz@invenia.in"), &imap("imappro.zoho.in")),
+            zoho
+        );
+        assert_eq!(
+            sign_in_first(&account("ada@zohomail.eu"), &AccountSettings::default()),
+            zoho
+        );
+        assert_eq!(
+            sign_in_first(&account("ada@gmail.com"), &imap("imap.gmail.com")),
+            Some((task_state::USE_SIGN_IN, "google".to_owned()))
+        );
+        // Linked already, or not Zoho's: it syncs.
+        let mut linked = imap("imappro.zoho.in");
+        linked.linked = Some(katna_core::LinkedSignIn {
+            provider: OAuthProvider::Zoho,
+            accounts_server: "https://accounts.zoho.in".into(),
+            api_domain: String::new(),
+        });
+        assert_eq!(sign_in_first(&account("mz@invenia.in"), &linked), None);
+        assert_eq!(
+            sign_in_first(&account("kim@example.org"), &imap("mail.example.org")),
+            None
+        );
     }
 }

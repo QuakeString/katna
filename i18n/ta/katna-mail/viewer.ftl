@@ -26,6 +26,8 @@ viewer-tool-underline = அடிக்கோடு
 viewer-tool-squiggly = அலைக்கோடு
 viewer-tool-strike = அடித்துவிடு
 viewer-tool-pen = பேனா
+viewer-tool-note = ஒட்டுக் குறிப்பு
+viewer-tool-text = உரைப் பெட்டி
 viewer-tool-eraser = அழிப்பான்
 viewer-color-yellow = மஞ்சள்
 viewer-color-green = பச்சை
@@ -38,6 +40,12 @@ viewer-color-purple = ஊதா
 viewer-marks-undo-tip = செயல்தவிர் (Ctrl+Z)
 viewer-marks-redo-tip = மீண்டும் செய் (Ctrl+Shift+Z)
 viewer-save-marked-tip = உங்கள் குறிகளுடன் ஒரு நகலைச் சேமி (Ctrl+S)
+viewer-reply-marked-tip = குறியிட்ட நகலுடன் பதிலளி
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = குறிப்பை எழுதுங்கள்
+viewer-text-placeholder = இங்கே தட்டச்சு செய்யுங்கள்
+viewer-note-done = முடிந்தது
+viewer-note-delete = நீக்கு
 viewer-markup-protected = இந்த PDF மாற்றங்களிலிருந்து பாதுகாக்கப்பட்டுள்ளதால், இதில் குறியிட முடியாது.
 viewer-marks-save-failed = குறியிட்ட நகலைச் சேமிக்க முடியவில்லை.
 # Asked when closing a PDF, or moving to another attachment, with marks

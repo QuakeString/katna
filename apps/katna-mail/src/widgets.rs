@@ -584,9 +584,10 @@ impl Check {
     }
 }
 
-/// The box of a checkbox: 18 px with a 2 px edge, which sits with a 20 px
-/// [`radio`] ring at the same weight, as Material draws the pair.
-const CHECK_BOX: f32 = 18.0;
+/// The box of a checkbox: 16 px with a 2 px edge, as big as the star and
+/// label icons it sits beside in a mail row, and at the weight of a
+/// [`radio`] ring.
+const CHECK_BOX: f32 = 16.0;
 /// The square of a partly checked box: 1 px clear of the edge all round.
 const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 2.0;
 
@@ -642,7 +643,7 @@ fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> A
                 // gap between them; checking grows it to fill the box.
                 let inner = lerp(PARTIAL_SQUARE, CHECK_BOX - 4.0, full) * edge;
                 d.rounded(px(3.0))
-                    .border_2()
+                    .border_px(2.0)
                     .border_color(rgba(crate::theme::mix(rest, fill, edge)))
                     .flex()
                     .items_center()
@@ -688,8 +689,10 @@ fn tick_color(fill: u32, th: &Theme) -> u32 {
 /// The tick drawn from its start to `t` of its length, inside the box's
 /// 2 px edge.
 fn check_mark(t: f32, color: u32) -> impl IntoElement {
-    // Points in the box, less its edge, whose sides are 14 px.
-    let points: &'static [(f32, f32)] = &[(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)];
+    // Points in a 14 px square, scaled to the box less its edge.
+    const POINTS: [(f32, f32); 3] = [(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)];
+    let k = (CHECK_BOX - 4.0) / 14.0;
+    let points = POINTS.map(|(x, y)| (x * k, y * k));
     // The tick starts once the box has begun to fill.
     let drawn = ((t - 0.25) / 0.75).clamp(0.0, 1.0);
     canvas(
@@ -727,17 +730,36 @@ fn check_mark(t: f32, color: u32) -> impl IntoElement {
     .size_full()
 }
 
+/// An edge in design pixels, scaled with the interface like every other
+/// length. GPUI's `border_2()` and the like are fixed device-independent
+/// pixels, so at 200% they would be half as thick, and a checkbox's tick
+/// would sit off the centre of a box drawn for the scaled edge.
+pub trait ScaledEdge: Styled + Sized {
+    /// An edge `width` design pixels wide all round.
+    fn border_px(mut self, width: f32) -> Self {
+        let width: gpui::AbsoluteLength = px(width).into();
+        let edges = &mut self.style().border_widths;
+        edges.top = Some(width);
+        edges.right = Some(width);
+        edges.bottom = Some(width);
+        edges.left = Some(width);
+        self
+    }
+}
+
+impl<E: Styled> ScaledEdge for E {}
+
 /// A radio button drawn at `t` (0 off, 1 on).
 pub fn radio(t: f32, th: &Theme) -> AnyElement {
     let ring = crate::theme::mix(th.text_dim, th.accent, t);
     div()
+        .border_px(2.0)
         .size(px(20.0))
         .flex_none()
         .flex()
         .items_center()
         .justify_center()
         .rounded_full()
-        .border_2()
         .border_color(rgba(ring))
         .child(div().size(px(10.0 * t)).rounded_full().bg(rgba(th.accent)))
         .into_any_element()

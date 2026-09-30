@@ -35,12 +35,14 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised, tip};
 use katna_core::quick_add::{self, Typed};
 
+mod task_tab;
+
 /// How long a new event lasts.
 const NEW_EVENT_MINUTES: i64 = 60;
 /// The steps of the time lists.
 const TIME_STEP: i32 = 15;
 /// The small card's width.
-const QUICK_WIDTH: f32 = 448.0;
+const QUICK_WIDTH: f32 = 480.0;
 /// The reminders offered, in minutes before the start.
 const REMINDERS: [i64; 7] = [0, 5, 10, 15, 30, 60, 24 * 60];
 
@@ -159,6 +161,8 @@ pub(super) enum Pick {
     Repeat,
     Reminder,
     Busy,
+    /// The Task tab's task list.
+    TaskList,
 }
 
 /// An event being added or changed.
@@ -190,6 +194,10 @@ pub(super) struct Draft {
     /// Focus time, out of office or a working location; chosen for a new
     /// event only, as services fix it when the event is made.
     kind: EventKind,
+    /// The Task tab is on: saving adds a task due at the start instead.
+    task: bool,
+    /// The task list a task goes in (`0`: the daemon's default list).
+    task_list: i64,
     /// Where the small card points.
     at: Point<Pixels>,
     pick: Option<(Pick, Point<Pixels>)>,
@@ -236,7 +244,9 @@ impl Draft {
     pub(super) fn placeholder<T>(&self, cx: &Context<T>) -> (f32, f32, String) {
         let minutes = |t: Time| f32::from(t.hour()) * 60.0 + f32::from(t.minute());
         let start = minutes(self.start_time);
-        let end = if self.end_day == self.start_day {
+        let end = if self.task {
+            start + task_tab::TASK_BLOCK_MINUTES
+        } else if self.end_day == self.start_day {
             minutes(self.end_time)
         } else {
             24.0 * 60.0
@@ -345,6 +355,8 @@ impl MailWindow {
             Some(o) => o.event.calendar_id,
             None => match self.default_calendar() {
                 Some(c) => c.id,
+                // Tasks can still be added.
+                None if self.has_task_lists() => 0,
                 None => {
                     self.show_snackbar(tr!("calendar-none-editable"), None, cx);
                     return None;
@@ -434,6 +446,8 @@ impl MailWindow {
                 },
             ),
         ];
+        // With no calendar to add an event to, the card adds a task.
+        let editing_none_without_calendar = editing.is_none() && calendar == 0;
         let tz = self.tz.clone();
         let (start_day, end_day, start_time, end_time, all_day) = match &editing {
             Some(o) if o.all_day() => {
@@ -490,6 +504,12 @@ impl MailWindow {
             busy,
             full: false,
             kind: data.as_ref().map(|d| d.kind).unwrap_or_default(),
+            task: editing_none_without_calendar,
+            task_list: if editing_none_without_calendar {
+                self.default_task_list(calendar)
+            } else {
+                0
+            },
             at,
             pick: None,
             pick_month: start_day,
@@ -836,9 +856,14 @@ impl MailWindow {
         let Some(draft) = &mut self.calendar.draft else {
             return;
         };
-        if draft.kind == kind || draft.editing.is_some() {
+        if (draft.kind == kind && !draft.task) || draft.editing.is_some() {
             return;
         }
+        if draft.task && draft.calendar == 0 {
+            self.show_snackbar(tr!("calendar-none-editable"), None, cx);
+            return;
+        }
+        draft.task = false;
         let typed = draft.title.read(cx).text().trim().to_owned();
         if typed.is_empty() || typed == kind_title(draft.kind) {
             let title = kind_title(kind);
@@ -855,8 +880,8 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// Event, Focus time, Out of office and Working location, above a new
-    /// event's times, as Google's tabs.
+    /// Event, Task (on the small card), Focus time, Out of office and
+    /// Working location, above a new event's times, as Google's tabs.
     fn render_kind_tabs(
         &self,
         draft: &Draft,
@@ -866,17 +891,9 @@ impl MailWindow {
         if draft.editing.is_some() {
             return None;
         }
-        let tabs = [
-            EventKind::Default,
-            EventKind::Focus,
-            EventKind::OutOfOffice,
-            EventKind::WorkingLocation,
-        ]
-        .into_iter()
-        .map(|kind| {
-            let on = draft.kind == kind;
+        let tab = |id: gpui::ElementId, label: String, on: bool| {
             div()
-                .id(("draft-kind", kind as usize))
+                .id(id)
                 .h(px(32.0))
                 .px(px(8.0))
                 .whitespace_nowrap()
@@ -894,13 +911,42 @@ impl MailWindow {
                     d.text_color(rgba(th.text_dim))
                         .hover(|s| s.bg(rgba(th.hover)))
                 })
-                .child(kind_label(kind))
-                .on_click(cx.listener(move |this, _, _, cx| this.set_draft_kind(kind, cx)))
-        });
+                .child(label)
+        };
+        let kind_tab = |kind: EventKind| {
+            tab(
+                ("draft-kind", kind as usize).into(),
+                kind_label(kind),
+                draft.kind == kind && !draft.task,
+            )
+            .on_click(cx.listener(move |this, _, _, cx| this.set_draft_kind(kind, cx)))
+        };
+        let mut tabs = vec![kind_tab(EventKind::Default)];
+        // A task is made on the small card only; the whole editor is an
+        // event's.
+        if !draft.full {
+            tabs.push(
+                tab(
+                    "draft-kind-task".into(),
+                    tr!("calendar-kind-task"),
+                    draft.task,
+                )
+                .on_click(cx.listener(|this, _, window, cx| this.set_draft_task(true, window, cx))),
+            );
+        }
+        tabs.extend(
+            [
+                EventKind::Focus,
+                EventKind::OutOfOffice,
+                EventKind::WorkingLocation,
+            ]
+            .map(kind_tab),
+        );
         Some(
             div()
                 .flex()
                 .flex_row()
+                .flex_wrap()
                 .gap(px(2.0))
                 .children(tabs)
                 .into_any_element(),
@@ -953,6 +999,10 @@ impl MailWindow {
         let Some(draft) = &self.calendar.draft else {
             return;
         };
+        if draft.task {
+            self.save_task_draft(cx);
+            return;
+        }
         let Some(edit) = self.draft_edit(draft, cx) else {
             self.show_snackbar(tr!("calendar-no-such-time"), None, cx);
             return;
@@ -1619,43 +1669,48 @@ impl MailWindow {
             self.render_kind_tabs(draft, th, cx)
                 .map(|tabs| div().ml(px(40.0)).mr(px(8.0)).child(tabs)),
         )
-        .child(
-            div()
-                .px(px(8.0))
-                .flex()
-                .flex_col()
-                .gap(px(8.0))
-                .child(row("schedule").child(self.render_when(draft, th, cx)))
-                // The place the title named (typed quick add).
-                .when(draft.quick.as_ref().is_some_and(|q| q.placed), |d| {
-                    d.child(
-                        row("location").child(
-                            div()
-                                .h(px(36.0))
-                                .px(px(10.0))
-                                .flex()
-                                .items_center()
-                                .text_size(px(14.0))
-                                .child(draft.location.read(cx).text().to_owned()),
-                        ),
-                    )
-                })
-                // The repeat the title named.
-                .when(draft.quick.as_ref().is_some_and(|q| q.repeated), |d| {
-                    d.child(
-                        row("repeat").child(
-                            div()
-                                .h(px(36.0))
-                                .px(px(10.0))
-                                .flex()
-                                .items_center()
-                                .text_size(px(14.0))
-                                .child(draft.repeat.label(draft.start_day)),
-                        ),
-                    )
-                })
-                .child(row("calendar").child(self.calendar_chip(draft, th, cx))),
-        )
+        .when(draft.task, |d| {
+            d.child(self.render_task_fields(draft, th, cx))
+        })
+        .when(!draft.task, |d| {
+            d.child(
+                div()
+                    .px(px(8.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(8.0))
+                    .child(row("schedule").child(self.render_when(draft, th, cx)))
+                    // The place the title named (typed quick add).
+                    .when(draft.quick.as_ref().is_some_and(|q| q.placed), |d| {
+                        d.child(
+                            row("location").child(
+                                div()
+                                    .h(px(36.0))
+                                    .px(px(10.0))
+                                    .flex()
+                                    .items_center()
+                                    .text_size(px(14.0))
+                                    .child(draft.location.read(cx).text().to_owned()),
+                            ),
+                        )
+                    })
+                    // The repeat the title named.
+                    .when(draft.quick.as_ref().is_some_and(|q| q.repeated), |d| {
+                        d.child(
+                            row("repeat").child(
+                                div()
+                                    .h(px(36.0))
+                                    .px(px(10.0))
+                                    .flex()
+                                    .items_center()
+                                    .text_size(px(14.0))
+                                    .child(draft.repeat.label(draft.start_day)),
+                            ),
+                        )
+                    })
+                    .child(row("calendar").child(self.calendar_chip(draft, th, cx))),
+            )
+        })
         .child(
             div()
                 .px(px(16.0))
@@ -1664,10 +1719,13 @@ impl MailWindow {
                 .justify_end()
                 .items_center()
                 .gap(px(8.0))
-                .child(
-                    text_button("draft-more", tr!("calendar-more-options"), th)
-                        .on_click(cx.listener(|this, _, window, cx| this.more_options(window, cx))),
-                )
+                .when(!draft.task, |d| {
+                    d.child(
+                        text_button("draft-more", tr!("calendar-more-options"), th).on_click(
+                            cx.listener(|this, _, window, cx| this.more_options(window, cx)),
+                        ),
+                    )
+                })
                 .child(
                     filled_button("draft-save", tr!("calendar-save"), th).on_click(
                         cx.listener(|this, _, window, cx| this.save_event_draft(None, window, cx)),
@@ -1891,7 +1949,7 @@ impl MailWindow {
             _ if !join.is_empty() => tr!("calendar-has-call"),
             CalendarSource::Google => tr!("calendar-add-meet"),
             CalendarSource::Microsoft => tr!("calendar-add-teams"),
-            CalendarSource::CalDav | CalendarSource::Local => return None,
+            CalendarSource::CalDav | CalendarSource::Zoho | CalendarSource::Local => return None,
         };
         let on = draft.add_call;
         let row = div()
@@ -2078,6 +2136,7 @@ impl MailWindow {
                     .children(times)
                     .into_any_element()
             }
+            Pick::TaskList => self.render_task_lists(draft, th, cx),
             Pick::Calendar => {
                 let items = self
                     .calendar

@@ -26,6 +26,8 @@ viewer-tool-underline = अंडरलाइन
 viewer-tool-squiggly = लहरदार रेखा
 viewer-tool-strike = स्ट्राइकथ्रू
 viewer-tool-pen = पेन
+viewer-tool-note = स्टिकी नोट
+viewer-tool-text = टेक्स्ट बॉक्स
 viewer-tool-eraser = इरेज़र
 viewer-color-yellow = पीला
 viewer-color-green = हरा
@@ -38,6 +40,12 @@ viewer-color-purple = बैंगनी
 viewer-marks-undo-tip = पहले जैसा करें (Ctrl+Z)
 viewer-marks-redo-tip = फिर से करें (Ctrl+Shift+Z)
 viewer-save-marked-tip = अपने निशानों के साथ एक कॉपी सहेजें (Ctrl+S)
+viewer-reply-marked-tip = निशान लगी कॉपी के साथ जवाब दें
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = नोट लिखें
+viewer-text-placeholder = यहां टाइप करें
+viewer-note-done = हो गया
+viewer-note-delete = मिटाएं
 viewer-markup-protected = यह PDF बदलावों से सुरक्षित है, इसलिए इस पर निशान नहीं लगाए जा सकते।
 viewer-marks-save-failed = निशान लगी कॉपी सहेजी नहीं जा सकी।
 # Asked when closing a PDF, or moving to another attachment, with marks

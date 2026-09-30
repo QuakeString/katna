@@ -26,6 +26,9 @@
 //!   empty.
 //! - `EditTask(s id, a{sv} fields)`: sets the keys of [`edit`] present.
 //! - `MoveTask(s id, x list)`: to another list, on top, with its steps.
+//! - `PlaceTask(s id, x list, s after)`: a task (not a step) into `list`,
+//!   this one or another, right after task `after`, or first when `after`
+//!   is empty: where it was dragged to.
 //! - `AddTaskList(x account, s title) -> x list`: `account` `0` is this
 //!   computer. `RenameTaskList(x list, s title)`, `DeleteTaskList(x list)`.
 //! - signal `Changed()`: read again.
@@ -127,6 +130,10 @@ macro_rules! agenda_proxy {
 
             /// Moves task `id`, with its steps, to `list`.
             fn move_task(&self, id: &str, list: i64) -> zbus::Result<()>;
+
+            /// Puts task `id` in `list` right after task `after`, or first
+            /// when `after` is empty, from that list or another.
+            fn place_task(&self, id: &str, list: i64, after: &str) -> zbus::Result<()>;
 
             /// Adds a list to `account` (`0`: this computer). Returns it.
             fn add_task_list(&self, account: i64, title: &str) -> zbus::Result<i64>;

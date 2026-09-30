@@ -1633,3 +1633,104 @@ Fà àkọsílẹ̀ kan lórí pátákó Àkọsílẹ̀ láti gbé e, bí ti Ke
 síbi tí o jù ú sí. Ctrl+Z máa ń dá a padà. Àwọn káàdì ti ń jókòó dáadáa
 nínú àwọn ọ̀wọ̀n wọn báyìí, láìsí àlàfo lábẹ́ àwọn àkọsílẹ̀ kúkúrú.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Títẹ̀ ọ̀tún lórí Kàlẹ́ńdà"
+text = """
+Tẹ ọ̀tún lórí àkókò tàbí ọjọ́ tí ó ṣófo láti fi ìṣẹ̀lẹ̀, àkókò ìfọkànsìn
+tàbí àkókò tí o kò sí ní ọ́fíìsì kún ibẹ̀. Tẹ ọ̀tún lórí ìṣẹ̀lẹ̀ kan
+láti ṣàtúnṣe rẹ̀, ṣe ẹ̀dà rẹ̀, pa á rẹ́, fèsì, darapọ̀, fi lẹ́tà ránṣẹ́
+sí àwọn àlejò, fún un ní àwọ̀ tàbí gbé e lọ sí kàlẹ́ńdà mìíràn, àti lórí
+iṣẹ́ kan láti sàmì sí i pé ó ti parí, fi ìràwọ̀ sí i, fún un ní ọjọ́
+mìíràn tàbí pa á rẹ́. Dá padà ń dá àyípadà kan padà.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Àkọsílẹ̀ àti ọ̀rọ̀ lórí PDF"
+text = """
+Sísàmì sí PDF ní àkọsílẹ̀ alálẹ̀mọ́ àti àpótí ọ̀rọ̀ báyìí: tẹ ojú-ìwé
+náà, tẹ ọ̀rọ̀, kí o sì tẹ Ctrl+Enter. Gbé atọ́ka lé àkọsílẹ̀ kan láti
+kà á, tàbí tẹ̀ ẹ́ láti yí i padà. Fèsì ń fi ẹ̀dà tí o sàmì sí ránṣẹ́
+padà tààrà nínú èsì sí ìfiránṣẹ́ náà.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Fa àwọn iṣẹ́ sí ibi tí o fẹ́"
+text = """
+Fa iṣẹ́ kan sókè tàbí sísàlẹ̀ nínú àtòjọ rẹ̀, tàbí sínú àtòjọ mìíràn,
+àwọn iṣẹ́ tó wà níbẹ̀ á sì yẹ̀ sẹ́gbẹ̀ẹ́ láti fi ibi tí yóò bọ́ sí hàn.
+Google Tasks ń pa ètò tuntun mọ́ lórí fóònù rẹ náà, Dá padà sì ń dá
+iṣẹ́ náà padà sí ààyè rẹ̀.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Fi iṣẹ́ kún un láti Kàlẹ́ńdà"
+text = """
+Káàdì ìṣẹ̀lẹ̀ tuntun ní táàbù Iṣẹ́, bíi ti Google Calendar. Tẹ àkókò
+kan, yan Iṣẹ́, àkọlé, ọjọ́ àti àkókò á sì di iṣẹ́ kan nínú àtòjọ tí
+o yàn, pẹ̀lú àpèjúwe tí o bá fẹ́.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Fi iṣẹ́ kún un láti Kàlẹ́ńdà"
+text = """
+Tẹ ọ̀tún lórí àkókò tàbí ọjọ́ tí ó ṣófo lórí Kàlẹ́ńdà kí o sì yan Iṣẹ́
+láti fi iṣẹ́ kan kún ibẹ̀. Káàdì ìṣẹ̀lẹ̀ tuntun á ṣí sí táàbù Iṣẹ́ rẹ̀,
+pẹ̀lú ọjọ́ àti àkókò náà tí a ti kọ sínú rẹ̀.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Àwọn kàlẹ́ńdà tún ń wò lẹ́yìn sáfà tó lọ́ra"
+text = """
+Nígbà tí sáfà kàlẹ́ńdà àkọọ́lẹ̀ kan kò bá dáhùn lásìkò, Kàlẹ́ńdà ti ń sọ
+bẹ́ẹ̀ báyìí, àti bóyá ìsopọ̀ ni tàbí ìbọwọ́ ààbò ló dúró, dípò "A kò rí
+kàlẹ́ńdà kankan". Ó tún ń gbìyànjú láàrín ìṣẹ́jú díẹ̀ dípò wákàtí.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Àwọn fáìlì olùbásọ̀rọ̀ ń fi ìgbàsílẹ̀ wọn hàn"
+text = """
+Fáìlì kan nínú pánẹ́ẹ̀lì olùbásọ̀rọ̀ tí lẹ́tà rẹ̀ kò tíì sí lórí kọ̀ǹpútà yìí ti ń kún báyìí bí ó ṣe ń gbà sílẹ̀, bí àwọn àfikún inú àkójọ ṣe ń ṣe, lẹ́yìn náà ó ṣí.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Lẹ́tà àkáǹtì tuntun ń hàn bí wọ́n ṣe ń dé"
+text = """
+Lẹ́yìn tí o bá ṣàfikún àkáǹtì kan, àpótí-ìwọlé rẹ̀ ni a máa kọ́kọ́ gbà
+sílẹ̀, ó sì máa ń kún bí o ṣe ń wò ó, dípò kí ó dúró sí “À ń gba lẹ́tà
+rẹ…” títí gbogbo fódà yóò fi parí. Àwọn fódà mìíràn náà máa ń kún bákan
+náà.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Àwọn àpótí àmì tó bá àwọn àmì mu"
+text = """
+Àwọn àpótí àmì ti kéré díẹ̀ báyìí, wọ́n tóbi tó àmì ìràwọ̀ àti àmì àkọlé
+tó wà lẹ́gbẹ̀ẹ́ wọn nínú àtòjọ lẹ́tà. Wọ́n ṣì rọrùn láti tẹ̀ bí ti tẹ́lẹ̀,
+àmì wọn sì ṣì ń ya ara rẹ̀.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Àwọn kàlẹ́ńdà Zoho lórí ìsopọ̀ Zoho fúnra rẹ̀"
+text = """
+Zoho ń pèsè kàlẹ́ńdà fún àwọn áàpù mìíràn lórí pọ́ọ̀tù kan tí ọ̀pọ̀
+nẹ́tíwọ́ọ̀kì ń dí, nítorí náà lẹ́yìn Wọlé pẹ̀lú Zoho, Kàlẹ́ńdà ń kà wọ́n
+nípasẹ̀ API Zoho fúnra rẹ̀ dípò. Àwọn ìṣẹ̀lẹ̀ Zoho rẹ ń hàn lẹ́gbẹ̀ẹ́
+àwọn kàlẹ́ńdà rẹ mìíràn; yíyí wọn padà láti Katna yóò dé lẹ́yìn náà.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Àwọn iṣẹ́ Zoho"
+text = """
+Wọlé pẹ̀lú Zoho lórí àkáǹtì Zoho kan, àwọn iṣẹ́ Zoho ToDo rẹ̀ yóò sì hàn
+nínú Iṣẹ́, ní ọ̀nà méjèèjì: ṣàfikún, ṣàtúnṣe, sàmì sí tàbí pa iṣẹ́ kan
+rẹ́ nínú Katna, yóò sì yí padà nínú Zoho náà.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Àmì máa ń wà láàrin ní ìwọ̀n èyíkéyìí"
+text = """
+Nígbà tí Ìwọ̀n nínú Ètò > Ìrísí bá ju 100% lọ, àmì àpótí àmì máa ń wà
+lókè díẹ̀ àti sí òsì. Etí àwọn àpótí àmì àti àwọn bọ́tìnnì yíká ń tóbi sí
+i pẹ̀lú ìwọ̀n báyìí, nítorí náà àmì máa ń wà láàrin ní gbogbo ìwọ̀n.
+"""

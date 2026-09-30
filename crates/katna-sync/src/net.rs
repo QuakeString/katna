@@ -193,6 +193,15 @@ async fn addresses(host: &str, port: u16, reach: Reach) -> Result<Vec<SocketAddr
     Ok(public)
 }
 
+/// `host`, with `port` when it isn't HTTPS's, for people.
+fn shown(host: &str, port: u16) -> String {
+    if port == 443 {
+        host.to_owned()
+    } else {
+        format!("{host} port {port}")
+    }
+}
+
 /// Connects to the first address of `host` that `reach` allows and that
 /// answers.
 async fn connect_to(host: &str, port: u16, reach: Reach) -> Result<TcpStream> {
@@ -249,7 +258,16 @@ impl Conn {
 
     pub async fn connect_tcp(&mut self, host: &str, port: u16) -> Result<()> {
         let reach = self.reach;
-        let tcp = with_timeout(CONNECT_TIMEOUT, connect_to(host, port, reach)).await?;
+        let tcp = with_timeout(CONNECT_TIMEOUT, connect_to(host, port, reach))
+            .await
+            .map_err(|err| match err {
+                Error::Timeout(limit) => Error::Unreachable(format!(
+                    "{} did not take a connection within {}s",
+                    shown(host, port),
+                    limit.as_secs()
+                )),
+                err => err,
+            })?;
         tcp.set_nodelay(true)?;
         tracing::debug!(host, port, "connected");
         self.host = host.to_owned();
@@ -280,7 +298,15 @@ impl Conn {
         let tls = with_timeout(CONNECT_TIMEOUT, async {
             connector.connect(name, tcp).await.map_err(tls_error)
         })
-        .await?;
+        .await
+        .map_err(|err| match err {
+            Error::Timeout(limit) => Error::Unreachable(format!(
+                "{} took a connection but did not finish the secure handshake within {}s",
+                self.host,
+                limit.as_secs()
+            )),
+            err => err,
+        })?;
         tracing::debug!(host = self.host, "TLS established");
         self.stream = Some(Stream::Tls(Box::new(tls)));
         Ok(())

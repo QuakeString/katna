@@ -1730,3 +1730,106 @@ Pozostałe notatki płynnie odsuwają się, robiąc miejsce, a ona zostaje
 tam, gdzie ją upuścisz. Ctrl+Z przywraca ją na miejsce. Karty układają
 się teraz ciasno w kolumnach, bez przerw pod krótkimi notatkami.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Prawy przycisk myszy w Kalendarzu"
+text = """
+Kliknij prawym przyciskiem wolny czas lub dzień, aby dodać tam wydarzenie,
+czas na skupienie lub nieobecność w biurze. Kliknij prawym przyciskiem
+wydarzenie, aby je edytować, zduplikować, usunąć, odpowiedzieć, dołączyć,
+wysłać e-mail do gości, nadać mu kolor lub przenieść je do innego
+kalendarza, a zadanie, aby je odhaczyć, oznaczyć gwiazdką, dać mu inny dzień
+lub je usunąć. Cofnij wycofuje zmianę.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notatki i tekst w plikach PDF"
+text = """
+Adnotacje w PDF obejmują teraz karteczki i pola tekstowe: kliknij stronę,
+pisz i naciśnij Ctrl+Enter. Najedź na notatkę, aby ją przeczytać, albo
+kliknij, aby ją zmienić. Odpowiedz wysyła kopię z adnotacjami od razu w
+odpowiedzi na wiadomość.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Przeciągaj zadania, gdzie chcesz"
+text = """
+Przeciągnij zadanie w górę lub w dół listy albo do innej listy, a zadania w
+tym miejscu rozsuną się, pokazując, gdzie trafi. Google Tasks zachowa nową
+kolejność także na telefonie, a Cofnij odłoży zadanie z powrotem.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Dodawaj zadania z Kalendarza"
+text = """
+Karta nowego wydarzenia ma zakładkę Zadanie, jak w Kalendarzu Google. Kliknij
+godzinę, wybierz Zadanie, a tytuł, dzień i godzina staną się zadaniem na
+wybranej liście, z opisem, jeśli chcesz.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Dodawaj zadania z Kalendarza"
+text = """
+Kliknij prawym przyciskiem wolny czas lub dzień w Kalendarzu i wybierz
+Zadanie, aby dodać tam zadanie. Karta nowego wydarzenia otworzy się na
+zakładce Zadanie z tym dniem i godziną już wpisanymi.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendarze szukane ponownie po wolnym serwerze"
+text = """
+Gdy serwer kalendarzy konta nie odpowie na czas, Kalendarz mówi to teraz
+wprost, a także czy utknęło połączenie, czy bezpieczne uzgadnianie, zamiast
+„Nie znaleziono kalendarzy”. Ponawia próbę w ciągu kilku minut, a nie
+godzin.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Pliki kontaktu pokazują pobieranie"
+text = """
+Plik w panelu kontaktu, którego wiadomości nie ma jeszcze na tym
+komputerze, wypełnia się teraz podczas pobierania, tak jak załączniki na
+liście, a potem się otwiera.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Poczta nowego konta pojawia się na bieżąco"
+text = """
+Po dodaniu konta jego Odebrane pobierają się najpierw i wypełniają na
+twoich oczach, zamiast stać na „Pobieranie poczty…”, aż skończą się
+wszystkie foldery. Pozostałe foldery wypełniają się tak samo.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Pola wyboru równo z ikonami"
+text = """
+Pola wyboru są nieco mniejsze, mają ten sam rozmiar co ikony gwiazdki
+i etykiety obok nich na liście poczty. Klika się je równie łatwo,
+a znacznik nadal się rysuje.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalendarze Zoho przez własne połączenie Zoho"
+text = """
+Zoho udostępnia kalendarze innym aplikacjom na porcie, który blokuje
+wiele sieci, więc po „Zaloguj się przez Zoho” Kalendarz czyta je zamiast
+tego przez własne API Zoho. Twoje wydarzenia Zoho są widoczne obok
+innych kalendarzy; zmienianie ich w Katna pojawi się później.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zadania Zoho"
+text = """
+Zaloguj się przez Zoho na koncie Zoho, a jego zadania z Zoho ToDo
+pojawią się w Zadaniach, w obie strony: dodaj, edytuj, odhacz lub usuń
+zadanie w Katna, a zmieni się też w Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Znacznik na środku przy każdym rozmiarze"
+text = """
+Przy skalowaniu powyżej 100% (Ustawienia > Wygląd > Skalowanie) znacznik
+w polu wyboru był nieco przesunięty w górę i w lewo. Krawędzie pól
+wyboru i okrągłych przycisków rosną teraz razem ze skalą, więc znacznik
+jest na środku przy każdym rozmiarze.
+"""

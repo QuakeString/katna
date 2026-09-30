@@ -167,9 +167,13 @@ calendar-color-grape = Grape
 calendar-color-graphite = Graphite
 # Tabs above a new event's times, as Google Calendar's.
 calendar-kind-event = Event
+calendar-kind-task = Task
 calendar-kind-focus = Focus time
 calendar-kind-out-of-office = Out of office
 calendar-kind-working-location = Working location
+calendar-task-added = Task added
+calendar-task-added-to = Task added to { $list }
+calendar-task-list-local = On this computer
 # A new working location's title until another place is typed.
 calendar-working-home = Home
 calendar-busy = Busy

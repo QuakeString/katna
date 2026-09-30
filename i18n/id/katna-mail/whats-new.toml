@@ -1744,3 +1744,106 @@ Catatan lain bergeser memberi ruang, dan catatan itu tetap di tempat
 Anda melepaskannya. Ctrl+Z mengembalikannya. Kartu kini tersusun rapat
 di kolomnya, tanpa celah di bawah catatan pendek.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Klik kanan di Kalender"
+text = """
+Klik kanan waktu atau hari yang kosong untuk menambahkan acara, waktu
+fokus, atau di luar kantor di sana. Klik kanan acara untuk mengeditnya,
+menduplikatnya, menghapusnya, menjawab, bergabung, mengirim email ke
+tamu, memberinya warna, atau memindahkannya ke kalender lain, dan klik
+kanan tugas untuk mencentangnya, memberinya bintang, memberinya hari
+lain, atau menghapusnya. Urungkan membatalkan perubahan.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Catatan dan teks di PDF"
+text = """
+Menandai PDF kini punya catatan tempel dan kotak teks: klik halaman,
+ketik, lalu tekan Ctrl+Enter. Arahkan penunjuk ke catatan untuk
+membacanya, atau klik untuk mengubahnya. Balas mengirim salinan bertanda
+Anda langsung kembali dalam balasan ke pesan.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Seret tugas ke tempat yang Anda mau"
+text = """
+Seret tugas ke atas atau ke bawah dalam daftarnya, atau ke daftar lain,
+dan tugas di sana bergeser untuk menunjukkan tempatnya mendarat. Google
+Tasks juga menyimpan urutan baru di ponsel Anda, dan Urungkan
+mengembalikan tugas itu.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tambahkan tugas dari Kalender"
+text = """
+Kartu acara baru kini punya tab Tugas, seperti di Google Calendar. Klik
+suatu waktu, pilih Tugas, lalu judul, hari, dan waktunya menjadi tugas
+di daftar yang Anda pilih, dengan deskripsi jika mau.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tambahkan tugas dari Kalender"
+text = """
+Klik kanan waktu atau hari yang kosong di Kalender dan pilih Tugas
+untuk menambahkan tugas di sana. Kartu acara baru terbuka di tab
+Tugasnya dengan hari dan waktu itu sudah terisi.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalender dicari lagi setelah server lambat"
+text = """
+Saat server kalender sebuah akun tidak menjawab tepat waktu, Kalender
+kini mengatakannya, beserta apakah koneksi atau jabat tangan amannya
+yang macet, alih-alih “Tidak ada kalender yang ditemukan”. Kalender
+mencoba lagi dalam hitungan menit, bukan jam.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "File kontak menampilkan unduhannya"
+text = """
+File di panel kontak yang emailnya belum ada di komputer ini kini
+terisi selama diunduh, seperti lampiran di daftar, lalu terbuka.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Email akun baru muncul saat tiba"
+text = """
+Setelah Anda menambahkan akun, Kotak Masuk-nya diunduh lebih dulu dan
+terisi sambil Anda lihat, alih-alih tetap di “Mengambil email Anda…”
+sampai setiap folder selesai. Folder lain terisi dengan cara yang sama.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kotak centang sejajar dengan ikon"
+text = """
+Kotak centang kini sedikit lebih kecil, seukuran ikon bintang dan label di
+sampingnya dalam daftar email. Kotak ini tetap mudah diklik, dan
+centangnya masih tergambar.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalender Zoho lewat koneksi Zoho sendiri"
+text = """
+Zoho menyajikan kalender ke aplikasi lain lewat port yang diblokir
+banyak jaringan, jadi setelah Masuk dengan Zoho, Kalender membacanya
+lewat API Zoho sendiri. Acara Zoho Anda tampil di samping kalender Anda
+yang lain; mengubahnya dari Katna menyusul nanti.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tugas Zoho"
+text = """
+Masuk dengan Zoho di akun Zoho dan tugas Zoho ToDo-nya tampil di
+Tugas, dua arah: tambah, edit, tandai selesai, atau hapus tugas di Katna
+dan tugas itu ikut berubah di Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Centang di tengah pada ukuran apa pun"
+text = """
+Dengan Setelan > Tampilan > Skala di atas 100%, centang kotak centang
+sedikit bergeser ke atas dan ke kiri. Tepi kotak centang dan tombol bulat
+kini ikut membesar sesuai skala, sehingga centangnya berada di tengah pada
+setiap ukuran.
+"""

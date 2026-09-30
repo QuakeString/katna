@@ -119,10 +119,37 @@ calendar-discard = Pa àwọn ìyípadà tì
 calendar-edit = Ṣàtúnṣe ìṣẹ̀lẹ̀
 calendar-delete = Pa ìṣẹ̀lẹ̀ rẹ́
 calendar-event-details = Àlàyé ìṣẹ̀lẹ̀
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Ìṣẹ̀lẹ̀ tuntun
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Ṣí ọjọ́
+calendar-menu-duplicate = Ṣe ẹ̀dà
+calendar-menu-color = Àwọ̀
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Àwọ̀ kàlẹ́ńdà
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Ní ọ̀sẹ̀ kan
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tòmátì
+calendar-color-flamingo = Fìlámíngò
+calendar-color-tangerine = Ọsàn
+calendar-color-banana = Ọ̀gẹ̀dẹ̀
+calendar-color-sage = Ewé eérú
+calendar-color-basil = Efínrín
+calendar-color-peacock = Ọ̀kín
+calendar-color-blueberry = Búlúbẹ́rì
+calendar-color-lavender = Làfẹ́ńdà
+calendar-color-grape = Àjàrà
+calendar-color-graphite = Gíráfáìtì
 calendar-kind-event = Ìṣẹ̀lẹ̀
+calendar-kind-task = Iṣẹ́
 calendar-kind-focus = Àkókò ìfọkànsìn
 calendar-kind-out-of-office = Kò sí ní ọ́fíìsì
 calendar-kind-working-location = Ibi iṣẹ́
+calendar-task-added = A ti fi iṣẹ́ kún un
+calendar-task-added-to = A ti fi iṣẹ́ kún { $list }
+calendar-task-list-local = Lórí kọ̀ǹpútà yìí
 calendar-working-home = Ilé
 calendar-busy = Ó ń ṣiṣẹ́
 calendar-free = Ó wà ní ìdẹ̀ra

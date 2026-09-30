@@ -1755,3 +1755,108 @@ Nota lain meluncur ke tepi untuk memberi ruang, dan ia kekal di tempat
 anda melepaskannya. Ctrl+Z mengembalikannya. Kad kini tersusun rapat
 dalam lajurnya, tanpa ruang kosong di bawah nota pendek.
 """
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Klik kanan pada Kalendar"
+text = """
+Klik kanan masa atau hari yang lapang untuk menambah acara, masa fokus
+atau di luar pejabat di situ. Klik kanan acara untuk mengedit, menduakan,
+memadam, menjawab, menyertai, menghantar e-mel kepada tetamu, mewarnakan
+atau mengalihkannya ke kalendar lain, dan tugas untuk menandainya selesai,
+membintanginya, memberinya hari lain atau memadamnya. Buat asal mengembalikan
+perubahan.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Nota dan teks pada PDF"
+text = """
+Menanda PDF kini ada nota lekat dan kotak teks: klik halaman, taip, dan
+tekan Ctrl+Enter. Tuding pada nota untuk membacanya, atau klik untuk
+mengubahnya. Balas menghantar salinan bertanda anda terus dalam balasan
+kepada mesej itu.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Seret tugasan ke tempat yang anda mahu"
+text = """
+Seret tugasan ke atas atau ke bawah dalam senarainya, atau ke senarai lain,
+dan tugasan di situ akan beralih ke tepi untuk menunjukkan tempat ia akan
+diletakkan. Google Tasks menyimpan susunan baharu itu pada telefon anda
+juga, dan Buat asal meletakkan tugasan itu semula.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tambah tugasan dari Kalendar"
+text = """
+Kad acara baharu ada tab Tugasan, seperti dalam Google Calendar. Klik satu
+masa, pilih Tugasan, dan tajuk, hari serta masa menjadi tugasan dalam
+senarai yang anda pilih, dengan keterangan jika anda mahu.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tambah tugasan dari Kalendar"
+text = """
+Klik kanan masa atau hari yang lapang pada Kalendar dan pilih Tugasan untuk
+menambah tugasan di situ. Kad acara baharu dibuka pada tab Tugasannya
+dengan hari dan masa itu sudah diisi.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendar mencari semula selepas pelayan yang perlahan"
+text = """
+Apabila pelayan kalendar sesuatu akaun tidak menjawab dalam masa,
+Kalendar kini memberitahunya, dan sama ada sambungan atau jabat tangan
+selamat yang tersekat, bukannya "Tiada kalendar ditemui". Ia cuba lagi
+dalam beberapa minit, bukan beberapa jam.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Fail kenalan menunjukkan muat turunnya"
+text = """
+Fail dalam panel kenalan yang melnya belum ada pada komputer ini kini
+terisi semasa dimuat turun, seperti lampiran dalam senarai, kemudian
+dibuka.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Mel akaun baharu dipaparkan sebaik sahaja tiba"
+text = """
+Selepas anda menambah akaun, Peti Masuknya dimuat turun dahulu dan terisi
+semasa anda melihat, bukannya kekal pada "Mendapatkan mel anda…" sehingga
+setiap folder selesai. Folder lain terisi dengan cara yang sama.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kotak semak sebaris dengan ikon"
+text = """
+Kotak semak kini sedikit lebih kecil, sama saiz dengan ikon bintang dan
+label di sebelahnya dalam senarai mel. Ia tetap mudah diklik, dan tandanya
+masih terlukis.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalendar Zoho melalui sambungan Zoho sendiri"
+text = """
+Zoho menyediakan kalendar kepada apl lain pada port yang disekat oleh
+banyak rangkaian, jadi selepas “Log masuk dengan Zoho”, Kalendar
+membacanya melalui API Zoho sendiri. Acara Zoho anda dipaparkan di
+sebelah kalendar anda yang lain; mengubahnya daripada Katna akan datang
+kemudian.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tugas Zoho"
+text = """
+Log masuk dengan Zoho pada akaun Zoho dan tugas Zoho ToDo miliknya
+dipaparkan dalam Tugas, dua hala: tambah, edit, tanda atau padam tugas
+dalam Katna dan ia turut berubah dalam Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Tanda di tengah pada semua saiz"
+text = """
+Dengan Tetapan > Penampilan > Penskalaan melebihi 100%, tanda kotak
+semak terletak sedikit ke atas dan ke kiri. Tepi kotak semak dan butang
+bulat kini membesar mengikut skala, jadi tandanya berada di tengah pada
+setiap saiz.
+"""

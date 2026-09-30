@@ -125,10 +125,37 @@ calendar-discard = Не зберігати зміни
 calendar-edit = Змінити подію
 calendar-delete = Видалити подію
 calendar-event-details = Відомості про подію
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Нова подія
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Відкрити день
+calendar-menu-duplicate = Дублювати
+calendar-menu-color = Колір
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Колір календаря
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Через тиждень
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Томат
+calendar-color-flamingo = Фламінго
+calendar-color-tangerine = Мандарин
+calendar-color-banana = Банан
+calendar-color-sage = Шавлія
+calendar-color-basil = Базилік
+calendar-color-peacock = Павич
+calendar-color-blueberry = Чорниця
+calendar-color-lavender = Лаванда
+calendar-color-grape = Виноград
+calendar-color-graphite = Графіт
 calendar-kind-event = Подія
+calendar-kind-task = Завдання
 calendar-kind-focus = Час для зосередження
 calendar-kind-out-of-office = Поза офісом
 calendar-kind-working-location = Місце роботи
+calendar-task-added = Завдання додано
+calendar-task-added-to = Завдання додано до { $list }
+calendar-task-list-local = На цьому комп’ютері
 calendar-working-home = Вдома
 calendar-busy = Зайнятий
 calendar-free = Вільний

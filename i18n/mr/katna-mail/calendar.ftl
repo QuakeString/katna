@@ -121,10 +121,37 @@ calendar-discard = बदल टाकून द्या
 calendar-edit = इव्हेंट संपादित करा
 calendar-delete = इव्हेंट हटवा
 calendar-event-details = इव्हेंटचा तपशील
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = नवीन इव्हेंट
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = दिवस उघडा
+calendar-menu-duplicate = डुप्लिकेट करा
+calendar-menu-color = रंग
+# The event takes its calendar's color.
+calendar-menu-color-calendar = कॅलेंडरचा रंग
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = एका आठवड्याने
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = टोमॅटो
+calendar-color-flamingo = फ्लेमिंगो
+calendar-color-tangerine = संत्रे
+calendar-color-banana = केळे
+calendar-color-sage = सेज
+calendar-color-basil = तुळस
+calendar-color-peacock = मोर
+calendar-color-blueberry = ब्लूबेरी
+calendar-color-lavender = लॅव्हेंडर
+calendar-color-grape = द्राक्ष
+calendar-color-graphite = ग्रॅफाइट
 calendar-kind-event = इव्हेंट
+calendar-kind-task = कार्य
 calendar-kind-focus = फोकस वेळ
 calendar-kind-out-of-office = कार्यालयाबाहेर
 calendar-kind-working-location = कामाचे ठिकाण
+calendar-task-added = कार्य जोडले
+calendar-task-added-to = { $list } मध्ये कार्य जोडले
+calendar-task-list-local = या संगणकावर
 calendar-working-home = घर
 calendar-busy = व्यग्र
 calendar-free = मोकळा

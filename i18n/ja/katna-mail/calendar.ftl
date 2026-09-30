@@ -119,10 +119,37 @@ calendar-discard = 変更を破棄
 calendar-edit = 予定を編集
 calendar-delete = 予定を削除
 calendar-event-details = 予定の詳細
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = 新しい予定
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = 日を開く
+calendar-menu-duplicate = 複製
+calendar-menu-color = 色
+# The event takes its calendar's color.
+calendar-menu-color-calendar = カレンダーの色
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = 1 週間後
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = トマト
+calendar-color-flamingo = フラミンゴ
+calendar-color-tangerine = ミカン
+calendar-color-banana = バナナ
+calendar-color-sage = セージ
+calendar-color-basil = バジル
+calendar-color-peacock = ピーコック
+calendar-color-blueberry = ブルーベリー
+calendar-color-lavender = ラベンダー
+calendar-color-grape = ブドウ
+calendar-color-graphite = グラファイト
 calendar-kind-event = 予定
+calendar-kind-task = タスク
 calendar-kind-focus = 集中時間
 calendar-kind-out-of-office = 不在
 calendar-kind-working-location = 勤務地
+calendar-task-added = タスクを追加しました
+calendar-task-added-to = { $list } にタスクを追加しました
+calendar-task-list-local = このコンピューター
 calendar-working-home = 自宅
 calendar-busy = 予定あり
 calendar-free = 予定なし

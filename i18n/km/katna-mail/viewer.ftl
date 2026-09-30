@@ -26,6 +26,8 @@ viewer-tool-underline = គូសបន្ទាត់ពីក្រោម
 viewer-tool-squiggly = បន្ទាត់រលក
 viewer-tool-strike = គូសឆូត
 viewer-tool-pen = ប៊ិច
+viewer-tool-note = កំណត់ចំណាំបិទភ្ជាប់
+viewer-tool-text = ប្រអប់អត្ថបទ
 viewer-tool-eraser = ជ័រលុប
 viewer-color-yellow = លឿង
 viewer-color-green = បៃតង
@@ -38,6 +40,12 @@ viewer-color-purple = ស្វាយ
 viewer-marks-undo-tip = មិនធ្វើវិញ (Ctrl+Z)
 viewer-marks-redo-tip = ធ្វើម្ដងទៀត (Ctrl+Shift+Z)
 viewer-save-marked-tip = រក្សាទុកច្បាប់ចម្លងដែលមានការសម្គាល់របស់អ្នក (Ctrl+S)
+viewer-reply-marked-tip = ឆ្លើយតបជាមួយច្បាប់ចម្លងដែលបានសម្គាល់
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = សរសេរកំណត់ចំណាំ
+viewer-text-placeholder = វាយនៅទីនេះ
+viewer-note-done = រួចរាល់
+viewer-note-delete = លុប
 viewer-markup-protected = PDF នេះត្រូវបានការពារពីការផ្លាស់ប្ដូរ ដូច្នេះមិនអាចសម្គាល់បានទេ។
 viewer-marks-save-failed = មិនអាចរក្សាទុកច្បាប់ចម្លងដែលបានសម្គាល់បានទេ។
 # Asked when closing a PDF, or moving to another attachment, with marks

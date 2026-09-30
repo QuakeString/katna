@@ -1016,7 +1016,13 @@ impl MailWindow {
                     order: f.order,
                 };
                 let kind = katna_preview::kind(&f.mime, &f.name);
+                // A file whose message isn't downloaded yet fills while it
+                // downloads, as the list's attachment chips do.
+                let fill = self.chip_fill(&file, false, th);
                 row(("contact-file", ix), th)
+                    .relative()
+                    .overflow_hidden()
+                    .children(fill)
                     .child(kind_badge(kind, 20.0))
                     .child(
                         words(pieces, f.name.clone())

@@ -10,8 +10,11 @@
 //! 2. Flags of known messages: only those changed since the stored
 //!    HIGHESTMODSEQ when the server has CONDSTORE, otherwise all of them.
 //! 3. New messages: headers and attachments (from `BODYSTRUCTURE`) for UIDs
-//!    above the highest stored one, in chunks, committed chunk by chunk so
-//!    an interrupted first sync keeps its progress.
+//!    above the highest stored one, newest first, in chunks going back in
+//!    time, so a new account shows its recent mail first. Each chunk is
+//!    committed on its own, and the UIDs still to fetch are saved before
+//!    each one, so an interrupted first sync keeps its progress and the
+//!    next run fills in the older mail.
 //! 4. Expunged messages: with QRESYNC, the UIDs the flag fetch reported as
 //!    `VANISHED (EARLIER)`; when the message count still does not add up,
 //!    compare the server's UID list with ours.
@@ -101,6 +104,11 @@ struct FolderState {
     uid_next: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     exists: Option<u32>,
+    /// UID ranges (first, last) below the highest stored UID that are not
+    /// downloaded yet: newer mail comes first, so an interrupted sync
+    /// leaves older mail here for the next run.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    missing: Vec<(u32, u32)>,
 }
 
 impl FolderState {
@@ -153,19 +161,37 @@ pub fn stale_folders(
     Ok(out)
 }
 
-/// Syncs the folder list of `account`, then every selectable folder.
+/// Syncs the folder list of `account`, then every selectable folder, the
+/// inbox first.
 pub async fn sync_account<B: MailBackend>(
     backend: &mut B,
     store: &mut Store,
     account: AccountId,
 ) -> Result<Vec<FolderReport>> {
-    let folders = sync_folders(backend, store, account).await?;
+    sync_account_live(backend, store, account, |_| {}).await
+}
+
+/// [`sync_account`], calling `stored` with how many messages each commit
+/// added (0 for the folder list), so the mail can show as it arrives
+/// rather than once every folder is done: a new account's first sync can
+/// take many minutes.
+pub async fn sync_account_live<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    mut stored: impl FnMut(usize),
+) -> Result<Vec<FolderReport>> {
+    let mut folders = sync_folders(backend, store, account).await?;
+    stored(0);
+    // The inbox first: it is what shows while a new account downloads,
+    // and servers such as Dovecot list it last.
+    folders.sort_by_key(|(folder, _)| folder.role != Some(crate::FolderRole::Inbox));
     let mut reports = Vec::with_capacity(folders.len());
     for (folder, id) in folders {
         if !folder.selectable {
             continue;
         }
-        match sync_folder(backend, store, account, id, &folder.name).await {
+        match sync_folder_live(backend, store, account, id, &folder.name, &mut stored).await {
             Ok(report) => reports.push(report),
             // Deleted since LIST, or not ours to read: skip it this time.
             Err(Error::Rejected(reason)) => {
@@ -214,6 +240,19 @@ pub async fn sync_folder<B: MailBackend>(
     folder: FolderId,
     path: &str,
 ) -> Result<FolderReport> {
+    sync_folder_live(backend, store, account, folder, path, &mut |_| {}).await
+}
+
+/// [`sync_folder`], calling `on_saved` after each chunk of new messages is
+/// committed.
+async fn sync_folder_live<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    folder: FolderId,
+    path: &str,
+    on_saved: &mut impl FnMut(usize),
+) -> Result<FolderReport> {
     let mut report = FolderReport {
         path: path.to_owned(),
         ..FolderReport::default()
@@ -251,24 +290,48 @@ pub async fn sync_folder<B: MailBackend>(
         vanished = changes.vanished;
     }
 
-    // 3. New messages.
-    let mut first = last_known + 1;
+    // 3. New messages, newest first. Without UIDNEXT we cannot chunk:
+    //    take them in one go.
     let mut added_uids = 0;
-    loop {
-        let last = match status.uid_next {
-            Some(next) if first >= next => break,
-            Some(next) => Some((first.saturating_add(CHUNK - 1)).min(next - 1)),
-            // Without UIDNEXT we cannot chunk: take the rest in one go.
-            None => None,
-        };
-        let messages = backend.fetch_headers(first, last).await?;
-        added_uids += messages.len();
-        report.added += save_messages(store, account, folder, &messages)?;
-        match last {
-            Some(last) => first = last + 1,
-            None => break,
+    let mut lowest_added = None;
+    let mut ranges = Vec::new();
+    match status.uid_next {
+        Some(next) if last_known + 1 < next => ranges.push((last_known + 1, next - 1)),
+        Some(_) => {}
+        None => {
+            let messages = backend.fetch_headers(last_known + 1, None).await?;
+            added_uids += messages.len();
+            lowest_added = messages.iter().map(|m| m.uid).min();
+            let saved = save_messages(store, account, folder, &messages)?;
+            if saved > 0 {
+                on_saved(saved);
+            }
+            report.added += saved;
         }
     }
+    ranges.append(&mut state.missing);
+    while let Some(&(low, high)) = ranges.first() {
+        let first = high.saturating_sub(CHUNK - 1).max(low);
+        // Saved before the fetch, so a sync cut off after this chunk is
+        // stored still knows what is below it.
+        state.missing = ranges.clone();
+        save_missing(store, folder, status.uid_validity, old_modseq, &state)?;
+
+        let messages = backend.fetch_headers(first, Some(high)).await?;
+        added_uids += messages.len();
+        lowest_added = Some(lowest_added.map_or(first, |l: u32| l.min(first)));
+        let saved = save_messages(store, account, folder, &messages)?;
+        if saved > 0 {
+            on_saved(saved);
+        }
+        report.added += saved;
+        if first > low {
+            ranges[0].1 = first - 1;
+        } else {
+            ranges.remove(0);
+        }
+    }
+    state.missing = Vec::new();
 
     // 4. Expunges: the ones QRESYNC reported; the UID lists are compared
     //    only when the numbers still do not add up.
@@ -311,7 +374,7 @@ pub async fn sync_folder<B: MailBackend>(
     let first = if !state.gmail_categories {
         Some(1)
     } else {
-        (added_uids > 0).then_some(last_known + 1)
+        lowest_added.filter(|_| added_uids > 0)
     };
     if let Some(first) = first
         && let Some(changed) = gmail_categories(backend, store, folder, first).await?
@@ -335,6 +398,22 @@ pub async fn sync_folder<B: MailBackend>(
     batch.commit()?;
     tracing::debug!(?report, "folder synced");
     Ok(report)
+}
+
+/// Saves `state` with the stored UIDVALIDITY and HIGHESTMODSEQ, midway
+/// through a sync, so the UIDs still missing survive an interruption.
+fn save_missing(
+    store: &mut Store,
+    folder: FolderId,
+    uid_validity: Option<u32>,
+    modseq: Option<u64>,
+    state: &FolderState,
+) -> Result<()> {
+    let json = serde_json::to_string(state).expect("plain struct serializes");
+    let mut batch = store.mail_batch()?;
+    batch.set_folder_state(folder, uid_validity, modseq, Some(&json))?;
+    batch.commit()?;
+    Ok(())
 }
 
 /// UIDs one `X-GM-MSGID` fetch asks for.

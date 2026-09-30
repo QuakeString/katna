@@ -65,6 +65,7 @@ impl DbKind {
                 include_str!("schema/pim_v9.sql"),
                 include_str!("schema/pim_v10.sql"),
                 include_str!("schema/pim_v11.sql"),
+                include_str!("schema/pim_v12.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -154,6 +155,12 @@ fn migrate(conn: &mut Connection, path: &Path, kind: DbKind) -> Result<()> {
         };
         tracing::info!(db = %path.display(), from = version, to = version + 1, "migrating schema");
         tx.execute_batch(sql)?;
+        // A migration that rewrote the schema's text (pim_v12) bumps the
+        // schema cookie, so every connection reads the new text.
+        if sql.contains("writable_schema") {
+            let cookie: i64 = tx.pragma_query_value(None, "schema_version", |row| row.get(0))?;
+            tx.pragma_update(None, "schema_version", cookie + 1)?;
+        }
         tx.pragma_update(None, "user_version", version + 1)?;
         tx.commit()?;
     }
@@ -288,6 +295,62 @@ mod tests {
             .pragma_query_value(None, "auto_vacuum", |row| row.get(0))
             .unwrap();
         assert_eq!(auto_vacuum, 2, "2 = INCREMENTAL");
+    }
+
+    #[test]
+    fn pim_v12_lets_calendars_come_from_zoho_and_keeps_every_event() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("pim.db");
+        let conn = Connection::open(&path).unwrap();
+        conn.pragma_update(None, "foreign_keys", true).unwrap();
+        for sql in &DbKind::Pim.migrations()[..11] {
+            conn.execute_batch(sql).unwrap();
+        }
+        conn.pragma_update(None, "user_version", 11).unwrap();
+        conn.execute_batch(
+            "INSERT INTO calendar (id, source, name) VALUES (1, 'caldav', 'Work');
+             INSERT INTO event (id, calendar_id, title, start, end) VALUES (1, 1, 'Kept', 0, 60);",
+        )
+        .unwrap();
+        assert!(
+            conn.execute(
+                "INSERT INTO calendar (source, name) VALUES ('zoho', 'Z')",
+                []
+            )
+            .is_err()
+        );
+        drop(conn);
+
+        let conn = open(&path, DbKind::Pim, Mode::ReadWrite).unwrap();
+        assert_eq!(user_version(&conn).unwrap(), 12);
+        conn.execute(
+            "INSERT INTO calendar (source, name) VALUES ('zoho', 'Z')",
+            [],
+        )
+        .unwrap();
+        assert!(
+            conn.execute(
+                "INSERT INTO calendar (source, name) VALUES ('other', 'O')",
+                []
+            )
+            .is_err()
+        );
+        let title: String = conn
+            .query_row("SELECT title FROM event WHERE id = 1", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(title, "Kept");
+        let ok: String = conn
+            .query_row("PRAGMA integrity_check", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(ok, "ok");
+        // Other connections read the new schema too.
+        let other = Connection::open(&path).unwrap();
+        other
+            .execute(
+                "INSERT INTO calendar (source, name) VALUES ('zoho', 'Z2')",
+                [],
+            )
+            .unwrap();
     }
 
     #[test]
