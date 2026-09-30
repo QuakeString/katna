@@ -43,7 +43,7 @@ fn due_day(task: &TaskItem) -> Option<Date> {
 }
 
 /// `minutes` after midnight as a time of day.
-fn clock(minutes: u32) -> Time {
+pub(super) fn clock(minutes: u32) -> Time {
     Time::new(
         i8::try_from(minutes / 60).unwrap_or(0),
         i8::try_from(minutes % 60).unwrap_or(0),
@@ -56,7 +56,7 @@ fn clock(minutes: u32) -> Time {
 impl MailWindow {
     /// Where `task` shows: its due day and time, or where it is being
     /// dragged to.
-    fn task_place(&self, task: &TaskItem) -> Option<(Date, Option<u32>)> {
+    pub(super) fn task_place(&self, task: &TaskItem) -> Option<(Date, Option<u32>)> {
         let dragged = self.calendar.task_drag.as_ref().filter(|d| d.id == task.id);
         match dragged.and_then(|d| d.to) {
             Some(to) => Some(to),

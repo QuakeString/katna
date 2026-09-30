@@ -14,7 +14,7 @@ use std::rc::Rc;
 use gpui::{
     Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
     KeyBinding, MouseButton, Pixels, Point, ScrollHandle, SharedString, Task, Window, anchored,
-    deferred, div, ease_out_quint, prelude::*, rgba,
+    canvas, deferred, div, ease_out_quint, prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
@@ -38,6 +38,7 @@ pub(super) mod menu;
 mod search;
 mod sets;
 mod tasks;
+mod year_peek;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
@@ -253,6 +254,8 @@ pub(super) struct CalendarPage {
     pub(super) search: search::Search,
     /// Where each account's calendar sync stands.
     pub(super) accounts: AccountStatus,
+    /// The Year view's day popover.
+    peek: year_peek::YearPeek,
 }
 
 impl CalendarPage {
@@ -283,6 +286,7 @@ impl CalendarPage {
             naming_set: None,
             search: search::Search::default(),
             accounts: AccountStatus::default(),
+            peek: year_peek::YearPeek::default(),
         }
     }
 
@@ -1010,6 +1014,7 @@ impl MailWindow {
                     .child(div().flex_1().min_h_0().child(main)),
             )
             .children(self.render_event_card(th, cx))
+            .children(self.render_year_peek(th, cx))
             .children(side.drawer);
         div()
             .relative()
@@ -2146,6 +2151,17 @@ impl MailWindow {
                 }
             }
         }
+        // Tasks too, in the accent, on days without events.
+        for (task, _) in self.dated_tasks() {
+            if let Some((day, _)) = self.task_place(task)
+                && day.year() == year.year()
+            {
+                busy.entry(day).or_insert(th.accent);
+            }
+        }
+        let phone = self.layout.shape.size == super::layout::Size::Phone;
+        let cells = self.calendar.peek.cells.clone();
+        cells.borrow_mut().clear();
         let head = format::weekdays_short();
         let months = (0..12)
             .filter_map(|m| year.checked_add(m.months()).ok())
@@ -2183,8 +2199,34 @@ impl MailWindow {
                                 self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
                             )
                             .on_click(cx.listener(move |this, _, _, cx| {
+                                if phone && this.year_day_tap(day, cx) {
+                                    return;
+                                }
+                                this.close_year_peek(cx);
                                 this.open_calendar_day(day, Some(CalView::Day), cx)
                             }))
+                            .when(dot.is_some() && !phone, |d| {
+                                d.on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                                    this.year_day_hover(day, *hovered, cx)
+                                }))
+                            })
+                            .when(dot.is_some(), |d| {
+                                let cells = cells.clone();
+                                d.child(
+                                    canvas(
+                                        move |bounds, window, _| {
+                                            cells
+                                                .borrow_mut()
+                                                .insert(day, (bounds, window.viewport_size()));
+                                        },
+                                        |_, _, _, _| {},
+                                    )
+                                    .absolute()
+                                    .top_0()
+                                    .left_0()
+                                    .size_full(),
+                                )
+                            })
                             .child(
                                 div()
                                     .size(px(YEAR_DAY - 4.0))
