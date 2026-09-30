@@ -3626,8 +3626,11 @@ most useful reason is shown. Changes go back the way their calendar came
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
-  months with a dot under days with events; a day opens Day, a month's
-  name opens Month), Schedule and a custom view (X or 6: 2 to 7 days
+  months with a dot under days with events or tasks; a day opens Day, a
+  month's name opens Month; resting the pointer on a dotted day, or
+  tapping it on a phone, shows its events and tasks in a popover with a
+  notch pointing at it, `calendar/year_peek.rs`, placed as the search's
+  date popover is by `window/notched.rs`), Schedule and a custom view (X or 6: 2 to 7 days
   from the day picked, 4 by default, chosen in the options menu as
   `custom_days`), like Google Calendar, with calendars grouped by account; the week starts as the
   language says, with a choice in Settings. Below 1000 px for the bar,

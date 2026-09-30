@@ -2190,8 +2190,9 @@ impl MailWindow {
             }
         }
         let phone = self.layout.shape.size == super::layout::Size::Phone;
+        // Each day's cell, painted after the popover reads them: kept
+        // from frame to frame, each rewritten when painted.
         let cells = self.calendar.peek.cells.clone();
-        cells.borrow_mut().clear();
         let head = format::weekdays_short();
         let months = (0..12)
             .filter_map(|m| year.checked_add(m.months()).ok())
@@ -2323,6 +2324,8 @@ impl MailWindow {
             .id("calendar-year")
             .size_full()
             .overflow_y_scroll()
+            // The popover belongs where its day was.
+            .on_scroll_wheel(cx.listener(|this, _, _, cx| this.close_year_peek(cx)))
             .p(px(16.0))
             .child(
                 div()

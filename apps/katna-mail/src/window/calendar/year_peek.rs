@@ -26,7 +26,7 @@ use katna_ui::{px, unpx};
 use super::super::MailWindow;
 use super::super::event_edit::kind_icon;
 use super::super::notched::{self, notch};
-use super::{CalView, midnight, time_range};
+use super::{CalView, civil, midnight};
 use crate::theme::Theme;
 use crate::widgets::{icon, raised};
 
@@ -335,7 +335,7 @@ impl MailWindow {
             Item::Event(occurrence) => {
                 let data = &occurrence.event.data;
                 let whole = occurrence.all_day() || occurrence.end - occurrence.start >= 24 * 3600;
-                let time = (!whole).then(|| time_range(occurrence.start, occurrence.end, tz));
+                let time = (!whole).then(|| format::time(civil(occurrence.start, tz)));
                 let glyph = match data.kind {
                     EventKind::Default => "event",
                     kind => kind_icon(kind).unwrap_or("event"),
