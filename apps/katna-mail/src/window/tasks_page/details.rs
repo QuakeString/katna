@@ -200,6 +200,7 @@ impl MailWindow {
         let time = cx.new(|cx| {
             let mut input = TextInput::new(tr!("tasks-time-placeholder"), cx);
             input.set_accent(accent);
+            input.set_stepper(Some(schedule::time_stepper()));
             input.set_text(clock, cx);
             input
         });

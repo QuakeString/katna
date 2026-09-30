@@ -66,8 +66,8 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-x", Cut, context),
         KeyBinding::new("enter", Submit, context),
         KeyBinding::new("escape", Cancel, context),
-        // Not handled by the input: for a parent's list of suggestions.
-        // Unhandled, the keys go on to the next binding for them.
+        // Handled by the input only with a stepper (a time field); else
+        // for a parent's list of suggestions, going on to the next binding.
         KeyBinding::new("up", Up, context),
         KeyBinding::new("down", Down, context),
     ]);
@@ -95,6 +95,10 @@ pub struct InputGrammarMenu {
     /// shows under them and closes when the pointer leaves both.
     pub word: Option<Bounds<Pixels>>,
 }
+
+/// What Up (`1`) and Down (`-1`) do in a field like a time: given the
+/// text and the cursor, the new text and cursor, or `None` to leave it.
+pub type Stepper = Arc<dyn Fn(&str, usize, i32) -> Option<(String, usize)>>;
 
 /// A single-line text input. Create it with [`TextInput::new`] inside
 /// `cx.new` and render the entity as a child.
@@ -127,6 +131,8 @@ pub struct TextInput {
     hover_task: Option<Task<()>>,
     /// The mistake a left click went down on.
     clicked: Option<Range<usize>>,
+    /// What Up and Down change, if they change the text.
+    stepper: Option<Stepper>,
 }
 
 /// What a masked input shows for each character.
@@ -160,6 +166,32 @@ impl TextInput {
             hover: None,
             hover_task: None,
             clicked: None,
+            stepper: None,
+        }
+    }
+
+    /// Makes Up and Down change the text with `stepper`, like the part of
+    /// a time the cursor is in; with `None` they go to the parent.
+    pub fn set_stepper(&mut self, stepper: Option<Stepper>) {
+        self.stepper = stepper;
+    }
+
+    fn step(&mut self, by: i32, cx: &mut Context<Self>) {
+        let Some(stepper) = &self.stepper else {
+            return;
+        };
+        let Some((text, cursor)) = stepper(&self.content, self.cursor_offset(), by) else {
+            return;
+        };
+        let cursor = cursor.min(text.len());
+        let changed = *text != *self.content;
+        self.content = text.into();
+        self.selected_range = cursor..cursor;
+        self.selection_reversed = false;
+        self.marked_range = None;
+        cx.notify();
+        if changed {
+            cx.emit(InputEvent::Changed);
         }
     }
 
@@ -1057,6 +1089,10 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::submit))
             .on_action(cx.listener(Self::cancel))
+            .when(self.stepper.is_some(), |d| {
+                d.on_action(cx.listener(|this, _: &Up, _, cx| this.step(1, cx)))
+                    .on_action(cx.listener(|this, _: &Down, _, cx| this.step(-1, cx)))
+            })
             .on_mouse_down(MouseButton::Left, cx.listener(Self::on_mouse_down))
             .on_mouse_down(MouseButton::Right, cx.listener(Self::on_right_mouse_down))
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))
