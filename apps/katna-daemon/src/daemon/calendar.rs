@@ -27,7 +27,7 @@ use std::{
 
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
-use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
+use katna_core::{Account, AccountId, AccountKind, AccountSettings, OAuthProvider};
 use katna_dbus::calendar_state;
 use katna_store::{
     Mode, Store,
@@ -44,7 +44,7 @@ use katna_sync::{
     },
     methods::{self, Data, Method},
     net::Tls,
-    oauth::Provider,
+    oauth::{Provider, is_zoho_host},
 };
 
 use super::{CommandError, Daemon, Notice};
@@ -388,6 +388,19 @@ impl Daemon {
             Ok(settings) => settings.unwrap_or_default(),
             Err(err) => return ((calendar_state::ERROR, err.to_string()), false),
         };
+        let (status, changed) = self
+            .sync_calendars_with(store, services, account, &settings)
+            .await;
+        (zoho_status(account, &settings, status), changed)
+    }
+
+    async fn sync_calendars_with(
+        &self,
+        store: &mut Store,
+        services: &mut Services,
+        account: &Account,
+        settings: &AccountSettings,
+    ) -> ((&'static str, String), bool) {
         let provider = settings.oauth;
         // Google and Microsoft let Katna into calendars only through their
         // own sign-in, not with a mail password.
@@ -538,6 +551,38 @@ impl Daemon {
     }
 }
 
+/// What a password Zoho account shows when its calendars didn't sync:
+/// "Sign in with Zoho" (`use-sign-in`, detail `zoho` or `zoho: why`)
+/// before it is linked to a Zoho sign-in, since Zoho's CalDAV answers on
+/// a port many networks block, and after, when that sign-in was refused
+/// (`needs-sign-in` on a password account would ask for its password).
+fn zoho_status(
+    account: &Account,
+    settings: &AccountSettings,
+    (state, detail): (&'static str, String),
+) -> (&'static str, String) {
+    let zoho = OAuthProvider::Zoho.as_str();
+    let is_zoho = settings.oauth.is_none()
+        && (is_zoho_host(&account.address)
+            || settings
+                .imap
+                .as_ref()
+                .is_some_and(|imap| is_zoho_host(&imap.host)));
+    if !is_zoho || state == calendar_state::OK {
+        return (state, detail);
+    }
+    match &settings.linked {
+        None if detail.is_empty() => (calendar_state::USE_SIGN_IN, zoho.to_owned()),
+        None => (calendar_state::USE_SIGN_IN, format!("{zoho}: {detail}")),
+        Some(linked)
+            if linked.provider == OAuthProvider::Zoho && state == calendar_state::NEEDS_SIGN_IN =>
+        {
+            (calendar_state::USE_SIGN_IN, zoho.to_owned())
+        }
+        Some(_) => (state, detail),
+    }
+}
+
 fn unix_now() -> i64 {
     jiff::Timestamp::now().as_second()
 }
@@ -589,5 +634,65 @@ impl Daemon {
         if changed {
             let _ = self.notices.try_send(Notice::CalendarChanged);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use katna_core::LinkedSignIn;
+
+    use super::*;
+
+    fn account(address: &str) -> Account {
+        Account {
+            id: AccountId(1),
+            kind: AccountKind::Imap,
+            display_name: String::new(),
+            address: address.into(),
+        }
+    }
+
+    #[test]
+    fn a_password_zoho_account_is_offered_zoho_sign_in() {
+        let zoho = account("me@zohomail.in");
+        let unlinked = AccountSettings::default();
+        let stalled = (
+            calendar_state::ERROR,
+            "calendar.zoho.in port 543 did not take a connection within 30s".to_owned(),
+        );
+        assert_eq!(
+            zoho_status(&zoho, &unlinked, stalled.clone()),
+            (
+                calendar_state::USE_SIGN_IN,
+                "zoho: calendar.zoho.in port 543 did not take a connection within 30s".into()
+            )
+        );
+        assert_eq!(
+            zoho_status(&zoho, &unlinked, (calendar_state::NONE, String::new())),
+            (calendar_state::USE_SIGN_IN, "zoho".into())
+        );
+        let ok = (calendar_state::OK, String::new());
+        assert_eq!(zoho_status(&zoho, &unlinked, ok.clone()), ok);
+
+        let linked = AccountSettings {
+            linked: Some(LinkedSignIn {
+                provider: OAuthProvider::Zoho,
+                accounts_server: "https://accounts.zoho.in".into(),
+                api_domain: String::new(),
+            }),
+            ..AccountSettings::default()
+        };
+        assert_eq!(
+            zoho_status(
+                &zoho,
+                &linked,
+                (calendar_state::NEEDS_SIGN_IN, "refused".into())
+            ),
+            (calendar_state::USE_SIGN_IN, "zoho".into())
+        );
+        assert_eq!(zoho_status(&zoho, &linked, stalled.clone()), stalled);
+
+        let other = account("me@fastmail.com");
+        assert_eq!(zoho_status(&other, &unlinked, stalled.clone()), stalled);
     }
 }

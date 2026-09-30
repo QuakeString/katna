@@ -3517,7 +3517,11 @@ most useful reason is shown. Changes go back the way their calendar came
   from about 3 months back to a year ahead, each occurrence a row of its
   own, and written where their etag changed. Source `zoho` (pim.db v12,
   which widens `calendar.source`'s CHECK in place so events are kept).
-  Read-only for now: a change to a Zoho event is refused and undone.
+  Read-only for now: a change to a Zoho event is refused and undone. A
+  password Zoho account whose calendars don't sync shows `use-sign-in`
+  (detail `zoho`, or `zoho: <why CalDAV failed>`) until it is linked, and
+  after, when the Zoho sign-in is refused, so its line offers "Sign in
+  with Zoho" rather than a password change.
   **CalDAV** (password accounts, and Google's fallback): found from the
   places above, with the IMAP password (or Google's token) over TLS; a
   calendar whose `getctag`/`sync-token` didn't change is
