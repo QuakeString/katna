@@ -41,8 +41,7 @@ use crate::{
 };
 
 /// Zoho Mail's scope for tasks, read and write.
-// TODO: use oauth::ZOHO_TASKS once it lands.
-const SCOPE: &str = "ZohoMail.tasks.ALL";
+const SCOPE: &str = crate::oauth::ZOHO_TASKS;
 
 /// The remote ID of the personal tasks, the default list.
 pub const PERSONAL: &str = "me";

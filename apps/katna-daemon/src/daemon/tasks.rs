@@ -29,8 +29,11 @@ use katna_sync::{
     calendar::caldav::CalDav,
     methods::{self, Data, Method},
     net::Tls,
-    oauth::Provider,
-    tasks::{TaskService, caldav::DavTasks, google::GoogleTasks, graph::ToDo, sync_account},
+    oauth::{self, Provider},
+    tasks::{
+        TaskService, caldav::DavTasks, google::GoogleTasks, graph::ToDo, sync_account,
+        zoho::ZohoTasks,
+    },
 };
 
 use super::{CommandError, Daemon, Notice};
@@ -167,6 +170,30 @@ impl Daemon {
             };
             return Ok(Some(Some((key, service))));
         }
+        // Zoho keeps no to-dos in CalDAV: its tasks come through the Zoho
+        // sign-in linked to the password account.
+        if let Some(linked) = settings.linked.as_ref()
+            && linked.provider == OAuthProvider::Zoho
+        {
+            if method != Method::Api {
+                return Ok(None);
+            }
+            let (tokens, linked) = self
+                .linked_tokens(account.id)
+                .await
+                .map_err(|err| {
+                    tracing::debug!(account = account.id.0, %err, "no Zoho tokens for tasks");
+                    Error::Auth(err)
+                })?
+                .ok_or_else(|| Error::Auth("Zoho asks to sign in again".into()))?;
+            let key = format!("zoho {:p}", Arc::as_ptr(&tokens));
+            let tls = Tls::system().map_err(|err| Error::Tls(err.to_string()))?;
+            let api = oauth::zoho_mail_api(&linked);
+            return Ok(Some(Some((
+                key,
+                TaskService::Zoho(ZohoTasks::new(tokens, tls, &api)),
+            ))));
+        }
         if method != Method::Dav {
             return Ok(None);
         }
@@ -236,6 +263,22 @@ impl Daemon {
         {
             return ((task_state::USE_SIGN_IN, own.as_str().to_owned()), false);
         }
+        let linked = settings.linked.as_ref().map(|l| l.provider);
+        // Nor does Zoho, whose CalDAV keeps no to-dos: its tasks need the
+        // Zoho sign-in linked to the account.
+        if account.kind == AccountKind::Imap
+            && provider.is_none()
+            && linked.is_none()
+            && (oauth::is_zoho_host(&account.address)
+                || settings
+                    .imap
+                    .as_ref()
+                    .is_some_and(|imap| oauth::is_zoho_host(&imap.host)))
+        {
+            let zoho = OAuthProvider::Zoho.as_str().to_owned();
+            return ((task_state::USE_SIGN_IN, zoho), false);
+        }
+        let provider = provider.or(linked);
         let now = super::unix_now();
         let order = methods::order(&self.store(), account.id, Data::Tasks, provider, now);
         // What to show when no way works: the most useful reason.
@@ -288,6 +331,14 @@ impl Daemon {
             if shown.0 == task_state::NONE {
                 shown = status;
             }
+        }
+        // A linked sign-in that stopped working is fixed by signing in
+        // with it again, not by the account's own password.
+        if shown.0 == task_state::NEEDS_SIGN_IN
+            && settings.oauth.is_none()
+            && let Some(linked) = linked
+        {
+            shown = (task_state::USE_SIGN_IN, linked.as_str().to_owned());
         }
         (shown, false)
     }

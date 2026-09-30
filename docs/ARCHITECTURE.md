@@ -3690,19 +3690,27 @@ server error is not.
   and a tick. The delta holds no steps, so each task it brings has its
   steps read again, and steps of that task not among them are dropped.
   CalDAV keeps it all, the due time too (written in UTC); a step is a
-  to-do with `RELATED-TO;RELTYPE=PARENT`. Zoho (`katna_sync::tasks::zoho`,
-  `https://mail.zoho.<dc>/api/tasks`, header `Zoho-oauthtoken`) keeps
-  title, description (notes), a due day (`DD/MM/YYYY`), done and one
-  level of subtasks (steps); its priority, reminder and repeat are not
-  mapped, so the star, reminders and repeat stay in Katna as with Google.
-  Its personal tasks (`me`) are the default list and each group with
-  tasks is a list (`group:<zgid>`). Zoho makes no lists of one's own: a
-  list made in Katna stays on this computer (refused and logged each
-  round), and a Zoho list renamed or deleted in Katna is not sent, so the
-  next round brings it back. Each field has its own `PUT` in Zoho's
-  reference, so a change reads the task and sends only what differs. A change is written over the
+  to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
+- **Zoho** (`katna_sync::tasks::zoho`, `https://mail.zoho.<dc>/api/tasks`,
+  header `Zoho-oauthtoken`) goes through the Zoho sign-in linked to the
+  password account (`AccountSettings::linked`, `daemon/linked.rs`); the
+  mail stays on its password. Zoho keeps title, description (notes), a
+  due day (`DD/MM/YYYY`), done and one level of subtasks (steps); its
+  priority, reminder and repeat are not mapped, so the star, reminders
+  and repeat stay in Katna as with Google. Its personal tasks (`me`) are
+  the default list and each group with tasks is a list (`group:<zgid>`).
+  Zoho makes no lists of one's own: a list made in Katna stays on this
+  computer (refused and logged each round), and a Zoho list renamed or
+  deleted in Katna is not sent, so the next round brings it back. Each
+  field has its own `PUT` in Zoho's reference, so a change reads the task
+  and sends only what differs. A Zoho account (`oauth::is_zoho_host`)
+  without the linked sign-in shows `USE_SIGN_IN` ("Sign in with Zoho")
+  and keeps its lists on this computer; a linked sign-in that stops
+  working shows the same, not the password's "Change password".
+  `USE_SIGN_IN`'s detail is `provider` or `provider: why the other way
+  failed`, and the side list shows that reason in small type under it.
 - **Sync** (`katna_sync::tasks`, run by the daemon's `daemon/tasks.rs`):
   every 5 minutes, and 2 seconds after a change in Katna. Each round sends
   list changes, takes the service's lists, then per list sends task

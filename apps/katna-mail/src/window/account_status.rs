@@ -275,6 +275,8 @@ impl MailWindow {
         let provider = status
             .and_then(AccountState::provider)
             .map_or("", |p| p.name());
+        // What the other way ran into, under a sign-in line.
+        let why = status.map_or("", AccountState::use_sign_in_why);
         let (text, fix) = match state {
             task_state::NEEDS_SIGN_IN if signs_in => (String::new(), Fix::SignIn),
             task_state::USE_SIGN_IN if !provider.is_empty() => {
@@ -345,6 +347,14 @@ impl MailWindow {
             .line_height(px(18.0))
             .text_color(rgba(th.text_faint))
             .children(text)
+            .when(!why.is_empty(), |d| {
+                d.child(
+                    div()
+                        .text_size(px(12.0))
+                        .line_height(px(16.0))
+                        .child(why.to_owned()),
+                )
+            })
             .children(action)
             .into_any_element()
     }

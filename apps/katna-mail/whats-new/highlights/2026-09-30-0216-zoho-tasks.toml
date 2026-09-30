@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Zoho tasks"
+text = """
+Sign in with Zoho on a Zoho account and its Zoho ToDo tasks show in
+Tasks, both ways: add, edit, tick or delete a task in Katna and it
+changes in Zoho too.
+"""
