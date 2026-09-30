@@ -45,7 +45,7 @@ const CALENDARS: &str = r##"{"calendars": [
 const EVENTS: &str = r##"{"events": [
   {"uid": "a@zoho.com", "title": "Standup", "location": "Office",
    "isallday": false, "etag": 1500358633876,
-   "dateandtime": {"timezone": "Asia/Calcutta", "start": "20261001T093000+0530",
+   "dateandtime": {"timezone": "India Standard Time", "start": "20261001T093000+0530",
                    "end": "20261001T100000+0530"},
    "organizer": "boss@invenia.in",
    "attendees": [{"email": "me@invenia.in", "status": "NEEDS-ACTION"},
