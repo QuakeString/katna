@@ -154,6 +154,19 @@ impl Daemon {
             .map_or(hint.trim(), |account| account.address.as_str())
             .to_owned();
         let grant = self.browser_grant(&config, &hint).await?;
+        let mail_refused = provider == OAuthProvider::Google
+            && grant.scope.as_deref().is_some_and(|granted| {
+                !granted
+                    .split_whitespace()
+                    .any(|scope| scope == katna_sync::oauth::GOOGLE_MAIL)
+            });
+        if mail_refused {
+            return Err(CommandError::AuthFailed(
+                "Google did not let Katna read Gmail: sign in again and tick \
+                 \"Read, compose, send and permanently delete all your email from Gmail\""
+                    .into(),
+            ));
+        }
         let identity = grant.identity.clone().unwrap_or_default();
         let refresh = grant.refresh_token.clone().unwrap_or_default();
 
