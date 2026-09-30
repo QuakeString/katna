@@ -1672,3 +1672,16 @@ title = "Tinye ọrụ site na Kalịnda"
 text = """
 Pịa aka nri n'oge efu ma ọ bụ ụbọchị na Kalịnda ma họrọ Ọrụ iji tinye ọrụ n'ebe ahụ. Kaadị ihe omume ọhụrụ na-emepe na taabụ Ọrụ ya, ya na ụbọchị na oge ahụ ejupụtara.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalịnda na-achọ ọzọ mgbe sava dị nwayọ"
+text = """
+Mgbe sava kalịnda nke akaụntụ azaghị n'oge, Kalịnda na-ekwu nke a ugbu a, na ma njikọ ahụ ma ọ bụ nkwekọrịta echekwara kwụsịrị, kama "Ahụghị kalịnda ọ bụla". Ọ na-anwa ọzọ n'ime nkeji ole na ole kama ọtụtụ awa.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Faịlụ kọntaktị na-egosi ibudata ha"
+text = """
+Faịlụ dị na panel kọntaktị nke ozi ya na-adịbeghị na kọmputa a na-ejupụta
+ugbu a ka ọ na-ebudata, dịka mgbakwunye ndị dị na ndepụta na-eme, wee meghee.
+"""

@@ -1847,3 +1847,18 @@ Chofoza kwesokudla isikhathi noma usuku olungenalutho kuKhalenda bese
 ukhetha Umsebenzi ukuze wengeze umsebenzi lapho. Ikhadi lomcimbi omusha
 livuleka kuthebhu yalo ethi Umsebenzi, lolo suku nesikhathi sekugcwalisiwe.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Amakhalenda aphinda abheke ngemva kweseva ehamba kancane"
+text = """
+Uma iseva yekhalenda ye-akhawunti ingaphenduli ngesikhathi, iKhalenda
+manje iyakusho lokho, nokuthi kwaba ukuxhumana noma ukuxhawulana
+okuvikelekile okubambekile, esikhundleni sokuthi "Awekho amakhalenda
+atholakele". Iphinda izame emizuzwini embalwa esikhundleni samahora.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Amafayela oxhumana naye abonisa ukulandwa kwawo"
+text = """
+Ifayela kuphaneli yoxhumana naye i-imeyili yalo engakabi kule khompyutha manje liyagcwala ngenkathi lilandwa, njengoba kwenza okunamathiselwe ohlwini, bese liyavuleka.
+"""

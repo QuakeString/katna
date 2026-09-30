@@ -94,7 +94,18 @@ impl Running {
         }
     }
 
+    /// The next event other than [`Event::Stored`], which only says a
+    /// full sync is under way.
     async fn next_any(&self) -> Event {
+        loop {
+            match self.next_raw().await {
+                Event::Stored(_) => {}
+                event => return event,
+            }
+        }
+    }
+
+    async fn next_raw(&self) -> Event {
         self.events
             .recv()
             .or(async {
@@ -145,6 +156,28 @@ fn syncs_then_picks_up_new_mail_by_push() {
         worker.stop().await;
         assert_eq!(server.log().last().map(String::as_str), Some("LOGOUT"));
         assert_eq!(server.state().connects, 1);
+    });
+}
+
+#[test]
+fn a_full_sync_tells_as_each_folder_is_stored_inbox_first() {
+    let server = FakeServer::default();
+    // Listed after the archive, as Dovecot does.
+    server.create("Archive", 1);
+    server.create("INBOX", 1);
+    server.deliver("Archive", "one");
+    server.deliver("Archive", "two");
+    server.deliver("INBOX", "three");
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next_raw().await, Event::Connected));
+        // The folder list, then each folder's mail, before the sync ends:
+        // a new account's inbox shows while other folders still download.
+        assert!(matches!(worker.next_raw().await, Event::Stored(0)));
+        assert!(matches!(worker.next_raw().await, Event::Stored(1)));
+        assert!(matches!(worker.next_raw().await, Event::Stored(2)));
+        assert_eq!(added(&worker.next_raw().await), 3);
+        worker.stop().await;
     });
 }
 

@@ -1718,7 +1718,7 @@ impl Daemon {
                         notices.synced(&self.store, id).await;
                     }
                 }
-                Event::BodiesStored(_) => {
+                Event::Stored(_) | Event::BodiesStored(_) => {
                     let _ = self.notices.try_send(Notice::MailChanged(id));
                     continue;
                 }
