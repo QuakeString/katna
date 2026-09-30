@@ -1692,3 +1692,12 @@ title = "Àwọn fáìlì olùbásọ̀rọ̀ ń fi ìgbàsílẹ̀ wọn hàn"
 text = """
 Fáìlì kan nínú pánẹ́ẹ̀lì olùbásọ̀rọ̀ tí lẹ́tà rẹ̀ kò tíì sí lórí kọ̀ǹpútà yìí ti ń kún báyìí bí ó ṣe ń gbà sílẹ̀, bí àwọn àfikún inú àkójọ ṣe ń ṣe, lẹ́yìn náà ó ṣí.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Lẹ́tà àkáǹtì tuntun ń hàn bí wọ́n ṣe ń dé"
+text = """
+Lẹ́yìn tí o bá ṣàfikún àkáǹtì kan, àpótí-ìwọlé rẹ̀ ni a máa kọ́kọ́ gbà
+sílẹ̀, ó sì máa ń kún bí o ṣe ń wò ó, dípò kí ó dúró sí “À ń gba lẹ́tà
+rẹ…” títí gbogbo fódà yóò fi parí. Àwọn fódà mìíràn náà máa ń kún bákan
+náà.
+"""

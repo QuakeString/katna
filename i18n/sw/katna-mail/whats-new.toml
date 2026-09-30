@@ -1723,3 +1723,11 @@ title = "Faili za mwasiliani zinaonyesha upakuaji wake"
 text = """
 Faili katika kidirisha cha mwasiliani ambayo barua yake bado haiko kwenye kompyuta hii sasa hujaa inapopakuliwa, kama viambatisho kwenye orodha vinavyofanya, kisha hufunguka.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Barua za akaunti mpya zinaonekana zinapowasili"
+text = """
+Baada ya kuongeza akaunti, kikasha chake hupakuliwa kwanza na hujaa
+ukiwa unatazama, badala ya kubaki kwenye “Inaleta barua zako…” hadi kila
+folda ikamilike. Folda nyingine hujaa kwa njia hiyo hiyo.
+"""

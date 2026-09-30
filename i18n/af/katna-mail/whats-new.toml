@@ -1752,3 +1752,11 @@ text = """
 is nie, vul nou terwyl dit afgelaai word, soos aanhegsels in die lys, en
 maak dan oop.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "'n Nuwe rekening se e-pos wys soos dit aankom"
+text = """
+Nadat jy 'n rekening bygevoeg het, word sy Inkassie eerste afgelaai en
+vul dit terwyl jy kyk, in plaas daarvan om op “Kry tans jou e-pos…” te
+bly totdat elke vouer klaar is. Ander vouers vul op dieselfde manier.
+"""

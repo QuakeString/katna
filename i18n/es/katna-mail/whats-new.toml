@@ -1814,3 +1814,12 @@ Un archivo de los detalles del contacto cuyo correo aún no está en este
 ordenador ahora se va llenando mientras se descarga, como los adjuntos
 de la lista, y luego se abre.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "El correo de una cuenta nueva aparece a medida que llega"
+text = """
+Después de añadir una cuenta, su bandeja de Recibidos se descarga
+primero y se va llenando ante tus ojos, en vez de quedarse en «Obteniendo
+tu correo…» hasta que termine cada carpeta. Las demás carpetas se llenan
+de la misma forma.
+"""

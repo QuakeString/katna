@@ -1791,3 +1791,11 @@ Plik w panelu kontaktu, którego wiadomości nie ma jeszcze na tym
 komputerze, wypełnia się teraz podczas pobierania, tak jak załączniki na
 liście, a potem się otwiera.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Poczta nowego konta pojawia się na bieżąco"
+text = """
+Po dodaniu konta jego Odebrane pobierają się najpierw i wypełniają na
+twoich oczach, zamiast stać na „Pobieranie poczty…”, aż skończą się
+wszystkie foldery. Pozostałe foldery wypełniają się tak samo.
+"""

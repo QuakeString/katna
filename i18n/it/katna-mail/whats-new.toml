@@ -1818,3 +1818,12 @@ Un file nel pannello del contatto la cui posta non è ancora su questo
 computer ora si riempie mentre viene scaricato, come fanno gli allegati
 nell’elenco, e poi si apre.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "La posta di un nuovo account compare mentre arriva"
+text = """
+Dopo che aggiungi un account, la sua Posta in arrivo viene scaricata per
+prima e si riempie sotto i tuoi occhi, invece di restare su «Recupero della
+posta…» finché non sono pronte tutte le cartelle. Le altre cartelle si
+riempiono allo stesso modo.
+"""

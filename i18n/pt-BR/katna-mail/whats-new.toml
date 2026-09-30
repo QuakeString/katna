@@ -1799,3 +1799,12 @@ Um arquivo no painel de contato cujo e-mail ainda não está neste
 computador agora se preenche enquanto é baixado, como fazem os anexos
 na lista, e depois abre.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Os e-mails de uma nova conta aparecem à medida que chegam"
+text = """
+Depois que você adiciona uma conta, a caixa de entrada dela é baixada
+primeiro e vai se preenchendo enquanto você acompanha, em vez de ficar
+em “Buscando seus e-mails…” até que todas as pastas terminem. As outras
+pastas se preenchem da mesma forma.
+"""
