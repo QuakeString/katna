@@ -3433,7 +3433,11 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(self.render_app_page(&th, window, cx))
+                .child(if self.settings_page.is_some() {
+                    self.render_settings_page(&th, window, cx)
+                } else {
+                    self.render_app_page(&th, window, cx)
+                })
                 .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };
