@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Easier to see in dark colors"
+text = """
+In dark colors, things that float over the mail list are now a shade lighter
+with a faint light edge, since shadows hardly show on a dark background. The
+Back to top button, menus, the Compose window and dialogs stand out clearly.
+Light colors look as before.
+"""

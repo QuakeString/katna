@@ -744,7 +744,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .rounded(px(15.0))
-            .bg(rgba(th.surface))
+            .bg(rgba(th.raised))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .child(title)

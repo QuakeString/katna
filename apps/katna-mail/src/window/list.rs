@@ -327,7 +327,7 @@ impl MailWindow {
                         .items_center()
                         .justify_center()
                         .rounded_full()
-                        .bg(rgba(th.surface))
+                        .bg(rgba(th.raised))
                         .cursor_pointer()
                         .shadow(elevation(th, 2.0))
                         .hover(|s| s.shadow(elevation(th, 3.0)))

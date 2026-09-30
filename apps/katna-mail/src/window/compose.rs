@@ -1895,6 +1895,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         // Harper's helper is large: it runs only while a message is open.
         if self.compose.is_none() && self.writing.grammar.is_some() {
             self.writing.grammar = None;

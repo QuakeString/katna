@@ -1760,6 +1760,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Everything honors the desktop's reduce-motion setting.
 - **Colors.** `theme.rs` has Katna's light and dark palettes. The owner
   later asked for the desktop's colors as well; see "Desktop colors" below.
+- **Depth in dark colors.** Shadows barely show on a dark background, so in
+  dark colors (Katna's or the desktop's) things that float are lighter the
+  higher they sit: floating buttons, dialogs, popovers and the Compose
+  window use `Theme::raised` (the card lifted by 10% of the text color),
+  menus `Theme::menu` (13%), and `widgets::elevation` adds a faint 1 px
+  light edge (`Theme::rim`) to every shadow. A dialog draws its contents
+  with `Theme::lifted`, so fields and chips inside it keep their contrast.
+  Light colors keep the white card and its shadow (the owner, 2026-09-30).
 
 The owner then asked for the rest of Gmail's pattern, with Katna's own
 icons and name and without Google-only features (no Chat, Meet, Drive,

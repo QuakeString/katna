@@ -202,6 +202,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let dialog = self.whats_new.as_mut()?;
         let t = dialog.shown.tick(window, reduce);
         if dialog.closing && dialog.shown.settled() {
