@@ -3908,6 +3908,13 @@ media code, nothing added to startup.
   `text<https://…>` as `text`) without the rules of underscores
   (`calendar/description.rs`); only the details scroll, the title and
   Going? stay in sight.
+- An event Gmail made from a mail (its description links to
+  `mail.google.com/mail?extsrc=cal&plid=…`, an id only Gmail reads) gets
+  Open the mail on its card: Katna searches its own index for the event's
+  title and place words in the year of mail before the event's day,
+  keeps a hit in the event's account, and opens it; with no hit, Gmail's
+  link opens in the browser (`calendar/from_mail.rs`). A task made from a
+  mail keeps its `Message-ID` and opens the mail from its card as well.
 
 ## 19. Security and privacy
 
