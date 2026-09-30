@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Switching tabs keeps the open mail"
+text = """
+With the reading pane beside the list, picking another inbox tab no longer
+closes the mail you are reading; the list changes and the mail stays open.
+"""

@@ -1477,9 +1477,19 @@ impl MailWindow {
         self.layout.stop_glide();
         self.tab = tab;
         // No fade: the tab's lines replace the last ones in the same frame,
-        // as the indicator slides over.
+        // as the indicator slides over. A conversation open beside the
+        // list stays open, as the list is still in sight; over the list,
+        // it closes to show the tab.
+        let keep_open = self.pane_open();
         if let Some(folder) = self.folder {
             self.open_folder(folder, cx);
+        }
+        if keep_open {
+            self.reading = true;
+            let key = self.reader.as_ref().map(|r| r.key);
+            if let Some(ix) = self.entries.iter().position(|e| Some(e.key) == key) {
+                self.selected = Some(ix);
+            }
         }
     }
 
