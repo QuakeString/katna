@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Inbox tabs in the middle"
+text = """
+The inbox tabs now sit in the middle of the list's top row, moving aside
+only as far as its buttons need.
+"""

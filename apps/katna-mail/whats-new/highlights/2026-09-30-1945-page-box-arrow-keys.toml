@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Arrow keys in the page box"
+text = """
+In a PDF, click the page number and press Up or Down to go a page back or
+on. Hold the key to flip through pages quickly.
+"""
