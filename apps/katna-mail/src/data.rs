@@ -573,6 +573,16 @@ impl Mail {
         settings.imap.map(|server| server.host)
     }
 
+    /// What a POP3 account does with mail on the server.
+    pub fn pop3_keep(&self, account: katna_core::AccountId) -> katna_core::Pop3Keep {
+        self.store
+            .account_settings(account)
+            .ok()
+            .flatten()
+            .map(|s| s.pop3_keep)
+            .unwrap_or_default()
+    }
+
     /// The provider an account signs in with, if not a password.
     pub fn sign_in_provider(
         &self,

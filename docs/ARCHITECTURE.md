@@ -516,8 +516,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   forget those UIDLs and the ones the server no longer lists. A broken
   session therefore never loses mail or deletes what is not stored. The
   client has `TOP`; partial download of very large messages (header first,
-  body on request) is a later option. Discovery does not look for POP3
-  servers yet, so `AddPop3Account` needs the server.
+  body on request) is a later option. Discovery reports a POP3 server
+  beside IMAP; Add account takes POP3 only when there is no IMAP server,
+  or when the user picks it under Server settings. `SetPop3Keep` changes
+  what stays on the server later (Settings > Accounts, "Mail on the
+  server").
 - **Gmail / Microsoft:** OAuth2 (`katna_sync::oauth`, daemon
   `daemon/sign_in.rs`, D-Bus `SignIn`): the installed-app flow with PKCE
   (RFC 7636) and a loopback redirect (RFC 8252). The daemon listens on a
@@ -585,10 +588,12 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   Yahoo, iCloud and Fastmail. Then the provider's own `config-v1.1.xml`
   (`https://autoconfig.DOMAIN/…` and `https://DOMAIN/.well-known/…`) and
   Thunderbird's ISPDB, fetched at once; the provider's file wins. Then DNS
-  SRV (`_imaps`, `_imap`, `_submissions`, `_submission`; RFC 6186 and
-  8314), then the ISPDB entry of the MX host's domain (hosted mail such as
-  Google Workspace), then probing `imap.`, `mail.` and `smtp.DOMAIN` on
-  993/143 and 465/587 for a mail greeting. Files come only over HTTPS; TLS
+  SRV (`_imaps`, `_imap`, `_pop3s`, `_pop3`, `_submissions`,
+  `_submission`; RFC 6186 and 8314), then the ISPDB entry of the MX host's
+  domain (hosted mail such as Google Workspace), then probing `imap.`,
+  `pop.`, `pop3.`, `mail.` and `smtp.DOMAIN` on 993/143, 995/110 and
+  465/587 for a mail greeting. POP3 servers are kept beside IMAP
+  (`Discovered::pop3`); IMAP stays the default when both exist. Files come only over HTTPS; TLS
   beats STARTTLS beats plain, and a cleartext server is only taken when
   the file offers nothing else (logged as a warning; the dialog shows the
   security). DNS answers are not authenticated, so an SRV record is only
@@ -2027,21 +2032,26 @@ Gemini or confidential mode):
   Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
   message the server refuses for good raises a snackbar
   (`OutboxChanged`).
-- **Adding an account.** A dialog shaped like a web sign-in
-  (`window/add_account.rs`): the address first; the daemon looks for the
-  servers (`DiscoverAccount`, §6), and the next step asks for the password
-  under a chip with the address, with "Show password", an optional name
-  for the From line and where the servers were found. Gmail, Yahoo, iCloud
-  and AOL addresses get a note that they need an app password. When
-  nothing is found, or from "Server settings", the servers are entered by
-  hand: host, port and SSL/TLS, STARTTLS or none for IMAP and SMTP, and
-  the username. `AddImapAccount` checks the login before saving; a refused
-  password is shown under the field. When this build has the client IDs,
-  "Sign in with Google" and "Sign in with Microsoft" sit under the address
-  field, and a Gmail password step offers "Sign in with Google instead";
-  for Microsoft's own addresses discovery leads straight there. Signing in
-  shows "Continue in your browser" while the daemon waits for the
-  provider's page (`SignIn`; Back or Cancel ends it with `CancelSignIn`). An
+- **Adding an account.** A dialog in steps (`window/add_account.rs`),
+  shaped after Mailspring's and Thunderbird's. First a grid of provider
+  tiles (`window/mail_providers.rs`): Google, Microsoft (only when this
+  build has its client ID), Yahoo, iCloud, Zoho, Fastmail, GMX, Yandex and
+  "Other mail" for any IMAP or POP3 server, each with its own mark. Google
+  and Microsoft sign in in the browser (`SignIn`; "Continue in your
+  browser" until the provider's page answers, Back or Cancel ends it with
+  `CancelSignIn`). The others lead to one form: name for the From line,
+  address and password with "Show password", and a help box saying what
+  the provider needs first (an app password, or IMAP turned on for GMX)
+  with a link to its page. Add account looks for the servers
+  (`DiscoverAccount`, §6) and checks the login, showing each stage with a
+  spinner. When nothing is found, or from "Server settings", the servers
+  are entered by hand: IMAP or POP3 for incoming mail, then host, port,
+  SSL/TLS, STARTTLS or none, and the username, for incoming and SMTP.
+  `AddImapAccount` or `AddPop3Account` checks the login before saving; a
+  refused password is shown under the field. The last step shows what was
+  set up (receiving and sending servers, and for POP3 what stays on the
+  server) with "Add another account"; a Zoho account is offered "Sign in
+  with Zoho" there for its tasks and calendars. An
   OAuth2 account whose sign-in stopped working shows a note at the bottom
   of the window with "Sign in" (`window/sign_in_again.rs`). It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
@@ -2846,11 +2856,13 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
 (id, kind, name, address, state, detail, last sync, OAuth2 provider),
-`DiscoverAccount(address) → (account, source, provider, password works)`,
+`DiscoverAccount(address) → (account, POP3 server, source, provider,
+password works)` (an empty POP3 host when there is none),
 `SignIn(provider, id, address) → id` (OAuth2 in the browser; adds the
 account, or signs one in again), `CancelSignIn() → b`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
-leave-on-server, days to keep, and delete-with-local),
+leave-on-server, days to keep, and delete-with-local), `SetPop3Keep(id,
+leave on server, days, delete with local)`,
 `SetPassword(id, password)`, `RenameAccount(id, name)` (an empty name
 goes back to the name the account's own sent mail uses, which a name-less
 account also takes after its first sync), `RemoveAccount(id) → b`,

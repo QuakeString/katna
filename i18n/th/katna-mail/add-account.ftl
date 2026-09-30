@@ -9,7 +9,6 @@ add-account-looking = กำลังค้นหาเซิร์ฟเวอ�
 add-account-address-intro = ป้อนที่อยู่อีเมลของคุณ แล้ว Katna จะค้นหาเซิร์ฟเวอร์ให้
 add-account-servers-title = การตั้งค่าเซิร์ฟเวอร์
 add-account-servers-intro = ที่ที่ Katna อ่านและส่งอีเมลของ { $address }
-add-account-password-title = ป้อนรหัสผ่านของคุณ
 add-account-signing-in = กำลังลงชื่อเข้าใช้…
 add-account-browser-title = ดำเนินการต่อในเบราว์เซอร์ของคุณ
 add-account-browser-intro = Katna เปิดหน้าลงชื่อเข้าใช้ { $provider } ในเบราว์เซอร์ของคุณแล้ว ลงชื่อเข้าใช้ที่นั่นและอนุญาตให้ Katna อ่านและส่งอีเมลของคุณ แล้วกลับมาที่นี่
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] เซิร์ฟเวอร์: { $servers } จากการคาดเดา โปรดตรวจสอบหากลงชื่อเข้าใช้ไม่สำเร็จ
 }
 add-account-servers-entered = เซิร์ฟเวอร์: { $servers } ตามที่ป้อน
-add-account-or = หรือ
 add-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
 add-account-sign-in-instead = ลงชื่อเข้าใช้ด้วย { $provider } แทน
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = ลงชื่อเข้าใช้ด้ว�
 add-account-servers-button = การตั้งค่าเซิร์ฟเวอร์
 add-account-back = กลับ
 add-account-add = เพิ่มบัญชี
-add-account-next = ถัดไป
 add-account-cancel = ยกเลิก
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = ป้อนที่อยู่อีเมล �
 add-account-not-found = Katna ไม่พบเซิร์ฟเวอร์ของ { $address } จึงใส่ชื่อที่ใช้กันทั่วไปให้ โปรดตรวจสอบกับผู้ให้บริการของคุณ
 add-account-password-empty = ป้อนรหัสผ่าน
 add-account-name-is-password = ชื่อเหมือนกับรหัสผ่าน ให้พิมพ์ชื่อของคุณในช่องนั้นแทน ตามที่ต้องการให้ผู้อื่นเห็น
-add-account-added = เพิ่ม { $address } แล้ว กำลังรับอีเมลของคุณ…
 add-account-app-password-refused = { $provider } ปฏิเสธรหัสผ่าน ต้องใช้รหัสผ่านสำหรับแอป ไม่ใช่รหัสผ่านที่คุณใช้บนเว็บ
 add-account-password-refused = เซิร์ฟเวอร์ปฏิเสธรหัสผ่าน โปรดตรวจสอบแล้วลองอีกครั้ง
 add-account-sign-in-refused = { $provider } ไม่อนุญาตให้ Katna เข้าใช้ ลองอีกครั้ง และอนุญาตให้เข้าถึงอีเมลของคุณ
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna ที่ติดตั้งอยู่นี้ยังลงชื่อเข้าใช้บัญชี Google ไม่ได้
    *[other] ผู้ให้บริการนี้อนุญาตให้ลงชื่อเข้าใช้ได้เฉพาะในหน้าของตนเอง ซึ่ง Katna ยังทำให้ไม่ได้
 }
-add-account-signed-in = ลงชื่อเข้าใช้ด้วย { $provider } แล้ว กำลังรับอีเมลของคุณ…
 
 ## The account menu (from the account button on the top bar)
 

@@ -9,7 +9,6 @@ add-account-looking = { $address } ನ ಮೇಲ್ ಸರ್ವರ್‌ಗಳ�
 add-account-address-intro = ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ. Katna ನಿಮಗಾಗಿ ಸರ್ವರ್‌ಗಳನ್ನು ಹುಡುಕುತ್ತದೆ.
 add-account-servers-title = ಸರ್ವರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 add-account-servers-intro = { $address } ಗಾಗಿ Katna ಮೇಲ್ ಅನ್ನು ಎಲ್ಲಿಂದ ಓದುತ್ತದೆ ಮತ್ತು ಕಳುಹಿಸುತ್ತದೆ.
-add-account-password-title = ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ
 add-account-signing-in = ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ…
 add-account-browser-title = ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಮುಂದುವರಿಯಿರಿ
 add-account-browser-intro = Katna ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ { $provider } ಸೈನ್ ಇನ್ ಪುಟವನ್ನು ತೆರೆದಿದೆ. ಅಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಮೇಲ್ ಓದಲು ಹಾಗೂ ಕಳುಹಿಸಲು Katna ಗೆ ಅನುಮತಿಸಿ, ನಂತರ ಇಲ್ಲಿಗೆ ಹಿಂತಿರುಗಿ.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] ಸರ್ವರ್‌ಗಳು: { $servers }, ಊಹೆಯಿಂದ; ಸೈನ್ ಇನ್ ವಿಫಲವಾದರೆ ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.
 }
 add-account-servers-entered = ಸರ್ವರ್‌ಗಳು: { $servers }, ನಮೂದಿಸಿದಂತೆ.
-add-account-or = ಅಥವಾ
 add-account-sign-in-with = { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ
 add-account-sign-in-instead = ಬದಲಿಗೆ { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = ಬದಲಿಗೆ { $provider } ಮೂಲಕ ಸ�
 add-account-servers-button = ಸರ್ವರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 add-account-back = ಹಿಂದೆ
 add-account-add = ಖಾತೆ ಸೇರಿಸಿ
-add-account-next = ಮುಂದೆ
 add-account-cancel = ರದ್ದುಮಾಡಿ
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example } ನಂತಹ ಇಮೇಲ್ ವಿ�
 add-account-not-found = Katna ಗೆ { $address } ನ ಸರ್ವರ್‌ಗಳು ಸಿಗಲಿಲ್ಲ, ಆದ್ದರಿಂದ ಅದು ಸಾಮಾನ್ಯ ಹೆಸರುಗಳನ್ನು ತುಂಬಿದೆ. ನಿಮ್ಮ ಪೂರೈಕೆದಾರರೊಂದಿಗೆ ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.
 add-account-password-empty = ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.
 add-account-name-is-password = ಹೆಸರು ಪಾಸ್‌ವರ್ಡ್‌ನಂತೆಯೇ ಇದೆ. ಅದರ ಬದಲು ಅಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರನ್ನು, ಜನರು ನೋಡಬೇಕಾದಂತೆ, ಟೈಪ್ ಮಾಡಿ.
-add-account-added = { $address } ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಮೇಲ್ ತರಲಾಗುತ್ತಿದೆ…
 add-account-app-password-refused = { $provider } ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿರಾಕರಿಸಿದೆ. ಅದಕ್ಕೆ ಆ್ಯಪ್ ಪಾಸ್‌ವರ್ಡ್ ಬೇಕು, ನೀವು ವೆಬ್‌ನಲ್ಲಿ ಬಳಸುವುದಲ್ಲ.
 add-account-password-refused = ಸರ್ವರ್ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿರಾಕರಿಸಿದೆ. ಅದನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.
 add-account-sign-in-refused = { $provider } Katna ಅನ್ನು ಒಳಗೆ ಬಿಡಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ, ಮತ್ತು ನಿಮ್ಮ ಮೇಲ್‌ಗೆ ಪ್ರವೇಶ ಅನುಮತಿಸಿ.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna ನ ಈ ಪ್ರತಿಗೆ ಇನ್ನೂ Google ಖಾತೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.
    *[other] ಈ ಪೂರೈಕೆದಾರರು ತಮ್ಮದೇ ಪುಟದಲ್ಲಿ ಮಾತ್ರ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅನುಮತಿಸುತ್ತಾರೆ, ಅದನ್ನು Katna ಇನ್ನೂ ಅವರಿಗಾಗಿ ಮಾಡಲಾರದು.
 }
-add-account-signed-in = { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಆಗಿದೆ. ನಿಮ್ಮ ಮೇಲ್ ಪಡೆಯಲಾಗುತ್ತಿದೆ…
 
 ## The account menu (from the account button on the top bar)
 

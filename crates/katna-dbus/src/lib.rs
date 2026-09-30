@@ -482,18 +482,19 @@ macro_rules! pim_proxy {
             fn add_pop3_account(&self, account: &NewPop3Account, password: &str)
             -> zbus::Result<i64>;
 
-            /// Finds the IMAP and SMTP servers of `address` (provider
-            /// settings, Thunderbird's ISPDB, DNS, then guesses), for
-            /// `AddImapAccount`. Returns them and where they came from:
-            /// `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
-            /// An SMTP server with an empty host was not found. Then the
-            /// provider to sign in to with `SignIn` (`google`, `microsoft`,
-            /// or empty), and whether a password works too (`false`: only
-            /// `SignIn`).
+            /// Finds the IMAP, POP3 and SMTP servers of `address`
+            /// (provider settings, Thunderbird's ISPDB, DNS, then guesses),
+            /// for `AddImapAccount` or `AddPop3Account`. Returns the IMAP
+            /// and SMTP servers, then the POP3 server, and where they came
+            /// from: `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or
+            /// `guess`. A server with an empty host was not found; there is
+            /// always an IMAP or a POP3 server. Then the provider to sign in
+            /// to with `SignIn` (`google`, `microsoft`, or empty), and
+            /// whether a password works too (`false`: only `SignIn`).
             fn discover_account(
                 &self,
                 address: &str,
-            ) -> zbus::Result<(NewImapAccount, String, String, bool)>;
+            ) -> zbus::Result<(NewImapAccount, ServerSpec, String, String, bool)>;
 
             /// Signs in to `provider` (`google` or `microsoft`) with OAuth2
             /// in the default browser, then adds the account that signed in,
@@ -516,6 +517,18 @@ macro_rules! pim_proxy {
             /// Renames an account; an empty name goes back to the name its
             /// own mail is sent under, else its address.
             fn rename_account(&self, account: i64, name: &str) -> zbus::Result<()>;
+
+            /// What a POP3 account does with mail on the server once it
+            /// is downloaded, as in `NewPop3Account`: leave it there,
+            /// then remove it after `keep_days` days (0: never) or once
+            /// it is deleted for good in Katna.
+            fn set_pop3_keep(
+                &self,
+                account: i64,
+                leave_on_server: bool,
+                keep_days: u32,
+                delete_with_local: bool,
+            ) -> zbus::Result<()>;
 
             /// Stops syncing an account and deletes it, its mail and its
             /// password. Returns whether it existed.

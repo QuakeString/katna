@@ -9,7 +9,6 @@ add-account-looking = ກຳລັງຊອກຫາເຊີບເວີອີ�
 add-account-address-intro = ປ້ອນທີ່ຢູ່ອີເມວຂອງທ່ານ. Katna ຈະຊອກຫາເຊີບເວີໃຫ້ທ່ານ.
 add-account-servers-title = ການຕັ້ງຄ່າເຊີບເວີ
 add-account-servers-intro = ບ່ອນທີ່ Katna ອ່ານ ແລະ ສົ່ງອີເມວສຳລັບ { $address }.
-add-account-password-title = ປ້ອນລະຫັດຜ່ານຂອງທ່ານ
 add-account-signing-in = ກຳລັງເຂົ້າສູ່ລະບົບ…
 add-account-browser-title = ສືບຕໍ່ໃນບຣາວເຊີຂອງທ່ານ
 add-account-browser-intro = Katna ໄດ້ເປີດໜ້າເຂົ້າສູ່ລະບົບຂອງ { $provider } ໃນບຣາວເຊີຂອງທ່ານແລ້ວ. ເຂົ້າສູ່ລະບົບຢູ່ທີ່ນັ້ນ ແລະ ອະນຸຍາດໃຫ້ Katna ອ່ານ ແລະ ສົ່ງອີເມວຂອງທ່ານ, ແລ້ວກັບມາທີ່ນີ້.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] ເຊີບເວີ: { $servers }, ຈາກການຄາດເດົາ; ກວດສອບຖ້າເຂົ້າສູ່ລະບົບບໍ່ສຳເລັດ.
 }
 add-account-servers-entered = ເຊີບເວີ: { $servers }, ຕາມທີ່ປ້ອນ.
-add-account-or = ຫຼື
 add-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 add-account-sign-in-instead = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ແທນ
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = ເຂົ້າສູ່ລະບົບດ້ວ�
 add-account-servers-button = ການຕັ້ງຄ່າເຊີບເວີ
 add-account-back = ກັບຄືນ
 add-account-add = ເພີ່ມບັນຊີ
-add-account-next = ຕໍ່ໄປ
 add-account-cancel = ຍົກເລີກ
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = ປ້ອນທີ່ຢູ່ອີເມວເ�
 add-account-not-found = Katna ຊອກບໍ່ພົບເຊີບເວີຂອງ { $address }, ສະນັ້ນຈຶ່ງໃສ່ຊື່ທີ່ໃຊ້ທົ່ວໄປໄວ້. ກວດສອບກັບຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.
 add-account-password-empty = ປ້ອນລະຫັດຜ່ານ.
 add-account-name-is-password = ຊື່ຄືກັນກັບລະຫັດຜ່ານ. ໃຫ້ພິມຊື່ຂອງທ່ານໃສ່ບ່ອນນັ້ນແທນ, ຕາມທີ່ຄົນອື່ນຄວນເຫັນ.
-add-account-added = ເພີ່ມ { $address } ແລ້ວ. ກຳລັງດຶງອີເມວຂອງທ່ານ…
 add-account-app-password-refused = { $provider } ປະຕິເສດລະຫັດຜ່ານ. ມັນຕ້ອງການລະຫັດຜ່ານແອັບ, ບໍ່ແມ່ນລະຫັດທີ່ທ່ານໃຊ້ໃນເວັບ.
 add-account-password-refused = ເຊີບເວີປະຕິເສດລະຫັດຜ່ານ. ກວດສອບແລ້ວລອງອີກຄັ້ງ.
 add-account-sign-in-refused = { $provider } ບໍ່ໃຫ້ Katna ເຂົ້າ. ລອງໃໝ່ ແລະ ອະນຸຍາດໃຫ້ເຂົ້າເຖິງອີເມວຂອງທ່ານ.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna ສະບັບນີ້ຍັງບໍ່ສາມາດເຂົ້າສູ່ລະບົບບັນຊີ Google ໄດ້ເທື່ອ.
    *[other] ຜູ້ໃຫ້ບໍລິການນີ້ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບໄດ້ສະເພາະໃນໜ້າຂອງຕົນເອງ, ເຊິ່ງ Katna ຍັງເຮັດໃຫ້ມັນບໍ່ໄດ້ເທື່ອ.
 }
-add-account-signed-in = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ແລ້ວ. ກຳລັງດຶງອີເມວຂອງທ່ານ…
 
 ## The account menu (from the account button on the top bar)
 

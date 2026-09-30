@@ -156,9 +156,11 @@ fn discovers_servers() {
     smol::block_on(async {
         let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
         let pim = PimProxy::new(&bus.connect().await).await.unwrap();
-        let (account, source, sign_in, password) =
+        let (account, pop3, source, sign_in, password) =
             pim.discover_account(" ada@gmail.com ").await.unwrap();
         assert_eq!(source, "built-in");
+        // Built-in providers are read by IMAP, so no POP3 server comes back.
+        assert!(pop3.host.is_empty());
         assert_eq!((sign_in.as_str(), password), ("google", true));
         assert_eq!(account.address, "ada@gmail.com");
         assert_eq!(
@@ -174,7 +176,7 @@ fn discovers_servers() {
         assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
 
         // Microsoft's own addresses only sign in in the browser.
-        let (account, _, sign_in, password) =
+        let (account, _, _, sign_in, password) =
             pim.discover_account("kay@outlook.com").await.unwrap();
         assert_eq!((sign_in.as_str(), password), ("microsoft", false));
         assert_eq!(account.imap.host, "outlook.office365.com");
