@@ -33,6 +33,9 @@ pub enum Request {
     Search(String),
     /// The page to show (`app_action::OPEN_PAGE`): `calendar`, `tasks`…
     Page(String),
+    /// Open this message in the mail window: `open-message` when it starts
+    /// the app, as the new window is the place for it.
+    ShowMessage(i64),
 }
 
 impl Request {
@@ -58,6 +61,18 @@ impl Request {
                 name: name.to_owned(),
                 message: Some(id),
             })
+    }
+
+    /// What this request does when it starts the app rather than
+    /// reaching it running.
+    fn at_start(self) -> Self {
+        match self {
+            Self::Action {
+                name,
+                message: Some(id),
+            } if name == app_action::OPEN_MESSAGE => Self::ShowMessage(id),
+            other => other,
+        }
     }
 
     pub fn action(name: &str) -> Self {
@@ -198,7 +213,7 @@ pub fn start(request: Option<Request>, single: bool) -> Started {
             }
             // The other instance did not answer; run anyway.
             if let Some(request) = request {
-                let _ = sender.try_send(request);
+                let _ = sender.try_send(request.at_start());
             }
             Started::First {
                 connection: Some(connection),
@@ -240,7 +255,7 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
     let interface = Some("org.freedesktop.Application");
     let (app, path) = (Some(ids::MAIL_APP_ID), ids::MAIL_OBJECT_PATH);
     let called = match request {
-        None | Some(Request::Activate | Request::Menu(_)) => {
+        None | Some(Request::Activate | Request::Menu(_) | Request::ShowMessage(_)) => {
             connection
                 .call_method(app, path, interface, "Activate", &platform)
                 .await
