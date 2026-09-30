@@ -1789,3 +1789,19 @@ Klik kanan waktu atau hari yang kosong di Kalender dan pilih Tugas
 untuk menambahkan tugas di sana. Kartu acara baru terbuka di tab
 Tugasnya dengan hari dan waktu itu sudah terisi.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalender dicari lagi setelah server lambat"
+text = """
+Saat server kalender sebuah akun tidak menjawab tepat waktu, Kalender
+kini mengatakannya, beserta apakah koneksi atau jabat tangan amannya
+yang macet, alih-alih “Tidak ada kalender yang ditemukan”. Kalender
+mencoba lagi dalam hitungan menit, bukan jam.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "File kontak menampilkan unduhannya"
+text = """
+File di panel kontak yang emailnya belum ada di komputer ini kini
+terisi selama diunduh, seperti lampiran di daftar, lalu terbuka.
+"""

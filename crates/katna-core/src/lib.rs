@@ -21,7 +21,8 @@ pub mod update;
 pub mod window;
 
 pub use account::{
-    Account, AccountId, AccountKind, AccountSettings, OAuthProvider, Pop3Keep, Security, Server,
+    Account, AccountId, AccountKind, AccountSettings, LinkedSignIn, OAuthProvider, Pop3Keep,
+    Security, Server,
 };
 pub use category::{MailCategory, MailFacts, classify};
 pub use config::Config;

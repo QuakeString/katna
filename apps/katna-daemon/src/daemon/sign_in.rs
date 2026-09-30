@@ -133,6 +133,11 @@ impl Daemon {
         if self.closing.load(Ordering::SeqCst) {
             return Err(CommandError::Failed(tr!("daemon-deleting-data")));
         }
+        if provider == OAuthProvider::Zoho && account.is_none() {
+            return Err(CommandError::InvalidArgs(
+                "Zoho signs in for an account Katna already has".into(),
+            ));
+        }
         let tls = Tls::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         let config = Provider::new(provider, tls.clone()).ok_or_else(|| {
             CommandError::Failed(format!(
@@ -140,49 +145,15 @@ impl Daemon {
                 provider.name()
             ))
         })?;
+        if let (OAuthProvider::Zoho, Some(account)) = (provider, account) {
+            return self.link(config, account).await;
+        }
         let again = account.map(|id| self.account(id)).transpose()?;
         let hint = again
             .as_ref()
             .map_or(hint.trim(), |account| account.address.as_str())
             .to_owned();
-        let flow = SignIn::start(&config, &hint).await.map_err(|err| {
-            CommandError::Failed(format!("cannot wait for the browser's answer: {err}"))
-        })?;
-
-        // A new sign-in ends one still waiting.
-        let (cancel, cancelled) = async_channel::bounded(1);
-        if let Some(old) = self.signing_in.lock().unwrap().replace(cancel.clone()) {
-            let _ = old.try_send(());
-        }
-        tracing::info!(%provider, "signing in in the browser");
-        open_in_browser(flow.url()).await;
-        let pages = Pages {
-            signed_in: tr!("daemon-signed-in", provider = provider.name()),
-            failed: tr!("daemon-sign-in-failed", provider = provider.name()),
-        };
-        let grant = flow
-            .finish(&config, &pages)
-            .or(async {
-                let _ = cancelled.recv().await;
-                Err(katna_sync::Error::Closed(
-                    "the sign-in was cancelled".into(),
-                ))
-            })
-            .or(async {
-                async_io::Timer::after(SIGN_IN_TIMEOUT).await;
-                Err(katna_sync::Error::Timeout(SIGN_IN_TIMEOUT))
-            })
-            .await;
-        {
-            let mut current = self.signing_in.lock().unwrap();
-            if current.as_ref().is_some_and(|c| c.same_channel(&cancel)) {
-                *current = None;
-            }
-        }
-        let grant = grant.map_err(|err| match err {
-            katna_sync::Error::Auth(message) => CommandError::AuthFailed(message),
-            err => CommandError::Failed(err.to_string()),
-        })?;
+        let grant = self.browser_grant(&config, &hint).await?;
         let identity = grant.identity.clone().unwrap_or_default();
         let refresh = grant.refresh_token.clone().unwrap_or_default();
 
@@ -270,6 +241,56 @@ impl Daemon {
             .detach();
         }
         Ok(id)
+    }
+
+    /// Shows `config`'s sign-in page in the browser and waits for its
+    /// answer, until [`Self::cancel_sign_in`], a newer sign-in or
+    /// [`SIGN_IN_TIMEOUT`].
+    pub(super) async fn browser_grant(
+        &self,
+        config: &Provider,
+        hint: &str,
+    ) -> Result<Grant, CommandError> {
+        let provider = config.kind;
+        let flow = SignIn::start(config, hint).await.map_err(|err| {
+            CommandError::Failed(format!("cannot wait for the browser's answer: {err}"))
+        })?;
+
+        // A new sign-in ends one still waiting.
+        let (cancel, cancelled) = async_channel::bounded(1);
+        if let Some(old) = self.signing_in.lock().unwrap().replace(cancel.clone()) {
+            let _ = old.try_send(());
+        }
+        tracing::info!(%provider, "signing in in the browser");
+        open_in_browser(flow.url()).await;
+        let pages = Pages {
+            signed_in: tr!("daemon-signed-in", provider = provider.name()),
+            failed: tr!("daemon-sign-in-failed", provider = provider.name()),
+        };
+        let grant = flow
+            .finish(config, &pages)
+            .or(async {
+                let _ = cancelled.recv().await;
+                Err(katna_sync::Error::Closed(
+                    "the sign-in was cancelled".into(),
+                ))
+            })
+            .or(async {
+                async_io::Timer::after(SIGN_IN_TIMEOUT).await;
+                Err(katna_sync::Error::Timeout(SIGN_IN_TIMEOUT))
+            })
+            .await;
+        {
+            let mut current = self.signing_in.lock().unwrap();
+            if current.as_ref().is_some_and(|c| c.same_channel(&cancel)) {
+                *current = None;
+            }
+        }
+        let grant = grant.map_err(|err| match err {
+            katna_sync::Error::Auth(message) => CommandError::AuthFailed(message),
+            err => CommandError::Failed(err.to_string()),
+        })?;
+        Ok(grant)
     }
 
     /// Ends the browser sign-in under way. Returns whether there was one.

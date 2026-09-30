@@ -1850,3 +1850,20 @@ Faites un clic droit sur une heure ou un jour libre du Calendrier et
 choisissez Tâche pour y ajouter une tâche. La fiche de nouvel événement
 s’ouvre sur son onglet Tâche, avec ce jour et cette heure déjà remplis.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Les calendriers sont recherchés à nouveau après un serveur lent"
+text = """
+Quand le serveur de calendriers d’un compte ne répond pas à temps, le
+Calendrier le dit désormais, et précise si c’est la connexion ou
+l’échange sécurisé qui a bloqué, au lieu de « Aucun calendrier
+trouvé ». Il réessaie en quelques minutes plutôt qu’en quelques heures.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Les fichiers du contact montrent leur téléchargement"
+text = """
+Un fichier des détails du contact dont le message n’est pas encore sur
+cet ordinateur se remplit désormais pendant son téléchargement, comme
+les pièces jointes de la liste, puis s’ouvre.
+"""

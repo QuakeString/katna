@@ -153,19 +153,37 @@ pub fn stale_folders(
     Ok(out)
 }
 
-/// Syncs the folder list of `account`, then every selectable folder.
+/// Syncs the folder list of `account`, then every selectable folder, the
+/// inbox first.
 pub async fn sync_account<B: MailBackend>(
     backend: &mut B,
     store: &mut Store,
     account: AccountId,
 ) -> Result<Vec<FolderReport>> {
-    let folders = sync_folders(backend, store, account).await?;
+    sync_account_live(backend, store, account, |_| {}).await
+}
+
+/// [`sync_account`], calling `stored` with how many messages each commit
+/// added (0 for the folder list), so the mail can show as it arrives
+/// rather than once every folder is done: a new account's first sync can
+/// take many minutes.
+pub async fn sync_account_live<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    mut stored: impl FnMut(usize),
+) -> Result<Vec<FolderReport>> {
+    let mut folders = sync_folders(backend, store, account).await?;
+    stored(0);
+    // The inbox first: it is what shows while a new account downloads,
+    // and servers such as Dovecot list it last.
+    folders.sort_by_key(|(folder, _)| folder.role != Some(crate::FolderRole::Inbox));
     let mut reports = Vec::with_capacity(folders.len());
     for (folder, id) in folders {
         if !folder.selectable {
             continue;
         }
-        match sync_folder(backend, store, account, id, &folder.name).await {
+        match sync_folder_live(backend, store, account, id, &folder.name, &mut stored).await {
             Ok(report) => reports.push(report),
             // Deleted since LIST, or not ours to read: skip it this time.
             Err(Error::Rejected(reason)) => {
@@ -213,6 +231,19 @@ pub async fn sync_folder<B: MailBackend>(
     account: AccountId,
     folder: FolderId,
     path: &str,
+) -> Result<FolderReport> {
+    sync_folder_live(backend, store, account, folder, path, &mut |_| {}).await
+}
+
+/// [`sync_folder`], calling `on_saved` after each chunk of new messages is
+/// committed.
+async fn sync_folder_live<B: MailBackend>(
+    backend: &mut B,
+    store: &mut Store,
+    account: AccountId,
+    folder: FolderId,
+    path: &str,
+    on_saved: &mut impl FnMut(usize),
 ) -> Result<FolderReport> {
     let mut report = FolderReport {
         path: path.to_owned(),
@@ -263,7 +294,11 @@ pub async fn sync_folder<B: MailBackend>(
         };
         let messages = backend.fetch_headers(first, last).await?;
         added_uids += messages.len();
-        report.added += save_messages(store, account, folder, &messages)?;
+        let saved = save_messages(store, account, folder, &messages)?;
+        if saved > 0 {
+            on_saved(saved);
+        }
+        report.added += saved;
         match last {
             Some(last) => first = last + 1,
             None => break,

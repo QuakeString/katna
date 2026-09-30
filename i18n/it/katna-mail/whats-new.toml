@@ -1801,3 +1801,20 @@ Fai clic destro su un orario o un giorno libero nel Calendario e scegli
 Attività per aggiungere lì un’attività. La scheda del nuovo evento si apre
 sulla scheda Attività con quel giorno e quell’ora già inseriti.
 """
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Il Calendario riprova dopo un server lento"
+text = """
+Quando il server dei calendari di un account non risponde in tempo, il
+Calendario ora lo dice, e se si è bloccata la connessione o l’handshake
+sicuro, invece di «Nessun calendario trovato». Riprova entro pochi minuti
+anziché dopo ore.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "I file del contatto mostrano il download"
+text = """
+Un file nel pannello del contatto la cui posta non è ancora su questo
+computer ora si riempie mentre viene scaricato, come fanno gli allegati
+nell’elenco, e poi si apre.
+"""

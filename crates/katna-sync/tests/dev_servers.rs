@@ -777,7 +777,7 @@ fn worker_syncs_new_mail_by_push() {
                         })
                         .await
                         .unwrap();
-                    if !matches!(event, Event::BodiesStored(_)) {
+                    if !matches!(event, Event::Stored(_) | Event::BodiesStored(_)) {
                         return event;
                     }
                 }
@@ -847,7 +847,7 @@ fn worker_sees_mail_filed_in_other_folders() {
                         })
                         .await
                         .unwrap();
-                    if !matches!(event, Event::BodiesStored(_)) {
+                    if !matches!(event, Event::Stored(_) | Event::BodiesStored(_)) {
                         return event;
                     }
                 }

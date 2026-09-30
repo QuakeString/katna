@@ -42,7 +42,7 @@ fn first_sync_then_incremental_changes() {
     let reports = sync(&server, &mut store, account);
     assert_eq!(
         reports,
-        vec![report("Archive", 0, 0, 0), report("INBOX", 3, 0, 0)]
+        vec![report("INBOX", 3, 0, 0), report("Archive", 0, 0, 0)]
     );
     let folders = store.folders(account).unwrap();
     let inbox = folders.iter().find(|f| f.path == "INBOX").unwrap();
@@ -53,7 +53,7 @@ fn first_sync_then_incremental_changes() {
 
     // Nothing changed: no flag fetch, no header fetch past UIDNEXT.
     let reports = sync(&server, &mut store, account);
-    assert_eq!(reports[1], report("INBOX", 0, 0, 0));
+    assert_eq!(reports[0], report("INBOX", 0, 0, 0));
     assert!(
         !server
             .log()
@@ -68,7 +68,7 @@ fn first_sync_then_incremental_changes() {
     server.set_seen("INBOX", 1);
     server.expunge("INBOX", 2);
     let reports = sync(&server, &mut store, account);
-    assert_eq!(reports[1], report("INBOX", 1, 1, 1));
+    assert_eq!(reports[0], report("INBOX", 1, 1, 1));
     assert!(
         server.log().contains(&"FLAGS 1:3 since Some(3)".to_owned()),
         "{:?}",
