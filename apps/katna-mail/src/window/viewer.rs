@@ -251,6 +251,7 @@ impl Viewer {
         let goto = cx.new(|cx| {
             let mut input = TextInput::new("", cx);
             input.set_accent(rgba(th.accent).into());
+            input.set_centered(true);
             input
         });
         let _goto = cx.subscribe_in(&goto, window, |this, _, event, window, cx| match event {
