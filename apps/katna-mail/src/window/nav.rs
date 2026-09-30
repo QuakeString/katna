@@ -1001,14 +1001,17 @@ impl MailWindow {
             .cursor_pointer()
             .rounded_full()
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
-            .tooltip(tip(
-                if expanded {
-                    tr!("nav-collapse")
-                } else {
-                    tr!("nav-expand")
-                },
-                th,
-            ))
+            // Not over its own right-click menu.
+            .when(self.nav_menu.is_none(), |d| {
+                d.tooltip(tip(
+                    if expanded {
+                        tr!("nav-collapse")
+                    } else {
+                        tr!("nav-expand")
+                    },
+                    th,
+                ))
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
             .on_mouse_down(
                 MouseButton::Right,
