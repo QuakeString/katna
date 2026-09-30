@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Join Teams and Zoom calls from the Calendar"
+text = """
+An event's card now finds the call in its description or place, so a
+Microsoft Teams, Zoom, Webex, Jitsi or Google Meet invitation gets a
+"Join with" button at the top. Web addresses in the description are
+links, the lines of underscores are gone, and Going? stays at the bottom
+while the details scroll.
+"""

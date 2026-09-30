@@ -6,13 +6,11 @@
 //! `before:` at local midnight.
 
 use std::cell::Cell;
-use std::f32::consts::FRAC_PI_2;
-use std::f32::consts::PI;
 use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, Bounds, Context, Div, Entity, Focusable, FontWeight, MouseButton, Pixels,
-    Transformation, Window, anchored, deferred, div, point, prelude::*, radians, rgba, svg,
+    Window, anchored, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time, Weekday};
 use jiff::tz::TimeZone;
@@ -21,6 +19,7 @@ use katna_ui::TextInput;
 use katna_ui::px;
 use katna_ui::unpx;
 
+use super::super::notched::{self, Side, notch};
 use super::{MailWindow, chip};
 use crate::theme::Theme;
 use crate::widgets::{filled_button, icon_button, raised, tip};
@@ -227,55 +226,10 @@ const ERROR: f32 = 18.0;
 const BUTTONS: f32 = 36.0;
 const WIDTH: f32 = 7.0 * DAY + 2.0 * PAD;
 const RADIUS: f32 = 15.0;
-/// The notch's length out of the popover, and the popover's distance from
-/// the chip and from the window's edges.
-const NOTCH: f32 = 10.0;
-const SPACE: f32 = 2.0;
-const MARGIN: f32 = 8.0;
-
-/// Where the popover sits against the chip.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum Side {
-    Below,
-    Above,
-    Right,
-    Left,
-}
-
 /// The popover's top left corner, its side of the chip and where the notch
-/// meets its edge (from its left for Below/Above, from its top otherwise).
-/// Below the chip if it fits, else above, right, left; else below, kept
-/// inside the window.
+/// meets its edge ([`notched::place`]).
 fn place(chip: Bounds<Pixels>, size: (f32, f32), viewport: (f32, f32)) -> (f32, f32, Side, f32) {
-    let (w, h) = size;
-    let (vw, vh) = viewport;
-    let (left, top) = (unpx(chip.origin.x), unpx(chip.origin.y));
-    let (right, bottom) = (left + unpx(chip.size.width), top + unpx(chip.size.height));
-    let (cx, cy) = ((left + right) / 2.0, (top + bottom) / 2.0);
-    let away = NOTCH + SPACE;
-    let clamp = |v: f32, lo: f32, hi: f32| v.min(hi).max(lo);
-    let x_centered = clamp(cx - w / 2.0, MARGIN, vw - w - MARGIN);
-    let y_centered = clamp(cy - h / 2.0, MARGIN, vh - h - MARGIN);
-    let along_x = |x: f32| clamp(cx - x, RADIUS + NOTCH, w - RADIUS - NOTCH);
-    let along_y = |y: f32| clamp(cy - y, RADIUS + NOTCH, h - RADIUS - NOTCH);
-    let below = bottom + away;
-    if below + h <= vh - MARGIN {
-        return (x_centered, below, Side::Below, along_x(x_centered));
-    }
-    let above = top - away - h;
-    if above >= MARGIN {
-        return (x_centered, above, Side::Above, along_x(x_centered));
-    }
-    let beside = right + away;
-    if beside + w <= vw - MARGIN {
-        return (beside, y_centered, Side::Right, along_y(y_centered));
-    }
-    let before = left - away - w;
-    if before >= MARGIN {
-        return (before, y_centered, Side::Left, along_y(y_centered));
-    }
-    let y = clamp(below, MARGIN, vh - h - MARGIN);
-    (x_centered, y, Side::Below, along_x(x_centered))
+    notched::place(chip, size, viewport, RADIUS)
 }
 
 /// Weeks the calendar shows for a month, weeks starting on `start`.
@@ -699,39 +653,9 @@ fn show_month(custom: &mut CustomDates, cx: &App) {
     custom.month = shown.month();
 }
 
-/// The notch on the popover's edge facing the chip: a border-colored
-/// triangle with a popover-colored one just inside it, covering the
-/// border where they meet.
-fn notch(side: Side, along: f32, (w, h): (f32, f32), th: &Theme) -> [AnyElement; 2] {
-    // The middle of the notch's base on the popover's edge, the way out
-    // and the turn of an upward triangle to face that way.
-    let (base, out, turn) = match side {
-        Side::Below => ((along, 0.0), (0.0, -1.0), 0.0),
-        Side::Above => ((along, h), (0.0, 1.0), PI),
-        Side::Right => ((0.0, along), (-1.0, 0.0), -FRAC_PI_2),
-        Side::Left => ((w, along), (1.0, 0.0), FRAC_PI_2),
-    };
-    let triangle = |scale: f32, inset: f32, color: u32| {
-        // Its middle, half its length out from where its base sits.
-        let (bw, bh) = (20.0 * scale, NOTCH * scale);
-        let reach = bh / 2.0 - inset;
-        let (mx, my) = (base.0 + out.0 * reach, base.1 + out.1 * reach);
-        svg()
-            .path("icons/notch.svg")
-            .absolute()
-            .left(px(mx - bw / 2.0))
-            .top(px(my - bh / 2.0))
-            .w(px(bw))
-            .h(px(bh))
-            .text_color(rgba(color))
-            .with_transformation(Transformation::rotate(radians(turn)))
-            .into_any_element()
-    };
-    [triangle(1.0, 0.0, th.divider), triangle(0.9, 1.0, th.menu)]
-}
-
 #[cfg(test)]
 mod tests {
+    use super::super::super::notched::{NOTCH, SPACE};
     use super::*;
 
     #[test]
