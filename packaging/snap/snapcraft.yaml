@@ -1,0 +1,105 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Snap package for Katna, from the katna-linux-x86_64 tarball
+# (packaging/linux/make-tarball.sh). Build it on Ubuntu 24.04:
+#
+#   cp katna-linux-x86_64.tar.gz packaging/snap/
+#   cd packaging/snap && snapcraft pack --destructive-mode
+#
+# See packaging/README.md, "Snap". CI sets the version.
+name: katna
+title: Katna Mail
+base: core24
+version: '0.0.0'
+summary: Email for all your accounts
+description: |
+  Katna Mail reads, searches and writes mail from all your accounts in one
+  place. Its background service syncs them, and katnactl drives it from a
+  terminal.
+license: GPL-3.0-or-later
+grade: devel
+confinement: strict
+platforms:
+  amd64:
+
+apps:
+  katna:
+    command: usr/bin/katna-mail
+    extensions: [gnome]
+    desktop: usr/share/applications/in.invenia.katna.Mail.desktop
+    common-id: in.invenia.katna.Mail
+    # "Start Katna at login" writes this file (apps/katna-mail/src/autostart.rs).
+    autostart: in.invenia.katna.Mail.desktop
+    slots: [mail-dbus]
+    plugs:
+      - daemon-client
+      - network
+      - network-bind
+      - network-status
+      - home
+      - removable-media
+      - password-manager-service
+  # The background service: D-Bus starts it when Katna Mail or katnactl
+  # calls it, and systemd at login. It shows the tray icon and opens
+  # Katna Mail from it.
+  daemon:
+    command: usr/bin/katna-daemon
+    extensions: [gnome]
+    daemon: simple
+    daemon-scope: user
+    restart-condition: on-failure
+    activates-on: [daemon-dbus]
+    plugs:
+      - mail-client
+      - network
+      - network-bind
+      - network-status
+      - home
+      - password-manager-service
+      - unity7
+  katnactl:
+    command: usr/bin/katnactl
+    plugs: [daemon-client, home]
+
+# Katna Mail and the service talk to each other over the session bus.
+slots:
+  daemon-dbus:
+    interface: dbus
+    bus: session
+    name: in.invenia.katna.Daemon
+  mail-dbus:
+    interface: dbus
+    bus: session
+    name: in.invenia.katna.Mail
+plugs:
+  daemon-client:
+    interface: dbus
+    bus: session
+    name: in.invenia.katna.Daemon
+  mail-client:
+    interface: dbus
+    bus: session
+    name: in.invenia.katna.Mail
+
+parts:
+  katna:
+    plugin: dump
+    source: katna-linux-x86_64.tar.gz
+    # Only what a snap can use: no install script, systemd unit or
+    # activation file (snapd writes its own), and no add-ons for other
+    # programs.
+    stage:
+      - bin/
+      - share/applications/
+      - share/icons/
+      - share/licenses/
+    organize:
+      bin/: usr/bin/
+      share/: usr/share/
+    override-prime: |
+      craftctl default
+      # The menu entry runs this snap's katna app, with its icon.
+      sed -i -e 's|^Exec=katna-mail|Exec=katna|' \
+        -e 's|^Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/in.invenia.katna.Mail.png|' \
+        usr/share/applications/in.invenia.katna.Mail.desktop
+    stage-packages:
+      - libxkbcommon-x11-0

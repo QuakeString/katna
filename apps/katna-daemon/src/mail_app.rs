@@ -141,17 +141,20 @@ pub(crate) async fn open_mailto(
     false
 }
 
-/// Katna Mail: from `PATH` on Linux; on Windows the `katna-mail.exe`
-/// beside this program, as Setup installs them together.
+/// Katna Mail: the one beside this program, as every package installs
+/// them together (an AppImage, a Flatpak or a Snap only has it there, and
+/// `~/.local/bin` is often not on the service's `PATH`); else from `PATH`.
 fn mail_program() -> std::path::PathBuf {
-    let name = std::path::PathBuf::from("katna-mail");
-    if !cfg!(windows) {
-        return name;
-    }
+    let name = if cfg!(windows) {
+        "katna-mail.exe"
+    } else {
+        "katna-mail"
+    };
     std::env::current_exe()
         .ok()
-        .and_then(|exe| Some(exe.parent()?.join("katna-mail.exe")))
-        .unwrap_or(name)
+        .and_then(|exe| Some(exe.parent()?.join(name)))
+        .filter(|path| path.is_file())
+        .unwrap_or_else(|| std::path::PathBuf::from(name))
 }
 
 async fn spawn(connection: &zbus::Connection, mut command: Command) {

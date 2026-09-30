@@ -4365,6 +4365,26 @@ does something. CI builds it on every push to `main` and publishes it, with
 a pacman repository database, as the `arch-latest` pre-release, so Arch
 users can install and update without building. See `packaging/README.md`.
 
+Since 30 September 2026 CI also builds, on every push to `main`, a Fedora
+RPM (`packaging/fedora/katna.spec`, built from source with Fedora's Rust),
+a Nix flake (`flake.nix`, `packaging/nix/package.nix`), an AppImage, a
+Snap, a Flatpak and a plain tarball with an `install.sh`
+(`.github/workflows/linux-packages.yml`). The last four share one build on
+Ubuntu 22.04's glibc (2.35), so they run on older systems too. Each is
+installed and tried on its own platform (Fedora, Nix, Ubuntu with FUSE,
+snapd, Flatpak, Debian): D-Bus must start the daemon for `katnactl`, and
+Katna Mail must open a window, whose screenshot is published with the
+files on the `linux-latest` pre-release. `packaging/linux/stage.sh` lays out
+the same files the PKGBUILD installs for all of them. None of these
+updates itself yet (`Package::Other`): their own tools, or a new download,
+update them. They are unsigned and in no store; Flathub, the Snap Store,
+Copr and nixpkgs are later steps. The Flatpak's ID is the ID prefix
+(`in.invenia.katna`), so it may own and export both the app's and the
+daemon's names; it has no systemd unit, so D-Bus runs the daemon directly.
+The AppImage writes a user D-Bus activation file that runs the AppImage
+itself wherever it is, and its "Start Katna at login" entry names the
+AppImage. Snap's daemon is a user daemon activated by its D-Bus slot.
+
 ### 21.2 Update channels and safe updates (partly built)
 
 Planned 26 September 2026. Built so far (28 September 2026): **in-app

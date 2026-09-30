@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Flatpak for Katna, from the katna-linux-x86_64 tarball
+# (packaging/linux/make-tarball.sh):
+#
+#   cp katna-linux-x86_64.tar.gz packaging/flatpak/
+#   flatpak-builder --user --install-deps-from=flathub --repo=repo build \
+#     packaging/flatpak/in.invenia.katna.yml
+#
+# The app ID is the prefix of Katna Mail's and the service's D-Bus names,
+# so the Flatpak may own both and export the service's activation file.
+# See packaging/README.md, "Flatpak".
+id: in.invenia.katna
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+command: katna-mail
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Account passwords (GNOME Keyring, KWallet or KeePassXC).
+  - --talk-name=org.freedesktop.secrets
+  - --talk-name=org.freedesktop.Notifications
+  # The tray icon.
+  - --talk-name=org.kde.StatusNotifierWatcher
+  # Metered connections pause updates and big downloads.
+  - --system-talk-name=org.freedesktop.NetworkManager
+  # Saved attachments.
+  - --filesystem=xdg-download
+modules:
+  - name: katna
+    buildsystem: simple
+    sources:
+      - type: archive
+        path: katna-linux-x86_64.tar.gz
+    build-commands:
+      - install -Dm755 -t /app/bin bin/katna-mail bin/katna-daemon bin/katnactl
+      - cp -r share/applications share/icons share/licenses /app/share/
+      - cp -r share/krunner share/gnome-shell /app/share/
+      - rm -r /app/share/gnome-shell/extensions
+      # No systemd unit in a Flatpak: D-Bus runs the service itself, and
+      # Flatpak points Exec at this app.
+      - mkdir -p /app/share/dbus-1/services
+      - |
+        for file in share/dbus-1/services/*.service; do
+          sed -e 's|^Exec=/usr/bin/|Exec=/app/bin/|' -e '/^SystemdService=/d' \
+            "$file" > "/app/share/dbus-1/services/$(basename "$file")"
+        done

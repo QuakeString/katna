@@ -17,6 +17,12 @@ Files that distribution packages install, and the Arch Linux package.
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
 | `windows/` | Katna Setup for Windows (`windows/README.md`) |
+| `linux/` | `stage.sh` (the files above under a prefix, for every package below), the plain tarball and its `install.sh` |
+| `fedora/katna.spec` | Fedora RPM `katna` |
+| `nix/package.nix` | Nix package (`flake.nix` at the top builds it) |
+| `appimage/` | `Katna-x86_64.AppImage` |
+| `snap/snapcraft.yaml` | Snap `katna` |
+| `flatpak/<ID prefix>.yml` | Flatpak |
 
 The file names are the IDs from `katna_core::ids` (`in.invenia.katna.Mail`,
 `in.invenia.katna.Daemon`). `crates/katna-core/tests/packaging.rs` checks
@@ -127,3 +133,98 @@ iCloud and Fastmail, whose servers it knows; others need `--imap`).
 
 To remove: `pacman -R katna-git`. Your mail and settings stay in
 `~/.local/share/katna` and `~/.config/katna`.
+
+## Other Linux packages
+
+CI builds these on every push to `main`
+(`.github/workflows/linux-packages.yml`), installs each on its own platform
+and tries it there: D-Bus starts `katna-daemon` for `katnactl status`, and
+Katna Mail opens a window (`ci/linux-package-test.sh`). Once CI on `main`
+has passed, they replace the files on the
+[`linux-latest`](https://github.com/QuakeString/katna/releases/tag/linux-latest)
+pre-release, with a screenshot of each running. They are x86_64 only, not
+signed, in no store, and do not update themselves: their own package
+manager, or a new download, updates them.
+
+The AppImage, Snap, Flatpak and tarball share one build made on Ubuntu
+22.04, so they need glibc 2.35 or newer. The RPM and the Nix package are
+built from source by Fedora and Nix.
+
+### Fedora
+
+```sh
+sudo dnf install https://github.com/QuakeString/katna/releases/download/linux-latest/katna-x86_64.rpm
+```
+
+To build it yourself (Fedora's Rust must be at least the workspace's
+`rust-version`):
+
+```sh
+sudo dnf install rpm-build rpmdevtools dnf-plugins-core
+sudo dnf builddep packaging/fedora/katna.spec
+rpmdev-setuptree
+git archive --prefix=katna/ -o ~/rpmbuild/SOURCES/katna.tar.gz HEAD
+rpmbuild -bb packaging/fedora/katna.spec \
+  --define "katna_version $(packaging/linux/version.sh)" \
+  --define "katna_built $(git log -1 --format=%ct)"
+```
+
+### Nix
+
+```sh
+nix run github:QuakeString/katna                # try it
+nix profile install github:QuakeString/katna    # install it
+```
+
+Nix builds it from source (there is no binary cache yet), without the
+Sign in with Google, Microsoft and Zoho buttons, whose app keys only CI
+has. On NixOS, add the package to `environment.systemPackages` and
+`services.dbus.packages` so D-Bus finds the service. Elsewhere the session
+bus finds it through `~/.nix-profile/share` in `XDG_DATA_DIRS`.
+
+### AppImage
+
+Download `Katna-x86_64.AppImage`, make it executable and run it. It needs
+FUSE 2 (`libfuse2`). Each start writes
+`~/.local/share/dbus-1/services/<daemon bus name>.service`, which runs the
+AppImage as `katna-daemon` wherever it now is, so keep it in one place
+(such as `~/Applications`). `Katna-x86_64.AppImage katnactl status` runs
+the command-line tool.
+
+### Snap
+
+```sh
+sudo snap install --dangerous katna_amd64.snap
+sudo snap connect katna:password-manager-service
+sudo snap connect katna:daemon-client katna:daemon-dbus
+sudo snap connect katna:mail-client katna:mail-dbus
+```
+
+The store would make those connections itself once it approves them; a
+local install does not. `katna.katnactl` is the command-line tool. The
+service is a user daemon, started by D-Bus and at login.
+
+### Flatpak
+
+```sh
+flatpak install --user katna-x86_64.flatpak
+```
+
+The bundle fetches the Freedesktop runtime from Flathub. The Flatpak's ID
+is the prefix of Katna's IDs, so it may own Katna Mail's and the service's
+D-Bus names and export the service's activation file; D-Bus starts the
+service inside the sandbox. "Start Katna at login" does not work from the
+Flatpak yet (it needs the Background portal, `docs/ARCHITECTURE.md` §9.2).
+
+### Any other Linux
+
+`katna-linux-x86_64.tar.gz` holds the programs and the files above, laid
+out as under `/usr`:
+
+```sh
+tar xzf katna-linux-x86_64.tar.gz
+katna-linux-x86_64/install.sh                            # into ~/.local
+sudo katna-linux-x86_64/install.sh --prefix /usr/local   # or for everyone
+```
+
+`install.sh --uninstall` (with the same `--prefix`) removes it.
