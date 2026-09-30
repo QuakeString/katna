@@ -67,7 +67,7 @@ pub(super) struct SheetView {
     /// A drag is extending the selection, by `Drag`.
     dragging: Option<Drag>,
     /// The right-click menu, where the pointer was.
-    menu: Option<Point<Pixels>>,
+    pub(super) menu: Option<Point<Pixels>>,
 }
 
 type Cell = (usize, usize);
@@ -546,6 +546,7 @@ impl Viewer {
         let page = (vw - 2.0 * side_margin(vw)).clamp(280.0, PAGE_WIDTH) * zoom;
         let pad = if vw < 700.0 { 20.0 } else { 72.0 } * zoom;
         let count = doc.blocks.len();
+        let viewer = cx.entity().downgrade();
         select::selectable(div(), None, cx)
             .size_full()
             .pt(px(BAR_HEIGHT + 8.0))
@@ -596,6 +597,12 @@ impl Viewer {
                                 .w(px(page))
                                 .px(px(pad))
                                 .bg(rgba(PAPER))
+                                .capture_any_mouse_down({
+                                    let viewer = viewer.clone();
+                                    move |_, _, cx| {
+                                        viewer.update(cx, |this, _| this.backdrop = None).ok();
+                                    }
+                                })
                                 .text_color(rgba(INK))
                                 .when(top, |d| d.pt(px(pad)).rounded_t(px(4.0)))
                                 .when(end, |d| d.pb(px(pad)).rounded_b(px(4.0)))
@@ -610,7 +617,7 @@ impl Viewer {
 }
 
 impl Viewer {
-    fn sheet_view(&self) -> Option<&SheetView> {
+    pub(super) fn sheet_view(&self) -> Option<&SheetView> {
         match &self.content {
             Content::Sheet(view) => Some(view),
             _ => None,

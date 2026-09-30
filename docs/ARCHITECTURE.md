@@ -2262,7 +2262,10 @@ desktop's own app stays one click away.
   box. A PDF also turns a quarter turn either way (Ctrl+R, Ctrl+Shift+R):
   every page turns, the page on show stays, marks turn with it, and a
   marked copy is saved turned (`/Rotate`). Too narrow for the bar (a
-  phone), these float in a pill at the foot instead. Escape closes the viewer. It is dark in light and dark themes alike.
+  phone), these float in a pill at the foot instead. A click on the dim
+  space around the file closes the viewer, as in Gmail; a click on the
+  page, a control or the bar, or a drag, does not (nor while a menu, the
+  unsaved-marks question or a note being typed is open). Escape closes the viewer. It is dark in light and dark themes alike.
   - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
     Only pages on screen (and one either side) are drawn, at the zoom and
     the screen's scale, one at a time on a background thread; pages far
