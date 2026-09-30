@@ -5,7 +5,7 @@
 //! All Accounts), "Mark all as read", a new folder or label inside it,
 //! and "Empty Trash".
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, MouseButton, Pixels, Point, SharedString,
@@ -31,15 +31,11 @@ const ITEM_HEIGHT: f32 = 36.0;
 /// How long a check may keep the refresh arrow turning.
 const CHECK_LIMIT: Duration = Duration::from_secs(90);
 
-/// How long before "Checking for new mail…" shows.
-const PILL_AFTER: Duration = Duration::from_secs(1);
-
 /// A check for new mail under way.
 pub(super) struct Check {
     id: u64,
     /// The account checked, or every account.
     account: Option<AccountId>,
-    since: Instant,
 }
 
 /// The refresh arrow, turning: mail is being checked for.
@@ -158,24 +154,13 @@ impl MailWindow {
 
     /// Has the daemon check `account` (every account for `None`) for new
     /// mail now. Until it has, the refresh arrow and the account's inbox
-    /// show a turning arrow, and after a moment "Checking for new mail…"
-    /// shows at the top.
+    /// show a turning arrow.
     pub(super) fn check_mail(&mut self, account: Option<AccountId>, cx: &mut Context<Self>) {
         self.check_seq += 1;
         let id = self.check_seq;
-        self.checking.push(Check {
-            id,
-            account,
-            since: Instant::now(),
-        });
+        self.checking.push(Check { id, account });
         cx.notify();
         let connection = self.daemon.clone();
-        // The pill waits a moment, so a quick check only turns the arrows.
-        cx.spawn(async move |this, cx| {
-            cx.background_executor().timer(PILL_AFTER).await;
-            this.update(cx, |_, cx| cx.notify()).ok();
-        })
-        .detach();
         cx.spawn(async move |this, cx| {
             let limit = cx.background_executor().timer(CHECK_LIMIT);
             let result = cx
@@ -216,47 +201,6 @@ impl MailWindow {
         self.checking
             .iter()
             .any(|c| c.account.is_none_or(|a| a == account))
-    }
-
-    /// "Checking for new mail…" at the top, once a check has taken a
-    /// moment.
-    pub(super) fn render_checking_pill(&self, th: &Theme) -> Option<AnyElement> {
-        self.checking
-            .iter()
-            .any(|c| c.since.elapsed() >= PILL_AFTER)
-            .then(|| {
-                div()
-                    .absolute()
-                    // The layer starts under the top bar: over the middle of
-                    // the list's toolbar.
-                    .top(px(8.0))
-                    .left_0()
-                    .right_0()
-                    .flex()
-                    .justify_center()
-                    .child(
-                        div()
-                            .id("checking-pill")
-                            .h(px(32.0))
-                            .px(px(14.0))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(8.0))
-                            .map(|d| raised(d, th, 16.0, 2.0))
-                            .text_size(px(13.0))
-                            .text_color(rgba(th.text))
-                            .child(turning_arrow("checking-pill-arrow", th.accent, 16.0))
-                            .child(tr!("list-checking"))
-                            .with_animation(
-                                "checking-pill-in",
-                                Animation::new(Duration::from_millis(180))
-                                    .with_easing(ease_out_quint()),
-                                |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
-                            ),
-                    )
-                    .into_any_element()
-            })
     }
 
     fn nav_mark_all_read(&mut self, folder: FolderId, cx: &mut Context<Self>) {

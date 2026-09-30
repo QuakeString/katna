@@ -3453,7 +3453,6 @@ impl Render for MailWindow {
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
-        let checking_pill = self.render_checking_pill(&th);
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -3490,7 +3489,6 @@ impl Render for MailWindow {
             .children(add_account)
             .children(context_menu)
             .children(nav_menu)
-            .children(checking_pill)
             .children(snooze_menu)
             .children(danger)
             .children(delete_ask)
