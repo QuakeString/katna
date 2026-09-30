@@ -37,6 +37,7 @@ modules:
         path: katna-linux-x86_64.tar.gz
     build-commands:
       - install -Dm755 -t /app/bin bin/katna-mail bin/katna-daemon bin/katnactl
+      - mkdir -p /app/share
       - cp -r share/applications share/icons share/licenses /app/share/
       - cp -r share/krunner share/gnome-shell /app/share/
       - rm -r /app/share/gnome-shell/extensions

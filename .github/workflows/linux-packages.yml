@@ -83,10 +83,20 @@ jobs:
           ls -l target/release/katna-mail target/release/katna-daemon target/release/katnactl
       - name: Make the tarball
         run: packaging/linux/make-tarball.sh target/release out
+      # Made-up mail for every package's screenshot.
+      - name: Make the demo data
+        run: |
+          cargo build --locked --release --package katna-search-cli
+          ci/linux-demo-data.sh target/release demo/demo-data.tar.gz
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: linux-tarball
           path: out/katna-linux-x86_64.tar.gz
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-demo-data
+          path: demo/demo-data.tar.gz
           if-no-files-found: error
 
   # The plain download, installed with its install.sh on Debian.
@@ -101,15 +111,18 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             ca-certificates dbus-daemon dbus-user-session gnome-keyring imagemagick x11-utils xvfb \
             libxkbcommon-x11-0 libfontconfig1 libfreetype6 libwayland-client0 \
-            libvulkan1 mesa-vulkan-drivers libegl1 libegl-mesa0 fonts-dejavu-core
+            libvulkan1 mesa-vulkan-drivers libegl1 libegl-mesa0 fonts-dejavu-core procps
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
       - name: Install it for a user and try it
         run: |
           useradd --create-home tester
-          cp katna-linux-x86_64.tar.gz ci/linux-package-test.sh /home/tester/
+          cp katna-linux-x86_64.tar.gz demo-data.tar.gz ci/linux-package-test.sh /home/tester/
           chown tester: /home/tester/*
           runuser -u tester -- sh -euc '
             cd ~
@@ -118,7 +131,8 @@ jobs:
             test -x ~/.local/bin/katna-mail
             grep -q "^Exec=$HOME/.local/bin/katna-daemon" ~/.local/share/dbus-1/services/*.service
             grep -q "^ExecStart=$HOME/.local/bin/katna-daemon" ~/.local/share/systemd/user/*.service
-            PATH=$HOME/.local/bin:$PATH ./linux-package-test.sh ~/tarball-debian.png
+            PATH=$HOME/.local/bin:$PATH KATNA_DEMO=~/demo-data.tar.gz \
+              ./linux-package-test.sh ~/tarball-debian.png
             katna-linux-x86_64/install.sh --uninstall
             test ! -e ~/.local/bin/katna-mail
           '
@@ -136,6 +150,9 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
       - name: Install appimagetool and the test tools
         run: |
           sudo apt-get update
@@ -159,7 +176,7 @@ jobs:
           app=~/Applications/Katna-x86_64.AppImage
           "$app" katnactl --help > /dev/null
           mkdir shots
-          KATNACTL="$app katnactl" KATNA_MAIL="$app" \
+          KATNACTL="$app katnactl" KATNA_MAIL="$app" KATNA_DEMO=$PWD/demo-data.tar.gz \
             ci/linux-package-test.sh shots/appimage-ubuntu.png
           # D-Bus found katna-daemon through the file the AppImage wrote.
           grep -q "Katna-x86_64.AppImage\" katna-daemon" ~/.local/share/dbus-1/services/*.service
@@ -181,6 +198,9 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
       - name: Install Flatpak and the test tools
         run: |
           sudo apt-get update
@@ -209,6 +229,9 @@ jobs:
           mkdir shots
           KATNACTL="flatpak run --command=katnactl $FLATPAK_ID" \
           KATNA_MAIL="flatpak run $FLATPAK_ID" \
+          KATNA_DEMO=$PWD/demo-data.tar.gz \
+          KATNA_DATA_HOME=~/.var/app/$FLATPAK_ID/data \
+          KATNA_CONFIG_HOME=~/.var/app/$FLATPAK_ID/config \
             ci/linux-package-test.sh shots/flatpak-ubuntu.png
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -228,6 +251,9 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
       - name: Install snapcraft and the test tools
         run: |
           sudo snap install snapcraft --classic
@@ -258,8 +284,13 @@ jobs:
             sudo snap connect "katna:${pair%%:*}" "katna:${pair#*:}" || true
           done
           snap connections katna
+          # Makes the snap's own home folder, where the demo data goes.
+          snap run katna.katnactl --help > /dev/null
           mkdir shots
           KATNACTL="snap run katna.katnactl" KATNA_MAIL="snap run katna" \
+          KATNA_DEMO=$PWD/demo-data.tar.gz \
+          KATNA_DATA_HOME=~/snap/katna/current/.local/share \
+          KATNA_CONFIG_HOME=~/snap/katna/current/.config \
             ci/linux-package-test.sh shots/snap-ubuntu.png
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -304,56 +335,99 @@ jobs:
           cp ~/rpmbuild/RPMS/*/katna-*.rpm out/
           cp out/katna-*.rpm out/katna-x86_64.rpm
           ls -l out
-      - name: Install it with dnf and try it
-        run: |
-          dnf install -y out/katna-x86_64.rpm
-          dnf install -y --setopt=install_weak_deps=False \
-            dbus-daemon gnome-keyring ImageMagick xorg-x11-utils xorg-x11-server-Xvfb \
-            mesa-vulkan-drivers mesa-dri-drivers dejavu-sans-fonts
-          rpm -ql katna
-          useradd --create-home tester
-          cp ci/linux-package-test.sh /home/tester/
-          runuser -u tester -- sh -euc 'cd ~ && ./linux-package-test.sh ~/rpm-fedora.png'
-          mkdir shots && cp /home/tester/rpm-fedora.png shots/
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: fedora
           path: out/
           if-no-files-found: error
+
+  fedora-test:
+    needs: [fedora, portable]
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: fedora
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install it with dnf and try it
+        run: |
+          dnf install -y ./katna-x86_64.rpm
+          dnf install -y --setopt=install_weak_deps=False \
+            dbus-daemon gnome-keyring ImageMagick xorg-x11-utils xorg-x11-server-Xvfb \
+            mesa-vulkan-drivers mesa-dri-drivers dejavu-sans-fonts procps-ng
+          rpm -ql katna
+          useradd --create-home tester
+          cp ci/linux-package-test.sh demo-data.tar.gz /home/tester/
+          chown tester: /home/tester/*
+          runuser -u tester -- sh -euc \
+            'cd ~ && KATNA_DEMO=~/demo-data.tar.gz ./linux-package-test.sh ~/rpm-fedora.png'
+          mkdir shots && cp /home/tester/rpm-fedora.png shots/
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: screenshot-fedora
           path: shots/
 
-  # The flake, built by Nix and run from a Nix profile, with Nix's own
-  # Mesa for drawing.
+  # The flake, built by Nix; its closure goes to the test below.
   nix:
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Build and try it in the Nix image
+      - name: Build it in the Nix image
+        run: |
+          mkdir out
+          docker run --rm -v "$PWD:/src" -w /src nixos/nix:latest sh -euc '
+            git config --global --add safe.directory "*"
+            nix --extra-experimental-features "nix-command flakes" \
+              build --print-build-logs .#katna -o /tmp/result
+            ls -l /tmp/result/bin /tmp/result/share/dbus-1/services
+            readlink /tmp/result > out/katna-nix.path
+            nix-store --export $(nix-store -qR /tmp/result) > out/katna-nix.closure
+          '
+          ls -l out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: nix
+          path: out/
+          if-no-files-found: error
+
+  # Installed into a Nix profile and run with Nix's own Mesa for drawing.
+  nix-test:
+    needs: [nix, portable]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: nix
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install it and try it in the Nix image
         run: |
           mkdir shots
           docker run --rm -v "$PWD:/src" -w /src nixos/nix:latest sh -euc '
             git config --global --add safe.directory "*"
             nix() { command nix --extra-experimental-features "nix-command flakes" "$@"; }
-            nix build --print-build-logs .#katna
-            ls -l result/bin result/share/dbus-1/services
-            nix profile install ./result
+            nix-store --import < katna-nix.closure > /dev/null
+            nix profile install "$(cat katna-nix.path)"
             # The activation file names the Nix store path.
             grep -q "^Exec=/nix/store/.*/bin/katna-daemon" \
               ~/.nix-profile/share/dbus-1/services/*.service
-            export XDG_DATA_DIRS=$HOME/.nix-profile/share
             nix profile install --inputs-from . nixpkgs#xorg.xorgserver nixpkgs#xorg.xwininfo \
-              nixpkgs#dbus nixpkgs#gnome-keyring nixpkgs#imagemagick nixpkgs#mesa \
-              nixpkgs#dejavu_fonts nixpkgs#fontconfig
+              nixpkgs#dbus nixpkgs#gnome-keyring nixpkgs#imagemagick nixpkgs#procps \
+              nixpkgs#dejavu_fonts
             mesa=$(nix eval --inputs-from . --raw nixpkgs#mesa.outPath)
+            nix build --inputs-from . nixpkgs#mesa nixpkgs#fontconfig.out --no-link
+            export XDG_DATA_DIRS=$HOME/.nix-profile/share
             export VK_ICD_FILENAMES=$(ls $mesa/share/vulkan/icd.d/lvp_icd.*.json)
             export __EGL_VENDOR_LIBRARY_FILENAMES=$(ls $mesa/share/glvnd/egl_vendor.d/*mesa*.json)
             export FONTCONFIG_FILE=$(nix eval --inputs-from . --raw nixpkgs#fontconfig.out.outPath)/etc/fonts/fonts.conf
-            mkdir -p /tmp && export HOME=/root
-            ./ci/linux-package-test.sh shots/nix.png
+            KATNA_DEMO=/src/demo-data.tar.gz ./ci/linux-package-test.sh shots/nix.png
           '
           sudo chown -R "$USER" shots
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -362,7 +436,7 @@ jobs:
           path: shots/
 
   publish:
-    needs: [portable, tarball, appimage, flatpak, snap, fedora, nix]
+    needs: [portable, tarball, appimage, flatpak, snap, fedora, fedora-test, nix, nix-test]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:

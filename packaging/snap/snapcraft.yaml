@@ -87,14 +87,15 @@ parts:
     # Only what a snap can use: no install script, systemd unit or
     # activation file (snapd writes its own), and no add-ons for other
     # programs.
-    stage:
-      - bin/
-      - share/applications/
-      - share/icons/
-      - share/licenses/
     organize:
       bin/: usr/bin/
       share/: usr/share/
+    stage:
+      - usr/bin/
+      - usr/share/applications/
+      - usr/share/icons/
+      - usr/share/licenses/
+      - usr/lib/
     override-prime: |
       craftctl default
       # The menu entry runs this snap's katna app, with its icon.

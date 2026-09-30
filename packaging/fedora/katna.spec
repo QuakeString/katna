@@ -25,6 +25,8 @@ ExclusiveArch:  x86_64 aarch64
 # into GCC LTO objects that rustc's link step does not handle.
 %global debug_package %{nil}
 %global _lto_cflags %{nil}
+# The build's date comes from its commit (katna_built), not a changelog.
+%global source_date_epoch_from_changelog 0
 
 BuildRequires:  cargo >= 1.98
 BuildRequires:  rust >= 1.98
@@ -60,6 +62,10 @@ from a terminal.
 %autosetup -n katna
 
 %build
+# Fedora's Rust flags ask for full debug info, which with Cargo's fat LTO
+# needs more memory than CI has and is stripped anyway; Cargo's release
+# profile has what Katna is built with everywhere.
+unset RUSTFLAGS
 # Katna Mail names this version in What's new, and the build's date in
 # the Update dialog.
 export KATNA_VERSION=%{version}

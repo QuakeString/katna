@@ -8,8 +8,12 @@
 #   KATNACTL="flatpak run --command=katnactl ..." KATNA_MAIL="..." \
 #     ci/linux-package-test.sh SCREENSHOT.png
 #
-# KATNACTL and KATNA_MAIL default to katnactl and katna-mail on PATH. Needs
-# Xvfb, dbus-run-session, gnome-keyring-daemon, xwininfo and ImageMagick.
+# KATNACTL and KATNA_MAIL default to katnactl and katna-mail on PATH. With
+# KATNA_DEMO, a tarball from ci/linux-demo-data.sh, Katna starts with its
+# made-up mail, unpacked into KATNA_DATA_HOME and KATNA_CONFIG_HOME (by
+# default ~/.local/share and ~/.config; a Flatpak or Snap keeps its own).
+# Needs Xvfb, dbus-run-session, gnome-keyring-daemon, xwininfo and
+# ImageMagick.
 set -eu
 
 shot=$1
@@ -26,6 +30,17 @@ fi
 katnactl=${KATNACTL:-katnactl}
 katna_mail=${KATNA_MAIL:-katna-mail}
 log=$(mktemp -d)
+trap 'set +e; kill $(jobs -p) 2> /dev/null; pkill -x katna-daemon 2> /dev/null' EXIT
+
+if [ -n "${KATNA_DEMO:-}" ]; then
+  data=${KATNA_DATA_HOME:-$HOME/.local/share}
+  config=${KATNA_CONFIG_HOME:-$HOME/.config}
+  tar -C "$log" -xzf "$KATNA_DEMO"
+  mkdir -p "$data" "$config"
+  rm -rf "$data/katna" "$config/katna"
+  mv "$log/.local/share/katna" "$data/katna"
+  mv "$log/.config/katna" "$config/katna"
+fi
 
 Xvfb :99 -screen 0 1280x800x24 -nolisten tcp > "$log/xvfb.log" 2>&1 &
 export DISPLAY=:99
