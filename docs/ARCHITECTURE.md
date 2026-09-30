@@ -1632,9 +1632,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   "Folder pane" in Settings > Accounts (`mail.accounts_shown`, `one` or
   `all`) picks between the shown account's folders only and every account
   one after another. The account card switches the shown account (it marks
-  it and gives each account's unread count, under an icon row of Add
-  account, Settings (the General page), the language button and the ☰
-  application menu); the choice is kept in
+  it and gives each account's unread count, under an icon row of
+  Settings (the General page), the language button and the ☰ application
+  menu, with "Add another account" as the last row); the choice is kept in
   `mail.current_account`. The list, search results, Go to, compose's From
   and the top-bar picture follow the shown account, and opening a message
   of another account (from a notification) switches to it. The taskbar
@@ -2629,7 +2629,7 @@ building Katna.
 **Language picker.** Two places change the same setting:
 
 - A **language button** in the icon row at the top of the account card
-  (opened from the account picture), beside Add account and Settings, as
+  (opened from the account picture), beside Settings, as
   the owner asked, which keeps the top bar to Settings and the picture. It
   shows the current language's flag and a small chevron; its tooltip names
   the language ("Language: বাংলা, following the system" with System

@@ -2152,8 +2152,8 @@ impl MailWindow {
                     d.child(icon("check", th.nav_selected_text, 20.0))
                 })
         });
-        // The icon row at the top: Add account, Settings and the language,
-        // with the application menu at its end.
+        // The icon row at the top: Settings and the language, with the
+        // application menu at its end.
         let icons = div()
             .h(px(48.0))
             .px(px(4.0))
@@ -2161,18 +2161,6 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(4.0))
-            .child(
-                icon_button("account-add", "person-add", 22.0, th)
-                    .tooltip(tip(
-                        if self.accounts.is_empty() {
-                            tr!("account-add")
-                        } else {
-                            tr!("add-account-menu-another")
-                        },
-                        th,
-                    ))
-                    .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx))),
-            )
             .child(
                 icon_button("account-settings", "settings", 22.0, th)
                     .tooltip(tip(tr!("settings"), th))
@@ -2183,6 +2171,34 @@ impl MailWindow {
             )
             .child(language)
             .child(menu_button);
+        let add = div()
+            .id("account-add")
+            .h(px(48.0))
+            .px(px(16.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(12.0))
+            .rounded(px(8.0))
+            .text_size(px(14.0))
+            .font_weight(FontWeight::MEDIUM)
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .menu_key(th)
+            .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
+            .child(
+                div()
+                    .size(px(32.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .child(icon("person-add", th.text_dim, 22.0)),
+            )
+            .child(if self.accounts.is_empty() {
+                tr!("account-add")
+            } else {
+                tr!("add-account-menu-another")
+            });
         let card = app_menu.unwrap_or_else(|| {
             div()
                 .id("account-menu")
@@ -2209,6 +2225,16 @@ impl MailWindow {
                     )
                 })
                 .children(rows)
+                .when(!self.accounts.is_empty(), |d| {
+                    d.child(
+                        div()
+                            .mx(px(16.0))
+                            .my(px(4.0))
+                            .h(px(1.0))
+                            .bg(rgba(th.divider)),
+                    )
+                })
+                .child(add)
                 .with_animation(
                     "account-menu",
                     Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
