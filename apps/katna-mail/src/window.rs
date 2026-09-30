@@ -140,6 +140,7 @@ actions!(
         OpenContextMenu,
         SelectFirst,
         SelectLast,
+        ListTop,
         PageDown,
         PageUp,
         OpenMessage,
@@ -980,9 +981,14 @@ impl MailWindow {
         this.remote.always = this.config.mail.remote_images;
         this.watch_escape(window, cx);
         let weak = cx.entity().downgrade();
-        // The toolbar's "1–50 of N" follows the scrolling.
+        // The toolbar's "1–50 of N" follows the scrolling, and the wheel
+        // stops the list gliding back to its top.
         this.list_state.state().set_scroll_handler(move |_, _, cx| {
-            weak.update(cx, |_, cx| cx.notify()).ok();
+            weak.update(cx, |this, cx| {
+                this.layout.stop_glide();
+                cx.notify();
+            })
+            .ok();
         });
         this
     }
@@ -1571,6 +1577,25 @@ impl MailWindow {
 
     fn select_first(&mut self, _: &SelectFirst, _: &mut Window, cx: &mut Context<Self>) {
         self.select(0, cx);
+    }
+
+    /// Home with the keys in none of the panes, as after a click on the
+    /// top bar: the list on screen glides back to its top. The folder pane
+    /// and a conversation keep Home for themselves, and the list's own
+    /// Home selects its first line.
+    fn list_top(&mut self, _: &ListTop, window: &mut Window, cx: &mut Context<Self>) {
+        let in_pane = [&self.nav_focus, &self.reader_focus, &self.list_focus]
+            .iter()
+            .any(|f| f.contains_focused(window, cx));
+        let list_shown = self.app == RailApp::Mail
+            && self.settings_page.is_none()
+            && self.mail.is_ok()
+            && (!self.reading || self.split());
+        if in_pane || !list_shown {
+            cx.propagate();
+            return;
+        }
+        self.glide_list_to_top(cx);
     }
 
     fn select_last(&mut self, _: &SelectLast, _: &mut Window, cx: &mut Context<Self>) {
@@ -3562,6 +3587,7 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::previous_pane))
             .on_action(cx.listener(Self::focus_search))
             .on_action(cx.listener(Self::focus_list))
+            .on_action(cx.listener(Self::list_top))
             .on_action(cx.listener(Self::toggle_navigation))
             .on_action(cx.listener(Self::toggle_settings))
             .on_action(cx.listener(Self::compose))

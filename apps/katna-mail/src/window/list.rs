@@ -16,7 +16,7 @@ use gpui::{
 use katna_core::config::Density;
 use katna_i18n::tr;
 use katna_ui::Ripple;
-use katna_ui::motion;
+use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 
 /// The lift of the line under the pointer: critically damped and slower
@@ -34,8 +34,11 @@ pub(super) const CHIP_HEIGHT: f32 = 30.0;
 const CHIP_WIDTH: f32 = 184.0;
 const CHIP_GAP: f32 = 8.0;
 const MORE_SIZE: f32 = 30.0;
+/// The Back to top button's size.
+const TO_TOP_SIZE: f32 = 40.0;
 
 use super::attachments::kind_badge;
+use super::layout::FAB_SIZE;
 use super::reader::Squeeze;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row, RowFile};
@@ -43,8 +46,8 @@ use crate::format;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    TOOLBAR_HEIGHT, card_outline, card_shadow, icon, icon_button, icon_button_colored, menu,
-    menu_item, menu_item_icon, placeholder, tip, toolbar,
+    TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
+    menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 
 const TAB_HEIGHT: f32 = 56.0;
@@ -235,7 +238,56 @@ impl MailWindow {
                         .flex_1()
                         .min_h_0()
                         .child(list)
+                        .children(self.render_list_top(th, cx))
                         .child(self.tour_mark(super::tour::Spot::List)),
+                )
+                .into_any_element(),
+        )
+    }
+
+    /// The round button that takes the list back to its top, once it is
+    /// a screen down: at the list's bottom right, above a phone's Compose
+    /// button and any note at the bottom of the window.
+    fn render_list_top(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let t = self.layout.to_top_t();
+        if t <= 0.001 {
+            return None;
+        }
+        let shape = self.layout.shape;
+        let snackbar = self
+            .snackbar
+            .as_ref()
+            .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
+        let above = 16.0 + shape.phone * (FAB_SIZE + 16.0) + 64.0 * snackbar;
+        // On a phone it stands centred over the Compose button.
+        let right = 16.0 + shape.phone * (FAB_SIZE - TO_TOP_SIZE) / 2.0;
+        Some(
+            div()
+                .absolute()
+                .right(px(right))
+                .bottom(px(above + lerp(-12.0, 0.0, t)))
+                .opacity(t)
+                .child(
+                    div()
+                        .id("list-top")
+                        // The line under it takes no hover or click.
+                        .occlude()
+                        .relative()
+                        .overflow_hidden()
+                        .size(px(TO_TOP_SIZE))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .bg(rgba(th.surface))
+                        .cursor_pointer()
+                        .shadow(elevation(th, 2.0))
+                        .hover(|s| s.shadow(elevation(th, 3.0)))
+                        .tooltip(tip(tr!("list-back-to-top"), th))
+                        .on_mouse_move(|_, _, cx| cx.stop_propagation())
+                        .on_click(cx.listener(|this, _, _, cx| this.glide_list_to_top(cx)))
+                        .child(Ripple::new(("list-top", 0_usize), rgba(th.ripple)).centered())
+                        .child(icon("arrow-up", th.text, 22.0)),
                 )
                 .into_any_element(),
         )

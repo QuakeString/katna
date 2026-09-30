@@ -1169,8 +1169,7 @@ impl MailWindow {
         if let Some(next) = listing_of(&row)
             && self.showing(&next, cx)
         {
-            self.scroll_list_to(0);
-            cx.notify();
+            self.glide_list_to_top(cx);
             self.picked_from_nav(window, cx);
             return;
         }

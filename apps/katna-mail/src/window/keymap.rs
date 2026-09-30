@@ -12,12 +12,13 @@ use katna_i18n::tr;
 use super::{
     AddToTasks, Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious,
     FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
-    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane, OpenContextMenu,
-    OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply,
-    ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp,
-    SelectAll, SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail,
-    ShowCalendar, ShowContacts, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck,
-    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane,
+    OpenContextMenu, OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit,
+    READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown,
+    ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast, SelectNext,
+    SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowMail, ShowNotes,
+    ShowShortcuts, ShowTasks, ToggleCheck, ToggleNavigation, ToggleSettings, ToggleStar, Undo,
+    WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -403,6 +404,9 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
     ));
     // Google Calendar's keys on the Calendar page.
     bindings.extend(super::calendar::bindings());
+    // Home with the keys in no pane takes the list to its top; the
+    // list's own Home (a shortcut) selects its first line.
+    bindings.push(KeyBinding::new("home", ListTop, Some(WINDOW_CONTEXT)));
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
     // Tab and Shift+Tab move between fields and buttons, as in any desktop
