@@ -71,6 +71,7 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
             Item("desktop-menu-page-contacts", "katna_mail::ShowContacts"),
             Item("desktop-menu-page-tasks", "katna_mail::ShowTasks"),
             Item("desktop-menu-page-notes", "katna_mail::ShowNotes"),
+            Item("desktop-menu-page-files", "katna_mail::ShowFiles"),
             Separator,
             Item("desktop-menu-next", "katna_mail::SelectNext"),
             Item("desktop-menu-previous", "katna_mail::SelectPrevious"),

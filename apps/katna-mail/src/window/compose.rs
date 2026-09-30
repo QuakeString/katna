@@ -705,6 +705,39 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Starts a new mail with `file` attached: "Forward the file" on the
+    /// Files page. A new mail already being written gets the file instead.
+    pub(super) fn new_mail_with_file(
+        &mut self,
+        file: &katna_render::AttachmentFile,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::New, None, window, cx);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::New {
+            return;
+        }
+        if compose.used_bytes(cx) + file.bytes.len() > attach::MAX_TOTAL {
+            let problem = tr!(
+                "compose-file-too-large",
+                name = file.name.clone(),
+                limit = format::size(attach::MAX_TOTAL as u64)
+            );
+            self.show_snackbar(problem, None, cx);
+            return;
+        }
+        compose.attachments.push(Attachment {
+            name: file.name.clone(),
+            mime: file.mime.clone(),
+            data: Arc::new(file.bytes.clone()),
+        });
+        compose.attach_scroll.scroll_to_bottom();
+        cx.notify();
+    }
+
     /// Opens the compose window. `source` picks the message a reply or
     /// forward starts from; by default the newest of the open conversation.
     pub(super) fn open_compose(

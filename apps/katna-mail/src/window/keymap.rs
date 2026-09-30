@@ -16,8 +16,8 @@ use super::{
     OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply,
     ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp,
     SelectAll, SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail,
-    ShowCalendar, ShowContacts, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck,
-    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    ShowCalendar, ShowContacts, ShowFiles, ShowMail, ShowNotes, ShowShortcuts, ShowTasks,
+    ToggleCheck, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -179,6 +179,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("page_contacts", GoTo, Anywhere, ["ctrl-3"], ShowContacts),
     shortcut!("page_tasks", GoTo, Anywhere, ["ctrl-4"], ShowTasks),
     shortcut!("page_notes", GoTo, Anywhere, ["ctrl-5"], ShowNotes),
+    shortcut!("page_files", GoTo, Anywhere, ["ctrl-7"], ShowFiles),
     shortcut!("search", App, Anywhere, ["/", "ctrl-f"], FocusSearch),
     shortcut!("navigation", App, Anywhere, [], ToggleNavigation),
     shortcut!("quick_settings", App, Anywhere, ["ctrl-,"], ToggleSettings),

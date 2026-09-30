@@ -2428,6 +2428,23 @@ desktop's own app stays one click away.
   the file instead. Save writes where the user chooses.
 - Not yet: text search in PDFs, printing, pictures inside documents,
   old Word files and slides.
+- **Files page** (the attachment library, from the HEY study's Files):
+  the last app of the rail (after Feeds, Ctrl+7, `--page files`) shows
+  every named attachment of every account as the cards above, newest
+  first under month headings, or as a list. It reads the attachment lists
+  sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
+  schema change, no server, works offline. Mail in Trash or Spam is left
+  out, a file sent again (same name and size) shows once, and pictures
+  under 12 KB (signature logos) are skipped; it reads at most 20,000
+  files. The side column (a drawer and chips on a phone) narrows it to a
+  kind of file, an account, or received or sent; chips pick a sender, a
+  time and the order; the top bar's search box matches names, subjects
+  and senders. A click opens a file as the list's chips do (downloading
+  its mail first); the hover panel, the right-click menu and the viewer
+  (opened from this page) offer **Show the mail**, and the menu also
+  opens the mail in a new window, forwards the file in a new mail, and
+  shows the sender's files. Thumbnails are made in the background only
+  for cards on show whose mail is downloaded, and at most 96 are kept.
 
 ### 13.9 Window sizes
 
