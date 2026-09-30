@@ -1632,7 +1632,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   "Folder pane" in Settings > Accounts (`mail.accounts_shown`, `one` or
   `all`) picks between the shown account's folders only and every account
   one after another. The account card switches the shown account (it marks
-  it and gives each account's unread count); the choice is kept in
+  it and gives each account's unread count, under an icon row of
+  Settings (the General page), the language button and the ☰ application
+  menu, with "Add another account" as the last row); the choice is kept in
   `mail.current_account`. The list, search results, Go to, compose's From
   and the top-bar picture follow the shown account, and opening a message
   of another account (from a notification) switches to it. The taskbar
@@ -1915,7 +1917,7 @@ Gemini or confidential mode):
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
 - **Removing an account, deleting all data.** Settings → Accounts
-  (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
+  (`window/accounts.rs`) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
   only touch this computer: they ask first in a dialog that lists in red
   what is deleted, says the mail stays on the server (or, for imported
@@ -2274,8 +2276,8 @@ Gemini or confidential mode):
   the list and reader keep 900 px (600 px with the reader alone), never on
   tablets and phones or in a conversation window; a button on the reader
   toolbar turns it off (`mail.contact_panel`).
-- **Day's agenda.** A Calendar button on the top bar, beside the language
-  button (the Mail page of a desktop window only), opens a card at the
+- **Day's agenda.** A Calendar button on the top bar, beside Settings
+  (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it
   (`window/agenda.rs`, `mail.agenda_panel`). It and the contact panel
   take turns.
@@ -2631,11 +2633,12 @@ building Katna.
 
 **Language picker.** Two places change the same setting:
 
-- A **language button** in the top bar, just left of Settings (the gear),
-  with the same size, hover and one shared gap (`TOP_BAR_GAP`) as the
-  other top-bar buttons. It shows the current language's flag and a small
-  chevron; its tooltip names the language ("Language: বাংলা, following
-  the system" with System default).
+- A **language button** in the icon row at the top of the account card
+  (opened from the account picture), beside Settings, as
+  the owner asked, which keeps the top bar to Settings and the picture. It
+  shows the current language's flag and a small chevron; its tooltip names
+  the language ("Language: বাংলা, following the system" with System
+  default). The popover opens under the account picture.
 - **Settings > General > Language**, a row with the same choices.
 
 The button opens a popover (the popover rules of §13.6: closes on Esc and

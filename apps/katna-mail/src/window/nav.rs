@@ -642,18 +642,6 @@ impl MailWindow {
             end.push(
                 div()
                     .flex_none()
-                    .w(px(super::LANGUAGE_BUTTON_WIDTH * (1.0 - phone)))
-                    .mr(px(
-                        (super::TOP_BAR_GAP - super::BAR_ITEM_GAP) * (1.0 - phone)
-                    ))
-                    .overflow_hidden()
-                    .opacity(1.0 - phone)
-                    .child(self.render_language_button(th, cx))
-                    .into_any_element(),
-            );
-            end.push(
-                div()
-                    .flex_none()
                     .w(px(40.0 * (1.0 - phone)))
                     .overflow_hidden()
                     .opacity(1.0 - phone)

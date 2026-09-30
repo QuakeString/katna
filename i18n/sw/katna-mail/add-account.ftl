@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Ongeza akaunti nyingine
-add-account-menu-manage = Dhibiti akaunti
 app-menu = Menyu kuu
 app-menu-back = Rudi

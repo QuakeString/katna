@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Tinye akaụntụ ọzọ
-add-account-menu-manage = Jikwaa akaụntụ
 app-menu = Menu isi
 app-menu-back = Laghachi

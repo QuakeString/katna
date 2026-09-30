@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = နောက်ထပ်အကောင့် ထည့်ရန်
-add-account-menu-manage = အကောင့်များ စီမံရန်
 app-menu = ပင်မ မီနူး
 app-menu-back = နောက်သို့

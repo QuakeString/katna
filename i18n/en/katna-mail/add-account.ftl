@@ -182,7 +182,6 @@ add-account-done-linked = Tasks and calendars connected
 
 add-account-menu-another = Add another account
 # Opens Settings > Accounts.
-add-account-menu-manage = Manage accounts
 # The ☰ button beside it: opens the application menu (File, Edit, View…),
 # for desktops without a global menu.
 app-menu = Main menu
