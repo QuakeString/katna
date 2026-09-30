@@ -424,7 +424,9 @@ jobs:
       - name: Install it and try it in the Nix image
         run: |
           mkdir shots
-          docker run --rm -v "$PWD:/src" -w /src nixos/nix:latest sh -euc '
+          # gnome-keyring-daemon drops capabilities as root, which Docker forbids
+          # without --privileged.
+          docker run --rm --privileged -v "$PWD:/src" -w /src nixos/nix:latest sh -euc '
             git config --global --add safe.directory "*"
             nix() { command nix --extra-experimental-features "nix-command flakes" "$@"; }
             nix-store --import < katna-nix.closure > /dev/null
