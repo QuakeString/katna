@@ -148,14 +148,15 @@ impl Layout {
     }
 
     /// Whether the programs folder can take Katna: a new folder, or one
-    /// that holds Katna already or is empty, and not a link to somewhere
+    /// that holds Katna already, is empty or holds only a Setup left by an
+    /// uninstall, and not a link to somewhere
     /// else. Setup never mixes Katna into another program's files, which
     /// removing Katna would delete.
     pub fn check_folder(&self) -> io::Result<()> {
         let dir = &self.programs;
         let usable = match std::fs::symlink_metadata(dir) {
             Ok(meta) if meta.file_type().is_symlink() || !meta.is_dir() => false,
-            Ok(_) => self.installed() || std::fs::read_dir(dir)?.next().is_none(),
+            Ok(_) => self.installed() || only_setup_left(dir)?,
             Err(err) if err.kind() == io::ErrorKind::NotFound => true,
             Err(err) => return Err(err),
         };
@@ -877,6 +878,21 @@ fn system_program(name: &str) -> PathBuf {
         .join(name)
 }
 
+/// Whether `dir` is empty or holds nothing but `katna-setup.exe`: what
+/// an uninstall leaves when the Setup it ran could not remove itself
+/// (Setups before 2026-09-30 gave up after two seconds). Installing puts
+/// its own copy there.
+fn only_setup_left(dir: &Path) -> io::Result<bool> {
+    for entry in std::fs::read_dir(dir)? {
+        let entry = entry?;
+        let setup = entry.file_name().eq_ignore_ascii_case(SETUP_EXE);
+        if !setup || !entry.file_type()?.is_file() {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 #[cfg(test)]
 mod tests {
     use std::ffi::OsString;
@@ -1061,6 +1077,9 @@ mod tests {
         // A new folder, then an empty one.
         layout.check_folder().unwrap();
         std::fs::create_dir(&layout.programs).unwrap();
+        layout.check_folder().unwrap();
+        // What an uninstall left: only Setup.
+        std::fs::write(layout.programs.join("Katna-Setup.exe"), b"").unwrap();
         layout.check_folder().unwrap();
         // Someone else's files.
         std::fs::write(layout.programs.join("other.exe"), b"").unwrap();
