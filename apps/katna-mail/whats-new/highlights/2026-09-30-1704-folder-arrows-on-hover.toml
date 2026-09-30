@@ -1,7 +1,0 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-title = "Tidier folder pane"
-text = """
-The small arrows beside Inbox, Starred and the other folders show only while
-the pointer is over that folder. A folder you have opened keeps its arrow.
-"""
