@@ -233,8 +233,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> (AnyElement, AnyElement) {
-        // The inbox tabs have a row of their own when the top row has no
-        // room for them.
+        // The inbox tabs have a row of their own, centred, when the top row
+        // has no room for them.
         let tabs = self
             .shows_tabs()
             .then(|| self.tabs_fit())
@@ -246,6 +246,7 @@ impl MailWindow {
                     .px(px(TABS_ROW_PAD))
                     .flex()
                     .items_center()
+                    .justify_center()
                     .border_b_1()
                     .border_color(rgba(th.divider))
                     .child(self.render_tabs(fit, th, cx))
