@@ -2284,8 +2284,12 @@ desktop's own app stays one click away.
   Thumbnails are made in the background from the stored raw message and
   freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
-  top bar (the window's own controls stay usable): a dark page with a bar
-  naming the file, "Open with another app" and Save; arrows (and ←/→) go
+  top bar (the window's own controls stay usable): with frosted menus on,
+  the window shows blurred under a dark veil and the viewer's bar (a
+  shade darker), its controls pill, foot pill and markup pill are frosted
+  too; the file shows below the bar, never under it; with frost off, a
+  plain darker veil. The bar names the file, "Open with another app" and
+  Save; arrows (and ←/→) go
   through the message's other attachments, the viewer staying open: the
   file on show stays until the next one is ready (a PDF with its first
   page drawn) and they swap in one frame, or "Opening…" shows after

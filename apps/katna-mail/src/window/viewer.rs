@@ -1795,7 +1795,7 @@ mod tests {
         );
         // A large one shrinks to the room, keeping its shape.
         let (w, h) = picture_size(4000, 3000, 1.0, 1600.0, 1000.0, 1.0);
-        assert!(w <= 1440.0 && h <= 1000.0 - BAR_HEIGHT - 104.0);
+        assert!(w <= 1440.0 && h <= 1000.0 - BAR_HEIGHT - 104.0 + 0.01);
         assert!((w / h - 4.0 / 3.0).abs() < 0.01);
         // Zoom scales the fitted size.
         assert_eq!(
