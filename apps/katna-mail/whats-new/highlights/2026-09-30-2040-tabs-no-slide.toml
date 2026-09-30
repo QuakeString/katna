@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Quicker inbox tabs"
+text = """
+Clicking an inbox tab now highlights it at once, with just the click's
+ripple, instead of sliding the highlight across the other tabs.
+"""

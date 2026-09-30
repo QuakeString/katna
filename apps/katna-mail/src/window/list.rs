@@ -568,7 +568,7 @@ impl MailWindow {
         // buttons on either side let them.
         if self.shows_tabs() && self.tabs_fit() == TabsFit::TopRow {
             let width = self.list_width();
-            let tabs = self.tabs_width(self.tab_fold.value(), self.tab_spring.value());
+            let tabs = self.tabs_width(self.tab_fold.value());
             let left = ((width - tabs) / 2.0)
                 .min(width - TOP_ROW_RIGHT - tabs)
                 .max(TOP_ROW_LEFT);
@@ -1491,7 +1491,7 @@ impl MailWindow {
     // Tabs
 
     /// Measures the inbox tabs' labels and unread counts in the window's
-    /// font, for the pill bar to lay them out and slide between them.
+    /// font, for the pill bar to lay them out.
     pub(super) fn measure_tabs(&mut self, window: &gpui::Window) {
         let sizes = self
             .tabs
@@ -1532,31 +1532,17 @@ impl MailWindow {
             .sum()
     }
 
-    /// How open tab `ix` looks, 0 to 1, with the highlight `at` tabs
-    /// along: the tab it slides to turns on as the one it left turns off,
-    /// over the whole slide, and the tabs it passes stay as they are.
-    fn tab_on(&self, ix: usize, at: f32) -> f32 {
-        let (from, to) = self.tab_slide;
-        let done = if from == to {
-            1.0
-        } else {
-            ((at - from as f32) / (to as f32 - from as f32)).clamp(0.0, 1.0)
-        };
-        if ix == to {
-            done
-        } else if ix == from {
-            1.0 - done
-        } else {
-            0.0
-        }
+    /// 1 for the open tab, 0 for the others. The highlight moves at once,
+    /// the tab's ripple showing the click.
+    fn tab_on(&self, ix: usize) -> f32 {
+        if ix == self.tab { 1.0 } else { 0.0 }
     }
 
     /// How much tab `ix` shows its label and its badge, 0 to 1, with the
-    /// highlight `at` tabs along and the tabs folded `fold` steps: the
-    /// open tab keeps its label longest, and only the others have
-    /// badges, so the bar changes smoothly as the highlight slides.
-    fn tab_shares(&self, ix: usize, fold: f32, at: f32) -> (f32, f32) {
-        let on = self.tab_on(ix, at);
+    /// tabs folded `fold` steps: the open tab keeps its label longest,
+    /// and only the others have badges.
+    fn tab_shares(&self, ix: usize, fold: f32) -> (f32, f32) {
+        let on = self.tab_on(ix);
         let step = |from: f32| (fold - from).clamp(0.0, 1.0);
         let label = lerp(1.0, on, step(FOLD_LABELS)) * (1.0 - step(FOLD_NO_COUNTS));
         // The first tab, Primary, has no count, as in Gmail.
@@ -1570,31 +1556,31 @@ impl MailWindow {
 
     /// Tab `ix`'s padding and icon size: a tab without its label has less
     /// padding and a larger icon, which grows as the label folds away.
-    fn tab_pad_icon(&self, ix: usize, fold: f32, at: f32) -> (f32, f32) {
-        let (label, _) = self.tab_shares(ix, fold, at);
+    fn tab_pad_icon(&self, ix: usize, fold: f32) -> (f32, f32) {
+        let (label, _) = self.tab_shares(ix, fold);
         let pad = lerp(TAB_PAD, TAB_PAD_ICONS, fold.clamp(0.0, 1.0));
         (pad, lerp(TAB_ICON_ALONE, TAB_ICON, label))
     }
 
     /// Tab `ix`'s width in the pill bar.
-    fn tab_width(&self, ix: usize, fold: f32, at: f32) -> f32 {
+    fn tab_width(&self, ix: usize, fold: f32) -> f32 {
         let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
-        let (label, badge) = self.tab_shares(ix, fold, at);
-        let (pad, icon) = self.tab_pad_icon(ix, fold, at);
+        let (label, badge) = self.tab_shares(ix, fold);
+        let (pad, icon) = self.tab_pad_icon(ix, fold);
         let badge = if badge_w > 0.0 { badge } else { 0.0 };
         2.0 * pad + icon + (TAB_GAP + label_w) * label + (TAB_GAP + badge_w) * badge
     }
 
     /// The pill bar's width with every label and count showing.
     fn tabs_full_width(&self) -> f32 {
-        self.tabs_width(FOLD_LABELS, self.tab as f32)
+        self.tabs_width(FOLD_LABELS)
     }
 
     /// The pill bar's width folded `fold` steps with the highlight `at`
     /// tabs along.
-    fn tabs_width(&self, fold: f32, at: f32) -> f32 {
+    fn tabs_width(&self, fold: f32) -> f32 {
         (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, fold, at))
+            .map(|ix| self.tab_width(ix, fold))
             .sum::<f32>()
             + 2.0 * TABS_INSET
             + TAB_SPACING * self.tabs.len().saturating_sub(1) as f32
@@ -1622,7 +1608,7 @@ impl MailWindow {
         let room = self.tabs_room(self.tabs_fit());
         [FOLD_LABELS, FOLD_OPEN_LABEL, FOLD_NO_COUNTS]
             .into_iter()
-            .find(|&fold| self.tabs_width(fold, self.tab as f32) <= room)
+            .find(|&fold| self.tabs_width(fold) <= room)
             .unwrap_or(FOLD_ICONS)
     }
 
@@ -1648,8 +1634,8 @@ impl MailWindow {
         }
     }
 
-    /// The inbox tabs as a pill bar; the open tab's highlight slides from
-    /// tab to tab. With `fill`, the bar takes that width, sharing what the
+    /// The inbox tabs as a pill bar, the open tab highlighted; a click
+    /// moves the highlight at once, the ripple showing it. With `fill`, the bar takes that width, sharing what the
     /// tabs leave over evenly among them.
     pub(super) fn render_tabs(
         &self,
@@ -1658,15 +1644,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let fold = self.tab_fold.value();
-        let at = self
-            .tab_spring
-            .value()
-            .clamp(0.0, self.tabs.len().saturating_sub(1) as f32);
         let extra = fill.map_or(0.0, |fill| {
-            ((fill - self.tabs_width(fold, at)) / self.tabs.len().max(1) as f32).max(0.0)
+            ((fill - self.tabs_width(fold)) / self.tabs.len().max(1) as f32).max(0.0)
         });
         let widths: Vec<f32> = (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, fold, at) + extra)
+            .map(|ix| self.tab_width(ix, fold) + extra)
             .collect();
         let lefts: Vec<f32> = widths
             .iter()
@@ -1676,18 +1658,15 @@ impl MailWindow {
                 Some(left)
             })
             .collect();
-        // Between two tabs the highlight takes a share of each.
-        let (from, frac) = (at.floor() as usize, at.fract());
-        let to = (from + 1).min(self.tabs.len().saturating_sub(1));
-        let (hl_left, hl_width) = match (lefts.get(from), lefts.get(to)) {
-            (Some(&a), Some(&b)) => (lerp(a, b, frac), lerp(widths[from], widths[to], frac)),
+        let (hl_left, hl_width) = match (lefts.get(self.tab), widths.get(self.tab)) {
+            (Some(&left), Some(&width)) => (left, width),
             _ => (TABS_INSET, 0.0),
         };
         let tabs = self.tabs.iter().enumerate().map(|(ix, tab)| {
             let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
-            let (label, badge) = self.tab_shares(ix, fold, at);
-            let (pad, icon_size) = self.tab_pad_icon(ix, fold, at);
-            let on = self.tab_on(ix, at);
+            let (label, badge) = self.tab_shares(ix, fold);
+            let (pad, icon_size) = self.tab_pad_icon(ix, fold);
+            let on = self.tab_on(ix);
             let color = mix(th.text_dim, th.nav_selected_text, on);
             let unread = self.tab_unread(tab);
             div()
