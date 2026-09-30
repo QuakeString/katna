@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Checkboxes sit level with the icons"
+text = """
+Checkboxes are a little smaller, the same size as the star and label icons
+beside them in the mail list. They're just as easy to click, and the tick
+still draws in.
+"""

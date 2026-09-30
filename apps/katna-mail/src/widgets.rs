@@ -584,9 +584,10 @@ impl Check {
     }
 }
 
-/// The box of a checkbox: 18 px with a 2 px edge, which sits with a 20 px
-/// [`radio`] ring at the same weight, as Material draws the pair.
-const CHECK_BOX: f32 = 18.0;
+/// The box of a checkbox: 16 px with a 2 px edge, as big as the star and
+/// label icons it sits beside in a mail row, and at the weight of a
+/// [`radio`] ring.
+const CHECK_BOX: f32 = 16.0;
 /// The square of a partly checked box: 1 px clear of the edge all round.
 const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 2.0;
 
@@ -688,8 +689,10 @@ fn tick_color(fill: u32, th: &Theme) -> u32 {
 /// The tick drawn from its start to `t` of its length, inside the box's
 /// 2 px edge.
 fn check_mark(t: f32, color: u32) -> impl IntoElement {
-    // Points in the box, less its edge, whose sides are 14 px.
-    let points: &'static [(f32, f32)] = &[(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)];
+    // Points in a 14 px square, scaled to the box less its edge.
+    const POINTS: [(f32, f32); 3] = [(1.8, 7.2), (5.2, 10.6), (12.2, 3.6)];
+    let k = (CHECK_BOX - 4.0) / 14.0;
+    let points = POINTS.map(|(x, y)| (x * k, y * k));
     // The tick starts once the box has begun to fill.
     let drawn = ((t - 0.25) / 0.75).clamp(0.0, 1.0);
     canvas(
