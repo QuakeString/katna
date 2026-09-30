@@ -1865,3 +1865,12 @@ Ang file sa card ng contact na wala pa sa computer na ito ang mail ay
 napupuno na ngayon habang nagda-download, gaya ng mga attachment sa
 listahan, saka nagbubukas.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Lumalabas ang mail ng bagong account habang dumarating"
+text = """
+Pagkatapos mong magdagdag ng account, unang nagda-download ang Inbox
+nito at napupuno habang nanonood ka, sa halip na manatili sa “Kinukuha
+ang iyong mail…” hanggang matapos ang bawat folder. Ganoon din napupuno
+ang ibang mga folder.
+"""

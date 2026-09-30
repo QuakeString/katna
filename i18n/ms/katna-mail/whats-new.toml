@@ -1817,3 +1817,11 @@ Fail dalam panel kenalan yang melnya belum ada pada komputer ini kini
 terisi semasa dimuat turun, seperti lampiran dalam senarai, kemudian
 dibuka.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Mel akaun baharu dipaparkan sebaik sahaja tiba"
+text = """
+Selepas anda menambah akaun, Peti Masuknya dimuat turun dahulu dan terisi
+semasa anda melihat, bukannya kekal pada "Mendapatkan mel anda…" sehingga
+setiap folder selesai. Folder lain terisi dengan cara yang sama.
+"""

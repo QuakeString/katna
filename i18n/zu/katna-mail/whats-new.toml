@@ -1862,3 +1862,12 @@ title = "Amafayela oxhumana naye abonisa ukulandwa kwawo"
 text = """
 Ifayela kuphaneli yoxhumana naye i-imeyili yalo engakabi kule khompyutha manje liyagcwala ngenkathi lilandwa, njengoba kwenza okunamathiselwe ohlwini, bese liyavuleka.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Imeyili ye-akhawunti entsha ivela njengoba ifika"
+text = """
+Ngemva kokwengeza i-akhawunti, ibhokisi layo lokungenayo lilandwa kuqala
+futhi ligcwala ubukele, esikhundleni sokuhlala ku-“Kulandwa imeyili
+yakho…” kuze kuqedwe wonke amafolda. Amanye amafolda agcwala ngendlela
+efanayo.
+"""
