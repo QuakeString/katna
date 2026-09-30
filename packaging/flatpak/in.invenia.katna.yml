@@ -45,6 +45,9 @@ modules:
       - cp -r share/applications share/icons share/licenses /app/share/
       - cp -r share/krunner share/gnome-shell /app/share/
       - rm -r /app/share/gnome-shell/extensions
+      # Flatpak checks icons with gdk-pixbuf, which only looks for <svg in the
+      # first 256 bytes; the long header comments push it past that.
+      - sed -i '/^<!--.*-->$/d' /app/share/icons/hicolor/*/apps/*.svg
       # No systemd unit in a Flatpak: D-Bus runs the service itself, and
       # Flatpak points Exec at this app.
       - mkdir -p /app/share/dbus-1/services
