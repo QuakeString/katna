@@ -134,7 +134,7 @@ fn qresync_reports_expunges_without_a_uid_list() {
 }
 
 #[test]
-fn big_folder_is_fetched_in_chunks() {
+fn big_folder_is_fetched_newest_first_in_chunks() {
     let (_tmp, mut store, account) = setup();
     let server = FakeServer::default();
     server.create("INBOX", 1);
@@ -149,11 +149,54 @@ fn big_folder_is_fetched_in_chunks() {
     assert_eq!(
         fetches,
         [
-            &format!("HEADERS 1:Some({CHUNK})"),
-            &format!("HEADERS {}:Some({})", CHUNK + 1, CHUNK * 2),
-            &format!("HEADERS {}:Some({total})", CHUNK * 2 + 1),
+            &format!("HEADERS {}:Some({total})", total - CHUNK + 1),
+            &format!("HEADERS {}:Some({})", total - 2 * CHUNK + 1, total - CHUNK),
+            &format!("HEADERS 1:Some({})", total - 2 * CHUNK),
         ]
     );
+}
+
+#[test]
+fn a_cut_off_first_sync_fills_in_the_older_mail_next_time() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    let total = CHUNK * 2 + 10;
+    for i in 0..total {
+        server.deliver("INBOX", &format!("m{i}"));
+    }
+    // The newest chunk is stored, then the connection drops.
+    server.state().header_fetches_left = Some(1);
+    let mut conn = server.connection();
+    assert!(smol::block_on(engine::sync_account(&mut conn, &mut store, account)).is_err());
+    let inbox = store.folders(account).unwrap()[0].id;
+    let stored = store.folder_uids(inbox).unwrap();
+    assert_eq!(stored.first(), Some(&(total - CHUNK + 1)));
+    assert_eq!(stored.last(), Some(&total));
+
+    // Mail that arrived meanwhile comes first, then the older mail.
+    server.deliver("INBOX", "late");
+    let reports = sync(&server, &mut store, account);
+    assert_eq!(reports[0].added, total as usize - CHUNK as usize + 1);
+    let log = server.log();
+    let fetches: Vec<_> = log.iter().filter(|c| c.starts_with("HEADERS")).collect();
+    assert_eq!(
+        fetches,
+        [
+            &format!("HEADERS {}:Some({})", total + 1, total + 1),
+            &format!("HEADERS {}:Some({})", total - 2 * CHUNK + 1, total - CHUNK),
+            &format!("HEADERS 1:Some({})", total - 2 * CHUNK),
+        ]
+    );
+    assert_eq!(
+        store.folder_uids(inbox).unwrap(),
+        (1..=total + 1).collect::<Vec<_>>()
+    );
+
+    // Nothing is left to fetch.
+    let reports = sync(&server, &mut store, account);
+    assert_eq!(reports[0].added, 0);
+    assert!(!server.log().iter().any(|c| c.starts_with("HEADERS")));
 }
 
 #[test]

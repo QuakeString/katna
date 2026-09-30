@@ -386,8 +386,10 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   D-Bus signals.
 - **Level-1 sync (`katna_sync::engine`):** per folder, SELECT with
   CONDSTORE, reset on a new UIDVALIDITY, fetch flags changed since the stored
-  HIGHESTMODSEQ, fetch headers of new UIDs in chunks of 500 (committed chunk
-  by chunk), and compare UID lists only when the message count does not add
+  HIGHESTMODSEQ, fetch headers of new UIDs newest first in chunks of 500
+  going back in time (committed chunk by chunk; the UID ranges still missing
+  are saved in the folder's sync state, so a cut-off first sync fills in the
+  older mail next time), and compare UID lists only when the message count does not add
   up. Servers with QRESYNC (Stalwart and Dovecot here; Gmail has none) get
   `ENABLE QRESYNC` after login: the flag fetch then carries the
   `VANISHED` modifier, so the expunges since the stored HIGHESTMODSEQ come
