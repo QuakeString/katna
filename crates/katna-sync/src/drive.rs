@@ -373,9 +373,14 @@ fn check(reply: &Reply, doing: &str) -> Result<()> {
     }
 }
 
-/// What a failed answer means: a refused grant or scope asks to sign in
-/// again ([`Error::Auth`]); anything else is Drive's own message.
+/// What a failed answer means: the Drive API switched off for Katna's
+/// Google Cloud project ([`Error::NotEnabled`]); a refused grant or scope
+/// asks to sign in again ([`Error::Auth`]); anything else is Drive's own
+/// message.
 fn failure(reply: &Reply, doing: &str) -> Error {
+    if let Some(off) = crate::google_api::switched_off(reply.status, &reply.body) {
+        return off;
+    }
     let (reasons, message) = reasons(&reply.body);
     let scope = reasons.iter().any(|r| {
         matches!(

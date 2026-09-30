@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Says which Google API is off"
+text = """
+When Google has an API switched off for Katna, Contacts, Calendar, Tasks and
+Drive files now say which one in a short line, with a Turn on button that
+opens Google's page for it, instead of Google's raw error.
+"""

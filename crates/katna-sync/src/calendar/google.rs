@@ -632,10 +632,10 @@ fn check(reply: &Reply, doing: &str) -> std::result::Result<(), CalendarError> {
         .map(|r| r.reason.as_str())
         .collect();
     let any = |names: &[&str]| reasons.iter().any(|r| names.contains(r));
-    if reply.status == 403 && any(&["accessNotConfigured", "SERVICE_DISABLED"]) {
-        return Err(CalendarError::NotEnabled(
-            "the Google Calendar API is not enabled for Katna's Google Cloud project".into(),
-        ));
+    if let Some(crate::Error::NotEnabled(detail)) =
+        crate::google_api::switched_off(reply.status, &reply.body)
+    {
+        return Err(CalendarError::NotEnabled(detail));
     }
     if reply.status == 401
         || (reply.status == 403
