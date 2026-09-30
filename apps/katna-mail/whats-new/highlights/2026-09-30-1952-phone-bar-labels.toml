@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "App names on a phone follow your setting"
+text = """
+With app names turned off in Settings, the bar along the bottom of a
+phone-sized window now shows only the icons, centered, as the side rail
+does.
+"""
