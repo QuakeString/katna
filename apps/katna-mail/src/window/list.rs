@@ -554,12 +554,24 @@ impl MailWindow {
         if phone {
             return bar.child(div().flex_1()).into_any_element();
         }
+        // The tabs sit in the middle of the row, or as near it as the
+        // buttons on either side let them.
         if self.shows_tabs() && self.tabs_fit() == TabsFit::TopRow {
-            bar = bar.child(div().flex_none().pl(px(12.0)).child(self.render_tabs(
-                TabsFit::TopRow,
-                th,
-                cx,
-            )));
+            let width = self.list_width();
+            let tabs = self.tabs_width(self.tab_spring.value());
+            let left = ((width - tabs) / 2.0)
+                .min(width - TOP_ROW_RIGHT - tabs)
+                .max(TOP_ROW_LEFT);
+            bar = bar.relative().child(
+                div()
+                    .absolute()
+                    .top_0()
+                    .bottom_0()
+                    .left(px(left))
+                    .flex()
+                    .items_center()
+                    .child(self.render_tabs(TabsFit::TopRow, th, cx)),
+            );
         }
         bar.child(
             div()
@@ -1541,7 +1553,11 @@ impl MailWindow {
 
     /// The pill bar's width with every label and count showing.
     fn tabs_full_width(&self) -> f32 {
-        let at = self.tab as f32;
+        self.tabs_width(self.tab as f32)
+    }
+
+    /// The top row's pill bar's width with the highlight `at` tabs along.
+    fn tabs_width(&self, at: f32) -> f32 {
         (0..self.tabs.len())
             .map(|ix| self.tab_width(ix, TabsFit::TopRow, at))
             .sum::<f32>()
