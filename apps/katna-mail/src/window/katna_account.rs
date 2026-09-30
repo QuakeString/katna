@@ -446,7 +446,7 @@ impl MailWindow {
         }
         let (mode, busy) = (page.mode, page.busy);
         let account = page.account.clone().unwrap_or_default();
-        let status = if std::env::var("RIG_STEP").is_ok() { None } else { page.error.clone() }.map(|e| (e, th.error)).or(None); let _unused = page
+        let status = page
             .error
             .clone()
             .map(|e| (e, th.error))
@@ -522,11 +522,19 @@ impl MailWindow {
                     cx,
                 ))
                 .child(div().flex().flex_row().justify_center().child(if create {
-                    link_button("katna-to-sign-in", tr!("katna-have-account"), th)
-                        .on_click(cx.listener(|this, _, _, cx| this.katna_mode(Mode::SignIn, cx)))
+                    link_button("katna-to-sign-in", tr!("katna-have-account"), th).on_click(
+                        cx.listener(|this, _, _, cx| {
+                            this.katna_mode(Mode::SignIn, cx);
+                            this.onboarding_katna_form(Some(false), cx)
+                        }),
+                    )
                 } else {
-                    link_button("katna-to-create", tr!("katna-create"), th)
-                        .on_click(cx.listener(|this, _, _, cx| this.katna_mode(Mode::Create, cx)))
+                    link_button("katna-to-create", tr!("katna-create"), th).on_click(cx.listener(
+                        |this, _, _, cx| {
+                            this.katna_mode(Mode::Create, cx);
+                            this.onboarding_katna_form(Some(true), cx)
+                        },
+                    ))
                 })),
                 if create {
                     submit("katna-create", tr!("katna-create"), cx)

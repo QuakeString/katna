@@ -87,17 +87,9 @@ pub(super) struct Onboarding {
 
 impl Onboarding {
     pub(super) fn new() -> Self {
-        let rig = std::env::var("RIG_STEP").ok();
         Self {
-            katna_form: match rig.as_deref() {
-                Some("form") => Some(true),
-                _ => None,
-            },
-            step: match rig.as_deref() {
-                Some("katna") | Some("form") => Step::Katna,
-                Some("look") => Step::Look,
-                _ => Step::Welcome,
-            },
+            step: Step::Welcome,
+            katna_form: None,
             forward: true,
             service: Service::Checking,
             _check: None,
@@ -156,7 +148,7 @@ impl MailWindow {
     }
 
     /// Shows the Katna account form, to create one or to sign in.
-    fn onboarding_katna_form(&mut self, form: Option<bool>, cx: &mut Context<Self>) {
+    pub(super) fn onboarding_katna_form(&mut self, form: Option<bool>, cx: &mut Context<Self>) {
         if let Some(onboarding) = &mut self.onboarding {
             onboarding.forward = form.is_some();
             onboarding.katna_form = form;
@@ -275,7 +267,13 @@ impl MailWindow {
             .max_w_full()
             // The same height on every page, so the card does not jump;
             // all the room there is on a phone.
-            .map(|d| if phone { d.h_full() } else { d.h(px(CARD_HEIGHT)) })
+            .map(|d| {
+                if phone {
+                    d.h_full()
+                } else {
+                    d.h(px(CARD_HEIGHT))
+                }
+            })
             .max_h_full()
             .overflow_hidden()
             .px(px(if phone { 24.0 } else { 48.0 }))
@@ -325,8 +323,7 @@ impl MailWindow {
                     .pb(px(16.0))
                     // Above a phone's apps along the bottom.
                     .when(phone, |d| {
-                        d.pt(px(8.0))
-                            .pb(px(super::layout::BOTTOM_BAR_HEIGHT + 8.0))
+                        d.pt(px(8.0)).pb(px(super::layout::BOTTOM_BAR_HEIGHT + 8.0))
                     })
                     .flex()
                     .items_center()
