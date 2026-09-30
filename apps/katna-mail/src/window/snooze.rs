@@ -153,6 +153,7 @@ impl MailWindow {
             input.set_accent(accent);
             input.set_text(morning, cx);
             input.select_all_text(cx);
+            input.set_stepper(Some(schedule::time_stepper()));
             input
         });
         let events = cx.subscribe_in(

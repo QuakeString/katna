@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Arrow keys in time boxes"
+text = """
+In Pick date & time, and in a task's time, Up and Down change the part the
+cursor is in: the hour, the minutes or AM/PM.
+"""
