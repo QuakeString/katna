@@ -2266,7 +2266,8 @@ desktop's own app stays one click away.
   file on show stays until the next one is ready (a PDF with its first
   page drawn) and they swap in one frame, or "Opening…" shows after
   300 ms if it takes longer; the viewer fades in only when it opens. The
-  middle of the top bar zooms (−/+/0, 25 %–400 %, 100 % fits the window)
+  middle of the top bar zooms (−/+/0, Ctrl + mouse wheel or a touchpad
+  pinch around the pointer, 25 %–400 %, 100 % fits the window)
   and shows a PDF's page as "Page [n] of N": typing a number in the box
   (click it or Ctrl+G) and Enter goes to that page, Escape leaves the
   box. A PDF also turns a quarter turn either way (Ctrl+R, Ctrl+Shift+R):
