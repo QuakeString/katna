@@ -26,7 +26,7 @@ use katna_i18n::tr;
 
 use crate::format;
 use crate::sidebar::{self, Role, Unified};
-use crate::theme::{Theme, fade};
+use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     ScaledEdge, elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
@@ -45,6 +45,11 @@ const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
+/// How opaque the idle search box is in a blurred window: frosted glass
+/// that shows the blur behind it. Focused, it is solid.
+const SEARCH_GLASS_ALPHA: f32 = 0.4;
+/// How strong the idle glass search box's faint edge is.
+const SEARCH_GLASS_EDGE: f32 = 0.22;
 
 /// The button at the top of a page's side panel (Create contact, Create
 /// task), in the size, shape and colours of Mail's Compose over the
@@ -457,20 +462,22 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            // Active, it keeps its color and gains a faint edge. In a
-            // blurred window it lets the blur through like the bar
-            // around it, so it reads as the same frosted glass.
+            // In a blurred window it is frosted glass while idle, letting
+            // more of the blur through than the bar around it, and turns
+            // solid as it takes focus.
             .bg(rgba(if th.backdrop == 0 {
-                fade(
-                    th.search,
-                    f32::from(katna_chrome::tokens::blur_alpha(th.dark)) / 255.0,
-                )
+                fade(th.search, lerp(SEARCH_GLASS_ALPHA, 1.0, t.clamp(0.0, 1.0)))
             } else {
                 th.search
             }))
-            // Focused, it gains the accent edge every other field has.
+            // Focused, it gains the accent edge every other field has. As
+            // glass it keeps a faint edge while idle, so it stays visible.
             .border_px(2.0)
-            .border_color(rgba(fade(th.accent, t.clamp(0.0, 1.0))))
+            .border_color(rgba(if th.backdrop == 0 {
+                mix(fade(th.text, SEARCH_GLASS_EDGE), th.accent, t)
+            } else {
+                fade(th.accent, t.clamp(0.0, 1.0))
+            }))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
