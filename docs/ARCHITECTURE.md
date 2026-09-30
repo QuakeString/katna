@@ -4983,7 +4983,8 @@ Downloads are never run or loaded as administrator.
 
 CI builds Setup.exe into a `windows-latest` pre-release when the owner
 runs the Windows package workflow by hand on `main` (Actions > Windows
-package > Run workflow); while Katna is young, pushes and pull requests
+package > Run workflow), with the faster `quick` profile (thin LTO)
+unless Full build is ticked; while Katna is young, pushes and pull requests
 test on Arch only, and the Windows and Ubuntu CI jobs also run only by
 hand. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
