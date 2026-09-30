@@ -2069,7 +2069,13 @@ impl MailWindow {
                     }
                     Listing::Search { .. } => (Vec::new(), None),
                 };
+                let open = self.kept_open_line(&listing, &entries);
                 self.entries = entries;
+                // The open conversation stays where it was until it closes,
+                // as in webmail, though reading it took it out of the list.
+                if let Some((at, entry)) = open {
+                    self.entries.insert(at.min(self.entries.len()), entry);
+                }
                 self.reset_list(true);
                 if let Some(unread) = unread {
                     self.category_unread = unread;
@@ -2562,6 +2568,24 @@ impl MailWindow {
         self.send(command, done, undo.clone(), false, cx);
         cx.notify();
         undo
+    }
+
+    /// The open conversation's line and where it is, when the list
+    /// `listing` is about to get `entries` without it: a list of unread
+    /// mail loses the conversation that opening it marked read.
+    fn kept_open_line(&self, listing: &Listing, entries: &[Entry]) -> Option<(usize, Entry)> {
+        let Listing::Unified { view, .. } = listing else {
+            return None;
+        };
+        if view.filter() == Default::default() || !self.reading || self.detached {
+            return None;
+        }
+        let key = self.reader.as_ref()?.key;
+        if entries.iter().any(|e| e.key == key) {
+            return None;
+        }
+        let at = self.entries.iter().position(|e| e.key == key)?;
+        Some((at, self.entries[at]))
     }
 
     /// Takes lines out of the list, keeping the cursor on the next one.

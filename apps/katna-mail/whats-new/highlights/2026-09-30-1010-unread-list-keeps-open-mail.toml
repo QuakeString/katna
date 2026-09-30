@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Unread mail stays open"
+text = """
+Opening a conversation in All Accounts > Unread no longer closes it at
+once. Reading it marks it read, and it stays in the list until you close
+it or open another one.
+"""
