@@ -294,7 +294,12 @@ async fn upload(daemon: Weak<Daemon>, drive: Storage, id: i64, path: PathBuf, na
         }
         Err(err) => {
             tracing::warn!(upload = id, %err, "upload failed");
-            let message = err.to_string();
+            // Switched off in Katna's Google Cloud project: the app names
+            // the API and offers the page that turns it on.
+            let message = match err {
+                Error::NotEnabled(detail) => detail,
+                err => err.to_string(),
+            };
             update(&|u| {
                 u.status.state = drive_state::FAILED.into();
                 u.status.error = message.clone();

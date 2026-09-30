@@ -175,7 +175,9 @@ pub mod calendar_state {
     /// was signed in before Katna asked): `SignIn` again.
     pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
     /// The provider has its calendar API switched off for Katna (Google
-    /// Calendar API not enabled in Katna's Google Cloud project).
+    /// Calendar API not enabled in Katna's Google Cloud project). The
+    /// detail names the API and the page that turns it on
+    /// (`katna_core::api_off`), or says why in words.
     pub const NOT_ENABLED: &str = "not-enabled";
     /// The last sync failed; the detail says why. It is tried again.
     pub const ERROR: &str = "error";
@@ -196,6 +198,11 @@ pub mod contacts_state {
     /// The account's sign-in or password did not let Katna into its
     /// contacts: sign in again (OAuth2), or check the password.
     pub const NEEDS_SIGN_IN: &str = "needs-sign-in";
+    /// The provider has its contacts API switched off for Katna (People
+    /// API not enabled in Katna's Google Cloud project). The detail names
+    /// the API and the page that turns it on (`katna_core::api_off`), or
+    /// says why in words.
+    pub const NOT_ENABLED: &str = "not-enabled";
     /// The last sync failed; the detail says why. It is tried again.
     pub const ERROR: &str = "error";
     /// A mail account signed in with a password at a provider that lets
