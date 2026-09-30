@@ -560,6 +560,7 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   because Zoho lets only "self client" apps use XOAUTH2 for IMAP, so Zoho
   Mail keeps its password. `SignIn("zoho", account)` asks at once for
   `ZohoMail.tasks.ALL` (Zoho Mail's Tasks API, which Zoho ToDo serves),
+  `ZohoMail.accounts.READ` (the Mail `accountId` and `zuid` task calls take),
   `ZohoCalendar.calendar.ALL` and `ZohoCalendar.event.ALL`, and
   `AaaServer.profile.READ` (who signed in, from `/oauth/user/info`; Zoho
   gives no ID token). Zoho scopes are separated by commas. Zoho takes

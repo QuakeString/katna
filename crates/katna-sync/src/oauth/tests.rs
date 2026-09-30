@@ -521,6 +521,27 @@ fn zoho_data_centres_by_domain() {
         Some("https://accounts.zohocloud.ca")
     );
     assert_eq!(server("mail.example.com"), None);
+    assert!(is_zoho_host("imappro.zoho.in"));
+    assert!(!is_zoho_host("imap.gmail.com"));
+    let mail_api = |server: &str| {
+        zoho_mail_api(&LinkedSignIn {
+            provider: OAuthProvider::Zoho,
+            accounts_server: server.into(),
+            api_domain: String::new(),
+        })
+    };
+    assert_eq!(
+        mail_api("https://accounts.zoho.in"),
+        "https://mail.zoho.in/api"
+    );
+    assert_eq!(
+        mail_api("https://accounts.zohocloud.ca/"),
+        "https://mail.zohocloud.ca/api"
+    );
+    assert_eq!(
+        mail_api("https://evil.example"),
+        "https://mail.zoho.com/api"
+    );
     assert_eq!(server("notzoho.com"), None);
     assert!(is_zoho_accounts_server("https://accounts.zoho.sa/"));
     assert!(!is_zoho_accounts_server(
@@ -543,7 +564,7 @@ fn zoho(server: &FakeServer) -> Provider {
         OAuthProvider::Zoho,
         &server.url.replace("/token", "/oauth/v2/token"),
     );
-    provider.scope = format!("{ZOHO_TASKS},{ZOHO_CALENDAR},{ZOHO_PROFILE}");
+    provider.scope = format!("{ZOHO_TASKS},{ZOHO_MAIL_ACCOUNTS},{ZOHO_CALENDAR},{ZOHO_PROFILE}");
     provider.redirect_host = format!("127.0.0.1:{port}").leak();
     provider.client_secret = "zoho-secret".into();
     provider
@@ -573,7 +594,7 @@ fn zoho_signs_in_at_the_users_data_centre() {
         assert_eq!(redirect, format!("http://127.0.0.1:{port}/"));
         assert_eq!(
             param(&url, "scope").unwrap(),
-            "ZohoMail.tasks.ALL,ZohoCalendar.calendar.ALL,ZohoCalendar.event.ALL,AaaServer.profile.READ"
+            "ZohoMail.tasks.ALL,ZohoMail.accounts.READ,ZohoCalendar.calendar.ALL,ZohoCalendar.event.ALL,AaaServer.profile.READ"
         );
         assert_eq!(param(&url, "access_type").unwrap(), "offline");
         assert_eq!(param(&url, "prompt").unwrap(), "consent");

@@ -18,7 +18,7 @@ use std::{
 use async_net::{TcpListener, TcpStream};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use futures_lite::{AsyncReadExt, AsyncWriteExt, FutureExt};
-use katna_core::{OAuthProvider, Security, Server};
+use katna_core::{LinkedSignIn, OAuthProvider, Security, Server};
 use serde::Deserialize;
 
 use crate::{
@@ -78,6 +78,10 @@ pub const MICROSOFT_TASKS: &str = "https://graph.microsoft.com/Tasks.ReadWrite";
 
 /// Zoho Mail's tasks (Zoho ToDo's), through the Zoho Mail API.
 pub const ZOHO_TASKS: &str = "ZohoMail.tasks.ALL";
+
+/// The Zoho Mail accounts of who signed in: the `accountId` and `zuid`
+/// some Zoho Mail task calls take.
+pub const ZOHO_MAIL_ACCOUNTS: &str = "ZohoMail.accounts.READ";
 
 /// Zoho Calendar: the calendars and their events.
 pub const ZOHO_CALENDAR: &str = "ZohoCalendar.calendar.ALL,ZohoCalendar.event.ALL";
@@ -160,6 +164,27 @@ pub fn zoho_accounts_server(host_or_address: &str) -> Option<&'static str> {
         }
     }
     best.map(|(server, _)| server)
+}
+
+/// Whether a mail server host (`imappro.zoho.in`) or address is Zoho's.
+pub fn is_zoho_host(host_or_address: &str) -> bool {
+    zoho_accounts_server(host_or_address).is_some()
+}
+
+/// The Zoho Mail API of a linked Zoho sign-in's data centre:
+/// `https://mail.zoho.in/api` for `https://accounts.zoho.in`.
+/// `KATNA_ZOHO_API_URL` stands in for it under test.
+pub fn zoho_mail_api(linked: &LinkedSignIn) -> String {
+    if let Some(url) = http::test_url("KATNA_ZOHO_API_URL") {
+        return url;
+    }
+    let server = linked.accounts_server.trim_end_matches('/');
+    let server = if is_zoho_accounts_server(server) {
+        server
+    } else {
+        "https://accounts.zoho.com"
+    };
+    format!("{}/api", server.replacen("://accounts.", "://mail.", 1))
 }
 
 /// Whether `server` is one of Zoho's sign-in servers: the code and the
@@ -282,7 +307,7 @@ impl Provider {
                 client_secret: katna_core::ids::ZOHO_OAUTH_CLIENT_SECRET.into(),
                 // Zoho's scopes are separated by commas. Calendar comes at
                 // the same sign-in as the tasks, so it needs no second one.
-                scope: format!("{ZOHO_TASKS},{ZOHO_CALENDAR},{ZOHO_PROFILE}"),
+                scope: format!("{ZOHO_TASKS},{ZOHO_MAIL_ACCOUNTS},{ZOHO_CALENDAR},{ZOHO_PROFILE}"),
                 consent: String::new(),
                 // The one port registered with Zoho: [`ZOHO_REDIRECT_PORT`].
                 redirect_host: "localhost:53710",
