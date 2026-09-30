@@ -6002,6 +6002,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tracing",
+ "winreg 0.56.0",
  "winresource",
  "zbus",
 ]
@@ -6098,6 +6099,7 @@ dependencies = [
  "winreg 0.56.0",
  "winresource",
  "zbus",
+ "zip 8.6.0",
 ]
 
 [[package]]
