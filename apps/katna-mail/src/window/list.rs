@@ -265,7 +265,7 @@ impl MailWindow {
                     .justify_center()
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .child(self.render_tabs(th, cx))
+                    .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
         let list = self.render_list(th, cx);
@@ -580,7 +580,7 @@ impl MailWindow {
                     .left(px(left))
                     .flex()
                     .items_center()
-                    .child(self.render_tabs(th, cx)),
+                    .child(self.render_tabs(None, th, cx)),
             );
         }
         bar.child(
@@ -676,14 +676,16 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         // The tabs take the place of the title, which would only repeat
         // the open tab's name, and Refresh goes into the More menu, whose
-        // button ends the tabs' pill.
+        // button ends the tabs' pill. The pill spans the bar, its tabs
+        // sharing the room, so they are easy to tap.
         if self.phone_bar_tabs() {
             let more = more.size(px(TAB_HEIGHT)).rounded_full().ml(px(TAB_SPACING));
+            let fill = self.tabs_room(TabsFit::Row);
             return toolbar(th)
                 .px(px(PHONE_TABS_SIDE))
-                .justify_center()
                 .child(
                     div()
+                        .flex_1()
                         .min_w_0()
                         .h(px(TABS_HEIGHT))
                         .pr(px(TABS_INSET))
@@ -697,7 +699,7 @@ impl MailWindow {
                                 .id("phone-tabs")
                                 .min_w_0()
                                 .overflow_x_scroll()
-                                .child(self.render_tabs(th, cx)),
+                                .child(self.render_tabs(Some(fill), th, cx)),
                         )
                         .child(self.with_menu(more, Menu::ListMore, th, cx)),
                 )
@@ -1647,15 +1649,24 @@ impl MailWindow {
     }
 
     /// The inbox tabs as a pill bar; the open tab's highlight slides from
-    /// tab to tab.
-    pub(super) fn render_tabs(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// tab to tab. With `fill`, the bar takes that width, sharing what the
+    /// tabs leave over evenly among them.
+    pub(super) fn render_tabs(
+        &self,
+        fill: Option<f32>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let fold = self.tab_fold.value();
         let at = self
             .tab_spring
             .value()
             .clamp(0.0, self.tabs.len().saturating_sub(1) as f32);
+        let extra = fill.map_or(0.0, |fill| {
+            ((fill - self.tabs_width(fold, at)) / self.tabs.len().max(1) as f32).max(0.0)
+        });
         let widths: Vec<f32> = (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, fold, at))
+            .map(|ix| self.tab_width(ix, fold, at) + extra)
             .collect();
         let lefts: Vec<f32> = widths
             .iter()
@@ -1689,6 +1700,7 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .items_center()
+                .justify_center()
                 .overflow_hidden()
                 .rounded_full()
                 .text_size(px(TAB_TEXT))
