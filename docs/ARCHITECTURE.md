@@ -760,6 +760,11 @@ Free text that matches an organization name or alias is expanded to
    metadata is already local, so results render and rank instantly.
 3. Messages found on the server are downloaded and indexed.
 
+Results replace the list and close the open conversation. The list, its
+scroll place, the cursor and the open conversation are kept as the search
+starts: cancelling it (Escape or clearing the box) with no result opened
+brings them back; opening a result drops them.
+
 ### 7.4 Ranking
 
 BM25 plus boosts: subject match, recency, people you reply to often,
