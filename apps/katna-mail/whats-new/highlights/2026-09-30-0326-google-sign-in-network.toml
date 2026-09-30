@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Sign in with Google on every network"
+text = """
+Sign in with Google no longer stops with "peer closed connection" on
+networks that drop Google's connection early. If you untick Gmail on
+Google's page, Katna now says so instead of failing later.
+"""

@@ -571,17 +571,7 @@ pub async fn exchange_limited(
                 }
             }
         }
-        let mut response = Vec::new();
-        loop {
-            let chunk = conn.read().await?;
-            if chunk.is_empty() {
-                break;
-            }
-            response.extend_from_slice(chunk);
-            if response.len() > max_body + 64 * 1024 {
-                return Err(Error::Protocol(format!("{url}: answer too large")));
-            }
-        }
+        let response = read_answer(&mut conn, url, max_body + 64 * 1024).await?;
         let _ = conn.close().await;
         let head = parse_head(&response)?;
         let body = parse_body(&head, max_body, false)?;
@@ -666,17 +656,7 @@ pub async fn post_form(
                 .await?;
         }
         conn.write_all(request.as_bytes()).await?;
-        let mut response = Vec::new();
-        loop {
-            let chunk = conn.read().await?;
-            if chunk.is_empty() {
-                break;
-            }
-            response.extend_from_slice(chunk);
-            if response.len() > MAX_FORM_ANSWER {
-                return Err(Error::Protocol(format!("{url}: answer too large")));
-            }
-        }
+        let response = read_answer(&mut conn, url, MAX_FORM_ANSWER).await?;
         let _ = conn.close().await;
         let head = parse_head(&response)?;
         let body = parse_body(&head, MAX_FORM_ANSWER, false)?;
@@ -687,6 +667,57 @@ pub async fn post_form(
         Err(Error::Timeout(timeout))
     })
     .await
+}
+
+/// Reads the answer to a `Connection: close` request up to where its own
+/// framing (`Content-Length`, or a chunked body's last chunk) says it
+/// ends, or else to the end of the connection. Stopping there means a
+/// server, or a network box on the way, that drops the connection without
+/// TLS's `close_notify` (seen from Google's token server on a mobile
+/// network) costs nothing once the whole answer is in.
+async fn read_answer(conn: &mut Conn, url: &str, limit: usize) -> Result<Vec<u8>> {
+    let mut response = Vec::new();
+    loop {
+        let chunk = match conn.read_raw().await {
+            Ok(chunk) => chunk,
+            Err(Error::Io(err)) if err.kind() == std::io::ErrorKind::UnexpectedEof => {
+                if answer_complete(&response) {
+                    break;
+                }
+                return Err(Error::Closed(format!(
+                    "{url}: the connection ended in the middle of the answer"
+                )));
+            }
+            Err(err) => return Err(err),
+        };
+        if chunk.is_empty() {
+            break;
+        }
+        response.extend_from_slice(chunk);
+        if answer_complete(&response) {
+            break;
+        }
+        if response.len() > limit {
+            return Err(Error::Protocol(format!("{url}: answer too large")));
+        }
+    }
+    Ok(response)
+}
+
+/// Whether `response` holds a whole answer by its own framing.
+fn answer_complete(response: &[u8]) -> bool {
+    let Ok(head) = parse_head(response) else {
+        return false;
+    };
+    // These never have a body.
+    if matches!(head.status, 204 | 304) {
+        return true;
+    }
+    if head.chunked {
+        dechunk(head.rest, false).is_some()
+    } else {
+        head.length.is_some_and(|length| head.rest.len() >= length)
+    }
 }
 
 /// `name=value&…`, escaped for a form or a URL query.
@@ -745,6 +776,53 @@ fn dechunk(mut data: &[u8], cut: bool) -> Option<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn answers_end_where_their_framing_says() {
+        let whole = b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}";
+        assert!(answer_complete(whole));
+        assert!(!answer_complete(&whole[..whole.len() - 1]));
+        assert!(!answer_complete(b"HTTP/1.1 200 OK\r\nContent-Len"));
+        let chunked = b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n";
+        assert!(answer_complete(chunked));
+        assert!(!answer_complete(&chunked[..chunked.len() - 7]));
+        assert!(answer_complete(b"HTTP/1.1 204 No Content\r\n\r\n"));
+        // Without framing, only the end of the connection ends it.
+        assert!(!answer_complete(b"HTTP/1.1 200 OK\r\n\r\n{}"));
+    }
+
+    /// A server that keeps the connection open after its answer, as one
+    /// whose close the network loses does, still answers at once.
+    #[test]
+    fn a_whole_answer_needs_no_close() {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let server = std::thread::spawn(move || {
+            use std::io::{Read, Write};
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request = [0; 4096];
+            let _ = stream.read(&mut request).unwrap();
+            stream
+                .write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 18\r\n\r\n{\"access_token\":1}")
+                .unwrap();
+            std::thread::sleep(Duration::from_secs(5));
+        });
+        let tls = Tls::insecure_for_local_tests();
+        let started = std::time::Instant::now();
+        let (status, body) = async_io::block_on(post_form(
+            &format!("http://127.0.0.1:{port}/token"),
+            &[("code", "c")],
+            &tls,
+            Duration::from_secs(3),
+        ))
+        .unwrap();
+        assert_eq!(
+            (status, body.as_slice()),
+            (200, &b"{\"access_token\":1}"[..])
+        );
+        assert!(started.elapsed() < Duration::from_secs(2));
+        server.join().unwrap();
+    }
 
     #[test]
     fn status_lines() {
