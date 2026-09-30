@@ -4383,7 +4383,10 @@ Copr and nixpkgs are later steps. The Flatpak's ID is the ID prefix
 daemon's names; it has no systemd unit, so D-Bus runs the daemon directly.
 The AppImage writes a user D-Bus activation file that runs the AppImage
 itself wherever it is, and its "Start Katna at login" entry names the
-AppImage. Snap's daemon is a user daemon activated by its D-Bus slot.
+AppImage. snapd's user daemons are experimental, so the Snap has no
+activation file; where the daemon's name has no owner and cannot be
+activated, Katna Mail and `katnactl` start the `katna-daemon` beside them
+(`katna_dbus::ensure_daemon`), as in an unpacked tarball.
 
 ### 21.2 Update channels and safe updates (partly built)
 

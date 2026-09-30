@@ -188,6 +188,7 @@ pub fn set(start: Option<Start>) -> io::Result<()> {
 pub fn start_service() -> ExitCode {
     let started = futures_lite::future::block_on(async {
         let connection = katna_dbus::session().await?;
+        katna_dbus::ensure_daemon(&connection).await;
         connection
             .call_method(
                 Some("org.freedesktop.DBus"),

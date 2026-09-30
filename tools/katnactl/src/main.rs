@@ -487,6 +487,7 @@ where
         let connection = katna_dbus::session()
             .await
             .map_err(|err| error(format!("session bus: {err}")))?;
+        katna_dbus::ensure_daemon(&connection).await;
         let pim = PimProxy::new(&connection).await?;
         f(pim).await
     })

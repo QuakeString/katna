@@ -29,36 +29,25 @@ apps:
     common-id: in.invenia.katna.Mail
     # "Start Katna at login" writes this file (apps/katna-mail/src/autostart.rs).
     autostart: in.invenia.katna.Mail.desktop
-    slots: [mail-dbus]
-    plugs:
+    # Katna Mail starts the background service beside it
+    # (katna_dbus::ensure_daemon): snapd's user daemons are experimental.
+    # So the service runs as this app and needs what it needs.
+    slots: &slots [daemon-dbus, mail-dbus]
+    plugs: &plugs
       - daemon-client
+      - mail-client
       - network
       - network-bind
       - network-status
       - home
       - removable-media
       - password-manager-service
-  # The background service: D-Bus starts it when Katna Mail or katnactl
-  # calls it, and systemd at login. It shows the tray icon and opens
-  # Katna Mail from it.
-  daemon:
-    command: usr/bin/katna-daemon
-    extensions: [gnome]
-    daemon: simple
-    daemon-scope: user
-    restart-condition: on-failure
-    activates-on: [daemon-dbus]
-    plugs:
-      - mail-client
-      - network
-      - network-bind
-      - network-status
-      - home
-      - password-manager-service
       - unity7
   katnactl:
     command: usr/bin/katnactl
-    plugs: [daemon-client, home]
+    extensions: [gnome]
+    slots: *slots
+    plugs: *plugs
 
 # Katna Mail and the service talk to each other over the session bus.
 slots:

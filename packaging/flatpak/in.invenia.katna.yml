@@ -32,6 +32,10 @@ finish-args:
 modules:
   - name: katna
     buildsystem: simple
+    # The binaries are already stripped release builds.
+    build-options:
+      no-debuginfo: true
+      strip: false
     sources:
       - type: archive
         path: katna-linux-x86_64.tar.gz

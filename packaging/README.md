@@ -201,8 +201,11 @@ sudo snap connect katna:mail-client katna:mail-dbus
 ```
 
 The store would make those connections itself once it approves them; a
-local install does not. `katna.katnactl` is the command-line tool. The
-service is a user daemon, started by D-Bus and at login.
+local install does not. `katna.katnactl` is the command-line tool. snapd's
+user daemons are still experimental, so the Snap has no D-Bus activation
+file: Katna Mail and `katnactl` start the service beside them when it is
+not running (`katna_dbus::ensure_daemon`), and "Start Katna at login"
+starts it through Katna Mail.
 
 ### Flatpak
 
@@ -227,4 +230,6 @@ katna-linux-x86_64/install.sh                            # into ~/.local
 sudo katna-linux-x86_64/install.sh --prefix /usr/local   # or for everyone
 ```
 
-`install.sh --uninstall` (with the same `--prefix`) removes it.
+`install.sh --uninstall` (with the same `--prefix`) removes it. Katna
+Mail also runs straight from the unpacked folder: with no activation file
+installed, it starts the `katna-daemon` beside it.

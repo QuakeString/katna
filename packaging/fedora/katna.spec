@@ -89,7 +89,7 @@ test "$(%{buildroot}%{_bindir}/katna-mail --version)" = "katna-mail %{version}"
 %{_bindir}/katna-mail
 %{_bindir}/katna-daemon
 %{_bindir}/katnactl
-%{_userunitdir}/*.service
+%{_prefix}/lib/systemd/user/*.service
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/applications/*.desktop
 %{_datadir}/krunner/dbusplugins/*.desktop
