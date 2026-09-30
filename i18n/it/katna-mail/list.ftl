@@ -14,11 +14,6 @@ tab-other = Altra
 tab-inbox = Posta in arrivo
 tab-newsletters = Newsletter
 tab-notifications = Notifiche
-tab-new = { $count ->
-    [one] { $count } nuovo
-    [many] { $count } nuovi
-   *[other] { $count } nuovi
-}
 tab-provider-other = ordinata da Katna
 
 ## Mail list: toolbar

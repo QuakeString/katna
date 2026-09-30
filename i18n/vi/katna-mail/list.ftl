@@ -14,7 +14,6 @@ tab-other = Khác
 tab-inbox = Hộp thư đến
 tab-newsletters = Bản tin
 tab-notifications = Thông báo
-tab-new = { $count } thư mới
 tab-provider-other = do Katna sắp xếp
 
 ## Mail list: toolbar

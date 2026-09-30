@@ -16,10 +16,6 @@ nav-account-unnamed = መለያ { $number }
 nav-all-accounts = ሁሉም መለያዎች
 nav-expand = አቃፊዎችን አሳይ
 nav-collapse = አቃፊዎችን ደብቅ
-nav-tab-new = { $count ->
-    [one] { $count } አዲስ
-   *[other] { $count } አዲስ
-}
 storage-used = ከ{ $total } ውስጥ { $percent }% ጥቅም ላይ ውሏል
 storage-used-detail = { $address }፦ ከ{ $total } ውስጥ { $used } ጥቅም ላይ ውሏል
 

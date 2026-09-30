@@ -14,7 +14,6 @@ tab-other = Diğer
 tab-inbox = Gelen Kutusu
 tab-newsletters = Bültenler
 tab-notifications = Bildirimler
-tab-new = { $count } yeni
 tab-provider-other = Katna tarafından sıralanır
 
 ## Mail list: toolbar

@@ -16,10 +16,6 @@ nav-account-unnamed = கணக்கு { $number }
 nav-all-accounts = எல்லாக் கணக்குகளும்
 nav-expand = ஃபோல்டர்களைக் காட்டு
 nav-collapse = ஃபோல்டர்களை மறை
-nav-tab-new = { $count ->
-    [one] { $count } புதியது
-   *[other] { $count } புதியவை
-}
 storage-used = { $total } இல் { $percent }% பயன்படுத்தப்பட்டுள்ளது
 storage-used-detail = { $address }: { $total } இல் { $used } பயன்படுத்தப்பட்டுள்ளது
 

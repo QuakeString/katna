@@ -14,7 +14,6 @@ tab-other = Sauran
 tab-inbox = Akwatin saƙo
 tab-newsletters = Wasiƙun labarai
 tab-notifications = Sanarwa
-tab-new = { $count } sababbi
 tab-provider-other = Katna ne ya tsara
 
 ## Mail list: toolbar

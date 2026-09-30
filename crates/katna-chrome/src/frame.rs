@@ -10,8 +10,9 @@ use gpui::{
     AnyElement, App, Bounds, BoxShadow, ClickEvent, Context, CursorStyle, Decorations, Div,
     FontWeight, Global, HitboxBehavior, Hsla, IntoElement, MouseButton, ParentElement, PathBuilder,
     Pixels, ResizeEdge, SharedString, Size, Styled, Tiling, TitlebarOptions, Window,
-    WindowAppearance, WindowBackgroundAppearance, WindowBounds, WindowButton, WindowButtonLayout,
-    WindowDecorations, WindowOptions, canvas, div, point, prelude::*, rgba, size,
+    WindowAppearance, WindowBackgroundAppearance, WindowButton, WindowButtonLayout,
+    WindowControlArea, WindowDecorations, WindowOptions, canvas, div, point, prelude::*, rgba,
+    size,
 };
 use katna_ui::px;
 use katna_ui::unpx;
@@ -43,7 +44,7 @@ impl Global for Look {}
 
 impl Look {
     /// Whether the compositor blurs what is behind a window (KWin's blur
-    /// effect). Elsewhere [`Look::blur`] has no effect.
+    /// effect, or Windows'). Elsewhere [`Look::blur`] has no effect.
     pub fn blur_available() -> bool {
         katna_ui::native::compositor_blur()
     }
@@ -52,6 +53,10 @@ impl Look {
 /// The margin, in logical pixels, around the visible frame of a window
 /// opened in `env`: its shadow and resize edges under CSD, none under SSD.
 pub(crate) fn surface_margin(env: &Environment) -> f32 {
+    // Windows draws the shadow and the resize edges of every window.
+    if cfg!(windows) {
+        return 0.0;
+    }
     match env.requested_decorations() {
         DecorationMode::Client if env.full_client_frame() => {
             ChromeTokens::new(env.preset(), false).shadow_inset
@@ -87,13 +92,12 @@ pub fn window_options(
         initial_size.height + px(2.0 * margin),
     );
     WindowOptions {
-        window_bounds: Some(WindowBounds::Windowed(Bounds::centered(
-            None,
-            surface_size,
-            cx,
-        ))),
+        window_bounds: Some(crate::placement::fitted(surface_size, cx)),
         titlebar: Some(TitlebarOptions {
             title: Some(title.into()),
+            // Windows leaves the title bar to Katna for its own frame. It is
+            // set when the window opens and cannot change after.
+            appears_transparent: hides_title_bar(env),
             ..Default::default()
         }),
         app_id: Some(app_id.to_owned()),
@@ -107,6 +111,12 @@ pub fn window_options(
         window_min_size: Some(MIN_WINDOW_SIZE),
         ..Default::default()
     }
+}
+
+/// Whether a window opened in `env` leaves the title bar to Katna on
+/// Windows, where GPUI decides that when the window opens.
+fn hides_title_bar(env: &Environment) -> bool {
+    cfg!(windows) && env.requested_decorations() == DecorationMode::Client
 }
 
 /// What the header bar (CSD) or toolbar (SSD) holds.
@@ -144,6 +154,9 @@ pub struct WindowChrome {
     blur_allowed: bool,
     /// The window is translucent and blurred.
     blurred: Cell<bool>,
+    /// Windows' own title bar is hidden and Katna's bar holds the window
+    /// buttons: Katna's frame on Windows, fixed when the window opened.
+    title_bar_hidden: bool,
 }
 
 impl WindowChrome {
@@ -162,7 +175,9 @@ impl WindowChrome {
         cx.observe_button_layout_changed(window, |_, _, cx| cx.notify())
             .detach();
         cx.observe_global::<Look>(|_, cx| cx.notify()).detach();
+        let title_bar_hidden = hides_title_bar(&env);
         Self {
+            title_bar_hidden,
             env: RefCell::new(env),
             title: title.into(),
             drag_pending: Rc::new(Cell::new(false)),
@@ -185,6 +200,18 @@ impl WindowChrome {
     /// The desktop and the frame asked for, as they are now.
     pub fn environment(&self) -> Environment {
         self.env.borrow().clone()
+    }
+
+    /// Whether the frame asked for differs from the one this window has
+    /// until it opens again: on Windows the frame is chosen when a window
+    /// opens.
+    pub fn frame_on_reopen(&self) -> bool {
+        hides_title_bar(&self.env.borrow()) != self.title_bar_hidden
+    }
+
+    /// Whether Katna's bar holds the window buttons.
+    fn draws_buttons(&self, window: &Window) -> bool {
+        self.title_bar_hidden || matches!(window.window_decorations(), Decorations::Client { .. })
     }
 
     /// Whether the window is translucent and blurred.
@@ -323,7 +350,7 @@ impl WindowChrome {
     /// side without buttons, and on both under server-side decorations.
     /// `bar_height` is [`Bar::height`].
     pub fn button_room(&self, bar_height: Option<f32>, window: &Window, cx: &App) -> (f32, f32) {
-        if !matches!(window.window_decorations(), Decorations::Client { .. }) {
+        if !self.draws_buttons(window) {
             return (0.0, 0.0);
         }
         let t = self.tokens(window);
@@ -386,7 +413,7 @@ impl WindowChrome {
                     .flex_col()
                     .bg(rgba(t.window_bg))
                     .text_color(rgba(t.fg))
-                    .child(self.bar(&t, false, bar, window, cx))
+                    .child(self.bar(&t, self.title_bar_hidden, bar, window, cx))
                     .child(div().flex_1().min_h_0().child(content))
             }
             Decorations::Client { tiling } => {
@@ -592,6 +619,7 @@ impl WindowChrome {
                 .children(end);
         }
 
+        let windows = self.title_bar_hidden;
         let layout = cx.button_layout().unwrap_or_else(default_button_layout);
         let controls = window.window_controls();
         let buttons = |side: &[Option<WindowButton>]| {
@@ -603,7 +631,7 @@ impl WindowChrome {
                     WindowButton::Maximize => controls.maximize,
                     WindowButton::Close => true,
                 })
-                .map(|b| window_button(t, b, window))
+                .map(|b| window_button(t, b, windows, window))
                 .collect::<Vec<_>>()
         };
         let left = buttons(&layout.left);
@@ -616,51 +644,61 @@ impl WindowChrome {
         let drag_out = self.drag_pending.clone();
         let drag_move = self.drag_pending.clone();
 
-        bar.on_mouse_down(MouseButton::Left, move |_, _, _| drag_down.set(true))
-            .on_mouse_up(MouseButton::Left, move |_, _, _| drag_up.set(false))
-            .on_mouse_down_out(move |_, _, _| drag_out.set(false))
-            .on_mouse_move(move |_, window, _| {
-                if drag_move.replace(false) {
-                    window.start_window_move();
-                }
-            })
-            .on_click(|e: &ClickEvent, window, _| {
-                if e.standard_click() && e.click_count() == 2 {
-                    window.zoom_window();
-                }
-            })
-            .on_mouse_down(MouseButton::Right, |e, window, _| {
-                window.show_window_menu(e.position)
-            })
-            .child(middle(center.unwrap_or_else(|| {
+        // On Windows the bar's empty space is the title bar to Windows
+        // (`window_control_area`), which moves, maximizes and snaps the
+        // window and opens its menu itself.
+        bar.when(!windows, |bar| {
+            bar.on_mouse_down(MouseButton::Left, move |_, _, _| drag_down.set(true))
+                .on_mouse_up(MouseButton::Left, move |_, _, _| drag_up.set(false))
+                .on_mouse_down_out(move |_, _, _| drag_out.set(false))
+                .on_mouse_move(move |_, window, _| {
+                    if drag_move.replace(false) {
+                        window.start_window_move();
+                    }
+                })
+                .on_click(|e: &ClickEvent, window, _| {
+                    if e.standard_click() && e.click_count() == 2 {
+                        window.zoom_window();
+                    }
+                })
+                .on_mouse_down(MouseButton::Right, |e, window, _| {
+                    window.show_window_menu(e.position)
+                })
+        })
+        .child(middle(center.unwrap_or_else(|| {
+            div()
+                .text_size(px(t.title_size))
+                .font_weight(FontWeight(t.title_weight as f32))
+                .text_color(rgba(title_color))
+                .child(self.title.clone())
+                .into_any_element()
+        })))
+        .when(!left.is_empty(), |b| {
+            b.child(
                 div()
-                    .text_size(px(t.title_size))
-                    .font_weight(FontWeight(t.title_weight as f32))
-                    .text_color(rgba(title_color))
-                    .child(self.title.clone())
-                    .into_any_element()
-            })))
-            .when(!left.is_empty(), |b| {
-                b.child(
-                    div()
-                        .flex()
-                        .gap(px(t.button_gap))
-                        .px(px(side))
-                        .children(left),
-                )
-            })
-            .children(start)
-            .child(div().flex_1())
-            .children(end)
-            .when(!right.is_empty(), |b| {
-                b.child(
-                    div()
-                        .flex()
-                        .gap(px(t.button_gap))
-                        .px(px(side))
-                        .children(right),
-                )
-            })
+                    .flex()
+                    .gap(px(t.button_gap))
+                    .px(px(side))
+                    .children(left),
+            )
+        })
+        .children(start)
+        .child(
+            div()
+                .flex_1()
+                .h_full()
+                .when(windows, |d| d.window_control_area(WindowControlArea::Drag)),
+        )
+        .children(end)
+        .when(!right.is_empty(), |b| {
+            b.child(
+                div()
+                    .flex()
+                    .gap(px(t.button_gap))
+                    .px(px(side))
+                    .children(right),
+            )
+        })
     }
 }
 
@@ -730,7 +768,14 @@ fn box_shadow(s: &Shadow) -> BoxShadow {
     }
 }
 
-fn window_button(t: &ChromeTokens, button: WindowButton, window: &Window) -> AnyElement {
+/// A window button; with `windows`, Windows presses it (and shows its
+/// snap layouts over Maximize).
+fn window_button(
+    t: &ChromeTokens,
+    button: WindowButton,
+    windows: bool,
+    window: &Window,
+) -> AnyElement {
     let icon = match button {
         WindowButton::Close => Icon::Close,
         WindowButton::Minimize => Icon::Minimize,
@@ -763,6 +808,13 @@ fn window_button(t: &ChromeTokens, button: WindowButton, window: &Window) -> Any
             WindowButton::Close => window.remove_window(),
             WindowButton::Minimize => window.minimize_window(),
             WindowButton::Maximize => window.zoom_window(),
+        })
+        .when(windows, |d| {
+            d.window_control_area(match button {
+                WindowButton::Close => WindowControlArea::Close,
+                WindowButton::Minimize => WindowControlArea::Min,
+                WindowButton::Maximize => WindowControlArea::Max,
+            })
         })
         .when(!is_close || t.close_fg_hover == fg, |d| {
             d.child(icon_canvas(icon, preset, fg, icon_size, stroke))

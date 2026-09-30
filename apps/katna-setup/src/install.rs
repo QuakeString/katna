@@ -445,10 +445,9 @@ fn stop(programs: &Path) {
     }
     // Only the processes started from this folder: another program may
     // run its own dbus-daemon.exe.
-    let folder = ps_quote(&programs.display().to_string());
     let script = format!(
-        "Get-Process | Where-Object {{ $_.Path -and $_.Path.StartsWith('{folder}\\', \
-         [StringComparison]::OrdinalIgnoreCase) -and $_.Id -ne {me} }} | Stop-Process -Force",
+        "{} | Where-Object {{ $_.Id -ne {me} }} | Stop-Process -Force",
+        running_from(programs),
         me = std::process::id()
     );
     let stopped = std::process::Command::new(system_program(POWERSHELL))
@@ -795,8 +794,10 @@ fn delete_passwords() {
 fn delete_passwords() {}
 
 /// Deletes the programs folder. When Windows' Apps settings uninstall
-/// Katna, Setup's own copy in that folder is running, so a short-lived
-/// PowerShell removes the folder once Setup has exited.
+/// Katna, Setup's own copy in that folder is running, and for everyone
+/// the user's Setup waits there for the administrator's, so a PowerShell
+/// removes the folder once no program runs from it any more: Setup's
+/// window may stay open on "Katna was removed" for a while.
 fn remove_programs(programs: &Path) -> io::Result<()> {
     // Only Katna's own folder: never one without Katna Mail in it.
     if !programs.join(MAIL_EXE).is_file() {
@@ -816,8 +817,14 @@ fn remove_programs(programs: &Path) -> io::Result<()> {
         use std::os::windows::process::CommandExt;
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;
         let script = format!(
-            "Start-Sleep -Seconds 2; Remove-Item -LiteralPath '{}' -Recurse -Force",
-            ps_quote(&programs.display().to_string())
+            "$until = (Get-Date).AddHours(1); \
+             while ((Get-Date) -lt $until -and ({running})) {{ Start-Sleep -Seconds 1 }}; \
+             foreach ($try in 1..10) {{ \
+             Start-Sleep -Seconds 1; \
+             Remove-Item -LiteralPath '{folder}' -Recurse -Force -ErrorAction SilentlyContinue; \
+             if (-not (Test-Path -LiteralPath '{folder}')) {{ break }} }}",
+            running = running_from(programs),
+            folder = ps_quote(&programs.display().to_string())
         );
         std::process::Command::new(system_program(POWERSHELL))
             .args(["-NoProfile", "-NonInteractive", "-Command", &script])
@@ -826,6 +833,16 @@ fn remove_programs(programs: &Path) -> io::Result<()> {
             .spawn()?;
     }
     Ok(())
+}
+
+/// A PowerShell pipeline listing the processes started from `folder`.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn running_from(folder: &Path) -> String {
+    format!(
+        "Get-Process | Where-Object {{ $_.Path -and $_.Path.StartsWith('{}\\', \
+         [StringComparison]::OrdinalIgnoreCase) }}",
+        ps_quote(&folder.display().to_string())
+    )
 }
 
 /// `s` inside a single-quoted PowerShell string. PowerShell also ends such
@@ -906,6 +923,12 @@ mod tests {
             _ => return None,
         };
         Some(at(path).into_os_string())
+    }
+
+    #[test]
+    fn finds_only_programs_inside_the_folder() {
+        let script = running_from(Path::new(r"C:\Kat'na\Katna"));
+        assert!(script.contains(r"StartsWith('C:\Kat''na\Katna\', "));
     }
 
     #[test]

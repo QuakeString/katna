@@ -16,7 +16,6 @@ nav-account-unnamed = ບັນຊີ { $number }
 nav-all-accounts = ທຸກບັນຊີ
 nav-expand = ສະແດງໂຟນເດີ
 nav-collapse = ເຊື່ອງໂຟນເດີ
-nav-tab-new = ໃໝ່ { $count }
 storage-used = ໃຊ້ໄປ { $percent }% ຈາກ { $total }
 storage-used-detail = { $address }: ໃຊ້ໄປ { $used } ຈາກ { $total }
 

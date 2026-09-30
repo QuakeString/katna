@@ -14,10 +14,6 @@ tab-other = Övrigt
 tab-inbox = Inkorgen
 tab-newsletters = Nyhetsbrev
 tab-notifications = Aviseringar
-tab-new = { $count ->
-    [one] { $count } nytt
-   *[other] { $count } nya
-}
 tab-provider-other = sorteras av Katna
 
 ## Mail list: toolbar

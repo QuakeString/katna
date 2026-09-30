@@ -14,7 +14,6 @@ tab-other = Òmíràn
 tab-inbox = Àpótí-ìwọlé
 tab-newsletters = Ìwé ìròyìn
 tab-notifications = Ìfitónilétí
-tab-new = { $count } tuntun
 tab-provider-other = Katna ló tò ó
 
 ## Mail list: toolbar

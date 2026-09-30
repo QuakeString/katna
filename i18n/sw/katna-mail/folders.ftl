@@ -16,10 +16,6 @@ nav-account-unnamed = Akaunti { $number }
 nav-all-accounts = Akaunti Zote
 nav-expand = Onyesha folda
 nav-collapse = Ficha folda
-nav-tab-new = { $count ->
-    [one] { $count } mpya
-   *[other] { $count } mpya
-}
 storage-used = Imetumika { $percent }% ya { $total }
 storage-used-detail = { $address }: imetumika { $used } ya { $total }
 

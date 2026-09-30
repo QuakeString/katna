@@ -16,10 +16,6 @@ nav-account-unnamed = ಖಾತೆ { $number }
 nav-all-accounts = ಎಲ್ಲಾ ಖಾತೆಗಳು
 nav-expand = ಫೋಲ್ಡರ್‌ಗಳನ್ನು ತೋರಿಸಿ
 nav-collapse = ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ
-nav-tab-new = { $count ->
-    [one] { $count } ಹೊಸದು
-   *[other] { $count } ಹೊಸವು
-}
 storage-used = { $total } ರಲ್ಲಿ { $percent }% ಬಳಸಲಾಗಿದೆ
 storage-used-detail = { $address }: { $total } ರಲ್ಲಿ { $used } ಬಳಸಲಾಗಿದೆ
 
