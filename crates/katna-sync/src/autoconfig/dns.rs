@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! SRV, MX and TXT lookups over UDP to the system's resolver
-//! (`/etc/resolv.conf`). Small on purpose: one question, no caching, no
-//! DNSSEC. The answers only pick which servers to try; the login then
+//! (`/etc/resolv.conf`, or the network adapters' settings on Windows).
+//! Small on purpose: one question, no caching, no DNSSEC. The answers only pick which servers to try; the login then
 //! goes over TLS to the name found.
 
 use std::{
@@ -39,15 +39,58 @@ pub struct Mx {
 }
 
 /// Name servers from `/etc/resolv.conf`, or none.
+#[cfg(not(windows))]
 pub fn system_resolvers() -> Vec<SocketAddr> {
     let Ok(conf) = std::fs::read_to_string("/etc/resolv.conf") else {
         return Vec::new();
     };
     conf.lines()
         .filter_map(|line| line.trim().strip_prefix("nameserver"))
-        .filter_map(|rest| rest.trim().split('%').next()?.parse::<IpAddr>().ok())
+        .filter_map(|rest| name_servers(rest).next())
         .map(|ip| SocketAddr::new(ip, 53))
         .collect()
+}
+
+/// Name servers of the network adapters: those set by hand first, then
+/// those from DHCP. Windows has no `/etc/resolv.conf`.
+#[cfg(windows)]
+pub fn system_resolvers() -> Vec<SocketAddr> {
+    use winreg::{RegKey, enums::HKEY_LOCAL_MACHINE};
+
+    let machine = RegKey::predef(HKEY_LOCAL_MACHINE);
+    let mut found: Vec<IpAddr> = Vec::new();
+    for value in ["NameServer", "DhcpNameServer"] {
+        for stack in ["Tcpip", "Tcpip6"] {
+            let path = format!(r"SYSTEM\CurrentControlSet\Services\{stack}\Parameters\Interfaces");
+            let Ok(interfaces) = machine.open_subkey(path) else {
+                continue;
+            };
+            for name in interfaces.enum_keys().flatten() {
+                let Ok(list) = interfaces
+                    .open_subkey(&name)
+                    .and_then(|key| key.get_value::<String, _>(value))
+                else {
+                    continue;
+                };
+                for ip in name_servers(&list) {
+                    if !found.contains(&ip) {
+                        found.push(ip);
+                    }
+                }
+            }
+        }
+    }
+    found
+        .into_iter()
+        .map(|ip| SocketAddr::new(ip, 53))
+        .collect()
+}
+
+/// Addresses in a list split by spaces or commas; a `%zone` is dropped.
+fn name_servers(list: &str) -> impl Iterator<Item = IpAddr> + '_ {
+    list.split([' ', ',', '\t'])
+        .filter_map(|word| word.split('%').next()?.parse::<IpAddr>().ok())
+        .filter(|ip| !ip.is_unspecified())
 }
 
 /// SRV records of `name`, best first (lowest priority, then highest weight).
@@ -275,6 +318,20 @@ fn read_name(packet: &[u8], mut at: usize) -> Option<(String, usize)> {
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
+
+    #[test]
+    fn name_server_lists() {
+        let ips: Vec<IpAddr> =
+            name_servers(" 192.168.1.1,8.8.8.8 fe80::1%12\t0.0.0.0 bogus").collect();
+        assert_eq!(
+            ips,
+            [
+                "192.168.1.1".parse::<IpAddr>().unwrap(),
+                "8.8.8.8".parse().unwrap(),
+                "fe80::1".parse().unwrap(),
+            ]
+        );
+    }
 
     /// A reply to `query` with the given records (type, data), each named
     /// by a pointer to the question.

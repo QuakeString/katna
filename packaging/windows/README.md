@@ -12,6 +12,8 @@ administrator rights, on Windows 10 (version 1903 or later) and 11.
 - `.github/workflows/windows-package.yml` runs that script and, on
   `main`, replaces the `windows-latest` pre-release with the new Setup.
   It runs only by hand for now (Actions > Windows package > Run workflow).
+  It builds with the `quick` profile (thin LTO) unless **Full build** is
+  ticked, which uses `release` as the Arch package does.
 - `katna.ico` is made from the hicolor PNGs by `make-ico.py`; run it again
   when the icon changes.
 

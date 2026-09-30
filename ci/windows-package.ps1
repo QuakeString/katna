@@ -16,10 +16,14 @@ if ($LASTEXITCODE -eq 0 -and $described) {
 $env:KATNA_VERSION = $version
 Write-Host "Katna $version"
 
+# KATNA_PROFILE=quick links faster for test builds (Cargo.toml).
+$cargoProfile = if ($env:KATNA_PROFILE) { $env:KATNA_PROFILE } else { "release" }
+$out = "target\$cargoProfile"
+
 # Two builds, as on Linux: the daemon and katnactl without GPUI's features.
-cargo build --locked --release -p katna-mail
+cargo build --locked --profile $cargoProfile -p katna-mail
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-cargo build --locked --release -p katna-daemon -p katnactl
+cargo build --locked --profile $cargoProfile -p katna-daemon -p katnactl
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & "$PSScriptRoot\windows-dbus.ps1"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -27,13 +31,13 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $payload = Join-Path $root "target\windows\payload"
 Remove-Item -Recurse -Force $payload -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $payload | Out-Null
-Copy-Item target\release\katna-mail.exe, target\release\katna-daemon.exe, target\release\katnactl.exe $payload
+Copy-Item "$out\katna-mail.exe", "$out\katna-daemon.exe", "$out\katnactl.exe" $payload
 Copy-Item target\dbus\* $payload
 Copy-Item packaging\windows\katna.ico $payload
 Copy-Item LICENSE "$payload\COPYING.txt"
 
 $env:KATNA_SETUP_PAYLOAD = $payload
-cargo build --locked --release -p katna-setup
+cargo build --locked --profile $cargoProfile -p katna-setup
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-Copy-Item target\release\katna-setup.exe target\windows\KatnaSetup.exe
+Copy-Item "$out\katna-setup.exe" target\windows\KatnaSetup.exe
 Get-ChildItem target\windows\KatnaSetup.exe
