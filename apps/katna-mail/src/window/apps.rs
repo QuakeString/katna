@@ -224,6 +224,8 @@ impl MailWindow {
         }
         let from = self.app;
         self.app = app;
+        // An event or task picked up on the Calendar stays where it was.
+        self.cancel_calendar_drags();
         // Each page shows its side column as it left it, without motion.
         let open = if self.page_side_open(app) { 1.0 } else { 0.0 };
         self.page_side_spring.snap(open);
