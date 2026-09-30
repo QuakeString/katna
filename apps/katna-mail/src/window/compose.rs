@@ -348,6 +348,9 @@ pub(super) struct Writing {
     /// Whether each account's mail server sends delivery receipts, once
     /// asked.
     delivery_receipts: std::collections::HashMap<AccountId, bool>,
+    /// When a file manager last opened a new message with files, which
+    /// the files that follow straight after join.
+    files_opened: Option<std::time::Instant>,
 }
 
 impl Writing {

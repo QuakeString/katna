@@ -688,6 +688,23 @@ fn register(
 
     katna_platform::mail_handler::register_in(&root, &mail)?;
 
+    // "Send with Katna Mail" on files and folders, for this user (the
+    // daemon adds each user's, with a submenu of the accounts when there
+    // are several), and Katna Mail in Send to.
+    katna_platform::file_menus::windows::apply(
+        &winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER),
+        &mail.display().to_string(),
+        &tr!("setup-file-menu-send"),
+        &[],
+    )?;
+    if let Some(path) = send_to_link() {
+        let mut link = mslnk::ShellLink::new(&mail).map_err(io::Error::other)?;
+        link.set_arguments(Some("--attach".to_owned()));
+        link.set_working_dir(Some(dir.display().to_string()));
+        link.set_icon_location(Some(icon.display().to_string()));
+        link.create_lnk(path).map_err(io::Error::other)?;
+    }
+
     // For everyone, the machine's Run key starts Katna for each user;
     // Katna Mail's own setting changes only the user's.
     let (key, _) = root.create_subkey(RUN_KEY)?;
@@ -723,9 +740,23 @@ fn register(
     Ok(())
 }
 
+/// Katna Mail in the user's Send to menu.
+#[cfg(windows)]
+fn send_to_link() -> Option<PathBuf> {
+    let data = PathBuf::from(std::env::var_os("APPDATA")?);
+    Some(data.join(r"Microsoft\Windows\SendTo").join(LINK))
+}
+
 #[cfg(windows)]
 fn unregister(layout: &Layout) {
     let root = root(layout.scope);
+    katna_platform::file_menus::windows::remove(&root);
+    katna_platform::file_menus::windows::remove(&winreg::RegKey::predef(
+        winreg::enums::HKEY_CURRENT_USER,
+    ));
+    if let Some(path) = send_to_link() {
+        let _ = std::fs::remove_file(path);
+    }
     for key in [
         UNINSTALL_KEY.to_owned(),
         app_id_key(),

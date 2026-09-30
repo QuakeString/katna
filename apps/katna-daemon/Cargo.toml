@@ -43,6 +43,10 @@ zbus.workspace = true
 [target.'cfg(unix)'.dependencies]
 oo7.workspace = true
 
+# The file managers' menu entry on Windows lives in the registry.
+[target.'cfg(windows)'.dependencies]
+winreg.workspace = true
+
 [build-dependencies]
 winresource.workspace = true
 
