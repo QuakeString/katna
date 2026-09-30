@@ -1949,7 +1949,7 @@ impl MailWindow {
             _ if !join.is_empty() => tr!("calendar-has-call"),
             CalendarSource::Google => tr!("calendar-add-meet"),
             CalendarSource::Microsoft => tr!("calendar-add-teams"),
-            CalendarSource::CalDav | CalendarSource::Local => return None,
+            CalendarSource::CalDav | CalendarSource::Zoho | CalendarSource::Local => return None,
         };
         let on = draft.add_call;
         let row = div()

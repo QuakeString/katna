@@ -6,6 +6,8 @@
 //! - [`google`]: Google Calendar API v3, incremental with sync tokens.
 //! - [`graph`]: Microsoft Graph (Outlook.com, Microsoft 365), read in full
 //!   each time and written only where an event's etag changed.
+//! - [`zoho`]: Zoho Calendar's REST API, read by date ranges when a
+//!   calendar's `ctag` changed.
 //! - [`caldav`]: CalDAV (RFC 4791) on the server of an IMAP account, when
 //!   it offers it; only events whose etag changed are downloaded.
 //!
@@ -23,6 +25,7 @@ pub mod caldav;
 pub mod edit;
 pub mod google;
 pub mod graph;
+pub mod zoho;
 
 #[cfg(test)]
 pub(crate) mod fake;

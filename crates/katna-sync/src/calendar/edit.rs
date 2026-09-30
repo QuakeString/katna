@@ -29,7 +29,9 @@ use katna_store::{
     },
 };
 
-use super::{CalendarError, caldav::CalDav, google::GoogleCalendar, graph::GraphCalendar};
+use super::{
+    CalendarError, caldav::CalDav, google::GoogleCalendar, graph::GraphCalendar, zoho::ZohoCalendar,
+};
 
 const DAY: i64 = 86_400;
 
@@ -177,7 +179,7 @@ fn new_remote_id(cal: &Calendar, key: &str) -> String {
             let dir = cal.remote_id.trim_end_matches('/');
             format!("{dir}/{key}.ics")
         }
-        CalendarSource::Microsoft => format!("{NEW_PREFIX}{key}"),
+        CalendarSource::Microsoft | CalendarSource::Zoho => format!("{NEW_PREFIX}{key}"),
         CalendarSource::Local => format!("local:{key}"),
     }
 }
@@ -862,6 +864,7 @@ pub enum Remote<'a> {
     Google(&'a GoogleCalendar),
     Microsoft(&'a GraphCalendar),
     CalDav(&'a CalDav),
+    Zoho(&'a ZohoCalendar),
 }
 
 /// Sends `step` to `remote`, the service of calendar `calendar`, and
@@ -876,6 +879,10 @@ pub async fn push(
         Remote::Google(google) => google.push(store, calendar, step).await,
         Remote::Microsoft(graph) => graph.push(store, calendar, step).await,
         Remote::CalDav(dav) => dav.push(store, calendar, step).await,
+        // Zoho calendars are listed read-only for now.
+        Remote::Zoho(_) => Err(CalendarError::Failed(crate::Error::Rejected(
+            "Katna can't change Zoho events yet".into(),
+        ))),
     }
 }
 

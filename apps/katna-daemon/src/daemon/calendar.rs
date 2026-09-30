@@ -269,7 +269,9 @@ impl Daemon {
             // The way the calendar came: its events' IDs are that service's.
             let method = match calendar.source {
                 CalendarSource::CalDav => Method::Dav,
-                CalendarSource::Google | CalendarSource::Microsoft => Method::Api,
+                CalendarSource::Google | CalendarSource::Microsoft | CalendarSource::Zoho => {
+                    Method::Api
+                }
                 CalendarSource::Local => continue,
             };
             let mut services = self.calendars.services.lock().await;
