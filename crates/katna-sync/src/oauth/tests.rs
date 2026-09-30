@@ -527,8 +527,8 @@ fn zoho_data_centres_by_domain() {
         "https://accounts.zoho.in.evil.example"
     ));
     assert_eq!(
-        "127.0.0.1:53710",
-        format!("127.0.0.1:{ZOHO_REDIRECT_PORT}"),
+        "localhost:53710",
+        format!("localhost:{ZOHO_REDIRECT_PORT}"),
         "Provider::new's redirect_host names the registered port"
     );
 }

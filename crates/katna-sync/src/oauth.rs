@@ -285,7 +285,7 @@ impl Provider {
                 scope: format!("{ZOHO_TASKS},{ZOHO_CALENDAR},{ZOHO_PROFILE}"),
                 consent: String::new(),
                 // The one port registered with Zoho: [`ZOHO_REDIRECT_PORT`].
-                redirect_host: "127.0.0.1:53710",
+                redirect_host: "localhost:53710",
                 tls,
             },
         })
