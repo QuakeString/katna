@@ -1739,3 +1739,30 @@ Visanduku vya kuteua sasa ni vidogo kidogo, vya ukubwa sawa na aikoni za
 nyota na lebo zilizo kando yake katika orodha ya barua. Bado ni rahisi
 kuvibofya kama awali, na tiki bado hujichora.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalenda za Zoho kupitia muunganisho wa Zoho wenyewe"
+text = """
+Zoho hutoa kalenda kwa programu nyingine kupitia mlango ambao mitandao
+mingi huuzuia, kwa hivyo baada ya Ingia kwa Zoho, Kalenda huzisoma
+kupitia API ya Zoho yenyewe badala yake. Matukio yako ya Zoho
+yanaonekana kando ya kalenda zako nyingine; kuyabadilisha kutoka Katna
+kutakuja baadaye.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Majukumu ya Zoho"
+text = """
+Ingia kwa Zoho kwenye akaunti ya Zoho na majukumu yake ya Zoho ToDo
+yanaonekana kwenye Majukumu, pande zote mbili: ongeza, hariri, weka
+alama au futa jukumu kwenye Katna nalo hubadilika kwenye Zoho pia.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Tiki hukaa katikati kwa ukubwa wowote"
+text = """
+Kiwango cha ukubwa katika Mipangilio > Mwonekano kikiwa juu ya 100%,
+tiki ya kisanduku cha kuteua ilikaa juu kidogo na kushoto. Kingo za
+visanduku vya kuteua na vitufe vya mviringo sasa hukua pamoja na kiwango,
+hivyo tiki hukaa katikati kwa kila ukubwa.
+"""

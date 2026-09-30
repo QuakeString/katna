@@ -33,6 +33,9 @@ const TOKEN_TIMEOUT: Duration = Duration::from_secs(30);
 /// An access token is renewed this long before it runs out.
 const EXPIRY_MARGIN: Duration = Duration::from_secs(120);
 
+/// Gmail over IMAP and SMTP. Google's consent page lets people untick it.
+pub const GOOGLE_MAIL: &str = "https://mail.google.com/";
+
 /// Google Drive, limited to the files Katna itself put there: for
 /// attachments too large to send by mail.
 pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file";
@@ -260,7 +263,7 @@ impl Provider {
                 // meetings Katna makes, and who signed in (address, name,
                 // picture) in the ID token.
                 scope: format!(
-                    "https://mail.google.com/ {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
+                    "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_CALENDAR} \
                      {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} \
                      {GOOGLE_TASKS} {GOOGLE_MEET} openid email profile"
                 ),

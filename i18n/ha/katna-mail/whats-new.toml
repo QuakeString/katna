@@ -1662,3 +1662,24 @@ title = "Akwatunan zaɓi daidai da gumaka"
 text = """
 Akwatunan zaɓi sun ɗan ƙanƙanta, girmansu daidai da gumakan tauraro da lakabi da ke kusa da su a jerin wasiƙu. Suna da sauƙin dannawa kamar dā, kuma alamarsu tana ci gaba da zana kanta.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalandojin Zoho ta haɗin Zoho na kansa"
+text = """
+Zoho yana ba wa sauran manhajoji kalandoji ta wata tashar port da hanyoyin sadarwa da yawa ke toshewa, don haka bayan Shiga da Zoho, Kalanda yana karanta su ta API na Zoho na kansa maimakon haka. Tarukan Zoho naka suna bayyana kusa da sauran kalandojinka; canza su daga Katna zai zo daga baya.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Ayyukan Zoho"
+text = """
+Shiga da Zoho a kan asusun Zoho, kuma ayyukansa na Zoho ToDo suna bayyana a Ayyuka, ta hanyoyi biyu: ƙara, gyara, yi alamar an kammala ko share wani aiki a Katna kuma zai canza a Zoho ma.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Alamar tana tsakiya a kowane girma"
+text = """
+Idan Saituna > Bayyanar > Girman nuni ya wuce 100%, alamar akwatin zaɓi
+tana ɗan hawa sama da hagu. Gefunan akwatunan zaɓi da maɓallan zagaye
+yanzu suna girma tare da girman nuni, don haka alamar tana tsakiya a
+kowane girma.
+"""

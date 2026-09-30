@@ -1836,3 +1836,29 @@ delle icone della stella e delle etichette accanto nell'elenco dei
 messaggi. Si selezionano con la stessa facilità e la spunta si disegna
 ancora.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Calendari Zoho tramite la connessione di Zoho"
+text = """
+Zoho fornisce i calendari alle altre app su una porta che molte reti
+bloccano, quindi dopo «Accedi con Zoho» Calendario li legge invece
+tramite l’API di Zoho. I tuoi eventi Zoho compaiono accanto agli altri
+calendari; modificarli da Katna arriverà più avanti.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Attività Zoho"
+text = """
+Accedi con Zoho su un account Zoho e le sue attività di Zoho ToDo
+compaiono in Attività, in entrambe le direzioni: aggiungi, modifica,
+spunta o elimina un’attività in Katna e cambia anche in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "La spunta al centro a ogni dimensione"
+text = """
+Con Impostazioni > Aspetto > Scala sopra il 100%, la spunta di una
+casella di controllo stava un po' in alto e a sinistra. I bordi delle
+caselle di controllo e dei pulsanti rotondi ora crescono con la scala,
+così la spunta è centrata a ogni dimensione.
+"""

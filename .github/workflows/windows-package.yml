@@ -4,20 +4,9 @@ name: Windows package
 # `windows-latest` pre-release with the new KatnaSetup.exe, so Windows users
 # install and update Katna without building it (packaging/windows/README.md).
 
+# Only when run by hand (Actions > Windows package > Run workflow) while
+# Katna is young; run on main, it publishes as before.
 on:
-  push:
-    branches: [main]
-    # As for the Arch package: docs-only pushes keep the current Setup.
-    paths:
-      - "**"
-      - "!docs/**"
-      - "docs/credits.json"
-  pull_request:
-    paths:
-      - "apps/katna-setup/**"
-      - "packaging/windows/**"
-      - "ci/windows-*.ps1"
-      - ".github/workflows/windows-package.yml"
   workflow_dispatch:
 
 concurrency:

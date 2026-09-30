@@ -1768,3 +1768,29 @@ Merkblokkies is 'n bietjie kleiner, so groot soos die ster- en etiketikone
 langsaan in die e-poslys. Hulle is net so maklik om te klik, en die
 regmerkie teken homself steeds in.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-kalenders oor Zoho se eie verbinding"
+text = """
+Zoho bedien kalenders aan ander toepassings op 'n poort wat baie
+netwerke blokkeer, dus lees Kalender hulle ná Meld aan met Zoho eerder
+deur Zoho se eie API. Jou Zoho-geleenthede wys langs jou ander
+kalenders; om hulle uit Katna te verander, kom later.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-take"
+text = """
+Meld aan met Zoho op 'n Zoho-rekening en sy Zoho ToDo-take wys in
+Take, albei rigtings: voeg 'n taak by, wysig, merk as voltooi of vee
+dit uit in Katna, en dit verander ook in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Regmerkies in die middel by enige grootte"
+text = """
+Met Instellings > Voorkoms > Skalering bo 100%, het 'n merkblokkie se
+regmerkie effens bo en links gesit. Die rande van merkblokkies en ronde
+knoppies groei nou saam met die skaal, sodat die regmerkie by elke grootte
+in die middel sit.
+"""

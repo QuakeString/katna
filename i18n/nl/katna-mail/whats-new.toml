@@ -1821,3 +1821,29 @@ Selectievakjes zijn iets kleiner, even groot als de ster- en
 labelpictogrammen ernaast in de e-maillijst. Ze zijn net zo makkelijk aan
 te klikken en het vinkje tekent zich nog steeds.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-agenda’s via Zoho’s eigen verbinding"
+text = """
+Zoho levert agenda’s aan andere apps via een poort die veel netwerken
+blokkeren, dus na “Aanmelden met Zoho” leest Agenda ze in plaats daarvan
+via Zoho’s eigen API. Je Zoho-afspraken staan naast je andere agenda’s;
+ze vanuit Katna wijzigen komt later.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-taken"
+text = """
+Kies “Aanmelden met Zoho” bij een Zoho-account en de taken uit Zoho ToDo
+verschijnen in Taken, in beide richtingen: voeg in Katna een taak toe,
+bewerk, vink af of verwijder hem, en hij verandert ook in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Vinkjes in het midden bij elke grootte"
+text = """
+Met Instellingen > Weergave > Schaal boven 100% stond het vinkje van een
+selectievakje iets naar linksboven. De randen van selectievakjes en
+ronde knoppen groeien nu mee met de schaal, zodat het vinkje bij elke
+grootte in het midden staat.
+"""

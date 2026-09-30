@@ -1807,3 +1807,29 @@ Pola wyboru są nieco mniejsze, mają ten sam rozmiar co ikony gwiazdki
 i etykiety obok nich na liście poczty. Klika się je równie łatwo,
 a znacznik nadal się rysuje.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalendarze Zoho przez własne połączenie Zoho"
+text = """
+Zoho udostępnia kalendarze innym aplikacjom na porcie, który blokuje
+wiele sieci, więc po „Zaloguj się przez Zoho” Kalendarz czyta je zamiast
+tego przez własne API Zoho. Twoje wydarzenia Zoho są widoczne obok
+innych kalendarzy; zmienianie ich w Katna pojawi się później.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zadania Zoho"
+text = """
+Zaloguj się przez Zoho na koncie Zoho, a jego zadania z Zoho ToDo
+pojawią się w Zadaniach, w obie strony: dodaj, edytuj, odhacz lub usuń
+zadanie w Katna, a zmieni się też w Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Znacznik na środku przy każdym rozmiarze"
+text = """
+Przy skalowaniu powyżej 100% (Ustawienia > Wygląd > Skalowanie) znacznik
+w polu wyboru był nieco przesunięty w górę i w lewo. Krawędzie pól
+wyboru i okrągłych przycisków rosną teraz razem ze skalą, więc znacznik
+jest na środku przy każdym rozmiarze.
+"""

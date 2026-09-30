@@ -1831,3 +1831,29 @@ Las casillas son un poco más pequeñas, del mismo tamaño que los iconos de
 estrella y etiqueta de al lado en la lista de correo. Son igual de fáciles
 de pulsar, y su marca se sigue dibujando.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Calendarios de Zoho por la conexión propia de Zoho"
+text = """
+Zoho ofrece los calendarios a otras apps por un puerto que muchas redes
+bloquean, así que tras Iniciar sesión con Zoho, Calendario los lee por
+la API propia de Zoho. Tus eventos de Zoho aparecen junto a tus otros
+calendarios; cambiarlos desde Katna llegará más adelante.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tareas de Zoho"
+text = """
+Inicia sesión con Zoho en una cuenta de Zoho y sus tareas de Zoho ToDo
+aparecen en Tareas, en ambos sentidos: añade, edita, marca como
+completada o elimina una tarea en Katna y también cambia en Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Marcas centradas a cualquier tamaño"
+text = """
+Con Ajustes > Apariencia > Escala por encima del 100 %, la marca de una
+casilla quedaba un poco arriba y a la izquierda. Los bordes de las
+casillas y los botones redondos crecen ahora con la escala, así que la
+marca queda centrada a cualquier tamaño.
+"""
