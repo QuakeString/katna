@@ -2,6 +2,9 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+# The entry Setup adds to Explorer's right-click menu on files and folders
+# (under Show more options on Windows 11): a new message with them attached.
+setup-file-menu-send = Send with Katna Mail
 setup-tagline = Fast, private email that lives on your computer.
 setup-update-where = Updates Katna Mail in { $path }. Your mail, settings and shortcuts stay as they are.
 setup-for = Install for

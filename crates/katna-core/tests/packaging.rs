@@ -193,6 +193,24 @@ fn search_provider_names_the_provider() {
     assert_eq!(value(&text, "Version"), Some("2"));
 }
 
+/// "Send with Katna Mail" in Dolphin: files and folders, local only, in the
+/// menu itself rather than under Actions, starting `katna-mail --attach`
+/// (the name is `katna_platform::file_menus::service_menu_file`, which
+/// the daemon's per-user copy with the accounts replaces).
+#[test]
+fn dolphin_menu_attaches_the_files() {
+    let text = read("kio", &format!("{MAIL_APP_ID}.SendFiles.desktop"));
+    assert_eq!(value(&text, "Type"), Some("Service"));
+    assert_eq!(value(&text, "MimeType"), Some("all/all;"));
+    assert_eq!(value(&text, "X-KDE-Protocols"), Some("file"));
+    assert_eq!(value(&text, "X-KDE-Priority"), Some("TopLevel"));
+    assert_eq!(value(&text, "Name"), Some("Send with Katna Mail"));
+    assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
+    assert_eq!(value(&text, "Exec"), Some("katna-mail --attach %F"));
+    let nautilus = read("nautilus", "katna-mail.py");
+    assert!(nautilus.contains("\"katna-mail\", \"--attach\""));
+}
+
 /// Other packaging files (`packaging/*/*`) use the IDs only through file
 /// names (the PKGBUILD installs with globs), so they never need changing.
 /// Subdirectories are makepkg output and are not checked.
@@ -205,6 +223,7 @@ fn prefix_only_in_checked_files() {
         format!("krunner/{MAIL_APP_ID}.desktop"),
         format!("gnome-shell/{MAIL_APP_ID}.search-provider.ini"),
         format!("polkit/{UPDATE_ACTION}.policy"),
+        format!("kio/{MAIL_APP_ID}.SendFiles.desktop"),
     ];
     for dir in fs::read_dir(packaging()).unwrap() {
         let dir = dir.unwrap().path();

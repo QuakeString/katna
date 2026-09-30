@@ -299,6 +299,7 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            Request::Attach { from, paths } => self.open_with_files(from, paths, window, cx),
             // The app may reopen on another page: the mail is on Mail.
             Request::ShowMessage(id) => {
                 self.show_page(RailApp::Mail, window, cx);

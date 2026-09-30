@@ -3048,6 +3048,18 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   set it (`katna_platform::mimeapps`, in the user's `mimeapps.list` and any
   desktop-specific list that names another app). Plasma and GNOME read
   these files. Under Flatpak this needs the OpenURI portal instead (later).
+- **Send with Katna Mail** in the file managers' right-click menus on files
+  and folders runs `katna-mail --attach [--from ADDRESS] FILE…`: a new
+  message with them attached, a folder as a zip of it; a running app gets
+  it as the `attach` action, and files arriving within two seconds join the
+  same message (Explorer starts one process per file). With several mail
+  accounts the entry is a submenu of them (`katna_platform::file_menus`).
+  Dolphin: the package's service menu in `/usr/share/kio/servicemenus`,
+  and the daemon's copy with the submenu in the user's
+  `~/.local/share/kio/servicemenus` (same name, so it wins) while there are
+  several accounts. GNOME Files: a nautilus-python extension that reads
+  `send-menu.json`, which the daemon writes in Katna's data folder. The
+  daemon rewrites both at start and when accounts change.
 - **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
   Message, Settings, Help) with `com.canonical.dbusmenu` at
   `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their
@@ -4942,6 +4954,7 @@ menu.
 | SNI tray, badge on the launcher | notification-area icon with the same menu and the unread count drawn on it (`tray-icon` on a `winit` loop). A taskbar overlay badge needs COM calls the workspace's `unsafe_code = "forbid"` rules out, so it waits for a safe wrapper |
 | freedesktop notifications | toasts, under the AppUserModelID Setup registers: the daemon serves `org.freedesktop.Notifications` on Katna's bus itself (`katna_platform::toasts`), so `katna-notify` is unchanged |
 | XDG mimeapps (mailto) | `Katna.Mailto` under `HKCU\Software\Classes`, with Capabilities so Katna is listed in Settings > Default apps. Windows only lets people pick the default there, so Katna's "Make default" opens that page |
+| file manager menus (§15.2) | Explorer's `*\shell\KatnaMail.Send` and `Directory\shell\KatnaMail.Send` under `HKCU\Software\Classes`, one entry from Setup, rewritten by the daemon with an `ExtendedSubCommandsKey` submenu when there are several accounts. Windows 11 shows it under Show more options (its short menu needs a packaged app's `IExplorerCommand`); Setup also puts Katna Mail in Send to |
 | print portal | the PDF opens in the default PDF app to print from there |
 | "Open with" portal | Windows' Open with dialog |
 | KRunner, GNOME search | no third-party results in Start search; a PowerToys Run plugin later |
