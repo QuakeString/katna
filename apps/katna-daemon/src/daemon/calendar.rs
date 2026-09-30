@@ -419,6 +419,15 @@ impl Daemon {
             );
         }
         let now = unix_now();
+        // A password Zoho account before Sign in with Zoho: Zoho's CalDAV
+        // refuses Katna (it answers 400, or its port is blocked), so it is
+        // not asked every round, unless it worked for this account before.
+        if password_zoho(account, settings)
+            && settings.linked.is_none()
+            && methods::remembered(store, account.id, Data::Calendar, now) != Some(Method::Dav)
+        {
+            return ((calendar_state::NONE, String::new()), false);
+        }
         // What to show when no way works: the most useful reason.
         let mut shown = (calendar_state::NONE, String::new());
         let mut order = methods::order(store, account.id, Data::Calendar, provider, now);
@@ -564,13 +573,7 @@ fn zoho_status(
     (state, detail): (&'static str, String),
 ) -> (&'static str, String) {
     let zoho = OAuthProvider::Zoho.as_str();
-    let is_zoho = settings.oauth.is_none()
-        && (is_zoho_host(&account.address)
-            || settings
-                .imap
-                .as_ref()
-                .is_some_and(|imap| is_zoho_host(&imap.host)));
-    if !is_zoho || state == calendar_state::OK {
+    if !password_zoho(account, settings) || state == calendar_state::OK {
         return (state, detail);
     }
     match &settings.linked {
@@ -583,6 +586,16 @@ fn zoho_status(
         }
         Some(_) => (state, detail),
     }
+}
+
+/// A Zoho account that logs in with a password, not a Zoho sign-in.
+fn password_zoho(account: &Account, settings: &AccountSettings) -> bool {
+    settings.oauth.is_none()
+        && (is_zoho_host(&account.address)
+            || settings
+                .imap
+                .as_ref()
+                .is_some_and(|imap| is_zoho_host(&imap.host)))
 }
 
 fn unix_now() -> i64 {

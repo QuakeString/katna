@@ -203,6 +203,11 @@ impl Pictures {
                 page
             }
             Err(err) => {
+                // A site whose certificate is refused answered all the
+                // same: not asked again until the answer is old.
+                if matches!(err, Error::Tls(_)) {
+                    *reached = true;
+                }
                 tracing::debug!(url, %err, "page not read");
                 None
             }
@@ -216,6 +221,11 @@ impl Pictures {
                 body
             }
             Err(err) => {
+                // A site whose certificate is refused answered all the
+                // same: not asked again until the answer is old.
+                if matches!(err, Error::Tls(_)) {
+                    *reached = true;
+                }
                 tracing::debug!(url, %err, "picture not fetched");
                 None
             }
