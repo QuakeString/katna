@@ -102,6 +102,8 @@ pub(crate) struct NewMailNotices {
     events: Mutex<HashMap<u32, Alarm>>,
     /// Snoozed event reminders and when they show again.
     snoozed: Mutex<Vec<Alarm>>,
+    /// Notes that mail was archived from a notification, for their Undo.
+    archived: Mutex<HashMap<u32, Shown>>,
 }
 
 impl NewMailNotices {
@@ -119,6 +121,7 @@ impl NewMailNotices {
             tokens: Mutex::default(),
             events: Mutex::default(),
             snoozed: Mutex::default(),
+            archived: Mutex::default(),
         })
     }
 
@@ -394,15 +397,20 @@ impl NewMailNotices {
             Closed(u32),
         }
         loop {
+            // The server sends a click's token just before its action.
+            // Both wait in their streams by the time the action is read,
+            // so the token is taken first; read the other way round, the
+            // action went out without it and the window could not come
+            // forward on Wayland.
             let next = async {
-                let signal = actions.next().await?;
-                let args = signal.args().ok()?;
-                Some(Got::Action(args.id, args.action_key.to_owned()))
-            }
-            .or(async {
                 let signal = tokens.next().await?;
                 let args = signal.args().ok()?;
                 Some(Got::Token(args.id, args.activation_token.to_owned()))
+            }
+            .or(async {
+                let signal = actions.next().await?;
+                let args = signal.args().ok()?;
+                Some(Got::Action(args.id, args.action_key.to_owned()))
             })
             .or(async {
                 let signal = closed.next().await?;
@@ -429,6 +437,7 @@ impl NewMailNotices {
                     }
                 }
                 Got::Closed(id) => {
+                    notices.archived.lock().unwrap().remove(&id);
                     notices.events.lock().unwrap().remove(&id);
                     daemon.updates().take_notice(id);
                     notices.shown.lock().unwrap().remove(&id);
@@ -496,6 +505,35 @@ impl NewMailNotices {
                     }
                     notices.close(vec![id]).await;
                 }
+                Got::Action(id, key) if notices.archived.lock().unwrap().contains_key(&id) => {
+                    let Some(archived) = notices.archived.lock().unwrap().remove(&id) else {
+                        continue;
+                    };
+                    if key == action::UNDO {
+                        tracing::info!(id, "undo archive from a notification");
+                        let inbox =
+                            daemon
+                                .store()
+                                .folders(archived.account)
+                                .ok()
+                                .and_then(|folders| {
+                                    folders
+                                        .into_iter()
+                                        .find(|f| f.role == Some(FolderRole::Inbox))
+                                        .map(|f| f.id)
+                                });
+                        let undone = match inbox {
+                            Some(inbox) => daemon
+                                .move_messages(&archived.messages, inbox)
+                                .map_err(|e| e.to_string()),
+                            None => Err("the account has no inbox".to_owned()),
+                        };
+                        if let Err(err) = undone {
+                            tracing::warn!(%err, "could not undo an archive");
+                        }
+                    }
+                    notices.close(vec![id]).await;
+                }
                 Got::Action(id, key) => {
                     let Some(shown) = notices.shown.lock().unwrap().remove(&id) else {
                         continue;
@@ -506,9 +544,13 @@ impl NewMailNotices {
                         action::MARK_READ => daemon
                             .set_flags(&shown.messages, MessageFlags::SEEN, MessageFlags::empty())
                             .map_err(|e| e.to_string()),
-                        action::ARCHIVE => daemon
-                            .archive_messages(&shown.messages)
-                            .map_err(|e| e.to_string()),
+                        action::ARCHIVE => match daemon.archive_messages(&shown.messages) {
+                            Ok(()) => {
+                                notices.confirm_archived(&daemon, shown.clone()).await;
+                                Ok(())
+                            }
+                            Err(err) => Err(err.to_string()),
+                        },
                         action::OPEN => {
                             notices.open(shown.messages[0], false, token).await;
                             Ok(())
@@ -525,6 +567,30 @@ impl NewMailNotices {
                     notices.close(vec![id]).await;
                 }
             }
+        }
+    }
+
+    /// Says in a notification that `shown`'s mail was archived, with an
+    /// Undo that puts it back in the inbox.
+    async fn confirm_archived(&self, daemon: &Daemon, shown: Shown) {
+        let subject = match shown.messages.as_slice() {
+            [one] => daemon
+                .store()
+                .messages_by_id(&[*one])
+                .ok()
+                .and_then(|m| m.into_iter().next())
+                .map(|m| m.subject),
+            _ => None,
+        };
+        match self
+            .notifier
+            .archived(subject.as_deref(), shown.messages.len())
+            .await
+        {
+            Ok(id) => {
+                self.archived.lock().unwrap().insert(id, shown);
+            }
+            Err(err) => tracing::warn!(%err, "could not say that mail was archived"),
         }
     }
 

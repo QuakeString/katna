@@ -59,6 +59,7 @@ mod mail_providers;
 mod meeting;
 mod nav;
 mod nav_menu;
+mod notched;
 mod notes;
 mod onboarding;
 mod popovers;

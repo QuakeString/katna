@@ -7,7 +7,7 @@
 //! (Plasma, GNOME Shell, mako, dunst, …). So far: new-mail notifications
 //! with Open, Reply all, Mark as read and Archive, reminders (snooze,
 //! follow-up) with Open, Mark as read and Archive, and event reminders
-//! with Join and Snooze.
+//! with Join and Snooze, and a note with Undo after Archive.
 
 use std::collections::HashMap;
 
@@ -31,12 +31,17 @@ pub mod action {
     pub const SNOOZE: &str = "snooze";
     /// On a task's reminder: tick the task off.
     pub const DONE: &str = "done";
+    /// On the note that mail was archived from a notification: put it
+    /// back in the inbox.
+    pub const UNDO: &str = "undo";
 }
 
 /// At most this many messages are listed in a grouped notification.
 const LISTED: usize = 4;
 /// Longest preview of a single message's text, in characters.
 const PREVIEW_CHARS: usize = 160;
+/// How long the note that mail was archived stays, in milliseconds.
+const ARCHIVED_SHOWN_MS: i32 = 8000;
 
 #[zbus::proxy(
     interface = "org.freedesktop.Notifications",
@@ -403,6 +408,39 @@ impl Notifier {
                 &actions,
                 hints,
                 0,
+            )
+            .await
+    }
+
+    /// Says, quietly and for a few seconds, that mail was archived from
+    /// a notification: `subject` for one message, else how many, with
+    /// Undo. Returns its ID.
+    pub async fn archived(&self, subject: Option<&str>, count: usize) -> zbus::Result<u32> {
+        let body = match subject {
+            Some(subject) if count == 1 && !subject.trim().is_empty() => escape(subject),
+            Some(_) if count == 1 => tr!("notify-no-subject"),
+            _ => escape(&tr!("notify-archived-count", count = count)),
+        };
+        let undo = tr!("notify-undo");
+        let actions = [action::UNDO, undo.as_str()];
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("email")),
+            ("urgency", Value::U8(0)),
+            ("suppress-sound", Value::Bool(true)),
+            // Gone from the history once it closes: it only confirms.
+            ("transient", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                &tr!("notify-archived"),
+                &body,
+                &actions,
+                hints,
+                ARCHIVED_SHOWN_MS,
             )
             .await
     }

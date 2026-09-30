@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See a day's plans from the Year view"
+text = """
+In the Calendar's Year view, rest the pointer on a day with a dot to see
+its events and tasks in a small popover beside it, each with an icon
+saying what it is and its time. Click one to open it, or the day's name
+to open the day. On a phone, tap the day.
+"""
