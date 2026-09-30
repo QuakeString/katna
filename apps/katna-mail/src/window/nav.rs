@@ -1058,9 +1058,16 @@ impl MailWindow {
             th.text
         };
         let bold = bold && (selected || unread > 0);
+        // A folded line's arrow shows only while the pointer is over the
+        // line, as the list's stars do; an open line keeps its arrow, and
+        // so do the keys' line and a phone, which has no pointer.
+        let arrow_rests = !self.nav_cursor_on(ix) && !self.layout.shape.is_phone();
         let chevron = chevron.map(|expanded| {
             div()
                 .id(("nav-chevron", ix))
+                .when(arrow_rests && !expanded, |d| {
+                    d.opacity(0.0).group_hover(NAV_PILL, |s| s.opacity(1.0))
+                })
                 .absolute()
                 // In the pill's rounded end, centred on it, so its hover
                 // circle keeps an even gap to the pill's edge.
@@ -1082,6 +1089,7 @@ impl MailWindow {
         // label stay where they were.
         let row = div()
             .id(("nav-row", ix))
+            .group(NAV_PILL)
             .relative()
             .h(px(NAV_ROW_HEIGHT))
             .w(px(NAV_WIDTH - NAV_ROW_END - NAV_ROW_INSET))
@@ -1546,6 +1554,8 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
 
 /// The key context of the folder pane while it has the keys.
 const NAV_CONTEXT: &str = "Navigation";
+/// The hover group of a folder's line, for its arrow.
+const NAV_PILL: &str = "nav-pill";
 
 /// The folder pane by keyboard, as in Thunderbird, Outlook and KDE's
 /// apps: F6 or Tab gives it the keys; Up and Down go through its lines and
