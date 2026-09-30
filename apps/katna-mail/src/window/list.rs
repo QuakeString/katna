@@ -71,10 +71,10 @@ const TOP_ROW_LEFT: f32 = 152.0;
 const TOP_ROW_LEFT_CHECKED: f32 = 340.0;
 const TOP_ROW_RIGHT: f32 = 185.0;
 const TABS_ROW_PAD: f32 = 12.0;
-/// A phone's list bar with the tabs in it: the room before them, and the
-/// room for the More button after them.
-const PHONE_TABS_LEFT: f32 = 8.0;
-const PHONE_TABS_RIGHT: f32 = 48.0;
+/// A phone's list bar with the tabs in it: the room on each side, and the
+/// room the More button at the end of their pill takes.
+const PHONE_TABS_SIDE: f32 = 8.0;
+const PHONE_TABS_MORE: f32 = TAB_SPACING + TAB_HEIGHT + TABS_INSET;
 
 /// Where the inbox tabs go (see [`MailWindow::tabs_fit`]).
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -665,20 +665,36 @@ impl MailWindow {
             })
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         // The tabs take the place of the title, which would only repeat
-        // the open tab's name, and Refresh goes into the More menu.
+        // the open tab's name, and Refresh goes into the More menu, whose
+        // button ends the tabs' pill.
         if self.phone_bar_tabs() {
             let fit = self.tabs_fit();
+            let more = more
+                .size(px(TAB_HEIGHT))
+                .rounded_full()
+                .ml(px(TAB_SPACING));
             return toolbar(th)
-                .pl(px(PHONE_TABS_LEFT))
+                .px(px(PHONE_TABS_SIDE))
+                .justify_center()
                 .child(
                     div()
-                        .id("phone-tabs")
-                        .flex_1()
                         .min_w_0()
-                        .overflow_x_scroll()
-                        .child(self.render_tabs(fit, th, cx)),
+                        .h(px(TABS_HEIGHT))
+                        .pr(px(TABS_INSET))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .rounded_full()
+                        .bg(rgba(th.search))
+                        .child(
+                            div()
+                                .id("phone-tabs")
+                                .min_w_0()
+                                .overflow_x_scroll()
+                                .child(self.render_tabs(fit, th, cx)),
+                        )
+                        .child(self.with_menu(more, Menu::ListMore, th, cx)),
                 )
-                .child(self.with_menu(more, Menu::ListMore, th, cx))
                 .into_any_element();
         }
         toolbar(th)
@@ -1573,7 +1589,7 @@ impl MailWindow {
         let width = self.list_width();
         let full = self.tabs_full_width();
         if self.layout.shape.is_phone() && self.checked.is_empty() {
-            return if full <= width - PHONE_TABS_LEFT - PHONE_TABS_RIGHT {
+            return if full <= width - 2.0 * PHONE_TABS_SIDE - PHONE_TABS_MORE {
                 TabsFit::Row
             } else {
                 TabsFit::Icons
