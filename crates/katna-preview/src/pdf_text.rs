@@ -37,11 +37,9 @@ impl TextLine {
 }
 
 /// A page's lines of text, in the order the page draws them.
-pub(crate) fn lines(page: &Page<'_>) -> Vec<TextLine> {
-    let (w, h) = page.render_dimensions();
-    let transform = page.initial_transform(true);
-    let [a, b, c, d, e, f] = transform.as_coeffs();
-    let transform = Affine::new([a, b, c, d, e, f].map(f64::from));
+/// `transform` goes from the page's own coordinates to points as shown,
+/// `(w, h)` the page's size as shown.
+pub(crate) fn lines(page: &Page<'_>, transform: Affine, (w, h): (f32, f32)) -> Vec<TextLine> {
     let cache = InterpreterCache::new();
     let mut context = Context::new(
         transform,

@@ -53,6 +53,7 @@ mod contact_labels;
 mod contacts;
 mod contacts_import;
 mod drive;
+mod keyring;
 mod linked;
 mod meet;
 mod notes;
@@ -278,6 +279,10 @@ pub struct Daemon {
     task_sync_wake: (Sender<()>, Receiver<()>),
     /// Each account's last task sync result, for the Tasks page.
     tasks_status: Mutex<HashMap<AccountId, tasks::Status>>,
+    /// Accounts that wait for the keyring to be unlocked ([`keyring`]).
+    keyring_waiting: Mutex<std::collections::HashSet<AccountId>>,
+    /// Tells [`keyring::run`] that an account waits.
+    keyring_wake: (Sender<()>, Receiver<()>),
 }
 
 /// A refresh token that replaced the account's old one.
@@ -340,6 +345,8 @@ impl Daemon {
             updates: crate::updates::Updates::default(),
             task_sync_wake: async_channel::bounded(1),
             tasks_status: Mutex::default(),
+            keyring_waiting: Mutex::default(),
+            keyring_wake: async_channel::bounded(1),
         });
         Ok((daemon, receiver))
     }
@@ -388,9 +395,20 @@ impl Daemon {
     pub async fn start(self: &Arc<Self>) -> Result<(), CommandError> {
         let accounts = self.store().accounts()?;
         tracing::info!(accounts = accounts.len(), "starting");
-        for account in accounts {
-            self.start_account(&account).await;
-        }
+        smol::spawn(keyring::run(
+            Arc::downgrade(self),
+            self.keyring_wake.1.clone(),
+        ))
+        .detach();
+        // In the background: at login the keyring may ask to be unlocked,
+        // and nothing else waits for that answer.
+        let daemon = self.clone();
+        smol::spawn(async move {
+            for account in accounts {
+                daemon.start_account(&account).await;
+            }
+        })
+        .detach();
         self.start_outbox()?;
         self.start_calendars();
         smol::spawn(sign_in::save_rotated(
@@ -1006,6 +1024,8 @@ impl Daemon {
             Some(id) => vec![self.account(id)?],
             None => self.store().accounts()?,
         };
+        // The user asks for it: a locked keyring may ask them again.
+        self.secrets.ask_again();
         // "Try again" looks for the calendars from scratch.
         self.recheck_calendars(accounts.iter().map(|a| a.id));
         self.contacts_recheck
@@ -1608,9 +1628,19 @@ impl Daemon {
         if let Some(old) = old {
             stop(account.id, old).await;
         }
-        match self.connector(account).await {
+        let connector = self.connector(account).await;
+        // The keyring may have kept it waiting while the daemon stopped.
+        if self.closing.load(Ordering::SeqCst) || self.resetting.load(Ordering::SeqCst) {
+            return;
+        }
+        match connector {
             Ok(Some(link)) => self.spawn_worker(account.id, link),
             Ok(None) => self.set_status(account.id, Status::new(state::NOT_SYNCED, "")),
+            // A dismissed unlock prompt is not a wrong password.
+            Err(detail) if self.secrets.declined() => {
+                tracing::info!(account = %account.id, %detail, "waiting for the keyring");
+                self.wait_for_keyring(account.id);
+            }
             Err(detail) => {
                 tracing::warn!(account = %account.id, %detail, "not syncing");
                 self.set_status(account.id, Status::new(state::AUTH_FAILED, detail));
@@ -1684,6 +1714,7 @@ impl Daemon {
         // Ends when the worker does and drops its event sender.
         smol::spawn(self.clone().forward(id, received)).detach();
         self.set_status(id, Status::new(state::CONNECTING, ""));
+        self.keyring_waiting.lock().unwrap().remove(&id);
         self.workers().insert(id, Running { handle, task });
     }
 

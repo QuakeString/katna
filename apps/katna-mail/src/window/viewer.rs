@@ -4,8 +4,9 @@
 //! or document shown over the mail, like webmail's preview. A dark bar on
 //! top names the file and offers Save and "Open with" (the desktop's list
 //! of apps); arrows at the sides go through
-//! the message's other attachments; a pill at the foot zooms (and shows
-//! the PDF page, in a box that takes a page number to go to, Ctrl+G).
+//! the message's other attachments; the middle of the bar (a pill at the
+//! foot on a phone) zooms, turns a PDF's pages and shows the PDF page, in
+//! a box that takes a page number to go to, Ctrl+G.
 //! Escape closes it.
 //!
 //! Decoding happens off the UI thread (`katna_preview`). PDF pages are
@@ -34,6 +35,7 @@ use gpui::{
     rgba, uniform_list,
 };
 use katna_i18n::tr;
+use katna_preview::image::{Frame, RgbaImage};
 use katna_preview::pdf::{self, Document, TextLine};
 use katna_preview::{Kind, Picture, document, picture, sheet, slides, text};
 use katna_render::AttachmentFile;
@@ -63,6 +65,12 @@ const PAGE_GAP: f32 = 16.0;
 /// Pages this far from the screen keep their bitmaps.
 const KEEP_PAGES: usize = 2;
 const BAR_HEIGHT: f32 = 64.0;
+/// From this width the page box, zoom and turning sit in the top bar; the
+/// first for a PDF, the second for zoom alone.
+const BAR_CONTROLS_PDF: f32 = 900.0;
+const BAR_CONTROLS: f32 = 640.0;
+/// Below this width the foot pill drops the word "Page" to fit a phone.
+const COMPACT_CONTROLS: f32 = 440.0;
 const LINE_SCROLL: f32 = 48.0;
 
 // The viewer is dark in light and dark themes alike, like a photo viewer.
@@ -499,6 +507,57 @@ impl Viewer {
         }
     }
 
+    /// Turns the PDF's pages a quarter turn, keeping the page on show.
+    /// Pages already drawn are turned at once; marks turn with them.
+    fn rotate(&mut self, clockwise: bool, cx: &mut Context<Self>) {
+        if !matches!(self.content, Content::Pdf(_)) {
+            return;
+        }
+        self.finish_typing(true, cx);
+        let Content::Pdf(pdf) = &self.content else {
+            return;
+        };
+        // The page the box shows.
+        let count = pdf.doc.pages();
+        let went = self
+            .went
+            .filter(|&(_, y)| (unpx(self.scroll.offset().y) - y).abs() < 0.5);
+        let page = match went {
+            Some((page, _)) => page,
+            None => self.current_page(count),
+        }
+        .min(count.saturating_sub(1));
+        let Content::Pdf(pdf) = &mut self.content else {
+            return;
+        };
+        let old = pdf.doc.clone();
+        let doc = Arc::new(old.turned(old.turn() + if clockwise { 1 } else { 3 }));
+        self.markup.marks.turn(clockwise, |p| old.page_size(p));
+        self.markup.stroke_cancel();
+        // A page being drawn the old way is not wanted now.
+        self.drawing = None;
+        for (_, image) in pdf.pages.values_mut() {
+            let turned = turn_bitmap(image, clockwise);
+            self.released.push(std::mem::replace(image, turned));
+        }
+        pdf.doc = doc.clone();
+        pdf.text.clear();
+        self.text.clear();
+        self.text.set_all(None);
+        pdf._reading = None;
+        let reading = self.read_pdf_text(doc.clone(), cx);
+        let z = pdf_fit(&doc, self.frame.0) * ZOOMS[self.zoom];
+        let top: f32 = (0..page).map(|p| doc.page_size(p).1 * z + PAGE_GAP).sum();
+        if let Content::Pdf(pdf) = &mut self.content {
+            pdf._reading = Some(reading);
+            pdf.z = z;
+        }
+        // Past the end is pulled back when the pages are laid out.
+        self.scroll.set_offset(gpui::point(px(0.0), px(-top)));
+        self.went = Some((page, -top));
+        cx.notify();
+    }
+
     /// Scrolls the PDF so `page` (from 0) starts just below the top bar.
     fn go_to_page(&mut self, page: usize, cx: &mut Context<Self>) {
         let Content::Pdf(pdf) = &self.content else {
@@ -568,6 +627,10 @@ impl Viewer {
                 "z" if shift => self.redo_mark(cx),
                 "y" => self.redo_mark(cx),
                 "z" => self.undo_mark(cx),
+                "r" => {
+                    self.rotate(!shift, cx);
+                    true
+                }
                 _ => false,
             };
             if done {
@@ -674,6 +737,20 @@ impl Viewer {
             .ok();
         });
         self.drawing = Some((page, task));
+    }
+}
+
+/// `image` (drawn BGRA) turned a quarter turn.
+fn turn_bitmap(image: &Arc<RenderImage>, clockwise: bool) -> Arc<RenderImage> {
+    let size = image.size(0);
+    let pixels = image.as_bytes(0).and_then(|bytes| {
+        RgbaImage::from_raw(size.width.0 as u32, size.height.0 as u32, bytes.to_vec())
+    });
+    match pixels {
+        Some(pixels) => Arc::new(RenderImage::new([Frame::new(
+            katna_preview::pdf::turn_image(pixels, if clockwise { 1 } else { 3 }),
+        )])),
+        None => image.clone(),
     }
 }
 
@@ -1046,6 +1123,40 @@ impl Render for Viewer {
             }
         }
 
+        let zoomable = matches!(
+            self.content,
+            Content::Pdf(_)
+                | Content::Bitmap(..)
+                | Content::Drawn(..)
+                | Content::Text(..)
+                | Content::Sheet(_)
+                | Content::Document(_)
+        );
+        // Wide enough: pages, zoom and turning sit in the middle of the top
+        // bar, off the page. Narrower (a phone), they float at the foot.
+        let in_bar = self.frame.0
+            >= if pages.is_some() {
+                BAR_CONTROLS_PDF
+            } else {
+                BAR_CONTROLS
+            };
+        let controls = zoomable.then(|| self.controls(pages, zoom, goto_focused, &th, cx));
+        let (bar_controls, foot_controls) = if in_bar {
+            (controls, None)
+        } else {
+            (None, controls)
+        };
+        // With the controls in the middle both sides share the rest evenly,
+        // so the controls sit centred; without, the name takes it all.
+        let side_group = |grow: bool| {
+            div()
+                .when(grow, |d| d.flex_1().min_w_0())
+                .when(!grow, |d| d.flex_none())
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+        };
         let top_bar = div()
             .absolute()
             .top_0()
@@ -1060,85 +1171,88 @@ impl Render for Viewer {
             .occlude()
             .bg(rgba(BAR))
             .child(
-                bar_button("viewer-close", "back", &th)
-                    .on_click(cx.listener(|this, _, _, cx| this.close(cx))),
-            )
-            .child(kind_badge(
-                item.as_ref().map(|i| i.kind).unwrap_or(Kind::Other),
-                22.0,
-            ))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .flex()
-                    .flex_col()
+                side_group(true)
+                    .child(
+                        bar_button("viewer-close", "back", &th)
+                            .on_click(cx.listener(|this, _, _, cx| this.close(cx))),
+                    )
+                    .child(kind_badge(
+                        item.as_ref().map(|i| i.kind).unwrap_or(Kind::Other),
+                        22.0,
+                    ))
                     .child(
                         div()
-                            .truncate()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(INK))
-                            .child(name),
-                    )
-                    .when_some(item.as_ref(), |d, item| {
-                        d.child(div().text_size(px(12.0)).text_color(rgba(INK_DIM)).child(
-                            if many {
-                                format!(
-                                    "{} · {} of {}",
-                                    format::size(item.size),
-                                    self.current + 1,
-                                    self.items.len()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .child(
+                                div()
+                                    .truncate()
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(INK))
+                                    .child(name),
+                            )
+                            .when_some(item.as_ref(), |d, item| {
+                                d.child(
+                                    div()
+                                        .truncate()
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(INK_DIM))
+                                        .child(if many {
+                                            format!(
+                                                "{} · {} of {}",
+                                                format::size(item.size),
+                                                self.current + 1,
+                                                self.items.len()
+                                            )
+                                        } else {
+                                            format::size(item.size)
+                                        }),
                                 )
-                            } else {
-                                format::size(item.size)
-                            },
-                        ))
-                    }),
+                            }),
+                    ),
             )
-            .when(
-                self.file.is_some() && matches!(self.content, Content::Pdf(_)),
-                |d| d.child(self.markup_button(&th, cx)),
-            )
-            .when(self.file.is_some(), |d| {
-                let save = if self.saves_marks() {
-                    bar_button_tip(
-                        "viewer-save",
-                        "download",
-                        tr!("viewer-save-marked-tip").into(),
-                        &th,
+            .children(bar_controls)
+            .child(
+                side_group(in_bar)
+                    .justify_end()
+                    .when(
+                        self.file.is_some() && matches!(self.content, Content::Pdf(_)),
+                        |d| d.child(self.markup_button(&th, cx)),
                     )
-                } else {
-                    bar_button("viewer-save", "download", &th)
-                };
-                d.when(self.can_reply && self.saves_marks(), |d| {
-                    d.child(
-                        bar_button_tip(
-                            "viewer-reply-marked",
-                            "reply",
-                            tr!("viewer-reply-marked-tip").into(),
-                            &th,
+                    .when(self.file.is_some(), |d| {
+                        let save = if self.saves_marks() {
+                            bar_button_tip(
+                                "viewer-save",
+                                "download",
+                                tr!("viewer-save-marked-tip").into(),
+                                &th,
+                            )
+                        } else {
+                            bar_button("viewer-save", "download", &th)
+                        };
+                        d.when(self.can_reply && self.saves_marks(), |d| {
+                            d.child(
+                                bar_button_tip(
+                                    "viewer-reply-marked",
+                                    "reply",
+                                    tr!("viewer-reply-marked-tip").into(),
+                                    &th,
+                                )
+                                .on_click(cx.listener(|this, _, _, cx| this.reply_marked(cx))),
+                            )
+                        })
+                        .child(
+                            bar_button("viewer-open", "open-external", &th)
+                                .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
                         )
-                        .on_click(cx.listener(|this, _, _, cx| this.reply_marked(cx))),
-                    )
-                })
-                .child(
-                    bar_button("viewer-open", "open-external", &th)
-                        .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
-                )
-                .child(save.on_click(cx.listener(|this, _, _, cx| this.save(cx))))
-            });
+                        .child(save.on_click(cx.listener(|this, _, _, cx| this.save(cx))))
+                    }),
+            );
 
-        let zoomable = matches!(
-            self.content,
-            Content::Pdf(_)
-                | Content::Bitmap(..)
-                | Content::Drawn(..)
-                | Content::Text(..)
-                | Content::Sheet(_)
-                | Content::Document(_)
-        );
-        let foot = zoomable.then(|| {
+        let foot = foot_controls.map(|controls| {
             div()
                 .absolute()
                 .bottom(px(24.0))
@@ -1147,96 +1261,12 @@ impl Render for Viewer {
                 .flex()
                 .justify_center()
                 .child(
-                    div()
-                        .id("viewer-foot")
+                    controls
                         .occlude()
                         .h(px(44.0))
                         .px(px(6.0))
-                        .flex()
-                        .flex_row()
-                        .items_center()
-                        .gap(px(2.0))
                         .rounded_full()
-                        .bg(rgba(PILL))
-                        .text_size(px(13.0))
-                        .text_color(rgba(INK))
-                        .when_some(pages, |d, (_, count)| {
-                            d.child(
-                                div()
-                                    .id("viewer-page")
-                                    .pl(px(12.0))
-                                    .pr(px(10.0))
-                                    .flex()
-                                    .items_center()
-                                    .gap(px(6.0))
-                                    .tooltip(tip(tr!("viewer-go-to-page-tip"), &th))
-                                    .child(tr!("viewer-page"))
-                                    .child(
-                                        div()
-                                            .w(px(46.0))
-                                            .h(px(28.0))
-                                            .px(px(7.0))
-                                            .flex()
-                                            .items_center()
-                                            .rounded(px(6.0))
-                                            .border_1()
-                                            .border_color(if goto_focused {
-                                                rgba(th.accent)
-                                            } else {
-                                                rgba(0x00000000)
-                                            })
-                                            .bg(rgba(0xffffff1f))
-                                            .capture_any_mouse_down(cx.listener(
-                                                |this, _, window, cx| {
-                                                    this.goto_click = !this
-                                                        .goto
-                                                        .focus_handle(cx)
-                                                        .is_focused(window);
-                                                },
-                                            ))
-                                            .on_mouse_up(
-                                                MouseButton::Left,
-                                                cx.listener(|this, _, _, cx| {
-                                                    if std::mem::take(&mut this.goto_click) {
-                                                        this.goto.update(cx, |input, cx| {
-                                                            input.select_all_text(cx)
-                                                        });
-                                                    }
-                                                }),
-                                            )
-                                            .child(self.goto.clone()),
-                                    )
-                                    .child(tr!("viewer-page-count", count = count)),
-                            )
-                            .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff33)))
-                        })
-                        .child(
-                            bar_button("viewer-zoom-out", "zoom-out", &th)
-                                .size(px(36.0))
-                                .on_click(cx.listener(|this, _, _, cx| {
-                                    this.set_zoom(this.zoom.saturating_sub(1), cx)
-                                })),
-                        )
-                        .child(
-                            div()
-                                .id("viewer-zoom-reset")
-                                .w(px(52.0))
-                                .flex()
-                                .justify_center()
-                                .cursor_pointer()
-                                .tooltip(tip("Fit to window (0)", &th))
-                                .on_click(
-                                    cx.listener(|this, _, _, cx| this.set_zoom(fit_step(), cx)),
-                                )
-                                .child(format!("{:.0}%", zoom * 100.0)),
-                        )
-                        .child(
-                            bar_button("viewer-zoom-in", "zoom-in", &th)
-                                .size(px(36.0))
-                                .on_click(
-                                    cx.listener(|this, _, _, cx| this.set_zoom(this.zoom + 1, cx)),
-                                ),
-                        ),
+                        .bg(rgba(PILL)),
                 )
         });
 
@@ -1303,6 +1333,132 @@ impl Render for Viewer {
                 Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
+    }
+}
+
+impl Viewer {
+    /// The page box, zoom and (for a PDF) turning: in the top bar, or in a
+    /// pill at the foot when the window is narrow.
+    fn controls(
+        &self,
+        pages: Option<(usize, usize)>,
+        zoom: f32,
+        goto_focused: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<gpui::Div> {
+        let th = *th;
+        let compact = self.frame.0 < COMPACT_CONTROLS;
+        let separator = || {
+            div()
+                .mx(px(4.0))
+                .w(px(1.0))
+                .h(px(20.0))
+                .bg(rgba(0xffffff33))
+        };
+        div()
+            .id("viewer-controls")
+            .flex_none()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
+            .text_size(px(13.0))
+            .text_color(rgba(INK))
+            .when_some(pages, |d, (_, count)| {
+                d.child(
+                    div()
+                        .id("viewer-page")
+                        .pl(px(if compact { 6.0 } else { 12.0 }))
+                        .pr(px(10.0))
+                        .flex()
+                        .items_center()
+                        .gap(px(6.0))
+                        .tooltip(tip(tr!("viewer-go-to-page-tip"), &th))
+                        // A phone keeps the number and drops the word.
+                        .when(!compact, |d| d.child(tr!("viewer-page")))
+                        .child(
+                            div()
+                                .w(px(46.0))
+                                .h(px(28.0))
+                                .px(px(7.0))
+                                .flex()
+                                .items_center()
+                                .rounded(px(6.0))
+                                .border_1()
+                                .border_color(if goto_focused {
+                                    rgba(th.accent)
+                                } else {
+                                    rgba(0x00000000)
+                                })
+                                .bg(rgba(0xffffff1f))
+                                .capture_any_mouse_down(cx.listener(|this, _, window, cx| {
+                                    this.goto_click =
+                                        !this.goto.focus_handle(cx).is_focused(window);
+                                }))
+                                .on_mouse_up(
+                                    MouseButton::Left,
+                                    cx.listener(|this, _, _, cx| {
+                                        if std::mem::take(&mut this.goto_click) {
+                                            this.goto
+                                                .update(cx, |input, cx| input.select_all_text(cx));
+                                        }
+                                    }),
+                                )
+                                .child(self.goto.clone()),
+                        )
+                        .child(tr!("viewer-page-count", count = count)),
+                )
+                .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff33)))
+            })
+            .child(
+                bar_button("viewer-zoom-out", "zoom-out", &th)
+                    .size(px(36.0))
+                    .on_click(
+                        cx.listener(|this, _, _, cx| {
+                            this.set_zoom(this.zoom.saturating_sub(1), cx)
+                        }),
+                    ),
+            )
+            .child(
+                div()
+                    .id("viewer-zoom-reset")
+                    .w(px(52.0))
+                    .flex()
+                    .justify_center()
+                    .cursor_pointer()
+                    .tooltip(tip("Fit to window (0)", &th))
+                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(fit_step(), cx)))
+                    .child(format!("{:.0}%", zoom * 100.0)),
+            )
+            .child(
+                bar_button("viewer-zoom-in", "zoom-in", &th)
+                    .size(px(36.0))
+                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(this.zoom + 1, cx))),
+            )
+            .when(pages.is_some(), |d| {
+                d.child(separator())
+                    .child(
+                        bar_button_tip(
+                            "viewer-rotate-ccw",
+                            "rotate-ccw",
+                            tr!("viewer-rotate-anticlockwise-tip").into(),
+                            &th,
+                        )
+                        .size(px(36.0))
+                        .on_click(cx.listener(|this, _, _, cx| this.rotate(false, cx))),
+                    )
+                    .child(
+                        bar_button_tip(
+                            "viewer-rotate-cw",
+                            "rotate-cw",
+                            tr!("viewer-rotate-clockwise-tip").into(),
+                            &th,
+                        )
+                        .size(px(36.0))
+                        .on_click(cx.listener(|this, _, _, cx| this.rotate(true, cx))),
+                    )
+            })
     }
 }
 

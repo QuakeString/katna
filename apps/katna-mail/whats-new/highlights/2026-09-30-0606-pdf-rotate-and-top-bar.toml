@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Turn PDF pages"
+text = """
+The PDF viewer can now turn pages clockwise or anticlockwise (Ctrl+R and
+Ctrl+Shift+R), and a marked copy saves the way you turned it. The page
+number and zoom moved into the top bar, so nothing covers the page.
+"""

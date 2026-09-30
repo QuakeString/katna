@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Waits for your wallet at login"
+text = """
+If KWallet or GNOME Keyring is still locked when Katna starts, and its
+unlock window is closed, your accounts no longer show a wrong password.
+They wait, and start syncing on their own as soon as you unlock the
+wallet, with no need to quit Katna. Sync now asks to unlock it again.
+"""

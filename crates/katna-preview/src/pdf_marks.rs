@@ -51,10 +51,12 @@ fn allowed(doc: &lopdf::Document) -> Result<(), SaveError> {
     Ok(())
 }
 
-/// `bytes` with `marks` added; `transforms` has one per page.
+/// `bytes` with `marks` added; `transforms` has one per page. `turns`
+/// is empty, or each page's new `/Rotate` in degrees.
 pub(crate) fn write(
     bytes: &[u8],
     transforms: &[Transform],
+    turns: &[i64],
     marks: &[Mark],
 ) -> Result<Vec<u8>, SaveError> {
     let prev = lopdf::Document::load_mem(bytes).map_err(|_| SaveError::Invalid)?;
@@ -91,6 +93,19 @@ pub(crate) fn write(
             .and_then(Object::as_dict_mut)
             .map_err(|_| SaveError::Invalid)?;
         dict.set("Annots", Object::Array(annots));
+    }
+    for (&number, &id) in &pages {
+        let Some(&degrees) = turns.get(number as usize - 1) else {
+            continue;
+        };
+        doc.opt_clone_object_to_new_document(id)
+            .map_err(|_| SaveError::Invalid)?;
+        let dict = doc
+            .new_document
+            .get_object_mut(id)
+            .and_then(Object::as_dict_mut)
+            .map_err(|_| SaveError::Invalid)?;
+        dict.set("Rotate", Object::Integer(degrees));
     }
     let mut out = Vec::with_capacity(bytes.len() + 4096);
     doc.save_to(&mut out).map_err(|_| SaveError::Invalid)?;

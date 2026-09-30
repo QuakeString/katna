@@ -5,6 +5,7 @@
 use std::sync::Arc;
 
 use hayro::hayro_interpret::InterpreterSettings;
+use hayro::hayro_syntax::page::Rotation;
 use hayro::hayro_syntax::{LoadPdfError, Pdf};
 use hayro::vello_cpu::color::palette::css::WHITE;
 use hayro::vello_cpu::kurbo::Affine;
@@ -31,9 +32,13 @@ pub enum Error {
 /// An open PDF. It can be shared between threads; each [`Document::render`]
 /// draws one page.
 pub struct Document {
-    pdf: Pdf,
-    /// Each page's size in points (1/72 inch), rotation applied.
+    pdf: Arc<Pdf>,
+    /// Each page's size in points (1/72 inch), as the file draws it.
+    base: Vec<(f32, f32)>,
+    /// Each page's size in points, [`Document::turn`] applied.
     sizes: Vec<(f32, f32)>,
+    /// Quarter turns clockwise the pages are shown at, 0 to 3.
+    turn: u8,
 }
 
 impl Document {
@@ -53,7 +58,52 @@ impl Document {
         if sizes.is_empty() {
             return Err(Error::Invalid);
         }
-        Ok(Self { pdf, sizes })
+        Ok(Self {
+            pdf: Arc::new(pdf),
+            base: sizes.clone(),
+            sizes,
+            turn: 0,
+        })
+    }
+
+    /// Quarter turns clockwise the pages are shown at, 0 to 3.
+    pub fn turn(&self) -> u8 {
+        self.turn
+    }
+
+    /// The same PDF shown turned `turn` quarter turns clockwise (from how
+    /// the file draws it). Sizes, drawing, text and saved marks all follow.
+    pub fn turned(&self, turn: u8) -> Self {
+        let turn = turn % 4;
+        let sizes = self
+            .base
+            .iter()
+            .map(|&(w, h)| if turn % 2 == 1 { (h, w) } else { (w, h) })
+            .collect();
+        Self {
+            pdf: self.pdf.clone(),
+            base: self.base.clone(),
+            sizes,
+            turn,
+        }
+    }
+
+    /// From points as the file draws page `page` to points as shown.
+    fn turning(&self, page: usize) -> Affine {
+        let (w, h) = self.base.get(page).copied().unwrap_or((612.0, 792.0));
+        let (w, h) = (f64::from(w), f64::from(h));
+        match self.turn {
+            1 => Affine::new([0.0, 1.0, -1.0, 0.0, h, 0.0]),
+            2 => Affine::new([-1.0, 0.0, 0.0, -1.0, w, h]),
+            3 => Affine::new([0.0, -1.0, 1.0, 0.0, 0.0, w]),
+            _ => Affine::IDENTITY,
+        }
+    }
+
+    /// Page `page`'s transform from its own coordinates to points as shown.
+    fn shown(&self, page: &hayro::hayro_syntax::page::Page<'_>, ix: usize) -> Affine {
+        let [a, b, c, d, e, f] = page.initial_transform(true).as_coeffs();
+        self.turning(ix) * Affine::new([a, b, c, d, e, f].map(f64::from))
     }
 
     /// The number of pages; at least one.
@@ -71,7 +121,7 @@ impl Document {
     pub fn render(&self, page: usize, scale: f32) -> Option<RgbaImage> {
         let pages = self.pdf.pages();
         let pdf_page = pages.get(page)?;
-        let (w, h) = self.page_size(page);
+        let (w, h) = self.base.get(page).copied()?;
         let scale = fit_scale(w, h, scale);
         let settings = RenderSettings {
             x_scale: scale,
@@ -86,7 +136,8 @@ impl Document {
             return None;
         }
         // On an opaque white page premultiplied and straight alpha agree.
-        RgbaImage::from_raw(width, height, pixmap.data_as_u8_slice().to_vec())
+        let image = RgbaImage::from_raw(width, height, pixmap.data_as_u8_slice().to_vec())?;
+        Some(turn_image(image, self.turn))
     }
 }
 
@@ -94,11 +145,11 @@ impl Document {
     /// The text of page `page`, line by line, with where each character
     /// is drawn, in points from the page's top left.
     pub fn text(&self, page: usize) -> Vec<TextLine> {
-        self.pdf
-            .pages()
-            .get(page)
-            .map(crate::pdf_text::lines)
-            .unwrap_or_default()
+        let pages = self.pdf.pages();
+        let Some(pdf_page) = pages.get(page) else {
+            return Vec::new();
+        };
+        crate::pdf_text::lines(pdf_page, self.shown(pdf_page, page), self.page_size(page))
     }
 
     /// Whether marks can be saved into this PDF: not when it is encrypted
@@ -108,21 +159,33 @@ impl Document {
     }
 
     /// A copy of the file with `marks` added as annotations, the original
-    /// bytes unchanged at its start.
+    /// bytes unchanged at its start. Turned pages are saved turned, so
+    /// the copy opens the way it was marked.
     pub fn with_marks(&self, marks: &[crate::markup::Mark]) -> Result<Vec<u8>, SaveError> {
-        let transforms: Vec<_> = self
-            .pdf
-            .pages()
+        let pages = self.pdf.pages();
+        // From points as shown back to the page's own.
+        let transforms: Vec<_> = pages
             .iter()
-            .map(|page| {
-                // From points as drawn back to the page's own.
-                let [a, b, c, d, e, f] = page.initial_transform(true).as_coeffs();
-                Affine::new([a, b, c, d, e, f].map(f64::from))
-                    .inverse()
-                    .as_coeffs()
-            })
+            .enumerate()
+            .map(|(ix, page)| self.shown(page, ix).inverse().as_coeffs())
             .collect();
-        crate::pdf_marks::write(self.pdf.data().as_ref(), &transforms, marks)
+        let turns: Vec<i64> = if self.turn == 0 {
+            Vec::new()
+        } else {
+            pages
+                .iter()
+                .map(|page| {
+                    let own = match page.rotation() {
+                        Rotation::None => 0,
+                        Rotation::Horizontal => 90,
+                        Rotation::Flipped => 180,
+                        Rotation::FlippedHorizontal => 270,
+                    };
+                    (own + 90 * i64::from(self.turn)) % 360
+                })
+                .collect()
+        };
+        crate::pdf_marks::write(self.pdf.data().as_ref(), &transforms, &turns, marks)
     }
 }
 
@@ -134,6 +197,16 @@ pub fn thumbnail(bytes: Vec<u8>, width: u32, height: u32) -> Option<RgbaImage> {
     let page = doc.render(0, width as f32 / w)?;
     let height = height.min(page.height());
     Some(image::imageops::crop_imm(&page, 0, 0, page.width().min(width), height).to_image())
+}
+
+/// `image` turned `turn` quarter turns clockwise.
+pub fn turn_image(image: RgbaImage, turn: u8) -> RgbaImage {
+    match turn % 4 {
+        1 => image::imageops::rotate90(&image),
+        2 => image::imageops::rotate180(&image),
+        3 => image::imageops::rotate270(&image),
+        _ => image,
+    }
 }
 
 /// `scale`, made smaller so a `w` × `h` point page stays within the limits.
@@ -193,6 +266,30 @@ mod tests {
         // The square is at the bottom left, the rest is white paper.
         assert_eq!(page.get_pixel(10, 390).0, [0, 0, 0, 255]);
         assert_eq!(page.get_pixel(300, 10).0, [255, 255, 255, 255]);
+    }
+
+    #[test]
+    fn turned_pages_draw_and_save_turned() {
+        let doc = Document::open(square_pdf()).unwrap().turned(1);
+        assert_eq!(doc.page_size(0), (792.0, 612.0));
+        let page = doc.render(0, 0.5).unwrap();
+        assert_eq!(page.dimensions(), (396, 306));
+        // A clockwise turn brings the bottom left to the top left.
+        assert_eq!(page.get_pixel(10, 10).0, [0, 0, 0, 255]);
+        assert_eq!(page.get_pixel(10, 300).0, [255, 255, 255, 255]);
+        let stroke = crate::markup::Mark {
+            page: 0,
+            kind: crate::markup::Kind::Ink,
+            color: [1.0, 0.0, 0.0],
+            shape: crate::markup::Shape::Ink(vec![(600.0, 400.0), (700.0, 400.0)]),
+        };
+        let saved = Document::open(doc.with_marks(&[stroke]).unwrap()).unwrap();
+        // The copy opens turned, with the stroke where it was drawn.
+        assert_eq!(saved.page_size(0), (792.0, 612.0));
+        let page = saved.render(0, 0.5).unwrap();
+        assert_eq!(page.get_pixel(10, 10).0, [0, 0, 0, 255]);
+        let [r, g, b, _] = page.get_pixel(325, 200).0;
+        assert!(r > 200 && g < 200 && b < 200, "{r} {g} {b}");
     }
 
     #[test]

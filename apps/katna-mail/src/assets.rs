@@ -127,6 +127,8 @@ icons!(
     "reply-all",
     "reply",
     "restore",
+    "rotate-ccw",
+    "rotate-cw",
     "schedule",
     "search",
     "send",
