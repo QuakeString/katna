@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Ticks sit in the middle at any size"
+text = """
+With Scaling in Settings > Appearance above 100%, a checkbox's tick sat a
+little up and to the left. Checkbox and radio edges now grow with the
+scale, so the tick is centred at every size.
+"""
