@@ -1699,3 +1699,26 @@ title = "Igbe nlele kwụ otu ọkwa na akara ngosi"
 text = """
 Igbe nlele dị ntakịrị ugbu a, otu nha dị ka akara ngosi kpakpando na leebụl dị n'akụkụ ha na ndepụta ozi. Ọ ka dị mfe ịpị ha, akara ya ka na-esekwa onwe ya.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalịnda Zoho site n'njikọ nke Zoho n'onwe ya"
+text = """
+Zoho na-enye ngwa ndị ọzọ kalịnda site n'ọdụ (port) nke ọtụtụ netwọk
+na-egbochi, ya mere mgbe “Banye na Zoho” gasịrị, Kalịnda na-agụ ha site
+na API nke Zoho n'onwe ya kama. Ihe omume Zoho gị na-egosi n'akụkụ kalịnda
+gị ndị ọzọ; ịgbanwe ha site na Katna ga-abịa ma emechaa.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Ọrụ Zoho"
+text = """
+Banye na Zoho n'akaụntụ Zoho, ọrụ Zoho ToDo ya na-egosikwa na Ọrụ,
+n'ụzọ abụọ: tinye, dezie, kaa akara ma ọ bụ hichapụ ọrụ na Katna, ọ
+na-agbanwekwa na Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Akara na-anọ n'etiti n'nha ọ bụla"
+text = """
+Mgbe Ntọala > Ọdịdị > Nha karịrị 100%, akara igbe nlele na-anọ ntakịrị n'elu na n'aka ekpe. Nsọtụ igbe nlele na bọtịnụ gburugburu na-eso nha ahụ ebuwanye ibu ugbu a, ya mere akara ya na-anọ n'etiti n'nha ọ bụla.
+"""

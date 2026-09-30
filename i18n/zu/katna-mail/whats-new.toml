@@ -1879,3 +1879,30 @@ Amabhokisi okuhlola manje amancane kancane, alingana nezithonjana
 zenkanyezi nezelebula eziseduze kwawo ohlwini lweposi. Asalula
 ukuwachofoza njengakuqala, futhi umaki usazidweba.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Amakhalenda e-Zoho ngoxhumano lwe-Zoho uqobo"
+text = """
+I-Zoho inikeza amakhalenda kwezinye izinhlelo zokusebenza ngembobo
+evinjwa amanethiwekhi amaningi, ngakho ngemuva kokuthi Ngena nge-Zoho,
+iKhalenda iwafunda nge-API ye-Zoho uqobo esikhundleni salokho. Imicimbi
+yakho ye-Zoho ivela eduze kwamanye amakhalenda akho; ukuyishintsha
+ku-Katna kuzofika kamuva.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Imisebenzi ye-Zoho"
+text = """
+Ngena nge-Zoho ku-akhawunti ye-Zoho futhi imisebenzi yayo ye-Zoho ToDo
+ivela ku-Imisebenzi, ngazo zombili izindlela: engeza, hlela, maka noma
+susa umsebenzi ku-Katna futhi uyashintsha naku-Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Umaki uhlala phakathi nendawo kunoma yimuphi usayizi"
+text = """
+Uma Ukukala ku-Izilungiselelo > Ukubukeka kungaphezu kuka-100%, umaki
+webhokisi lokuhlola wawuhlala phezulu kancane nangakwesobunxele. Imiphetho
+yamabhokisi okuhlola nezinkinobho eziyindilinga manje ikhula
+nesilinganiso, ngakho umaki uhlala phakathi nendawo kuwo wonke usayizi.
+"""

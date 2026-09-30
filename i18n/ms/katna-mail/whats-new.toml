@@ -1833,3 +1833,30 @@ Kotak semak kini sedikit lebih kecil, sama saiz dengan ikon bintang dan
 label di sebelahnya dalam senarai mel. Ia tetap mudah diklik, dan tandanya
 masih terlukis.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalendar Zoho melalui sambungan Zoho sendiri"
+text = """
+Zoho menyediakan kalendar kepada apl lain pada port yang disekat oleh
+banyak rangkaian, jadi selepas “Log masuk dengan Zoho”, Kalendar
+membacanya melalui API Zoho sendiri. Acara Zoho anda dipaparkan di
+sebelah kalendar anda yang lain; mengubahnya daripada Katna akan datang
+kemudian.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tugas Zoho"
+text = """
+Log masuk dengan Zoho pada akaun Zoho dan tugas Zoho ToDo miliknya
+dipaparkan dalam Tugas, dua hala: tambah, edit, tanda atau padam tugas
+dalam Katna dan ia turut berubah dalam Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Tanda di tengah pada semua saiz"
+text = """
+Dengan Tetapan > Penampilan > Penskalaan melebihi 100%, tanda kotak
+semak terletak sedikit ke atas dan ke kiri. Tepi kotak semak dan butang
+bulat kini membesar mengikut skala, jadi tandanya berada di tengah pada
+setiap saiz.
+"""
