@@ -9,7 +9,6 @@ add-account-looking = Na-achọ sava ozi nke { $address }…
 add-account-address-intro = Tinye adreesị ozi-e gị. Katna ga-achọtara gị sava ndị ahụ.
 add-account-servers-title = Ntọala sava
 add-account-servers-intro = Ebe Katna na-agụ ma na-ezipụ ozi maka { $address }.
-add-account-password-title = Tinye okwuntughe gị
 add-account-signing-in = Na-abanye…
 add-account-browser-title = Gaa n'ihu na ihe nchọgharị gị
 add-account-browser-intro = Katna emepela peeji mbanye { $provider } na ihe nchọgharị gị. Banye ebe ahụ ma kwe ka Katna gụọ ma zipụ ozi gị, wee laghachi ebe a.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Sava: { $servers }, site n'ịkọ nkọ; nyochaa ha ma ọ bụrụ na ịbanye dara.
 }
 add-account-servers-entered = Sava: { $servers }, dịka e tinyere ha.
-add-account-or = ma ọ bụ
 add-account-sign-in-with = Banye na { $provider }
 add-account-sign-in-instead = Kama nke ahụ, banye na { $provider }
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Kama nke ahụ, banye na { $provider }
 add-account-servers-button = Ntọala sava
 add-account-back = Laghachi
 add-account-add = Tinye akaụntụ
-add-account-next = Nke ọzọ
 add-account-cancel = Kagbuo
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Tinye adreesị ozi-e dị ka { $example }.
 add-account-not-found = Katna enweghị ike ịchọta sava nke { $address }, ya mere o tinyere aha a na-ejikarị. Nyochaa ha n'aka onye na-enye gị ọrụ.
 add-account-password-empty = Tinye okwuntughe.
 add-account-name-is-password = Aha ahụ yiri okwuntughe. Pịnye aha gị ebe ahụ kama, dị ka ndị mmadụ kwesịrị ịhụ ya.
-add-account-added = Etinyela { $address }. Na-ebute ozi gị…
 add-account-app-password-refused = { $provider } jụrụ okwuntughe ahụ. Ọ chọrọ okwuntughe ngwa, ọ bụghị nke ị na-eji na weebụ.
 add-account-password-refused = Sava jụrụ okwuntughe ahụ. Nyochaa ya ma nwaa ọzọ.
 add-account-sign-in-refused = { $provider } ekweghị ka Katna banye. Nwaa ọzọ, ma kwe ka ọ nweta ozi gị.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Mbipụta Katna a enweghị ike ịbanye n'akaụntụ Google ugbu a.
    *[other] Onye na-enye ọrụ a na-ekwe ka a banye naanị na peeji nke ya, nke Katna enweghị ike ime ya ugbu a.
 }
-add-account-signed-in = Abanyela na { $provider }. Na-enweta ozi gị…
 
 ## The account menu (from the account button on the top bar)
 

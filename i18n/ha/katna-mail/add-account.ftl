@@ -9,7 +9,6 @@ add-account-looking = Ana neman sabobin wasiƙu na { $address }…
 add-account-address-intro = Shigar da adireshin imel ɗinku. Katna za ta nemo muku sabobin.
 add-account-servers-title = Saitunan sabar
 add-account-servers-intro = Inda Katna ke karantawa da aika wasiƙun { $address }.
-add-account-password-title = Shigar da kalmar sirrinku
 add-account-signing-in = Ana shiga…
 add-account-browser-title = Ku ci gaba a burauzarku
 add-account-browser-intro = Katna ya buɗe shafin shiga na { $provider } a burauzarku. Ku shiga a can ku ba Katna izinin karantawa da aika wasiƙunku, sannan ku dawo nan.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Sabobi: { $servers }, bisa hasashe; ku duba su idan shiga ya kasa.
 }
 add-account-servers-entered = Sabobi: { $servers }, kamar yadda aka shigar.
-add-account-or = ko
 add-account-sign-in-with = Shiga da { $provider }
 add-account-sign-in-instead = Shiga da { $provider } maimakon haka
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Shiga da { $provider } maimakon haka
 add-account-servers-button = Saitunan sabar
 add-account-back = Koma baya
 add-account-add = Ƙara asusu
-add-account-next = Na gaba
 add-account-cancel = Soke
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Shigar da adireshin imel kamar { $example }.
 add-account-not-found = Katna ba ta iya samo sabobin { $address } ba, don haka ta cike sunayen da aka saba. Ku tabbatar da su wurin mai ba ku sabis.
 add-account-password-empty = Shigar da kalmar sirri.
 add-account-name-is-password = Sunan daidai yake da kalmar sirri. Rubuta sunanku a can maimakon haka, yadda mutane za su gan shi.
-add-account-added = An ƙara { $address }. Ana karɓo wasiƙunku…
 add-account-app-password-refused = { $provider } ya ƙi kalmar sirrin. Yana buƙatar kalmar sirrin manhaja, ba wadda kuke amfani da ita a yanar gizo ba.
 add-account-password-refused = Sabar ta ƙi kalmar sirrin. Ku duba ta kuma ku sake gwadawa.
 add-account-sign-in-refused = { $provider } bai bar Katna ya shiga ba. Ku sake gwadawa, kuma ku ba da izinin shiga wasiƙunku.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Wannan kwafin Katna ba zai iya shiga asusun Google ba tukuna.
    *[other] Wannan mai ba da sabis yana ba da damar shiga ne kawai a shafinsa, abin da Katna ba zai iya yi masa ba tukuna.
 }
-add-account-signed-in = An shiga da { $provider }. Ana samo wasiƙunku…
 
 ## The account menu (from the account button on the top bar)
 

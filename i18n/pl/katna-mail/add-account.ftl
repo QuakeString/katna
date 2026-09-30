@@ -9,7 +9,6 @@ add-account-looking = Szukanie serwerów poczty dla { $address }…
 add-account-address-intro = Wpisz adres e-mail. Katna sama znajdzie serwery.
 add-account-servers-title = Ustawienia serwera
 add-account-servers-intro = Gdzie Katna odbiera i wysyła pocztę dla { $address }.
-add-account-password-title = Wpisz hasło
 add-account-signing-in = Logowanie…
 add-account-browser-title = Kontynuuj w przeglądarce
 add-account-browser-intro = Katna otworzyła stronę logowania { $provider } w przeglądarce. Zaloguj się tam i pozwól aplikacji Katna czytać i wysyłać Twoją pocztę, a potem wróć tutaj.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Serwery: { $servers }, odgadnięte; sprawdź je, jeśli logowanie się nie powiedzie.
 }
 add-account-servers-entered = Serwery: { $servers }, wpisane ręcznie.
-add-account-or = lub
 add-account-sign-in-with = Zaloguj się przez { $provider }
 add-account-sign-in-instead = Zamiast tego zaloguj się przez { $provider }
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Zamiast tego zaloguj się przez { $provider }
 add-account-servers-button = Ustawienia serwera
 add-account-back = Wstecz
 add-account-add = Dodaj konto
-add-account-next = Dalej
 add-account-cancel = Anuluj
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Wpisz adres e-mail, na przykład { $example }.
 add-account-not-found = Katna nie znalazła serwerów dla { $address }, więc wpisała typowe nazwy. Sprawdź je u swojego dostawcy.
 add-account-password-empty = Wpisz hasło.
 add-account-name-is-password = Nazwa jest taka sama jak hasło. Wpisz tam zamiast tego swoje imię i nazwisko, tak jak mają je widzieć inni.
-add-account-added = Dodano { $address }. Pobieranie poczty…
 add-account-app-password-refused = { $provider } odrzucił hasło. Wymagane jest hasło do aplikacji, a nie to, którego używasz w przeglądarce.
 add-account-password-refused = Serwer odrzucił hasło. Sprawdź je i spróbuj ponownie.
 add-account-sign-in-refused = { $provider } nie wpuścił aplikacji Katna. Spróbuj ponownie i zezwól na dostęp do poczty.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Ta kopia Katna nie potrafi jeszcze logować się do kont Google.
    *[other] Ten dostawca pozwala logować się tylko na własnej stronie, a Katna jeszcze tego dla niego nie potrafi.
 }
-add-account-signed-in = Zalogowano przez { $provider }. Pobieranie poczty…
 
 ## The account menu (from the account button on the top bar)
 

@@ -690,7 +690,7 @@ impl Daemon {
     pub async fn discover_account(
         &self,
         address: &str,
-    ) -> Result<(NewImapAccount, Discovered), CommandError> {
+    ) -> Result<(NewImapAccount, ServerSpec, Discovered), CommandError> {
         let discovery =
             Discovery::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         let found = discovery
@@ -700,16 +700,18 @@ impl Daemon {
         tracing::info!(
             address,
             source = found.source.as_str(),
-            host = found.imap.host,
+            host = found.incoming().host,
+            pop3 = found.imap.is_none(),
             "discovered"
         );
         let account = NewImapAccount {
             display_name: String::new(),
             address: address.trim().to_owned(),
-            imap: spec(&found.imap),
+            imap: found.imap.as_ref().map(spec).unwrap_or_default(),
             smtp: found.smtp.as_ref().map(spec).unwrap_or_default(),
         };
-        Ok((account, found))
+        let pop3 = found.pop3.as_ref().map(spec).unwrap_or_default();
+        Ok((account, pop3, found))
     }
 
     /// Downloads a remote image for the reading pane.
@@ -820,6 +822,30 @@ impl Daemon {
             .sources(&server, target)
             .await
             .inspect_err(|err| tracing::info!(%err, "asking the server for its languages"))
+    }
+
+    /// Sets what a POP3 account does with mail on the server, and restarts
+    /// its worker so the next check follows it.
+    pub async fn set_pop3_keep(
+        self: &Arc<Self>,
+        id: AccountId,
+        keep: Pop3Keep,
+    ) -> Result<(), CommandError> {
+        let account = self.account(id)?;
+        if account.kind != AccountKind::Pop3 {
+            return Err(CommandError::InvalidArgs(format!(
+                "account {id} is not a POP3 account"
+            )));
+        }
+        {
+            let mut store = self.store();
+            let mut settings = store.account_settings(id)?.unwrap_or_default();
+            settings.pop3_keep = keep;
+            store.set_account_settings(id, &settings)?;
+        }
+        tracing::info!(account = %id, ?keep, "POP3 keep changed");
+        self.start_account(&account).await;
+        Ok(())
     }
 
     /// Renames an account. An empty name goes back to the name its own

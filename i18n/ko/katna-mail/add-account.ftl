@@ -9,7 +9,6 @@ add-account-looking = { $address }의 메일 서버를 찾는 중…
 add-account-address-intro = 이메일 주소를 입력하세요. Katna가 서버를 찾아 줍니다.
 add-account-servers-title = 서버 설정
 add-account-servers-intro = Katna가 { $address }의 메일을 읽고 보내는 곳입니다.
-add-account-password-title = 비밀번호 입력
 add-account-signing-in = 로그인 중…
 add-account-browser-title = 브라우저에서 계속하기
 add-account-browser-intro = Katna가 브라우저에서 { $provider } 로그인 페이지를 열었습니다. 그곳에서 로그인하고 Katna가 메일을 읽고 보낼 수 있도록 허용한 다음 여기로 돌아오세요.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] 서버: { $servers }, 추측한 값입니다. 로그인에 실패하면 확인하세요.
 }
 add-account-servers-entered = 서버: { $servers }, 입력한 대로.
-add-account-or = 또는
 add-account-sign-in-with = { $provider }로 로그인
 add-account-sign-in-instead = 대신 { $provider }로 로그인
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = 대신 { $provider }로 로그인
 add-account-servers-button = 서버 설정
 add-account-back = 뒤로
 add-account-add = 계정 추가
-add-account-next = 다음
 add-account-cancel = 취소
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example }와(과) 같은 이메일 주소를 �
 add-account-not-found = Katna가 { $address }의 서버를 찾지 못해 일반적인 이름을 입력했습니다. 메일 제공업체에 확인하세요.
 add-account-password-empty = 비밀번호를 입력하세요.
 add-account-name-is-password = 이름이 비밀번호와 같습니다. 이 칸에는 다른 사람에게 보일 이름을 입력하세요.
-add-account-added = { $address }을(를) 추가했습니다. 메일을 가져오는 중…
 add-account-app-password-refused = { $provider }에서 비밀번호를 거부했습니다. 웹에서 쓰는 비밀번호가 아니라 앱 비밀번호가 필요합니다.
 add-account-password-refused = 서버에서 비밀번호를 거부했습니다. 확인한 후 다시 시도하세요.
 add-account-sign-in-refused = { $provider }에서 Katna의 접근을 허용하지 않았습니다. 다시 시도하고 메일에 대한 접근을 허용하세요.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] 이 Katna 사본은 아직 Google 계정에 로그인할 수 없습니다.
    *[other] 이 메일 서비스는 자체 페이지에서만 로그인할 수 있으며, Katna는 아직 이를 지원하지 않습니다.
 }
-add-account-signed-in = { $provider }로 로그인했습니다. 메일을 가져오는 중…
 
 ## The account menu (from the account button on the top bar)
 

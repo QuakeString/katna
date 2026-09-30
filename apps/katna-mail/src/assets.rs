@@ -2,8 +2,11 @@
 
 //! Icons built into the binary, served to GPUI's `svg()` element, and the
 //! language picker's flags (`flags/`, from `flag-icons`, MIT) and Katna's
-//! logo (`logo/`), served to `img()`. The GitHub and X marks
-//! (`icons/brand-*.svg`) are from Simple Icons, CC0.
+//! logo (`logo/`), served to `img()`. Brand marks (`icons/brand-*.svg`)
+//! are from Simple Icons (CC0), except Yahoo's and Yandex's, from Font
+//! Awesome Free (CC BY 4.0), and Fastmail's, from Dashboard Icons
+//! (Apache-2.0); each file names its source. The marks stay their owners'
+//! trademarks and only stand for their own services.
 
 use std::borrow::Cow;
 
@@ -29,9 +32,18 @@ icons!(
     "back",
     "bell",
     "bolt",
+    "brand-fastmail-blue",
+    "brand-fastmail-ink",
+    "brand-fastmail-sky",
+    "brand-fastmail-yellow",
     "brand-github",
+    "brand-gmx",
+    "brand-icloud",
     "brand-linkedin",
     "brand-x",
+    "brand-yahoo",
+    "brand-yandex",
+    "brand-zoho",
     "cake",
     "calendar",
     "check-circle",
@@ -79,6 +91,10 @@ icons!(
     "format-underline",
     "forum",
     "forward",
+    "google-g-blue",
+    "google-g-green",
+    "google-g-red",
+    "google-g-yellow",
     "headphones",
     "heart",
     "highlight",
@@ -123,6 +139,7 @@ icons!(
     "read-receipt",
     "redo",
     "refresh",
+    "remove",
     "repeat",
     "reply-all",
     "reply",

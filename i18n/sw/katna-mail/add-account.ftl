@@ -9,7 +9,6 @@ add-account-looking = Inatafuta seva za barua za { $address }…
 add-account-address-intro = Weka anwani yako ya barua pepe. Katna itakutafutia seva.
 add-account-servers-title = Mipangilio ya seva
 add-account-servers-intro = Mahali Katna inaposoma na kutuma barua za { $address }.
-add-account-password-title = Weka nenosiri lako
 add-account-signing-in = Inaingia…
 add-account-browser-title = Endelea kwenye kivinjari chako
 add-account-browser-intro = Katna imefungua ukurasa wa kuingia wa { $provider } kwenye kivinjari chako. Ingia hapo na uiruhusu Katna isome na kutuma barua zako, kisha urudi hapa.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Seva: { $servers }, zimekisiwa; zikague ikiwa kuingia kutashindwa.
 }
 add-account-servers-entered = Seva: { $servers }, kama zilivyowekwa.
-add-account-or = au
 add-account-sign-in-with = Ingia kwa { $provider }
 add-account-sign-in-instead = Ingia kwa { $provider } badala yake
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Ingia kwa { $provider } badala yake
 add-account-servers-button = Mipangilio ya seva
 add-account-back = Rudi
 add-account-add = Ongeza akaunti
-add-account-next = Endelea
 add-account-cancel = Ghairi
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Weka anwani ya barua pepe kama { $example }.
 add-account-not-found = Katna haikuweza kupata seva za { $address }, kwa hivyo imejaza majina ya kawaida. Yakague na mtoa huduma wako.
 add-account-password-empty = Weka nenosiri.
 add-account-name-is-password = Jina ni sawa na nenosiri. Andika jina lako hapo badala yake, kama watu wanavyopaswa kuliona.
-add-account-added = { $address } imeongezwa. Inapokea barua zako…
 add-account-app-password-refused = { $provider } imekataa nenosiri. Inahitaji nenosiri la programu, si lile unalotumia kwenye wavuti.
 add-account-password-refused = Seva imekataa nenosiri. Likague na ujaribu tena.
 add-account-sign-in-refused = { $provider } haikuiruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa barua zako.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Nakala hii ya Katna bado haiwezi kuingia kwenye akaunti za Google.
    *[other] Mtoa huduma huyu anaruhusu kuingia kwenye ukurasa wake tu, jambo ambalo Katna bado haiwezi kulifanya kwa ajili yake.
 }
-add-account-signed-in = Umeingia kwa { $provider }. Inapokea barua zako…
 
 ## The account menu (from the account button on the top bar)
 

@@ -55,6 +55,7 @@ mod layout;
 mod lines;
 mod list;
 mod look;
+mod mail_providers;
 mod meeting;
 mod nav;
 mod nav_menu;
@@ -655,6 +656,8 @@ pub struct MailWindow {
     /// An account still waits for its first sync, so an empty folder may
     /// only be not fetched yet.
     first_sync: bool,
+    /// POP3 choices sent to the daemon, shown until the store has them.
+    pop3_keep: HashMap<AccountId, katna_core::Pop3Keep>,
     _first_sync_check: Option<Task<()>>,
     /// The account card above the rail's account picture.
     account_menu: bool,
@@ -927,6 +930,7 @@ impl MailWindow {
             tour_seen: HashMap::new(),
             read_timer: None,
             first_sync: false,
+            pop3_keep: HashMap::new(),
             _first_sync_check: None,
             account_menu: false,
             app_menu: None,

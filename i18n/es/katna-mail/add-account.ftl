@@ -9,7 +9,6 @@ add-account-looking = Buscando los servidores de correo de { $address }…
 add-account-address-intro = Escribe tu dirección de correo. Katna encuentra los servidores por ti.
 add-account-servers-title = Configuración del servidor
 add-account-servers-intro = Dónde lee y envía Katna el correo de { $address }.
-add-account-password-title = Escribe tu contraseña
 add-account-signing-in = Iniciando sesión…
 add-account-browser-title = Continúa en tu navegador
 add-account-browser-intro = Katna ha abierto la página de inicio de sesión de { $provider } en tu navegador. Inicia sesión allí y permite que Katna lea y envíe tu correo; después, vuelve aquí.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Servidores: { $servers }, deducidos; compruébalos si falla el inicio de sesión.
 }
 add-account-servers-entered = Servidores: { $servers }, tal como se escribieron.
-add-account-or = o
 add-account-sign-in-with = Iniciar sesión con { $provider }
 add-account-sign-in-instead = Iniciar sesión con { $provider } en su lugar
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Iniciar sesión con { $provider } en su lugar
 add-account-servers-button = Configuración del servidor
 add-account-back = Atrás
 add-account-add = Añadir cuenta
-add-account-next = Siguiente
 add-account-cancel = Cancelar
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Escribe una dirección de correo como { $example }
 add-account-not-found = Katna no ha encontrado los servidores de { $address }, así que ha rellenado los nombres habituales. Compruébalos con tu proveedor.
 add-account-password-empty = Escribe la contraseña.
 add-account-name-is-password = El nombre es igual que la contraseña. Escribe ahí tu nombre, tal como deben verlo los demás.
-add-account-added = Se ha añadido { $address }. Descargando tu correo…
 add-account-app-password-refused = { $provider } ha rechazado la contraseña. Necesita una contraseña de aplicación, no la que usas en la web.
 add-account-password-refused = El servidor ha rechazado la contraseña. Compruébala y vuelve a intentarlo.
 add-account-sign-in-refused = { $provider } no ha dejado entrar a Katna. Vuelve a intentarlo y permite el acceso a tu correo.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Esta copia de Katna aún no puede iniciar sesión en cuentas de Google.
    *[other] Este proveedor solo permite iniciar sesión en su propia página, algo que Katna aún no puede hacer con él.
 }
-add-account-signed-in = Has iniciado sesión con { $provider }. Descargando tu correo…
 
 ## The account menu (from the account button on the top bar)
 

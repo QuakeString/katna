@@ -9,7 +9,6 @@ add-account-looking = { $address } için posta sunucuları aranıyor…
 add-account-address-intro = E-posta adresinizi girin. Katna sunucuları sizin için bulur.
 add-account-servers-title = Sunucu ayarları
 add-account-servers-intro = Katna'nın { $address } için postaları okuduğu ve gönderdiği yer.
-add-account-password-title = Parolanızı girin
 add-account-signing-in = Oturum açılıyor…
 add-account-browser-title = Tarayıcınızda devam edin
 add-account-browser-intro = Katna, tarayıcınızda { $provider } oturum açma sayfasını açtı. Orada oturum açın ve Katna'nın postalarınızı okumasına ve göndermesine izin verin, ardından buraya dönün.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Sunucular: { $servers }, tahmin edildi; oturum açma başarısız olursa denetleyin.
 }
 add-account-servers-entered = Sunucular: { $servers }, girildiği gibi.
-add-account-or = veya
 add-account-sign-in-with = { $provider } ile oturum aç
 add-account-sign-in-instead = Bunun yerine { $provider } ile oturum aç
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Bunun yerine { $provider } ile oturum aç
 add-account-servers-button = Sunucu ayarları
 add-account-back = Geri
 add-account-add = Hesap ekle
-add-account-next = İleri
 add-account-cancel = İptal
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example } gibi bir e-posta adresi girin.
 add-account-not-found = Katna, { $address } için sunucuları bulamadı, bu yüzden olağan adları doldurdu. Sağlayıcınızla denetleyin.
 add-account-password-empty = Parolayı girin.
 add-account-name-is-password = Ad, parolayla aynı. Oraya bunun yerine adınızı, insanların görmesi gereken biçimde yazın.
-add-account-added = { $address } eklendi. Postalarınız alınıyor…
 add-account-app-password-refused = { $provider } parolayı reddetti. Web'de kullandığınız parola değil, bir uygulama parolası gerekiyor.
 add-account-password-refused = Sunucu parolayı reddetti. Denetleyip yeniden deneyin.
 add-account-sign-in-refused = { $provider }, Katna'nın girişine izin vermedi. Yeniden deneyin ve postalarınıza erişime izin verin.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna'nın bu kopyası henüz Google hesaplarında oturum açamıyor.
    *[other] Bu sağlayıcı yalnızca kendi sayfasında oturum açmaya izin veriyor ve Katna bunu henüz bu sağlayıcı için yapamıyor.
 }
-add-account-signed-in = { $provider } ile oturum açıldı. Postalarınız alınıyor…
 
 ## The account menu (from the account button on the top bar)
 
