@@ -1816,3 +1816,29 @@ As caixas de seleção estão um pouco menores, do mesmo tamanho dos ícones
 de estrela e de marcador ao lado delas na lista de e-mails. Continuam tão
 fáceis de clicar quanto antes, e a marca ainda se desenha.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Agendas do Zoho pela conexão do próprio Zoho"
+text = """
+O Zoho oferece agendas a outros apps numa porta que muitas redes
+bloqueiam, por isso, depois de fazer login com o Zoho, a Agenda as lê
+pela API do próprio Zoho. Seus eventos do Zoho aparecem ao lado das suas
+outras agendas; alterá-los pelo Katna vem depois.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tarefas do Zoho"
+text = """
+Faça login com o Zoho numa conta do Zoho e as tarefas do Zoho ToDo dela
+aparecem em Tarefas, nos dois sentidos: adicione, edite, marque ou
+exclua uma tarefa no Katna e ela muda no Zoho também.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Marcas no centro em qualquer tamanho"
+text = """
+Com a Escala em Configurações > Aparência acima de 100%, a marca de uma
+caixa de seleção ficava um pouco para cima e para a esquerda. As bordas
+das caixas de seleção e dos botões redondos agora crescem com a escala,
+então a marca fica centralizada em qualquer tamanho.
+"""

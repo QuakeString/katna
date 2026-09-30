@@ -1884,3 +1884,30 @@ Les cases à cocher sont un peu plus petites, de la taille des icônes
 d’étoile et de libellé voisines dans la liste des messages. Elles restent
 aussi faciles à cliquer, et leur coche se dessine toujours.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Les calendriers Zoho par la connexion propre à Zoho"
+text = """
+Zoho fournit les calendriers aux autres applications sur un port que
+bloquent beaucoup de réseaux, donc après Se connecter avec Zoho,
+Calendrier les lit plutôt par l’API propre à Zoho. Vos événements Zoho
+s’affichent à côté de vos autres calendriers ; les modifier depuis Katna
+viendra plus tard.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Les tâches Zoho"
+text = """
+Connectez-vous avec Zoho sur un compte Zoho et ses tâches Zoho ToDo
+s’affichent dans Tâches, dans les deux sens : ajoutez, modifiez, cochez
+ou supprimez une tâche dans Katna, et elle change aussi dans Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Des coches centrées à toutes les tailles"
+text = """
+Avec Paramètres > Apparence > Mise à l’échelle au-delà de 100 %, la coche
+d’une case se plaçait un peu en haut à gauche. Les bords des cases à
+cocher et des boutons ronds suivent désormais l’échelle, et la coche est
+centrée à toutes les tailles.
+"""

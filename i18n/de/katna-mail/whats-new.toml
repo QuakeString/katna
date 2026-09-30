@@ -1867,3 +1867,30 @@ Kontrollkästchen sind etwas kleiner, so groß wie die Stern- und
 Label-Symbole daneben in der Mailliste. Sie lassen sich genauso leicht
 anklicken, und das Häkchen zeichnet sich weiterhin ein.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-Kalender über Zohos eigene Verbindung"
+text = """
+Zoho stellt Kalender für andere Apps über einen Port bereit, den viele
+Netzwerke sperren, deshalb liest der Kalender sie nach Mit Zoho anmelden
+stattdessen über Zohos eigene API. Deine Zoho-Termine erscheinen neben
+deinen anderen Kalendern; sie aus Katna zu ändern, kommt später.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-Aufgaben"
+text = """
+Melde dich bei einem Zoho-Konto mit Mit Zoho anmelden an, und seine
+Zoho-ToDo-Aufgaben erscheinen in Aufgaben, in beide Richtungen: Lege in
+Katna eine Aufgabe an, bearbeite, erledige oder lösche sie, und sie
+ändert sich auch in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Häkchen in der Mitte, bei jeder Größe"
+text = """
+Mit Einstellungen > Darstellung > Skalierung über 100 % saß das Häkchen
+eines Kontrollkästchens etwas zu weit oben links. Die Ränder von
+Kontrollkästchen und runden Tasten wachsen jetzt mit der Skalierung,
+sodass das Häkchen bei jeder Größe mittig sitzt.
+"""

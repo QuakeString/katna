@@ -1785,3 +1785,28 @@ Kryssrutorna är lite mindre, lika stora som stjärn- och etikettikonerna
 bredvid dem i e-postlistan. De är lika lätta att klicka på som förut, och
 bocken ritas fortfarande fram.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-kalendrar via Zohos egen anslutning"
+text = """
+Zoho delar kalendrar med andra appar på en port som många nätverk
+blockerar, så efter Logga in med Zoho läser Kalender dem via Zohos eget
+API i stället. Dina Zoho-händelser visas bredvid dina andra kalendrar;
+att ändra dem från Katna kommer senare.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-uppgifter"
+text = """
+Logga in med Zoho på ett Zoho-konto så visas dess uppgifter i Zoho ToDo
+i Uppgifter, åt båda hållen: lägg till, redigera, bocka av eller ta bort
+en uppgift i Katna så ändras den i Zoho också.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Bocken hamnar i mitten i alla storlekar"
+text = """
+Med Skalning i Inställningar > Utseende över 100 % hamnade bocken i en
+kryssruta lite upp och till vänster. Kanterna på kryssrutor och runda
+knappar växer nu med skalan, så bocken hamnar i mitten i alla storlekar.
+"""
