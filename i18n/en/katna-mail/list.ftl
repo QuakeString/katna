@@ -26,6 +26,8 @@ tab-provider-other = sorted by Katna
 # Tooltip of the checkbox that ticks every line.
 list-select = Select
 list-refresh = Refresh
+# Tooltip of the round button that takes the list back to its top.
+list-back-to-top = Back to top
 # Tooltip of the refresh button while it checks for new mail.
 list-checking = Checking for new mail…
 # Tooltip of the "more actions" button (three dots).

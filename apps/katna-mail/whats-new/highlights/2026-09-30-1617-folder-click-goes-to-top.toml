@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Back to the top of the list"
+text = """
+Once the mail list is a screen down, a round button at its bottom right
+takes it back to the top. Clicking the folder you are already in, such as
+Inbox, does the same, as in Gmail, and so does Home.
+"""
