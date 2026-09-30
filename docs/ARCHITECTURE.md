@@ -3473,7 +3473,8 @@ account and kind (`meta` rows, object `account`, plugin
 which the best way goes first again. A new sign-in forgets it. Network or
 server errors never switch ways. Google sign-ins: the Google API, then
 Google's CalDAV/CardDAV with the same token. Microsoft sign-ins: Graph
-(Outlook.com has no CalDAV). Password accounts: CalDAV/CardDAV looked for
+(Outlook.com has no CalDAV). Password accounts linked to a Zoho sign-in:
+Zoho Calendar's API for calendars, then CalDAV. Password accounts: CalDAV/CardDAV looked for
 on the provider's known server (Yahoo, Zoho by region, iCloud, Fastmail,
 mailbox.org, Posteo, GMX, web.de, Yandex, AOL; by mail domain or IMAP host), then
 `.well-known` on the mail domain, the IMAP server's domain and the IMAP
@@ -3506,6 +3507,17 @@ most useful reason is shown. Changes go back the way their calendar came
   that refuses the expansion shows its series without changed
   occurrences). Scope `https://graph.microsoft.com/Calendars.ReadWrite`,
   consented at sign-in beside `Files.ReadWrite`, its tokens separate.
+  **Zoho** (`calendar::zoho`, accounts linked to a Zoho sign-in, scope
+  `ZOHO_CALENDAR`): Zoho's CalDAV answers only on port 543, which many
+  networks block, so calendars come from Zoho Calendar's REST API
+  (`calendar.zoho.<dc>/api/v1`, the data centre of the sign-in's
+  accounts server, on port 443). `/calendars` lists them with a `ctag`;
+  a calendar whose `ctag` didn't change today is skipped, otherwise its
+  events are read with `byinstance=true` in 31-day ranges (Zoho's limit)
+  from about 3 months back to a year ahead, each occurrence a row of its
+  own, and written where their etag changed. Source `zoho` (pim.db v12,
+  which widens `calendar.source`'s CHECK in place so events are kept).
+  Read-only for now: a change to a Zoho event is refused and undone.
   **CalDAV** (password accounts, and Google's fallback): found from the
   places above, with the IMAP password (or Google's token) over TLS; a
   calendar whose `getctag`/`sync-token` didn't change is

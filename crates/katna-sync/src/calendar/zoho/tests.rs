@@ -15,7 +15,7 @@ const ACCOUNT: AccountId = AccountId(1);
 
 fn client(api: &str) -> ZohoCalendar {
     let provider = Provider {
-        kind: OAuthProvider::Google,
+        kind: OAuthProvider::Zoho,
         auth_url: "https://accounts.test/auth".into(),
         token_url: "http://127.0.0.1:1/token".into(),
         client_id: "katna-test".into(),

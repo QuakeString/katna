@@ -4,8 +4,10 @@
 //! and events into `pim.db`, at start, every five minutes and on
 //! `SyncNow`, the best way first and others when that one is not
 //! available ([`katna_sync::methods`]): Google Calendar, then Google's
-//! CalDAV, for Google sign-ins; Microsoft Graph for Microsoft ones; CalDAV
-//! on the provider's server for others ([`katna_sync::calendar`]). The
+//! CalDAV, for Google sign-ins; Microsoft Graph for Microsoft ones; Zoho
+//! Calendar's API, then CalDAV, for accounts linked to a Zoho sign-in (its
+//! CalDAV is on port 543, which many networks block); CalDAV on the
+//! provider's server for others ([`katna_sync::calendar`]). The
 //! way that worked is remembered per account. One task
 //! goes through the accounts in turn with its own store connection, apart
 //! from the mail workers, and says `CalendarChanged` (and the clock's
@@ -38,6 +40,7 @@ use katna_sync::{
         edit::{self, Applied, EditError, Remote},
         google::GoogleCalendar,
         graph::GraphCalendar,
+        zoho::ZohoCalendar,
     },
     methods::{self, Data, Method},
     net::Tls,
@@ -85,6 +88,7 @@ enum Service {
     Google(GoogleCalendar),
     Microsoft(GraphCalendar),
     CalDav(CalDav),
+    Zoho(ZohoCalendar),
 }
 
 impl Service {
@@ -93,6 +97,7 @@ impl Service {
             Self::Google(google) => google.sync(store, account.id).await,
             Self::Microsoft(graph) => graph.sync(store, account.id, &account.address).await,
             Self::CalDav(dav) => dav.sync(store, account.id, &account.address).await,
+            Self::Zoho(zoho) => zoho.sync(store, account.id, &account.address).await,
         }
     }
 
@@ -109,6 +114,7 @@ impl Service {
             Self::Google(google) => Remote::Google(google),
             Self::Microsoft(graph) => Remote::Microsoft(graph),
             Self::CalDav(dav) => Remote::CalDav(dav),
+            Self::Zoho(zoho) => Remote::Zoho(zoho),
         }
     }
 }
@@ -321,6 +327,9 @@ impl Daemon {
                 (OAuthProvider::Zoho, _) => None,
             });
         }
+        if method == Method::Api {
+            return self.linked_calendar_service(account).await;
+        }
         if method != Method::Dav {
             return Ok(None);
         }
@@ -346,6 +355,24 @@ impl Daemon {
             tls,
         );
         Ok(Some((key, Service::CalDav(dav))))
+    }
+
+    /// Zoho Calendar's API through the Zoho sign-in `account` is linked
+    /// to, if any.
+    async fn linked_calendar_service(
+        &self,
+        account: &Account,
+    ) -> Result<Option<(String, Service)>, String> {
+        let Some((tokens, linked)) = self.linked_tokens(account.id).await? else {
+            return Ok(None);
+        };
+        if linked.provider != OAuthProvider::Zoho {
+            return Ok(None);
+        }
+        let key = format!("zoho {} {:p}", linked.accounts_server, Arc::as_ptr(&tokens));
+        let tls = Tls::system().map_err(|err| format!("TLS setup: {err}"))?;
+        let zoho = ZohoCalendar::new(tokens, tls, &linked.accounts_server);
+        Ok(Some((key, Service::Zoho(zoho))))
     }
 
     /// Syncs `account`'s calendars, the best way first and the others
@@ -379,7 +406,24 @@ impl Daemon {
         let now = unix_now();
         // What to show when no way works: the most useful reason.
         let mut shown = (calendar_state::NONE, String::new());
-        for method in methods::order(store, account.id, Data::Calendar, provider, now) {
+        let mut order = methods::order(store, account.id, Data::Calendar, provider, now);
+        // A password account linked to a Zoho sign-in: Zoho's API first.
+        if provider.is_none()
+            && settings
+                .linked
+                .as_ref()
+                .is_some_and(|l| l.provider == OAuthProvider::Zoho)
+            && !order.contains(&Method::Api)
+        {
+            let remembered_dav =
+                methods::remembered(store, account.id, Data::Calendar, now) == Some(Method::Dav);
+            if remembered_dav {
+                order.push(Method::Api);
+            } else {
+                order.insert(0, Method::Api);
+            }
+        }
+        for method in order {
             let service = match self.service(services, account, method).await {
                 Ok(Some(service)) => service,
                 Ok(None) => continue,
