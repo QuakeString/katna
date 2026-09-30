@@ -1465,8 +1465,9 @@ GPUI global):
   draws frames (GNOME on Wayland) the choice is replaced by a note.
   `KATNA_DECORATIONS=auto|server|client` still overrides it, for testing.
 - *Blurred background*: the window's page color becomes translucent
-  (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the search
-  bar's fill takes the same alpha) and the compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
+  (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
+  search box is 40 % glass over it and turns solid while focused) and the
+  compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
   else `org_kde_kwin_blur`, and `_KDE_NET_WM_BLUR_BEHIND_REGION` on X11.
   The blur region is the frame less its rounded corners; the CSD shadow is
   painted only outside the frame, so it cannot darken the window. Cards

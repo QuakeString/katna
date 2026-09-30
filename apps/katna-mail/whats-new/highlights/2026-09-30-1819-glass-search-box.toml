@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A glass search box"
+text = """
+With the blurred background on, the search box is frosted glass while you are
+not using it, and turns solid when you click into it to type.
+"""

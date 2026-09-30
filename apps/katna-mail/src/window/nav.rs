@@ -45,6 +45,9 @@ const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
+/// How opaque the idle search box is in a blurred window: frosted glass
+/// that shows the blur behind it. Focused, it is solid.
+const SEARCH_GLASS_ALPHA: f32 = 0.4;
 
 /// The button at the top of a page's side panel (Create contact, Create
 /// task), in the size, shape and colours of Mail's Compose over the
@@ -452,14 +455,11 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            // Active, it keeps its color and gains a faint edge. In a
-            // blurred window it lets the blur through like the bar
-            // around it, so it reads as the same frosted glass.
+            // In a blurred window it is frosted glass while idle, letting
+            // more of the blur through than the bar around it, and turns
+            // solid as it takes focus.
             .bg(rgba(if th.backdrop == 0 {
-                fade(
-                    th.search,
-                    f32::from(katna_chrome::tokens::blur_alpha(th.dark)) / 255.0,
-                )
+                fade(th.search, lerp(SEARCH_GLASS_ALPHA, 1.0, t.clamp(0.0, 1.0)))
             } else {
                 th.search
             }))
