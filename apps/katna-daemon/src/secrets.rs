@@ -53,6 +53,24 @@ fn server_attributes() -> [(&'static str, String); 2] {
     ]
 }
 
+/// The attributes of the refresh token of a sign-in linked to `account`
+/// (`AccountSettings::linked`). Its own attribute names, not `account`:
+/// the Secret Service finds items by a subset of their attributes, so a
+/// password lookup would otherwise find this token too.
+#[cfg_attr(windows, allow(dead_code))]
+fn linked_attributes(account: AccountId) -> [(&'static str, String); 2] {
+    [
+        ("application", ids::PREFIX.to_owned()),
+        ("linked-account", account.to_string()),
+    ]
+}
+
+/// Where the linked sign-in of `account` sits in the in-memory store,
+/// apart from the accounts' passwords (ids are positive).
+fn linked_key(account: AccountId) -> AccountId {
+    AccountId(-1 - account.0)
+}
+
 /// Where the Katna Server token sits in the in-memory store.
 const SERVER_KEY: AccountId = AccountId(i64::MIN);
 
@@ -128,6 +146,83 @@ impl Secrets {
             }
             Self::Memory(map) => {
                 map.lock().unwrap().insert(account, password.to_owned());
+            }
+        }
+        Ok(())
+    }
+
+    /// The refresh token of the sign-in linked to `account`, if saved.
+    pub async fn linked_token(&self, account: AccountId) -> Result<Option<String>, Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                let Some(item) = keyring
+                    .search_items(&linked_attributes(account))
+                    .await?
+                    .into_iter()
+                    .next()
+                else {
+                    return Ok(None);
+                };
+                let secret = item.secret().await?;
+                String::from_utf8(secret.to_vec())
+                    .map(Some)
+                    .map_err(|_| Error("the saved sign-in is not UTF-8".into()))
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => store.get(&windows::linked(account)).await,
+            Self::Memory(map) => Ok(map.lock().unwrap().get(&linked_key(account)).cloned()),
+        }
+    }
+
+    /// Saves the refresh token of the sign-in linked to `account`.
+    pub async fn set_linked_token(
+        &self,
+        account: AccountId,
+        label: &str,
+        token: &str,
+    ) -> Result<(), Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                keyring
+                    .create_item(
+                        &format!("Katna: {label}"),
+                        &linked_attributes(account),
+                        token,
+                        true,
+                    )
+                    .await?;
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => {
+                let _ = label;
+                store.set(&windows::linked(account), token).await?
+            }
+            Self::Memory(map) => {
+                map.lock()
+                    .unwrap()
+                    .insert(linked_key(account), token.to_owned());
+            }
+        }
+        Ok(())
+    }
+
+    /// Deletes the refresh token of the sign-in linked to `account`, if
+    /// any.
+    pub async fn delete_linked_token(&self, account: AccountId) -> Result<(), Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                keyring.delete(&linked_attributes(account)).await?;
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => store.delete(&windows::linked(account)).await?,
+            Self::Memory(map) => {
+                map.lock().unwrap().remove(&linked_key(account));
             }
         }
         Ok(())
@@ -251,6 +346,12 @@ mod windows {
         format!("account-{account}")
     }
 
+    /// The user name of the refresh token of a sign-in linked to an
+    /// account.
+    pub fn linked(account: AccountId) -> String {
+        format!("linked-{account}")
+    }
+
     /// The user name of part `index` of a long secret; part 0 is `user`.
     fn part(user: &str, index: usize) -> String {
         match index {
@@ -311,7 +412,28 @@ mod windows {
 
 #[cfg(test)]
 mod tests {
-    use super::{PART_UNITS, split};
+    use katna_core::AccountId;
+
+    use super::{PART_UNITS, Secrets, split};
+
+    #[test]
+    fn linked_sign_ins_are_kept_apart_from_passwords() {
+        smol::block_on(async {
+            let secrets = Secrets::memory();
+            let id = AccountId(3);
+            secrets.set_password(id, "a@zoho.in", "pw").await.unwrap();
+            secrets.set_linked_token(id, "Zoho", "rt").await.unwrap();
+            assert_eq!(secrets.password(id).await.unwrap().as_deref(), Some("pw"));
+            assert_eq!(
+                secrets.linked_token(id).await.unwrap().as_deref(),
+                Some("rt")
+            );
+            assert_eq!(secrets.linked_token(AccountId(4)).await.unwrap(), None);
+            secrets.delete_linked_token(id).await.unwrap();
+            assert_eq!(secrets.linked_token(id).await.unwrap(), None);
+            assert_eq!(secrets.password(id).await.unwrap().as_deref(), Some("pw"));
+        });
+    }
 
     #[test]
     fn long_secrets_are_split() {

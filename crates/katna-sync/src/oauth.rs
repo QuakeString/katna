@@ -95,14 +95,46 @@ pub const ZOHO_REDIRECT_PORT: u16 = 53710;
 /// it) keeps its accounts, and the mail domains that live there. An
 /// account's tokens come only from its own data centre.
 pub const ZOHO_DATA_CENTRES: [(&str, &str, &[&str]); 8] = [
-    ("us", "https://accounts.zoho.com", &["zoho.com", "zohomail.com"]),
-    ("eu", "https://accounts.zoho.eu", &["zoho.eu", "zohomail.eu"]),
-    ("in", "https://accounts.zoho.in", &["zoho.in", "zohomail.in"]),
-    ("au", "https://accounts.zoho.com.au", &["zoho.com.au", "zohomail.com.au"]),
-    ("jp", "https://accounts.zoho.jp", &["zoho.jp", "zohomail.jp"]),
-    ("ca", "https://accounts.zohocloud.ca", &["zohocloud.ca", "zohomail.ca"]),
-    ("sa", "https://accounts.zoho.sa", &["zoho.sa", "zohomail.sa"]),
-    ("uk", "https://accounts.zoho.uk", &["zoho.uk", "zohomail.uk"]),
+    (
+        "us",
+        "https://accounts.zoho.com",
+        &["zoho.com", "zohomail.com"],
+    ),
+    (
+        "eu",
+        "https://accounts.zoho.eu",
+        &["zoho.eu", "zohomail.eu"],
+    ),
+    (
+        "in",
+        "https://accounts.zoho.in",
+        &["zoho.in", "zohomail.in"],
+    ),
+    (
+        "au",
+        "https://accounts.zoho.com.au",
+        &["zoho.com.au", "zohomail.com.au"],
+    ),
+    (
+        "jp",
+        "https://accounts.zoho.jp",
+        &["zoho.jp", "zohomail.jp"],
+    ),
+    (
+        "ca",
+        "https://accounts.zohocloud.ca",
+        &["zohocloud.ca", "zohomail.ca"],
+    ),
+    (
+        "sa",
+        "https://accounts.zoho.sa",
+        &["zoho.sa", "zohomail.sa"],
+    ),
+    (
+        "uk",
+        "https://accounts.zoho.uk",
+        &["zoho.uk", "zohomail.uk"],
+    ),
 ];
 
 /// The Zoho data centre of a mail domain or server host
@@ -134,7 +166,9 @@ pub fn zoho_accounts_server(host_or_address: &str) -> Option<&'static str> {
 /// client secret go only there, whatever the browser was sent back with.
 fn is_zoho_accounts_server(server: &str) -> bool {
     let server = server.trim_end_matches('/');
-    ZOHO_DATA_CENTRES.iter().any(|(_, known, _)| *known == server)
+    ZOHO_DATA_CENTRES
+        .iter()
+        .any(|(_, known, _)| *known == server)
 }
 
 /// Largest request the loopback listener reads.
@@ -558,16 +592,18 @@ impl SignIn {
             Some((host, port)) => (host, port.parse().unwrap_or(0)),
             None => (provider.redirect_host, 0),
         };
-        let v4 = TcpListener::bind(("127.0.0.1", fixed)).await.map_err(|err| {
-            if fixed == 0 {
-                Error::from(err)
-            } else {
-                Error::Protocol(format!(
-                    "port {fixed}, where {} sends the browser back, is taken: {err}",
-                    provider.kind.name()
-                ))
-            }
-        })?;
+        let v4 = TcpListener::bind(("127.0.0.1", fixed))
+            .await
+            .map_err(|err| {
+                if fixed == 0 {
+                    Error::from(err)
+                } else {
+                    Error::Protocol(format!(
+                        "port {fixed}, where {} sends the browser back, is taken: {err}",
+                        provider.kind.name()
+                    ))
+                }
+            })?;
         let port = v4.local_addr()?.port();
         let mut listeners = vec![v4];
         // Browsers may try `localhost` on IPv6 first.
@@ -695,7 +731,10 @@ impl SignIn {
         let provider = at_server.as_ref().unwrap_or(provider);
         let mut grant = token_request(provider, &mut form).await?;
         if provider.kind == OAuthProvider::Zoho {
-            grant.accounts_server = Some(provider.accounts_server().to_owned());
+            grant.accounts_server = Some(match &server {
+                Some(server) => server.trim_end_matches('/').to_owned(),
+                None => provider.accounts_server().to_owned(),
+            });
             if grant.identity.is_none() {
                 grant.identity = zoho_identity(provider, &grant.access_token).await;
             }
@@ -717,11 +756,10 @@ impl SignIn {
 }
 
 #[derive(Deserialize)]
-#[serde(rename_all = "PascalCase")]
 struct ZohoUser {
-    #[serde(default)]
+    #[serde(default, rename = "Email")]
     email: String,
-    #[serde(default)]
+    #[serde(default, rename = "Display_Name")]
     display_name: String,
 }
 

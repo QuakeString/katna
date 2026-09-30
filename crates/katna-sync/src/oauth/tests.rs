@@ -20,6 +20,8 @@ const ID_PAYLOAD: &str = "eyJlbWFpbCI6ImFkYUBnbWFpbC5jb20iLCJuYW1lIjoiQWRhIiwicG
 struct FakeServer {
     url: String,
     forms: Arc<Mutex<Vec<String>>>,
+    /// Whole requests, head and body.
+    requests: Arc<Mutex<Vec<String>>>,
 }
 
 fn fake_server(answers: Vec<(u16, String)>) -> FakeServer {
@@ -29,13 +31,15 @@ fn fake_server(answers: Vec<(u16, String)>) -> FakeServer {
         listener.local_addr().unwrap().port()
     );
     let forms = Arc::new(Mutex::new(Vec::new()));
-    let seen = forms.clone();
+    let requests = Arc::new(Mutex::new(Vec::new()));
+    let (seen, whole) = (forms.clone(), requests.clone());
     thread::spawn(move || {
         for (status, body) in answers {
             let (mut stream, _) = listener.accept().unwrap();
             let request = read_http(&mut stream);
             let form = request.split("\r\n\r\n").nth(1).unwrap_or_default();
             seen.lock().unwrap().push(form.to_owned());
+            whole.lock().unwrap().push(request.clone());
             let answer = format!(
                 "HTTP/1.1 {status} X\r\nContent-Type: application/json\r\n\
                  Content-Length: {}\r\nConnection: close\r\n\r\n{body}",
@@ -44,7 +48,11 @@ fn fake_server(answers: Vec<(u16, String)>) -> FakeServer {
             stream.write_all(answer.as_bytes()).unwrap();
         }
     });
-    FakeServer { url, forms }
+    FakeServer {
+        url,
+        forms,
+        requests,
+    }
 }
 
 /// Reads a request with its `Content-Length` body.
@@ -495,4 +503,172 @@ fn imap_logs_in_with_xoauth2_and_renews_a_refused_token() {
     assert_eq!(logins.len(), 2, "{logins:?}");
     assert!(logins[0].contains("Bearer stale"));
     assert!(logins[1].contains("Bearer at-1"));
+}
+
+#[test]
+fn zoho_data_centres_by_domain() {
+    let server = |host: &str| zoho_accounts_server(host);
+    assert_eq!(server("imap.zoho.in"), Some("https://accounts.zoho.in"));
+    assert_eq!(server("ada@zohomail.eu"), Some("https://accounts.zoho.eu"));
+    assert_eq!(server("IMAP.ZOHO.COM."), Some("https://accounts.zoho.com"));
+    // Not taken for zoho.com.
+    assert_eq!(
+        server("imap.zoho.com.au"),
+        Some("https://accounts.zoho.com.au")
+    );
+    assert_eq!(
+        server("imappro.zohocloud.ca"),
+        Some("https://accounts.zohocloud.ca")
+    );
+    assert_eq!(server("mail.example.com"), None);
+    assert_eq!(server("notzoho.com"), None);
+    assert!(is_zoho_accounts_server("https://accounts.zoho.sa/"));
+    assert!(!is_zoho_accounts_server(
+        "https://accounts.zoho.in.evil.example"
+    ));
+    assert_eq!(
+        "127.0.0.1:53710",
+        format!("127.0.0.1:{ZOHO_REDIRECT_PORT}"),
+        "Provider::new's redirect_host names the registered port"
+    );
+}
+
+/// A Zoho provider against `server`, sending the browser back to a port
+/// fixed like the registered one.
+fn zoho(server: &FakeServer) -> Provider {
+    let free = StdListener::bind("127.0.0.1:0").unwrap();
+    let port = free.local_addr().unwrap().port();
+    drop(free);
+    let mut provider = provider(
+        OAuthProvider::Zoho,
+        &server.url.replace("/token", "/oauth/v2/token"),
+    );
+    provider.scope = format!("{ZOHO_TASKS},{ZOHO_CALENDAR},{ZOHO_PROFILE}");
+    provider.redirect_host = format!("127.0.0.1:{port}").leak();
+    provider.client_secret = "zoho-secret".into();
+    provider
+}
+
+#[test]
+fn zoho_signs_in_at_the_users_data_centre() {
+    let server = fake_server(vec![
+        (
+            200,
+            r#"{"access_token":"at-z","refresh_token":"rt-z","api_domain":"https://www.zohoapis.in","token_type":"Bearer","expires_in":3600}"#.into(),
+        ),
+        (200, r#"{"Email":"ada@zohomail.in","Display_Name":"Ada","ZUID":1}"#.into()),
+    ]);
+    let provider = zoho(&server);
+    let port = provider
+        .redirect_host
+        .rsplit_once(':')
+        .unwrap()
+        .1
+        .to_owned();
+    smol::block_on(async {
+        let sign_in = SignIn::start(&provider, "ada@zohomail.in").await.unwrap();
+        let url = sign_in.url().to_owned();
+        // The registered port, and Zoho's comma-separated scopes.
+        let redirect = param(&url, "redirect_uri").unwrap();
+        assert_eq!(redirect, format!("http://127.0.0.1:{port}/"));
+        assert_eq!(
+            param(&url, "scope").unwrap(),
+            "ZohoMail.tasks.ALL,ZohoCalendar.calendar.ALL,ZohoCalendar.event.ALL,AaaServer.profile.READ"
+        );
+        assert_eq!(param(&url, "access_type").unwrap(), "offline");
+        assert_eq!(param(&url, "prompt").unwrap(), "consent");
+        let state = param(&url, "state").unwrap();
+        let browser = thread::spawn(move || {
+            browse(
+                &redirect,
+                &format!(
+                    "?state={state}&code=1000.abc&location=in&accounts-server=https%3A%2F%2Faccounts.zoho.in"
+                ),
+            )
+        });
+        let grant = sign_in.finish(&provider, &pages()).await.unwrap();
+        browser.join().unwrap();
+        assert_eq!(grant.refresh_token.as_deref(), Some("rt-z"));
+        assert_eq!(
+            grant.accounts_server.as_deref(),
+            Some("https://accounts.zoho.in")
+        );
+        assert_eq!(grant.api_domain.as_deref(), Some("https://www.zohoapis.in"));
+        let identity = grant.identity.unwrap();
+        assert_eq!(
+            (identity.email.as_str(), identity.name.as_str()),
+            ("ada@zohomail.in", "Ada")
+        );
+
+        let requests = server.requests.lock().unwrap().clone();
+        let form = server.forms.lock().unwrap()[0].clone();
+        assert_eq!(param(&form, "code").unwrap(), "1000.abc");
+        assert_eq!(param(&form, "client_secret").unwrap(), "zoho-secret");
+        assert!(param(&form, "code_verifier").is_some());
+        // Who signed in, asked with Zoho's own token scheme.
+        assert!(
+            requests[1].starts_with("GET /oauth/user/info "),
+            "{}",
+            requests[1]
+        );
+        assert!(requests[1].contains("Authorization: Zoho-oauthtoken at-z"));
+    });
+}
+
+#[test]
+fn zoho_codes_go_only_to_zohos_servers() {
+    let server = fake_server(vec![]);
+    let provider = zoho(&server);
+    smol::block_on(async {
+        let sign_in = SignIn::start(&provider, "").await.unwrap();
+        let url = sign_in.url().to_owned();
+        let redirect = param(&url, "redirect_uri").unwrap();
+        let state = param(&url, "state").unwrap();
+        let browser = thread::spawn(move || {
+            browse(
+                &redirect,
+                &format!("?state={state}&code=c&accounts-server=https%3A%2F%2Fevil.example"),
+            )
+        });
+        let err = sign_in.finish(&provider, &pages()).await.unwrap_err();
+        assert!(browser.join().unwrap().contains("Not signed in"));
+        assert!(err.to_string().contains("unknown server"), "{err}");
+        assert!(server.requests.lock().unwrap().is_empty());
+    });
+}
+
+#[test]
+fn zoho_refusals_come_with_200() {
+    let server = fake_server(vec![
+        (
+            200,
+            r#"{"access_token":"at-2","api_domain":"https://www.zohoapis.com","expires_in":3600}"#
+                .into(),
+        ),
+        (200, r#"{"error":"invalid_code"}"#.into()),
+    ]);
+    let provider = zoho(&server);
+    smol::block_on(async {
+        let grant = refresh(&provider, "rt-z").await.unwrap();
+        assert_eq!(grant.access_token, "at-2");
+        // Zoho keeps its refresh token and takes no scope when refreshing.
+        assert_eq!(grant.refresh_token, None);
+        assert_eq!(param(&server.forms.lock().unwrap()[0], "scope"), None);
+        let err = refresh(&provider, "rt-z").await.unwrap_err();
+        assert!(matches!(err, Error::Auth(_)), "{err}");
+    });
+}
+
+#[test]
+fn a_taken_registered_port_says_so() {
+    let server = fake_server(vec![]);
+    let mut provider = zoho(&server);
+    let taken = StdListener::bind("127.0.0.1:0").unwrap();
+    provider.redirect_host = format!("127.0.0.1:{}", taken.local_addr().unwrap().port()).leak();
+    smol::block_on(async {
+        let Err(err) = SignIn::start(&provider, "").await else {
+            panic!("the port is taken");
+        };
+        assert!(err.to_string().contains("is taken"), "{err}");
+    });
 }

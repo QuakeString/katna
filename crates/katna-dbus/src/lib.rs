@@ -494,7 +494,9 @@ macro_rules! pim_proxy {
             /// address, if any) in again. `address` fills in the provider's
             /// page (may be empty). Returns once the browser comes back (at
             /// most ten minutes), with the account's ID. `AuthFailed` when
-            /// the user did not allow access.
+            /// the user did not allow access. `zoho` needs `account`: it
+            /// links Zoho's tasks and calendars to it, and its mail keeps
+            /// its password.
             fn sign_in(&self, provider: &str, account: i64, address: &str) -> zbus::Result<i64>;
 
             /// Ends a `SignIn` still waiting for the browser. Returns

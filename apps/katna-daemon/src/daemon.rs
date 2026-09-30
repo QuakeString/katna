@@ -53,6 +53,7 @@ mod contact_labels;
 mod contacts;
 mod contacts_import;
 mod drive;
+mod linked;
 mod meet;
 mod notes;
 mod other_contacts;
@@ -243,6 +244,8 @@ pub struct Daemon {
     /// Access tokens of the accounts that sign in with OAuth2, shared by
     /// their connections.
     tokens: Mutex<HashMap<AccountId, Arc<TokenSource>>>,
+    /// Access tokens of the sign-ins linked to accounts (Zoho).
+    linked: Mutex<HashMap<AccountId, Arc<TokenSource>>>,
     /// Refresh tokens a provider replaced, to save in the Secret Service.
     rotated: (Sender<Rotated>, Receiver<Rotated>),
     /// Ends the browser sign-in under way, if any.
@@ -322,6 +325,7 @@ impl Daemon {
             delete_requests: async_channel::bounded(1),
             crash_uploads: async_channel::bounded(1),
             tokens: Mutex::default(),
+            linked: Mutex::default(),
             rotated: async_channel::unbounded(),
             signing_in: Mutex::default(),
             uploads: drive::Uploads::default(),
@@ -899,6 +903,7 @@ impl Daemon {
             tracing::warn!(account = %id, %err, "could not delete the password");
         }
         self.tokens.lock().unwrap().remove(&id);
+        self.forget_linked(id).await;
         self.forget_calendars(id);
         let _ = std::fs::remove_file(sign_in::provider_picture(&self.paths, id));
         self.status.lock().unwrap().remove(&id);

@@ -109,6 +109,11 @@ impl Daemon {
         Ok(match provider {
             OAuthProvider::Google => Storage::Google(Drive::new(tokens, tls)),
             OAuthProvider::Microsoft => Storage::Microsoft(OneDrive::new(tokens, tls)),
+            OAuthProvider::Zoho => {
+                return Err(CommandError::InvalidArgs(
+                    "Zoho accounts keep no large files".into(),
+                ));
+            }
         })
     }
 

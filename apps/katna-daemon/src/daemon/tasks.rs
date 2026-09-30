@@ -162,6 +162,8 @@ impl Daemon {
                     TaskService::Microsoft(ToDo::new(tokens, tls))
                 }
                 (_, Method::Dav) => return Ok(None),
+                // Never an account's own sign-in.
+                (OAuthProvider::Zoho, _) => return Ok(None),
             };
             return Ok(Some(Some((key, service))));
         }
