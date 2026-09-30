@@ -90,7 +90,7 @@ const SCRIM: u32 = 0x0c0d0eb8;
 const SCRIM_FROSTED: u32 = 0x0c0d0e73;
 const BAR: u32 = 0x202124e6;
 const BAR_FROSTED: u32 = 0x0c0d0e59;
-const PILL_FROSTED: u32 = 0x2d2f31b3;
+const PILL_FROSTED: u32 = 0x2d2f31d9;
 /// The page box, zoom and turning sit on a pill this tall in the top bar,
 /// and a little taller at the foot.
 const PILL_HEIGHT: f32 = 40.0;
