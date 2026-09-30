@@ -441,6 +441,7 @@ jobs:
             export VK_ICD_FILENAMES=$(ls $mesa/share/vulkan/icd.d/lvp_icd.*.json)
             export __EGL_VENDOR_LIBRARY_FILENAMES=$(ls $mesa/share/glvnd/egl_vendor.d/*mesa*.json)
             export FONTCONFIG_FILE=$(nix eval --inputs-from . --raw nixpkgs#fontconfig.out.outPath)/etc/fonts/fonts.conf
+            export KATNA_DBUS_CONFIG=$HOME/.nix-profile/share/dbus-1/session.conf
             KATNA_DEMO=/src/demo-data.tar.gz ./ci/linux-package-test.sh shots/nix.png
           '
           sudo chown -R "$USER" shots

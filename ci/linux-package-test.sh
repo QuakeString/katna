@@ -26,7 +26,9 @@ if [ -z "${KATNA_TEST_SESSION:-}" ]; then
   fi
   chmod 700 "$XDG_RUNTIME_DIR"
   export KATNA_TEST_SESSION=1
-  exec dbus-run-session -- "$0" "$@"
+  # KATNA_DBUS_CONFIG names session.conf where D-Bus has none in /etc (Nix).
+  exec dbus-run-session ${KATNA_DBUS_CONFIG:+--config-file="$KATNA_DBUS_CONFIG"} \
+    -- "$0" "$@"
 fi
 
 katnactl=${KATNACTL:-katnactl}
