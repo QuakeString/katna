@@ -76,7 +76,10 @@ pub(super) fn drive_provider(window: &MailWindow, account: AccountId) -> Option<
 pub(super) fn drive_note(provider: OAuthProvider, name: String, limit: String) -> String {
     match provider {
         OAuthProvider::Google => tr!("compose-drive-note", name = name, limit = limit),
-        OAuthProvider::Microsoft => tr!("compose-onedrive-note", name = name, limit = limit),
+        // Only Google and Microsoft accounts keep large files.
+        OAuthProvider::Microsoft | OAuthProvider::Zoho => {
+            tr!("compose-onedrive-note", name = name, limit = limit)
+        }
     }
 }
 

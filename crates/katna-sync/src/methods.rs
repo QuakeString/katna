@@ -105,6 +105,8 @@ pub fn methods(provider: Option<OAuthProvider>) -> &'static [Method] {
     match provider {
         Some(OAuthProvider::Google) => &[Method::Api, Method::Dav],
         Some(OAuthProvider::Microsoft) => &[Method::Api],
+        // Never an account's own login; its linked sign-in reaches the APIs.
+        Some(OAuthProvider::Zoho) => &[Method::Api],
         None => &[Method::Dav],
     }
 }

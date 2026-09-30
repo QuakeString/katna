@@ -317,6 +317,8 @@ impl Daemon {
                     Some((key, Service::Microsoft(GraphCalendar::new(tokens, tls))))
                 }
                 (OAuthProvider::Microsoft, Method::Dav) => None,
+                // Never an account's own sign-in.
+                (OAuthProvider::Zoho, _) => None,
             });
         }
         if method != Method::Dav {
