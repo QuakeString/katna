@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Thêm tài khoản khác
-add-account-menu-manage = Quản lý tài khoản
 app-menu = Menu chính
 app-menu-back = Quay lại

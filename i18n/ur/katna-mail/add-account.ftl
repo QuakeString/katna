@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = ایک اور اکاؤنٹ شامل کریں
-add-account-menu-manage = اکاؤنٹس کا نظم کریں
 app-menu = مرکزی مینیو
 app-menu-back = واپس

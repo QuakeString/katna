@@ -216,14 +216,11 @@ const EDGE_REST: f32 = 0.55;
 /// the account picture. The header bar itself spaces its items 6 px apart.
 const TOP_BAR_GAP: f32 = 16.0;
 const BAR_ITEM_GAP: f32 = 6.0;
-/// The room the language button, Settings and the account picture take at
-/// the top bar's end, up to the window buttons: 40 px wide each (the
-/// language button a flag and a chevron), with the gap between them, and
-/// 8 px after the picture plus the bar's own spacing.
-const TOP_END_WIDTH: f32 =
-    LANGUAGE_BUTTON_WIDTH + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
-/// The language button: its flag and chevron with 8 px either side.
-const LANGUAGE_BUTTON_WIDTH: f32 = 8.0 + 24.0 + 4.0 + 18.0 + 8.0;
+/// The room Settings and the account picture take at the top bar's end, up
+/// to the window buttons: 40 px wide each, with the gap between them, and
+/// 8 px after the picture plus the bar's own spacing. The language button
+/// is in the account menu.
+const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
 /// The size of the word on the Compose button.
 const COMPOSE_TEXT_SIZE: f32 = 14.0;
 /// Compose is as tall as a phone's: a 56 px square in the rail, a pill in
@@ -3498,7 +3495,7 @@ impl Render for MailWindow {
         };
         // The box gives way first, so the buttons after it keep their
         // gaps and never overlap.
-        // The agenda button before the language button, with its gap.
+        // The agenda button before Settings, with its gap.
         let agenda_room = if self.agenda_button_shown() {
             agenda::AGENDA_BUTTON_WIDTH + TOP_BAR_GAP
         } else {
@@ -3506,7 +3503,7 @@ impl Render for MailWindow {
         };
         let room = width - open_left - room_end - TOP_END_WIDTH - agenda_room - TOP_BAR_GAP;
         // Too narrow for both (wider than a phone, with wide window
-        // buttons): the button goes rather than cover the language button.
+        // buttons): the button goes rather than cover the agenda button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
         let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);

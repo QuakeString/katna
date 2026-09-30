@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Engeza enye i-akhawunti
-add-account-menu-manage = Phatha ama-akhawunti
 app-menu = Imenyu enkulu
 app-menu-back = Emuva

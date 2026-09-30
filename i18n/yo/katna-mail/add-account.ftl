@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Ṣàfikún àkáǹtì míì
-add-account-menu-manage = Ṣàkóso àwọn àkáǹtì
 app-menu = Mẹ́nù pàtàkì
 app-menu-back = Padà

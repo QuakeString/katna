@@ -42,7 +42,9 @@ use super::mail_providers::{MailProvider, PasswordHelp};
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, icon, raised};
+use crate::widgets::{
+    FocusRing, ScaledEdge, elevation, filled_button, icon, icon_button, raised, tip,
+};
 
 /// The dialog's width with the provider tiles, and on the other steps.
 const WIDE: f32 = 640.0;
@@ -2077,9 +2079,9 @@ impl MailWindow {
         // With one account at a time, the shown one is marked and a click
         // switches to another.
         let shown = self.shown_account();
-        // On the last row: Manage accounts, or Add account without any.
-        let mut menu_button = Some(self.app_menu_button(th, cx));
         let app_menu = self.render_app_menu(th, cx);
+        let language = self.render_language_button(th, cx);
+        let menu_button = self.app_menu_button(th, cx);
         let rows = self.accounts.iter().enumerate().map(|(ix, account)| {
             let name = if account.display_name.trim().is_empty() {
                 account.address.clone()
@@ -2150,35 +2152,37 @@ impl MailWindow {
                     d.child(icon("check", th.nav_selected_text, 20.0))
                 })
         });
-        let add = div()
-            .id("account-add")
+        // The icon row at the top: Add account, Settings and the language,
+        // with the application menu at its end.
+        let icons = div()
             .h(px(48.0))
-            .px(px(16.0))
+            .px(px(4.0))
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::MEDIUM)
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
-            .menu_key(th)
-            .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
+            .gap(px(4.0))
             .child(
-                div()
-                    .size(px(32.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .child(icon("person-add", th.text_dim, 22.0)),
+                icon_button("account-add", "person-add", 22.0, th)
+                    .tooltip(tip(
+                        if self.accounts.is_empty() {
+                            tr!("account-add")
+                        } else {
+                            tr!("add-account-menu-another")
+                        },
+                        th,
+                    ))
+                    .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx))),
             )
-            .child(if self.accounts.is_empty() {
-                tr!("account-add")
-            } else {
-                tr!("add-account-menu-another")
-            })
-            .when(self.accounts.is_empty(), |d| d.children(menu_button.take()));
+            .child(
+                icon_button("account-settings", "settings", 22.0, th)
+                    .tooltip(tip(tr!("settings"), th))
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.account_menu = false;
+                        this.open_settings_page(super::settings_page::Section::General, window, cx);
+                    })),
+            )
+            .child(language)
+            .child(menu_button);
         let card = app_menu.unwrap_or_else(|| {
             div()
                 .id("account-menu")
@@ -2194,7 +2198,7 @@ impl MailWindow {
                 .gap(px(2.0))
                 .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
                 .text_color(rgba(th.text))
-                .children(rows)
+                .child(icons)
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
                         div()
@@ -2204,43 +2208,7 @@ impl MailWindow {
                             .bg(rgba(th.divider)),
                     )
                 })
-                .child(add)
-                .when(!self.accounts.is_empty(), |d| {
-                    d.child(
-                        div()
-                            .id("account-manage")
-                            .h(px(48.0))
-                            .px(px(16.0))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(12.0))
-                            .rounded(px(8.0))
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .menu_key(th)
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.account_menu = false;
-                                this.open_settings_page(
-                                    super::settings_page::Section::Accounts,
-                                    window,
-                                    cx,
-                                );
-                            }))
-                            .child(
-                                div()
-                                    .size(px(32.0))
-                                    .flex()
-                                    .items_center()
-                                    .justify_center()
-                                    .child(icon("settings", th.text_dim, 22.0)),
-                            )
-                            .child(tr!("add-account-menu-manage"))
-                            .children(menu_button.take()),
-                    )
-                })
+                .children(rows)
                 .with_animation(
                     "account-menu",
                     Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
