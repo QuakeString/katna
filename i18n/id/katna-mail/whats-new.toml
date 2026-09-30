@@ -1813,3 +1813,11 @@ Setelah Anda menambahkan akun, Kotak Masuk-nya diunduh lebih dulu dan
 terisi sambil Anda lihat, alih-alih tetap di “Mengambil email Anda…”
 sampai setiap folder selesai. Folder lain terisi dengan cara yang sama.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kotak centang sejajar dengan ikon"
+text = """
+Kotak centang kini sedikit lebih kecil, seukuran ikon bintang dan label di
+sampingnya dalam daftar email. Kotak ini tetap mudah diklik, dan
+centangnya masih tergambar.
+"""

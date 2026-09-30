@@ -1825,3 +1825,11 @@ Selepas anda menambah akaun, Peti Masuknya dimuat turun dahulu dan terisi
 semasa anda melihat, bukannya kekal pada "Mendapatkan mel anda…" sehingga
 setiap folder selesai. Folder lain terisi dengan cara yang sama.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kotak semak sebaris dengan ikon"
+text = """
+Kotak semak kini sedikit lebih kecil, sama saiz dengan ikon bintang dan
+label di sebelahnya dalam senarai mel. Ia tetap mudah diklik, dan tandanya
+masih terlukis.
+"""

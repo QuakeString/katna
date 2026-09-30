@@ -1793,3 +1793,11 @@ Bir hesap ekledikten sonra, tüm klasörler bitene kadar “Postalarınız
 alınıyor…” ekranında kalmak yerine önce gelen kutusu iner ve siz
 izlerken dolar. Diğer klasörler de aynı şekilde dolar.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Onay kutuları simgelerle aynı hizada"
+text = """
+Onay kutuları biraz küçüldü; posta listesinde yanlarındaki yıldız ve
+etiket simgeleriyle aynı boyutta. Tıklaması eskisi kadar kolay ve işaret
+hâlâ kendini çiziyor.
+"""

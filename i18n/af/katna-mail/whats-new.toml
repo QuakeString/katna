@@ -1760,3 +1760,11 @@ Nadat jy 'n rekening bygevoeg het, word sy Inkassie eerste afgelaai en
 vul dit terwyl jy kyk, in plaas daarvan om op “Kry tans jou e-pos…” te
 bly totdat elke vouer klaar is. Ander vouers vul op dieselfde manier.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Merkblokkies gelyk met die ikone"
+text = """
+Merkblokkies is 'n bietjie kleiner, so groot soos die ster- en etiketikone
+langsaan in die e-poslys. Hulle is net so maklik om te klik, en die
+regmerkie teken homself steeds in.
+"""

@@ -1874,3 +1874,11 @@ nito at napupuno habang nanonood ka, sa halip na manatili sa “Kinukuha
 ang iyong mail…” hanggang matapos ang bawat folder. Ganoon din napupuno
 ang ibang mga folder.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Mga checkbox na kapantay ng mga icon"
+text = """
+Medyo mas maliit na ang mga checkbox, kasinlaki ng mga icon ng star at
+label sa tabi nito sa listahan ng mail. Kasindali pa rin itong i-click, at
+kusa pa ring iginuguhit ang tsek.
+"""
