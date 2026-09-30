@@ -81,9 +81,7 @@ pub fn service_menu(label: &str, accounts: &[MenuAccount]) -> Option<String> {
 
 /// `value` on one line of a desktop file.
 fn entry_value(value: &str) -> String {
-    value
-        .replace('\\', "\\\\")
-        .replace(['\n', '\r'], " ")
+    value.replace('\\', "\\\\").replace(['\n', '\r'], " ")
 }
 
 /// `arg` as one argument of a desktop file's `Exec` line: quoted, with the
