@@ -371,7 +371,7 @@ jobs:
         run: |
           dnf install -y ./katna-x86_64.rpm
           dnf install -y --setopt=install_weak_deps=False \
-            dbus-daemon gnome-keyring ImageMagick xorg-x11-utils xorg-x11-server-Xvfb \
+            dbus-daemon gnome-keyring ImageMagick xwininfo xorg-x11-server-Xvfb \
             mesa-vulkan-drivers mesa-dri-drivers dejavu-sans-fonts procps-ng
           rpm -ql katna
           useradd --create-home tester
