@@ -19,11 +19,19 @@ viewer-slide = Slide { $number }
 # In the pill under a PDF, before the box with the page number on show,
 # which can be changed to go to another page.
 viewer-page = Page
+# The same box for slides, before the slide number on show.
+viewer-slide-box = Slide
 # After that box. $count: the PDF's number of pages.
 viewer-page-count = of { $count }
 viewer-go-to-page-tip = Type a page number and press Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Rotate clockwise (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Rotate anticlockwise (Ctrl+Shift+R)
+viewer-fit-page-tip = Fit page
+viewer-fit-picture-tip = Fit to window
+viewer-fit-width-tip = Fit width
+viewer-real-size-tip = Real size (1:1)
+viewer-page-back-tip = Previous page
+viewer-page-on-tip = Next page
 
 ## Marking up a PDF
 
