@@ -5003,11 +5003,15 @@ removes. Setup starts PowerShell and icacls by their full System32 paths
 and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
 Downloads are never run or loaded as administrator.
 
-CI builds Setup.exe into a `windows-latest` pre-release when the owner
-runs the Windows package workflow by hand on `main` (Actions > Windows
-package > Run workflow), with the faster `quick` profile (thin LTO)
-unless Full build is ticked; while Katna is young, pushes and pull requests
-test on Arch only, and the Windows and Ubuntu CI jobs also run only by
-hand. Without a code-signing
+Arch Linux is the primary platform: its CI (`ci.yml`) alone gates pull
+requests and the Arch package. Ubuntu and Windows are secondary: after
+each push to `main` the Secondary workflow (`secondary.yml`) runs their
+tests beside Arch without blocking it, a newer push cancelling an older
+run, and once the Windows tests pass it builds Setup.exe with the faster
+`quick` profile (thin LTO) and publishes it as the `windows-latest`
+pre-release. The Windows package workflow can also be run by hand
+(Actions > Windows package > Run workflow; tick Full build for the
+`release` profile). A Claude thread follows Secondary's results and fixes
+what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.
