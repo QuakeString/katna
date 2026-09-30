@@ -81,7 +81,10 @@ It also raises windows with another app's activation token
 (`src/linux/activation.rs`): `set_activation_token(token)` keeps the token
 a tray icon or notification passed along, and the next Wayland
 `Window::activate` uses it, so the window comes forward (and out of
-minimized) instead of only asking for attention.
+minimized) instead of only asking for attention. A new window opened
+before that uses it too (`consume_startup_activation_token` in
+`wayland/client.rs`), so a window opened for a notification's click comes
+up in front.
 
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
