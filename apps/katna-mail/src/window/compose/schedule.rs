@@ -82,6 +82,91 @@ pub(super) fn rfc2822(at: Timestamp, tz: &TimeZone) -> String {
         .to_string()
 }
 
+/// The parts of a written time: the hour, the minutes and AM/PM.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum TimePart {
+    Hour,
+    Minute,
+    Half,
+}
+
+/// Where each part of a written time is, in bytes: the first run of
+/// digits is the hour, the second the minutes, and letters are AM/PM
+/// (before or after the digits, as the language writes it).
+fn time_parts(text: &str) -> Vec<(TimePart, std::ops::Range<usize>)> {
+    let mut parts: Vec<(TimePart, std::ops::Range<usize>)> = Vec::new();
+    let mut digits = 0;
+    for (ix, c) in text.char_indices() {
+        let part = if c.is_numeric() {
+            Some(TimePart::Minute)
+        } else if c.is_alphabetic() {
+            Some(TimePart::Half)
+        } else {
+            None
+        };
+        let end = ix + c.len_utf8();
+        match (part, parts.last_mut()) {
+            (Some(TimePart::Minute), Some((TimePart::Hour | TimePart::Minute, run)))
+            | (Some(TimePart::Half), Some((TimePart::Half, run)))
+                if run.end == ix =>
+            {
+                run.end = end;
+            }
+            (Some(TimePart::Minute), _) => {
+                let kind = if digits == 0 {
+                    TimePart::Hour
+                } else {
+                    TimePart::Minute
+                };
+                digits += 1;
+                parts.push((kind, ix..end));
+            }
+            (Some(TimePart::Half), _) => parts.push((TimePart::Half, ix..end)),
+            _ => {}
+        }
+    }
+    parts
+}
+
+/// Up (`by` 1) or Down (-1) in a time field: changes the hour, the
+/// minutes or AM/PM, whichever the cursor is in, wrapping round without
+/// changing the other parts. Returns the new text and a cursor in the same
+/// part, or `None` when the text is not a time.
+pub(in crate::window) fn step_time(text: &str, cursor: usize, by: i32) -> Option<(String, usize)> {
+    let time = parse_time(text)?;
+    let parts = time_parts(text);
+    // The part the cursor is in, or else the one it touches from the left.
+    let (part, range) = parts
+        .iter()
+        .find(|(_, r)| r.start <= cursor && cursor < r.end)
+        .or_else(|| parts.iter().find(|(_, r)| r.end == cursor))?
+        .clone();
+    let twelve = parts.iter().any(|(p, _)| *p == TimePart::Half);
+    let (hour, minute) = (i32::from(time.hour()), i32::from(time.minute()));
+    let (hour, minute) = match part {
+        TimePart::Hour if twelve => {
+            let shown = (hour + 11) % 12 + 1;
+            let shown = (shown - 1 + by).rem_euclid(12) + 1;
+            (shown % 12 + hour / 12 * 12, minute)
+        }
+        TimePart::Hour => ((hour + by).rem_euclid(24), minute),
+        TimePart::Minute => (hour, (minute + by).rem_euclid(60)),
+        TimePart::Half => ((hour + 12) % 24, minute),
+    };
+    let new = clock(Time::new(hour as i8, minute as i8, 0, 0).ok()?);
+    let at_start = cursor == range.start;
+    let place = time_parts(&new)
+        .into_iter()
+        .find(|(p, _)| *p == part)
+        .map_or(new.len(), |(_, r)| if at_start { r.start } else { r.end });
+    Some((new, place))
+}
+
+/// Up and Down for a time field: see [`step_time`].
+pub(in crate::window) fn time_stepper() -> katna_ui::text_input::Stepper {
+    std::sync::Arc::new(step_time)
+}
+
 /// Reads a time of day as people type it: as [`clock`] writes it, or
 /// "8:00 AM", "8am", "13:30", "1.30 pm", "9", in any script's digits.
 pub(in crate::window) fn parse_time(text: &str) -> Option<Time> {
@@ -164,6 +249,48 @@ pub(in crate::window) fn moment(date: Date, time: Time, tz: &TimeZone) -> Option
 mod tests {
     use super::*;
     use jiff::civil::date;
+
+    #[test]
+    fn up_and_down_change_the_part_under_the_cursor() {
+        let at = |h, m| clock(Time::constant(h, m, 0, 0));
+        let part = |text: &str, part| {
+            time_parts(text)
+                .into_iter()
+                .find(|(p, _)| *p == part)
+                .unwrap()
+                .1
+        };
+        let step = |h, m, which, by| {
+            let text = at(h, m);
+            let range = part(&text, which);
+            let (new, cursor) = step_time(&text, range.start, by).unwrap();
+            assert_eq!(cursor, part(&new, which).start, "{new}");
+            parse_time(&new).unwrap()
+        };
+        let t = |h, m| Time::constant(h, m, 0, 0);
+        let twelve = time_parts(&at(8, 0))
+            .iter()
+            .any(|(p, _)| *p == TimePart::Half);
+        assert_eq!(step(8, 0, TimePart::Hour, 1), t(9, 0));
+        assert_eq!(step(8, 0, TimePart::Minute, -1), t(8, 59));
+        assert_eq!(step(8, 59, TimePart::Minute, 1), t(8, 0));
+        if twelve {
+            assert_eq!(step(8, 0, TimePart::Half, 1), t(20, 0));
+            assert_eq!(step(20, 0, TimePart::Half, -1), t(8, 0));
+            // 12 goes round to 1 in the same half.
+            assert_eq!(step(12, 30, TimePart::Hour, 1), t(13, 30));
+            assert_eq!(step(0, 30, TimePart::Hour, -1), t(11, 30));
+        } else {
+            assert_eq!(step(23, 0, TimePart::Hour, 1), t(0, 0));
+        }
+        // The cursor at the end of the minutes, touching them from the left.
+        let text = at(8, 0);
+        let end = part(&text, TimePart::Minute).end;
+        let (new, cursor) = step_time(&text, end, 1).unwrap();
+        assert_eq!(parse_time(&new), Some(t(8, 1)));
+        assert_eq!(cursor, part(&new, TimePart::Minute).end);
+        assert_eq!(step_time("soon", 1, 1), None);
+    }
 
     #[test]
     fn reads_times() {

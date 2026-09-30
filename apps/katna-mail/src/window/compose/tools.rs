@@ -155,7 +155,11 @@ impl Dialog {
             editing_link: false,
             emoji_search: input(tr!("compose-tool-emoji-search"), cx),
             emoji_group: 0,
-            time: input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx),
+            time: {
+                let time = input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
+                time.update(cx, |t, _| t.set_stepper(Some(schedule::time_stepper())));
+                time
+            },
             month: today,
             day: today,
             grid: (0, 0),
