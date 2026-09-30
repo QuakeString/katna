@@ -1709,3 +1709,28 @@ text = """
 tó wà lẹ́gbẹ̀ẹ́ wọn nínú àtòjọ lẹ́tà. Wọ́n ṣì rọrùn láti tẹ̀ bí ti tẹ́lẹ̀,
 àmì wọn sì ṣì ń ya ara rẹ̀.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Àwọn kàlẹ́ńdà Zoho lórí ìsopọ̀ Zoho fúnra rẹ̀"
+text = """
+Zoho ń pèsè kàlẹ́ńdà fún àwọn áàpù mìíràn lórí pọ́ọ̀tù kan tí ọ̀pọ̀
+nẹ́tíwọ́ọ̀kì ń dí, nítorí náà lẹ́yìn Wọlé pẹ̀lú Zoho, Kàlẹ́ńdà ń kà wọ́n
+nípasẹ̀ API Zoho fúnra rẹ̀ dípò. Àwọn ìṣẹ̀lẹ̀ Zoho rẹ ń hàn lẹ́gbẹ̀ẹ́
+àwọn kàlẹ́ńdà rẹ mìíràn; yíyí wọn padà láti Katna yóò dé lẹ́yìn náà.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Àwọn iṣẹ́ Zoho"
+text = """
+Wọlé pẹ̀lú Zoho lórí àkáǹtì Zoho kan, àwọn iṣẹ́ Zoho ToDo rẹ̀ yóò sì hàn
+nínú Iṣẹ́, ní ọ̀nà méjèèjì: ṣàfikún, ṣàtúnṣe, sàmì sí tàbí pa iṣẹ́ kan
+rẹ́ nínú Katna, yóò sì yí padà nínú Zoho náà.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Àmì máa ń wà láàrin ní ìwọ̀n èyíkéyìí"
+text = """
+Nígbà tí Ìwọ̀n nínú Ètò > Ìrísí bá ju 100% lọ, àmì àpótí àmì máa ń wà
+lókè díẹ̀ àti sí òsì. Etí àwọn àpótí àmì àti àwọn bọ́tìnnì yíká ń tóbi sí
+i pẹ̀lú ìwọ̀n báyìí, nítorí náà àmì máa ń wà láàrin ní gbogbo ìwọ̀n.
+"""

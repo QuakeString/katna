@@ -1764,3 +1764,29 @@ text = """
 nhãn bên cạnh trong danh sách thư. Chúng vẫn dễ bấm như trước, và dấu tích
 vẫn tự vẽ ra.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Lịch Zoho qua kết nối riêng của Zoho"
+text = """
+Zoho cung cấp lịch cho các ứng dụng khác qua một cổng mà nhiều mạng
+chặn, nên sau khi Đăng nhập bằng Zoho, Lịch sẽ đọc chúng qua API riêng
+của Zoho. Các sự kiện Zoho của bạn hiện bên cạnh các lịch khác; việc
+thay đổi chúng từ Katna sẽ có sau.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Việc cần làm của Zoho"
+text = """
+Đăng nhập bằng Zoho trên một tài khoản Zoho và việc cần làm trong Zoho
+ToDo của tài khoản đó sẽ hiện trong Việc cần làm, theo cả hai chiều:
+thêm, sửa, đánh dấu hoặc xóa một việc trong Katna và nó cũng thay đổi
+trong Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Dấu tích nằm giữa ở mọi kích thước"
+text = """
+Khi Tỷ lệ trong Cài đặt > Giao diện trên 100%, dấu tích của ô đánh dấu
+hơi lệch lên trên và sang trái. Viền của ô đánh dấu và nút tròn giờ lớn
+theo tỷ lệ, nên dấu tích nằm giữa ở mọi kích thước.
+"""

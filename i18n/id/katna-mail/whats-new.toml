@@ -1821,3 +1821,29 @@ Kotak centang kini sedikit lebih kecil, seukuran ikon bintang dan label di
 sampingnya dalam daftar email. Kotak ini tetap mudah diklik, dan
 centangnya masih tergambar.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalender Zoho lewat koneksi Zoho sendiri"
+text = """
+Zoho menyajikan kalender ke aplikasi lain lewat port yang diblokir
+banyak jaringan, jadi setelah Masuk dengan Zoho, Kalender membacanya
+lewat API Zoho sendiri. Acara Zoho Anda tampil di samping kalender Anda
+yang lain; mengubahnya dari Katna menyusul nanti.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tugas Zoho"
+text = """
+Masuk dengan Zoho di akun Zoho dan tugas Zoho ToDo-nya tampil di
+Tugas, dua arah: tambah, edit, tandai selesai, atau hapus tugas di Katna
+dan tugas itu ikut berubah di Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Centang di tengah pada ukuran apa pun"
+text = """
+Dengan Setelan > Tampilan > Skala di atas 100%, centang kotak centang
+sedikit bergeser ke atas dan ke kiri. Tepi kotak centang dan tombol bulat
+kini ikut membesar sesuai skala, sehingga centangnya berada di tengah pada
+setiap ukuran.
+"""

@@ -1801,3 +1801,30 @@ Onay kutuları biraz küçüldü; posta listesinde yanlarındaki yıldız ve
 etiket simgeleriyle aynı boyutta. Tıklaması eskisi kadar kolay ve işaret
 hâlâ kendini çiziyor.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho takvimleri Zoho'nun kendi bağlantısıyla"
+text = """
+Zoho, takvimleri diğer uygulamalara birçok ağın engellediği bir bağlantı
+noktasından sunuyor; bu yüzden Zoho ile oturum açtıktan sonra Takvim
+onları Zoho'nun kendi API'si üzerinden okuyor. Zoho etkinlikleriniz
+diğer takvimlerinizin yanında görünüyor; bunları Katna'dan değiştirmek
+daha sonra gelecek.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho görevleri"
+text = """
+Bir Zoho hesabında Zoho ile oturum açın; hesabın Zoho ToDo görevleri
+Görevler'de iki yönlü görünür: Katna'da bir görevi ekleyin, düzenleyin,
+işaretleyin ya da silin, Zoho'da da değişir.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "İşaret her boyutta ortada"
+text = """
+Ayarlar > Görünüm'deki Ölçekleme %100'ün üzerindeyken onay kutusunun
+işareti biraz yukarıda ve solda duruyordu. Onay kutularının ve yuvarlak
+düğmelerin kenarları artık ölçekle birlikte büyüyor; böylece işaret her
+boyutta ortada.
+"""

@@ -1882,3 +1882,31 @@ Medyo mas maliit na ang mga checkbox, kasinlaki ng mga icon ng star at
 label sa tabi nito sa listahan ng mail. Kasindali pa rin itong i-click, at
 kusa pa ring iginuguhit ang tsek.
 """
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Mga kalendaryo ng Zoho sa sariling koneksyon ng Zoho"
+text = """
+Ibinibigay ng Zoho ang mga kalendaryo sa ibang app sa isang port na
+bina-block ng maraming network, kaya pagkatapos ng Mag-sign in gamit ang
+Zoho, binabasa na lang ng Kalendaryo ang mga ito sa sariling API ng
+Zoho. Lumalabas ang mga event mo sa Zoho sa tabi ng iba mong kalendaryo;
+darating sa ibang pagkakataon ang pagbabago sa mga ito mula sa Katna.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Mga gawain sa Zoho"
+text = """
+Mag-sign in gamit ang Zoho sa isang Zoho account at lalabas ang mga
+gawain nito sa Zoho ToDo sa Mga Gawain, sa magkabilang direksyon:
+magdagdag, mag-edit, markahang tapos na o i-delete ang isang gawain sa
+Katna at magbabago rin ito sa Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Nasa gitna ang tsek sa anumang laki"
+text = """
+Kapag lampas sa 100% ang Mga setting > Hitsura > Scaling, medyo pataas at
+pakaliwa ang tsek ng checkbox. Lumalaki na ngayon kasabay ng scale ang mga
+gilid ng checkbox at bilog na button, kaya nasa gitna ang tsek sa bawat
+laki.
+"""
