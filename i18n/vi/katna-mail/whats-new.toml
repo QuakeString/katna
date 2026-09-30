@@ -1756,3 +1756,11 @@ trước và đầy dần ngay trước mắt bạn, thay vì cứ dừng ở �
 bạn…” cho đến khi mọi thư mục xong. Các thư mục khác cũng đầy dần theo
 cách đó.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Ô đánh dấu ngang hàng với biểu tượng"
+text = """
+Ô đánh dấu giờ nhỏ hơn một chút, cùng kích thước với biểu tượng dấu sao và
+nhãn bên cạnh trong danh sách thư. Chúng vẫn dễ bấm như trước, và dấu tích
+vẫn tự vẽ ra.
+"""

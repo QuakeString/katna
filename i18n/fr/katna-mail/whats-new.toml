@@ -1876,3 +1876,11 @@ premier et se remplit sous vos yeux, au lieu de rester sur « Récupération
 de vos messages… » jusqu’à ce que chaque dossier soit terminé. Les autres
 dossiers se remplissent de la même façon.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Des cases à la hauteur des icônes"
+text = """
+Les cases à cocher sont un peu plus petites, de la taille des icônes
+d’étoile et de libellé voisines dans la liste des messages. Elles restent
+aussi faciles à cliquer, et leur coche se dessine toujours.
+"""

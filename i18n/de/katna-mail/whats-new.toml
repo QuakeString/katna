@@ -1859,3 +1859,11 @@ heruntergeladen und füllt sich vor Ihren Augen, statt bei „Ihre E-Mails
 werden abgerufen…“ zu bleiben, bis jeder Ordner fertig ist. Andere
 Ordner füllen sich auf dieselbe Weise.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kontrollkästchen auf Höhe der Symbole"
+text = """
+Kontrollkästchen sind etwas kleiner, so groß wie die Stern- und
+Label-Symbole daneben in der Mailliste. Sie lassen sich genauso leicht
+anklicken, und das Häkchen zeichnet sich weiterhin ein.
+"""

@@ -1813,3 +1813,11 @@ loopt die vol terwijl je kijkt, in plaats van op ‘Je e-mail ophalen…’ te
 blijven staan tot elke map klaar is. Andere mappen vullen zich op dezelfde
 manier.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Selectievakjes op één lijn met de pictogrammen"
+text = """
+Selectievakjes zijn iets kleiner, even groot als de ster- en
+labelpictogrammen ernaast in de e-maillijst. Ze zijn net zo makkelijk aan
+te klikken en het vinkje tekent zich nog steeds.
+"""

@@ -1808,3 +1808,11 @@ primeiro e vai se preenchendo enquanto você acompanha, em vez de ficar
 em “Buscando seus e-mails…” até que todas as pastas terminem. As outras
 pastas se preenchem da mesma forma.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Caixas de seleção alinhadas aos ícones"
+text = """
+As caixas de seleção estão um pouco menores, do mesmo tamanho dos ícones
+de estrela e de marcador ao lado delas na lista de e-mails. Continuam tão
+fáceis de clicar quanto antes, e a marca ainda se desenha.
+"""

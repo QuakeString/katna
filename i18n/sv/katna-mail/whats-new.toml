@@ -1777,3 +1777,11 @@ När du har lagt till ett konto hämtas dess inkorg först och fylls på
 medan du tittar, i stället för att stå på ”Hämtar din e-post…” tills
 alla mappar är klara. Andra mappar fylls på på samma sätt.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kryssrutorna ligger i nivå med ikonerna"
+text = """
+Kryssrutorna är lite mindre, lika stora som stjärn- och etikettikonerna
+bredvid dem i e-postlistan. De är lika lätta att klicka på som förut, och
+bocken ritas fortfarande fram.
+"""

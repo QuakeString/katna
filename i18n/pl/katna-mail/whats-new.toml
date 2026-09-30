@@ -1799,3 +1799,11 @@ Po dodaniu konta jego Odebrane pobierają się najpierw i wypełniają na
 twoich oczach, zamiast stać na „Pobieranie poczty…”, aż skończą się
 wszystkie foldery. Pozostałe foldery wypełniają się tak samo.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Pola wyboru równo z ikonami"
+text = """
+Pola wyboru są nieco mniejsze, mają ten sam rozmiar co ikony gwiazdki
+i etykiety obok nich na liście poczty. Klika się je równie łatwo,
+a znacznik nadal się rysuje.
+"""

@@ -1823,3 +1823,11 @@ primero y se va llenando ante tus ojos, en vez de quedarse en «Obteniendo
 tu correo…» hasta que termine cada carpeta. Las demás carpetas se llenan
 de la misma forma.
 """
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Casillas a la altura de los iconos"
+text = """
+Las casillas son un poco más pequeñas, del mismo tamaño que los iconos de
+estrella y etiqueta de al lado en la lista de correo. Son igual de fáciles
+de pulsar, y su marca se sigue dibujando.
+"""
