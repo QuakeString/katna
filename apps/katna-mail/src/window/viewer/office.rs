@@ -29,7 +29,7 @@ use katna_ui::px;
 use katna_ui::unpx;
 
 use super::super::select::{self, Key, Marker, MenuAct};
-use super::{Content, Viewer, ZOOMS};
+use super::{Content, Viewer};
 use crate::theme::Theme;
 use crate::widgets::ScaledEdge;
 
@@ -220,6 +220,31 @@ impl DocumentView {
         }
     }
 
+    /// Where each slide starts, by block, for a presentation; empty for a
+    /// document.
+    pub fn slide_starts(&self) -> Vec<usize> {
+        (self.doc.blocks.iter().enumerate())
+            .filter(|(_, block)| matches!(block, Block::Slide(_)))
+            .map(|(ix, _)| ix)
+            .collect()
+    }
+
+    /// The slide (from 0) at the top of the view, of `starts`.
+    pub fn top_slide(&self, starts: &[usize]) -> usize {
+        let top = self.state.logical_scroll_top().item_ix;
+        starts.iter().rposition(|&ix| ix <= top).unwrap_or(0)
+    }
+
+    /// Scrolls slide `slide` (from 0) of `starts` to the top.
+    pub fn go_to_slide(&self, slide: usize, starts: &[usize]) {
+        if let Some(&item_ix) = starts.get(slide) {
+            self.state.scroll_to(gpui::ListOffset {
+                item_ix,
+                offset_in_item: px(0.0),
+            });
+        }
+    }
+
     /// All of the document's text, keyed as it is drawn: a block is a
     /// part, and a table's paragraphs its pieces, cell by cell.
     pub fn all_text(&self) -> Rc<Vec<(Key, SharedString)>> {
@@ -276,6 +301,22 @@ fn numeric(cell: &str) -> bool {
 /// windows, a small margin on narrow ones.
 fn side_margin(vw: f32) -> f32 {
     if vw < 700.0 { 12.0 } else { 80.0 }
+}
+
+/// The zoom at which a document's page fills a viewer `vw` wide.
+pub(super) fn document_fit_width(vw: f32) -> f32 {
+    let room = vw - 2.0 * side_margin(vw);
+    room / room.clamp(280.0, PAGE_WIDTH)
+}
+
+impl SheetView {
+    /// The zoom at which every column of the sheet on show fits a viewer
+    /// `vw` wide.
+    pub(super) fn fit_width(&self, vw: f32) -> f32 {
+        let grid = self.grid(1.0);
+        let total = grid.number_width + grid.widths.iter().sum::<f32>();
+        (vw - 2.0 * side_margin(vw) - 2.0) / total.max(1.0)
+    }
 }
 
 impl Viewer {
@@ -642,7 +683,7 @@ impl Viewer {
     ) {
         cx.stop_propagation();
         window.focus(&self.focus, cx);
-        let zoom = ZOOMS[self.zoom];
+        let zoom = self.zoom_value();
         let Some(view) = self.sheet_view_mut() else {
             return;
         };
@@ -670,7 +711,7 @@ impl Viewer {
             self.release_cells(cx);
             return;
         }
-        let zoom = ZOOMS[self.zoom];
+        let zoom = self.zoom_value();
         let Some(view) = self.sheet_view_mut() else {
             return;
         };

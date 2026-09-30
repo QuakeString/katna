@@ -130,6 +130,15 @@ pub(super) struct Viewer {
     content: Content,
     /// A step of [`ZOOMS`].
     zoom: usize,
+    /// A zoom between the steps, from Fit or Real size; the steps go on
+    /// from the nearest one.
+    zoom_free: Option<f32>,
+    /// The height of the room under the top bar, at the last frame.
+    view_h: f32,
+    /// The page (or slide) on show and the count, at the last frame.
+    shown_page: Option<(usize, usize)>,
+    /// Keeps stepping pages while a page box arrow is held.
+    page_repeat: Option<Task<()>>,
     scroll: ScrollHandle,
     /// Bitmaps no longer drawn; the window frees them at the next frame.
     released: Vec<Arc<RenderImage>>,
@@ -284,10 +293,10 @@ impl Viewer {
                 if !this.goto_stepped.swap(false, Ordering::Relaxed) {
                     return;
                 }
-                let Content::Pdf(pdf) = &this.content else {
+                let Some((_, count)) = this.shown_page else {
                     return;
                 };
-                let count = pdf.doc.pages().max(1);
+                let count = count.max(1);
                 let typed = this.goto.read(cx).text().trim().parse::<usize>();
                 let page = typed.unwrap_or(1).clamp(1, count);
                 // Past the last page the box stays on it.
@@ -307,6 +316,10 @@ impl Viewer {
             file: None,
             content: Content::Loading,
             zoom: fit_step(),
+            zoom_free: None,
+            view_h: 0.0,
+            shown_page: None,
+            page_repeat: None,
             scroll: ScrollHandle::new(),
             released: Vec::new(),
             _load: None,
@@ -456,6 +469,7 @@ impl Viewer {
         self.seq += 1;
         self.text.begin(self.seq);
         self.zoom = fit_step();
+        self.zoom_free = None;
         self.went = None;
         self.markup = Markup::new();
         self.scroll.set_offset(gpui::point(px(0.0), px(0.0)));
@@ -563,12 +577,47 @@ impl Viewer {
         self.zoom_at(step, None, cx);
     }
 
+    /// The zoom on show: 1 fits the page (or picture) to the window.
+    fn zoom_value(&self) -> f32 {
+        self.zoom_free.unwrap_or(ZOOMS[self.zoom])
+    }
+
+    /// The step `by` steps from the zoom on show; from a zoom between the
+    /// steps, the first step is the next one that way.
+    fn zoom_step(&self, by: isize) -> usize {
+        let last = ZOOMS.len() as isize - 1;
+        let from = match self.zoom_free {
+            Some(value) if by > 0 => {
+                let next = ZOOMS.iter().position(|z| *z > value + 0.001);
+                next.map_or(last + 1, |ix| ix as isize) - 1
+            }
+            Some(value) if by < 0 => {
+                let next = ZOOMS.iter().rposition(|z| *z < value - 0.001);
+                next.map_or(-1, |ix| ix as isize) + 1
+            }
+            _ => self.zoom as isize,
+        };
+        (from + by).clamp(0, last) as usize
+    }
+
     /// Zooms to `step`, keeping what is under `at` (a window position; the
     /// top left when none) in place on a PDF or picture.
     fn zoom_at(&mut self, step: usize, at: Option<Point<Pixels>>, cx: &mut Context<Self>) {
         let step = step.min(ZOOMS.len() - 1);
-        if step != self.zoom {
-            let ratio = ZOOMS[step] / ZOOMS[self.zoom];
+        self.zoom_to(ZOOMS[step], Some(step), at, cx);
+    }
+
+    /// Zooms to `value`, a step of [`ZOOMS`] when `step` names it.
+    fn zoom_to(
+        &mut self,
+        value: f32,
+        step: Option<usize>,
+        at: Option<Point<Pixels>>,
+        cx: &mut Context<Self>,
+    ) {
+        let value = value.clamp(ZOOMS[0], ZOOMS[ZOOMS.len() - 1]);
+        let ratio = value / self.zoom_value();
+        if (ratio - 1.0).abs() > 0.0001 {
             let offset = self.scroll.offset();
             let view = self.scroll.bounds();
             let (px_, py_) = at.filter(|at| view.contains(at)).map_or((0.0, 0.0), |at| {
@@ -577,13 +626,19 @@ impl Viewer {
             // The point under the pointer is `p - offset` into the file;
             // after zooming it is `ratio` times further in.
             let keep = |p: f32, offset: Pixels| p * (1.0 - ratio) + unpx(offset) * ratio;
-            self.zoom = step;
             self.scroll.set_offset(gpui::point(
                 px(keep(px_, offset.x)),
                 px(keep(py_, offset.y)),
             ));
-            cx.notify();
         }
+        match step {
+            Some(step) => {
+                self.zoom = step;
+                self.zoom_free = None;
+            }
+            None => self.zoom_free = Some(value),
+        }
+        cx.notify();
     }
 
     /// Ctrl + mouse wheel (or a touchpad's smooth scroll) zooms in steps,
@@ -605,8 +660,8 @@ impl Viewer {
         let steps = (self.wheel_zoom / WHEEL_STEP).trunc();
         if steps != 0.0 {
             self.wheel_zoom -= steps * WHEEL_STEP;
-            let step = (self.zoom as isize + steps as isize).clamp(0, ZOOMS.len() as isize - 1);
-            self.zoom_at(step as usize, Some(event.position), cx);
+            let step = self.zoom_step(steps as isize);
+            self.zoom_at(step, Some(event.position), cx);
         }
         true
     }
@@ -623,8 +678,8 @@ impl Viewer {
         let steps = (self.pinch_zoom / PINCH_STEP).trunc();
         if steps != 0.0 {
             self.pinch_zoom -= steps * PINCH_STEP;
-            let step = (self.zoom as isize + steps as isize).clamp(0, ZOOMS.len() as isize - 1);
-            self.zoom_at(step as usize, Some(event.position), cx);
+            let step = self.zoom_step(steps as isize);
+            self.zoom_at(step, Some(event.position), cx);
         }
     }
 
@@ -685,6 +740,14 @@ impl Viewer {
     /// Turns the PDF's pages a quarter turn, keeping the page on show.
     /// Pages already drawn are turned at once; marks turn with them.
     fn rotate(&mut self, clockwise: bool, cx: &mut Context<Self>) {
+        // A picture turns only on screen; Save keeps the file as it came.
+        if let Content::Bitmap(image, (w, h)) = &mut self.content {
+            let turned = turn_bitmap(image, clockwise);
+            self.released.push(std::mem::replace(image, turned));
+            (*w, *h) = (*h, *w);
+            cx.notify();
+            return;
+        }
         if !matches!(self.content, Content::Pdf(_)) {
             return;
         }
@@ -721,7 +784,7 @@ impl Viewer {
         self.text.set_all(None);
         pdf._reading = None;
         let reading = self.read_pdf_text(doc.clone(), cx);
-        let z = pdf_fit(&doc, self.frame.0) * ZOOMS[self.zoom];
+        let z = pdf_fit(&doc, self.frame.0) * self.zoom_value();
         let top: f32 = (0..page).map(|p| doc.page_size(p).1 * z + PAGE_GAP).sum();
         if let Content::Pdf(pdf) = &mut self.content {
             pdf._reading = Some(reading);
@@ -733,8 +796,114 @@ impl Viewer {
         cx.notify();
     }
 
+    /// What the controls offer for the file on show.
+    fn tools(&self, pages: Option<(usize, usize)>) -> Tools {
+        let slides = matches!(&self.content, Content::Document(_)) && pages.is_some();
+        let (fit, real_size, rotate) = match &self.content {
+            Content::Pdf(_) => (Some(Fit::Page), false, true),
+            Content::Bitmap(..) => (Some(Fit::Picture), true, true),
+            Content::Drawn(_, size) => (Some(Fit::Picture), size.is_some(), false),
+            Content::Document(_) | Content::Sheet(_) => (Some(Fit::Width), false, false),
+            _ => (None, false, false),
+        };
+        Tools {
+            pages,
+            slides,
+            fit,
+            real_size,
+            rotate,
+        }
+    }
+
+    /// Fit: a PDF's whole page (its height) in the window, a picture in
+    /// the window, a document's or sheet's width across it.
+    fn fit(&mut self, cx: &mut Context<Self>) {
+        let (vw, _) = self.frame;
+        let value = match &self.content {
+            Content::Pdf(pdf) => {
+                let page = self.shown_page.map_or(0, |(page, _)| page);
+                let (w, h) = pdf.doc.page_size(page);
+                let base = pdf_fit(&pdf.doc, vw);
+                // Room under the bar; on a phone the foot pill takes more.
+                let foot = if vw >= BAR_CONTROLS_PDF { 24.0 } else { 80.0 };
+                let tall = (self.view_h - 8.0 - foot) / (h * base);
+                let wide = (vw - 32.0) / (w * base);
+                let value = tall.min(wide);
+                let doc = pdf.doc.clone();
+                self.zoom_to(value, None, None, cx);
+                if let Content::Pdf(pdf) = &mut self.content {
+                    pdf.z = pdf_fit(&doc, vw) * self.zoom_free.unwrap_or(value);
+                }
+                self.go_to_page(page, cx);
+                return;
+            }
+            Content::Document(_) => office::document_fit_width(vw),
+            Content::Sheet(view) => view.fit_width(vw),
+            _ => 1.0,
+        };
+        if (value - 1.0).abs() < 0.005 {
+            self.set_zoom(fit_step(), cx);
+        } else {
+            self.zoom_to(value, None, None, cx);
+        }
+    }
+
+    /// Shows a picture pixel for pixel.
+    fn real_size(&mut self, cx: &mut Context<Self>) {
+        let size = match &self.content {
+            Content::Bitmap(_, size) => Some(*size),
+            Content::Drawn(_, size) => *size,
+            _ => None,
+        };
+        let Some((w, h)) = size else {
+            return;
+        };
+        let (vw, scale) = self.frame;
+        let fitted = picture_size(w, h, scale, vw, self.view_h, 1.0).0;
+        let value = (w as f32 / scale) / fitted.max(1.0);
+        if (value - 1.0).abs() < 0.005 {
+            self.set_zoom(fit_step(), cx);
+        } else {
+            self.zoom_to(value, None, None, cx);
+        }
+    }
+
+    /// Goes `by` pages (or slides) from the one on show, and shows it in
+    /// the page box.
+    fn step_page(&mut self, by: isize, cx: &mut Context<Self>) {
+        let Some((page, count)) = self.shown_page else {
+            return;
+        };
+        let to = (page as isize + by).clamp(0, count as isize - 1) as usize;
+        self.go_to_page(to, cx);
+        self.shown_page = Some((to, count));
+        self.goto
+            .update(cx, |input, cx| input.set_text((to + 1).to_string(), cx));
+    }
+
+    /// A press on a page box arrow: one page, then more while held.
+    fn press_page_arrow(&mut self, by: isize, cx: &mut Context<Self>) {
+        self.step_page(by, cx);
+        self.page_repeat = Some(cx.spawn(async move |this, cx| {
+            let mut wait = Duration::from_millis(400);
+            loop {
+                cx.background_executor().timer(wait).await;
+                wait = Duration::from_millis(90);
+                if this.update(cx, |this, cx| this.step_page(by, cx)).is_err() {
+                    break;
+                }
+            }
+        }));
+    }
+
     /// Scrolls the PDF so `page` (from 0) starts just below the top bar.
     fn go_to_page(&mut self, page: usize, cx: &mut Context<Self>) {
+        if let Content::Document(view) = &self.content {
+            let starts = view.slide_starts();
+            view.go_to_slide(page.min(starts.len().saturating_sub(1)), &starts);
+            cx.notify();
+            return;
+        }
         let Content::Pdf(pdf) = &self.content else {
             return;
         };
@@ -823,8 +992,8 @@ impl Viewer {
             "escape" => self.close(cx),
             "left" => self.step(-1, cx),
             "right" => self.step(1, cx),
-            "+" | "=" => self.set_zoom(self.zoom + 1, cx),
-            "-" => self.set_zoom(self.zoom.saturating_sub(1), cx),
+            "+" | "=" => self.set_zoom(self.zoom_step(1), cx),
+            "-" => self.set_zoom(self.zoom_step(-1), cx),
             "0" => self.set_zoom(fit_step(), cx),
             "s" if ctrl => self.save(cx),
             "c" if ctrl => self.copy(cx),
@@ -921,6 +1090,87 @@ fn on_paper(this: &mut Viewer, _: &MouseDownEvent, _: &mut Window, _: &mut Conte
 }
 
 /// `image` (drawn BGRA) turned a quarter turn.
+/// What the controls offer for the file on show.
+#[derive(Clone, Copy)]
+struct Tools {
+    /// The page (or slide) on show and the count.
+    pages: Option<(usize, usize)>,
+    slides: bool,
+    fit: Option<Fit>,
+    /// Real size, for a picture.
+    real_size: bool,
+    rotate: bool,
+}
+
+/// What the Fit button fits.
+#[derive(Clone, Copy)]
+enum Fit {
+    Page,
+    Picture,
+    Width,
+}
+
+/// The ▲▼ at the right of the page box, shown while the pointer is on
+/// it: a page back or on, more while held.
+fn page_arrows(th: &Theme, cx: &mut Context<Viewer>) -> impl IntoElement {
+    let arrow = |id: &'static str, name: &'static str, by: isize, tip_id: SharedString| {
+        div()
+            .id(id)
+            .flex_1()
+            .w_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded(px(3.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(0xffffff33)))
+            .tooltip(tip(tip_id, th))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.press_page_arrow(by, cx);
+                }),
+            )
+            .on_mouse_up(
+                MouseButton::Left,
+                cx.listener(|this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.page_repeat = None;
+                }),
+            )
+            .on_mouse_up_out(
+                MouseButton::Left,
+                cx.listener(|this, _, _, _| this.page_repeat = None),
+            )
+            .child(icon(name, INK, 10.0))
+    };
+    div()
+        .absolute()
+        .top(px(3.0))
+        .bottom(px(3.0))
+        .right(px(3.0))
+        .w(px(14.0))
+        .flex()
+        .flex_col()
+        // Not occluding: the box under it keeps the pointer, so the arrows
+        // stay shown; their presses stop before reaching the box.
+        .opacity(0.0)
+        .group_hover("viewer-page-box", |s| s.opacity(1.0))
+        .child(arrow(
+            "viewer-page-back",
+            "chevron-up",
+            -1,
+            tr!("viewer-page-back-tip").into(),
+        ))
+        .child(arrow(
+            "viewer-page-on",
+            "chevron-down",
+            1,
+            tr!("viewer-page-on-tip").into(),
+        ))
+}
+
 fn turn_bitmap(image: &Arc<RenderImage>, clockwise: bool) -> Arc<RenderImage> {
     let size = image.size(0);
     let pixels = image.as_bytes(0).and_then(|bytes| {
@@ -1081,7 +1331,8 @@ impl Render for Viewer {
             (unpx(viewport.width), unpx(viewport.height) - BAR_HEIGHT)
         };
         self.frame = (vw, window.scale_factor());
-        let zoom = ZOOMS[self.zoom];
+        self.view_h = vh;
+        let zoom = self.zoom_value();
         let item = self.items.get(self.current).cloned();
         let name = item.as_ref().map(|i| i.name.clone()).unwrap_or_default();
         let many = self.items.len() > 1;
@@ -1090,7 +1341,14 @@ impl Render for Viewer {
         let mut pages = None;
         let mut pdf_z = None;
         let body: AnyElement = if matches!(self.content, Content::Document(_)) {
-            self.document_body(zoom, vw, cx)
+            let body = self.document_body(zoom, vw, cx);
+            if let Content::Document(view) = &self.content {
+                let starts = view.slide_starts();
+                if !starts.is_empty() {
+                    pages = Some((view.top_slide(&starts), starts.len()));
+                }
+            }
+            body
         } else {
             match &self.content {
                 Content::Document(_) => div().into_any_element(),
@@ -1311,6 +1569,7 @@ impl Render for Viewer {
         if let (Some(z), Content::Pdf(pdf)) = (pdf_z, &mut self.content) {
             pdf.z = z;
         }
+        self.shown_page = pages;
         let goto_focused = self.goto.focus_handle(cx).is_focused(window);
         if let Some((current, _)) = pages
             && !goto_focused
@@ -1335,7 +1594,8 @@ impl Render for Viewer {
         } else {
             FOOT_PILL_HEIGHT
         };
-        let controls = zoomable.then(|| self.controls(pages, zoom, goto_focused, pill, &th, cx));
+        let tools = self.tools(pages);
+        let controls = zoomable.then(|| self.controls(tools, zoom, goto_focused, pill, &th, cx));
         let (bar_controls, foot_controls) = if in_bar {
             (controls, None)
         } else {
@@ -1507,6 +1767,7 @@ impl Render for Viewer {
                     .then_some(event.position);
             }))
             .capture_any_mouse_up(cx.listener(|this, event: &MouseUpEvent, _, cx| {
+                this.page_repeat = None;
                 if let Some(at) = this.backdrop.take()
                     && event.button == MouseButton::Left
                     && unpx(event.position.x - at.x).hypot(unpx(event.position.y - at.y))
@@ -1558,7 +1819,7 @@ impl Viewer {
     /// pill at the foot when the window is narrow.
     fn controls(
         &self,
-        pages: Option<(usize, usize)>,
+        tools: Tools,
         zoom: f32,
         goto_focused: bool,
         height: f32,
@@ -1566,7 +1827,10 @@ impl Viewer {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         let th = *th;
+        let pages = tools.pages;
         let compact = self.frame.0 < COMPACT_CONTROLS;
+        // A phone's pill packs its buttons a little closer.
+        let button = if compact { 32.0 } else { 36.0 };
         let separator = || {
             div()
                 .mx(px(4.0))
@@ -1599,36 +1863,51 @@ impl Viewer {
                         .gap(px(6.0))
                         .tooltip(tip(tr!("viewer-go-to-page-tip"), &th))
                         // A phone keeps the number and drops the word.
-                        .when(!compact, |d| d.child(tr!("viewer-page")))
+                        .when(!compact, |d| {
+                            d.child(if tools.slides {
+                                tr!("viewer-slide-box")
+                            } else {
+                                tr!("viewer-page")
+                            })
+                        })
                         .child(
                             div()
-                                .w(px(46.0))
-                                .h(px(28.0))
-                                .px(px(7.0))
-                                .flex()
-                                .items_center()
-                                .rounded(px(6.0))
-                                .border_1()
-                                .border_color(if goto_focused {
-                                    rgba(th.accent)
-                                } else {
-                                    rgba(0x00000000)
-                                })
-                                .bg(rgba(0xffffff1f))
-                                .capture_any_mouse_down(cx.listener(|this, _, window, cx| {
-                                    this.goto_click =
-                                        !this.goto.focus_handle(cx).is_focused(window);
-                                }))
-                                .on_mouse_up(
-                                    MouseButton::Left,
-                                    cx.listener(|this, _, _, cx| {
-                                        if std::mem::take(&mut this.goto_click) {
-                                            this.goto
-                                                .update(cx, |input, cx| input.select_all_text(cx));
-                                        }
-                                    }),
+                                .relative()
+                                .group("viewer-page-box")
+                                .child(
+                                    div()
+                                        .w(px(46.0))
+                                        .h(px(28.0))
+                                        .px(px(7.0))
+                                        .flex()
+                                        .items_center()
+                                        .rounded(px(6.0))
+                                        .border_1()
+                                        .border_color(if goto_focused {
+                                            rgba(th.accent)
+                                        } else {
+                                            rgba(0x00000000)
+                                        })
+                                        .bg(rgba(0xffffff1f))
+                                        .capture_any_mouse_down(cx.listener(
+                                            |this, _, window, cx| {
+                                                this.goto_click =
+                                                    !this.goto.focus_handle(cx).is_focused(window);
+                                            },
+                                        ))
+                                        .on_mouse_up(
+                                            MouseButton::Left,
+                                            cx.listener(|this, _, _, cx| {
+                                                if std::mem::take(&mut this.goto_click) {
+                                                    this.goto.update(cx, |input, cx| {
+                                                        input.select_all_text(cx)
+                                                    });
+                                                }
+                                            }),
+                                        )
+                                        .child(self.goto.clone()),
                                 )
-                                .child(self.goto.clone()),
+                                .child(page_arrows(&th, cx)),
                         )
                         .child(tr!("viewer-page-count", count = count)),
                 )
@@ -1636,17 +1915,13 @@ impl Viewer {
             })
             .child(
                 bar_button("viewer-zoom-out", "zoom-out", &th)
-                    .size(px(36.0))
-                    .on_click(
-                        cx.listener(|this, _, _, cx| {
-                            this.set_zoom(this.zoom.saturating_sub(1), cx)
-                        }),
-                    ),
+                    .size(px(button))
+                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(this.zoom_step(-1), cx))),
             )
             .child(
                 div()
                     .id("viewer-zoom-reset")
-                    .w(px(52.0))
+                    .w(px(if compact { 44.0 } else { 52.0 }))
                     .flex()
                     .justify_center()
                     .cursor_pointer()
@@ -1656,10 +1931,34 @@ impl Viewer {
             )
             .child(
                 bar_button("viewer-zoom-in", "zoom-in", &th)
-                    .size(px(36.0))
-                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(this.zoom + 1, cx))),
+                    .size(px(button))
+                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(this.zoom_step(1), cx))),
             )
-            .when(pages.is_some(), |d| {
+            .when_some(tools.fit, |d, fit| {
+                let (name, tip) = match fit {
+                    Fit::Page => ("fit-page", tr!("viewer-fit-page-tip")),
+                    Fit::Picture => ("fit-page", tr!("viewer-fit-picture-tip")),
+                    Fit::Width => ("fit-width", tr!("viewer-fit-width-tip")),
+                };
+                d.child(
+                    bar_button_tip("viewer-fit", name, tip.into(), &th)
+                        .size(px(button))
+                        .on_click(cx.listener(|this, _, _, cx| this.fit(cx))),
+                )
+            })
+            .when(tools.real_size, |d| {
+                d.child(
+                    bar_button_tip(
+                        "viewer-real-size",
+                        "real-size",
+                        tr!("viewer-real-size-tip").into(),
+                        &th,
+                    )
+                    .size(px(button))
+                    .on_click(cx.listener(|this, _, _, cx| this.real_size(cx))),
+                )
+            })
+            .when(tools.rotate, |d| {
                 d.child(separator())
                     .child(
                         bar_button_tip(
@@ -1668,7 +1967,7 @@ impl Viewer {
                             tr!("viewer-rotate-anticlockwise-tip").into(),
                             &th,
                         )
-                        .size(px(36.0))
+                        .size(px(button))
                         .on_click(cx.listener(|this, _, _, cx| this.rotate(false, cx))),
                     )
                     .child(
@@ -1678,7 +1977,7 @@ impl Viewer {
                             tr!("viewer-rotate-clockwise-tip").into(),
                             &th,
                         )
-                        .size(px(36.0))
+                        .size(px(button))
                         .on_click(cx.listener(|this, _, _, cx| this.rotate(true, cx))),
                     )
             })

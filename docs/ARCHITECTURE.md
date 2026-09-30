@@ -2324,9 +2324,14 @@ desktop's own app stays one click away.
   300 ms if it takes longer; the viewer fades in only when it opens. The
   middle of the top bar zooms (−/+/0, Ctrl + mouse wheel or a touchpad
   pinch around the pointer, 25 %–400 %, 100 % fits the window)
-  and shows a PDF's page as "Page [n] of N": typing a number in the box
-  (click it or Ctrl+G) and Enter goes to that page, Escape leaves the
-  box. A PDF also turns a quarter turn either way (Ctrl+R, Ctrl+Shift+R):
+  and shows a PDF's page (or a presentation's slide) as "Page [n] of N":
+  typing a number in the box (click it or Ctrl+G) and Enter goes to that
+  page, Up/Down in it or its ▲▼ (shown on hover, repeating while held)
+  go a page back or on, Escape leaves the box. Fit fits a PDF page's
+  height (the whole page), a picture to the window, and a document's,
+  presentation's or sheet's width; a picture also has Real size (1:1)
+  and turns on screen only (Save keeps the file). Zoom between the
+  steps (from Fit or 1:1) goes on from the nearest step. A PDF also turns a quarter turn either way (Ctrl+R, Ctrl+Shift+R):
   every page turns, the page on show stays, marks turn with it, and a
   marked copy is saved turned (`/Rotate`). Too narrow for the bar (a
   phone), these float in a pill at the foot instead. A click on the dim

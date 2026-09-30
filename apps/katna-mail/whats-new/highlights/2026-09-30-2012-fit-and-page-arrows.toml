@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Fit, page arrows and more in the viewer"
+text = """
+The attachment viewer has a Fit button: a PDF page fits the window's
+height, a picture the window, and documents, slides and spreadsheets its
+width. Pictures also get Real size and can be turned. Point at the page
+box for small arrows to go a page back or on, and slides get a box of
+their own.
+"""
