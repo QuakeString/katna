@@ -137,6 +137,7 @@ async fn run() -> Result<bool> {
             Some(Event::Synced(_)) => break,
             Some(
                 Event::Connected
+                | Event::Stored(_)
                 | Event::BodiesStored(_)
                 | Event::ChangesSent(_)
                 | Event::QuotaChanged,
