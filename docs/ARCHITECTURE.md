@@ -1291,8 +1291,13 @@ parses the HTML body with `html5ever` (browser-grade error recovery) and
 walks it once into a small layout tree (`katna_render::html::Document`):
 paragraphs of styled runs (bold, italic, underline, strike, colors,
 monospace, links), headings, lists, quotes, `<pre>`, rules, boxes with
-background, padding, border, radius and width, table rows as rows of cells,
-button-like inline boxes, and images. Only inline `style` attributes and
+background, padding, border (all round, or a top or bottom divider),
+radius and width, table rows as rows of cells, button-like inline boxes,
+and images. As in a browser, a table cell is never narrower than its
+longest word or image (estimated from the font size, or its whole line
+under `nowrap`), and the rows of one table with the same number of cells
+share their columns' widths, so `width="1%"` columns hold their headings
+on one line and line up. Only inline `style` attributes and
 presentational attributes are read; `<style>` sheets are ignored. The walk
 is the sanitizer: scripts, style sheets, forms, frames, objects, SVG and
 unknown elements never reach the tree, hidden preheaders are dropped, link

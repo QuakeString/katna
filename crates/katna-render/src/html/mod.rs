@@ -85,11 +85,19 @@ pub struct BoxStyle {
     /// way when there is less room.
     pub width: Option<Length>,
     pub max_width: Option<f32>,
+    /// The narrowest a table cell can be, in pixels: as wide as its longest
+    /// word or image, as a browser keeps it, so `width="1%"` columns do not
+    /// break their text a letter per line. 0 when it has none.
+    pub min_width: f32,
     /// The box sits in the middle of its parent (`align="center"` on a
     /// table, `margin: 0 auto`).
     pub center: bool,
     /// Border width in pixels and color.
     pub border: Option<(f32, Color)>,
+    /// A line along the top or bottom edge only (`border-top`,
+    /// `border-bottom`), as dividers are drawn; `border` wins over them.
+    pub border_top: Option<(f32, Color)>,
+    pub border_bottom: Option<(f32, Color)>,
     pub radius: f32,
     /// As wide as its content, like an `inline-block` button, placed by
     /// `align` in its own line.

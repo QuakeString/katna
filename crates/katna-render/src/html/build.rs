@@ -73,8 +73,15 @@ const TRACKER_PATHS: &[&str] = &[
 /// Past this many boxes deep, further boxes are flattened into their
 /// parent, so a pathological message cannot build a tree the UI chokes on.
 const MAX_BOX_DEPTH: usize = 40;
-/// Past this many elements deep, the rest is dropped.
-const MAX_DEPTH: usize = 400;
+/// Widest a table cell's longest word can make it, so one long link does
+/// not push the rest of its row out of the pane.
+const MAX_CELL_MIN: f32 = 240.0;
+/// Most the cells of one row can ask for in all.
+const MAX_ROW_MIN: f32 = 560.0;
+/// Past this many elements deep, the rest is dropped. Every level costs
+/// stack (several kilobytes in a debug build), and no real mail nests
+/// anywhere near this deep.
+const MAX_DEPTH: usize = 320;
 /// At most this many blocks and inlines in all.
 const MAX_ITEMS: usize = 40_000;
 
@@ -569,9 +576,10 @@ impl Builder<'_> {
                 .unwrap_or(0x000000ff);
             style.border = Some((w, color));
         }
-        if style.border.is_some_and(|(w, c)| w <= 0.0 || c & 0xff == 0) {
-            style.border = None;
-        }
+        let visible = |b: Option<(f32, u32)>| b.filter(|(w, c)| *w > 0.0 && c & 0xff != 0);
+        style.border = visible(style.border);
+        style.border_top = visible(get("border-top").and_then(border_value));
+        style.border_bottom = visible(get("border-bottom").and_then(border_value));
         if let Some(r) =
             get("border-radius").and_then(|r| css::px(r.split_whitespace().next()?, em))
         {
@@ -598,6 +606,8 @@ impl Builder<'_> {
     }
 
     /// `inherited` is the text alignment around the table.
+    // Kept out of `element`, whose stack frame every level of nesting pays.
+    #[inline(never)]
     fn table<'s>(
         &mut self,
         id: NodeId,
@@ -632,9 +642,21 @@ impl Builder<'_> {
             .and_then(|p| css::px(p, 16.0))
             .unwrap_or(if ctx.cell_border.is_some() { 1.0 } else { 0.0 })
             .min(64.0);
-        self.boxed(id, BoxKind::Stack, style, ctx, out);
+        if ctx.boxes >= MAX_BOX_DEPTH {
+            self.boxed(id, BoxKind::Stack, style, ctx, out);
+            return;
+        }
+        let mut inner_ctx = ctx;
+        inner_ctx.boxes += 1;
+        let mut inner = Out::default();
+        self.children(id, &inner_ctx, &mut inner);
+        inner.flush();
+        share_columns(&mut inner.blocks);
+        out.flush();
+        push_box(&mut out.blocks, BoxKind::Stack, style, inner.blocks);
     }
 
+    #[inline(never)]
     fn row<'s>(
         &mut self,
         id: NodeId,
@@ -700,6 +722,16 @@ impl Builder<'_> {
             if empty && style.width.is_none() && style.background.is_none() {
                 continue;
             }
+            let nowrap = node.attr("nowrap").is_some()
+                || get("white-space").is_some_and(|w| w.trim().eq_ignore_ascii_case("nowrap"));
+            let border = style.border.map_or(0.0, |(w, _)| 2.0 * w);
+            if !empty {
+                style.min_width = (min_content(&inner.blocks, nowrap)
+                    + style.padding[1]
+                    + style.padding[3]
+                    + border)
+                    .min(MAX_CELL_MIN);
+            }
             cells.push(Block::Box(BoxBlock {
                 kind: BoxKind::Stack,
                 style,
@@ -713,6 +745,7 @@ impl Builder<'_> {
         if !has_content && style.background.is_none() {
             return;
         }
+        fit_row_mins(&mut cells);
         if cells.len() == 1 {
             // A one-cell row is just the cell.
             let Some(Block::Box(mut cell)) = cells.pop() else {
@@ -723,6 +756,7 @@ impl Builder<'_> {
             }
             // Its width is the table's business.
             cell.style.width = None;
+            cell.style.min_width = 0.0;
             push_box(&mut out.blocks, BoxKind::Stack, cell.style, cell.children);
             return;
         }
@@ -800,10 +834,13 @@ impl Builder<'_> {
 fn push_box(blocks: &mut Vec<Block>, kind: BoxKind, style: BoxStyle, children: Vec<Block>) {
     let plain = style.background.is_none()
         && style.border.is_none()
+        && style.border_top.is_none()
+        && style.border_bottom.is_none()
         && !style.inline
         && style.padding == [0.0; 4]
         && style.width.is_none()
         && style.max_width.is_none()
+        && style.min_width == 0.0
         && !style.center;
     if children.is_empty() && (style.background.is_none() || kind != BoxKind::Stack) {
         return;
@@ -828,6 +865,159 @@ fn push_box(blocks: &mut Vec<Block>, kind: BoxKind, style: BoxStyle, children: V
         style,
         children,
     }));
+}
+
+/// Rows of one table line up, as in a browser: a column takes the width
+/// the first row that sets one gives it, and in every row it is as wide as
+/// the longest word of its cells. Rows with another number of cells
+/// (spans, empty cells left out) keep their own.
+fn share_columns(blocks: &mut [Block]) {
+    let mut groups: Vec<(usize, Vec<usize>)> = Vec::new();
+    for (ix, block) in blocks.iter().enumerate() {
+        if let Block::Box(b) = block
+            && b.kind == BoxKind::Row
+        {
+            let n = b.children.len();
+            match groups.iter_mut().find(|(len, _)| *len == n) {
+                Some((_, rows)) => rows.push(ix),
+                None => groups.push((n, vec![ix])),
+            }
+        }
+    }
+    for (n, rows) in groups {
+        if rows.len() < 2 {
+            continue;
+        }
+        let mut widths: Vec<Option<Length>> = vec![None; n];
+        let mut mins = vec![0.0f32; n];
+        for &ix in &rows {
+            let Block::Box(row) = &blocks[ix] else {
+                continue;
+            };
+            for (col, cell) in row.children.iter().enumerate() {
+                if let Block::Box(cell) = cell {
+                    if widths[col].is_none() {
+                        widths[col] = cell.style.width;
+                    }
+                    mins[col] = mins[col].max(cell.style.min_width);
+                }
+            }
+        }
+        for &ix in &rows {
+            let Block::Box(row) = &mut blocks[ix] else {
+                continue;
+            };
+            for (col, cell) in row.children.iter_mut().enumerate() {
+                if let Block::Box(cell) = cell {
+                    if cell.style.width.is_none() {
+                        cell.style.width = widths[col];
+                    }
+                    cell.style.min_width = mins[col];
+                }
+            }
+            fit_row_mins(&mut row.children);
+        }
+    }
+}
+
+/// Keeps the cells of a row from asking for more than a narrow pane has
+/// in all: past [`MAX_ROW_MIN`], every cell's least width shrinks alike.
+fn fit_row_mins(cells: &mut [Block]) {
+    let total: f32 = cells
+        .iter()
+        .map(|c| match c {
+            Block::Box(b) => b.style.min_width,
+            _ => 0.0,
+        })
+        .sum();
+    if total <= MAX_ROW_MIN {
+        return;
+    }
+    let scale = MAX_ROW_MIN / total;
+    for cell in cells {
+        if let Block::Box(b) = cell {
+            b.style.min_width *= scale;
+        }
+    }
+}
+
+/// An estimate of the narrowest `blocks` can be laid out: their longest
+/// word or image, or with `nowrap` their longest line. Glyphs count a
+/// little wider than they are on average: a cell a few pixels too wide
+/// reads better than one that breaks a word.
+fn min_content(blocks: &[Block], nowrap: bool) -> f32 {
+    blocks
+        .iter()
+        .map(|block| match block {
+            Block::Rule => 0.0,
+            Block::Text(t) => text_min(t, nowrap || t.preformatted),
+            Block::Box(b) => {
+                let inner = match b.kind {
+                    BoxKind::Row => b
+                        .children
+                        .iter()
+                        .map(|c| min_content(std::slice::from_ref(c), nowrap))
+                        .sum(),
+                    BoxKind::ListItem(_) => 28.0 + min_content(&b.children, nowrap),
+                    _ => min_content(&b.children, nowrap),
+                };
+                let border = b.style.border.map_or(0.0, |(w, _)| 2.0 * w);
+                (inner + b.style.padding[1] + b.style.padding[3] + border).max(b.style.min_width)
+            }
+        })
+        .fold(0.0, f32::max)
+}
+
+/// The longest unbreakable piece of a paragraph: a word (across runs, as
+/// `<b>bold</b>face` is one word), an image, or a line when `nowrap`.
+fn text_min(t: &TextBlock, nowrap: bool) -> f32 {
+    let mut widest = 0.0f32;
+    let mut word = 0.0f32;
+    for inline in &t.inlines {
+        match inline {
+            Inline::Text(run) => {
+                let s = &run.style;
+                let glyph = s.size
+                    * if s.monospace {
+                        0.62
+                    } else if s.bold {
+                        0.6
+                    } else {
+                        0.55
+                    };
+                for c in run.text.chars() {
+                    if c == '\n' || (!nowrap && c.is_whitespace()) {
+                        widest = widest.max(word);
+                        word = 0.0;
+                    } else if !nowrap && is_wide(c) {
+                        // East Asian text breaks between any two characters.
+                        widest = widest.max(word).max(s.size);
+                        word = 0.0;
+                    } else {
+                        word += if is_wide(c) { s.size } else { glyph };
+                    }
+                }
+            }
+            Inline::Image(image) => {
+                let w = match image.width {
+                    Some(Length::Px(w)) => w,
+                    _ => 0.0,
+                };
+                if nowrap {
+                    word += w;
+                } else {
+                    widest = widest.max(word).max(w);
+                    word = 0.0;
+                }
+            }
+        }
+    }
+    widest.max(word)
+}
+
+/// A character East Asian text sets a full em wide.
+fn is_wide(c: char) -> bool {
+    matches!(c as u32, 0x1100..=0x115f | 0x2e80..=0xa4cf | 0xac00..=0xd7a3 | 0xf900..=0xfaff | 0xfe30..=0xfe4f | 0xff00..=0xff60 | 0x20000..=0x3fffd)
 }
 
 fn hidden<'s>(get: &dyn Fn(&str) -> Option<&'s str>) -> bool {
@@ -1103,6 +1293,49 @@ mod tests {
                 ("file".to_owned(), None),
             ]
         );
+    }
+
+    #[test]
+    fn narrow_columns_keep_their_words_and_line_up() {
+        // As GitHub's Actions mail: 1% columns around a wide one.
+        let d = doc(
+            "<table width=\"100%\" style=\"border-top:1px solid #d0d7de\">\
+             <tr><th width=\"1%\">Status</th><th>Job</th><th width=\"1%\">Annotations</th></tr>\
+             <tr><td><img src=\"data:image/png;base64,iVBORw0KGgo=\" width=\"24\" height=\"24\"></td>\
+             <td><b>Windows package</b> / build<br>Succeeded in 39 minutes</td>\
+             <td nowrap>1 annotation</td></tr></table>",
+        );
+        let Block::Box(table) = &d.blocks[0] else {
+            unreachable!()
+        };
+        assert!(table.style.border_top.is_some() && table.style.border.is_none());
+        let cells = |row: usize| -> Vec<BoxStyle> {
+            let Block::Box(r) = &table.children[row] else {
+                unreachable!()
+            };
+            assert_eq!(r.kind, BoxKind::Row);
+            r.children
+                .iter()
+                .map(|c| match c {
+                    Block::Box(b) => b.style.clone(),
+                    _ => unreachable!(),
+                })
+                .collect()
+        };
+        let (head, body) = (cells(0), cells(1));
+        // "Annotations" in bold is wider than "1 annotation" set on one line.
+        assert!(
+            head[2].min_width > 11.0 * 16.0 * 0.5,
+            "{}",
+            head[2].min_width
+        );
+        // "Status" is wider than the 24 px icon under it.
+        assert!(head[0].min_width > 24.0);
+        for col in 0..3 {
+            assert_eq!(head[col].min_width, body[col].min_width);
+            assert_eq!(head[col].width, body[col].width);
+        }
+        assert_eq!(body[0].width, Some(Length::Percent(0.01)));
     }
 
     #[test]

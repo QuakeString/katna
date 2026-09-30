@@ -275,6 +275,17 @@ impl<'a> Painter<'a> {
                 d.border_px(4.0)
             }
             .border_color(rgba(self.fill(color)));
+        } else if let Some((width, color)) = s.border_top.or(s.border_bottom) {
+            // A divider along the top or bottom edge.
+            let width: gpui::AbsoluteLength = px(width.clamp(1.0, 4.0).round()).into();
+            let edges = &mut d.style().border_widths;
+            if s.border_top.is_some() {
+                edges.top = Some(width);
+            }
+            if s.border_bottom.is_some() {
+                edges.bottom = Some(width);
+            }
+            d = d.border_color(rgba(self.fill(color)));
         }
         if s.radius > 0.0 {
             d = d.rounded(px(s.radius.min(48.0)));
@@ -347,7 +358,13 @@ impl<'a> Painter<'a> {
             return self.block(block);
         };
         let el = self.boxed(b, true);
-        let d = div().min_w_0().flex().flex_col();
+        // Never narrower than its longest word, as in a browser.
+        let min = b.style.min_width;
+        let d = div()
+            .when(min > 0.0, |d| d.min_w(px(min.ceil())))
+            .when(min <= 0.0, |d| d.min_w_0())
+            .flex()
+            .flex_col();
         match b.style.width {
             Some(Length::Px(w)) => d.flex_basis(px(w)).flex_shrink(1.0),
             Some(Length::Percent(p)) => d.flex_basis(relative(p.min(1.0))).flex_shrink(1.0),
