@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A scrollbar on the Files page"
+text = """
+When there are more files than fit, a thin scrollbar shows on the right while you scroll or while the pointer is over the files, then fades away. Drag it to move through the files quickly, or click above or below it to jump there.
+"""

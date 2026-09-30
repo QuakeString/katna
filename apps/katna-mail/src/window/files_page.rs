@@ -27,7 +27,7 @@ use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_store::{LibraryFile, MessageId};
-use katna_ui::px;
+use katna_ui::{ScrollBar, px};
 
 use super::MailWindow;
 use super::apps::App;
@@ -308,6 +308,7 @@ pub(super) struct Library {
     stale: bool,
     columns: usize,
     state: ListState,
+    bar: ScrollBar,
     thumbs: HashMap<(MessageId, usize), (Thumb, u64)>,
     asked: HashSet<(MessageId, usize)>,
     wanted: Vec<(RowFile, Kind)>,
@@ -339,6 +340,7 @@ impl Default for Library {
             stale: true,
             columns: 0,
             state: ListState::new(0, ListAlignment::Top, px(600.0)),
+            bar: ScrollBar::default(),
             thumbs: HashMap::new(),
             asked: HashSet::new(),
             wanted: Vec::new(),
@@ -354,8 +356,9 @@ impl Library {
     }
 
     /// Makes `shown`, the counts and the lines again for `columns` cards
-    /// a row.
-    fn rebuild(&mut self, columns: usize, now: i64) {
+    /// a row, each line about `line` high until it is drawn (so the
+    /// scrollbar's thumb is about the right size from the start).
+    fn rebuild(&mut self, columns: usize, line: f32, now: i64) {
         self.stale = false;
         self.columns = columns;
         let Some(files) = self.found().cloned() else {
@@ -426,13 +429,25 @@ impl Library {
         self.counts = counts;
         self.shown = Rc::new(shown);
         self.lines = Rc::new(lines);
-        self.state.reset(self.lines.len());
+        let line = if self.grid { line } else { ROW_HEIGHT };
+        self.state
+            .reset_with_uniform_height(self.lines.len(), px(line));
     }
 
     fn changed(&mut self) {
         self.stale = true;
         self.menu = None;
     }
+}
+
+/// The height of a card's thumbnail, for a card `width` wide.
+fn thumb_height(width: f32) -> f32 {
+    (width / 2.05).clamp(72.0, THUMB_HEIGHT)
+}
+
+/// The height of a card `width` wide.
+fn card_height(width: f32) -> f32 {
+    thumb_height(width) + CARD_FOOT
 }
 
 /// The heading a file dated `date` goes under.
@@ -710,7 +725,6 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let _ = window;
         self.library.frame += 1;
         let shape = self.layout.shape;
         let pad = if shape.is_phone() { 12.0 } else { 24.0 };
@@ -728,14 +742,15 @@ impl MailWindow {
         let columns = (((room + GAP) / (min + GAP)).floor() as usize).max(1);
         let card_width = ((room - GAP * (columns - 1) as f32) / columns as f32).max(min);
         if self.library.stale || columns != self.library.columns {
+            let line = card_height(card_width) + GAP;
             self.library
-                .rebuild(columns, jiff::Timestamp::now().as_second());
+                .rebuild(columns, line, jiff::Timestamp::now().as_second());
         }
         let body = match &self.library.files {
             None => placeholder(&tr!("files-loading"), th),
             Some(Err(err)) => placeholder(err, th),
             Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
-            Some(Ok(_)) => self.render_files_body(card_width, pad, th, cx),
+            Some(Ok(_)) => self.render_files_body(card_width, pad, th, window, cx),
         };
         let menu = self.render_files_menu(th, cx);
         let side = self.render_files_nav(th, cx);
@@ -864,6 +879,7 @@ impl MailWindow {
         card_width: f32,
         pad: f32,
         th: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let page = &self.library;
@@ -1088,7 +1104,7 @@ impl MailWindow {
         let content = if page.shown.is_empty() {
             placeholder(&tr!("files-none-match"), th)
         } else {
-            list(
+            let files = list(
                 page.state.clone(),
                 cx.processor(move |this, ix: usize, window, cx| {
                     let th = this.theme(window);
@@ -1097,8 +1113,12 @@ impl MailWindow {
                     row
                 }),
             )
-            .size_full()
-            .into_any_element()
+            .size_full();
+            let thumb = th.text_dim & 0xffff_ff00 | 0x99;
+            page.bar
+                .clone()
+                .wrap("files-scroll", &page.state, files, thumb, window, cx)
+                .into_any_element()
         };
         div()
             .size_full()
@@ -1217,7 +1237,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let thumb = self.library_thumb(found);
-        let thumb_height = (width / 2.05).clamp(72.0, THUMB_HEIGHT);
+        let thumb_height = thumb_height(width);
         let file = found.row_file();
         let message = file.message;
         let group = SharedString::from(format!("files-card-{ix}"));
