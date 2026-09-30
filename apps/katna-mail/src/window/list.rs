@@ -71,6 +71,10 @@ const TOP_ROW_LEFT: f32 = 152.0;
 const TOP_ROW_LEFT_CHECKED: f32 = 340.0;
 const TOP_ROW_RIGHT: f32 = 185.0;
 const TABS_ROW_PAD: f32 = 12.0;
+/// A phone's list bar with the tabs in it: the room before them, and the
+/// room for the More button after them.
+const PHONE_TABS_LEFT: f32 = 8.0;
+const PHONE_TABS_RIGHT: f32 = 48.0;
 
 /// Where the inbox tabs go (see [`MailWindow::tabs_fit`]).
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -234,11 +238,13 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> (AnyElement, AnyElement) {
         // The inbox tabs have a row of their own, centred, when the top row
-        // has no room for them.
+        // has no room for them. A phone keeps them in its list bar, but
+        // while lines are ticked that bar holds the actions.
+        let phone_bar = self.layout.shape.is_phone() && self.checked.is_empty();
         let tabs = self
             .shows_tabs()
             .then(|| self.tabs_fit())
-            .filter(|fit| *fit != TabsFit::TopRow)
+            .filter(|fit| *fit != TabsFit::TopRow && !phone_bar)
             .map(|fit| {
                 div()
                     .flex_none()
@@ -620,6 +626,15 @@ impl MailWindow {
 
     /// A phone's bar over the list: what the list shows, refresh and more.
     /// Ticking a line (on its picture) brings the actions.
+    /// Whether a phone's list bar shows the inbox tabs.
+    fn phone_bar_tabs(&self) -> bool {
+        self.layout.shape.is_phone()
+            && self.checked.is_empty()
+            && self.shows_tabs()
+            && self.search_error.is_none()
+            && !matches!(self.listing, Some(Listing::Search { .. }))
+    }
+
     fn render_phone_list_bar(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let label: SharedString = match (&self.search_error, &self.listing) {
             (Some(err), _) => err.clone(),
@@ -637,6 +652,23 @@ impl MailWindow {
                 d.tooltip(tip(tr!("list-more"), th))
             })
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
+        // The tabs take the place of the title, which would only repeat
+        // the open tab's name, and Refresh goes into the More menu.
+        if self.phone_bar_tabs() {
+            let fit = self.tabs_fit();
+            return toolbar(th)
+                .pl(px(PHONE_TABS_LEFT))
+                .child(
+                    div()
+                        .id("phone-tabs")
+                        .flex_1()
+                        .min_w_0()
+                        .overflow_x_scroll()
+                        .child(self.render_tabs(fit, th, cx)),
+                )
+                .child(self.with_menu(more, Menu::ListMore, th, cx))
+                .into_any_element();
+        }
         toolbar(th)
             .pl(px(16.0))
             .child(
@@ -858,18 +890,28 @@ impl MailWindow {
                     Some(())
                 };
                 match targets {
-                    None => menu(th).child(
-                        menu_item_icon(
-                            "mark-all-read",
-                            "mark-read",
-                            &tr!("menu-mark-all-read"),
-                            th,
-                        )
-                        .on_click(cx.listener(|this, _, _, cx| {
-                            let keys = this.entries.iter().map(|e| e.key).collect();
-                            this.act(Act::Read(true), keys, cx);
-                        })),
-                    ),
+                    None => menu(th)
+                        .when(which == Menu::ListMore && self.phone_bar_tabs(), |d| {
+                            d.child(
+                                menu_item_icon("more-refresh", "refresh", &tr!("list-refresh"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.menu = None;
+                                        this.reload(&Reload, window, cx);
+                                    })),
+                            )
+                        })
+                        .child(
+                            menu_item_icon(
+                                "mark-all-read",
+                                "mark-read",
+                                &tr!("menu-mark-all-read"),
+                                th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                let keys = this.entries.iter().map(|e| e.key).collect();
+                                this.act(Act::Read(true), keys, cx);
+                            })),
+                        ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
                         .when(squeeze.is_some_and(|s| s.spam), |d| {
@@ -1509,10 +1551,18 @@ impl MailWindow {
 
     /// Where the inbox tabs go for the list's width: in the list's top
     /// row while they fit there with their labels, else in a row of their
-    /// own, with labels while they fit, else with icons and counts.
+    /// own, with labels while they fit, else with icons and counts. A
+    /// phone has them in its list bar, with labels while they fit.
     pub(super) fn tabs_fit(&self) -> TabsFit {
         let width = self.list_width();
         let full = self.tabs_full_width();
+        if self.layout.shape.is_phone() && self.checked.is_empty() {
+            return if full <= width - PHONE_TABS_LEFT - PHONE_TABS_RIGHT {
+                TabsFit::Row
+            } else {
+                TabsFit::Icons
+            };
+        }
         let left = if self.checked.is_empty() {
             TOP_ROW_LEFT
         } else {
