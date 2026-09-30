@@ -4945,8 +4945,9 @@ menu.
 ### 27.2 Setup
 
 Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
-Katna's look: one rounded window with its own shadow and close button (the
-same on Windows 10, which draws windows square, and 11), the logo, the
+Katna's look: one window with its own close button, whose shadow, border
+and corners Windows draws (round on Windows 11, square on Windows 10; a
+see-through window with a card drawn inside showed as a grey box), the logo, the
 choices, Install, a progress bar and Open Katna, light or dark as Windows
 is set. The choices: install for just me (the default, into
 `%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
