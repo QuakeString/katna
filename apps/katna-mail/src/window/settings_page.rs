@@ -34,9 +34,7 @@ use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
 use super::tab_strip::TabStrip;
-use super::{
-    FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp,
-};
+use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::{Theme, fade};
@@ -216,7 +214,6 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.open_app(RailApp::Mail, cx);
         self.settings_open = false;
         self.menu = None;
         let fresh = self.settings_page.is_none();
@@ -297,6 +294,12 @@ impl MailWindow {
             self.edit_signature(editing, window, cx);
             self.load_templates(cx);
         }
+        // The page opens over the app on show, which stays picked in the
+        // rail and comes back as it was when the page closes. The search
+        // box goes back to mail before the page takes it.
+        if fresh {
+            self.swap_app_search(false, cx);
+        }
         self.card_seq += 1;
         cx.notify();
     }
@@ -342,7 +345,10 @@ impl MailWindow {
             self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
         }
         self.card_seq += 1;
-        window.focus(&self.list_focus, cx);
+        // The search box and the keys go back to the app on show.
+        self.sync_search_box(cx);
+        self.swap_app_search(true, cx);
+        self.focus_app_page(window, cx);
         cx.notify();
     }
 
