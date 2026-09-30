@@ -78,6 +78,7 @@ mod settings_page;
 mod settings_search;
 mod share_ask;
 mod sign_in_again;
+mod skeleton;
 mod snooze;
 mod storage;
 mod tab_strip;
@@ -97,9 +98,9 @@ use std::time::{Duration, Instant};
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, MouseButton,
-    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun, WeakEntity,
-    Window, actions, div, prelude::*, rgba,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListOffset,
+    MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun,
+    WeakEntity, Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -364,6 +365,18 @@ enum Listing {
     },
 }
 
+/// What the list showed when a search started: back when the search is
+/// cancelled without a result opened.
+#[derive(Debug, Clone)]
+struct BeforeSearch {
+    listing: Listing,
+    /// The open conversation.
+    open: Option<EntryKey>,
+    /// The line the cursor was on.
+    selected: Option<EntryKey>,
+    top: ListOffset,
+}
+
 /// An open popup menu.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Menu {
@@ -455,6 +468,7 @@ pub struct MailWindow {
     undo_reopens: Vec<(Command, EntryKey)>,
     /// The conversation to open once an undo brings it back to the list.
     reopen_after_undo: Option<EntryKey>,
+    before_search: Option<BeforeSearch>,
     /// The app whose name rolls away at the top left, and how far the
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
@@ -620,6 +634,11 @@ pub struct MailWindow {
     pane_hover: Option<ReadingPane>,
     /// The tab indicator's position, in tabs.
     tab_spring: Spring,
+    /// The tab the indicator last left and the one it goes to, so only
+    /// those two change their label and count as it slides past others.
+    tab_slide: (usize, usize),
+    /// Each inbox tab's label and count badge widths, measured each frame.
+    tab_sizes: Vec<(f32, f32)>,
     snackbar: Option<Snackbar>,
     /// What Ctrl+Z takes back, newest last: this window's actions since
     /// it opened.
@@ -825,6 +844,7 @@ impl MailWindow {
             agenda: agenda::AgendaPanel::new(),
             undo_reopens: Vec::new(),
             reopen_after_undo: None,
+            before_search: None,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
@@ -915,6 +935,8 @@ impl MailWindow {
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_spring: Spring::new(motion::SLIDE, 0.0),
+            tab_slide: (0, 0),
+            tab_sizes: Vec::new(),
             snackbar: None,
             undo_history: Vec::new(),
             crash_notice: None,
@@ -1451,6 +1473,8 @@ impl MailWindow {
         if self.tab == tab {
             return;
         }
+        // Another tab opens at its top, without the last one's glide.
+        self.layout.stop_glide();
         self.tab = tab;
         // No fade: the tab's lines replace the last ones in the same frame,
         // as the indicator slides over.
@@ -1503,6 +1527,10 @@ impl MailWindow {
         }
         if !self.reading && !self.split() {
             self.card_seq += 1;
+        }
+        // A result opened: cancelling the search no longer goes back.
+        if matches!(self.listing, Some(Listing::Search { .. })) {
+            self.before_search = None;
         }
         self.selected = Some(ix);
         self.reading = true;
@@ -2218,7 +2246,9 @@ impl MailWindow {
             self.search_task = None;
             if matches!(self.listing, Some(Listing::Search { .. })) {
                 self.open_listed(cx);
+                self.restore_before_search(cx);
             }
+            self.before_search = None;
             return;
         }
         let Some(index) = self.mail.as_mut().ok().and_then(Mail::index) else {
@@ -2244,6 +2274,53 @@ impl MailWindow {
         }));
     }
 
+    /// Keeps what the list shows as a search replaces it, before the
+    /// results take the lines and the open conversation.
+    fn save_before_search(&mut self) {
+        let Some(listing) = self.listing.clone() else {
+            return;
+        };
+        let key = |ix: usize| self.entries.get(ix).map(|e| e.key);
+        self.before_search = Some(BeforeSearch {
+            listing,
+            open: self
+                .reading
+                .then(|| self.reader.as_ref().map(|r| r.key))
+                .flatten(),
+            selected: self.selected.and_then(key),
+            top: self.list_state.logical_scroll_top(),
+        });
+    }
+
+    /// A search cancelled with no result opened: the list goes back to
+    /// where it was, with the conversation that was open open again. The
+    /// list is listed again first (`open_listed`).
+    fn restore_before_search(&mut self, cx: &mut Context<Self>) {
+        let Some(before) = self.before_search.take() else {
+            return;
+        };
+        // Another folder picked meanwhile keeps its own place.
+        if self.listing.as_ref() != Some(&before.listing) {
+            return;
+        }
+        let at = |key: Option<EntryKey>| {
+            key.and_then(|key| self.entries.iter().position(|e| e.key == key))
+        };
+        if let Some(ix) = at(before.selected) {
+            self.selected = Some(ix);
+        }
+        self.list_state.scroll_to(before.top);
+        if let Some(ix) = at(before.open) {
+            if !self.reading && !self.split() {
+                self.card_seq += 1;
+            }
+            self.selected = Some(ix);
+            self.reading = true;
+            self.load_reader(ix, cx);
+        }
+        cx.notify();
+    }
+
     fn show_results(
         &mut self,
         query: String,
@@ -2260,6 +2337,9 @@ impl MailWindow {
                     }
                 }
                 let first = !matches!(self.listing, Some(Listing::Search { .. }));
+                if first {
+                    self.save_before_search();
+                }
                 // The same search again, after the mail changed: keep the
                 // cursor, the ticks and the open conversation.
                 let again = matches!(
@@ -3222,6 +3302,9 @@ impl Render for MailWindow {
                 0.0
             });
         self.tab_spring.set(self.tab as f32);
+        if self.tab_slide.1 != self.tab {
+            self.tab_slide = (self.tab_slide.1, self.tab);
+        }
         self.nav_t = self.nav_spring.tick(window, reduce);
         let reserve = self.reserve_spring.tick(window, reduce);
         let search_t = self.search_spring.tick(window, reduce);
@@ -3230,6 +3313,7 @@ impl Render for MailWindow {
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
         self.tab_spring.tick(window, reduce);
+        self.measure_tabs(window);
         self.tick_reorder(window, reduce, cx);
         self.tick_nav_fold(window, reduce);
         self.sync_nav_list();
@@ -3543,24 +3627,34 @@ impl Render for MailWindow {
         // The first-start pages keep the bar empty.
         let bar = Bar {
             start: if onboarding {
-                Vec::new()
+                self.skeleton_top_start(&th, titles)
             } else {
                 self.render_top_start(&th, titles, cx)
             },
-            center: (self.mail.is_ok() && !onboarding).then(|| {
-                div()
-                    .w_full()
-                    .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(self.render_search(&th, search_width, search_t, window, cx))
-                    .when(shape.phone < 0.5 && activity_fits, |d| {
-                        d.children(self.render_activity_button(&th, cx))
-                    })
-                    .into_any_element()
-            }),
+            center: if onboarding {
+                Some(
+                    div()
+                        .w_full()
+                        .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                        .child(skeleton::search_pill(&th, search_width, shape.phone))
+                        .into_any_element(),
+                )
+            } else {
+                self.mail.is_ok().then(|| {
+                    div()
+                        .w_full()
+                        .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(self.render_search(&th, search_width, search_t, window, cx))
+                        .when(shape.phone < 0.5 && activity_fits, |d| {
+                            d.children(self.render_activity_button(&th, cx))
+                        })
+                        .into_any_element()
+                })
+            },
             end: if onboarding {
                 Vec::new()
             } else {

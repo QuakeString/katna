@@ -26,7 +26,7 @@ use katna_i18n::tr;
 
 use crate::format;
 use crate::sidebar::{self, Role, Unified};
-use crate::theme::{Theme, fade};
+use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     ScaledEdge, elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
@@ -45,6 +45,11 @@ const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
+/// How opaque the idle search box is in a blurred window: frosted glass
+/// that shows the blur behind it. Focused, it is solid.
+const SEARCH_GLASS_ALPHA: f32 = 0.4;
+/// How strong the idle glass search box's faint edge is.
+const SEARCH_GLASS_EDGE: f32 = 0.22;
 
 /// The button at the top of a page's side panel (Create contact, Create
 /// task), in the size, shape and colours of Mail's Compose over the
@@ -228,7 +233,12 @@ impl MailWindow {
     /// the name: the old one rolls down and out, the new one down into
     /// its place. A narrow tablet folds the words away, so the search box
     /// keeps its room.
-    fn render_title(&self, th: &Theme, label: f32, (brand, name): (f32, f32)) -> AnyElement {
+    pub(super) fn render_title(
+        &self,
+        th: &Theme,
+        label: f32,
+        (brand, name): (f32, f32),
+    ) -> AnyElement {
         let roll = self.title_roll.value();
         let word = |app: super::RailApp, top: f32, opacity: f32| {
             div()
@@ -452,20 +462,22 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            // Active, it keeps its color and gains a faint edge. In a
-            // blurred window it lets the blur through like the bar
-            // around it, so it reads as the same frosted glass.
+            // In a blurred window it is frosted glass while idle, letting
+            // more of the blur through than the bar around it, and turns
+            // solid as it takes focus.
             .bg(rgba(if th.backdrop == 0 {
-                fade(
-                    th.search,
-                    f32::from(katna_chrome::tokens::blur_alpha(th.dark)) / 255.0,
-                )
+                fade(th.search, lerp(SEARCH_GLASS_ALPHA, 1.0, t.clamp(0.0, 1.0)))
             } else {
                 th.search
             }))
-            // Focused, it gains the accent edge every other field has.
+            // Focused, it gains the accent edge every other field has. As
+            // glass it keeps a faint edge while idle, so it stays visible.
             .border_px(2.0)
-            .border_color(rgba(fade(th.accent, t.clamp(0.0, 1.0))))
+            .border_color(rgba(if th.backdrop == 0 {
+                mix(fade(th.text, SEARCH_GLASS_EDGE), th.accent, t)
+            } else {
+                fade(th.accent, t.clamp(0.0, 1.0))
+            }))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
@@ -735,7 +747,7 @@ impl MailWindow {
             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
                 this.hover_navigation(Hover::Panel, *hovered, cx)
             }))
-            .children(self.render_drawer_head(th, cx))
+            .children(self.render_drawer_head(th))
             .child(div().flex_none().h(px(compose_room)))
             .children(head)
             .child(list)
@@ -806,7 +818,7 @@ impl MailWindow {
             sidebar::Row::AllAccounts { expanded } => self.render_heading(
                 ix,
                 tr!("nav-all-accounts"),
-                (*expanded, self.checking_mail()),
+                (*expanded, self.checking_all()),
                 th,
                 cx,
             ),
@@ -882,7 +894,12 @@ impl MailWindow {
                         selected: self.listing == listing,
                         bold: true,
                         chevron: Some(*expanded),
-                        checking: *view == Unified::Inbox && self.checking_mail(),
+                        checking: (*view == Unified::Inbox && self.checking_all())
+                            || self
+                                .tree
+                                .unified_folders(*view, None)
+                                .into_iter()
+                                .any(|f| self.checking_folder(f)),
                     },
                     th,
                     cx,
@@ -917,7 +934,8 @@ impl MailWindow {
                         // Addresses are long; the count tells of new mail.
                         bold: false,
                         chevron: None,
-                        checking: *view == Unified::Inbox && self.checking_account(*account),
+                        checking: (*view == Unified::Inbox && self.checking_account(*account))
+                            || folder.is_some_and(|f| self.checking_folder(f)),
                     },
                     th,
                     cx,
@@ -957,10 +975,11 @@ impl MailWindow {
                         bold: true,
                         chevron: has_children.then_some(*expanded),
                         // New mail lands in the inbox.
-                        checking: *role == Role::Inbox
-                            && folder
-                                .and_then(|f| self.tree.account_of(f))
-                                .is_some_and(|a| self.checking_account(a)),
+                        checking: folder.is_some_and(|f| self.checking_folder(f))
+                            || *role == Role::Inbox
+                                && folder
+                                    .and_then(|f| self.tree.account_of(f))
+                                    .is_some_and(|a| self.checking_account(a)),
                     },
                     th,
                     cx,
@@ -994,14 +1013,17 @@ impl MailWindow {
             .cursor_pointer()
             .rounded_full()
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
-            .tooltip(tip(
-                if expanded {
-                    tr!("nav-collapse")
-                } else {
-                    tr!("nav-expand")
-                },
-                th,
-            ))
+            // Not over its own right-click menu.
+            .when(self.nav_menu.is_none(), |d| {
+                d.tooltip(tip(
+                    if expanded {
+                        tr!("nav-collapse")
+                    } else {
+                        tr!("nav-expand")
+                    },
+                    th,
+                ))
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
             .on_mouse_down(
                 MouseButton::Right,

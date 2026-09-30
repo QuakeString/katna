@@ -16,10 +16,6 @@ nav-account-unnamed = Konto { $number }
 nav-all-accounts = Alla konton
 nav-expand = Visa mappar
 nav-collapse = Dölj mappar
-nav-tab-new = { $count ->
-    [one] { $count } nytt
-   *[other] { $count } nya
-}
 storage-used = { $percent } % av { $total } används
 storage-used-detail = { $address }: { $used } av { $total } används
 

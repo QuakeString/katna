@@ -15,8 +15,6 @@ tab-other = Other
 tab-inbox = Inbox
 tab-newsletters = Newsletters
 tab-notifications = Notifications
-# Badge under a tab's name: how many unread messages it has.
-tab-new = { $count } new
 # Settings > Inbox tabs, "Automatic: Gmail (sorted by Katna)": for accounts
 # that are not Gmail, Outlook or Zoho, Katna sorts mail into tabs itself.
 tab-provider-other = sorted by Katna

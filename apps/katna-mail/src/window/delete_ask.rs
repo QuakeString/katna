@@ -90,6 +90,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let ask = self.delete_ask.as_mut()?;
         let t = ask.shown.tick(window, reduce);
         if ask.closing && ask.shown.settled() {

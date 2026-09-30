@@ -189,6 +189,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let qr = self.contacts.qr.as_mut()?;
         let t = qr.shown.tick(window, reduce);
         if qr.closing && qr.shown.settled() {

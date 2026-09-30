@@ -16,11 +16,6 @@ nav-account-unnamed = Compte { $number }
 nav-all-accounts = Tous les comptes
 nav-expand = Afficher les dossiers
 nav-collapse = Masquer les dossiers
-nav-tab-new = { $count ->
-    [one] { $count } nouveau
-    [many] { $count } de nouveaux
-   *[other] { $count } nouveaux
-}
 storage-used = { $percent } % utilisés sur { $total }
 storage-used-detail = { $address } : { $used } utilisés sur { $total }
 

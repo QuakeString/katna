@@ -14,7 +14,6 @@ tab-other = Overige
 tab-inbox = Inbox
 tab-newsletters = Nieuwsbrieven
 tab-notifications = Meldingen
-tab-new = { $count } nieuw
 tab-provider-other = gesorteerd door Katna
 
 ## Mail list: toolbar

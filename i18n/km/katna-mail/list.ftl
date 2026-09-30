@@ -14,7 +14,6 @@ tab-other = ផ្សេងៗ
 tab-inbox = ប្រអប់ទទួល
 tab-newsletters = ព្រឹត្តិបត្រ
 tab-notifications = ការជូនដំណឹង
-tab-new = ថ្មី { $count }
 tab-provider-other = តម្រៀបដោយ Katna
 
 ## Mail list: toolbar

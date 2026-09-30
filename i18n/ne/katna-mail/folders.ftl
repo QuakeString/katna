@@ -16,10 +16,6 @@ nav-account-unnamed = खाता { $number }
 nav-all-accounts = सबै खाताहरू
 nav-expand = फोल्डरहरू देखाउनुहोस्
 nav-collapse = फोल्डरहरू लुकाउनुहोस्
-nav-tab-new = { $count ->
-    [one] { $count } नयाँ
-   *[other] { $count } नयाँ
-}
 storage-used = { $total } मध्ये { $percent }% प्रयोग भयो
 storage-used-detail = { $address }: { $total } मध्ये { $used } प्रयोग भयो
 

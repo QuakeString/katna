@@ -311,6 +311,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let about = self.about.as_mut()?;
         let t = about.shown.tick(window, reduce);
         if about.closing && about.shown.settled() {

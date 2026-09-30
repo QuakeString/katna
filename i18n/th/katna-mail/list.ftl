@@ -14,7 +14,6 @@ tab-other = อื่นๆ
 tab-inbox = กล่องจดหมาย
 tab-newsletters = จดหมายข่าว
 tab-notifications = การแจ้งเตือน
-tab-new = ใหม่ { $count } รายการ
 tab-provider-other = จัดเรียงโดย Katna
 
 ## Mail list: toolbar

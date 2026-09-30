@@ -2,7 +2,8 @@
 
 //! Settings > Experimental > Look & Feel: Katna's own window frame instead
 //! of the desktop's, and a blurred, translucent window background. Both
-//! apply at once to every open window (`katna_chrome::Look`).
+//! apply at once to every open window (`katna_chrome::Look`); on Windows
+//! the frame changes when a window next opens.
 
 use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
 use katna_chrome::{DecorationMode, Desktop, Look, Session};
@@ -60,6 +61,7 @@ impl MailWindow {
             return explain(tr!("look-frame-client-side"), th);
         }
         let note = match env.desktop {
+            _ if cfg!(windows) => tr!("look-frame-katna-note-windows"),
             Desktop::Kde => tr!("look-frame-katna-note-named", desktop = "KDE"),
             Desktop::Gnome => tr!("look-frame-katna-note-named", desktop = "GNOME"),
             Desktop::Other(_) => tr!("look-frame-katna-note"),
@@ -72,6 +74,7 @@ impl MailWindow {
             .child(self.radio_row(
                 "page-frame-native",
                 match env.desktop {
+                    _ if cfg!(windows) => tr!("look-frame-native-windows"),
                     Desktop::Kde => tr!("look-frame-native-kde"),
                     _ => tr!("look-frame-native"),
                 },
@@ -89,6 +92,10 @@ impl MailWindow {
                 cx,
             ))
             .when(frame == WindowFrame::Katna, |d| d.child(explain(note, th)))
+            // Windows sets a window's frame when it opens.
+            .when(self.chrome.frame_on_reopen(), |d| {
+                d.child(explain(tr!("look-frame-on-reopen"), th))
+            })
             .into_any_element()
     }
 

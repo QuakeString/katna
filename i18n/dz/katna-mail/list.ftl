@@ -14,7 +14,6 @@ tab-other = གཞན
 tab-inbox = ནང་འབྱོར་སྒྲོམ
 tab-newsletters = གསར་ཤོག
 tab-notifications = བརྡ་བསྐུལ
-tab-new = གསརཔ་ { $count }
 tab-provider-other = Katna གིས་དབྱེ་སེལ་འབད་ཡོདཔ
 
 ## Mail list: toolbar

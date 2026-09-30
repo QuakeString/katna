@@ -169,6 +169,8 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let reduce = cx.reduce_motion();
         if self.tour.as_ref()?.waiting {
             if self.tour_seen.is_empty() {

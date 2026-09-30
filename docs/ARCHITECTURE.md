@@ -760,6 +760,11 @@ Free text that matches an organization name or alias is expanded to
    metadata is already local, so results render and rank instantly.
 3. Messages found on the server are downloaded and indexed.
 
+Results replace the list and close the open conversation. The list, its
+scroll place, the cursor and the open conversation are kept as the search
+starts: cancelling it (Escape or clearing the box) with no result opened
+brings them back; opening a result drops them.
+
 ### 7.4 Ranking
 
 BM25 plus boosts: subject match, recency, people you reply to often,
@@ -1464,14 +1469,24 @@ GPUI global):
   header bar, as far from the window's side as from its top. Switching keeps the window's size on screen. Where the desktop never
   draws frames (GNOME on Wayland) the choice is replaced by a note.
   `KATNA_DECORATIONS=auto|server|client` still overrides it, for testing.
+  On Windows GPUI fixes the title bar when a window opens, so the choice
+  applies to windows opened after it (Settings says so): `katna` hides
+  Windows' title bar (`TitlebarOptions::appears_transparent`) and the top
+  bar's empty space and window buttons become Windows' caption and buttons
+  (`WindowControlArea`), so Windows moves, snaps and maximizes the window;
+  Windows keeps drawing the corners, shadow and resize edges.
 - *Blurred background*: the window's page color becomes translucent
-  (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the search
-  bar's fill takes the same alpha) and the compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
+  (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
+  search box is 40 % glass over it with a faint edge and turns solid while
+  focused) and the
+  compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
   else `org_kde_kwin_blur`, and `_KDE_NET_WM_BLUR_BEHIND_REGION` on X11.
   The blur region is the frame less its rounded corners; the CSD shadow is
   painted only outside the frame, so it cannot darken the window. Cards
   and dialogs stay opaque, so text keeps its contrast. Offered only where
-  the compositor can blur (`gpui_linux::compositor_blur`); elsewhere the
+  the compositor can blur (`gpui_linux::compositor_blur`; always on
+  Windows, through GPUI's `WindowBackgroundAppearance::Blurred`, the
+  acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
 - The same switch frosts floating panels in every window: menus (the
@@ -1508,6 +1523,11 @@ window as on the first start.
 - X11: the window opens exactly at its old position (user-specified
   position, static gravity). KWin adds the CSD shadow margin itself on X11,
   so the saved frame is asked for as is.
+- Windows: GPUI's bounds are the inside of the window and Windows adds
+  its title bar and borders around them, so sizes are fitted to the main
+  display's work area less 16 × 48 px. A first window that does not fit
+  (1280 × 800 on a small screen) opens maximized; a saved size that does
+  not fit shrinks, centred.
 
 ### 13.2 Look and feel
 
@@ -1742,6 +1762,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Everything honors the desktop's reduce-motion setting.
 - **Colors.** `theme.rs` has Katna's light and dark palettes. The owner
   later asked for the desktop's colors as well; see "Desktop colors" below.
+- **Depth in dark colors.** Shadows barely show on a dark background, so in
+  dark colors (Katna's or the desktop's) things that float are lighter the
+  higher they sit: floating buttons, dialogs, popovers and the Compose
+  window use `Theme::raised` (the card lifted by 10% of the text color),
+  menus `Theme::menu` (13%), and `widgets::elevation` adds a faint 1 px
+  light edge (`Theme::rim`) to every shadow. A dialog draws its contents
+  with `Theme::lifted`, so fields and chips inside it keep their contrast.
+  Light colors keep the white card and its shadow (the owner, 2026-09-30).
 
 The owner then asked for the rest of Gmail's pattern, with Katna's own
 icons and name and without Google-only features (no Chat, Meet, Drive,
@@ -2897,7 +2925,7 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Search | `Search(query, limit) → results` (used by KRunner, GNOME search, apps) |
 | Calendar | `EventsInRange(start, end) → events`, `CreateEvent(ical)`, `UpdateEvent(uid, ical)`, `DeleteEvent(uid)` |
 | Contacts / orgs | `FindContacts(text)`, `Organizations()` |
-| Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
+| Sync | `SyncNow(account?)`, `SyncFolder(folder)` (only that folder, for a folder's "Check for new mail"), `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`

@@ -16,7 +16,6 @@ nav-account-unnamed = Akaun { $number }
 nav-all-accounts = Semua Akaun
 nav-expand = Tunjukkan folder
 nav-collapse = Sembunyikan folder
-nav-tab-new = { $count } baharu
 storage-used = { $percent }% daripada { $total } digunakan
 storage-used-detail = { $address }: { $used } daripada { $total } digunakan
 

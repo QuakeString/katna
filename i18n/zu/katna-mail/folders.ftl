@@ -16,10 +16,6 @@ nav-account-unnamed = I-akhawunti { $number }
 nav-all-accounts = Wonke Ama-akhawunti
 nav-expand = Bonisa amafolda
 nav-collapse = Fihla amafolda
-nav-tab-new = { $count ->
-    [one] { $count } okusha
-   *[other] { $count } okusha
-}
 storage-used = Kusetshenziswe { $percent }% ku-{ $total }
 storage-used-detail = { $address }: kusetshenziswe { $used } ku-{ $total }
 

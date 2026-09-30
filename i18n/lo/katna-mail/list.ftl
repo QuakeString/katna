@@ -14,7 +14,6 @@ tab-other = ອື່ນໆ
 tab-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 tab-newsletters = ຈົດໝາຍຂ່າວ
 tab-notifications = ການແຈ້ງເຕືອນ
-tab-new = ໃໝ່ { $count }
 tab-provider-other = ຈັດຮຽງໂດຍ Katna
 
 ## Mail list: toolbar

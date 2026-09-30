@@ -232,6 +232,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let preview = self.print_preview.as_mut()?;
         for image in preview.released.drain(..) {
             window.drop_image(image).ok();
