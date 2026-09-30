@@ -86,6 +86,17 @@ before that uses it too (`consume_startup_activation_token` in
 `wayland/client.rs`), so a window opened for a notification's click comes
 up in front.
 
+It also keeps a touchpad flick gliding on Wayland
+(`src/linux/wayland/kinetic.rs`), which GPUI leaves to macOS: finger
+scrolling (`axis_source` finger) is remembered with its axis times, and
+when `axis_stop` says the fingers lifted while still moving, a calloop
+timer (`start_glide` in `wayland/client.rs`) keeps sending pixel scroll
+events that slow down exponentially. Other scrolling, a click, a modifier
+key, the pointer leaving, or fingers touching the touchpad again (the
+`zwp_pointer_gesture_hold_v1` begin event, pointer-gestures version 3)
+stops it. Mouse wheels are unchanged. X11 does not say when the fingers
+lift, so it has no glide.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream
