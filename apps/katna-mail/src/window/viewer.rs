@@ -25,7 +25,7 @@ mod office;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::time::Duration;
 
 use gpui::{
@@ -151,6 +151,8 @@ pub(super) struct Viewer {
     /// The PDF page number in the foot pill, typed to go to a page.
     goto: Entity<TextInput>,
     _goto: Subscription,
+    /// Up or Down changed the page box: the viewer goes there at once.
+    goto_stepped: Arc<AtomicBool>,
     /// The page box was clicked while not focused: its number is selected
     /// when the button comes up, so typing replaces it.
     goto_click: bool,
@@ -248,10 +250,25 @@ impl Viewer {
     ) -> Self {
         let focus = cx.focus_handle();
         focus.focus(window, cx);
+        let goto_stepped = Arc::new(AtomicBool::new(false));
         let goto = cx.new(|cx| {
             let mut input = TextInput::new("", cx);
             input.set_accent(rgba(th.accent).into());
             input.set_centered(true);
+            // Up goes a page back, Down a page on; held, they keep going.
+            let stepped = goto_stepped.clone();
+            input.set_stepper(Some(Arc::new(move |text: &str, _, by| {
+                let page = text.trim().parse::<usize>().unwrap_or(1);
+                let page = if by > 0 {
+                    page.saturating_sub(1).max(1)
+                } else {
+                    page + 1
+                };
+                stepped.store(true, Ordering::Relaxed);
+                let text = page.to_string();
+                let end = text.len();
+                Some((text, end))
+            })));
             input
         });
         let _goto = cx.subscribe_in(&goto, window, |this, _, event, window, cx| match event {
@@ -263,7 +280,23 @@ impl Viewer {
                 this.focus.focus(window, cx);
             }
             InputEvent::Cancel => this.focus.focus(window, cx),
-            InputEvent::Changed => {}
+            InputEvent::Changed => {
+                if !this.goto_stepped.swap(false, Ordering::Relaxed) {
+                    return;
+                }
+                let Content::Pdf(pdf) = &this.content else {
+                    return;
+                };
+                let count = pdf.doc.pages().max(1);
+                let typed = this.goto.read(cx).text().trim().parse::<usize>();
+                let page = typed.unwrap_or(1).clamp(1, count);
+                // Past the last page the box stays on it.
+                let number = page.to_string();
+                if this.goto.read(cx).text() != number {
+                    this.goto.update(cx, |input, cx| input.set_text(number, cx));
+                }
+                this.go_to_page(page - 1, cx);
+            }
         });
         let mut this = Self {
             focus,
@@ -285,6 +318,7 @@ impl Viewer {
             text: TextSelection::new(cx),
             goto,
             _goto,
+            goto_stepped,
             goto_click: false,
             went: None,
             backdrop: None,
