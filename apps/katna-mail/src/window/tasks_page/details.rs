@@ -702,6 +702,21 @@ impl MailWindow {
             .size(px(36.0))
             .tooltip(tip(tr!("tasks-delete"), th))
             .on_click(cx.listener(|this, _, window, cx| this.task_details_delete(window, cx)));
+        // A task made from a mail opens it, as its line on the board does.
+        let mail = self
+            .tasks
+            .task(details.id)
+            .map(|t| t.mail.clone())
+            .filter(|m| !m.is_empty() && super::super::notes::note_of_task(m).is_none())
+            .map(|header| {
+                icon_button("task-details-mail", "mail", 20.0, th)
+                    .size(px(36.0))
+                    .tooltip(tip(tr!("tasks-open-mail"), th))
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.task_close_details(window, cx);
+                        this.open_task_mail(&header, window, cx);
+                    }))
+            });
 
         let focus = details.focus.clone();
         let card = div()
@@ -742,6 +757,7 @@ impl MailWindow {
                     .items_center()
                     .gap(px(8.0))
                     .child(delete)
+                    .children(mail)
                     .child(div().flex_1())
                     .child(cancel)
                     .child(save),

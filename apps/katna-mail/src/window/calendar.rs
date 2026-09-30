@@ -36,6 +36,7 @@ use menu::CalTarget;
 mod birthdays;
 mod description;
 mod free;
+mod from_mail;
 pub(super) mod menu;
 mod search;
 mod sets;
@@ -2792,6 +2793,8 @@ impl MailWindow {
             None => (!data.join_url.is_empty()).then(|| (None, data.join_url.clone())),
         };
         let web = data.web_link.clone();
+        // An event Gmail made from a mail opens that mail.
+        let gmail = from_mail::gmail_link(&data.description).map(|link| (link, occurrence.clone()));
         let editable = self.can_edit(occurrence);
         let emails = !self.other_guests(occurrence).is_empty();
         // A saved contact's birthday opens their contact page.
@@ -2862,6 +2865,15 @@ impl MailWindow {
                                 if let Some(card) = birthday_of {
                                     this.open_birthday_contact(card, window, cx);
                                 }
+                            })),
+                    )
+                })
+                .when_some(gmail, |d, (link, occurrence)| {
+                    d.child(
+                        icon_button("event-mail", "inbox", 20.0, th)
+                            .tooltip(tip(tr!("calendar-open-mail"), th))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.open_event_mail(&occurrence, link.clone(), window, cx)
                             })),
                     )
                 })

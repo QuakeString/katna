@@ -123,6 +123,7 @@ calendar-guest-answers = { $yes } yes, { $maybe } maybe, { $no } no, { $waiting 
 calendar-organizer = Organizer
 calendar-optional = Optional
 calendar-open-web = Open in the browser
+calendar-open-mail = Open the mail
 calendar-open-contact = Open contact
 calendar-close = Close
 

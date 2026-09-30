@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Open the mail behind an event"
+text = """
+Events Gmail made from a mail, like trains, flights and hotels, get an
+Open the mail button on their card. It opens that mail in Katna, or in
+Gmail when Katna doesn't have it. A task made from a mail opens its mail
+from its card on the Calendar too, and Take meeting notes opens without
+a blink.
+"""
