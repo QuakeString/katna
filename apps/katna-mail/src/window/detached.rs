@@ -66,10 +66,16 @@ impl MailWindow {
         self.open_window(entry, origin, cx);
     }
 
-    /// Opens the conversation of `message` in a window of its own with a
-    /// reply to all started, for a notification's Reply all: the mail
-    /// window stays where it is.
-    pub(super) fn reply_all_in_window(&mut self, message: MessageId, cx: &mut Context<Self>) {
+    /// Opens the conversation of `message` in a window of its own, for a
+    /// click on a notification, with a reply to all started if
+    /// `reply_all` (its Reply all): the mail window stays where it is,
+    /// whatever page it shows.
+    pub(super) fn message_in_window(
+        &mut self,
+        message: MessageId,
+        reply_all: bool,
+        cx: &mut Context<Self>,
+    ) {
         let mail = self.mail.as_ref().ok();
         let entry = match mail.and_then(|m| m.message_thread(message)) {
             Some(thread) => Entry {
@@ -85,7 +91,7 @@ impl MailWindow {
         let origin = Origin {
             folder: inbox.or_else(|| self.listed_folder()),
             show_recipients: false,
-            reply_all: Some(message),
+            reply_all: reply_all.then_some(message),
         };
         self.open_window(entry, origin, cx);
     }
