@@ -629,14 +629,9 @@ pub struct MailWindow {
     settings_spring: Spring,
     /// The reading-pane choice of the quick settings under the pointer.
     pane_hover: Option<ReadingPane>,
-    /// The tab indicator's position, in tabs.
-    tab_spring: Spring,
     /// How far the inbox tabs have folded to fit their room (see
     /// `tabs_fold_target`), gliding between steps.
     tab_fold: Spring,
-    /// The tab the indicator last left and the one it goes to, so only
-    /// those two change their label and count as it slides past others.
-    tab_slide: (usize, usize),
     /// Each inbox tab's label and count badge widths, measured each frame.
     tab_sizes: Vec<(f32, f32)>,
     snackbar: Option<Snackbar>,
@@ -934,9 +929,7 @@ impl MailWindow {
             settings_open: false,
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
-            tab_spring: Spring::new(motion::SLIDE, 0.0),
             tab_fold: Spring::new(motion::SMOOTH, 0.0),
-            tab_slide: (0, 0),
             tab_sizes: Vec::new(),
             snackbar: None,
             undo_history: Vec::new(),
@@ -3312,10 +3305,6 @@ impl Render for MailWindow {
             } else {
                 0.0
             });
-        self.tab_spring.set(self.tab as f32);
-        if self.tab_slide.1 != self.tab {
-            self.tab_slide = (self.tab_slide.1, self.tab);
-        }
         self.nav_t = self.nav_spring.tick(window, reduce);
         let reserve = self.reserve_spring.tick(window, reduce);
         let search_t = self.search_spring.tick(window, reduce);
@@ -3323,7 +3312,6 @@ impl Render for MailWindow {
         self.keys_t = self.keys_spring.tick(window, reduce);
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
-        self.tab_spring.tick(window, reduce);
         self.measure_tabs(window);
         self.tick_reorder(window, reduce, cx);
         self.tick_nav_fold(window, reduce);
