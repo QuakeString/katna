@@ -5,12 +5,14 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 
-use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, Window, div, prelude::*, rgba};
 use katna_i18n::tr;
 use katna_ui::px;
 
 use super::super::MailWindow;
+use super::Kind;
 use crate::format;
 use crate::outgoing::Part;
 use crate::theme::Theme;
@@ -19,6 +21,11 @@ use crate::widgets::{ScaledEdge, icon, tip};
 /// What mail servers take in one message (Gmail's limit), counting the
 /// pictures in the text.
 pub(in crate::window) const MAX_TOTAL: usize = 25 * 1024 * 1024;
+
+/// Files that reach the app this soon after a file manager opened a new
+/// message with files join that message: Explorer starts Katna Mail once
+/// for each file chosen.
+const JOIN: Duration = Duration::from_secs(2);
 
 /// An attachment chip's height, and the gap between chips.
 const ROW: f32 = 36.0;
@@ -143,23 +150,86 @@ impl MailWindow {
         .detach();
     }
 
+    /// "Send with Katna Mail" in a file manager: a new message with `paths`
+    /// attached (folders as zips), from the account with the address
+    /// `from` when one is given. A message being written is kept in
+    /// Drafts, so the files get one of their own.
+    pub(in crate::window) fn open_with_files(
+        &mut self,
+        from: Option<String>,
+        paths: Vec<PathBuf>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let account = from
+            .as_deref()
+            .and_then(|address| {
+                self.accounts
+                    .iter()
+                    .find(|a| a.address.eq_ignore_ascii_case(address))
+            })
+            .map(|a| a.id);
+        let joins = self
+            .writing
+            .files_opened
+            .is_some_and(|at| at.elapsed() < JOIN)
+            && self.compose.as_ref().is_some_and(|c| {
+                c.kind == Kind::New && !c.closing && (account.is_none() || c.from == account)
+            });
+        if !joins {
+            self.close_compose_saving(cx);
+            self.open_compose(Kind::New, None, window, cx);
+            if let Some(account) = account {
+                self.send_compose_from(account);
+                self.ask_delivery_receipts(cx);
+            }
+        }
+        self.writing.files_opened = Some(Instant::now());
+        self.add_files(paths, Place::Attach, cx);
+    }
+
     /// Reads `paths` off the main thread and adds them where `place` says:
     /// pictures may go in the text (unless it is plain text); everything
     /// else is attached.
     pub(super) fn add_files(&mut self, paths: Vec<PathBuf>, place: Place, cx: &mut Context<Self>) {
+        let zips = self.paths.cache_dir().join("attach");
         let read = cx.background_executor().spawn(async move {
+            let name_of = |path: &std::path::Path| {
+                path.file_name()
+                    .map(|n| n.to_string_lossy().into_owned())
+                    .unwrap_or_else(|| "attachment".to_owned())
+            };
             paths
                 .into_iter()
-                .filter(|p| p.is_file())
-                .map(|path| {
-                    let name = path
-                        .file_name()
-                        .map(|n| n.to_string_lossy().into_owned())
-                        .unwrap_or_else(|| "attachment".to_owned());
+                .filter_map(|path| {
+                    if path.is_file() {
+                        return Some(Ok((path, false)));
+                    }
+                    // A folder goes as a zip of it.
+                    path.is_dir().then(|| {
+                        crate::folder_zip::zip_folder(&path, &zips)
+                            .map(|zip| (zip, true))
+                            .map_err(|err| format!("{}: {err}", name_of(&path)))
+                    })
+                })
+                .map(|file| {
+                    let (path, zipped) = match file {
+                        Ok(file) => file,
+                        Err(err) => return (PathBuf::new(), String::new(), 0, Some(Err(err))),
+                    };
+                    let name = name_of(&path);
                     let size = std::fs::metadata(&path).map_or(0, |m| m.len());
                     // Larger files go through Drive, never into memory.
                     let data = (size <= MAX_TOTAL as u64)
                         .then(|| std::fs::read(&path).map_err(|err| format!("{name}: {err}")));
+                    // A zip that went into memory is not needed any more;
+                    // one on its way to Drive is.
+                    if zipped
+                        && data.is_some()
+                        && let Some(dir) = path.parent()
+                    {
+                        let _ = std::fs::remove_dir_all(dir);
+                    }
                     (path, name, size, data)
                 })
                 .collect::<Vec<_>>()

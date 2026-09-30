@@ -1,0 +1,50 @@
+name: Secondary
+
+# Ubuntu and Windows follow main: after each push they run their tests and,
+# once Windows passes, build Katna Setup and publish `windows-latest`. Arch
+# (ci.yml) stays the only check that gates pull requests and the Arch
+# package; nothing here blocks it. A newer push cancels an older run, so
+# this always tests the newest main.
+on:
+  push:
+    branches: [main]
+    # As for the packages: docs-only pushes change nothing built.
+    paths:
+      - "**"
+      - "!docs/**"
+      - "docs/credits.json"
+  workflow_dispatch:
+
+concurrency:
+  group: secondary-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # A called workflow's jobs get at most these permissions; ci.yml's
+  # `changes` job reads the pull request's files.
+  ubuntu:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      platform: ubuntu
+
+  windows:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      platform: windows
+
+  windows-package:
+    needs: windows
+    uses: ./.github/workflows/windows-package.yml
+    secrets: inherit
+    permissions:
+      contents: write
+      actions: read

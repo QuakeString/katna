@@ -373,6 +373,11 @@ pub mod app_action {
     /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, and
     /// the Calendar takes a day too ([`calendar_page`]).
     pub const OPEN_PAGE: &str = "open-page";
+    /// Start a new message with files attached ("Send with Katna Mail" in
+    /// a file manager); the parameters are texts (`s`): the address to
+    /// send from (empty for the usual one), then the files' full paths.
+    /// Folders go as zips.
+    pub const ATTACH: &str = "attach";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -387,6 +392,7 @@ pub mod app_action {
             REPLY_ALL => Some("--reply-all"),
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
+            ATTACH => Some("--attach"),
             _ => None,
         }
     }

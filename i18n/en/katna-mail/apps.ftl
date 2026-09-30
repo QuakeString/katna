@@ -19,6 +19,8 @@ rail-tasks = Tasks
 rail-notes = Notes
 # RSS and Atom news feeds.
 rail-feeds = Feeds
+# Every attachment of every account in one place.
+rail-files = Files
 
 ## Pages of apps still to come
 

@@ -40,6 +40,7 @@ fontdb.workspace = true
 serde_json.workspace = true
 url.workspace = true
 qrcodegen.workspace = true
+zip.workspace = true
 
 # XDG desktop portals (print dialog, "Open with"): Linux only.
 [target.'cfg(not(windows))'.dependencies]

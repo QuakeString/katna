@@ -2428,6 +2428,23 @@ desktop's own app stays one click away.
   the file instead. Save writes where the user chooses.
 - Not yet: text search in PDFs, printing, pictures inside documents,
   old Word files and slides.
+- **Files page** (the attachment library, from the HEY study's Files):
+  the last app of the rail (after Feeds, Ctrl+7, `--page files`) shows
+  every named attachment of every account as the cards above, newest
+  first under month headings, or as a list. It reads the attachment lists
+  sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
+  schema change, no server, works offline. Mail in Trash or Spam is left
+  out, a file sent again (same name and size) shows once, and pictures
+  under 12 KB (signature logos) are skipped; it reads at most 20,000
+  files. The side column (a drawer and chips on a phone) narrows it to a
+  kind of file, an account, or received or sent; chips pick a sender, a
+  time and the order; the top bar's search box matches names, subjects
+  and senders. A click opens a file as the list's chips do (downloading
+  its mail first); the hover panel, the right-click menu and the viewer
+  (opened from this page) offer **Show the mail**, and the menu also
+  opens the mail in a new window, forwards the file in a new mail, and
+  shows the sender's files. Thumbnails are made in the background only
+  for cards on show whose mail is downloaded, and at most 96 are kept.
 
 ### 13.9 Window sizes
 
@@ -3048,6 +3065,18 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   set it (`katna_platform::mimeapps`, in the user's `mimeapps.list` and any
   desktop-specific list that names another app). Plasma and GNOME read
   these files. Under Flatpak this needs the OpenURI portal instead (later).
+- **Send with Katna Mail** in the file managers' right-click menus on files
+  and folders runs `katna-mail --attach [--from ADDRESS] FILE…`: a new
+  message with them attached, a folder as a zip of it; a running app gets
+  it as the `attach` action, and files arriving within two seconds join the
+  same message (Explorer starts one process per file). With several mail
+  accounts the entry is a submenu of them (`katna_platform::file_menus`).
+  Dolphin: the package's service menu in `/usr/share/kio/servicemenus`,
+  and the daemon's copy with the submenu in the user's
+  `~/.local/share/kio/servicemenus` (same name, so it wins) while there are
+  several accounts. GNOME Files: a nautilus-python extension that reads
+  `send-menu.json`, which the daemon writes in Katna's data folder. The
+  daemon rewrites both at start and when accounts change.
 - **KDE global menu**: the app serves its menu bar (File, Edit, View, Go,
   Message, Settings, Help) with `com.canonical.dbusmenu` at
   `/in/invenia/katna/Mail/MenuBar`, built from its GPUI actions and their
@@ -4942,6 +4971,7 @@ menu.
 | SNI tray, badge on the launcher | notification-area icon with the same menu and the unread count drawn on it (`tray-icon` on a `winit` loop). A taskbar overlay badge needs COM calls the workspace's `unsafe_code = "forbid"` rules out, so it waits for a safe wrapper |
 | freedesktop notifications | toasts, under the AppUserModelID Setup registers: the daemon serves `org.freedesktop.Notifications` on Katna's bus itself (`katna_platform::toasts`), so `katna-notify` is unchanged |
 | XDG mimeapps (mailto) | `Katna.Mailto` under `HKCU\Software\Classes`, with Capabilities so Katna is listed in Settings > Default apps. Windows only lets people pick the default there, so Katna's "Make default" opens that page |
+| file manager menus (§15.2) | Explorer's `*\shell\KatnaMail.Send` and `Directory\shell\KatnaMail.Send` under `HKCU\Software\Classes`, one entry from Setup, rewritten by the daemon with an `ExtendedSubCommandsKey` submenu when there are several accounts. Windows 11 shows it under Show more options (its short menu needs a packaged app's `IExplorerCommand`); Setup also puts Katna Mail in Send to |
 | print portal | the PDF opens in the default PDF app to print from there |
 | "Open with" portal | Windows' Open with dialog |
 | KRunner, GNOME search | no third-party results in Start search; a PowerToys Run plugin later |
@@ -4986,11 +5016,15 @@ removes. Setup starts PowerShell and icacls by their full System32 paths
 and links with `/DEPENDENTLOADFLAG:0x800`, so files left beside it in
 Downloads are never run or loaded as administrator.
 
-CI builds Setup.exe into a `windows-latest` pre-release when the owner
-runs the Windows package workflow by hand on `main` (Actions > Windows
-package > Run workflow), with the faster `quick` profile (thin LTO)
-unless Full build is ticked; while Katna is young, pushes and pull requests
-test on Arch only, and the Windows and Ubuntu CI jobs also run only by
-hand. Without a code-signing
+Arch Linux is the primary platform: its CI (`ci.yml`) alone gates pull
+requests and the Arch package. Ubuntu and Windows are secondary: after
+each push to `main` the Secondary workflow (`secondary.yml`) runs their
+tests beside Arch without blocking it, a newer push cancelling an older
+run, and once the Windows tests pass it builds Setup.exe with the faster
+`quick` profile (thin LTO) and publishes it as the `windows-latest`
+pre-release. The Windows package workflow can also be run by hand
+(Actions > Windows package > Run workflow; tick Full build for the
+`release` profile). A Claude thread follows Secondary's results and fixes
+what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.

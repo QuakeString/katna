@@ -4,8 +4,9 @@ name: Windows package
 # `windows-latest` pre-release with the new KatnaSetup.exe, so Windows users
 # install and update Katna without building it (packaging/windows/README.md).
 
-# Only when run by hand (Actions > Windows package > Run workflow) while
-# Katna is young; run on main, it publishes as before.
+# Secondary (secondary.yml) runs it after each push to main once the
+# Windows tests pass; it can also be run by hand (Actions > Windows package
+# > Run workflow). Run on main, it publishes.
 on:
   workflow_dispatch:
     inputs:
@@ -13,6 +14,7 @@ on:
         description: "Full build: smallest, fastest Katna, but much slower to build"
         type: boolean
         default: false
+  workflow_call:
 
 concurrency:
   group: windows-package-${{ github.ref }}

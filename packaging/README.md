@@ -11,6 +11,8 @@ Files that distribution packages install, and the Arch Linux package.
 | `desktop/<mail app ID>.desktop` | `/usr/share/applications/` |
 | `krunner/<mail app ID>.desktop` | `/usr/share/krunner/dbusplugins/` (KRunner results from the daemon) |
 | `gnome-shell/<mail app ID>.search-provider.ini` | `/usr/share/gnome-shell/search-providers/` (GNOME search results from the daemon) |
+| `kio/<mail app ID>.SendFiles.desktop` | `/usr/share/kio/servicemenus/` ("Send with Katna Mail" in Dolphin; the daemon writes the user's copy with an account submenu) |
+| `nautilus/katna-mail.py` | `/usr/share/nautilus-python/extensions/` ("Send with Katna Mail" in GNOME Files; needs python-nautilus) |
 | `icons/<mail app ID>.svg` | `/usr/share/icons/hicolor/scalable/apps/` |
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |

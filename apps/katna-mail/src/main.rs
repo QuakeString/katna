@@ -13,6 +13,7 @@ mod assets;
 mod autostart;
 mod daemon;
 mod data;
+mod folder_zip;
 mod format;
 mod grammar;
 mod instance;
@@ -50,6 +51,7 @@ use katna_ui::scale::desktop_px;
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY | --compose | --inbox | --settings |
                   --message ID | --reply-all ID | --page PAGE]
+       katna-mail --attach [--from ADDRESS] FILE...
        katna-mail --background
 
 When Katna Mail is already running, it comes to the front and does what
@@ -63,12 +65,16 @@ Options:
   --compose        Start a new message
   --inbox          Show the Inbox
   --page PAGE      Show a page of the window: mail, calendar, contacts,
-                   tasks or notes; calendar:YYYY-MM-DD shows that day,
+                   tasks, notes or files; calendar:YYYY-MM-DD shows that day,
                    calendar:YYYY-MM-DD:new starts an event on it
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
   --reply-all ID   Open the message with this ID and reply to all
   --update         Show the downloaded update of Katna, ready to install
+  --attach FILE... Write a new message with the files attached; a folder
+                   goes as a zip (Send with Katna Mail in the file
+                   manager). With --from ADDRESS it goes out from that
+                   account. Every argument after it is a file.
   mailto:...       Write a new message as the link asks (Katna Mail is
                    the desktop's mail app when Settings > General says so)
   --background     Start the Katna service (sync, notifications, the tray
@@ -129,6 +135,24 @@ fn main() -> ExitCode {
                     Some(id) => request = instance::Request::for_message(flag, id),
                     None => return usage_error(),
                 }
+            }
+            // "Send with Katna Mail" in a file manager: the rest are files.
+            Some("--attach") => {
+                let mut rest: Vec<_> = args.by_ref().collect();
+                let mut from = None;
+                if rest.first().and_then(|a| a.to_str()) == Some("--from") {
+                    if rest.len() < 2 {
+                        return usage_error();
+                    }
+                    from = rest.drain(..2).nth(1).and_then(|a| a.into_string().ok());
+                }
+                // The running app has another working folder.
+                let paths = rest
+                    .into_iter()
+                    .map(PathBuf::from)
+                    .map(|p| std::path::absolute(&p).unwrap_or(p))
+                    .collect();
+                request = Some(instance::Request::Attach { from, paths });
             }
             // The desktop file's `%u`: a link to write to.
             Some(uri) if mailto::Mailto::parse(uri).is_some() => {

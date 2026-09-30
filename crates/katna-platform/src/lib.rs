@@ -7,6 +7,7 @@ pub mod colors;
 #[cfg(windows)]
 pub mod credentials;
 pub mod dbusmenu;
+pub mod file_menus;
 pub mod font;
 pub mod icon;
 pub mod launcher;

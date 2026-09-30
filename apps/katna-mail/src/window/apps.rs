@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
-//! and Feeds, with settings at the bottom; their names can be hidden in
+//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes,
+//! Feeds and Files, with settings at the bottom; their names can be hidden in
 //! quick settings. Each app is a page of the one window: the rail, Ctrl+1
 //! to Ctrl+5 (Outlook's keys), the Go menu, the desktop file's actions and
 //! `katna-mail --page NAME` (D-Bus `ActivateAction("open-page", [NAME])`)
@@ -41,16 +41,18 @@ pub(super) enum App {
     Tasks,
     Notes,
     Feeds,
+    Files,
 }
 
 impl App {
-    pub(super) const ALL: [Self; 6] = [
+    pub(super) const ALL: [Self; 7] = [
         Self::Mail,
         Self::Calendar,
         Self::Contacts,
         Self::Tasks,
         Self::Notes,
         Self::Feeds,
+        Self::Files,
     ];
 
     pub(super) fn label(self) -> String {
@@ -61,13 +63,17 @@ impl App {
             Self::Tasks => "rail-tasks",
             Self::Notes => "rail-notes",
             Self::Feeds => "rail-feeds",
+            Self::Files => "rail-files",
         })
     }
 
     /// The page's name for `--page` and `open-page`, and in the saved
     /// window state.
     pub(super) fn key(self) -> &'static str {
-        self.icon()
+        match self {
+            Self::Files => "files",
+            _ => self.icon(),
+        }
     }
 
     /// The page named `key`.
@@ -83,13 +89,14 @@ impl App {
             Self::Tasks => "tasks",
             Self::Notes => "notes",
             Self::Feeds => "feeds",
+            Self::Files => "attachment",
         }
     }
 
     /// What the app will do, for its "coming soon" page.
     fn promise(self) -> String {
         match self {
-            Self::Mail | Self::Contacts | Self::Tasks => String::new(),
+            Self::Mail | Self::Contacts | Self::Tasks | Self::Files => String::new(),
             Self::Calendar => tr!("app-calendar-promise"),
             Self::Notes => tr!("app-notes-promise"),
             Self::Feeds => tr!("app-feeds-promise"),
@@ -242,6 +249,9 @@ impl MailWindow {
         if from == App::Tasks {
             self.swap_tasks_search(false, cx);
         }
+        if from == App::Files {
+            self.swap_files_search(false, cx);
+        }
         if from == App::Contacts || app == App::Contacts {
             // The search box follows: contacts on this page, mail elsewhere.
             self.swap_contacts_search(app == App::Contacts, cx);
@@ -267,6 +277,10 @@ impl MailWindow {
         }
         if app == App::Tasks {
             self.open_tasks_page(cx);
+        }
+        if app == App::Files {
+            self.swap_files_search(true, cx);
+            self.load_library(cx);
         }
         cx.notify();
     }
@@ -460,6 +474,7 @@ impl MailWindow {
             }
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
+            App::Files => self.render_files(th, window, cx),
             App::Mail | App::Feeds => self.render_coming_soon(th),
         };
         // Edge to edge on a phone, as Mail's cards are.

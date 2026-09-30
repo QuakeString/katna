@@ -43,6 +43,7 @@ optdepends=(
   'noto-fonts: letters of Indic, Thai, Khmer, Lao, Burmese, Tibetan, Ethiopic, Arabic and Hebrew mail and translations'
   'noto-fonts-cjk: Chinese, Japanese and Korean mail and translations'
   'noto-fonts-emoji: colour emoji in mail and in the app'
+  'python-nautilus: Send with Katna Mail in the right-click menu of GNOME Files'
 )
 provides=('katna')
 conflicts=('katna')
@@ -112,6 +113,9 @@ package() {
   install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
   install -Dm644 -t "$pkgdir/usr/share/krunner/dbusplugins" packaging/krunner/*.desktop
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
+  # "Send with Katna Mail" on files and folders in Dolphin and GNOME Files.
+  install -Dm644 -t "$pkgdir/usr/share/kio/servicemenus" packaging/kio/*.desktop
+  install -Dm644 -t "$pkgdir/usr/share/nautilus-python/extensions" packaging/nautilus/*.py
   install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
   for dir in packaging/icons/hicolor/*/apps; do
     install -Dm644 -t "$pkgdir/usr/share/icons/${dir#packaging/icons/}" "$dir"/*

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Send files from your file manager"
+text = """
+Right-click files or folders in Dolphin, GNOME Files or Windows Explorer and choose Send with Katna Mail: a new message opens with them attached, and a folder goes as a zip. With more than one mail account, pick the one to send from in its submenu.
+"""
