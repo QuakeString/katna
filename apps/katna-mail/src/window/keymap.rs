@@ -450,8 +450,9 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         bindings.push(KeyBinding::new("ctrl-z", gpui::NoAction, Some(context)));
     }
     // In the attachment viewer, Ctrl+Z and redo are about the marks made
-    // on a PDF; the viewer takes them itself.
-    for keys in ["ctrl-z", "ctrl-shift-z", "ctrl-y"] {
+    // on a PDF, and Ctrl+R (Shift for anticlockwise) turns its pages; the
+    // viewer takes them itself.
+    for keys in ["ctrl-z", "ctrl-shift-z", "ctrl-y", "ctrl-r", "ctrl-shift-r"] {
         bindings.push(KeyBinding::new(
             keys,
             gpui::NoAction,

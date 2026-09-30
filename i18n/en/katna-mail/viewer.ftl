@@ -22,6 +22,8 @@ viewer-page = Page
 # After that box. $count: the PDF's number of pages.
 viewer-page-count = of { $count }
 viewer-go-to-page-tip = Type a page number and press Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Rotate clockwise (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Rotate anticlockwise (Ctrl+Shift+R)
 
 ## Marking up a PDF
 

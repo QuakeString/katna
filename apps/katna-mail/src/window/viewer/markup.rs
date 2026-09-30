@@ -186,6 +186,12 @@ pub(super) struct Markup {
 }
 
 impl Markup {
+    /// Drops a pen stroke or erasing still under way (the page turned).
+    pub(super) fn stroke_cancel(&mut self) {
+        self.stroke = None;
+        self.erasing = false;
+    }
+
     pub(super) fn new() -> Self {
         Self {
             on: false,
