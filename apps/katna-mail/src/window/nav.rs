@@ -28,7 +28,7 @@ use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
+    ScaledEdge, elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
 
 /// How far the floating folder pane stands off the rail and the top bar.
@@ -464,7 +464,7 @@ impl MailWindow {
                 th.search
             }))
             // Focused, it gains the accent edge every other field has.
-            .border_2()
+            .border_px(2.0)
             .border_color(rgba(fade(th.accent, t.clamp(0.0, 1.0))))
             .text_size(px(16.0))
             .line_height(px(24.0))

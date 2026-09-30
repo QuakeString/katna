@@ -28,7 +28,7 @@ use super::{Listing, MailWindow, keymap};
 use crate::daemon;
 use crate::data::Mail;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, icon};
+use crate::widgets::{FocusRing, ScaledEdge, elevation, icon};
 
 const WIDTH: f32 = 500.0;
 
@@ -349,7 +349,7 @@ impl MailWindow {
                         .flex()
                         .items_center()
                         .rounded(px(8.0))
-                        .border_2()
+                        .border_px(2.0)
                         .border_color(rgba(th.accent))
                         .text_size(px(14.0))
                         .child(div().flex_1().min_w_0().child(renaming.input.clone())),
@@ -1212,7 +1212,7 @@ impl MailWindow {
                                 .flex()
                                 .items_center()
                                 .rounded(px(8.0))
-                                .border_2()
+                                .border_px(2.0)
                                 .border_color(rgba(if ready {
                                     th.error
                                 } else {

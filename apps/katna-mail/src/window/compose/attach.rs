@@ -14,7 +14,7 @@ use super::super::MailWindow;
 use crate::format;
 use crate::outgoing::Part;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::{ScaledEdge, icon, tip};
 
 /// What mail servers take in one message (Gmail's limit), counting the
 /// pictures in the text.
@@ -430,7 +430,7 @@ impl MailWindow {
                     .relative()
                     .size_full()
                     .rounded(px(12.0))
-                    .border_2()
+                    .border_px(2.0)
                     .border_dashed()
                     .border_color(rgba(accent))
                     .bg(rgba(crate::theme::fade(surface, 0.92)))

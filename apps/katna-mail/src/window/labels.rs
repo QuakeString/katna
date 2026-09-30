@@ -18,7 +18,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button, radio};
+use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, radio};
 use crate::{daemon, format};
 
 const WIDTH: f32 = 420.0;
@@ -203,7 +203,7 @@ impl MailWindow {
             .flex()
             .items_center()
             .rounded(px(8.0))
-            .border_2()
+            .border_px(2.0)
             .border_color(rgba(if focused {
                 th.accent
             } else {

@@ -31,7 +31,7 @@ use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, placeholder, raised, tip};
+use crate::widgets::{ScaledEdge, icon, placeholder, raised, tip};
 
 /// The width of the lists on the left.
 const NAV_WIDTH: f32 = 256.0;
@@ -2911,7 +2911,7 @@ pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
             )
             .into_any_element();
     }
-    ring.border_2()
+    ring.border_px(2.0)
         .border_color(rgba(th.text_dim))
         .when(hover, |d| {
             d.child(

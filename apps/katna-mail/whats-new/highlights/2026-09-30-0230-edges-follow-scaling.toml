@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Outlines grow with Scaling"
+text = """
+With Scaling in Settings > Appearance above or below 100%, the accent
+outline of the focused search box and fields, and the edges of choice cards
+and task rings, now grow and shrink with everything else instead of
+staying thin.
+"""

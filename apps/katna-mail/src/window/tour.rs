@@ -24,7 +24,7 @@ use katna_ui::unpx;
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button};
+use crate::widgets::{ScaledEdge, elevation, filled_button};
 
 const CARD_WIDTH: f32 = 340.0;
 /// Room kept around a lit part.
@@ -254,7 +254,7 @@ impl MailWindow {
                 .w(px(w))
                 .h(px(h))
                 .rounded(px(RADIUS))
-                .border_2()
+                .border_px(2.0)
                 .border_color(rgba(th.accent))
         });
 

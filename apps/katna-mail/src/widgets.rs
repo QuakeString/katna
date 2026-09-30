@@ -642,7 +642,8 @@ fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> A
                 // Partly checked is a smaller square inside the edge, with a
                 // gap between them; checking grows it to fill the box.
                 let inner = lerp(PARTIAL_SQUARE, CHECK_BOX - 4.0, full) * edge;
-                edge_of(d.rounded(px(3.0)), 2.0)
+                d.rounded(px(3.0))
+                    .border_px(2.0)
                     .border_color(rgba(crate::theme::mix(rest, fill, edge)))
                     .flex()
                     .items_center()
@@ -729,24 +730,30 @@ fn check_mark(t: f32, color: u32) -> impl IntoElement {
     .size_full()
 }
 
-/// An edge `width` design pixels wide all round, scaled with the interface
-/// like every other length. GPUI's `border_2()` and the like are fixed
-/// device-independent pixels, so at 200% they would be half as thick and
-/// leave the inside 2 px larger than drawn for.
-fn edge_of<E: Styled>(mut element: E, width: f32) -> E {
-    let width: gpui::AbsoluteLength = px(width).into();
-    let edges = &mut element.style().border_widths;
-    edges.top = Some(width);
-    edges.right = Some(width);
-    edges.bottom = Some(width);
-    edges.left = Some(width);
-    element
+/// An edge in design pixels, scaled with the interface like every other
+/// length. GPUI's `border_2()` and the like are fixed device-independent
+/// pixels, so at 200% they would be half as thick, and a checkbox's tick
+/// would sit off the centre of a box drawn for the scaled edge.
+pub trait ScaledEdge: Styled + Sized {
+    /// An edge `width` design pixels wide all round.
+    fn border_px(mut self, width: f32) -> Self {
+        let width: gpui::AbsoluteLength = px(width).into();
+        let edges = &mut self.style().border_widths;
+        edges.top = Some(width);
+        edges.right = Some(width);
+        edges.bottom = Some(width);
+        edges.left = Some(width);
+        self
+    }
 }
+
+impl<E: Styled> ScaledEdge for E {}
 
 /// A radio button drawn at `t` (0 off, 1 on).
 pub fn radio(t: f32, th: &Theme) -> AnyElement {
     let ring = crate::theme::mix(th.text_dim, th.accent, t);
-    edge_of(div(), 2.0)
+    div()
+        .border_px(2.0)
         .size(px(20.0))
         .flex_none()
         .flex()
