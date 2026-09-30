@@ -47,6 +47,7 @@ mod detached;
 mod download;
 mod event_edit;
 mod feedback_page;
+mod files_page;
 mod katna_account;
 mod keymap;
 mod labels;
@@ -182,6 +183,7 @@ actions!(
         ShowContacts,
         ShowTasks,
         ShowNotes,
+        ShowFiles,
         OpenSettings,
         ShowShortcuts,
         ShowWhatsNew,
@@ -472,6 +474,8 @@ pub struct MailWindow {
     contacts: contacts_page::ContactsPage,
     /// The Tasks page.
     tasks: tasks_page::TasksPage,
+    /// The Files page: every attachment in one place.
+    library: files_page::Library,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
     /// How far text in a pill goes up to look centred in it, per pixel
@@ -831,6 +835,7 @@ impl MailWindow {
             people_task: None,
             contacts: Default::default(),
             tasks: Default::default(),
+            library: Default::default(),
             font,
             pill_text_lift: 0.0,
             mail: Mail::open(&paths),
@@ -2157,6 +2162,10 @@ impl MailWindow {
         }
         if self.app == RailApp::Tasks {
             self.on_tasks_search(search, event, window, cx);
+            return;
+        }
+        if self.app == RailApp::Files {
+            self.on_files_search(search, event, window, cx);
             return;
         }
         match event {
@@ -3593,6 +3602,9 @@ impl Render for MailWindow {
             }))
             .on_action(cx.listener(|this, _: &ShowNotes, window, cx| {
                 this.show_page(RailApp::Notes, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowFiles, window, cx| {
+                this.show_page(RailApp::Files, window, cx)
             }))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
