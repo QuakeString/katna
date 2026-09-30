@@ -1164,10 +1164,13 @@ impl MailWindow {
         };
         self.nav_cursor = Some(ix);
         self.nav_by_keys = false;
-        // The list already shown stays as it is, without a blink.
+        // The list already shown stays as it is, without a blink, and goes
+        // back to its top, as in Gmail.
         if let Some(next) = listing_of(&row)
             && self.showing(&next, cx)
         {
+            self.scroll_list_to(0);
+            cx.notify();
             self.picked_from_nav(window, cx);
             return;
         }

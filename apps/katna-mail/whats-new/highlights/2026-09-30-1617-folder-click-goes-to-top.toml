@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Back to the top of a folder"
+text = """
+Clicking the folder you are already in, such as Inbox after scrolling down,
+takes its list back to the top, as in Gmail.
+"""
