@@ -3,8 +3,9 @@ name: Secondary
 # Ubuntu and Windows follow main: after each push they run their tests and,
 # once Windows passes, build Katna Setup and publish `windows-latest`. Arch
 # (ci.yml) stays the only check that gates pull requests and the Arch
-# package; nothing here blocks it. A newer push cancels an older run, so
-# this always tests the newest main.
+# package; nothing here blocks it. A run always finishes, since main moves
+# faster than Windows builds; pushes meanwhile wait, and only the newest of
+# them runs next.
 on:
   push:
     branches: [main]
@@ -17,7 +18,7 @@ on:
 
 concurrency:
   group: secondary-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read

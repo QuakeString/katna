@@ -28,6 +28,7 @@ icons!(
     "align-right",
     "all-mail",
     "archive",
+    "arrow-up",
     "attachment",
     "back",
     "bell",

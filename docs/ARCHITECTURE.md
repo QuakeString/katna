@@ -2284,8 +2284,12 @@ desktop's own app stays one click away.
   Thumbnails are made in the background from the stored raw message and
   freed when the conversation closes.
 - **Viewer.** Clicking a card opens the viewer over the window below the
-  top bar (the window's own controls stay usable): a dark page with a bar
-  naming the file, "Open with another app" and Save; arrows (and ←/→) go
+  top bar (the window's own controls stay usable): with frosted menus on,
+  the window shows blurred under a dark veil and the viewer's bar (a
+  shade darker), its controls pill, foot pill and markup pill are frosted
+  too; the file shows below the bar, never under it; with frost off, a
+  plain darker veil. The bar names the file, "Open with another app" and
+  Save; arrows (and ←/→) go
   through the message's other attachments, the viewer staying open: the
   file on show stays until the next one is ready (a PDF with its first
   page drawn) and they swap in one frame, or "Opening…" shows after
@@ -2893,7 +2897,7 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Search | `Search(query, limit) → results` (used by KRunner, GNOME search, apps) |
 | Calendar | `EventsInRange(start, end) → events`, `CreateEvent(ical)`, `UpdateEvent(uid, ical)`, `DeleteEvent(uid)` |
 | Contacts / orgs | `FindContacts(text)`, `Organizations()` |
-| Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
+| Sync | `SyncNow(account?)`, `SyncFolder(folder)` (only that folder, for a folder's "Check for new mail"), `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
@@ -5019,8 +5023,8 @@ Downloads are never run or loaded as administrator.
 Arch Linux is the primary platform: its CI (`ci.yml`) alone gates pull
 requests and the Arch package. Ubuntu and Windows are secondary: after
 each push to `main` the Secondary workflow (`secondary.yml`) runs their
-tests beside Arch without blocking it, a newer push cancelling an older
-run, and once the Windows tests pass it builds Setup.exe with the faster
+tests beside Arch without blocking it (a run always finishes, and only the
+newest push that arrived meanwhile runs next), and once the Windows tests pass it builds Setup.exe with the faster
 `quick` profile (thin LTO) and publishes it as the `windows-latest`
 pre-release. The Windows package workflow can also be run by hand
 (Actions > Windows package > Run workflow; tick Full build for the

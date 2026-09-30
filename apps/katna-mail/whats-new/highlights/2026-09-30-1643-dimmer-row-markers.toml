@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calmer mail list"
+text = """
+An empty tick box, star or Important marker in the mail list is dimmer
+until the pointer is over its row. Set stars and markers keep their colour.
+"""

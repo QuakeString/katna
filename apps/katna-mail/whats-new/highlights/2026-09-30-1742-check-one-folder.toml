@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Check one folder for new mail"
+text = """
+"Check for new mail" in a folder's right-click menu now checks only that
+folder, so it is quick. On an account's inbox under All Accounts it checks
+that account's inbox, and on a list like Inbox or Sent under All Accounts it
+checks that folder in each account.
+"""

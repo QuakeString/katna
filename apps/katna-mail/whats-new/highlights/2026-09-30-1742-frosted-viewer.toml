@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A lighter, frosted viewer"
+text = """
+The attachment viewer's top bar is slimmer and lighter, and page, zoom and
+turning sit on a pill. Around the file, Katna Mail shows blurred under a
+soft dark veil, and the toolbars are frosted too. The blur follows
+Settings > Experimental; without it the viewer uses a plain dark veil.
+"""

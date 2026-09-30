@@ -35,7 +35,10 @@ use katna_render::AttachmentFile;
 use katna_ui::{InputEvent, TextArea};
 use katna_ui::{Ripple, px, unpx};
 
-use super::{BAR_HEIGHT, Content, HOVER, INK, INK_DIM, PILL, PdfView, Viewer, ViewerEvent};
+use super::{
+    BAR_HEIGHT, Content, HOVER, INK, INK_DIM, PILL, PILL_FROSTED, PdfView, Viewer, ViewerEvent,
+    glassy,
+};
 use crate::theme::Theme;
 use crate::widgets::{ScaledEdge, icon, tip};
 
@@ -1028,8 +1031,9 @@ impl Viewer {
             .items_center()
             .justify_center()
             .gap(px(2.0))
+            .relative()
             .rounded(px(22.0))
-            .bg(rgba(PILL))
+            .map(|el| glassy(el, PILL, PILL_FROSTED, 22.0, self.th.frost))
             .text_size(px(13.0))
             .text_color(rgba(INK));
         let separator = || {
