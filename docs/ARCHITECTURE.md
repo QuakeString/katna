@@ -555,6 +555,28 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   in. Tests use a local fake OAuth server and a fake IMAP server, never a
   real provider. App passwords keep working for Gmail; setting a password on
   an OAuth2 account (`SetPassword`) switches it back to the password.
+- **Zoho** (tasks and calendars; `AccountSettings::linked`,
+  `daemon/linked.rs`): a sign-in linked to an account, not its mail login,
+  because Zoho lets only "self client" apps use XOAUTH2 for IMAP, so Zoho
+  Mail keeps its password. `SignIn("zoho", account)` asks at once for
+  `ZohoMail.tasks.ALL` (Zoho Mail's Tasks API, which Zoho ToDo serves),
+  `ZohoMail.accounts.READ` (the Mail `accountId` and `zuid` task calls take),
+  `ZohoCalendar.calendar.ALL` and `ZohoCalendar.event.ALL`, and
+  `AaaServer.profile.READ` (who signed in, from `/oauth/user/info`; Zoho
+  gives no ID token). Zoho scopes are separated by commas. Zoho takes
+  only registered redirect URIs, port included, so its loopback is the
+  fixed `http://localhost:53710/` (as rclone registers its own). It starts at the data centre of the
+  account's mail host or domain (`accounts.zoho.com`, `.eu`, `.in`,
+  `.com.au`, `.jp`, `.sa`, `.uk`, `zohocloud.ca`). Zoho sends every other
+  user on and names their `accounts-server` in the answer: the code goes
+  there, but only if it is one of those servers. The account keeps that
+  server and the `api_domain` of the token answer. Zoho answers a refused
+  token with 200 and `invalid_code`, which counts as signing in again.
+  The refresh token is a Secret Service item of its own
+  (`linked-account` attribute, so a password lookup never finds it).
+  `Daemon::linked_tokens` hands it to the tasks and calendar syncs. The
+  client ID and secret come from `KATNA_ZOHO_OAUTH_CLIENT_ID` and
+  `KATNA_ZOHO_OAUTH_CLIENT_SECRET` at build time.
 - **Account setup** (task 1.2, `katna_sync::autoconfig`, D-Bus
   `DiscoverAccount`): the user gives an address and the daemon finds the
   servers, in Thunderbird's order. First built-in settings for Gmail,

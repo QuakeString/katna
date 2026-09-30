@@ -87,11 +87,13 @@ jobs:
           chown -R builder: "$RUSTUP_HOME" "$CARGO_HOME" "$CARGO_TARGET_DIR"
       - name: Build the package
         env:
-          # "Sign in with Google/Microsoft" (katna_core::ids); unset hides
+          # "Sign in with Google/Microsoft/Zoho" (katna_core::ids); unset hides
           # the buttons, as in pull requests from forks.
           KATNA_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_ID }}
           KATNA_GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_SECRET }}
           KATNA_MICROSOFT_OAUTH_CLIENT_ID: ${{ secrets.KATNA_MICROSOFT_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_ID: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
         run: |
           runuser -u builder -- env HOME=/home/builder \
               RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" \
@@ -99,6 +101,8 @@ jobs:
               KATNA_GOOGLE_OAUTH_CLIENT_ID="$KATNA_GOOGLE_OAUTH_CLIENT_ID" \
               KATNA_GOOGLE_OAUTH_CLIENT_SECRET="$KATNA_GOOGLE_OAUTH_CLIENT_SECRET" \
               KATNA_MICROSOFT_OAUTH_CLIENT_ID="$KATNA_MICROSOFT_OAUTH_CLIENT_ID" \
+              KATNA_ZOHO_OAUTH_CLIENT_ID="$KATNA_ZOHO_OAUTH_CLIENT_ID" \
+              KATNA_ZOHO_OAUTH_CLIENT_SECRET="$KATNA_ZOHO_OAUTH_CLIENT_SECRET" \
               bash -euc '
             # makepkg clones the checked-out branch; pull request
             # checkouts have none.

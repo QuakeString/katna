@@ -824,7 +824,7 @@ impl MailWindow {
                         cx,
                     )))
                     .children(error.clone().map(|error| error_line(error, th)));
-                let providers: Vec<OAuthProvider> = OAuthProvider::ALL
+                let providers: Vec<OAuthProvider> = OAuthProvider::MAIL
                     .into_iter()
                     .filter(|p| p.available())
                     .collect();

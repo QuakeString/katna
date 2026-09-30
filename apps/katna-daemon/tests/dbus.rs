@@ -184,6 +184,9 @@ fn discovers_servers() {
             let err = pim.sign_in("microsoft", 0, "").await.unwrap_err();
             assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
         }
+        // Zoho only links its tasks and calendars to an account.
+        let err = pim.sign_in("zoho", 0, "").await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
         assert!(!pim.cancel_sign_in().await.unwrap());
         instance.shutdown().await;
     });
