@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The right-click menu of the folder pane, as in Thunderbird and webmail:
-//! "Check for new mail" for the folder's account (every account from
-//! All Accounts), "Mark all as read", a new folder or label inside it,
-//! and "Empty Trash".
+//! "Check for new mail" for that folder only (its account from an
+//! account's heading, every account from All Accounts), "Mark all as
+//! read", a new folder or label inside it, and "Empty Trash".
 
 use std::time::Duration;
 
@@ -36,6 +36,8 @@ pub(super) struct Check {
     id: u64,
     /// The account checked, or every account.
     account: Option<AccountId>,
+    /// Only these folders were checked, when there are any.
+    folders: Vec<FolderId>,
 }
 
 /// The refresh arrow, turning: mail is being checked for.
@@ -59,6 +61,8 @@ pub(super) struct NavMenu {
     at: Point<Pixels>,
     /// The account to check, or every account.
     account: Option<AccountId>,
+    /// The folders to check instead, when there are any.
+    check: Vec<(AccountId, FolderId)>,
     /// The folder the line opens, for Mark all as read.
     folder: Option<FolderId>,
     unread: u64,
@@ -79,11 +83,34 @@ impl MailWindow {
                 .iter()
                 .any(|a| a.id == account && a.kind == AccountKind::Imap)
         };
+        let owned = |folders: Vec<FolderId>| -> Vec<(AccountId, FolderId)> {
+            folders
+                .into_iter()
+                .filter_map(|f| Some((self.tree.account_of(f)?, f)))
+                .collect()
+        };
         let menu = match row {
-            sidebar::Row::AllAccounts { .. } | sidebar::Row::Unified { .. } => NavMenu {
+            sidebar::Row::AllAccounts { .. } => NavMenu {
                 ix,
                 at,
                 account: None,
+                check: Vec::new(),
+                folder: None,
+                unread: 0,
+                role: Role::Other,
+                nests: false,
+            },
+            // Each account's own folder of that kind; a list by flag
+            // spans every folder, so every account is checked.
+            sidebar::Row::Unified { view, .. } => NavMenu {
+                ix,
+                at,
+                account: None,
+                check: if view.role().is_some() {
+                    owned(self.tree.unified_folders(*view, None))
+                } else {
+                    Vec::new()
+                },
                 folder: None,
                 unread: 0,
                 role: Role::Other,
@@ -93,6 +120,7 @@ impl MailWindow {
                 ix,
                 at,
                 account: Some(*id),
+                check: Vec::new(),
                 folder: None,
                 unread: 0,
                 role: Role::Other,
@@ -107,6 +135,7 @@ impl MailWindow {
                 ix,
                 at,
                 account: Some(*account),
+                check: folder.map(|f| (*account, f)).into_iter().collect(),
                 folder: *folder,
                 unread: *unread,
                 role: folder
@@ -125,6 +154,7 @@ impl MailWindow {
                     ix,
                     at,
                     account,
+                    check: account.map(|a| (a, *folder)).into_iter().collect(),
                     folder: Some(*folder),
                     unread: *unread,
                     role: *role,
@@ -156,9 +186,28 @@ impl MailWindow {
     /// mail now. Until it has, the refresh arrow and the account's inbox
     /// show a turning arrow.
     pub(super) fn check_mail(&mut self, account: Option<AccountId>, cx: &mut Context<Self>) {
+        self.check(account, Vec::new(), cx);
+    }
+
+    /// Has the daemon check only `folders` (each with its account) for new
+    /// mail now, with a turning arrow on them until it has.
+    fn check_folders(&mut self, folders: Vec<(AccountId, FolderId)>, cx: &mut Context<Self>) {
+        self.check(None, folders, cx);
+    }
+
+    fn check(
+        &mut self,
+        account: Option<AccountId>,
+        folders: Vec<(AccountId, FolderId)>,
+        cx: &mut Context<Self>,
+    ) {
         self.check_seq += 1;
         let id = self.check_seq;
-        self.checking.push(Check { id, account });
+        self.checking.push(Check {
+            id,
+            account,
+            folders: folders.iter().map(|(_, f)| *f).collect(),
+        });
         cx.notify();
         let connection = self.daemon.clone();
         cx.spawn(async move |this, cx| {
@@ -170,7 +219,11 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
-                    daemon::check_mail(&connection, account).await
+                    if folders.is_empty() {
+                        daemon::check_mail(&connection, account).await
+                    } else {
+                        daemon::check_folders(&connection, &folders).await
+                    }
                 })
                 .or(async {
                     limit.await;
@@ -200,7 +253,19 @@ impl MailWindow {
     pub(super) fn checking_account(&self, account: AccountId) -> bool {
         self.checking
             .iter()
-            .any(|c| c.account.is_none_or(|a| a == account))
+            .any(|c| c.folders.is_empty() && c.account.is_none_or(|a| a == account))
+    }
+
+    /// Whether every account's mail is being checked for now.
+    pub(super) fn checking_all(&self) -> bool {
+        self.checking
+            .iter()
+            .any(|c| c.folders.is_empty() && c.account.is_none())
+    }
+
+    /// Whether `folder` alone was asked to be checked, and still is.
+    pub(super) fn checking_folder(&self, folder: FolderId) -> bool {
+        self.checking.iter().any(|c| c.folders.contains(&folder))
     }
 
     fn nav_mark_all_read(&mut self, folder: FolderId, cx: &mut Context<Self>) {
@@ -259,6 +324,7 @@ impl MailWindow {
                 .child(div().flex_1().min_w_0().truncate().child(label))
         };
         let account = menu.account;
+        let check = menu.check.clone();
         let gmail = account.is_some_and(|a| self.tree.is_gmail(a));
         let list = div()
             .key_context(crate::widgets::MENU_CONTEXT)
@@ -277,7 +343,11 @@ impl MailWindow {
                 )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.nav_menu = None;
-                    this.check_mail(account, cx);
+                    if check.is_empty() {
+                        this.check_mail(account, cx);
+                    } else {
+                        this.check_folders(check.clone(), cx);
+                    }
                 })),
             )
             .when_some(menu.folder.filter(|_| menu.unread > 0), |d, folder| {

@@ -1197,6 +1197,22 @@ pub async fn check_mail(
     connection: &Connection,
     account: Option<katna_core::AccountId>,
 ) -> Result<(), String> {
+    check(connection, account, &[]).await
+}
+
+/// Like [`check_mail`], for only `folders` (each with its account).
+pub async fn check_folders(
+    connection: &Connection,
+    folders: &[(katna_core::AccountId, katna_store::FolderId)],
+) -> Result<(), String> {
+    check(connection, None, folders).await
+}
+
+async fn check(
+    connection: &Connection,
+    account: Option<katna_core::AccountId>,
+    folders: &[(katna_core::AccountId, katna_store::FolderId)],
+) -> Result<(), String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
@@ -1210,12 +1226,26 @@ pub async fn check_mail(
         .await
         .map_err(|err| describe(&err))?
         .into_iter()
-        .filter(|a| account.is_none_or(|id| id.0 == a.id) && a.state != state::NOT_SYNCED)
+        .filter(|a| {
+            if folders.is_empty() {
+                account.is_none_or(|id| id.0 == a.id)
+            } else {
+                folders.iter().any(|(id, _)| id.0 == a.id)
+            }
+        })
+        .filter(|a| a.state != state::NOT_SYNCED)
         .map(|a| a.id)
         .collect();
-    pim.sync_now(account.map_or(0, |id| id.0))
-        .await
-        .map_err(|err| describe(&err))?;
+    if folders.is_empty() {
+        pim.sync_now(account.map_or(0, |id| id.0))
+            .await
+            .map_err(|err| describe(&err))?;
+    }
+    for (_, folder) in folders {
+        pim.sync_folder(folder.0)
+            .await
+            .map_err(|err| describe(&err))?;
+    }
     // A woken account says so when its sync ends: in sync, offline or
     // with its password refused. "Connecting" comes first when it had no
     // connection.

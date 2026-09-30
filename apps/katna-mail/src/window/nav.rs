@@ -806,7 +806,7 @@ impl MailWindow {
             sidebar::Row::AllAccounts { expanded } => self.render_heading(
                 ix,
                 tr!("nav-all-accounts"),
-                (*expanded, self.checking_mail()),
+                (*expanded, self.checking_all()),
                 th,
                 cx,
             ),
@@ -882,7 +882,12 @@ impl MailWindow {
                         selected: self.listing == listing,
                         bold: true,
                         chevron: Some(*expanded),
-                        checking: *view == Unified::Inbox && self.checking_mail(),
+                        checking: (*view == Unified::Inbox && self.checking_all())
+                            || self
+                                .tree
+                                .unified_folders(*view, None)
+                                .into_iter()
+                                .any(|f| self.checking_folder(f)),
                     },
                     th,
                     cx,
@@ -917,7 +922,8 @@ impl MailWindow {
                         // Addresses are long; the count tells of new mail.
                         bold: false,
                         chevron: None,
-                        checking: *view == Unified::Inbox && self.checking_account(*account),
+                        checking: (*view == Unified::Inbox && self.checking_account(*account))
+                            || folder.is_some_and(|f| self.checking_folder(f)),
                     },
                     th,
                     cx,
@@ -957,10 +963,11 @@ impl MailWindow {
                         bold: true,
                         chevron: has_children.then_some(*expanded),
                         // New mail lands in the inbox.
-                        checking: *role == Role::Inbox
-                            && folder
-                                .and_then(|f| self.tree.account_of(f))
-                                .is_some_and(|a| self.checking_account(a)),
+                        checking: folder.is_some_and(|f| self.checking_folder(f))
+                            || *role == Role::Inbox
+                                && folder
+                                    .and_then(|f| self.tree.account_of(f))
+                                    .is_some_and(|a| self.checking_account(a)),
                     },
                     th,
                     cx,

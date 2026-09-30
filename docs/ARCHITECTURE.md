@@ -2893,7 +2893,7 @@ Sketch — versioned by the interface name; breaking changes create `Pim2`.
 | Search | `Search(query, limit) → results` (used by KRunner, GNOME search, apps) |
 | Calendar | `EventsInRange(start, end) → events`, `CreateEvent(ical)`, `UpdateEvent(uid, ical)`, `DeleteEvent(uid)` |
 | Contacts / orgs | `FindContacts(text)`, `Organizations()` |
-| Sync | `SyncNow(account?)`, `SetForegroundFolders(ids)`, `Status() → per-account state` |
+| Sync | `SyncNow(account?)`, `SyncFolder(folder)` (only that folder, for a folder's "Check for new mail"), `SetForegroundFolders(ids)`, `Status() → per-account state` |
 | Signals | `MessagesChanged(ids)`, `FoldersChanged`, `EventsChanged(range)`, `SyncStatusChanged`, `UnreadCountChanged(n)` |
 
 Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
