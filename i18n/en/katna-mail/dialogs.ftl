@@ -189,6 +189,22 @@ onboarding-density-default = Default
 onboarding-density-compact = Compact
 onboarding-continue = Continue
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Get more with a Katna account
+onboarding-katna-lead = It's optional. It turns on Katna's online features, and you can make one later in Settings > Subscription.
+onboarding-katna-receipts-title = Read receipts
+onboarding-katna-receipts-text = See when people open the mail you send.
+onboarding-katna-links-title = Link tracking
+onboarding-katna-links-text = See which links in your mail get clicked.
+onboarding-katna-activity-title = Activity
+onboarding-katna-activity-text = Opens and clicks for everything you sent, in one place.
+onboarding-katna-translate-title = Automatic translation
+onboarding-katna-translate-text = Read mail written in other languages in your own.
+# Under the list, beside a lock.
+onboarding-katna-private = It has its own password. Your mail logins never leave this computer.
+
 ## First run: done
 
 onboarding-ready-title = You're all set

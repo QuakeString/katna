@@ -429,6 +429,143 @@ impl MailWindow {
     }
 
     /// Settings > Subscription: the Katna account.
+    /// The Katna account step of the first start, once "Create account"
+    /// or "I have an account" was picked: the form, the code to confirm
+    /// the address, or who is signed in. Returns the page and its main
+    /// button.
+    pub(super) fn katna_onboarding_form(
+        &mut self,
+        create: bool,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> (AnyElement, AnyElement) {
+        let page = self.katna_page(window, cx);
+        if matches!(page.mode, Mode::SignIn | Mode::Create) {
+            page.mode = if create { Mode::Create } else { Mode::SignIn };
+        }
+        let (mode, busy) = (page.mode, page.busy);
+        let account = page.account.clone().unwrap_or_default();
+        let status = if std::env::var("RIG_STEP").is_ok() { None } else { page.error.clone() }.map(|e| (e, th.error)).or(None); let _unused = page
+            .error
+            .clone()
+            .map(|e| (e, th.error))
+            .or(page.notice.clone().map(|n| (n, th.text_dim)));
+        let (email, password, code) =
+            (page.email.clone(), page.password.clone(), page.code.clone());
+        let submit = |id: &'static str, label: String, cx: &mut Context<Self>| {
+            filled_button(id, label, th)
+                .when(busy, |b| b.opacity(0.6))
+                .on_click(cx.listener(|this, _, _, cx| this.katna_submit(cx)))
+                .into_any_element()
+        };
+        let form = div().w_full().flex().flex_col().gap(px(16.0));
+        let (title, lead, form, main) = if account.signed_in && account.verified {
+            (
+                tr!("katna-signed-in"),
+                account.email.clone(),
+                form,
+                filled_button("katna-onboarding-done", tr!("onboarding-continue"), th)
+                    .on_click(cx.listener(|this, _, _, cx| this.onboarding_katna_done(cx)))
+                    .into_any_element(),
+            )
+        } else if account.signed_in {
+            (
+                tr!("katna-confirm-title"),
+                tr!("katna-confirm-detail", email = account.email.clone()),
+                form.child(self.outlined_field(
+                    "katna-code",
+                    tr!("katna-code"),
+                    &code,
+                    false,
+                    th,
+                    window,
+                    cx,
+                ))
+                .child(
+                    div().flex().flex_row().justify_center().child(
+                        link_button("katna-resend", tr!("katna-resend"), th)
+                            .on_click(cx.listener(|this, _, _, cx| this.katna_resend(cx))),
+                    ),
+                ),
+                submit("katna-confirm", tr!("katna-confirm"), cx),
+            )
+        } else {
+            let create = mode == Mode::Create;
+            (
+                if create {
+                    tr!("katna-onboarding-create-title")
+                } else {
+                    tr!("katna-onboarding-sign-in-title")
+                },
+                if create {
+                    tr!("katna-create-detail")
+                } else {
+                    tr!("katna-sign-in-detail")
+                },
+                form.child(self.outlined_field(
+                    "katna-email",
+                    tr!("katna-email"),
+                    &email,
+                    false,
+                    th,
+                    window,
+                    cx,
+                ))
+                .child(self.outlined_field(
+                    "katna-password",
+                    tr!("katna-password"),
+                    &password,
+                    false,
+                    th,
+                    window,
+                    cx,
+                ))
+                .child(div().flex().flex_row().justify_center().child(if create {
+                    link_button("katna-to-sign-in", tr!("katna-have-account"), th)
+                        .on_click(cx.listener(|this, _, _, cx| this.katna_mode(Mode::SignIn, cx)))
+                } else {
+                    link_button("katna-to-create", tr!("katna-create"), th)
+                        .on_click(cx.listener(|this, _, _, cx| this.katna_mode(Mode::Create, cx)))
+                })),
+                if create {
+                    submit("katna-create", tr!("katna-create"), cx)
+                } else {
+                    submit("katna-sign-in", tr!("katna-sign-in"), cx)
+                },
+            )
+        };
+        let body = div()
+            .flex()
+            .flex_col()
+            .items_center()
+            .gap(px(12.0))
+            .child(crate::widgets::katna_mark(48.0))
+            .child(super::onboarding::title(title, th))
+            .child(super::onboarding::lead(&lead, th))
+            .child(
+                div()
+                    .pt(px(12.0))
+                    .w_full()
+                    .max_w(px(380.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(12.0))
+                    .child(form)
+                    .when_some(status, |d, (text, color)| {
+                        d.child(
+                            div()
+                                .text_size(px(13.0))
+                                .text_center()
+                                .text_color(rgba(color))
+                                .child(text),
+                        )
+                    }),
+            )
+            .into_any_element();
+        (body, main)
+    }
+
     pub(super) fn katna_section(
         &mut self,
         th: &Theme,
@@ -869,6 +1006,21 @@ impl MailWindow {
             .child(body)
             .into_any_element()
     }
+}
+
+/// A quiet text button in the accent color.
+fn link_button(id: &'static str, label: String, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .px(px(10.0))
+        .py(px(6.0))
+        .rounded(px(16.0))
+        .text_size(px(13.0))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.accent))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(label)
 }
 
 #[cfg(test)]

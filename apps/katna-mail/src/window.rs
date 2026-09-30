@@ -78,6 +78,7 @@ mod settings_page;
 mod settings_search;
 mod share_ask;
 mod sign_in_again;
+mod skeleton;
 mod snooze;
 mod storage;
 mod tab_strip;
@@ -3543,24 +3544,34 @@ impl Render for MailWindow {
         // The first-start pages keep the bar empty.
         let bar = Bar {
             start: if onboarding {
-                Vec::new()
+                self.skeleton_top_start(&th, titles)
             } else {
                 self.render_top_start(&th, titles, cx)
             },
-            center: (self.mail.is_ok() && !onboarding).then(|| {
-                div()
-                    .w_full()
-                    .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(self.render_search(&th, search_width, search_t, window, cx))
-                    .when(shape.phone < 0.5 && activity_fits, |d| {
-                        d.children(self.render_activity_button(&th, cx))
-                    })
-                    .into_any_element()
-            }),
+            center: if onboarding {
+                Some(
+                    div()
+                        .w_full()
+                        .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                        .child(skeleton::search_pill(&th, search_width, shape.phone))
+                        .into_any_element(),
+                )
+            } else {
+                self.mail.is_ok().then(|| {
+                    div()
+                        .w_full()
+                        .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(self.render_search(&th, search_width, search_t, window, cx))
+                        .when(shape.phone < 0.5 && activity_fits, |d| {
+                            d.children(self.render_activity_button(&th, cx))
+                        })
+                        .into_any_element()
+                })
+            },
             end: if onboarding {
                 Vec::new()
             } else {
