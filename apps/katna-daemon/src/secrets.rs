@@ -16,7 +16,7 @@ use katna_core::{AccountId, ids};
 pub enum Secrets {
     /// The desktop's Secret Service.
     #[cfg(unix)]
-    Keyring(oo7::Keyring),
+    Keyring(keyring::Keyring),
     /// The Windows Credential Manager.
     #[cfg(windows)]
     Keyring(windows::Store),
@@ -33,6 +33,13 @@ pub struct Error(String);
 #[cfg(unix)]
 impl From<oo7::Error> for Error {
     fn from(err: oo7::Error) -> Self {
+        Self(err.to_string())
+    }
+}
+
+#[cfg(unix)]
+impl From<zbus::Error> for Error {
+    fn from(err: zbus::Error) -> Self {
         Self(err.to_string())
     }
 }
@@ -78,7 +85,7 @@ impl Secrets {
     /// Connects to the Secret Service.
     #[cfg(unix)]
     pub async fn keyring() -> Result<Self, Error> {
-        Ok(Self::Keyring(oo7::Keyring::new().await?))
+        Ok(Self::Keyring(keyring::Keyring::new().await?))
     }
 
     /// Opens the Windows Credential Manager.
@@ -92,12 +99,47 @@ impl Secrets {
         Self::Memory(Arc::default())
     }
 
+    /// Whether the keyring is locked and the user turned down unlocking
+    /// it: reading passwords then fails until they unlock it themselves
+    /// (in KWallet, GNOME Keyring's Passwords, or a Sync now in Katna).
+    pub fn declined(&self) -> bool {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => keyring.declined(),
+            #[cfg(windows)]
+            Self::Keyring(_) => false,
+            Self::Memory(_) => false,
+        }
+    }
+
+    /// After [`Self::declined`]: whether the keyring is open now, looked up
+    /// without asking the user.
+    pub async fn unlocked_since(&self) -> bool {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => keyring.unlocked_since().await,
+            #[cfg(windows)]
+            Self::Keyring(_) => true,
+            Self::Memory(_) => true,
+        }
+    }
+
+    /// Lets the next read ask the user to unlock the keyring again: they
+    /// asked for something that needs it, such as Sync now.
+    pub fn ask_again(&self) {
+        #[cfg(unix)]
+        if let Self::Keyring(keyring) = self {
+            keyring.ask_again();
+        }
+    }
+
     /// The password of `account`, if one is saved.
     pub async fn password(&self, account: AccountId) -> Result<Option<String>, Error> {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                // Asks the user to unlock the keyring if it is locked.
+                // Asks the user to unlock the keyring if it is locked,
+                // unless they turned that down (keyring::Keyring::unlock).
                 keyring.unlock().await?;
                 let Some(item) = keyring
                     .search_items(&attributes(account))
@@ -128,7 +170,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .create_item(
                         &format!("Katna: {address}"),
@@ -186,7 +228,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .create_item(
                         &format!("Katna: {label}"),
@@ -216,7 +258,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring.delete(&linked_attributes(account)).await?;
             }
             #[cfg(windows)]
@@ -258,7 +300,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .create_item("Katna account", &server_attributes(), token, true)
                     .await?;
@@ -277,7 +319,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .delete(&[("application", ids::PREFIX.to_owned())])
                     .await?;
@@ -294,7 +336,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring.delete(&attributes(account)).await?;
             }
             #[cfg(windows)]
@@ -304,6 +346,138 @@ impl Secrets {
             }
         }
         Ok(())
+    }
+}
+
+/// The Secret Service at login: the keyring may still be locked when the
+/// daemon starts, and its unlock prompt may be dismissed or never answered.
+/// Katna then asks once, not once per account, and waits for the user to
+/// unlock it rather than asking again at every read.
+#[cfg(unix)]
+mod keyring {
+    use std::sync::atomic::{AtomicBool, Ordering};
+
+    use smol::lock::Mutex;
+    use zbus::proxy::CacheProperties;
+
+    use super::Error;
+
+    pub struct Keyring {
+        inner: oo7::Keyring,
+        /// Our own connection, for reading `Locked` without a cache: the
+        /// keyring may not say when it changes.
+        connection: zbus::Connection,
+        /// One unlock prompt at a time; the others wait for its answer.
+        prompt: Mutex<()>,
+        /// The user dismissed the prompt and has not unlocked it since.
+        declined: AtomicBool,
+    }
+
+    impl std::ops::Deref for Keyring {
+        type Target = oo7::Keyring;
+
+        fn deref(&self) -> &oo7::Keyring {
+            &self.inner
+        }
+    }
+
+    impl Keyring {
+        pub async fn new() -> Result<Self, Error> {
+            Ok(Self {
+                inner: oo7::Keyring::new().await?,
+                connection: zbus::Connection::session().await?,
+                prompt: Mutex::new(()),
+                declined: AtomicBool::new(false),
+            })
+        }
+
+        pub fn declined(&self) -> bool {
+            self.declined.load(Ordering::SeqCst)
+        }
+
+        pub fn ask_again(&self) {
+            self.declined.store(false, Ordering::SeqCst);
+        }
+
+        /// Unlocks the keyring for a read: asks the user unless they
+        /// turned that down, then only checks whether they unlocked it.
+        pub async fn unlock(&self) -> Result<(), Error> {
+            let _one = self.prompt.lock().await;
+            if self.declined() {
+                return if self.unlocked_since().await {
+                    Ok(())
+                } else {
+                    Err(Error(LOCKED.into()))
+                };
+            }
+            self.ask().await
+        }
+
+        /// Unlocks the keyring for a change the user made: asks even if
+        /// they turned it down before.
+        pub async fn unlock_asking(&self) -> Result<(), Error> {
+            let _one = self.prompt.lock().await;
+            self.ask().await
+        }
+
+        async fn ask(&self) -> Result<(), Error> {
+            match self.inner.unlock().await {
+                Ok(()) => {
+                    self.ask_again();
+                    Ok(())
+                }
+                Err(err) if still_locked(&err) => {
+                    tracing::warn!(%err, "the keyring stays locked; waiting for it");
+                    self.declined.store(true, Ordering::SeqCst);
+                    Err(Error(LOCKED.into()))
+                }
+                Err(err) => Err(err.into()),
+            }
+        }
+
+        /// Whether the keyring is unlocked now, without asking; clears
+        /// `declined` when it is.
+        pub async fn unlocked_since(&self) -> bool {
+            let locked = match &self.inner {
+                oo7::Keyring::DBus(collection) => {
+                    self.locked(collection.path().to_owned().into()).await
+                }
+                other => other.is_locked().await.map_err(Error::from),
+            };
+            match locked {
+                Ok(false) => {
+                    self.ask_again();
+                    true
+                }
+                Ok(true) => false,
+                Err(err) => {
+                    tracing::debug!(%err, "is the keyring locked?");
+                    false
+                }
+            }
+        }
+
+        async fn locked(&self, path: zbus::zvariant::OwnedObjectPath) -> Result<bool, Error> {
+            let collection = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&self.connection)
+                .destination("org.freedesktop.secrets")?
+                .path(path)?
+                .interface("org.freedesktop.Secret.Collection")?
+                .cache_properties(CacheProperties::No)
+                .build()
+                .await?;
+            Ok(collection.get_property::<bool>("Locked").await?)
+        }
+    }
+
+    const LOCKED: &str = "the keyring is locked; unlock it to sync";
+
+    /// The prompt was dismissed or the keyring said it is locked.
+    fn still_locked(err: &oo7::Error) -> bool {
+        use oo7::dbus::{Error, ServiceError};
+        matches!(
+            err,
+            oo7::Error::DBus(Error::Dismissed | Error::Service(ServiceError::IsLocked(_)))
+        )
     }
 }
 
