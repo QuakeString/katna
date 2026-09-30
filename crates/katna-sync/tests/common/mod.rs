@@ -71,6 +71,9 @@ pub struct State {
     pub gmail: bool,
     /// Report expunges with flag fetches (QRESYNC `VANISHED (EARLIER)`).
     pub qresync: bool,
+    /// Answer this many header fetches, then break the connection on the
+    /// next one, as a sync cut off halfway would.
+    pub header_fetches_left: Option<u32>,
 }
 
 /// A shared server; clones see the same state.
@@ -378,7 +381,16 @@ impl MailBackend for FakeConnection {
         first: u32,
         last: Option<u32>,
     ) -> Result<Vec<MessageHeaders>> {
-        let state = self.state(format!("HEADERS {first}:{last:?}"))?;
+        let mut state = self.state(format!("HEADERS {first}:{last:?}"))?;
+        match &mut state.header_fetches_left {
+            Some(0) => {
+                state.header_fetches_left = None;
+                state.generation += 1;
+                return Err(Error::Closed("connection reset".into()));
+            }
+            Some(left) => *left -= 1,
+            None => {}
+        }
         let gmail = state.gmail;
         Ok(range(&state.folders[self.selected()], first, last)
             .map(|(uid, m)| MessageHeaders {
