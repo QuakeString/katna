@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendars look again after a slow server"
+text = """
+When an account's calendar server doesn't answer in time, the Calendar
+now says so, and whether the connection or the secure handshake stalled,
+instead of "No calendars found". It tries again within minutes rather
+than hours.
+"""

@@ -43,6 +43,11 @@ pub enum Error {
     #[error("no answer after {0:?}")]
     Timeout(Duration),
 
+    /// The server could not be reached in time: no connection, or no
+    /// secure handshake. Says which, with the server's name.
+    #[error("{0}")]
+    Unreachable(String),
+
     /// The server or the connection's task closed the connection.
     #[error("connection closed: {0}")]
     Closed(String),
@@ -65,7 +70,10 @@ impl Error {
 
     /// Whether trying again later, on a new connection, may succeed.
     pub fn is_transient(&self) -> bool {
-        matches!(self, Self::Io(_) | Self::Timeout(_) | Self::Closed(_))
+        matches!(
+            self,
+            Self::Io(_) | Self::Timeout(_) | Self::Unreachable(_) | Self::Closed(_)
+        )
     }
 }
 
