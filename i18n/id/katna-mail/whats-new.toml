@@ -1805,3 +1805,11 @@ text = """
 File di panel kontak yang emailnya belum ada di komputer ini kini
 terisi selama diunduh, seperti lampiran di daftar, lalu terbuka.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Email akun baru muncul saat tiba"
+text = """
+Setelah Anda menambahkan akun, Kotak Masuk-nya diunduh lebih dulu dan
+terisi sambil Anda lihat, alih-alih tetap di “Mengambil email Anda…”
+sampai setiap folder selesai. Folder lain terisi dengan cara yang sama.
+"""

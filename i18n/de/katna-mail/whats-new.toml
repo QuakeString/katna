@@ -1850,3 +1850,12 @@ Eine Datei in den Kontaktdetails, deren Mail noch nicht auf diesem
 Computer ist, füllt sich jetzt beim Herunterladen, wie Anhänge in der
 Liste, und öffnet sich dann.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "E-Mails eines neuen Kontos erscheinen, sobald sie eintreffen"
+text = """
+Nachdem Sie ein Konto hinzugefügt haben, wird zuerst sein Posteingang
+heruntergeladen und füllt sich vor Ihren Augen, statt bei „Ihre E-Mails
+werden abgerufen…“ zu bleiben, bis jeder Ordner fertig ist. Andere
+Ordner füllen sich auf dieselbe Weise.
+"""

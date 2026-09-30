@@ -1685,3 +1685,11 @@ text = """
 Faịlụ dị na panel kọntaktị nke ozi ya na-adịbeghị na kọmputa a na-ejupụta
 ugbu a ka ọ na-ebudata, dịka mgbakwunye ndị dị na ndepụta na-eme, wee meghee.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Ozi akaụntụ ọhụrụ na-apụta ka ọ na-abata"
+text = """
+Mgbe ị tinyere akaụntụ, igbe ozi mbata ya na-ebudata mbụ ma na-ejupụta ka
+ị na-ele, kama ịnọgide na "Na-enweta ozi gị…" ruo mgbe folda niile gwụrụ.
+Folda ndị ọzọ na-ejupụta n'otu ụzọ ahụ.
+"""

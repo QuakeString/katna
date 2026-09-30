@@ -1867,3 +1867,12 @@ Un fichier des détails du contact dont le message n’est pas encore sur
 cet ordinateur se remplit désormais pendant son téléchargement, comme
 les pièces jointes de la liste, puis s’ouvre.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Le courrier d’un nouveau compte s’affiche à son arrivée"
+text = """
+Après l’ajout d’un compte, sa Boîte de réception se télécharge en
+premier et se remplit sous vos yeux, au lieu de rester sur « Récupération
+de vos messages… » jusqu’à ce que chaque dossier soit terminé. Les autres
+dossiers se remplissent de la même façon.
+"""

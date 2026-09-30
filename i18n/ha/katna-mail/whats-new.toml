@@ -1648,3 +1648,11 @@ Fayil a fanel na tuntuɓa wanda wasiƙarsa ba ta wannan kwamfuta tukuna
 yanzu yana cika yayin da ake saukewa, kamar haɗe-haɗe a jerin, sannan
 ya buɗe.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Wasiƙun sabon asusu suna bayyana yayin da suke isowa"
+text = """
+Bayan kun ƙara asusu, Akwatin saƙonsa yana saukowa da farko kuma yana
+cika yayin da kuke kallo, maimakon tsayawa a kan “Ana samo wasiƙunku…”
+har sai kowace folda ta gama. Sauran folda suna cika haka ma.
+"""

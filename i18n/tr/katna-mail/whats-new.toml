@@ -1785,3 +1785,11 @@ text = """
 Kişi panelinde, e-postası henüz bu bilgisayarda olmayan bir dosya artık
 listedeki ekler gibi indirilirken dolar, ardından açılır.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Yeni bir hesabın postaları geldikçe görünür"
+text = """
+Bir hesap ekledikten sonra, tüm klasörler bitene kadar “Postalarınız
+alınıyor…” ekranında kalmak yerine önce gelen kutusu iner ve siz
+izlerken dolar. Diğer klasörler de aynı şekilde dolar.
+"""

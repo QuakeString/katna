@@ -1747,3 +1747,12 @@ Một tệp trong bảng liên hệ mà thư của nó chưa có trên máy tín
 sẽ đầy dần khi đang tải xuống, giống tệp đính kèm trong danh sách, rồi
 mở ra.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Thư của tài khoản mới hiện ra ngay khi đến"
+text = """
+Sau khi bạn thêm tài khoản, hộp thư đến của tài khoản đó được tải về
+trước và đầy dần ngay trước mắt bạn, thay vì cứ dừng ở “Đang tải thư của
+bạn…” cho đến khi mọi thư mục xong. Các thư mục khác cũng đầy dần theo
+cách đó.
+"""

@@ -1804,3 +1804,12 @@ Een bestand in het contactpaneel waarvan de e-mail nog niet op deze
 computer staat, loopt nu vol terwijl het wordt gedownload, zoals bijlagen
 in de lijst doen, en gaat daarna open.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "E-mail van een nieuw account verschijnt terwijl hij binnenkomt"
+text = """
+Nadat je een account hebt toegevoegd, wordt eerst de Inbox gedownload en
+loopt die vol terwijl je kijkt, in plaats van op ‘Je e-mail ophalen…’ te
+blijven staan tot elke map klaar is. Andere mappen vullen zich op dezelfde
+manier.
+"""

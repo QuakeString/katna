@@ -1769,3 +1769,11 @@ En fil i kontaktpanelen vars e-post inte finns på den här datorn än
 fylls nu medan den laddas ned, som bilagorna i listan gör, och öppnas
 sedan.
 """
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Ett nytt kontos e-post visas allt eftersom den kommer in"
+text = """
+När du har lagt till ett konto hämtas dess inkorg först och fylls på
+medan du tittar, i stället för att stå på ”Hämtar din e-post…” tills
+alla mappar är klara. Andra mappar fylls på på samma sätt.
+"""
