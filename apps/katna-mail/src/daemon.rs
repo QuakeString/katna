@@ -10,7 +10,9 @@ use std::collections::HashMap;
 use futures_lite::{Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
-use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state, state};
+use katna_dbus::{
+    NewImapAccount, NewPop3Account, OutboxItem, PimProxy, ServerSpec, flag, send_state, state,
+};
 use katna_store::{FolderId, MessageId};
 
 /// A change to send to the daemon.
@@ -630,7 +632,11 @@ pub async fn discard_draft(
 /// What the daemon found for an address.
 #[derive(Debug, Clone)]
 pub struct Found {
+    /// The IMAP and SMTP servers; an empty host was not found.
     pub account: NewImapAccount,
+    /// The POP3 server; an empty host was not found. There is always an
+    /// IMAP or a POP3 server.
+    pub pop3: ServerSpec,
     /// Where: `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
     pub source: String,
     /// The provider to sign in to in the browser, if the servers are
@@ -645,12 +651,13 @@ pub async fn discover(connection: &Connection, address: &str) -> Result<Found, S
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    let (account, source, sign_in, password) = pim
+    let (account, pop3, source, sign_in, password) = pim
         .discover_account(address)
         .await
         .map_err(|err| describe(&err))?;
     Ok(Found {
         account,
+        pop3,
         source,
         sign_in: sign_in.parse().ok(),
         password,
@@ -873,6 +880,41 @@ pub async fn add_account(
     pim.add_imap_account(account, password)
         .await
         .map_err(|err| add_error(&err))
+}
+
+/// Checks the password with the POP3 server and adds the account.
+/// Returns its ID.
+pub async fn add_pop3_account(
+    connection: &Connection,
+    account: &NewPop3Account,
+    password: &str,
+) -> Result<i64, AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.add_pop3_account(account, password)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Sets what a POP3 account does with mail on the server (see
+/// `NewPop3Account`).
+pub async fn set_pop3_keep(
+    connection: &Connection,
+    account: i64,
+    keep: katna_core::Pop3Keep,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_pop3_keep(
+        account,
+        keep.leave_on_server,
+        keep.days.unwrap_or(0),
+        keep.delete_with_local,
+    )
+    .await
+    .map_err(|err| describe(&err))
 }
 
 fn add_error(err: &katna_dbus::zbus::Error) -> AddError {

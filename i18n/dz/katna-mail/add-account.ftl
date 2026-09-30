@@ -9,7 +9,6 @@ add-account-looking = { $address } གི་ གློག་འཕྲིན་�
 add-account-address-intro = ཁྱོད་ཀྱི་གློག་འཕྲིན་ཁ་བྱང་བཙུགས། Katna གིས་ ཁྱོད་ཀྱི་དོན་ལུ་ སར་བར་ཚུ་འཚོལཝ་ཨིན།
 add-account-servers-title = སར་བར་སྒྲིག་སྟངས
 add-account-servers-intro = Katna གིས་ { $address } གི་གློག་འཕྲིན་ ལྷག་ནི་དང་གཏང་སའི་ས་གནས།
-add-account-password-title = ཁྱོད་ཀྱི་ཆོག་ཡིག་བཙུགས།
 add-account-signing-in = ནང་བསྐྱོད་འབད་དོ…
 add-account-browser-title = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ནང་ འཕྲོ་མཐུད་དེ་འབད།
 add-account-browser-intro = Katna གིས་ ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ནང་ { $provider } གི་ ནང་བསྐྱོད་ཤོག་ངོས་ ཁ་ཕྱེ་ཡི། དེ་ཁར་ ནང་བསྐྱོད་འབད་ཞིནམ་ལས་ Katna གིས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ ལྷག་ནི་དང་ གཏང་ནིའི་ གནང་བ་བྱིན། དེ་ལས་ ནཱ་ལུ་ ལོག་ཤོག།
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] སར་བར: { $servers }། ཚོད་དཔག་ཨིན། ནང་བསྐྱོད་འཐུས་ཤོར་བྱུང་པ་ཅིན་ ཞིབ་དཔྱད་འབད།
 }
 add-account-servers-entered = སར་བར: { $servers }། བཙུགས་མི་བཟུམ་སྦེ།
-add-account-or = ཡང་ན
 add-account-sign-in-with = { $provider } གིས་ ནང་བསྐྱོད་འབད།
 add-account-sign-in-instead = དེའི་ཚབ་ལུ་ { $provider } གིས་ ནང་བསྐྱོད་འབད།
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = དེའི་ཚབ་ལུ་ { $provider } �
 add-account-servers-button = སར་བར་སྒྲིག་སྟངས
 add-account-back = ལོག
 add-account-add = རྩིས་ཐོ་ཁ་སྐོང་འབད།
-add-account-next = ཤུལ་མམ།
 add-account-cancel = ཆ་མེད་གཏང་།
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = { $example } བཟུམ་གྱི་ གློ
 add-account-not-found = Katna གིས་ { $address } གི་སར་བར་ཚུ་ འཚོལ་མ་ཐོབ། དེ་འབདཝ་ལས་ སྤྱིར་བཏང་མིང་ཚུ་བཙུགས་ཅི། ཁྱོད་ཀྱི་བྱིན་མི་དང་གཅིག་ཁར་ ཞིབ་དཔྱད་འབད།
 add-account-password-empty = ཆོག་ཡིག་བཙུགས།
 add-account-name-is-password = མིང་འདི་ ཆོག་ཡིག་དང་གཅིག་པ་ཨིན། དེའི་ཚབ་ལུ་ མི་ཚུ་གིས་མཐོང་དགོཔ་བཟུམ་སྦེ་ ཁྱོད་ཀྱི་མིང་ དེ་ཁར་ཡིག་དཔར་རྐྱབ།
-add-account-added = { $address } ཁ་སྐོང་འབད་ཡི། ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
 add-account-app-password-refused = { $provider } གིས་ ཆོག་ཡིག་ངོས་ལེན་མ་འབད། གློག་རིམ་ཆོག་ཡིག་དགོཔ་ཨིན། ཁྱོད་ཀྱིས་ ཝེབ་གུ་ལག་ལེན་འཐབ་མི་འདི་མེན།
 add-account-password-refused = སར་བར་གྱིས་ ཆོག་ཡིག་ངོས་ལེན་མ་འབད། ཞིབ་དཔྱད་འབད་ཞིནམ་ལས་ ལོག་འབད་རྩོལ་བསྐྱེད།
 add-account-sign-in-refused = { $provider } གིས་ Katna ནང་ན་ འཛུལ་མ་བཅུག ལོག་འབད་རྩོལ་བསྐྱེད་ཞིནམ་ལས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ལུ་ འཛུལ་སྤྱོད་ཀྱི་གནང་བ་བྱིན།
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna གི་འདྲ་བཤུས་འདི་གིས་ ད་ལྟོ་ཚུན་ Google རྩིས་ཐོ་ཚུ་ནང་ ནང་བསྐྱོད་འབད་མི་ཚུགས།
    *[other] བྱིན་མི་འདི་གིས་ རང་སོའི་ཤོག་ངོས་གུ་རྐྱངམ་ཅིག་ ནང་བསྐྱོད་འབད་བཅུགཔ་ཨིན། དེ་ Katna གིས་ ད་ལྟོ་ཚུན་ འབད་མི་ཚུགས།
 }
-add-account-signed-in = { $provider } གིས་ ནང་བསྐྱོད་འབད་ཡི། ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
 
 ## The account menu (from the account button on the top bar)
 

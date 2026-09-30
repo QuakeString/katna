@@ -15,6 +15,7 @@ fn main() {
         Ok(found) => {
             println!("source: {}", found.source.as_str());
             println!("imap: {:?}", found.imap);
+            println!("pop3: {:?}", found.pop3);
             println!("smtp: {:?}", found.smtp);
         }
         Err(err) => {

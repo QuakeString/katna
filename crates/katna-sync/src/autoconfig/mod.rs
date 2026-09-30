@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Finding an address's IMAP and SMTP servers (plan task 1.2), in the order
+//! Finding an address's IMAP, POP3 and SMTP servers (plan task 1.2), in the order
 //! Thunderbird uses (`docs/ARCHITECTURE.md` §6.4):
 //!
 //! 1. Built-in settings for a few big providers (no network).
@@ -10,8 +10,11 @@
 //! 3. DNS SRV records (RFC 6186 and RFC 8314).
 //! 4. The ISPDB entry of the domain that receives the mail (MX), which
 //!    finds hosted domains such as Google Workspace or Fastmail.
-//! 5. Guessing `imap.DOMAIN`, `mail.DOMAIN` and `smtp.DOMAIN` on the usual
-//!    ports, keeping those that greet like a mail server.
+//! 5. Guessing `imap.DOMAIN`, `pop.DOMAIN`, `mail.DOMAIN` and `smtp.DOMAIN`
+//!    on the usual ports, keeping those that greet like a mail server.
+//!
+//! Each step looks for IMAP and POP3 alike; an account takes IMAP when the
+//! provider offers both, and POP3 only when that is all it has.
 //!
 //! Configuration files only come over HTTPS. Google and Microsoft servers
 //! are marked for OAuth2 sign-in ([`Discovered::oauth`]); other servers that
@@ -61,7 +64,11 @@ impl Source {
 /// Settings found for an address.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Discovered {
-    pub imap: Server,
+    /// The IMAP server; `None` when the provider only offers POP3.
+    pub imap: Option<Server>,
+    /// The POP3 server, when the provider offers one. Always set when
+    /// `imap` is `None`.
+    pub pop3: Option<Server>,
     /// `None` when no SMTP server was found; the account can still read.
     pub smtp: Option<Server>,
     pub source: Source,
@@ -73,21 +80,34 @@ pub struct Discovered {
 }
 
 impl Discovered {
-    fn new(imap: Server, smtp: Option<Server>, source: Source) -> Self {
+    fn new(servers: Servers, source: Source) -> Self {
+        let Servers { imap, pop3, smtp } = servers;
         Self {
-            oauth: Provider::for_imap_host(&imap.host),
+            oauth: imap
+                .as_ref()
+                .and_then(|imap| Provider::for_imap_host(&imap.host)),
             imap,
+            pop3,
             smtp,
             source,
             password: true,
         }
     }
 
+    /// The server mail is read from: IMAP when there is one, else POP3.
+    pub fn incoming(&self) -> &Server {
+        self.imap
+            .as_ref()
+            .or(self.pop3.as_ref())
+            .expect("discovery finds IMAP or POP3")
+    }
+
     /// The provider's own servers, for signing in with OAuth2 only.
     fn oauth_only(provider: OAuthProvider, address: &str, source: Source) -> Self {
         let (imap, smtp) = Provider::servers(provider, address);
         Self {
-            imap,
+            imap: Some(imap),
+            pop3: None,
             smtp: Some(smtp),
             source,
             oauth: Some(provider),
@@ -96,11 +116,20 @@ impl Discovered {
     }
 }
 
-/// Which of an account's two servers.
+/// Which of an account's servers.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Protocol {
     Imap,
+    Pop3,
     Smtp,
+}
+
+/// The servers one step found: IMAP or POP3 or both, and SMTP if any.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Servers {
+    imap: Option<Server>,
+    pop3: Option<Server>,
+    smtp: Option<Server>,
 }
 
 /// Thunderbird's database of provider settings.
@@ -189,6 +218,7 @@ impl Network for Discovery {
         match greeting {
             Ok(line) => match protocol {
                 Protocol::Imap => line.starts_with(b"* OK") || line.starts_with(b"* PREAUTH"),
+                Protocol::Pop3 => line.starts_with(b"+OK"),
                 Protocol::Smtp => line.starts_with(b"220"),
             },
             Err(_) => false,
@@ -233,7 +263,7 @@ async fn discover_with(
             Source::Ispdb
         };
         match parse_config(&body, &user) {
-            Ok(Some((imap, smtp))) => return Ok(Discovered::new(imap, smtp, source)),
+            Ok(Some(servers)) => return Ok(Discovered::new(servers, source)),
             Ok(None) => {
                 oauth_only.get_or_insert((oauth_provider(&body, &user), source));
             }
@@ -264,7 +294,7 @@ async fn discover_with(
         tried.push(base.clone());
         if let Some(body) = net.fetch(format!("{}{base}", net.ispdb())).await {
             match parse_config(&body, &user) {
-                Ok(Some((imap, smtp))) => return Ok(Discovered::new(imap, smtp, Source::Mx)),
+                Ok(Some(servers)) => return Ok(Discovered::new(servers, Source::Mx)),
                 Ok(None) => {
                     return match oauth_provider(&body, &user) {
                         Some(provider) => Ok(Discovered::oauth_only(provider, address, Source::Mx)),
@@ -373,9 +403,10 @@ fn built_in(user: &User<'_>) -> Option<Discovered> {
     } else {
         user.address
     };
-    Some(Discovered::new(
-        server(imap, 993, Security::Tls, username),
-        Some(server(
+    let servers = Servers {
+        imap: Some(server(imap, 993, Security::Tls, username)),
+        pop3: None,
+        smtp: Some(server(
             smtp,
             if *smtp_security == Security::Tls {
                 465
@@ -385,8 +416,8 @@ fn built_in(user: &User<'_>) -> Option<Discovered> {
             *smtp_security,
             username,
         )),
-        Source::BuiltIn,
-    ))
+    };
+    Some(Discovered::new(servers, Source::BuiltIn))
 }
 
 fn server(host: &str, port: u16, security: Security, username: &str) -> Server {
@@ -399,30 +430,29 @@ fn server(host: &str, port: u16, security: Security, username: &str) -> Server {
     }
 }
 
-/// Reads a Thunderbird `config-v1.1.xml`. Returns the best IMAP and SMTP
-/// servers that take a password, `None` if the IMAP servers only take
-/// OAuth2, and an error if there is no IMAP server at all.
-fn parse_config(
-    xml: &[u8],
-    user: &User<'_>,
-) -> std::result::Result<Option<(Server, Option<Server>)>, String> {
+/// Reads a Thunderbird `config-v1.1.xml`. Returns the best IMAP, POP3 and
+/// SMTP servers that take a password, `None` if the IMAP and POP3 servers
+/// only take OAuth2, and an error if there is neither at all.
+fn parse_config(xml: &[u8], user: &User<'_>) -> std::result::Result<Option<Servers>, String> {
     let text = std::str::from_utf8(xml).map_err(|_| "not UTF-8".to_owned())?;
     let doc = roxmltree::Document::parse(text).map_err(|err| err.to_string())?;
     let provider = doc
         .descendants()
         .find(|node| node.has_tag_name("emailProvider"))
         .ok_or("no emailProvider")?;
-    let mut any_imap = false;
-    let mut best: [Option<Server>; 2] = [None, None];
+    let mut any_incoming = false;
+    // IMAP, SMTP, POP3.
+    let mut best: [Option<Server>; 3] = [None, None, None];
     // Whether a cleartext server was offered, for each slot.
-    let mut plain = [false, false];
+    let mut plain = [false, false, false];
     for node in provider.children().filter(|n| n.is_element()) {
         let slot = match (node.tag_name().name(), node.attribute("type")) {
             ("incomingServer", Some("imap")) => 0,
             ("outgoingServer", Some("smtp")) => 1,
+            ("incomingServer", Some("pop3")) => 2,
             _ => continue,
         };
-        any_imap |= slot == 0;
+        any_incoming |= slot != 1;
         let field = |name: &str| {
             node.children()
                 .find(|c| c.has_tag_name(name))
@@ -473,11 +503,11 @@ fn parse_config(
             tracing::debug!("cleartext server skipped for an encrypted one");
         }
     }
-    let [imap, smtp] = best;
-    match imap {
-        Some(imap) => Ok(Some((imap, smtp))),
-        None if any_imap => Ok(None),
-        None => Err("no IMAP server".into()),
+    let [imap, smtp, pop3] = best;
+    match (imap, pop3) {
+        (None, None) if any_incoming => Ok(None),
+        (None, None) => Err("no IMAP or POP3 server".into()),
+        (imap, pop3) => Ok(Some(Servers { imap, pop3, smtp })),
     }
 }
 
@@ -505,6 +535,8 @@ async fn from_srv(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
         format!("_imap._tcp.{domain}"),
         format!("_submissions._tcp.{domain}"),
         format!("_submission._tcp.{domain}"),
+        format!("_pop3s._tcp.{domain}"),
+        format!("_pop3._tcp.{domain}"),
     ];
     let found = join_all(names.into_iter().map(|name| net.srv(name)).collect()).await;
     let pick = |records: &[dns::Srv], security| {
@@ -524,9 +556,16 @@ async fn from_srv(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
             })
             .map(|r| server(&r.target, r.port, security, user.address))
     };
-    let imap = pick(&found[0], Security::Tls).or_else(|| pick(&found[1], Security::StartTls))?;
+    let imap = pick(&found[0], Security::Tls).or_else(|| pick(&found[1], Security::StartTls));
     let smtp = pick(&found[2], Security::Tls).or_else(|| pick(&found[3], Security::StartTls));
-    Some(Discovered::new(imap, smtp, Source::DnsSrv))
+    let pop3 = pick(&found[4], Security::Tls).or_else(|| pick(&found[5], Security::StartTls));
+    if imap.is_none() && pop3.is_none() {
+        return None;
+    }
+    Some(Discovered::new(
+        Servers { imap, pop3, smtp },
+        Source::DnsSrv,
+    ))
 }
 
 /// Whether an SRV record of `user`'s domain may name `target`. DNS
@@ -583,14 +622,20 @@ async fn guess(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
         &["smtp", "mail"],
         [(465, Security::Tls), (587, Security::StartTls)],
     );
+    let pop3 = candidates(
+        &["pop", "pop3", "mail"],
+        [(995, Security::Tls), (110, Security::StartTls)],
+    );
     let probes = imap
         .iter()
         .map(|s| (s.clone(), Protocol::Imap))
         .chain(smtp.iter().map(|s| (s.clone(), Protocol::Smtp)))
+        .chain(pop3.iter().map(|s| (s.clone(), Protocol::Pop3)))
         .map(|(s, protocol)| net.probe(s, protocol))
         .collect();
     let answered = join_all(probes).await;
-    let (imap_ok, smtp_ok) = answered.split_at(imap.len());
+    let (imap_ok, rest) = answered.split_at(imap.len());
+    let (smtp_ok, pop3_ok) = rest.split_at(smtp.len());
     let first = |servers: &[Server], ok: &[bool]| {
         servers
             .iter()
@@ -598,11 +643,15 @@ async fn guess(net: &impl Network, user: &User<'_>) -> Option<Discovered> {
             .find(|(_, ok)| **ok)
             .map(|(s, _)| s.clone())
     };
-    Some(Discovered::new(
-        first(&imap, imap_ok)?,
-        first(&smtp, smtp_ok),
-        Source::Guess,
-    ))
+    let servers = Servers {
+        imap: first(&imap, imap_ok),
+        pop3: first(&pop3, pop3_ok),
+        smtp: first(&smtp, smtp_ok),
+    };
+    if servers.imap.is_none() && servers.pop3.is_none() {
+        return None;
+    }
+    Some(Discovered::new(servers, Source::Guess))
 }
 
 /// The registrable part of a host name, roughly

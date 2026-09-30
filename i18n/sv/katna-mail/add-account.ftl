@@ -9,7 +9,6 @@ add-account-looking = Letar efter e-postservrarna för { $address }…
 add-account-address-intro = Ange din e-postadress. Katna hittar servrarna åt dig.
 add-account-servers-title = Serverinställningar
 add-account-servers-intro = Var Katna läser och skickar e-post för { $address }.
-add-account-password-title = Ange ditt lösenord
 add-account-signing-in = Loggar in…
 add-account-browser-title = Fortsätt i webbläsaren
 add-account-browser-intro = Katna har öppnat inloggningssidan för { $provider } i din webbläsare. Logga in där och låt Katna läsa och skicka din e-post, och kom sedan tillbaka hit.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] Servrar: { $servers }, gissade; kontrollera dem om inloggningen misslyckas.
 }
 add-account-servers-entered = Servrar: { $servers }, som angivna.
-add-account-or = eller
 add-account-sign-in-with = Logga in med { $provider }
 add-account-sign-in-instead = Logga in med { $provider } i stället
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = Logga in med { $provider } i stället
 add-account-servers-button = Serverinställningar
 add-account-back = Tillbaka
 add-account-add = Lägg till konto
-add-account-next = Nästa
 add-account-cancel = Avbryt
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = Ange en e-postadress som { $example }.
 add-account-not-found = Katna kunde inte hitta servrarna för { $address }, så de vanliga namnen fylldes i. Kontrollera dem med din leverantör.
 add-account-password-empty = Ange lösenordet.
 add-account-name-is-password = Namnet är detsamma som lösenordet. Skriv ditt namn där i stället, så som andra ska se det.
-add-account-added = { $address } har lagts till. Hämtar din e-post…
 add-account-app-password-refused = { $provider } avvisade lösenordet. Det krävs ett applösenord, inte det du använder på webben.
 add-account-password-refused = Servern avvisade lösenordet. Kontrollera det och försök igen.
 add-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till din e-post.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Den här versionen av Katna kan inte logga in på Google-konton än.
    *[other] Den här leverantören tillåter bara inloggning på sin egen sida, vilket Katna inte kan göra för den än.
 }
-add-account-signed-in = Inloggad med { $provider }. Hämtar din e-post…
 
 ## The account menu (from the account button on the top bar)
 

@@ -9,7 +9,6 @@ add-account-looking = جارٍ البحث عن خوادم البريد لـ { $a
 add-account-address-intro = أدخل عنوان بريدك الإلكتروني. سيجد Katna الخوادم نيابةً عنك.
 add-account-servers-title = إعدادات الخادم
 add-account-servers-intro = المكان الذي يقرأ منه Katna بريد { $address } ويرسله.
-add-account-password-title = أدخل كلمة المرور
 add-account-signing-in = جارٍ تسجيل الدخول…
 add-account-browser-title = تابِع في متصفحك
 add-account-browser-intro = فتح Katna صفحة تسجيل الدخول إلى { $provider } في متصفحك. سجّل الدخول هناك واسمح لـ Katna بقراءة بريدك وإرساله، ثم عُد إلى هنا.
@@ -39,7 +38,6 @@ add-account-servers-found = { $source ->
    *[other] الخوادم: { $servers }، مُخمَّنة؛ تحقّق منها إن فشل تسجيل الدخول.
 }
 add-account-servers-entered = الخوادم: { $servers }، كما أُدخلت.
-add-account-or = أو
 add-account-sign-in-with = تسجيل الدخول باستخدام { $provider }
 add-account-sign-in-instead = تسجيل الدخول باستخدام { $provider } بدلًا من ذلك
 
@@ -48,7 +46,6 @@ add-account-sign-in-instead = تسجيل الدخول باستخدام { $provid
 add-account-servers-button = إعدادات الخادم
 add-account-back = رجوع
 add-account-add = إضافة الحساب
-add-account-next = التالي
 add-account-cancel = إلغاء
 
 ## Add a mail account: problems
@@ -70,7 +67,6 @@ add-account-address-invalid = أدخل عنوان بريد إلكتروني مث
 add-account-not-found = تعذّر على Katna العثور على خوادم { $address }، فملأ الأسماء المعتادة. تحقّق منها لدى مزوّدك.
 add-account-password-empty = أدخل كلمة المرور.
 add-account-name-is-password = الاسم هو نفسه كلمة المرور. اكتب اسمك هناك بدلًا منها، كما ينبغي أن يراه الناس.
-add-account-added = تمت إضافة { $address }. جارٍ جلب بريدك…
 add-account-app-password-refused = رفض { $provider } كلمة المرور. يحتاج إلى كلمة مرور للتطبيقات، لا كلمة المرور التي تستخدمها على الويب.
 add-account-password-refused = رفض الخادم كلمة المرور. تحقّق منها وحاول مجددًا.
 add-account-sign-in-refused = لم يسمح { $provider } لـ Katna بالدخول. حاول مجددًا، واسمح بالوصول إلى بريدك.
@@ -79,7 +75,6 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] لا يمكن لهذه النسخة من Katna تسجيل الدخول إلى حسابات Google بعد.
    *[other] لا يسمح هذا المزوّد بتسجيل الدخول إلا على صفحته الخاصة، وهذا ما لا يستطيع Katna فعله معه بعد.
 }
-add-account-signed-in = تم تسجيل الدخول باستخدام { $provider }. جارٍ جلب بريدك…
 
 ## The account menu (from the account button on the top bar)
 

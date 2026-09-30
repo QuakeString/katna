@@ -20,6 +20,22 @@ accounts-unified-switch-detail = "All Accounts" heads the folder pane, with the 
 accounts-row = Accounts
 accounts-row-detail = The folder pane and the account menu list accounts in this order; the first is the default. Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.
 accounts-none = No accounts yet.
+# A Settings row, only with a POP3 account: what happens to mail on the
+# server once Katna has downloaded it.
+accounts-pop3-row = Mail on the server
+accounts-pop3-row-detail = POP3 accounts download mail to this computer. Pick what then happens to the copy on the server.
+# The choices of that row.
+accounts-pop3-with-katna = Keep it until I delete it in Katna
+accounts-pop3-at-once = Delete it once downloaded
+# $count: a number of days.
+accounts-pop3-after-days = { $count ->
+    [one] Delete it after { $count } day
+   *[other] Delete it after { $count } days
+}
+accounts-pop3-never = Never delete it
+# Tooltips of the buttons beside the days.
+accounts-pop3-days-less = Fewer days
+accounts-pop3-days-more = More days
 # Account type shown after the address, for mail imported from files (mbox, Maildir…).
 accounts-kind-imported = Imported
 # Button: the account uses the picture of the desktop's user account.

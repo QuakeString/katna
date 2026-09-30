@@ -92,14 +92,14 @@ fn built_in_providers_need_no_network() {
     assert_eq!(found.source, Source::BuiltIn);
     assert_eq!(
         (
-            found.imap.host.as_str(),
-            found.imap.port,
-            found.imap.username.as_str()
+            found.imap.clone().unwrap().host.as_str(),
+            found.imap.clone().unwrap().port,
+            found.imap.clone().unwrap().username.as_str()
         ),
         ("imap.gmail.com", 993, "Ada@Gmail.com")
     );
     let icloud = discover(&net, "ada@icloud.com").unwrap();
-    assert_eq!(icloud.imap.username, "ada");
+    assert_eq!(icloud.imap.clone().unwrap().username, "ada");
     assert_eq!(icloud.smtp.unwrap().port, 587);
     assert!(net.asked.lock().unwrap().is_empty());
     assert!(discover(&net, "no-at-sign").is_err());
@@ -114,7 +114,7 @@ fn provider_file_beats_the_ispdb() {
     let found = discover(&net, "ada+x@example.org").unwrap();
     assert_eq!(found.source, Source::Provider);
     assert_eq!(
-        found.imap,
+        found.imap.unwrap(),
         server("imaps.example.org", 993, Security::Tls, "ada+x")
     );
     assert_eq!(
@@ -162,7 +162,7 @@ fn ispdb_then_srv_then_mx_then_guess() {
     let found = discover(&net, "ada@example.org").unwrap();
     assert_eq!(found.source, Source::DnsSrv);
     assert_eq!(
-        found.imap,
+        found.imap.unwrap(),
         server(
             "mail.example.org",
             143,
@@ -185,7 +185,7 @@ fn ispdb_then_srv_then_mx_then_guess() {
         .insert("https://ispdb.test/v1.1/messagingengine.com".into(), CONFIG);
     let found = discover(&net, "ada@shop.example").unwrap();
     assert_eq!(found.source, Source::Mx);
-    assert_eq!(found.imap.username, "ada");
+    assert_eq!(found.imap.clone().unwrap().username, "ada");
 
     let net = FakeNet {
         open: vec!["mail.example.net:993".into(), "smtp.example.net:587".into()],
@@ -193,7 +193,7 @@ fn ispdb_then_srv_then_mx_then_guess() {
     };
     let found = discover(&net, "ada@example.net").unwrap();
     assert_eq!(found.source, Source::Guess);
-    assert_eq!(found.imap.host, "mail.example.net");
+    assert_eq!(found.imap.clone().unwrap().host, "mail.example.net");
     assert_eq!(found.smtp.unwrap().security, Security::StartTls);
     let probes = net
         .asked
@@ -202,7 +202,8 @@ fn ispdb_then_srv_then_mx_then_guess() {
         .iter()
         .filter(|a| a.starts_with("probe"))
         .count();
-    assert_eq!(probes, 8);
+    // IMAP, SMTP and POP3 names, two ports each.
+    assert_eq!(probes, 14);
 }
 
 #[test]
@@ -259,8 +260,11 @@ fn socket_type_tls_means_implicit_tls() {
         "<port>465</port>\n      <socketType>TLS</socketType>",
     );
     assert_ne!(config, CONFIG);
-    let (_, smtp) = parse_config(config.as_bytes(), &user).unwrap().unwrap();
-    let smtp = smtp.unwrap();
+    let smtp = parse_config(config.as_bytes(), &user)
+        .unwrap()
+        .unwrap()
+        .smtp
+        .unwrap();
     assert_eq!((smtp.port, smtp.security), (465, Security::Tls));
 }
 
@@ -274,8 +278,12 @@ fn config_files_are_checked() {
     assert!(parse_config(b"<clientConfig/>", &user).is_err());
     assert!(parse_config(b"not xml", &user).is_err());
     let bad_host = CONFIG.replace("IMAPS.%EMAILDOMAIN%", "evil host/");
-    let (imap, _) = parse_config(bad_host.as_bytes(), &user).unwrap().unwrap();
-    assert_eq!(imap.host, "imap.example.org", "the bad entry is skipped");
+    let found = parse_config(bad_host.as_bytes(), &user).unwrap().unwrap();
+    assert_eq!(
+        found.imap.unwrap().host,
+        "imap.example.org",
+        "the bad entry is skipped"
+    );
 }
 
 #[test]
@@ -293,9 +301,9 @@ fn cleartext_only_when_nothing_else_is_offered() {
          <authentication>password-cleartext</authentication>\n    </incomingServer>\n    \
          <incomingServer type=\"imap\">",
     );
-    let (imap, smtp) = parse_config(with_plain.as_bytes(), &user).unwrap().unwrap();
-    assert_eq!(imap.security, Security::Tls);
-    assert_eq!(smtp.unwrap().security, Security::StartTls);
+    let found = parse_config(with_plain.as_bytes(), &user).unwrap().unwrap();
+    assert_eq!(found.imap.unwrap().security, Security::Tls);
+    assert_eq!(found.smtp.unwrap().security, Security::StartTls);
 
     // Only cleartext: taken, as the provider says (the dialog shows it).
     let only_plain = r#"<clientConfig><emailProvider id="b.org">
@@ -303,8 +311,59 @@ fn cleartext_only_when_nothing_else_is_offered() {
           <hostname>mail.b.org</hostname><port>143</port><socketType>PLAIN</socketType>
           <authentication>password-cleartext</authentication>
         </incomingServer></emailProvider></clientConfig>"#;
-    let (imap, _) = parse_config(only_plain.as_bytes(), &user).unwrap().unwrap();
-    assert_eq!(imap.security, Security::Plain);
+    let found = parse_config(only_plain.as_bytes(), &user).unwrap().unwrap();
+    assert_eq!(found.imap.unwrap().security, Security::Plain);
+}
+
+#[test]
+fn pop3_beside_imap_and_alone() {
+    let user = User {
+        address: "a@b.org",
+        local: "a",
+        domain: "b.org",
+    };
+    // Both: IMAP stays the account's, POP3 is there to pick.
+    let both = parse_config(CONFIG.as_bytes(), &user).unwrap().unwrap();
+    assert_eq!(both.imap.unwrap().host, "imaps.b.org");
+    assert_eq!(
+        both.pop3,
+        Some(server("pop.example.org", 995, Security::Tls, "a@b.org"))
+    );
+
+    // Only POP3: found all the same.
+    let only_pop3 = r#"<clientConfig><emailProvider id="b.org">
+        <incomingServer type="pop3">
+          <hostname>pop.b.org</hostname><port>995</port><socketType>SSL</socketType>
+          <authentication>password-cleartext</authentication>
+        </incomingServer>
+        <outgoingServer type="smtp">
+          <hostname>smtp.b.org</hostname><port>465</port><socketType>SSL</socketType>
+          <authentication>password-cleartext</authentication>
+        </outgoingServer></emailProvider></clientConfig>"#;
+    let mut net = FakeNet::default();
+    net.files
+        .insert("https://ispdb.test/v1.1/b.org".into(), only_pop3);
+    let found = discover(&net, "a@b.org").unwrap();
+    assert_eq!(found.source, Source::Ispdb);
+    assert_eq!(found.imap, None);
+    assert_eq!(found.incoming().host, "pop.b.org");
+    assert_eq!(found.smtp.unwrap().host, "smtp.b.org");
+    assert_eq!(found.oauth, None);
+}
+
+#[test]
+fn guesses_a_pop3_server() {
+    let net = FakeNet {
+        open: vec!["pop.b.org:995".into(), "smtp.b.org:465".into()],
+        ..FakeNet::default()
+    };
+    let found = discover(&net, "a@b.org").unwrap();
+    assert_eq!(found.source, Source::Guess);
+    assert_eq!(found.imap, None);
+    assert_eq!(
+        found.pop3,
+        Some(server("pop.b.org", 995, Security::Tls, "a@b.org"))
+    );
 }
 
 #[test]
@@ -336,7 +395,7 @@ fn srv_targets_stay_in_the_domain() {
     net.srv.insert("_imaps._tcp.example.org".into(), records);
     let found = discover(&net, "ada@example.org").unwrap();
     assert_eq!(found.source, Source::DnsSrv);
-    assert_eq!(found.imap.host, "imap.example.org");
+    assert_eq!(found.imap.clone().unwrap().host, "imap.example.org");
 
     // The domain itself, and providers Katna knows, are fine.
     for target in ["example.org", "imap.gmail.com", "outlook.office365.com"] {
@@ -344,7 +403,7 @@ fn srv_targets_stay_in_the_domain() {
         net.srv
             .insert("_imaps._tcp.example.org".into(), record(target));
         let found = discover(&net, "ada@example.org").unwrap();
-        assert_eq!(found.imap.host, target);
+        assert_eq!(found.imap.clone().unwrap().host, target);
     }
 }
 
@@ -406,8 +465,8 @@ fn google_and_microsoft_offer_oauth() {
     let outlook = discover(&net, "ada@outlook.com").unwrap();
     assert_eq!(outlook.oauth, Some(OAuthProvider::Microsoft));
     assert!(!outlook.password);
-    assert_eq!(outlook.imap.host, "outlook.office365.com");
-    assert_eq!(outlook.imap.username, "ada@outlook.com");
+    assert_eq!(outlook.imap.clone().unwrap().host, "outlook.office365.com");
+    assert_eq!(outlook.imap.clone().unwrap().username, "ada@outlook.com");
     assert_eq!(outlook.smtp.unwrap().security, Security::StartTls);
 
     // A Microsoft 365 domain whose MX leads to an OAuth2-only ISPDB entry.
@@ -428,5 +487,5 @@ fn google_and_microsoft_offer_oauth() {
     assert_eq!(found.source, Source::Mx);
     assert_eq!(found.oauth, Some(OAuthProvider::Microsoft));
     assert!(!found.password);
-    assert_eq!(found.imap.username, "ada@corp.example");
+    assert_eq!(found.imap.clone().unwrap().username, "ada@corp.example");
 }
