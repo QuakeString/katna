@@ -588,8 +588,8 @@ impl Check {
 /// label icons it sits beside in a mail row, and at the weight of a
 /// [`radio`] ring.
 const CHECK_BOX: f32 = 16.0;
-/// The square of a partly checked box: 1 px clear of the edge all round.
-const PARTIAL_SQUARE: f32 = CHECK_BOX - 4.0 - 2.0;
+/// The gap between the edge and the square of a partly checked box.
+const PARTIAL_GAP: f32 = 1.0;
 
 /// A checkbox in the accent colour. Its tick draws itself in when checked
 /// and wipes back out when cleared; `id` keys that motion, so give each box
@@ -640,20 +640,25 @@ fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> A
                 let edge = v.clamp(0.0, 1.0);
                 let full = (v - 1.0).clamp(0.0, 1.0);
                 // Partly checked is a smaller square inside the edge, with a
-                // gap between them; checking grows it to fill the box.
-                let inner = lerp(PARTIAL_SQUARE, CHECK_BOX - 4.0, full) * edge;
+                // gap between them; checking grows it to fill the box. The
+                // square is inset by the same length on every side rather
+                // than sized and centred: at scales like 175% a sized square
+                // and the box inside the edge differ by an odd number of
+                // pixels, which left the gap thinner on the top and right.
+                let half = (CHECK_BOX - 4.0) / 2.0;
+                let gap = half - (half - lerp(PARTIAL_GAP, 0.0, full)) * edge;
                 d.rounded(px(3.0))
                     .border_px(2.0)
                     .border_color(rgba(crate::theme::mix(rest, fill, edge)))
-                    .flex()
-                    .items_center()
-                    .justify_center()
                     .relative()
-                    .when(inner > 0.1, |d| {
+                    .when(gap < half - 0.05, |d| {
                         d.child(
                             div()
-                                .size(px(inner))
-                                .flex_none()
+                                .absolute()
+                                .top(px(gap))
+                                .left(px(gap))
+                                .bottom(px(gap))
+                                .right(px(gap))
                                 .rounded(px(lerp(1.0, 0.0, full)))
                                 .bg(rgba(fill)),
                         )

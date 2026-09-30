@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Partly ticked boxes look even"
+text = """
+When only some messages are selected, the square inside the select-all box
+now has the same gap on every side, whatever your interface scale.
+"""
