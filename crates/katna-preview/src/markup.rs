@@ -149,6 +149,53 @@ pub struct Mark {
 }
 
 impl Mark {
+    /// This mark on its page turned a quarter turn, clockwise or not;
+    /// `(w, h)` is the page's size before the turn. Notes and text boxes
+    /// keep their corner and stay upright.
+    pub fn turned(&self, clockwise: bool, (w, h): (f32, f32)) -> Mark {
+        let point = |(x, y): (f32, f32)| {
+            if clockwise { (h - y, x) } else { (y, w - x) }
+        };
+        let quad = |q: &Quad| {
+            let (a, b) = (point((q.left, q.top)), point((q.right, q.bottom)));
+            Quad {
+                left: a.0.min(b.0),
+                top: a.1.min(b.1),
+                right: a.0.max(b.0),
+                bottom: a.1.max(b.1),
+            }
+        };
+        let corner = |shape: &Shape| {
+            shape.frame().map_or((0.0, 0.0), |q| {
+                let q = quad(&q);
+                (q.left, q.top)
+            })
+        };
+        let shape = match &self.shape {
+            Shape::Text { quads, text } => Shape::Text {
+                quads: quads.iter().map(quad).collect(),
+                text: text.clone(),
+            },
+            Shape::Ink(points) => Shape::Ink(points.iter().copied().map(point).collect()),
+            Shape::Note { text, .. } => Shape::Note {
+                at: corner(&self.shape),
+                text: text.clone(),
+            },
+            Shape::Box {
+                width, size, text, ..
+            } => Shape::Box {
+                at: corner(&self.shape),
+                width: *width,
+                size: *size,
+                text: text.clone(),
+            },
+        };
+        Mark {
+            shape,
+            ..self.clone()
+        }
+    }
+
     /// Whether the point `(x, y)` on `page` is on this mark, give or take
     /// `slop` points.
     pub fn hit(&self, page: usize, x: f32, y: f32, slop: f32) -> bool {
@@ -306,6 +353,22 @@ impl Marks {
         }
     }
 
+    /// Turns every mark, and every step of undo and redo, with its page
+    /// a quarter turn; `size` gives a page's size before the turn.
+    pub fn turn(&mut self, clockwise: bool, size: impl Fn(usize) -> (f32, f32)) {
+        let turn = |mark: &mut Mark| *mark = mark.turned(clockwise, size(mark.page));
+        self.list.iter_mut().for_each(turn);
+        for step in self.done.iter_mut().chain(self.undone.iter_mut()) {
+            match step {
+                Step::Added(_, mark) | Step::Removed(_, mark) => turn(mark),
+                Step::Changed(_, before, after) => {
+                    turn(before);
+                    turn(after);
+                }
+            }
+        }
+    }
+
     /// The topmost mark at `(x, y)` on `page`.
     pub fn at(&self, page: usize, x: f32, y: f32, slop: f32) -> Option<usize> {
         self.list.iter().rposition(|m| m.hit(page, x, y, slop))
@@ -396,6 +459,46 @@ mod tests {
         assert_eq!(marks.list().len(), 1);
         assert_eq!(marks.list()[0].page, 1);
         assert!(!marks.redo());
+    }
+
+    #[test]
+    fn turning_there_and_back_keeps_marks() {
+        let mut marks = Marks::default();
+        let stroke = Mark {
+            page: 0,
+            kind: Kind::Ink,
+            color: [1.0, 0.0, 0.0],
+            shape: Shape::Ink(vec![(10.0, 20.0), (30.0, 25.0)]),
+        };
+        let note = Mark {
+            page: 0,
+            kind: Kind::Note,
+            color: [0.0, 1.0, 0.0],
+            shape: Shape::Note {
+                at: (100.0, 200.0),
+                text: "Hi".into(),
+            },
+        };
+        marks.add(stroke.clone());
+        marks.add(note.clone());
+        marks.turn(true, |_| (600.0, 800.0));
+        // Clockwise, the page's left edge becomes its top.
+        let Shape::Ink(points) = &marks.list()[0].shape else {
+            panic!("a stroke");
+        };
+        assert_eq!(points[0], (780.0, 10.0));
+        let Shape::Note { at, .. } = &marks.list()[1].shape else {
+            panic!("a note");
+        };
+        assert_eq!(*at, (800.0 - 200.0 - NOTE_SIZE, 100.0));
+        marks.turn(false, |_| (800.0, 600.0));
+        assert_eq!(marks.list(), &[stroke.clone(), note]);
+        // Undo takes back the turned mark, not the one before the turn.
+        marks.turn(true, |_| (600.0, 800.0));
+        marks.undo();
+        marks.undo();
+        marks.redo();
+        assert_eq!(marks.list(), &[stroke.turned(true, (600.0, 800.0))]);
     }
 
     #[test]
