@@ -34,19 +34,34 @@
   <img src="docs/screenshots/desktop-light-dark.webp" alt="Katna Mail on a desktop-sized window, half in the light theme and half in the dark theme, with a conversation open beside the list">
 </p>
 
-## A personal project
+## Why I built Katna
+
+For about eight years, KMail was the mail app I loved most. It looked
+native on my desktop and I could shape it exactly the way I wanted. But it
+kept breaking for me, and it still does today. I tried Thunderbird, but
+its mail search never found what I was looking for. Then I tried
+Mailspring, which looks lovely and works well, but it never fitted into
+KDE and it is very large.
+
+What I really love is Gmail: its interface and how easy it is to use. I
+just don't want my mail to live in a web page; I want a desktop app that
+also works offline. No app gave me all of that, so I set out to build one.
 
 Katna Mail is not trying to be unique or revolutionary. It is a very
-personal project: the mail client its author wanted on their own Linux
-desktop. Its features and look are openly borrowed from the mail apps they
-love, mainly Gmail, Mailspring and Thunderbird, and rebuilt in Rust with
-Katna's own name and icons.
+personal project: the mail client I wanted on my own Linux desktop. Its
+features and look are openly borrowed from the mail apps I love, mainly
+Gmail, Mailspring and Thunderbird, and rebuilt in Rust with Katna's own
+name and icons. KMail, Thunderbird and Mailspring are made by people who
+have given a lot to free software, and Katna owes each of them a great
+deal.
 
 Katna has only been possible because of how far LLMs (large language
 models) have come. They turned a full mail client, long the work of a whole
-team, into something one person can build with care. Every screen is still
-designed, checked pixel by pixel and used every day by its author, on a
-real desktop with real mail.
+team, into something one person can build with care. I still design every
+screen, check it pixel by pixel and use Katna every day, on a real desktop
+with real mail.
+
+— Mozammel
 
 ## Highlights
 
@@ -64,8 +79,9 @@ real desktop with real mail.
 
 ## Katna Mail today
 
-One app for every screen size, in light and dark. Desktop is shown above;
-tablet and phone below.
+One window for mail, calendar, contacts, tasks and notes, on every screen
+size, in light and dark. Desktop is shown above; the rest below. Every
+screenshot uses made-up demo data.
 
 <table>
   <tr>
@@ -83,6 +99,20 @@ tablet and phone below.
   <tr>
     <td>Encrypted and signed mail</td>
     <td>Built-in viewer for PDFs, pictures, sheets and documents</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="docs/screenshots/calendar-light-dark.webp" alt="The Calendar page, half light and half dark, with a week of events in three colored calendars and tasks above the days"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">Calendar: your week, with calendars grouped by account and tasks on their day</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/contacts-light-dark.webp" alt="The Contacts page, half light and half dark, with starred contacts, labels and a list of people"></td>
+    <td width="50%"><img src="docs/screenshots/tasks-light-dark.webp" alt="The Tasks page, half light and half dark, with two task lists side by side"></td>
+  </tr>
+  <tr>
+    <td>Contacts, with labels and starred people</td>
+    <td>Tasks, in lists with due dates and stars</td>
   </tr>
   <tr>
     <td colspan="2" align="center"><img src="docs/screenshots/kde-global-menu-tray.webp" width="70%" alt="Katna Mail on KDE Plasma with the global menu, taskbar count and tray badge"></td>
@@ -107,6 +137,15 @@ tablet and phone below.
 - **Your desktop:** tray icon, unread badge, global menu, notifications
   with Reply all, Mark read and Archive, light and dark themes, optional
   own window frame with blur (Experimental).
+- **Calendar:** day, week, month and year views, events from Google,
+  Microsoft and CalDAV accounts or on this computer, repeating events,
+  invitations answered from the reader, and events in the Plasma clock.
+- **Contacts:** synced from Google, Microsoft and CardDAV, with labels,
+  birthdays in the calendar, merge and fix, import, export and print.
+- **Tasks:** Google Tasks, Microsoft To Do and CalDAV lists, with due
+  dates, reminders, repeats and stars.
+- **Notes:** notes in Google Keep's look, kept in each account's Notes
+  folder so they also show in Apple Notes and Thunderbird.
 - **Any screen size:** desktop, tablet and phone layouts in one app.
 - **Settings** for accounts, signatures, keyboard shortcuts, default apps
   and more, plus a short onboarding for new users.
@@ -114,9 +153,8 @@ tablet and phone below.
 
 ### Coming next
 
-Katna Calendar (CalDAV, with events in the Plasma clock), Contacts, Tasks,
-Notes and Feeds are planned; they already have a place in the app, marked
-"coming soon". See the [implementation plan](docs/IMPLEMENTATION_PLAN.md).
+Feeds is planned and already has a place in the app, marked "coming soon".
+See the [implementation plan](docs/IMPLEMENTATION_PLAN.md).
 
 ## Install
 
