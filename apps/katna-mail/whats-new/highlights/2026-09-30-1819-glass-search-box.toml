@@ -2,6 +2,6 @@
 
 title = "A glass search box"
 text = """
-With the blurred background on, the search box is frosted glass while you are
-not using it, and turns solid when you click into it to type.
+With the blurred background on, the search box is frosted glass with a faint
+edge while you are not using it, and turns solid when you click into it to type.
 """
