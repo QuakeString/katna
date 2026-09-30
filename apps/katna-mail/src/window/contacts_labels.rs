@@ -24,7 +24,7 @@ use super::contacts_page::View;
 use crate::daemon::{self, Command};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, icon, raised};
 
 const MENU_WIDTH: f32 = 260.0;
 const DIALOG_WIDTH: f32 = 400.0;
@@ -576,7 +576,7 @@ impl MailWindow {
             .flex()
             .items_center()
             .rounded(px(8.0))
-            .border_2()
+            .border_px(2.0)
             .border_color(rgba(if focused {
                 th.accent
             } else {

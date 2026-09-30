@@ -34,7 +34,9 @@ use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, placeholder, tip};
+use crate::widgets::{
+    ScaledEdge, elevation, icon, icon_button, icon_button_colored, placeholder, tip,
+};
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
@@ -1967,7 +1969,7 @@ impl MailWindow {
                         .justify_center()
                         .rounded_full()
                         .bg(rgba(fill))
-                        .border_2()
+                        .border_px(2.0)
                         .border_color(rgba(if color == current {
                             th.accent
                         } else if ix == 0 {

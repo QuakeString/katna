@@ -28,7 +28,7 @@ use super::dark::Dark;
 use super::remote::{Fetch, MailImage, svg_key};
 use super::select::Pieces;
 use crate::theme::Theme;
-use crate::widgets::icon;
+use crate::widgets::{ScaledEdge, icon};
 
 /// Mail is written for browsers, where normal text is 16 CSS pixels; the
 /// app's body text is 14.
@@ -270,9 +270,9 @@ impl<'a> Painter<'a> {
             d = if width <= 1.5 {
                 d.border_1()
             } else if width <= 3.0 {
-                d.border_2()
+                d.border_px(2.0)
             } else {
-                d.border_4()
+                d.border_px(4.0)
             }
             .border_color(rgba(self.fill(color)));
         }

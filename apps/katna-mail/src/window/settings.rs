@@ -24,7 +24,7 @@ use super::{CARD_GAP, MailWindow, SETTINGS_WIDTH};
 use crate::theme::{Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
 };
 
 /// One loop of the reading-pane demo.
@@ -716,7 +716,7 @@ impl MailWindow {
         .flex_col()
         .gap(px(8.0))
         .rounded(px(12.0))
-        .border_2()
+        .border_px(2.0)
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {

@@ -37,7 +37,7 @@ use katna_ui::{Ripple, px, unpx};
 
 use super::{BAR_HEIGHT, Content, HOVER, INK, INK_DIM, PILL, PdfView, Viewer, ViewerEvent};
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::{ScaledEdge, icon, tip};
 
 /// Highlighter colours: light, as they lie under the text.
 const MARKERS: [(&str, u32); 5] = [
@@ -1091,7 +1091,7 @@ impl Viewer {
                                             .rounded_full()
                                             .bg(rgba(rgb << 8 | 0xff))
                                             .when(ix == chosen, |d| {
-                                                d.border_2().border_color(rgba(INK))
+                                                d.border_px(2.0).border_color(rgba(INK))
                                             }),
                                     ),
                             );
