@@ -179,7 +179,12 @@ fn gone(reply: &Reply) -> bool {
 impl GoogleCalendar {
     /// Sends `method` to `url` with a JSON `body`, trying once more with
     /// a fresh token when Google refuses the one it had.
-    async fn send(&self, method: &str, url: &str, body: Option<&Value>) -> Result<Reply> {
+    pub(super) async fn send(
+        &self,
+        method: &str,
+        url: &str,
+        body: Option<&Value>,
+    ) -> Result<Reply> {
         let bytes = body.map(|b| b.to_string().into_bytes());
         loop {
             let token = format!("Bearer {}", self.tokens.access_token().await?);

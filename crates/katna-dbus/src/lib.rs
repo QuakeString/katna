@@ -719,6 +719,26 @@ macro_rules! pim_proxy {
             /// the desktop's clock. Sends `CalendarChanged`.
             fn set_calendar_hidden(&self, id: i64, hidden: bool) -> zbus::Result<()>;
 
+            /// Adds a calendar named `name` in `color` (`#rrggbb`, or empty
+            /// for the service's pick) to `account`, on its service, or to
+            /// this computer (0). Returns its `calendar.id`. Fails with the
+            /// service's reason when it refuses.
+            fn add_calendar(&self, account: i64, name: &str, color: &str) -> zbus::Result<i64>;
+
+            /// Renames calendar `id`, on its service first.
+            fn rename_calendar(&self, id: i64, name: &str) -> zbus::Result<()>;
+
+            /// Gives calendar `id` colour `color` (`#rrggbb`), on its service
+            /// first. Returns the colour it got: an Outlook calendar takes
+            /// the nearest of Outlook's.
+            fn set_calendar_color(&self, id: i64, color: &str) -> zbus::Result<String>;
+
+            /// Deletes calendar `id` with its events (`delete`), or takes one
+            /// shared with the person off their list, on its service first.
+            /// Only Google tells the two apart; other services delete one's
+            /// own calendar and unsubscribe from someone else's either way.
+            fn delete_calendar(&self, id: i64, delete: bool) -> zbus::Result<()>;
+
             /// Where each account's calendar sync stands: its ID, a
             /// [`calendar_state`] and a detail for people (may be empty).
             fn calendar_status(&self) -> zbus::Result<Vec<(i64, String, String)>>;

@@ -237,6 +237,15 @@ impl Reorder {
 
 enum What {
     RemoveAccount(Account),
+    /// Deleting a calendar (`delete`), or taking one shared with the
+    /// person off their list, on its account's service (`account`, its
+    /// address; empty for this computer).
+    Calendar {
+        id: i64,
+        name: String,
+        account: String,
+        delete: bool,
+    },
     DeleteAll {
         typed: Entity<TextInput>,
         _subscription: Subscription,
@@ -250,6 +259,8 @@ enum Done {
     DeletedAll,
     /// Messages that lost their body, and bytes deleted.
     CacheReset(u64, u64),
+    /// A calendar went: its name, and whether it was deleted.
+    Calendar(String, bool),
 }
 
 impl MailWindow {
@@ -1080,6 +1091,27 @@ impl MailWindow {
         .detach();
     }
 
+    /// Asks before deleting calendar `id` (`delete`), or taking it off the
+    /// person's list, on the service of `account` (empty: this computer).
+    pub(super) fn ask_calendar_removal(
+        &mut self,
+        id: i64,
+        name: String,
+        account: String,
+        delete: bool,
+        cx: &mut Context<Self>,
+    ) {
+        self.ask(
+            What::Calendar {
+                id,
+                name,
+                account,
+                delete,
+            },
+            cx,
+        );
+    }
+
     fn ask(&mut self, what: What, cx: &mut Context<Self>) {
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
@@ -1166,7 +1198,13 @@ impl MailWindow {
         danger.error = None;
         let remove = match &danger.what {
             What::RemoveAccount(account) => Some(account.clone()),
-            What::DeleteAll { .. } | What::ResetCache => None,
+            What::DeleteAll { .. } | What::ResetCache | What::Calendar { .. } => None,
+        };
+        let calendar = match &danger.what {
+            What::Calendar {
+                id, name, delete, ..
+            } => Some((*id, name.clone(), *delete)),
+            _ => None,
         };
         let reset = matches!(danger.what, What::ResetCache);
         let connection = self.daemon.clone();
@@ -1178,6 +1216,12 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
+                    if let Some((id, name, delete)) = calendar {
+                        let edit = daemon::CalendarEdit::Delete(id, delete);
+                        return daemon::edit_calendar(&connection, &edit)
+                            .await
+                            .map(|_| Done::Calendar(name, delete));
+                    }
                     match remove {
                         Some(account) => daemon::remove_account(&connection, account.id.0)
                             .await
@@ -1201,6 +1245,7 @@ impl MailWindow {
                         Done::Removed(account) => this.account_removed(&account, cx),
                         Done::DeletedAll => this.all_data_deleted(cx),
                         Done::CacheReset(messages, bytes) => this.cache_reset(messages, bytes, cx),
+                        Done::Calendar(name, delete) => this.calendar_removed(&name, delete, cx),
                     }
                 }
                 Err(err) => {
@@ -1342,6 +1387,30 @@ impl MailWindow {
                         },
                     )
                 }
+                What::Calendar {
+                    name,
+                    account,
+                    delete: true,
+                    ..
+                } => {
+                    let mut items = vec![tr!("calendar-delete-events")];
+                    // One on this computer is shared with no one.
+                    if !account.is_empty() {
+                        items.push(tr!("calendar-delete-shared"));
+                    }
+                    (
+                        tr!("calendar-delete-title", name = name.as_str()),
+                        tr!("calendar-delete-confirm"),
+                        tr!("calendar-deleting"),
+                        items,
+                    )
+                }
+                What::Calendar { name, .. } => (
+                    tr!("calendar-remove-title", name = name.as_str()),
+                    tr!("calendar-remove-confirm"),
+                    tr!("calendar-removing"),
+                    vec![tr!("calendar-remove-events")],
+                ),
                 What::DeleteAll { .. } => (
                     tr!("accounts-delete-all-title"),
                     tr!("accounts-delete-all-confirm"),
@@ -1355,9 +1424,12 @@ impl MailWindow {
                 ),
             };
         let reset = matches!(danger.what, What::ResetCache);
+        // Taking a shared calendar off the list loses nothing: its owner
+        // keeps it.
+        let unlist = matches!(danger.what, What::Calendar { delete: false, .. });
         // Resetting deletes nothing that cannot be downloaded again, so it
         // is not red.
-        let tone = if reset { th.accent } else { th.error };
+        let tone = if reset || unlist { th.accent } else { th.error };
         let warning = div()
             .mt(px(20.0))
             .p(px(16.0))
@@ -1373,10 +1445,11 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .font_weight(FontWeight::SEMIBOLD)
                     .text_color(rgba(tone))
-                    .child(if reset {
-                        tr!("reset-cache-deleted")
-                    } else {
-                        tr!("accounts-deleted-heading")
+                    .child(match &danger.what {
+                        What::ResetCache => tr!("reset-cache-deleted"),
+                        What::Calendar { delete: true, .. } => tr!("calendar-delete-heading"),
+                        What::Calendar { .. } => tr!("calendar-remove-heading"),
+                        _ => tr!("accounts-deleted-heading"),
                     }),
             )
             .children(items.into_iter().map(|item| {
@@ -1389,7 +1462,7 @@ impl MailWindow {
                     .child(div().text_color(rgba(tone)).child("\u{2022}"))
                     .child(div().flex_1().min_w_0().child(item))
             }))
-            .when(!reset, |d| {
+            .when(!reset && !unlist, |d| {
                 d.child(
                     div()
                         .pt(px(4.0))
@@ -1422,6 +1495,15 @@ impl MailWindow {
                             tr!("accounts-server-local")
                         }
                         What::RemoveAccount(_) => tr!("accounts-server-remove"),
+                        What::Calendar { account, .. } if account.is_empty() => {
+                            tr!("calendar-delete-local")
+                        }
+                        What::Calendar {
+                            account,
+                            delete: true,
+                            ..
+                        } => tr!("calendar-delete-server", account = account.as_str()),
+                        What::Calendar { .. } => tr!("calendar-remove-server"),
                     }),
             );
         let confirm = match &danger.what {
@@ -1459,7 +1541,7 @@ impl MailWindow {
                         ),
                 )
             }
-            What::RemoveAccount(_) | What::ResetCache => None,
+            What::RemoveAccount(_) | What::ResetCache | What::Calendar { .. } => None,
         };
         let error = danger.error.clone().map(|err| {
             div()
@@ -1487,6 +1569,8 @@ impl MailWindow {
                     .bg(rgba(fade(tone, 0.14)))
                     .child(if reset {
                         icon("refresh", tone, 28.0)
+                    } else if unlist {
+                        icon("remove", tone, 28.0)
                     } else {
                         icon("warning", tone, 28.0)
                     }),
@@ -1532,7 +1616,7 @@ impl MailWindow {
                     .child(
                         {
                             let label = if busy { busy_text } else { action };
-                            if reset {
+                            if reset || unlist {
                                 crate::widgets::filled_button("danger-confirm", label, th)
                             } else {
                                 danger_button("danger-confirm", label, true, th)
