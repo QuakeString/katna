@@ -133,6 +133,26 @@ pub struct FolderIcons {
 }
 
 impl Theme {
+    /// The chat view's bubble for the user's own mail: a light tint of the
+    /// accent.
+    pub fn bubble_own(&self) -> u32 {
+        mix(
+            self.surface,
+            self.accent,
+            if self.dark { 0.14 } else { 0.10 },
+        )
+    }
+
+    /// The chat view's bubble for other people's mail: a quiet grey a step
+    /// off the card.
+    pub fn bubble_other(&self) -> u32 {
+        if self.dark {
+            mix(self.surface, 0xffff_ffff, 0.06)
+        } else {
+            mix(self.surface, 0x0000_00ff, 0.05)
+        }
+    }
+
     /// Katna's own palette.
     pub fn new(dark: bool) -> Self {
         if dark { DARK } else { LIGHT }

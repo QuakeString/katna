@@ -55,6 +55,9 @@ pub(in crate::window) enum Popup {
     Signature,
     /// The templates to put in the message.
     Templates,
+    /// The paperclip of the chat view's reply box: pictures, files, a
+    /// template or another signature.
+    ChatAttach,
     /// Asks the name to save the message under as a template.
     SaveTemplate,
     More,
@@ -124,7 +127,7 @@ pub(in crate::window) struct Dialog {
     link_url: Entity<TextInput>,
     /// The link dialog changes a link that is there.
     editing_link: bool,
-    emoji_search: Entity<TextInput>,
+    pub(super) emoji_search: Entity<TextInput>,
     emoji_group: usize,
     time: Entity<TextInput>,
     /// The month the date picker shows.
@@ -338,7 +341,7 @@ pub(super) fn format_bar_bg(th: &Theme) -> u32 {
 
 /// A format that is on (Bold, a list, the alignment): the selection color,
 /// stronger than the bar's tint.
-fn format_active(th: &Theme) -> u32 {
+pub(super) fn format_active(th: &Theme) -> u32 {
     mix(th.surface, th.accent, if th.dark { 0.42 } else { 0.30 })
 }
 
@@ -699,7 +702,7 @@ impl MailWindow {
     }
 
     /// Catches a click anywhere outside the open menu, closing it.
-    fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
         let popup = self.compose.as_ref()?.popup.as_ref()?;
         // The dialogs close with their own buttons; the cards of fixes when
         // the pointer leaves them, so the text under them still takes it.
@@ -1499,7 +1502,7 @@ impl MailWindow {
 
     // Emoji.
 
-    fn render_emoji_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_emoji_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
@@ -1677,7 +1680,11 @@ impl MailWindow {
     }
 
     /// "Go to link · Change · Remove" under a link the cursor is in.
-    fn render_link_bubble(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_link_bubble(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         if compose.popup.is_some() || !compose.body.read(cx).had_focus() {
             return None;
@@ -1766,7 +1773,11 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn render_context_popup(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_context_popup(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let Some(Popup::Context {
             position,
@@ -1986,7 +1997,7 @@ impl MailWindow {
     }
 
     /// The fixes of the marked words under the pointer or a left click.
-    fn render_hint(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_hint(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let Some(Popup::Hint {
             word,
@@ -2052,7 +2063,11 @@ impl MailWindow {
     }
 
     /// The fixes of a grammar mistake in the subject.
-    fn render_subject_grammar(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_subject_grammar(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let Some(Popup::SubjectGrammar {
             position,
@@ -2868,7 +2883,24 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        let current = compose.signature;
+        div()
+            .relative()
+            .child(
+                icon_button("compose-signature", "signature", 20.0, th)
+                    .tooltip(tip(tr!("compose-tool-signature"), th))
+                    .on_click(
+                        cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
+                    ),
+            )
+            .when(compose.popup == Some(Popup::Signature), |d| {
+                d.child(above(self.signature_menu(th, cx)))
+            })
+            .into_any_element()
+    }
+
+    /// The signatures to sign with, None, and Manage.
+    pub(super) fn signature_menu(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        let current = self.compose.as_ref().and_then(|c| c.signature);
         let item = |ix: usize, id: Option<u32>, label: &str| {
             menu_item(("compose-signature-item", ix), label, th)
                 .gap(px(12.0))
@@ -2891,44 +2923,28 @@ impl MailWindow {
                 item(ix + 1, Some(s.id), &name)
             })
             .collect::<Vec<_>>();
-        div()
-            .relative()
+        menu(th)
+            .w(px(240.0))
+            .child(item(0, None, &tr!("compose-tool-signature-none")))
+            .children(items)
+            .child(menu_divider(th))
             .child(
-                icon_button("compose-signature", "signature", 20.0, th)
-                    .tooltip(tip(tr!("compose-tool-signature"), th))
-                    .on_click(
-                        cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
-                    ),
+                menu_item(
+                    "compose-signatures-manage",
+                    &tr!("compose-tool-signature-manage"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| {
+                    if let Some(c) = &mut this.compose {
+                        c.popup = None;
+                    }
+                    this.open_settings_page(
+                        super::super::settings_page::Section::Signatures,
+                        window,
+                        cx,
+                    );
+                })),
             )
-            .when(compose.popup == Some(Popup::Signature), |d| {
-                d.child(above(
-                    menu(th)
-                        .w(px(240.0))
-                        .child(item(0, None, &tr!("compose-tool-signature-none")))
-                        .children(items)
-                        .child(menu_divider(th))
-                        .child(
-                            menu_item(
-                                "compose-signatures-manage",
-                                &tr!("compose-tool-signature-manage"),
-                                th,
-                            )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    if let Some(c) = &mut this.compose {
-                                        c.popup = None;
-                                    }
-                                    this.open_settings_page(
-                                        super::super::settings_page::Section::Signatures,
-                                        window,
-                                        cx,
-                                    );
-                                },
-                            )),
-                        ),
-                ))
-            })
-            .into_any_element()
     }
 }
 

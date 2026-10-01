@@ -36,6 +36,7 @@ use crate::widgets::{
     card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
 };
 
+mod chat;
 mod invite;
 mod security;
 mod ticks;
@@ -76,6 +77,8 @@ pub(super) struct Conversation {
     drafts: HashSet<MessageId>,
     /// Its messages' `Message-ID`s, oldest first, for the notes about it.
     headers: Vec<String>,
+    /// How it shows as a chat (Settings > Experimental).
+    pub(super) chat: chat::ChatState,
 }
 
 /// One message of the conversation.
@@ -363,6 +366,7 @@ impl Conversation {
             seen: None,
             drafts: HashSet::new(),
             headers,
+            chat: chat::ChatState::default(),
         };
         conversation.read_tracking(mail);
         conversation.read_drafts(mail);
@@ -497,7 +501,10 @@ impl Conversation {
     pub(super) fn missing_bodies(&self) -> Vec<MessageId> {
         self.parts
             .iter()
-            .filter(|p| p.expanded && p.body.as_ref().is_some_and(|b| b.view.is_none()))
+            .filter(|p| {
+                (p.expanded || self.chat.all_bodies)
+                    && p.body.as_ref().is_some_and(|b| b.view.is_none())
+            })
             .map(|p| p.id)
             .collect()
     }
@@ -575,7 +582,7 @@ impl Conversation {
     pub(super) fn open_views(&self) -> impl Iterator<Item = (MessageId, &MessageView)> {
         self.parts
             .iter()
-            .filter(|p| p.expanded)
+            .filter(|p| p.expanded || self.chat.all_bodies)
             .filter_map(|p| Some((p.id, p.body.as_ref()?.view.as_ref()?)))
     }
 }
@@ -1026,9 +1033,13 @@ impl MailWindow {
         self.open_sealed(cx);
         self.fetch_remote(cx);
         self.download_bodies(cx);
+        self.prepare_chat();
         self.request_thumbnails(cx);
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
             self.text.begin(key);
+        }
+        if self.chat_shown() {
+            return self.render_chat(th, cx);
         }
         // The link under the pointer was in another conversation.
         let conversation = self.reader.as_ref().map(|r| key_number(r.key));
@@ -1101,6 +1112,10 @@ impl MailWindow {
                         )
                     }),
             )
+            // With the chat view on, the conversation can show as a chat.
+            .when(self.config.experimental.chat_view, |d| {
+                d.child(self.chat_switch(false, th, cx))
+            })
             .when(reader.parts.len() > 1, |d| {
                 d.child(
                     icon_button_colored(

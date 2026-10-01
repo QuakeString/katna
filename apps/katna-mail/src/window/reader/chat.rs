@@ -1,0 +1,1235 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The chat view (Settings > Experimental > Reading): a conversation
+//! between people shown as a group chat. Each mail is a bubble holding only
+//! what its sender wrote, the user's own on the right; the quoted mail and
+//! the signature wait behind a ··· pill, a forwarded mail is a small card,
+//! and attachments show as chat media: pictures in a grid, files as cards.
+//! Mail in a row from one person within a few minutes forms a group with
+//! one name and one picture. Newsletters keep the usual view, and the
+//! header's Chat | Mail switch turns any conversation either way.
+//!
+//! The reply box at the bottom is the inline reply (`compose/chat_box.rs`);
+//! a reply just sent shows its undo countdown beside its bubble.
+
+use std::cell::RefCell;
+use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
+use std::time::Instant;
+
+use gpui::{
+    AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, MouseDownEvent,
+    SharedString, div, prelude::*, relative, rgba,
+};
+use katna_i18n::tr;
+use katna_preview::Kind as FileKind;
+use katna_render::Attachment;
+use katna_render::trim::{self, Forwarded};
+use katna_store::MessageId;
+use katna_ui::px;
+
+use super::super::MailWindow;
+use super::super::attachments::{Thumb, kind_badge};
+use super::super::compose::Kind;
+use super::super::context_menu::Rows;
+use super::{Conversation, Part, first_name, key_number, read};
+use crate::daemon::Command;
+use crate::data::Mail;
+use crate::format;
+use crate::theme::{Theme, avatar_color, mix};
+use crate::widgets::{icon, icon_button_colored, tip};
+
+/// Mail from one person this close together joins their group.
+const GROUP_SECONDS: i64 = 10 * 60;
+/// The picture beside a group.
+const PICTURE: f32 = 28.0;
+/// The room the picture takes beside other people's bubbles.
+const PICTURE_COLUMN: f32 = PICTURE + 8.0;
+/// A bubble's corners: round, and tighter where it joins its group.
+const ROUND: f32 = 16.0;
+const JOINED: f32 = 6.0;
+/// Pictures shown in a bubble's grid; more show as "+N" on the last.
+const GRID: usize = 4;
+/// Inline pictures smaller than this are logos and signature icons.
+const SMALL_PICTURE: u64 = 12 * 1024;
+
+/// How the open conversation shows as a chat.
+#[derive(Default)]
+pub(in crate::window) struct ChatState {
+    /// The user's pick for this conversation: Chat (`true`) or Mail.
+    pub(in crate::window) pick: Option<bool>,
+    /// Every message's body is read, as the chat shows each one.
+    pub(in crate::window) all_bodies: bool,
+    /// Bubbles whose quoted text and signature show.
+    open: HashSet<MessageId>,
+    /// What each message says, trimmed, with the length of the body it
+    /// was trimmed from.
+    said: RefCell<HashMap<MessageId, (usize, Rc<Said>)>>,
+    /// Messages shown when the chat last scrolled to its end.
+    shown: usize,
+}
+
+/// One mail as a bubble shows it.
+pub(in crate::window) struct Said {
+    /// What the sender wrote.
+    pub(in crate::window) text: String,
+    quoted: Option<String>,
+    pub(in crate::window) signature: Option<String>,
+    forwarded: Option<Forwarded<String>>,
+}
+
+impl Said {
+    fn of(body: &str) -> Self {
+        let trimmed = trim::plain(body);
+        Self {
+            text: trimmed.said.trim().to_owned(),
+            quoted: trimmed.quoted.filter(|q| !q.trim().is_empty()),
+            signature: trimmed.signature.filter(|s| !s.trim().is_empty()),
+            forwarded: trimmed.forwarded,
+        }
+    }
+
+    /// Something waits behind its ··· pill.
+    fn hides(&self) -> bool {
+        self.quoted.is_some() || self.signature.is_some()
+    }
+}
+
+impl Conversation {
+    /// Reads the body of every message not read yet, for the chat.
+    fn read_all_bodies(&mut self, mail: &Mail) {
+        for part in &mut self.parts {
+            if part.body.is_none() {
+                part.body = Some(read(mail, part.id));
+            }
+        }
+        self.chat.all_bodies = true;
+    }
+
+    /// Mail between people: none of it is a newsletter or other bulk mail
+    /// from someone else, and not all of it is drafts.
+    fn between_people(&self, is_me: impl Fn(&str) -> bool) -> bool {
+        let bulk = self.parts.iter().any(|p| {
+            p.body
+                .as_ref()
+                .and_then(|b| b.view.as_ref())
+                .is_some_and(|v| v.bulk && !v.from.first().is_some_and(|a| is_me(&a.email)))
+        });
+        let drafts = self.parts.iter().all(|p| self.drafts.contains(&p.id));
+        !bulk && !drafts
+    }
+
+    /// What message `part` says, trimmed; `None` while it is not read.
+    fn said(&self, part: &Part) -> Option<Rc<Said>> {
+        let body = &part.body.as_ref()?.view.as_ref()?.body;
+        let mut cache = self.chat.said.borrow_mut();
+        match cache.get(&part.id) {
+            Some((len, said)) if *len == body.len() => Some(said.clone()),
+            _ => {
+                let said = Rc::new(Said::of(body));
+                cache.insert(part.id, (body.len(), said.clone()));
+                Some(said)
+            }
+        }
+    }
+
+    /// The signature `email` last signed with in this conversation.
+    pub(in crate::window) fn signature_of(&self, email: &str) -> Option<String> {
+        self.parts.iter().rev().find_map(|part| {
+            let from = part.body.as_ref()?.view.as_ref()?.from.first()?;
+            if !from.email.eq_ignore_ascii_case(email) {
+                return None;
+            }
+            self.said(part)?.signature.clone()
+        })
+    }
+}
+
+/// One bubble of the feed, worked out before it is drawn.
+struct Bubble {
+    ix: usize,
+    id: MessageId,
+    mine: bool,
+    name: String,
+    email: String,
+    date: Option<i64>,
+    said: Option<Rc<Said>>,
+    /// The attachments it shows, with their place among all of them.
+    files: Vec<(usize, Attachment)>,
+    /// A reply just sent: `Some(false)` while it waits to go.
+    pending: Option<bool>,
+    /// The first and last of its group.
+    first: bool,
+    last: bool,
+}
+
+/// What the feed shows, in order.
+enum Line {
+    Day(String),
+    /// "Arjun added Sara".
+    Joined(String, Vec<String>),
+    Bubble(Bubble),
+}
+
+impl MailWindow {
+    /// The open conversation shows as a chat: the chat view is on, and the
+    /// conversation is mail between people or the user picked Chat.
+    pub(in crate::window) fn chat_shown(&self) -> bool {
+        self.config.experimental.chat_view
+            && self.reading
+            && self.reader.as_ref().is_some_and(|r| {
+                !r.parts.is_empty()
+                    && r.chat
+                        .pick
+                        .unwrap_or_else(|| r.between_people(|e| self.is_me(e)))
+            })
+    }
+
+    /// The chat view was turned on or off: the open conversation follows
+    /// it rather than an earlier pick.
+    pub(in crate::window) fn open_chat_as_set(&mut self) {
+        if let Some(reader) = &mut self.reader {
+            reader.chat.pick = None;
+            reader.chat.shown = 0;
+        }
+    }
+
+    /// Reads what the chat needs before the open conversation is drawn.
+    pub(super) fn prepare_chat(&mut self) {
+        if !self.config.experimental.chat_view {
+            return;
+        }
+        if let (Some(reader), Ok(mail)) = (&mut self.reader, &self.mail)
+            && (!reader.chat.all_bodies || reader.parts.iter().any(|p| p.body.is_none()))
+        {
+            reader.read_all_bodies(mail);
+        }
+    }
+
+    /// Shows the open conversation as a chat (`true`) or as mail.
+    fn pick_chat(&mut self, chat: bool, cx: &mut Context<Self>) {
+        if let Some(reader) = &mut self.reader {
+            reader.chat.pick = Some(chat);
+            reader.chat.shown = 0;
+        }
+        cx.notify();
+    }
+
+    /// The Chat | Mail switch, in the chat's header and above the mail.
+    pub(super) fn chat_switch(&self, chat: bool, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let side = |id: &'static str, name: &'static str, label: String, on: bool, to: bool| {
+            div()
+                .id(id)
+                .h(px(28.0))
+                .px(px(10.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(6.0))
+                .rounded_full()
+                .text_size(px(13.0))
+                .font_weight(FontWeight::MEDIUM)
+                .cursor_pointer()
+                .when(on, |d| {
+                    d.bg(rgba(th.surface))
+                        .text_color(rgba(th.text))
+                        .shadow(crate::widgets::elevation(th, 0.5))
+                })
+                .when(!on, |d| {
+                    d.text_color(rgba(th.text_dim))
+                        .hover(|s| s.text_color(rgba(th.text)))
+                })
+                .child(icon(name, if on { th.text } else { th.text_dim }, 16.0))
+                .child(label)
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.pick_chat(to, cx);
+                }))
+        };
+        div()
+            .flex_none()
+            .p(px(2.0))
+            .flex()
+            .flex_row()
+            .rounded_full()
+            .bg(rgba(th.chip))
+            .child(side(
+                "chat-pick-chat",
+                "chat",
+                tr!("chat-switch-chat"),
+                chat,
+                true,
+            ))
+            .child(side(
+                "chat-pick-mail",
+                "mail",
+                tr!("chat-switch-mail"),
+                !chat,
+                false,
+            ))
+            .into_any_element()
+    }
+
+    /// The feed's lines: day separators, people joining, and bubbles.
+    fn chat_lines(&self) -> Vec<Line> {
+        let Some(reader) = &self.reader else {
+            return Vec::new();
+        };
+        let now = jiff::Timestamp::now().as_second();
+        let today = format::local(now, &self.tz).map(|d| d.date());
+        let mut lines = Vec::new();
+        let mut day = None;
+        let mut people: HashSet<String> = HashSet::new();
+        for (ix, part) in reader.parts.iter().enumerate() {
+            let view = part.body.as_ref().and_then(|b| b.view.as_ref());
+            let row = part.row.as_ref();
+            let (name, email) = match (view.and_then(|v| v.from.first()), row) {
+                (Some(from), _) => (from.label().to_owned(), from.email.clone()),
+                (None, Some(row)) => (row.correspondent.clone(), row.sender.clone()),
+                (None, None) => (tr!("reader-unknown-sender"), String::new()),
+            };
+            let mine = part.pending.is_some() || self.is_me(&email);
+            let date = row.and_then(|r| r.date).or(view.and_then(|v| v.date));
+            let local = date.and_then(|d| format::local(d, &self.tz));
+            if let Some(local) = local
+                && day != Some(local.date())
+            {
+                day = Some(local.date());
+                lines.push(Line::Day(day_label(local, today)));
+            }
+            if let Some(view) = view {
+                let everyone = view.from.iter().chain(&view.to).chain(&view.cc);
+                let new: Vec<String> = everyone
+                    .filter(|a| !self.is_me(&a.email))
+                    .filter(|a| people.insert(a.email.to_lowercase()))
+                    .filter(|a| !a.email.eq_ignore_ascii_case(&email))
+                    .map(|a| first_name(a.label()).to_owned())
+                    .collect();
+                if ix > 0 && !new.is_empty() {
+                    let who = if mine {
+                        tr!("chat-you")
+                    } else {
+                        first_name(&name).to_owned()
+                    };
+                    lines.push(Line::Joined(who, new));
+                }
+                people.insert(email.to_lowercase());
+            }
+            let files = view
+                .map(|v| {
+                    v.attachments
+                        .iter()
+                        .enumerate()
+                        .filter(|(_, a)| !(a.content_id.is_some() && a.size < SMALL_PICTURE))
+                        .map(|(ix, a)| (ix, a.clone()))
+                        .collect()
+                })
+                .unwrap_or_default();
+            // Joins the bubble before when nothing came between them.
+            let joins = match lines.last_mut() {
+                Some(Line::Bubble(before)) => {
+                    let near = match (before.date, date) {
+                        (Some(a), Some(b)) => (b - a).abs() <= GROUP_SECONDS,
+                        _ => true,
+                    };
+                    let same = before.mine == mine && before.email.eq_ignore_ascii_case(&email);
+                    if same && near {
+                        before.last = false;
+                        true
+                    } else {
+                        false
+                    }
+                }
+                _ => false,
+            };
+            lines.push(Line::Bubble(Bubble {
+                ix,
+                id: part.id,
+                mine,
+                name,
+                email,
+                date,
+                said: reader.said(part),
+                files,
+                pending: part.pending,
+                first: !joins,
+                last: true,
+            }));
+        }
+        lines
+    }
+
+    /// The open conversation as a chat: its header, the feed and the reply
+    /// box.
+    pub(super) fn render_chat(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let lines = self.chat_lines();
+        let Some(reader) = &mut self.reader else {
+            return div().into_any_element();
+        };
+        let key = reader.key;
+        // Opens at its newest mail, and goes there when mail comes or is
+        // sent.
+        if reader.chat.shown != reader.parts.len() {
+            reader.chat.shown = reader.parts.len();
+            self.reader_scroll.scroll_to_bottom();
+        }
+        let header = self.chat_header(th, cx);
+        let feed: Vec<AnyElement> = lines
+            .iter()
+            .map(|line| match line {
+                Line::Day(label) => div()
+                    .self_center()
+                    .my(px(8.0))
+                    .px(px(10.0))
+                    .py(px(2.0))
+                    .rounded_full()
+                    .bg(rgba(th.chip))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(label.clone())
+                    .into_any_element(),
+                Line::Joined(who, names) => div()
+                    .self_center()
+                    .max_w(relative(0.8))
+                    .my(px(4.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!(
+                        "chat-added",
+                        who = who.clone(),
+                        names = names.join(", ")
+                    ))
+                    .into_any_element(),
+                Line::Bubble(bubble) => self.render_bubble_row(bubble, th, cx),
+            })
+            .collect();
+        let people = self.chat_people();
+        let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
+        let reply = self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), th, cx);
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .child(header)
+            .child(
+                div().flex_1().min_h_0().relative().child(
+                    div()
+                        .id("reader")
+                        .size_full()
+                        .overflow_y_scroll()
+                        .track_scroll(&self.reader_scroll)
+                        .child(
+                            div()
+                                .min_h_full()
+                                .flex()
+                                .flex_col()
+                                .justify_end()
+                                .gap(px(2.0))
+                                .px(px(16.0))
+                                .pt(px(12.0))
+                                .pb(px(8.0))
+                                .children(feed),
+                        ),
+                ),
+            )
+            .child(reply)
+            .children(self.render_text_menu(th, cx))
+            .with_animation(
+                ("open-chat", key_number(key)),
+                gpui::Animation::new(std::time::Duration::from_millis(280))
+                    .with_easing(gpui::ease_out_quint()),
+                |el, t| el.opacity(t),
+            )
+            .into_any_element()
+    }
+
+    /// The conversation's people other than the user, names and addresses,
+    /// in the order they came in.
+    fn chat_people(&self) -> Vec<(String, String)> {
+        let Some(reader) = &self.reader else {
+            return Vec::new();
+        };
+        let mut seen = HashSet::new();
+        reader
+            .parts
+            .iter()
+            .filter_map(|p| p.body.as_ref()?.view.as_ref())
+            .flat_map(|v| v.from.iter().chain(&v.to).chain(&v.cc))
+            .filter(|a| !self.is_me(&a.email) && seen.insert(a.email.to_lowercase()))
+            .map(|a| (a.label().to_owned(), a.email.clone()))
+            .collect()
+    }
+
+    /// When the reply being written answers an older mail, or its sender
+    /// only: who sent that mail, and the start of what they said.
+    fn chat_aimed(&self, key: crate::data::EntryKey) -> Option<(String, String)> {
+        let reader = self.reader.as_ref()?;
+        let (source, all) = self.chat_reply_source(key)?;
+        if all && reader.view_id(None) == Some(source) {
+            return None;
+        }
+        let part = reader.parts.iter().find(|p| p.id == source)?;
+        let from = part.body.as_ref()?.view.as_ref()?.from.first()?;
+        let name = first_name(from.label()).to_owned();
+        let said = reader
+            .said(part)
+            .and_then(|s| {
+                s.text
+                    .lines()
+                    .find(|l| !l.trim().is_empty())
+                    .map(str::to_owned)
+            })
+            .unwrap_or_default();
+        Some((name, said))
+    }
+
+    /// The people's pictures, the subject with who is in it, and the
+    /// Chat | Mail switch.
+    fn chat_header(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(reader) = &self.reader else {
+            return div().into_any_element();
+        };
+        let people = self.chat_people();
+        let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
+        let mails = reader.parts.iter().filter(|p| p.pending.is_none()).count();
+        let stack = people.iter().take(3).enumerate().map(|(i, (name, email))| {
+            div()
+                .flex_none()
+                .when(i > 0, |d| d.ml(px(-8.0)))
+                .rounded_full()
+                .border_2()
+                .border_color(rgba(th.surface))
+                .child(self.person_avatar(name, email, 26.0))
+        });
+        div()
+            .flex_none()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(10.0))
+            .pl(px(16.0))
+            .pr(px(12.0))
+            .py(px(10.0))
+            .border_b_1()
+            .border_color(rgba(th.divider))
+            .child(div().flex_none().flex().flex_row().children(stack))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(15.0))
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .text_color(rgba(th.text))
+                            .child(reader.subject.clone()),
+                    )
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(tr!("chat-people", names = names.join(", "), count = mails)),
+                    ),
+            )
+            .child(self.chat_switch(true, th, cx))
+            .into_any_element()
+    }
+
+    /// A bubble with the sender's picture (others' last in a group), its
+    /// undo countdown (the user's, while it waits) and the hover buttons.
+    fn render_bubble_row(&self, bubble: &Bubble, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let group = SharedString::from(format!("bubble-{}", bubble.id.0));
+        let id = bubble.id;
+        let key = self.reader.as_ref().map(|r| r.key);
+        let email = bubble.email.clone();
+        let picture = (!bubble.mine).then(|| {
+            let slot = div().w(px(PICTURE_COLUMN)).flex_none().flex().items_end();
+            if bubble.last {
+                let pick = email.clone();
+                slot.child(
+                    div()
+                        .id(("chat-picture", bubble.ix))
+                        .cursor_pointer()
+                        .tooltip(tip(tr!("chat-show-card"), th))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            if let Some(key) = key {
+                                this.show_contact_of(key, &pick, cx);
+                            }
+                        }))
+                        .child(self.person_avatar(&bubble.name, &bubble.email, PICTURE)),
+                )
+            } else {
+                slot
+            }
+        });
+        let pending = bubble.pending.is_some();
+        // The hover buttons sit on the bubble's inner side.
+        let hover = (!pending).then(|| self.bubble_hover(bubble, group.clone(), th, cx));
+        let (before, after) = if bubble.mine {
+            (hover, None)
+        } else {
+            (None, hover)
+        };
+        let undo = self.undo_beside(bubble, th, cx);
+        div()
+            .id(("chat-row", bubble.ix))
+            .group(group)
+            .w_full()
+            .flex()
+            .flex_row()
+            .items_end()
+            .gap(px(6.0))
+            .when(bubble.first, |d| d.mt(px(6.0)))
+            .when(bubble.mine, |d| d.justify_end())
+            .when(!pending, |d| {
+                d.on_mouse_down(
+                    MouseButton::Right,
+                    cx.listener(move |this, e: &MouseDownEvent, _, cx| {
+                        cx.stop_propagation();
+                        this.open_bubble_menu(id, e.position, cx);
+                    }),
+                )
+            })
+            .children(picture)
+            .children(before)
+            .children(undo)
+            .child(self.render_bubble(bubble, th, cx))
+            .children(after)
+            .into_any_element()
+    }
+
+    /// The bubble itself.
+    fn render_bubble(&self, bubble: &Bubble, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let id = bubble.id;
+        let open = self
+            .reader
+            .as_ref()
+            .is_some_and(|r| r.chat.open.contains(&id));
+        let (top, bottom) = (
+            if bubble.first { ROUND } else { JOINED },
+            if bubble.last { ROUND } else { JOINED },
+        );
+        let name = (!bubble.mine && bubble.first).then(|| {
+            let pick = bubble.email.clone();
+            let key = self.reader.as_ref().map(|r| r.key);
+            div()
+                .id(("chat-name", bubble.ix))
+                .cursor_pointer()
+                .text_size(px(13.0))
+                .font_weight(FontWeight::SEMIBOLD)
+                .text_color(rgba(name_color(&bubble.email, th)))
+                .hover(|s| s.underline())
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    if let Some(key) = key {
+                        this.show_contact_of(key, &pick, cx);
+                    }
+                }))
+                .child(bubble.name.clone())
+        });
+        let said = bubble.said.as_ref();
+        let text = said
+            .map(|s| s.text.clone())
+            .filter(|t| !t.is_empty())
+            .map(|t| div().child(t));
+        let not_read = said.is_none().then(|| {
+            div()
+                .text_color(rgba(th.text_faint))
+                .child(tr!("chat-not-downloaded"))
+        });
+        let forwarded = said
+            .and_then(|s| s.forwarded.as_ref())
+            .map(|f| forwarded_card(f, open, th));
+        let pill = said.filter(|s| s.hides()).map(|_| {
+            div()
+                .id(("chat-more", bubble.ix))
+                .mt(px(4.0))
+                .px(px(8.0))
+                .h(px(20.0))
+                .flex()
+                .items_center()
+                .rounded_full()
+                .bg(rgba(th.hover))
+                .cursor_pointer()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_dim))
+                .hover(|s| s.text_color(rgba(th.text)))
+                .tooltip(tip(
+                    if open {
+                        tr!("chat-hide-quoted")
+                    } else {
+                        tr!("chat-show-quoted")
+                    },
+                    th,
+                ))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    if let Some(reader) = &mut this.reader
+                        && !reader.chat.open.remove(&id)
+                    {
+                        reader.chat.open.insert(id);
+                    }
+                    cx.notify();
+                }))
+                .child(if open {
+                    tr!("chat-hide-dots")
+                } else {
+                    "···".to_owned()
+                })
+        });
+        let hidden = said.filter(|_| open).map(|s| {
+            div()
+                .mt(px(6.0))
+                .flex()
+                .flex_col()
+                .gap(px(6.0))
+                .text_size(px(13.0))
+                .children(
+                    s.signature
+                        .clone()
+                        .map(|sig| div().text_color(rgba(th.text_dim)).child(sig)),
+                )
+                .children(s.quoted.clone().map(|quoted| {
+                    div()
+                        .pl(px(10.0))
+                        .border_l_2()
+                        .border_color(rgba(th.divider))
+                        .text_color(rgba(th.text_faint))
+                        .child(quoted)
+                }))
+        });
+        let media = self.bubble_media(bubble, th, cx);
+        let meta = self.bubble_meta(bubble, th);
+        div()
+            .id(("chat-bubble", bubble.ix))
+            .max_w(relative(0.72))
+            .min_w_0()
+            .flex()
+            .flex_col()
+            .px(px(11.0))
+            .pt(px(7.0))
+            .pb(px(5.0))
+            .bg(rgba(if bubble.mine {
+                th.bubble_own()
+            } else {
+                th.bubble_other()
+            }))
+            .map(|d| {
+                // Round, with the corners along the group's side joined.
+                if bubble.mine {
+                    d.rounded_tl(px(ROUND))
+                        .rounded_bl(px(ROUND))
+                        .rounded_tr(px(top))
+                        .rounded_br(px(bottom))
+                } else {
+                    d.rounded_tr(px(ROUND))
+                        .rounded_br(px(ROUND))
+                        .rounded_tl(px(top))
+                        .rounded_bl(px(bottom))
+                }
+            })
+            .when(bubble.pending == Some(false), |d| d.opacity(0.75))
+            .text_size(px(14.0))
+            .line_height(px(20.0))
+            .text_color(rgba(th.text))
+            .children(name)
+            .children(text)
+            .children(not_read)
+            .children(forwarded)
+            .children(media)
+            .children(pill)
+            .children(hidden)
+            .child(meta)
+            .into_any_element()
+    }
+
+    /// The time, and for the user's own mail whether it went.
+    fn bubble_meta(&self, bubble: &Bubble, th: &Theme) -> AnyElement {
+        let time = bubble
+            .date
+            .and_then(|d| format::local(d, &self.tz))
+            .map(katna_i18n::format::time)
+            .unwrap_or_default();
+        let state = bubble.mine.then(|| match bubble.pending {
+            Some(false) => icon("schedule", th.text_faint, 13.0),
+            _ => icon("done-all", th.text_faint, 15.0),
+        });
+        div()
+            .self_end()
+            .mt(px(2.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(3.0))
+            .text_size(px(11.0))
+            .line_height(px(14.0))
+            .text_color(rgba(th.text_faint))
+            .child(time)
+            .children(state)
+            .into_any_element()
+    }
+
+    /// Pictures in a grid, other files as cards.
+    fn bubble_media(
+        &self,
+        bubble: &Bubble,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if bubble.files.is_empty() || bubble.pending.is_some() {
+            return None;
+        }
+        let id = bubble.id;
+        let kind = |a: &Attachment| katna_preview::kind(&a.mime, &a.name);
+        let (pictures, others): (Vec<_>, Vec<_>) = bubble
+            .files
+            .iter()
+            .partition(|(_, a)| matches!(kind(a), FileKind::Picture(_)));
+        let more = pictures.len().saturating_sub(GRID);
+        let shown = pictures.len().min(GRID);
+        let tiles = pictures.iter().take(GRID).enumerate().map(|(n, (ix, a))| {
+            let ix = *ix;
+            let thumb = self.files.thumb(id, ix);
+            let wide = shown == 1 || (shown == 3 && n == 0);
+            div()
+                .id(("chat-photo", id.0 as usize * 64 + ix))
+                .relative()
+                .when(wide, |d| d.w_full())
+                .when(!wide, |d| d.w(relative(0.49)))
+                .h(px(if shown == 1 { 180.0 } else { 110.0 }))
+                .rounded(px(10.0))
+                .overflow_hidden()
+                .bg(rgba(th.chip))
+                .cursor_pointer()
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.open_attachment(id, ix, window, cx);
+                }))
+                .child(match thumb {
+                    Some(Thumb::Picture { sharp, .. }) => {
+                        gpui::img(gpui::ImageSource::Render(sharp))
+                            .size_full()
+                            .object_fit(gpui::ObjectFit::Cover)
+                            .into_any_element()
+                    }
+                    _ => div()
+                        .size_full()
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .child(kind_badge(kind(a), 28.0))
+                        .into_any_element(),
+                })
+                .when(n + 1 == GRID && more > 0, |d| {
+                    d.child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .bg(rgba(0x0000_0080))
+                            .text_size(px(22.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(0xffff_ffff))
+                            .child(format!("+{}", katna_i18n::format::number(more as u64))),
+                    )
+                })
+        });
+        let grid = (shown > 0).then(|| {
+            div()
+                .mt(px(4.0))
+                .w(px(280.0))
+                .max_w_full()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .justify_between()
+                .gap_y(px(4.0))
+                .children(tiles)
+        });
+        let cards = others.into_iter().map(|(ix, a)| {
+            let ix = *ix;
+            let video = a.mime.starts_with("video/");
+            div()
+                .id(("chat-file", id.0 as usize * 64 + ix))
+                .mt(px(4.0))
+                .w(px(250.0))
+                .max_w_full()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(10.0))
+                .px(px(10.0))
+                .py(px(8.0))
+                .rounded(px(11.0))
+                .bg(rgba(th.surface))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(mix(th.surface, th.hover | 0xff, 0.5))))
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.open_attachment(id, ix, window, cx);
+                }))
+                .child(if video {
+                    div()
+                        .size(px(32.0))
+                        .flex_none()
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded(px(6.4))
+                        .bg(rgba(0x5f63_68ff))
+                        .child(icon("play", 0xffff_ffff, 20.0))
+                        .into_any_element()
+                } else {
+                    kind_badge(kind(a), 32.0)
+                })
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            div()
+                                .truncate()
+                                .text_size(px(13.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .child(a.name.clone()),
+                        )
+                        .child(
+                            div()
+                                .text_size(px(12.0))
+                                .line_height(px(16.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(format::size(a.size)),
+                        ),
+                )
+        });
+        Some(
+            div()
+                .flex()
+                .flex_col()
+                .children(grid)
+                .children(cards)
+                .into_any_element(),
+        )
+    }
+
+    /// The buttons that show while the pointer is over a bubble: Reply all
+    /// and more.
+    fn bubble_hover(
+        &self,
+        bubble: &Bubble,
+        group: SharedString,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let id = bubble.id;
+        let bar = div()
+            .flex_none()
+            .self_center()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
+            .p(px(2.0))
+            .rounded_full()
+            .bg(rgba(th.raised))
+            .shadow(crate::widgets::elevation(th, 1.0))
+            // Shown on hover; not `hidden()`, which GPUI cannot switch
+            // between layout and paint.
+            .opacity(0.0)
+            .group_hover(group, |s| s.opacity(1.0))
+            .child(
+                icon_button_colored(
+                    ("chat-reply-all", bubble.ix),
+                    "reply-all",
+                    18.0,
+                    th.text_dim,
+                    th,
+                )
+                .size(px(28.0))
+                .tooltip(tip(tr!("chat-reply-all"), th))
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.chat_reply(Some(id), Kind::ReplyAll, window, cx);
+                })),
+            )
+            .child(
+                icon_button_colored(
+                    ("chat-bubble-more", bubble.ix),
+                    "more",
+                    18.0,
+                    th.text_dim,
+                    th,
+                )
+                .size(px(28.0))
+                .tooltip(tip(tr!("chat-more"), th))
+                .on_mouse_down(
+                    MouseButton::Left,
+                    cx.listener(move |this, e: &MouseDownEvent, _, cx| {
+                        cx.stop_propagation();
+                        this.open_bubble_menu(id, e.position, cx);
+                    }),
+                ),
+            );
+        bar.into_any_element()
+    }
+
+    /// For the user's reply waiting to go: the seconds left to take it
+    /// back, and Undo.
+    fn undo_beside(
+        &self,
+        bubble: &Bubble,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if bubble.pending != Some(false) {
+            return None;
+        }
+        let key = self.reader.as_ref()?.key;
+        let (outbox, until, total) = self
+            .sending
+            .cards(key)
+            .find(|c| c.id == bubble.id)
+            .and_then(|c| c.countdown())?;
+        let left = until.saturating_duration_since(Instant::now());
+        if left.is_zero() {
+            return None;
+        }
+        let share = left.as_secs_f32() / total.as_secs_f32().max(0.001);
+        Some(
+            div()
+                .flex_none()
+                .self_center()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(6.0))
+                .child(super::super::countdown_ring(
+                    share,
+                    left.as_secs_f32().ceil() as u64,
+                    th.text_dim,
+                    th.divider,
+                    24.0,
+                ))
+                .child(
+                    div()
+                        .id(("chat-undo", bubble.ix))
+                        .h(px(24.0))
+                        .px(px(11.0))
+                        .flex()
+                        .items_center()
+                        .rounded_full()
+                        .bg(rgba(th.chip))
+                        .cursor_pointer()
+                        .text_size(px(12.0))
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .text_color(rgba(th.text))
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            cx.stop_propagation();
+                            this.run_undo(Command::UndoSend(outbox), window, cx);
+                        }))
+                        .child(tr!("chat-undo")),
+                )
+                .into_any_element(),
+        )
+    }
+
+    /// Opens the right-click menu of bubble `id`.
+    fn open_bubble_menu(
+        &mut self,
+        id: MessageId,
+        at: gpui::Point<gpui::Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_chat_context_menu(id, at, cx);
+    }
+
+    /// The right-click menu of a bubble: reply to all, reply to its sender
+    /// only, forward, copy its text, show the conversation as mail.
+    pub(in crate::window) fn bubble_menu_rows(
+        &self,
+        id: MessageId,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Rows {
+        let mut rows = Rows::new(rh);
+        let Some(reader) = &self.reader else {
+            return rows;
+        };
+        let part = reader.parts.iter().find(|p| p.id == id);
+        let from = part.and_then(|p| p.body.as_ref()?.view.as_ref()?.from.first().cloned());
+        let mine = from.as_ref().is_none_or(|a| self.is_me(&a.email));
+        let text = part.and_then(|p| reader.said(p)).map(|s| s.text.clone());
+        let item = |key: &'static str, icon: &str, label: String| {
+            self.context_item(key, icon, label, rh, th, cx)
+        };
+        rows.item(
+            item("chat-menu-reply-all", "reply-all", tr!("chat-reply-all")).on_click(cx.listener(
+                move |this, _, window, cx| {
+                    this.close_context_menu(cx);
+                    this.chat_reply(Some(id), Kind::ReplyAll, window, cx);
+                },
+            )),
+        );
+        if let Some(from) = from.filter(|_| !mine) {
+            rows.item(
+                item(
+                    "chat-menu-reply",
+                    "reply",
+                    tr!(
+                        "chat-reply-only",
+                        name = first_name(from.label()).to_owned()
+                    ),
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.close_context_menu(cx);
+                    this.chat_reply(Some(id), Kind::Reply, window, cx);
+                })),
+            );
+        }
+        rows.item(
+            item("chat-menu-forward", "forward", tr!("chat-forward")).on_click(cx.listener(
+                move |this, _, window, cx| {
+                    this.close_context_menu(cx);
+                    this.open_compose(Kind::Forward, Some(id), window, cx);
+                    this.pop_out_compose(window, cx);
+                },
+            )),
+        );
+        rows.rule(th);
+        if let Some(text) = text {
+            rows.item(
+                item("chat-menu-copy", "copy", tr!("chat-copy-text")).on_click(cx.listener(
+                    move |this, _, _, cx| {
+                        this.close_context_menu(cx);
+                        cx.write_to_clipboard(ClipboardItem::new_string(text.clone()));
+                    },
+                )),
+            );
+        }
+        rows.item(
+            item("chat-menu-mail", "mail", tr!("chat-show-as-mail")).on_click(cx.listener(
+                move |this, _, _, cx| {
+                    this.close_context_menu(cx);
+                    this.pick_chat(false, cx);
+                    // The bubble's mail opens in the mail view.
+                    if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail)
+                        && let Some(ix) = reader.parts.iter().position(|p| p.id == id)
+                    {
+                        reader.parts[ix].set_expanded(true, mail);
+                    }
+                },
+            )),
+        );
+        rows
+    }
+}
+
+/// A forwarded mail inside a bubble: who it came from and what it says,
+/// cut short until the bubble's ··· opens it.
+fn forwarded_card(forwarded: &Forwarded<String>, open: bool, th: &Theme) -> AnyElement {
+    let from = [forwarded.from.as_deref(), forwarded.subject.as_deref()]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join(" · ");
+    let body: String = if open {
+        forwarded.body.trim().to_owned()
+    } else {
+        let mut lines: Vec<&str> = forwarded.body.trim().lines().take(4).collect();
+        if forwarded.body.trim().lines().count() > 4 {
+            lines.push("…");
+        }
+        lines.join("\n")
+    };
+    div()
+        .mt(px(4.0))
+        .pl(px(10.0))
+        .py(px(4.0))
+        .border_l_2()
+        .border_color(rgba(th.accent))
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(4.0))
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_dim))
+                .child(icon("forward", th.text_dim, 14.0))
+                .child(tr!("chat-forwarded")),
+        )
+        .when(!from.is_empty(), |d| {
+            d.child(
+                div()
+                    .text_size(px(13.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child(from),
+            )
+        })
+        .child(div().text_size(px(13.0)).child(body))
+        .into_any_element()
+}
+
+/// The color of a sender's name over their bubble: their picture's color,
+/// lightened on a dark theme so it reads.
+fn name_color(email: &str, th: &Theme) -> u32 {
+    let color = avatar_color(email);
+    if th.dark {
+        mix(color, 0xffff_ffff, 0.35)
+    } else {
+        color
+    }
+}
+
+/// The day separator's words: Today, Yesterday, the weekday within a
+/// week, else the date.
+fn day_label(date: jiff::civil::DateTime, today: Option<jiff::civil::Date>) -> String {
+    let Some(today) = today else {
+        return katna_i18n::format::date(date);
+    };
+    let days = (today - date.date()).get_days();
+    match days {
+        0 => tr!("chat-today"),
+        1 => tr!("chat-yesterday"),
+        2..7 => katna_i18n::format::weekday(date),
+        _ if date.year() == today.year() => katna_i18n::format::day_month(date),
+        _ => katna_i18n::format::date(date),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn says_only_what_was_written() {
+        let said = Said::of("Sounds good!\n\nOn Mon, Ana wrote:\n> Lunch?\n");
+        assert_eq!(said.text, "Sounds good!");
+        assert!(said.hides());
+    }
+
+    #[test]
+    fn days_read_as_people_say_them() {
+        let today = jiff::civil::date(2026, 10, 1);
+        let at = |d: jiff::civil::Date| d.at(9, 30, 0, 0);
+        assert_eq!(day_label(at(today), Some(today)), tr!("chat-today"));
+        assert_eq!(
+            day_label(at(today.yesterday().unwrap()), Some(today)),
+            tr!("chat-yesterday")
+        );
+    }
+}

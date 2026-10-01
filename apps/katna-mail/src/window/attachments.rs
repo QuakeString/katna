@@ -124,6 +124,11 @@ pub(super) struct Files {
 }
 
 impl Files {
+    /// The thumbnail of attachment `index` of message `id`, once made.
+    pub(super) fn thumb(&self, id: MessageId, index: usize) -> Option<Thumb> {
+        self.thumbs.get(&(id, index)).cloned()
+    }
+
     /// Forgets the thumbnails of messages other than `keep`.
     fn keep_only(&mut self, keep: &HashSet<MessageId>) {
         self.asked.retain(|id, _| keep.contains(id));
@@ -728,7 +733,7 @@ impl MailWindow {
     }
 
     /// Opens attachment `index` of message `id` in the viewer.
-    fn open_attachment(
+    pub(super) fn open_attachment(
         &mut self,
         id: MessageId,
         index: usize,
