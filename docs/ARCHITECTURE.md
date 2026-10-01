@@ -1502,6 +1502,35 @@ GPUI global):
   one plain box shadow that follows its rounded corners. Where the
   window's surface cannot be copied from, panels stay opaque.
 
+**Settings > Experimental > Reading** (config `[experimental] chat_view`,
+off by default): conversations between people show as a group chat
+(`window/reader/chat.rs`). Each mail is a bubble with only what its sender
+wrote, the user's own on the right, grouped when one person writes again
+within ten minutes; days, and people a mail brings in, show between them.
+`katna_render::trim` splits a body into what was said, the quoted mail, the
+signature and a forwarded mail (`trim::plain`, and `html::trimmed` for HTML
+bodies, cutting at Gmail, Outlook, Apple Mail and Thunderbird quote markers
+and the usual attribution, forward and `-- ` lines); the quote and
+signature wait behind a ··· pill, a forward is a small card. Attachments are
+chat media: pictures in a grid of their thumbnails, other files as cards,
+both opening the viewer; inline pictures under 12 KB (logos) are left out.
+A conversation opens as a chat unless a message from someone else is bulk
+mail (`MessageView::bulk`: `Precedence: bulk|junk`, or `List-Unsubscribe`
+outside a mailing list); the header's Chat | Mail switch (also above the
+mail view) overrides that for the open conversation. The reply box at the
+foot is the inline reply as Reply all (`compose/chat_box.rs`): Ctrl+Enter
+sends, Aa opens the full formatting bar above it, the paperclip offers
+pictures, files, a template or another signature, and the signature is held
+out of the text and added on Send. Sending never archives the chat, and the
+undo-send countdown shows as a ring with Undo beside the new bubble instead
+of the snackbar. Hover shows Reply all and ⋯; right-click offers Reply to
+all, Reply to the sender only, Forward, Copy text and Show as mail, and
+answering an older bubble aims the reply at it (quote and threading) with a
+"Replying to" strip, keeping what was written. A name or picture opens the
+contact panel on that person, with the signature they last used in the
+conversation. Pinning, attaching from the Files page and company details
+are later steps.
+
 **Window state.** The mail window opens as it closed: its size, maximized
 state and place (`katna_chrome::placement`), and what it showed: the app of
 the rail, the folder or unified list, the inbox tab, the folders opened in

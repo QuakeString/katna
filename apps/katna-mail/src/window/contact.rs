@@ -134,6 +134,16 @@ impl MailWindow {
         (room(t), room(self.contact.spring.target()))
     }
 
+    /// Shows `email`'s card for conversation `key`, opening the panel if
+    /// it is hidden: a click on a name or picture in the chat view.
+    pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
+        self.contact.picked = Some((key, email.to_lowercase()));
+        if !self.config.mail.contact_panel {
+            self.toggle_contact_panel(cx);
+        }
+        cx.notify();
+    }
+
     /// Shows or hides the panel, from the reader's toolbar.
     pub(super) fn toggle_contact_panel(&mut self, cx: &mut Context<Self>) {
         self.config.mail.contact_panel = !self.config.mail.contact_panel;
@@ -417,10 +427,30 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
+        if let Some(profile) = &profile
+            && let Some(details) = self.contact_details(profile, &mut pieces, th, cx)
+        {
+            sections.push(details);
+        }
+        // The chat view leaves signatures out of the bubbles: the one they
+        // signed with last shows here.
+        if let Some(signature) = self
+            .chat_shown()
+            .then(|| self.reader.as_ref()?.signature_of(email))
+            .flatten()
+        {
+            sections.push(
+                section(words(&mut pieces, tr!("contact-signature")), th)
+                    .child(
+                        words(&mut pieces, signature)
+                            .text_size(px(13.0))
+                            .line_height(px(19.0))
+                            .text_color(rgba(th.text)),
+                    )
+                    .into_any_element(),
+            );
+        }
         if let Some(profile) = &profile {
-            if let Some(details) = self.contact_details(profile, &mut pieces, th, cx) {
-                sections.push(details);
-            }
             sections.push(self.contact_mail(profile, &mut pieces, th));
             if let Some(tasks) = self.contact_tasks(&profile.task_mails, &mut pieces, th, cx) {
                 sections.push(tasks);

@@ -2,6 +2,7 @@
 
 //! Walks the parsed HTML once and builds the [`Document`].
 
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use super::css::{self, Length};
@@ -235,12 +236,27 @@ struct Builder<'a> {
     items: usize,
     /// List counters, innermost last.
     counters: Vec<usize>,
+    /// Nodes left out with everything in them.
+    skip: &'a HashSet<NodeId>,
 }
 
 pub(super) fn build(dom: &Dom, inline_image: &dyn Fn(&str) -> Option<Arc<[u8]>>) -> Document {
+    build_from(dom, &[DOCUMENT], &HashSet::new(), inline_image)
+}
+
+/// Builds the nodes `roots`, in order, as one document, leaving out the
+/// nodes in `skip`. A root starts from default styles: what its ancestors
+/// set (a `<font color>` around it) is not carried in.
+pub(super) fn build_from(
+    dom: &Dom,
+    roots: &[NodeId],
+    skip: &HashSet<NodeId>,
+    inline_image: &dyn Fn(&str) -> Option<Arc<[u8]>>,
+) -> Document {
     let mut builder = Builder {
         dom,
         inline_image,
+        skip,
         doc: Document::default(),
         bytes: 0,
         items: 0,
@@ -257,7 +273,16 @@ pub(super) fn build(dom: &Dom, inline_image: &dyn Fn(&str) -> Option<Arc<[u8]>>)
         lists: 0,
     };
     let mut out = Out::default();
-    builder.children(DOCUMENT, &ctx, &mut out);
+    for &root in roots {
+        if builder.full() {
+            break;
+        }
+        if root == DOCUMENT {
+            builder.children(root, &ctx, &mut out);
+        } else {
+            builder.node(root, &ctx, &mut out);
+        }
+    }
     out.flush();
     let mut doc = builder.doc;
     doc.blocks = out.blocks;
@@ -287,6 +312,9 @@ impl Builder<'_> {
     }
 
     fn node(&mut self, id: NodeId, ctx: &Ctx, out: &mut Out) {
+        if self.skip.contains(&id) {
+            return;
+        }
         let node = &self.dom.nodes[id];
         match &node.data {
             Data::Text(text) => {
@@ -674,7 +702,7 @@ impl Builder<'_> {
                 break;
             }
             let node = &self.dom.nodes[child];
-            if !matches!(node.tag(), "td" | "th") {
+            if !matches!(node.tag(), "td" | "th") || self.skip.contains(&child) {
                 continue;
             }
             let decls = node

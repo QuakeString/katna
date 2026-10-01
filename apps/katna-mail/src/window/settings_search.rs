@@ -436,6 +436,12 @@ const ENTRIES: &[Entry] = &[
         "settings-experimental-blur-summary",
         "blur transparency frosted glass look feel",
     ),
+    entry(
+        Section::Experimental,
+        "chat-view",
+        "chat-view-detail",
+        "chat bubbles whatsapp group conversation messenger reading",
+    ),
 ];
 
 /// What a tab that is still to come will do.
