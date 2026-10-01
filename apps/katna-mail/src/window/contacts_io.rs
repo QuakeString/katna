@@ -82,7 +82,7 @@ impl MailWindow {
                         .flex_none()
                         .text_size(px(12.0))
                         .text_color(rgba(if on {
-                            th.nav_selected_text
+                            th.row_selected_text
                         } else {
                             th.text_faint
                         }))

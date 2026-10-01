@@ -32,6 +32,10 @@ pub struct Theme {
     pub ripple: u32,
     pub nav_selected: u32,
     pub nav_selected_text: u32,
+    /// The open line of a side pane (folders, Contacts, Tasks, Notes,
+    /// Files): a quiet grey, so the accent is left to Compose and the rail.
+    pub row_selected: u32,
+    pub row_selected_text: u32,
     pub compose: u32,
     pub compose_text: u32,
     pub search: u32,
@@ -204,6 +208,8 @@ impl Theme {
             ripple: fade(text, if dark { 0.16 } else { 0.14 }),
             nav_selected: mix(page, accent, if dark { 0.34 } else { 0.22 }),
             nav_selected_text: text,
+            row_selected: fade(text, if dark { 0.12 } else { 0.10 }),
+            row_selected_text: text,
             compose: mix(page, accent, if dark { 0.34 } else { 0.28 }),
             compose_text: text,
             search: over(fade(s.window_fg, if dark { 0.08 } else { 0.06 }), page),
@@ -328,6 +334,8 @@ const LIGHT: Theme = Theme {
     ripple: 0x1f1f1f24,
     nav_selected: 0xd3e3fdff,
     nav_selected_text: 0x041e49ff,
+    row_selected: 0x1f1f1f1a,
+    row_selected_text: 0x1f1f1fff,
     compose: 0xc2e7ffff,
     compose_text: 0x001d35ff,
     search: 0xe9eef6ff,
@@ -374,6 +382,8 @@ const DARK: Theme = Theme {
     ripple: 0xffffff29,
     nav_selected: 0x004a77ff,
     nav_selected_text: 0xc2e7ffff,
+    row_selected: 0xe3e3e31f,
+    row_selected_text: 0xe3e3e3ff,
     compose: 0x004a77ff,
     compose_text: 0xc2e7ffff,
     search: 0x2a2d31ff,
@@ -531,6 +541,7 @@ mod tests {
             assert!(contrast(th.accent, th.surface) >= 3.0);
             assert!(contrast(th.on_accent, th.accent) >= 3.0);
             assert!(contrast(th.nav_selected_text, th.nav_selected) >= 4.5);
+            assert!(contrast(th.row_selected_text, over(th.row_selected, th.page)) >= 4.5);
         }
     }
 

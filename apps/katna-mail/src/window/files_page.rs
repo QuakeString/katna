@@ -1147,7 +1147,7 @@ impl MailWindow {
         // The line's text color: see `side_row`.
         let count = |n: usize, on: bool| {
             let n = n as u64;
-            super::nav::count_pill(n, if on { th.nav_selected_text } else { th.text })
+            super::nav::count_pill(n, if on { th.row_selected_text } else { th.text })
         };
         let rule = || {
             div()

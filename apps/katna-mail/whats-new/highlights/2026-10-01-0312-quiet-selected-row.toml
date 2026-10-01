@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A quieter open folder"
+text = """
+The open folder in Mail, and the open view in Contacts, Tasks, Notes and
+Files, is now marked in a soft grey instead of the accent colour, so Compose
+and the app rail stand out and the folder icons keep their own colours.
+"""
