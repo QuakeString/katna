@@ -206,6 +206,8 @@ pub(super) struct Compose {
     /// The message a reply or forward answers, to write it again as
     /// another kind.
     source: Option<MessageId>,
+    /// The files a forward brought along from its message.
+    forwarded: Vec<Arc<Vec<u8>>>,
     /// An inline reply shows its From, To, Cc and Bcc rows rather than
     /// one line naming the recipients.
     header_open: bool,
@@ -241,7 +243,7 @@ impl Compose {
 
     /// Something was written that closing would lose.
     fn touched(&self, cx: &gpui::App) -> bool {
-        !self.attachments.is_empty() || !self.drive.is_empty() || self.fields(cx) != self.start
+        self.files_changed() || !self.drive.is_empty() || self.fields(cx) != self.start
     }
 
     fn title(&self, cx: &gpui::App) -> SharedString {
@@ -864,6 +866,9 @@ impl MailWindow {
                 }
             }
         }
+        if kind == Kind::Forward {
+            self.attach_forwarded(cx);
+        }
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
         }
@@ -1266,6 +1271,7 @@ impl MailWindow {
             from_template: false,
             attach_scroll: ScrollHandle::new(),
             source: None,
+            forwarded: Vec::new(),
             header_open: false,
             active_field: None,
             chip_layout: Rc::default(),
