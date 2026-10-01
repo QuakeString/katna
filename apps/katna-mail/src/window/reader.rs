@@ -874,7 +874,7 @@ impl MailWindow {
         let shown = Toolbar {
             back: !self.detached,
             separators: !phone,
-            contact: self.contact_fits(self.cards_width + self.contact_room()),
+            contact: self.contact_offered(),
             colors: self.original_colors_offered(th),
             new_window: !self.detached,
             // About 6.5 px a character at 12 px, and its 8 px padding.
