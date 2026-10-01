@@ -1222,7 +1222,13 @@ impl MailWindow {
                     this.keep_cursor_in_view(cx);
                     cx.notify();
                 }
-                RichEvent::Selection => cx.notify(),
+                RichEvent::Selection => {
+                    // The chat's short box follows the arrow keys too.
+                    if this.chat_shown() {
+                        this.keep_cursor_in_view(cx);
+                    }
+                    cx.notify();
+                }
                 RichEvent::Cancel => this.escape_compose(cx),
                 RichEvent::EditLink => this.open_link_dialog(window, cx),
                 RichEvent::ContextMenu {
@@ -1462,8 +1468,10 @@ impl MailWindow {
             return;
         };
         // An inline reply has no scroll of its own: the conversation scrolls,
-        // under its Send row.
-        let (scroll, mut covered) = if compose.mode == Mode::Inline {
+        // under its Send row. The chat's reply box scrolls its own text
+        // once it is as tall as it grows.
+        let chat = self.chat_shown() && compose.mode == Mode::Inline;
+        let (scroll, mut covered) = if compose.mode == Mode::Inline && !chat {
             (
                 self.reader_scroll.clone(),
                 compose.stick.get().footer_height,
@@ -1471,7 +1479,7 @@ impl MailWindow {
         } else {
             (compose.body_scroll.clone(), 0.0)
         };
-        if compose.format_bar {
+        if compose.format_bar && !chat {
             covered += tools::FORMAT_BAR_COVER;
         }
         let body = compose.body.clone();
@@ -1483,7 +1491,7 @@ impl MailWindow {
                 };
                 let mut view = scroll.bounds();
                 view.size.height -= px(covered);
-                let pad = px(12.0);
+                let pad = px(if chat { 9.0 } else { 12.0 });
                 let mut offset = scroll.offset();
                 if cursor.bottom() + pad > view.bottom() {
                     offset.y -= cursor.bottom() + pad - view.bottom();

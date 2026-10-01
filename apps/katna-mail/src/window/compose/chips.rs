@@ -264,7 +264,7 @@ const LINE: f32 = HEIGHT + 4.0;
 
 /// The thumb beside a field's lines that scroll, showing where the lines
 /// in view are; from where the list was last drawn.
-fn scrollbar(scroll: &gpui::ScrollHandle, th: &Theme) -> Option<gpui::Div> {
+pub(super) fn scrollbar(scroll: &gpui::ScrollHandle, th: &Theme) -> Option<gpui::Div> {
     let max = unpx(scroll.max_offset().y);
     let view = unpx(scroll.bounds().size.height);
     if max < 1.0 || view < 1.0 {

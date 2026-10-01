@@ -277,17 +277,27 @@ impl MailWindow {
                 d.child(above(self.render_emoji_picker(th, cx)))
             });
         let text = match compose {
+            // Once as tall as it grows, the text scrolls, following the
+            // cursor, with a thin bar showing where it is.
             Some(compose) => div()
-                .id("chat-text")
                 .flex_1()
                 .min_w_0()
-                .max_h(px(MAX_TEXT))
-                .overflow_y_scroll()
-                .py(px(9.0))
-                .text_size(px(14.0))
-                .line_height(px(20.0))
-                .cursor_text()
-                .child(compose.body.clone())
+                .relative()
+                .child(
+                    div()
+                        .id("chat-text")
+                        .w_full()
+                        .max_h(px(MAX_TEXT))
+                        .overflow_y_scroll()
+                        .track_scroll(&compose.body_scroll)
+                        .py(px(9.0))
+                        .pr(px(6.0))
+                        .text_size(px(14.0))
+                        .line_height(px(20.0))
+                        .cursor_text()
+                        .child(compose.body.clone()),
+                )
+                .children(super::chips::scrollbar(&compose.body_scroll, th))
                 .into_any_element(),
             None => div()
                 .id("chat-placeholder")
