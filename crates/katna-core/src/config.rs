@@ -255,6 +255,9 @@ pub struct General {
     /// `tray_icon = false` as their default into every config file the app
     /// wrote, which would keep the icon hidden. That key is ignored.
     pub show_in_tray: bool,
+    /// The tray icon in Katna's colors or in the panel's one color; the
+    /// unread badge is red either way.
+    pub tray_style: TrayStyle,
     /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
     pub unread_badge: bool,
     /// The language of the interface, a tag from `i18n/languages.toml`
@@ -287,6 +290,28 @@ impl General {
     }
 }
 
+/// How the tray icon is drawn ([`General::tray_style`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TrayStyle {
+    #[serde(rename = "color")]
+    Color,
+    /// One color, as the panel draws its own icons.
+    #[serde(rename = "monochrome")]
+    Monochrome,
+}
+
+impl Default for TrayStyle {
+    /// Monochrome like the rest of a Linux panel; Windows' notification
+    /// area shows apps in color.
+    fn default() -> Self {
+        if cfg!(windows) {
+            Self::Color
+        } else {
+            Self::Monochrome
+        }
+    }
+}
+
 /// How times show ([`General::clock`]).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Clock {
@@ -307,6 +332,7 @@ impl Default for General {
         Self {
             run_in_background: true,
             show_in_tray: true,
+            tray_style: TrayStyle::default(),
             unread_badge: true,
             language: String::new(),
             clock: Clock::Language,
@@ -1417,6 +1443,19 @@ mod tests {
         assert!(config.general.show_in_tray);
         let config = Config::parse("[general]\nshow_in_tray = false\n").unwrap();
         assert!(!config.general.show_in_tray);
+    }
+
+    #[test]
+    fn tray_style_defaults_by_platform() {
+        let config = Config::parse("").unwrap();
+        let expected = if cfg!(windows) {
+            TrayStyle::Color
+        } else {
+            TrayStyle::Monochrome
+        };
+        assert_eq!(config.general.tray_style, expected);
+        let config = Config::parse("[general]\ntray_style = \"color\"\n").unwrap();
+        assert_eq!(config.general.tray_style, TrayStyle::Color);
     }
 
     #[test]

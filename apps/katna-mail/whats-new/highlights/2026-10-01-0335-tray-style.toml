@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tray icon in color or one color"
+text = """
+Settings > General > Desktop > Tray icon in color picks Katna's colors or one
+color like the panel's other icons. One color stays one color with unread
+mail, and the unread count is always red. On Linux the tray icon is one color
+by default; on Windows it is in color.
+"""

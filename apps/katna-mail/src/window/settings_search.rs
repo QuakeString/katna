@@ -152,7 +152,7 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-desktop",
         "settings-general-desktop-summary",
-        "tray badge unread count taskbar dock panel startup start login autostart launch boot",
+        "tray badge unread count icon color colour monochrome symbolic taskbar dock panel startup start login autostart launch boot",
     ),
     entry(
         Section::General,

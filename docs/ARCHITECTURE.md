@@ -3148,12 +3148,20 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is the one-colour k
-  (`<mail app ID>-symbolic`), which the panel recolours. With unread mail
-  it is the coloured app icon, pre-rendered at each tray size
-  (`crates/katna-platform/icons/`, from `packaging/icons/render.py`), with
-  a red badge drawn in code with the count, `99+` above 99, since the
-  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). `general.tray_style` picks Colour or Monochrome
+  (Settings → General → Desktop → "Tray icon in color"; default Monochrome
+  on Linux, Colour on Windows, 2026-10-01). Without unread mail the panel
+  draws the named icon: the one-colour k (`<mail app ID>-symbolic`), which
+  it recolours, or the coloured app icon. With unread mail the icon is
+  pixels, pre-rendered at each tray size (`crates/katna-platform/icons/`,
+  from `packaging/icons/render.py`), with a red badge drawn in code with
+  the count, `99+` above 99, since the protocol takes pixels and an SVG
+  renderer would grow the daemon. Monochrome stays monochrome then: the
+  disc in the panel's text colour with the k cut out (its whiteness in the
+  coloured pixels), and only the badge is red. Panels can't be asked their
+  colour, so it is inferred (`colors::panel_text`): Plasma's from the
+  scheme's window text, white on GNOME and other panels, and on Windows
+  from `SystemUsesLightTheme`; it is read again with each count. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or

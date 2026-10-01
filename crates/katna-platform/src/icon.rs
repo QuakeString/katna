@@ -106,6 +106,19 @@ fn polyline(x: f32, y: f32, points: &[(f32, f32)]) -> f32 {
 }
 
 const BADGE: u32 = 0xe5372d;
+/// The brightest channel of the icon's teal disc (`#008080`).
+const DISC_BRIGHTNESS: f32 = 128.0 / 255.0;
+
+/// How the tray draws the icon: Katna's colors, or one color as panels draw
+/// their own icons. The badge is red either way.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Style {
+    #[default]
+    Color,
+    /// The disc in this color (`0xRRGGBB`) with the k cut out of it, like
+    /// the symbolic icon.
+    Mono(u32),
+}
 
 /// The icon at the tray's sizes: straight-alpha RGBA, row by row.
 const PIXELS: &[(u32, &[u8])] = &[
@@ -119,7 +132,7 @@ const PIXELS: &[(u32, &[u8])] = &[
 
 /// Paints the icon, scaled from the nearest rendered size at or above `size`
 /// (or the largest) when `size` isn't one of them.
-fn draw_icon(canvas: &mut Canvas) {
+fn draw_icon(canvas: &mut Canvas, style: Style) {
     let size = canvas.size;
     let &(from, rgba) = PIXELS
         .iter()
@@ -140,10 +153,23 @@ fn draw_icon(canvas: &mut Canvas) {
                 for sx in sx0..sx1 {
                     let wx = (x1.min((sx + 1) as f32) - x0.max(sx as f32)).max(0.0);
                     let i = ((sy * from + sx) * 4) as usize;
-                    let a = rgba[i + 3] as f32 / 255.0;
+                    let mut a = rgba[i + 3] as f32 / 255.0;
+                    let mut color = [0, 1, 2].map(|c| rgba[i + c] as f32 / 255.0);
+                    if let Style::Mono(ink) = style {
+                        // The disc has no white and the k is all white, so
+                        // the whiteness of a pixel is how much k it holds;
+                        // the drop shadow is black, so how far a pixel is
+                        // from the disc's teal towards black is shadow.
+                        let white = color.iter().copied().fold(1.0, f32::min);
+                        let bright = color.iter().copied().fold(0.0, f32::max);
+                        a *= (bright / DISC_BRIGHTNESS).min(1.0) * (1.0 - white);
+                        color = Rgba::hex(ink, 1.0).0[..3]
+                            .try_into()
+                            .expect("three channels");
+                    }
                     let w = wx * wy;
                     for c in 0..3 {
-                        sum[c] += rgba[i + c] as f32 / 255.0 * a * w;
+                        sum[c] += color[c] * a * w;
                     }
                     sum[3] += a * w;
                     weight += w;
@@ -317,8 +343,13 @@ fn draw_badge(canvas: &mut Canvas, text: &str) {
 /// The icon at `size`×`size` pixels, with a badge saying `badge` if given,
 /// as ARGB32 in network byte order.
 pub fn app_icon_argb(size: u32, badge: Option<&str>) -> Vec<u8> {
+    tray_icon_argb(size, Style::Color, badge)
+}
+
+/// [`app_icon_argb`] in `style`.
+pub fn tray_icon_argb(size: u32, style: Style, badge: Option<&str>) -> Vec<u8> {
     let mut canvas = Canvas::new(size);
-    draw_icon(&mut canvas);
+    draw_icon(&mut canvas, style);
     if let Some(text) = badge.filter(|t| !t.is_empty()) {
         draw_badge(&mut canvas, text);
     }
@@ -379,6 +410,34 @@ mod tests {
         assert!(white > 10, "{white} white pixels");
         // The bottom-left of the icon is untouched.
         assert_eq!(pixel(&plain, size, 10, 60), pixel(&badged, size, 10, 60));
+    }
+
+    #[test]
+    fn monochrome_is_the_disc_in_one_color_with_the_k_cut_out_and_a_red_badge() {
+        for size in [16, 22, 24, 32, 48, 64] {
+            let icon = tray_icon_argb(size, Style::Mono(0xfcfcfc), None);
+            let [a, r, g, b] = pixel(&icon, size, size / 2, size / 10);
+            assert_eq!([a, r, g, b], [255, 0xfc, 0xfc, 0xfc], "disc, {size}");
+            let [a, ..] = pixel(&icon, size, size / 10, size / 2);
+            assert!(a < 64, "the k is a hole: {a}, {size}");
+            // No drop shadow: where the colored icon is only shadow (black),
+            // this one is clear.
+            let color = app_icon_argb(size, None);
+            for (shaded, mono) in color.chunks(4).zip(icon.chunks(4)) {
+                if shaded[0] > 0 && shaded[2] < 4 {
+                    assert_eq!(mono[0], 0, "{size}");
+                }
+            }
+            // Only one color anywhere.
+            for px in icon.chunks(4).filter(|px| px[0] > 0) {
+                assert_eq!(px[1..], [0xfc, 0xfc, 0xfc]);
+            }
+        }
+        let size = 64;
+        let badged = tray_icon_argb(size, Style::Mono(0x232629), Some("7"));
+        let [a, r, g, b] = pixel(&badged, size, 60, 18);
+        assert_eq!(a, 255);
+        assert!(r > 200 && g < 90 && b < 90, "badge stays red: {r} {g} {b}");
     }
 
     #[test]
