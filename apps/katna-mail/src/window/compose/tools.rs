@@ -994,7 +994,12 @@ impl MailWindow {
         )
     }
 
-    fn render_format_bar(&self, th: &Theme, width: f32, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_format_bar(
+        &self,
+        th: &Theme,
+        width: f32,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };

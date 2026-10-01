@@ -39,6 +39,9 @@ use crate::format;
 use crate::theme::{Theme, avatar_color, mix};
 use crate::widgets::{icon, icon_button_colored, tip};
 
+/// The header's pictures, and how far each overlaps the one before.
+const STACK_PICTURE: f32 = 26.0;
+const STACK_STEP: f32 = 18.0;
 /// Mail from one person this close together joins their group.
 const GROUP_SECONDS: i64 = 10 * 60;
 /// The picture beside a group.
@@ -81,11 +84,25 @@ pub(in crate::window) struct Said {
 impl Said {
     fn of(body: &str) -> Self {
         let trimmed = trim::plain(body);
+        let mut quoted = trimmed.quoted.filter(|q| !q.trim().is_empty());
+        // A forward in a reply ends where the quoted mail starts: that
+        // goes behind ··· like any quote.
+        let forwarded = trimmed.forwarded.map(|mut forwarded| {
+            let inner = trim::plain(&forwarded.body);
+            if let Some(more) = inner.quoted.filter(|q| !q.trim().is_empty()) {
+                forwarded.body = inner.said;
+                quoted = Some(match quoted.take() {
+                    Some(q) => format!("{more}\n\n{q}"),
+                    None => more,
+                });
+            }
+            forwarded
+        });
         Self {
             text: trimmed.said.trim().to_owned(),
-            quoted: trimmed.quoted.filter(|q| !q.trim().is_empty()),
-            signature: trimmed.signature.filter(|s| !s.trim().is_empty()),
-            forwarded: trimmed.forwarded,
+            quoted,
+            signature: trimmed.signature.as_deref().and_then(signature_lines),
+            forwarded,
         }
     }
 
@@ -493,14 +510,19 @@ impl MailWindow {
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
         let mails = reader.parts.iter().filter(|p| p.pending.is_none()).count();
+        // Overlapping pictures, each ringed in the card's colour.
+        let shown = people.len().min(3);
         let stack = people.iter().take(3).enumerate().map(|(i, (name, email))| {
             div()
-                .flex_none()
-                .when(i > 0, |d| d.ml(px(-8.0)))
+                .absolute()
+                .top_0()
+                .left(px(STACK_STEP * i as f32))
+                .size(px(STACK_PICTURE + 4.0))
                 .rounded_full()
                 .border_2()
                 .border_color(rgba(th.surface))
-                .child(self.person_avatar(name, email, 26.0))
+                .bg(rgba(th.surface))
+                .child(self.person_avatar(name, email, STACK_PICTURE))
         });
         div()
             .flex_none()
@@ -513,7 +535,16 @@ impl MailWindow {
             .py(px(10.0))
             .border_b_1()
             .border_color(rgba(th.divider))
-            .child(div().flex_none().flex().flex_row().children(stack))
+            .child(
+                div()
+                    .flex_none()
+                    .relative()
+                    .h(px(STACK_PICTURE + 4.0))
+                    .w(px(STACK_PICTURE
+                        + 4.0
+                        + STACK_STEP * shown.saturating_sub(1) as f32))
+                    .children(stack),
+            )
             .child(
                 div()
                     .flex_1()
@@ -647,6 +678,7 @@ impl MailWindow {
         let pill = said.filter(|s| s.hides()).map(|_| {
             div()
                 .id(("chat-more", bubble.ix))
+                .self_start()
                 .mt(px(4.0))
                 .px(px(8.0))
                 .h(px(20.0))
@@ -1020,7 +1052,7 @@ impl MailWindow {
                     th.divider,
                     24.0,
                 ))
-                .child(
+                .children(outbox.map(|outbox| {
                     div()
                         .id(("chat-undo", bubble.ix))
                         .h(px(24.0))
@@ -1038,8 +1070,8 @@ impl MailWindow {
                             cx.stop_propagation();
                             this.run_undo(Command::UndoSend(outbox), window, cx);
                         }))
-                        .child(tr!("chat-undo")),
-                )
+                        .child(tr!("chat-undo"))
+                }))
                 .into_any_element(),
         )
     }
@@ -1136,6 +1168,17 @@ impl MailWindow {
     }
 }
 
+/// A signature without its `-- ` line; `None` when nothing is left.
+fn signature_lines(signature: &str) -> Option<String> {
+    let lines: Vec<&str> = signature
+        .trim()
+        .lines()
+        .skip_while(|l| l.trim_end() == "--" || l.trim().is_empty())
+        .collect();
+    let text = lines.join("\n").trim().to_owned();
+    (!text.is_empty()).then_some(text)
+}
+
 /// A forwarded mail inside a bubble: who it came from and what it says,
 /// cut short until the bubble's ··· opens it.
 fn forwarded_card(forwarded: &Forwarded<String>, open: bool, th: &Theme) -> AnyElement {
@@ -1221,6 +1264,15 @@ mod tests {
         let said = Said::of("Sounds good!\n\nOn Mon, Ana wrote:\n> Lunch?\n");
         assert_eq!(said.text, "Sounds good!");
         assert!(said.hides());
+    }
+
+    #[test]
+    fn signatures_lose_their_dashes() {
+        assert_eq!(
+            signature_lines("-- \nArjun Mehta\nDemo Travel Co").as_deref(),
+            Some("Arjun Mehta\nDemo Travel Co")
+        );
+        assert_eq!(signature_lines("--"), None);
     }
 
     #[test]

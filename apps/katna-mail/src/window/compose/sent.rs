@@ -70,11 +70,11 @@ pub(in crate::window) struct SentCard {
 }
 
 impl SentCard {
-    /// Its outbox entry, and until when it can be taken back out of how
-    /// long in all, while it waits in the chat view.
-    pub(in crate::window) fn countdown(&self) -> Option<(i64, Instant, Duration)> {
+    /// Until when it can be taken back out of how long in all, while it
+    /// waits in the chat view, and its outbox entry once queued.
+    pub(in crate::window) fn countdown(&self) -> Option<(Option<i64>, Instant, Duration)> {
         let (until, total) = self.countdown?;
-        Some((self.outbox?, until, total))
+        Some((self.outbox, until, total))
     }
 }
 
@@ -179,6 +179,30 @@ impl Sending {
 }
 
 impl MailWindow {
+    /// Starts the undo countdown of chat reply `id`, `delay` seconds,
+    /// beside its bubble.
+    pub(super) fn chat_countdown(&mut self, id: MessageId, delay: u32, cx: &mut Context<Self>) {
+        if delay == 0 {
+            return;
+        }
+        let Some(card) = self.sending.cards.iter_mut().find(|c| c.id == id) else {
+            return;
+        };
+        let total = Duration::from_secs(u64::from(delay));
+        let until = Instant::now() + total;
+        card.countdown = Some((until, total));
+        // The ring runs back smoothly until then.
+        cx.spawn(async move |this, cx| {
+            while Instant::now() < until {
+                cx.background_executor().timer(RING_FRAME).await;
+                if this.update(cx, |_, cx| cx.notify()).is_err() {
+                    break;
+                }
+            }
+        })
+        .detach();
+    }
+
     /// Outbox entry `id` was queued to go out after `delay` seconds; with
     /// `archived`, its conversation was archived with it.
     pub(in crate::window) fn queued(
@@ -188,28 +212,13 @@ impl MailWindow {
         archived: bool,
         cx: &mut Context<Self>,
     ) {
-        let total = Duration::from_secs(u64::from(delay));
         let chat = self
             .sending
             .cards
-            .iter_mut()
-            .find(|c| c.outbox == Some(id) && c.chat);
-        if let Some(card) = chat {
-            // The countdown shows beside the reply in the chat.
-            if delay > 0 {
-                let until = Instant::now() + total;
-                card.countdown = Some((until, total));
-                // The ring runs back smoothly until then.
-                cx.spawn(async move |this, cx| {
-                    while Instant::now() < until {
-                        cx.background_executor().timer(RING_FRAME).await;
-                        if this.update(cx, |_, cx| cx.notify()).is_err() {
-                            break;
-                        }
-                    }
-                })
-                .detach();
-            }
+            .iter()
+            .any(|c| c.outbox == Some(id) && c.chat);
+        if chat {
+            // The countdown shows beside the reply in the chat, from Send.
         } else if delay > 0 {
             let until = Instant::now() + Duration::from_secs(u64::from(delay));
             self.show_countdown(

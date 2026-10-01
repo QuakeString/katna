@@ -1699,6 +1699,9 @@ impl MailWindow {
                         .add_card(key, message_id, Arc::new(raw.clone()), chat, |id| {
                             sent::row(key, id, me, subject, snippet)
                         });
+                if chat {
+                    self.chat_countdown(card, delay, cx);
+                }
                 self.show_sent_cards(cx);
                 Some(card)
             }

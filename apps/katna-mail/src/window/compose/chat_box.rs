@@ -18,7 +18,7 @@ use katna_ui::rich::{Block, Doc};
 use katna_ui::unpx;
 
 use super::recipients::Field;
-use super::tools::{Popup, above, format_active, menu_divider};
+use super::tools::{Popup, above, format_active, format_bar_bg, menu_divider};
 use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_quote};
 use crate::data::EntryKey;
 use crate::format;
@@ -368,11 +368,27 @@ impl MailWindow {
             .when(compose.is_some(), |d| {
                 d.child(div().mx(px(16.0)).child(self.render_attachments(th, cx)))
             })
-            .children(
-                compose
-                    .and_then(|_| self.render_floating_format_bar(th, width - 32.0, cx))
-                    .map(|bar| div().mx(px(16.0)).child(bar)),
-            )
+            // The formatting bar sits above the box, pushing the feed up
+            // rather than covering it; a narrow pane scrolls it sideways.
+            .when(format_on, |d| {
+                d.child(
+                    div()
+                        .id("chat-format-bar")
+                        .mx(px(16.0))
+                        .mb(px(6.0))
+                        .max_w(px(width - 32.0))
+                        .rounded_full()
+                        .border_1()
+                        .border_color(rgba(th.divider))
+                        .bg(rgba(format_bar_bg(th)))
+                        .overflow_x_scroll()
+                        .child(div().flex_none().child(self.render_format_bar(
+                            th,
+                            width - 32.0,
+                            cx,
+                        ))),
+                )
+            })
             .child(
                 div()
                     .px(px(8.0))
