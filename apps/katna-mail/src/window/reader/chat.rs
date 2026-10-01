@@ -434,14 +434,22 @@ impl MailWindow {
                 reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
             }
         }
+        // A feed at its end stays there as the reply box grows or shrinks.
+        // The box may have changed before the feed's last layout or
+        // after it, so "at the end" allows for the change, and the frames
+        // around a change keep what the feed was before it.
         let reply_height = reader.chat.reply_drawn.get();
-        if (reply_height - reader.chat.reply_seen).abs() > 0.5 {
+        let change = reply_height - reader.chat.reply_seen;
+        if change.abs() > 0.5 {
             reader.chat.reply_seen = reply_height;
-            if at_end || reader.chat.was_at_end {
+            let near_end = -unpx(self.reader_scroll.offset().y)
+                >= unpx(self.reader_scroll.max_offset().y) - 4.0 - change.abs();
+            if near_end || reader.chat.was_at_end {
                 reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
             }
+        } else if reader.chat.settle == 0 {
+            reader.chat.was_at_end = at_end;
         }
-        reader.chat.was_at_end = at_end;
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
             self.reader_scroll.scroll_to_bottom();
