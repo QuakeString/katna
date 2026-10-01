@@ -18,9 +18,7 @@ chat-people = { $names } and you · { $count ->
     [one] { $count } mail
    *[other] { $count } mails
 }
-# The tooltip of the conversation's header, which opens the list of everyone in it.
-chat-people-show = Show everyone in this chat
-# Over that list. $count: the people, the user included.
+# Over the list of everyone in the chat, opened from its header. $count: the people, the user included.
 chat-people-heading = { $count ->
     [one] In this chat · { $count } person
    *[other] In this chat · { $count } people

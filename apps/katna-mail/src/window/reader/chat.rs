@@ -469,17 +469,6 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            // Esc folds the list of people.
-            .on_key_down(cx.listener(|this, e: &gpui::KeyDownEvent, _, cx| {
-                let open = this
-                    .reader
-                    .as_ref()
-                    .is_some_and(|r| r.chat.people.is_some());
-                if open && e.keystroke.key == "escape" {
-                    this.close_chat_people(cx);
-                    cx.stop_propagation();
-                }
-            }))
             .child(header)
             .child(
                 div()
@@ -593,11 +582,20 @@ impl MailWindow {
     }
 
     fn close_chat_people(&mut self, cx: &mut Context<Self>) {
-        if let Some(reader) = &mut self.reader
-            && reader.chat.people.take().is_some()
-        {
+        self.fold_chat_people(cx);
+    }
+
+    /// Folds the chat's list of people, if it is open: what Esc does
+    /// first.
+    pub(in crate::window) fn fold_chat_people(&mut self, cx: &mut Context<Self>) -> bool {
+        let open = self
+            .reader
+            .as_mut()
+            .is_some_and(|reader| reader.chat.people.take().is_some());
+        if open {
             cx.notify();
         }
+        open
     }
 
     /// The list of everyone in the chat, dropped over the feed from the
@@ -655,7 +653,7 @@ impl MailWindow {
                                             .flex_none()
                                             .px(px(6.0))
                                             .rounded(px(6.0))
-                                            .bg(rgba(th.chip))
+                                            .bg(rgba(mix(th.menu, th.text, 0.12)))
                                             .text_size(px(11.0))
                                             .text_color(rgba(th.text_dim))
                                             .child(tr!("chat-you")),
@@ -705,7 +703,8 @@ impl MailWindow {
             .max_h(relative(0.8))
             .overflow_y_scroll()
             .map(|d| crate::widgets::raised(d, th, 14.0, 3.0))
-            // A click inside stays inside.
+            // Pointer and clicks stay on the list, not the bubbles under it.
+            .occlude()
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .child(
                 div()
@@ -829,7 +828,6 @@ impl MailWindow {
                     .rounded(px(10.0))
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .tooltip(tip(tr!("chat-people-show"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_chat_people(cx)))
                     .child(
                         div()
