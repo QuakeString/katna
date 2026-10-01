@@ -18,6 +18,8 @@ pub use zbus;
 pub mod agenda;
 mod session;
 pub use session::session;
+mod start;
+pub use start::ensure_daemon;
 
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]

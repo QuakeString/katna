@@ -211,6 +211,35 @@ fn dolphin_menu_attaches_the_files() {
     assert!(nautilus.contains("\"katna-mail\", \"--attach\""));
 }
 
+/// The Flatpak's ID is the prefix of Katna Mail's and the service's names:
+/// Flatpak exports only files named after the app ID or under it (the
+/// desktop entry, icons and the D-Bus activation file), and lets the app
+/// own only those bus names.
+#[test]
+fn flatpak_id_is_the_prefix() {
+    let text = read("flatpak", &format!("{PREFIX}.yml"));
+    assert!(text.contains(&format!("\nid: {PREFIX}\n")), "{text}");
+    for id in [MAIL_APP_ID, DAEMON_BUS_NAME] {
+        assert!(id.starts_with(&format!("{PREFIX}.")), "{id}");
+    }
+}
+
+/// The Snap owns Katna Mail's and the service's bus names, and its menu
+/// entry and "Start Katna at login" entry are Katna Mail's.
+#[test]
+fn snap_names_match_ids() {
+    let text = read("snap", "snapcraft.yaml");
+    for line in [
+        format!("    name: {DAEMON_BUS_NAME}\n"),
+        format!("    name: {MAIL_APP_ID}\n"),
+        format!("    desktop: usr/share/applications/{MAIL_APP_ID}.desktop\n"),
+        format!("    common-id: {MAIL_APP_ID}\n"),
+        format!("    autostart: {MAIL_APP_ID}.desktop\n"),
+    ] {
+        assert!(text.contains(&line), "snapcraft.yaml has no {line:?}");
+    }
+}
+
 /// Other packaging files (`packaging/*/*`) use the IDs only through file
 /// names (the PKGBUILD installs with globs), so they never need changing.
 /// Subdirectories are makepkg output and are not checked.
@@ -224,6 +253,8 @@ fn prefix_only_in_checked_files() {
         format!("gnome-shell/{MAIL_APP_ID}.search-provider.ini"),
         format!("polkit/{UPDATE_ACTION}.policy"),
         format!("kio/{MAIL_APP_ID}.SendFiles.desktop"),
+        format!("flatpak/{PREFIX}.yml"),
+        "snap/snapcraft.yaml".to_owned(),
     ];
     for dir in fs::read_dir(packaging()).unwrap() {
         let dir = dir.unwrap().path();

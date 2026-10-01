@@ -239,9 +239,11 @@ impl AccountState {
 
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
-    katna_dbus::session()
+    let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))
+        .map_err(|err| format!("No D-Bus session: {err}"))?;
+    katna_dbus::ensure_daemon(&connection).await;
+    Ok(connection)
 }
 
 /// Sends `command` and waits until the daemon has applied it to the store,
