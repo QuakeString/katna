@@ -310,7 +310,15 @@ impl MailWindow {
 
     /// Turns `target` back on: unmuted, and for a folder its bell on.
     pub(super) fn unquiet(&mut self, target: Quiet, cx: &mut Context<Self>) {
-        let name = self.quiet_name(&target);
+        // A mute for a while was on the whole folder.
+        let name = match &target {
+            Quiet::Folder { folder, .. } if self.quiet_state(&target).muted.is_some() => self
+                .quiet_name(&Quiet::Folder {
+                    folder: *folder,
+                    categories: Vec::new(),
+                }),
+            _ => self.quiet_name(&target),
+        };
         let state = QuietState {
             bell: true,
             muted: None,
