@@ -18,9 +18,10 @@ use std::{
 
 use futures_lite::{FutureExt, StreamExt};
 use katna_core::AccountId;
-use katna_core::config::Notifications;
+use katna_core::config::{Notifications, SoundEvent, Sounds};
 use katna_i18n::tr;
 use katna_notify::{NewMail, Notifier, action};
+use katna_platform::sound;
 use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store};
 use zbus::zvariant::Value;
 
@@ -96,8 +97,8 @@ pub(crate) struct NewMailNotices {
     notifier: Notifier,
     connection: zbus::Connection,
     enabled: AtomicBool,
-    /// Notifications play the new-mail sound.
-    sound: AtomicBool,
+    /// The sounds notifications play.
+    sounds: Mutex<Sounds>,
     seen: Mutex<HashMap<AccountId, Seen>>,
     shown: Mutex<HashMap<u32, Shown>>,
     /// Activation tokens, sent by the server just before an action.
@@ -114,12 +115,13 @@ impl NewMailNotices {
     pub(crate) async fn new(
         connection: &zbus::Connection,
         settings: &Notifications,
+        sounds: &Sounds,
     ) -> zbus::Result<Self> {
         Ok(Self {
             notifier: Notifier::new(connection).await?,
             connection: connection.clone(),
             enabled: AtomicBool::new(settings.new_mail),
-            sound: AtomicBool::new(settings.sound),
+            sounds: Mutex::new(sounds.clone()),
             seen: Mutex::default(),
             shown: Mutex::default(),
             tokens: Mutex::default(),
@@ -129,10 +131,38 @@ impl NewMailNotices {
         })
     }
 
-    /// Applies the `notifications` settings.
-    pub(crate) fn set(&self, settings: &Notifications) {
+    /// Applies the `notifications` and `sounds` settings.
+    pub(crate) fn set(&self, settings: &Notifications, sounds: &Sounds) {
         self.enabled.store(settings.new_mail, Ordering::Relaxed);
-        self.sound.store(settings.sound, Ordering::Relaxed);
+        *self.sounds.lock().unwrap() = sounds.clone();
+    }
+
+    /// The sound of `event`, if it plays one.
+    fn sound(&self, event: SoundEvent) -> Option<&'static str> {
+        let sounds = self.sounds.lock().unwrap();
+        sounds
+            .playing(event)
+            .map(|chosen| sound::resolve(event, chosen))
+    }
+
+    /// What the notification server is to play of `sound`: a toast plays
+    /// its own on Windows; elsewhere servers such as Plasma's play none, so
+    /// [`Self::ring`] does.
+    fn server_sound(sound: Option<&'static str>) -> Option<&'static str> {
+        sound.filter(|_| cfg!(windows))
+    }
+
+    /// Plays `sound` for a notification just shown, where the server does
+    /// not, unless Do not disturb is on.
+    async fn ring(&self, sound: Option<&'static str>) {
+        if cfg!(windows) {
+            return;
+        }
+        if let Some(id) = sound
+            && !sound::quiet(&self.connection).await
+        {
+            sound::play(id);
+        }
     }
 
     /// Starts watching `account`: mail stored from now on is news. An
@@ -184,11 +214,11 @@ impl NewMailNotices {
 
     /// Shows the reminder of a calendar event or a task.
     pub(crate) async fn event_reminder(&self, alarm: Alarm) {
-        let sound = self.sound.load(Ordering::Relaxed);
+        let sound = self.sound(SoundEvent::Reminders);
         let shown = match alarm.task {
             Some(_) => {
                 self.notifier
-                    .task_reminder(&alarm.title, &alarm.lines, sound)
+                    .task_reminder(&alarm.title, &alarm.lines, Self::server_sound(sound))
                     .await
             }
             None => {
@@ -197,7 +227,7 @@ impl NewMailNotices {
                         &alarm.title,
                         &alarm.lines,
                         !alarm.join_url.is_empty(),
-                        sound,
+                        Self::server_sound(sound),
                     )
                     .await
             }
@@ -205,6 +235,7 @@ impl NewMailNotices {
         match shown {
             Ok(id) => {
                 self.events.lock().unwrap().insert(id, alarm);
+                self.ring(sound).await;
             }
             Err(err) => tracing::warn!(%err, "could not show an event reminder"),
         }
@@ -244,6 +275,7 @@ impl NewMailNotices {
             let store = store.lock().unwrap();
             self.find_new(&store, account)
         };
+        let sound = self.sound(SoundEvent::NewMail);
         match found {
             Ok(Some(Found {
                 origin,
@@ -251,10 +283,11 @@ impl NewMailNotices {
                 messages,
             })) => match self
                 .notifier
-                .new_mail(&origin, &mails, 0, self.sound.load(Ordering::Relaxed))
+                .new_mail(&origin, &mails, 0, Self::server_sound(sound))
                 .await
             {
                 Ok(id) => {
+                    self.ring(sound).await;
                     tracing::info!(%account, count = messages.len(), "new mail notified");
                     self.shown.lock().unwrap().insert(
                         id,
@@ -293,9 +326,14 @@ impl NewMailNotices {
             .and_then(|accounts| accounts.into_iter().find(|a| a.id == account))
             .map(|a| a.address)
             .unwrap_or_default();
-        let sound = self.sound.load(Ordering::Relaxed);
-        match self.notifier.reminder(&origin, summary, lines, sound).await {
+        let sound = self.sound(SoundEvent::MailBack);
+        match self
+            .notifier
+            .reminder(&origin, summary, lines, Self::server_sound(sound))
+            .await
+        {
             Ok(id) => {
+                self.ring(sound).await;
                 self.shown.lock().unwrap().insert(
                     id,
                     Shown {

@@ -34,6 +34,7 @@ pub struct Config {
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
+    pub sounds: Sounds,
     pub onboarding: Onboarding,
     pub experimental: Experimental,
     pub feedback: Feedback,
@@ -177,16 +178,104 @@ pub struct Onboarding {
 pub struct Notifications {
     /// Notify about new mail in the inbox (Primary tab).
     pub new_mail: bool,
-    /// New-mail notifications play the desktop's new-mail sound.
-    pub sound: bool,
+    /// Older versions' one switch for the sounds of notifications, now
+    /// [`Sounds`]; read once, never written.
+    #[serde(skip_serializing)]
+    pub sound: Option<bool>,
 }
 
 impl Default for Notifications {
     fn default() -> Self {
         Self {
             new_mail: true,
-            sound: true,
+            sound: None,
         }
+    }
+}
+
+/// The sounds Katna plays, one per [`SoundEvent`] (Settings >
+/// Notifications > Sounds). Muted folders, conversations and senders
+/// never notify, so they make no sound either.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Sounds {
+    pub new_mail: EventSound,
+    pub reminders: EventSound,
+    pub mail_back: EventSound,
+    pub sent: EventSound,
+    pub not_sent: EventSound,
+}
+
+/// Whether one event plays a sound, and which.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EventSound {
+    pub on: bool,
+    /// The sound's name in `katna_platform::sound`; empty for the event's
+    /// usual one.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub sound: String,
+}
+
+impl Default for EventSound {
+    fn default() -> Self {
+        Self {
+            on: true,
+            sound: String::new(),
+        }
+    }
+}
+
+/// What a sound is for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum SoundEvent {
+    /// New mail in a folder that notifies.
+    NewMail,
+    /// Calendar event and task reminders.
+    Reminders,
+    /// Mail back in the inbox: from snooze, or nobody replied.
+    MailBack,
+    /// A message has gone out.
+    Sent,
+    /// A message could not be sent.
+    NotSent,
+}
+
+impl SoundEvent {
+    pub const ALL: [SoundEvent; 5] = [
+        SoundEvent::NewMail,
+        SoundEvent::Reminders,
+        SoundEvent::MailBack,
+        SoundEvent::Sent,
+        SoundEvent::NotSent,
+    ];
+}
+
+impl Sounds {
+    pub fn get(&self, event: SoundEvent) -> &EventSound {
+        match event {
+            SoundEvent::NewMail => &self.new_mail,
+            SoundEvent::Reminders => &self.reminders,
+            SoundEvent::MailBack => &self.mail_back,
+            SoundEvent::Sent => &self.sent,
+            SoundEvent::NotSent => &self.not_sent,
+        }
+    }
+
+    pub fn get_mut(&mut self, event: SoundEvent) -> &mut EventSound {
+        match event {
+            SoundEvent::NewMail => &mut self.new_mail,
+            SoundEvent::Reminders => &mut self.reminders,
+            SoundEvent::MailBack => &mut self.mail_back,
+            SoundEvent::Sent => &mut self.sent,
+            SoundEvent::NotSent => &mut self.not_sent,
+        }
+    }
+
+    /// The sound `event` plays, if on: its name, empty for the usual one.
+    pub fn playing(&self, event: SoundEvent) -> Option<&str> {
+        let sound = self.get(event);
+        sound.on.then_some(sound.sound.as_str())
     }
 }
 
@@ -395,8 +484,10 @@ pub struct Sending {
     /// Send on replies and forwards also archives the conversation; the
     /// Send menu offers the other way.
     pub send_and_archive: bool,
-    /// A short sound plays when a message has gone out.
-    pub sent_sound: bool,
+    /// Older versions' switch for the sound when a message has gone out,
+    /// now [`Sounds::sent`]; read once, never written.
+    #[serde(skip_serializing)]
+    pub sent_sound: Option<bool>,
 }
 
 impl Default for Sending {
@@ -415,7 +506,7 @@ impl Default for Sending {
             writing_suggestions: true,
             send_from: String::new(),
             send_and_archive: false,
-            sent_sound: true,
+            sent_sound: None,
         }
     }
 }
@@ -1109,8 +1200,25 @@ impl Config {
     fn parse(text: &str) -> Result<Self, ParseError> {
         let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
         config.sending.upgrade();
+        config.upgrade_sounds();
         config.validate().map_err(ParseError::Invalid)?;
         Ok(config)
+    }
+
+    /// Carries older versions' sound switches into [`Sounds`].
+    fn upgrade_sounds(&mut self) {
+        if self.notifications.sound.take() == Some(false) {
+            for event in [
+                SoundEvent::NewMail,
+                SoundEvent::Reminders,
+                SoundEvent::MailBack,
+            ] {
+                self.sounds.get_mut(event).on = false;
+            }
+        }
+        if self.sending.sent_sound.take() == Some(false) {
+            self.sounds.sent.on = false;
+        }
     }
 
     /// Checks that every value is in range.
@@ -1200,6 +1308,22 @@ fn tempfile_in(dir: &Path) -> Result<(std::path::PathBuf, fs::File)> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn older_sound_switches_carry_over() {
+        use super::{Config, SoundEvent};
+        let config =
+            Config::parse("[notifications]\nsound = false\n[sending]\nsent_sound = false\n")
+                .unwrap();
+        for event in SoundEvent::ALL {
+            let on = config.sounds.get(event).on;
+            assert_eq!(on, event == SoundEvent::NotSent, "{event:?}");
+        }
+        let text = toml::to_string(&config).unwrap();
+        assert!(!text.contains("sent_sound"), "never written back");
+        let fresh = Config::parse("").unwrap();
+        assert_eq!(fresh.sounds.playing(SoundEvent::Sent), Some(""));
+    }
+
     #[test]
     fn accounts_follow_the_chosen_order() {
         use crate::{Account, AccountId, AccountKind};

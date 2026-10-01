@@ -152,7 +152,13 @@ const ENTRIES: &[Entry] = &[
         Section::Notifications,
         "settings-general-notifications",
         "settings-general-notifications-summary",
-        "notify alert sound chime popup new mail bell folder tab",
+        "notify alert popup new mail bell folder tab",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-sounds",
+        "settings-notifications-sounds-summary",
+        "sound chime ding audio alarm reminder sent failed error play volume quiet",
     ),
     entry(
         Section::Notifications,

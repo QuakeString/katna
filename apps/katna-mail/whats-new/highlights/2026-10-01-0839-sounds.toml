@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Sounds for new mail, reminders and sending"
+text = """
+Settings > Notifications has a Sounds section: new mail, reminders, mail
+back in the inbox, mail sent and mail not sent each pick a sound from your
+desktop, play it with the button beside it, or turn it off. Sounds now play
+on KDE Plasma too, and stay silent for muted mail and during Do not
+disturb.
+"""

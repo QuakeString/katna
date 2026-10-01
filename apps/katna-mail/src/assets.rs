@@ -135,6 +135,7 @@ icons!(
     "pin-filled",
     "pin",
     "plain-text",
+    "play",
     "pointer",
     "print",
     "pulse",

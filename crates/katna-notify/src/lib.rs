@@ -156,14 +156,15 @@ impl Notifier {
     }
 
     /// Shows `mails` (not empty) of the account `origin` (its address),
-    /// replacing notification `replaces` if not 0, with the new-mail sound
-    /// or, without `sound`, silently. Returns its ID.
+    /// replacing notification `replaces` if not 0, with `sound` (a
+    /// `katna_platform::sound` name the server plays) or silently.
+    /// Returns its ID.
     pub async fn new_mail(
         &self,
         origin: &str,
         mails: &[NewMail],
         replaces: u32,
-        sound: bool,
+        sound: Option<&str>,
     ) -> zbus::Result<u32> {
         let (summary, body) = new_mail_text(mails);
         let one = mails.len() == 1;
@@ -191,8 +192,8 @@ impl Notifier {
             ("x-kde-origin-name", Value::from(origin)),
             ("urgency", Value::U8(1)),
         ]);
-        if sound {
-            hints.insert("sound-name", Value::from("message-new-email"));
+        if let Some(sound) = sound {
+            hints.insert("sound-name", Value::from(sound));
         } else {
             hints.insert("suppress-sound", Value::Bool(true));
         }
@@ -244,7 +245,7 @@ impl Notifier {
         origin: &str,
         summary: &str,
         lines: &[String],
-        sound: bool,
+        sound: Option<&str>,
     ) -> zbus::Result<u32> {
         let body = lines
             .iter()
@@ -266,8 +267,8 @@ impl Notifier {
             ("x-kde-origin-name", Value::from(origin)),
             ("urgency", Value::U8(1)),
         ]);
-        if sound {
-            hints.insert("sound-name", Value::from("message-new-email"));
+        if let Some(sound) = sound {
+            hints.insert("sound-name", Value::from(sound));
         } else {
             hints.insert("suppress-sound", Value::Bool(true));
         }
@@ -293,7 +294,7 @@ impl Notifier {
         summary: &str,
         lines: &[String],
         join: bool,
-        sound: bool,
+        sound: Option<&str>,
     ) -> zbus::Result<u32> {
         let body = lines
             .iter()
@@ -315,8 +316,8 @@ impl Notifier {
             ("urgency", Value::U8(1)),
             ("resident", Value::Bool(false)),
         ]);
-        if sound {
-            hints.insert("sound-name", Value::from("alarm-clock-elapsed"));
+        if let Some(sound) = sound {
+            hints.insert("sound-name", Value::from(sound));
         } else {
             hints.insert("suppress-sound", Value::Bool(true));
         }
@@ -341,7 +342,7 @@ impl Notifier {
         &self,
         summary: &str,
         lines: &[String],
-        sound: bool,
+        sound: Option<&str>,
     ) -> zbus::Result<u32> {
         let body = lines
             .iter()
@@ -363,8 +364,8 @@ impl Notifier {
             ("urgency", Value::U8(1)),
             ("resident", Value::Bool(false)),
         ]);
-        if sound {
-            hints.insert("sound-name", Value::from("alarm-clock-elapsed"));
+        if let Some(sound) = sound {
+            hints.insert("sound-name", Value::from(sound));
         } else {
             hints.insert("suppress-sound", Value::Bool(true));
         }

@@ -668,15 +668,6 @@ impl MailWindow {
                         .flex_col()
                         .gap(px(8.0))
                         .child(self.undo_send_choice(th, cx))
-                        .child(self.switch_row(
-                            "page-sent-sound",
-                            tr!("settings-general-sent-sound"),
-                            tr!("settings-general-sent-sound-detail"),
-                            self.config.sending.sent_sound,
-                            Change::SentSound(!self.config.sending.sent_sound),
-                            th,
-                            cx,
-                        ))
                         .into_any_element(),
                     th,
                 ),
@@ -941,34 +932,18 @@ impl MailWindow {
         choices.into_any_element()
     }
 
-    /// New-mail notifications and their sound, which the daemon shows.
+    /// New-mail notifications, which the daemon shows.
     pub(super) fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let notifications = &self.config.notifications;
-        div()
-            .flex()
-            .flex_col()
-            .gap(px(2.0))
-            .child(self.switch_row(
-                "page-new-mail",
-                tr!("settings-general-new-mail"),
-                tr!("settings-general-new-mail-detail"),
-                notifications.new_mail,
-                Change::NewMailNotices(!notifications.new_mail),
-                th,
-                cx,
-            ))
-            .when(notifications.new_mail, |d| {
-                d.child(self.switch_row(
-                    "page-new-mail-sound",
-                    tr!("settings-general-new-mail-sound"),
-                    tr!("settings-general-new-mail-sound-detail"),
-                    notifications.sound,
-                    Change::NotificationSound(!notifications.sound),
-                    th,
-                    cx,
-                ))
-            })
-            .into_any_element()
+        self.switch_row(
+            "page-new-mail",
+            tr!("settings-general-new-mail"),
+            tr!("settings-general-new-mail-detail"),
+            notifications.new_mail,
+            Change::NewMailNotices(!notifications.new_mail),
+            th,
+            cx,
+        )
     }
 
     /// Windows lets only the user pick the default mail app: opens the
