@@ -12,7 +12,7 @@
 //! The reply box at the bottom is the inline reply (`compose/chat_box.rs`);
 //! a reply just sent shows its undo countdown beside its bubble.
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::time::Instant;
@@ -86,6 +86,11 @@ pub(in crate::window) struct ChatState {
     /// opening it is, so each one plays its slide again.
     people: Option<usize>,
     people_runs: usize,
+    /// The reply box's height as last drawn, and as the feed last saw
+    /// it: chips or the formatting bar growing it keep a feed at its end
+    /// there.
+    reply_drawn: Rc<Cell<f32>>,
+    reply_seen: f32,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -426,6 +431,13 @@ impl MailWindow {
                 reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
             }
         }
+        let reply_height = reader.chat.reply_drawn.get();
+        if (reply_height - reader.chat.reply_seen).abs() > 0.5 {
+            reader.chat.reply_seen = reply_height;
+            if at_end {
+                reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
+            }
+        }
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
             self.reader_scroll.scroll_to_bottom();
@@ -465,6 +477,25 @@ impl MailWindow {
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
         let reply = self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), th, cx);
+        let drawn = self
+            .reader
+            .as_ref()
+            .map(|r| r.chat.reply_drawn.clone())
+            .unwrap_or_default();
+        let reply = div().relative().flex_none().child(reply).child(
+            gpui::canvas(
+                move |bounds, window, _| {
+                    let height = katna_ui::unpx(bounds.size.height);
+                    if (drawn.get() - height).abs() > 0.5 {
+                        drawn.set(height);
+                        window.refresh();
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .size_full(),
+        );
         div()
             .size_full()
             .flex()

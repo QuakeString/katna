@@ -16,8 +16,7 @@ use katna_preview::table;
 use katna_ui::rich::{Align, Block, PasteOption, Picture, RichEditor, Transfer};
 
 use super::super::MailWindow;
-use super::attach::{Attachment, MAX_TOTAL, Place};
-use crate::format;
+use super::attach::{Attachment, MAX_TOTAL, Place, limit_text};
 
 /// Pictures just pasted or dropped, in the text or attached, while the
 /// choice between the two shows.
@@ -191,7 +190,7 @@ impl MailWindow {
                 problem = Some(tr!(
                     "compose-file-too-large",
                     name = picture.name.clone(),
-                    limit = format::size(MAX_TOTAL as u64)
+                    limit = limit_text()
                 ));
                 continue;
             }

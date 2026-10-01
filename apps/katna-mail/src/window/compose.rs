@@ -709,7 +709,7 @@ impl MailWindow {
             let problem = tr!(
                 "compose-file-too-large",
                 name = file.name.clone(),
-                limit = format::size(attach::MAX_TOTAL as u64)
+                limit = attach::limit_text()
             );
             self.show_snackbar(problem, None, cx);
             return;
@@ -742,7 +742,7 @@ impl MailWindow {
             let problem = tr!(
                 "compose-file-too-large",
                 name = file.name.clone(),
-                limit = format::size(attach::MAX_TOTAL as u64)
+                limit = attach::limit_text()
             );
             self.show_snackbar(problem, None, cx);
             return;
@@ -1602,7 +1602,7 @@ impl MailWindow {
                 tr!(
                     "compose-attachments-too-large",
                     size = format::size(total as u64),
-                    limit = format::size(attach::MAX_TOTAL as u64)
+                    limit = attach::limit_text()
                 ),
                 None,
                 cx,

@@ -29,7 +29,7 @@ use katna_ui::unpx;
 
 use super::super::MailWindow;
 use super::super::attachments::{CARD_RADIUS, Item, card_top, row_file_index};
-use super::super::compose::attach::{MAX_TOTAL, cloud_bound};
+use super::super::compose::attach::{MAX_TOTAL, cloud_bound, limit_text};
 use super::{Direction, Found, Sort, Time, Types};
 use crate::data::EntryKey;
 use crate::format;
@@ -542,11 +542,11 @@ impl MailWindow {
         let chips = div()
             .id("picker-chips")
             .flex_none()
-            .overflow_x_scroll()
             .px(px(PAD))
             .pb(px(10.0))
             .flex()
             .flex_row()
+            .flex_wrap()
             .gap(px(8.0))
             .children(
                 KINDS
@@ -832,7 +832,7 @@ impl MailWindow {
                     d.text_color(rgba(th.error)).child(tr!(
                         "picker-over",
                         size = size,
-                        limit = format::size(limit)
+                        limit = limit_text()
                     ))
                 } else if weight.cloud > 0 {
                     let via = format::size(weight.cloud);
@@ -858,7 +858,7 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(size),
                     )
-                    .child(tr!("picker-of-limit", limit = format::size(limit)))
+                    .child(tr!("picker-of-limit", limit = limit_text()))
                 }
             });
         let ready = weight.count > 0 && !over;

@@ -22,6 +22,12 @@ use crate::widgets::{ScaledEdge, icon, tip};
 /// pictures in the text.
 pub(in crate::window) const MAX_TOTAL: usize = 25 * 1024 * 1024;
 
+/// The limit as mail services name it ("25 MB"); [`format::size`] of
+/// [`MAX_TOTAL`] would round its mebibytes up to 26 MB.
+pub(in crate::window) fn limit_text() -> String {
+    format::size(25 * 1000 * 1000)
+}
+
 /// Files that reach the app this soon after a file manager opened a new
 /// message with files join that message: Explorer starts Katna Mail once
 /// for each file chosen.
@@ -263,7 +269,7 @@ impl MailWindow {
                                 problem = Some(tr!(
                                     "compose-file-too-large",
                                     name = name,
-                                    limit = format::size(MAX_TOTAL as u64)
+                                    limit = limit_text()
                                 ));
                             }
                         }
@@ -306,11 +312,7 @@ impl MailWindow {
                 if let (Some((_, name, ..)), Some((_, provider))) =
                     (to_drive.first(), drive_account)
                 {
-                    let note = super::drive::drive_note(
-                        provider,
-                        name.clone(),
-                        format::size(MAX_TOTAL as u64),
-                    );
+                    let note = super::drive::drive_note(provider, name.clone(), limit_text());
                     this.show_snackbar(note, None, cx);
                 }
                 for (path, name, size, account) in to_drive {
@@ -582,11 +584,7 @@ impl MailWindow {
         }
         compose.attach_scroll.scroll_to_bottom();
         if let Some(name) = left_out {
-            let problem = tr!(
-                "compose-file-too-large",
-                name = name,
-                limit = format::size(MAX_TOTAL as u64)
-            );
+            let problem = tr!("compose-file-too-large", name = name, limit = limit_text());
             self.show_snackbar(problem, None, cx);
         }
         cx.notify();
@@ -688,11 +686,7 @@ impl MailWindow {
             }
         }
         if let Some(name) = left_out {
-            let problem = tr!(
-                "compose-file-too-large",
-                name = name,
-                limit = format::size(MAX_TOTAL as u64)
-            );
+            let problem = tr!("compose-file-too-large", name = name, limit = limit_text());
             self.show_snackbar(problem, None, cx);
         } else if failed > 0 {
             self.show_snackbar(tr!("picker-some-failed", count = failed), None, cx);
