@@ -13,7 +13,7 @@ use gpui::{
 };
 use katna_core::config::{
     AccountsShown, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    Theme as ThemeChoice, UNDO_SEND_CHOICES, WindowFrame,
+    Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -58,6 +58,7 @@ pub(super) enum Change {
     UnifiedInbox(bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
+    TrayStyle(TrayStyle),
     /// The unread count on the taskbar icon, shown by the daemon.
     UnreadBadge(bool),
     /// Katna's own window frame, or the desktop's.
@@ -653,12 +654,13 @@ impl MailWindow {
                 view.translation.reading_language = tag.to_owned();
                 self.translations.forget_sources();
             }
-            Change::Tray(on) | Change::UnreadBadge(on) => {
+            Change::Tray(_) | Change::TrayStyle(_) | Change::UnreadBadge(_) => {
                 let general = &mut self.config.general;
-                if matches!(change, Change::Tray(_)) {
-                    general.show_in_tray = on;
-                } else {
-                    general.unread_badge = on;
+                match change {
+                    Change::Tray(on) => general.show_in_tray = on,
+                    Change::TrayStyle(style) => general.tray_style = style,
+                    Change::UnreadBadge(on) => general.unread_badge = on,
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);

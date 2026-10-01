@@ -21,7 +21,7 @@ use winit::window::WindowId;
 use zbus::Connection;
 
 use crate::dbusmenu::MenuItem;
-use crate::icon;
+use crate::icon::{self, Style};
 
 /// What the tray calls its handler with, besides menu actions.
 pub const ACTIVATE: &str = "activate";
@@ -37,8 +37,10 @@ type Handler = Box<dyn Fn(&str, Option<String>) + Send + Sync>;
 enum Command {
     Show {
         title: String,
+        style: Style,
         menu: Vec<MenuItem>,
     },
+    Style(Style),
     Unread {
         badge: Option<String>,
         status: String,
@@ -59,14 +61,14 @@ pub struct Tray {
 }
 
 impl Tray {
-    /// Shows the app's icon with `menu` on right click and `title` as the
-    /// tooltip. Clicks call `handler`. `connection`, `id` and `icon_name`
+    /// Shows the app's icon in `style` with `menu` on right click and
+    /// `title` as the tooltip. Clicks call `handler`. `connection` and `id`
     /// are for the Linux tray.
     pub async fn show(
         _connection: &Connection,
         _id: &str,
         title: &str,
-        _icon_name: &str,
+        style: Style,
         menu: Vec<MenuItem>,
         handler: impl Fn(&str, Option<String>) + Send + Sync + 'static,
     ) -> zbus::Result<Self> {
@@ -78,6 +80,7 @@ impl Tray {
         let tray = Self { proxy };
         tray.send(Command::Show {
             title: title.to_owned(),
+            style,
             menu,
         })?;
         Ok(tray)
@@ -89,6 +92,11 @@ impl Tray {
             badge: (count > 0).then(|| icon::badge_text(count)),
             status: status.to_owned(),
         })
+    }
+
+    /// Draws the icon in `style` from now on.
+    pub async fn set_style(&self, style: Style) -> zbus::Result<()> {
+        self.send(Command::Style(style))
     }
 
     /// Replaces the right-click menu.
@@ -169,6 +177,8 @@ fn click(action: &str) {
 struct App {
     icon: Option<TrayIcon>,
     title: String,
+    style: Style,
+    badge: Option<String>,
 }
 
 impl ApplicationHandler<Command> for App {
@@ -178,10 +188,12 @@ impl ApplicationHandler<Command> for App {
 
     fn user_event(&mut self, _event_loop: &ActiveEventLoop, command: Command) {
         match command {
-            Command::Show { title, menu } => {
+            Command::Show { title, style, menu } => {
                 self.title = title;
+                self.style = style;
+                self.badge = None;
                 let built = TrayIconBuilder::new()
-                    .with_icon(draw(None))
+                    .with_icon(draw(style, None))
                     .with_tooltip(&self.title)
                     .with_menu(Box::new(native_menu(&menu)))
                     .with_menu_on_left_click(false)
@@ -191,9 +203,16 @@ impl ApplicationHandler<Command> for App {
                     Err(err) => tracing::warn!(%err, "no tray icon"),
                 }
             }
-            Command::Unread { badge, status } => {
+            Command::Style(style) => {
+                self.style = style;
                 if let Some(icon) = &self.icon {
-                    let _ = icon.set_icon(Some(draw(badge.as_deref())));
+                    let _ = icon.set_icon(Some(draw(style, self.badge.as_deref())));
+                }
+            }
+            Command::Unread { badge, status } => {
+                self.badge = badge;
+                if let Some(icon) = &self.icon {
+                    let _ = icon.set_icon(Some(draw(self.style, self.badge.as_deref())));
                     let _ = icon.set_tooltip(Some(format!("{}\n{status}", self.title)));
                 }
             }
@@ -207,9 +226,9 @@ impl ApplicationHandler<Command> for App {
     }
 }
 
-/// The app icon with `badge`, as the tray wants it.
-fn draw(badge: Option<&str>) -> Icon {
-    let rgba = argb_to_rgba(&icon::app_icon_argb(SIZE, badge));
+/// The app icon in `style` with `badge`, as the tray wants it.
+fn draw(style: Style, badge: Option<&str>) -> Icon {
+    let rgba = argb_to_rgba(&icon::tray_icon_argb(SIZE, style, badge));
     Icon::from_rgba(rgba, SIZE, SIZE).expect("an icon of the right size")
 }
 

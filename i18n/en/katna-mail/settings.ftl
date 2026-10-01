@@ -121,6 +121,9 @@ settings-general-login-window = Open the Katna Mail window too
 settings-general-login-window-detail = The window opens at login as well
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
+# Under "Show Katna in the system tray", while it is on.
+settings-general-tray-color = Tray icon in color
+settings-general-tray-color-detail = Off, it is one color like the panel's other icons. The unread count stays red.
 settings-general-unread-badge = Unread count on the taskbar icon
 settings-general-unread-badge-detail = Unread mail in the folders that count
 ## Settings › Notifications (the bells of folders and inbox tabs, and mutes)

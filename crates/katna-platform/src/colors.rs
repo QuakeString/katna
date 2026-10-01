@@ -235,6 +235,41 @@ pub fn read(desktop: DesktopKind, config_home: &Path, portal_accent: Option<u32>
     }
 }
 
+/// The color of the panel's own icons and text (`0xRRGGBB`), for a
+/// one-color tray icon drawn as pixels (`icon::Style::Mono`). Panels can't
+/// be asked, so it is inferred: Plasma's panel follows the color scheme's
+/// window text, GNOME's top bar and most other panels are dark, and
+/// Windows says whether its taskbar is light.
+pub fn panel_text() -> u32 {
+    #[cfg(windows)]
+    {
+        use winreg::RegKey;
+        use winreg::enums::HKEY_CURRENT_USER;
+        let light = RegKey::predef(HKEY_CURRENT_USER)
+            .open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize")
+            .and_then(|key| key.get_value::<u32, _>("SystemUsesLightTheme"))
+            .is_ok_and(|light| light != 0);
+        if light { 0x1c1c1c } else { 0xffffff }
+    }
+    #[cfg(not(windows))]
+    {
+        let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+        let kdeglobals =
+            config_home().and_then(|home| std::fs::read_to_string(home.join("kdeglobals")).ok());
+        panel_text_on(&desktop, kdeglobals.as_deref())
+    }
+}
+
+/// [`panel_text`] on Linux, for `XDG_CURRENT_DESKTOP` and the contents of
+/// `kdeglobals`.
+pub fn panel_text_on(desktop: &str, kdeglobals: Option<&str>) -> u32 {
+    if desktop.split(':').any(|d| d.eq_ignore_ascii_case("KDE")) {
+        let (scheme, _) = parse_kdeglobals(kdeglobals.unwrap_or_default());
+        return scheme.window_fg >> 8;
+    }
+    0xffffff
+}
+
 /// `$XDG_CONFIG_HOME`, else `~/.config`.
 pub fn config_home() -> Option<PathBuf> {
     std::env::var_os("XDG_CONFIG_HOME")
@@ -982,6 +1017,15 @@ pub fn contrast(a: u32, b: u32) -> f32 {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn panel_text_follows_plasma_and_is_light_elsewhere() {
+        let dark = "[Colors:Window]\nForegroundNormal=252,252,252\n";
+        assert_eq!(super::panel_text_on("KDE", Some(dark)), 0xfcfcfc);
+        // Breeze Light when kdeglobals says nothing.
+        assert_eq!(super::panel_text_on("KDE", None), 0x232629);
+        assert_eq!(super::panel_text_on("ubuntu:GNOME", Some(dark)), 0xffffff);
+    }
+
     use super::*;
 
     const BREEZE_DARK: &str = "\

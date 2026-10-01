@@ -146,7 +146,7 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-desktop",
         "settings-general-desktop-summary",
-        "tray panel startup start login autostart launch boot",
+        "tray icon color colour monochrome symbolic panel startup start login autostart launch boot",
     ),
     entry(
         Section::Notifications,
