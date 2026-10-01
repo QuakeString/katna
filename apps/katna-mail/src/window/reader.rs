@@ -874,7 +874,7 @@ impl MailWindow {
         let shown = Toolbar {
             back: !self.detached,
             separators: !phone,
-            contact: self.contact_fits(self.cards_width + self.contact_room()),
+            contact: self.contact_offered(),
             colors: self.original_colors_offered(th),
             new_window: !self.detached,
             // About 6.5 px a character at 12 px, and its 8 px padding.
@@ -1576,7 +1576,7 @@ impl MailWindow {
             };
             let mut pieces = self.text.pieces(super::select::DETAILS_PART + slot, th);
             // Where the contact panel has no room, a click only selects.
-            let panel = self.contact_room_now();
+            let panel = self.contact_offered();
             let line = |label: String, value: AnyElement| {
                 div()
                     .flex()

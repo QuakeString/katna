@@ -1840,6 +1840,7 @@ impl MailWindow {
         }
         // One fold for Mail's folders and every page's side column.
         self.nav_open = !self.nav_open;
+        self.nav_toggled_by_hand();
         self.nav_peek = false;
         self.peek_hover = (false, false);
         self.peek_task = None;
@@ -3294,6 +3295,13 @@ impl Render for MailWindow {
         let shape = self.layout.shape;
         let width = shape.width;
 
+        // The contact panel folds the folders when it needs their room.
+        let settings_room = if self.settings_open && !shape.is_phone() {
+            SETTINGS_WIDTH
+        } else {
+            0.0
+        };
+        self.fold_nav_for_contact(width - shape.rail() - shape.card_margin() - settings_room);
         self.nav_spring.set(
             if self.nav_docked() || self.nav_peek || self.layout.drawer {
                 1.0

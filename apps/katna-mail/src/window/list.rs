@@ -1146,9 +1146,7 @@ impl MailWindow {
                                     )
                                 })
                                 .when(
-                                    squeeze.is_some_and(|s| s.contact)
-                                        && self
-                                            .contact_fits(self.cards_width + self.contact_room()),
+                                    squeeze.is_some_and(|s| s.contact) && self.contact_offered(),
                                     |d| {
                                         let on = self.config.mail.contact_panel;
                                         d.child(
