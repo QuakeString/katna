@@ -271,7 +271,7 @@ impl CalendarPage {
     pub(super) fn new(custom_days: u8, cx: &mut App) -> Self {
         let today = Zoned::now().date();
         Self {
-            view: CalView::Month,
+            view: CalView::Week,
             custom_days,
             day: today,
             mini: today.first_of_month(),

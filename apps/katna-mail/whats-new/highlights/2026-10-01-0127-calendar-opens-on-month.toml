@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-title = "The Calendar opens on Month"
-text = """
-Katna Calendar now opens on the Month view, so the whole month is in
-sight at once. Day, Week, Year and the others are a click away in the
-top bar, as before.
-"""

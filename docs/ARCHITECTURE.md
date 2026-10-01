@@ -3833,7 +3833,7 @@ most useful reason is shown. Changes go back the way their calendar came
   daemon as the Tasks page's Add does. With no calendar to add events to
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
-- Views: Day, Week, Month (the default), Year (Y or 5: twelve small
+- Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events or tasks; a day opens Day, a
   month's name opens Month; resting the pointer on a dotted day, or
   tapping it on a phone, shows its events and tasks in a popover with a
