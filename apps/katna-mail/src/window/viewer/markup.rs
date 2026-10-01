@@ -141,6 +141,8 @@ const TOOLS: [(Tool, &str, &str, &str); 9] = [
 pub(super) enum Leave {
     Close,
     Show(usize),
+    /// Another file of the Files page's list, this many places on.
+    Out(isize),
 }
 
 /// A note or a text box open for typing.
@@ -923,6 +925,7 @@ impl Viewer {
         match to {
             Leave::Close => cx.emit(ViewerEvent::Close),
             Leave::Show(ix) => self.show(ix, cx),
+            Leave::Out(by) => cx.emit(ViewerEvent::Step(by)),
         }
     }
 

@@ -19,9 +19,9 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, ListAlignment,
-    ListState, MouseButton, MouseDownEvent, Pixels, Point, SharedString, Task, Window, anchored,
-    deferred, div, ease_out_quint, list, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FocusHandle, FontWeight,
+    KeyDownEvent, ListAlignment, ListState, MouseButton, MouseDownEvent, Pixels, Point,
+    SharedString, Task, Window, anchored, deferred, div, ease_out_quint, list, prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
@@ -32,7 +32,7 @@ use katna_ui::{ScrollBar, px};
 use super::MailWindow;
 use super::apps::App;
 use super::attachments::{
-    CARD_RADIUS, Thumb, card_top, has_thumbnail, hover_panel, kind_badge, panel_button,
+    CARD_RADIUS, Item, Thumb, card_top, has_thumbnail, hover_panel, kind_badge, panel_button,
     row_file_index, thumbnail,
 };
 use crate::data::RowFile;
@@ -309,6 +309,10 @@ pub(super) struct Library {
     columns: usize,
     state: ListState,
     bar: ScrollBar,
+    /// The file the arrow keys are on (its index in `files`), and what
+    /// takes them.
+    cursor: Option<usize>,
+    focus: Option<FocusHandle>,
     thumbs: HashMap<(MessageId, usize), (Thumb, u64)>,
     asked: HashSet<(MessageId, usize)>,
     wanted: Vec<(RowFile, Kind)>,
@@ -341,6 +345,8 @@ impl Default for Library {
             columns: 0,
             state: ListState::new(0, ListAlignment::Top, px(600.0)),
             bar: ScrollBar::default(),
+            cursor: None,
+            focus: None,
             thumbs: HashMap::new(),
             asked: HashSet::new(),
             wanted: Vec::new(),
@@ -606,6 +612,229 @@ impl MailWindow {
     }
 
     /// Does `act` with `file`, downloading its mail first if needed.
+    /// Moves the arrow keys' cursor onto the file the page shows at
+    /// `place`, scrolling it into view.
+    fn put_files_cursor(&mut self, place: usize, cx: &mut Context<Self>) {
+        let Some(&ix) = self.library.shown.get(place) else {
+            return;
+        };
+        self.library.cursor = Some(ix);
+        let line = self.library.lines.iter().position(|line| match line {
+            Line::Cards(range) => range.contains(&place),
+            Line::Row(at) => *at == place,
+            Line::Heading(_) => false,
+        });
+        if let Some(line) = line {
+            // The heading over the first files shows with them.
+            let line = if place == 0 { 0 } else { line };
+            self.library.state.scroll_to_reveal_item(line);
+        }
+        cx.notify();
+    }
+
+    /// Gives the files the keyboard, the cursor on the first file when
+    /// none has it yet: Down from the search box.
+    pub(super) fn focus_files(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(focus) = &self.library.focus {
+            window.focus(focus, cx);
+        }
+        if self.library.cursor.is_none() {
+            self.put_files_cursor(0, cx);
+        }
+    }
+
+    /// The arrow keys move between files (Up and Down by a row of cards),
+    /// Home and End go to the first and last, Enter or Space opens one,
+    /// and the Menu key or Shift+F10 opens its menu.
+    fn on_files_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
+        let keys = &event.keystroke;
+        let m = keys.modifiers;
+        if m.control || m.alt || m.platform {
+            return;
+        }
+        let count = self.library.shown.len();
+        if count == 0 {
+            return;
+        }
+        let place = self
+            .library
+            .cursor
+            .and_then(|ix| self.library.shown.iter().position(|&s| s == ix));
+        let last = count - 1;
+        let to = match (keys.key.as_str(), place) {
+            ("enter" | "space", Some(place)) => {
+                let file = self
+                    .library
+                    .found()
+                    .map(|f| f[self.library.shown[place]].row_file());
+                if let Some(file) = file {
+                    self.open_row_file(&file, window, cx);
+                }
+                cx.stop_propagation();
+                return;
+            }
+            ("menu", Some(_)) | ("f10", Some(_)) if keys.key == "menu" || m.shift => {
+                if let Some(ix) = self.library.cursor {
+                    let at = self.files_cursor_point(window);
+                    self.library.menu = Some(Menu::File { ix, at });
+                    cx.notify();
+                }
+                cx.stop_propagation();
+                return;
+            }
+            ("left" | "right" | "up" | "down" | "home" | "end", None) => 0,
+            ("left", Some(p)) => p.saturating_sub(1),
+            ("right", Some(p)) => (p + 1).min(last),
+            ("up", Some(p)) => self.files_row_step(p, -1).unwrap_or(p),
+            ("down", Some(p)) => self.files_row_step(p, 1).unwrap_or(p),
+            ("home", _) => 0,
+            ("end", _) => last,
+            ("escape", Some(_)) => {
+                self.library.cursor = None;
+                cx.notify();
+                cx.stop_propagation();
+                return;
+            }
+            _ => return,
+        };
+        self.put_files_cursor(to, cx);
+        cx.stop_propagation();
+    }
+
+    /// The file in the row of cards (or list line) above or below the
+    /// one at `place`, in the same column where it has one; headings are
+    /// passed over.
+    fn files_row_step(&self, place: usize, by: isize) -> Option<usize> {
+        let lines = &self.library.lines;
+        let range = |line: &Line| match line {
+            Line::Cards(range) => Some(range.clone()),
+            Line::Row(at) => Some(*at..*at + 1),
+            Line::Heading(_) => None,
+        };
+        let at = lines
+            .iter()
+            .position(|l| range(l).is_some_and(|r| r.contains(&place)))?;
+        let column = place - range(&lines[at])?.start;
+        let mut ix = at as isize;
+        loop {
+            ix += by;
+            let line = lines.get(usize::try_from(ix).ok()?)?;
+            if let Some(next) = range(line) {
+                return Some((next.start + column).min(next.end - 1));
+            }
+        }
+    }
+
+    /// The viewer shows attachment `index` of its mail (Shift and an
+    /// arrow): its place in the list follows, so the arrows go on from
+    /// there.
+    pub(super) fn paged_library(&mut self, index: usize, cx: &mut Context<Self>) {
+        let (Some(viewer), Some(message)) = (self.files.viewer.clone(), self.files.viewer_mail)
+        else {
+            return;
+        };
+        let (Some(files), Some((raw, _))) =
+            (self.library.found().cloned(), self.attachment_raw(message))
+        else {
+            return;
+        };
+        let view = katna_render::message_view(&raw);
+        let shown = self.library.shown.clone();
+        let place = shown.iter().position(|&ix| {
+            let file = files[ix].row_file();
+            file.message == message && row_file_index(&view.attachments, &file) == Some(index)
+        });
+        // An attachment the page leaves out (a small picture) keeps the
+        // last place.
+        if let Some(place) = place {
+            self.put_files_cursor(place, cx);
+            viewer.update(cx, |viewer, cx| {
+                viewer.library = Some((place, shown.len()));
+                cx.notify();
+            });
+        }
+    }
+
+    /// Where a menu opened from the keyboard appears: the middle of the
+    /// page, near the files.
+    fn files_cursor_point(&self, window: &Window) -> Point<Pixels> {
+        let bounds = self.library.state.viewport_bounds();
+        if bounds.size.width > Pixels::ZERO {
+            bounds.center()
+        } else {
+            let size = window.viewport_size();
+            gpui::point(size.width / 2.0, size.height / 2.0)
+        }
+    }
+
+    /// Where `file` is among the files the page shows, and how many
+    /// there are.
+    pub(super) fn library_place(&self, file: &RowFile) -> Option<(usize, usize)> {
+        let files = self.library.found()?;
+        let shown = &self.library.shown;
+        let place = shown.iter().position(|&ix| {
+            let found = &files[ix].file;
+            found.message == file.message && found.order == file.order
+        })?;
+        Some((place, shown.len()))
+    }
+
+    /// Shows in the open viewer the file `by` places on from the one it
+    /// shows, among the files the page shows (wrapping around). A file
+    /// whose mail is not downloaded yet opens once it is.
+    pub(super) fn step_library(&mut self, by: isize, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(viewer) = self.files.viewer.clone() else {
+            return;
+        };
+        let Some((place, count)) = viewer.read(cx).library else {
+            return;
+        };
+        let Some(files) = self.library.found().cloned() else {
+            return;
+        };
+        let shown = self.library.shown.clone();
+        if count == 0 || shown.is_empty() {
+            return;
+        }
+        let count = shown.len() as isize;
+        // A file its mail no longer lists is passed over.
+        let mut found = None;
+        for step in 1..=count {
+            let place =
+                (place as isize + by.signum() * step + by - by.signum()).rem_euclid(count) as usize;
+            let file = files[shown[place]].row_file();
+            let Some((raw, encrypted)) = self.attachment_raw(file.message) else {
+                // Sealed (encrypted, not opened) or not downloaded: the
+                // usual way, which downloads it first and opens it after.
+                self.open_row_file(&file, window, cx);
+                return;
+            };
+            let view = katna_render::message_view(&raw);
+            if let Some(index) = row_file_index(&view.attachments, &file) {
+                found = Some((place, file, raw, encrypted, view, index));
+                break;
+            }
+        }
+        let Some((place, file, raw, encrypted, view, index)) = found else {
+            return;
+        };
+        let items: Vec<Item> = view
+            .attachments
+            .iter()
+            .enumerate()
+            .map(|(ix, a)| Item::new(ix, a))
+            .collect();
+        self.files.viewer_mail = Some(file.message);
+        self.files.viewer_encrypted = encrypted;
+        // Closing the viewer leaves the arrow keys on this file.
+        self.put_files_cursor(place, cx);
+        viewer.update(cx, |viewer, cx| {
+            viewer.library = Some((place, shown.len()));
+            viewer.show_from(raw, items, index, cx);
+            cx.notify();
+        });
+    }
+
     fn file_act(&mut self, file: RowFile, act: Act, window: &mut Window, cx: &mut Context<Self>) {
         self.library.menu = None;
         let Some((raw, encrypted)) = self.attachment_raw(file.message) else {
@@ -1133,7 +1362,20 @@ impl MailWindow {
                 .wrap("files-scroll", &page.state, files, thumb, window, cx)
                 .into_any_element()
         };
+        let focus = self
+            .library
+            .focus
+            .get_or_insert_with(|| cx.focus_handle())
+            .clone();
+        // Opened from the rail, the keys still go to the hidden mail list
+        // (or nowhere): the files take them.
+        if window.focused(cx).is_none_or(|f| f == self.list_focus) {
+            window.focus(&focus, cx);
+        }
         div()
+            .id("files-body")
+            .track_focus(&focus)
+            .on_key_down(cx.listener(Self::on_files_key))
             .size_full()
             .flex()
             .flex_col()
@@ -1235,6 +1477,10 @@ impl MailWindow {
         el.cursor_pointer()
             .on_click(cx.listener(move |this, _, window, cx| {
                 this.library.menu = None;
+                this.library.cursor = Some(ix);
+                if let Some(focus) = &this.library.focus {
+                    window.focus(focus, cx);
+                }
                 this.open_row_file(&file, window, cx);
             }))
             .on_mouse_down(
@@ -1396,6 +1642,17 @@ impl MailWindow {
                     .child(icon("mail", th.accent, 14.0))
                     .child(div().min_w_0().truncate().child(subject)),
             );
+        // The arrow keys' cursor: a ring over the card's edge.
+        let card = card.when(self.library.cursor == Some(ix), |d| {
+            d.child(
+                div()
+                    .absolute()
+                    .inset_0()
+                    .rounded(px(CARD_RADIUS))
+                    .border_2()
+                    .border_color(rgba(th.accent)),
+            )
+        });
         self.file_handlers(card, ix, file, cx).into_any_element()
     }
 
@@ -1438,6 +1695,9 @@ impl MailWindow {
             .border_b_1()
             .border_color(rgba(th.divider))
             .hover(|s| s.bg(rgba(th.hover)))
+            .when(self.library.cursor == Some(ix), |d| {
+                d.bg(rgba(th.nav_selected))
+            })
             .children(fill)
             .child(kind_badge(found.kind, 24.0))
             .child(

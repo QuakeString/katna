@@ -57,7 +57,7 @@ pub(super) struct Item {
 }
 
 impl Item {
-    fn new(index: usize, attachment: &Attachment) -> Self {
+    pub(super) fn new(index: usize, attachment: &Attachment) -> Self {
         Self {
             index,
             name: attachment.name.clone(),
@@ -113,7 +113,7 @@ pub(super) struct Files {
     /// What had the keyboard before the viewer opened.
     restore: Option<FocusHandle>,
     /// The viewer shows the attachments of a decrypted message.
-    viewer_encrypted: bool,
+    pub(super) viewer_encrypted: bool,
     /// The open conversation's message the viewer shows, which a marked
     /// copy can be sent back to in a reply.
     viewer_message: Option<MessageId>,
@@ -801,12 +801,15 @@ impl MailWindow {
         }
         self.show_viewer(raw, encrypted, items, index, None, window, cx);
         // From the Files page the viewer can show the file's mail.
+        // Its arrows page through the page's files.
         if self.app == super::apps::App::Files
             && let Some(viewer) = &self.files.viewer
         {
             self.files.viewer_mail = Some(file.message);
+            let place = self.library_place(file);
             viewer.update(cx, |viewer, cx| {
                 viewer.can_show_mail = true;
+                viewer.library = place;
                 cx.notify();
             });
         }
@@ -871,6 +874,8 @@ impl MailWindow {
                 self.close_viewer(window, cx);
                 self.open_attachment_with(file.clone(), ask, encrypted, cx)
             }
+            ViewerEvent::Step(by) => self.step_library(*by, window, cx),
+            ViewerEvent::Paged(index) => self.paged_library(*index, cx),
             ViewerEvent::ShowMail => {
                 let mail = self.files.viewer_mail;
                 self.close_viewer(window, cx);

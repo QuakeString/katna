@@ -115,6 +115,12 @@ pub(super) enum ViewerEvent {
     Reply(Arc<AttachmentFile>),
     /// Show the mail the file came with (opened from the Files page).
     ShowMail,
+    /// Show the file this many places on in the Files page's list
+    /// (opened from there).
+    Step(isize),
+    /// Shift and an arrow showed another of this mail's attachments
+    /// (this one, by its index): opened from the Files page.
+    Paged(usize),
 }
 
 pub(super) struct Viewer {
@@ -181,6 +187,10 @@ pub(super) struct Viewer {
     can_reply: bool,
     /// Offers Show the mail: opened from the Files page, away from it.
     pub(super) can_show_mail: bool,
+    /// Opened from the Files page: the file's place among the files it
+    /// shows, and how many there are. The arrows then page through
+    /// those; with Shift, through this mail's attachments.
+    pub(super) library: Option<(usize, usize)>,
     pub(super) th: Theme,
 }
 
@@ -340,10 +350,27 @@ impl Viewer {
             markup: Markup::new(),
             can_reply,
             can_show_mail: false,
+            library: None,
             th,
         };
         this.show(current, cx);
         this
+    }
+
+    /// Shows attachment `ix` of `raw`, another mail's or this one's,
+    /// keeping the viewer open: paging through the Files page.
+    pub(super) fn show_from(
+        &mut self,
+        raw: Arc<Vec<u8>>,
+        items: Vec<Item>,
+        ix: usize,
+        cx: &mut Context<Self>,
+    ) {
+        if !Arc::ptr_eq(&raw, &self.raw) {
+            self.raw = raw;
+            self.items = items;
+        }
+        self.show(ix, cx);
     }
 
     /// Bitmaps to free, all of them when `all` (the viewer is closing).
@@ -484,13 +511,27 @@ impl Viewer {
         self.leave(Leave::Close, cx);
     }
 
+    /// Shows the file `by` places on: in the Files page's list when
+    /// opened from there, else among this mail's attachments.
+    fn step(&mut self, by: isize, cx: &mut Context<Self>) {
+        if self.library.is_some() {
+            self.leave(Leave::Out(by), cx);
+        } else {
+            self.step_mail(by, cx);
+        }
+    }
+
     /// Shows the attachment `ix` places on (wrapping around), asking
     /// first about unsaved marks.
-    fn step(&mut self, by: isize, cx: &mut Context<Self>) {
+    fn step_mail(&mut self, by: isize, cx: &mut Context<Self>) {
         let count = self.items.len() as isize;
         if count > 0 {
             let ix = (self.target as isize + by).rem_euclid(count) as usize;
             self.leave(Leave::Show(ix), cx);
+            // (Once shown: not while asking about unsaved marks.)
+            if self.library.is_some() && !self.markup.asking() {
+                cx.emit(ViewerEvent::Paged(self.items[ix].index));
+            }
         }
     }
 
@@ -990,6 +1031,8 @@ impl Viewer {
         let page = (unpx(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
         match keystroke.key.as_str() {
             "escape" => self.close(cx),
+            "left" if shift => self.step_mail(-1, cx),
+            "right" if shift => self.step_mail(1, cx),
             "left" => self.step(-1, cx),
             "right" => self.step(1, cx),
             "+" | "=" => self.set_zoom(self.zoom_step(1), cx),
@@ -1335,7 +1378,10 @@ impl Render for Viewer {
         let zoom = self.zoom_value();
         let item = self.items.get(self.current).cloned();
         let name = item.as_ref().map(|i| i.name.clone()).unwrap_or_default();
-        let many = self.items.len() > 1;
+        let many = self.items.len() > 1 || self.library.is_some_and(|(_, n)| n > 1);
+        // Which file of how many: in the Files page's list when opened
+        // from there.
+        let (place, count) = self.library.unwrap_or((self.current, self.items.len()));
 
         // The PDF's page at the middle of the screen and its page count.
         let mut pages = None;
@@ -1659,8 +1705,8 @@ impl Render for Viewer {
                                             format!(
                                                 "{} · {} of {}",
                                                 format::size(item.size),
-                                                self.current + 1,
-                                                self.items.len()
+                                                place + 1,
+                                                count
                                             )
                                         } else {
                                             format::size(item.size)
