@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Settings > Experimental > Look & Feel: Katna's own window frame instead
-//! of the desktop's, and a blurred, translucent window background. Both
-//! apply at once to every open window (`katna_chrome::Look`); on Windows
+//! of the desktop's, a blurred, translucent window background, and frosted
+//! menus and dialogs. They apply at once to every open window (`katna_chrome::Look`); on Windows
 //! the frame changes when a window next opens.
 
 use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
@@ -47,7 +47,7 @@ impl MailWindow {
             .child(self.row(
                 tr!("look-blurred-background"),
                 Some(&tr!("look-blurred-background-detail")),
-                self.blur_switch(th, cx),
+                self.blur_switches(th, cx),
                 th,
             ))
             .child(div().pt(px(12.0)).child(heading(tr!("chat-heading"), th)))
@@ -114,7 +114,16 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn blur_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn blur_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .flex()
+            .flex_col()
+            .child(self.window_blur_switch(th, cx))
+            .child(self.frosted_popups_switch(th, cx))
+            .into_any_element()
+    }
+
+    fn window_blur_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if Look::blur_available() {
             return self.switch_row(
                 "page-blur",
@@ -133,31 +142,50 @@ impl MailWindow {
             (_, Session::X11) => tr!("look-blur-none-x11"),
             (_, Session::Wayland) => tr!("look-blur-none-wayland"),
         };
-        div()
-            .flex()
-            .flex_col()
-            .child(
-                // The switch, off and out of reach.
-                div()
-                    .py(px(8.0))
-                    .px(px(8.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(12.0))
-                    .opacity(0.45)
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .text_size(px(14.0))
-                            .child(tr!("look-blur")),
-                    )
-                    .child(switch(0.0, th)),
-            )
-            .child(explain(why, th))
-            .into_any_element()
+        unavailable(tr!("look-blur"), why, th)
     }
+
+    /// Katna blurs under its own menus, so this needs no compositor.
+    fn frosted_popups_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        if katna_ui::frost::supported() {
+            return self.switch_row(
+                "page-frosted-popups",
+                tr!("look-frosted-popups"),
+                tr!("look-frosted-popups-detail"),
+                self.config.experimental.frosted_popups,
+                Change::FrostedPopups(!self.config.experimental.frosted_popups),
+                th,
+                cx,
+            );
+        }
+        let why = if cfg!(windows) {
+            tr!("look-frosted-popups-none-windows")
+        } else {
+            tr!("look-frosted-popups-none")
+        };
+        unavailable(tr!("look-frosted-popups"), why, th)
+    }
+}
+
+/// A switch that cannot be used here: off and out of reach, with why.
+fn unavailable(label: String, why: String, th: &Theme) -> AnyElement {
+    div()
+        .flex()
+        .flex_col()
+        .child(
+            div()
+                .py(px(8.0))
+                .px(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .opacity(0.45)
+                .child(div().flex_1().min_w_0().text_size(px(14.0)).child(label))
+                .child(switch(0.0, th)),
+        )
+        .child(explain(why, th))
+        .into_any_element()
 }
 
 fn explain(text: impl Into<SharedString>, th: &Theme) -> AnyElement {

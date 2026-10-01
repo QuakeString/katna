@@ -1079,12 +1079,9 @@ impl MailWindow {
             accent: th.accent,
         }));
         chrome.set_backdrop(Some(th.page));
-        // Menus and popovers are frosted with the blurred background, in
-        // every window, blurred or not.
-        let th = if self.config.experimental.blur
-            && katna_chrome::Look::blur_available()
-            && katna_ui::frost::supported()
-        {
+        // Menus and popovers are frosted on their own switch, whether the
+        // window is blurred or not: Katna draws their blur itself.
+        let th = if self.config.experimental.frosted_popups && katna_ui::frost::supported() {
             th.frosted(FROST_BLUR * window.scale_factor())
         } else {
             th

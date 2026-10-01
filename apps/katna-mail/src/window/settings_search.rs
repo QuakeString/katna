@@ -440,7 +440,7 @@ const ENTRIES: &[Entry] = &[
         Section::Experimental,
         "look-blurred-background",
         "settings-experimental-blur-summary",
-        "blur transparency frosted glass look feel",
+        "blur transparency frosted glass look feel menus popups popovers dialogs",
     ),
     entry(
         Section::Experimental,
