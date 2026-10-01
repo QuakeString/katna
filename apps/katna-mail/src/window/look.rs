@@ -50,6 +50,21 @@ impl MailWindow {
                 self.blur_switch(th, cx),
                 th,
             ))
+            .child(div().pt(px(12.0)).child(heading(tr!("chat-heading"), th)))
+            .child(self.row(
+                tr!("chat-view"),
+                Some(&tr!("chat-view-detail")),
+                self.switch_row(
+                    "page-chat-view",
+                    tr!("chat-view-switch"),
+                    tr!("chat-view-switch-detail"),
+                    self.config.experimental.chat_view,
+                    Change::ChatView(!self.config.experimental.chat_view),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Read conversations as chats (experimental)"
+text = """
+Turn on Settings > Experimental > Conversations as chats and mail between
+people reads like a group chat: a bubble for each mail with only what was
+written, your own on the right, pictures and files as chat media. The
+quoted mail and signatures wait behind ··· in each bubble, and a click on a
+name shows their card with their signature. Reply from the box at the
+bottom, with Ctrl+Enter, the formatting bar behind Aa and the paperclip for
+files, templates and signatures. Newsletters keep the usual view, and the
+Chat | Mail switch turns any conversation either way.
+"""

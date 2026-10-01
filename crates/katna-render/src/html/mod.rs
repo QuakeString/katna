@@ -16,12 +16,19 @@
 //! kept as bytes. Remote images are only named ([`ImageSource::Remote`]);
 //! whether and how they are fetched is the app's choice. Tracking pixels
 //! (tiny or hidden remote images) are dropped and counted.
+//!
+//! [`trimmed`] lays out a message in pieces: what the sender wrote, and
+//! the quote, signature and forward a chat-style view folds away.
 
 mod build;
 mod css;
+mod cut;
 mod dom;
 
+use std::collections::HashSet;
 use std::sync::Arc;
+
+use crate::trim::{Forwarded, Trimmed};
 
 pub use css::{Color, Length};
 pub use katna_core::image::ImageKind;
@@ -208,6 +215,96 @@ pub enum ImageSource {
 /// `Content-ID` (without angle brackets) for `cid:` images.
 pub fn document(html: &str, inline_image: &dyn Fn(&str) -> Option<Arc<[u8]>>) -> Document {
     build::build(&dom::parse(html), inline_image)
+}
+
+/// Lays out `html` in pieces, as [`crate::trim::plain`] splits text.
+/// `said` keeps the whole message's page color and `styled`; each piece
+/// counts its own images and trackers.
+pub fn trimmed(html: &str, inline_image: &dyn Fn(&str) -> Option<Arc<[u8]>>) -> Trimmed<Document> {
+    let dom = dom::parse(html);
+    let cuts = cut::find(&dom);
+    let forward_roots = cuts.forward.as_ref().map_or(&[][..], |f| &f.roots[..]);
+    let set = |parts: &[&[dom::NodeId]]| -> HashSet<dom::NodeId> {
+        parts.iter().flat_map(|p| p.iter().copied()).collect()
+    };
+    let piece = |roots: &[dom::NodeId], skip: HashSet<dom::NodeId>| {
+        let mut doc = build::build_from(&dom, roots, &skip, inline_image);
+        trim_blank(&mut doc.blocks);
+        doc
+    };
+    let some = |doc: Document| (!doc.blocks.is_empty()).then_some(doc);
+
+    let mut said = piece(
+        &[dom::DOCUMENT],
+        set(&[&cuts.quoted, &cuts.signature, forward_roots]),
+    );
+    let quoted = (!cuts.quoted.is_empty())
+        .then(|| piece(&cuts.quoted, set(&[&cuts.signature, forward_roots])))
+        .and_then(some);
+    let signature = (!cuts.signature.is_empty())
+        .then(|| piece(&cuts.signature, set(&[&cuts.quoted, forward_roots])))
+        .and_then(some);
+    let forwarded = cuts.forward.as_ref().map(|f| Forwarded {
+        from: f.from.clone(),
+        date: f.date.clone(),
+        subject: f.subject.clone(),
+        body: piece(&f.body, set(&[&cuts.quoted, &cuts.signature])),
+    });
+    for doc in [&quoted, &signature]
+        .into_iter()
+        .flatten()
+        .chain(forwarded.as_ref().map(|f| &f.body))
+    {
+        said.styled |= doc.styled;
+        said.background = said.background.or(doc.background);
+    }
+    Trimmed {
+        said,
+        quoted,
+        signature,
+        forwarded,
+    }
+}
+
+/// Drops blank lines at the start and end of `blocks`, and inside plain
+/// boxes there, so a piece does not open or close on empty space.
+fn trim_blank(blocks: &mut Vec<Block>) {
+    fn blank(block: &mut Block, end: bool) -> bool {
+        match block {
+            Block::Text(t) => t.inlines.iter().all(|i| match i {
+                Inline::Text(run) => run.text.trim().is_empty(),
+                Inline::Image(_) => false,
+            }),
+            Block::Box(b)
+                if b.kind == BoxKind::Stack
+                    && b.style.background.is_none()
+                    && b.style.border.is_none() =>
+            {
+                trim(&mut b.children, end);
+                b.children.is_empty()
+            }
+            Block::Box(_) | Block::Rule => false,
+        }
+    }
+    fn trim(blocks: &mut Vec<Block>, end: bool) {
+        loop {
+            let edge = if end {
+                blocks.last_mut()
+            } else {
+                blocks.first_mut()
+            };
+            if !edge.is_some_and(|b| blank(b, end)) {
+                break;
+            }
+            if end {
+                blocks.pop();
+            } else {
+                blocks.remove(0);
+            }
+        }
+    }
+    trim(blocks, true);
+    trim(blocks, false);
 }
 
 /// Whether text that came as `text/plain` is really an HTML document, as

@@ -124,6 +124,11 @@ pub(super) struct Files {
 }
 
 impl Files {
+    /// The thumbnail of attachment `index` of message `id`, once made.
+    pub(super) fn thumb(&self, id: MessageId, index: usize) -> Option<Thumb> {
+        self.thumbs.get(&(id, index)).cloned()
+    }
+
     /// Forgets the thumbnails of messages other than `keep`.
     fn keep_only(&mut self, keep: &HashSet<MessageId>) {
         self.asked.retain(|id, _| keep.contains(id));
@@ -620,12 +625,23 @@ impl MailWindow {
                 cx.stop_propagation();
                 this.save_from_message(id, ix, &save_name, cx);
             }));
+            let forward_name = name.clone();
+            let forward = panel_button(
+                ("attachment-forward", ix),
+                "forward",
+                tr!("attachment-forward"),
+                th,
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.forward_from_message(id, ix, &forward_name, window, cx);
+            }));
             let overlay = hover_panel(
                 group.clone(),
                 name.clone(),
                 item.size,
                 frost,
-                vec![save.into_any_element()],
+                vec![forward.into_any_element(), save.into_any_element()],
                 th,
             );
             div()
@@ -728,7 +744,7 @@ impl MailWindow {
     }
 
     /// Opens attachment `index` of message `id` in the viewer.
-    fn open_attachment(
+    pub(super) fn open_attachment(
         &mut self,
         id: MessageId,
         index: usize,
@@ -883,6 +899,11 @@ impl MailWindow {
                     self.show_file_mail(id, window, cx);
                 }
             }
+            ViewerEvent::Forward(file) => {
+                let file = file.clone();
+                self.close_viewer(window, cx);
+                self.new_mail_with_file(&file, window, cx);
+            }
             ViewerEvent::Reply(file) => {
                 let message = self.files.viewer_message;
                 self.close_viewer(window, cx);
@@ -928,6 +949,38 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match file {
                 Some(file) => this.save_attachment(Arc::new(file), cx),
+                None => this.show_snackbar(
+                    tr!("attachment-read-failed", name = name.as_str()),
+                    None,
+                    cx,
+                ),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Starts a new mail with only attachment `index` of message `id`.
+    fn forward_from_message(
+        &mut self,
+        id: MessageId,
+        index: usize,
+        name: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
+            return;
+        };
+        let name = name.to_owned();
+        cx.spawn_in(window, async move |this, cx| {
+            let file = cx
+                .background_executor()
+                .spawn(async move { katna_render::attachment_file(&raw, index) })
+                .await;
+            this.update_in(cx, |this, window, cx| match file {
+                Some(file) => this.new_mail_with_file(&file, window, cx),
                 None => this.show_snackbar(
                     tr!("attachment-read-failed", name = name.as_str()),
                     None,

@@ -72,6 +72,8 @@ enum MenuFor {
     Scheme(&'static str),
     /// The sounds to pick for an event in Settings > Notifications.
     Sound(SoundEvent),
+    /// A mail's bubble in the chat view.
+    Bubble(katna_store::MessageId),
 }
 
 impl ContextMenu {
@@ -88,7 +90,9 @@ impl ContextMenu {
     fn line(&self) -> Option<(usize, EntryKey)> {
         match &self.what {
             MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
-            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) => None,
+            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(_) => {
+                None
+            }
         }
     }
 }
@@ -157,13 +161,27 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of mail `id`'s bubble in the chat view.
+    pub(super) fn open_chat_context_menu(
+        &mut self,
+        id: katna_store::MessageId,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Bubble(id), at));
+        cx.notify();
+    }
+
     /// Closes the menu; returns the Calendar thing it was for and where
     /// it opened.
     pub(super) fn take_calendar_target(&mut self) -> Option<(CalTarget, Point<Pixels>)> {
         let menu = self.context_menu.take()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
-            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) => None,
+            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(_) => {
+                None
+            }
         }
     }
 
@@ -388,6 +406,7 @@ impl MailWindow {
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
             MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
             MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
+            MenuFor::Bubble(id) => format!("context-menu-bubble-{}", id.0),
         };
         let key = match (menu.open, drills) {
             (Some(sub), true) => format!("{base}-{sub:?}"),
@@ -442,6 +461,7 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
             Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
             Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
+            Some(MenuFor::Bubble(id)) => (self.bubble_menu_rows(*id, rh, th, cx), Vec::new()),
             None => (Rows::new(rh), Vec::new()),
         }
     }
@@ -670,7 +690,7 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => {
                 return self.calendar_sub_rows(target, sub, rh, th, cx);
             }
-            Some(MenuFor::Scheme(_) | MenuFor::Sound(_)) | None => None,
+            Some(MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(_)) | None => None,
         };
         let act = |act: Act| {
             cx.listener(

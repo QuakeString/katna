@@ -3058,7 +3058,14 @@ impl MailWindow {
         let ring = left.map(|(left, total)| {
             window.request_animation_frame();
             let share = left.as_secs_f32() / total.as_secs_f32().max(0.001);
-            countdown_ring(share, left.as_secs_f32().ceil() as u64, th)
+            let ink = th.snackbar_text;
+            countdown_ring(
+                share,
+                left.as_secs_f32().ceil() as u64,
+                ink,
+                crate::theme::fade(ink, 0.25),
+                30.0,
+            )
         });
         let text = snackbar.text.clone();
         let has_undo = snackbar.undo.is_some();
@@ -3845,17 +3852,15 @@ fn page_card(th: &Theme) -> gpui::Div {
         .bg(rgba(th.surface))
 }
 
-/// The undo-send countdown: a ring whose line runs back as time passes,
-/// `share` of it left, with the `seconds` left inside.
-fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
-    const SIZE: f32 = 30.0;
-    const LINE: f32 = 2.5;
-    let track = crate::theme::fade(th.snackbar_text, 0.25);
-    let color = th.snackbar_text;
+/// The undo-send countdown: a ring `size` wide in `color` on `track`,
+/// whose line runs back as time passes, `share` of it left, with the
+/// `seconds` left inside.
+fn countdown_ring(share: f32, seconds: u64, color: u32, track: u32, size: f32) -> AnyElement {
+    let line = size / 12.0;
     div()
         .relative()
         .flex_none()
-        .size(px(SIZE))
+        .size(px(size))
         .flex()
         .items_center()
         .justify_center()
@@ -3863,7 +3868,7 @@ fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
             gpui::canvas(
                 |_, _, _| {},
                 move |bounds, _, window, _| {
-                    let radius = (SIZE - LINE) / 2.0;
+                    let radius = (size - line) / 2.0;
                     let center = bounds.center();
                     let at = |turn: f32| {
                         // From the top, clockwise.
@@ -3874,7 +3879,7 @@ fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
                         )
                     };
                     let arc = |from: f32, to: f32| {
-                        let mut path = gpui::PathBuilder::stroke(px(LINE));
+                        let mut path = gpui::PathBuilder::stroke(px(line));
                         let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
                         path.move_to(at(from));
                         for step in 1..=steps {
@@ -3899,7 +3904,7 @@ fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
         )
         .child(
             div()
-                .text_size(px(13.0))
+                .text_size(px(size * 0.43))
                 .font_weight(gpui::FontWeight::MEDIUM)
                 .child(katna_i18n::format::number(seconds)),
         )

@@ -169,6 +169,7 @@ attachment-count = { $count ->
 }
 # Tooltip of the download button on an attachment card.
 attachment-save = Save
+attachment-forward = Forward
 attachment-save-all = Save all
 attachment-save-all-tooltip = Save every attachment to a folder
 # The button of the folder chooser that saves every attachment.

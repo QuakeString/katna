@@ -48,6 +48,7 @@ icons!(
     "brand-zoho",
     "cake",
     "calendar",
+    "chat",
     "check-circle",
     "check",
     "checkbox-checked",

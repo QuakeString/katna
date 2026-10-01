@@ -78,6 +78,8 @@ pub(super) enum Change {
     WindowFrame(WindowFrame),
     /// The blurred, translucent window background.
     Blur(bool),
+    /// Conversations between people open as a group chat.
+    ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
     OfflineDays(u32),
     /// Crash reports written on this computer (Settings > User feedback).
@@ -527,6 +529,10 @@ impl MailWindow {
             Change::Blur(on) => {
                 self.config.experimental.blur = on;
                 cx.set_global(super::look(&self.config));
+            }
+            Change::ChatView(on) => {
+                self.config.experimental.chat_view = on;
+                self.open_chat_as_set();
             }
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::MarkRead(when) => view.mark_read = when,
