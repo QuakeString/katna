@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! A thin scrollbar over a [`gpui::list`], like KDE's overlay scrollbars:
-//! it shows while the list scrolls and while the pointer is over the
-//! list, then fades out. Its thumb drags, and a click on the track above
-//! or below it jumps there.
+//! A thin scrollbar over a [`gpui::list`] or a scrolling `div`, like
+//! KDE's overlay scrollbars: it shows while the list scrolls and while
+//! the pointer is over the list, then fades out. It is a hairline at rest
+//! and grows as the pointer nears the right edge. Its thumb drags, and a
+//! click on the track above or below it jumps there.
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -11,11 +12,11 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     App, Bounds, DispatchPhase, ElementId, IntoElement, ListState, MouseButton, MouseDownEvent,
-    MouseMoveEvent, MouseUpEvent, ParentElement, Pixels, Stateful, Styled, Window, canvas, div,
-    point, prelude::*, rgba,
+    MouseMoveEvent, MouseUpEvent, ParentElement, Pixels, ScrollHandle, Stateful, Styled, Window,
+    canvas, div, point, prelude::*, rgba,
 };
 
-use crate::motion::{SMOOTH, Spring};
+use crate::motion::{SMOOTH, Spring, lerp};
 use crate::{px, unpx};
 
 /// How long the bar stays after the list stops scrolling.
@@ -24,11 +25,62 @@ const LINGER: Duration = Duration::from_millis(900);
 const MIN_THUMB: f32 = 32.0;
 /// The strip along the right edge that takes clicks and drags.
 const TRACK: f32 = 14.0;
-const THIN: f32 = 6.0;
+/// The thumb's width at rest.
+const THIN: f32 = 3.0;
 /// The thumb's width while the pointer is on it or drags it.
-const WIDE: f32 = 8.0;
+const WIDE: f32 = 9.0;
+/// How far from the right edge the pointer starts to widen the thumb.
+const REACH: f32 = 96.0;
 
-/// The bar's state; keep one per list, beside its [`ListState`].
+/// What the bar scrolls: a [`gpui::list`]'s [`ListState`] or a scrolling
+/// `div`'s [`ScrollHandle`].
+pub trait Scrolls: Clone + 'static {
+    /// The visible height, the most it can scroll, and how far it has.
+    fn heights(&self) -> (f32, f32, f32);
+    /// Scrolls to `offset` down from the top, from the bar.
+    fn scroll_to(&self, offset: f32);
+    fn drag_started(&self) {}
+    fn drag_ended(&self) {}
+}
+
+impl Scrolls for ListState {
+    fn heights(&self) -> (f32, f32, f32) {
+        (
+            unpx(self.viewport_bounds().size.height),
+            unpx(self.max_offset_for_scrollbar().y),
+            -unpx(self.scroll_px_offset_for_scrollbar().y),
+        )
+    }
+
+    fn scroll_to(&self, offset: f32) {
+        self.set_offset_from_scrollbar(point(px(0.0), -px(offset)));
+    }
+
+    fn drag_started(&self) {
+        self.scrollbar_drag_started();
+    }
+
+    fn drag_ended(&self) {
+        self.scrollbar_drag_ended();
+    }
+}
+
+impl Scrolls for ScrollHandle {
+    fn heights(&self) -> (f32, f32, f32) {
+        (
+            unpx(self.bounds().size.height),
+            unpx(self.max_offset().y),
+            -unpx(self.offset().y),
+        )
+    }
+
+    fn scroll_to(&self, offset: f32) {
+        self.set_offset(point(self.offset().x, -px(offset)));
+    }
+}
+
+/// The bar's state; keep one per list, beside its [`ListState`] or
+/// [`ScrollHandle`].
 #[derive(Clone)]
 pub struct ScrollBar(Rc<RefCell<Inner>>);
 
@@ -39,11 +91,19 @@ struct Inner {
     scrolled: Option<Instant>,
     over_list: bool,
     over_bar: bool,
+    /// How close the pointer is to the right edge, from 0 (`REACH` or
+    /// more away) to 1 (on the edge).
+    near: f32,
+    /// The thumb growing from `THIN` (0) to `WIDE` (1).
+    grow: Spring,
     /// While the thumb drags: where on the thumb it was grabbed.
     grab: Option<f32>,
     track: Option<Bounds<Pixels>>,
     /// A frame is asked for when the bar should start to fade.
     timer: bool,
+    /// How strongly the bar shows this frame, and how wide.
+    strength: f32,
+    wide: f32,
 }
 
 impl Default for ScrollBar {
@@ -54,9 +114,13 @@ impl Default for ScrollBar {
             scrolled: None,
             over_list: false,
             over_bar: false,
+            near: 0.0,
+            grow: Spring::new(SMOOTH, 0.0),
             grab: None,
             track: None,
             timer: false,
+            strength: 0.0,
+            wide: 0.0,
         })))
     }
 }
@@ -100,22 +164,26 @@ impl Thumb {
 }
 
 impl ScrollBar {
-    /// `content`, the list drawn from `state`, with the bar over its
+    /// `content`, the list or div scrolled by `state`, with the bar over its
     /// right edge. `color` is the thumb's `0xRRGGBBAA` at full strength.
     pub fn wrap(
         &self,
         id: impl Into<ElementId>,
-        state: &ListState,
+        state: &impl Scrolls,
         content: impl IntoElement,
         color: u32,
         window: &mut Window,
         cx: &mut App,
     ) -> Stateful<gpui::Div> {
-        let thumb = Thumb::new(
-            unpx(state.viewport_bounds().size.height),
-            unpx(state.max_offset_for_scrollbar().y),
-            -unpx(state.scroll_px_offset_for_scrollbar().y),
-        );
+        self.tick(state, window, cx);
+        self.draw(id, state, content, color)
+    }
+
+    /// Moves the bar toward shown or hidden for this frame: call once a
+    /// frame before [`ScrollBar::draw`], where the window is at hand.
+    pub fn tick(&self, state: &impl Scrolls, window: &mut Window, cx: &mut App) {
+        let (visible, max, scrolled) = state.heights();
+        let thumb = Thumb::new(visible, max, scrolled);
         let now = Instant::now();
         let mut inner = self.0.borrow_mut();
         if let Some(thumb) = thumb
@@ -141,12 +209,36 @@ impl ScrollBar {
         }
         let shown = thumb.is_some() && (inner.over_list || inner.grab.is_some() || lingering);
         inner.opacity.set(if shown { 1.0 } else { 0.0 });
-        let strength = inner.opacity.tick(window, cx.reduce_motion());
-        let wide = inner.over_bar || inner.grab.is_some();
+        inner.strength = inner.opacity.tick(window, cx.reduce_motion());
+        let grow = if inner.over_bar || inner.grab.is_some() {
+            1.0
+        } else if inner.over_list {
+            inner.near
+        } else {
+            0.0
+        };
+        inner.grow.set(grow);
+        inner.wide = inner.grow.tick(window, cx.reduce_motion());
+    }
+
+    /// `content` with the bar over its right edge, as [`ScrollBar::tick`]
+    /// left it this frame.
+    pub fn draw(
+        &self,
+        id: impl Into<ElementId>,
+        state: &impl Scrolls,
+        content: impl IntoElement,
+        color: u32,
+    ) -> Stateful<gpui::Div> {
+        let (visible, max, scrolled) = state.heights();
+        let thumb = Thumb::new(visible, max, scrolled);
+        let inner = self.0.borrow();
+        let strength = inner.strength;
+        let wide = inner.wide.clamp(0.0, 1.0);
         let grabbed = inner.grab;
         drop(inner);
 
-        let bar = self.0.clone();
+        let (bar, nearing) = (self.0.clone(), self.0.clone());
         let root = div()
             .id(id)
             .relative()
@@ -155,13 +247,25 @@ impl ScrollBar {
                 bar.borrow_mut().over_list = *hovered;
                 window.refresh();
             })
+            .on_mouse_move(move |event: &MouseMoveEvent, window, _| {
+                let mut inner = nearing.borrow_mut();
+                let Some(track) = inner.track else {
+                    return;
+                };
+                let away = unpx(track.right() - event.position.x).max(0.0);
+                let near = (1.0 - away / REACH).clamp(0.0, 1.0);
+                if (near - inner.near).abs() > 0.01 {
+                    inner.near = near;
+                    window.refresh();
+                }
+            })
             .child(content);
         let Some(thumb) = thumb.filter(|_| strength > 0.01) else {
             return root;
         };
-        let alpha = (color & 0xff) as f32 * if wide { 1.0 } else { 0.75 } * strength;
+        let alpha = (color & 0xff) as f32 * lerp(0.75, 1.0, wide) * strength;
         let fill = color & 0xffff_ff00 | alpha.round().clamp(0.0, 255.0) as u32;
-        let width = if wide { WIDE } else { THIN };
+        let width = lerp(THIN, WIDE, wide);
 
         let (hover, press, record, list) = (
             self.0.clone(),
@@ -197,14 +301,11 @@ impl ScrollBar {
                             // A click on the track brings the thumb's middle
                             // there, and keeps it under the pointer.
                             let grab = thumb.height / 2.0;
-                            list.set_offset_from_scrollbar(point(
-                                px(0.0),
-                                -px(thumb.offset_at(y - grab)),
-                            ));
+                            list.scroll_to(thumb.offset_at(y - grab));
                             grab
                         };
                         inner.grab = Some(grab);
-                        list.scrollbar_drag_started();
+                        list.drag_started();
                         window.refresh();
                     },
                 )
@@ -238,10 +339,7 @@ impl ScrollBar {
                                         return;
                                     };
                                     let y = unpx(event.position.y - track.top());
-                                    list.set_offset_from_scrollbar(point(
-                                        px(0.0),
-                                        -px(thumb.offset_at(y - grab)),
-                                    ));
+                                    list.scroll_to(thumb.offset_at(y - grab));
                                     window.refresh();
                                 },
                             );
@@ -250,7 +348,7 @@ impl ScrollBar {
                                     return;
                                 }
                                 released.borrow_mut().grab = None;
-                                drag_list.scrollbar_drag_ended();
+                                drag_list.drag_ended();
                                 window.refresh();
                             });
                         },

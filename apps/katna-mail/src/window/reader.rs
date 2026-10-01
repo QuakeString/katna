@@ -1205,30 +1205,37 @@ impl MailWindow {
                     .min_h_0()
                     .relative()
                     .child(
-                        div()
-                            .id("reader")
-                            .size_full()
-                            .overflow_y_scroll()
-                            .track_scroll(&self.reader_scroll)
-                            .child(
-                                div()
-                                    .flex()
-                                    .flex_col()
-                                    .pb(px(24.0))
-                                    .child(title)
-                                    .children(muted)
-                                    .children(notes)
-                                    .children(reply_above)
-                                    .children(parts)
-                                    .children(reply_below)
-                                    .map(|d| self.text_area(d, cx))
-                                    .with_animation(
-                                        ("open-conversation", key_number(key)),
-                                        Animation::new(Duration::from_millis(280))
-                                            .with_easing(ease_out_quint()),
-                                        |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
-                                    ),
-                            ),
+                        self.reader_bar.draw(
+                            "reader-bar",
+                            &self.reader_scroll,
+                            div()
+                                .id("reader")
+                                .size_full()
+                                .overflow_y_scroll()
+                                .track_scroll(&self.reader_scroll)
+                                .child(
+                                    div()
+                                        .flex()
+                                        .flex_col()
+                                        .pb(px(24.0))
+                                        .child(title)
+                                        .children(muted)
+                                        .children(notes)
+                                        .children(reply_above)
+                                        .children(parts)
+                                        .children(reply_below)
+                                        .map(|d| self.text_area(d, cx))
+                                        .with_animation(
+                                            ("open-conversation", key_number(key)),
+                                            Animation::new(Duration::from_millis(280))
+                                                .with_easing(ease_out_quint()),
+                                            |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
+                                        ),
+                                ),
+                            // The Files page's bar, over the open mail's
+                            // right edge.
+                            th.text_dim & 0xffff_ff00 | 0x99,
+                        ),
                     )
                     .children(link_status),
             )

@@ -770,6 +770,8 @@ pub struct MailWindow {
     /// Lines of the folder pane sliding open or shut.
     nav_fold: Option<nav::Fold>,
     reader_scroll: ScrollHandle,
+    /// The open mail's scroll bar, shown while it scrolls or is pointed at.
+    reader_bar: katna_ui::ScrollBar,
     tz: TimeZone,
     _subscriptions: Vec<Subscription>,
 }
@@ -1010,6 +1012,7 @@ impl MailWindow {
             nav_synced: 0,
             nav_fold: None,
             reader_scroll: ScrollHandle::new(),
+            reader_bar: katna_ui::ScrollBar::default(),
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
         };
@@ -3430,6 +3433,7 @@ impl Render for MailWindow {
                 0.0
             });
         self.compose_dock.tick(window, reduce);
+        self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
         self.avatar_turn.tick(window, reduce);
         let compose_text = compose_text_width(&self.app.primary().1, self.font.as_ref(), window);
