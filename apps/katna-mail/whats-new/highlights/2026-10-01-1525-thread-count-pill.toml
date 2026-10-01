@@ -1,7 +1,0 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-title = "A tidier mail count"
-text = """
-The number of mails in a conversation now sits in a small faint pill
-beside the names, like the folders' counts, centred on the names' line.
-"""

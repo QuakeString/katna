@@ -2263,12 +2263,20 @@ impl MailWindow {
                 )
             })
             .when(row.count > 1, |d| {
-                // The conversation's mail count: the folders' tight faint
-                // pill, centred on the names' line.
+                // The conversation's mail count: a faint chat icon and the
+                // number, centred on the names' line.
                 d.child(
-                    super::nav::count_pill(row.count as u64, open || checked, th)
-                        .pl(px(2.0))
-                        .text_color(rgba(th.text_dim)),
+                    div()
+                        .flex_none()
+                        .pl(px(4.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(3.0))
+                        .text_size(px(13.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(icon("forum", th.text_faint, 14.0))
+                        .child(row.count.to_string()),
                 )
             });
         // The quick actions fade in over the date.
