@@ -22,6 +22,7 @@ mod outgoing;
 mod placement;
 mod profile;
 mod receipts;
+mod schemes;
 mod sidebar;
 mod signatures;
 mod sound;

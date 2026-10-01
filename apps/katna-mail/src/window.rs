@@ -71,6 +71,7 @@ mod remote;
 mod reply_row;
 mod rich;
 mod scale_slider;
+mod scheme_picker;
 mod search_panel;
 mod select;
 mod settings;
@@ -118,7 +119,7 @@ use crate::daemon::{self, Command};
 use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
-use crate::theme::Theme;
+use crate::theme::{Accent, Theme};
 use crate::widgets::{elevation, icon, tip};
 
 use apps::{App as RailApp, People};
@@ -1036,7 +1037,8 @@ impl MailWindow {
     }
 
     /// The colors: the desktop's light or dark, unless the settings pick
-    /// one, in the desktop's color scheme or accent color if it has them.
+    /// one, in the color scheme and accent color the settings pick
+    /// ([`Theme::pick`]).
     fn theme(&self, window: &Window) -> Theme {
         self.theme_for(&self.chrome, window)
     }
@@ -1050,15 +1052,12 @@ impl MailWindow {
         };
         let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
         let system = &self.desktop_colors.colors;
-        let desktop_scheme = self.config.mail.desktop_colors && system.scheme_for(dark).is_some();
-        let th = if self.config.mail.desktop_colors {
-            Theme::system(dark, system)
-        } else {
-            Theme::new(dark)
-        };
+        let view = &self.config.mail;
+        let scheme = Theme::picks_scheme(dark, view.colors(), system);
+        let th = Theme::pick(dark, view.colors(), Accent::parse(&view.accent), system);
         // The window frame follows the same choices.
         chrome.set_dark(choice);
-        chrome.set_colors(desktop_scheme.then_some(ChromeColors {
+        chrome.set_colors(scheme.then_some(ChromeColors {
             window_bg: th.page,
             view_bg: th.surface,
             fg: th.text,

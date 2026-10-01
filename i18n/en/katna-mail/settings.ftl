@@ -166,14 +166,47 @@ settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
 settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
-settings-appearance-theme = Theme
-# A theme choice: light or dark, following the desktop.
+# Light or dark, apart from the color scheme.
+settings-appearance-theme = Mode
+# A mode choice: light or dark, following the desktop.
 settings-appearance-theme-system = System
 settings-appearance-theme-light = Light
 settings-appearance-theme-dark = Dark
-settings-appearance-desktop-colors = Desktop colors
-settings-appearance-desktop-colors-use = Use the desktop's colors
-settings-appearance-desktop-colors-use-detail = The color scheme and accent color of the desktop
+settings-appearance-colors = Colors
+settings-appearance-colors-detail = Every scheme has a light and a dark side, so Mode works with each one. The previews show both sides in the accent color picked below.
+# Heading over the color schemes that come with Katna.
+settings-appearance-colors-built-in = Built in
+# Heading over the color schemes that come from the desktop.
+settings-appearance-colors-from-system = From your system
+# The desktop's own color scheme, whatever it is.
+settings-appearance-colors-system = System
+settings-appearance-colors-system-detail = Follows the desktop
+settings-appearance-accent = Accent
+settings-appearance-accent-detail = The color of the selected folder, Compose, counts and highlights
+# An accent choice: the color scheme's own accent color.
+settings-appearance-accent-scheme = From colors
+# An accent choice: the desktop's accent color.
+settings-appearance-accent-system = System
+
+## Color scheme names: names of themes, usually left as they are.
+
+scheme-katna = Katna
+scheme-clear = Clear
+scheme-graphite = Graphite
+scheme-nord = Nord
+scheme-solarized = Solarized
+scheme-dracula = Dracula
+scheme-gruvbox = Gruvbox
+scheme-catppuccin = Catppuccin
+scheme-tokyo-night = Tokyo Night
+scheme-one = One
+scheme-rose-pine = Rosé Pine
+scheme-everforest = Everforest
+scheme-kanagawa = Kanagawa
+scheme-ayu = Ayu
+
+## Settings > Appearance, continued
+
 settings-appearance-app-names = App names
 settings-appearance-app-names-show = Show app names
 settings-appearance-app-names-show-detail = Names under the app icons at the far left
@@ -323,6 +356,8 @@ settings-accounts-accounts-summary = Add or remove an account, or change its pic
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
 settings-appearance-theme-summary = System, light or dark
+settings-appearance-colors-summary = Color schemes: the desktop's, Katna's or a built-in one such as Nord or Solarized
+settings-appearance-accent-summary = The color of the selected folder, Compose and counts
 settings-appearance-sender-pictures-summary = Company logos, looked up by the sender's domain
 settings-appearance-important-summary = The Important marker beside each message in the list
 settings-appearance-mail-colors-summary = Dark colors for HTML mail in a dark theme, or its sender's colors
