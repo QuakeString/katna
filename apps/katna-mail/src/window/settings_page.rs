@@ -1066,7 +1066,17 @@ impl MailWindow {
                 self.scale_control(th, cx),
                 th,
             ))
-            .child(self.row(tr!("settings-appearance-theme"), None, theme, th))
+            .child(
+                self.row(
+                    tr!("settings-appearance-theme"),
+                    // A scheme with one side sets light or dark itself.
+                    Theme::forced_dark(view.colors(), &self.desktop_colors.colors)
+                        .map(|_| tr!("settings-appearance-theme-forced"))
+                        .as_deref(),
+                    theme,
+                    th,
+                ),
+            )
             .child(self.row(
                 tr!("settings-appearance-colors"),
                 Some(&tr!("settings-appearance-colors-detail")),

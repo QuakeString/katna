@@ -1050,9 +1050,11 @@ impl MailWindow {
             ThemeChoice::Light => Some(false),
             ThemeChoice::Dark => Some(true),
         };
-        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
         let system = &self.desktop_colors.colors;
         let view = &self.config.mail;
+        // A scheme with one side decides light or dark itself.
+        let choice = Theme::forced_dark(view.colors(), system).or(choice);
+        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
         let scheme = Theme::picks_scheme(dark, view.colors(), system);
         let th = Theme::pick(dark, view.colors(), Accent::parse(&view.accent), system);
         // The window frame follows the same choices.

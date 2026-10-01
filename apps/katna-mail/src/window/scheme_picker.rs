@@ -3,7 +3,10 @@
 //! Settings > Appearance > Colors and Accent: the color schemes as cards,
 //! each with a small picture of the mail window on its light and dark
 //! side in the accent color picked, grouped into Katna's built-in schemes
-//! and the desktop's; and the accent choices under them.
+//! and the desktop's (`katna_platform::colors::DesktopScheme`); and the
+//! accent choices under them.
+
+use std::sync::Mutex;
 
 use gpui::{
     AnimationExt, AnyElement, Context, Div, ElementId, SharedString, SpringAnimation, div,
@@ -42,12 +45,26 @@ impl MailWindow {
             .chain(BUILT_IN.iter().map(|s| s.id))
             .map(|id| card(id, scheme_name(id), None, cx))
             .collect::<Vec<_>>();
-        let system = card(
+        let system = &self.desktop_colors.colors;
+        let mut from_system = vec![card(
             schemes::SYSTEM,
             tr!("settings-appearance-colors-system").into(),
             Some(tr!("settings-appearance-colors-system-detail").into()),
             cx,
-        );
+        )];
+        for scheme in &system.schemes {
+            let tag = match (&scheme.light, &scheme.dark) {
+                (Some(_), None) => Some(tr!("settings-appearance-colors-light-only").into()),
+                (None, Some(_)) => Some(tr!("settings-appearance-colors-dark-only").into()),
+                _ => None,
+            };
+            from_system.push(card(
+                intern(&scheme.id),
+                scheme.name.clone().into(),
+                tag,
+                cx,
+            ));
+        }
         div()
             .flex()
             .flex_col()
@@ -61,7 +78,7 @@ impl MailWindow {
                 tr!("settings-appearance-colors-from-system"),
                 th,
             ))
-            .child(cards(vec![system]))
+            .child(cards(from_system))
     }
 
     fn scheme_card(
@@ -76,6 +93,11 @@ impl MailWindow {
         let system = &self.desktop_colors.colors;
         let accent = Accent::parse(&self.config.mail.accent);
         let side = |dark: bool| scheme_picture(&Theme::pick(dark, id, accent, system));
+        // A scheme with one side shows it alone.
+        let sides = match Theme::forced_dark(id, system) {
+            Some(dark) if id != schemes::SYSTEM => vec![side(dark)],
+            _ => vec![side(false), side(true)],
+        };
         let element_id = ElementId::Name(format!("scheme-{id}").into());
         self.page_control(div().id(element_id), th, cx)
             .relative()
@@ -105,8 +127,7 @@ impl MailWindow {
                     .rounded(px(8.0))
                     .overflow_hidden()
                     .border_2()
-                    .child(side(false))
-                    .child(side(true))
+                    .children(sides)
                     .with_spring(
                         ElementId::Name(format!("scheme-ring-{id}").into()),
                         SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
@@ -237,6 +258,21 @@ impl MailWindow {
             )
             .into_any_element()
     }
+}
+
+/// `id` as a `&'static str` for [`Change::Colors`]: the desktop's scheme
+/// ids are kept once each, so there are only ever as many as schemes seen.
+fn intern(id: &str) -> &'static str {
+    static IDS: Mutex<Vec<&'static str>> = Mutex::new(Vec::new());
+    let mut ids = IDS
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    if let Some(known) = ids.iter().find(|known| **known == id) {
+        return known;
+    }
+    let leaked: &'static str = Box::leak(id.to_owned().into_boxed_str());
+    ids.push(leaked);
+    leaked
 }
 
 /// The name of the scheme with `id`, in the current language.

@@ -175,28 +175,31 @@ impl Theme {
     }
 
     /// The colors for `dark` in the color scheme with the id `colors`
-    /// ([`schemes`]) and `accent`. `system` is the desktop's scheme
-    /// ([`Theme::system`]); Katna's own palette, and schemes Katna no
-    /// longer has, are [`Theme::new`].
+    /// ([`schemes`], or one of the desktop's) and `accent`. `system` is
+    /// the desktop's scheme in use ([`Theme::system`]); Katna's own
+    /// palette, and schemes no longer there, are [`Theme::new`]. A scheme
+    /// with one side draws that side: see [`Theme::forced_dark`].
     pub fn pick(dark: bool, colors: &str, accent: Accent, system: &SystemColors) -> Self {
         let accent = match accent {
             Accent::Scheme => None,
             Accent::System => system.accent,
             Accent::Color(color) => Some(color),
         };
-        if let Some(built_in) = schemes::built_in(colors) {
-            let mut scheme = built_in.side(dark).scheme(built_in.id);
+        let with_accent = |mut scheme: Scheme| {
             if let Some(accent) = accent {
                 scheme.accent = opaque(accent);
             }
-            return Self::from_scheme(&scheme);
+            Self::from_scheme(&scheme)
+        };
+        if let Some(built_in) = schemes::built_in(colors) {
+            return with_accent(built_in.side(dark).scheme(built_in.id));
+        }
+        if let Some(side) = system.scheme(colors).and_then(|s| s.side(dark)) {
+            return with_accent(side.clone());
         }
         if colors == schemes::SYSTEM {
             return match (system.scheme_for(dark), accent) {
-                (Some(mut scheme), Some(accent)) => {
-                    scheme.accent = opaque(accent);
-                    Self::from_scheme(&scheme)
-                }
+                (Some(scheme), Some(_)) => with_accent(scheme),
                 (_, None) => Self::system(dark, system),
                 (None, Some(accent)) => Self::new(dark).with_accent(accent),
             };
@@ -207,10 +210,26 @@ impl Theme {
         }
     }
 
+    /// Light or dark as the scheme `colors` decides when it has one side
+    /// only (a Contrast theme, a KDE scheme without a partner), whatever
+    /// the mode asks; `None` when the mode decides.
+    pub fn forced_dark(colors: &str, system: &SystemColors) -> Option<bool> {
+        if colors == schemes::SYSTEM {
+            return system.forced_dark();
+        }
+        let scheme = system.scheme(colors)?;
+        match (&scheme.light, &scheme.dark) {
+            (Some(_), None) => Some(false),
+            (None, Some(_)) => Some(true),
+            _ => None,
+        }
+    }
+
     /// Whether [`Theme::pick`] draws a color scheme rather than Katna's
     /// palette, so the window frame takes its colors too.
     pub fn picks_scheme(dark: bool, colors: &str, system: &SystemColors) -> bool {
         schemes::built_in(colors).is_some()
+            || system.scheme(colors).is_some()
             || (colors == schemes::SYSTEM && system.scheme_for(dark).is_some())
     }
 
@@ -540,6 +559,7 @@ pub fn initial(name: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use katna_platform::colors::DesktopScheme;
 
     #[test]
     fn mixes_colors() {
@@ -665,6 +685,33 @@ mod tests {
         let th = Theme::pick(false, "system", Accent::Color(0x2e9e4fff), &red);
         assert_eq!(th.page, LIGHT.page);
         assert_eq!(th.accent, 0x2e9e4fff);
+        // The desktop's other schemes; one with one side decides light or
+        // dark itself.
+        let breeze = Scheme {
+            name: "BreezeClassic".to_owned(),
+            window_bg: 0xeff0f1ff,
+            window_fg: 0x31363bff,
+            view_bg: 0xfcfcfcff,
+            view_fg: 0x31363bff,
+            inactive_fg: 0x7f8c8dff,
+            accent: 0x3daee9ff,
+            accent_fg: 0xffffffff,
+            negative: 0xda4453ff,
+        };
+        let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
+            id: "kde:BreezeClassic".to_owned(),
+            name: "Breeze Classic".to_owned(),
+            light: Some(breeze),
+            dark: None,
+        }]);
+        assert_eq!(
+            Theme::forced_dark("kde:BreezeClassic", &desktop),
+            Some(false)
+        );
+        assert_eq!(Theme::forced_dark("nord", &desktop), None);
+        let th = Theme::pick(true, "kde:BreezeClassic", Accent::Scheme, &desktop);
+        assert_eq!((th.dark, th.surface), (false, 0xfcfcfcff));
+        assert!(Theme::picks_scheme(false, "kde:BreezeClassic", &desktop));
         assert!(Theme::picks_scheme(true, "nord", &none));
         assert!(!Theme::picks_scheme(true, "system", &none));
         assert!(!Theme::picks_scheme(true, "katna", &none));
