@@ -140,6 +140,9 @@ pub struct Experimental {
     pub window_frame: WindowFrame,
     /// A translucent window background that the compositor blurs.
     pub blur: bool,
+    /// Conversations between people open as a group chat: a bubble per
+    /// mail with only what its sender wrote.
+    pub chat_view: bool,
 }
 
 /// [`Experimental::window_frame`].
@@ -1440,6 +1443,7 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
+        assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);

@@ -31,6 +31,22 @@ impl MailWindow {
             return div().into_any_element();
         };
         let open = compose.popup == Some(Popup::Templates);
+        div()
+            .relative()
+            .child(
+                icon_button("compose-templates", "template", 20.0, th)
+                    .tooltip(tip(tr!("compose-tool-templates"), th))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        this.toggle_popup(Popup::Templates, cx);
+                        this.load_templates(cx);
+                    })),
+            )
+            .when(open, |d| d.child(above(self.templates_menu(th, cx))))
+            .into_any_element()
+    }
+
+    /// The templates to put in, with Save as template and Manage.
+    pub(super) fn templates_menu(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
         let items = self
             .writing
             .templates
@@ -44,65 +60,46 @@ impl MailWindow {
             })
             .collect::<Vec<_>>();
         let none = items.is_empty();
-        div()
-            .relative()
-            .child(
-                icon_button("compose-templates", "template", 20.0, th)
-                    .tooltip(tip(tr!("compose-tool-templates"), th))
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        this.toggle_popup(Popup::Templates, cx);
-                        this.load_templates(cx);
-                    })),
-            )
-            .when(open, |d| {
-                d.child(above(
-                    menu(th)
-                        .w(px(260.0))
-                        .when(none, |d| {
-                            d.child(
-                                div()
-                                    .px(px(16.0))
-                                    .py(px(8.0))
-                                    .text_size(px(13.0))
-                                    .line_height(px(18.0))
-                                    .text_color(rgba(th.text_dim))
-                                    .child(tr!("compose-tool-templates-none")),
-                            )
-                        })
-                        .children(items)
-                        .child(menu_divider(th))
-                        .child(
-                            menu_item(
-                                "compose-template-save",
-                                &tr!("compose-tool-template-save"),
-                                th,
-                            )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| this.open_save_template(window, cx),
-                            )),
-                        )
-                        .child(
-                            menu_item(
-                                "compose-templates-manage",
-                                &tr!("compose-tool-templates-manage"),
-                                th,
-                            )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    if let Some(c) = &mut this.compose {
-                                        c.popup = None;
-                                    }
-                                    this.open_settings_page(
-                                        super::super::settings_page::Section::Signatures,
-                                        window,
-                                        cx,
-                                    );
-                                },
-                            )),
-                        ),
-                ))
+        menu(th)
+            .w(px(260.0))
+            .when(none, |d| {
+                d.child(
+                    div()
+                        .px(px(16.0))
+                        .py(px(8.0))
+                        .text_size(px(13.0))
+                        .line_height(px(18.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("compose-tool-templates-none")),
+                )
             })
-            .into_any_element()
+            .children(items)
+            .child(menu_divider(th))
+            .child(
+                menu_item(
+                    "compose-template-save",
+                    &tr!("compose-tool-template-save"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| this.open_save_template(window, cx))),
+            )
+            .child(
+                menu_item(
+                    "compose-templates-manage",
+                    &tr!("compose-tool-templates-manage"),
+                    th,
+                )
+                .on_click(cx.listener(|this, _, window, cx| {
+                    if let Some(c) = &mut this.compose {
+                        c.popup = None;
+                    }
+                    this.open_settings_page(
+                        super::super::settings_page::Section::Signatures,
+                        window,
+                        cx,
+                    );
+                })),
+            )
     }
 
     /// Reads the list of templates again, for the menus that show them.

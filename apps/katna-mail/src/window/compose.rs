@@ -22,6 +22,7 @@
 //! in a window of its own.
 
 mod attach;
+mod chat_box;
 mod checks;
 mod chips;
 mod drafts;
@@ -220,6 +221,8 @@ pub(super) struct Compose {
     chip_scroll: [ScrollHandle; 3],
     /// Those rows growing in or shrinking away.
     rows_glide: reply_kind::RowsGlide,
+    /// Written in the chat view's reply box.
+    chat: Option<chat_box::ChatReply>,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -235,6 +238,10 @@ impl Compose {
             subject: text(&self.subject),
             body: {
                 let mut body = self.body.read(cx).doc().clone();
+                // The chat's reply box keeps the signature out of sight.
+                if let Some(chat) = &self.chat {
+                    body.blocks.extend(chat.held.iter().cloned());
+                }
                 body.blocks.extend(self.quote.hidden().iter().cloned());
                 body
             },
@@ -942,6 +949,10 @@ impl MailWindow {
     }
 
     fn scroll_to_inline_reply(&mut self, back: bool, cx: &mut Context<Self>) {
+        // The chat's reply box is always in sight, under the feed.
+        if self.chat_shown() {
+            return;
+        }
         let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
             return;
         };
@@ -1029,6 +1040,12 @@ impl MailWindow {
         };
         compose.popup = None;
         if compose.signature == id {
+            cx.notify();
+            return;
+        }
+        if let Some(chat) = &mut compose.chat {
+            chat.held = chat_box::held_signature(new);
+            compose.signature = id;
             cx.notify();
             return;
         }
@@ -1277,6 +1294,7 @@ impl MailWindow {
             chip_layout: Rc::default(),
             chip_scroll: Default::default(),
             rows_glide: reply_kind::RowsGlide::default(),
+            chat: None,
             _subscriptions: subscriptions,
         });
         self.ask_delivery_receipts(cx);
@@ -1491,7 +1509,9 @@ impl MailWindow {
     /// Sends the open message the way Settings chooses: a reply or forward
     /// also archives its conversation when Send and archive is the default.
     pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let archive = self.config.sending.send_and_archive;
+        // A chat goes on: its conversation is never archived.
+        let chat = self.compose.as_ref().is_some_and(|c| c.chat.is_some());
+        let archive = self.config.sending.send_and_archive && !chat;
         self.send_compose(None, archive, Passed::default(), window, cx);
     }
 
@@ -1516,6 +1536,7 @@ impl MailWindow {
         let sealing = compose.sealing;
         let kind = compose.kind;
         let chosen = compose.from;
+        let chat = compose.chat.is_some();
         let answered = compose.answering;
         let answering = answered.filter(|_| archive && at.is_none());
         // Sent, the draft it was saved as goes.
@@ -1679,25 +1700,31 @@ impl MailWindow {
         let card = match answered {
             Some(key) if at.is_none() => {
                 let subject = draft_subject.clone();
-                let card = self
-                    .sending
-                    .add_card(key, message_id, Arc::new(raw.clone()), |id| {
-                        sent::row(key, id, me, subject, snippet)
-                    });
+                let card =
+                    self.sending
+                        .add_card(key, message_id, Arc::new(raw.clone()), chat, |id| {
+                            sent::row(key, id, me, subject, snippet)
+                        });
+                if chat {
+                    self.chat_countdown(card, delay, cx);
+                }
                 self.show_sent_cards(cx);
                 Some(card)
             }
             _ => None,
         };
-        self.show_snackbar(
-            if at.is_some() {
-                tr!("compose-scheduling")
-            } else {
-                tr!("compose-sending")
-            },
-            None,
-            cx,
-        );
+        // The chat shows the reply waiting beside its countdown.
+        if !(chat && card.is_some()) {
+            self.show_snackbar(
+                if at.is_some() {
+                    tr!("compose-scheduling")
+                } else {
+                    tr!("compose-sending")
+                },
+                None,
+                cx,
+            );
+        }
         let connection = self.daemon.clone();
         let when = at.map(|at| schedule::describe(at, &self.tz));
         let undo = self.config.sending.undo_send_seconds;
