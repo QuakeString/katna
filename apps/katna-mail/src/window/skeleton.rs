@@ -359,7 +359,7 @@ fn mail_row(i: usize, phone: bool, compact: bool, th: &Theme) -> AnyElement {
         .items_center()
         .gap(px(16.0))
         .border_t_1()
-        .border_color(rgba(fade(th.divider, 0.5)))
+        .border_color(rgba(super::list::row_line(th)))
         .child(bone(th).size(px(14.0)).rounded(px(3.0)))
         .child(bone(th).size(px(14.0)))
         .child(div().w(px(150.0)).child(bone(th).w(px(sender)).h(px(10.0))))

@@ -10,7 +10,7 @@ const LONG_MONTHS = ["January", "February", "March", "April", "May", "June", "Ju
   "September", "October", "November", "December"];
 
 let page = null;     // the state the server last sent
-let step = "password";
+let step = "password"; // see STEPS
 
 async function call(method, path, body) {
   const response = await fetch(path, {
@@ -43,22 +43,76 @@ function monthName(yyyymm, long) {
   return long ? `${LONG_MONTHS[index]} ${Math.floor(yyyymm / 100)}` : MONTHS[index];
 }
 
-// Signing in.
+// Signing in. Steps: "password" then "code"; or, for the first password,
+// "setup" (mail a code) then "choose" (the code and the new password).
 
-function showSignIn() {
+const STEPS = {
+  password: {
+    intro: "For whoever runs this server, not Katna accounts. Sign in with the admin address and password.",
+    fields: ["password-field"], button: "Continue",
+    other: "First time here? Choose the password", otherStep: "setup",
+    foot: "Signed in for 12 hours on this browser.",
+  },
+  code: {
+    intro: "We mailed a code to the admin address.",
+    fields: ["code-field"], button: "Sign in",
+    other: "Start again", otherStep: "password",
+    foot: "The code works for 30 minutes.",
+  },
+  setup: {
+    intro: "Choose the admin password. Type the admin address from the server's .env (KATNA_SERVER_ADMIN_EMAILS) and we'll mail it a code, so only its owner can set the password.",
+    fields: [], button: "Mail me a code",
+    other: "Already have a password? Sign in", otherStep: "password",
+    foot: "Forgot the password? On the server: katna-server admin-password",
+  },
+  choose: {
+    intro: "Type the code we mailed to the admin address, then the new password twice.",
+    fields: ["code-field", "new-password-field", "again-field"], button: "Save and sign in",
+    other: "Start again", otherStep: "setup",
+    foot: "At least 8 characters.",
+  },
+};
+const STEP_FIELDS = ["password-field", "code-field", "new-password-field", "again-field"];
+
+function showStep(name) {
+  step = name;
+  const s = STEPS[name];
+  $("signin-intro").textContent = s.intro;
+  for (const id of STEP_FIELDS) $(id).hidden = !s.fields.includes(id);
+  $("signin-button").textContent = s.button;
+  $("switch-step").textContent = s.other;
+  $("signin-foot").textContent = s.foot;
+  for (const id of ["password", "code", "new-password", "again"]) $(id).value = "";
+  const first = s.fields.length && name !== "password" ? s.fields[0].replace("-field", "") : "email";
+  (name === "password" && $("email").value ? $("password") : $(first)).focus();
+}
+
+async function showSignIn() {
   $("admin").hidden = true;
   $("signin").hidden = false;
-  step = "password";
-  $("password-field").hidden = false;
-  $("code-field").hidden = true;
-  $("signin-button").textContent = "Continue";
-  $("email").focus();
+  let first = "password";
+  try {
+    const { status, data } = await call("GET", "/admin/api/status");
+    if (status === 200 && data.setup) first = "setup";
+  } catch (_) { /* the sign-in step then */ }
+  showStep(first);
 }
 
 function signInProblem(text) {
   const problem = $("signin-problem");
   problem.textContent = text || "";
   problem.hidden = !text;
+}
+
+$("switch-step").addEventListener("click", () => {
+  signInProblem("");
+  showStep(STEPS[step].otherStep);
+});
+
+function codeProblem(status, data) {
+  if (data && data.code === "code_expired") return "That code has run out. Start again for a new one.";
+  if (status === 429) return "Too many wrong codes. Try again tomorrow.";
+  return "Wrong code.";
 }
 
 $("signin-form").addEventListener("submit", async (event) => {
@@ -71,33 +125,34 @@ $("signin-form").addEventListener("submit", async (event) => {
       const { status } = await call("POST", "/admin/api/sign-in", {
         email: $("email").value, password: $("password").value,
       });
-      if (status === 202) {
-        step = "code";
-        $("password").value = "";
-        $("password-field").hidden = true;
-        $("code-field").hidden = false;
-        button.textContent = "Sign in";
-        $("code").focus();
-      } else if (status === 429) {
-        signInProblem("Too many tries. Wait a few minutes.");
-      } else {
-        signInProblem("That address and password can't open this page.");
-      }
-    } else {
+      if (status === 202) showStep("code");
+      else if (status === 429) signInProblem("Too many tries. Wait a few minutes.");
+      else signInProblem("That address and password can't open this page.");
+    } else if (step === "code") {
       const { status, data } = await call("POST", "/admin/api/code", {
         email: $("email").value, code: $("code").value,
       });
-      if (status === 204) {
-        $("code").value = "";
-        await load();
-      } else if (data && data.code === "code_expired") {
-        signInProblem("That code has run out. Start again for a new one.");
-        showSignIn();
-      } else if (status === 429) {
-        signInProblem("Too many wrong codes. Try again tomorrow.");
-      } else {
-        signInProblem("Wrong code.");
+      if (status === 204) await load();
+      else signInProblem(codeProblem(status, data));
+    } else if (step === "setup") {
+      const { status } = await call("POST", "/admin/api/setup", { email: $("email").value });
+      if (status === 202) showStep("choose");
+      else if (status === 429) signInProblem("Too many codes mailed. Wait an hour.");
+      else signInProblem("The code could not be mailed. Check the server's mail settings.");
+    } else {
+      if ($("new-password").value !== $("again").value) {
+        signInProblem("The two passwords differ.");
+        return;
       }
+      if ([...$("new-password").value].length < 8) {
+        signInProblem("The password needs at least 8 characters.");
+        return;
+      }
+      const { status, data } = await call("POST", "/admin/api/setup/finish", {
+        email: $("email").value, code: $("code").value, password: $("new-password").value,
+      });
+      if (status === 204) await load();
+      else signInProblem(codeProblem(status, data));
     }
   } catch (_) {
     signInProblem("The server can't be reached.");

@@ -2449,30 +2449,29 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
-                .text_color(rgba(th.text))
-                .child(div().mb(px(8.0)).text_size(px(20.0)).child(title))
-                .children(options)
-                .child(
-                    div()
-                        .mt(px(16.0))
-                        .flex()
-                        .flex_row()
-                        .justify_end()
-                        .gap(px(8.0))
-                        .child(
-                            text_button("scope-cancel", tr!("calendar-cancel"), th).on_click(
-                                cx.listener(|this, _, window, cx| {
-                                    this.answer_scope(false, window, cx)
-                                }),
-                            ),
-                        )
-                        .child(filled_button("scope-ok", tr!("calendar-ok"), th).on_click(
-                            cx.listener(|this, _, window, cx| this.answer_scope(true, window, cx)),
-                        )),
-                ),
+                .text_color(rgba(th.text)),
             th,
             15.0,
             4.0,
+        )
+        // The frosted glass is the dialog's first child, under the text.
+        .child(div().mb(px(8.0)).text_size(px(20.0)).child(title))
+        .children(options)
+        .child(
+            div()
+                .mt(px(16.0))
+                .flex()
+                .flex_row()
+                .justify_end()
+                .gap(px(8.0))
+                .child(
+                    text_button("scope-cancel", tr!("calendar-cancel"), th).on_click(
+                        cx.listener(|this, _, window, cx| this.answer_scope(false, window, cx)),
+                    ),
+                )
+                .child(filled_button("scope-ok", tr!("calendar-ok"), th).on_click(
+                    cx.listener(|this, _, window, cx| this.answer_scope(true, window, cx)),
+                )),
         );
         deferred(
             div()
