@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The Calendar opens on Week"
+text = """
+Katna Calendar opens on the Week view again, with the days ahead in
+hours. Month, Day, Year and the others are a click away in the top bar.
+"""
