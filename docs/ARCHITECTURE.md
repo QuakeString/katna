@@ -3701,11 +3701,21 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   Longer suggestions use the grey writing suggestion and its Tab
   (`katna_ui::rich::Complete`), after a 600 ms pause at the end of a paragraph, ending in
   a small "✦ Tab" key; never for encrypted mail.
-- **Katna AI** (Katna Server, to come): 30 days free from the first use,
-  then $5 a month through Razorpay Subscriptions; a monthly cost cap per
-  account and an overall budget switch; the provider and model chosen on
-  a sign-in protected admin page; keys and the Razorpay secrets from
-  environment variables only.
+- **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
+  confirmed Katna accounts, 30 days free from the first use, then $5 a
+  month through Razorpay Subscriptions (to come; until then the server
+  answers 402 after the free month). The server builds the prompt with
+  `katna_ai::prompt` from the request, so a client cannot send the
+  service anything else, and asks the service set in
+  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 2.5 Flash-Lite by
+  default), then `KATNA_SERVER_AI_FALLBACK_*` when that fails. It counts
+  each answer's cost from the tokens the service reports at the prices
+  set (`_PRICE_IN_USD`, `_PRICE_OUT_USD`) per account and calendar month
+  (UTC): an account stops at `_ACCOUNT_CAP_USD` (1.00) and everyone at
+  `_BUDGET_USD` (50; 0 is off), with 300 requests an hour per account.
+  Text and answers are neither logged nor kept. Keys and the Razorpay
+  secrets come from environment variables only; a sign-in protected
+  admin page to change the service, model and budget is to come.
 
 ## 17. Performance budget
 

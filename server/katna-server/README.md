@@ -135,17 +135,19 @@ log could reset any account.
 | `GET /api/v1/languages` | LibreTranslate's languages: `[{"code", "name", "targets"}]`. |
 | `POST /api/v1/translate` `{"q", "source", "target"}` | Plain text translated by LibreTranslate: `{"translatedText"}`. `source` may be `auto`. 2000 requests per account per day; `503` when `KATNA_SERVER_TRANSLATE_CONCURRENCY` (8) requests are already being translated. |
 | `POST /api/v1/detect` `{"q"}` | The language of a text, as LibreTranslate answers. |
+| `POST /api/v1/ai/rephrase` `{"text", "tone", "instruction"}` | Katna AI rewrites the text: `{"text", "plan": {"kind": "trial"\|"paid", "days_left"}}`. 30 days free from the first use, then `402` (`pay`) until paid; `429` past the account's monthly cap (`KATNA_SERVER_AI_ACCOUNT_CAP_USD`), everyone's (`_BUDGET_USD`) or 300 an hour; `503` when no AI service is set; `502` (`upstream`) when it and the fallback fail. |
+| `POST /api/v1/ai/complete` `{"before", "answered"}` | The rest of the sentence, the same way; `""` when there is too little to go on. |
 | `GET /healthz` | `ok` when the database answers. |
 
 All but the first need `Authorization: Bearer <token>`. The tracking
 and translation routes (`/api/v1/tracks`, `/api/v1/events`,
-`/api/v1/languages`, `/api/v1/translate`, `/api/v1/detect`) also need the install signed in
+`/api/v1/languages`, `/api/v1/translate`, `/api/v1/detect`, `/api/v1/ai/…`) also need the install signed in
 to an account with a confirmed address. Errors are
 `{"error": "…", "code": "…"}`; `code` is `unknown_install` (401, register
 again), `sign_in` or `not_verified` (403), `wrong_password` (401),
 `exists` (409), `bad_email`, `short_password`, `long_password`,
-`wrong_code`, `code_expired`, `bad_request` (400), `not_found`, `too_many` (429),
-`mail_failed` (502), `busy` (503) or `server`.
+`wrong_code`, `code_expired`, `bad_request` (400), `pay` (402), `not_found`, `too_many` (429),
+`mail_failed` or `upstream` (502), `busy` (503) or `server`.
 
 ## Running it
 
@@ -197,7 +199,17 @@ only), `KATNA_SERVER_TRANSLATE_URL` (LibreTranslate, `http://` on the
 internal network; empty turns translation off),
 `KATNA_SERVER_TRANSLATIONS_PER_DAY` (2000),
 `KATNA_SERVER_TRANSLATE_CONCURRENCY` (8), `KATNA_SERVER_BLOCKED_HOSTS`
-(hosts, split by commas or spaces, that links may not go to), `RUST_LOG`.
+(hosts, split by commas or spaces, that links may not go to),
+`KATNA_SERVER_AI_KEY` (Katna AI's service key; empty turns it off),
+`_AI_PROVIDER` (`gemini`), `_AI_MODEL` (the service's usual one),
+`_AI_BASE` (its API address; `http://` only on an internal network),
+the same four as `KATNA_SERVER_AI_FALLBACK_*` for the service tried when
+the first fails, `_AI_TRIAL_DAYS` (30), `_AI_ACCOUNT_CAP_USD` (1.00 a
+month), `_AI_BUDGET_USD` (50 a month for all; 0 turns it off),
+`_AI_PRICE_IN_USD` and `_AI_PRICE_OUT_USD` (0.10 and 0.40 per million
+tokens, Gemini 2.5 Flash-Lite's), `_AI_PER_HOUR` (300), `RUST_LOG`.
+Neither the text sent to Katna AI nor its answer is logged or kept; only
+the number of requests and their cost per account and month.
 
 The in-memory limits (per address, per install, per network) each hold at
 most 100,000 keys; when one is full of keys still inside their window it

@@ -58,6 +58,66 @@ pub struct Config {
     /// username when it is an address, else
     /// `Katna <no-reply@katna.invenia.in>`).
     pub mail_from: String,
+    /// Katna AI: writing help for Katna accounts (`crate::ai`).
+    pub ai: AiConfig,
+}
+
+/// Katna AI's settings (`KATNA_SERVER_AI_*`).
+#[derive(Clone, Debug)]
+pub struct AiConfig {
+    /// The services asked, in order: the first, then the fallback when the
+    /// first fails. Empty turns Katna AI off.
+    pub services: Vec<AiService>,
+    /// Days free from an account's first use (`KATNA_SERVER_AI_TRIAL_DAYS`,
+    /// default 30).
+    pub trial_days: u32,
+    /// What one account may cost per calendar month, in millionths of a
+    /// US dollar (`KATNA_SERVER_AI_ACCOUNT_CAP_USD`, default 1.00).
+    pub account_cap_micros: u64,
+    /// What all accounts together may cost per calendar month
+    /// (`KATNA_SERVER_AI_BUDGET_USD`, default 50; 0 turns Katna AI off).
+    pub budget_micros: u64,
+    /// The price of a million tokens read and written
+    /// (`KATNA_SERVER_AI_PRICE_IN_USD`, default 0.10, and `_OUT_USD`, 0.40:
+    /// Gemini 2.5 Flash-Lite's), for the caps.
+    pub price_in_micros: u64,
+    pub price_out_micros: u64,
+    /// Requests one account may make per hour
+    /// (`KATNA_SERVER_AI_PER_HOUR`, default 300).
+    pub per_hour: u32,
+}
+
+impl Default for AiConfig {
+    fn default() -> Self {
+        Self {
+            services: Vec::new(),
+            trial_days: 30,
+            account_cap_micros: 1_000_000,
+            budget_micros: 50_000_000,
+            price_in_micros: 100_000,
+            price_out_micros: 400_000,
+            per_hour: 300,
+        }
+    }
+}
+
+/// One AI service Katna AI asks.
+#[derive(Clone, Debug)]
+pub struct AiService {
+    /// A `katna_ai::provider::PRESETS` id.
+    pub provider: &'static str,
+    /// Where its API is: the preset's, or `_BASE` (an `http://` address
+    /// only on the internal network, such as Ollama beside the server).
+    pub base: String,
+    pub model: String,
+    pub key: Secret,
+}
+
+impl AiService {
+    /// The kind of API it speaks.
+    pub fn kind(&self) -> katna_ai::Kind {
+        katna_ai::provider::preset(self.provider).kind
+    }
 }
 
 /// A setting that holds a password, kept out of debug output.
@@ -86,6 +146,7 @@ impl Default for Config {
             dev_mailer_log: false,
             blocked_hosts: Vec::new(),
             mail_from: "Katna <no-reply@katna.invenia.in>".into(),
+            ai: AiConfig::default(),
         }
     }
 }
@@ -189,6 +250,7 @@ impl Config {
             }
             (None, None) => None,
         };
+        config.ai = ai_config(&set)?;
         if let Some(value) = set("KATNA_SERVER_MAIL_FROM") {
             config.mail_from = value;
         } else if let Some(address) = username.filter(|u| u.contains('@')) {
@@ -196,6 +258,78 @@ impl Config {
         }
         Ok(config)
     }
+}
+
+/// Katna AI's settings, through `set` (a setting given and not empty).
+fn ai_config(set: &dyn Fn(&str) -> Option<String>) -> Result<AiConfig, ConfigError> {
+    let mut ai = AiConfig::default();
+    for prefix in ["KATNA_SERVER_AI", "KATNA_SERVER_AI_FALLBACK"] {
+        let name = |what: &str| format!("{prefix}_{what}");
+        let key = set(&name("KEY")).unwrap_or_default();
+        let base = set(&name("BASE"));
+        if key.is_empty() && base.is_none() {
+            continue;
+        }
+        let provider = set(&name("PROVIDER")).unwrap_or_else(|| "gemini".into());
+        let Some(preset) = katna_ai::PRESETS.iter().find(|p| p.id == provider) else {
+            return Err(ConfigError {
+                name: if prefix.ends_with("FALLBACK") {
+                    "KATNA_SERVER_AI_FALLBACK_PROVIDER"
+                } else {
+                    "KATNA_SERVER_AI_PROVIDER"
+                },
+                problem: format!(
+                    "{provider:?}: not one of gemini, openai, anthropic, mistral, deepseek, openrouter, other"
+                ),
+            });
+        };
+        let base = base.unwrap_or_else(|| preset.base.to_owned());
+        if !base.starts_with("https://") && !base.starts_with("http://") {
+            return Err(ConfigError {
+                name: "KATNA_SERVER_AI_BASE",
+                problem: format!("{base:?}: an https:// address (http:// only inside)"),
+            });
+        }
+        let model = set(&name("MODEL")).unwrap_or_else(|| preset.model.to_owned());
+        if model.is_empty() {
+            return Err(ConfigError {
+                name: "KATNA_SERVER_AI_MODEL",
+                problem: "needed for this provider".into(),
+            });
+        }
+        ai.services.push(AiService {
+            provider: preset.id,
+            base,
+            model,
+            key: Secret(key),
+        });
+    }
+    let usd = |name: &'static str, default: u64| -> Result<u64, ConfigError> {
+        match set(name) {
+            None => Ok(default),
+            Some(value) => {
+                let dollars: f64 = parse(name, &value)?;
+                if !(0.0..1e9).contains(&dollars) {
+                    return Err(ConfigError {
+                        name,
+                        problem: format!("{value:?}: dollars, such as 1.50"),
+                    });
+                }
+                Ok((dollars * 1e6).round() as u64)
+            }
+        }
+    };
+    ai.account_cap_micros = usd("KATNA_SERVER_AI_ACCOUNT_CAP_USD", ai.account_cap_micros)?;
+    ai.budget_micros = usd("KATNA_SERVER_AI_BUDGET_USD", ai.budget_micros)?;
+    ai.price_in_micros = usd("KATNA_SERVER_AI_PRICE_IN_USD", ai.price_in_micros)?;
+    ai.price_out_micros = usd("KATNA_SERVER_AI_PRICE_OUT_USD", ai.price_out_micros)?;
+    if let Some(value) = set("KATNA_SERVER_AI_TRIAL_DAYS") {
+        ai.trial_days = parse("KATNA_SERVER_AI_TRIAL_DAYS", &value)?;
+    }
+    if let Some(value) = set("KATNA_SERVER_AI_PER_HOUR") {
+        ai.per_hour = parse("KATNA_SERVER_AI_PER_HOUR", &value)?;
+    }
+    Ok(ai)
 }
 
 /// The SMTP URL for `host` and `port`: TLS from the start on 465, else
@@ -285,6 +419,29 @@ mod tests {
             _ => None,
         });
         assert!(bad.is_err());
+    }
+
+    #[test]
+    fn reads_katna_ai() {
+        let env: HashMap<&str, &str> = HashMap::from([
+            ("DATABASE_URL", "postgres://x"),
+            ("KATNA_SERVER_AI_KEY", "g-secret"),
+            ("KATNA_SERVER_AI_FALLBACK_PROVIDER", "mistral"),
+            ("KATNA_SERVER_AI_FALLBACK_KEY", "m-secret"),
+            ("KATNA_SERVER_AI_BUDGET_USD", "12.5"),
+        ]);
+        let config = Config::from_lookup(|name| env.get(name).map(|v| v.to_string())).unwrap();
+        let ai = &config.ai;
+        assert_eq!(ai.services.len(), 2);
+        assert_eq!(ai.services[0].provider, "gemini");
+        assert_eq!(ai.services[0].model, "gemini-2.5-flash-lite");
+        assert_eq!(ai.services[1].base, "https://api.mistral.ai/v1");
+        assert_eq!(ai.budget_micros, 12_500_000);
+        assert_eq!(ai.trial_days, 30);
+        assert!(!format!("{config:?}").contains("secret"));
+        // No key: Katna AI is off.
+        let off = Config::from_lookup(|name| (name == "DATABASE_URL").then(|| "x".into())).unwrap();
+        assert!(off.ai.services.is_empty());
     }
 
     #[test]

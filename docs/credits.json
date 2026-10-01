@@ -711,6 +711,16 @@
       "repository": "https://github.com/rust-postgres/rust-postgres"
     },
     {
+      "name": "tokio-rustls",
+      "version": "0.26.5",
+      "description": "Asynchronous TLS/SSL streams for Tokio using Rustls.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "rustls"
+      ],
+      "repository": "https://github.com/rustls/tokio-rustls"
+    },
+    {
       "name": "toml",
       "version": "1.1.6+spec-1.1.0",
       "description": "A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures.",
@@ -773,6 +783,16 @@
         "The rust-url developers"
       ],
       "repository": "https://github.com/servo/rust-url"
+    },
+    {
+      "name": "webpki-roots",
+      "version": "1.0.9",
+      "description": "Mozilla's CA root certificates for use with webpki",
+      "license": "CDLA-Permissive-2.0",
+      "authors": [
+        "rustls"
+      ],
+      "repository": "https://github.com/rustls/webpki-roots"
     },
     {
       "name": "whatlang",
