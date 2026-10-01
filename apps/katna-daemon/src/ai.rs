@@ -114,6 +114,7 @@ pub async fn complete(
             plan: Plan::default(),
         });
     };
+    let asked = std::time::Instant::now();
     let answer = match settings.source {
         AiSource::Off => return Err(AiError::Off),
         AiSource::Katna => {
@@ -126,7 +127,21 @@ pub async fn complete(
         AiSource::Own => own(settings, secrets, &prompt, COMPLETE_TIMEOUT).await?,
     };
     let text = prompt::clean_completion(before, &answer.text).unwrap_or_default();
+    tracing::info!(
+        ms = asked.elapsed().as_millis() as u64,
+        empty = text.is_empty(),
+        "sentence finished"
+    );
     Ok(AiAnswer { text, ..answer })
+}
+
+/// TLS for the AI services, set up once: loading the system's
+/// certificates for every suggestion would slow each one down.
+fn tls() -> Result<Tls, AiError> {
+    static TLS: std::sync::OnceLock<Result<Tls, String>> = std::sync::OnceLock::new();
+    TLS.get_or_init(|| Tls::system().map_err(|err| err.to_string()))
+        .clone()
+        .map_err(|err| AiError::Failed(format!("TLS: {err}")))
 }
 
 /// Asks Katna AI on Katna Server.
@@ -147,7 +162,7 @@ async fn katna(
         .map_err(|err| AiError::Failed(err.to_string()))?
         .filter(|token| !token.is_empty())
         .ok_or(AiError::SignIn)?;
-    let tls = Tls::system().map_err(|err| AiError::Failed(format!("TLS: {err}")))?;
+    let tls = tls()?;
     let body = serde_json::to_vec(request).map_err(|err| AiError::Failed(err.to_string()))?;
     let authorization = format!("Bearer {token}");
     let (status, answer) = http::request(
@@ -191,7 +206,7 @@ async fn own(
         return Err(AiError::NoKey);
     }
     let call = provider::call(preset.kind, &base, &model, &key, prompt);
-    let tls = Tls::system().map_err(|err| AiError::Failed(format!("TLS: {err}")))?;
+    let tls = tls()?;
     let headers: Vec<(&str, &str)> = call
         .headers
         .iter()
@@ -214,6 +229,50 @@ async fn own(
         },
     })
 }
+
+/// The models the user's own service `provider` (at `address` for
+/// [`OTHER`]) offers to the saved key.
+pub async fn models(
+    secrets: &Secrets,
+    provider: &str,
+    address: &str,
+) -> Result<Vec<String>, AiError> {
+    let preset = provider::preset(provider);
+    let base = if preset.id == OTHER {
+        address.trim().to_owned()
+    } else {
+        preset.base.to_owned()
+    };
+    if base.is_empty() {
+        return Err(AiError::Failed("no service address".into()));
+    }
+    let key = secrets
+        .ai_key()
+        .await
+        .map_err(|err| AiError::Failed(err.to_string()))?
+        .unwrap_or_default();
+    if key.is_empty() && preset.needs_key {
+        return Err(AiError::NoKey);
+    }
+    let call = provider::models_call(preset.kind, &base, &key);
+    let tls = tls()?;
+    let headers: Vec<(&str, &str)> = call
+        .headers
+        .iter()
+        .map(|(name, value)| (*name, value.as_str()))
+        .collect();
+    let (status, body) = http::request("GET", &call.url, &headers, None, &tls, MODELS_TIMEOUT)
+        .await
+        .map_err(|err| AiError::Failed(err.to_string()))?;
+    provider::models(preset.kind, status, &body).map_err(|err| match err {
+        ProviderError::Key => AiError::BadKey,
+        ProviderError::TooMany => AiError::TooMany,
+        ProviderError::Failed(err) => AiError::Failed(err),
+    })
+}
+
+/// How long listing a service's models may take.
+const MODELS_TIMEOUT: Duration = Duration::from_secs(15);
 
 /// The user's own service: its preset, address and model.
 fn own_service(settings: &Ai) -> (&'static provider::Preset, String, String) {

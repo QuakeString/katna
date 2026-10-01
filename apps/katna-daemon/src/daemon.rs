@@ -841,7 +841,19 @@ impl Daemon {
         let settings = settings(&self.paths).ai;
         crate::ai::complete(&settings, &self.secrets, before, answered)
             .await
-            .inspect_err(|err| tracing::debug!(%err, "finishing a sentence"))
+            .inspect_err(|err| tracing::info!(%err, "finishing a sentence"))
+    }
+
+    /// The models the user's own service `provider` offers to the saved
+    /// key ([`crate::ai::models`]).
+    pub async fn ai_models(
+        &self,
+        provider: &str,
+        address: &str,
+    ) -> Result<Vec<String>, crate::ai::AiError> {
+        crate::ai::models(&self.secrets, provider, address)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "listing AI models"))
     }
 
     /// Saves the key of the user's own AI service; empty deletes it.

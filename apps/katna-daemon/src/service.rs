@@ -534,6 +534,13 @@ macro_rules! pim_interface {
                 Ok(self.daemon.ai_key_saved().await?)
             }
 
+            async fn ai_models(&self, provider: String, address: String) -> (Vec<String>, String) {
+                match self.daemon.ai_models(&provider, &address).await {
+                    Ok(models) => (models, String::new()),
+                    Err(err) => (Vec::new(), err.problem().to_owned()),
+                }
+            }
+
             async fn update_status(&self) -> UpdateStatus {
                 self.daemon.updates().status()
             }

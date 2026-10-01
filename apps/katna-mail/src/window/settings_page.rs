@@ -333,6 +333,7 @@ impl MailWindow {
             self.edit_signature(editing, window, cx);
             self.load_templates(cx);
             self.load_ai_key_saved(cx);
+            self.load_ai_models(cx);
         }
         // The page opens over the app on show, which stays picked in the
         // rail and comes back as it was when the page closes. The search

@@ -1559,7 +1559,39 @@ impl RichEditor {
     }
 
     pub fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_whole(cx);
+    }
+
+    /// Selects the whole text, as Ctrl+A does.
+    pub fn select_whole(&mut self, cx: &mut Context<Self>) {
         self.set_selection(self.doc.start(), self.doc.end(), cx);
+    }
+
+    /// Where what the user wrote ends: the last paragraph with text above
+    /// the signature, the quoted mail, a table or a picture.
+    pub fn own_text_end(&self) -> Option<Pos> {
+        let mut last = None;
+        for (ix, block) in self.doc.blocks.iter().enumerate() {
+            match block {
+                Block::Para(para) if !self.plain_blocked(para) => {
+                    if para.text.chars().any(char::is_alphabetic) {
+                        last = Some(Pos::new(Path::top(ix), para.len()));
+                    }
+                }
+                _ => break,
+            }
+        }
+        last
+    }
+
+    /// Selects what the user wrote ([`Self::own_text_end`]). False when
+    /// there is none.
+    pub fn select_own_text(&mut self, cx: &mut Context<Self>) -> bool {
+        let Some(end) = self.own_text_end() else {
+            return false;
+        };
+        self.set_selection(Pos::new(Path::top(0), 0), end, cx);
+        true
     }
 
     /// Moves `dy` pixels up or down from the cursor, keeping its x.

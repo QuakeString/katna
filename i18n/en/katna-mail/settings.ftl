@@ -425,6 +425,8 @@ settings-ai-other = Other
 settings-ai-address = Address
 # Left empty, the service's usual model is used (shown greyed in the field).
 settings-ai-model = Model
+# The button at the end of the model field that shows the service's models.
+settings-ai-models = Models this service offers
 settings-ai-key = API key
 settings-ai-key-paste = Paste your key
 settings-ai-key-save = Save key

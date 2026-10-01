@@ -163,7 +163,14 @@ pub fn call(kind: Kind, base: &str, model: &str, key: &str, prompt: &Prompt) -> 
             if model.contains("2.5") {
                 config["thinkingConfig"] = json!({"thinkingBudget": 0});
             } else if model.starts_with("gemini-3") {
-                config["thinkingConfig"] = json!({"thinkingLevel": "low"});
+                // Flash models can skip almost all thinking; Pro ones
+                // think at least a little.
+                let level = if prompt.quick && model.contains("flash") {
+                    "minimal"
+                } else {
+                    "low"
+                };
+                config["thinkingConfig"] = json!({"thinkingLevel": level});
                 config["maxOutputTokens"] = json!(prompt.max_tokens.max(512));
             }
             let body = json!({
@@ -250,6 +257,99 @@ pub fn answer(kind: Kind, status: u16, body: &[u8]) -> Result<String, ProviderEr
     Ok(text.unwrap_or_default())
 }
 
+/// The request listing the models a service of `kind` at `base` offers
+/// to `key` (a `GET`, so no body).
+pub fn models_call(kind: Kind, base: &str, key: &str) -> Call {
+    let base = base.trim().trim_end_matches('/');
+    let mut headers = Vec::new();
+    let url = match kind {
+        Kind::OpenAi => {
+            if !key.is_empty() {
+                headers.push(("Authorization", format!("Bearer {key}")));
+            }
+            format!("{base}/models")
+        }
+        Kind::Gemini => {
+            headers.push(("x-goog-api-key", key.to_owned()));
+            format!("{base}/v1beta/models?pageSize=1000")
+        }
+        Kind::Anthropic => {
+            headers.push(("x-api-key", key.to_owned()));
+            headers.push(("anthropic-version", "2023-06-01".to_owned()));
+            format!("{base}/v1/models?limit=1000")
+        }
+    };
+    Call {
+        url,
+        headers,
+        body: Vec::new(),
+    }
+}
+
+/// The models in a service's answer to [`models_call`] that can write
+/// text, sorted, newest names first within a family.
+pub fn models(kind: Kind, status: u16, body: &[u8]) -> Result<Vec<String>, ProviderError> {
+    match status {
+        200 => {}
+        401 | 403 => return Err(ProviderError::Key),
+        429 => return Err(ProviderError::TooMany),
+        400 if body
+            .windows(b"API_KEY_INVALID".len())
+            .any(|w| w == b"API_KEY_INVALID") =>
+        {
+            return Err(ProviderError::Key);
+        }
+        status => return Err(ProviderError::Failed(format!("HTTP {status}"))),
+    }
+    let value: Value = serde_json::from_slice(body)
+        .map_err(|err| ProviderError::Failed(format!("models: {err}")))?;
+    let mut names: Vec<String> = match kind {
+        Kind::Gemini => value["models"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|m| {
+                m["supportedGenerationMethods"]
+                    .as_array()
+                    .is_some_and(|ways| ways.iter().any(|w| w == "generateContent"))
+            })
+            .filter_map(|m| m["name"].as_str())
+            .map(|name| name.trim_start_matches("models/").to_owned())
+            // Not for writing text.
+            .filter(|name| {
+                !["embedding", "tts", "image", "aqa"]
+                    .iter()
+                    .any(|n| name.contains(n))
+            })
+            .collect(),
+        Kind::OpenAi | Kind::Anthropic => value["data"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|m| m["id"].as_str())
+            .filter(|id| {
+                ![
+                    "embed",
+                    "whisper",
+                    "tts",
+                    "dall-e",
+                    "moderation",
+                    "image",
+                    "audio",
+                    "realtime",
+                    "transcribe",
+                ]
+                .iter()
+                .any(|n| id.contains(n))
+            })
+            .map(str::to_owned)
+            .collect(),
+    };
+    names.sort_by(|a, b| b.cmp(a));
+    names.dedup();
+    Ok(names)
+}
+
 /// The tokens a service's answer says it read and wrote, when it says.
 pub fn usage(kind: Kind, body: &[u8]) -> Option<(u64, u64)> {
     let value: Value = serde_json::from_slice(body).ok()?;
@@ -293,6 +393,7 @@ mod tests {
             user: "hi".into(),
             max_tokens: 40,
             temperature: 0.2,
+            quick: false,
         }
     }
 
@@ -344,6 +445,31 @@ mod tests {
     }
 
     #[test]
+    fn model_lists() {
+        let c = models_call(
+            Kind::Gemini,
+            "https://generativelanguage.googleapis.com/",
+            "k",
+        );
+        assert!(c.url.ends_with("/v1beta/models?pageSize=1000"));
+        let gemini = br#"{"models":[
+            {"name":"models/gemini-3.5-flash-lite","supportedGenerationMethods":["generateContent","countTokens"]},
+            {"name":"models/gemini-embedding-001","supportedGenerationMethods":["embedContent"]},
+            {"name":"models/gemini-3.5-flash","supportedGenerationMethods":["generateContent"]}]}"#;
+        assert_eq!(
+            models(Kind::Gemini, 200, gemini).unwrap(),
+            ["gemini-3.5-flash-lite", "gemini-3.5-flash"]
+        );
+        let openai =
+            br#"{"data":[{"id":"gpt-5-mini"},{"id":"text-embedding-3-small"},{"id":"gpt-5"}]}"#;
+        assert_eq!(
+            models(Kind::OpenAi, 200, openai).unwrap(),
+            ["gpt-5-mini", "gpt-5"]
+        );
+        assert_eq!(models(Kind::OpenAi, 401, b""), Err(ProviderError::Key));
+    }
+
+    #[test]
     fn gemini_and_claude_requests() {
         let c = call(
             Kind::Gemini,
@@ -360,6 +486,18 @@ mod tests {
             body(&c)["generationConfig"]["thinkingConfig"]["thinkingBudget"],
             0
         );
+        // Finishing a sentence: Flash thinks as little as it can.
+        let quick = Prompt {
+            quick: true,
+            ..prompt()
+        };
+        let level = |model: &str, prompt: &Prompt| {
+            let c = call(Kind::Gemini, "https://g", model, "k", prompt);
+            body(&c)["generationConfig"]["thinkingConfig"]["thinkingLevel"].clone()
+        };
+        assert_eq!(level("gemini-3.5-flash-lite", &quick), "minimal");
+        assert_eq!(level("gemini-3.5-flash-lite", &prompt()), "low");
+        assert_eq!(level("gemini-3.5-pro", &quick), "low");
         let c = call(
             Kind::Anthropic,
             "https://api.anthropic.com",

@@ -650,6 +650,24 @@ impl MailWindow {
             .when(open(Popup::Emoji), |d| {
                 d.child(above(self.render_emoji_picker(th, cx)))
             });
+        // Writing help: the selection, or all the user wrote.
+        let sparkle = self.ai_allowed().then(|| {
+            icon_button_colored(
+                "compose-rephrase-all",
+                "sparkle",
+                20.0,
+                if compose.rephrase.is_some() {
+                    th.accent
+                } else {
+                    th.text_dim
+                },
+                th,
+            )
+            .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
+            // The text keeps its selection.
+            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(cx.listener(|this, _, window, cx| this.toggle_rephrase(window, cx)))
+        });
         let more = div()
             .relative()
             .child(
@@ -662,9 +680,10 @@ impl MailWindow {
         // A narrow row keeps the tools that fit beside Send and the bin,
         // dropping the calendar, photo, emoji and link buttons in turn;
         // links still come with Ctrl+K. Formatting, attaching, the
-        // signature, templates and More always stay.
+        // signature, templates, More and writing help always stay.
         let pill = if archives { 24.0 } else { 0.0 };
-        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - 5;
+        let always = if sparkle.is_some() { 6 } else { 5 };
+        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - always;
         let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
         div()
             .flex_none()
@@ -677,6 +696,7 @@ impl MailWindow {
             .child(send)
             .child(div().w(px(8.0)))
             .child(format)
+            .children(sparkle)
             .child(
                 tool("compose-attach", "attachment", tr!("compose-tool-attach"))
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
