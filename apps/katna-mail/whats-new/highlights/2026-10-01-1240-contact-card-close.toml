@@ -5,5 +5,6 @@ text = """
 The contact card beside a conversation has a ✕ in its corner, and clicking
 the same person's picture or address again puts the card away. In the chat
 view, the formatting bar behind Aa is sharper: a raised strip with icons at
-full strength.
+full strength, and a click on the chat's header lists everyone in it
+with their address and how many mails each sent.
 """

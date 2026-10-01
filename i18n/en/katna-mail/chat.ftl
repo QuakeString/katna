@@ -18,6 +18,19 @@ chat-people = { $names } and you · { $count ->
     [one] { $count } mail
    *[other] { $count } mails
 }
+# The tooltip of the conversation's header, which opens the list of everyone in it.
+chat-people-show = Show everyone in this chat
+# Over that list. $count: the people, the user included.
+chat-people-heading = { $count ->
+    [one] In this chat · { $count } person
+   *[other] In this chat · { $count } people
+}
+# Beside each person in that list. $count: the mails they sent in this conversation.
+chat-member-mails = { $count ->
+    [0] No mails
+    [one] { $count } mail
+   *[other] { $count } mails
+}
 # The day over the bubbles of that day.
 chat-today = Today
 chat-yesterday = Yesterday
