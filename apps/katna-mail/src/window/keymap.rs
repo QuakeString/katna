@@ -17,8 +17,8 @@ use super::{
     READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown,
     ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast, SelectNext,
     SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowFiles, ShowMail,
-    ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck, ToggleNavigation, ToggleSettings, ToggleStar,
-    Undo, WINDOW_CONTEXT,
+    ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck, ToggleMute, ToggleNavigation, ToggleSettings,
+    ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -165,6 +165,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("add_to_tasks", Actions, Mail, ["shift-t"], AddToTasks),
     shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
     shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
+    shortcut!("mute", Actions, Mail, ["m"], ToggleMute),
     shortcut!("check", Actions, List, ["x"], ToggleCheck),
     shortcut!("select_all", Actions, List, ["* a"], SelectAll),
     shortcut!("select_none", Actions, List, ["* n"], SelectNone),
@@ -269,6 +270,8 @@ const THUNDERBIRD: Preset = &[
     ("spam", &["j"]),
     ("mark_read", &["r"]),
     ("mark_unread", &["m"]),
+    // Ignore thread.
+    ("mute", &["k"]),
     ("select_all", &["ctrl-a"]),
     ("undo", &["ctrl-z"]),
     ("search", &["ctrl-k", "ctrl-shift-k"]),

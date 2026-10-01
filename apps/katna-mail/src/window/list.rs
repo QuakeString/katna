@@ -248,6 +248,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
             .on_action(cx.listener(Self::open_context_menu_key))
@@ -1096,6 +1097,12 @@ impl MailWindow {
                                     this.act_on_targets(Act::Pin(false), cx)
                                 })),
                         )
+                        .child(self.mute_menu_items(
+                            which != Menu::ReaderMore || squeeze.is_some_and(|s| s.mute),
+                            which == Menu::ReaderMore,
+                            th,
+                            cx,
+                        ))
                         .when(which == Menu::ReaderMore, |d| {
                             d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
                                 .child(
@@ -2233,6 +2240,14 @@ impl MailWindow {
             .font_weight(weight)
             .whitespace_nowrap()
             .text_color(rgba(if row.unread { th.text } else { th.text_faint }))
+            .when(self.line_muted(key), |d| {
+                d.child(
+                    div()
+                        .id(("row-muted", ix))
+                        .tooltip(tip(tr!("quiet-row-muted"), th))
+                        .child(icon("bell-off", th.text_faint, 16.0)),
+                )
+            })
             .when(row.pinned, |d| {
                 d.child(
                     div()
