@@ -378,3 +378,93 @@ async fn no_admins_no_page() {
         assert_eq!(status, StatusCode::NOT_FOUND, "{path}");
     }
 }
+
+#[tokio::test]
+#[ignore = "needs PostgreSQL in KATNA_SERVER_TEST_DATABASE_URL"]
+async fn the_first_password_is_chosen_on_the_page_after_a_mailed_code() {
+    let app = App::new(true).await;
+    let status = |body: Value| body["setup"].as_bool();
+    let (_, body, _) = app
+        .call("GET", "/admin/api/status", None, None, false, None)
+        .await;
+    assert_eq!(status(body), Some(true));
+
+    // Anyone may ask; only the admin's address gets a code.
+    for email in ["stranger@example.com", app.admin.as_str()] {
+        let (code, _, _) = app
+            .call(
+                "POST",
+                "/admin/api/setup",
+                None,
+                None,
+                true,
+                Some(json!({ "email": email })),
+            )
+            .await;
+        assert_eq!(code, StatusCode::ACCEPTED);
+    }
+    assert!(
+        app.last_code("stranger@example.com", Purpose::AdminSetup)
+            .is_none()
+    );
+    let code = app.last_code(&app.admin, Purpose::AdminSetup).unwrap();
+
+    // A wrong code sets nothing.
+    let finish =
+        |code: String| json!({ "email": app.admin, "code": code, "password": "admin battery" });
+    let (status_code, body, _) = app
+        .call(
+            "POST",
+            "/admin/api/setup/finish",
+            None,
+            None,
+            true,
+            Some(finish("000000".into())),
+        )
+        .await;
+    assert_eq!(status_code, StatusCode::BAD_REQUEST, "{body}");
+
+    let (status_code, _, set) = app
+        .call(
+            "POST",
+            "/admin/api/setup/finish",
+            None,
+            None,
+            true,
+            Some(finish(code)),
+        )
+        .await;
+    assert_eq!(status_code, StatusCode::NO_CONTENT);
+    let cookie = set.unwrap().split(';').next().unwrap().to_owned();
+    let (status_code, _, _) = app
+        .call("GET", "/admin/api/state", None, Some(&cookie), false, None)
+        .await;
+    assert_eq!(status_code, StatusCode::OK);
+    let (_, body, _) = app
+        .call("GET", "/admin/api/status", None, None, false, None)
+        .await;
+    assert_eq!(status(body), Some(false));
+
+    // Once set, the page can't choose it again; signing in works.
+    let (code, _, _) = app
+        .call(
+            "POST",
+            "/admin/api/setup",
+            None,
+            None,
+            true,
+            Some(json!({ "email": app.admin })),
+        )
+        .await;
+    assert_eq!(code, StatusCode::ACCEPTED);
+    assert_eq!(
+        app.outbox
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|s| s.purpose == Purpose::AdminSetup)
+            .count(),
+        1
+    );
+    app.sign_in().await;
+}

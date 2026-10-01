@@ -217,8 +217,9 @@ among; what it saves wins over the `_AI_*` lines above,
 off), `RUST_LOG`.
 
 The admin page is for whoever runs the server; Katna accounts can never
-open it. Set each admin's password on the server, asked twice and stored
-as a hash (run it again to change it):
+open it. The first time, open `/admin`: it mails a code to the admin
+address and then takes the new password. To set a forgotten password, run
+on the server (asked twice, stored as a hash):
 
 ```sh
 docker compose exec -it server katna-server admin-password [address]

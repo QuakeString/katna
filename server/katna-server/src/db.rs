@@ -128,11 +128,12 @@ const MIGRATIONS: &[&str] = &[
          updated_by TEXT NOT NULL
      );",
     // 7: the admin page's own sign-in, apart from Katna accounts: a
-    // password set on the server (`katna-server admin-password`), and the
-    // code mailed for the second step with its wrong guesses.
+    // password (none until it is first set, on the page or with
+    // `katna-server admin-password`), and the code mailed for the second
+    // step or the first password, with its wrong guesses.
     "CREATE TABLE admins (
          email TEXT PRIMARY KEY,
-         password_hash TEXT NOT NULL,
+         password_hash TEXT,
          code_hash BYTEA,
          code_expires_at BIGINT,
          code_attempts INTEGER NOT NULL DEFAULT 0,
@@ -1011,11 +1012,74 @@ impl Db {
             .get()
             .await?
             .query_opt(
-                "SELECT password_hash FROM admins WHERE email = $1",
+                "SELECT password_hash FROM admins
+                 WHERE email = $1 AND password_hash IS NOT NULL",
                 &[&email],
             )
             .await?
             .map(|row| row.get(0)))
+    }
+
+    /// Whether any of `emails` has no admin page password yet.
+    pub async fn admins_to_set_up(&self, emails: &[String]) -> Result<bool, DbError> {
+        let set: i64 = self
+            .pool
+            .get()
+            .await?
+            .query_one(
+                "SELECT count(*) FROM admins
+                 WHERE email = ANY($1) AND password_hash IS NOT NULL",
+                &[&emails],
+            )
+            .await?
+            .get(0);
+        Ok(usize::try_from(set).unwrap_or(usize::MAX) < emails.len())
+    }
+
+    /// Keeps the hash of a code mailed to set the first password of the
+    /// admin `email`; false (and nothing kept) once it has one.
+    pub async fn put_admin_setup_code(
+        &self,
+        email: &str,
+        code_hash: &[u8],
+        expires_at: i64,
+        now: i64,
+    ) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO admins (email, code_hash, code_expires_at, updated_at)
+                 VALUES ($1, $2, $3, $4)
+                 ON CONFLICT (email) DO UPDATE
+                     SET code_hash = $2, code_expires_at = $3, code_attempts = 0
+                     WHERE admins.password_hash IS NULL",
+                &[&email, &code_hash, &expires_at, &now],
+            )
+            .await?
+            == 1)
+    }
+
+    /// Sets the first admin page password of `email`; false if it already
+    /// has one.
+    pub async fn set_first_admin_password(
+        &self,
+        email: &str,
+        password_hash: &str,
+        now: i64,
+    ) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .execute(
+                "UPDATE admins SET password_hash = $2, updated_at = $3
+                 WHERE email = $1 AND password_hash IS NULL",
+                &[&email, &password_hash, &now],
+            )
+            .await?
+            == 1)
     }
 
     /// Keeps the hash of a code mailed to the admin `email`.

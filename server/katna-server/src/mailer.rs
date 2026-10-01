@@ -24,6 +24,8 @@ pub enum Purpose {
     Reset,
     /// Second step of signing in to the server's admin page.
     Admin,
+    /// Setting the admin page's first password.
+    AdminSetup,
 }
 
 impl Purpose {
@@ -33,6 +35,7 @@ impl Purpose {
             Purpose::Verify => "verify",
             Purpose::Reset => "reset",
             Purpose::Admin => "admin",
+            Purpose::AdminSetup => "admin-setup",
         }
     }
 }
@@ -164,6 +167,15 @@ fn text(purpose: Purpose, code: &str) -> (String, String) {
                  this mail; your password stays as it is.\n"
             ),
         ),
+        Purpose::AdminSetup => (
+            format!("{code} sets up your Katna Server admin page"),
+            format!(
+                "Type this code on the Katna Server admin page to choose its password:\n\n    \
+                 {code}\n\n\
+                 It works for 30 minutes. If you did not just open the admin page, someone \
+                 else did: nothing changes without this code.\n"
+            ),
+        ),
         Purpose::Admin => (
             format!("{code} is your Katna Server admin code"),
             format!(
@@ -182,7 +194,12 @@ mod tests {
 
     #[test]
     fn the_code_is_in_subject_and_body() {
-        for purpose in [Purpose::Verify, Purpose::Reset, Purpose::Admin] {
+        for purpose in [
+            Purpose::Verify,
+            Purpose::Reset,
+            Purpose::Admin,
+            Purpose::AdminSetup,
+        ] {
             let (subject, body) = text(purpose, "482913");
             assert!(subject.starts_with("482913 "));
             assert!(body.contains("    482913\n"));

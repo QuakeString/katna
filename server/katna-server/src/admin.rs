@@ -7,7 +7,9 @@
 //! server with `katna-server admin-password`, and Katna accounts can never
 //! open the page.
 //!
-//! Signing in takes that password and then a code mailed to the address
+//! The first password can also be chosen on the page itself, after a code
+//! mailed to the admin's address, so whoever finds the page first cannot
+//! claim it. Signing in takes that password and then a code mailed to the address
 //! (both within the account routes' limits); the session is a random token
 //! in a `Secure`, `HttpOnly`, `SameSite=Strict` cookie, kept in memory for
 //! 12 hours (a restart signs everyone out). Every call of the page also
@@ -19,6 +21,12 @@
 //! are saved in the database over the environment's.
 //!
 //! - `GET /admin`, `/admin/app.js`, `/admin/app.css`: the page.
+//! - `GET /admin/api/status`: `{setup}`, true while an admin has no
+//!   password yet.
+//! - `POST /admin/api/setup` `{email}`: for an admin without a password,
+//!   mails a code to choose the first one (always 202).
+//! - `POST /admin/api/setup/finish` `{email, code, password}`: sets that
+//!   first password and signs in (204 + cookie).
 //! - `POST /admin/api/sign-in` `{email, password}`: mails a code (202).
 //! - `POST /admin/api/code` `{email, code}`: sets the session cookie (204).
 //! - `POST /admin/api/sign-out`.
@@ -200,6 +208,9 @@ pub fn routes() -> Router<AppState> {
         .route("/admin/", get(page))
         .route("/admin/app.js", get(script))
         .route("/admin/app.css", get(style))
+        .route("/admin/api/status", get(status))
+        .route("/admin/api/setup", post(setup))
+        .route("/admin/api/setup/finish", post(finish_setup))
         .route("/admin/api/sign-in", post(sign_in))
         .route("/admin/api/code", post(code))
         .route("/admin/api/sign-out", post(sign_out))
@@ -323,27 +334,34 @@ async fn code(
     let email = normalize_email(&body.email)
         .filter(|email| is_admin(&state, email))
         .ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
-    match state
-        .db()
-        .check_admin_code(&email, &admin_code_hash(&email, &body.code), now_ms())
-        .await?
-    {
-        CodeCheck::Right => {}
-        CodeCheck::Wrong => return Err(ApiError::Invalid("wrong_code", "wrong code")),
-        CodeCheck::Gone => {
-            return Err(ApiError::Invalid(
-                "code_expired",
-                "the code has expired; ask for a new one",
-            ));
-        }
-        CodeCheck::Locked => {
-            return Err(ApiError::TooMany(
-                "too many wrong codes; try again tomorrow",
-            ));
-        }
-    }
-    let token = state.admin_sessions().start(&email);
+    check_admin(
+        state
+            .db()
+            .check_admin_code(&email, &admin_code_hash(&email, &body.code), now_ms())
+            .await?,
+    )?;
     tracing::info!("signed in to the admin page");
+    signed_in(&state, &email)
+}
+
+/// The answer to a typed code.
+fn check_admin(check: CodeCheck) -> Result<(), ApiError> {
+    match check {
+        CodeCheck::Right => Ok(()),
+        CodeCheck::Wrong => Err(ApiError::Invalid("wrong_code", "wrong code")),
+        CodeCheck::Gone => Err(ApiError::Invalid(
+            "code_expired",
+            "the code has expired; ask for a new one",
+        )),
+        CodeCheck::Locked => Err(ApiError::TooMany(
+            "too many wrong codes; try again tomorrow",
+        )),
+    }
+}
+
+/// A new session for the admin `email`, in the answer's cookie.
+fn signed_in(state: &AppState, email: &str) -> Result<Response, ApiError> {
+    let token = state.admin_sessions().start(email);
     let cookie = format!(
         "{COOKIE}={token}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age={}",
         SESSION.as_secs()
@@ -354,6 +372,114 @@ async fn code(
         HeaderValue::from_str(&cookie).map_err(|_| ApiError::Hash)?,
     );
     Ok(response)
+}
+
+/// What a code mailed to choose the first password is stored as.
+fn setup_code_hash(email: &str, code: &str) -> Vec<u8> {
+    code_hash(&format!("admin-setup:{email}"), &clean_code(code))
+}
+
+#[derive(Serialize)]
+struct Status {
+    setup: bool,
+}
+
+/// Whether the page should offer to choose a first password.
+async fn status(State(state): State<AppState>) -> Result<Json<Status>, ApiError> {
+    page_on(&state)?;
+    let setup = state
+        .db()
+        .admins_to_set_up(&state.config().admin_emails)
+        .await?;
+    Ok(Json(Status { setup }))
+}
+
+#[derive(Deserialize)]
+struct SetupBody {
+    email: String,
+}
+
+/// Mails a code to choose the first password, to an admin without one.
+/// The same answer whatever the address, so the page does not tell who
+/// the admins are.
+async fn setup(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    addr: ClientAddr,
+    Json(body): Json<SetupBody>,
+) -> Result<StatusCode, ApiError> {
+    page_on(&state)?;
+    from_page(&headers)?;
+    limited(&state, &headers, addr)?;
+    let Some(email) = normalize_email(&body.email).filter(|email| is_admin(&state, email)) else {
+        return Ok(StatusCode::ACCEPTED);
+    };
+    if !state.account_limits().mails.allow(email.clone()) {
+        return Err(ApiError::TooMany("too many codes mailed; try again later"));
+    }
+    let code = auth::new_code();
+    let kept = state
+        .db()
+        .put_admin_setup_code(
+            &email,
+            &setup_code_hash(&email, &code),
+            now_ms() + CODE_LIFETIME_MS,
+            now_ms(),
+        )
+        .await?;
+    if kept {
+        state
+            .mailer()
+            .send_code(&email, Purpose::AdminSetup, &code)
+            .await
+            .map_err(|error| {
+                tracing::warn!(%error, "could not mail an admin setup code");
+                ApiError::MailFailed
+            })?;
+    }
+    Ok(StatusCode::ACCEPTED)
+}
+
+#[derive(Deserialize)]
+struct FinishSetup {
+    email: String,
+    code: String,
+    password: String,
+}
+
+/// The mailed code is right: keeps the first password and signs in.
+async fn finish_setup(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    addr: ClientAddr,
+    Json(body): Json<FinishSetup>,
+) -> Result<Response, ApiError> {
+    page_on(&state)?;
+    from_page(&headers)?;
+    limited(&state, &headers, addr)?;
+    auth::check_password(&body.password)?;
+    let email = normalize_email(&body.email)
+        .filter(|email| is_admin(&state, email))
+        .ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
+    check_admin(
+        state
+            .db()
+            .check_admin_code(&email, &setup_code_hash(&email, &body.code), now_ms())
+            .await?,
+    )?;
+    let hash = auth::hash_password(body.password).await?;
+    if !state
+        .db()
+        .set_first_admin_password(&email, &hash, now_ms())
+        .await?
+    {
+        return Err(ApiError::Invalid(
+            "code_expired",
+            "the password is already set",
+        ));
+    }
+    tracing::info!("admin page password chosen");
+    signed_in(&state, &email)
 }
 
 async fn sign_out(State(state): State<AppState>, admin: Admin) -> Response {
