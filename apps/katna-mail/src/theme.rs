@@ -103,6 +103,8 @@ pub struct Theme {
     /// translucent, over a blur of this many device pixels of what is
     /// behind. 0 keeps them opaque ([`Theme::frosted`]).
     pub frost: u32,
+    /// How opaque the frost's tint is, in percent.
+    pub frost_tint: u8,
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
@@ -182,10 +184,12 @@ impl Theme {
     }
 
     /// Frosted floating panels, blurring `radius` device pixels of what is
-    /// behind them (Settings > Experimental > Blurred background).
-    pub fn frosted(self, radius: f32) -> Self {
+    /// behind them under a tint `tint` percent opaque (Settings >
+    /// Experimental > Blur).
+    pub fn frosted(self, radius: f32, tint: u8) -> Self {
         Self {
             frost: radius.round().max(1.0) as u32,
+            frost_tint: tint.min(100),
             ..self
         }
     }
@@ -363,6 +367,7 @@ impl Theme {
             raised: if dark { ink(RAISED_LIFT) } else { surface },
             rim: if dark { fade(text, RIM) } else { 0x00000000 },
             frost: 0,
+            frost_tint: 100,
             switch_off: ink(0.18),
             tabs,
             folder_icons: base.folder_icons,
@@ -486,6 +491,7 @@ const LIGHT: Theme = Theme {
     raised: 0xffffffff,
     rim: 0x00000000,
     frost: 0,
+    frost_tint: 100,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
     folder_icons: FolderIcons {
@@ -538,6 +544,7 @@ const DARK: Theme = Theme {
     raised: 0x333537ff,
     rim: 0xe3e3e321,
     frost: 0,
+    frost_tint: 100,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
     folder_icons: FolderIcons {
