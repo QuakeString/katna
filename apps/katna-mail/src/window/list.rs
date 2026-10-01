@@ -2208,6 +2208,7 @@ impl MailWindow {
         let correspondent = div()
             .flex()
             .flex_row()
+            .items_center()
             .min_w_0()
             .gap(px(4.0))
             .text_color(rgba(th.text))
@@ -2262,12 +2263,12 @@ impl MailWindow {
                 )
             })
             .when(row.count > 1, |d| {
+                // The conversation's mail count: the folders' tight faint
+                // pill, centred on the names' line.
                 d.child(
-                    div()
-                        .flex_none()
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(row.count.to_string()),
+                    super::nav::count_pill(row.count as u64, open || checked, th)
+                        .pl(px(2.0))
+                        .text_color(rgba(th.text_dim)),
                 )
             });
         // The quick actions fade in over the date.
