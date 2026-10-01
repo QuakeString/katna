@@ -1554,8 +1554,20 @@ all, Reply to the sender only, Forward, Copy text and Show as mail, and
 answering an older bubble aims the reply at it (quote and threading) with a
 "Replying to" strip, keeping what was written. A name or picture opens the
 contact panel on that person, with the signature they last used in the
-conversation. Pinning, attaching from the Files page and company details
-are later steps.
+conversation. The paperclip's From Files opens a picker over the feed with
+the Files page's filters, this conversation's files first; ticked files
+weigh against the 25 MB a mail carries, and those past it go by Google
+Drive or OneDrive when the account has one. Up to five things can be pinned
+to the top of a chat: a mail (hover Pin, or the right-click menu) or one of
+its files (right-click on its card). Pins live in the mail store's
+`chat_pin` table (`katna_store::chat_pins`, mail.db v12), written by the
+daemon (`Pim1.PinInChat`, `UnpinInChat`, `OrderChatPins`) and read through
+the conversation's messages, so they survive the thread being rebuilt;
+nothing goes to the mail service, which has no such thing. A bar under the
+header shows one pin; a click jumps to its bubble and moves to the next,
+and its list button lists all of them, to drag into a new order or unpin.
+A sixth pin asks which one it replaces, the oldest picked. Pinning text
+waits for bubbles' text to be selectable; company details are a later step.
 
 **Window state.** The mail window opens as it closed: its size, maximized
 state and place (`katna_chrome::placement`), and what it showed: the app of

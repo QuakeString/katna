@@ -54,6 +54,27 @@ chat-reply-only = Reply to { $name } only
 chat-forward = Forward
 chat-copy-text = Copy text
 chat-show-as-mail = Show as mail
+# Pins: up to five things kept at the top of a chat, on this computer.
+chat-pin = Pin to top
+chat-pin-file = Pin file to top
+chat-unpin = Unpin
+chat-unpin-file = Unpin file
+# The bar under the header. $at: which pin it shows; $count: how many.
+chat-pinned-of = Pinned { $at } of { $count }
+chat-pins-all = All pins
+# The list of pins. $count: how many; $most: the most a chat holds.
+chat-pins-heading = Pinned · { $count } of { $most }
+chat-pins-drag = Drag to reorder
+# $name: the sender's first name; $when: a day, as "yesterday".
+chat-pin-from-mail = Mail from { $name } · { $when }
+chat-pin-from-file = File from { $name } · { $when }
+chat-pin-from-text = Text from { $name } · { $when }
+# Pinning a sixth thing.
+chat-pins-full = This chat holds 5 pins already
+chat-pins-replace-title = Replace a pin
+chat-pins-replace-hint = A chat holds up to 5 pins. Pick the one to take off.
+chat-pins-replace = Replace
+chat-pins-cancel = Cancel
 # Beside a reply just sent, while it can still be taken back.
 chat-undo = Undo
 

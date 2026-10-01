@@ -10,7 +10,7 @@ use katna_dbus::{
     AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
     NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag, mute,
 };
-use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId};
+use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
 
 use crate::daemon::{CommandError, Daemon, MuteOf, Notice};
@@ -195,6 +195,47 @@ macro_rules! pim_interface {
 
             async fn unmute(&self, kind: &str, id: i64, address: &str) -> fdo::Result<()> {
                 Ok(self.daemon.unmute(mute_of(kind, id, address)?)?)
+            }
+
+            async fn pin_in_chat(
+                &self,
+                message: i64,
+                kind: &str,
+                file: i64,
+                text: &str,
+                label: &str,
+                replace: i64,
+            ) -> fdo::Result<i64> {
+                let what =
+                    match kind {
+                        "mail" => Pinned::Mail,
+                        "file" => Pinned::File(usize::try_from(file).map_err(|_| {
+                            CommandError::InvalidArgs(format!("no attachment {file}"))
+                        })?),
+                        "text" => Pinned::Text(text.to_owned()),
+                        other => {
+                            return Err(
+                                CommandError::InvalidArgs(format!("no pin kind {other}")).into()
+                            );
+                        }
+                    };
+                Ok(self
+                    .daemon
+                    .pin_in_chat(
+                        MessageId(message),
+                        what,
+                        label,
+                        (replace != 0).then_some(replace),
+                    )?
+                    .unwrap_or(0))
+            }
+
+            async fn unpin_in_chat(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.unpin_in_chat(id)?)
+            }
+
+            async fn order_chat_pins(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.order_chat_pins(&ids)?)
             }
 
             async fn set_bell(

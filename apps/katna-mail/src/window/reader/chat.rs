@@ -25,7 +25,7 @@ use katna_i18n::tr;
 use katna_preview::Kind as FileKind;
 use katna_render::Attachment;
 use katna_render::trim::{self, Forwarded};
-use katna_store::MessageId;
+use katna_store::{MessageId, Pinned};
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
@@ -36,8 +36,10 @@ use super::{Conversation, Part, first_name, key_number, read};
 use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
-use crate::theme::{Theme, avatar_color, mix};
+use crate::theme::{Theme, avatar_color, fade, mix};
 use crate::widgets::{icon, icon_button_colored, tip};
+
+mod pins;
 
 /// The header's list of people: how long each row takes to slide in, and
 /// how long after the one above it starts.
@@ -98,6 +100,8 @@ pub(in crate::window) struct ChatState {
     /// once the layout is final, so a change landing after this view
     /// drew still brings the feed back to its end.
     held: Rc<Cell<bool>>,
+    /// Up to five things pinned to the top.
+    pub(super) pins: pins::Pins,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -295,6 +299,7 @@ impl MailWindow {
         {
             reader.read_all_bodies(mail);
         }
+        self.read_chat_pins();
     }
 
     /// Shows the open conversation as a chat (`true`) or as mail.
@@ -493,6 +498,7 @@ impl MailWindow {
         }
         reader.chat.held.set(reader.chat.stuck);
         let held = reader.chat.held.clone();
+        let feed_top = reader.chat.pins.feed_top.clone();
         let scroll = self.reader_scroll.clone();
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
@@ -561,6 +567,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(header)
+            .children(self.render_pin_bar(th, cx))
             .child(
                 div()
                     .flex_1()
@@ -597,7 +604,8 @@ impl MailWindow {
                                     .children(feed)
                                     .child(
                                         gpui::canvas(
-                                            move |_, window, _| {
+                                            move |bounds, window, _| {
+                                                feed_top.set(unpx(bounds.origin.y));
                                                 let off = -unpx(scroll.offset().y);
                                                 let max = unpx(scroll.max_offset().y);
                                                 if held.get() && off < max - 4.0 {
@@ -608,12 +616,16 @@ impl MailWindow {
                                             |_, _, _, _| {},
                                         )
                                         .absolute()
+                                        .top_0()
+                                        .left_0()
                                         .size_0(),
                                     ),
                             ),
                     )
                     .children(self.render_chat_people(th, cx))
-                    .children(self.render_files_picker(key, th, cx)),
+                    .children(self.render_files_picker(key, th, cx))
+                    .children(self.render_pin_list(th, cx))
+                    .children(self.render_pin_replace(th, cx)),
             )
             .child(reply)
             .children(self.render_text_menu(th, cx))
@@ -1041,9 +1053,20 @@ impl MailWindow {
             (None, hover)
         };
         let undo = self.undo_beside(bubble, th, cx);
-        div()
+        let pins = self.reader.as_ref().map(|r| &r.chat.pins);
+        let tops = pins.map(|p| p.tops.clone());
+        let flash = pins
+            .filter(|p| {
+                p.flash.is_some_and(|(m, at)| {
+                    m == id && at.elapsed().as_secs_f32() * 1000.0 < pins::FLASH_MS
+                })
+            })
+            .map(|p| p.flashes);
+        let row = div()
             .id(("chat-row", bubble.ix))
             .group(group)
+            .relative()
+            .rounded(px(12.0))
             .w_full()
             .flex()
             .flex_row()
@@ -1056,7 +1079,7 @@ impl MailWindow {
                     MouseButton::Right,
                     cx.listener(move |this, e: &MouseDownEvent, _, cx| {
                         cx.stop_propagation();
-                        this.open_bubble_menu(id, e.position, cx);
+                        this.open_bubble_menu(id, None, e.position, cx);
                     }),
                 )
             })
@@ -1065,7 +1088,30 @@ impl MailWindow {
             .children(undo)
             .child(self.render_bubble(bubble, th, cx))
             .children(after)
-            .into_any_element()
+            // Where it stands, for a pin's jump.
+            .children(tops.map(|tops| {
+                gpui::canvas(
+                    move |bounds, _, _| {
+                        tops.borrow_mut().insert(id, unpx(bounds.origin.y));
+                    },
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .size_full()
+            }));
+        // A pin's bubble, just jumped to, glows for a moment.
+        match flash {
+            Some(run) if !cx.reduce_motion() => {
+                let tint = th.hover;
+                row.with_animation(
+                    ("chat-flash", run),
+                    gpui::Animation::new(std::time::Duration::from_millis(pins::FLASH_MS as u64)),
+                    move |el, t| el.bg(rgba(fade(tint, (1.0 - t).powi(2)))),
+                )
+                .into_any_element()
+            }
+            _ => row.into_any_element(),
+        }
     }
 
     /// The bubble itself.
@@ -1220,6 +1266,11 @@ impl MailWindow {
             .and_then(|d| format::local(d, &self.tz))
             .map(katna_i18n::format::time)
             .unwrap_or_default();
+        let pinned = self
+            .reader
+            .as_ref()
+            .is_some_and(|r| r.chat.pins.of(bubble.id).next().is_some())
+            .then(|| icon("pin", th.text_faint, 12.0));
         let state = bubble.mine.then(|| match bubble.pending {
             Some(false) => icon("schedule", th.text_faint, 13.0),
             _ => icon("done-all", th.text_faint, 15.0),
@@ -1234,6 +1285,7 @@ impl MailWindow {
             .text_size(px(11.0))
             .line_height(px(14.0))
             .text_color(rgba(th.text_faint))
+            .children(pinned)
             .child(time)
             .children(state)
             .into_any_element()
@@ -1342,6 +1394,13 @@ impl MailWindow {
                     cx.stop_propagation();
                     this.open_attachment(id, ix, window, cx);
                 }))
+                .on_mouse_down(
+                    MouseButton::Right,
+                    cx.listener(move |this, e: &MouseDownEvent, _, cx| {
+                        cx.stop_propagation();
+                        this.open_bubble_menu(id, Some(ix), e.position, cx);
+                    }),
+                )
                 .child(if video {
                     div()
                         .size(px(32.0))
@@ -1398,6 +1457,10 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let id = bubble.id;
+        let pinned = self
+            .reader
+            .as_ref()
+            .is_some_and(|r| r.chat.pins.find(id, &Pinned::Mail).is_some());
         let bar = div()
             .flex_none()
             .self_center()
@@ -1430,6 +1493,28 @@ impl MailWindow {
             )
             .child(
                 icon_button_colored(
+                    ("chat-bubble-pin", bubble.ix),
+                    if pinned { "pin-filled" } else { "pin" },
+                    18.0,
+                    th.text_dim,
+                    th,
+                )
+                .size(px(28.0))
+                .tooltip(tip(
+                    if pinned {
+                        tr!("chat-unpin")
+                    } else {
+                        tr!("chat-pin")
+                    },
+                    th,
+                ))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.toggle_chat_pin(id, Pinned::Mail, cx);
+                })),
+            )
+            .child(
+                icon_button_colored(
                     ("chat-bubble-more", bubble.ix),
                     "more",
                     18.0,
@@ -1442,7 +1527,7 @@ impl MailWindow {
                     MouseButton::Left,
                     cx.listener(move |this, e: &MouseDownEvent, _, cx| {
                         cx.stop_propagation();
-                        this.open_bubble_menu(id, e.position, cx);
+                        this.open_bubble_menu(id, None, e.position, cx);
                     }),
                 ),
             );
@@ -1510,21 +1595,24 @@ impl MailWindow {
         )
     }
 
-    /// Opens the right-click menu of bubble `id`.
+    /// Opens the right-click menu of bubble `id`, or of its file `file`.
     fn open_bubble_menu(
         &mut self,
         id: MessageId,
+        file: Option<usize>,
         at: gpui::Point<gpui::Pixels>,
         cx: &mut Context<Self>,
     ) {
-        self.open_chat_context_menu(id, at, cx);
+        self.open_chat_context_menu(id, file, at, cx);
     }
 
     /// The right-click menu of a bubble: reply to all, reply to its sender
-    /// only, forward, copy its text, show the conversation as mail.
+    /// only, forward, pin it (or its `file`), copy its text, show the
+    /// conversation as mail.
     pub(in crate::window) fn bubble_menu_rows(
         &self,
         id: MessageId,
+        file: Option<usize>,
         rh: f32,
         th: &Theme,
         cx: &mut Context<Self>,
@@ -1574,6 +1662,25 @@ impl MailWindow {
             )),
         );
         rows.rule(th);
+        let what = file.map_or(Pinned::Mail, Pinned::File);
+        let pinned = reader.chat.pins.find(id, &what).is_some();
+        let pin_label = match (file.is_some(), pinned) {
+            (false, false) => tr!("chat-pin"),
+            (false, true) => tr!("chat-unpin"),
+            (true, false) => tr!("chat-pin-file"),
+            (true, true) => tr!("chat-unpin-file"),
+        };
+        rows.item(
+            item(
+                "chat-menu-pin",
+                if pinned { "pin-filled" } else { "pin" },
+                pin_label,
+            )
+            .on_click(cx.listener(move |this, _, _, cx| {
+                this.close_context_menu(cx);
+                this.toggle_chat_pin(id, what.clone(), cx);
+            })),
+        );
         if let Some(text) = text {
             rows.item(
                 item("chat-menu-copy", "copy", tr!("chat-copy-text")).on_click(cx.listener(
