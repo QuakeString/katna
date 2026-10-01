@@ -52,7 +52,8 @@ use katna_store::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Error, FlagState, Flags, Folder, FolderStatus, IMPORTANT, MailBackend, MessageHeaders, Result,
+    Error, FlagState, Flags, Folder, FolderStatus, IMPORTANT, MUTED, MailBackend, MessageHeaders,
+    Result,
 };
 
 /// How many messages one header fetch asks for.
@@ -714,6 +715,8 @@ fn split_flags(flags: &Flags) -> (MessageFlags, Vec<String>) {
             bits |= MessageFlags::FORWARDED;
         } else if keyword.eq_ignore_ascii_case(IMPORTANT) {
             bits |= MessageFlags::IMPORTANT;
+        } else if keyword.eq_ignore_ascii_case(MUTED) {
+            bits |= MessageFlags::MUTED;
         } else {
             keywords.push(keyword.clone());
         }

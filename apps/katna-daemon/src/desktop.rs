@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The daemon's place on the desktop (`docs/ARCHITECTURE.md` §15.2): the
-//! Inbox unread count on Katna Mail's taskbar or dock icon, and the tray
+//! unread count (§15.1.1) on Katna Mail's taskbar or dock icon, and the tray
 //! icon with its badge and menu. Both follow `[general]` `unread_badge` and
 //! `show_in_tray`, and stay up while the app is closed.
 
@@ -14,7 +14,7 @@ use katna_i18n::tr;
 use katna_platform::dbusmenu::MenuItem;
 use katna_platform::launcher::LauncherEntry;
 use katna_platform::tray::{self, Tray};
-use katna_store::{FolderRole, Mode, Store};
+use katna_store::{Mode, Store};
 
 use crate::mail_app;
 
@@ -50,21 +50,17 @@ pub(crate) fn channel() -> (Handle, Receiver<Event>) {
     (Handle(sender), receiver)
 }
 
-/// Unread messages in every account's Inbox: the number next to Inbox in
-/// Katna Mail's folder list, added up.
-pub(crate) fn inbox_unread(store: &Store) -> katna_store::Result<u64> {
-    let inboxes: Vec<_> = store
-        .folder_summaries()?
-        .into_iter()
-        .filter(|f| f.role.as_deref() == Some(FolderRole::Inbox.as_str()))
-        .map(|f| f.id)
-        .collect();
-    Ok(store
-        .unread_counts()?
-        .into_iter()
-        .filter(|(folder, _)| inboxes.contains(folder))
-        .map(|(_, count)| count)
-        .sum())
+/// Unread messages that count on the taskbar and tray, in every account:
+/// by default those in an Inbox's Primary tab, less anything muted
+/// (`docs/ARCHITECTURE.md` §15.1.1).
+pub(crate) fn counted_unread(store: &Store) -> katna_store::Result<u64> {
+    store.counted_unread(unix_now())
+}
+
+fn unix_now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
 }
 
 /// The tray's right-click menu, in the current language.
@@ -131,7 +127,8 @@ pub(crate) async fn run(
                 count = None;
             }
             let paths = paths.clone();
-            match smol::unblock(move || inbox_unread(&Store::open(&paths, Mode::ReadOnly)?)).await {
+            match smol::unblock(move || counted_unread(&Store::open(&paths, Mode::ReadOnly)?)).await
+            {
                 Ok(unread) => {
                     show_count(launcher.as_ref(), tray.as_ref(), &general, unread, count).await;
                     count = Some(unread);
@@ -283,7 +280,7 @@ async fn show_count(
 mod tests {
     use super::*;
     use katna_core::AccountKind;
-    use katna_store::{MessageFlags, NewMessage};
+    use katna_store::{FolderRole, MessageFlags, NewMessage};
 
     #[test]
     fn counts_unread_mail_in_every_inbox_only() {
@@ -324,7 +321,7 @@ mod tests {
             batch.add_message(account, folder, &message).unwrap();
         }
         batch.commit().unwrap();
-        assert_eq!(inbox_unread(&store).unwrap(), 2);
+        assert_eq!(counted_unread(&store).unwrap(), 2);
     }
 
     #[test]
