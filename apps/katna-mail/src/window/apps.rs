@@ -93,6 +93,24 @@ impl App {
         }
     }
 
+    /// Whether the page has a side column (folders, calendars, lists), so
+    /// its big button heads the column rather than waiting in the rail.
+    pub(super) fn has_side(self) -> bool {
+        !matches!(self, Self::Feeds)
+    }
+
+    /// The big button at the top of the left bar: the page's own action,
+    /// its icon and its word. Files has nothing to create, so it writes.
+    pub(super) fn primary(self) -> (&'static str, String) {
+        match self {
+            Self::Calendar => ("event", tr!("calendar-menu-new-event")),
+            Self::Contacts => ("person-add", tr!("contacts-create")),
+            Self::Tasks => ("add", tr!("tasks-create")),
+            Self::Notes => ("pen", tr!("notes-new-note")),
+            Self::Mail | Self::Files | Self::Feeds => ("compose", tr!("compose")),
+        }
+    }
+
     /// What the app will do, for its "coming soon" page.
     fn promise(self) -> String {
         match self {
@@ -143,7 +161,17 @@ impl MailWindow {
                     .w(px(width * t))
                     .overflow_hidden()
                     .opacity(t)
-                    .child(div().h_full().w(px(width)).child(side))
+                    .child(
+                        div()
+                            .h_full()
+                            .w(px(width))
+                            .flex()
+                            .flex_col()
+                            // The big button heads the column, as Compose
+                            // heads Mail's folders.
+                            .child(div().flex_none().h(px(self.side_button_room())))
+                            .child(div().flex_1().min_h_0().child(side)),
+                    )
                     .into_any_element()
             });
             return PageSide {
@@ -188,9 +216,24 @@ impl MailWindow {
         }
     }
 
-    /// Whether page `app` shows its side column beside it on a desktop.
-    pub(super) fn page_side_open(&self, app: App) -> bool {
-        !self.page_sides_folded.contains(&app)
+    /// Whether the pages show their side column beside them on a desktop:
+    /// one fold for Mail's folders and every page's column.
+    pub(super) fn page_side_open(&self) -> bool {
+        self.nav_open
+    }
+
+    /// The big button's action on the page on show.
+    pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        match self.app {
+            App::Calendar => self.create_event_button(window, cx),
+            App::Contacts => {
+                self.contacts.open = None;
+                self.start_contact_edit(None, window, cx);
+            }
+            App::Tasks => self.tasks_create(window, cx),
+            App::Notes => self.new_note(window, cx),
+            App::Mail | App::Files | App::Feeds => self.compose(&super::Compose, window, cx),
+        }
     }
 
     /// The room a side column `width` wide takes beside the page now: none
@@ -251,7 +294,7 @@ impl MailWindow {
         // An event or task picked up on the Calendar stays where it was.
         self.cancel_calendar_drags();
         // Each page shows its side column as it left it, without motion.
-        let open = if self.page_side_open(app) { 1.0 } else { 0.0 };
+        let open = if self.page_side_open() { 1.0 } else { 0.0 };
         self.page_side_spring.snap(open);
         self.page_side_t = open;
         super::desktop::menu_page_changed(app != App::Mail, cx);
@@ -319,6 +362,11 @@ impl MailWindow {
             })
             .ok();
         }));
+    }
+
+    /// Room at the top of a page's side column for its big button.
+    pub(super) fn side_button_room(&self) -> f32 {
+        super::COMPOSE_NAV_ROOM * self.compose_shown.value().clamp(0.0, 1.0)
     }
 
     /// Room at the top of the rail for Compose while it is there.
