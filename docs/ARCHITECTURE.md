@@ -1490,7 +1490,10 @@ GPUI global):
   acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
-- The same switch frosts floating panels in every window: menus (the
+- A second switch, *Frosted menus and dialogs*
+  (`experimental.frosted_popups`, on by default and independent of the
+  window blur, which needs no compositor since Katna draws it), frosts
+  floating panels in every window: menus (the
   right-click menu and its folder list, dropdowns), Search options and its
   date popover, and the account menu. Their color is 78 % opaque over a
   20 px blur of what is behind them in the window

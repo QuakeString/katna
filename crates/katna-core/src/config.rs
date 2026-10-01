@@ -184,16 +184,30 @@ pub enum AiSource {
 }
 
 /// Settings > Experimental: features still being tried out.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Experimental {
     /// Who draws the window frame.
     pub window_frame: WindowFrame,
     /// A translucent window background that the compositor blurs.
     pub blur: bool,
+    /// Menus, popovers, dialogs and viewer bars are frosted glass: they
+    /// blur what is under them, drawn by Katna itself.
+    pub frosted_popups: bool,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.
     pub chat_view: bool,
+}
+
+impl Default for Experimental {
+    fn default() -> Self {
+        Self {
+            window_frame: WindowFrame::default(),
+            blur: false,
+            frosted_popups: true,
+            chat_view: false,
+        }
+    }
 }
 
 /// [`Experimental::window_frame`].
@@ -1494,11 +1508,15 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
         assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
         assert!(config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();
+        assert!(!config.experimental.frosted_popups);
     }
 
     #[test]
