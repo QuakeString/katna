@@ -30,3 +30,25 @@ quiet-turn-on = Notify for new mail
 quiet-off = { $name } muted
 quiet-muted-until = { $name } muted until { $when }
 quiet-on = { $name } notifies again
+
+## Conversations and senders (the reading pane's bell, the More menus and
+## the right-click menu)
+
+quiet-mute-conversation = Mute conversation
+quiet-unmute-conversation = Unmute conversation
+quiet-mute-sender = Mute sender
+quiet-unmute-sender = Unmute sender
+# Tooltip of the crossed bell on a muted conversation's line.
+quiet-row-muted = Muted
+# Over a muted conversation in the reading pane.
+quiet-conversation-strip = Muted. New replies won't notify or count.
+quiet-conversation-muted = { $count ->
+    [one] Conversation muted
+   *[other] { $count } conversations muted
+}
+quiet-conversation-unmuted = { $count ->
+    [one] Conversation unmuted
+   *[other] { $count } conversations unmuted
+}
+quiet-sender-muted = Mail from { $address } muted
+quiet-sender-unmuted = Mail from { $address } notifies again

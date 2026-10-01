@@ -167,6 +167,7 @@ actions!(
         ToggleStar,
         AddToTasks,
         MarkImportant,
+        ToggleMute,
         MarkNotImportant,
         ToggleCheck,
         ToggleSettings,
@@ -2959,6 +2960,10 @@ impl MailWindow {
 
     fn mark_not_important(&mut self, _: &MarkNotImportant, _: &mut Window, cx: &mut Context<Self>) {
         self.act_on_targets(Act::Important(false), cx);
+    }
+
+    fn toggle_mute(&mut self, _: &ToggleMute, _: &mut Window, cx: &mut Context<Self>) {
+        self.toggle_mute_targets(cx);
     }
 
     fn toggle_check(&mut self, _: &ToggleCheck, _: &mut Window, cx: &mut Context<Self>) {

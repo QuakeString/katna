@@ -15,7 +15,9 @@ use gpui::{
 use jiff::Timestamp;
 use katna_core::{AccountId, MailCategory};
 use katna_i18n::tr;
-use katna_store::{Bell, FolderId, MuteTarget};
+use katna_store::{Bell, FolderId, MessageId, MuteTarget, ThreadId};
+
+use crate::data::EntryKey;
 use katna_ui::px;
 
 use super::{Listing, MailWindow, Menu};
@@ -513,6 +515,284 @@ impl MailWindow {
                             .child(div().occlude().child(items)),
                     )
                     .with_priority(4),
+                )
+                .into_any_element(),
+        )
+    }
+}
+
+// Conversations and senders
+
+impl MailWindow {
+    /// The conversation of line `key`, and a message of it, which the
+    /// daemon finds the conversation by.
+    fn line_conversation(&self, key: EntryKey) -> Option<(Option<ThreadId>, MessageId)> {
+        let mail = self.mail.as_ref().ok()?;
+        match key {
+            EntryKey::Thread(thread) => {
+                Some((Some(thread), mail.entry_messages(key).last().copied()?))
+            }
+            EntryKey::Message(id) => Some((mail.message_thread(id), id)),
+        }
+    }
+
+    /// Whether the conversation of line `key` is muted. A message line
+    /// outside the conversation view is checked only by its own thread.
+    pub(super) fn line_muted(&self, key: EntryKey) -> bool {
+        match key {
+            EntryKey::Thread(thread) => self.alerts.muted_threads.contains(&thread),
+            EntryKey::Message(_) => false,
+        }
+    }
+
+    /// Whether the conversations of `keys` are all muted.
+    pub(super) fn lines_muted(&self, keys: &[EntryKey]) -> bool {
+        !keys.is_empty()
+            && keys.iter().all(|k| {
+                self.line_conversation(*k)
+                    .and_then(|(thread, _)| thread)
+                    .is_some_and(|t| self.alerts.muted_threads.contains(&t))
+            })
+    }
+
+    /// Whether mail from `address` is muted.
+    pub(super) fn sender_muted(&self, address: &str) -> bool {
+        let address = address.trim().to_lowercase();
+        self.alerts.mute(&MuteTarget::Sender(address)).is_some()
+    }
+
+    /// Mutes the conversations of `keys`, or unmutes them, with Undo.
+    pub(super) fn mute_lines(&mut self, keys: Vec<EntryKey>, mute: bool, cx: &mut Context<Self>) {
+        self.menu = None;
+        let lines: Vec<(Option<ThreadId>, MessageId)> = keys
+            .iter()
+            .filter_map(|k| self.line_conversation(*k))
+            .collect();
+        if lines.is_empty() {
+            return;
+        }
+        let subject = self
+            .reader
+            .as_ref()
+            .filter(|r| keys.contains(&r.key))
+            .and_then(|r| r.mute_info())
+            .map(|(subject, ..)| subject)
+            .unwrap_or_default();
+        let now = Timestamp::now().as_second();
+        let mut command = Vec::new();
+        let mut undo = Vec::new();
+        for (thread, message) in &lines {
+            let what = Muted::Conversation(*message);
+            if mute {
+                command.push(Command::Mute(what.clone(), 0));
+                undo.push(Command::Unmute(what));
+            } else {
+                command.push(Command::Unmute(what.clone()));
+                undo.push(Command::Mute(what, 0));
+            }
+            // Shown at once; the daemon's change brings the rest.
+            if let Some(thread) = thread {
+                self.alerts
+                    .mutes
+                    .retain(|m| m.target != MuteTarget::Thread(*thread));
+                if mute {
+                    self.alerts.muted_threads.insert(*thread);
+                    self.alerts.thread_message.insert(*thread, *message);
+                    self.alerts.mutes.push(katna_store::Mute {
+                        target: MuteTarget::Thread(*thread),
+                        label: subject.clone(),
+                        until: None,
+                        server: false,
+                        created_at: now,
+                    });
+                } else {
+                    self.alerts.muted_threads.remove(thread);
+                }
+            }
+        }
+        let count = lines.len() as u64;
+        let done = if mute {
+            tr!("quiet-conversation-muted", count = count)
+        } else {
+            tr!("quiet-conversation-unmuted", count = count)
+        };
+        self.send(
+            Command::Several(command),
+            Some(done),
+            Some(Command::Several(undo)),
+            false,
+            cx,
+        );
+        cx.notify();
+    }
+
+    /// Mutes the targets' conversations, or unmutes them when all are
+    /// muted: the reader's bell, the More menus and the shortcut.
+    pub(super) fn toggle_mute_targets(&mut self, cx: &mut Context<Self>) {
+        let keys = self.target_keys();
+        let mute = !self.lines_muted(&keys);
+        self.mute_lines(keys, mute, cx);
+    }
+
+    /// Mutes mail from `address`, or unmutes it, with Undo.
+    pub(super) fn mute_sender(&mut self, address: String, mute: bool, cx: &mut Context<Self>) {
+        self.menu = None;
+        let address = address.trim().to_lowercase();
+        if address.is_empty() {
+            return;
+        }
+        let what = Muted::Sender(address.clone());
+        let (command, undo, done) = if mute {
+            (
+                Command::Mute(what.clone(), 0),
+                Command::Unmute(what),
+                tr!("quiet-sender-muted", address = address.clone()),
+            )
+        } else {
+            (
+                Command::Unmute(what.clone()),
+                Command::Mute(what, 0),
+                tr!("quiet-sender-unmuted", address = address.clone()),
+            )
+        };
+        let target = MuteTarget::Sender(address);
+        self.alerts.mutes.retain(|m| m.target != target);
+        if mute {
+            self.alerts.mutes.push(katna_store::Mute {
+                target,
+                label: String::new(),
+                until: None,
+                server: false,
+                created_at: Timestamp::now().as_second(),
+            });
+        }
+        self.send(command, Some(done), Some(undo), false, cx);
+        cx.notify();
+    }
+
+    /// The sender of the open conversation's newest message, for the
+    /// reading pane's More menu.
+    pub(super) fn reader_sender(&self) -> Option<String> {
+        let (_, _, sender) = self.reader.as_ref()?.mute_info()?;
+        Some(sender).filter(|s| !s.is_empty())
+    }
+
+    /// Mute conversation (or Unmute) for the More menus, and in the
+    /// reading pane's, Mute sender.
+    pub(super) fn mute_menu_items(
+        &self,
+        conversation: bool,
+        reader: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let muted = self.lines_muted(&self.target_keys());
+        let conversation = conversation.then(|| {
+            if muted {
+                menu_item_icon("more-mute", "bell", &tr!("quiet-unmute-conversation"), th)
+            } else {
+                menu_item_icon("more-mute", "bell-off", &tr!("quiet-mute-conversation"), th)
+            }
+            .on_click(cx.listener(|this, _, _, cx| this.toggle_mute_targets(cx)))
+        });
+        let sender = reader
+            .then(|| self.reader_sender())
+            .flatten()
+            .map(|sender| {
+                let muted = self.sender_muted(&sender);
+                if muted {
+                    menu_item_icon("more-mute-sender", "bell", &tr!("quiet-unmute-sender"), th)
+                } else {
+                    menu_item_icon(
+                        "more-mute-sender",
+                        "bell-off",
+                        &tr!("quiet-mute-sender"),
+                        th,
+                    )
+                }
+                .on_click(
+                    cx.listener(move |this, _, _, cx| this.mute_sender(sender.clone(), !muted, cx)),
+                )
+            });
+        div()
+            .flex()
+            .flex_col()
+            .children(conversation)
+            .children(sender)
+    }
+
+    /// The reading pane's bell: mutes or unmutes the open conversation.
+    pub(super) fn reader_mute_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let muted = self
+            .reader
+            .as_ref()
+            .is_some_and(|r| self.lines_muted(&[r.key]));
+        let (glyph, text) = if muted {
+            ("bell-off", tr!("quiet-unmute-conversation"))
+        } else {
+            ("bell", tr!("quiet-mute-conversation"))
+        };
+        icon_button("reader-mute", glyph, 20.0, th)
+            .tooltip(tip(text, th))
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(key) = this.reader.as_ref().map(|r| r.key) {
+                    let mute = !this.lines_muted(&[key]);
+                    this.mute_lines(vec![key], mute, cx);
+                }
+            }))
+            .into_any_element()
+    }
+
+    /// The strip over a muted conversation, with Unmute.
+    pub(super) fn render_muted_strip(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let key = self.reader.as_ref()?.key;
+        if !self.lines_muted(&[key]) {
+            return None;
+        }
+        Some(
+            div()
+                .ml(px(self.reader_indent()))
+                .mr(px(16.0))
+                .mb(px(8.0))
+                .px(px(12.0))
+                .min_h(px(40.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .rounded(px(8.0))
+                .bg(gpui::rgba(th.chip))
+                .text_size(px(13.0))
+                .text_color(gpui::rgba(th.text_dim))
+                .child(crate::widgets::icon("bell-off", th.text_dim, 18.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .child(tr!("quiet-conversation-strip")),
+                )
+                .child(
+                    div()
+                        .id("muted-strip-unmute")
+                        .flex_none()
+                        .px(px(10.0))
+                        .h(px(28.0))
+                        .flex()
+                        .items_center()
+                        .rounded(px(14.0))
+                        .cursor_pointer()
+                        .text_color(gpui::rgba(th.accent))
+                        .hover(|s| s.bg(gpui::rgba(th.hover)))
+                        .child(tr!("quiet-unmute"))
+                        .on_click(
+                            cx.listener(move |this, _, _, cx| {
+                                this.mute_lines(vec![key], false, cx)
+                            }),
+                        ),
                 )
                 .into_any_element(),
         )

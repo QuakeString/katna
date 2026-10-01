@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mute a conversation or a sender"
+text = """
+The bell over an open conversation mutes it: new replies no longer notify
+you or add to the taskbar count, and a crossed bell marks it in the list.
+Right-click a conversation for Mute conversation or Mute sender, or press
+M.
+"""

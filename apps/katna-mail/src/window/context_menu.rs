@@ -775,6 +775,61 @@ impl MailWindow {
                     menu_row("context-pin", "pin", tr!("menu-pin").into(), th, rh)
                         .on_click(act(Act::Pin(true)))
                 });
+                // Mute the conversation, or its sender (§15.1.1).
+                if let Some(key) = self
+                    .context_menu
+                    .as_ref()
+                    .and_then(|m| m.line())
+                    .map(|l| l.1)
+                {
+                    let muted = self.lines_muted(&self.context_targets(key));
+                    rows.item(
+                        menu_row(
+                            "context-mute",
+                            if muted { "bell" } else { "bell-off" },
+                            if muted {
+                                tr!("quiet-unmute-conversation")
+                            } else {
+                                tr!("quiet-mute-conversation")
+                            }
+                            .into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.mute_lines(keys, !muted, cx);
+                        })),
+                    );
+                }
+                if let Some(sender) = row
+                    .as_ref()
+                    .map(|r| r.sender.clone())
+                    .filter(|s| !s.is_empty())
+                {
+                    let muted = self.sender_muted(&sender);
+                    rows.item(
+                        menu_row(
+                            "context-mute-sender",
+                            if muted { "bell" } else { "bell-off" },
+                            if muted {
+                                tr!("quiet-unmute-sender")
+                            } else {
+                                tr!("quiet-mute-sender")
+                            }
+                            .into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.context_menu = None;
+                            this.mute_sender(sender.clone(), !muted, cx);
+                        })),
+                    );
+                }
             }
             // The Calendar's, above.
             Sub::Color | Sub::Calendar | Sub::Answer | Sub::Date => {}
