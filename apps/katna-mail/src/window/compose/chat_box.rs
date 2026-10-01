@@ -18,7 +18,7 @@ use katna_ui::rich::{Block, Doc};
 use katna_ui::unpx;
 
 use super::recipients::Field;
-use super::tools::{Popup, above, format_active, format_bar_bg, menu_divider};
+use super::tools::{Popup, above, format_active, menu_divider};
 use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_quote};
 use crate::data::EntryKey;
 use crate::format;
@@ -377,14 +377,16 @@ impl MailWindow {
                         .mx(px(16.0))
                         .mb(px(6.0))
                         .max_w(px(width - 32.0))
-                        .rounded_full()
-                        .border_1()
-                        .border_color(rgba(th.divider))
-                        .bg(rgba(format_bar_bg(th)))
                         .overflow_x_scroll()
-                        // Room for the last button inside the round end.
-                        .child(div().flex_none().pr(px(12.0)).child(self.render_format_bar(
-                            th,
+                        // A raised strip on the menus' surface, no border.
+                        .map(|d| crate::widgets::raised(d, th, 12.0, 2.0))
+                        // Icons and labels at full strength, so the bar
+                        // reads sharp rather than greyed out.
+                        .child(div().flex_none().child(self.render_format_bar(
+                            &Theme {
+                                text_dim: th.text,
+                                ..*th
+                            },
                             width - 96.0,
                             cx,
                         ))),

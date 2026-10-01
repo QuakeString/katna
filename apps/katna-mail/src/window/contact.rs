@@ -366,6 +366,16 @@ impl MailWindow {
                     .child(body),
             )
             .children(card_outline(th, radius, edge))
+            // Puts the panel away, as its toolbar button does.
+            .child(
+                div().absolute().top(px(10.0)).right(px(10.0)).child(
+                    icon_button_colored("contact-close", "close", 18.0, th.text_faint, th)
+                        .size(px(28.0))
+                        .rounded(px(8.0))
+                        .tooltip(tip(tr!("contact-panel-hide"), th))
+                        .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx))),
+                ),
+            )
             .into_any_element()
     }
 
@@ -393,6 +403,8 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(12.0))
+            // Clear of the close button in the corner.
+            .pr(px(22.0))
             .child(self.person_avatar(&shown_name, email, PICTURE))
             .child(
                 div()
