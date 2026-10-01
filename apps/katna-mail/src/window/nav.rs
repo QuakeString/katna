@@ -139,9 +139,15 @@ pub(super) fn side_row(
                 .child(label),
         )
 }
-/// A side line's count, in a tight, faint pill of the line's own `text`
-/// color: Mail's folders and the Files page's kinds and accounts.
-pub(super) fn count_pill(count: u64, text: u32) -> gpui::Div {
+/// A side line's count, in a tight, faint pill of the line's text color:
+/// Mail's folders and the Files page's kinds and accounts. On the open
+/// line the pill is lighter than the line's grey.
+pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
+    let bg = if on {
+        th.row_selected_pill
+    } else {
+        fade(th.text, 0.08)
+    };
     div().flex_none().pl(px(8.0)).child(
         div()
             .h(px(18.0))
@@ -149,7 +155,7 @@ pub(super) fn count_pill(count: u64, text: u32) -> gpui::Div {
             .flex()
             .items_center()
             .rounded_full()
-            .bg(rgba(fade(text, 0.08)))
+            .bg(rgba(bg))
             .text_size(px(12.0))
             .child(format::thousands(count)),
     )
@@ -1195,7 +1201,7 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(unread > 0, |d| d.child(count_pill(unread, text)))
+            .when(unread > 0, |d| d.child(count_pill(unread, selected, th)))
             .children(chevron);
         // Named by the line rather than its place, which moves as lines
         // above fold or open.
