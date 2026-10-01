@@ -8,7 +8,7 @@
 
 use katna_platform::colors::{Scheme, SystemColors, contrast, luminance, over};
 
-use crate::schemes;
+use crate::schemes::{self, SideScheme};
 
 /// The accent color the settings pick (Settings > Appearance > Accent).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

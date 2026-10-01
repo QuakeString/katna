@@ -33,6 +33,7 @@ mod tasks;
 mod templates;
 mod theme;
 mod updater;
+mod user_schemes;
 mod whats_new;
 mod widgets;
 mod window;
