@@ -2407,8 +2407,10 @@ desktop's own app stays one click away.
   the window shows blurred under a dark veil and the viewer's bar (a
   shade darker), its controls pill, foot pill and markup pill are frosted
   too; the file shows below the bar, never under it; with frost off, a
-  plain darker veil. The bar names the file, "Open with another app" and
-  Save; arrows (and ←/→) go
+  plain darker veil. The bar names the file, Forward, "Open with another
+  app" and Save (Forward starts a new mail with only that file attached,
+  the marked copy for a marked PDF; the no-preview page and an open
+  mail's attachment cards, beside Save, offer it too); arrows (and ←/→) go
   through the message's other attachments, the viewer staying open: the
   file on show stays until the next one is ready (a PDF with its first
   page drawn) and they swap in one frame, or "Opening…" shows after

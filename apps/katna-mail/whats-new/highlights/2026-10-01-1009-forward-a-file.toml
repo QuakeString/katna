@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Forward just the file"
+text = """
+The attachment viewer has a Forward button in its top bar: it starts a
+new mail with only that file attached, without the mail it came with.
+Files without a preview offer Forward too, and so do the attachment
+cards under an open mail, beside Save.
+"""

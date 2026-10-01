@@ -113,6 +113,9 @@ pub(super) enum ViewerEvent {
     Unreadable(Arc<AttachmentFile>),
     /// Reply to the message with this file (a marked copy) attached.
     Reply(Arc<AttachmentFile>),
+    /// Start a new mail with only this file (a marked copy, with marks)
+    /// attached.
+    Forward(Arc<AttachmentFile>),
     /// Show the mail the file came with (opened from the Files page).
     ShowMail,
     /// Show the file this many places on in the Files page's list
@@ -605,6 +608,14 @@ impl Viewer {
             self.save_marked(None, cx);
         } else if let Some(file) = &self.file {
             cx.emit(ViewerEvent::Save(file.clone()));
+        }
+    }
+
+    fn forward(&mut self, cx: &mut Context<Self>) {
+        if self.saves_marks() {
+            self.forward_marked(cx);
+        } else if let Some(file) = &self.file {
+            cx.emit(ViewerEvent::Forward(file.clone()));
         }
     }
 
@@ -1411,7 +1422,7 @@ impl Render for Viewer {
                     centered(
                         div()
                             .capture_any_mouse_down(cx.listener(on_paper))
-                            .w(px(360.0))
+                            .w(px(460.0_f32.min(vw - 32.0)))
                             .p(px(28.0))
                             .flex()
                             .flex_col()
@@ -1426,22 +1437,36 @@ impl Render for Viewer {
                                     div()
                                         .flex()
                                         .flex_row()
+                                        .flex_wrap()
+                                        .justify_center()
                                         .gap(px(8.0))
                                         .child(
-                                            text_button("viewer-save-big", "download", "Save")
-                                                .on_click(
-                                                    cx.listener(|this, _, _, cx| this.save(cx)),
-                                                ),
+                                            text_button(
+                                                "viewer-forward-big",
+                                                "forward",
+                                                tr!("viewer-forward"),
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| this.forward(cx)),
+                                            ),
                                         )
                                         .child(
                                             text_button(
                                                 "viewer-open-big",
                                                 "open-external",
-                                                "Open with…",
+                                                tr!("viewer-open-with"),
                                             )
                                             .on_click(
                                                 cx.listener(|this, _, _, cx| this.open_with(cx)),
                                             ),
+                                        )
+                                        .child(
+                                            text_button(
+                                                "viewer-save-big",
+                                                "download",
+                                                tr!("viewer-save"),
+                                            )
+                                            .on_click(cx.listener(|this, _, _, cx| this.save(cx))),
                                         ),
                                 )
                             }),
@@ -1756,6 +1781,15 @@ impl Render for Viewer {
                                 .on_click(cx.listener(|this, _, _, cx| this.reply_marked(cx))),
                             )
                         })
+                        .child(
+                            bar_button_tip(
+                                "viewer-forward",
+                                "forward",
+                                tr!("viewer-forward-tip").into(),
+                                &th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| this.forward(cx))),
+                        )
                         .child(
                             bar_button("viewer-open", "open-external", &th)
                                 .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
@@ -2133,7 +2167,7 @@ fn centered(child: impl IntoElement) -> AnyElement {
 }
 
 /// A labelled button on the dark "no preview" card.
-fn text_button(id: &'static str, name: &str, label: &'static str) -> gpui::Stateful<gpui::Div> {
+fn text_button(id: &'static str, name: &str, label: String) -> gpui::Stateful<gpui::Div> {
     div()
         .id(id)
         .relative()

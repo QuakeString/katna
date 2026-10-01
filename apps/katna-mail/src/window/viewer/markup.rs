@@ -136,6 +136,14 @@ const TOOLS: [(Tool, &str, &str, &str); 9] = [
     ),
 ];
 
+/// Where a marked copy of the PDF goes.
+#[derive(Clone, Copy)]
+enum Marked {
+    Save,
+    Reply,
+    Forward,
+}
+
 /// What to do once unsaved marks are dealt with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Leave {
@@ -950,16 +958,21 @@ impl Viewer {
     /// Saves a copy of the PDF with the marks (through the window's save
     /// dialog), then does `then`.
     pub(super) fn save_marked(&mut self, then: Option<Leave>, cx: &mut Context<Self>) {
-        self.write_marked(false, then, cx);
+        self.write_marked(Marked::Save, then, cx);
     }
 
     /// Starts a reply to the message with a copy of the PDF with the
     /// marks attached.
     pub(super) fn reply_marked(&mut self, cx: &mut Context<Self>) {
-        self.write_marked(true, None, cx);
+        self.write_marked(Marked::Reply, None, cx);
     }
 
-    fn write_marked(&mut self, reply: bool, then: Option<Leave>, cx: &mut Context<Self>) {
+    /// Starts a new mail with a copy of the PDF with the marks attached.
+    pub(super) fn forward_marked(&mut self, cx: &mut Context<Self>) {
+        self.write_marked(Marked::Forward, None, cx);
+    }
+
+    fn write_marked(&mut self, to: Marked, then: Option<Leave>, cx: &mut Context<Self>) {
         self.finish_typing(true, cx);
         let (Some(pdf), Some(file)) = (self.pdf(), self.file.clone()) else {
             return;
@@ -981,10 +994,10 @@ impl Viewer {
                             mime: file.mime.clone(),
                             bytes,
                         });
-                        cx.emit(if reply {
-                            ViewerEvent::Reply(marked)
-                        } else {
-                            ViewerEvent::Save(marked)
+                        cx.emit(match to {
+                            Marked::Save => ViewerEvent::Save(marked),
+                            Marked::Reply => ViewerEvent::Reply(marked),
+                            Marked::Forward => ViewerEvent::Forward(marked),
                         });
                         if let Some(to) = then {
                             this.go(to, cx);
