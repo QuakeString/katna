@@ -384,7 +384,7 @@ impl MailWindow {
                         .overflow_x_scroll()
                         .child(div().flex_none().child(self.render_format_bar(
                             th,
-                            width - 32.0,
+                            width - 96.0,
                             cx,
                         ))),
                 )
