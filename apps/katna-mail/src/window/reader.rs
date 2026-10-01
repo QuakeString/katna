@@ -1303,15 +1303,24 @@ impl MailWindow {
                                 .flex_col()
                                 .child(
                                     div()
-                                        .truncate()
-                                        .text_size(px(14.0))
-                                        .font_weight(if unread {
-                                            FontWeight::BOLD
-                                        } else {
-                                            FontWeight::MEDIUM
-                                        })
-                                        .text_color(rgba(th.text))
-                                        .child(name),
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .gap(px(6.0))
+                                        .child(
+                                            div()
+                                                .min_w_0()
+                                                .truncate()
+                                                .text_size(px(14.0))
+                                                .font_weight(if unread {
+                                                    FontWeight::BOLD
+                                                } else {
+                                                    FontWeight::MEDIUM
+                                                })
+                                                .text_color(rgba(th.text))
+                                                .child(name),
+                                        )
+                                        .children(self.muted_mark(&email, 16.0, th)),
                                 )
                                 .child(
                                     div()
@@ -1404,7 +1413,12 @@ impl MailWindow {
         // the date to the details under "to", and lets the name shrink
         // further.
         let roomy = self.reader_width() >= STAR_FROM;
-        let name_room = lerp(120.0, 48.0, self.reader_compact());
+        let mark = self
+            .muted_mark(&email, 16.0, th)
+            .map(|mark| div().flex_none().self_center().child(mark));
+        // A muted sender's crossed bell takes its room from the date.
+        let name_room =
+            lerp(120.0, 48.0, self.reader_compact()) + if mark.is_some() { 22.0 } else { 0.0 };
         let header = div()
             .id(("part-header", ix))
             .flex()
@@ -1433,6 +1447,7 @@ impl MailWindow {
                                     .text_color(rgba(th.text))
                                     .child(name.clone()),
                             )
+                            .children(mark)
                             .when(!email.is_empty() && email != name, |d| {
                                 // Takes only the room the name leaves.
                                 d.child(

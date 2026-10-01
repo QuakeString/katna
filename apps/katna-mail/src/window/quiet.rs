@@ -24,7 +24,7 @@ use super::{Listing, MailWindow, Menu};
 use crate::daemon::{Command, Muted};
 use crate::sidebar::Role;
 use crate::theme::Theme;
-use crate::widgets::{icon_button, menu, menu_item_icon, tip};
+use crate::widgets::{icon, icon_button, menu, menu_item_icon, tip};
 
 /// What a bell or mute is set on, from the app's side.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -559,6 +559,32 @@ impl MailWindow {
     pub(super) fn sender_muted(&self, address: &str) -> bool {
         let address = address.trim().to_lowercase();
         self.alerts.mute(&MuteTarget::Sender(address)).is_some()
+    }
+
+    /// The crossed bell after a muted person's name, wherever people show,
+    /// with "Muted" on hover; `None` when mail from `address` notifies.
+    pub(super) fn muted_mark(&self, address: &str, size: f32, th: &Theme) -> Option<AnyElement> {
+        self.sender_muted(address).then(|| {
+            div()
+                .id(SharedString::from(format!("muted-{address}")))
+                .flex_none()
+                .tooltip(tip(tr!("quiet-row-muted"), th))
+                .child(icon("bell-off", th.text_dim, size))
+                .into_any_element()
+        })
+    }
+
+    /// [`Self::muted_mark`] for a person with several addresses: shown
+    /// when mail from any of them is muted.
+    pub(super) fn muted_mark_any<'a>(
+        &self,
+        addresses: impl IntoIterator<Item = &'a String>,
+        size: f32,
+        th: &Theme,
+    ) -> Option<AnyElement> {
+        addresses
+            .into_iter()
+            .find_map(|address| self.muted_mark(address, size, th))
     }
 
     /// Mutes the conversations of `keys`, or unmutes them, with Undo.

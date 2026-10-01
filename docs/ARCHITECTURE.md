@@ -3129,7 +3129,12 @@ notified).
   sender (an address, every account), for a while or until unmuted. A
   muted thing's mail still arrives and stays unread; it only never
   notifies and is not counted. Mutes win over bells. Snooze and follow-up
-  reminders still show, because they were asked for.
+  reminders still show, because they were asked for. A muted sender
+  carries a crossed bell after their name wherever people show (mail
+  list, reader, contact card, Contacts, recipient chips and suggestions,
+  Files, event guests, Activity; `MailWindow::muted_mark`), so quiet mail
+  is never a mystery. Refusing a muted sender's mail outright is a later
+  step.
 - **Mail services first.** A conversation muted for good is muted at the
   service too: Gmail's mute (the `\Muted` label in `X-GM-LABELS`, set on
   every message of the conversation; Gmail then keeps later replies out of

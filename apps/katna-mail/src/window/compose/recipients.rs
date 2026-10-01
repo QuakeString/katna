@@ -440,10 +440,19 @@ impl MailWindow {
                     .flex_col()
                     .child(
                         div()
-                            .text_size(px(15.0))
-                            .text_color(rgba(th.text))
-                            .truncate()
-                            .child(marked(title, title_marks)),
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(6.0))
+                            .child(
+                                div()
+                                    .min_w_0()
+                                    .text_size(px(15.0))
+                                    .text_color(rgba(th.text))
+                                    .truncate()
+                                    .child(marked(title, title_marks)),
+                            )
+                            .children(self.muted_mark(&item.email, 16.0, th)),
                     )
                     .when(item.name.is_some(), |d| {
                         d.child(

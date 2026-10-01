@@ -675,10 +675,19 @@ fn render_person(
                 .flex_col()
                 .child(
                     div()
-                        .truncate()
-                        .text_size(px(14.0))
-                        .text_color(rgba(th.text))
-                        .child(name.clone().unwrap_or_else(|| person.email.clone())),
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
+                        .child(
+                            div()
+                                .min_w_0()
+                                .truncate()
+                                .text_size(px(14.0))
+                                .text_color(rgba(th.text))
+                                .child(name.clone().unwrap_or_else(|| person.email.clone())),
+                        )
+                        .children(this.muted_mark(&person.email, 16.0, th)),
                 )
                 .when(name.is_some(), |d| {
                     d.child(
