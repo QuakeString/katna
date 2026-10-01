@@ -1559,6 +1559,11 @@ impl RichEditor {
     }
 
     pub fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_whole(cx);
+    }
+
+    /// Selects the whole text, as Ctrl+A does.
+    pub fn select_whole(&mut self, cx: &mut Context<Self>) {
         self.set_selection(self.doc.start(), self.doc.end(), cx);
     }
 

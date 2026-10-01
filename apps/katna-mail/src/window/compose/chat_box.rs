@@ -4,7 +4,9 @@
 //! always answers everyone, as a group chat does. It is the inline reply
 //! underneath, so drafts, Ctrl+Enter, spelling and undo send work as
 //! they do there; Aa opens the full formatting bar above it, and the
-//! paperclip offers pictures, files, a template or another signature. The
+//! paperclip offers pictures, files, a template or another signature; the
+//! sparkle (or Ctrl+J) opens the Rephrase card of the compose window for
+//! the selection or the whole reply, and AI autocomplete works as there. The
 //! signature is kept out of sight and added on Send. Replying to an
 //! older bubble aims the reply at that mail, keeping what was written.
 
@@ -20,6 +22,7 @@ use katna_ui::unpx;
 use super::recipients::Field;
 use super::tools::{Popup, above, format_active, format_bar_bg, menu_divider};
 use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_quote};
+use crate::window::RephraseSelection;
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::Theme;
@@ -245,6 +248,22 @@ impl MailWindow {
             .when(popup == Some(Popup::Emoji), |d| {
                 d.child(above(self.render_emoji_picker(th, cx)))
             });
+        // Writing help, once there is text to rephrase.
+        let sparkle = self.can_rephrase(cx).then(|| {
+            let open = compose.is_some_and(|c| c.rephrase.is_some());
+            icon_button_colored(
+                "chat-rephrase",
+                "sparkle",
+                18.0,
+                if open { th.accent } else { th.text_faint },
+                th,
+            )
+            .size(px(28.0))
+            .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
+            // The text keeps its selection.
+            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(cx.listener(|this, _, window, cx| this.rephrase_reply(window, cx)))
+        });
         let text = match compose {
             Some(compose) => div()
                 .id("chat-text")
@@ -286,6 +305,7 @@ impl MailWindow {
             .bg(rgba(th.bubble_other()))
             .child(div().pb(px(6.0)).child(emoji))
             .child(text)
+            .children(sparkle.map(|s| div().pb(px(6.0)).child(s)))
             .child(div().pb(px(8.0)).child(aa));
         let send = div()
             .id("chat-send")
@@ -356,6 +376,9 @@ impl MailWindow {
             .on_action(
                 cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
             )
+            .on_action(cx.listener(|this, _: &RephraseSelection, window, cx| {
+                this.toggle_rephrase(window, cx)
+            }))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
             }))
@@ -406,6 +429,8 @@ impl MailWindow {
                 d.children(self.render_popup_scrim(cx))
                     .children(self.render_context_popup(th, cx))
                     .children(self.render_hint(th, cx))
+                    .children(self.render_rephrase_button(th, cx))
+                    .children(self.render_rephrase(th, cx))
                     .children(self.render_link_bubble(th, cx))
             })
             .into_any_element()

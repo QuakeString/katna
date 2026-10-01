@@ -143,6 +143,30 @@ impl MailWindow {
         }
     }
 
+    /// The chat reply box's sparkle: the card for the selection, or for
+    /// the whole reply when nothing is selected.
+    pub(super) fn rephrase_reply(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.compose.as_ref().is_some_and(|c| c.rephrase.is_some()) {
+            self.close_rephrase(window, cx);
+            return;
+        }
+        if self.rephrase_selection(cx).is_none()
+            && let Some(c) = &self.compose
+        {
+            c.body.update(cx, |editor, cx| editor.select_whole(cx));
+        }
+        self.open_rephrase(window, cx);
+    }
+
+    /// Whether the sparkle can rephrase something in the open message.
+    pub(super) fn can_rephrase(&self, cx: &App) -> bool {
+        self.ai_allowed()
+            && self
+                .compose
+                .as_ref()
+                .is_some_and(|c| !c.body.read(cx).doc().is_blank())
+    }
+
     fn open_rephrase(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some((text, at)) = self.rephrase_selection(cx) else {
             return;
