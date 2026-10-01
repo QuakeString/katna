@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Quieter lines between mails"
+text = """
+The lines between mails in the list are much fainter now, so the list
+reads as one calm column in light and dark.
+"""

@@ -1965,7 +1965,7 @@ impl MailWindow {
             .flex_row()
             .bg(rgba(background))
             .border_b_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(row_line(th)))
             .text_size(px(14.0))
             .cursor_pointer()
             .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2822,6 +2822,12 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
             |el, t| el.opacity(0.5 + 0.5 * t),
         )
         .into_any_element()
+}
+
+/// The faint line between mail rows: well under the app's other dividers,
+/// so the rows read as one calm list.
+pub(super) fn row_line(th: &Theme) -> u32 {
+    fade(th.divider, 0.4)
 }
 
 /// A thin vertical line between toolbar groups.
