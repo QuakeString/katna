@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rephrase shows its suggestions again"
+text = """
+With frosted menus on, the Rephrase card (Ctrl+J) opened empty. Its
+suggestions now show over the frosted glass.
+"""
