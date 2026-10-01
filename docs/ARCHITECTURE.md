@@ -1495,9 +1495,19 @@ GPUI global):
   window blur, which needs no compositor since Katna draws it), frosts
   floating panels in every window: menus (the
   right-click menu and its folder list, dropdowns), Search options and its
-  date popover, and the account menu. Their color is 78 % opaque over a
-  20 px blur of what is behind them in the window
-  (`katna_mail::widgets::raised`, `katna_ui::frost`). Dialogs and
+  date popover, and the account menu. Their color is 45 % opaque over a
+  24 px blur of what is behind them in the window
+  (`katna_mail::widgets::raised`, `katna_ui::frost`). Under it, *Custom
+  blur amount* (`experimental.custom_frost`, off by default) shows two
+  sliders, Blur strength (4 to 48 px, `frost_blur`) and Opacity (10 to
+  95 %, `frost_opacity`), that change the frost live while dragged. Off,
+  the blur follows KDE's Blur effect strength (`[Effect-blur]
+  BlurStrength` in `kwinrc`, 1 to 15, polled like `kdeglobals`; 1 is
+  4 px, KWin's default 15 is the 24 px default), and Katna's 24 px when
+  there is none (Blur effect off, other desktops); the opacity stays
+  45 %. The compositor's window blur takes no strength from the window,
+  so on KDE a line opens Desktop Effects for it
+  (`katna_platform::blur`, `window/frost_sliders.rs`). Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
   color (`katna_mail::widgets::frosted`); a test keeps every frosted
@@ -3763,9 +3773,11 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   in memory, and every call also carries `X-Katna-Admin: 1`. It shows this
   month's cost against the budget, requests, accounts in the free month,
   paid and at their cap, and the last six months; it chooses the service
-  asked first and the fallback, with a model each, among those with a key
-  in the environment (`KATNA_SERVER_AI_<SERVICE>_KEY`; keys never show
-  there), the limits and prices, and an off switch; "Test" asks each
+  asked first and the fallback, with a model each (typed, or picked from
+  the models the service lists for its key), among those with a key in
+  the environment (`KATNA_SERVER_AI_<SERVICE>_KEY`) or saved on the page
+  (`ai_keys`, used over the environment's; only the last four characters
+  ever show again), the limits and prices, and an off switch; "Test" asks each
   chosen service a short question. Its settings are saved in the database
   (`ai_settings`) over the environment's. The page is static HTML, CSS
   and script served by the server under a strict Content Security Policy.

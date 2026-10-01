@@ -310,7 +310,7 @@ fn cost(ai: &AiConfig, service: &AiService, prompt: &Prompt, text: &str, body: &
 
 /// Sends `call` (HTTPS, or HTTP for a service on the internal network) and
 /// gives back the status and body.
-async fn send(call: &provider::Call) -> Result<(u16, Bytes), String> {
+pub(crate) async fn send(call: &provider::Call) -> Result<(u16, Bytes), String> {
     let uri: Uri = call.url.parse().map_err(|_| "bad service address")?;
     let host = uri
         .host()
@@ -349,13 +349,17 @@ where
     tokio::spawn(connection);
     let path = uri.path_and_query().map_or("/", |p| p.as_str());
     let authority = uri.authority().map_or("", |a| a.as_str());
+    // A call without a body only reads, such as the list of models.
+    let get = call.body.is_empty();
     let mut request = hyper::Request::builder()
-        .method("POST")
+        .method(if get { "GET" } else { "POST" })
         .uri(path)
         .header(header::HOST, authority)
-        .header(header::CONTENT_TYPE, "application/json")
         .header(header::ACCEPT, "application/json")
         .header(header::USER_AGENT, "katna-server");
+    if !get {
+        request = request.header(header::CONTENT_TYPE, "application/json");
+    }
     for (name, value) in &call.headers {
         request = request.header(*name, value);
     }

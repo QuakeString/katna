@@ -120,6 +120,37 @@ impl MailWindow {
             .flex_col()
             .child(self.window_blur_switch(th, cx))
             .child(self.frosted_popups_switch(th, cx))
+            .when(
+                self.config.experimental.frosted_popups && katna_ui::frost::supported(),
+                |d| d.child(self.custom_frost_switch(th, cx)),
+            )
+            .when(self.chrome.environment().desktop == Desktop::Kde, |d| {
+                d.child(kde_blur_line(th, cx))
+            })
+            .into_any_element()
+    }
+
+    /// The frost's blur and opacity by hand, or the desktop's.
+    fn custom_frost_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let custom = self.config.experimental.custom_frost;
+        let detail = match (custom, self.chrome.environment().desktop) {
+            (true, _) => tr!("look-custom-frost-on"),
+            (false, Desktop::Kde) => tr!("look-custom-frost-off-kde"),
+            (false, _) => tr!("look-custom-frost-off"),
+        };
+        div()
+            .flex()
+            .flex_col()
+            .child(self.switch_row(
+                "page-custom-frost",
+                tr!("look-custom-frost"),
+                detail,
+                custom,
+                Change::CustomFrost(!custom),
+                th,
+                cx,
+            ))
+            .when(custom, |d| d.child(self.frost_sliders(th, cx)))
             .into_any_element()
     }
 
@@ -164,6 +195,49 @@ impl MailWindow {
             tr!("look-frosted-popups-none")
         };
         unavailable(tr!("look-frosted-popups"), why, th)
+    }
+}
+
+/// KDE sets how strongly the window background blurs; this opens its
+/// Blur settings.
+fn kde_blur_line(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
+    div()
+        .px(px(8.0))
+        .pt(px(12.0))
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .text_size(px(12.0))
+        .line_height(px(17.0))
+        .child(
+            div()
+                .text_color(rgba(th.text_faint))
+                .child(tr!("look-kde-blur-note")),
+        )
+        .child(
+            div()
+                .id("page-kde-blur")
+                .text_color(rgba(th.accent))
+                .cursor_pointer()
+                .hover(|s| s.underline())
+                .on_click(cx.listener(|_, _, _, _| open_kde_blur_settings()))
+                .child(tr!("look-kde-blur-open")),
+        )
+        .into_any_element()
+}
+
+/// Opens Desktop Effects in KDE's System Settings, where Blur is.
+fn open_kde_blur_settings() {
+    let opened = std::process::Command::new("kcmshell6")
+        .arg("kcm_kwin_effects")
+        .spawn()
+        .or_else(|_| {
+            std::process::Command::new("systemsettings")
+                .arg("kcm_kwin_effects")
+                .spawn()
+        });
+    if let Err(err) = opened {
+        tracing::warn!("could not open KDE's Blur settings: {err}");
     }
 }
 

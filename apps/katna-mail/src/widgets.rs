@@ -499,9 +499,6 @@ pub fn menu(th: &Theme) -> Div {
     )
 }
 
-/// How opaque a frosted panel's color is over the blur.
-const FROST_ALPHA: f32 = 0.78;
-
 /// The surface of a floating panel (menu, popover, dropdown): `th.menu`
 /// with corners of `radius` and a shadow of `level`. When
 /// [`Theme::frost`] is on it is frosted glass: the color translucent over
@@ -525,7 +522,7 @@ pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radiu
         return panel.bg(rgba(fill));
     }
     panel.child(katna_ui::frost::glass(
-        rgba(fade(fill, FROST_ALPHA)).into(),
+        rgba(fade(fill, f32::from(th.frost_tint) / 100.0)).into(),
         px(radius),
         th.frost as f32,
     ))

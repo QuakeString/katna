@@ -183,6 +183,11 @@ pub enum AiSource {
     Off,
 }
 
+/// The frost's blur, in pixels, when nothing else sets it.
+pub const FROST_BLUR: u8 = 24;
+/// The frost's tint opacity, in percent, when nothing else sets it.
+pub const FROST_OPACITY: u8 = 45;
+
 /// Settings > Experimental: features still being tried out.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
@@ -194,6 +199,14 @@ pub struct Experimental {
     /// Menus, popovers, dialogs and viewer bars are frosted glass: they
     /// blur what is under them, drawn by Katna itself.
     pub frosted_popups: bool,
+    /// The frost's blur and opacity come from [`Self::frost_blur`] and
+    /// [`Self::frost_opacity`]; off, they follow the desktop's blur
+    /// strength (KDE's Blur effect) or Katna's defaults.
+    pub custom_frost: bool,
+    /// How far the frost blurs, in pixels ([`FROST_BLUR`]).
+    pub frost_blur: u8,
+    /// How opaque the frost's tint is, in percent ([`FROST_OPACITY`]).
+    pub frost_opacity: u8,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.
     pub chat_view: bool,
@@ -205,6 +218,9 @@ impl Default for Experimental {
             window_frame: WindowFrame::default(),
             blur: false,
             frosted_popups: true,
+            custom_frost: false,
+            frost_blur: FROST_BLUR,
+            frost_opacity: FROST_OPACITY,
             chat_view: false,
         }
     }
@@ -1517,6 +1533,10 @@ mod tests {
         assert!(config.experimental.frosted_popups);
         let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();
         assert!(!config.experimental.frosted_popups);
+        // The frost follows the desktop unless set by hand.
+        assert!(!config.experimental.custom_frost);
+        assert_eq!(config.experimental.frost_blur, FROST_BLUR);
+        assert_eq!(config.experimental.frost_opacity, FROST_OPACITY);
     }
 
     #[test]
