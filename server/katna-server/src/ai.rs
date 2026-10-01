@@ -34,6 +34,7 @@ use hyper::header;
 use hyper_util::rt::TokioIo;
 use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, RephraseRequest, plan};
 use katna_ai::{Prompt, ProviderError, Tone, prompt, provider};
+use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio_rustls::TlsConnector;
 use tokio_rustls::rustls::{self, ClientConfig, RootCertStore};
@@ -105,8 +106,8 @@ async fn complete(
 
 /// Where `account` stands, or why it may not ask now.
 async fn admit(state: &AppState, account: &str) -> Result<Plan, ApiError> {
-    let ai = &state.config().ai;
-    if ai.services.is_empty() || ai.budget_micros == 0 {
+    let ai = state.ai();
+    if !ai.on || ai.services.is_empty() || ai.budget_micros == 0 {
         return Err(ApiError::Busy("Katna AI is not set up on this server"));
     }
     if !state.ai_requests().allow(account.to_owned()) {
@@ -115,7 +116,7 @@ async fn admit(state: &AppState, account: &str) -> Result<Plan, ApiError> {
     let now = now_ms();
     let stored = state.db().ai_plan(account, now).await?;
     let plan =
-        standing(ai, stored.first_use, stored.paid_until, now).ok_or(ApiError::PaymentNeeded)?;
+        standing(&ai, stored.first_use, stored.paid_until, now).ok_or(ApiError::PaymentNeeded)?;
     let spent = state.db().ai_spent(account, month_of(now)).await?;
     if spent.account as u64 >= ai.account_cap_micros {
         return Err(ApiError::TooMany("this month's Katna AI limit is reached"));
@@ -154,48 +155,144 @@ async fn ask(
     let Ok(_turn) = state.ai_calls().clone().try_acquire_owned() else {
         return Err(ApiError::Busy("Katna AI is busy; try again shortly"));
     };
-    let ai = &state.config().ai;
+    let ai = state.ai();
     for service in &ai.services {
-        let call = provider::call(
-            service.kind(),
-            &service.base,
-            &service.model,
-            &service.key.0,
-            prompt,
-        );
-        let (status, body) = match tokio::time::timeout(timeout, send(&call)).await {
-            Ok(Ok(answer)) => answer,
-            Ok(Err(error)) => {
-                tracing::warn!(provider = service.provider, %error, "AI service unreachable");
-                continue;
-            }
-            Err(_) => {
-                tracing::warn!(provider = service.provider, "AI service took too long");
-                continue;
-            }
-        };
-        match provider::answer(service.kind(), status, &body) {
-            Ok(text) => {
-                let cost = cost(ai, service, prompt, &text, &body);
+        match ask_one(service, prompt, timeout).await {
+            Ok((text, body)) => {
+                let cost = cost(&ai, service, prompt, &text, &body);
                 state
                     .db()
                     .ai_record(account, month_of(now_ms()), cost as i64)
                     .await?;
                 return Ok(text);
             }
-            // The status only: a message may quote the text.
-            Err(ProviderError::Key) => {
-                tracing::error!(provider = service.provider, "AI service refused the key")
-            }
-            Err(ProviderError::TooMany) => {
-                tracing::warn!(provider = service.provider, "AI service is over its limits")
-            }
-            Err(ProviderError::Failed(_)) => {
-                tracing::warn!(provider = service.provider, status, "AI service failed")
+            Err(problem) => {
+                tracing::warn!(
+                    provider = service.provider,
+                    problem,
+                    "AI service gave no answer"
+                )
             }
         }
     }
     Err(ApiError::Upstream("Katna AI is not available just now"))
+}
+
+/// `service`'s answer to `prompt` and the body it came in, or what went
+/// wrong in a few words (never the service's message, which may quote the
+/// text).
+pub(crate) async fn ask_one(
+    service: &AiService,
+    prompt: &Prompt,
+    timeout: Duration,
+) -> Result<(String, Bytes), &'static str> {
+    let call = provider::call(
+        service.kind(),
+        &service.base,
+        &service.model,
+        &service.key.0,
+        prompt,
+    );
+    let (status, body) = match tokio::time::timeout(timeout, send(&call)).await {
+        Ok(Ok(answer)) => answer,
+        Ok(Err(error)) => {
+            tracing::debug!(provider = service.provider, %error, "AI service unreachable");
+            return Err("could not be reached");
+        }
+        Err(_) => return Err("took too long"),
+    };
+    match provider::answer(service.kind(), status, &body) {
+        Ok(text) => Ok((text, body)),
+        Err(ProviderError::Key) => Err("refused the key"),
+        Err(ProviderError::TooMany) => Err("is over its limits"),
+        Err(ProviderError::Failed(_)) if status == 404 => Err("does not know the model"),
+        Err(ProviderError::Failed(_)) => Err("failed"),
+    }
+}
+
+/// Katna AI's settings as the admin page saves them, over those of the
+/// environment ([`AiConfig`]).
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AiSettings {
+    /// Whether Katna AI answers at all.
+    pub on: bool,
+    /// The service asked first, and the one asked when that fails.
+    pub main: Option<Choice>,
+    pub fallback: Option<Choice>,
+    pub trial_days: u32,
+    pub account_cap_micros: u64,
+    pub budget_micros: u64,
+    pub price_in_micros: u64,
+    pub price_out_micros: u64,
+    pub per_hour: u32,
+}
+
+/// A service and model.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Choice {
+    pub provider: String,
+    pub model: String,
+}
+
+impl AiSettings {
+    /// The settings `ai` stands for.
+    pub fn of(ai: &AiConfig) -> Self {
+        let choice = |service: Option<&AiService>| {
+            service.map(|service| Choice {
+                provider: service.provider.to_owned(),
+                model: service.model.clone(),
+            })
+        };
+        Self {
+            on: ai.on,
+            main: choice(ai.services.first()),
+            fallback: choice(ai.services.get(1)),
+            trial_days: ai.trial_days,
+            account_cap_micros: ai.account_cap_micros,
+            budget_micros: ai.budget_micros,
+            price_in_micros: ai.price_in_micros,
+            price_out_micros: ai.price_out_micros,
+            per_hour: ai.per_hour,
+        }
+    }
+
+    /// These settings over `env`'s keys, or why they cannot be used.
+    pub fn apply(&self, env: &AiConfig) -> Result<AiConfig, &'static str> {
+        if self.trial_days > 3650
+            || self.per_hour > 100_000
+            || [
+                self.account_cap_micros,
+                self.budget_micros,
+                self.price_in_micros,
+                self.price_out_micros,
+            ]
+            .iter()
+            .any(|micros| *micros > 1_000_000_000_000)
+        {
+            return Err("a number is out of range");
+        }
+        let mut services = Vec::new();
+        for choice in [&self.main, &self.fallback].into_iter().flatten() {
+            let service = env
+                .service(&choice.provider, &choice.model)
+                .ok_or("no key for that service, or no model")?;
+            services.push(service);
+        }
+        if self.on && services.is_empty() {
+            return Err("choose a service");
+        }
+        Ok(AiConfig {
+            on: self.on,
+            services,
+            keys: env.keys.clone(),
+            trial_days: self.trial_days,
+            account_cap_micros: self.account_cap_micros,
+            budget_micros: self.budget_micros,
+            price_in_micros: self.price_in_micros,
+            price_out_micros: self.price_out_micros,
+            per_hour: self.per_hour,
+        })
+    }
 }
 
 /// What one answer cost, in millionths of a US dollar: from the tokens the
@@ -318,6 +415,41 @@ mod tests {
         let paid = standing(&ai, start, Some(later + 1), later).unwrap();
         assert_eq!(paid.kind, plan::PAID);
         assert_eq!(standing(&ai, start, Some(later), later), None);
+    }
+
+    #[test]
+    fn settings_need_a_key() {
+        let gemini = AiService {
+            provider: "gemini",
+            base: "https://generativelanguage.googleapis.com".into(),
+            model: "gemini-2.5-flash-lite".into(),
+            key: Secret("g".into()),
+        };
+        let env = AiConfig {
+            services: vec![gemini.clone()],
+            keys: vec![gemini],
+            ..AiConfig::default()
+        };
+        let mut settings = AiSettings::of(&env);
+        assert_eq!(settings.apply(&env).unwrap().services.len(), 1);
+        settings.main = Some(Choice {
+            provider: "gemini".into(),
+            model: "gemini-3-flash".into(),
+        });
+        settings.budget_micros = 10_000_000;
+        let applied = settings.apply(&env).unwrap();
+        assert_eq!(applied.services[0].model, "gemini-3-flash");
+        assert_eq!(applied.budget_micros, 10_000_000);
+        settings.fallback = Some(Choice {
+            provider: "openai".into(),
+            model: "gpt-5-mini".into(),
+        });
+        assert!(settings.apply(&env).is_err());
+        settings.fallback = None;
+        settings.main = None;
+        assert!(settings.apply(&env).is_err());
+        settings.on = false;
+        assert!(settings.apply(&env).is_ok());
     }
 
     #[test]
