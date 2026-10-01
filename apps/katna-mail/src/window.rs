@@ -72,6 +72,7 @@ mod remote;
 mod reply_row;
 mod rich;
 mod scale_slider;
+mod scheme_editor;
 mod scheme_picker;
 mod search_panel;
 mod select;
@@ -744,6 +745,8 @@ pub struct MailWindow {
     /// A dialog without fields of its own to focus (the delete question),
     /// and any dialog's frame that keeps Tab inside it.
     dialog_focus: FocusHandle,
+    /// Settings > Appearance > Colors' editor, while open.
+    scheme_editor: Option<scheme_editor::SchemeEditor>,
     /// The folder pane while it has the keys, the line they are on, and
     /// whether it had them when this frame was drawn.
     nav_focus: FocusHandle,
@@ -842,7 +845,7 @@ impl MailWindow {
             tracing::warn!("{err}; using the default settings");
             Config::default()
         });
-        let desktop_colors = colors::DesktopColors::new(&env.desktop);
+        let desktop_colors = colors::DesktopColors::new(&env.desktop, paths.config_dir());
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
@@ -996,6 +999,7 @@ impl MailWindow {
             reader_focus: cx.focus_handle(),
             reader_keys: false,
             dialog_focus: cx.focus_handle(),
+            scheme_editor: None,
             nav_focus: cx.focus_handle(),
             nav_cursor: None,
             nav_keys_shown: false,
@@ -2889,6 +2893,10 @@ impl MailWindow {
             self.restore_contacts(keys, cx);
             return;
         }
+        if let Command::RestoreScheme(id, contents, was_used) = &undo {
+            self.restore_scheme(id, contents, *was_used, cx);
+            return;
+        }
         if let Command::UndoSend(id) = undo {
             self.send_undone(id, cx);
             // Taken back from the outbox: the message opens again.
@@ -3589,6 +3597,7 @@ impl Render for MailWindow {
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
+        let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
@@ -3644,6 +3653,7 @@ impl Render for MailWindow {
             .children(delete_ask)
             .children(new_label)
             .children(contact_label)
+            .children(scheme_editor)
             .children(contact_qr)
             .children(crash_notice)
             .children(sign_in_again)

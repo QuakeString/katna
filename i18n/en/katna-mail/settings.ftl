@@ -121,6 +121,9 @@ settings-general-login-window = Open the Katna Mail window too
 settings-general-login-window-detail = The window opens at login as well
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
+# Under "Show Katna in the system tray", while it is on.
+settings-general-tray-color = Tray icon in color
+settings-general-tray-color-detail = Off, it is one color like the panel's other icons. The unread count stays red.
 settings-general-unread-badge = Unread count on the taskbar icon
 settings-general-unread-badge-detail = Unread mail in the folders that count
 ## Settings › Notifications (the bells of folders and inbox tabs, and mutes)
@@ -203,8 +206,16 @@ settings-appearance-colors-system-detail = Follows the desktop
 # Under a color scheme that has a light side only, so Mode does not change it.
 settings-appearance-colors-light-only = Light only
 settings-appearance-colors-dark-only = Dark only
+# Heading over the color schemes people made or imported.
+settings-appearance-colors-yours = Yours
+# A card at the end of Yours: copies the selected scheme into the editor.
+scheme-customize-card = Customize…
+scheme-customize-card-detail = From the picked one
+# A card at the end of Yours: reads a scheme from a file.
+scheme-import-card = Import…
+scheme-import-card-detail = Katna or KDE file
 settings-appearance-accent = Accent
-settings-appearance-accent-detail = The color of the selected folder, Compose, counts and highlights
+settings-appearance-accent-detail = The color of Compose, the app on show in the rail, counts and highlights
 # An accent choice: the color scheme's own accent color.
 settings-appearance-accent-scheme = From colors
 # An accent choice: the desktop's accent color.
@@ -226,6 +237,44 @@ scheme-rose-pine = Rosé Pine
 scheme-everforest = Everforest
 scheme-kanagawa = Kanagawa
 scheme-ayu = Ayu
+# The name a copy of a color scheme starts with.
+scheme-copy-name = { $name } copy
+
+## Color schemes people make: the right-click menu of a scheme's card, and
+## the editor.
+
+scheme-customize = Customize
+scheme-edit = Edit
+scheme-duplicate = Duplicate
+scheme-export = Export
+scheme-delete = Delete
+scheme-deleted = Deleted “{ $name }”
+scheme-exported = Saved “{ $name }”
+# The title of the file picker.
+scheme-import = Import a color scheme
+scheme-import-failed = Not a color scheme Katna can read: { $error }
+scheme-editor-new = New color scheme
+scheme-editor-edit = Edit color scheme
+# The placeholder of the name field.
+scheme-editor-name = Name
+scheme-editor-light = Light side
+scheme-editor-dark = Dark side
+scheme-editor-make-dark = Make dark from light
+scheme-editor-add-dark = Add a dark side
+scheme-editor-add-light = Add a light side
+scheme-editor-remove-side = Remove this side
+scheme-editor-readable = Easy to read
+# $colors lists the colors, like "Text, Text on accent".
+scheme-editor-hard-to-read = Hard to read: { $colors }
+# The eight colors of a side.
+scheme-seed-page = Page
+scheme-seed-cards = Cards
+scheme-seed-text = Text
+scheme-seed-faint = Faint text
+scheme-seed-accent = Accent
+scheme-seed-bar-text = Top bar text
+scheme-seed-on-accent = Text on accent
+scheme-seed-error = Error
 
 ## Settings > Appearance, continued
 

@@ -41,6 +41,10 @@ pub enum Command {
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
+    /// Brings back the color scheme just deleted: its id, its file's
+    /// contents and whether it was in use. The app does this itself; the
+    /// daemon never sees it.
+    RestoreScheme(String, String, bool),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -191,6 +195,7 @@ impl Command {
             | Self::ReopenDraft
             | Self::RestoreQuote
             | Self::RestoreContacts(_)
+            | Self::RestoreScheme(..)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
@@ -362,7 +367,10 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             return Ok(());
         }
         Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
-        Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
+        Command::ReopenDraft
+        | Command::RestoreQuote
+        | Command::RestoreContacts(_)
+        | Command::RestoreScheme(..) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),

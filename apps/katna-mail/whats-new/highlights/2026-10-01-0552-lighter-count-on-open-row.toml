@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Counts stand out on the open folder"
+text = """
+The count beside the open folder in Mail, and beside the open kind in Files,
+now sits in a pill lighter than the grey of the line, so it no longer sinks
+into it, in light and dark.
+"""

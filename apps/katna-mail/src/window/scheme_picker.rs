@@ -9,8 +9,8 @@
 use std::sync::Mutex;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Div, ElementId, SharedString, SpringAnimation, div,
-    prelude::*, rgba,
+    AnimationExt, AnyElement, Context, Div, ElementId, MouseButton, MouseDownEvent, SharedString,
+    SpringAnimation, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::motion;
@@ -20,6 +20,7 @@ use super::MailWindow;
 use super::settings::Change;
 use crate::schemes::{self, BUILT_IN};
 use crate::theme::{Accent, Theme, fade, mix};
+use crate::user_schemes;
 
 /// The accent colors offered besides the scheme's and the desktop's:
 /// blue, teal, green, yellow, orange, pink and violet.
@@ -52,19 +53,37 @@ impl MailWindow {
             Some(tr!("settings-appearance-colors-system-detail").into()),
             cx,
         )];
+        let mut yours = Vec::new();
         for scheme in &system.schemes {
+            let mine = scheme.id.starts_with(user_schemes::PREFIX);
             let tag = match (&scheme.light, &scheme.dark) {
                 (Some(_), None) => Some(tr!("settings-appearance-colors-light-only").into()),
                 (None, Some(_)) => Some(tr!("settings-appearance-colors-dark-only").into()),
                 _ => None,
             };
-            from_system.push(card(
-                intern(&scheme.id),
-                scheme.name.clone().into(),
-                tag,
-                cx,
-            ));
+            let card = card(intern(&scheme.id), scheme.name.clone().into(), tag, cx);
+            if mine {
+                yours.push(card);
+            } else {
+                from_system.push(card);
+            }
         }
+        yours.push(self.new_scheme_card(
+            "scheme-new",
+            "add",
+            tr!("scheme-customize-card"),
+            tr!("scheme-customize-card-detail"),
+            th,
+            cx,
+        ));
+        yours.push(self.new_scheme_card(
+            "scheme-import",
+            "upload",
+            tr!("scheme-import-card"),
+            tr!("scheme-import-card-detail"),
+            th,
+            cx,
+        ));
         div()
             .flex()
             .flex_col()
@@ -79,6 +98,77 @@ impl MailWindow {
                 th,
             ))
             .child(cards(from_system))
+            .child(group_heading(tr!("settings-appearance-colors-yours"), th))
+            .child(cards(yours))
+    }
+
+    /// Customize… and Import… at the end of Yours: a card with a dashed
+    /// picture holding `icon`.
+    fn new_scheme_card(
+        &self,
+        id: &'static str,
+        icon_name: &str,
+        name: String,
+        tag: String,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let import = id == "scheme-import";
+        self.page_control(div().id(id), th, cx)
+            .relative()
+            .overflow_hidden()
+            .w(px(CARD_WIDTH))
+            .p(px(4.0))
+            .flex()
+            .flex_col()
+            .gap(px(6.0))
+            .rounded(px(12.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                if import {
+                    this.import_scheme(cx);
+                } else {
+                    let picked = intern(this.config.mail.colors());
+                    this.customize_scheme(picked, window, cx);
+                }
+            }))
+            .child(
+                Ripple::new(
+                    ElementId::Name(format!("{id}-ripple").into()),
+                    rgba(th.ripple),
+                )
+                .rounded(12.0),
+            )
+            .child(
+                div()
+                    .h(px(PICTURE_HEIGHT))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded(px(8.0))
+                    .border_2()
+                    .border_dashed()
+                    .border_color(rgba(th.divider))
+                    .child(crate::widgets::icon(icon_name, th.text_dim, 24.0)),
+            )
+            .child(
+                div()
+                    .px(px(2.0))
+                    .flex()
+                    .flex_col()
+                    .text_size(px(13.0))
+                    .child(div().min_w_0().truncate().child(name))
+                    .child(
+                        div()
+                            .min_w_0()
+                            .truncate()
+                            .text_size(px(11.0))
+                            .text_color(rgba(th.text_faint))
+                            .child(tag),
+                    ),
+            )
+            .into_any_element()
     }
 
     fn scheme_card(
@@ -111,6 +201,13 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Colors(id), cx)))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_scheme_menu(id, event.position, cx);
+                }),
+            )
             .child(
                 Ripple::new(
                     ElementId::Name(format!("scheme-ripple-{id}").into()),
@@ -262,7 +359,7 @@ impl MailWindow {
 
 /// `id` as a `&'static str` for [`Change::Colors`]: the desktop's scheme
 /// ids are kept once each, so there are only ever as many as schemes seen.
-fn intern(id: &str) -> &'static str {
+pub(super) fn intern(id: &str) -> &'static str {
     static IDS: Mutex<Vec<&'static str>> = Mutex::new(Vec::new());
     let mut ids = IDS
         .lock()
@@ -304,7 +401,7 @@ fn cards(cards: Vec<AnyElement>) -> Div {
 /// The mail window in miniature, in `th`: the top bar, Compose and the
 /// selected folder at the left, and the list's card with an accent tab, a
 /// line of text, a ticked row and a date.
-fn scheme_picture(th: &Theme) -> Div {
+pub(super) fn scheme_picture(th: &Theme) -> Div {
     let bar = |w: f32, h: f32, color: u32| div().w(px(w)).h(px(h)).rounded_full().bg(rgba(color));
     div()
         .flex_1()

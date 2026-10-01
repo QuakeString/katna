@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Make your own color scheme"
+text = """
+Settings > Appearance > Colors > Customize copies the scheme you use into an
+editor: change any of its eight colors on the light and the dark side, see the
+mail window in them, and Katna tells you what would be hard to read. Import
+takes a Katna or KDE color scheme file, and a right-click on your scheme edits,
+duplicates, exports or deletes it.
+"""

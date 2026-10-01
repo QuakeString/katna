@@ -24,7 +24,7 @@ use gpui::{
 };
 use katna_core::config::{
     AccountTabs, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice,
+    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
 use katna_ui::motion::lerp;
@@ -1347,6 +1347,23 @@ impl MailWindow {
                 th,
                 cx,
             ))
+            // Only while the tray icon shows.
+            .when(general.show_in_tray, |d| {
+                let color = general.tray_style == TrayStyle::Color;
+                d.child(self.switch_row(
+                    "page-tray-color",
+                    tr!("settings-general-tray-color"),
+                    tr!("settings-general-tray-color-detail"),
+                    color,
+                    Change::TrayStyle(if color {
+                        TrayStyle::Monochrome
+                    } else {
+                        TrayStyle::Color
+                    }),
+                    th,
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 

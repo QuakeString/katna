@@ -8,7 +8,7 @@
 
 use katna_platform::colors::{Scheme, SystemColors, contrast, luminance, over};
 
-use crate::schemes;
+use crate::schemes::{self, SideScheme};
 
 /// The accent color the settings pick (Settings > Appearance > Accent).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -73,6 +73,9 @@ pub struct Theme {
     /// Files): a quiet grey, so the accent is left to Compose and the rail.
     pub row_selected: u32,
     pub row_selected_text: u32,
+    /// A count pill on that open line: lighter than the line, so the
+    /// count still reads as a pill on the grey.
+    pub row_selected_pill: u32,
     pub compose: u32,
     pub compose_text: u32,
     pub search: u32,
@@ -306,6 +309,11 @@ impl Theme {
             nav_selected_text: text,
             row_selected: fade(text, if dark { 0.12 } else { 0.10 }),
             row_selected_text: text,
+            row_selected_pill: if dark {
+                fade(text, 0.10)
+            } else {
+                fade(surface, 0.7)
+            },
             compose: mix(page, accent, if dark { 0.34 } else { 0.28 }),
             compose_text: text,
             search: over(fade(s.window_fg, if dark { 0.08 } else { 0.06 }), page),
@@ -432,6 +440,7 @@ const LIGHT: Theme = Theme {
     nav_selected_text: 0x041e49ff,
     row_selected: 0x1f1f1f1a,
     row_selected_text: 0x1f1f1fff,
+    row_selected_pill: 0xffffffb3,
     compose: 0xc2e7ffff,
     compose_text: 0x001d35ff,
     search: 0xe9eef6ff,
@@ -480,6 +489,7 @@ const DARK: Theme = Theme {
     nav_selected_text: 0xc2e7ffff,
     row_selected: 0xe3e3e31f,
     row_selected_text: 0xe3e3e3ff,
+    row_selected_pill: 0xe3e3e31a,
     compose: 0x004a77ff,
     compose_text: 0xc2e7ffff,
     search: 0x2a2d31ff,

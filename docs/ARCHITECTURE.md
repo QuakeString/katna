@@ -2285,8 +2285,20 @@ Gemini or confidential mode):
   Contrast theme is on, System draws its colors. A scheme with one side
   (a Contrast theme, a KDE scheme without a partner) decides light or
   dark itself, whatever Mode says (`Theme::forced_dark`), as KDE does.
-  Windows' colors are read at startup. Still to come: the editor for
-  one's own schemes (Yours).
+  Windows' colors are read at startup.
+
+  *Yours* lists the schemes people make (`user_schemes.rs`): one TOML file
+  each in `<config>/colors/`, ids `user:<file stem>`, with the eight
+  colors of a light side, a dark side or both (the six above plus top bar
+  text and text on the accent). *Customize…* copies the selected scheme,
+  as drawn in the picked accent, into the editor; *Import…* reads a Katna
+  file or a KDE `.colors` file (one side). The editor shows both sides
+  next to each other, each color with a hex field and a palette, the mail
+  window drawn in them and what reads badly (text under 4.5:1, faint text
+  and text on the accent under 3:1); *Make dark from light* works a dark
+  side out from the light one's hues. A card's right-click menu has
+  Customize, or for one's own Edit, Duplicate, Export and Delete (with
+  Undo: the file comes back, in use again if it was).
 - **Contact panel.** On a desktop, a card beside the open conversation
   (300 px, the usual 16 px card gap, sliding in with the reading pane's
   spring) shows one of its people: the newest sender other than the user,
@@ -3148,12 +3160,20 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is the one-colour k
-  (`<mail app ID>-symbolic`), which the panel recolours. With unread mail
-  it is the coloured app icon, pre-rendered at each tray size
-  (`crates/katna-platform/icons/`, from `packaging/icons/render.py`), with
-  a red badge drawn in code with the count, `99+` above 99, since the
-  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). `general.tray_style` picks Colour or Monochrome
+  (Settings → General → Desktop → "Tray icon in color"; default Monochrome
+  on Linux, Colour on Windows, 2026-10-01). Without unread mail the panel
+  draws the named icon: the one-colour k (`<mail app ID>-symbolic`), which
+  it recolours, or the coloured app icon. With unread mail the icon is
+  pixels, pre-rendered at each tray size (`crates/katna-platform/icons/`,
+  from `packaging/icons/render.py`), with a red badge drawn in code with
+  the count, `99+` above 99, since the protocol takes pixels and an SVG
+  renderer would grow the daemon. Monochrome stays monochrome then: the
+  disc in the panel's text colour with the k cut out (its whiteness in the
+  coloured pixels), and only the badge is red. Panels can't be asked their
+  colour, so it is inferred (`colors::panel_text`): Plasma's from the
+  scheme's window text, white on GNOME and other panels, and on Windows
+  from `SystemUsesLightTheme`; it is read again with each count. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
@@ -3813,7 +3833,7 @@ most useful reason is shown. Changes go back the way their calendar came
   daemon as the Tasks page's Add does. With no calendar to add events to
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
-- Views: Day, Week, Month (the default), Year (Y or 5: twelve small
+- Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events or tasks; a day opens Day, a
   month's name opens Month; resting the pointer on a dotted day, or
   tapping it on a phone, shows its events and tasks in a popover with a
@@ -5121,8 +5141,10 @@ Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
 Katna's look: one window with its own close button, whose shadow, border
 and corners Windows draws (round on Windows 11, square on Windows 10; a
 see-through window with a card drawn inside showed as a grey box), the logo, the
-choices, Install, a progress bar and Open Katna, light or dark as Windows
-is set. The choices: install for just me (the default, into
+choices, Install, a progress bar and Open Katna, in Katna Mail's Mode,
+built-in color scheme and accent when its settings file is there
+(`katna_ui::schemes`; the desktop's and one's own schemes draw Katna's
+palette), else light or dark as Windows is set. The choices: install for just me (the default, into
 `%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
 (into `%ProgramFiles%\Katna`, with the machine's Start menu, public desktop
 and `HKLM` entries; Setup starts a second copy of itself as administrator,

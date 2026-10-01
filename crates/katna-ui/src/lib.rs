@@ -9,6 +9,7 @@ pub mod native;
 pub mod rich;
 pub mod ripple;
 pub mod scale;
+pub mod schemes;
 pub mod scrollbar;
 pub mod text_area;
 pub mod text_input;
