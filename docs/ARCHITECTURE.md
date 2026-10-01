@@ -3020,9 +3020,10 @@ Content and behavior:
 
 Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 
-- After each sync, unread mail that reached an account's inbox (Primary tab,
-  or not classified yet) since the daemon last looked, and dated within the
-  last two days, becomes one notification per account and sync. One message
+- After each sync, unread mail that rings (§15.1.1; by default mail that
+  reached an account's inbox, Primary tab or not classified yet, and is not
+  muted) since the daemon last looked, and dated within the last two days,
+  becomes one notification per account and sync. One message
   shows sender, subject and the start of its text; more show "N new emails"
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
@@ -3037,7 +3038,8 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   message in every inbox tab. The Plasma inline-reply field in the table
   above is not built yet.
 - A notification closes when all its mail is read or out of the inbox, from
-  a sync or from a change made in the app.
+  a sync or from a change made in the app, and a new-mail notification
+  also when its mail is muted or its folder stops notifying.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
@@ -3055,6 +3057,43 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   fell due in the last ten minutes. Snoozes live in memory. Tasks'
   reminders come through the same loop (§18.1).
 
+#### 15.1.1 What rings and counts: bells and mutes
+
+One rule decides both what notifies and what the taskbar and tray count
+(`katna-store` `alerts.rs`), so they never disagree (before October 2026
+the badge counted the whole Inbox, Promotions included, while only Primary
+notified).
+
+- **Bells.** Each folder, and each inbox tab, has a bell with two switches:
+  Notify (new mail shows a notification) and Count (unread mail counts on
+  the taskbar and tray). Default: an inbox's Primary tab (and unclassified
+  mail) both on, everything else off. `mail.db` `folder_alert` keeps only
+  bells that differ from the default (`category` 0 for a whole folder).
+  Mail rings when any folder it is in rings, so a Gmail message labelled
+  Clients rings when Clients' bell is on.
+- **Mutes** (`mail.db` `mute`): an account, a folder, a conversation or a
+  sender (an address, every account), for a while or until unmuted. A
+  muted thing's mail still arrives and stays unread; it only never
+  notifies and is not counted. Mutes win over bells. Snooze and follow-up
+  reminders still show, because they were asked for.
+- **Mail services first.** A conversation muted for good is muted at the
+  service too: Gmail's mute (the `\Muted` label in `X-GM-LABELS`, set on
+  every message of the conversation; Gmail then keeps later replies out of
+  the Inbox), elsewhere the `$muted` keyword (RFC 9979). Both read back as
+  `MessageFlags::MUTED`. After each sync the daemon follows the service:
+  a conversation with a muted message is muted (`server` = 1), and one
+  muted by the service whose messages all lost the flag is unmuted.
+  Katna's own mute of a conversation on a server that keeps no keywords
+  stays Katna's (`server` = 0). Microsoft's Ignore deletes mail, so it is
+  not used. Bells, folder, account and sender mutes are Katna's own: no
+  service keeps them for other apps.
+- **Daemon** (`daemon/mutes.rs`): D-Bus `Mute(kind, id, address, until)`,
+  `Unmute` and `SetBell(folder, category, notify, count)`; each closes
+  notifications that no longer ring, sends `MailChanged` for every account
+  (the apps and the taskbar count look again) and wakes the scheduler,
+  which drops timed mutes when they end. A muted conversation follows
+  thread merges.
+
 ### 15.2 Taskbar, tray and global menu
 
 The count and the tray live in `katna-daemon`, so they stay while the app
@@ -3065,8 +3104,8 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   `com.canonical.Unity.LauncherEntry` `Update` signals for
   `application://in.invenia.katna.Mail.desktop` from
   `/in/invenia/katna/Daemon/LauncherEntry`. The number is the unread
-  messages in every account's Inbox, the same as next to Inbox in the app,
-  recounted half a second after mail changes. Plasma's task manager shows
+  messages that count (§15.1.1; by default every account's Inbox, Primary
+  tab, less anything muted), recounted half a second after mail changes. Plasma's task manager shows
   it; on GNOME, Ubuntu Dock, Dash to Dock and Dash to Panel do (the stock
   GNOME dash shows no counts). Setting `general.unread_badge` (default on).
 - **Tray icon**: a StatusNotifierItem under its own name

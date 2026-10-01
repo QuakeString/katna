@@ -161,6 +161,10 @@ pub struct Address {
 /// take it as this keyword too.
 pub const IMPORTANT: &str = "$Important";
 
+/// The keyword of a muted conversation's mail (RFC 9979). Gmail keeps
+/// mutes as its Muted label, reported and taken as this keyword too.
+pub const MUTED: &str = "$muted";
+
 /// Message flags. Keywords keep their IMAP spelling (`$Forwarded`, …).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Flags {

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The taskbar count matches your notifications"
+text = """
+The unread count on the taskbar and tray now counts the same mail that
+notifies you: your Inbox's Primary tab. Promotions, Social, Updates and
+Forums no longer add to it.
+"""

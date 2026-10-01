@@ -243,6 +243,11 @@ fn merge(conn: &Connection, from: i64, into: i64, changed: &mut BTreeSet<i64>) -
          SELECT account_id, message_id_hdr, ?2 FROM thread_ref WHERE thread_id = ?1",
     )?
     .execute(params![from, into])?;
+    // A muted conversation stays muted (before the trigger removes `from`).
+    conn.prepare_cached(
+        "UPDATE OR IGNORE mute SET thread_id = ?2 WHERE kind = 'thread' AND thread_id = ?1",
+    )?
+    .execute(params![from, into])?;
     conn.prepare_cached("UPDATE message SET thread_id = ?2 WHERE thread_id = ?1")?
         .execute(params![from, into])?;
     // Usually gone already: the trigger removes a thread with no messages.

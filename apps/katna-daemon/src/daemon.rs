@@ -56,10 +56,12 @@ mod drive;
 mod keyring;
 mod linked;
 mod meet;
+mod mutes;
 mod notes;
 mod other_contacts;
 mod reminders;
 
+pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
 pub(crate) use sign_in::open_in_browser;
 mod sign_in;
@@ -1805,6 +1807,9 @@ impl Daemon {
                     }
                     if first {
                         self.name_from_mail(id);
+                    }
+                    if changed && self.follow_server_mutes() {
+                        self.mail_changed_everywhere();
                     }
                     if let Some(notices) = self.new_mail_notices() {
                         notices.synced(&self.store, id).await;

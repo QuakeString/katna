@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! New-mail notifications (`docs/ARCHITECTURE.md` §15.1): after each sync,
-//! unread mail that reached an account's inbox (Primary tab) since the last
-//! look becomes one notification per account and sync, with Open, Reply all
-//! (for one message), Mark as read and Archive. Notifications close when their mail is read or leaves
-//! the inbox anywhere.
+//! unread mail that rings (by default: reached an account's inbox, Primary
+//! tab, and nothing about it is muted; §15.1.1) since the last look becomes
+//! one notification per account and sync, with Open, Reply all (for one
+//! message), Mark as read and Archive. Notifications close when their mail
+//! is read or leaves the inbox anywhere, or is muted.
 
 use std::{
     collections::{HashMap, HashSet},
@@ -66,7 +67,7 @@ impl Seen {
             return Ok(Vec::new());
         }
         Ok(store
-            .new_inbox_mail(account, self.after, since, CANDIDATES)?
+            .new_ringing_mail(account, self.after, since, CANDIDATES, unix_now())?
             .into_iter()
             .filter(|id| self.announced.insert(*id))
             .collect())
@@ -86,6 +87,9 @@ struct Found {
 struct Shown {
     account: AccountId,
     messages: Vec<MessageId>,
+    /// A new-mail notification, which also closes once its mail is muted
+    /// or its folder stops notifying. Reminders stay until read or moved.
+    new_mail: bool,
 }
 
 pub(crate) struct NewMailNotices {
@@ -169,6 +173,7 @@ impl NewMailNotices {
                         Shown {
                             account,
                             messages: vec![message],
+                            new_mail: false,
                         },
                     );
                 }
@@ -251,10 +256,14 @@ impl NewMailNotices {
             {
                 Ok(id) => {
                     tracing::info!(%account, count = messages.len(), "new mail notified");
-                    self.shown
-                        .lock()
-                        .unwrap()
-                        .insert(id, Shown { account, messages });
+                    self.shown.lock().unwrap().insert(
+                        id,
+                        Shown {
+                            account,
+                            messages,
+                            new_mail: true,
+                        },
+                    );
                 }
                 Err(err) => tracing::warn!(%err, "could not show a notification"),
             },
@@ -287,10 +296,14 @@ impl NewMailNotices {
         let sound = self.sound.load(Ordering::Relaxed);
         match self.notifier.reminder(&origin, summary, lines, sound).await {
             Ok(id) => {
-                self.shown
-                    .lock()
-                    .unwrap()
-                    .insert(id, Shown { account, messages });
+                self.shown.lock().unwrap().insert(
+                    id,
+                    Shown {
+                        account,
+                        messages,
+                        new_mail: false,
+                    },
+                );
             }
             Err(err) => tracing::warn!(%err, "could not show a reminder"),
         }
@@ -342,13 +355,22 @@ impl NewMailNotices {
     }
 
     /// Notifications (of `account`, or all) whose mail is all read or out
-    /// of the inbox; they are forgotten, and should be closed.
+    /// of the inbox, and new-mail notifications whose mail no longer
+    /// notifies (muted, or its folder's bell turned off); they are
+    /// forgotten, and should be closed.
     pub(crate) fn handled(&self, store: &Store, account: Option<AccountId>) -> Vec<u32> {
         let mut shown = self.shown.lock().unwrap();
         let done: Vec<u32> = shown
             .iter()
             .filter(|(_, s)| account.is_none_or(|a| s.account == a))
             .filter(|(_, s)| {
+                if s.new_mail
+                    && store
+                        .still_ringing(&s.messages, unix_now())
+                        .is_ok_and(|ringing| ringing.is_empty())
+                {
+                    return true;
+                }
                 store.messages_by_id(&s.messages).is_ok_and(|messages| {
                     !messages.iter().any(|m| {
                         !m.flags.contains(MessageFlags::SEEN)
