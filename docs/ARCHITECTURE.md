@@ -2536,7 +2536,9 @@ desktop's own app stays one click away.
   out, a file sent again (same name and size) shows once, and small
   pictures (signature logos) are left out: by default those under 12 KB,
   or under 100 px wide or tall (Settings > Default apps > Files page,
-  `mail.files`). Pixel sizes are read in the background from downloaded
+  `mail.files`). With them go signature pictures of any size: one its
+  sender sent in three or more conversations (same name and size), or a
+  social network's icon by name. Pixel sizes are read in the background from downloaded
   mail and kept in the cache directory (`files-picture-sizes.json`); they
   apply the next time the page opens, so cards never move under the
   pointer. It reads at most 20,000 files. The side column (a drawer and chips on a phone) narrows it to a

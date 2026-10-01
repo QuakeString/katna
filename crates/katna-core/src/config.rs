@@ -709,6 +709,36 @@ impl FilesPage {
             && (bytes < u64::from(self.small_kb) * 1024
                 || size.is_some_and(|(w, h)| w.min(h) < self.small_px))
     }
+
+    /// Whether a picture named `name` is part of an email signature,
+    /// whatever its size: its sender sent the same picture in
+    /// `conversations` conversations (three or more), or it is a social
+    /// network's icon. Left out with the small pictures.
+    pub fn is_signature(&self, name: &str, conversations: usize) -> bool {
+        const SIGNATURE_CONVERSATIONS: usize = 3;
+        const WORDS: [&str; 11] = [
+            "facebook",
+            "twitter",
+            "linkedin",
+            "instagram",
+            "youtube",
+            "whatsapp",
+            "tiktok",
+            "pinterest",
+            "telegram",
+            "signature",
+            "emailsignature",
+        ];
+        if !self.leave_out_small {
+            return false;
+        }
+        let stem = name.rsplit_once('.').map_or(name, |(stem, _)| stem);
+        conversations >= SIGNATURE_CONVERSATIONS
+            || stem
+                .to_lowercase()
+                .split(|c: char| !c.is_alphanumeric())
+                .any(|word| WORDS.contains(&word))
+    }
 }
 
 impl Default for FilesPage {
@@ -1427,6 +1457,19 @@ mod tests {
         let config = Config::parse("[mail.files]\nleave_out_small = false\n").unwrap();
         assert!(!config.mail.files.leaves_out(1, Some((1, 1))));
         assert_eq!(config.mail.files.small_kb, 12);
+        assert!(!config.mail.files.is_signature("linkedin.png", 5));
+    }
+
+    #[test]
+    fn files_page_leaves_out_signature_pictures() {
+        let files = Config::default().mail.files;
+        assert!(files.is_signature("image001.png", 3));
+        assert!(!files.is_signature("image001.png", 2));
+        assert!(files.is_signature("LinkedIn_icon.png", 1));
+        assert!(files.is_signature("email-signature.jpg", 1));
+        assert!(!files.is_signature("site-visit.jpg", 1));
+        // Only whole words: "signatures-page-scan" is a file.
+        assert!(!files.is_signature("signatures-scan.jpg", 1));
     }
 
     #[test]
