@@ -15,7 +15,9 @@
 //! saved to `config.toml`.
 
 use std::cell::RefCell;
+use std::ops::RangeInclusive;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
@@ -23,7 +25,7 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
+    AccountTabs, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn, ReadingPane,
     SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
@@ -164,6 +166,10 @@ pub(super) struct SettingsPage {
     /// Where new Jitsi Meet rooms go (`meetings.jitsi_server`).
     jitsi: Entity<TextInput>,
     _jitsi: Subscription,
+    /// The Files page's small-picture limits, in KB and in pixels.
+    small_kb: Entity<TextInput>,
+    small_px: Entity<TextInput>,
+    _small: [Subscription; 2],
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -227,6 +233,7 @@ impl MailWindow {
         let accent = rgba(self.theme(window).accent).into();
         let words = self.config.general.search_triggers.join(", ");
         let server = self.config.meetings.jitsi_server.clone();
+        let this_files = self.config.mail.files.clone();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -252,6 +259,23 @@ impl MailWindow {
                     this.set_jitsi_server(&text, cx);
                 }
             });
+            let files = this_files.clone();
+            let small_kb = number_input(files.small_kb, FilesPage::KB_RANGE, accent, cx);
+            let small_px = number_input(files.small_px, FilesPage::PX_RANGE, accent, cx);
+            let small_subscriptions = [
+                cx.subscribe(&small_kb, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.set_small_picture(&text, Change::SmallPictureKb, cx);
+                    }
+                }),
+                cx.subscribe(&small_px, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.set_small_picture(&text, Change::SmallPicturePx, cx);
+                    }
+                }),
+            ];
             SettingsPage {
                 section,
                 editing: None,
@@ -275,6 +299,9 @@ impl MailWindow {
                 _triggers: subscription,
                 jitsi,
                 _jitsi: jitsi_subscription,
+                small_kb,
+                small_px,
+                _small: small_subscriptions,
             }
         });
         page.mail_app = opens_mail_links();
@@ -1442,7 +1469,96 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .child(self.files_page_row(th, cx))
             .into_any_element()
+    }
+
+    /// Settings > Default apps > Files page: small pictures left out.
+    fn files_page_row(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(page) = &self.settings_page else {
+            return div().into_any_element();
+        };
+        let files = &self.config.mail.files;
+        let mut limit = |label: String, input: &Entity<TextInput>, id, range, unit: String| {
+            div()
+                .flex()
+                .items_center()
+                .gap(px(8.0))
+                .text_size(px(14.0))
+                .text_color(rgba(th.text))
+                .child(label)
+                .child(number_field(id, input, range, th, cx))
+                .child(div().text_color(rgba(th.text_dim)).child(unit))
+        };
+        let limits = div()
+            .ml(px(12.0))
+            .mb(px(8.0))
+            .pl(px(18.0))
+            .py(px(4.0))
+            .border_l_1()
+            .border_color(rgba(th.divider))
+            .flex()
+            .flex_col()
+            .gap(px(12.0))
+            // Off, the limits stay to be set but read as not in use.
+            .when(!files.leave_out_small, |d| d.opacity(0.5))
+            .child(limit(
+                tr!("settings-files-smaller-than"),
+                &page.small_kb,
+                "page-files-small-kb",
+                FilesPage::KB_RANGE,
+                tr!("settings-files-kb"),
+            ))
+            .child(limit(
+                tr!("settings-files-narrower-than"),
+                &page.small_px,
+                "page-files-small-px",
+                FilesPage::PX_RANGE,
+                tr!("settings-files-px"),
+            ))
+            .child(
+                div()
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!("settings-files-sizes-note")),
+            );
+        self.row(
+            tr!("settings-files-page"),
+            Some(tr!("settings-files-page-detail").as_str()),
+            div()
+                .flex()
+                .flex_col()
+                .child(self.switch_row(
+                    "page-files-leave-out-small",
+                    tr!("settings-files-leave-out-small"),
+                    tr!("settings-files-leave-out-small-detail"),
+                    files.leave_out_small,
+                    Change::LeaveOutSmallPictures(!files.leave_out_small),
+                    th,
+                    cx,
+                ))
+                .child(limits),
+            th,
+        )
+        .into_any_element()
+    }
+
+    /// A small-picture limit typed or stepped: applied once typing pauses,
+    /// so the Files page is read again once, not at every key.
+    fn set_small_picture(&mut self, text: &str, change: fn(u32) -> Change, cx: &mut Context<Self>) {
+        let Ok(value) = text.trim().parse::<u32>() else {
+            return;
+        };
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(SAVE_DELAY).await;
+            this.update(cx, |this, cx| this.apply(change(value), cx))
+                .ok();
+        });
+        if let Some(page) = &mut self.settings_page {
+            page.save = Some(task);
+        } else {
+            task.detach();
+        }
     }
 
     // Inbox
@@ -2690,6 +2806,101 @@ fn note(text: String, th: &Theme) -> Div {
         .child(text)
 }
 
+/// A whole number from `range` in a field: Up and Down step it, as do the
+/// arrows at its side.
+fn number_input(
+    value: u32,
+    range: RangeInclusive<u32>,
+    accent: gpui::Hsla,
+    cx: &mut Context<MailWindow>,
+) -> Entity<TextInput> {
+    cx.new(|cx| {
+        let mut input = TextInput::new("", cx);
+        input.set_text(value.to_string(), cx);
+        input.set_accent(accent);
+        input.set_stepper(Some(Arc::new(move |text: &str, _, by| {
+            let text = stepped(text, by, &range).to_string();
+            let end = text.len();
+            Some((text, end))
+        })));
+        input
+    })
+}
+
+/// `text`'s number one up (`by > 0`) or down, kept in `range`.
+fn stepped(text: &str, by: i32, range: &RangeInclusive<u32>) -> u32 {
+    let value = text.trim().parse::<u32>().unwrap_or(*range.start());
+    let value = if by > 0 {
+        value.saturating_add(1)
+    } else {
+        value.saturating_sub(1)
+    };
+    value.clamp(*range.start(), *range.end())
+}
+
+/// The field of a [`number_input`], with its up and down arrows.
+fn number_field(
+    id: &'static str,
+    input: &Entity<TextInput>,
+    range: RangeInclusive<u32>,
+    th: &Theme,
+    cx: &mut Context<MailWindow>,
+) -> Stateful<Div> {
+    let focus = input.focus_handle(cx);
+    let arrow = |which: &'static str, name: &'static str, by: i32, tip_text: String| {
+        let input = input.clone();
+        let range = range.clone();
+        div()
+            .id(which)
+            .flex_1()
+            .w_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded(px(3.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .tooltip(tip(tip_text, th))
+            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(move |_, _, cx| {
+                input.update(cx, |input, cx| {
+                    let value = stepped(input.text(), by, &range);
+                    input.set_text(value.to_string(), cx);
+                });
+            })
+            .child(icon(name, th.text_faint, 9.0))
+    };
+    let (up, down) = match id {
+        "page-files-small-kb" => ("page-files-small-kb-up", "page-files-small-kb-down"),
+        _ => ("page-files-small-px-up", "page-files-small-px-down"),
+    };
+    field_box(id, th)
+        .w(px(64.0))
+        .h(px(32.0))
+        .pl(px(10.0))
+        .pr(px(3.0))
+        .flex()
+        .items_center()
+        .gap(px(2.0))
+        .on_click(move |_, window, cx| window.focus(&focus, cx))
+        .child(div().flex_1().min_w_0().child(input.clone()))
+        .child(
+            div()
+                .h_full()
+                .py(px(3.0))
+                .w(px(14.0))
+                .flex()
+                .flex_col()
+                .child(arrow(up, "chevron-up", 1, tr!("settings-files-more-tip")))
+                .child(arrow(
+                    down,
+                    "chevron-down",
+                    -1,
+                    tr!("settings-files-less-tip"),
+                )),
+        )
+}
+
 fn field_box(id: &'static str, th: &Theme) -> Stateful<Div> {
     div()
         .id(id)
@@ -2770,4 +2981,20 @@ fn recording_chip(recording: Option<&Recording>, th: &Theme) -> Div {
         .text_size(px(13.0))
         .text_color(rgba(th.accent))
         .child(text)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn number_fields_step_within_their_range() {
+        let range = FilesPage::KB_RANGE;
+        assert_eq!(stepped("12", 1, &range), 13);
+        assert_eq!(stepped("12", -1, &range), 11);
+        assert_eq!(stepped("1", -1, &range), 1);
+        assert_eq!(stepped("1024", 1, &range), 1024);
+        assert_eq!(stepped("", 1, &range), 2);
+        assert_eq!(stepped("5000", -1, &range), 1024);
+    }
 }

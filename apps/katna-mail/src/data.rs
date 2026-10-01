@@ -1507,6 +1507,51 @@ pub fn address_book(paths: &Paths) -> Result<katna_search::contacts::ContactBook
         .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
 }
 
+/// Where the pixel sizes of attached pictures are kept, so the Files page
+/// can leave out small ones without reading their mail again.
+fn picture_sizes_file(paths: &Paths) -> PathBuf {
+    paths.cache_dir().join("files-picture-sizes.json")
+}
+
+/// Pixel sizes of attached pictures, by message and place among its named
+/// attachments; `(0, 0)` for one whose size cannot be read (an SVG).
+pub type PictureSizes = HashMap<(MessageId, usize), (u32, u32)>;
+
+/// The sizes saved by [`save_picture_sizes`], if any.
+pub fn picture_sizes(paths: &Paths) -> PictureSizes {
+    let Ok(bytes) = std::fs::read(picture_sizes_file(paths)) else {
+        return PictureSizes::new();
+    };
+    let saved: Vec<(i64, usize, u32, u32)> = serde_json::from_slice(&bytes)
+        .inspect_err(|err| tracing::warn!("reading the picture sizes: {err}"))
+        .unwrap_or_default();
+    saved
+        .into_iter()
+        .map(|(message, order, w, h)| ((MessageId(message), order), (w, h)))
+        .collect()
+}
+
+/// Saves the picture sizes for the next time the Files page opens.
+pub fn save_picture_sizes(paths: &Paths, sizes: &PictureSizes) {
+    let file = picture_sizes_file(paths);
+    let partial = file.with_extension("json.part");
+    let mut rows: Vec<(i64, usize, u32, u32)> = sizes
+        .iter()
+        .map(|((message, order), (w, h))| (message.0, *order, *w, *h))
+        .collect();
+    rows.sort_unstable();
+    let saved = serde_json::to_vec(&rows)
+        .map_err(std::io::Error::other)
+        .and_then(|bytes| {
+            std::fs::create_dir_all(paths.cache_dir())?;
+            std::fs::write(&partial, bytes)?;
+            std::fs::rename(&partial, &file)
+        });
+    if let Err(err) = saved {
+        tracing::warn!("saving the picture sizes: {err}");
+    }
+}
+
 /// Where the address book is kept between runs, so suggestions work at
 /// once while it is read again.
 fn address_book_file(paths: &Paths) -> PathBuf {

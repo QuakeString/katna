@@ -557,6 +557,8 @@ pub struct MailView {
     pub attachment_previews: bool,
     /// Open the folder in the file manager after saving attachments.
     pub open_saved_folder: bool,
+    /// What the Files page leaves out.
+    pub files: FilesPage,
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
@@ -590,6 +592,42 @@ pub struct MailView {
     /// empty for all accounts.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub activity_account: String,
+}
+
+/// The Files page's small pictures (Settings > Default apps): logos and
+/// icons in signatures, which come with many mails.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct FilesPage {
+    /// Leave pictures smaller than these out of the Files page.
+    pub leave_out_small: bool,
+    /// A picture under this many KB is small...
+    pub small_kb: u32,
+    /// ... and so is one under this many pixels wide or tall.
+    pub small_px: u32,
+}
+
+impl FilesPage {
+    pub const KB_RANGE: std::ops::RangeInclusive<u32> = 1..=1024;
+    pub const PX_RANGE: std::ops::RangeInclusive<u32> = 1..=2000;
+
+    /// Whether a picture of `bytes`, `size` pixels (once known), is left
+    /// out.
+    pub fn leaves_out(&self, bytes: u64, size: Option<(u32, u32)>) -> bool {
+        self.leave_out_small
+            && (bytes < u64::from(self.small_kb) * 1024
+                || size.is_some_and(|(w, h)| w.min(h) < self.small_px))
+    }
+}
+
+impl Default for FilesPage {
+    fn default() -> Self {
+        Self {
+            leave_out_small: true,
+            small_kb: 12,
+            small_px: 100,
+        }
+    }
 }
 
 fn is_zero(n: &i64) -> bool {
@@ -659,6 +697,7 @@ impl Default for MailView {
             dark_mail: true,
             attachment_previews: true,
             open_saved_folder: false,
+            files: FilesPage::default(),
             accounts_shown: AccountsShown::One,
             unified_inbox: false,
             current_account: String::new(),
@@ -1251,6 +1290,19 @@ mod tests {
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
         assert!(config.experimental.blur);
+    }
+
+    #[test]
+    fn files_page_leaves_out_small_pictures() {
+        let files = Config::default().mail.files;
+        assert!(files.leaves_out(11 * 1024, None));
+        assert!(!files.leaves_out(40 * 1024, None));
+        // A wide, short logo.
+        assert!(files.leaves_out(40 * 1024, Some((300, 80))));
+        assert!(!files.leaves_out(40 * 1024, Some((640, 480))));
+        let config = Config::parse("[mail.files]\nleave_out_small = false\n").unwrap();
+        assert!(!config.mail.files.leaves_out(1, Some((1, 1))));
+        assert_eq!(config.mail.files.small_kb, 12);
     }
 
     #[test]
