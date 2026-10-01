@@ -24,7 +24,7 @@ use super::context_menu::Rows;
 use super::scheme_picker::{intern, scheme_picture};
 use super::settings::Change;
 use crate::daemon::Command;
-use crate::schemes;
+use crate::schemes::{self, SideScheme};
 use crate::theme::{Accent, Theme, fade, mix};
 use crate::user_schemes::{self, Seed};
 use crate::widgets::{elevation, filled_button, icon};
