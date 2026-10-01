@@ -1497,7 +1497,12 @@ GPUI global):
   right-click menu and its folder list, dropdowns), Search options and its
   date popover, and the account menu. Their color is 78 % opaque over a
   20 px blur of what is behind them in the window
-  (`katna_mail::widgets::raised`, `katna_ui::frost`). GPUI has no backdrop
+  (`katna_mail::widgets::raised`, `katna_ui::frost`). Dialogs and
+  floating cards (Add account, About, What's new, confirmations, label and
+  share dialogs, the first-run card) frost the same way with their own
+  color (`katna_mail::widgets::frosted`); a test keeps every frosted
+  panel's glass ahead of its content. The compose window, notes and the
+  task details (a scrolling card) stay opaque. GPUI has no backdrop
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS

@@ -655,7 +655,7 @@ impl MailWindow {
             .flex_col()
             .overflow_hidden()
             .rounded(px(super::PANEL_RADIUS))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .child(body);
