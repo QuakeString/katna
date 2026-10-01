@@ -41,7 +41,7 @@ use crate::widgets::{icon, icon_button_colored, tip};
 
 /// The header's pictures, and how far each overlaps the one before.
 const STACK_PICTURE: f32 = 26.0;
-const STACK_STEP: f32 = 18.0;
+const STACK_STEP: f32 = 22.0;
 /// Mail from one person this close together joins their group.
 const GROUP_SECONDS: i64 = 10 * 60;
 /// The picture beside a group.
