@@ -732,7 +732,9 @@ impl MailWindow {
                         });
                     }
                     let size = size.filter(|&(w, h)| w > 0 && h > 0);
-                    if rule.leaves_out(file.size, size) {
+                    if rule.leaves_out(file.size, size)
+                        || rule.is_signature(&file.name, file.conversations)
+                    {
                         return None;
                     }
                 }

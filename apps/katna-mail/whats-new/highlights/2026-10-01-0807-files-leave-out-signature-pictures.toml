@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Files leaves out large signature pictures too"
+text = """
+A picture someone sends in three or more conversations, like the banner or
+photo in their signature, no longer shows on the Files page, nor do social
+network icons, however big. They still show under their mail, and turning off
+"Leave out small pictures" brings them all back.
+"""
