@@ -65,6 +65,10 @@ pub struct MessageView {
     pub message_id: Option<String>,
     /// The `References`, oldest first, without angle brackets.
     pub references: Vec<String>,
+    /// Sent to a list of subscribers rather than written to people: it
+    /// offers to unsubscribe and is no mailing list's discussion, or says
+    /// it is bulk mail.
+    pub bulk: bool,
 }
 
 /// Parses `raw` into its plain-text view. A message that cannot be parsed
@@ -145,7 +149,25 @@ pub fn message_view(raw: &[u8]) -> MessageView {
             .as_text_list()
             .map(|ids| ids.iter().map(|id| id.to_string()).collect())
             .unwrap_or_default(),
+        bulk: is_bulk(&message),
     }
+}
+
+/// Whether `message` went to subscribers ([`MessageView::bulk`]).
+fn is_bulk(message: &mail_parser::Message<'_>) -> bool {
+    let header = |name: &str| {
+        message
+            .header_raw(name)
+            .map(|v| v.trim().to_ascii_lowercase())
+    };
+    let precedence = header("Precedence");
+    if matches!(precedence.as_deref(), Some("bulk" | "junk")) {
+        return true;
+    }
+    // A mailing list's discussion has a List-Id and says it is list mail;
+    // a newsletter offers to unsubscribe without being one.
+    header("List-Unsubscribe").is_some()
+        && !(header("List-Id").is_some() && precedence.as_deref() == Some("list"))
 }
 
 /// Attachment `index` of `raw`, counted as in [`MessageView::attachments`].
