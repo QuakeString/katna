@@ -238,5 +238,7 @@ print-cc = Cc: { $addresses }
 
 ## Message text (right-click menu in the reading pane)
 
+# On the right-click menu of an address in a mail's details.
+text-copy-address = Copy address
 text-copy = Copy
 text-select-all = Select all
