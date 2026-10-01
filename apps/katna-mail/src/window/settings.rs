@@ -80,6 +80,12 @@ pub(super) enum Change {
     Blur(bool),
     /// Frosted menus, popovers, dialogs and viewer bars.
     FrostedPopups(bool),
+    /// The frost's blur and opacity set by hand, or following the desktop.
+    CustomFrost(bool),
+    /// The frost's blur, in pixels.
+    FrostBlur(u8),
+    /// The frost's tint opacity, in percent.
+    FrostOpacity(u8),
     /// Conversations between people open as a group chat.
     ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
@@ -533,6 +539,9 @@ impl MailWindow {
                 cx.set_global(super::look(&self.config));
             }
             Change::FrostedPopups(on) => self.config.experimental.frosted_popups = on,
+            Change::CustomFrost(on) => self.config.experimental.custom_frost = on,
+            Change::FrostBlur(blur) => self.config.experimental.frost_blur = blur,
+            Change::FrostOpacity(opacity) => self.config.experimental.frost_opacity = opacity,
             Change::ChatView(on) => {
                 self.config.experimental.chat_view = on;
                 self.open_chat_as_set();

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Choose how frosted menus look"
+text = """
+Frosted menus and dialogs are clearer now and follow KDE's blur strength.
+Turn on Custom blur amount in Settings, Experimental, Blur to set the blur
+strength and opacity yourself.
+"""

@@ -4,7 +4,8 @@
 //! startup, again whenever the portal says a setting changed (accent
 //! color, color scheme, any `kdeglobals` group on KDE), and whenever the
 //! files they come from change (theme tools write `gtk.css` without
-//! telling anyone).
+//! telling anyone). On KDE it also follows the Blur effect's strength in
+//! `kwinrc`, which the frosted menus and dialogs take on.
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
@@ -13,6 +14,7 @@ use futures_lite::StreamExt;
 use gpui::{Context, Task};
 use katna_chrome::Desktop;
 use katna_dbus::zbus::Connection;
+use katna_platform::blur;
 use katna_platform::colors::{self, DesktopKind, DesktopScheme, SystemColors};
 
 use super::MailWindow;
@@ -36,6 +38,9 @@ pub(super) struct DesktopColors {
     /// The desktop's colors with the schemes people made listed too, as
     /// `Theme::pick` looks them up.
     pub(super) colors: SystemColors,
+    /// KDE's blur strength, 1 to 15; `None` off KDE or with its Blur
+    /// effect off.
+    pub(super) kde_blur: Option<u8>,
     _watch: Vec<Task<()>>,
 }
 
@@ -53,6 +58,7 @@ impl DesktopColors {
         let colors = read(kind, config_home.as_ref(), None);
         tracing::info!(?kind, ?colors, "desktop colors");
         let user = user_schemes::load_all(&user_schemes::dir(config_dir));
+        let kde_blur = read_kde_blur(kind, config_home.as_deref());
         let mut this = Self {
             kind,
             config_home,
@@ -60,6 +66,7 @@ impl DesktopColors {
             desktop: colors,
             user,
             colors: SystemColors::default(),
+            kde_blur,
             _watch: Vec::new(),
         };
         this.merge();
@@ -91,11 +98,19 @@ fn read(
     }
 }
 
+fn read_kde_blur(kind: DesktopKind, config_home: Option<&Path>) -> Option<u8> {
+    match config_home {
+        Some(home) if kind == DesktopKind::Kde => blur::read_kde(home),
+        _ => None,
+    }
+}
+
 impl MailWindow {
     /// Starts following the desktop's colors.
     pub(super) fn watch_colors(&mut self, cx: &mut Context<Self>) {
         let kind = self.desktop_colors.kind;
         let home = self.desktop_colors.config_home.clone();
+        let home_for_blur = home.clone();
         let portal = cx.spawn({
             let home = home.clone();
             async move |this, cx| {
@@ -173,7 +188,37 @@ impl MailWindow {
                 }
             }
         });
-        self.desktop_colors._watch = vec![portal, files];
+        let kwin = cx.spawn(async move |this, cx| {
+            let Some(home) = home_for_blur else {
+                return;
+            };
+            if kind != DesktopKind::Kde {
+                return;
+            }
+            let files = [blur::kwinrc(&home)];
+            let mut last = colors::stamps(&files);
+            loop {
+                cx.background_executor().timer(FILE_POLL).await;
+                let now = colors::stamps(&files);
+                if now == last {
+                    continue;
+                }
+                last = now;
+                cx.background_executor().timer(SETTLE).await;
+                let strength = read_kde_blur(kind, Some(&home));
+                let updated = this.update(cx, |this, cx| {
+                    if this.desktop_colors.kde_blur != strength {
+                        tracing::info!(?strength, "KDE blur strength changed");
+                        this.desktop_colors.kde_blur = strength;
+                        cx.notify();
+                    }
+                });
+                if updated.is_err() {
+                    return;
+                }
+            }
+        });
+        self.desktop_colors._watch = vec![portal, files, kwin];
     }
 
     fn set_desktop_colors(&mut self, colors: SystemColors, cx: &mut Context<Self>) {

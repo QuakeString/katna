@@ -1495,9 +1495,19 @@ GPUI global):
   window blur, which needs no compositor since Katna draws it), frosts
   floating panels in every window: menus (the
   right-click menu and its folder list, dropdowns), Search options and its
-  date popover, and the account menu. Their color is 78 % opaque over a
-  20 px blur of what is behind them in the window
-  (`katna_mail::widgets::raised`, `katna_ui::frost`). Dialogs and
+  date popover, and the account menu. Their color is 45 % opaque over a
+  24 px blur of what is behind them in the window
+  (`katna_mail::widgets::raised`, `katna_ui::frost`). Under it, *Custom
+  blur amount* (`experimental.custom_frost`, off by default) shows two
+  sliders, Blur strength (4 to 48 px, `frost_blur`) and Opacity (10 to
+  95 %, `frost_opacity`), that change the frost live while dragged. Off,
+  the blur follows KDE's Blur effect strength (`[Effect-blur]
+  BlurStrength` in `kwinrc`, 1 to 15, polled like `kdeglobals`; 1 is
+  4 px, KWin's default 15 is the 24 px default), and Katna's 24 px when
+  there is none (Blur effect off, other desktops); the opacity stays
+  45 %. The compositor's window blur takes no strength from the window,
+  so on KDE a line opens Desktop Effects for it
+  (`katna_platform::blur`, `window/frost_sliders.rs`). Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
   color (`katna_mail::widgets::frosted`); a test keeps every frosted

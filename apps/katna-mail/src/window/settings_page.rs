@@ -149,6 +149,8 @@ pub(super) struct SettingsPage {
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
     /// A drag on the Scaling slider.
     pub(super) scale: super::scale_slider::ScaleDrag,
+    /// A drag on the frost's blur and opacity sliders.
+    pub(super) frost: super::frost_sliders::FrostDrag,
     /// The account whose name is being changed in Settings > Accounts.
     pub(super) renaming: Option<super::accounts::Renaming>,
     /// An account being dragged to a new place, and rows gliding to theirs.
@@ -295,6 +297,7 @@ impl MailWindow {
                 flash: None,
                 info: Rc::default(),
                 scale: Default::default(),
+                frost: Default::default(),
                 renaming: None,
                 reorder: Default::default(),
                 start_at_login: crate::autostart::get(),

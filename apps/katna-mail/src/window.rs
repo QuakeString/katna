@@ -48,6 +48,7 @@ mod download;
 mod event_edit;
 mod feedback_page;
 mod files_page;
+mod frost_sliders;
 mod katna_account;
 mod keymap;
 mod labels;
@@ -207,8 +208,6 @@ const READER_CONTEXT: &str = "MessageReader";
 const SEARCH_CONTEXT: &str = "SearchBox";
 
 pub(super) const TOP_BAR_HEIGHT: f32 = 64.0;
-/// How far frosted menus and popovers blur what is behind them, in pixels.
-const FROST_BLUR: f32 = 20.0;
 const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
@@ -1085,7 +1084,8 @@ impl MailWindow {
         // Menus and popovers are frosted on their own switch, whether the
         // window is blurred or not: Katna draws their blur itself.
         let th = if self.config.experimental.frosted_popups && katna_ui::frost::supported() {
-            th.frosted(FROST_BLUR * window.scale_factor())
+            let (blur, tint) = self.frost_amount();
+            th.frosted(blur * window.scale_factor(), tint)
         } else {
             th
         };
