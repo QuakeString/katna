@@ -26,7 +26,7 @@ use katna_preview::Kind as FileKind;
 use katna_render::Attachment;
 use katna_render::trim::{self, Forwarded};
 use katna_store::MessageId;
-use katna_ui::px;
+use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
 use super::super::attachments::{Thumb, kind_badge};
@@ -75,6 +75,9 @@ pub(in crate::window) struct ChatState {
     /// Frames left to keep the feed at its end: the newest bubble and the
     /// reply box settle over a few frames.
     settle: u8,
+    /// The contact panel's width when the chat last drew, to keep the
+    /// feed at its end while the panel slides in or out.
+    room: f32,
 }
 
 /// One mail as a bubble shows it.
@@ -385,6 +388,9 @@ impl MailWindow {
     /// box.
     pub(super) fn render_chat(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let lines = self.chat_lines();
+        let room = self.contact_room();
+        let at_end =
+            -unpx(self.reader_scroll.offset().y) >= unpx(self.reader_scroll.max_offset().y) - 4.0;
         let Some(reader) = &mut self.reader else {
             return div().into_any_element();
         };
@@ -394,6 +400,14 @@ impl MailWindow {
         if reader.chat.shown != reader.parts.len() {
             reader.chat.shown = reader.parts.len();
             reader.chat.settle = SETTLE_FRAMES;
+        }
+        // The panel sliding in or out reflows the bubbles: a feed at its
+        // end stays there.
+        if (room - reader.chat.room).abs() > 0.5 {
+            reader.chat.room = room;
+            if at_end {
+                reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
+            }
         }
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
