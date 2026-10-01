@@ -822,7 +822,7 @@ impl MailWindow {
             sidebar::Row::AllAccounts { expanded } => self.render_heading(
                 ix,
                 tr!("nav-all-accounts"),
-                (*expanded, self.checking_all()),
+                (*expanded, self.checking_all(), None),
                 th,
                 cx,
             ),
@@ -831,7 +831,11 @@ impl MailWindow {
             } => self.render_heading(
                 ix,
                 name.clone(),
-                (*expanded, self.checking_account(*id)),
+                (
+                    *expanded,
+                    self.checking_account(*id),
+                    self.account_bell_icon(*id),
+                ),
                 th,
                 cx,
             ),
@@ -904,6 +908,7 @@ impl MailWindow {
                                 .unified_folders(*view, None)
                                 .into_iter()
                                 .any(|f| self.checking_folder(f)),
+                        bell: None,
                     },
                     th,
                     cx,
@@ -940,6 +945,7 @@ impl MailWindow {
                         chevron: None,
                         checking: (*view == Unified::Inbox && self.checking_account(*account))
                             || folder.is_some_and(|f| self.checking_folder(f)),
+                        bell: self.account_bell_icon(*account),
                     },
                     th,
                     cx,
@@ -984,6 +990,7 @@ impl MailWindow {
                                 && folder
                                     .and_then(|f| self.tree.account_of(f))
                                     .is_some_and(|a| self.checking_account(a)),
+                        bell: folder.and_then(|f| self.folder_bell_icon(f)),
                     },
                     th,
                     cx,
@@ -998,7 +1005,7 @@ impl MailWindow {
         &self,
         ix: usize,
         name: String,
-        (expanded, checking): (bool, bool),
+        (expanded, checking, bell): (bool, bool, Option<&'static str>),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1037,6 +1044,13 @@ impl MailWindow {
                 }),
             )
             .child(div().min_w_0().pb(px(2.0)).truncate().child(name))
+            .when_some(bell, |d, bell| {
+                d.child(div().flex_none().pl(px(6.0)).pb(px(3.0)).child(icon(
+                    bell,
+                    th.text_faint,
+                    14.0,
+                )))
+            })
             .child(div().flex_1().pl(px(6.0)).pb(px(3.0)).when(checking, |d| {
                 d.child(super::nav_menu::turning_arrow(
                     "heading-checking",
@@ -1076,6 +1090,7 @@ impl MailWindow {
             bold,
             chevron,
             checking,
+            bell,
         } = pill;
         let indent = 12.0 * depth as f32;
         let text = if selected {
@@ -1151,12 +1166,23 @@ impl MailWindow {
             ))
             .child(
                 div()
-                    .flex_1()
+                    .when(bell.is_none(), |d| d.flex_1())
                     .min_w_0()
                     .pl(px(18.0))
                     .truncate()
                     .child(label),
             )
+            // Beside the name, so the markers of lines line up whatever
+            // their counts.
+            .when_some(bell, |d, bell| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(6.0))
+                        .child(icon(bell, th.text_dim, 16.0)),
+                )
+                .child(div().flex_1())
+            })
             .when(checking, |d| {
                 d.child(
                     div()
@@ -1506,6 +1532,9 @@ struct Pill {
     chevron: Option<bool>,
     /// Mail is being checked for: a turning arrow beside the name.
     checking: bool,
+    /// A bell, or a crossed bell, when its notifications differ from
+    /// the usual (§15.1.1).
+    bell: Option<&'static str>,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.

@@ -31,6 +31,7 @@ icons!(
     "arrow-up",
     "attachment",
     "back",
+    "bell-off",
     "bell",
     "bolt",
     "brand-fastmail-blue",

@@ -218,7 +218,11 @@ impl MailWindow {
         } else if self.nav_menu.is_some() {
             self.close_nav_menu(cx);
             true
-        } else if self.close_delete_ask(cx) || self.close_snooze_menu(cx) || self.close_danger(cx) {
+        } else if self.close_delete_ask(cx)
+            || self.close_snooze_menu(cx)
+            || self.close_quiet_menu(cx)
+            || self.close_danger(cx)
+        {
             true
         } else if self.print_preview_open() {
             self.close_print_preview(window, cx);

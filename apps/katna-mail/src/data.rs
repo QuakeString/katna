@@ -4,7 +4,7 @@
 //! here. Only `katna-daemon` writes; the app opens both read-only.
 
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -14,8 +14,9 @@ use katna_core::{Account, AccountId, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
-    FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId, Mode,
-    ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender, ThreadSummary,
+    Bell, FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId,
+    Mode, Mute, MuteTarget, ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender,
+    ThreadSummary,
 };
 
 mod preload;
@@ -1276,17 +1277,87 @@ fn open_index(dir: &std::path::Path) -> (Option<Arc<SearchIndex>>, Option<String
     }
 }
 
-/// The folders with their message counts, and unread messages per folder.
-/// Opens its own connection, so it can run on a background thread while
-/// the UI uses [`Mail`]. `None` for the folders when they could not be read.
-pub fn folders_and_unread(paths: &Paths) -> (Option<Vec<FolderSummary>>, HashMap<FolderId, u64>) {
-    let read = Store::open(paths, Mode::ReadOnly)
-        .and_then(|store| Ok((store.folder_summaries()?, store.unread_counts()?)));
+/// What rings and counts (`docs/ARCHITECTURE.md` §15.1.1): the folder
+/// bells that differ from the default, and what is muted.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Alerts {
+    /// By folder and inbox tab (`None` for the whole folder).
+    pub bells: HashMap<(FolderId, Option<MailCategory>), Bell>,
+    pub mutes: Vec<Mute>,
+    pub muted_threads: HashSet<ThreadId>,
+    /// A message of each muted conversation, which Unmute names.
+    pub thread_message: HashMap<ThreadId, MessageId>,
+}
+
+impl Alerts {
+    fn read(store: &Store, now: i64) -> katna_store::Result<Self> {
+        let mutes = store.mutes(now)?;
+        let mut thread_message = HashMap::new();
+        for mute in &mutes {
+            if let MuteTarget::Thread(thread) = mute.target
+                && let Some(message) = store.thread_messages(thread)?.first()
+            {
+                thread_message.insert(thread, *message);
+            }
+        }
+        Ok(Self {
+            bells: store
+                .folder_bells()?
+                .into_iter()
+                .map(|b| ((b.folder, b.category), b.bell))
+                .collect(),
+            mutes,
+            thread_message,
+            muted_threads: store.muted_threads(now)?,
+        })
+    }
+
+    /// The bell of `folder` (`role` its role), or of its inbox tab
+    /// `category` (`None`: an inbox's Primary tab).
+    pub fn bell(
+        &self,
+        folder: FolderId,
+        role: Option<&str>,
+        category: Option<MailCategory>,
+    ) -> Bell {
+        let inbox = role == Some(katna_store::FolderRole::Inbox.as_str());
+        let category = if inbox {
+            Some(category.unwrap_or_default())
+        } else {
+            None
+        };
+        self.bells
+            .get(&(folder, category))
+            .copied()
+            .unwrap_or_else(|| Bell::default_for(role, category))
+    }
+
+    /// The mute of `target` in force, if any.
+    pub fn mute(&self, target: &MuteTarget) -> Option<&Mute> {
+        self.mutes.iter().find(|m| &m.target == target)
+    }
+}
+
+/// The folders with their message counts, unread messages per folder and
+/// what rings and counts. Opens its own connection, so it can run on a
+/// background thread while the UI uses [`Mail`]. `None` for the folders
+/// when they could not be read.
+pub fn folders_and_unread(
+    paths: &Paths,
+) -> (Option<Vec<FolderSummary>>, HashMap<FolderId, u64>, Alerts) {
+    let now = jiff::Timestamp::now().as_second();
+    let read = Store::open(paths, Mode::ReadOnly).and_then(|store| {
+        Ok((
+            store.folder_summaries()?,
+            store.unread_counts()?,
+            Alerts::read(&store, now)?,
+        ))
+    });
     match read {
-        Ok((folders, counts)) => (Some(folders), counts.into_iter().collect()),
+        Ok((folders, counts, alerts)) => (Some(folders), counts.into_iter().collect(), alerts),
         Err(err) => {
             tracing::warn!("counting unread mail: {err}");
-            (None, HashMap::new())
+            (None, HashMap::new(), Alerts::default())
         }
     }
 }

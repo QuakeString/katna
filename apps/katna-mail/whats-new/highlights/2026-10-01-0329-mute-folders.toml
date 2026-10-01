@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mute a folder, a tab or an account"
+text = """
+The bell over the list mutes the open folder or Inbox tab for an hour,
+until tomorrow morning, or until you turn it back on. Right-click a folder
+or an account for the same. Settings › Notifications shows which folders
+notify and which count on the taskbar, and everything muted.
+"""
