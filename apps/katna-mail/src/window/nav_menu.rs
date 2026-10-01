@@ -552,149 +552,149 @@ impl MailWindow {
             let (glyph, label) = self.quiet_menu_label(&target);
             (target, glyph, label)
         });
+        let quiet_item = quiet.map(|(target, glyph, label)| {
+            item("nav-menu-quiet", glyph, label).on_click(
+                cx.listener(move |this, _, _, cx| this.quiet_menu_click(target.clone(), at, cx)),
+            )
+        });
         let divider = || div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider));
         let gmail = account.is_some_and(|a| self.tree.is_gmail(a));
-        let list =
-            div()
-                .key_context(crate::widgets::MENU_CONTEXT)
-                .w(px(if about.is_some() {
-                    ACCOUNT_MENU_WIDTH
-                } else {
-                    MENU_WIDTH
-                }))
-                .py(px(8.0))
-                .flex()
-                .flex_col()
-                .map(|d| raised(d, th, 8.0, 3.0))
-                .text_size(px(14.0))
-                .text_color(rgba(th.text))
-                .when_some(card, |d, card| d.child(card).child(divider()))
-                .when_some(sign_in, |d, (id, address, provider)| {
-                    d.child(
-                        item(
-                            "nav-menu-sign-in",
-                            "warning",
-                            tr!("nav-menu-sign-in-again").into(),
-                        )
-                        .text_color(rgba(th.error))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            this.nav_menu = None;
-                            this.sign_in_account(id, address.clone(), provider, cx);
-                        })),
-                    )
-                    .child(divider())
-                })
-                .child(
+        let list = div()
+            .key_context(crate::widgets::MENU_CONTEXT)
+            .w(px(if about.is_some() {
+                ACCOUNT_MENU_WIDTH
+            } else {
+                MENU_WIDTH
+            }))
+            .py(px(8.0))
+            .flex()
+            .flex_col()
+            .map(|d| raised(d, th, 8.0, 3.0))
+            .text_size(px(14.0))
+            .text_color(rgba(th.text))
+            .when_some(card, |d, card| d.child(card).child(divider()))
+            .when_some(sign_in, |d, (id, address, provider)| {
+                d.child(
                     item(
-                        "nav-menu-check",
-                        "refresh",
-                        if about.is_some() && menu.role == Role::Inbox {
-                            tr!("nav-menu-check-inbox")
-                        } else {
-                            tr!("nav-menu-check-mail")
-                        }
-                        .into(),
+                        "nav-menu-sign-in",
+                        "warning",
+                        tr!("nav-menu-sign-in-again").into(),
                     )
+                    .text_color(rgba(th.error))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.nav_menu = None;
-                        if check.is_empty() {
-                            this.check_mail(account, cx);
-                        } else {
-                            this.check_folders(check.clone(), cx);
-                        }
+                        this.sign_in_account(id, address.clone(), provider, cx);
                     })),
                 )
-                .when_some(menu.folder.filter(|_| menu.unread > 0), |d, folder| {
+                .child(divider())
+            })
+            .child(
+                item(
+                    "nav-menu-check",
+                    "refresh",
+                    if about.is_some() && menu.role == Role::Inbox {
+                        tr!("nav-menu-check-inbox")
+                    } else {
+                        tr!("nav-menu-check-mail")
+                    }
+                    .into(),
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.nav_menu = None;
+                    if check.is_empty() {
+                        this.check_mail(account, cx);
+                    } else {
+                        this.check_folders(check.clone(), cx);
+                    }
+                })),
+            )
+            .when_some(menu.folder.filter(|_| menu.unread > 0), |d, folder| {
+                d.child(
+                    item(
+                        "nav-menu-read",
+                        "mark-read",
+                        tr!("menu-mark-all-read").into(),
+                    )
+                    .on_click(
+                        cx.listener(move |this, _, _, cx| this.nav_mark_all_read(folder, cx)),
+                    ),
+                )
+            })
+            .children(quiet_item)
+            .when_some(
+                menu.folder.zip(account).filter(|_| menu.nests),
+                |d, (folder, account)| {
                     d.child(
                         item(
-                            "nav-menu-read",
-                            "mark-read",
-                            tr!("menu-mark-all-read").into(),
+                            "nav-menu-new",
+                            "add",
+                            if gmail {
+                                tr!("nav-menu-new-sublabel")
+                            } else {
+                                tr!("nav-menu-new-subfolder")
+                            }
+                            .into(),
                         )
-                        .on_click(
-                            cx.listener(move |this, _, _, cx| this.nav_mark_all_read(folder, cx)),
-                        ),
+                        .on_click(cx.listener(
+                            move |this, _, window, cx| {
+                                this.nav_new_folder(account, folder, window, cx)
+                            },
+                        )),
                     )
-                })
-                .when_some(quiet, |d, (target, glyph, label)| {
-                    d.child(item("nav-menu-quiet", glyph, label).on_click(cx.listener(
-                        move |this, _, _, cx| this.quiet_menu_click(target.clone(), at, cx),
-                    )))
-                })
-                .when_some(
-                    menu.folder.zip(account).filter(|_| menu.nests),
-                    |d, (folder, account)| {
-                        d.child(
-                            item(
-                                "nav-menu-new",
-                                "add",
-                                if gmail {
-                                    tr!("nav-menu-new-sublabel")
-                                } else {
-                                    tr!("nav-menu-new-subfolder")
-                                }
-                                .into(),
-                            )
-                            .on_click(cx.listener(
-                                move |this, _, window, cx| {
-                                    this.nav_new_folder(account, folder, window, cx)
-                                },
-                            )),
+                },
+            )
+            .when_some(
+                about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
+                |d, about| {
+                    d.child(
+                        item(
+                            "nav-menu-new-mail",
+                            "compose",
+                            tr!("nav-menu-new-mail").into(),
                         )
-                    },
+                        .on_click(cx.listener(
+                            move |this, _, window, cx| this.nav_new_mail(about, window, cx),
+                        )),
+                    )
+                },
+            )
+            .when(about.is_some(), |d| {
+                d.child(divider()).child(
+                    item(
+                        "nav-menu-settings",
+                        "settings",
+                        tr!("nav-menu-account-settings").into(),
+                    )
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.nav_menu = None;
+                        this.open_settings_page(
+                            super::settings_page::Section::Accounts,
+                            window,
+                            cx,
+                        );
+                    })),
                 )
-                .when_some(
-                    about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
-                    |d, about| {
-                        d.child(
-                            item(
-                                "nav-menu-new-mail",
-                                "compose",
-                                tr!("nav-menu-new-mail").into(),
-                            )
-                            .on_click(cx.listener(
-                                move |this, _, window, cx| this.nav_new_mail(about, window, cx),
-                            )),
-                        )
-                    },
-                )
-                .when(about.is_some(), |d| {
+            })
+            .when_some(
+                menu.folder.filter(|_| menu.role == Role::Trash),
+                |d, folder| {
                     d.child(divider()).child(
                         item(
-                            "nav-menu-settings",
-                            "settings",
-                            tr!("nav-menu-account-settings").into(),
+                            "nav-menu-empty",
+                            "trash",
+                            tr!("nav-menu-empty-trash").into(),
                         )
-                        .on_click(cx.listener(|this, _, window, cx| {
-                            this.nav_menu = None;
-                            this.open_settings_page(
-                                super::settings_page::Section::Accounts,
-                                window,
-                                cx,
-                            );
-                        })),
+                        .on_click(cx.listener(
+                            move |this, _, window, cx| this.empty_trash(folder, window, cx),
+                        )),
                     )
-                })
-                .when_some(
-                    menu.folder.filter(|_| menu.role == Role::Trash),
-                    |d, folder| {
-                        d.child(divider()).child(
-                            item(
-                                "nav-menu-empty",
-                                "trash",
-                                tr!("nav-menu-empty-trash").into(),
-                            )
-                            .on_click(cx.listener(
-                                move |this, _, window, cx| this.empty_trash(folder, window, cx),
-                            )),
-                        )
-                    },
-                )
-                .with_animation(
-                    ("nav-menu", menu.ix),
-                    Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
-                    |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
-                );
+                },
+            )
+            .with_animation(
+                ("nav-menu", menu.ix),
+                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
+                |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
+            );
         let close = || {
             cx.listener(|this: &mut Self, _: &gpui::MouseDownEvent, _, cx| this.close_nav_menu(cx))
         };
