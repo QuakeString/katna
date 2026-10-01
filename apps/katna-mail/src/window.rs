@@ -72,6 +72,7 @@ mod remote;
 mod reply_row;
 mod rich;
 mod scale_slider;
+mod scheme_color;
 mod scheme_editor;
 mod scheme_picker;
 mod search_panel;

@@ -290,6 +290,11 @@ scheme-editor-remove-side = Remove this side
 scheme-editor-readable = Easy to read
 # $colors lists the colors, like "Text, Text on accent".
 scheme-editor-hard-to-read = Hard to read: { $colors }
+# The color picker beside a color of the editor.
+scheme-picker-dropper = Pick from screen
+scheme-picker-in-scheme = In this scheme
+scheme-picker-recent = Recent
+scheme-picker-system = System picker…
 # The eight colors of a side.
 scheme-seed-page = Page
 scheme-seed-cards = Cards
