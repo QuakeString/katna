@@ -1231,7 +1231,6 @@ impl MailWindow {
             .h_full()
             .overflow_y_scroll()
             .px(px(12.0))
-            .pt(px(16.0))
             .pb(px(16.0))
             .flex()
             .flex_col()

@@ -22,7 +22,7 @@ use katna_ui::px;
 use katna_ui::unpx;
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
-use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
+use super::{MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
 use crate::theme::{Theme, fade};
 use crate::widgets::{TOOLBAR_HEIGHT, elevation, icon, tip};
 
@@ -49,8 +49,8 @@ const FAB_UNFOLD_AFTER: f32 = 120.0;
 /// A phone's search row and list toolbar come back once the list has
 /// turned back up this far.
 const ROWS_RETURN_AFTER: f32 = 24.0;
-/// Room for the word "Compose" on a phone's Compose button.
-const FAB_LABEL_WIDTH: f32 = 80.0;
+/// Room for the word on a phone's big button ("Compose", "New contact").
+const FAB_LABEL_WIDTH: f32 = 120.0;
 /// The least the list scrolls down before its Back to top button shows.
 const TO_TOP_AFTER: f32 = 240.0;
 /// From further down than this many screens, the list jumps to that many
@@ -597,8 +597,9 @@ impl MailWindow {
         )
     }
 
-    /// The Compose button floating over the list of a phone, above the
-    /// bottom bar and any note at the bottom.
+    /// The big button floating over a phone's page (Compose in Mail, the
+    /// page's own action elsewhere), above the bottom bar and any note at
+    /// the bottom.
     pub(super) fn render_phone_fab(
         &self,
         th: &Theme,
@@ -613,7 +614,7 @@ impl MailWindow {
             || compose_open
             || self.settings_open
             || self.settings_page.is_some()
-            || self.app != RailApp::Mail
+            || !self.app.has_side()
             || self.mail.is_err()
             || self.accounts.is_empty()
         {
@@ -624,6 +625,7 @@ impl MailWindow {
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
         let label = self.layout.fab_label.value().clamp(0.0, 1.0);
+        let (icon_name, word) = self.app.primary();
         Some(
             div()
                 .absolute()
@@ -641,13 +643,11 @@ impl MailWindow {
                         .text_size(px(14.0))
                         .font_weight(FontWeight::MEDIUM)
                         .shadow(elevation(th, 3.0))
-                        .when(label < 0.5, |d| {
-                            d.tooltip(tip(katna_i18n::tr!("compose"), th))
-                        })
+                        .when(label < 0.5, |d| d.tooltip(tip(word.clone(), th)))
                         .on_click(
-                            cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)),
+                            cx.listener(|this, _, window, cx| this.primary_action(window, cx)),
                         )
-                        .child(icon("compose", th.compose_text, 24.0))
+                        .child(icon(icon_name, th.compose_text, 24.0))
                         .child(
                             div()
                                 .pl(px(12.0 * label))
@@ -655,7 +655,7 @@ impl MailWindow {
                                 .overflow_hidden()
                                 .whitespace_nowrap()
                                 .opacity(label)
-                                .child(katna_i18n::tr!("compose")),
+                                .child(word),
                         ),
                 )
                 .into_any_element(),

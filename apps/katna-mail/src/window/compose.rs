@@ -31,6 +31,7 @@ mod paste;
 mod popout;
 mod quote;
 mod recipients;
+mod rephrase;
 mod reply_kind;
 pub(super) mod schedule;
 mod scheduled;
@@ -65,7 +66,7 @@ use katna_ui::rich::{
 use katna_ui::unpx;
 use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
-use super::{MailWindow, SNACKBAR_TIME, SendMail};
+use super::{MailWindow, RephraseSelection, SNACKBAR_TIME, SendMail};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
@@ -221,6 +222,14 @@ pub(super) struct Compose {
     chip_scroll: [ScrollHandle; 3],
     /// Those rows growing in or shrinking away.
     rows_glide: reply_kind::RowsGlide,
+    /// The Rephrase card, while it is open.
+    rephrase: Option<rephrase::Rephrase>,
+    /// How deep the text's undo went with the rephrased text put in, for
+    /// the snackbar's Undo.
+    rephrased: Option<usize>,
+    /// The user agreed to send text of this encrypted message for
+    /// rephrasing.
+    ai_encrypted_ok: bool,
     /// Written in the chat view's reply box.
     chat: Option<chat_box::ChatReply>,
     _subscriptions: Vec<Subscription>,
@@ -1109,6 +1118,7 @@ impl MailWindow {
         let grammar = self.grammar();
         let answered = thread_text(&draft.body);
         let suggest = self.suggestions(&answered, cx);
+        let complete = self.ai_complete(cx);
         subject.update(cx, |input, cx| {
             input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
         });
@@ -1119,6 +1129,7 @@ impl MailWindow {
             editor.set_spell_check(speller, cx);
             editor.set_grammar_check(grammar, cx);
             editor.set_suggest(suggest, cx);
+            editor.set_complete(complete, cx);
             paste::setup(&mut editor);
             editor
         });
@@ -1200,6 +1211,10 @@ impl MailWindow {
             |this, _, event: &RichEvent, window, cx| match event {
                 RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
+                    // The selection the card was for is gone.
+                    if let Some(c) = &mut this.compose {
+                        c.rephrase = None;
+                    }
                     this.quote_changed(cx);
                     this.close_hint(cx);
                     this.keep_cursor_in_view(cx);
@@ -1294,6 +1309,9 @@ impl MailWindow {
             chip_layout: Rc::default(),
             chip_scroll: Default::default(),
             rows_glide: reply_kind::RowsGlide::default(),
+            rephrase: None,
+            rephrased: None,
+            ai_encrypted_ok: false,
             chat: None,
             _subscriptions: subscriptions,
         });
@@ -1424,10 +1442,12 @@ impl MailWindow {
             .map(|c| c.answered.clone())
             .unwrap_or_default();
         let suggest = self.suggestions(&thread, cx);
+        let complete = self.ai_complete(cx);
         if let Some(compose) = &self.compose {
-            compose
-                .body
-                .update(cx, |editor, cx| editor.set_suggest(suggest, cx));
+            compose.body.update(cx, |editor, cx| {
+                editor.set_suggest(suggest, cx);
+                editor.set_complete(complete, cx);
+            });
         }
     }
 
@@ -1886,6 +1906,11 @@ impl MailWindow {
         let Some(c) = &mut self.compose else {
             return;
         };
+        if c.rephrase.is_some() {
+            c.rephrase = None;
+            cx.notify();
+            return;
+        }
         match &c.popup {
             Some(popup) if popup.is_hint() => self.close_hint(cx),
             Some(_) => {
@@ -2083,6 +2108,9 @@ impl MailWindow {
             .on_action(
                 cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
             )
+            .on_action(cx.listener(|this, _: &RephraseSelection, window, cx| {
+                this.toggle_rephrase(window, cx)
+            }))
             .occlude()
             .relative()
             .map(|d| {
@@ -2385,6 +2413,9 @@ impl MailWindow {
             .on_action(
                 cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
             )
+            .on_action(cx.listener(|this, _: &RephraseSelection, window, cx| {
+                this.toggle_rephrase(window, cx)
+            }))
             .relative()
             .flex_1()
             .min_w_0()
@@ -2730,6 +2761,7 @@ pub(in crate::window) fn palette(th: &Theme) -> Palette {
         surface: color(th.menu),
         text: color(th.text),
         hover: color(th.hover),
+        inserted: color(if th.dark { 0x81c99533 } else { 0x1e8e3e24 }),
     }
 }
 

@@ -5,8 +5,8 @@
 
 ## Left side
 
-# The button at the top left that adds a task, like Google Tasks' "Create".
-tasks-create = Create
+# The big button at the top of the left bar on Tasks.
+tasks-create = New task
 tasks-all = All tasks
 # Tasks due today and overdue, from every list.
 tasks-today = Today

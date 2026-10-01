@@ -204,6 +204,18 @@ impl MailWindow {
         (room(t), room(self.contact.spring.target()))
     }
 
+    /// Shows `email` (lower case) in the panel, opening it if it was put
+    /// away: an address clicked in the open mail's details.
+    pub(super) fn show_person(&mut self, email: &str, cx: &mut Context<Self>) {
+        if let Some(key) = self.reader.as_ref().map(|r| r.key) {
+            self.contact.picked = Some((key, email.to_owned()));
+        }
+        if !self.config.mail.contact_panel && self.contact_offered() {
+            self.toggle_contact_panel(cx);
+        }
+        cx.notify();
+    }
+
     /// Shows `email`'s card for conversation `key`, opening the panel if
     /// it is hidden: a click on a name or picture in the chat view.
     pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {

@@ -696,6 +696,8 @@ impl MailWindow {
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
             .children(self.render_hint(th, cx))
+            .children(self.render_rephrase_button(th, cx))
+            .children(self.render_rephrase(th, cx))
             .children(self.render_subject_grammar(th, cx))
             .children(self.render_link_bubble(th, cx))
             .into_any_element()

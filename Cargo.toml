@@ -33,6 +33,7 @@ katna-chrome = { path = "crates/katna-chrome" }
 katna-ui = { path = "crates/katna-ui" }
 katna-i18n = { path = "crates/katna-i18n" }
 katna-translate = { path = "crates/katna-translate" }
+katna-ai = { path = "crates/katna-ai" }
 
 # Third-party crates. Pin minor versions; upgrade deliberately.
 async-channel = "2.5"
@@ -116,7 +117,7 @@ url = "2.5"
 whatlang = "0.18"
 # async-io, so zbus runs on the same executor family as katna-sync.
 zbus = { version = "5.19", default-features = false, features = ["async-io"] }
-ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri", "print"] }
+ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri", "print", "screenshot"] }
 zstd = "0.14"
 # Languages (docs/ARCHITECTURE.md §13.10): Fluent for the interface's text,
 # ICU4X for dates and numbers in the user's formats.

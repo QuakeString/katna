@@ -43,6 +43,7 @@ use crate::tabs::{self, Provider};
 use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
+mod ai;
 mod notifications;
 mod templates;
 
@@ -170,6 +171,8 @@ pub(super) struct SettingsPage {
     small_kb: Entity<TextInput>,
     small_px: Entity<TextInput>,
     _small: [Subscription; 2],
+    /// Writing help with AI: the user's own service.
+    ai: ai::AiFields,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -234,6 +237,7 @@ impl MailWindow {
         let words = self.config.general.search_triggers.join(", ");
         let server = self.config.meetings.jitsi_server.clone();
         let this_files = self.config.mail.files.clone();
+        let ai_config = self.config.ai.clone();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -276,6 +280,7 @@ impl MailWindow {
                     }
                 }),
             ];
+            let ai = ai::AiFields::new(&ai_config, accent, cx);
             SettingsPage {
                 section,
                 editing: None,
@@ -302,6 +307,7 @@ impl MailWindow {
                 small_kb,
                 small_px,
                 _small: small_subscriptions,
+                ai,
             }
         });
         page.mail_app = opens_mail_links();
@@ -326,6 +332,7 @@ impl MailWindow {
                 .or(first);
             self.edit_signature(editing, window, cx);
             self.load_templates(cx);
+            self.load_ai_key_saved(cx);
         }
         // The page opens over the app on show, which stays picked in the
         // rail and comes back as it was when the page closes. The search
@@ -1935,15 +1942,22 @@ impl MailWindow {
             self.row(
                 tr!("settings-compose-suggestions"),
                 Some(&tr!("settings-compose-suggestions-detail")),
-                self.switch_row(
-                    "page-suggestions",
-                    tr!("settings-compose-suggestions-on"),
-                    tr!("settings-compose-suggestions-on-detail"),
-                    sending.writing_suggestions,
-                    Change::WritingSuggestions(!sending.writing_suggestions),
-                    th,
-                    cx,
-                ),
+                div()
+                    .flex()
+                    .flex_col()
+                    .child(self.switch_row(
+                        "page-suggestions",
+                        tr!("settings-compose-suggestions-on"),
+                        tr!("settings-compose-suggestions-on-detail"),
+                        sending.writing_suggestions,
+                        Change::WritingSuggestions(!sending.writing_suggestions),
+                        th,
+                        cx,
+                    ))
+                    .when(
+                        self.config.ai.source != katna_core::config::AiSource::Off,
+                        |d| d.child(self.ai_suggestion_switches(th, cx)),
+                    ),
                 th,
             ),
         ]
@@ -1951,6 +1965,7 @@ impl MailWindow {
 
     fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let sending_rows = self.sending_rows(th, cx);
+        let ai_rows = self.ai_rows(th, cx);
         let tools = self.render_signature_tools(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
@@ -2062,6 +2077,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .children(sending_rows)
+            .children(ai_rows)
             .child(
                 self.row(
                     tr!("settings-compose-signatures"),

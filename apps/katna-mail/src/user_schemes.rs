@@ -29,7 +29,7 @@ use serde::{Deserialize, Serialize};
 pub const PREFIX: &str = "user:";
 
 /// One of the eight colors of a side, in the order the editor lists them.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Seed {
     Page,
     Cards,

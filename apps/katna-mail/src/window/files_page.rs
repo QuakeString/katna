@@ -1255,7 +1255,7 @@ impl MailWindow {
                 .truncate()
                 .child(text)
         };
-        let mut nav = div().flex_none().pt(px(8.0)).pb(px(16.0)).flex().flex_col();
+        let mut nav = div().flex_none().pb(px(16.0)).flex().flex_col();
         for (n, types) in Types::ALL.into_iter().enumerate() {
             let on = page.types == types;
             nav = nav.child(

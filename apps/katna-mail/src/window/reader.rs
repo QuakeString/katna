@@ -13,8 +13,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, FontWeight, SharedString, div, ease_out_quint,
-    prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Context, FontWeight, MouseButton, SharedString, div,
+    ease_out_quint, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_render::MessageView;
@@ -1205,30 +1205,37 @@ impl MailWindow {
                     .min_h_0()
                     .relative()
                     .child(
-                        div()
-                            .id("reader")
-                            .size_full()
-                            .overflow_y_scroll()
-                            .track_scroll(&self.reader_scroll)
-                            .child(
-                                div()
-                                    .flex()
-                                    .flex_col()
-                                    .pb(px(24.0))
-                                    .child(title)
-                                    .children(muted)
-                                    .children(notes)
-                                    .children(reply_above)
-                                    .children(parts)
-                                    .children(reply_below)
-                                    .map(|d| self.text_area(d, cx))
-                                    .with_animation(
-                                        ("open-conversation", key_number(key)),
-                                        Animation::new(Duration::from_millis(280))
-                                            .with_easing(ease_out_quint()),
-                                        |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
-                                    ),
-                            ),
+                        self.reader_bar.draw(
+                            "reader-bar",
+                            &self.reader_scroll,
+                            div()
+                                .id("reader")
+                                .size_full()
+                                .overflow_y_scroll()
+                                .track_scroll(&self.reader_scroll)
+                                .child(
+                                    div()
+                                        .flex()
+                                        .flex_col()
+                                        .pb(px(24.0))
+                                        .child(title)
+                                        .children(muted)
+                                        .children(notes)
+                                        .children(reply_above)
+                                        .children(parts)
+                                        .children(reply_below)
+                                        .map(|d| self.text_area(d, cx))
+                                        .with_animation(
+                                            ("open-conversation", key_number(key)),
+                                            Animation::new(Duration::from_millis(280))
+                                                .with_easing(ease_out_quint()),
+                                            |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
+                                        ),
+                                ),
+                            // The Files page's bar, over the open mail's
+                            // right edge.
+                            th.text_dim & 0xffff_ff00 | 0x99,
+                        ),
                     )
                     .children(link_status),
             )
@@ -1560,7 +1567,17 @@ impl MailWindow {
 
         let details_box = (details && view.is_some()).then(|| {
             let view = view.expect("checked");
-            let line = |label: String, value: String| {
+            // Its text can be selected and copied as the mail's can; each
+            // address opens its person in the contact panel, and its
+            // right-click menu can copy it.
+            let slot = match self.reader.as_ref() {
+                Some(r) if self.config.mail.newest_first => r.parts.len() - 1 - ix,
+                _ => ix,
+            };
+            let mut pieces = self.text.pieces(super::select::DETAILS_PART + slot, th);
+            // Where the contact panel has no room, a click only selects.
+            let panel = self.contact_offered();
+            let line = |label: String, value: AnyElement| {
                 div()
                     .flex()
                     .flex_row()
@@ -1576,16 +1593,66 @@ impl MailWindow {
                     )
                     .child(div().flex_1().min_w_0().child(value))
             };
-            let full = |list: &[katna_render::Address]| {
-                list.iter()
-                    .map(|a| match &a.name {
-                        Some(name) => format!("{name} <{}>", a.email),
-                        None => a.email.clone(),
-                    })
-                    .collect::<Vec<_>>()
-                    .join(", ")
+            let mut addresses = |field: &str, list: &[katna_render::Address]| -> AnyElement {
+                let count = list.len();
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .items_center()
+                    .children(list.iter().enumerate().map(|(i, a)| {
+                        let shown = match &a.name {
+                            Some(name) => format!("{name} <{}>", a.email),
+                            None => a.email.clone(),
+                        };
+                        let (styled, holder) = pieces.piece(shown.into(), Vec::new());
+                        let email = a.email.to_lowercase();
+                        let copied = a.email.clone();
+                        // A long address wraps in a narrow pane.
+                        div()
+                            .min_w_0()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(
+                                holder
+                                    .min_w_0()
+                                    .id(SharedString::from(format!("details-{ix}-{field}-{i}")))
+                                    .when(panel, |d| {
+                                        d.cursor_pointer().hover(|s| s.text_color(rgba(th.text)))
+                                    })
+                                    .on_click(cx.listener(move |this, _, _, cx| {
+                                        // A drag that selected text is not a click.
+                                        if this.text.is_empty() {
+                                            this.show_person(&email, cx);
+                                        }
+                                    }))
+                                    .on_mouse_down(
+                                        MouseButton::Right,
+                                        cx.listener(move |this, _, _, _| {
+                                            this.text.menu_address = Some(copied.clone().into());
+                                        }),
+                                    )
+                                    .child(styled),
+                            )
+                            .children(
+                                self.muted_mark(&a.email, 14.0, th)
+                                    .map(|bell| div().ml(px(4.0)).child(bell)),
+                            )
+                            .when(i + 1 < count, |d| d.child(div().mr(px(4.0)).child(",")))
+                    }))
+                    .into_any_element()
             };
-            div()
+            let from = addresses("from", &view.from);
+            let to = (!view.to.is_empty()).then(|| addresses("to", &view.to));
+            let copy = (!view.cc.is_empty()).then(|| addresses("cc", &view.cc));
+            let mut plain = |text: String| -> AnyElement {
+                let (styled, holder) = pieces.piece(text.into(), Vec::new());
+                holder.child(styled).into_any_element()
+            };
+            let date = plain(long_date.clone());
+            let subject = plain(view.subject.clone());
+            let details = div()
                 .mt(px(8.0))
                 .p(px(12.0))
                 .flex()
@@ -1596,15 +1663,12 @@ impl MailWindow {
                 .border_color(rgba(th.divider))
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
-                .child(line(tr!("reader-details-from"), full(&view.from)))
-                .when(!view.to.is_empty(), |d| {
-                    d.child(line(tr!("reader-details-to"), full(&view.to)))
-                })
-                .when(!view.cc.is_empty(), |d| {
-                    d.child(line(tr!("reader-details-cc"), full(&view.cc)))
-                })
-                .child(line(tr!("reader-details-date"), long_date.clone()))
-                .child(line(tr!("reader-details-subject"), view.subject.clone()))
+                .child(line(tr!("reader-details-from"), from))
+                .children(to.map(|to| line(tr!("reader-details-to"), to)))
+                .children(copy.map(|cc| line(tr!("reader-details-cc"), cc)))
+                .child(line(tr!("reader-details-date"), date))
+                .child(line(tr!("reader-details-subject"), subject));
+            self.selectable_body(super::select::DETAILS_PART + slot, details, cx)
                 .with_animation(
                     ("details", ix),
                     Animation::new(Duration::from_millis(180)).with_easing(ease_out_quint()),

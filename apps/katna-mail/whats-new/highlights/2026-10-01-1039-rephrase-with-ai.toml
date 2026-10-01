@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rephrase with AI"
+text = """
+Select text in a message and press the sparkle beside it, or Ctrl+J, to
+have it rewritten clearer, shorter, friendlier or more formal, then
+Replace. Katna AI is free for 30 days, or use your own key from Google
+Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter or a model on this
+computer. AI can also finish your sentences in grey; switch it on in
+Settings > Compose.
+"""
