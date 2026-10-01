@@ -317,6 +317,17 @@ settings-default-apps-ask = Ask which app each time
 settings-default-apps-after-saving = After saving
 settings-default-apps-show-folder = Show saved files in their folder
 settings-default-apps-show-folder-detail = Opens the file manager with the saved attachments picked
+settings-files-page = Files page
+settings-files-page-detail = Which attachments the Files page shows
+settings-files-leave-out-small = Leave out small pictures
+settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
+settings-files-smaller-than = Smaller than
+settings-files-kb = KB
+settings-files-narrower-than = or narrower or shorter than
+settings-files-px = px
+settings-files-more-tip = More
+settings-files-less-tip = Less
+settings-files-sizes-note = Pixel sizes are read once a mail is downloaded; until then its pictures go by file size alone.
 
 ## Settings > Compose
 
@@ -443,6 +454,7 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
+settings-files-page-summary = Leave small pictures, like signature logos, off the Files page
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line

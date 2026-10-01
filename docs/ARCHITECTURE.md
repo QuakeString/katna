@@ -2518,9 +2518,13 @@ desktop's own app stays one click away.
   first under month headings, or as a list. It reads the attachment lists
   sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
   schema change, no server, works offline. Mail in Trash or Spam is left
-  out, a file sent again (same name and size) shows once, and pictures
-  under 12 KB (signature logos) are skipped; it reads at most 20,000
-  files. The side column (a drawer and chips on a phone) narrows it to a
+  out, a file sent again (same name and size) shows once, and small
+  pictures (signature logos) are left out: by default those under 12 KB,
+  or under 100 px wide or tall (Settings > Default apps > Files page,
+  `mail.files`). Pixel sizes are read in the background from downloaded
+  mail and kept in the cache directory (`files-picture-sizes.json`); they
+  apply the next time the page opens, so cards never move under the
+  pointer. It reads at most 20,000 files. The side column (a drawer and chips on a phone) narrows it to a
   kind of file, an account, or received or sent; chips pick a sender,
   days (quick picks over a two-month calendar: click a day, drag across
   days or Shift+click; the files follow the drag and the calendar closes
