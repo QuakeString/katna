@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tab counts stay put"
+text = """
+Opening an inbox tab no longer makes the tab bar jump. The open tab keeps its
+count of new mail, which slowly fades to a quiet grey, and the count folds
+away smoothly once you have read everything in that tab.
+"""

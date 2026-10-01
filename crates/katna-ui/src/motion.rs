@@ -12,6 +12,8 @@ use gpui::{SpringConfig, SpringState, Window};
 
 /// Critically damped, settles in about 250 ms: fades and color changes.
 pub const SMOOTH: SpringConfig = SpringConfig::new(700.0, 52.9, 1.0);
+/// Critically damped, settles in about 450 ms: slow, quiet fades.
+pub const GENTLE: SpringConfig = SpringConfig::new(216.0, 29.4, 1.0);
 /// Slightly bouncy, settles in about 350 ms: panels that slide or grow.
 pub const SLIDE: SpringConfig = SpringConfig::new(420.0, 34.0, 1.0);
 /// Fast and critically damped: hover feedback.
