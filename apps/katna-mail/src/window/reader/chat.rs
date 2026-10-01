@@ -91,6 +91,9 @@ pub(in crate::window) struct ChatState {
     /// there.
     reply_drawn: Rc<Cell<f32>>,
     reply_seen: f32,
+    /// The feed was at its end when the chat last drew: the frame after
+    /// the reply box grows, the feed has already shrunk.
+    was_at_end: bool,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -434,10 +437,11 @@ impl MailWindow {
         let reply_height = reader.chat.reply_drawn.get();
         if (reply_height - reader.chat.reply_seen).abs() > 0.5 {
             reader.chat.reply_seen = reply_height;
-            if at_end {
+            if at_end || reader.chat.was_at_end {
                 reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
             }
         }
+        reader.chat.was_at_end = at_end;
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
             self.reader_scroll.scroll_to_bottom();

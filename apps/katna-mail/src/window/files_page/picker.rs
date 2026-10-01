@@ -689,9 +689,10 @@ impl MailWindow {
                     d.bg(rgba(th.accent))
                         .child(icon("check", th.on_accent, 16.0))
                 } else {
-                    d.bg(rgba(fade(th.surface, 0.85)))
+                    // Light on any preview, dark or light theme alike.
+                    d.bg(rgba(0xffff_ffd9))
                         .border_2()
-                        .border_color(rgba(th.text_faint))
+                        .border_color(rgba(0x0000_0059))
                 }
             });
         let eye = div()
