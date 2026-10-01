@@ -212,12 +212,16 @@ tokens, Gemini 2.5 Flash-Lite's), `_AI_PER_HOUR` (300),
 `KATNA_SERVER_AI_<SERVICE>_KEY` for `GEMINI`, `OPENAI`, `ANTHROPIC`,
 `MISTRAL`, `DEEPSEEK`, `OPENROUTER` and `OTHER` (with
 `KATNA_SERVER_AI_OTHER_BASE`): the services the admin page may choose
-among; what it saves wins over the `_AI_*` lines above,
+among (keys can also be added there instead); what it saves wins over the
+`_AI_*` lines above,
 `KATNA_SERVER_ADMIN_EMAILS` (who may open `/admin`; empty turns the page
 off), `RUST_LOG`.
 
 The admin page is for whoever runs the server; Katna accounts can never
-open it. The first time, open `/admin`: it mails a code to the admin
+open it. Keys added on the page are kept in the database as typed (the
+server has no secret to lock them with), are used over the same service's
+key in `.env`, and never show again: the page shows only their last four
+characters. Remove one there to go back to `.env`'s. The first time, open `/admin`: it mails a code to the admin
 address and then takes the new password. To set a forgotten password, run
 on the server (asked twice, stored as a hash):
 

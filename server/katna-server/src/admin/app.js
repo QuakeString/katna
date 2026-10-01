@@ -230,14 +230,9 @@ function render() {
   $("fallback-model").disabled = !s.fallback;
   $("test").textContent = s.fallback ? "Test both" : "Test";
 
-  const keys = $("keys");
-  keys.replaceChildren();
-  for (const service of page.services) {
-    const chip = document.createElement("span");
-    chip.className = service.has_key ? "chip has-key" : "chip";
-    chip.textContent = service.has_key ? `${service.name} ✓` : `${service.name}: no key`;
-    keys.append(chip);
-  }
+  renderKeys();
+  listModels("main-provider", "main-models");
+  listModels("fallback-provider", "fallback-models");
 
   $("budget").value = dollars(s.budget_micros);
   $("cap").value = dollars(s.account_cap_micros);
@@ -265,6 +260,163 @@ function render() {
     months.append(column);
   });
   changed();
+}
+
+// Keys.
+
+let editingKey = null; // the service whose key is being typed
+
+function button(text, className, onClick) {
+  const item = document.createElement("button");
+  item.type = "button";
+  item.className = className;
+  item.textContent = text;
+  item.addEventListener("click", onClick);
+  return item;
+}
+
+function keyState(service) {
+  const state = document.createElement("span");
+  state.className = service.has_key ? "key-state set" : "key-state";
+  if (!service.has_key) {
+    state.textContent = "No key";
+    return state;
+  }
+  const from = service.key_from === "page" ? "✓ Saved here" : "✓ In .env";
+  state.textContent = service.base ? `${from} · ${service.base}` : from;
+  if (service.key_end) {
+    const end = document.createElement("span");
+    end.className = "end";
+    end.textContent = `…${service.key_end}`;
+    state.append(end);
+  }
+  return state;
+}
+
+function renderKeys() {
+  const keys = $("keys");
+  keys.replaceChildren();
+  for (const service of page.services) {
+    const row = document.createElement("div");
+    row.className = "key";
+    const head = document.createElement("div");
+    head.className = "key-head";
+    const name = document.createElement("span");
+    name.className = "key-name";
+    name.textContent = service.name;
+    head.append(name, keyState(service));
+    const editing = editingKey === service.id;
+    if (!editing) {
+      head.append(button(service.has_key ? "Replace" : "Add key", "quiet", () => {
+        editingKey = service.id;
+        renderKeys();
+        const first = $("keys").querySelector(".key-edit input");
+        if (first) first.focus();
+      }));
+      if (service.key_from === "page") {
+        head.append(button("Remove", "quiet danger", () => removeKey(service)));
+      }
+    }
+    row.append(head);
+    if (editing) row.append(...keyEditor(service));
+    keys.append(row);
+  }
+}
+
+function keyEditor(service) {
+  const edit = document.createElement("div");
+  edit.className = "key-edit";
+  const other = service.id === "other";
+  let base = null;
+  if (other) {
+    base = document.createElement("input");
+    base.className = "base";
+    base.placeholder = "Address, such as http://ollama:11434/v1";
+    base.setAttribute("aria-label", `${service.name} address`);
+    base.spellcheck = false;
+    base.value = service.base || "";
+    edit.append(base);
+  }
+  const key = document.createElement("input");
+  key.type = "password";
+  key.autocomplete = "off";
+  key.spellcheck = false;
+  key.placeholder = service.key_optional ? "Key, if it needs one" : "Paste the key";
+  key.setAttribute("aria-label", `${service.name} key`);
+  const problem = document.createElement("p");
+  problem.className = "small bad key-problem";
+  problem.hidden = true;
+  const save = button("Save key", "primary", async () => {
+    save.disabled = true;
+    const { status, data } = await call("POST", "/admin/api/key", {
+      provider: service.id, key: key.value, base: base ? base.value : "",
+    });
+    if (status === 200) {
+      page = data;
+      editingKey = null;
+      render();
+    } else if (status === 401) {
+      showSignIn();
+    } else {
+      problem.textContent = data && data.error ? `Not saved: ${data.error}.` : "Not saved.";
+      problem.hidden = false;
+      save.disabled = false;
+    }
+  });
+  const cancel = button("Cancel", "quiet", () => {
+    editingKey = null;
+    renderKeys();
+  });
+  for (const input of [base, key]) {
+    if (!input) continue;
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") save.click();
+      if (event.key === "Escape") cancel.click();
+    });
+  }
+  edit.append(key, save, cancel);
+  return [edit, problem];
+}
+
+async function removeKey(service) {
+  const { status, data } = await call("POST", "/admin/api/key/remove", { provider: service.id });
+  if (status === 200) {
+    page = data;
+    render();
+  } else if (status === 401) {
+    showSignIn();
+  }
+}
+
+// The models each service offers to its key, asked once per page load
+// and again when its key changes.
+const models = {};
+
+async function listModels(providerId, listId) {
+  const provider = $(providerId).value;
+  const list = $(listId);
+  const problem = $(`${listId}-problem`);
+  list.replaceChildren();
+  problem.hidden = true;
+  if (!provider) return;
+  const service = page.services.find((s) => s.id === provider);
+  const stamp = service ? `${service.key_from}${service.key_end}${service.base}` : "";
+  if (!models[provider] || models[provider].stamp !== stamp) {
+    models[provider] = { stamp, answer: call("POST", "/admin/api/models", { provider }) };
+  }
+  const { status, data } = await models[provider].answer;
+  if ($(providerId).value !== provider) return;
+  if (status === 401) { showSignIn(); return; }
+  if (status !== 200) return;
+  for (const model of data.models) {
+    const item = document.createElement("option");
+    item.value = model;
+    list.append(item);
+  }
+  if (data.problem) {
+    problem.textContent = `${service ? service.name : provider} ${data.problem}, so its models can't be listed. You can still type one.`;
+    problem.hidden = false;
+  }
 }
 
 // Editing.
@@ -315,8 +467,16 @@ function usualModel(providerId, modelId) {
   $(modelId).disabled = !service;
 }
 
-$("main-provider").addEventListener("change", () => { usualModel("main-provider", "main-model"); changed(); });
-$("fallback-provider").addEventListener("change", () => { usualModel("fallback-provider", "fallback-model"); changed(); });
+$("main-provider").addEventListener("change", () => {
+  usualModel("main-provider", "main-model");
+  listModels("main-provider", "main-models");
+  changed();
+});
+$("fallback-provider").addEventListener("change", () => {
+  usualModel("fallback-provider", "fallback-model");
+  listModels("fallback-provider", "fallback-models");
+  changed();
+});
 for (const id of ["main-model", "fallback-model", "budget", "cap", "trial-days", "per-hour", "price-in", "price-out"]) {
   $(id).addEventListener("input", changed);
 }

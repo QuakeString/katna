@@ -119,9 +119,20 @@ input[aria-invalid="true"] { border-color: var(--bad); }
 .tile { background: var(--soft); border-radius: 12px; padding: 14px 16px; }
 .tile-value { font-size: 22px; font-weight: 600; margin-top: 4px; }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { height: 30px; padding: 0 12px; border-radius: 15px; font-size: 13px; display: inline-flex; align-items: center; background: var(--off); color: var(--off-text); }
-.chip.has-key { background: var(--good-soft); color: var(--good); }
+.keys { display: flex; flex-direction: column; }
+.key { display: flex; flex-direction: column; gap: 10px; padding: 12px 0; border-top: 1px solid var(--track); }
+.key:first-child { border-top: none; padding-top: 0; }
+.key-head { display: flex; align-items: center; gap: 12px; min-height: 36px; }
+.key-name { width: 180px; flex: none; font-weight: 500; }
+.key-state { flex-grow: 1; font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.key-state.set { color: var(--good); }
+.key-state .end { font-family: ui-monospace, monospace; color: var(--muted); }
+.key button { height: 36px; padding: 0 16px; border-radius: 18px; }
+.key button.danger { color: var(--bad); }
+.key-edit { display: flex; gap: 10px; align-items: center; padding-left: 192px; }
+.key-edit input { flex: 1 1 0; }
+.key-edit .base { flex: 1.2 1 0; }
+.key-problem { padding-left: 192px; }
 .card p { margin: 0; }
 .good { color: var(--good); }
 .bad { color: var(--bad); }
@@ -152,6 +163,12 @@ button { white-space: nowrap; }
   .months { flex-direction: column; align-items: stretch; }
   .pair { flex-direction: column; }
   .pair > * { flex: none; }
+  .key-head { flex-wrap: wrap; }
+  .key-name { width: auto; }
+  .key-state { flex-basis: 100%; order: 3; }
+  .key-edit { padding-left: 0; flex-wrap: wrap; }
+  .key-edit input { flex-basis: 100%; }
+  .key-problem { padding-left: 0; }
   .switch-row { flex-wrap: wrap; }
   .switch-row .muted { order: 3; flex-basis: 100%; }
   .actions { flex-wrap: wrap; }

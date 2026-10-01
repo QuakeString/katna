@@ -230,23 +230,32 @@ impl AppState {
         *self.ai.write().unwrap_or_else(|e| e.into_inner()) = Arc::new(ai);
     }
 
-    /// Puts the settings saved from the admin page over the environment's.
-    /// Saved choices whose key has left the environment are dropped.
+    /// The environment's AI settings with the keys saved on the admin page.
+    pub(crate) async fn ai_base(&self) -> Result<AiConfig, DbError> {
+        Ok(self.config.ai.with_saved_keys(&self.db.ai_keys().await?))
+    }
+
+    /// Puts the keys and settings saved from the admin page over the
+    /// environment's. Saved choices whose key has gone are dropped.
     pub async fn load_ai_settings(&self) -> Result<(), DbError> {
-        let Some(saved) = self.db.ai_settings().await? else {
-            return Ok(());
-        };
-        let Ok(mut settings) = serde_json::from_str::<ai::AiSettings>(&saved) else {
-            tracing::error!(
-                "the saved Katna AI settings could not be read; using the environment's"
-            );
-            return Ok(());
-        };
         let env = &self.config.ai;
+        let base = self.ai_base().await?;
+        let mut settings = match self.db.ai_settings().await? {
+            None => ai::AiSettings::of(env),
+            Some(saved) => match serde_json::from_str::<ai::AiSettings>(&saved) {
+                Ok(settings) => settings,
+                Err(_) => {
+                    tracing::error!(
+                        "the saved Katna AI settings could not be read; using the environment's"
+                    );
+                    ai::AiSettings::of(env)
+                }
+            },
+        };
         for choice in [&mut settings.main, &mut settings.fallback] {
             if choice
                 .as_ref()
-                .is_some_and(|c| env.service(&c.provider, &c.model).is_none())
+                .is_some_and(|c| base.service(&c.provider, &c.model).is_none())
             {
                 tracing::warn!("a saved Katna AI service has no key any more");
                 *choice = None;
@@ -260,9 +269,14 @@ impl AppState {
             settings.main = from_env.main;
             settings.fallback = from_env.fallback;
         }
-        match settings.apply(env) {
+        match settings.apply(&base) {
             Ok(ai) => self.set_ai(ai),
-            Err(problem) => tracing::error!(problem, "the saved Katna AI settings were not used"),
+            Err(problem) => {
+                if settings.main.is_some() {
+                    tracing::error!(problem, "the saved Katna AI settings were not used");
+                }
+                self.set_ai(base);
+            }
         }
         Ok(())
     }
