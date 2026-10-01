@@ -1001,6 +1001,11 @@ impl MailWindow {
             .child(
                 div()
                     .min_w_0()
+                    // GPUI lines the two up by their boxes' first lines
+                    // rather than by the letters, which leaves the smaller
+                    // text 3 px low; this puts it on the title's baseline.
+                    .relative()
+                    .top(px(-3.0))
                     .truncate()
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_faint))
