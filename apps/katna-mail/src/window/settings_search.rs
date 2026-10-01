@@ -372,6 +372,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
+        "settings-ai",
+        "settings-ai-summary",
+        "ai artificial intelligence rephrase rewrite tone katna ai own key api gemini openai chatgpt claude mistral deepseek openrouter ollama lm studio model autocomplete",
+    ),
+    entry(
+        Section::Signatures,
         "settings-compose-signatures",
         "settings-compose-signatures-summary",
         "signature sign-off",

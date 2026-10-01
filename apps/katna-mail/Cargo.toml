@@ -17,6 +17,7 @@ katna-search.workspace = true
 katna-org.workspace = true
 katna-dbus.workspace = true
 katna-translate.workspace = true
+katna-ai.workspace = true
 katna-platform.workspace = true
 katna-chrome.workspace = true
 katna-ui.workspace = true

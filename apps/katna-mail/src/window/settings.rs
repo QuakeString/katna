@@ -35,6 +35,16 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
+    /// Where writing help with AI goes (`ai.source`).
+    AiSource(katna_core::config::AiSource),
+    /// The user's own AI service, by `katna_ai::provider::Preset::id`.
+    AiProvider(&'static str),
+    /// AI finishes sentences (`ai.autocomplete`).
+    AiAutocomplete(bool),
+    /// Those suggestions also send the mail being answered.
+    AiAnswered(bool),
+    /// Rephrase is offered for encrypted mail.
+    AiEncrypted(bool),
     /// An event's sound on or off.
     Sound(SoundEvent, bool),
     /// The sound an event plays, by its `katna_platform::sound` name.
@@ -450,6 +460,14 @@ impl MailWindow {
         let view = &mut self.config.mail;
         let mut relist = false;
         match change {
+            Change::AiSource(_)
+            | Change::AiProvider(_)
+            | Change::AiAutocomplete(_)
+            | Change::AiAnswered(_)
+            | Change::AiEncrypted(_) => {
+                self.apply_ai(change, cx);
+                return;
+            }
             Change::Pane(pane) => {
                 if view.reading_pane == pane {
                     return;
