@@ -38,6 +38,11 @@ pub(super) struct AiFields {
     models: Option<(String, Vec<String>)>,
     /// The models list under the field shows.
     models_open: bool,
+    /// The list was opened with its button: every model, not only those
+    /// matching what is typed.
+    models_all: bool,
+    /// The field's text was just set from the list.
+    models_picked: bool,
     _subscriptions: [Subscription; 3],
 }
 
@@ -60,10 +65,15 @@ impl AiFields {
             cx.subscribe(&model, |this, input, event: &InputEvent, cx| match event {
                 InputEvent::Changed => {
                     let text = input.read(cx).text().trim().to_owned();
+                    // A model just picked from the list needs no list.
+                    let picked = this
+                        .settings_page
+                        .as_mut()
+                        .is_some_and(|page| std::mem::take(&mut page.ai.models_picked));
                     this.set_ai_text(|ai| &mut ai.model, text, cx);
-                    this.open_ai_models(true, cx);
+                    this.open_ai_models(!picked, false, cx);
                 }
-                InputEvent::Submit | InputEvent::Cancel => this.open_ai_models(false, cx),
+                InputEvent::Submit | InputEvent::Cancel => this.open_ai_models(false, false, cx),
             }),
             cx.subscribe(&address, |this, input, event: &InputEvent, cx| {
                 if *event == InputEvent::Changed {
@@ -84,6 +94,8 @@ impl AiFields {
             key_saved: None,
             models: None,
             models_open: false,
+            models_all: false,
+            models_picked: false,
             _subscriptions: subscriptions,
         }
     }
@@ -145,11 +157,12 @@ impl MailWindow {
     }
 
     /// Shows or hides the models under the model field.
-    fn open_ai_models(&mut self, open: bool, cx: &mut Context<Self>) {
+    fn open_ai_models(&mut self, open: bool, all: bool, cx: &mut Context<Self>) {
         if let Some(page) = &mut self.settings_page
-            && page.ai.models_open != open
+            && (page.ai.models_open, page.ai.models_all) != (open, all)
         {
             page.ai.models_open = open;
+            page.ai.models_all = all;
             cx.notify();
         }
     }
@@ -160,6 +173,7 @@ impl MailWindow {
             return;
         };
         page.ai.models_open = false;
+        page.ai.models_picked = true;
         let input = page.ai.model.clone();
         input.update(cx, |input, cx| input.set_text(model.clone(), cx));
         window.focus(&input.focus_handle(cx), cx);
@@ -168,7 +182,7 @@ impl MailWindow {
     }
 
     /// The models matching what is typed, at most [`MODELS_SHOWN`]; all
-    /// of them while the field holds a whole name.
+    /// of them when the list was opened with its button.
     fn ai_model_matches(&self, cx: &Context<Self>) -> Vec<String> {
         let Some(page) = &self.settings_page else {
             return Vec::new();
@@ -179,11 +193,13 @@ impl MailWindow {
         if *provider != self.config.ai.provider {
             return Vec::new();
         }
+        if page.ai.models_all {
+            return models.clone();
+        }
         let typed = page.ai.model.read(cx).text().trim().to_lowercase();
-        let whole = models.iter().any(|m| m.to_lowercase() == typed);
         models
             .iter()
-            .filter(|m| whole || m.to_lowercase().contains(&typed))
+            .filter(|m| m.to_lowercase().contains(&typed))
             .take(MODELS_SHOWN)
             .cloned()
             .collect()
@@ -508,11 +524,16 @@ impl MailWindow {
             .as_ref()
             .is_some_and(|p| p.ai.models_open)
             && !matches.is_empty();
-        let toggle = (!matches.is_empty() || open).then(|| {
+        let known = self.settings_page.as_ref().is_some_and(|p| {
+            p.ai.models.as_ref().is_some_and(|(provider, models)| {
+                *provider == self.config.ai.provider && !models.is_empty()
+            })
+        });
+        let toggle = known.then(|| {
             icon_button_colored("page-ai-models", "drop-down", 20.0, th.text_dim, th)
                 .size(px(32.0))
                 .tooltip(tip(tr!("settings-ai-models"), th))
-                .on_click(cx.listener(move |this, _, _, cx| this.open_ai_models(!open, cx)))
+                .on_click(cx.listener(move |this, _, _, cx| this.open_ai_models(!open, true, cx)))
         });
         let list = open.then(|| {
             deferred(
@@ -522,17 +543,23 @@ impl MailWindow {
                     .left_0()
                     .right_0()
                     .occlude()
-                    .on_mouse_down_out(cx.listener(|this, _, _, cx| this.open_ai_models(false, cx)))
-                    .child(menu(th).max_h(px(320.0)).children(
-                        matches.into_iter().enumerate().map(|(n, model)| {
-                            let picked = model.clone();
-                            menu_item(("page-ai-model-item", n), &model, th).on_click(cx.listener(
-                                move |this, _, window, cx| {
-                                    this.pick_ai_model(picked.clone(), window, cx)
-                                },
-                            ))
-                        }),
-                    )),
+                    .on_mouse_down_out(
+                        cx.listener(|this, _, _, cx| this.open_ai_models(false, false, cx)),
+                    )
+                    .child(
+                        menu(th)
+                            .id("page-ai-models-list")
+                            .max_h(px(320.0))
+                            .overflow_y_scroll()
+                            .children(matches.into_iter().enumerate().map(|(n, model)| {
+                                let picked = model.clone();
+                                menu_item(("page-ai-model-item", n), &model, th).on_click(
+                                    cx.listener(move |this, _, window, cx| {
+                                        this.pick_ai_model(picked.clone(), window, cx)
+                                    }),
+                                )
+                            })),
+                    ),
             )
             .with_priority(1)
         });

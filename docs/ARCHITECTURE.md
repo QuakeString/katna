@@ -3701,13 +3701,19 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   left, `paid`, `own`) and a problem name (`katna_ai::wire::problem`).
   Nothing is logged but that it happened.
 - **App:** selecting text in the message's own paragraphs (not the quote,
-  signature, tables or pictures) shows a sparkle by its end; it or Ctrl+J
-  opens the Rephrase card: tones, a preview, Replace (one undo step, a
+  signature, tables or pictures) shows a sparkle by its end; it, the
+  sparkle beside Formatting in the compose bar (and in the chat view's
+  reply box) or Ctrl+J opens the Rephrase card, for the selection or,
+  with nothing selected, for all those paragraphs: tones, a preview, Replace (one undo step, a
   snackbar with Undo), Try again, Add below, Copy, and who answered.
   Encrypted mail asks before sending the selection, once per message.
   Longer suggestions use the grey writing suggestion and its Tab
   (`katna_ui::rich::Complete`), after a 600 ms pause at the end of a paragraph, ending in
-  a small "✦ Tab" key; never for encrypted mail.
+  a small "✦ Tab" key; never for encrypted mail. They ask for as little
+  thinking as the model allows (`Prompt::quick`: Gemini 3 Flash models
+  `thinkingLevel: minimal`). Settings lists the models the service
+  offers to the key (`AiModels` over D-Bus) under the editable Model
+  field, filtered as the user types.
 - **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
   confirmed Katna accounts, 30 days free from the first use, then $5 a
   month through Razorpay Subscriptions (to come; until then the server
