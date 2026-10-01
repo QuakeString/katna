@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A quieter preview line"
+text = """
+The preview text under each mail's subject in the list is dimmer now, so
+the sender and subject stand out, in light and dark.
+"""
