@@ -81,29 +81,42 @@ impl MailWindow {
             self.aim_chat_reply(source, kind, cx);
         } else {
             self.open_compose(kind, source, window, cx);
-            let Some(compose) = self
-                .compose
-                .as_mut()
-                .filter(|c| c.conversation == Some(key))
-            else {
-                return;
-            };
-            // The signature waits out of sight, after the cursor's line.
-            let mut doc = compose.body.read(cx).doc().clone();
-            let held = if doc.blocks.len() > 1 {
-                doc.blocks.split_off(1)
-            } else {
-                Vec::new()
-            };
-            compose.body.update(cx, |editor, cx| {
-                editor.set_doc(doc.clone(), doc.start(), cx)
-            });
-            compose.chat = Some(ChatReply { held });
+            // The signature waits out of sight.
+            self.adopt_chat_reply(key, cx);
         }
         if let Some(compose) = &self.compose {
             window.focus(&compose.body.focus_handle(cx), cx);
         }
         cx.notify();
+    }
+
+    /// Takes a reply written in conversation `key` before it showed as a
+    /// chat (or opened again after Undo) into the reply box: its signature
+    /// goes out of sight like the box's own.
+    pub(in crate::window) fn adopt_chat_reply(&mut self, key: EntryKey, cx: &mut Context<Self>) {
+        let Some(compose) = self.compose.as_mut().filter(|c| {
+            c.mode == Mode::Inline && !c.closing && c.conversation == Some(key) && c.chat.is_none()
+        }) else {
+            return;
+        };
+        let mut doc = compose.body.read(cx).doc().clone();
+        let blank = |b: &Block| matches!(b, Block::Para(p) if p.text.is_empty());
+        let held = match doc
+            .blocks
+            .iter()
+            .position(|b| matches!(b, Block::Para(p) if p.style.signature))
+        {
+            // With the blank line before it, when the text keeps a line.
+            Some(at) if at > 1 && blank(&doc.blocks[at - 1]) => doc.blocks.split_off(at - 1),
+            Some(at) if at > 0 => doc.blocks.split_off(at),
+            _ => Vec::new(),
+        };
+        if !held.is_empty() {
+            compose.body.update(cx, |editor, cx| {
+                editor.set_doc(doc.clone(), doc.start(), cx)
+            });
+        }
+        compose.chat = Some(ChatReply { held });
     }
 
     /// Aims the reply being written at `source`: what it quotes and

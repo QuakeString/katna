@@ -403,6 +403,7 @@ impl MailWindow {
                 Line::Bubble(bubble) => self.render_bubble_row(bubble, th, cx),
             })
             .collect();
+        self.adopt_chat_reply(key, cx);
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
         let reply = self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), th, cx);
