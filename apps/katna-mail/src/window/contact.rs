@@ -141,24 +141,41 @@ impl MailWindow {
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
     /// away: an address clicked in the open mail's details.
+    /// A second click on the person whose card shows puts the panel away.
     pub(super) fn show_person(&mut self, email: &str, cx: &mut Context<Self>) {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
-            self.contact.picked = Some((key, email.to_owned()));
+            self.show_contact_of(key, email, cx);
         }
+    }
+
+    /// Shows `email`'s card for conversation `key`, opening the panel if
+    /// it is hidden: a click on a name or picture in the chat view. A
+    /// second click on the person whose card shows puts the panel away.
+    pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
+        let email = email.to_lowercase();
+        let shown = self.config.mail.contact_panel && self.contact_room_now();
+        if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
+            self.toggle_contact_panel(cx);
+            return;
+        }
+        self.contact.picked = Some((key, email));
         if !self.config.mail.contact_panel && self.contact_room_now() {
             self.toggle_contact_panel(cx);
         }
         cx.notify();
     }
 
-    /// Shows `email`'s card for conversation `key`, opening the panel if
-    /// it is hidden: a click on a name or picture in the chat view.
-    pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
-        self.contact.picked = Some((key, email.to_lowercase()));
-        if !self.config.mail.contact_panel {
-            self.toggle_contact_panel(cx);
-        }
-        cx.notify();
+    /// The address whose card the panel shows for the open conversation:
+    /// the one picked, else the newest sender.
+    fn contact_person_shown(&mut self) -> Option<String> {
+        let key = self.reader.as_ref().map(|r| r.key);
+        let people = self.contact_people();
+        self.contact
+            .picked
+            .as_ref()
+            .filter(|(k, email)| Some(*k) == key && people.iter().any(|(e, _)| e == email))
+            .map(|(_, email)| email.clone())
+            .or_else(|| people.first().map(|(email, _)| email.clone()))
     }
 
     /// Shows or hides the panel, from the reader's toolbar.
@@ -311,17 +328,9 @@ impl MailWindow {
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
-        let key = self.reader.as_ref().map(|r| r.key);
+        let shown = self.contact_person_shown();
         let people = self.contact_people();
-        let picked = self
-            .contact
-            .picked
-            .as_ref()
-            .filter(|(k, email)| Some(*k) == key && people.iter().any(|(e, _)| e == email))
-            .map(|(_, email)| email.clone());
-        let person = picked
-            .and_then(|email| people.iter().find(|(e, _)| *e == email).cloned())
-            .or_else(|| people.first().cloned());
+        let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
         // More folds back for another person.
         if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
             self.contact.more = None;
