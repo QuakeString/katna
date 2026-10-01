@@ -31,7 +31,7 @@ use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{card_outline, card_shadow, icon, icon_button_colored, tip};
+use crate::widgets::{card_outline, card_shadow, icon, icon_button, icon_button_colored, tip};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -433,12 +433,11 @@ impl MailWindow {
                     .child(body),
             )
             .children(card_outline(th, radius, edge))
-            // Puts the panel away, as its toolbar button does.
+            // Puts the panel away, as its toolbar button does: the same
+            // round close button as the open mail's.
             .child(
-                div().absolute().top(px(10.0)).right(px(10.0)).child(
-                    icon_button_colored("contact-close", "close", 18.0, th.text_faint, th)
-                        .size(px(28.0))
-                        .rounded(px(8.0))
+                div().absolute().top(px(6.0)).right(px(6.0)).child(
+                    icon_button("contact-close", "close", 20.0, th)
                         .tooltip(tip(tr!("contact-panel-hide"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx))),
                 ),
@@ -471,7 +470,7 @@ impl MailWindow {
             .items_center()
             .gap(px(12.0))
             // Clear of the close button in the corner.
-            .pr(px(22.0))
+            .pr(px(30.0))
             .child(self.person_avatar(&shown_name, email, PICTURE))
             .child(
                 div()
