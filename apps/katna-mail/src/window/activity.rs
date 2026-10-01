@@ -1340,7 +1340,7 @@ impl MailWindow {
                 a.display_name.trim().to_owned()
             }
         };
-        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), &name);
+        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), name);
         let button = div()
             .id("activity-accounts")
             .h(px(28.0))
