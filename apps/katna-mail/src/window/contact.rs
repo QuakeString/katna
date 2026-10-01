@@ -380,13 +380,7 @@ impl MailWindow {
                                     .text_color(rgba(th.text)),
                             )
                             // Their mail is muted (§15.1.1).
-                            .when(muted, |d| {
-                                d.child(div().flex_none().child(icon(
-                                    "bell-off",
-                                    th.text_dim,
-                                    16.0,
-                                )))
-                            }),
+                            .children(muted.then(|| self.muted_mark(email, 16.0, th)).flatten()),
                     )
                     .when(name.is_some(), |d| {
                         d.child(
@@ -1131,12 +1125,12 @@ impl MailWindow {
                             .child(self.person_avatar(&label, email, 24.0))
                             .child(
                                 words(pieces, label)
-                                    .flex_1()
                                     .min_w_0()
                                     .truncate()
                                     .cursor_pointer()
                                     .text_color(rgba(th.text)),
                             )
+                            .children(self.muted_mark(email, 16.0, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(key) = key {
                                     this.contact.picked = Some((key, pick.clone()));

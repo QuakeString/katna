@@ -2203,13 +2203,56 @@ impl MailWindow {
             .min_w_0()
             .gap(px(4.0))
             .text_color(rgba(th.text))
-            .child(
-                div()
-                    .min_w_0()
-                    .truncate()
-                    .font_weight(weight)
-                    .child(row.correspondent.clone()),
-            )
+            .map(|d| {
+                // A muted sender gets a crossed bell after their name
+                // (§15.1.1); the names are then laid out one by one.
+                let marks: Vec<Option<AnyElement>> = row
+                    .people
+                    .iter()
+                    .map(|(_, email)| {
+                        email
+                            .as_deref()
+                            .and_then(|email| self.muted_mark(email, 16.0, th))
+                    })
+                    .collect();
+                if marks.iter().all(Option::is_none) {
+                    return d.child(
+                        div()
+                            .min_w_0()
+                            .truncate()
+                            .font_weight(weight)
+                            .child(row.correspondent.clone()),
+                    );
+                }
+                d.child(
+                    div()
+                        .min_w_0()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .overflow_hidden()
+                        .font_weight(weight)
+                        .children(row.people.iter().zip(marks).flat_map(|((text, _), mark)| {
+                            let text = div()
+                                .min_w_0()
+                                .truncate()
+                                .child(text.clone())
+                                .into_any_element();
+                            let mark = mark.map(|mark| {
+                                // Lifted 1 px to sit on the name as the
+                                // contact card's does.
+                                div()
+                                    .flex_none()
+                                    .relative()
+                                    .top(px(-1.0))
+                                    .pl(px(4.0))
+                                    .child(mark)
+                                    .into_any_element()
+                            });
+                            std::iter::once(text).chain(mark)
+                        })),
+                )
+            })
             .when(row.count > 1, |d| {
                 d.child(
                     div()

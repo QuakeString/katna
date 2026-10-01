@@ -90,6 +90,7 @@ pub(super) fn row(
         } else {
             name
         },
+        people: Vec::new(),
         sender: address,
         count: 1,
         subject,

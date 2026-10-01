@@ -1932,6 +1932,7 @@ impl MailWindow {
                     .text_color(rgba(th.text_dim))
                     .child(avatar)
                     .child(div().min_w_0().truncate().child(sender))
+                    .children(self.muted_mark(&found.file.from_email, 14.0, th))
                     .child(div().flex_none().text_color(rgba(th.text_faint)).child("·"))
                     .child(
                         div()
@@ -2056,7 +2057,8 @@ impl MailWindow {
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
                         .child(self.person_avatar(&sender, &found.file.from_email, 20.0))
-                        .child(div().min_w_0().truncate().child(sender.clone())),
+                        .child(div().min_w_0().truncate().child(sender.clone()))
+                        .children(self.muted_mark(&found.file.from_email, 14.0, th)),
                 )
                 .child(
                     div()
@@ -2274,8 +2276,12 @@ impl MailWindow {
                                 div()
                                     .flex_1()
                                     .min_w_0()
-                                    .truncate()
-                                    .child(sender.name.clone()),
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(6.0))
+                                    .child(div().min_w_0().truncate().child(sender.name.clone()))
+                                    .children(self.muted_mark(&sender.email, 16.0, th)),
                             )
                             .child(
                                 div()

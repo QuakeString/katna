@@ -1039,6 +1039,7 @@ impl MailWindow {
     ) -> AnyElement {
         let open = person.clone();
         let dim = |d: gpui::Div| d.text_color(rgba(th.text_dim));
+        let mark = || self.muted_mark_any(&person.emails, 16.0, th);
         let row = div()
             .id(("contact", ix))
             .w_full()
@@ -1074,10 +1075,19 @@ impl MailWindow {
                         .flex_col()
                         .child(
                             div()
-                                .truncate()
-                                .text_color(rgba(th.text))
-                                .font_weight(FontWeight::MEDIUM)
-                                .child(person.name.clone()),
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .child(
+                                    div()
+                                        .min_w_0()
+                                        .truncate()
+                                        .text_color(rgba(th.text))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .child(person.name.clone()),
+                                )
+                                .children(mark()),
                         )
                         .when(!under.is_empty(), |d| {
                             d.child(
@@ -1093,9 +1103,14 @@ impl MailWindow {
             .when(self.contacts_columns(), |row| {
                 row.child(
                     column(2.0)
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
                         .text_color(rgba(th.text))
                         .font_weight(FontWeight::MEDIUM)
-                        .child(person.name.clone()),
+                        .child(div().min_w_0().truncate().child(person.name.clone()))
+                        .children(mark()),
                 )
                 .child(dim(column(2.4)).child(person.emails.first().cloned().unwrap_or_default()))
                 .child(dim(column(1.6)).child(person.phone.clone()))
@@ -1163,9 +1178,18 @@ impl MailWindow {
                     .gap(px(6.0))
                     .child(
                         div()
-                            .text_size(px(28.0))
-                            .text_color(rgba(th.text))
-                            .child(person.name.clone()),
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(10.0))
+                            .child(
+                                div()
+                                    .min_w_0()
+                                    .text_size(px(28.0))
+                                    .text_color(rgba(th.text))
+                                    .child(person.name.clone()),
+                            )
+                            .children(self.muted_mark_any(&person.emails, 22.0, th)),
                     )
                     .when(!job.is_empty(), |d| {
                         d.child(

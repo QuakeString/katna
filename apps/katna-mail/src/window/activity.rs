@@ -1617,9 +1617,13 @@ impl MailWindow {
                                     div()
                                         .flex_1()
                                         .min_w_0()
-                                        .truncate()
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .gap(px(6.0))
                                         .text_size(px(14.0))
-                                        .child(name),
+                                        .child(div().min_w_0().truncate().child(name))
+                                        .children(self.muted_mark(&person.email, 16.0, th)),
                                 )
                                 .child(
                                     div()
