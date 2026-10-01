@@ -37,11 +37,28 @@ files-count = { $count ->
 files-anyone = Anyone
 # The same chip once a person is picked. $name: their name.
 files-from-person = From { $name }
+# The chip that picks the days the files are from, and its calendar.
 files-time-any = Any time
-files-time-week = Past week
-files-time-month = Past month
-files-time-year = Past year
-files-time-older = Older than a year
+files-time-today = Today
+files-time-yesterday = Yesterday
+files-time-this-week = This week
+files-time-last-week = Last week
+files-time-this-month = This month
+files-time-last-month = Last month
+# Days picked on the calendar, such as "12 Sep – 28 Sep".
+files-time-between = { $first } – { $last }
+# Under the calendar before any day is picked.
+files-time-hint = Click a day, or drag across days
+# Under the calendar: $days picked (as on the chip) and the files they hold.
+files-time-summary = { $count ->
+    [one] { $days } · { $count } file
+   *[other] { $days } · { $count } files
+}
+files-time-clear = Clear
+files-time-month-back = Previous month
+files-time-month-on = Next month
+# Tooltip of the chip once days are picked.
+files-time-wheel = Scroll to move these dates, keeping their length
 files-sort-newest = Newest first
 files-sort-oldest = Oldest first
 files-sort-largest = Largest first

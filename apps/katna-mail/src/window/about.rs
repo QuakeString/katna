@@ -165,6 +165,12 @@ const CREDITS: &[(&str, &str, &str, &str)] = &[
         "Apache-2.0 or MIT",
         "https://github.com/smol-rs/smol",
     ),
+    (
+        "Nord, Solarized, Dracula, Gruvbox, Catppuccin, Tokyo Night, One, Rosé Pine, Everforest, Kanagawa and Ayu",
+        "about-credit-color-schemes",
+        "MIT",
+        "https://github.com/QuakeString/katna#built-with-love-on-the-shoulders-of-giants",
+    ),
 ];
 
 /// A library Katna uses directly, from `docs/credits.json`, which

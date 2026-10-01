@@ -4,7 +4,8 @@
 //! settings". Its tabs: General (conversations, undo send, offline
 //! mail, the tray),
 //! Inbox (tabs per account), Accounts (the folder pane, remove one, or
-//! delete all data), Appearance (reading pane, density, theme, pictures),
+//! delete all data), Appearance (reading pane, density, mode, color scheme
+//! and accent, pictures),
 //! Shortcuts (every one, each can be changed by pressing the new keys),
 //! Default apps (where each kind of attachment opens), Compose (signatures,
 //! with defaults for new mail and replies, and templates), User feedback (crash reports
@@ -1067,17 +1068,15 @@ impl MailWindow {
             ))
             .child(self.row(tr!("settings-appearance-theme"), None, theme, th))
             .child(self.row(
-                tr!("settings-appearance-desktop-colors"),
-                None,
-                self.switch_row(
-                    "page-desktop-colors",
-                    tr!("settings-appearance-desktop-colors-use"),
-                    tr!("settings-appearance-desktop-colors-use-detail"),
-                    view.desktop_colors,
-                    Change::DesktopColors(!view.desktop_colors),
-                    th,
-                    cx,
-                ),
+                tr!("settings-appearance-colors"),
+                Some(&tr!("settings-appearance-colors-detail")),
+                self.scheme_picker(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-accent"),
+                Some(&tr!("settings-appearance-accent-detail")),
+                self.accent_picker(th, cx),
                 th,
             ))
             .child(self.row(

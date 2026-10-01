@@ -2252,8 +2252,29 @@ Gemini or confidential mode):
   as it is without one. The window frame (`katna_chrome::ChromeColors`)
   follows the scheme too. Colors are read at startup, again on the
   portal's `SettingChanged`, and when `kdeglobals` or `gtk.css` change
-  (checked every 2 s). A quick setting, *Desktop colors* (on by default,
-  `mail.desktop_colors`), turns this off.
+  (checked every 2 s).
+- **Mode, colors and accent (2026-10-01).** Three separate choices in
+  Settings > Appearance: *Mode* (`mail.theme`: System, Light or Dark),
+  *Colors* (`mail.colors`: `system` for the desktop's scheme above,
+  `katna` for Katna's palette, or a built-in scheme, `schemes.rs`) and
+  *Accent* (`mail.accent`: the scheme's own, `system` for the desktop's,
+  or `#rrggbb`). Every built-in scheme has a light and a dark side, made of
+  six colors (page, cards, text, faint text, accent, error) that
+  `Theme::from_scheme` turns into the full theme, so any mode works with
+  any scheme; `Theme::pick` puts the three together. The built-ins are
+  Katna's own (Katna, Clear after Apple's system colors, Graphite) and
+  eleven MIT-licensed editor and desktop palettes (Nord, Solarized,
+  Dracula, Gruvbox, Catppuccin, Tokyo Night, One, Rosé Pine, Everforest,
+  Kanagawa, Ayu), credited in About and the README. Settings shows each
+  as a card with a small mail window on its light and dark side in the
+  picked accent, grouped as Built in and From your system. Files from
+  before schemes have no `colors`: `mail.desktop_colors` decides (on is
+  `system`, off is `katna`), and every pick keeps it in step for older
+  versions. The quick setting *Desktop colors* switches between `system`
+  and `katna`. Still to come: the desktop's other installed schemes and
+  their light/dark partners, Windows' accent and Contrast themes, the
+  editor for one's own schemes (Yours), and schemes with one side
+  setting light or dark itself.
 - **Contact panel.** On a desktop, a card beside the open conversation
   (300 px, the usual 16 px card gap, sliding in with the reading pane's
   spring) shows one of its people: the newest sender other than the user,
@@ -2476,8 +2497,11 @@ desktop's own app stays one click away.
   out, a file sent again (same name and size) shows once, and pictures
   under 12 KB (signature logos) are skipped; it reads at most 20,000
   files. The side column (a drawer and chips on a phone) narrows it to a
-  kind of file, an account, or received or sent; chips pick a sender, a
-  time and the order; the top bar's search box matches names, subjects
+  kind of file, an account, or received or sent; chips pick a sender,
+  days (quick picks over a two-month calendar: click a day, drag across
+  days or Shift+click; the files follow the drag and the calendar closes
+  on release; the wheel over the chip moves the days, keeping their
+  length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
   its mail first); the hover panel, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also

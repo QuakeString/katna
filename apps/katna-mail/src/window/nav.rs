@@ -107,7 +107,7 @@ pub(super) fn side_row(
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
     let id = id.into();
-    let text = if on { th.nav_selected_text } else { th.text };
+    let text = if on { th.row_selected_text } else { th.text };
     div()
         .id(id.clone())
         .relative()
@@ -125,7 +125,7 @@ pub(super) fn side_row(
         .text_size(px(14.0))
         .text_color(rgba(text))
         .when(on, |d| {
-            d.bg(rgba(th.nav_selected)).font_weight(FontWeight::BOLD)
+            d.bg(rgba(th.row_selected)).font_weight(FontWeight::BOLD)
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
@@ -1094,7 +1094,7 @@ impl MailWindow {
         } = pill;
         let indent = 12.0 * depth as f32;
         let text = if selected {
-            th.nav_selected_text
+            th.row_selected_text
         } else {
             th.text
         };
@@ -1203,7 +1203,7 @@ impl MailWindow {
             ElementId::Name(format!("nav-selected:{key}").into()),
             SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
             {
-                let bg = th.nav_selected;
+                let bg = th.row_selected;
                 move |row, s: f32| {
                     if s > 0.001 {
                         row.bg(rgba(fade(bg, s)))

@@ -112,6 +112,7 @@ about-credit-jiff = Dates and time zones
 about-credit-spellbook = Spell check, from the Helix editor
 # The library that lets Katna do many tasks at the same time.
 about-credit-smol = Doing many things at once
+about-credit-color-schemes = The palettes of the built-in color schemes
 # Shows or hides the full list of libraries. $count: how many there are.
 about-all-libraries = Every library Katna uses ({ $count })
 # Under a library's name. $authors: the names of its authors.

@@ -473,8 +473,19 @@ pub struct MailView {
     pub scale: u16,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
-    /// own colors.
+    /// own colors. Older versions' choice: [`MailView::colors`] wins when
+    /// it is set, and is kept in step with it.
     pub desktop_colors: bool,
+    /// The color scheme, by id: `system` for the desktop's, `katna` for
+    /// Katna's own, or a built-in scheme's (`nord`, `clear`, ...). Not set
+    /// in files from before schemes, which [`MailView::desktop_colors`]
+    /// decides; see [`MailView::colors`].
+    #[serde(rename = "colors", skip_serializing_if = "Option::is_none")]
+    pub color_scheme: Option<String>,
+    /// The accent color: empty for the scheme's own, `system` for the
+    /// desktop's, or `#rrggbb`.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub accent: String,
     /// Show the names under the icons of the app bar (Mail, Calendar, ...).
     pub app_labels: bool,
     /// Show the logo of each sender's organization (its BIMI logo or
@@ -602,6 +613,8 @@ impl Default for MailView {
             scale: 100,
             theme: Theme::System,
             desktop_colors: true,
+            color_scheme: None,
+            accent: String::new(),
             app_labels: true,
             sender_pictures: true,
             newest_first: false,
@@ -634,6 +647,24 @@ impl Default for MailView {
 }
 
 impl MailView {
+    /// The color scheme's id: [`Self::color_scheme`], or for files from
+    /// before schemes the desktop's (`system`) or Katna's own (`katna`),
+    /// as [`Self::desktop_colors`] says.
+    pub fn colors(&self) -> &str {
+        match &self.color_scheme {
+            Some(id) => id,
+            None if self.desktop_colors => "system",
+            None => "katna",
+        }
+    }
+
+    /// Picks the color scheme `id`. Older versions read
+    /// [`Self::desktop_colors`], kept on for the desktop's scheme.
+    pub fn set_colors(&mut self, id: &str) {
+        self.desktop_colors = id == "system";
+        self.color_scheme = Some(id.to_owned());
+    }
+
     /// The tab settings of the account with `address`.
     pub fn tabs_of(&self, address: &str) -> AccountTabs {
         self.account_tabs
@@ -1164,6 +1195,25 @@ mod tests {
         assert_eq!(config.mail.theme, Theme::Dark);
         assert!(config.mail.desktop_colors);
         assert!(Config::parse("[mail]\nreading_pane_share = 0.9\n").is_err());
+    }
+
+    #[test]
+    fn color_schemes() {
+        // Files from before schemes: the old switch decides.
+        assert_eq!(Config::default().mail.colors(), "system");
+        let config = Config::parse("[mail]\ndesktop_colors = false\n").unwrap();
+        assert_eq!(config.mail.colors(), "katna");
+        let mut config =
+            Config::parse("[mail]\ncolors = \"nord\"\naccent = \"#e8590c\"\n").unwrap();
+        assert_eq!(config.mail.colors(), "nord");
+        assert_eq!(config.mail.accent, "#e8590c");
+        // A pick keeps the old switch in step for older versions.
+        config.mail.set_colors("system");
+        assert!(config.mail.desktop_colors);
+        config.mail.set_colors("clear");
+        assert!(!config.mail.desktop_colors);
+        let saved = Config::parse(&toml::to_string(&config).unwrap()).unwrap();
+        assert_eq!(saved.mail.colors(), "clear");
     }
 
     #[test]
