@@ -89,7 +89,8 @@ pub struct AiConfig {
     pub budget_micros: u64,
     /// The price of a million tokens read and written
     /// (`KATNA_SERVER_AI_PRICE_IN_USD`, default 0.10, and `_OUT_USD`, 0.40:
-    /// Gemini 2.5 Flash-Lite's), for the caps.
+    /// Gemini 2.5 Flash-Lite's; set the chosen model's own on the admin page),
+    /// for the caps.
     pub price_in_micros: u64,
     pub price_out_micros: u64,
     /// Requests one account may make per hour
@@ -508,7 +509,7 @@ mod tests {
         let ai = &config.ai;
         assert_eq!(ai.services.len(), 2);
         assert_eq!(ai.services[0].provider, "gemini");
-        assert_eq!(ai.services[0].model, "gemini-2.5-flash-lite");
+        assert_eq!(ai.services[0].model, "gemini-3.5-flash-lite");
         assert_eq!(ai.services[1].base, "https://api.mistral.ai/v1");
         assert_eq!(ai.budget_micros, 12_500_000);
         assert_eq!(ai.trial_days, 30);

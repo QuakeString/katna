@@ -3675,7 +3675,7 @@ owner's server, over on-device models or DeepL).
 
 Katna Mail rephrases the text the user selects in a message and can finish
 the sentence being written (decided 1 October 2026: Katna AI on Katna
-Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
+Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google closed 2.5 Flash-Lite to new keys).
 
 - **Shared crate:** `katna-ai` (no network, no GPUI) holds the prompts
   (`prompt`: the tones Clearer, Shorter, Friendlier, Formal, Fix grammar,
@@ -3714,7 +3714,7 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   answers 402 after the free month). The server builds the prompt with
   `katna_ai::prompt` from the request, so a client cannot send the
   service anything else, and asks the service set in
-  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 2.5 Flash-Lite by
+  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 3.5 Flash-Lite by
   default), then `KATNA_SERVER_AI_FALLBACK_*` when that fails. It counts
   each answer's cost from the tokens the service reports at the prices
   set (`_PRICE_IN_USD`, `_PRICE_OUT_USD`) per account and calendar month

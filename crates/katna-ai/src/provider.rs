@@ -49,7 +49,7 @@ pub const PRESETS: &[Preset] = &[
         name: "Google Gemini",
         kind: Kind::Gemini,
         base: "https://generativelanguage.googleapis.com",
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-3.5-flash-lite",
         needs_key: true,
     },
     Preset {
