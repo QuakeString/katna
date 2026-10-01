@@ -62,6 +62,10 @@ impl MessageFlags {
     /// Marked important: the `$Important` keyword (RFC 8457), or Gmail's
     /// Important label.
     pub const IMPORTANT: Self = Self(1 << 6);
+    /// The conversation is muted at the mail service: the `$muted`
+    /// keyword (RFC 9979), or Gmail's Muted label. Katna's own record of
+    /// muted conversations is the `mute` table (`alerts`).
+    pub const MUTED: Self = Self(1 << 7);
 
     pub const fn empty() -> Self {
         Self(0)

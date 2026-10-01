@@ -246,6 +246,14 @@ Katna would not exist without these projects and the people behind them.
   [smol](https://github.com/smol-rs/smol) (async).
   Under them, [SQLite](https://sqlite.org) stores your mail and
   [rustls](https://github.com/rustls/rustls) keeps your connections safe.
+- **Color schemes:** the built-in schemes take their palettes from
+  [Nord](https://www.nordtheme.com), [Solarized](https://ethanschoonover.com/solarized/),
+  [Dracula](https://draculatheme.com), [Gruvbox](https://github.com/morhetz/gruvbox),
+  [Catppuccin](https://catppuccin.com), [Tokyo Night](https://github.com/folke/tokyonight.nvim),
+  [One](https://github.com/atom/atom/tree/master/packages/one-dark-ui),
+  [Rosé Pine](https://rosepinetheme.com), [Everforest](https://github.com/sainnhe/everforest),
+  [Kanagawa](https://github.com/rebelot/kanagawa.nvim) and [Ayu](https://github.com/ayu-theme/ayu-colors),
+  all MIT-licensed. Clear follows Apple's system colors.
 
 **[CREDITS.md](CREDITS.md) lists every library Katna uses, with its
 authors, license and link.** It is generated from `Cargo.lock` by

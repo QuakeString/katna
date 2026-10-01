@@ -12,8 +12,8 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    Theme as ThemeChoice, UNDO_SEND_CHOICES, WindowFrame,
+    AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
+    ReadingPane, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -21,7 +21,8 @@ use katna_ui::motion;
 use katna_ui::px;
 
 use super::{CARD_GAP, MailWindow, SETTINGS_WIDTH};
-use crate::theme::{Theme, mix};
+use crate::schemes;
+use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
     CARD_SHADOW_ROOM, ScaledEdge, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
@@ -34,11 +35,18 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
-    SentSound(bool),
+    /// An event's sound on or off.
+    Sound(SoundEvent, bool),
+    /// The sound an event plays, by its `katna_platform::sound` name.
+    SoundChoice(SoundEvent, &'static str),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
+    /// The desktop's color scheme (on), or Katna's own (off).
     DesktopColors(bool),
+    /// The color scheme, by id (`crate::schemes`).
+    Colors(&'static str),
+    Accent(Accent),
     Tabs(bool),
     Conversations(bool),
     AppLabels(bool),
@@ -53,6 +61,7 @@ pub(super) enum Change {
     UnifiedInbox(bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
+    TrayStyle(TrayStyle),
     /// The unread count on the taskbar icon, shown by the daemon.
     UnreadBadge(bool),
     /// Katna's own window frame, or the desktop's.
@@ -83,10 +92,14 @@ pub(super) enum Change {
     DarkMail(bool),
     AttachmentPreviews(bool),
     OpenSavedFolder(bool),
+    /// The Files page leaves out small pictures (signature logos).
+    LeaveOutSmallPictures(bool),
+    /// Pictures under this many KB are small.
+    SmallPictureKb(u32),
+    /// Pictures under this many pixels wide or tall are small.
+    SmallPicturePx(u32),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
-    /// Their sound.
-    NotificationSound(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
     AutoDownloadUpdates(bool),
     PlainText(bool),
@@ -248,8 +261,8 @@ impl MailWindow {
                                 "desktop-colors",
                                 tr!("quick-desktop-colors"),
                                 tr!("quick-desktop-colors-detail"),
-                                view.desktop_colors,
-                                Change::DesktopColors(!view.desktop_colors),
+                                view.colors() == schemes::SYSTEM,
+                                Change::DesktopColors(view.colors() != schemes::SYSTEM),
                                 th,
                                 cx,
                             ))
@@ -450,7 +463,6 @@ impl MailWindow {
                 }
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
-            Change::SentSound(on) => sending.sent_sound = on,
             Change::Density(density) => view.density = density,
             Change::Scale(percent) => {
                 if view.scale == percent {
@@ -463,7 +475,11 @@ impl MailWindow {
                 cx.refresh_windows();
             }
             Change::Theme(theme) => view.theme = theme,
-            Change::DesktopColors(on) => view.desktop_colors = on,
+            Change::DesktopColors(on) => {
+                view.set_colors(if on { schemes::SYSTEM } else { schemes::KATNA });
+            }
+            Change::Colors(id) => view.set_colors(id),
+            Change::Accent(accent) => view.accent = accent.setting(),
             Change::AppLabels(on) => view.app_labels = on,
             Change::SenderPictures(on) => view.sender_pictures = on,
             Change::NewestFirst(on) => view.newest_first = on,
@@ -515,6 +531,30 @@ impl MailWindow {
                 self.request_thumbnails(cx);
             }
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::LeaveOutSmallPictures(_)
+            | Change::SmallPictureKb(_)
+            | Change::SmallPicturePx(_) => {
+                let files = &mut view.files;
+                match change {
+                    Change::LeaveOutSmallPictures(on) => files.leave_out_small = on,
+                    Change::SmallPictureKb(kb) => {
+                        files.small_kb =
+                            kb.clamp(*FilesPage::KB_RANGE.start(), *FilesPage::KB_RANGE.end());
+                    }
+                    Change::SmallPicturePx(side) => {
+                        files.small_px =
+                            side.clamp(*FilesPage::PX_RANGE.start(), *FilesPage::PX_RANGE.end());
+                    }
+                    _ => {}
+                }
+                self.save_config();
+                // The page read once is read again with the new rule.
+                if self.library_loaded() {
+                    self.load_library(cx);
+                }
+                cx.notify();
+                return;
+            }
             Change::PlainText(on) => sending.plain_text = on,
             Change::SpellCheck(on) => sending.spell_check = on,
             Change::StartAtLogin(start) => {
@@ -532,12 +572,21 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
-            Change::NewMailNotices(on) | Change::NotificationSound(on) => {
-                let notifications = &mut self.config.notifications;
-                if matches!(change, Change::NewMailNotices(_)) {
-                    notifications.new_mail = on;
-                } else {
-                    notifications.sound = on;
+            Change::NewMailNotices(_) | Change::Sound(..) | Change::SoundChoice(..) => {
+                match change {
+                    Change::NewMailNotices(on) => self.config.notifications.new_mail = on,
+                    Change::Sound(event, on) => self.config.sounds.get_mut(event).on = on,
+                    Change::SoundChoice(event, id) => {
+                        // The usual sound stays unnamed, so it follows a
+                        // change of the usual one.
+                        self.config.sounds.get_mut(event).sound =
+                            if id == katna_platform::sound::usual(event) {
+                                String::new()
+                            } else {
+                                id.to_owned()
+                            };
+                    }
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
@@ -644,12 +693,13 @@ impl MailWindow {
                 view.translation.reading_language = tag.to_owned();
                 self.translations.forget_sources();
             }
-            Change::Tray(on) | Change::UnreadBadge(on) => {
+            Change::Tray(_) | Change::TrayStyle(_) | Change::UnreadBadge(_) => {
                 let general = &mut self.config.general;
-                if matches!(change, Change::Tray(_)) {
-                    general.show_in_tray = on;
-                } else {
-                    general.unread_badge = on;
+                match change {
+                    Change::Tray(on) => general.show_in_tray = on,
+                    Change::TrayStyle(style) => general.tray_style = style,
+                    Change::UnreadBadge(on) => general.unread_badge = on,
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
@@ -879,6 +929,22 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        self.switch_row_with(id, label, detail, on, change, None, th, cx)
+    }
+
+    /// A [`Self::switch_row`] with `extra` controls just before the switch.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn switch_row_with(
+        &self,
+        id: &'static str,
+        label: impl Into<SharedString>,
+        detail: impl Into<SharedString>,
+        on: bool,
+        change: Change,
+        extra: Option<AnyElement>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
@@ -907,6 +973,7 @@ impl MailWindow {
                             .child(detail.into()),
                     ),
             )
+            .children(extra)
             .child(div().with_spring(
                 (id, 3_usize),
                 SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),

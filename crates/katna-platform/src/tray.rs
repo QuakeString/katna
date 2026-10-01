@@ -20,7 +20,7 @@ use zbus::zvariant::OwnedObjectPath;
 use zbus::{Connection, Task};
 
 use crate::dbusmenu::{Menu, MenuItem};
-use crate::icon;
+use crate::icon::{self, Style};
 
 const ITEM_PATH: &str = "/StatusNotifierItem";
 const MENU_PATH: &str = "/StatusNotifierItem/Menu";
@@ -45,7 +45,9 @@ pub type Handler = Arc<dyn Fn(&str, Option<String>) + Send + Sync>;
 /// What the icon shows.
 struct Look {
     title: String,
-    icon_name: String,
+    /// The app's icon name; `-symbolic` names its one-color icon.
+    id: String,
+    style: Style,
     /// The tooltip's second line.
     status: String,
     badge: Option<String>,
@@ -53,10 +55,11 @@ struct Look {
 }
 
 impl Look {
-    fn new(title: String, icon_name: String) -> Self {
+    fn new(title: String, id: String, style: Style) -> Self {
         let mut look = Self {
             title,
-            icon_name,
+            id,
+            style,
             status: String::new(),
             badge: None,
             pixmaps: Vec::new(),
@@ -65,12 +68,22 @@ impl Look {
         look
     }
 
+    /// The icon from the icon theme, which the panel draws at its size and,
+    /// for the one-color icon, in its own text color.
+    fn icon_name(&self) -> String {
+        match self.style {
+            Style::Color => self.id.clone(),
+            Style::Mono(_) => format!("{}-symbolic", self.id),
+        }
+    }
+
     fn draw(&mut self) {
         self.pixmaps = SIZES
             .iter()
             .map(|&size| {
                 let side = i32::try_from(size).unwrap_or(i32::MAX);
-                (side, side, icon::app_icon_argb(size, self.badge.as_deref()))
+                let argb = icon::tray_icon_argb(size, self.style, self.badge.as_deref());
+                (side, side, argb)
             })
             .collect();
     }
@@ -145,7 +158,7 @@ impl ItemObject {
         if look.badge.is_some() {
             String::new()
         } else {
-            look.icon_name.clone()
+            look.icon_name()
         }
     }
 
@@ -188,7 +201,7 @@ impl ItemObject {
     fn tool_tip(&self) -> (String, Pixmaps, String, String) {
         let look = self.look.lock().unwrap();
         (
-            look.icon_name.clone(),
+            look.icon_name(),
             Vec::new(),
             look.title.clone(),
             look.status.clone(),
@@ -239,22 +252,23 @@ pub struct Tray {
 }
 
 impl Tray {
-    /// Shows an icon named `icon_name` (the app icon drawn in code, in
-    /// colour so it reads on any panel, when it has a badge)
-    /// with `menu` on right click. `id` names the app to the panel, such as
-    /// its app ID. Clicks call `handler`.
+    /// Shows the app's icon in `style` with `menu` on right click. `id`
+    /// names the app to the panel and is its icon's name: the icon theme's
+    /// icon while there is no badge, the icon drawn in code with one.
+    /// Clicks call `handler`.
     pub async fn show(
         connection: &Connection,
         id: &str,
         title: &str,
-        icon_name: &str,
+        style: Style,
         menu: Vec<MenuItem>,
         handler: impl Fn(&str, Option<String>) + Send + Sync + 'static,
     ) -> zbus::Result<Self> {
         let handler: Handler = Arc::new(handler);
         let look = Arc::new(Mutex::new(Look::new(
             title.to_owned(),
-            icon_name.to_owned(),
+            id.to_owned(),
+            style,
         )));
         let object = ItemObject {
             id: id.to_owned(),
@@ -313,6 +327,19 @@ impl Tray {
         Ok(())
     }
 
+    /// Draws the icon in `style` from now on.
+    pub async fn set_style(&self, style: Style) -> zbus::Result<()> {
+        {
+            let mut look = self.look.lock().unwrap();
+            if look.style == style {
+                return Ok(());
+            }
+            look.style = style;
+            look.draw();
+        }
+        ItemObject::new_icon(&SignalEmitter::new(&self.connection, ITEM_PATH)?).await
+    }
+
     /// Replaces the right-click menu.
     pub async fn set_menu(&self, items: Vec<MenuItem>) -> zbus::Result<()> {
         self.menu.set_items(items).await
@@ -366,7 +393,11 @@ mod tests {
 
     #[test]
     fn draws_every_size() {
-        let mut look = Look::new("Katna Mail".into(), "in.invenia.katna.Mail".into());
+        let mut look = Look::new(
+            "Katna Mail".into(),
+            "in.invenia.katna.Mail".into(),
+            Style::Color,
+        );
         assert_eq!(look.pixmaps.len(), SIZES.len());
         for (w, h, pixels) in &look.pixmaps {
             assert_eq!(w, h);
@@ -376,6 +407,18 @@ mod tests {
         look.badge = Some("3".into());
         look.draw();
         assert_ne!(plain, look.pixmaps);
+    }
+
+    #[test]
+    fn the_icon_name_follows_the_style() {
+        let mut look = Look::new(
+            "Katna Mail".into(),
+            "in.invenia.katna.Mail".into(),
+            Style::Color,
+        );
+        assert_eq!(look.icon_name(), "in.invenia.katna.Mail");
+        look.style = Style::Mono(0xffffff);
+        assert_eq!(look.icon_name(), "in.invenia.katna.Mail-symbolic");
     }
 
     #[test]

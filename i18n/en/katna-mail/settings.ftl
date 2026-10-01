@@ -6,6 +6,8 @@
 ## Settings page: its tabs
 
 settings-tab-general = General
+# What notifies and counts on the taskbar, and what is muted.
+settings-tab-notifications = Notifications
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
 # The tab with the Katna account (an account on Katna's own server, for
@@ -79,8 +81,6 @@ settings-general-remote-images-always-detail = In every message, not only from s
 settings-general-sending = Sending
 settings-general-sending-detail = How long a sent message waits, so it can be taken back.
 # A switch under the undo-send choice.
-settings-general-sent-sound = Sound when mail is sent
-settings-general-sent-sound-detail = A short sound plays once a message has gone out.
 settings-general-video-calls = Video calls
 settings-general-video-calls-detail = Start a video call uses Google Meet for Gmail accounts. Other accounts get a Jitsi Meet room on this server; anyone with the link can join.
 settings-general-offline = Offline mail
@@ -97,12 +97,38 @@ settings-general-offline-years = { $count ->
 settings-general-offline-all = All mail
 settings-general-offline-note = Choosing fewer days keeps mail already downloaded. Nothing changes on the server.
 settings-general-notifications = Notifications
-settings-general-notifications-detail = For new mail in the Inbox, even while Katna Mail is closed.
+settings-general-notifications-detail = For new mail in the folders that notify, even while Katna Mail is closed.
 settings-general-new-mail = Notify me about new mail
 # The buttons a new-mail notification has.
 settings-general-new-mail-detail = With Reply all, Mark as read and Archive
-settings-general-new-mail-sound = Play a sound
-settings-general-new-mail-sound-detail = The desktop's new-mail sound
+# The Sounds row of Settings > Notifications: a line per event, with a
+# sound to pick, a button that plays it and a switch.
+settings-notifications-sounds = Sounds
+settings-notifications-sounds-detail = From your desktop's sound theme. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
+sounds-new-mail = New mail
+sounds-new-mail-detail = In the folders that notify
+sounds-reminders = Reminders
+sounds-reminders-detail = Calendar events and tasks
+sounds-mail-back = Mail back in the inbox
+sounds-mail-back-detail = Snoozed mail, and mail nobody answered
+sounds-sent = Mail sent
+sounds-sent-detail = Once a message has gone out
+sounds-not-sent = Mail not sent
+sounds-not-sent-detail = When sending fails
+# Tooltip of the button that plays a sound.
+sounds-play = Play
+# The sounds to pick from (the desktop's own).
+sound-new-email = New email
+sound-new-message = New message
+sound-sent = Sent
+sound-alarm = Alarm
+sound-bell = Bell
+sound-complete = Complete
+sound-information = Information
+sound-warning = Warning
+sound-error = Error
+sound-reminder = Reminder
+sound-default = Notification
 # The row about updates of Katna (only in packages that update themselves).
 settings-general-updates = Updates
 settings-general-updates-detail = Install a new version from About, or from the notification that it is ready.
@@ -119,8 +145,27 @@ settings-general-login-window = Open the Katna Mail window too
 settings-general-login-window-detail = The window opens at login as well
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
+# Under "Show Katna in the system tray", while it is on.
+settings-general-tray-color = Tray icon in color
+settings-general-tray-color-detail = Off, it is one color like the panel's other icons. The unread count stays red.
 settings-general-unread-badge = Unread count on the taskbar icon
-settings-general-unread-badge-detail = How many Inbox messages are unread
+settings-general-unread-badge-detail = Unread mail in the folders that count
+## Settings › Notifications (the bells of folders and inbox tabs, and mutes)
+
+# The row with the taskbar count's switch.
+settings-notifications-count = Taskbar count
+settings-notifications-count-detail = Also the tray icon's count.
+# The two columns of each account's table of folders and inbox tabs.
+settings-notifications-notify = Notify
+settings-notifications-counts = Count
+settings-notifications-muted = Muted
+settings-notifications-muted-detail = Folders, accounts, conversations and senders whose new mail does not notify or count.
+settings-notifications-nothing-muted = Nothing is muted. Mute a folder from its right-click menu or the bell over the list.
+# When a mute ends; { $when } is a date and time.
+settings-notifications-until = Until { $when }
+settings-notifications-until-unmuted = Until you turn it back on
+# A muted conversation whose subject is not known.
+settings-notifications-a-conversation = A conversation
 # The row with the words that, typed first in KRunner or GNOME's search,
 # search the mail. The field holds words like "k, m".
 settings-general-search-triggers = Search from the desktop
@@ -166,14 +211,97 @@ settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
 settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
-settings-appearance-theme = Theme
-# A theme choice: light or dark, following the desktop.
+# Light or dark, apart from the color scheme.
+settings-appearance-theme = Mode
+# A mode choice: light or dark, following the desktop.
 settings-appearance-theme-system = System
 settings-appearance-theme-light = Light
 settings-appearance-theme-dark = Dark
-settings-appearance-desktop-colors = Desktop colors
-settings-appearance-desktop-colors-use = Use the desktop's colors
-settings-appearance-desktop-colors-use-detail = The color scheme and accent color of the desktop
+settings-appearance-theme-forced = The color scheme picked below has only a light or a dark side, so it decides.
+settings-appearance-colors = Colors
+settings-appearance-colors-detail = Every scheme has a light and a dark side, so Mode works with each one. The previews show both sides in the accent color picked below.
+# Heading over the color schemes that come with Katna.
+settings-appearance-colors-built-in = Built in
+# Heading over the color schemes that come from the desktop.
+settings-appearance-colors-from-system = From your system
+# The desktop's own color scheme, whatever it is.
+settings-appearance-colors-system = System
+settings-appearance-colors-system-detail = Follows the desktop
+# Under a color scheme that has a light side only, so Mode does not change it.
+settings-appearance-colors-light-only = Light only
+settings-appearance-colors-dark-only = Dark only
+# Heading over the color schemes people made or imported.
+settings-appearance-colors-yours = Yours
+# A card at the end of Yours: copies the selected scheme into the editor.
+scheme-customize-card = Customize…
+scheme-customize-card-detail = From the picked one
+# A card at the end of Yours: reads a scheme from a file.
+scheme-import-card = Import…
+scheme-import-card-detail = Katna or KDE file
+settings-appearance-accent = Accent
+settings-appearance-accent-detail = The color of Compose, the app on show in the rail, counts and highlights
+# An accent choice: the color scheme's own accent color.
+settings-appearance-accent-scheme = From colors
+# An accent choice: the desktop's accent color.
+settings-appearance-accent-system = System
+
+## Color scheme names: names of themes, usually left as they are.
+
+scheme-katna = Katna
+scheme-clear = Clear
+scheme-graphite = Graphite
+scheme-nord = Nord
+scheme-solarized = Solarized
+scheme-dracula = Dracula
+scheme-gruvbox = Gruvbox
+scheme-catppuccin = Catppuccin
+scheme-tokyo-night = Tokyo Night
+scheme-one = One
+scheme-rose-pine = Rosé Pine
+scheme-everforest = Everforest
+scheme-kanagawa = Kanagawa
+scheme-ayu = Ayu
+# The name a copy of a color scheme starts with.
+scheme-copy-name = { $name } copy
+
+## Color schemes people make: the right-click menu of a scheme's card, and
+## the editor.
+
+scheme-customize = Customize
+scheme-edit = Edit
+scheme-duplicate = Duplicate
+scheme-export = Export
+scheme-delete = Delete
+scheme-deleted = Deleted “{ $name }”
+scheme-exported = Saved “{ $name }”
+# The title of the file picker.
+scheme-import = Import a color scheme
+scheme-import-failed = Not a color scheme Katna can read: { $error }
+scheme-editor-new = New color scheme
+scheme-editor-edit = Edit color scheme
+# The placeholder of the name field.
+scheme-editor-name = Name
+scheme-editor-light = Light side
+scheme-editor-dark = Dark side
+scheme-editor-make-dark = Make dark from light
+scheme-editor-add-dark = Add a dark side
+scheme-editor-add-light = Add a light side
+scheme-editor-remove-side = Remove this side
+scheme-editor-readable = Easy to read
+# $colors lists the colors, like "Text, Text on accent".
+scheme-editor-hard-to-read = Hard to read: { $colors }
+# The eight colors of a side.
+scheme-seed-page = Page
+scheme-seed-cards = Cards
+scheme-seed-text = Text
+scheme-seed-faint = Faint text
+scheme-seed-accent = Accent
+scheme-seed-bar-text = Top bar text
+scheme-seed-on-accent = Text on accent
+scheme-seed-error = Error
+
+## Settings > Appearance, continued
+
 settings-appearance-app-names = App names
 settings-appearance-app-names-show = Show app names
 settings-appearance-app-names-show-detail = Names under the app icons at the far left
@@ -213,6 +341,17 @@ settings-default-apps-ask = Ask which app each time
 settings-default-apps-after-saving = After saving
 settings-default-apps-show-folder = Show saved files in their folder
 settings-default-apps-show-folder-detail = Opens the file manager with the saved attachments picked
+settings-files-page = Files page
+settings-files-page-detail = Which attachments the Files page shows
+settings-files-leave-out-small = Leave out small pictures
+settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
+settings-files-smaller-than = Smaller than
+settings-files-kb = KB
+settings-files-narrower-than = or narrower or shorter than
+settings-files-px = px
+settings-files-more-tip = More
+settings-files-less-tip = Less
+settings-files-sizes-note = Pixel sizes are read once a mail is downloaded; until then its pictures go by file size alone.
 
 ## Settings > Compose
 
@@ -315,14 +454,19 @@ settings-general-remote-images-summary = Always show the images of every message
 settings-general-sending-summary = Undo send: how long a sent message waits, so it can be taken back
 settings-general-video-calls-summary = The Jitsi Meet server for new video calls from accounts without Google Meet
 settings-general-offline-summary = How many days of recent mail are downloaded whole, to read without a connection
-settings-general-notifications-summary = New-mail notifications and their sound
+settings-general-notifications-summary = New-mail notifications
+settings-notifications-sounds-summary = The sound for new mail, reminders, and mail sent or not sent
 settings-general-updates-summary = Download new versions of Katna by themselves
 settings-general-reset-cache-summary = Delete downloaded mail, sender pictures and the search index, and download them again
-settings-general-desktop-summary = Start Katna at login, the system tray icon and the unread count on the taskbar icon
+settings-general-desktop-summary = Start Katna at login and the system tray icon
+settings-notifications-count-summary = The unread count on the taskbar icon
+settings-notifications-muted-summary = Unmute folders, accounts, conversations and senders
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
 settings-appearance-theme-summary = System, light or dark
+settings-appearance-colors-summary = Color schemes: the desktop's, Katna's or a built-in one such as Nord or Solarized
+settings-appearance-accent-summary = The color of the selected folder, Compose and counts
 settings-appearance-sender-pictures-summary = Company logos, looked up by the sender's domain
 settings-appearance-important-summary = The Important marker beside each message in the list
 settings-appearance-mail-colors-summary = Dark colors for HTML mail in a dark theme, or its sender's colors
@@ -335,6 +479,7 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
+settings-files-page-summary = Leave small pictures, like signature logos, off the Files page
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line

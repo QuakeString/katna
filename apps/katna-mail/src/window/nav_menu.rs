@@ -538,6 +538,25 @@ impl MailWindow {
                     s.sign_in.parse::<OAuthProvider>().ok()?,
                 ))
             });
+        // Mute… (or Unmute) the folder, or the account on its heading.
+        let at = menu.at;
+        let quiet = match (menu.folder, about) {
+            (Some(folder), _) => Some(super::quiet::Quiet::Folder {
+                folder,
+                categories: Vec::new(),
+            }),
+            (None, Some(account)) => Some(super::quiet::Quiet::Account(account)),
+            _ => None,
+        }
+        .map(|target| {
+            let (glyph, label) = self.quiet_menu_label(&target);
+            (target, glyph, label)
+        });
+        let quiet_item = quiet.map(|(target, glyph, label)| {
+            item("nav-menu-quiet", glyph, label).on_click(
+                cx.listener(move |this, _, _, cx| this.quiet_menu_click(target.clone(), at, cx)),
+            )
+        });
         let divider = || div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider));
         let gmail = account.is_some_and(|a| self.tree.is_gmail(a));
         let list = div()
@@ -601,6 +620,7 @@ impl MailWindow {
                     ),
                 )
             })
+            .children(quiet_item)
             .when_some(
                 menu.folder.zip(account).filter(|_| menu.nests),
                 |d, (folder, account)| {

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Move through your files with the keyboard"
+text = """
+On the Files page the arrow keys now move between files, Home and End go to the first and last, and Enter opens one. In the viewer opened from there, the arrows go on to the next file on the page, whichever mail it came with; Shift and an arrow stays with the attachments of the same mail.
+"""

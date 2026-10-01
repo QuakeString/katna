@@ -199,6 +199,18 @@ impl Body {
 }
 
 impl Conversation {
+    /// Its subject, a message of it, and the sender of its newest
+    /// message, for muting it or its sender.
+    pub(super) fn mute_info(&self) -> Option<(String, MessageId, String)> {
+        let last = self.parts.iter().rev().find(|p| p.pending.is_none())?;
+        let sender = last
+            .row
+            .as_ref()
+            .map(|r| r.sender.clone())
+            .unwrap_or_default();
+        Some((self.subject.clone(), last.id, sender))
+    }
+
     /// The invitations of the loaded messages.
     fn invites(&self) -> impl Iterator<Item = &Arc<invite::Invite>> {
         self.parts
@@ -606,6 +618,8 @@ pub(super) struct Squeeze {
     pub colors: bool,
     pub contact: bool,
     pub move_to: bool,
+    /// The bell that mutes the conversation.
+    pub mute: bool,
     pub unread: bool,
     pub spam: bool,
     /// The lines between the groups of buttons.
@@ -630,6 +644,7 @@ impl Squeeze {
         colors: false,
         contact: false,
         move_to: false,
+        mute: false,
         unread: false,
         spam: false,
         separators: false,
@@ -652,9 +667,10 @@ impl Squeeze {
         squeeze
     }
 
-    const DROP_ORDER: [fn(&mut Self); 10] = [
+    const DROP_ORDER: [fn(&mut Self); 11] = [
         |s| s.new_window = true,
         |s| s.print = true,
+        |s| s.mute = true,
         |s| s.colors = true,
         |s| s.contact = true,
         |s| s.move_to = true,
@@ -694,6 +710,7 @@ impl Toolbar {
         add(!squeeze.delete, 1.0);
         add(!squeeze.unread, 1.0);
         add(!squeeze.move_to, 1.0);
+        add(!squeeze.mute, 1.0);
         add(self.contact && !squeeze.contact, 1.0);
         add(self.colors && !squeeze.colors, 1.0);
         add(!squeeze.print, 1.0);
@@ -801,6 +818,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
@@ -863,6 +881,7 @@ impl MailWindow {
             print: phone,
             new_window: phone,
             move_to: phone,
+            mute: phone,
             ..Squeeze::NONE
         };
         Squeeze::fit(self.reader_width(), &shown, start)
@@ -938,6 +957,7 @@ impl MailWindow {
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
             })
+            .when(!squeeze.mute, |d| d.child(self.reader_mute_button(th, cx)))
             .child(more)
             .child(div().flex_1())
             .when(!squeeze.contact, |d| {
@@ -1028,6 +1048,7 @@ impl MailWindow {
                 self.notes_page(cx);
                 self.render_mail_notes(&headers, self.reader_indent(), th, cx)
             });
+        let muted = self.render_muted_strip(th, cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -1180,6 +1201,7 @@ impl MailWindow {
                                     .flex_col()
                                     .pb(px(24.0))
                                     .child(title)
+                                    .children(muted)
                                     .children(notes)
                                     .children(reply_above)
                                     .children(parts)
@@ -1281,15 +1303,24 @@ impl MailWindow {
                                 .flex_col()
                                 .child(
                                     div()
-                                        .truncate()
-                                        .text_size(px(14.0))
-                                        .font_weight(if unread {
-                                            FontWeight::BOLD
-                                        } else {
-                                            FontWeight::MEDIUM
-                                        })
-                                        .text_color(rgba(th.text))
-                                        .child(name),
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .gap(px(6.0))
+                                        .child(
+                                            div()
+                                                .min_w_0()
+                                                .truncate()
+                                                .text_size(px(14.0))
+                                                .font_weight(if unread {
+                                                    FontWeight::BOLD
+                                                } else {
+                                                    FontWeight::MEDIUM
+                                                })
+                                                .text_color(rgba(th.text))
+                                                .child(name),
+                                        )
+                                        .children(self.muted_mark(&email, 16.0, th)),
                                 )
                                 .child(
                                     div()
@@ -1382,7 +1413,12 @@ impl MailWindow {
         // the date to the details under "to", and lets the name shrink
         // further.
         let roomy = self.reader_width() >= STAR_FROM;
-        let name_room = lerp(120.0, 48.0, self.reader_compact());
+        let mark = self
+            .muted_mark(&email, 16.0, th)
+            .map(|mark| div().flex_none().self_center().child(mark));
+        // A muted sender's crossed bell takes its room from the date.
+        let name_room =
+            lerp(120.0, 48.0, self.reader_compact()) + if mark.is_some() { 22.0 } else { 0.0 };
         let header = div()
             .id(("part-header", ix))
             .flex()
@@ -1411,6 +1447,7 @@ impl MailWindow {
                                     .text_color(rgba(th.text))
                                     .child(name.clone()),
                             )
+                            .children(mark)
                             .when(!email.is_empty() && email != name, |d| {
                                 // Takes only the room the name leaves.
                                 d.child(

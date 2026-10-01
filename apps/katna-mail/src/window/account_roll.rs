@@ -17,12 +17,12 @@ use katna_ui::{px, unpx};
 use super::MailWindow;
 use crate::sidebar::Role;
 
-/// How far the wheel turns before the next account shows: one notch of a
-/// mouse wheel, or about as far on a touchpad.
+/// How far the wheel turns for one step: one notch of a mouse wheel, or
+/// about as far on a touchpad.
 const LINES_PER_STEP: f32 = 1.0;
 const PIXELS_PER_STEP: f32 = 48.0;
-/// The least time between two switches, so a fast spin moves one account
-/// per notch and a touchpad's fling does not race to the end.
+/// The least time between two steps, so a fast spin moves one step per
+/// notch and a touchpad's fling does not race to the end.
 const STEP_GAP: Duration = Duration::from_millis(140);
 /// A pause in the wheel after which a part-turned notch is forgotten.
 const WHEEL_IDLE: Duration = Duration::from_millis(400);
@@ -33,11 +33,7 @@ pub(super) struct AvatarRoll {
     pub(super) from: Option<AccountId>,
     /// True when the new picture comes in from above (the next account).
     pub(super) down: bool,
-    /// The wheel's turn not yet spent on a switch.
-    wheel: f32,
-    /// When the wheel last turned, and when it last switched accounts.
-    wheel_at: Option<Instant>,
-    stepped_at: Option<Instant>,
+    wheel: Notches,
 }
 
 impl AvatarRoll {
@@ -45,16 +41,31 @@ impl AvatarRoll {
         Self {
             from: None,
             down: true,
-            wheel: 0.0,
-            wheel_at: None,
-            stepped_at: None,
+            wheel: Notches::default(),
         }
     }
 
-    /// Adds a turn of the wheel; returns +1 for the next account, -1 for
-    /// the previous, or 0 while the turn is short of a notch or too soon
-    /// after the last switch. Turning the wheel down moves to the next.
     fn turn(&mut self, delta: ScrollDelta, now: Instant) -> i32 {
+        self.wheel.turn(delta, now)
+    }
+}
+
+/// Turns of the mouse wheel counted out in notches, for a control the
+/// wheel steps through (the account picture, the Files page's dates).
+#[derive(Default)]
+pub(super) struct Notches {
+    /// The wheel's turn not yet spent on a step.
+    wheel: f32,
+    /// When the wheel last turned, and when it last stepped.
+    wheel_at: Option<Instant>,
+    stepped_at: Option<Instant>,
+}
+
+impl Notches {
+    /// Adds a turn of the wheel; returns +1 for a notch down, -1 for one
+    /// up, or 0 while the turn is short of a notch or too soon after the
+    /// last step.
+    pub(super) fn turn(&mut self, delta: ScrollDelta, now: Instant) -> i32 {
         if self
             .wheel_at
             .is_some_and(|at| now.duration_since(at) > WHEEL_IDLE)

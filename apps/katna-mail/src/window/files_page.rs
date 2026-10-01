@@ -13,16 +13,19 @@
 //! downloading its mail if needed. Thumbnails are made in the background
 //! for mail already downloaded, and only for the cards on show.
 
+use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, ListAlignment,
-    ListState, MouseButton, MouseDownEvent, Pixels, Point, SharedString, Task, Window, anchored,
-    deferred, div, ease_out_quint, list, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FocusHandle, FontWeight,
+    KeyDownEvent, ListAlignment, ListState, MouseButton, MouseDownEvent, MouseUpEvent, Pixels,
+    Point, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred, div,
+    ease_out_quint, list, point, prelude::*, rgba,
 };
+use jiff::civil::Date;
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_preview::Kind;
@@ -30,11 +33,13 @@ use katna_store::{LibraryFile, MessageId};
 use katna_ui::{ScrollBar, px};
 
 use super::MailWindow;
+use super::account_roll::Notches;
 use super::apps::App;
 use super::attachments::{
-    CARD_RADIUS, Thumb, card_top, has_thumbnail, hover_panel, kind_badge, panel_button,
+    CARD_RADIUS, Item, Thumb, card_top, has_thumbnail, hover_panel, kind_badge, panel_button,
     row_file_index, thumbnail,
 };
+use super::compose::schedule;
 use crate::data::RowFile;
 use crate::format;
 use crate::theme::Theme;
@@ -57,8 +62,16 @@ const CARD_FOOT: f32 = NAME_HEIGHT + 22.0 + 28.0 + 2.0;
 const HEADING_HEIGHT: f32 = 44.0;
 const ROW_HEIGHT: f32 = 52.0;
 const MENU_WIDTH: f32 = 290.0;
-/// Pictures smaller than this are signature logos and the like, not files.
-const SMALL_PICTURE: u64 = 12 * 1024;
+/// The time calendar: a day's width and a week's height, its padding and
+/// the space between its two months.
+const DAY: f32 = 36.0;
+const ROW: f32 = 34.0;
+const PAD: f32 = 16.0;
+const BETWEEN: f32 = 28.0;
+const CALENDAR_WIDTH: f32 = 14.0 * DAY + BETWEEN + 2.0 * PAD;
+/// Pictures whose pixel size is read in one background run; the rest wait
+/// for the next time the page opens.
+const MEASURE_BATCH: usize = 200;
 /// Thumbnails kept in memory; those drawn longest ago go first.
 const THUMBS_KEPT: usize = 96;
 /// Thumbnails made in one background run.
@@ -133,40 +146,143 @@ enum Direction {
     Sent,
 }
 
-/// How far back the files go.
+/// The days the files are from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Time {
     Any,
-    Week,
-    Month,
-    Year,
-    Older,
+    /// Local days from the first to the last, both included.
+    Days(Date, Date),
 }
 
 impl Time {
-    const ALL: [Self; 5] = [Self::Any, Self::Week, Self::Month, Self::Year, Self::Older];
+    /// The days from `one` to `other`, either way round.
+    fn between(one: Date, other: Date) -> Self {
+        Self::Days(one.min(other), one.max(other))
+    }
+
+    /// The chip's text: a quick pick's name when the days are one,
+    /// else the days.
+    fn label(self, today: Date) -> String {
+        let Self::Days(first, last) = self else {
+            return tr!("files-time-any");
+        };
+        if let Some(quick) = Quick::ALL
+            .into_iter()
+            .find(|q| q.days(today) == Some((first, last)))
+        {
+            return quick.label();
+        }
+        let day = |d: Date| {
+            let at = d.to_datetime(jiff::civil::Time::midnight());
+            if d.year() == today.year() {
+                katna_i18n::format::day_month(at)
+            } else {
+                katna_i18n::format::day_month_year(at)
+            }
+        };
+        if first.day() == 1 && last == first.last_of_month() {
+            katna_i18n::format::month_year(first)
+        } else if first == last {
+            day(first)
+        } else {
+            tr!("files-time-between", first = day(first), last = day(last))
+        }
+    }
+
+    /// Whether a file from the local day `day` is shown.
+    fn keeps(self, day: Option<Date>) -> bool {
+        match self {
+            Self::Any => true,
+            Self::Days(first, last) => day.is_some_and(|d| first <= d && d <= last),
+        }
+    }
+
+    /// The same length of time `by` lengths later (earlier when `by` is
+    /// negative): whole months move by months, so "This month" turns to
+    /// the next month rather than 31 days on.
+    fn shifted(self, by: i32) -> Self {
+        let Self::Days(first, last) = self else {
+            return self;
+        };
+        let moved = if first.day() == 1 && last == last.last_of_month() {
+            let months = i32::from(last.year() - first.year()) * 12
+                + i32::from(last.month() - first.month())
+                + 1;
+            first
+                .checked_add(jiff::Span::new().months(by * months))
+                .ok()
+                .and_then(|first| {
+                    let end = first
+                        .checked_add(jiff::Span::new().months(months - 1))
+                        .ok()?
+                        .last_of_month();
+                    Some((first, end))
+                })
+        } else {
+            let days = first.until(last).map_or(0, |s| s.get_days()) + 1;
+            let span = jiff::Span::new().days(i64::from(by) * i64::from(days));
+            first
+                .checked_add(span)
+                .ok()
+                .zip(last.checked_add(span).ok())
+        };
+        moved.map_or(self, |(first, last)| Self::Days(first, last))
+    }
+}
+
+/// The quick picks over the time calendar.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Quick {
+    Today,
+    Yesterday,
+    ThisWeek,
+    LastWeek,
+    ThisMonth,
+    LastMonth,
+}
+
+impl Quick {
+    const ALL: [Self; 6] = [
+        Self::Today,
+        Self::Yesterday,
+        Self::ThisWeek,
+        Self::LastWeek,
+        Self::ThisMonth,
+        Self::LastMonth,
+    ];
 
     fn label(self) -> String {
         tr!(match self {
-            Self::Any => "files-time-any",
-            Self::Week => "files-time-week",
-            Self::Month => "files-time-month",
-            Self::Year => "files-time-year",
-            Self::Older => "files-time-older",
+            Self::Today => "files-time-today",
+            Self::Yesterday => "files-time-yesterday",
+            Self::ThisWeek => "files-time-this-week",
+            Self::LastWeek => "files-time-last-week",
+            Self::ThisMonth => "files-time-this-month",
+            Self::LastMonth => "files-time-last-month",
         })
     }
 
-    /// Whether a file dated `date` is shown, `now` being the time now.
-    fn keeps(self, date: Option<i64>, now: i64) -> bool {
-        const DAY: i64 = 24 * 60 * 60;
-        let age = date.map(|d| now - d);
-        match self {
-            Self::Any => true,
-            Self::Week => age.is_some_and(|a| a <= 7 * DAY),
-            Self::Month => age.is_some_and(|a| a <= 31 * DAY),
-            Self::Year => age.is_some_and(|a| a <= 366 * DAY),
-            Self::Older => age.is_none_or(|a| a > 366 * DAY),
-        }
+    /// Its first and last day, `today` being today.
+    fn days(self, today: Date) -> Option<(Date, Date)> {
+        let back = |d: Date, n: i64| d.checked_sub(jiff::Span::new().days(n)).ok();
+        let week = back(
+            today,
+            i64::from(today.weekday().since(katna_i18n::format::first_weekday())),
+        )?;
+        Some(match self {
+            Self::Today => (today, today),
+            Self::Yesterday => {
+                let day = back(today, 1)?;
+                (day, day)
+            }
+            Self::ThisWeek => (week, week.checked_add(jiff::Span::new().days(6)).ok()?),
+            Self::LastWeek => (back(week, 7)?, back(week, 1)?),
+            Self::ThisMonth => (today.first_of_month(), today.last_of_month()),
+            Self::LastMonth => {
+                let end = back(today.first_of_month(), 1)?;
+                (end.first_of_month(), end)
+            }
+        })
     }
 }
 
@@ -206,6 +322,8 @@ struct Found {
     hay: String,
     /// The heading it goes under when sorted by date.
     group: Group,
+    /// Its mail's local day.
+    day: Option<Date>,
 }
 
 impl Found {
@@ -263,9 +381,18 @@ struct Sender {
 
 /// The open menu, and where it was opened.
 enum Menu {
-    File { ix: usize, at: Point<Pixels> },
+    File {
+        ix: usize,
+        at: Point<Pixels>,
+    },
     People(Point<Pixels>),
-    Time(Point<Pixels>),
+    /// The time calendar: its left month (the first of it), and while
+    /// days are dragged across, the day the drag started on.
+    Time {
+        at: Point<Pixels>,
+        month: Date,
+        anchor: Option<Date>,
+    },
     Sort(Point<Pixels>),
 }
 
@@ -293,6 +420,10 @@ pub(super) struct Library {
     /// Files from this address only.
     person: Option<String>,
     time: Time,
+    /// The mouse wheel over the time chip, moving its days.
+    wheel: Notches,
+    /// Where the time chip was drawn, for its calendar to hang from.
+    time_chip: Rc<Cell<Option<Bounds<Pixels>>>>,
     sort: Sort,
     grid: bool,
     menu: Option<Menu>,
@@ -309,11 +440,20 @@ pub(super) struct Library {
     columns: usize,
     state: ListState,
     bar: ScrollBar,
+    /// The file the arrow keys are on (its index in `files`), and what
+    /// takes them.
+    cursor: Option<usize>,
+    focus: Option<FocusHandle>,
     thumbs: HashMap<(MessageId, usize), (Thumb, u64)>,
     asked: HashSet<(MessageId, usize)>,
     wanted: Vec<(RowFile, Kind)>,
     _thumbs: Option<Task<()>>,
     frame: u64,
+    /// Pixel sizes of the pictures read so far, kept between runs.
+    sizes: crate::data::PictureSizes,
+    /// Downloaded pictures whose size is not read yet.
+    unmeasured: Vec<RowFile>,
+    _measure: Option<Task<()>>,
 }
 
 impl Default for Library {
@@ -330,6 +470,8 @@ impl Default for Library {
             direction: Direction::Any,
             person: None,
             time: Time::Any,
+            wheel: Notches::default(),
+            time_chip: Rc::default(),
             sort: Sort::Newest,
             grid: true,
             menu: None,
@@ -341,11 +483,16 @@ impl Default for Library {
             columns: 0,
             state: ListState::new(0, ListAlignment::Top, px(600.0)),
             bar: ScrollBar::default(),
+            cursor: None,
+            focus: None,
             thumbs: HashMap::new(),
             asked: HashSet::new(),
             wanted: Vec::new(),
             _thumbs: None,
             frame: 0,
+            sizes: HashMap::new(),
+            unmeasured: Vec::new(),
+            _measure: None,
         }
     }
 }
@@ -358,7 +505,7 @@ impl Library {
     /// Makes `shown`, the counts and the lines again for `columns` cards
     /// a row, each line about `line` high until it is drawn (so the
     /// scrollbar's thumb is about the right size from the start).
-    fn rebuild(&mut self, columns: usize, line: f32, now: i64) {
+    fn rebuild(&mut self, columns: usize, line: f32) {
         self.stale = false;
         self.columns = columns;
         let Some(files) = self.found().cloned() else {
@@ -380,7 +527,7 @@ impl Library {
                     Direction::Sent => file.mine,
                 }
                 && self.person.as_ref().is_none_or(|p| *p == file.from_email)
-                && self.time.keeps(file.date, now)
+                && self.time.keeps(found.day)
                 && words.iter().all(|w| found.hay.contains(w.as_str()));
             if !passes {
                 continue;
@@ -480,13 +627,69 @@ impl MailWindow {
     pub(super) fn load_library(&mut self, cx: &mut Context<Self>) {
         let paths = self.paths.clone();
         self.library._load = Some(cx.spawn(async move |this, cx| {
-            let files = cx
+            let (files, sizes) = cx
                 .background_executor()
-                .spawn(async move { crate::data::library(&paths, LIMIT) })
+                .spawn(async move {
+                    (
+                        crate::data::library(&paths, LIMIT),
+                        crate::data::picture_sizes(&paths),
+                    )
+                })
                 .await;
             this.update(cx, |this, cx| {
+                this.library.sizes = sizes;
                 this.set_library(files);
+                this.measure_pictures(cx);
                 cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    /// The page has read its files, since it last opened.
+    pub(super) fn library_loaded(&self) -> bool {
+        self.library.files.is_some()
+    }
+
+    /// Reads the pixel sizes of downloaded pictures not read before, in the
+    /// background, and keeps them for the next time the page opens: the
+    /// cards showing now stay where they are.
+    fn measure_pictures(&mut self, cx: &mut Context<Self>) {
+        let mut batch = std::mem::take(&mut self.library.unmeasured);
+        if batch.is_empty() {
+            return;
+        }
+        batch.truncate(MEASURE_BATCH);
+        let paths = self.paths.clone();
+        let mut sizes = self.library.sizes.clone();
+        self.library._measure = Some(cx.spawn(async move |this, cx| {
+            let sizes = cx
+                .background_executor()
+                .spawn(async move {
+                    // A few mails at a time, so memory stays small.
+                    for chunk in batch.chunks(16) {
+                        let mut ids: Vec<MessageId> = chunk.iter().map(|f| f.message).collect();
+                        ids.sort_unstable();
+                        ids.dedup();
+                        let raws = crate::data::raw_messages(&paths, &ids);
+                        for file in chunk {
+                            let Some(raw) = raws.get(&file.message) else {
+                                continue;
+                            };
+                            let view = katna_render::message_view(raw);
+                            let size = row_file_index(&view.attachments, file)
+                                .and_then(|index| katna_render::attachment_file(raw, index))
+                                .and_then(|got| katna_preview::picture::dimensions(&got.bytes));
+                            sizes.insert((file.message, file.order), size.unwrap_or((0, 0)));
+                        }
+                    }
+                    crate::data::save_picture_sizes(&paths, &sizes);
+                    sizes
+                })
+                .await;
+            this.update(cx, |this, _| {
+                this.library.sizes = sizes;
+                this.library._measure = None;
             })
             .ok();
         }));
@@ -503,13 +706,37 @@ impl MailWindow {
         let now = jiff::Timestamp::now().as_second();
         let mut senders: HashMap<String, Sender> = HashMap::new();
         let mut per_account = HashMap::new();
+        let rule = self.config.mail.files.clone();
+        let library = &mut self.library;
+        // Sizes of files no longer on the page are forgotten.
+        let present: HashSet<(MessageId, usize)> =
+            files.iter().map(|f| (f.message, f.order)).collect();
+        library.sizes.retain(|key, _| present.contains(key));
+        library.unmeasured.clear();
         let found: Vec<Found> = files
             .into_iter()
             .filter_map(|file| {
                 let kind = katna_preview::kind(&file.mime, &file.name);
                 // Signature logos and the like.
-                if matches!(kind, Kind::Picture(_)) && file.size < SMALL_PICTURE {
-                    return None;
+                if matches!(kind, Kind::Picture(_)) {
+                    let key = (file.message, file.order);
+                    let size = library.sizes.get(&key).copied();
+                    if size.is_none() && file.downloaded {
+                        library.unmeasured.push(RowFile {
+                            message: file.message,
+                            name: file.name.clone(),
+                            mime: file.mime.clone(),
+                            size: file.size,
+                            nth: file.nth,
+                            order: file.order,
+                        });
+                    }
+                    let size = size.filter(|&(w, h)| w > 0 && h > 0);
+                    if rule.leaves_out(file.size, size)
+                        || rule.is_signature(&file.name, file.conversations)
+                    {
+                        return None;
+                    }
                 }
                 let hay = format!(
                     "{}\n{}\n{}\n{}",
@@ -535,6 +762,10 @@ impl MailWindow {
                 }
                 Some(Found {
                     group: group_of(file.date, now, &self.tz),
+                    day: file
+                        .date
+                        .and_then(|d| format::local(d, &self.tz))
+                        .map(|d| d.date()),
                     kind,
                     types: Types::of(kind),
                     hay,
@@ -606,6 +837,235 @@ impl MailWindow {
     }
 
     /// Does `act` with `file`, downloading its mail first if needed.
+    /// Moves the arrow keys' cursor onto the file the page shows at
+    /// `place`, scrolling it into view.
+    fn put_files_cursor(&mut self, place: usize, cx: &mut Context<Self>) {
+        let Some(&ix) = self.library.shown.get(place) else {
+            return;
+        };
+        self.library.cursor = Some(ix);
+        let line = self.library.lines.iter().position(|line| match line {
+            Line::Cards(range) => range.contains(&place),
+            Line::Row(at) => *at == place,
+            Line::Heading(_) => false,
+        });
+        if let Some(line) = line {
+            // The heading over the first files shows with them.
+            let line = if place == 0 { 0 } else { line };
+            self.library.state.scroll_to_reveal_item(line);
+        }
+        cx.notify();
+    }
+
+    /// Gives the files the keyboard, the cursor on the first file when
+    /// none has it yet: Down from the search box.
+    pub(super) fn focus_files(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(focus) = &self.library.focus {
+            window.focus(focus, cx);
+        }
+        if self.library.cursor.is_none() {
+            self.put_files_cursor(0, cx);
+        }
+    }
+
+    /// The arrow keys move between files (Up and Down by a row of cards),
+    /// Home and End go to the first and last, Enter or Space opens one,
+    /// and the Menu key or Shift+F10 opens its menu.
+    fn on_files_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
+        let keys = &event.keystroke;
+        let m = keys.modifiers;
+        if m.control || m.alt || m.platform {
+            return;
+        }
+        if keys.key == "escape" && self.library.menu.is_some() {
+            self.library.menu = None;
+            cx.notify();
+            cx.stop_propagation();
+            return;
+        }
+        let count = self.library.shown.len();
+        if count == 0 {
+            return;
+        }
+        let place = self
+            .library
+            .cursor
+            .and_then(|ix| self.library.shown.iter().position(|&s| s == ix));
+        let last = count - 1;
+        let to = match (keys.key.as_str(), place) {
+            ("enter" | "space", Some(place)) => {
+                let file = self
+                    .library
+                    .found()
+                    .map(|f| f[self.library.shown[place]].row_file());
+                if let Some(file) = file {
+                    self.open_row_file(&file, window, cx);
+                }
+                cx.stop_propagation();
+                return;
+            }
+            ("menu", Some(_)) | ("f10", Some(_)) if keys.key == "menu" || m.shift => {
+                if let Some(ix) = self.library.cursor {
+                    let at = self.files_cursor_point(window);
+                    self.library.menu = Some(Menu::File { ix, at });
+                    cx.notify();
+                }
+                cx.stop_propagation();
+                return;
+            }
+            ("left" | "right" | "up" | "down" | "home" | "end", None) => 0,
+            ("left", Some(p)) => p.saturating_sub(1),
+            ("right", Some(p)) => (p + 1).min(last),
+            ("up", Some(p)) => self.files_row_step(p, -1).unwrap_or(p),
+            ("down", Some(p)) => self.files_row_step(p, 1).unwrap_or(p),
+            ("home", _) => 0,
+            ("end", _) => last,
+            ("escape", Some(_)) => {
+                self.library.cursor = None;
+                cx.notify();
+                cx.stop_propagation();
+                return;
+            }
+            _ => return,
+        };
+        self.put_files_cursor(to, cx);
+        cx.stop_propagation();
+    }
+
+    /// The file in the row of cards (or list line) above or below the
+    /// one at `place`, in the same column where it has one; headings are
+    /// passed over.
+    fn files_row_step(&self, place: usize, by: isize) -> Option<usize> {
+        let lines = &self.library.lines;
+        let range = |line: &Line| match line {
+            Line::Cards(range) => Some(range.clone()),
+            Line::Row(at) => Some(*at..*at + 1),
+            Line::Heading(_) => None,
+        };
+        let at = lines
+            .iter()
+            .position(|l| range(l).is_some_and(|r| r.contains(&place)))?;
+        let column = place - range(&lines[at])?.start;
+        let mut ix = at as isize;
+        loop {
+            ix += by;
+            let line = lines.get(usize::try_from(ix).ok()?)?;
+            if let Some(next) = range(line) {
+                return Some((next.start + column).min(next.end - 1));
+            }
+        }
+    }
+
+    /// The viewer shows attachment `index` of its mail (Shift and an
+    /// arrow): its place in the list follows, so the arrows go on from
+    /// there.
+    pub(super) fn paged_library(&mut self, index: usize, cx: &mut Context<Self>) {
+        let (Some(viewer), Some(message)) = (self.files.viewer.clone(), self.files.viewer_mail)
+        else {
+            return;
+        };
+        let (Some(files), Some((raw, _))) =
+            (self.library.found().cloned(), self.attachment_raw(message))
+        else {
+            return;
+        };
+        let view = katna_render::message_view(&raw);
+        let shown = self.library.shown.clone();
+        let place = shown.iter().position(|&ix| {
+            let file = files[ix].row_file();
+            file.message == message && row_file_index(&view.attachments, &file) == Some(index)
+        });
+        // An attachment the page leaves out (a small picture) keeps the
+        // last place.
+        if let Some(place) = place {
+            self.put_files_cursor(place, cx);
+            viewer.update(cx, |viewer, cx| {
+                viewer.library = Some((place, shown.len()));
+                cx.notify();
+            });
+        }
+    }
+
+    /// Where a menu opened from the keyboard appears: the middle of the
+    /// page, near the files.
+    fn files_cursor_point(&self, window: &Window) -> Point<Pixels> {
+        let bounds = self.library.state.viewport_bounds();
+        if bounds.size.width > Pixels::ZERO {
+            bounds.center()
+        } else {
+            let size = window.viewport_size();
+            gpui::point(size.width / 2.0, size.height / 2.0)
+        }
+    }
+
+    /// Where `file` is among the files the page shows, and how many
+    /// there are.
+    pub(super) fn library_place(&self, file: &RowFile) -> Option<(usize, usize)> {
+        let files = self.library.found()?;
+        let shown = &self.library.shown;
+        let place = shown.iter().position(|&ix| {
+            let found = &files[ix].file;
+            found.message == file.message && found.order == file.order
+        })?;
+        Some((place, shown.len()))
+    }
+
+    /// Shows in the open viewer the file `by` places on from the one it
+    /// shows, among the files the page shows (wrapping around). A file
+    /// whose mail is not downloaded yet opens once it is.
+    pub(super) fn step_library(&mut self, by: isize, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(viewer) = self.files.viewer.clone() else {
+            return;
+        };
+        let Some((place, count)) = viewer.read(cx).library else {
+            return;
+        };
+        let Some(files) = self.library.found().cloned() else {
+            return;
+        };
+        let shown = self.library.shown.clone();
+        if count == 0 || shown.is_empty() {
+            return;
+        }
+        let count = shown.len() as isize;
+        // A file its mail no longer lists is passed over.
+        let mut found = None;
+        for step in 1..=count {
+            let place =
+                (place as isize + by.signum() * step + by - by.signum()).rem_euclid(count) as usize;
+            let file = files[shown[place]].row_file();
+            let Some((raw, encrypted)) = self.attachment_raw(file.message) else {
+                // Sealed (encrypted, not opened) or not downloaded: the
+                // usual way, which downloads it first and opens it after.
+                self.open_row_file(&file, window, cx);
+                return;
+            };
+            let view = katna_render::message_view(&raw);
+            if let Some(index) = row_file_index(&view.attachments, &file) {
+                found = Some((place, file, raw, encrypted, view, index));
+                break;
+            }
+        }
+        let Some((place, file, raw, encrypted, view, index)) = found else {
+            return;
+        };
+        let items: Vec<Item> = view
+            .attachments
+            .iter()
+            .enumerate()
+            .map(|(ix, a)| Item::new(ix, a))
+            .collect();
+        self.files.viewer_mail = Some(file.message);
+        self.files.viewer_encrypted = encrypted;
+        // Closing the viewer leaves the arrow keys on this file.
+        self.put_files_cursor(place, cx);
+        viewer.update(cx, |viewer, cx| {
+            viewer.library = Some((place, shown.len()));
+            viewer.show_from(raw, items, index, cx);
+            cx.notify();
+        });
+    }
+
     fn file_act(&mut self, file: RowFile, act: Act, window: &mut Window, cx: &mut Context<Self>) {
         self.library.menu = None;
         let Some((raw, encrypted)) = self.attachment_raw(file.message) else {
@@ -732,8 +1192,7 @@ impl MailWindow {
             - shape.rail()
             - shape.card_margin()
             - self.page_side_width(NAV_WIDTH)
-            - 2.0 * pad
-            - 8.0;
+            - 2.0 * pad;
         let min = if shape.is_phone() {
             CARD_MIN_PHONE
         } else {
@@ -743,8 +1202,7 @@ impl MailWindow {
         let card_width = ((room - GAP * (columns - 1) as f32) / columns as f32).max(min);
         if self.library.stale || columns != self.library.columns {
             let line = card_height(card_width) + GAP;
-            self.library
-                .rebuild(columns, line, jiff::Timestamp::now().as_second());
+            self.library.rebuild(columns, line);
         }
         let body = match &self.library.files {
             None => placeholder(&tr!("files-loading"), th),
@@ -775,12 +1233,7 @@ impl MailWindow {
 
     fn render_files_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.library;
-        let count = |n: usize| {
-            div()
-                .text_size(px(12.0))
-                .text_color(rgba(th.text_faint))
-                .child(katna_i18n::format::number(n as u64))
-        };
+        let count = |n: usize, on: bool| super::nav::count_pill(n as u64, on, th);
         let rule = || {
             div()
                 .flex_none()
@@ -807,7 +1260,7 @@ impl MailWindow {
             let on = page.types == types;
             nav = nav.child(
                 super::nav::side_row(("files-type", n), types.icon(), types.label(), on, th)
-                    .when(page.counts[n] > 0, |d| d.child(count(page.counts[n])))
+                    .when(page.counts[n] > 0, |d| d.child(count(page.counts[n], on)))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.library.types = types;
                         this.library.changed();
@@ -833,7 +1286,7 @@ impl MailWindow {
                         on,
                         th,
                     )
-                    .child(count(page.per_account.get(&id).copied().unwrap_or(0)))
+                    .child(count(page.per_account.get(&id).copied().unwrap_or(0), on))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         // A second click shows every account again.
                         this.library.account = (this.library.account != Some(id)).then_some(id);
@@ -873,6 +1326,31 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// How much lower the baseline of a line of `big` text sits than one
+    /// of `small` text when both start at the same top, in the font the
+    /// app draws with: what puts the two on one baseline. Measured, as
+    /// it differs from font to font by a pixel or two.
+    fn baseline_drop(&self, window: &Window, big: Pixels, small: Pixels) -> Pixels {
+        let style = window.text_style();
+        let family = self.font.clone().unwrap_or(style.font_family.clone());
+        let text = window.text_system();
+        let id = text.resolve_font(&gpui::font(family));
+        let rem = window.rem_size();
+        // As GPUI lays a line out: the ascent and descent centred in the
+        // line's height. Fonts give the descent either way up; the line
+        // layout takes it as a positive length.
+        let baseline = |size: Pixels| {
+            let line = style.line_height.to_pixels(size.into(), rem);
+            let (ascent, descent) = (text.ascent(id, size), text.descent(id, size).abs());
+            (line - ascent - descent) / 2.0 + ascent
+        };
+        // In whole device pixels, as the glyphs land on them: lowering by
+        // the exact difference can still round the two a pixel apart.
+        let scale = window.scale_factor();
+        let device = |size: Pixels| (baseline(size) * scale).round();
+        (device(big) - device(small)) / scale
+    }
+
     /// The bar over the files, then the files.
     fn render_files_body(
         &mut self,
@@ -908,15 +1386,17 @@ impl MailWindow {
                     th.text_dim
                 }))
                 .child(div().whitespace_nowrap().child(label))
-                .child(icon(
-                    "drop-down",
-                    if on {
-                        th.nav_selected_text
-                    } else {
-                        th.text_dim
-                    },
-                    18.0,
-                ))
+        };
+        let arrow = |on: bool| {
+            icon(
+                "drop-down",
+                if on {
+                    th.nav_selected_text
+                } else {
+                    th.text_dim
+                },
+                18.0,
+            )
         };
         let person = page.person.as_ref().map(|email| {
             page.senders
@@ -933,6 +1413,7 @@ impl MailWindow {
             },
             person.is_some(),
         )
+        .child(arrow(person.is_some()))
         .on_mouse_down(
             MouseButton::Left,
             cx.listener(|this, e: &MouseDownEvent, _, cx| {
@@ -941,23 +1422,91 @@ impl MailWindow {
                 cx.notify();
             }),
         );
-        let time_chip = chip("files-time", page.time.label(), page.time != Time::Any)
+        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+        let days = page.time != Time::Any;
+        let time_chip = chip("files-time", page.time.label(today), days)
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, e: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    // The right month holds the last day picked, else today.
+                    let last = match this.library.time {
+                        Time::Days(_, last) => last,
+                        Time::Any => today,
+                    };
+                    let month = last
+                        .first_of_month()
+                        .checked_sub(jiff::Span::new().months(1))
+                        .unwrap_or(last.first_of_month());
+                    // Under the chip, its right edge lined up with the
+                    // chip's (the window's edge moves it if need be).
+                    let at = this.library.time_chip.get().map_or(e.position, |b| {
+                        point(b.right() - px(CALENDAR_WIDTH), b.bottom() + px(6.0))
+                    });
+                    this.library.menu = Some(Menu::Time {
+                        at,
+                        month,
+                        anchor: None,
+                    });
+                    cx.notify();
+                }),
+            )
+            .child({
+                let chip = page.time_chip.clone();
+                canvas(move |bounds, _, _| chip.set(Some(bounds)), |_, _, _, _| {})
+                    .absolute()
+                    .size_full()
+            })
+            // Over picked days the wheel moves them, keeping their length:
+            // down to later days, up to earlier ones.
+            .on_scroll_wheel(cx.listener(|this, e: &ScrollWheelEvent, _, cx| {
+                if this.library.time == Time::Any {
+                    return;
+                }
+                cx.stop_propagation();
+                let step = this.library.wheel.turn(e.delta, std::time::Instant::now());
+                if step != 0 {
+                    this.library.time = this.library.time.shifted(step);
+                    this.library.changed();
+                    cx.notify();
+                }
+            }))
+            .map(|d| {
+                if days {
+                    d.tooltip(tip(tr!("files-time-wheel"), th)).child(
+                        div()
+                            .id("files-time-clear")
+                            .size(px(20.0))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .rounded_full()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .child(icon("close", th.nav_selected_text, 16.0))
+                            .on_mouse_down(
+                                MouseButton::Left,
+                                cx.listener(|this, _: &MouseDownEvent, _, cx| {
+                                    cx.stop_propagation();
+                                    this.library.time = Time::Any;
+                                    this.library.changed();
+                                    cx.notify();
+                                }),
+                            ),
+                    )
+                } else {
+                    d.child(arrow(false))
+                }
+            });
+        let sort_chip = chip("files-sort", page.sort.label(), false)
+            .child(arrow(false))
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, e: &MouseDownEvent, _, cx| {
                     cx.stop_propagation();
-                    this.library.menu = Some(Menu::Time(e.position));
+                    this.library.menu = Some(Menu::Sort(e.position));
                     cx.notify();
                 }),
             );
-        let sort_chip = chip("files-sort", page.sort.label(), false).on_mouse_down(
-            MouseButton::Left,
-            cx.listener(|this, e: &MouseDownEvent, _, cx| {
-                cx.stop_propagation();
-                this.library.menu = Some(Menu::Sort(e.position));
-                cx.notify();
-            }),
-        );
         let view_button = |id: &'static str, name: &'static str, grid: bool, label: String| {
             let on = page.grid == grid;
             icon_button(id, name, 20.0, th)
@@ -986,12 +1535,13 @@ impl MailWindow {
             count = page.shown.len(),
             size = format::size(page.shown_bytes)
         );
+        let drop = self.baseline_drop(window, px(20.0), px(13.0));
         let title = div()
             .flex_1()
             .min_w_0()
             .flex()
             .flex_row()
-            .items_baseline()
+            .items_start()
             .gap(px(10.0))
             .child(
                 div()
@@ -1003,6 +1553,9 @@ impl MailWindow {
             .child(
                 div()
                     .min_w_0()
+                    // Lowered from the title's top onto its baseline.
+                    .relative()
+                    .top(drop)
                     .truncate()
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_faint))
@@ -1016,20 +1569,31 @@ impl MailWindow {
             .child(person_chip)
             .child(time_chip)
             .child(sort_chip);
+        // The rule under the bar lines up with the title and the cards
+        // rather than running to the card's edges.
+        let rule = div()
+            .flex_none()
+            .mx(px(pad))
+            .h(px(1.0))
+            .bg(rgba(th.divider));
         let bar = if desktop {
             div()
                 .flex_none()
-                .h(px(56.0))
-                .px(px(pad))
                 .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .border_b_1()
-                .border_color(rgba(th.divider))
-                .child(title)
-                .child(chips)
-                .child(views)
+                .flex_col()
+                .child(
+                    div()
+                        .h(px(56.0))
+                        .px(px(pad))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(title)
+                        .child(chips)
+                        .child(views),
+                )
+                .child(rule)
         } else {
             // Kinds of file as chips, as the side column is a drawer.
             let kinds = Types::ALL.into_iter().enumerate().map(|(n, types)| {
@@ -1075,8 +1639,6 @@ impl MailWindow {
                 .flex_none()
                 .flex()
                 .flex_col()
-                .border_b_1()
-                .border_color(rgba(th.divider))
                 .child(
                     div()
                         .h(px(52.0))
@@ -1100,6 +1662,7 @@ impl MailWindow {
                         .children(kinds)
                         .child(chips),
                 )
+                .child(rule)
         };
         let content = if page.shown.is_empty() {
             placeholder(&tr!("files-none-match"), th)
@@ -1120,7 +1683,20 @@ impl MailWindow {
                 .wrap("files-scroll", &page.state, files, thumb, window, cx)
                 .into_any_element()
         };
+        let focus = self
+            .library
+            .focus
+            .get_or_insert_with(|| cx.focus_handle())
+            .clone();
+        // Opened from the rail, the keys still go to the hidden mail list
+        // (or nowhere): the files take them.
+        if window.focused(cx).is_none_or(|f| f == self.list_focus) {
+            window.focus(&focus, cx);
+        }
         div()
+            .id("files-body")
+            .track_focus(&focus)
+            .on_key_down(cx.listener(Self::on_files_key))
             .size_full()
             .flex()
             .flex_col()
@@ -1165,13 +1741,19 @@ impl MailWindow {
                         self.render_file_card(shown[at], found, card_width, th, cx)
                     })
                     .collect();
+                // Every row has a slot per column, so the cards share the
+                // row's whole width exactly and a short row's cards keep
+                // their size.
+                let empty = self.library.columns.saturating_sub(cards.len());
                 div()
+                    .w_full()
                     .px(px(pad))
                     .pb(px(GAP))
                     .flex()
                     .flex_row()
                     .gap(px(GAP))
                     .children(cards)
+                    .children((0..empty).map(|_| div().flex_1().flex_basis(px(0.0)).min_w_0()))
                     .into_any_element()
             }
             Line::Row(at) => {
@@ -1216,6 +1798,10 @@ impl MailWindow {
         el.cursor_pointer()
             .on_click(cx.listener(move |this, _, window, cx| {
                 this.library.menu = None;
+                this.library.cursor = Some(ix);
+                if let Some(focus) = &this.library.focus {
+                    window.focus(focus, cx);
+                }
                 this.open_row_file(&file, window, cx);
             }))
             .on_mouse_down(
@@ -1323,8 +1909,9 @@ impl MailWindow {
             .id(("files-card", ix))
             .group(group)
             .relative()
-            .flex_none()
-            .w(px(width))
+            .flex_1()
+            .flex_basis(px(0.0))
+            .min_w_0()
             .h(px(thumb_height + CARD_FOOT))
             .flex()
             .flex_col()
@@ -1347,6 +1934,7 @@ impl MailWindow {
                     .text_color(rgba(th.text_dim))
                     .child(avatar)
                     .child(div().min_w_0().truncate().child(sender))
+                    .children(self.muted_mark(&found.file.from_email, 14.0, th))
                     .child(div().flex_none().text_color(rgba(th.text_faint)).child("·"))
                     .child(
                         div()
@@ -1376,6 +1964,17 @@ impl MailWindow {
                     .child(icon("mail", th.accent, 14.0))
                     .child(div().min_w_0().truncate().child(subject)),
             );
+        // The arrow keys' cursor: a ring over the card's edge.
+        let card = card.when(self.library.cursor == Some(ix), |d| {
+            d.child(
+                div()
+                    .absolute()
+                    .inset_0()
+                    .rounded(px(CARD_RADIUS))
+                    .border_2()
+                    .border_color(rgba(th.accent)),
+            )
+        });
         self.file_handlers(card, ix, file, cx).into_any_element()
     }
 
@@ -1418,6 +2017,9 @@ impl MailWindow {
             .border_b_1()
             .border_color(rgba(th.divider))
             .hover(|s| s.bg(rgba(th.hover)))
+            .when(self.library.cursor == Some(ix), |d| {
+                d.bg(rgba(th.nav_selected))
+            })
             .children(fill)
             .child(kind_badge(found.kind, 24.0))
             .child(
@@ -1457,7 +2059,8 @@ impl MailWindow {
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
                         .child(self.person_avatar(&sender, &found.file.from_email, 20.0))
-                        .child(div().min_w_0().truncate().child(sender.clone())),
+                        .child(div().min_w_0().truncate().child(sender.clone()))
+                        .children(self.muted_mark(&found.file.from_email, 14.0, th)),
                 )
                 .child(
                     div()
@@ -1675,8 +2278,12 @@ impl MailWindow {
                                 div()
                                     .flex_1()
                                     .min_w_0()
-                                    .truncate()
-                                    .child(sender.name.clone()),
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(6.0))
+                                    .child(div().min_w_0().truncate().child(sender.name.clone()))
+                                    .children(self.muted_mark(&sender.email, 16.0, th)),
                             )
                             .child(
                                 div()
@@ -1695,26 +2302,9 @@ impl MailWindow {
                 }
                 (at, items)
             }
-            Menu::Time(at) => {
-                let items = Time::ALL
-                    .into_iter()
-                    .enumerate()
-                    .map(|(n, time)| {
-                        item(
-                            format!("files-time-{n}").into(),
-                            "schedule",
-                            time.label(),
-                            self.library.time == time,
-                        )
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            this.library.time = time;
-                            this.library.changed();
-                            cx.notify();
-                        }))
-                        .into_any_element()
-                    })
-                    .collect();
-                (at, items)
+            Menu::Time { at, month, .. } => {
+                let panel = self.render_time_calendar(month, th, cx);
+                return Some(self.files_overlay(at, panel, cx));
             }
             Menu::Sort(at) => {
                 let items = Sort::ALL
@@ -1747,49 +2337,368 @@ impl MailWindow {
             .text_size(px(14.0))
             .text_color(rgba(th.text))
             .children(items)
-            .with_animation(
-                "files-menu",
-                Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
-                |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
-            );
+            .into_any_element();
+        Some(self.files_overlay(at, panel, cx))
+    }
+
+    /// `panel` over the page at `at`, closed by a click anywhere else.
+    fn files_overlay(
+        &self,
+        at: Point<Pixels>,
+        panel: AnyElement,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let close = || {
             cx.listener(|this: &mut Self, _: &MouseDownEvent, _, cx| {
                 this.library.menu = None;
                 cx.notify();
             })
         };
-        Some(
+        let panel = div().child(panel).with_animation(
+            "files-menu",
+            Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+            |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
+        );
+        div()
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full()
+            .child(
+                deferred(
+                    div()
+                        .id("files-menu-scrim")
+                        .absolute()
+                        .top(px(-2000.0))
+                        .left(px(-4000.0))
+                        .w(px(8000.0))
+                        .h(px(6000.0))
+                        .occlude()
+                        .on_mouse_down(MouseButton::Left, close())
+                        .on_mouse_down(MouseButton::Right, close())
+                        // A drag across the calendar's days may end out here.
+                        .on_mouse_up(MouseButton::Left, cx.listener(Self::end_day_drag)),
+                )
+                .with_priority(3),
+            )
+            .child(
+                deferred(
+                    anchored()
+                        .position(at)
+                        .snap_to_window_with_margin(px(8.0))
+                        .child(div().occlude().child(panel)),
+                )
+                .with_priority(4),
+            )
+            .into_any_element()
+    }
+
+    /// The days picked so far, while the calendar is open.
+    fn pick_days(&mut self, time: Time, cx: &mut Context<Self>) {
+        if self.library.time != time {
+            self.library.time = time;
+            // Not `changed`, which would close the calendar.
+            self.library.stale = true;
+            cx.notify();
+        }
+    }
+
+    /// The mouse let go after a press on a day: the pick is made.
+    fn end_day_drag(&mut self, _: &MouseUpEvent, _: &mut Window, cx: &mut Context<Self>) {
+        if let Some(Menu::Time {
+            anchor: Some(_), ..
+        }) = self.library.menu
+        {
+            self.library.menu = None;
+            cx.notify();
+        }
+    }
+
+    /// The time chip's popover: quick picks over two months. A click on
+    /// a day picks it, a drag picks the days it crosses, Shift+click
+    /// stretches the days picked to the day clicked; the files behind
+    /// follow while the mouse is down, and the popover closes on release.
+    fn render_time_calendar(&self, month: Date, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+        let time = self.library.time;
+        let picked = match time {
+            Time::Days(first, last) => Some((first, last)),
+            Time::Any => None,
+        };
+        let quick = Quick::ALL.into_iter().enumerate().filter_map(|(n, quick)| {
+            let (first, last) = quick.days(today)?;
+            let on = picked == Some((first, last));
+            Some(
+                div()
+                    .id(("files-quick", n))
+                    .h(px(28.0))
+                    .px(px(8.0))
+                    .flex()
+                    .items_center()
+                    .rounded(px(8.0))
+                    .border_1()
+                    .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                    .when(on, |d| {
+                        d.bg(rgba(th.nav_selected))
+                            .text_color(rgba(th.nav_selected_text))
+                    })
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .text_size(px(13.0))
+                    .child(quick.label())
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.library.time = Time::Days(first, last);
+                        this.library.changed();
+                        cx.notify();
+                    })),
+            )
+        });
+        let turn = |id: &'static str, name: &'static str, by: i32, label: String| {
+            icon_button(id, name, 18.0, th)
+                .size(px(28.0))
+                .tooltip(tip(label, th))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    if let Some(Menu::Time { month, .. }) = &mut this.library.menu
+                        && let Ok(to) = month.checked_add(jiff::Span::new().months(by))
+                    {
+                        *month = to;
+                    }
+                    cx.notify();
+                }))
+        };
+        let weekdays =
+            || {
+                div().flex().flex_row().children(
+                    katna_i18n::format::weekdays_short()
+                        .into_iter()
+                        .map(|(_, name)| {
+                            div()
+                                .w(px(DAY))
+                                .h(px(24.0))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(name)
+                        }),
+                )
+            };
+        let shown = |shown: Date, side: usize| {
+            let days = schedule::month_grid(shown, katna_i18n::format::first_weekday());
+            let weeks = days.chunks(7).enumerate().map(|(week, days)| {
+                div()
+                    .h(px(ROW))
+                    .flex()
+                    .flex_row()
+                    .children(days.iter().enumerate().map(|(n, &day)| {
+                        let id = (side * 64 + week * 7 + n) as u64;
+                        let cell = div().w(px(DAY)).h(px(ROW)).relative();
+                        if day.month() != shown.month() {
+                            return cell.into_any_element();
+                        }
+                        let end = picked.is_some_and(|(a, b)| day == a || day == b);
+                        let inside = picked.is_some_and(|(a, b)| a <= day && day <= b);
+                        let (start, stop) =
+                            picked.map_or((false, false), |(a, b)| (day == a, day == b));
+                        let (accent, hover) = (th.accent, th.hover);
+                        cell.when(inside && !(start && stop), |d| {
+                            d.child(
+                                div()
+                                    .absolute()
+                                    .top(px(2.0))
+                                    .bottom(px(2.0))
+                                    .left(px(if start { DAY / 2.0 } else { 0.0 }))
+                                    .right(px(if stop { DAY / 2.0 } else { 0.0 }))
+                                    .bg(rgba(th.nav_selected)),
+                            )
+                        })
+                        .child(
+                            div()
+                                .id(("files-day", id))
+                                .absolute()
+                                .top(px(2.0))
+                                .left(px(3.0))
+                                .size(px(30.0))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .rounded_full()
+                                .cursor_pointer()
+                                .text_size(px(13.0))
+                                .text_color(rgba(if end {
+                                    th.on_accent
+                                } else if day > today {
+                                    th.text_faint
+                                } else {
+                                    th.text
+                                }))
+                                .when(end, |d| d.bg(rgba(th.accent)))
+                                .when(day == today && !end, |d| {
+                                    d.border_1().border_color(rgba(th.accent))
+                                })
+                                // Set once: GPUI panics on a second hover style.
+                                .hover(move |s| s.bg(rgba(if end { accent } else { hover })))
+                                .on_mouse_down(
+                                    MouseButton::Left,
+                                    cx.listener(move |this, e: &MouseDownEvent, _, cx| {
+                                        cx.stop_propagation();
+                                        if e.modifiers.shift
+                                            && let Time::Days(first, _) = this.library.time
+                                        {
+                                            // Stretches from the first day
+                                            // picked; done on release.
+                                            this.pick_days(Time::between(first, day), cx);
+                                            if let Some(Menu::Time { anchor, .. }) =
+                                                &mut this.library.menu
+                                            {
+                                                *anchor = Some(first);
+                                            }
+                                            return;
+                                        }
+                                        if let Some(Menu::Time { anchor, .. }) =
+                                            &mut this.library.menu
+                                        {
+                                            *anchor = Some(day);
+                                        }
+                                        this.pick_days(Time::Days(day, day), cx);
+                                    }),
+                                )
+                                .on_mouse_move(cx.listener(move |this, _, _, cx| {
+                                    if let Some(Menu::Time {
+                                        anchor: Some(from), ..
+                                    }) = this.library.menu
+                                    {
+                                        this.pick_days(Time::between(from, day), cx);
+                                    }
+                                }))
+                                .child(katna_i18n::format::number(day.day() as u64)),
+                        )
+                        .into_any_element()
+                    }))
+            });
             div()
-                .absolute()
-                .top_0()
-                .left_0()
-                .size_full()
+                .w(px(7.0 * DAY))
+                .flex()
+                .flex_col()
                 .child(
-                    deferred(
+                    div()
+                        .h(px(32.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .child(if side == 0 {
+                            turn(
+                                "files-month-back",
+                                "chevron-left",
+                                -1,
+                                tr!("files-time-month-back"),
+                            )
+                            .into_any_element()
+                        } else {
+                            div().size(px(28.0)).into_any_element()
+                        })
+                        .child(
+                            div()
+                                .flex_1()
+                                .flex()
+                                .justify_center()
+                                .text_size(px(14.0))
+                                .font_weight(FontWeight::SEMIBOLD)
+                                .child(katna_i18n::format::month_year(shown)),
+                        )
+                        .child(if side == 1 {
+                            turn(
+                                "files-month-on",
+                                "chevron-right",
+                                1,
+                                tr!("files-time-month-on"),
+                            )
+                            .into_any_element()
+                        } else {
+                            div().size(px(28.0)).into_any_element()
+                        }),
+                )
+                .child(weekdays())
+                .children(weeks)
+        };
+        let next = month
+            .checked_add(jiff::Span::new().months(1))
+            .unwrap_or(month);
+        let summary = match time {
+            Time::Any => tr!("files-time-hint"),
+            Time::Days(..) => tr!(
+                "files-time-summary",
+                days = time.label(today),
+                count = self.library.shown.len()
+            ),
+        };
+        div()
+            .id("files-time-calendar")
+            .w(px(CALENDAR_WIDTH))
+            .p(px(PAD))
+            .flex()
+            .flex_col()
+            .gap(px(12.0))
+            .map(|d| raised(d, th, 12.0, 3.0))
+            .text_color(rgba(th.text))
+            .on_mouse_up(MouseButton::Left, cx.listener(Self::end_day_drag))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(6.0))
+                    .children(quick),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .gap(px(BETWEEN))
+                    .child(shown(month, 0))
+                    .child(shown(next, 1)),
+            )
+            .child(div().h(px(1.0)).bg(rgba(th.divider)))
+            .child(
+                div()
+                    .h(px(28.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(12.0))
+                    .child(
                         div()
-                            .id("files-menu-scrim")
-                            .absolute()
-                            .top(px(-2000.0))
-                            .left(px(-4000.0))
-                            .w(px(8000.0))
-                            .h(px(6000.0))
-                            .occlude()
-                            .on_mouse_down(MouseButton::Left, close())
-                            .on_mouse_down(MouseButton::Right, close()),
+                            .flex_1()
+                            .min_w_0()
+                            .truncate()
+                            .text_size(px(13.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(summary),
                     )
-                    .with_priority(3),
-                )
-                .child(
-                    deferred(
-                        anchored()
-                            .position(at)
-                            .snap_to_window_with_margin(px(8.0))
-                            .child(div().occlude().child(panel)),
-                    )
-                    .with_priority(4),
-                )
-                .into_any_element(),
-        )
+                    .when(picked.is_some(), |d| {
+                        d.child(
+                            div()
+                                .id("files-time-clear-all")
+                                .h(px(28.0))
+                                .px(px(10.0))
+                                .flex()
+                                .items_center()
+                                .rounded(px(8.0))
+                                .cursor_pointer()
+                                .hover(|s| s.bg(rgba(th.hover)))
+                                .text_size(px(13.0))
+                                .text_color(rgba(th.accent))
+                                .child(tr!("files-time-clear"))
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.library.time = Time::Any;
+                                    this.library.changed();
+                                    cx.notify();
+                                })),
+                        )
+                    }),
+            )
+            .into_any_element()
     }
 }
 
@@ -1799,13 +2708,61 @@ mod tests {
 
     #[test]
     fn times_keep_their_files() {
-        let now = 1_800_000_000;
-        let day = 24 * 60 * 60;
-        assert!(Time::Week.keeps(Some(now - 6 * day), now));
-        assert!(!Time::Week.keeps(Some(now - 8 * day), now));
-        assert!(Time::Older.keeps(None, now));
-        assert!(!Time::Year.keeps(None, now));
-        assert!(Time::Any.keeps(None, now));
+        use jiff::civil::date;
+        let sep = Time::Days(date(2026, 9, 12), date(2026, 9, 28));
+        assert!(sep.keeps(Some(date(2026, 9, 12))));
+        assert!(sep.keeps(Some(date(2026, 9, 28))));
+        assert!(!sep.keeps(Some(date(2026, 9, 29))));
+        assert!(!sep.keeps(None));
+        assert!(Time::Any.keeps(None));
+        assert_eq!(Time::between(date(2026, 9, 28), date(2026, 9, 12)), sep);
+    }
+
+    #[test]
+    fn the_wheel_moves_the_days_by_their_length() {
+        use jiff::civil::date;
+        let week = Time::Days(date(2026, 1, 5), date(2026, 1, 11));
+        assert_eq!(
+            week.shifted(1),
+            Time::Days(date(2026, 1, 12), date(2026, 1, 18))
+        );
+        assert_eq!(
+            week.shifted(-1),
+            Time::Days(date(2025, 12, 29), date(2026, 1, 4))
+        );
+        // Whole months move by months.
+        let feb = Time::Days(date(2026, 2, 1), date(2026, 2, 28));
+        assert_eq!(
+            feb.shifted(1),
+            Time::Days(date(2026, 3, 1), date(2026, 3, 31))
+        );
+        let two = Time::Days(date(2026, 1, 1), date(2026, 2, 28));
+        assert_eq!(
+            two.shifted(1),
+            Time::Days(date(2026, 3, 1), date(2026, 4, 30))
+        );
+        assert_eq!(Time::Any.shifted(1), Time::Any);
+    }
+
+    #[test]
+    fn quick_picks_cover_their_days() {
+        use jiff::civil::date;
+        // A Thursday.
+        let today = date(2026, 10, 1);
+        assert_eq!(
+            Quick::LastMonth.days(today),
+            Some((date(2026, 9, 1), date(2026, 9, 30)))
+        );
+        assert_eq!(
+            Quick::Yesterday.days(today),
+            Some((date(2026, 9, 30), date(2026, 9, 30)))
+        );
+        let (first, last) = Quick::ThisWeek.days(today).unwrap();
+        assert!(first <= today && today <= last);
+        assert_eq!(first.until(last).unwrap().get_days(), 6);
+        let (before, end) = Quick::LastWeek.days(today).unwrap();
+        assert_eq!(end.tomorrow().unwrap(), first);
+        assert_eq!(before.until(end).unwrap().get_days(), 6);
     }
 
     #[test]

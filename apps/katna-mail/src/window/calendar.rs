@@ -2482,7 +2482,11 @@ impl MailWindow {
                         div().flex().justify_center().pt(px(4.0)).child(
                             div()
                                 .id(SharedString::from(format!("month-num-{day}")))
-                                .size(px(24.0))
+                                // A circle round the number; a pill round
+                                // the 1st's "01 Oct", so it holds it all.
+                                .h(px(24.0))
+                                .min_w(px(24.0))
+                                .when(day.day() == 1, |d| d.px(px(8.0)))
                                 .flex()
                                 .items_center()
                                 .justify_center()
@@ -3088,7 +3092,15 @@ impl MailWindow {
                                 .flex()
                                 .flex_col()
                                 .text_size(px(13.0))
-                                .child(div().truncate().child(name))
+                                .child(
+                                    div()
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .gap(px(6.0))
+                                        .child(div().min_w_0().truncate().child(name))
+                                        .children(self.muted_mark(&attendee.email, 14.0, th)),
+                                )
                                 .when(attendee.organizer || attendee.optional, |d| {
                                     d.child(
                                         div()

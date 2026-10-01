@@ -16,7 +16,7 @@ use gpui::{
 use katna_core::config::Density;
 use katna_i18n::tr;
 use katna_ui::Ripple;
-use katna_ui::motion::{self, lerp};
+use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 
 /// The lift of the line under the pointer: critically damped and slower
@@ -51,7 +51,8 @@ use crate::widgets::{
 };
 
 /// The inbox tabs' pill bar: its height and inset, and each tab's height,
-/// padding (with labels, and icons only), icon, gaps and text; the counts'
+/// padding (with labels, and icons only), icon (larger with no label),
+/// gaps and text; the counts'
 /// badges; and the room the list's top row keeps for its buttons on the
 /// left (more with lines ticked) and its "1–50 of N" and arrows on the
 /// right, and a row of its own's padding.
@@ -61,28 +62,56 @@ const TAB_HEIGHT: f32 = TABS_HEIGHT - 2.0 * TABS_INSET;
 const TAB_PAD: f32 = 10.0;
 const TAB_PAD_ICONS: f32 = 9.0;
 const TAB_ICON: f32 = 16.0;
+const TAB_ICON_ALONE: f32 = 19.0;
 const TAB_GAP: f32 = 5.0;
 const TAB_SPACING: f32 = 2.0;
 const TAB_TEXT: f32 = 13.0;
 const BADGE_HEIGHT: f32 = 18.0;
 const BADGE_PAD: f32 = 6.0;
 const BADGE_TEXT: f32 = 11.0;
+/// The open tab's quiet count: how much of the highlight's text color tints
+/// its badge and colors its number.
+const CHIP_QUIET_BG: f32 = 0.12;
+const CHIP_QUIET_TEXT: f32 = 0.7;
 const TOP_ROW_LEFT: f32 = 152.0;
 const TOP_ROW_LEFT_CHECKED: f32 = 340.0;
 const TOP_ROW_RIGHT: f32 = 185.0;
 const TABS_ROW_PAD: f32 = 12.0;
-/// A phone's list bar with the tabs in it: the room before them, and the
-/// room for the More button after them.
-const PHONE_TABS_LEFT: f32 = 8.0;
-const PHONE_TABS_RIGHT: f32 = 48.0;
+/// A phone's list bar with the tabs in it: the room on each side, and the
+/// room the More button at the end of their pill takes.
+const PHONE_TABS_SIDE: f32 = 8.0;
+const PHONE_TABS_MORE: f32 = TAB_SPACING + TAB_HEIGHT + TABS_INSET;
+
+/// The gap around the list toolbar's select pill: the toolbar's height
+/// less the pill's, halved, so its left end sits as far in as its top.
+const SELECT_PILL_GAP: f32 = (TOOLBAR_HEIGHT - 40.0) / 2.0;
+
+/// An inbox tab's unread chip: how much of it shows, folding away once
+/// the tab has nothing unread; how quiet it is, faint on the open tab and
+/// in color on the others, changing slowly so a click doesn't flash it;
+/// and the width and count it last had, kept while it folds away.
+pub(super) struct TabChip {
+    shown: Spring,
+    quiet: Spring,
+    width: f32,
+    count: u64,
+}
 
 /// Where the inbox tabs go (see [`MailWindow::tabs_fit`]).
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum TabsFit {
     TopRow,
     Row,
-    Icons,
 }
+
+/// How far the inbox tabs fold to fit their room, in steps the fold
+/// glides through: every label; then only the open tab's, the others'
+/// icons growing as their labels go; then no counts; then no label at
+/// all. No tab is ever hidden.
+const FOLD_LABELS: f32 = 0.0;
+const FOLD_OPEN_LABEL: f32 = 1.0;
+const FOLD_NO_COUNTS: f32 = 2.0;
+const FOLD_ICONS: f32 = 3.0;
 
 /// What Read, Unread, Starred or Unstarred in the select menu ticked: the
 /// matching lines on screen, then, from the banner's link, every matching
@@ -223,6 +252,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
             .on_action(cx.listener(Self::open_context_menu_key))
@@ -245,7 +275,7 @@ impl MailWindow {
             .shows_tabs()
             .then(|| self.tabs_fit())
             .filter(|fit| *fit != TabsFit::TopRow && !phone_bar)
-            .map(|fit| {
+            .map(|_| {
                 div()
                     .flex_none()
                     .h(px(TOOLBAR_HEIGHT))
@@ -255,7 +285,7 @@ impl MailWindow {
                     .justify_center()
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .child(self.render_tabs(fit, th, cx))
+                    .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
         let list = self.render_list(th, cx);
@@ -412,15 +442,21 @@ impl MailWindow {
             _ if page_checked || self.checked_all => crate::widgets::Check::On,
             _ => crate::widgets::Check::Partial,
         };
+        let select_radius =
+            (self.layout.shape.card_radius() - SELECT_PILL_GAP).max(SELECT_PILL_GAP);
         let select = div()
             .id("select")
             .flex()
             .flex_row()
             .items_center()
+            // As tall as the round buttons beside it, as far from the
+            // card's edge as from its top, its corners the card's corner
+            // less that gap, so the two curves nest.
             .h(px(40.0))
-            .pl(px(8.0))
-            .pr(px(2.0))
-            .rounded(px(4.0))
+            .ml(px(SELECT_PILL_GAP - 8.0))
+            .pl(px((40.0 - 28.0) / 2.0))
+            .pr(px(4.0))
+            .rounded(px(select_radius))
             .hover(|s| s.bg(rgba(th.hover)))
             .child(
                 div()
@@ -456,7 +492,8 @@ impl MailWindow {
         let select = self.with_menu(select, Menu::Select, th, cx);
         let mut bar = toolbar(th).child(select);
         if checked == 0 {
-            bar = bar.child(self.refresh_button("refresh", th, cx)).child({
+            bar = bar.child(self.refresh_button("refresh", th, cx));
+            bar = bar.children(self.quiet_button(th, cx)).child({
                 let more = icon_button("list-more", "more", 20.0, th)
                     .when(self.menu != Some(Menu::ListMore), |d| {
                         d.tooltip(tip(tr!("list-more"), th))
@@ -558,7 +595,7 @@ impl MailWindow {
         // buttons on either side let them.
         if self.shows_tabs() && self.tabs_fit() == TabsFit::TopRow {
             let width = self.list_width();
-            let tabs = self.tabs_width(self.tab_spring.value());
+            let tabs = self.tabs_width(self.tab_fold.value());
             let left = ((width - tabs) / 2.0)
                 .min(width - TOP_ROW_RIGHT - tabs)
                 .max(TOP_ROW_LEFT);
@@ -570,7 +607,7 @@ impl MailWindow {
                     .left(px(left))
                     .flex()
                     .items_center()
-                    .child(self.render_tabs(TabsFit::TopRow, th, cx)),
+                    .child(self.render_tabs(None, th, cx)),
             );
         }
         bar.child(
@@ -665,20 +702,34 @@ impl MailWindow {
             })
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         // The tabs take the place of the title, which would only repeat
-        // the open tab's name, and Refresh goes into the More menu.
+        // the open tab's name, and Refresh goes into the More menu, whose
+        // button ends the tabs' pill. The pill spans the bar, its tabs
+        // sharing the room, so they are easy to tap.
         if self.phone_bar_tabs() {
-            let fit = self.tabs_fit();
+            let more = more.size(px(TAB_HEIGHT)).rounded_full().ml(px(TAB_SPACING));
+            let fill = self.tabs_room(TabsFit::Row);
             return toolbar(th)
-                .pl(px(PHONE_TABS_LEFT))
+                .px(px(PHONE_TABS_SIDE))
                 .child(
                     div()
-                        .id("phone-tabs")
                         .flex_1()
                         .min_w_0()
-                        .overflow_x_scroll()
-                        .child(self.render_tabs(fit, th, cx)),
+                        .h(px(TABS_HEIGHT))
+                        .pr(px(TABS_INSET))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .rounded_full()
+                        .bg(rgba(th.search))
+                        .child(
+                            div()
+                                .id("phone-tabs")
+                                .min_w_0()
+                                .overflow_x_scroll()
+                                .child(self.render_tabs(Some(fill), th, cx)),
+                        )
+                        .child(self.with_menu(more, Menu::ListMore, th, cx)),
                 )
-                .child(self.with_menu(more, Menu::ListMore, th, cx))
                 .into_any_element();
         }
         toolbar(th)
@@ -879,6 +930,7 @@ impl MailWindow {
             Menu::CalendarOptions => self.calendar_options_menu(th, cx),
             Menu::CalendarZones => self.calendar_zones_menu(th, cx),
             Menu::CalendarViews => self.calendar_views_menu(th, cx),
+            Menu::Quiet => self.quiet_toolbar_items(th, cx),
             Menu::Select => menu(th).children(
                 [
                     (Pick::All, tr!("list-pick-all")),
@@ -1055,6 +1107,12 @@ impl MailWindow {
                                     this.act_on_targets(Act::Pin(false), cx)
                                 })),
                         )
+                        .child(self.mute_menu_items(
+                            which != Menu::ReaderMore || squeeze.is_some_and(|s| s.mute),
+                            which == Menu::ReaderMore,
+                            th,
+                            cx,
+                        ))
                         .when(which == Menu::ReaderMore, |d| {
                             d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
                                 .child(
@@ -1467,7 +1525,7 @@ impl MailWindow {
     // Tabs
 
     /// Measures the inbox tabs' labels and unread counts in the window's
-    /// font, for the pill bar to lay them out and slide between them.
+    /// font, for the pill bar to lay them out.
     pub(super) fn measure_tabs(&mut self, window: &gpui::Window) {
         let sizes = self
             .tabs
@@ -1500,6 +1558,50 @@ impl MailWindow {
         self.tab_sizes = sizes;
     }
 
+    /// Moves each inbox tab's chip toward how it should look: shown while
+    /// its tab has unread mail, quiet on the open tab.
+    pub(super) fn tick_tab_chips(&mut self, window: &gpui::Window, reduce: bool) {
+        let open = self.tab;
+        let counts: Vec<u64> = self.tabs.iter().map(|t| self.tab_unread(t)).collect();
+        self.tab_chips.truncate(counts.len());
+        for (ix, &count) in counts.iter().enumerate() {
+            let shown = if count > 0 { 1.0 } else { 0.0 };
+            let quiet = if ix == open { 1.0 } else { 0.0 };
+            if ix == self.tab_chips.len() {
+                // A new tab starts as it should look, without a fade.
+                self.tab_chips.push(TabChip {
+                    shown: Spring::new(motion::SMOOTH, shown),
+                    quiet: Spring::new(motion::GENTLE, quiet),
+                    width: 0.0,
+                    count,
+                });
+            }
+            let width = self.tab_sizes.get(ix).map_or(0.0, |s| s.1);
+            let chip = &mut self.tab_chips[ix];
+            if count > 0 {
+                chip.width = width;
+                chip.count = count;
+            }
+            chip.shown.set(shown);
+            chip.quiet.set(quiet);
+            chip.shown.tick(window, reduce);
+            chip.quiet.tick(window, reduce);
+        }
+    }
+
+    /// Tab `ix`'s chip: how much shows (0 to 1), how quiet it is (0 to
+    /// 1), its width and its count.
+    fn tab_chip(&self, ix: usize) -> (f32, f32, f32, u64) {
+        self.tab_chips.get(ix).map_or((0.0, 0.0, 0.0, 0), |c| {
+            (
+                c.shown.value().clamp(0.0, 1.0),
+                c.quiet.value().clamp(0.0, 1.0),
+                c.width,
+                c.count,
+            )
+        })
+    }
+
     /// The unread mail of a tab's categories.
     fn tab_unread(&self, tab: &crate::tabs::Tab) -> u64 {
         tab.categories
@@ -1508,76 +1610,96 @@ impl MailWindow {
             .sum()
     }
 
-    /// How open tab `ix` looks, 0 to 1, with the highlight `at` tabs
-    /// along: the tab it slides to turns on as the one it left turns off,
-    /// over the whole slide, and the tabs it passes stay as they are.
-    fn tab_on(&self, ix: usize, at: f32) -> f32 {
-        let (from, to) = self.tab_slide;
-        let done = if from == to {
-            1.0
-        } else {
-            ((at - from as f32) / (to as f32 - from as f32)).clamp(0.0, 1.0)
-        };
-        if ix == to {
-            done
-        } else if ix == from {
-            1.0 - done
-        } else {
-            0.0
-        }
+    /// 1 for the open tab, 0 for the others. The highlight moves at once,
+    /// the tab's ripple showing the click.
+    fn tab_on(&self, ix: usize) -> f32 {
+        if ix == self.tab { 1.0 } else { 0.0 }
     }
 
     /// How much tab `ix` shows its label and its badge, 0 to 1, with the
-    /// highlight `at` tabs along: the open tab's label, the others'
-    /// badges, so the bar changes smoothly as the highlight slides.
-    fn tab_shares(&self, ix: usize, fit: TabsFit, at: f32) -> (f32, f32) {
-        let on = self.tab_on(ix, at);
-        let label = if fit == TabsFit::Icons { on } else { 1.0 };
+    /// tabs folded `fold` steps: the open tab keeps its label longest;
+    /// a badge shows while its tab has unread mail, the open tab's too.
+    fn tab_shares(&self, ix: usize, fold: f32) -> (f32, f32) {
+        let on = self.tab_on(ix);
+        let step = |from: f32| (fold - from).clamp(0.0, 1.0);
+        let label = lerp(1.0, on, step(FOLD_LABELS)) * (1.0 - step(FOLD_NO_COUNTS));
         // The first tab, Primary, has no count, as in Gmail.
-        let badge = if ix == 0 { 0.0 } else { 1.0 - on };
+        let badge = if ix == 0 {
+            0.0
+        } else {
+            self.tab_chip(ix).0 * (1.0 - step(FOLD_OPEN_LABEL))
+        };
         (label, badge)
     }
 
+    /// Tab `ix`'s padding and icon size: a tab without its label has less
+    /// padding and a larger icon, which grows as the label folds away.
+    fn tab_pad_icon(&self, ix: usize, fold: f32) -> (f32, f32) {
+        let (label, _) = self.tab_shares(ix, fold);
+        let pad = lerp(TAB_PAD, TAB_PAD_ICONS, fold.clamp(0.0, 1.0));
+        (pad, lerp(TAB_ICON_ALONE, TAB_ICON, label))
+    }
+
     /// Tab `ix`'s width in the pill bar.
-    fn tab_width(&self, ix: usize, fit: TabsFit, at: f32) -> f32 {
-        let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
-        let (label, badge) = self.tab_shares(ix, fit, at);
-        let pad = if fit == TabsFit::Icons {
-            TAB_PAD_ICONS
-        } else {
-            TAB_PAD
-        };
+    fn tab_width(&self, ix: usize, fold: f32) -> f32 {
+        let label_w = self.tab_sizes.get(ix).map_or(0.0, |s| s.0);
+        let badge_w = self.tab_chip(ix).2;
+        let (label, badge) = self.tab_shares(ix, fold);
+        let (pad, icon) = self.tab_pad_icon(ix, fold);
         let badge = if badge_w > 0.0 { badge } else { 0.0 };
-        2.0 * pad + TAB_ICON + (TAB_GAP + label_w) * label + (TAB_GAP + badge_w) * badge
+        2.0 * pad + icon + (TAB_GAP + label_w) * label + (TAB_GAP + badge_w) * badge
     }
 
     /// The pill bar's width with every label and count showing.
     fn tabs_full_width(&self) -> f32 {
-        self.tabs_width(self.tab as f32)
+        self.tabs_width(FOLD_LABELS)
     }
 
-    /// The top row's pill bar's width with the highlight `at` tabs along.
-    fn tabs_width(&self, at: f32) -> f32 {
+    /// The pill bar's width folded `fold` steps with the highlight `at`
+    /// tabs along.
+    fn tabs_width(&self, fold: f32) -> f32 {
         (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, TabsFit::TopRow, at))
+            .map(|ix| self.tab_width(ix, fold))
             .sum::<f32>()
             + 2.0 * TABS_INSET
             + TAB_SPACING * self.tabs.len().saturating_sub(1) as f32
     }
 
+    /// The width the inbox tabs have where they go.
+    fn tabs_room(&self, fit: TabsFit) -> f32 {
+        let width = self.list_width();
+        if fit == TabsFit::TopRow {
+            // Chosen only where the tabs fit with every label.
+            f32::INFINITY
+        } else if self.layout.shape.is_phone() && self.checked.is_empty() {
+            width - 2.0 * PHONE_TABS_SIDE - PHONE_TABS_MORE
+        } else {
+            width - 2.0 * TABS_ROW_PAD
+        }
+    }
+
+    /// How far the inbox tabs fold to fit their room: the first step at
+    /// which they fit, or all the way.
+    pub(super) fn tabs_fold_target(&self) -> f32 {
+        if !self.shows_tabs() {
+            return FOLD_LABELS;
+        }
+        let room = self.tabs_room(self.tabs_fit());
+        [FOLD_LABELS, FOLD_OPEN_LABEL, FOLD_NO_COUNTS]
+            .into_iter()
+            .find(|&fold| self.tabs_width(fold) <= room)
+            .unwrap_or(FOLD_ICONS)
+    }
+
     /// Where the inbox tabs go for the list's width: in the list's top
     /// row while they fit there with their labels, else in a row of their
-    /// own, with labels while they fit, else with icons and counts. A
-    /// phone has them in its list bar, with labels while they fit.
+    /// own, folding as far as they must (see [`Self::tabs_fold_target`]).
+    /// A phone has them in its list bar.
     pub(super) fn tabs_fit(&self) -> TabsFit {
         let width = self.list_width();
         let full = self.tabs_full_width();
         if self.layout.shape.is_phone() && self.checked.is_empty() {
-            return if full <= width - PHONE_TABS_LEFT - PHONE_TABS_RIGHT {
-                TabsFit::Row
-            } else {
-                TabsFit::Icons
-            };
+            return TabsFit::Row;
         }
         let left = if self.checked.is_empty() {
             TOP_ROW_LEFT
@@ -1586,27 +1708,26 @@ impl MailWindow {
         };
         if !self.layout.shape.is_phone() && full <= width - left - TOP_ROW_RIGHT {
             TabsFit::TopRow
-        } else if full <= width - 2.0 * TABS_ROW_PAD {
-            TabsFit::Row
         } else {
-            TabsFit::Icons
+            TabsFit::Row
         }
     }
 
-    /// The inbox tabs as a pill bar; the open tab's highlight slides from
-    /// tab to tab.
+    /// The inbox tabs as a pill bar, the open tab highlighted; a click
+    /// moves the highlight at once, the ripple showing it. With `fill`, the bar takes that width, sharing what the
+    /// tabs leave over evenly among them.
     pub(super) fn render_tabs(
         &self,
-        fit: TabsFit,
+        fill: Option<f32>,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let at = self
-            .tab_spring
-            .value()
-            .clamp(0.0, self.tabs.len().saturating_sub(1) as f32);
+        let fold = self.tab_fold.value();
+        let extra = fill.map_or(0.0, |fill| {
+            ((fill - self.tabs_width(fold)) / self.tabs.len().max(1) as f32).max(0.0)
+        });
         let widths: Vec<f32> = (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, fit, at))
+            .map(|ix| self.tab_width(ix, fold) + extra)
             .collect();
         let lefts: Vec<f32> = widths
             .iter()
@@ -1616,24 +1737,23 @@ impl MailWindow {
                 Some(left)
             })
             .collect();
-        // Between two tabs the highlight takes a share of each.
-        let (from, frac) = (at.floor() as usize, at.fract());
-        let to = (from + 1).min(self.tabs.len().saturating_sub(1));
-        let (hl_left, hl_width) = match (lefts.get(from), lefts.get(to)) {
-            (Some(&a), Some(&b)) => (lerp(a, b, frac), lerp(widths[from], widths[to], frac)),
+        let (hl_left, hl_width) = match (lefts.get(self.tab), widths.get(self.tab)) {
+            (Some(&left), Some(&width)) => (left, width),
             _ => (TABS_INSET, 0.0),
         };
         let tabs = self.tabs.iter().enumerate().map(|(ix, tab)| {
-            let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
-            let (label, badge) = self.tab_shares(ix, fit, at);
-            let on = self.tab_on(ix, at);
+            let label_w = self.tab_sizes.get(ix).map_or(0.0, |s| s.0);
+            let (_, quiet, badge_w, unread) = self.tab_chip(ix);
+            let (label, badge) = self.tab_shares(ix, fold);
+            let (pad, icon_size) = self.tab_pad_icon(ix, fold);
+            let on = self.tab_on(ix);
             let color = mix(th.text_dim, th.nav_selected_text, on);
-            let pad = if fit == TabsFit::Icons {
-                TAB_PAD_ICONS
-            } else {
-                TAB_PAD
-            };
-            let unread = self.tab_unread(tab);
+            // The open tab's count goes quiet: a faint tint of its
+            // highlight's text color, under the tab's own color, which
+            // fades out over it so the number stays readable throughout.
+            let quiet_bg = mix(th.nav_selected, th.nav_selected_text, CHIP_QUIET_BG);
+            let quiet_text = mix(th.nav_selected, th.nav_selected_text, CHIP_QUIET_TEXT);
+            let count = format::thousands(unread);
             div()
                 .id(("tab", ix))
                 .relative()
@@ -1644,6 +1764,7 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .items_center()
+                .justify_center()
                 .overflow_hidden()
                 .rounded_full()
                 .text_size(px(TAB_TEXT))
@@ -1661,7 +1782,7 @@ impl MailWindow {
                     }
                 }))
                 .child(Ripple::new(("tab-ripple", ix), rgba(th.ripple)).rounded(TAB_HEIGHT / 2.0))
-                .child(icon(tab.icon, color, TAB_ICON))
+                .child(icon(tab.icon, color, icon_size))
                 .when(label > 0.001, |d| {
                     d.child(
                         div()
@@ -1690,11 +1811,27 @@ impl MailWindow {
                                     .items_center()
                                     .justify_center()
                                     .rounded_full()
-                                    .bg(rgba(th.tabs[tab.color]))
-                                    .text_color(rgba(th.on_accent))
+                                    .relative()
+                                    .bg(rgba(quiet_bg))
+                                    .text_color(rgba(quiet_text))
                                     .text_size(px(BADGE_TEXT))
                                     .font_weight(FontWeight::BOLD)
-                                    .child(format::thousands(unread)),
+                                    .child(count.clone())
+                                    .when(quiet < 0.999, |d| {
+                                        d.child(
+                                            div()
+                                                .absolute()
+                                                .inset_0()
+                                                .flex()
+                                                .items_center()
+                                                .justify_center()
+                                                .rounded_full()
+                                                .bg(rgba(th.tabs[tab.color]))
+                                                .text_color(rgba(th.on_accent))
+                                                .opacity(1.0 - quiet)
+                                                .child(count),
+                                        )
+                                    }),
                             ),
                     )
                 })
@@ -2076,13 +2213,56 @@ impl MailWindow {
             .min_w_0()
             .gap(px(4.0))
             .text_color(rgba(th.text))
-            .child(
-                div()
-                    .min_w_0()
-                    .truncate()
-                    .font_weight(weight)
-                    .child(row.correspondent.clone()),
-            )
+            .map(|d| {
+                // A muted sender gets a crossed bell after their name
+                // (§15.1.1); the names are then laid out one by one.
+                let marks: Vec<Option<AnyElement>> = row
+                    .people
+                    .iter()
+                    .map(|(_, email)| {
+                        email
+                            .as_deref()
+                            .and_then(|email| self.muted_mark(email, 16.0, th))
+                    })
+                    .collect();
+                if marks.iter().all(Option::is_none) {
+                    return d.child(
+                        div()
+                            .min_w_0()
+                            .truncate()
+                            .font_weight(weight)
+                            .child(row.correspondent.clone()),
+                    );
+                }
+                d.child(
+                    div()
+                        .min_w_0()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .overflow_hidden()
+                        .font_weight(weight)
+                        .children(row.people.iter().zip(marks).flat_map(|((text, _), mark)| {
+                            let text = div()
+                                .min_w_0()
+                                .truncate()
+                                .child(text.clone())
+                                .into_any_element();
+                            let mark = mark.map(|mark| {
+                                // Lifted 1 px to sit on the name as the
+                                // contact card's does.
+                                div()
+                                    .flex_none()
+                                    .relative()
+                                    .top(px(-1.0))
+                                    .pl(px(4.0))
+                                    .child(mark)
+                                    .into_any_element()
+                            });
+                            std::iter::once(text).chain(mark)
+                        })),
+                )
+            })
             .when(row.count > 1, |d| {
                 d.child(
                     div()
@@ -2113,6 +2293,14 @@ impl MailWindow {
             .font_weight(weight)
             .whitespace_nowrap()
             .text_color(rgba(if row.unread { th.text } else { th.text_faint }))
+            .when(self.line_muted(key), |d| {
+                d.child(
+                    div()
+                        .id(("row-muted", ix))
+                        .tooltip(tip(tr!("quiet-row-muted"), th))
+                        .child(icon("bell-off", th.text_faint, 16.0)),
+                )
+            })
             .when(row.pinned, |d| {
                 d.child(
                     div()

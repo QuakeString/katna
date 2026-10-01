@@ -2043,7 +2043,15 @@ impl MailWindow {
                         .flex()
                         .flex_col()
                         .text_size(px(14.0))
-                        .child(div().truncate().child(name))
+                        .child(
+                            div()
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .child(div().min_w_0().truncate().child(name))
+                                .children(self.muted_mark(&guest.email, 16.0, th)),
+                        )
                         .when(guest.organizer, |d| {
                             d.child(
                                 div()

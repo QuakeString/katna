@@ -8,12 +8,12 @@ use async_channel::Receiver;
 use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
     AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag,
+    NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag, mute,
 };
-use katna_store::{FolderId, MessageFlags, MessageId};
+use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId};
 use zbus::{fdo, object_server::SignalEmitter};
 
-use crate::daemon::{CommandError, Daemon, Notice};
+use crate::daemon::{CommandError, Daemon, MuteOf, Notice};
 use crate::translate::TranslateError;
 
 /// The object at `/in/invenia/katna/Pim1`.
@@ -180,6 +180,40 @@ macro_rules! pim_interface {
 
             async fn set_pinned(&self, messages: Vec<i64>, on: bool) -> fdo::Result<()> {
                 Ok(self.daemon.set_pinned(&ids(&messages), on)?)
+            }
+
+            async fn mute(
+                &self,
+                kind: &str,
+                id: i64,
+                address: &str,
+                until: i64,
+            ) -> fdo::Result<()> {
+                let what = mute_of(kind, id, address)?;
+                Ok(self.daemon.mute(what, (until != 0).then_some(until))?)
+            }
+
+            async fn unmute(&self, kind: &str, id: i64, address: &str) -> fdo::Result<()> {
+                Ok(self.daemon.unmute(mute_of(kind, id, address)?)?)
+            }
+
+            async fn set_bell(
+                &self,
+                folder: i64,
+                category: i64,
+                notify: bool,
+                count: bool,
+            ) -> fdo::Result<()> {
+                let category =
+                    match category {
+                        0 => None,
+                        n => Some(MailCategory::from_storage(n).ok_or_else(|| {
+                            CommandError::InvalidArgs(format!("no inbox tab {n}"))
+                        })?),
+                    };
+                Ok(self
+                    .daemon
+                    .set_bell(FolderId(folder), category, Bell { notify, count })?)
             }
 
             async fn create_folder(
@@ -609,6 +643,21 @@ fn ids(messages: &[i64]) -> Vec<MessageId> {
     messages.iter().copied().map(MessageId).collect()
 }
 
+/// What [`katna_dbus::mute`] `kind` and `id` or `address` name.
+fn mute_of(kind: &str, id: i64, address: &str) -> Result<MuteOf, CommandError> {
+    Ok(match kind {
+        mute::ACCOUNT => MuteOf::Account(AccountId(id)),
+        mute::FOLDER => MuteOf::Folder(FolderId(id)),
+        mute::CONVERSATION => MuteOf::Conversation(MessageId(id)),
+        mute::SENDER => MuteOf::Sender(address.to_owned()),
+        other => {
+            return Err(CommandError::InvalidArgs(format!(
+                "cannot mute {other:?} (account, folder, conversation or sender)"
+            )));
+        }
+    })
+}
+
 /// Flag names from [`katna_dbus::flag`] as bits.
 fn message_flags(names: &[String]) -> Result<MessageFlags, CommandError> {
     let mut flags = MessageFlags::empty();
@@ -620,10 +669,11 @@ fn message_flags(names: &[String]) -> Result<MessageFlags, CommandError> {
             flag::DRAFT => MessageFlags::DRAFT,
             flag::FORWARDED => MessageFlags::FORWARDED,
             flag::IMPORTANT => MessageFlags::IMPORTANT,
+            flag::MUTED => MessageFlags::MUTED,
             other => {
                 return Err(CommandError::InvalidArgs(format!(
                     "unknown flag {other:?} \
-                     (seen, answered, flagged, draft, forwarded or important)"
+                     (seen, answered, flagged, draft, forwarded, important or muted)"
                 )));
             }
         };

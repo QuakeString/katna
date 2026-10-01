@@ -866,9 +866,9 @@ fn drawer_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> gpui::Sta
         .items_center()
         .rounded_full()
         .text_size(px(14.0))
-        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
+        .text_color(rgba(if on { th.row_selected_text } else { th.text }))
         .when(on, |d| {
-            d.bg(rgba(th.nav_selected)).font_weight(FontWeight::BOLD)
+            d.bg(rgba(th.row_selected)).font_weight(FontWeight::BOLD)
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .cursor_pointer()

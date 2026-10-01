@@ -1632,7 +1632,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   "Folder pane" in Settings > Accounts (`mail.accounts_shown`, `one` or
   `all`) picks between the shown account's folders only and every account
   one after another. The account card switches the shown account (it marks
-  it and gives each account's unread count); the choice is kept in
+  it and gives each account's unread count, under an icon row of
+  Settings (the General page), the language button and the ☰ application
+  menu, with "Add another account" as the last row); the choice is kept in
   `mail.current_account`. The list, search results, Go to, compose's From
   and the top-bar picture follow the shown account, and opening a message
   of another account (from a notification) switches to it. The taskbar
@@ -1849,9 +1851,9 @@ Gemini or confidential mode):
   order: General (language, 12- or 24-hour time, conversation view,
   reading order and headers, when mail
   is marked read, what the reply button does, images from the web, undo
-  send, offline mail,
-  new-mail notifications and their sound, starting at login, tray and
-  badge), Inbox, Accounts, Subscription, Appearance (reading pane,
+  send, offline mail, starting at login, tray and badge), Notifications
+  (new-mail notifications, Sounds, taskbar count, which folders notify
+  and count, muted list), Inbox, Accounts, Subscription, Appearance (reading pane,
   density, scaling, theme, desktop colors, app names, sender pictures,
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
@@ -1876,8 +1878,23 @@ Gemini or confidential mode):
   the Katna Mail window too" is on;
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
-  still wait to be asked for; and the new-mail sound is the notification's
-  `sound-name` hint, or `suppress-sound` when off. Open and click
+  still wait to be asked for. Sounds (`[sounds]`, `window/sounds.rs`)
+  has a line per event: new mail, event and task reminders, mail back in
+  the inbox (snooze, no reply), mail sent and mail not sent, each with a
+  sound to pick (a menu that plays each as it is picked), a play button
+  and a switch. The sounds are the desktop's own (`katna_platform::sound`):
+  on Linux freedesktop names found in the KDE sound theme, Ocean or
+  freedesktop (with fallbacks, e.g. New email falls back to
+  `message-new-instant`), played with `pw-play`, `paplay` or
+  `canberra-gtk-play`; on Windows the toast sounds (Mail, Reminder, …),
+  whose `.wav` in `%SystemRoot%\Media` a `MediaPlayer` plays outside a
+  toast. Katna plays a notification's sound itself on Linux, because
+  servers such as Plasma's leave `sound-name` unplayed, and sends
+  `suppress-sound`; it stays silent while the server's `Inhibited` (Do not
+  disturb) is true. On Windows the toast plays it, so Focus Assist
+  silences it. Muted folders, conversations and senders never notify, so
+  they make no sound. Older `notifications.sound` and `sending.sent_sound`
+  switches carry over when off. Open and click
   tracking is not a setting: it, a read receipt and a delivery receipt
   are on for every new message and reply and turned off per message in compose (§16.1), so
   Mailspring's tracking defaults have no counterpart.
@@ -1915,7 +1932,7 @@ Gemini or confidential mode):
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
 - **Removing an account, deleting all data.** Settings → Accounts
-  (`window/accounts.rs`; also "Manage accounts" in the account menu) lists
+  (`window/accounts.rs`) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
   only touch this computer: they ask first in a dialog that lists in red
   what is deleted, says the mail stays on the server (or, for imported
@@ -2250,8 +2267,53 @@ Gemini or confidential mode):
   as it is without one. The window frame (`katna_chrome::ChromeColors`)
   follows the scheme too. Colors are read at startup, again on the
   portal's `SettingChanged`, and when `kdeglobals` or `gtk.css` change
-  (checked every 2 s). A quick setting, *Desktop colors* (on by default,
-  `mail.desktop_colors`), turns this off.
+  (checked every 2 s).
+- **Mode, colors and accent (2026-10-01).** Three separate choices in
+  Settings > Appearance: *Mode* (`mail.theme`: System, Light or Dark),
+  *Colors* (`mail.colors`: `system` for the desktop's scheme above,
+  `katna` for Katna's palette, or a built-in scheme, `schemes.rs`) and
+  *Accent* (`mail.accent`: the scheme's own, `system` for the desktop's,
+  or `#rrggbb`). Every built-in scheme has a light and a dark side, made of
+  six colors (page, cards, text, faint text, accent, error) that
+  `Theme::from_scheme` turns into the full theme, so any mode works with
+  any scheme; `Theme::pick` puts the three together. The built-ins are
+  Katna's own (Katna, Clear after Apple's system colors, Graphite) and
+  eleven MIT-licensed editor and desktop palettes (Nord, Solarized,
+  Dracula, Gruvbox, Catppuccin, Tokyo Night, One, Rosé Pine, Everforest,
+  Kanagawa, Ayu), credited in About and the README. Settings shows each
+  as a card with a small mail window on its light and dark side in the
+  picked accent, grouped as Built in and From your system. Files from
+  before schemes have no `colors`: `mail.desktop_colors` decides (on is
+  `system`, off is `katna`), and every pick keeps it in step for older
+  versions. The quick setting *Desktop colors* switches between `system`
+  and `katna`.
+
+  *From your system* lists the desktop's other schemes
+  (`DesktopScheme` in `katna_platform::colors`): on KDE every installed
+  `*.colors` file (`$XDG_DATA_HOME` and `$XDG_DATA_DIRS`, `color-schemes/`),
+  with a light and a dark scheme whose file names differ only by `Light`
+  and `Dark` paired into one (`kde:Breeze`); on Windows its own light and
+  dark colors and the Contrast themes in `%WINDIR%\Resources\Ease of
+  Access Themes`. The scheme in use on KDE gets its installed partner, so
+  System works in either mode (Breeze Dark on the desktop and Mode Light
+  draws Breeze Light). Windows' accent is `DWM\AccentColor`; while a
+  Contrast theme is on, System draws its colors. A scheme with one side
+  (a Contrast theme, a KDE scheme without a partner) decides light or
+  dark itself, whatever Mode says (`Theme::forced_dark`), as KDE does.
+  Windows' colors are read at startup.
+
+  *Yours* lists the schemes people make (`user_schemes.rs`): one TOML file
+  each in `<config>/colors/`, ids `user:<file stem>`, with the eight
+  colors of a light side, a dark side or both (the six above plus top bar
+  text and text on the accent). *Customize…* copies the selected scheme,
+  as drawn in the picked accent, into the editor; *Import…* reads a Katna
+  file or a KDE `.colors` file (one side). The editor shows both sides
+  next to each other, each color with a hex field and a palette, the mail
+  window drawn in them and what reads badly (text under 4.5:1, faint text
+  and text on the accent under 3:1); *Make dark from light* works a dark
+  side out from the light one's hues. A card's right-click menu has
+  Customize, or for one's own Edit, Duplicate, Export and Delete (with
+  Undo: the file comes back, in use again if it was).
 - **Contact panel.** On a desktop, a card beside the open conversation
   (300 px, the usual 16 px card gap, sliding in with the reading pane's
   spring) shows one of its people: the newest sender other than the user,
@@ -2274,8 +2336,8 @@ Gemini or confidential mode):
   the list and reader keep 900 px (600 px with the reader alone), never on
   tablets and phones or in a conversation window; a button on the reader
   toolbar turns it off (`mail.contact_panel`).
-- **Day's agenda.** A Calendar button on the top bar, beside the language
-  button (the Mail page of a desktop window only), opens a card at the
+- **Day's agenda.** A Calendar button on the top bar, beside Settings
+  (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it
   (`window/agenda.rs`, `mail.agenda_panel`). It and the contact panel
   take turns.
@@ -2471,11 +2533,20 @@ desktop's own app stays one click away.
   first under month headings, or as a list. It reads the attachment lists
   sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
   schema change, no server, works offline. Mail in Trash or Spam is left
-  out, a file sent again (same name and size) shows once, and pictures
-  under 12 KB (signature logos) are skipped; it reads at most 20,000
-  files. The side column (a drawer and chips on a phone) narrows it to a
-  kind of file, an account, or received or sent; chips pick a sender, a
-  time and the order; the top bar's search box matches names, subjects
+  out, a file sent again (same name and size) shows once, and small
+  pictures (signature logos) are left out: by default those under 12 KB,
+  or under 100 px wide or tall (Settings > Default apps > Files page,
+  `mail.files`). With them go signature pictures of any size: one its
+  sender sent in three or more conversations (same name and size), or a
+  social network's icon by name. Pixel sizes are read in the background from downloaded
+  mail and kept in the cache directory (`files-picture-sizes.json`); they
+  apply the next time the page opens, so cards never move under the
+  pointer. It reads at most 20,000 files. The side column (a drawer and chips on a phone) narrows it to a
+  kind of file, an account, or received or sent; chips pick a sender,
+  days (quick picks over a two-month calendar: click a day, drag across
+  days or Shift+click; the files follow the drag and the calendar closes
+  on release; the wheel over the chip moves the days, keeping their
+  length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
   its mail first); the hover panel, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also
@@ -2631,11 +2702,12 @@ building Katna.
 
 **Language picker.** Two places change the same setting:
 
-- A **language button** in the top bar, just left of Settings (the gear),
-  with the same size, hover and one shared gap (`TOP_BAR_GAP`) as the
-  other top-bar buttons. It shows the current language's flag and a small
-  chevron; its tooltip names the language ("Language: বাংলা, following
-  the system" with System default).
+- A **language button** in the icon row at the top of the account card
+  (opened from the account picture), beside Settings, as
+  the owner asked, which keeps the top bar to Settings and the picture. It
+  shows the current language's flag and a small chevron; its tooltip names
+  the language ("Language: বাংলা, following the system" with System
+  default). The popover opens under the account picture.
 - **Settings > General > Language**, a row with the same choices.
 
 The button opens a popover (the popover rules of §13.6: closes on Esc and
@@ -3002,7 +3074,8 @@ Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
 Content and behavior:
 
 - Hints: `desktop-entry`, `category=email.arrived`, `image-data` (sender
-  avatar or organization logo), `sound-name=message-new-email`,
+  avatar or organization logo), the Sounds setting's sound (§13 Settings;
+  Katna plays it itself on Linux and sends `suppress-sound`),
   `x-kde-origin-name` (account name).
 - **Grouping:** bursts become one notification ("5 new emails from Acme").
 - **Filtering:** notify for Inbox / important categories only by default;
@@ -3017,9 +3090,10 @@ Content and behavior:
 
 Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
 
-- After each sync, unread mail that reached an account's inbox (Primary tab,
-  or not classified yet) since the daemon last looked, and dated within the
-  last two days, becomes one notification per account and sync. One message
+- After each sync, unread mail that rings (§15.1.1; by default mail that
+  reached an account's inbox, Primary tab or not classified yet, and is not
+  muted) since the daemon last looked, and dated within the last two days,
+  becomes one notification per account and sync. One message
   shows sender, subject and the start of its text; more show "N new emails"
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
@@ -3034,7 +3108,8 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   message in every inbox tab. The Plasma inline-reply field in the table
   above is not built yet.
 - A notification closes when all its mail is read or out of the inbox, from
-  a sync or from a change made in the app.
+  a sync or from a change made in the app, and a new-mail notification
+  also when its mail is muted or its folder stops notifying.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
 - Not yet: inline reply, sender pictures (`image-data`), per-organization
   policy.
@@ -3044,13 +3119,55 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   it starts ("In 10 minutes"; the daemon has no ICU, so no clock times)
   and the place, with Open (the Calendar page), Join (the event's
   `https://` video link, in the browser) and Snooze 5 min.
-  `category=x-katna.event`, `sound-name=alarm-clock-elapsed`, no timeout.
+  `category=x-katna.event`, the Reminders sound (Alarm unless picked), no timeout.
   One task reads the next eight days of events, sleeps until the next
   reminder (at most a minute, so edits count) and keeps up to when it
   looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats
   none; reminders missed while the computer was off show only when they
   fell due in the last ten minutes. Snoozes live in memory. Tasks'
   reminders come through the same loop (§18.1).
+
+#### 15.1.1 What rings and counts: bells and mutes
+
+One rule decides both what notifies and what the taskbar and tray count
+(`katna-store` `alerts.rs`), so they never disagree (before October 2026
+the badge counted the whole Inbox, Promotions included, while only Primary
+notified).
+
+- **Bells.** Each folder, and each inbox tab, has a bell with two switches:
+  Notify (new mail shows a notification) and Count (unread mail counts on
+  the taskbar and tray). Default: an inbox's Primary tab (and unclassified
+  mail) both on, everything else off. `mail.db` `folder_alert` keeps only
+  bells that differ from the default (`category` 0 for a whole folder).
+  Mail rings when any folder it is in rings, so a Gmail message labelled
+  Clients rings when Clients' bell is on.
+- **Mutes** (`mail.db` `mute`): an account, a folder, a conversation or a
+  sender (an address, every account), for a while or until unmuted. A
+  muted thing's mail still arrives and stays unread; it only never
+  notifies and is not counted. Mutes win over bells. Snooze and follow-up
+  reminders still show, because they were asked for. A muted sender
+  carries a crossed bell after their name wherever people show (mail
+  list, reader, contact card, Contacts, recipient chips and suggestions,
+  Files, event guests, Activity; `MailWindow::muted_mark`), so quiet mail
+  is never a mystery. Refusing a muted sender's mail outright is a later
+  step.
+- **Mail services first.** A conversation muted for good is muted at the
+  service too: Gmail's mute (the `\Muted` label in `X-GM-LABELS`, set on
+  every message of the conversation; Gmail then keeps later replies out of
+  the Inbox), elsewhere the `$muted` keyword (RFC 9979). Both read back as
+  `MessageFlags::MUTED`. After each sync the daemon follows the service:
+  a conversation with a muted message is muted (`server` = 1), and one
+  muted by the service whose messages all lost the flag is unmuted.
+  Katna's own mute of a conversation on a server that keeps no keywords
+  stays Katna's (`server` = 0). Microsoft's Ignore deletes mail, so it is
+  not used. Bells, folder, account and sender mutes are Katna's own: no
+  service keeps them for other apps.
+- **Daemon** (`daemon/mutes.rs`): D-Bus `Mute(kind, id, address, until)`,
+  `Unmute` and `SetBell(folder, category, notify, count)`; each closes
+  notifications that no longer ring, sends `MailChanged` for every account
+  (the apps and the taskbar count look again) and wakes the scheduler,
+  which drops timed mutes when they end. A muted conversation follows
+  thread merges.
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -3062,20 +3179,28 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   `com.canonical.Unity.LauncherEntry` `Update` signals for
   `application://in.invenia.katna.Mail.desktop` from
   `/in/invenia/katna/Daemon/LauncherEntry`. The number is the unread
-  messages in every account's Inbox, the same as next to Inbox in the app,
-  recounted half a second after mail changes. Plasma's task manager shows
+  messages that count (§15.1.1; by default every account's Inbox, Primary
+  tab, less anything muted), recounted half a second after mail changes. Plasma's task manager shows
   it; on GNOME, Ubuntu Dock, Dash to Dock and Dash to Panel do (the stock
   GNOME dash shows no counts). Setting `general.unread_badge` (default on).
 - **Tray icon**: a StatusNotifierItem under its own name
   (`org.kde.StatusNotifierItem-PID-N`), registered with
   `org.kde.StatusNotifierWatcher` again whenever the watcher restarts.
   Plasma shows it natively; GNOME needs the AppIndicator extension (on by
-  default on Ubuntu). The icon is the one-colour k
-  (`<mail app ID>-symbolic`), which the panel recolours. With unread mail
-  it is the coloured app icon, pre-rendered at each tray size
-  (`crates/katna-platform/icons/`, from `packaging/icons/render.py`), with
-  a red badge drawn in code with the count, `99+` above 99, since the
-  protocol takes pixels and an SVG renderer would grow the daemon. Left click raises the
+  default on Ubuntu). `general.tray_style` picks Colour or Monochrome
+  (Settings → General → Desktop → "Tray icon in color"; default Monochrome
+  on Linux, Colour on Windows, 2026-10-01). Without unread mail the panel
+  draws the named icon: the one-colour k (`<mail app ID>-symbolic`), which
+  it recolours, or the coloured app icon. With unread mail the icon is
+  pixels, pre-rendered at each tray size (`crates/katna-platform/icons/`,
+  from `packaging/icons/render.py`), with a red badge drawn in code with
+  the count, `99+` above 99, since the protocol takes pixels and an SVG
+  renderer would grow the daemon. Monochrome stays monochrome then: the
+  disc in the panel's text colour with the k cut out (its whiteness in the
+  coloured pixels), and only the badge is red. Panels can't be asked their
+  colour, so it is inferred (`colors::panel_text`): Plasma's from the
+  scheme's window text, white on GNOME and other panels, and on Windows
+  from `SystemUsesLightTheme`; it is read again with each count. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
@@ -4362,6 +4487,29 @@ does something. CI builds it on every push to `main` and publishes it, with
 a pacman repository database, as the `arch-latest` pre-release, so Arch
 users can install and update without building. See `packaging/README.md`.
 
+Since 30 September 2026 CI also builds, on every push to `main`, a Fedora
+RPM (`packaging/fedora/katna.spec`, built from source with Fedora's Rust),
+a Nix flake (`flake.nix`, `packaging/nix/package.nix`), an AppImage, a
+Snap, a Flatpak and a plain tarball with an `install.sh`
+(`.github/workflows/linux-packages.yml`). The last four share one build on
+Ubuntu 22.04's glibc (2.35), so they run on older systems too. Each is
+installed and tried on its own platform (Fedora, Nix, Ubuntu with FUSE,
+snapd, Flatpak, Debian): D-Bus must start the daemon for `katnactl`, and
+Katna Mail must open a window, whose screenshot is published with the
+files on the `linux-latest` pre-release. `packaging/linux/stage.sh` lays out
+the same files the PKGBUILD installs for all of them. None of these
+updates itself yet (`Package::Other`): their own tools, or a new download,
+update them. They are unsigned and in no store; Flathub, the Snap Store,
+Copr and nixpkgs are later steps. The Flatpak's ID is the ID prefix
+(`in.invenia.katna`), so it may own and export both the app's and the
+daemon's names; it has no systemd unit, so D-Bus runs the daemon directly.
+The AppImage writes a user D-Bus activation file that runs the AppImage
+itself wherever it is, and its "Start Katna at login" entry names the
+AppImage. snapd's user daemons are experimental, so the Snap has no
+activation file; where the daemon's name has no owner and cannot be
+activated, Katna Mail and `katnactl` start the `katna-daemon` beside them
+(`katna_dbus::ensure_daemon`), as in an unpacked tarball.
+
 ### 21.2 Update channels and safe updates (partly built)
 
 Planned 26 September 2026. Built so far (28 September 2026): **in-app
@@ -5020,8 +5168,10 @@ Katna Setup.exe is Katna's own installer, written in Rust with GPUI in
 Katna's look: one window with its own close button, whose shadow, border
 and corners Windows draws (round on Windows 11, square on Windows 10; a
 see-through window with a card drawn inside showed as a grey box), the logo, the
-choices, Install, a progress bar and Open Katna, light or dark as Windows
-is set. The choices: install for just me (the default, into
+choices, Install, a progress bar and Open Katna, in Katna Mail's Mode,
+built-in color scheme and accent when its settings file is there
+(`katna_ui::schemes`; the desktop's and one's own schemes draw Katna's
+palette), else light or dark as Windows is set. The choices: install for just me (the default, into
 `%LOCALAPPDATA%\Programs\Katna`, no administrator prompt) or for everyone
 (into `%ProgramFiles%\Katna`, with the machine's Start menu, public desktop
 and `HKLM` entries; Setup starts a second copy of itself as administrator,

@@ -8,6 +8,43 @@
 
 use katna_platform::colors::{Scheme, SystemColors, contrast, luminance, over};
 
+use crate::schemes::{self, SideScheme};
+
+/// The accent color the settings pick (Settings > Appearance > Accent).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Accent {
+    /// The color scheme's own.
+    Scheme,
+    /// The desktop's, else the scheme's own.
+    System,
+    /// `0xRRGGBBAA`.
+    Color(u32),
+}
+
+impl Accent {
+    /// Reads the `accent` setting: empty, `system` or `#rrggbb`. Anything
+    /// else is the scheme's own.
+    pub fn parse(setting: &str) -> Self {
+        match setting {
+            "system" => Self::System,
+            hex => hex
+                .strip_prefix('#')
+                .filter(|digits| digits.len() == 6)
+                .and_then(|digits| u32::from_str_radix(digits, 16).ok())
+                .map_or(Self::Scheme, |rgb| Self::Color(rgb << 8 | 0xff)),
+        }
+    }
+
+    /// The `accent` setting for this choice.
+    pub fn setting(self) -> String {
+        match self {
+            Self::Scheme => String::new(),
+            Self::System => "system".to_owned(),
+            Self::Color(color) => format!("#{:06x}", color >> 8),
+        }
+    }
+}
+
 /// Colors as `0xRRGGBBAA`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Theme {
@@ -32,6 +69,13 @@ pub struct Theme {
     pub ripple: u32,
     pub nav_selected: u32,
     pub nav_selected_text: u32,
+    /// The open line of a side pane (folders, Contacts, Tasks, Notes,
+    /// Files): a quiet grey, so the accent is left to Compose and the rail.
+    pub row_selected: u32,
+    pub row_selected_text: u32,
+    /// A count pill on that open line: lighter than the line, so the
+    /// count still reads as a pill on the grey.
+    pub row_selected_pill: u32,
     pub compose: u32,
     pub compose_text: u32,
     pub search: u32,
@@ -62,6 +106,8 @@ pub struct Theme {
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
+    /// The folder pane's icons for special folders and views.
+    pub folder_icons: FolderIcons,
     pub chip: u32,
     pub snackbar: u32,
     pub snackbar_text: u32,
@@ -69,6 +115,21 @@ pub struct Theme {
     pub error: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
+}
+
+/// The colors of the folder pane's icons, each saying what its folder
+/// holds; the inbox takes the accent, and Trash, Archive and the user's
+/// own folders keep the dimmed text color.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct FolderIcons {
+    pub unread: u32,
+    pub starred: u32,
+    pub important: u32,
+    pub sent: u32,
+    pub all_mail: u32,
+    pub spam: u32,
+    pub drafts: u32,
+    pub scheduled: u32,
 }
 
 impl Theme {
@@ -114,6 +175,65 @@ impl Theme {
             switch_off: ink(0.18),
             ..self
         }
+    }
+
+    /// The colors for `dark` in the color scheme with the id `colors`
+    /// ([`schemes`], or one of the desktop's) and `accent`. `system` is
+    /// the desktop's scheme in use ([`Theme::system`]); Katna's own
+    /// palette, and schemes no longer there, are [`Theme::new`]. A scheme
+    /// with one side draws that side: see [`Theme::forced_dark`].
+    pub fn pick(dark: bool, colors: &str, accent: Accent, system: &SystemColors) -> Self {
+        let accent = match accent {
+            Accent::Scheme => None,
+            Accent::System => system.accent,
+            Accent::Color(color) => Some(color),
+        };
+        let with_accent = |mut scheme: Scheme| {
+            if let Some(accent) = accent {
+                scheme.accent = opaque(accent);
+            }
+            Self::from_scheme(&scheme)
+        };
+        if let Some(built_in) = schemes::built_in(colors) {
+            return with_accent(built_in.side(dark).scheme(built_in.id));
+        }
+        if let Some(side) = system.scheme(colors).and_then(|s| s.side(dark)) {
+            return with_accent(side.clone());
+        }
+        if colors == schemes::SYSTEM {
+            return match (system.scheme_for(dark), accent) {
+                (Some(scheme), Some(_)) => with_accent(scheme),
+                (_, None) => Self::system(dark, system),
+                (None, Some(accent)) => Self::new(dark).with_accent(accent),
+            };
+        }
+        match accent {
+            Some(accent) => Self::new(dark).with_accent(accent),
+            None => Self::new(dark),
+        }
+    }
+
+    /// Light or dark as the scheme `colors` decides when it has one side
+    /// only (a Contrast theme, a KDE scheme without a partner), whatever
+    /// the mode asks; `None` when the mode decides.
+    pub fn forced_dark(colors: &str, system: &SystemColors) -> Option<bool> {
+        if colors == schemes::SYSTEM {
+            return system.forced_dark();
+        }
+        let scheme = system.scheme(colors)?;
+        match (&scheme.light, &scheme.dark) {
+            (Some(_), None) => Some(false),
+            (None, Some(_)) => Some(true),
+            _ => None,
+        }
+    }
+
+    /// Whether [`Theme::pick`] draws a color scheme rather than Katna's
+    /// palette, so the window frame takes its colors too.
+    pub fn picks_scheme(dark: bool, colors: &str, system: &SystemColors) -> bool {
+        schemes::built_in(colors).is_some()
+            || system.scheme(colors).is_some()
+            || (colors == schemes::SYSTEM && system.scheme_for(dark).is_some())
     }
 
     /// The desktop's color scheme when it is as dark as `dark` asks, else
@@ -187,6 +307,13 @@ impl Theme {
             ripple: fade(text, if dark { 0.16 } else { 0.14 }),
             nav_selected: mix(page, accent, if dark { 0.34 } else { 0.22 }),
             nav_selected_text: text,
+            row_selected: fade(text, if dark { 0.12 } else { 0.10 }),
+            row_selected_text: text,
+            row_selected_pill: if dark {
+                fade(text, 0.10)
+            } else {
+                fade(surface, 0.7)
+            },
             compose: mix(page, accent, if dark { 0.34 } else { 0.28 }),
             compose_text: text,
             search: over(fade(s.window_fg, if dark { 0.08 } else { 0.06 }), page),
@@ -206,6 +333,7 @@ impl Theme {
             frost: 0,
             switch_off: ink(0.18),
             tabs,
+            folder_icons: base.folder_icons,
             chip: ink(0.1),
             snackbar: base.snackbar,
             snackbar_text: base.snackbar_text,
@@ -310,6 +438,9 @@ const LIGHT: Theme = Theme {
     ripple: 0x1f1f1f24,
     nav_selected: 0xd3e3fdff,
     nav_selected_text: 0x041e49ff,
+    row_selected: 0x1f1f1f1a,
+    row_selected_text: 0x1f1f1fff,
+    row_selected_pill: 0xffffffb3,
     compose: 0xc2e7ffff,
     compose_text: 0x001d35ff,
     search: 0xe9eef6ff,
@@ -325,6 +456,16 @@ const LIGHT: Theme = Theme {
     frost: 0,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
+    folder_icons: FolderIcons {
+        unread: 0x1a73e8ff,
+        starred: 0xe8a600ff,
+        important: 0xe37400ff,
+        sent: 0x188038ff,
+        all_mail: 0x5c6bc0ff,
+        spam: 0xd93025ff,
+        drafts: 0x9334e6ff,
+        scheduled: 0x00897bff,
+    },
     chip: 0xe1e3e1ff,
     snackbar: 0x313033ff,
     snackbar_text: 0xf4eff4ff,
@@ -346,6 +487,9 @@ const DARK: Theme = Theme {
     ripple: 0xffffff29,
     nav_selected: 0x004a77ff,
     nav_selected_text: 0xc2e7ffff,
+    row_selected: 0xe3e3e31f,
+    row_selected_text: 0xe3e3e3ff,
+    row_selected_pill: 0xe3e3e31a,
     compose: 0x004a77ff,
     compose_text: 0xc2e7ffff,
     search: 0x2a2d31ff,
@@ -364,6 +508,16 @@ const DARK: Theme = Theme {
     frost: 0,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
+    folder_icons: FolderIcons {
+        unread: 0x8ab4f8ff,
+        starred: 0xfdd663ff,
+        important: 0xfcad70ff,
+        sent: 0x81c995ff,
+        all_mail: 0x9fa8daff,
+        spam: 0xf28b82ff,
+        drafts: 0xd7aefbff,
+        scheduled: 0x80cbc4ff,
+    },
     chip: 0x3c3f43ff,
     snackbar: 0xe3e3e3ff,
     snackbar_text: 0x1f1f1fff,
@@ -415,6 +569,7 @@ pub fn initial(name: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use katna_platform::colors::DesktopScheme;
 
     #[test]
     fn mixes_colors() {
@@ -493,6 +648,93 @@ mod tests {
             assert!(contrast(th.accent, th.surface) >= 3.0);
             assert!(contrast(th.on_accent, th.accent) >= 3.0);
             assert!(contrast(th.nav_selected_text, th.nav_selected) >= 4.5);
+            assert!(contrast(th.row_selected_text, over(th.row_selected, th.page)) >= 4.5);
+        }
+    }
+
+    #[test]
+    fn picks_scheme_mode_and_accent_apart() {
+        let none = SystemColors::default();
+        // Katna's own palette, as it always looked.
+        assert_eq!(Theme::pick(false, "katna", Accent::Scheme, &none), LIGHT);
+        assert_eq!(Theme::pick(true, "katna", Accent::Scheme, &none), DARK);
+        assert_eq!(Theme::pick(true, "gone", Accent::Scheme, &none), DARK);
+        // Every built-in scheme in either mode, with any accent, stays
+        // readable.
+        for scheme in schemes::BUILT_IN {
+            for dark in [false, true] {
+                for accent in [
+                    Accent::Scheme,
+                    Accent::Color(0xffd400ff),
+                    Accent::Color(0x1a1a1aff),
+                ] {
+                    let th = Theme::pick(dark, scheme.id, accent, &none);
+                    assert_eq!(th.dark, dark, "{}", scheme.id);
+                    assert!(contrast(th.text, th.surface) >= 4.5, "{}", scheme.id);
+                    assert!(contrast(th.text_faint, th.surface) >= 3.0, "{}", scheme.id);
+                    assert!(contrast(th.accent, th.surface) >= 3.0, "{}", scheme.id);
+                    assert!(contrast(th.on_accent, th.accent) >= 3.0, "{}", scheme.id);
+                }
+            }
+        }
+        // An accent of its own over a scheme.
+        let nord = Theme::pick(false, "nord", Accent::Color(0xd6336cff), &none);
+        assert_eq!(nord.page, 0xe5e9f0ff);
+        assert_eq!(nord.accent, 0xd6336cff);
+        // The desktop's accent, else the scheme's own.
+        let red = SystemColors::accent_only(Some(0xe62d42ff));
+        assert_eq!(
+            Theme::pick(false, "clear", Accent::System, &red).accent,
+            0xe62d42ff
+        );
+        assert_eq!(
+            Theme::pick(false, "clear", Accent::System, &none).accent,
+            0x007affff
+        );
+        // The desktop's scheme with an accent of one's own.
+        let th = Theme::pick(false, "system", Accent::Color(0x2e9e4fff), &red);
+        assert_eq!(th.page, LIGHT.page);
+        assert_eq!(th.accent, 0x2e9e4fff);
+        // The desktop's other schemes; one with one side decides light or
+        // dark itself.
+        let breeze = Scheme {
+            name: "BreezeClassic".to_owned(),
+            window_bg: 0xeff0f1ff,
+            window_fg: 0x31363bff,
+            view_bg: 0xfcfcfcff,
+            view_fg: 0x31363bff,
+            inactive_fg: 0x7f8c8dff,
+            accent: 0x3daee9ff,
+            accent_fg: 0xffffffff,
+            negative: 0xda4453ff,
+        };
+        let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
+            id: "kde:BreezeClassic".to_owned(),
+            name: "Breeze Classic".to_owned(),
+            light: Some(breeze),
+            dark: None,
+        }]);
+        assert_eq!(
+            Theme::forced_dark("kde:BreezeClassic", &desktop),
+            Some(false)
+        );
+        assert_eq!(Theme::forced_dark("nord", &desktop), None);
+        let th = Theme::pick(true, "kde:BreezeClassic", Accent::Scheme, &desktop);
+        assert_eq!((th.dark, th.surface), (false, 0xfcfcfcff));
+        assert!(Theme::picks_scheme(false, "kde:BreezeClassic", &desktop));
+        assert!(Theme::picks_scheme(true, "nord", &none));
+        assert!(!Theme::picks_scheme(true, "system", &none));
+        assert!(!Theme::picks_scheme(true, "katna", &none));
+    }
+
+    #[test]
+    fn reads_the_accent_setting() {
+        assert_eq!(Accent::parse(""), Accent::Scheme);
+        assert_eq!(Accent::parse("system"), Accent::System);
+        assert_eq!(Accent::parse("#E8590c"), Accent::Color(0xe8590cff));
+        assert_eq!(Accent::parse("#e859"), Accent::Scheme);
+        for accent in [Accent::Scheme, Accent::System, Accent::Color(0x00807fff)] {
+            assert_eq!(Accent::parse(&accent.setting()), accent);
         }
     }
 

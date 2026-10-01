@@ -1,0 +1,39 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Starts Katna from its AppImage.
+#
+#   Katna-x86_64.AppImage [katna-mail options]   Katna Mail
+#   Katna-x86_64.AppImage katnactl ...           the command-line tool
+#   Katna-x86_64.AppImage katna-daemon ...       the background service
+#
+# Katna Mail talks to katna-daemon over D-Bus, which starts it on demand.
+# So D-Bus can find it, each start writes a user activation file that
+# runs this AppImage wherever it now is.
+set -eu
+
+here=$(dirname "$(readlink -f "$0")")
+export PATH="$here/usr/bin:$PATH"
+export XDG_DATA_DIRS="$here/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+program=katna-mail
+case ${1:-} in
+  katna-mail | katna-daemon | katnactl) program=$1; shift ;;
+esac
+
+if [ -n "${APPIMAGE:-}" ] && [ "$program" != katna-daemon ]; then
+  services=${XDG_DATA_HOME:-$HOME/.local/share}/dbus-1/services
+  for file in "$here"/usr/share/dbus-1/services/*.service; do
+    target=$services/$(basename "$file")
+    # No systemd unit comes with an AppImage: D-Bus runs the program itself.
+    text=$(sed -e "s|^Exec=.*|Exec=\"$APPIMAGE\" katna-daemon|" -e '/^SystemdService=/d' "$file")
+    if [ ! -f "$target" ] || [ "$(cat "$target")" != "$text" ]; then
+      mkdir -p "$services"
+      printf '%s\n' "$text" > "$target"
+      # A running session bus reads new activation files after this.
+      dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
+        /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig 2> /dev/null || true
+    fi
+  done
+fi
+
+exec "$here/usr/bin/$program" "$@"

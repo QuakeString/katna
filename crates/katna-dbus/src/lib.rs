@@ -18,6 +18,8 @@ pub use zbus;
 pub mod agenda;
 mod session;
 pub use session::session;
+mod start;
+pub use start::ensure_daemon;
 
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -468,6 +470,21 @@ pub mod flag {
     pub const FORWARDED: &str = "forwarded";
     /// Marked important (`$Important`, or Gmail's Important label).
     pub const IMPORTANT: &str = "important";
+    /// The conversation is muted at the mail service (`$muted`, or
+    /// Gmail's Muted label). Use `Mute` to mute; this only reports it.
+    pub const MUTED: &str = "muted";
+}
+
+/// What `Mute` and `Unmute` act on (`docs/ARCHITECTURE.md` §15.1.1).
+pub mod mute {
+    /// A whole account; `id` is the account.
+    pub const ACCOUNT: &str = "account";
+    /// A folder; `id` is the folder.
+    pub const FOLDER: &str = "folder";
+    /// A conversation; `id` is one of its messages.
+    pub const CONVERSATION: &str = "conversation";
+    /// Mail from `address`, in every account.
+    pub const SENDER: &str = "sender";
 }
 
 macro_rules! pim_proxy {
@@ -580,6 +597,24 @@ macro_rules! pim_proxy {
             /// list, or unpins them. Pins stay on this computer. Pinning more
             /// than ten conversations fails with a message saying so.
             fn set_pinned(&self, messages: &[i64], on: bool) -> zbus::Result<()>;
+
+            /// Mutes what `kind` ([`mute`]) and `id` or `address` name until
+            /// `until` (Unix seconds; 0 until unmuted): its new mail does not
+            /// notify and is not counted on the taskbar and tray, though it
+            /// still arrives unread. A conversation is muted at the mail
+            /// service too where it can be (Gmail's mute, `$muted`).
+            /// `MailChanged` follows for every account.
+            fn mute(&self, kind: &str, id: i64, address: &str, until: i64) -> zbus::Result<()>;
+
+            /// Undoes [`Self::mute`]; nothing happens when it was not muted.
+            fn unmute(&self, kind: &str, id: i64, address: &str) -> zbus::Result<()>;
+
+            /// Sets whether new mail in `folder` notifies and whether its
+            /// unread mail counts on the taskbar and tray. `category` is an
+            /// inbox tab (`MailCategory` storage number), or 0 for the whole
+            /// folder. `MailChanged` follows for every account.
+            fn set_bell(&self, folder: i64, category: i64, notify: bool, count: bool)
+                -> zbus::Result<()>;
 
             /// Creates a folder (a label, on Gmail) called `name` on the
             /// account's server, inside folder `parent` (0: at the top), and

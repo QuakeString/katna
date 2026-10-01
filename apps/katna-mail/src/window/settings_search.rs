@@ -132,12 +132,6 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
-        "settings-general-notifications",
-        "settings-general-notifications-summary",
-        "notify alert sound chime popup new mail",
-    ),
-    entry(
-        Section::General,
         "settings-general-updates",
         "settings-general-updates-summary",
         "update upgrade new version download install automatic",
@@ -152,7 +146,31 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-desktop",
         "settings-general-desktop-summary",
-        "tray badge unread count taskbar dock panel startup start login autostart launch boot",
+        "tray icon color colour monochrome symbolic panel startup start login autostart launch boot",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-general-notifications",
+        "settings-general-notifications-summary",
+        "notify alert popup new mail bell folder tab",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-sounds",
+        "settings-notifications-sounds-summary",
+        "sound chime ding audio alarm reminder sent failed error play volume quiet",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-count",
+        "settings-notifications-count-summary",
+        "badge unread count taskbar dock tray number folder",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-muted",
+        "settings-notifications-muted-summary",
+        "mute unmute silence quiet bell conversation thread sender account folder",
     ),
     entry(
         Section::General,
@@ -224,13 +242,19 @@ const ENTRIES: &[Entry] = &[
         Section::Appearance,
         "settings-appearance-theme",
         "settings-appearance-theme-summary",
-        "dark mode light mode night",
+        "dark mode light mode night theme",
     ),
     entry(
         Section::Appearance,
-        "settings-appearance-desktop-colors",
-        "settings-appearance-desktop-colors-use-detail",
-        "accent colour color scheme",
+        "settings-appearance-colors",
+        "settings-appearance-colors-summary",
+        "colour color scheme theme palette desktop yours custom customize edit editor import export kde clear graphite nord solarized dracula gruvbox catppuccin tokyo night one rose pine everforest kanagawa ayu",
+    ),
+    entry(
+        Section::Appearance,
+        "settings-appearance-accent",
+        "settings-appearance-accent-summary",
+        "accent colour color highlight",
     ),
     entry(
         Section::Appearance,
@@ -315,6 +339,12 @@ const ENTRIES: &[Entry] = &[
         "settings-default-apps-after-saving",
         "settings-default-apps-after-saving-summary",
         "save download folder file manager reveal show dolphin",
+    ),
+    entry(
+        Section::DefaultApps,
+        "settings-files-page",
+        "settings-files-page-summary",
+        "files page attachments small pictures images signature logo icon size kb pixels hide",
     ),
     entry(
         Section::Signatures,
@@ -808,7 +838,9 @@ mod tests {
                 .map(|f| f.title.to_string())
                 .collect::<Vec<_>>()
         };
-        assert_eq!(titles("dark")[0], "Theme");
+        assert_eq!(titles("dark")[0], "Mode");
+        assert_eq!(titles("nord")[0], "Colors");
+        assert_eq!(titles("accent")[0], "Accent");
         assert_eq!(titles("reading pane")[0], "Reading pane");
         assert!(titles("undo").contains(&"Sending".to_owned()));
         assert!(titles("rules").contains(&"Folders & rules".to_owned()));

@@ -41,6 +41,10 @@ pub enum Command {
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
+    /// Brings back the color scheme just deleted: its id, its file's
+    /// contents and whether it was in use. The app does this itself; the
+    /// daemon never sees it.
+    RestoreScheme(String, String, bool),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -72,6 +76,39 @@ pub enum Command {
     Task(Box<crate::tasks::TaskCommand>),
     /// A change to a calendar itself (`Pim1.RenameCalendar` and the like).
     Calendar(CalendarEdit),
+    /// Mutes something until then (Unix seconds), or until unmuted (0).
+    Mute(Muted, i64),
+    Unmute(Muted),
+    /// Sets whether a folder (or an inbox tab) notifies and counts.
+    SetBell(
+        FolderId,
+        Option<katna_core::MailCategory>,
+        katna_store::Bell,
+    ),
+}
+
+/// What [`Command::Mute`] acts on (`docs/ARCHITECTURE.md` §15.1.1).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Muted {
+    Account(katna_core::AccountId),
+    Folder(FolderId),
+    /// The conversation of this message.
+    Conversation(MessageId),
+    /// Mail from this address.
+    Sender(String),
+}
+
+impl Muted {
+    /// `Pim1.Mute`'s kind, id and address.
+    fn args(&self) -> (&'static str, i64, &str) {
+        use katna_dbus::mute;
+        match self {
+            Self::Account(a) => (mute::ACCOUNT, a.0, ""),
+            Self::Folder(f) => (mute::FOLDER, f.0, ""),
+            Self::Conversation(m) => (mute::CONVERSATION, m.0, ""),
+            Self::Sender(address) => (mute::SENDER, 0, address),
+        }
+    }
 }
 
 /// A saved card to write, for [`Command::WriteCards`].
@@ -158,6 +195,7 @@ impl Command {
             | Self::ReopenDraft
             | Self::RestoreQuote
             | Self::RestoreContacts(_)
+            | Self::RestoreScheme(..)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
@@ -171,7 +209,10 @@ impl Command {
             | Self::Event(_)
             | Self::Several(_)
             | Self::Task(_)
-            | Self::Calendar(_) => {
+            | Self::Calendar(_)
+            | Self::Mute(..)
+            | Self::Unmute(_)
+            | Self::SetBell(..) => {
                 return None;
             }
         })
@@ -239,9 +280,11 @@ impl AccountState {
 
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
-    katna_dbus::session()
+    let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))
+        .map_err(|err| format!("No D-Bus session: {err}"))?;
+    katna_dbus::ensure_daemon(&connection).await;
+    Ok(connection)
 }
 
 /// Sends `command` and waits until the daemon has applied it to the store,
@@ -324,12 +367,28 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             return Ok(());
         }
         Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
-        Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
+        Command::ReopenDraft
+        | Command::RestoreQuote
+        | Command::RestoreContacts(_)
+        | Command::RestoreScheme(..) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
         Command::Calendar(edit) => return edit_calendar(connection, edit).await.map(|_| ()),
+        Command::Mute(what, until) => {
+            let (kind, id, address) = what.args();
+            pim.mute(kind, id, address, *until).await
+        }
+        Command::Unmute(what) => {
+            let (kind, id, address) = what.args();
+            pim.unmute(kind, id, address).await
+        }
+        Command::SetBell(folder, category, bell) => {
+            let category = category.map_or(0, katna_core::MailCategory::to_storage);
+            pim.set_bell(folder.0, category, bell.notify, bell.count)
+                .await
+        }
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;

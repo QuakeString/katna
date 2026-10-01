@@ -218,44 +218,6 @@ impl Store {
         Ok(MessageId(id.unwrap_or(0)))
     }
 
-    /// Mail worth a new-mail notification: unread messages of `account`
-    /// in its inbox, in the Primary tab or not classified, stored after
-    /// message `after` and dated `since` (Unix seconds) or later. The
-    /// newest `limit`, oldest first.
-    pub fn new_inbox_mail(
-        &self,
-        account: AccountId,
-        after: MessageId,
-        since: i64,
-        limit: u32,
-    ) -> Result<Vec<MessageId>> {
-        let mut stmt = self.mail.prepare_cached(
-            "SELECT id FROM (
-               SELECT m.id FROM message m
-               WHERE m.account_id = ?1 AND m.id > ?2 AND (m.flags & ?3) = 0
-                 AND m.date >= ?4 AND (m.category IS NULL OR m.category = ?5)
-                 AND EXISTS (SELECT 1 FROM message_location l
-                             JOIN folder f ON f.id = l.folder_id
-                             WHERE l.message_id = m.id AND f.role = ?6)
-               ORDER BY m.id DESC LIMIT ?7)
-             ORDER BY id",
-        )?;
-        let unwanted = (MessageFlags::SEEN | MessageFlags::DELETED).bits();
-        let rows = stmt.query_map(
-            params![
-                account.0,
-                after.0,
-                unwanted,
-                since,
-                MailCategory::Primary.to_storage(),
-                FolderRole::Inbox.as_str(),
-                limit
-            ],
-            |row| row.get(0).map(MessageId),
-        )?;
-        Ok(rows.collect::<rusqlite::Result<_>>()?)
-    }
-
     /// The folders of `account`, ordered by path.
     pub fn folders(&self, account: AccountId) -> Result<Vec<StoredFolder>> {
         let mut stmt = self.mail.prepare_cached(
@@ -1042,11 +1004,15 @@ mod tests {
 
         assert_eq!(store.latest_message(account).unwrap(), unclassified);
         assert_eq!(
-            store.new_inbox_mail(account, before, 1_000, 10).unwrap(),
+            store
+                .new_ringing_mail(account, before, 1_000, 10, 4_000)
+                .unwrap(),
             [primary, unclassified]
         );
         assert_eq!(
-            store.new_inbox_mail(account, before, 1_000, 1).unwrap(),
+            store
+                .new_ringing_mail(account, before, 1_000, 1, 4_000)
+                .unwrap(),
             [unclassified]
         );
     }

@@ -1153,6 +1153,12 @@ impl MailWindow {
                     .truncate()
                     .child(SharedString::from(chip.label().to_owned())),
             )
+            .children(
+                chip.valid
+                    .then(|| self.muted_mark(&chip.email, 16.0, th))
+                    .flatten()
+                    .map(|mark| div().flex_none().ml(px(4.0)).child(mark)),
+            )
             .when(arrow, |d| {
                 d.child(
                     div()
@@ -1217,11 +1223,20 @@ impl MailWindow {
                     .flex_col()
                     .child(
                         div()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text))
-                            .truncate()
-                            .child(name),
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(6.0))
+                            .child(
+                                div()
+                                    .min_w_0()
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text))
+                                    .truncate()
+                                    .child(name),
+                            )
+                            .children(self.muted_mark(&chip.email, 16.0, th)),
                     )
                     .child(
                         div()

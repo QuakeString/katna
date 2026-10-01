@@ -66,11 +66,14 @@ mod onboarding;
 mod popovers;
 mod print;
 mod print_preview;
+mod quiet;
 mod reader;
 mod remote;
 mod reply_row;
 mod rich;
 mod scale_slider;
+mod scheme_editor;
+mod scheme_picker;
 mod search_panel;
 mod select;
 mod settings;
@@ -80,6 +83,7 @@ mod share_ask;
 mod sign_in_again;
 mod skeleton;
 mod snooze;
+mod sounds;
 mod storage;
 mod tab_strip;
 mod tasks_page;
@@ -118,7 +122,7 @@ use crate::daemon::{self, Command};
 use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
-use crate::theme::Theme;
+use crate::theme::{Accent, Theme};
 use crate::widgets::{elevation, icon, tip};
 
 use apps::{App as RailApp, People};
@@ -165,6 +169,7 @@ actions!(
         ToggleStar,
         AddToTasks,
         MarkImportant,
+        ToggleMute,
         MarkNotImportant,
         ToggleCheck,
         ToggleSettings,
@@ -216,14 +221,11 @@ const EDGE_REST: f32 = 0.55;
 /// the account picture. The header bar itself spaces its items 6 px apart.
 const TOP_BAR_GAP: f32 = 16.0;
 const BAR_ITEM_GAP: f32 = 6.0;
-/// The room the language button, Settings and the account picture take at
-/// the top bar's end, up to the window buttons: 40 px wide each (the
-/// language button a flag and a chevron), with the gap between them, and
-/// 8 px after the picture plus the bar's own spacing.
-const TOP_END_WIDTH: f32 =
-    LANGUAGE_BUTTON_WIDTH + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
-/// The language button: its flag and chevron with 8 px either side.
-const LANGUAGE_BUTTON_WIDTH: f32 = 8.0 + 24.0 + 4.0 + 18.0 + 8.0;
+/// The room Settings and the account picture take at the top bar's end, up
+/// to the window buttons: 40 px wide each, with the gap between them, and
+/// 8 px after the picture plus the bar's own spacing. The language button
+/// is in the account menu.
+const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
 /// The size of the word on the Compose button.
 const COMPOSE_TEXT_SIZE: f32 = 14.0;
 /// Compose is as tall as a phone's: a 56 px square in the rail, a pill in
@@ -394,6 +396,8 @@ enum Menu {
     CalendarZones,
     /// The views, when the bar is too narrow for their buttons.
     CalendarViews,
+    /// The list toolbar's bell: how long to mute the open folder or tab.
+    Quiet,
 }
 
 /// A change the user asks for on some lines of the list.
@@ -509,6 +513,8 @@ pub struct MailWindow {
     tree: Tree,
     /// Unread mail per folder, counted in the background.
     unread: HashMap<FolderId, u64>,
+    /// What notifies and counts: folder bells and mutes.
+    alerts: data::Alerts,
     unread_task: Option<Task<()>>,
     expanded: HashSet<String>,
     /// Accounts folded or opened in the folder pane by their arrow; the
@@ -585,6 +591,8 @@ pub struct MailWindow {
     context_menu: Option<context_menu::ContextMenu>,
     /// The right-click menu of the folder pane.
     nav_menu: Option<nav_menu::NavMenu>,
+    /// The mute choices opened from a folder's or account's menu.
+    quiet_menu: Option<quiet::QuietMenu>,
     /// Checks for new mail under way; the refresh arrow turns meanwhile.
     checking: Vec<nav_menu::Check>,
     check_seq: u64,
@@ -632,13 +640,13 @@ pub struct MailWindow {
     settings_spring: Spring,
     /// The reading-pane choice of the quick settings under the pointer.
     pane_hover: Option<ReadingPane>,
-    /// The tab indicator's position, in tabs.
-    tab_spring: Spring,
-    /// The tab the indicator last left and the one it goes to, so only
-    /// those two change their label and count as it slides past others.
-    tab_slide: (usize, usize),
+    /// How far the inbox tabs have folded to fit their room (see
+    /// `tabs_fold_target`), gliding between steps.
+    tab_fold: Spring,
     /// Each inbox tab's label and count badge widths, measured each frame.
     tab_sizes: Vec<(f32, f32)>,
+    /// Each inbox tab's unread chip as it shows, fades and folds away.
+    tab_chips: Vec<list::TabChip>,
     snackbar: Option<Snackbar>,
     /// What Ctrl+Z takes back, newest last: this window's actions since
     /// it opened.
@@ -738,6 +746,8 @@ pub struct MailWindow {
     /// A dialog without fields of its own to focus (the delete question),
     /// and any dialog's frame that keeps Tab inside it.
     dialog_focus: FocusHandle,
+    /// Settings > Appearance > Colors' editor, while open.
+    scheme_editor: Option<scheme_editor::SchemeEditor>,
     /// The folder pane while it has the keys, the line they are on, and
     /// whether it had them when this frame was drawn.
     nav_focus: FocusHandle,
@@ -836,7 +846,7 @@ impl MailWindow {
             tracing::warn!("{err}; using the default settings");
             Config::default()
         });
-        let desktop_colors = colors::DesktopColors::new(&env.desktop);
+        let desktop_colors = colors::DesktopColors::new(&env.desktop, paths.config_dir());
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
@@ -872,6 +882,7 @@ impl MailWindow {
             config_path,
             tree: Tree::default(),
             unread: HashMap::new(),
+            alerts: data::Alerts::default(),
             unread_task: None,
             expanded: HashSet::new(),
             open_accounts: HashMap::new(),
@@ -909,6 +920,7 @@ impl MailWindow {
             menu: None,
             context_menu: None,
             nav_menu: None,
+            quiet_menu: None,
             checking: Vec::new(),
             check_seq: 0,
             snooze_menu: None,
@@ -934,9 +946,9 @@ impl MailWindow {
             settings_open: false,
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
-            tab_spring: Spring::new(motion::SLIDE, 0.0),
-            tab_slide: (0, 0),
+            tab_fold: Spring::new(motion::SMOOTH, 0.0),
             tab_sizes: Vec::new(),
+            tab_chips: Vec::new(),
             snackbar: None,
             undo_history: Vec::new(),
             crash_notice: None,
@@ -988,6 +1000,7 @@ impl MailWindow {
             reader_focus: cx.focus_handle(),
             reader_keys: false,
             dialog_focus: cx.focus_handle(),
+            scheme_editor: None,
             nav_focus: cx.focus_handle(),
             nav_cursor: None,
             nav_keys_shown: false,
@@ -1039,7 +1052,8 @@ impl MailWindow {
     }
 
     /// The colors: the desktop's light or dark, unless the settings pick
-    /// one, in the desktop's color scheme or accent color if it has them.
+    /// one, in the color scheme and accent color the settings pick
+    /// ([`Theme::pick`]).
     fn theme(&self, window: &Window) -> Theme {
         self.theme_for(&self.chrome, window)
     }
@@ -1051,17 +1065,16 @@ impl MailWindow {
             ThemeChoice::Light => Some(false),
             ThemeChoice::Dark => Some(true),
         };
-        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
         let system = &self.desktop_colors.colors;
-        let desktop_scheme = self.config.mail.desktop_colors && system.scheme_for(dark).is_some();
-        let th = if self.config.mail.desktop_colors {
-            Theme::system(dark, system)
-        } else {
-            Theme::new(dark)
-        };
+        let view = &self.config.mail;
+        // A scheme with one side decides light or dark itself.
+        let choice = Theme::forced_dark(view.colors(), system).or(choice);
+        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
+        let scheme = Theme::picks_scheme(dark, view.colors(), system);
+        let th = Theme::pick(dark, view.colors(), Accent::parse(&view.accent), system);
         // The window frame follows the same choices.
         chrome.set_dark(choice);
-        chrome.set_colors(desktop_scheme.then_some(ChromeColors {
+        chrome.set_colors(scheme.then_some(ChromeColors {
             window_bg: th.page,
             view_bg: th.surface,
             fg: th.text,
@@ -1151,12 +1164,13 @@ impl MailWindow {
         self.unread_task = Some(cx.spawn(async move |this, cx| {
             // The folders are read there too, so the window never waits
             // for their counts.
-            let (folders, unread) = cx
+            let (folders, unread, alerts) = cx
                 .background_executor()
                 .spawn(async move { data::folders_and_unread(&paths) })
                 .await;
             this.update(cx, |this, cx| {
                 this.unread = unread;
+                this.alerts = alerts;
                 if let Ok(mail) = &this.mail {
                     let folders = folders.unwrap_or_else(|| mail.folders());
                     this.tree = Tree::build(&this.accounts, &folders, &this.unread);
@@ -1245,6 +1259,7 @@ impl MailWindow {
                         detail,
                     } => {
                         this.send_failed(id, cx);
+                        this.play_event_sound(katna_core::config::SoundEvent::NotSent);
                         let subject = if subject.trim().is_empty() {
                             "(no subject)".to_owned()
                         } else {
@@ -1806,6 +1821,10 @@ impl MailWindow {
     }
 
     fn focus_list(&mut self, _: &FocusList, window: &mut Window, cx: &mut Context<Self>) {
+        if self.app == RailApp::Files {
+            self.focus_files(window, cx);
+            return;
+        }
         window.focus(&self.list_focus, cx);
         if self.selected.is_none() && !self.entries.is_empty() {
             self.select(0, cx);
@@ -2876,6 +2895,10 @@ impl MailWindow {
             self.restore_contacts(keys, cx);
             return;
         }
+        if let Command::RestoreScheme(id, contents, was_used) = &undo {
+            self.restore_scheme(id, contents, *was_used, cx);
+            return;
+        }
         if let Command::UndoSend(id) = undo {
             self.send_undone(id, cx);
             // Taken back from the outbox: the message opens again.
@@ -2949,6 +2972,10 @@ impl MailWindow {
 
     fn mark_not_important(&mut self, _: &MarkNotImportant, _: &mut Window, cx: &mut Context<Self>) {
         self.act_on_targets(Act::Important(false), cx);
+    }
+
+    fn toggle_mute(&mut self, _: &ToggleMute, _: &mut Window, cx: &mut Context<Self>) {
+        self.toggle_mute_targets(cx);
     }
 
     fn toggle_check(&mut self, _: &ToggleCheck, _: &mut Window, cx: &mut Context<Self>) {
@@ -3311,10 +3338,6 @@ impl Render for MailWindow {
             } else {
                 0.0
             });
-        self.tab_spring.set(self.tab as f32);
-        if self.tab_slide.1 != self.tab {
-            self.tab_slide = (self.tab_slide.1, self.tab);
-        }
         self.nav_t = self.nav_spring.tick(window, reduce);
         let reserve = self.reserve_spring.tick(window, reduce);
         let search_t = self.search_spring.tick(window, reduce);
@@ -3322,8 +3345,8 @@ impl Render for MailWindow {
         self.keys_t = self.keys_spring.tick(window, reduce);
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
-        self.tab_spring.tick(window, reduce);
         self.measure_tabs(window);
+        self.tick_tab_chips(window, reduce);
         self.tick_reorder(window, reduce, cx);
         self.tick_nav_fold(window, reduce);
         self.sync_nav_list();
@@ -3360,6 +3383,9 @@ impl Render for MailWindow {
         let (agenda_room, agenda_target) = self.tick_agenda(available, window, reduce);
         let available = (available - contact_room - agenda_room).max(200.0);
         self.cards_width = available;
+        // The inbox tabs fold to fit the list's new width.
+        self.tab_fold.set(self.tabs_fold_target());
+        self.tab_fold.tick(window, reduce);
         let reader_width = if self.split() {
             ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
         } else {
@@ -3433,7 +3459,11 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(self.render_app_page(&th, window, cx))
+                .child(if self.settings_page.is_some() {
+                    self.render_settings_page(&th, window, cx)
+                } else {
+                    self.render_app_page(&th, window, cx)
+                })
                 .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };
@@ -3498,7 +3528,7 @@ impl Render for MailWindow {
         };
         // The box gives way first, so the buttons after it keep their
         // gaps and never overlap.
-        // The agenda button before the language button, with its gap.
+        // The agenda button before Settings, with its gap.
         let agenda_room = if self.agenda_button_shown() {
             agenda::AGENDA_BUTTON_WIDTH + TOP_BAR_GAP
         } else {
@@ -3506,7 +3536,7 @@ impl Render for MailWindow {
         };
         let room = width - open_left - room_end - TOP_END_WIDTH - agenda_room - TOP_BAR_GAP;
         // Too narrow for both (wider than a phone, with wide window
-        // buttons): the button goes rather than cover the language button.
+        // buttons): the button goes rather than cover the agenda button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
         let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
@@ -3569,6 +3599,7 @@ impl Render for MailWindow {
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
+        let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
@@ -3582,6 +3613,7 @@ impl Render for MailWindow {
         let context_menu = self.render_context_menu(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         let snooze_menu = self.render_snooze_menu(&th, cx);
+        let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
             None
@@ -3618,10 +3650,12 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(nav_menu)
             .children(snooze_menu)
+            .children(quiet_menu)
             .children(danger)
             .children(delete_ask)
             .children(new_label)
             .children(contact_label)
+            .children(scheme_editor)
             .children(contact_qr)
             .children(crash_notice)
             .children(sign_in_again)

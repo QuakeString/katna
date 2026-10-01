@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = ເພີ່ມບັນຊີອື່ນ
-add-account-menu-manage = ຈັດການບັນຊີ
 app-menu = ເມນູຫຼັກ
 app-menu-back = ກັບຄືນ

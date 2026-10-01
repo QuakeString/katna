@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings and language in the account menu"
+text = """
+The menu under your account picture now opens with a row of icons: open
+Settings or change the language. The language flag has left the top bar
+to make room.
+"""

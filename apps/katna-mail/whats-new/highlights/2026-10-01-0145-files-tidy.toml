@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A tidier Files page"
+text = """
+The counts beside each kind of file and each account now sit in the same small pills as the folder counts in Mail. The line under the page's title and the rows of files also start and end at the same edges.
+"""

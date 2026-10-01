@@ -85,8 +85,17 @@ pub fn set(start: Option<Start>) -> io::Result<()> {
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir)?;
     }
-    let exe = std::env::current_exe()?;
-    std::fs::write(&path, entry(&exe, start))
+    std::fs::write(&path, entry(&program()?, start))
+}
+
+#[cfg(not(windows))]
+/// The program the entry starts: this one, or in an AppImage the AppImage
+/// itself, since the folder this program runs from is gone after it quits.
+fn program() -> io::Result<PathBuf> {
+    match std::env::var_os("APPIMAGE").map(PathBuf::from) {
+        Some(appimage) if appimage.is_absolute() && appimage.is_file() => Ok(appimage),
+        _ => std::env::current_exe(),
+    }
 }
 
 /// The first run with the setting: Katna starts quietly at login unless it
@@ -179,6 +188,7 @@ pub fn set(start: Option<Start>) -> io::Result<()> {
 pub fn start_service() -> ExitCode {
     let started = futures_lite::future::block_on(async {
         let connection = katna_dbus::session().await?;
+        katna_dbus::ensure_daemon(&connection).await;
         connection
             .call_method(
                 Some("org.freedesktop.DBus"),

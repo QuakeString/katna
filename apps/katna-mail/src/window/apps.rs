@@ -209,19 +209,36 @@ impl MailWindow {
             self.close_settings_page(window, cx);
         }
         self.open_app(app, cx);
-        if app == App::Calendar {
-            window.focus(&self.calendar.focus, cx);
+        self.focus_app_page(window, cx);
+    }
+
+    /// Gives the keys to the page on show, so keys such as Ctrl+Z reach it
+    /// rather than the hidden mail list.
+    pub(super) fn focus_app_page(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        match self.app {
+            App::Mail => window.focus(&self.list_focus, cx),
+            App::Calendar => window.focus(&self.calendar.focus, cx),
+            App::Contacts => window.focus(&self.window_focus, cx),
+            App::Tasks => {
+                if let Some(focus) = &self.tasks.focus {
+                    window.focus(focus, cx);
+                }
+            }
+            App::Notes | App::Files | App::Feeds => {}
         }
-        // Keys such as Ctrl+Z need focus in the page on screen, not the
-        // hidden mail list.
-        if app == App::Contacts {
-            window.focus(&self.window_focus, cx);
-        }
-        // Its keys and Ctrl+Z reach the page, not the hidden mail list.
-        if app == App::Tasks
-            && let Some(focus) = &self.tasks.focus
-        {
-            window.focus(focus, cx);
+    }
+
+    /// Hands the search box to the app on show (`entering`), or back to
+    /// mail, as switching apps does, for the Settings page opening over it
+    /// and closing.
+    pub(super) fn swap_app_search(&mut self, entering: bool, cx: &mut Context<Self>) {
+        match self.app {
+            App::Calendar => self.swap_calendar_search(entering, cx),
+            App::Tasks => self.swap_tasks_search(entering, cx),
+            App::Files => self.swap_files_search(entering, cx),
+            App::Contacts => self.swap_contacts_search(entering, cx),
+            App::Notes => self.sync_notes_search(cx),
+            App::Mail | App::Feeds => {}
         }
     }
 
@@ -441,7 +458,7 @@ impl MailWindow {
                 )
                 .tooltip(tip(tr!("settings"), th))
                 .on_click(cx.listener(|this, _, window, cx| {
-                    if this.settings_page.is_some() && this.app == App::Mail {
+                    if this.settings_page.is_some() {
                         this.close_settings_page(window, cx);
                     } else {
                         this.open_settings(&OpenSettings, window, cx);
@@ -658,10 +675,19 @@ fn render_person(
                 .flex_col()
                 .child(
                     div()
-                        .truncate()
-                        .text_size(px(14.0))
-                        .text_color(rgba(th.text))
-                        .child(name.clone().unwrap_or_else(|| person.email.clone())),
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
+                        .child(
+                            div()
+                                .min_w_0()
+                                .truncate()
+                                .text_size(px(14.0))
+                                .text_color(rgba(th.text))
+                                .child(name.clone().unwrap_or_else(|| person.email.clone())),
+                        )
+                        .children(this.muted_mark(&person.email, 16.0, th)),
                 )
                 .when(name.is_some(), |d| {
                     d.child(

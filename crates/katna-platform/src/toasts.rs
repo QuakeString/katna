@@ -50,6 +50,11 @@ impl Server {
             self.next.fetch_add(1, Ordering::Relaxed)
         };
         let quiet = matches!(hints.get("suppress-sound"), Some(Value::Bool(true)));
+        // The sound `katna_platform::sound` names, e.g. "Mail".
+        let sound = match hints.get("sound-name") {
+            Some(Value::Str(name)) => name.parse().unwrap_or(Sound::Default),
+            _ => Sound::Default,
+        };
         let mut toast = Toast::new(ids::MAIL_APP_ID).title(&plain(summary));
         let mut lines = body.lines().map(plain);
         if let Some(line) = lines.next() {
@@ -70,7 +75,7 @@ impl Server {
         }
         let clicks = self.clicks.clone();
         let toast = toast
-            .sound(if quiet { None } else { Some(Sound::Mail) })
+            .sound((!quiet).then_some(sound))
             .on_activated(move |action| {
                 let key = action.unwrap_or_else(|| "default".to_owned());
                 let _ = clicks.try_send((id, key));

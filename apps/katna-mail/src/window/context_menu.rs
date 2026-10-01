@@ -46,6 +46,7 @@ const RULE_HEIGHT: f32 = 2.0 * RULE_MARGIN + 1.0;
 const MARGIN: f32 = 8.0;
 
 use super::calendar::menu::CalTarget;
+use katna_core::config::SoundEvent;
 
 /// The open right-click menu.
 pub(super) struct ContextMenu {
@@ -67,6 +68,10 @@ enum MenuFor {
         row: Rc<Row>,
     },
     Calendar(CalTarget),
+    /// A color scheme's card in Settings > Appearance > Colors.
+    Scheme(&'static str),
+    /// The sounds to pick for an event in Settings > Notifications.
+    Sound(SoundEvent),
 }
 
 impl ContextMenu {
@@ -83,7 +88,7 @@ impl ContextMenu {
     fn line(&self) -> Option<(usize, EntryKey)> {
         match &self.what {
             MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
-            MenuFor::Calendar(_) => None,
+            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) => None,
         }
     }
 }
@@ -128,13 +133,37 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of the color scheme `id`'s card.
+    pub(super) fn open_scheme_menu(
+        &mut self,
+        id: &'static str,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Scheme(id), at));
+        cx.notify();
+    }
+
+    /// Opens the menu of sounds for `event`.
+    pub(super) fn open_sound_context_menu(
+        &mut self,
+        event: SoundEvent,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Sound(event), at));
+        cx.notify();
+    }
+
     /// Closes the menu; returns the Calendar thing it was for and where
     /// it opened.
     pub(super) fn take_calendar_target(&mut self) -> Option<(CalTarget, Point<Pixels>)> {
         let menu = self.context_menu.take()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
-            MenuFor::Mail { .. } => None,
+            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) => None,
         }
     }
 
@@ -357,6 +386,8 @@ impl MailWindow {
         let base = match &menu.what {
             MenuFor::Mail { ix, .. } => format!("context-menu-{ix}"),
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
+            MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
+            MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
         };
         let key = match (menu.open, drills) {
             (Some(sub), true) => format!("{base}-{sub:?}"),
@@ -409,6 +440,8 @@ impl MailWindow {
         match self.context_menu.as_ref().map(|m| &m.what) {
             Some(MenuFor::Mail { row, .. }) => self.mail_menu_rows(row, rh, th, cx),
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
+            Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
+            Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
             None => (Rows::new(rh), Vec::new()),
         }
     }
@@ -637,7 +670,7 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => {
                 return self.calendar_sub_rows(target, sub, rh, th, cx);
             }
-            None => None,
+            Some(MenuFor::Scheme(_) | MenuFor::Sound(_)) | None => None,
         };
         let act = |act: Act| {
             cx.listener(
@@ -775,6 +808,61 @@ impl MailWindow {
                     menu_row("context-pin", "pin", tr!("menu-pin").into(), th, rh)
                         .on_click(act(Act::Pin(true)))
                 });
+                // Mute the conversation, or its sender (§15.1.1).
+                if let Some(key) = self
+                    .context_menu
+                    .as_ref()
+                    .and_then(|m| m.line())
+                    .map(|l| l.1)
+                {
+                    let muted = self.lines_muted(&self.context_targets(key));
+                    rows.item(
+                        menu_row(
+                            "context-mute",
+                            if muted { "bell" } else { "bell-off" },
+                            if muted {
+                                tr!("quiet-unmute-conversation")
+                            } else {
+                                tr!("quiet-mute-conversation")
+                            }
+                            .into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.mute_lines(keys, !muted, cx);
+                        })),
+                    );
+                }
+                if let Some(sender) = row
+                    .as_ref()
+                    .map(|r| r.sender.clone())
+                    .filter(|s| !s.is_empty())
+                {
+                    let muted = self.sender_muted(&sender);
+                    rows.item(
+                        menu_row(
+                            "context-mute-sender",
+                            if muted { "bell" } else { "bell-off" },
+                            if muted {
+                                tr!("quiet-unmute-sender")
+                            } else {
+                                tr!("quiet-mute-sender")
+                            }
+                            .into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.context_menu = None;
+                            this.mute_sender(sender.clone(), !muted, cx);
+                        })),
+                    );
+                }
             }
             // The Calendar's, above.
             Sub::Color | Sub::Calendar | Sub::Answer | Sub::Date => {}

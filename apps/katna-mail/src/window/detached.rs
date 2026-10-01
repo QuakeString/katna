@@ -215,6 +215,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .child(self.render_reader_card(&th, cx));
         let compose = self.render_compose(&th, window, reduce, cx);

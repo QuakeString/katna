@@ -79,6 +79,5 @@ add-account-sign-in-unavailable = { $provider ->
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = ሌላ መለያ አክል
-add-account-menu-manage = መለያዎችን አስተዳድር
 app-menu = ዋና ምናሌ
 app-menu-back = ተመለስ

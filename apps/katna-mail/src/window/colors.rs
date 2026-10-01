@@ -6,16 +6,17 @@
 //! files they come from change (theme tools write `gtk.css` without
 //! telling anyone).
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use futures_lite::StreamExt;
 use gpui::{Context, Task};
 use katna_chrome::Desktop;
 use katna_dbus::zbus::Connection;
-use katna_platform::colors::{self, DesktopKind, SystemColors};
+use katna_platform::colors::{self, DesktopKind, DesktopScheme, SystemColors};
 
 use super::MailWindow;
+use crate::user_schemes;
 
 /// How often the color files are checked for changes.
 const FILE_POLL: Duration = Duration::from_secs(2);
@@ -28,6 +29,12 @@ pub(super) struct DesktopColors {
     /// The portal's accent color, kept for reading again when a file
     /// changes.
     portal_accent: Option<u32>,
+    /// What the desktop gives.
+    desktop: SystemColors,
+    /// The schemes people made (`user_schemes`).
+    pub(super) user: Vec<DesktopScheme>,
+    /// The desktop's colors with the schemes people made listed too, as
+    /// `Theme::pick` looks them up.
     pub(super) colors: SystemColors,
     _watch: Vec<Task<()>>,
 }
@@ -35,8 +42,9 @@ pub(super) struct DesktopColors {
 impl DesktopColors {
     /// Reads the colors the files and GSettings give, so the first frame
     /// already has them; the portal's accent color follows.
-    pub(super) fn new(desktop: &Desktop) -> Self {
+    pub(super) fn new(desktop: &Desktop, config_dir: &Path) -> Self {
         let kind = match desktop {
+            _ if cfg!(windows) => DesktopKind::Windows,
             Desktop::Kde => DesktopKind::Kde,
             Desktop::Gnome => DesktopKind::Gnome,
             Desktop::Other(_) => DesktopKind::Other,
@@ -44,13 +52,30 @@ impl DesktopColors {
         let config_home = colors::config_home();
         let colors = read(kind, config_home.as_ref(), None);
         tracing::info!(?kind, ?colors, "desktop colors");
-        Self {
+        let user = user_schemes::load_all(&user_schemes::dir(config_dir));
+        let mut this = Self {
             kind,
             config_home,
             portal_accent: None,
-            colors,
+            desktop: colors,
+            user,
+            colors: SystemColors::default(),
             _watch: Vec::new(),
-        }
+        };
+        this.merge();
+        this
+    }
+
+    fn merge(&mut self) {
+        let mut colors = self.desktop.clone();
+        colors.schemes.extend(self.user.iter().cloned());
+        self.colors = colors;
+    }
+
+    /// Lists `user` as the schemes people made.
+    pub(super) fn set_user(&mut self, user: Vec<DesktopScheme>) {
+        self.user = user;
+        self.merge();
     }
 }
 
@@ -60,6 +85,7 @@ fn read(
     portal_accent: Option<u32>,
 ) -> SystemColors {
     match config_home {
+        _ if kind == DesktopKind::Windows => colors::windows::read(),
         Some(home) => colors::read(kind, home, portal_accent),
         None => SystemColors::accent_only(portal_accent),
     }
@@ -151,9 +177,10 @@ impl MailWindow {
     }
 
     fn set_desktop_colors(&mut self, colors: SystemColors, cx: &mut Context<Self>) {
-        if self.desktop_colors.colors != colors {
+        if self.desktop_colors.desktop != colors {
             tracing::info!(?colors, "desktop colors changed");
-            self.desktop_colors.colors = colors;
+            self.desktop_colors.desktop = colors;
+            self.desktop_colors.merge();
             cx.notify();
         }
     }

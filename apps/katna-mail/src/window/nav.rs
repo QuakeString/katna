@@ -107,7 +107,7 @@ pub(super) fn side_row(
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
     let id = id.into();
-    let text = if on { th.nav_selected_text } else { th.text };
+    let text = if on { th.row_selected_text } else { th.text };
     div()
         .id(id.clone())
         .relative()
@@ -125,7 +125,7 @@ pub(super) fn side_row(
         .text_size(px(14.0))
         .text_color(rgba(text))
         .when(on, |d| {
-            d.bg(rgba(th.nav_selected)).font_weight(FontWeight::BOLD)
+            d.bg(rgba(th.row_selected)).font_weight(FontWeight::BOLD)
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
@@ -139,6 +139,28 @@ pub(super) fn side_row(
                 .child(label),
         )
 }
+/// A side line's count, in a tight, faint pill of the line's text color:
+/// Mail's folders and the Files page's kinds and accounts. On the open
+/// line the pill is lighter than the line's grey.
+pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
+    let bg = if on {
+        th.row_selected_pill
+    } else {
+        fade(th.text, 0.08)
+    };
+    div().flex_none().pl(px(8.0)).child(
+        div()
+            .h(px(18.0))
+            .px(px(6.0))
+            .flex()
+            .items_center()
+            .rounded_full()
+            .bg(rgba(bg))
+            .text_size(px(12.0))
+            .child(format::thousands(count)),
+    )
+}
+
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
 
@@ -642,18 +664,6 @@ impl MailWindow {
             end.push(
                 div()
                     .flex_none()
-                    .w(px(super::LANGUAGE_BUTTON_WIDTH * (1.0 - phone)))
-                    .mr(px(
-                        (super::TOP_BAR_GAP - super::BAR_ITEM_GAP) * (1.0 - phone)
-                    ))
-                    .overflow_hidden()
-                    .opacity(1.0 - phone)
-                    .child(self.render_language_button(th, cx))
-                    .into_any_element(),
-            );
-            end.push(
-                div()
-                    .flex_none()
                     .w(px(40.0 * (1.0 - phone)))
                     .overflow_hidden()
                     .opacity(1.0 - phone)
@@ -818,7 +828,7 @@ impl MailWindow {
             sidebar::Row::AllAccounts { expanded } => self.render_heading(
                 ix,
                 tr!("nav-all-accounts"),
-                (*expanded, self.checking_all()),
+                (*expanded, self.checking_all(), None),
                 th,
                 cx,
             ),
@@ -827,7 +837,11 @@ impl MailWindow {
             } => self.render_heading(
                 ix,
                 name.clone(),
-                (*expanded, self.checking_account(*id)),
+                (
+                    *expanded,
+                    self.checking_account(*id),
+                    self.account_bell_icon(*id),
+                ),
                 th,
                 cx,
             ),
@@ -900,6 +914,7 @@ impl MailWindow {
                                 .unified_folders(*view, None)
                                 .into_iter()
                                 .any(|f| self.checking_folder(f)),
+                        bell: None,
                     },
                     th,
                     cx,
@@ -936,6 +951,7 @@ impl MailWindow {
                         chevron: None,
                         checking: (*view == Unified::Inbox && self.checking_account(*account))
                             || folder.is_some_and(|f| self.checking_folder(f)),
+                        bell: self.account_bell_icon(*account),
                     },
                     th,
                     cx,
@@ -980,6 +996,7 @@ impl MailWindow {
                                 && folder
                                     .and_then(|f| self.tree.account_of(f))
                                     .is_some_and(|a| self.checking_account(a)),
+                        bell: folder.and_then(|f| self.folder_bell_icon(f)),
                     },
                     th,
                     cx,
@@ -994,7 +1011,7 @@ impl MailWindow {
         &self,
         ix: usize,
         name: String,
-        (expanded, checking): (bool, bool),
+        (expanded, checking, bell): (bool, bool, Option<&'static str>),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1033,6 +1050,13 @@ impl MailWindow {
                 }),
             )
             .child(div().min_w_0().pb(px(2.0)).truncate().child(name))
+            .when_some(bell, |d, bell| {
+                d.child(div().flex_none().pl(px(6.0)).pb(px(3.0)).child(icon(
+                    bell,
+                    th.text_faint,
+                    14.0,
+                )))
+            })
             .child(div().flex_1().pl(px(6.0)).pb(px(3.0)).when(checking, |d| {
                 d.child(super::nav_menu::turning_arrow(
                     "heading-checking",
@@ -1072,10 +1096,11 @@ impl MailWindow {
             bold,
             chevron,
             checking,
+            bell,
         } = pill;
         let indent = 12.0 * depth as f32;
         let text = if selected {
-            th.nav_selected_text
+            th.row_selected_text
         } else {
             th.text
         };
@@ -1136,15 +1161,34 @@ impl MailWindow {
                 }),
             )
             .child(Ripple::new(("nav-ripple", ix), rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
-            .child(icon(icon_name, text, 20.0))
+            .child(icon(
+                icon_name,
+                if selected {
+                    text
+                } else {
+                    folder_icon_color(icon_name, th)
+                },
+                20.0,
+            ))
             .child(
                 div()
-                    .flex_1()
+                    .when(bell.is_none(), |d| d.flex_1())
                     .min_w_0()
                     .pl(px(18.0))
                     .truncate()
                     .child(label),
             )
+            // Beside the name, so the markers of lines line up whatever
+            // their counts.
+            .when_some(bell, |d, bell| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(6.0))
+                        .child(icon(bell, th.text_dim, 16.0)),
+                )
+                .child(div().flex_1())
+            })
             .when(checking, |d| {
                 d.child(
                     div()
@@ -1157,15 +1201,7 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(unread > 0, |d| {
-                d.child(
-                    div()
-                        .flex_none()
-                        .pl(px(8.0))
-                        .text_size(px(12.0))
-                        .child(format::thousands(unread)),
-                )
-            })
+            .when(unread > 0, |d| d.child(count_pill(unread, selected, th)))
             .children(chevron);
         // Named by the line rather than its place, which moves as lines
         // above fold or open.
@@ -1173,7 +1209,7 @@ impl MailWindow {
             ElementId::Name(format!("nav-selected:{key}").into()),
             SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
             {
-                let bg = th.nav_selected;
+                let bg = th.row_selected;
                 move |row, s: f32| {
                     if s > 0.001 {
                         row.bg(rgba(fade(bg, s)))
@@ -1502,6 +1538,9 @@ struct Pill {
     chevron: Option<bool>,
     /// Mail is being checked for: a turning arrow beside the name.
     checking: bool,
+    /// A bell, or a crossed bell, when its notifications differ from
+    /// the usual (§15.1.1).
+    bell: Option<&'static str>,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.
@@ -1528,6 +1567,23 @@ fn unified_icon(view: Unified) -> &'static str {
         Unified::Starred => "star",
         Unified::Important => "important",
         _ => view.role().map_or("label", role_icon),
+    }
+}
+
+/// The color of a folder pane icon, from what the icon stands for.
+fn folder_icon_color(icon: &str, th: &Theme) -> u32 {
+    let colors = &th.folder_icons;
+    match icon {
+        "inbox" => th.accent,
+        "unread" => colors.unread,
+        "star" => colors.starred,
+        "important" => colors.important,
+        "sent" => colors.sent,
+        "all-mail" => colors.all_mail,
+        "junk" => colors.spam,
+        "drafts" => colors.drafts,
+        "schedule" => colors.scheduled,
+        _ => th.text_dim,
     }
 }
 

@@ -5,6 +5,7 @@
 //!
 //! All SQL in Katna lives in this crate.
 
+mod alerts;
 mod attachments;
 mod backfill;
 pub mod blob;
@@ -41,6 +42,7 @@ mod translation;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
+pub use alerts::{Bell, FolderBell, Mute, MuteTarget};
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;

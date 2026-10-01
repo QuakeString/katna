@@ -4,7 +4,8 @@
 //! settings". Its tabs: General (conversations, undo send, offline
 //! mail, the tray),
 //! Inbox (tabs per account), Accounts (the folder pane, remove one, or
-//! delete all data), Appearance (reading pane, density, theme, pictures),
+//! delete all data), Appearance (reading pane, density, mode, color scheme
+//! and accent, pictures),
 //! Shortcuts (every one, each can be changed by pressing the new keys),
 //! Default apps (where each kind of attachment opens), Compose (signatures,
 //! with defaults for new mail and replies, and templates), User feedback (crash reports
@@ -14,7 +15,9 @@
 //! saved to `config.toml`.
 
 use std::cell::RefCell;
+use std::ops::RangeInclusive;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
@@ -22,8 +25,8 @@ use gpui::{
     ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice,
+    AccountTabs, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn, ReadingPane,
+    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
 use katna_ui::motion::lerp;
@@ -34,14 +37,13 @@ use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
 use super::tab_strip::TabStrip;
-use super::{
-    FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp,
-};
+use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
+mod notifications;
 mod templates;
 
 /// A signature edit is saved this long after the last key.
@@ -67,6 +69,8 @@ const SHORTCUT_COLUMN: f32 = 440.0;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Section {
     General,
+    /// What notifies and counts on the taskbar, and what is muted.
+    Notifications,
     Inbox,
     Accounts,
     /// Subscription: the Katna account, sign-in for Katna Server's features.
@@ -84,8 +88,9 @@ pub(super) enum Section {
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 12] = [
+    pub(super) const ALL: [Self; 13] = [
         Self::General,
+        Self::Notifications,
         Self::Inbox,
         Self::Accounts,
         Self::Subscriptions,
@@ -102,6 +107,7 @@ impl Section {
     pub(super) fn label(self) -> String {
         match self {
             Self::General => tr!("settings-tab-general"),
+            Self::Notifications => tr!("settings-tab-notifications"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Accounts => tr!("settings-tab-accounts"),
             Self::Subscriptions => tr!("settings-tab-subscriptions"),
@@ -160,6 +166,10 @@ pub(super) struct SettingsPage {
     /// Where new Jitsi Meet rooms go (`meetings.jitsi_server`).
     jitsi: Entity<TextInput>,
     _jitsi: Subscription,
+    /// The Files page's small-picture limits, in KB and in pixels.
+    small_kb: Entity<TextInput>,
+    small_px: Entity<TextInput>,
+    _small: [Subscription; 2],
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -216,7 +226,6 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.open_app(RailApp::Mail, cx);
         self.settings_open = false;
         self.menu = None;
         let fresh = self.settings_page.is_none();
@@ -224,6 +233,7 @@ impl MailWindow {
         let accent = rgba(self.theme(window).accent).into();
         let words = self.config.general.search_triggers.join(", ");
         let server = self.config.meetings.jitsi_server.clone();
+        let this_files = self.config.mail.files.clone();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -249,6 +259,23 @@ impl MailWindow {
                     this.set_jitsi_server(&text, cx);
                 }
             });
+            let files = this_files.clone();
+            let small_kb = number_input(files.small_kb, FilesPage::KB_RANGE, accent, cx);
+            let small_px = number_input(files.small_px, FilesPage::PX_RANGE, accent, cx);
+            let small_subscriptions = [
+                cx.subscribe(&small_kb, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.set_small_picture(&text, Change::SmallPictureKb, cx);
+                    }
+                }),
+                cx.subscribe(&small_px, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.set_small_picture(&text, Change::SmallPicturePx, cx);
+                    }
+                }),
+            ];
             SettingsPage {
                 section,
                 editing: None,
@@ -272,6 +299,9 @@ impl MailWindow {
                 _triggers: subscription,
                 jitsi,
                 _jitsi: jitsi_subscription,
+                small_kb,
+                small_px,
+                _small: small_subscriptions,
             }
         });
         page.mail_app = opens_mail_links();
@@ -296,6 +326,12 @@ impl MailWindow {
                 .or(first);
             self.edit_signature(editing, window, cx);
             self.load_templates(cx);
+        }
+        // The page opens over the app on show, which stays picked in the
+        // rail and comes back as it was when the page closes. The search
+        // box goes back to mail before the page takes it.
+        if fresh {
+            self.swap_app_search(false, cx);
         }
         self.card_seq += 1;
         cx.notify();
@@ -342,7 +378,10 @@ impl MailWindow {
             self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
         }
         self.card_seq += 1;
-        window.focus(&self.list_focus, cx);
+        // The search box and the keys go back to the app on show.
+        self.sync_search_box(cx);
+        self.swap_app_search(true, cx);
+        self.focus_app_page(window, cx);
         cx.notify();
     }
 
@@ -442,6 +481,7 @@ impl MailWindow {
         let body = match section {
             _ if !query.is_empty() => self.render_settings_results(&query, th, cx),
             Section::General => self.general_section(th, cx),
+            Section::Notifications => self.notifications_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
@@ -628,15 +668,6 @@ impl MailWindow {
                         .flex_col()
                         .gap(px(8.0))
                         .child(self.undo_send_choice(th, cx))
-                        .child(self.switch_row(
-                            "page-sent-sound",
-                            tr!("settings-general-sent-sound"),
-                            tr!("settings-general-sent-sound-detail"),
-                            self.config.sending.sent_sound,
-                            Change::SentSound(!self.config.sending.sent_sound),
-                            th,
-                            cx,
-                        ))
                         .into_any_element(),
                     th,
                 ),
@@ -651,12 +682,6 @@ impl MailWindow {
                 tr!("settings-general-offline"),
                 Some(&tr!("settings-general-offline-detail")),
                 self.offline_choice(th, cx),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-general-notifications"),
-                Some(&tr!("settings-general-notifications-detail")),
-                self.notification_switches(th, cx),
                 th,
             ))
             .when(
@@ -907,34 +932,18 @@ impl MailWindow {
         choices.into_any_element()
     }
 
-    /// New-mail notifications and their sound, which the daemon shows.
-    fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// New-mail notifications, which the daemon shows.
+    pub(super) fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let notifications = &self.config.notifications;
-        div()
-            .flex()
-            .flex_col()
-            .gap(px(2.0))
-            .child(self.switch_row(
-                "page-new-mail",
-                tr!("settings-general-new-mail"),
-                tr!("settings-general-new-mail-detail"),
-                notifications.new_mail,
-                Change::NewMailNotices(!notifications.new_mail),
-                th,
-                cx,
-            ))
-            .when(notifications.new_mail, |d| {
-                d.child(self.switch_row(
-                    "page-new-mail-sound",
-                    tr!("settings-general-new-mail-sound"),
-                    tr!("settings-general-new-mail-sound-detail"),
-                    notifications.sound,
-                    Change::NotificationSound(!notifications.sound),
-                    th,
-                    cx,
-                ))
-            })
-            .into_any_element()
+        self.switch_row(
+            "page-new-mail",
+            tr!("settings-general-new-mail"),
+            tr!("settings-general-new-mail-detail"),
+            notifications.new_mail,
+            Change::NewMailNotices(!notifications.new_mail),
+            th,
+            cx,
+        )
     }
 
     /// Windows lets only the user pick the default mail app: opens the
@@ -1059,19 +1068,27 @@ impl MailWindow {
                 self.scale_control(th, cx),
                 th,
             ))
-            .child(self.row(tr!("settings-appearance-theme"), None, theme, th))
-            .child(self.row(
-                tr!("settings-appearance-desktop-colors"),
-                None,
-                self.switch_row(
-                    "page-desktop-colors",
-                    tr!("settings-appearance-desktop-colors-use"),
-                    tr!("settings-appearance-desktop-colors-use-detail"),
-                    view.desktop_colors,
-                    Change::DesktopColors(!view.desktop_colors),
+            .child(
+                self.row(
+                    tr!("settings-appearance-theme"),
+                    // A scheme with one side sets light or dark itself.
+                    Theme::forced_dark(view.colors(), &self.desktop_colors.colors)
+                        .map(|_| tr!("settings-appearance-theme-forced"))
+                        .as_deref(),
+                    theme,
                     th,
-                    cx,
                 ),
+            )
+            .child(self.row(
+                tr!("settings-appearance-colors"),
+                Some(&tr!("settings-appearance-colors-detail")),
+                self.scheme_picker(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-accent"),
+                Some(&tr!("settings-appearance-accent-detail")),
+                self.accent_picker(th, cx),
                 th,
             ))
             .child(self.row(
@@ -1332,15 +1349,23 @@ impl MailWindow {
                 th,
                 cx,
             ))
-            .child(self.switch_row(
-                "page-unread-badge",
-                tr!("settings-general-unread-badge"),
-                tr!("settings-general-unread-badge-detail"),
-                general.unread_badge,
-                Change::UnreadBadge(!general.unread_badge),
-                th,
-                cx,
-            ))
+            // Only while the tray icon shows.
+            .when(general.show_in_tray, |d| {
+                let color = general.tray_style == TrayStyle::Color;
+                d.child(self.switch_row(
+                    "page-tray-color",
+                    tr!("settings-general-tray-color"),
+                    tr!("settings-general-tray-color-detail"),
+                    color,
+                    Change::TrayStyle(if color {
+                        TrayStyle::Monochrome
+                    } else {
+                        TrayStyle::Color
+                    }),
+                    th,
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 
@@ -1419,7 +1444,96 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .child(self.files_page_row(th, cx))
             .into_any_element()
+    }
+
+    /// Settings > Default apps > Files page: small pictures left out.
+    fn files_page_row(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(page) = &self.settings_page else {
+            return div().into_any_element();
+        };
+        let files = &self.config.mail.files;
+        let mut limit = |label: String, input: &Entity<TextInput>, id, range, unit: String| {
+            div()
+                .flex()
+                .items_center()
+                .gap(px(8.0))
+                .text_size(px(14.0))
+                .text_color(rgba(th.text))
+                .child(label)
+                .child(number_field(id, input, range, th, cx))
+                .child(div().text_color(rgba(th.text_dim)).child(unit))
+        };
+        let limits = div()
+            .ml(px(12.0))
+            .mb(px(8.0))
+            .pl(px(18.0))
+            .py(px(4.0))
+            .border_l_1()
+            .border_color(rgba(th.divider))
+            .flex()
+            .flex_col()
+            .gap(px(12.0))
+            // Off, the limits stay to be set but read as not in use.
+            .when(!files.leave_out_small, |d| d.opacity(0.5))
+            .child(limit(
+                tr!("settings-files-smaller-than"),
+                &page.small_kb,
+                "page-files-small-kb",
+                FilesPage::KB_RANGE,
+                tr!("settings-files-kb"),
+            ))
+            .child(limit(
+                tr!("settings-files-narrower-than"),
+                &page.small_px,
+                "page-files-small-px",
+                FilesPage::PX_RANGE,
+                tr!("settings-files-px"),
+            ))
+            .child(
+                div()
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!("settings-files-sizes-note")),
+            );
+        self.row(
+            tr!("settings-files-page"),
+            Some(tr!("settings-files-page-detail").as_str()),
+            div()
+                .flex()
+                .flex_col()
+                .child(self.switch_row(
+                    "page-files-leave-out-small",
+                    tr!("settings-files-leave-out-small"),
+                    tr!("settings-files-leave-out-small-detail"),
+                    files.leave_out_small,
+                    Change::LeaveOutSmallPictures(!files.leave_out_small),
+                    th,
+                    cx,
+                ))
+                .child(limits),
+            th,
+        )
+        .into_any_element()
+    }
+
+    /// A small-picture limit typed or stepped: applied once typing pauses,
+    /// so the Files page is read again once, not at every key.
+    fn set_small_picture(&mut self, text: &str, change: fn(u32) -> Change, cx: &mut Context<Self>) {
+        let Ok(value) = text.trim().parse::<u32>() else {
+            return;
+        };
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(SAVE_DELAY).await;
+            this.update(cx, |this, cx| this.apply(change(value), cx))
+                .ok();
+        });
+        if let Some(page) = &mut self.settings_page {
+            page.save = Some(task);
+        } else {
+            task.detach();
+        }
     }
 
     // Inbox
@@ -2667,6 +2781,101 @@ fn note(text: String, th: &Theme) -> Div {
         .child(text)
 }
 
+/// A whole number from `range` in a field: Up and Down step it, as do the
+/// arrows at its side.
+fn number_input(
+    value: u32,
+    range: RangeInclusive<u32>,
+    accent: gpui::Hsla,
+    cx: &mut Context<MailWindow>,
+) -> Entity<TextInput> {
+    cx.new(|cx| {
+        let mut input = TextInput::new("", cx);
+        input.set_text(value.to_string(), cx);
+        input.set_accent(accent);
+        input.set_stepper(Some(Arc::new(move |text: &str, _, by| {
+            let text = stepped(text, by, &range).to_string();
+            let end = text.len();
+            Some((text, end))
+        })));
+        input
+    })
+}
+
+/// `text`'s number one up (`by > 0`) or down, kept in `range`.
+fn stepped(text: &str, by: i32, range: &RangeInclusive<u32>) -> u32 {
+    let value = text.trim().parse::<u32>().unwrap_or(*range.start());
+    let value = if by > 0 {
+        value.saturating_add(1)
+    } else {
+        value.saturating_sub(1)
+    };
+    value.clamp(*range.start(), *range.end())
+}
+
+/// The field of a [`number_input`], with its up and down arrows.
+fn number_field(
+    id: &'static str,
+    input: &Entity<TextInput>,
+    range: RangeInclusive<u32>,
+    th: &Theme,
+    cx: &mut Context<MailWindow>,
+) -> Stateful<Div> {
+    let focus = input.focus_handle(cx);
+    let arrow = |which: &'static str, name: &'static str, by: i32, tip_text: String| {
+        let input = input.clone();
+        let range = range.clone();
+        div()
+            .id(which)
+            .flex_1()
+            .w_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded(px(3.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .tooltip(tip(tip_text, th))
+            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(move |_, _, cx| {
+                input.update(cx, |input, cx| {
+                    let value = stepped(input.text(), by, &range);
+                    input.set_text(value.to_string(), cx);
+                });
+            })
+            .child(icon(name, th.text_faint, 9.0))
+    };
+    let (up, down) = match id {
+        "page-files-small-kb" => ("page-files-small-kb-up", "page-files-small-kb-down"),
+        _ => ("page-files-small-px-up", "page-files-small-px-down"),
+    };
+    field_box(id, th)
+        .w(px(64.0))
+        .h(px(32.0))
+        .pl(px(10.0))
+        .pr(px(3.0))
+        .flex()
+        .items_center()
+        .gap(px(2.0))
+        .on_click(move |_, window, cx| window.focus(&focus, cx))
+        .child(div().flex_1().min_w_0().child(input.clone()))
+        .child(
+            div()
+                .h_full()
+                .py(px(3.0))
+                .w(px(14.0))
+                .flex()
+                .flex_col()
+                .child(arrow(up, "chevron-up", 1, tr!("settings-files-more-tip")))
+                .child(arrow(
+                    down,
+                    "chevron-down",
+                    -1,
+                    tr!("settings-files-less-tip"),
+                )),
+        )
+}
+
 fn field_box(id: &'static str, th: &Theme) -> Stateful<Div> {
     div()
         .id(id)
@@ -2747,4 +2956,20 @@ fn recording_chip(recording: Option<&Recording>, th: &Theme) -> Div {
         .text_size(px(13.0))
         .text_color(rgba(th.accent))
         .child(text)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn number_fields_step_within_their_range() {
+        let range = FilesPage::KB_RANGE;
+        assert_eq!(stepped("12", 1, &range), 13);
+        assert_eq!(stepped("12", -1, &range), 11);
+        assert_eq!(stepped("1", -1, &range), 1);
+        assert_eq!(stepped("1024", 1, &range), 1024);
+        assert_eq!(stepped("", 1, &range), 2);
+        assert_eq!(stepped("5000", -1, &range), 1024);
+    }
 }

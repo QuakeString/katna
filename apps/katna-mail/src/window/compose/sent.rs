@@ -90,6 +90,7 @@ pub(super) fn row(
         } else {
             name
         },
+        people: Vec::new(),
         sender: address,
         count: 1,
         subject,
@@ -214,9 +215,7 @@ impl MailWindow {
             tr!("compose-sent")
         };
         self.show_snackbar_for(text, None, SNACKBAR_TIME, cx);
-        if self.config.sending.sent_sound {
-            crate::sound::sent();
-        }
+        self.play_event_sound(katna_core::config::SoundEvent::Sent);
     }
 
     /// Shows the replies just sent in the open conversation, and forgets
