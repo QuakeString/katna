@@ -782,3 +782,81 @@ pub fn radio(t: f32, th: &Theme) -> AnyElement {
         .child(div().size(px(10.0 * t)).rounded_full().bg(rgba(th.accent)))
         .into_any_element()
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    /// Every `raised(...)` gets its panel before any child: the frost is
+    /// added as a child, and a child added earlier draws under the glass,
+    /// so the panel looks empty with frosted menus on.
+    #[test]
+    fn raised_panels_take_children_after_the_glass() {
+        let mut wrong = Vec::new();
+        walk(
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join("src"),
+            &mut wrong,
+        );
+        assert!(wrong.is_empty(), "children before raised(): {wrong:?}");
+    }
+
+    fn walk(dir: &Path, wrong: &mut Vec<String>) {
+        for entry in std::fs::read_dir(dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                walk(&path, wrong);
+            } else if path.extension().is_some_and(|e| e == "rs") {
+                let text = std::fs::read_to_string(&path).unwrap();
+                // Tests, like the ones here, may spell out wrong calls.
+                let code = text.split("#[cfg(test)]").next().unwrap_or_default();
+                for line in children_before_glass(code) {
+                    wrong.push(format!("{}:{line}", path.display()));
+                }
+            }
+        }
+    }
+
+    /// The lines of `raised(` calls whose first argument adds children.
+    fn children_before_glass(text: &str) -> Vec<usize> {
+        let mut lines = Vec::new();
+        for (at, _) in text.match_indices("raised(") {
+            let before = &text[..at];
+            if before.ends_with("fn ")
+                || before.ends_with(|c: char| c.is_alphanumeric() || c == '_')
+            {
+                continue;
+            }
+            let rest = &text[at + "raised(".len()..];
+            let mut depth = 0;
+            let mut end = rest.len();
+            for (i, c) in rest.char_indices() {
+                match c {
+                    '(' | '[' | '{' => depth += 1,
+                    ')' | ']' | '}' if depth == 0 => {
+                        end = i;
+                        break;
+                    }
+                    ')' | ']' | '}' => depth -= 1,
+                    ',' if depth == 0 => {
+                        end = i;
+                        break;
+                    }
+                    _ => {}
+                }
+            }
+            let panel = &rest[..end];
+            if panel.contains(".child(") || panel.contains(".children(") {
+                lines.push(before.matches('\n').count() + 1);
+            }
+        }
+        lines
+    }
+
+    #[test]
+    fn finds_children_before_the_glass() {
+        let good = "raised(div().p(px(4.0)), th, 8.0, 3.0).child(body)";
+        let bad = "\nraised(div().child(body), th, 8.0, 3.0)";
+        assert!(children_before_glass(good).is_empty());
+        assert_eq!(children_before_glass(bad), [2]);
+    }
+}

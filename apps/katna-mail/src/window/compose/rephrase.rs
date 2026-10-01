@@ -350,6 +350,7 @@ impl MailWindow {
             State::Ask => self.render_rephrase_ask(&service, th, cx),
             _ => self.render_rephrase_body(r, &service, th, cx),
         };
+        // The frosted glass is the card's first child, under the text.
         let card = raised(
             div()
                 .id("compose-rephrase-card")
@@ -363,12 +364,12 @@ impl MailWindow {
                 .text_color(rgba(th.text))
                 .on_mouse_down_out(
                     cx.listener(|this, _, window, cx| this.close_rephrase(window, cx)),
-                )
-                .child(body),
+                ),
             th,
             12.0,
             3.0,
-        );
+        )
+        .child(body);
         let at = r.at;
         Some(
             deferred(

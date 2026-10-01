@@ -52,7 +52,7 @@ pub struct AccountLimits {
     /// Sign-in and sign-up attempts per client address.
     per_ip: WindowLimit<Option<IpAddr>>,
     /// Codes mailed per address.
-    mails: WindowLimit<String>,
+    pub(crate) mails: WindowLimit<String>,
 }
 
 impl Default for AccountLimits {
@@ -119,7 +119,7 @@ pub(crate) fn limited(
 }
 
 /// Mails a new code for `purpose`, within the per-address limit.
-pub(crate) async fn mail_code(
+async fn mail_code(
     state: &AppState,
     account: &str,
     email: &str,
@@ -200,7 +200,7 @@ pub struct Code {
     pub code: String,
 }
 
-pub(crate) async fn check(
+async fn check(
     state: &AppState,
     account: &str,
     purpose: Purpose,

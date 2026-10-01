@@ -13,13 +13,16 @@
 <div id="signin" class="center" hidden>
   <form id="signin-form" class="card signin" novalidate>
     <div class="brand"><span class="logo" aria-hidden="true">K</span><span class="brand-name">Katna Server admin</span></div>
-    <p class="muted">Sign in with your Katna account. Only addresses listed in the server's .env can open this page.</p>
-    <div class="field"><label for="email">Address</label><input id="email" type="email" autocomplete="username" required></div>
-    <div class="field" id="password-field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+    <p id="signin-intro" class="muted"></p>
+    <div class="field"><label for="email">Admin address</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="field" id="password-field"><label for="password">Admin password</label><input id="password" type="password" autocomplete="current-password" required></div>
     <div class="field" id="code-field" hidden><label for="code">Code we just mailed you</label><input id="code" inputmode="numeric" autocomplete="one-time-code" class="code"></div>
+    <div class="field" id="new-password-field" hidden><label for="new-password">New admin password</label><input id="new-password" type="password" autocomplete="new-password"></div>
+    <div class="field" id="again-field" hidden><label for="again">Again</label><input id="again" type="password" autocomplete="new-password"></div>
     <p id="signin-problem" class="problem" role="alert" hidden></p>
     <button type="submit" id="signin-button" class="primary">Continue</button>
-    <p class="muted small centered">Signed in for 12 hours on this browser.</p>
+    <button type="button" id="switch-step" class="link"></button>
+    <p id="signin-foot" class="muted small centered"></p>
   </form>
 </div>
 

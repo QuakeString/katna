@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The admin page at `/admin`: Katna AI's service, model, limits and use
-//! this month, for the Katna accounts listed in `KATNA_SERVER_ADMIN_EMAILS`
-//! (without any, the page and its routes answer 404).
+//! this month, for the server's admins: the addresses in
+//! `KATNA_SERVER_ADMIN_EMAILS` (without any, the page and its routes answer
+//! 404). Admins are not Katna accounts: each one's password is set on the
+//! server with `katna-server admin-password`, and Katna accounts can never
+//! open the page.
 //!
-//! Signing in takes the account's password and then a code mailed to it
+//! The first password can also be chosen on the page itself, after a code
+//! mailed to the admin's address, so whoever finds the page first cannot
+//! claim it. Signing in takes that password and then a code mailed to the address
 //! (both within the account routes' limits); the session is a random token
 //! in a `Secure`, `HttpOnly`, `SameSite=Strict` cookie, kept in memory for
 //! 12 hours (a restart signs everyone out). Every call of the page also
@@ -16,6 +21,12 @@
 //! are saved in the database over the environment's.
 //!
 //! - `GET /admin`, `/admin/app.js`, `/admin/app.css`: the page.
+//! - `GET /admin/api/status`: `{setup}`, true while an admin has no
+//!   password yet.
+//! - `POST /admin/api/setup` `{email}`: for an admin without a password,
+//!   mails a code to choose the first one (always 202).
+//! - `POST /admin/api/setup/finish` `{email, code, password}`: sets that
+//!   first password and signs in (204 + cookie).
 //! - `POST /admin/api/sign-in` `{email, password}`: mails a code (202).
 //! - `POST /admin/api/code` `{email, code}`: sets the session cookie (204).
 //! - `POST /admin/api/sign-out`.
@@ -37,10 +48,12 @@ use axum::{Json, Router};
 use katna_ai::{PRESETS, Tone, prompt};
 use serde::{Deserialize, Serialize};
 
-use crate::accounts::{check, limited, mail_code};
+use crate::accounts::limited;
 use crate::ai::{AiSettings, ask_one};
-use crate::auth::{DUMMY_HASH, normalize_email, verify_password};
-use crate::db::{AiStats, month_of, months_to, now_ms};
+use crate::auth::{
+    self, CODE_LIFETIME_MS, DUMMY_HASH, clean_code, code_hash, normalize_email, verify_password,
+};
+use crate::db::{AiStats, CodeCheck, month_of, months_to, now_ms};
 use crate::ids;
 use crate::mailer::Purpose;
 use crate::routes::{ApiError, AppState, ClientAddr};
@@ -78,14 +91,13 @@ pub struct Sessions {
 }
 
 struct Session {
-    account: String,
     email: String,
     started: Instant,
 }
 
 impl Sessions {
-    /// A new session for `account`; its token.
-    fn start(&self, account: &str, email: &str) -> String {
+    /// A new session for the admin `email`; its token.
+    fn start(&self, email: &str) -> String {
         let token = ids::new_token();
         let mut sessions = self.inner.lock().unwrap_or_else(|e| e.into_inner());
         sessions.retain(|_, session| session.started.elapsed() < SESSION);
@@ -102,7 +114,6 @@ impl Sessions {
         sessions.insert(
             ids::token_hash(&token),
             Session {
-                account: account.to_owned(),
                 email: email.to_owned(),
                 started: Instant::now(),
             },
@@ -110,13 +121,13 @@ impl Sessions {
         token
     }
 
-    /// The account and address of a session's token, while it lasts.
-    fn find(&self, token: &str) -> Option<(String, String)> {
+    /// The admin of a session's token, while it lasts.
+    fn find(&self, token: &str) -> Option<String> {
         let sessions = self.inner.lock().unwrap_or_else(|e| e.into_inner());
         sessions
             .get(&ids::token_hash(token))
             .filter(|session| session.started.elapsed() < SESSION)
-            .map(|session| (session.account.clone(), session.email.clone()))
+            .map(|session| session.email.clone())
     }
 
     fn end(&self, token: &str) {
@@ -129,7 +140,6 @@ impl Sessions {
 
 /// A request from someone signed in to the admin page.
 pub struct Admin {
-    pub account: String,
     pub email: String,
     token: String,
 }
@@ -143,18 +153,14 @@ impl FromRequestParts<AppState> for Admin {
             from_page(&parts.headers)?;
         }
         let token = cookie(&parts.headers).ok_or(ApiError::AdminSignIn)?;
-        let (account, email) = state
+        let email = state
             .admin_sessions()
             .find(&token)
             .ok_or(ApiError::AdminSignIn)?;
         if !is_admin(state, &email) {
             return Err(ApiError::AdminSignIn);
         }
-        Ok(Admin {
-            account,
-            email,
-            token,
-        })
+        Ok(Admin { email, token })
     }
 }
 
@@ -202,6 +208,9 @@ pub fn routes() -> Router<AppState> {
         .route("/admin/", get(page))
         .route("/admin/app.js", get(script))
         .route("/admin/app.css", get(style))
+        .route("/admin/api/status", get(status))
+        .route("/admin/api/setup", post(setup))
+        .route("/admin/api/setup/finish", post(finish_setup))
         .route("/admin/api/sign-in", post(sign_in))
         .route("/admin/api/code", post(code))
         .route("/admin/api/sign-out", post(sign_out))
@@ -249,6 +258,11 @@ struct SignIn {
     password: String,
 }
 
+/// What a code mailed to the admin `email` is stored as.
+fn admin_code_hash(email: &str, code: &str) -> Vec<u8> {
+    code_hash(&format!("admin:{email}"), &clean_code(code))
+}
+
 /// The password is right for an admin: mails the second step's code.
 async fn sign_in(
     State(state): State<AppState>,
@@ -260,20 +274,44 @@ async fn sign_in(
     from_page(&headers)?;
     limited(&state, &headers, addr)?;
     let email = normalize_email(&body.email).ok_or(ApiError::WrongPassword)?;
-    if !state.account_limits().per_email.allow(email.clone()) {
+    if !state
+        .account_limits()
+        .per_email
+        .allow(format!("admin:{email}"))
+    {
         return Err(ApiError::TooMany("too many attempts; try again later"));
     }
-    let account = state.db().account_by_email(&email).await?;
-    let hash = account.as_ref().map_or_else(
-        || DUMMY_HASH.clone(),
-        |account| account.password_hash.clone(),
-    );
-    let right = verify_password(body.password, hash).await?;
-    // Wrong password, not an admin, or not confirmed: the same answer.
-    let account = account
-        .filter(|account| right && account.verified_at.is_some() && is_admin(&state, &email))
-        .ok_or(ApiError::WrongPassword)?;
-    mail_code(&state, &account.id, &account.email, Purpose::Admin).await?;
+    let hash = if is_admin(&state, &email) {
+        state.db().admin_password(&email).await?
+    } else {
+        None
+    };
+    let known = hash.is_some();
+    let right = verify_password(body.password, hash.unwrap_or_else(|| DUMMY_HASH.clone())).await?;
+    // Wrong password, not an admin, or no password set: the same answer.
+    if !(right && known) {
+        return Err(ApiError::WrongPassword);
+    }
+    if !state.account_limits().mails.allow(email.clone()) {
+        return Err(ApiError::TooMany("too many codes mailed; try again later"));
+    }
+    let code = auth::new_code();
+    state
+        .db()
+        .put_admin_code(
+            &email,
+            &admin_code_hash(&email, &code),
+            now_ms() + CODE_LIFETIME_MS,
+        )
+        .await?;
+    state
+        .mailer()
+        .send_code(&email, Purpose::Admin, &code)
+        .await
+        .map_err(|error| {
+            tracing::warn!(%error, "could not mail an admin code");
+            ApiError::MailFailed
+        })?;
     Ok(StatusCode::ACCEPTED)
 }
 
@@ -293,16 +331,37 @@ async fn code(
     page_on(&state)?;
     from_page(&headers)?;
     limited(&state, &headers, addr)?;
-    let email = normalize_email(&body.email).ok_or(ApiError::WrongPassword)?;
-    let account = state
-        .db()
-        .account_by_email(&email)
-        .await?
-        .filter(|_| is_admin(&state, &email))
+    let email = normalize_email(&body.email)
+        .filter(|email| is_admin(&state, email))
         .ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
-    check(&state, &account.id, Purpose::Admin, &body.code).await?;
-    let token = state.admin_sessions().start(&account.id, &account.email);
+    check_admin(
+        state
+            .db()
+            .check_admin_code(&email, &admin_code_hash(&email, &body.code), now_ms())
+            .await?,
+    )?;
     tracing::info!("signed in to the admin page");
+    signed_in(&state, &email)
+}
+
+/// The answer to a typed code.
+fn check_admin(check: CodeCheck) -> Result<(), ApiError> {
+    match check {
+        CodeCheck::Right => Ok(()),
+        CodeCheck::Wrong => Err(ApiError::Invalid("wrong_code", "wrong code")),
+        CodeCheck::Gone => Err(ApiError::Invalid(
+            "code_expired",
+            "the code has expired; ask for a new one",
+        )),
+        CodeCheck::Locked => Err(ApiError::TooMany(
+            "too many wrong codes; try again tomorrow",
+        )),
+    }
+}
+
+/// A new session for the admin `email`, in the answer's cookie.
+fn signed_in(state: &AppState, email: &str) -> Result<Response, ApiError> {
+    let token = state.admin_sessions().start(email);
     let cookie = format!(
         "{COOKIE}={token}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age={}",
         SESSION.as_secs()
@@ -313,6 +372,114 @@ async fn code(
         HeaderValue::from_str(&cookie).map_err(|_| ApiError::Hash)?,
     );
     Ok(response)
+}
+
+/// What a code mailed to choose the first password is stored as.
+fn setup_code_hash(email: &str, code: &str) -> Vec<u8> {
+    code_hash(&format!("admin-setup:{email}"), &clean_code(code))
+}
+
+#[derive(Serialize)]
+struct Status {
+    setup: bool,
+}
+
+/// Whether the page should offer to choose a first password.
+async fn status(State(state): State<AppState>) -> Result<Json<Status>, ApiError> {
+    page_on(&state)?;
+    let setup = state
+        .db()
+        .admins_to_set_up(&state.config().admin_emails)
+        .await?;
+    Ok(Json(Status { setup }))
+}
+
+#[derive(Deserialize)]
+struct SetupBody {
+    email: String,
+}
+
+/// Mails a code to choose the first password, to an admin without one.
+/// The same answer whatever the address, so the page does not tell who
+/// the admins are.
+async fn setup(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    addr: ClientAddr,
+    Json(body): Json<SetupBody>,
+) -> Result<StatusCode, ApiError> {
+    page_on(&state)?;
+    from_page(&headers)?;
+    limited(&state, &headers, addr)?;
+    let Some(email) = normalize_email(&body.email).filter(|email| is_admin(&state, email)) else {
+        return Ok(StatusCode::ACCEPTED);
+    };
+    if !state.account_limits().mails.allow(email.clone()) {
+        return Err(ApiError::TooMany("too many codes mailed; try again later"));
+    }
+    let code = auth::new_code();
+    let kept = state
+        .db()
+        .put_admin_setup_code(
+            &email,
+            &setup_code_hash(&email, &code),
+            now_ms() + CODE_LIFETIME_MS,
+            now_ms(),
+        )
+        .await?;
+    if kept {
+        state
+            .mailer()
+            .send_code(&email, Purpose::AdminSetup, &code)
+            .await
+            .map_err(|error| {
+                tracing::warn!(%error, "could not mail an admin setup code");
+                ApiError::MailFailed
+            })?;
+    }
+    Ok(StatusCode::ACCEPTED)
+}
+
+#[derive(Deserialize)]
+struct FinishSetup {
+    email: String,
+    code: String,
+    password: String,
+}
+
+/// The mailed code is right: keeps the first password and signs in.
+async fn finish_setup(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    addr: ClientAddr,
+    Json(body): Json<FinishSetup>,
+) -> Result<Response, ApiError> {
+    page_on(&state)?;
+    from_page(&headers)?;
+    limited(&state, &headers, addr)?;
+    auth::check_password(&body.password)?;
+    let email = normalize_email(&body.email)
+        .filter(|email| is_admin(&state, email))
+        .ok_or(ApiError::Invalid("wrong_code", "wrong code"))?;
+    check_admin(
+        state
+            .db()
+            .check_admin_code(&email, &setup_code_hash(&email, &body.code), now_ms())
+            .await?,
+    )?;
+    let hash = auth::hash_password(body.password).await?;
+    if !state
+        .db()
+        .set_first_admin_password(&email, &hash, now_ms())
+        .await?
+    {
+        return Err(ApiError::Invalid(
+            "code_expired",
+            "the password is already set",
+        ));
+    }
+    tracing::info!("admin page password chosen");
+    signed_in(&state, &email)
 }
 
 async fn sign_out(State(state): State<AppState>, admin: Admin) -> Response {
@@ -400,7 +567,7 @@ async fn save(
     let json = serde_json::to_string(&settings).map_err(|_| ApiError::Hash)?;
     state
         .db()
-        .set_ai_settings(&json, &admin.account, now_ms())
+        .set_ai_settings(&json, &admin.email, now_ms())
         .await?;
     state.set_ai(ai);
     tracing::info!(
@@ -469,14 +636,14 @@ mod tests {
     #[test]
     fn sessions_end() {
         let sessions = Sessions::default();
-        let token = sessions.start("a1", "a@b.io");
-        assert_eq!(sessions.find(&token), Some(("a1".into(), "a@b.io".into())));
+        let token = sessions.start("a@b.io");
+        assert_eq!(sessions.find(&token), Some("a@b.io".into()));
         sessions.end(&token);
         assert_eq!(sessions.find(&token), None);
         // Only the newest are kept.
-        let first = sessions.start("a1", "a@b.io");
+        let first = sessions.start("a@b.io");
         for _ in 0..MAX_SESSIONS {
-            sessions.start("a1", "a@b.io");
+            sessions.start("a@b.io");
         }
         assert_eq!(sessions.find(&first), None);
     }

@@ -3675,7 +3675,7 @@ owner's server, over on-device models or DeepL).
 
 Katna Mail rephrases the text the user selects in a message and can finish
 the sentence being written (decided 1 October 2026: Katna AI on Katna
-Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
+Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google closed 2.5 Flash-Lite to new keys).
 
 - **Shared crate:** `katna-ai` (no network, no GPUI) holds the prompts
   (`prompt`: the tones Clearer, Shorter, Friendlier, Formal, Fix grammar,
@@ -3714,7 +3714,7 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   answers 402 after the free month). The server builds the prompt with
   `katna_ai::prompt` from the request, so a client cannot send the
   service anything else, and asks the service set in
-  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 2.5 Flash-Lite by
+  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 3.5 Flash-Lite by
   default), then `KATNA_SERVER_AI_FALLBACK_*` when that fails. It counts
   each answer's cost from the tokens the service reports at the prices
   set (`_PRICE_IN_USD`, `_PRICE_OUT_USD`) per account and calendar month
@@ -3722,9 +3722,13 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   `_BUDGET_USD` (50; 0 is off), with 300 requests an hour per account.
   Text and answers are neither logged nor kept. Keys and the Razorpay
   secrets come from environment variables only.
-- **Admin page** (`/admin`, `server/katna-server/src/admin.rs`): for the
-  Katna accounts in `KATNA_SERVER_ADMIN_EMAILS` (none: 404). Sign-in is the
-  Katna password, then a code mailed to the account; the session is a
+- **Admin page** (`/admin`, `server/katna-server/src/admin.rs`): for
+  whoever runs the server, never a Katna account. The addresses in
+  `KATNA_SERVER_ADMIN_EMAILS` (none: 404) sign in with their own password
+  (an Argon2 hash in `admins`), then a code mailed to that address. The
+  first password is chosen on the page after a code mailed to the address
+  (so whoever finds the page first cannot claim it); a forgotten one is set
+  on the server with `katna-server admin-password`. The session is a
   12-hour `__Host-` cookie (`Secure`, `HttpOnly`, `SameSite=Strict`) kept
   in memory, and every call also carries `X-Katna-Admin: 1`. It shows this
   month's cost against the budget, requests, accounts in the free month,

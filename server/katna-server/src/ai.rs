@@ -2,7 +2,7 @@
 
 //! Katna AI (`docs/ARCHITECTURE.md` §16.5): writing help for computers
 //! signed in to a confirmed Katna account, through the AI service the
-//! server's owner chose (`KATNA_SERVER_AI_*`; Gemini 2.5 Flash-Lite unless
+//! server's owner chose (`KATNA_SERVER_AI_*`; Gemini 3.5 Flash-Lite unless
 //! told otherwise) and a fallback tried when it fails.
 //!
 //! - `POST /api/v1/ai/rephrase` `{"text", "tone", "instruction"}`

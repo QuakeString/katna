@@ -1965,7 +1965,7 @@ impl MailWindow {
             .flex_row()
             .bg(rgba(background))
             .border_b_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(row_line(th)))
             .text_size(px(14.0))
             .cursor_pointer()
             .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2208,6 +2208,7 @@ impl MailWindow {
         let correspondent = div()
             .flex()
             .flex_row()
+            .items_center()
             .min_w_0()
             .gap(px(4.0))
             .text_color(rgba(th.text))
@@ -2262,11 +2263,19 @@ impl MailWindow {
                 )
             })
             .when(row.count > 1, |d| {
+                // The conversation's mail count: a faint chat icon and the
+                // number, centred on the names' line.
                 d.child(
                     div()
                         .flex_none()
-                        .text_size(px(12.0))
+                        .pl(px(4.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(3.0))
+                        .text_size(px(13.0))
                         .text_color(rgba(th.text_faint))
+                        .child(icon("forum", th.text_faint, 14.0))
                         .child(row.count.to_string()),
                 )
             });
@@ -2351,7 +2360,7 @@ impl MailWindow {
                 .flex_1()
                 .min_w_0()
                 .truncate()
-                .text_color(rgba(th.text_faint))
+                .text_color(rgba(preview_color(th)))
                 .child(row.snippet.clone())
                 .into_any_element();
             // A phone shows the sender's picture, which ticks the line, and
@@ -2456,7 +2465,7 @@ impl MailWindow {
             (
                 subject_end..text_len,
                 HighlightStyle {
-                    color: Some(rgba(th.text_faint).into()),
+                    color: Some(rgba(preview_color(th)).into()),
                     ..Default::default()
                 },
             ),
@@ -2822,6 +2831,18 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
             |el, t| el.opacity(0.5 + 0.5 * t),
         )
         .into_any_element()
+}
+
+/// The preview text of a mail row: the faint text a third of the way
+/// toward the list's background, quieter than the sender and subject.
+pub(super) fn preview_color(th: &Theme) -> u32 {
+    mix(th.text_faint, th.surface, 0.35)
+}
+
+/// The faint line between mail rows: well under the app's other dividers,
+/// so the rows read as one calm list.
+pub(super) fn row_line(th: &Theme) -> u32 {
+    fade(th.divider, 0.6)
 }
 
 /// A thin vertical line between toolbar groups.
