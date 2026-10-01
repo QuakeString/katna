@@ -243,6 +243,33 @@ pub fn answer(kind: Kind, status: u16, body: &[u8]) -> Result<String, ProviderEr
     Ok(text.unwrap_or_default())
 }
 
+/// The tokens a service's answer says it read and wrote, when it says.
+pub fn usage(kind: Kind, body: &[u8]) -> Option<(u64, u64)> {
+    let value: Value = serde_json::from_slice(body).ok()?;
+    let (input, output) = match kind {
+        Kind::OpenAi => (
+            &value["usage"]["prompt_tokens"],
+            &value["usage"]["completion_tokens"],
+        ),
+        Kind::Gemini => (
+            &value["usageMetadata"]["promptTokenCount"],
+            // Thinking is paid as output too.
+            &value["usageMetadata"]["candidatesTokenCount"],
+        ),
+        Kind::Anthropic => (
+            &value["usage"]["input_tokens"],
+            &value["usage"]["output_tokens"],
+        ),
+    };
+    let thoughts = match kind {
+        Kind::Gemini => value["usageMetadata"]["thoughtsTokenCount"]
+            .as_u64()
+            .unwrap_or(0),
+        _ => 0,
+    };
+    Some((input.as_u64()?, output.as_u64().unwrap_or(0) + thoughts))
+}
+
 fn error_message(value: &Value) -> Option<String> {
     let error = &value["error"];
     let message = error["message"].as_str().or_else(|| error.as_str())?;
@@ -347,6 +374,11 @@ mod tests {
         assert_eq!(answer(Kind::Anthropic, 200, claude).unwrap(), "Yo");
         assert_eq!(answer(Kind::OpenAi, 401, b"{}"), Err(ProviderError::Key));
         assert_eq!(answer(Kind::Gemini, 429, b""), Err(ProviderError::TooMany));
+        let gemini = br#"{"usageMetadata":{"promptTokenCount":90,"candidatesTokenCount":20,"thoughtsTokenCount":5}}"#;
+        assert_eq!(usage(Kind::Gemini, gemini), Some((90, 25)));
+        let openai = br#"{"usage":{"prompt_tokens":7,"completion_tokens":3}}"#;
+        assert_eq!(usage(Kind::OpenAi, openai), Some((7, 3)));
+        assert_eq!(usage(Kind::Anthropic, b"{}"), None);
         let failed = answer(Kind::OpenAi, 400, br#"{"error":{"message":"bad model"}}"#);
         assert_eq!(
             failed,

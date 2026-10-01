@@ -6230,6 +6230,7 @@ dependencies = [
  "http-body-util",
  "hyper",
  "hyper-util",
+ "katna-ai",
  "lettre",
  "serde",
  "serde_json",
@@ -6237,9 +6238,11 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "tokio-postgres",
+ "tokio-rustls",
  "tower",
  "tracing",
  "tracing-subscriber",
+ "webpki-roots",
 ]
 
 [[package]]

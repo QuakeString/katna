@@ -100,6 +100,25 @@ const MIGRATIONS: &[&str] = &[
          at BIGINT NOT NULL
      );
      CREATE INDEX code_failures_account_at ON code_failures (account_id, at);",
+    // 5: Katna AI: each account's free month and paid time, and what it
+    // cost per calendar month (UTC, as yyyymm), per account and for all.
+    "CREATE TABLE ai_plans (
+         account_id TEXT PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE,
+         first_use BIGINT NOT NULL,
+         paid_until BIGINT
+     );
+     CREATE TABLE ai_usage (
+         account_id TEXT NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+         month INTEGER NOT NULL,
+         requests BIGINT NOT NULL DEFAULT 0,
+         cost_micros BIGINT NOT NULL DEFAULT 0,
+         PRIMARY KEY (account_id, month)
+     );
+     CREATE TABLE ai_spend (
+         month INTEGER PRIMARY KEY,
+         requests BIGINT NOT NULL DEFAULT 0,
+         cost_micros BIGINT NOT NULL DEFAULT 0
+     );",
 ];
 
 /// Wrong guesses allowed for one emailed code.
@@ -213,6 +232,24 @@ pub enum OverLimit {
     Ids,
     /// Too many bytes of link targets.
     LinkBytes,
+}
+
+/// An account's time with Katna AI.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct AiPlan {
+    /// Its first use, which started the free month.
+    pub first_use: i64,
+    /// The end of the time paid for, if any.
+    pub paid_until: Option<i64>,
+}
+
+/// What Katna AI cost this month, in millionths of a US dollar.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct AiSpent {
+    /// For one account.
+    pub account: i64,
+    /// For all accounts together.
+    pub everyone: i64,
 }
 
 /// The database.
@@ -820,6 +857,95 @@ impl Db {
             .collect())
     }
 
+    /// The account's time with Katna AI; a first use at `now` starts the
+    /// free month.
+    pub async fn ai_plan(&self, account: &str, now: i64) -> Result<AiPlan, DbError> {
+        let row = self
+            .pool
+            .get()
+            .await?
+            .query_one(
+                "INSERT INTO ai_plans (account_id, first_use) VALUES ($1, $2)
+                 ON CONFLICT (account_id) DO UPDATE SET account_id = EXCLUDED.account_id
+                 RETURNING first_use, paid_until",
+                &[&account, &now],
+            )
+            .await?;
+        Ok(AiPlan {
+            first_use: row.get(0),
+            paid_until: row.get(1),
+        })
+    }
+
+    /// Marks the account's Katna AI paid for until `until`.
+    pub async fn set_ai_paid_until(
+        &self,
+        account: &str,
+        until: i64,
+        now: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO ai_plans (account_id, first_use, paid_until) VALUES ($1, $3, $2)
+                 ON CONFLICT (account_id) DO UPDATE SET paid_until = $2",
+                &[&account, &until, &now],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// What Katna AI cost in `month` (yyyymm), for `account` and for all.
+    pub async fn ai_spent(&self, account: &str, month: i32) -> Result<AiSpent, DbError> {
+        let row = self
+            .pool
+            .get()
+            .await?
+            .query_one(
+                "SELECT
+                     COALESCE((SELECT cost_micros FROM ai_usage
+                               WHERE account_id = $1 AND month = $2), 0),
+                     COALESCE((SELECT cost_micros FROM ai_spend WHERE month = $2), 0)",
+                &[&account, &month],
+            )
+            .await?;
+        Ok(AiSpent {
+            account: row.get(0),
+            everyone: row.get(1),
+        })
+    }
+
+    /// Counts one Katna AI request by `account` in `month` that cost
+    /// `cost_micros`.
+    pub async fn ai_record(
+        &self,
+        account: &str,
+        month: i32,
+        cost_micros: i64,
+    ) -> Result<(), DbError> {
+        let mut client = self.pool.get().await?;
+        let tx = client.transaction().await?;
+        tx.execute(
+            "INSERT INTO ai_usage (account_id, month, requests, cost_micros) VALUES ($1, $2, 1, $3)
+             ON CONFLICT (account_id, month) DO UPDATE SET
+                 requests = ai_usage.requests + 1,
+                 cost_micros = ai_usage.cost_micros + $3",
+            &[&account, &month, &cost_micros],
+        )
+        .await?;
+        tx.execute(
+            "INSERT INTO ai_spend (month, requests, cost_micros) VALUES ($1, 1, $2)
+             ON CONFLICT (month) DO UPDATE SET
+                 requests = ai_spend.requests + 1,
+                 cost_micros = ai_spend.cost_micros + $2",
+            &[&month, &cost_micros],
+        )
+        .await?;
+        tx.commit().await?;
+        Ok(())
+    }
+
     /// Deletes tracking IDs created before `before` (with their events) and
     /// installs not seen since then. Returns how many of each went.
     pub async fn purge(&self, before: i64) -> Result<(u64, u64), DbError> {
@@ -847,10 +973,45 @@ fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
     a.len() == b.len() && a.iter().zip(b).fold(0u8, |acc, (x, y)| acc | (x ^ y)) == 0
 }
 
+/// The calendar month (UTC) of `ms` since the Unix epoch, as yyyymm.
+pub fn month_of(ms: i64) -> i32 {
+    // Howard Hinnant's days-to-civil.
+    let days = ms.div_euclid(86_400_000) + 719_468;
+    let era = days.div_euclid(146_097);
+    let day_of_era = days - era * 146_097;
+    let year_of_era =
+        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let shifted = (5 * day_of_year + 2) / 153;
+    let month = if shifted < 10 {
+        shifted + 3
+    } else {
+        shifted - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    (year * 100 + month) as i32
+}
+
 /// Milliseconds since the Unix epoch.
 pub fn now_ms() -> i64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|elapsed| elapsed.as_millis() as i64)
         .unwrap_or(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn months() {
+        assert_eq!(month_of(0), 197_001);
+        // 2026-10-01 00:00:00 UTC, and the millisecond before.
+        assert_eq!(month_of(1_790_812_800_000), 202_610);
+        assert_eq!(month_of(1_790_812_799_999), 202_609);
+        // 2024-02-29.
+        assert_eq!(month_of(1_709_164_800_000), 202_402);
+        assert_eq!(month_of(1_709_251_200_000), 202_403);
+    }
 }
