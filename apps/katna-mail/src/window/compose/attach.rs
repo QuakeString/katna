@@ -513,6 +513,106 @@ impl MailWindow {
     }
 }
 
+impl MailWindow {
+    /// Puts the files of the message being forwarded under it, as chips
+    /// that can be taken off before sending. They are read off the main
+    /// thread; the message may have changed by then.
+    pub(super) fn attach_forwarded(&mut self, cx: &mut Context<Self>) {
+        let Some(compose) = &self.compose else {
+            return;
+        };
+        let source = compose.source;
+        let Some(id) = source else {
+            return;
+        };
+        let count = self
+            .reader
+            .as_ref()
+            .and_then(|r| r.view(source))
+            .map_or(0, |view| view.attachments.len());
+        if count == 0 {
+            return;
+        }
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar(tr!("compose-forward-files-missing"), None, cx);
+            return;
+        };
+        cx.spawn(async move |this, cx| {
+            let files: Vec<_> = cx
+                .background_executor()
+                .spawn(async move {
+                    (0..count)
+                        .filter_map(|index| katna_render::attachment_file(&raw, index))
+                        .collect()
+                })
+                .await;
+            this.update(cx, |this, cx| this.add_forwarded(source, files, cx))
+                .ok();
+        })
+        .detach();
+    }
+
+    fn add_forwarded(
+        &mut self,
+        source: Option<katna_store::MessageId>,
+        files: Vec<katna_render::AttachmentFile>,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::Forward || compose.source != source {
+            return;
+        }
+        let mut used = compose.used_bytes(cx);
+        let mut left_out = None;
+        for file in files {
+            if used + file.bytes.len() > MAX_TOTAL {
+                left_out.get_or_insert(file.name);
+                continue;
+            }
+            used += file.bytes.len();
+            let data = Arc::new(file.bytes);
+            compose.forwarded.push(data.clone());
+            compose.attachments.push(Attachment {
+                name: file.name,
+                mime: file.mime,
+                data,
+            });
+        }
+        compose.attach_scroll.scroll_to_bottom();
+        if let Some(name) = left_out {
+            let problem = tr!(
+                "compose-file-too-large",
+                name = name,
+                limit = format::size(MAX_TOTAL as u64)
+            );
+            self.show_snackbar(problem, None, cx);
+        }
+        cx.notify();
+    }
+}
+
+impl super::Compose {
+    /// Takes off the files a forward brought along, when the message
+    /// becomes a reply.
+    pub(super) fn drop_forwarded(&mut self) {
+        let forwarded = std::mem::take(&mut self.forwarded);
+        self.attachments
+            .retain(|a| !forwarded.iter().any(|f| Arc::ptr_eq(f, &a.data)));
+    }
+
+    /// The files are other than the ones a forward brought along.
+    pub(super) fn files_changed(&self) -> bool {
+        self.attachments.len() != self.forwarded.len()
+            || self
+                .attachments
+                .iter()
+                .zip(&self.forwarded)
+                .any(|(a, f)| !Arc::ptr_eq(&a.data, f))
+    }
+}
+
 impl super::Compose {
     /// Bytes of attachments and pictures in the message.
     pub(super) fn used_bytes(&self, cx: &gpui::App) -> usize {

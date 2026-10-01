@@ -90,6 +90,8 @@ compose-picker-insert = Insert
 compose-picker-attach = Attach
 # $name: the file's name; $limit: the most a message can carry, such as "25 MB".
 compose-file-too-large = { $name } is too large: a message can carry up to { $limit }.
+# Forward could not bring the original files along: the message is not downloaded.
+compose-forward-files-missing = The forwarded message's files are not downloaded, so they are not attached.
 # An attached file's size, after its name. $size: such as "1.2 MB".
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remove attachment
