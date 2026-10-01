@@ -1695,6 +1695,10 @@ impl MailWindow {
     /// Esc (or U, Backspace) in the conversation beside the list: the keys
     /// go back to the list, and the conversation stays shown.
     fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
+        // Esc first folds the chat's list of people.
+        if self.fold_chat_people(cx) {
+            return;
+        }
         window.focus(&self.list_focus, cx);
         cx.notify();
     }
@@ -1770,6 +1774,10 @@ impl MailWindow {
     }
 
     fn close_message(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
+        // Esc first folds the chat's list of people.
+        if self.fold_chat_people(cx) {
+            return;
+        }
         if self.detached {
             window.remove_window();
             return;

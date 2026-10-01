@@ -26,7 +26,7 @@ use katna_preview::Kind as FileKind;
 use katna_render::Attachment;
 use katna_render::trim::{self, Forwarded};
 use katna_store::MessageId;
-use katna_ui::px;
+use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
 use super::super::attachments::{Thumb, kind_badge};
@@ -39,6 +39,10 @@ use crate::format;
 use crate::theme::{Theme, avatar_color, mix};
 use crate::widgets::{icon, icon_button_colored, tip};
 
+/// The header's list of people: how long each row takes to slide in, and
+/// how long after the one above it starts.
+const PEOPLE_ROW_MS: f32 = 260.0;
+const PEOPLE_DELAY_MS: f32 = 40.0;
 /// The header's pictures, and how far each overlaps the one before.
 const STACK_PICTURE: f32 = 26.0;
 const STACK_STEP: f32 = 22.0;
@@ -75,6 +79,22 @@ pub(in crate::window) struct ChatState {
     /// Frames left to keep the feed at its end: the newest bubble and the
     /// reply box settle over a few frames.
     settle: u8,
+    /// The contact panel's width when the chat last drew, to keep the
+    /// feed at its end while the panel slides in or out.
+    room: f32,
+    /// The list of everyone in the chat, open from the header: which
+    /// opening it is, so each one plays its slide again.
+    people: Option<usize>,
+    people_runs: usize,
+}
+
+/// Someone in the chat, as the header's list shows them.
+struct Member {
+    name: String,
+    email: String,
+    /// Mails they sent in this conversation.
+    mails: usize,
+    me: bool,
 }
 
 /// One mail as a bubble shows it.
@@ -385,6 +405,9 @@ impl MailWindow {
     /// box.
     pub(super) fn render_chat(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let lines = self.chat_lines();
+        let room = self.contact_room();
+        let at_end =
+            -unpx(self.reader_scroll.offset().y) >= unpx(self.reader_scroll.max_offset().y) - 4.0;
         let Some(reader) = &mut self.reader else {
             return div().into_any_element();
         };
@@ -394,6 +417,14 @@ impl MailWindow {
         if reader.chat.shown != reader.parts.len() {
             reader.chat.shown = reader.parts.len();
             reader.chat.settle = SETTLE_FRAMES;
+        }
+        // The panel sliding in or out reflows the bubbles: a feed at its
+        // end stays there.
+        if (room - reader.chat.room).abs() > 0.5 {
+            reader.chat.room = room;
+            if at_end {
+                reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
+            }
         }
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
@@ -440,25 +471,30 @@ impl MailWindow {
             .flex_col()
             .child(header)
             .child(
-                div().flex_1().min_h_0().relative().child(
-                    div()
-                        .id("reader")
-                        .size_full()
-                        .overflow_y_scroll()
-                        .track_scroll(&self.reader_scroll)
-                        .child(
-                            div()
-                                .min_h_full()
-                                .flex()
-                                .flex_col()
-                                .justify_end()
-                                .gap(px(2.0))
-                                .px(px(16.0))
-                                .pt(px(12.0))
-                                .pb(px(8.0))
-                                .children(feed),
-                        ),
-                ),
+                div()
+                    .flex_1()
+                    .min_h_0()
+                    .relative()
+                    .child(
+                        div()
+                            .id("reader")
+                            .size_full()
+                            .overflow_y_scroll()
+                            .track_scroll(&self.reader_scroll)
+                            .child(
+                                div()
+                                    .min_h_full()
+                                    .flex()
+                                    .flex_col()
+                                    .justify_end()
+                                    .gap(px(2.0))
+                                    .px(px(16.0))
+                                    .pt(px(12.0))
+                                    .pb(px(8.0))
+                                    .children(feed),
+                            ),
+                    )
+                    .children(self.render_chat_people(th, cx)),
             )
             .child(reply)
             .children(self.render_text_menu(th, cx))
@@ -486,6 +522,237 @@ impl MailWindow {
             .filter(|a| !self.is_me(&a.email) && seen.insert(a.email.to_lowercase()))
             .map(|a| (a.label().to_owned(), a.email.clone()))
             .collect()
+    }
+
+    /// Everyone in the chat: those who wrote, newest first, then those
+    /// only written to, then the user.
+    fn chat_members(&self) -> Vec<Member> {
+        let Some(reader) = &self.reader else {
+            return Vec::new();
+        };
+        let views: Vec<_> = reader
+            .parts
+            .iter()
+            .filter_map(|p| p.body.as_ref()?.view.as_ref())
+            .collect();
+        let sent = |email: &str| {
+            views
+                .iter()
+                .filter(|v| v.from.iter().any(|a| a.email.eq_ignore_ascii_case(email)))
+                .count()
+        };
+        let mut seen = HashSet::new();
+        let mut me: Option<Member> = None;
+        let mut members = Vec::new();
+        let writers = views.iter().rev().flat_map(|v| v.from.iter());
+        let others = views.iter().flat_map(|v| v.to.iter().chain(&v.cc));
+        for a in writers.chain(others) {
+            if !a.email.contains('@') || !seen.insert(a.email.to_lowercase()) {
+                continue;
+            }
+            let member = Member {
+                name: a.label().to_owned(),
+                email: a.email.clone(),
+                mails: sent(&a.email),
+                me: self.is_me(&a.email),
+            };
+            if member.me {
+                me.get_or_insert(member);
+            } else {
+                members.push(member);
+            }
+        }
+        members.extend(me);
+        members
+    }
+
+    /// Opens or folds the list of everyone in the chat under the header.
+    fn toggle_chat_people(&mut self, cx: &mut Context<Self>) {
+        if let Some(reader) = &mut self.reader {
+            let chat = &mut reader.chat;
+            chat.people = match chat.people {
+                Some(_) => None,
+                None => {
+                    chat.people_runs += 1;
+                    Some(chat.people_runs)
+                }
+            };
+            cx.notify();
+        }
+    }
+
+    fn close_chat_people(&mut self, cx: &mut Context<Self>) {
+        self.fold_chat_people(cx);
+    }
+
+    /// Folds the chat's list of people, if it is open: what Esc does
+    /// first.
+    pub(in crate::window) fn fold_chat_people(&mut self, cx: &mut Context<Self>) -> bool {
+        let open = self
+            .reader
+            .as_mut()
+            .is_some_and(|reader| reader.chat.people.take().is_some());
+        if open {
+            cx.notify();
+        }
+        open
+    }
+
+    /// The list of everyone in the chat, dropped over the feed from the
+    /// header; the people slide in one after another.
+    fn render_chat_people(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let reader = self.reader.as_ref()?;
+        let run = reader.chat.people?;
+        let key = reader.key;
+        let members = self.chat_members();
+        let reduce = cx.reduce_motion();
+        let rows = members.into_iter().enumerate().map(|(ix, m)| {
+            let email = m.email.to_lowercase();
+            let row = div()
+                .id(("chat-member", ix))
+                .relative()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .px(px(10.0))
+                .py(px(7.0))
+                .rounded(px(10.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip(tr!("chat-show-card"), th))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.close_chat_people(cx);
+                    this.show_contact_of(key, &email, cx);
+                }))
+                .child(self.person_avatar(&m.name, &m.email, 30.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            div()
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .child(
+                                    div()
+                                        .min_w_0()
+                                        .truncate()
+                                        .text_size(px(14.0))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .text_color(rgba(th.text))
+                                        .child(m.name.clone()),
+                                )
+                                .when(m.me, |d| {
+                                    d.child(
+                                        div()
+                                            .flex_none()
+                                            .px(px(6.0))
+                                            .rounded(px(6.0))
+                                            .bg(rgba(mix(th.menu, th.text, 0.12)))
+                                            .text_size(px(11.0))
+                                            .text_color(rgba(th.text_dim))
+                                            .child(tr!("chat-you")),
+                                    )
+                                }),
+                        )
+                        .child(
+                            div()
+                                .truncate()
+                                .text_size(px(12.5))
+                                .text_color(rgba(th.text_dim))
+                                .child(m.email.clone()),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex_none()
+                        .text_size(px(12.5))
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("chat-member-mails", count = m.mails)),
+                );
+            // Each row starts a little after the one above.
+            let delay = PEOPLE_DELAY_MS * ix as f32;
+            let total = delay + PEOPLE_ROW_MS;
+            row.with_animation(
+                ("chat-member-in", run * 1000 + ix),
+                gpui::Animation::new(std::time::Duration::from_millis(if reduce {
+                    1
+                } else {
+                    total as u64
+                })),
+                move |el, t| {
+                    let local = ((t * total - delay) / PEOPLE_ROW_MS).clamp(0.0, 1.0);
+                    let eased = 1.0 - (1.0 - local).powi(3);
+                    el.opacity(eased).top(px(-6.0 * (1.0 - eased)))
+                },
+            )
+        });
+        let count = self.chat_members().len();
+        let panel = div()
+            .id("chat-people")
+            .absolute()
+            .top(px(6.0))
+            .left(px(12.0))
+            .w(px(360.0))
+            .max_w(relative(0.9))
+            .max_h(relative(0.8))
+            .overflow_y_scroll()
+            .map(|d| crate::widgets::raised(d, th, 14.0, 3.0))
+            // Pointer and clicks stay on the list, not the bubbles under it.
+            .occlude()
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .child(
+                div()
+                    .px(px(18.0))
+                    .pt(px(12.0))
+                    .pb(px(4.0))
+                    .text_size(px(12.0))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .text_color(rgba(th.text_dim))
+                    .child(tr!("chat-people-heading", count = count)),
+            )
+            .child(
+                div()
+                    .px(px(8.0))
+                    .pb(px(10.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(2.0))
+                    .children(rows),
+            )
+            .with_animation(
+                ("chat-people-in", run),
+                gpui::Animation::new(std::time::Duration::from_millis(if reduce {
+                    1
+                } else {
+                    220
+                }))
+                .with_easing(gpui::ease_out_quint()),
+                |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
+            );
+        Some(
+            div()
+                .absolute()
+                .inset_0()
+                // A click beside the list folds it.
+                .child(
+                    div()
+                        .id("chat-people-scrim")
+                        .absolute()
+                        .inset_0()
+                        .on_mouse_down(
+                            MouseButton::Left,
+                            cx.listener(|this, _, _, cx| this.close_chat_people(cx)),
+                        ),
+                )
+                .child(panel)
+                .into_any_element(),
+        )
     }
 
     /// When the reply being written answers an older mail, or its sender
@@ -520,6 +787,7 @@ impl MailWindow {
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
         let mails = reader.parts.iter().filter(|p| p.pending.is_none()).count();
+        let people_open = reader.chat.people.is_some();
         // Overlapping pictures, each ringed in the card's colour.
         let shown = people.len().min(3);
         let stack = people.iter().take(3).enumerate().map(|(i, (name, email))| {
@@ -547,34 +815,71 @@ impl MailWindow {
             .border_color(rgba(th.divider))
             .child(
                 div()
-                    .flex_none()
-                    .relative()
-                    .h(px(STACK_PICTURE + 4.0))
-                    .w(px(STACK_PICTURE
-                        + 4.0
-                        + STACK_STEP * shown.saturating_sub(1) as f32))
-                    .children(stack),
-            )
-            .child(
-                div()
+                    .id("chat-header-people")
                     .flex_1()
                     .min_w_0()
                     .flex()
-                    .flex_col()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(10.0))
+                    .ml(px(-6.0))
+                    .pl(px(6.0))
+                    .py(px(4.0))
+                    .rounded(px(10.0))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_chat_people(cx)))
                     .child(
                         div()
-                            .truncate()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::SEMIBOLD)
-                            .text_color(rgba(th.text))
-                            .child(reader.subject.clone()),
+                            .flex_none()
+                            .relative()
+                            .h(px(STACK_PICTURE + 4.0))
+                            .w(px(STACK_PICTURE
+                                + 4.0
+                                + STACK_STEP * shown.saturating_sub(1) as f32))
+                            .children(stack),
                     )
                     .child(
                         div()
-                            .truncate()
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(tr!("chat-people", names = names.join(", "), count = mails)),
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .child(
+                                div()
+                                    .truncate()
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::SEMIBOLD)
+                                    .text_color(rgba(th.text))
+                                    .child(reader.subject.clone()),
+                            )
+                            .child(
+                                div()
+                                    .min_w_0()
+                                    .text_size(px(12.0))
+                                    .text_color(rgba(th.text_faint))
+                                    .child(
+                                        div()
+                                            .flex()
+                                            .flex_row()
+                                            .items_center()
+                                            .gap(px(2.0))
+                                            .child(div().min_w_0().truncate().child(tr!(
+                                                "chat-people",
+                                                names = names.join(", "),
+                                                count = mails
+                                            )))
+                                            .child(div().flex_none().child(icon(
+                                                if people_open {
+                                                    "chevron-up"
+                                                } else {
+                                                    "chevron-down"
+                                                },
+                                                th.text_faint,
+                                                16.0,
+                                            ))),
+                                    ),
+                            ),
                     ),
             )
             .child(self.chat_switch(true, th, cx))

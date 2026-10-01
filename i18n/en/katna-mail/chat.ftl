@@ -18,6 +18,17 @@ chat-people = { $names } and you · { $count ->
     [one] { $count } mail
    *[other] { $count } mails
 }
+# Over the list of everyone in the chat, opened from its header. $count: the people, the user included.
+chat-people-heading = { $count ->
+    [one] In this chat · { $count } person
+   *[other] In this chat · { $count } people
+}
+# Beside each person in that list. $count: the mails they sent in this conversation.
+chat-member-mails = { $count ->
+    [0] No mails
+    [one] { $count } mail
+   *[other] { $count } mails
+}
 # The day over the bubbles of that day.
 chat-today = Today
 chat-yesterday = Yesterday
