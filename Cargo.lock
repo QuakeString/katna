@@ -6090,6 +6090,7 @@ dependencies = [
  "katna-ui",
  "mail-parser",
  "qrcodegen",
+ "serde",
  "serde_json",
  "spellbook",
  "tempfile",

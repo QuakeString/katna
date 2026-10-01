@@ -242,7 +242,7 @@ const ENTRIES: &[Entry] = &[
         Section::Appearance,
         "settings-appearance-colors",
         "settings-appearance-colors-summary",
-        "colour color scheme theme palette desktop clear graphite nord solarized dracula gruvbox catppuccin tokyo night one rose pine everforest kanagawa ayu",
+        "colour color scheme theme palette desktop yours custom customize edit editor import export kde clear graphite nord solarized dracula gruvbox catppuccin tokyo night one rose pine everforest kanagawa ayu",
     ),
     entry(
         Section::Appearance,
