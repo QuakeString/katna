@@ -2476,8 +2476,11 @@ desktop's own app stays one click away.
   out, a file sent again (same name and size) shows once, and pictures
   under 12 KB (signature logos) are skipped; it reads at most 20,000
   files. The side column (a drawer and chips on a phone) narrows it to a
-  kind of file, an account, or received or sent; chips pick a sender, a
-  time and the order; the top bar's search box matches names, subjects
+  kind of file, an account, or received or sent; chips pick a sender,
+  days (quick picks over a two-month calendar: click a day, drag across
+  days or Shift+click; the files follow the drag and the calendar closes
+  on release; the wheel over the chip moves the days, keeping their
+  length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
   its mail first); the hover panel, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also
