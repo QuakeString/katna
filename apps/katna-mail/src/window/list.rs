@@ -2360,7 +2360,7 @@ impl MailWindow {
                 .flex_1()
                 .min_w_0()
                 .truncate()
-                .text_color(rgba(th.text_faint))
+                .text_color(rgba(preview_color(th)))
                 .child(row.snippet.clone())
                 .into_any_element();
             // A phone shows the sender's picture, which ticks the line, and
@@ -2465,7 +2465,7 @@ impl MailWindow {
             (
                 subject_end..text_len,
                 HighlightStyle {
-                    color: Some(rgba(th.text_faint).into()),
+                    color: Some(rgba(preview_color(th)).into()),
                     ..Default::default()
                 },
             ),
@@ -2831,6 +2831,12 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
             |el, t| el.opacity(0.5 + 0.5 * t),
         )
         .into_any_element()
+}
+
+/// The preview text of a mail row: the faint text a third of the way
+/// toward the list's background, quieter than the sender and subject.
+pub(super) fn preview_color(th: &Theme) -> u32 {
+    mix(th.text_faint, th.surface, 0.35)
 }
 
 /// The faint line between mail rows: well under the app's other dividers,
