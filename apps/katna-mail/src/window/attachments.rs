@@ -844,7 +844,7 @@ impl MailWindow {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn show_viewer(
+    pub(super) fn show_viewer(
         &mut self,
         raw: Arc<Vec<u8>>,
         encrypted: bool,
@@ -892,6 +892,7 @@ impl MailWindow {
             }
             ViewerEvent::Step(by) => self.step_library(*by, window, cx),
             ViewerEvent::Paged(index) => self.paged_library(*index, cx),
+            ViewerEvent::Pick => self.pick_previewed(cx),
             ViewerEvent::ShowMail => {
                 let mail = self.files.viewer_mail;
                 self.close_viewer(window, cx);
@@ -922,6 +923,9 @@ impl MailWindow {
         self.files.released.extend(released);
         self.files._viewer_events = None;
         self.files.viewer_mail = None;
+        if let Some(picker) = &mut self.picker {
+            picker.previewing = false;
+        }
         match self.files.restore.take() {
             Some(focus) => focus.focus(window, cx),
             None => self.list_focus.focus(window, cx),

@@ -153,6 +153,18 @@ impl Theme {
         }
     }
 
+    /// A meter nearly at its limit, before it turns to [`Theme::error`]:
+    /// amber.
+    pub fn caution(&self) -> u32 {
+        if self.dark { 0xfdd663ff } else { 0xe37400ff }
+    }
+
+    /// What goes to Google Drive or OneDrive rather than in the mail: the
+    /// clouds' own blue, whatever the accent.
+    pub fn cloud(&self) -> u32 {
+        if self.dark { 0x8ab4f8ff } else { 0x1a73e8ff }
+    }
+
     /// Katna's own palette.
     pub fn new(dark: bool) -> Self {
         if dark { DARK } else { LIGHT }

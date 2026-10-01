@@ -21,7 +21,7 @@
 //! pictures, `schedule` the times of schedule send, `popout` the message
 //! in a window of its own.
 
-mod attach;
+pub(super) mod attach;
 mod chat_box;
 mod checks;
 mod chips;
@@ -171,6 +171,8 @@ pub(super) struct Compose {
     signature: Option<u32>,
     /// The formatting bar (Aa) shows.
     format_bar: bool,
+    /// The chat reply box's formatting bar sliding in (1) or out (0).
+    format_slide: Spring,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
     /// Seconds after sending to remind if nobody replies; 0 for never.
@@ -709,7 +711,7 @@ impl MailWindow {
             let problem = tr!(
                 "compose-file-too-large",
                 name = file.name.clone(),
-                limit = format::size(attach::MAX_TOTAL as u64)
+                limit = attach::limit_text()
             );
             self.show_snackbar(problem, None, cx);
             return;
@@ -742,7 +744,7 @@ impl MailWindow {
             let problem = tr!(
                 "compose-file-too-large",
                 name = file.name.clone(),
-                limit = format::size(attach::MAX_TOTAL as u64)
+                limit = attach::limit_text()
             );
             self.show_snackbar(problem, None, cx);
             return;
@@ -1220,7 +1222,13 @@ impl MailWindow {
                     this.keep_cursor_in_view(cx);
                     cx.notify();
                 }
-                RichEvent::Selection => cx.notify(),
+                RichEvent::Selection => {
+                    // The chat's short box follows the arrow keys too.
+                    if this.chat_shown() {
+                        this.keep_cursor_in_view(cx);
+                    }
+                    cx.notify();
+                }
                 RichEvent::Cancel => this.escape_compose(cx),
                 RichEvent::EditLink => this.open_link_dialog(window, cx),
                 RichEvent::ContextMenu {
@@ -1286,6 +1294,7 @@ impl MailWindow {
             sealing: Sealing::new_message(),
             signature,
             format_bar: false,
+            format_slide: Spring::new(motion::SMOOTH, 0.0),
             popup: None,
             follow_up: 0,
             dialog,
@@ -1459,8 +1468,10 @@ impl MailWindow {
             return;
         };
         // An inline reply has no scroll of its own: the conversation scrolls,
-        // under its Send row.
-        let (scroll, mut covered) = if compose.mode == Mode::Inline {
+        // under its Send row. The chat's reply box scrolls its own text
+        // once it is as tall as it grows.
+        let chat = self.chat_shown() && compose.mode == Mode::Inline;
+        let (scroll, mut covered) = if compose.mode == Mode::Inline && !chat {
             (
                 self.reader_scroll.clone(),
                 compose.stick.get().footer_height,
@@ -1468,7 +1479,7 @@ impl MailWindow {
         } else {
             (compose.body_scroll.clone(), 0.0)
         };
-        if compose.format_bar {
+        if compose.format_bar && !chat {
             covered += tools::FORMAT_BAR_COVER;
         }
         let body = compose.body.clone();
@@ -1480,7 +1491,7 @@ impl MailWindow {
                 };
                 let mut view = scroll.bounds();
                 view.size.height -= px(covered);
-                let pad = px(12.0);
+                let pad = px(if chat { 9.0 } else { 12.0 });
                 let mut offset = scroll.offset();
                 if cursor.bottom() + pad > view.bottom() {
                     offset.y -= cursor.bottom() + pad - view.bottom();
@@ -1602,7 +1613,7 @@ impl MailWindow {
                 tr!(
                     "compose-attachments-too-large",
                     size = format::size(total as u64),
-                    limit = format::size(attach::MAX_TOTAL as u64)
+                    limit = attach::limit_text()
                 ),
                 None,
                 cx,

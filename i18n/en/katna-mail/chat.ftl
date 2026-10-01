@@ -63,9 +63,33 @@ chat-send = Send (Ctrl+Enter)
 chat-attach = Attach
 chat-attach-photo = Photo
 chat-attach-file = File
+# Opens the attach picker: files from Katna's Files page.
+chat-attach-library = From Files
 chat-attach-template = Template
 chat-attach-signature = Signature
 # Over the reply box when the reply answers an older mail. $name: its sender's first name.
 chat-replying-to = Replying to { $name }
 # The cross on that strip: the reply answers the newest mail again.
 chat-reply-newest = Reply to the newest mail
+
+## The attach picker (paperclip > From Files)
+
+picker-title = Attach from Files
+picker-search = Search names, people, subjects
+picker-in-chat = IN THIS CONVERSATION
+picker-recent = RECENT
+picker-preview = Preview
+picker-cancel = Cancel
+picker-attach = Attach
+picker-attach-count = Attach { $count }
+picker-selected = { $count } selected
+# After the size of everything the mail would carry. $limit: 25 MB.
+picker-of-limit = of { $limit }
+# $size: how much goes through the cloud rather than in the mail.
+picker-via-drive = { $size } via Google Drive
+picker-via-onedrive = { $size } via OneDrive
+picker-over = { $size }, more than the { $limit } a mail can carry
+picker-some-failed = { $count ->
+    [one] One file could not be read
+   *[other] { $count } files could not be read
+}

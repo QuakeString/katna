@@ -333,6 +333,36 @@ pub(super) fn format_button(
         ))
 }
 
+/// A button of the chat reply box's formatting bar: roomier than
+/// [`format_button`], as the bar has few.
+fn chat_format_button(
+    id: &'static str,
+    name: &'static str,
+    active: bool,
+    th: &Theme,
+) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .size(px(36.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(8.0))
+        .cursor_pointer()
+        .when(active, |d| d.bg(rgba(format_active(th))))
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(icon(
+            name,
+            if active {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            },
+            18.0,
+        ))
+}
+
 /// The formatting bar's background: the card's color tinted with the
 /// accent, so it stands apart from the text under it.
 pub(super) fn format_bar_bg(th: &Theme) -> u32 {
@@ -1302,6 +1332,154 @@ impl MailWindow {
                 .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
             )
             .child(tail)
+            .into_any_element()
+    }
+
+    /// The chat reply box's formatting bar: the few styles a chat message
+    /// needs, in groups, as the study drew it. The keys for the rest work
+    /// as in Compose.
+    pub(super) fn render_chat_format_bar(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let editor = compose.body.read(cx);
+        if editor.is_plain() {
+            return div()
+                .h(px(44.0))
+                .px(px(16.0))
+                .flex()
+                .items_center()
+                .text_size(px(13.0))
+                .text_color(rgba(th.text_dim))
+                .child(tr!("compose-tool-plain-note"))
+                .into_any_element();
+        }
+        let style = editor.current_style();
+        let para = editor.para_style();
+        let colors_open = compose.popup == Some(Popup::Colors);
+        let button = |id: &'static str, name: &'static str, on: bool, label: String| {
+            chat_format_button(id, name, on, th).tooltip(tip(label, th))
+        };
+        let group = || div().flex().flex_row().items_center().gap(px(2.0));
+        let dot = style.color.unwrap_or(th.text_dim);
+        let colors = div()
+            .relative()
+            .child(
+                div()
+                    .id("chat-format-color")
+                    .flex_none()
+                    .size(px(36.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded(px(8.0))
+                    .cursor_pointer()
+                    .when(colors_open, |d| d.bg(rgba(format_active(th))))
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(tr!("compose-tool-text-color"), th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Colors, cx)))
+                    .child(div().size(px(18.0)).rounded_full().bg(rgba(dot))),
+            )
+            .when(colors_open, |d| {
+                d.child(above(self.render_colors(
+                    th,
+                    style.color,
+                    style.background,
+                    cx,
+                )))
+            });
+        div()
+            .h(px(44.0))
+            .px(px(10.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(14.0))
+            .child(
+                group()
+                    .child(
+                        button(
+                            "chat-format-bold",
+                            "format-bold",
+                            style.bold,
+                            tr!("compose-tool-bold"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-italic",
+                            "format-italic",
+                            style.italic,
+                            tr!("compose-tool-italic"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-underline",
+                            "format-underline",
+                            style.underline,
+                            tr!("compose-tool-underline"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-strike",
+                            "format-strike",
+                            style.strike,
+                            tr!("compose-tool-strikethrough"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx))),
+                    ),
+            )
+            .child(
+                group().child(colors).child(
+                    button("chat-format-link", "link", false, tr!("compose-tool-link")).on_click(
+                        cx.listener(|this, _, window, cx| this.open_link_dialog(window, cx)),
+                    ),
+                ),
+            )
+            .child(
+                group()
+                    .child(
+                        button(
+                            "chat-format-bulleted",
+                            "list-bulleted",
+                            para.list == List::Bullet,
+                            tr!("compose-tool-bulleted-list"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-numbered",
+                            "list-numbered",
+                            para.list == List::Numbered,
+                            tr!("compose-tool-numbered-list"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-quote",
+                            "quote",
+                            para.quote > 0,
+                            tr!("compose-tool-quote"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx))),
+                    ),
+            )
+            .child(
+                button(
+                    "chat-format-clear",
+                    "clear-format",
+                    false,
+                    tr!("compose-tool-remove-formatting"),
+                )
+                .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx))),
+            )
             .into_any_element()
     }
 
