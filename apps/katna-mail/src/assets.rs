@@ -112,6 +112,7 @@ icons!(
     "indent-less",
     "indent-more",
     "info",
+    "insert-below",
     "junk",
     "label",
     "language",

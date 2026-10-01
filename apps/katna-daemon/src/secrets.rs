@@ -53,6 +53,14 @@ fn attributes(account: AccountId) -> [(&'static str, String); 2] {
 }
 
 #[cfg_attr(windows, allow(dead_code))]
+fn ai_key_attributes() -> [(&'static str, String); 2] {
+    [
+        ("application", ids::PREFIX.to_owned()),
+        ("ai-key", "own".to_owned()),
+    ]
+}
+
+#[cfg_attr(windows, allow(dead_code))]
 fn server_attributes() -> [(&'static str, String); 2] {
     [
         ("application", ids::PREFIX.to_owned()),
@@ -80,6 +88,8 @@ fn linked_key(account: AccountId) -> AccountId {
 
 /// Where the Katna Server token sits in the in-memory store.
 const SERVER_KEY: AccountId = AccountId(i64::MIN);
+/// Where [`Secrets::Memory`] keeps the key of the user's own AI service.
+const AI_KEY: AccountId = AccountId(i64::MIN + 1);
 
 impl Secrets {
     /// Connects to the Secret Service.
@@ -314,6 +324,65 @@ impl Secrets {
         Ok(())
     }
 
+    /// The key of the user's own AI service, if saved.
+    pub async fn ai_key(&self) -> Result<Option<String>, Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                let Some(item) = keyring
+                    .search_items(&ai_key_attributes())
+                    .await?
+                    .into_iter()
+                    .next()
+                else {
+                    return Ok(None);
+                };
+                let secret = item.secret().await?;
+                String::from_utf8(secret.to_vec())
+                    .map(Some)
+                    .map_err(|_| Error("the saved AI key is not UTF-8".into()))
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => store.get(windows::AI_KEY).await,
+            Self::Memory(map) => Ok(map.lock().unwrap().get(&AI_KEY).cloned()),
+        }
+    }
+
+    /// Saves the key of the user's own AI service; an empty key deletes it.
+    pub async fn set_ai_key(&self, key: &str) -> Result<(), Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock_asking().await?;
+                if key.is_empty() {
+                    keyring.delete(&ai_key_attributes()).await?;
+                } else {
+                    keyring
+                        .create_item("Katna AI key", &ai_key_attributes(), key, true)
+                        .await?;
+                }
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => {
+                if key.is_empty() {
+                    store.delete(windows::AI_KEY).await?;
+                } else {
+                    store.set(windows::AI_KEY, key).await?;
+                }
+            }
+            Self::Memory(map) => {
+                let mut map = map.lock().unwrap();
+                if key.is_empty() {
+                    map.remove(&AI_KEY);
+                } else {
+                    map.insert(AI_KEY, key.to_owned());
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Deletes every password Katna saved, also of accounts that are gone.
     pub async fn delete_all(&self) -> Result<(), Error> {
         match self {
@@ -532,6 +601,9 @@ mod windows {
 
     /// The user name of the Katna Server token.
     pub const SERVER: &str = "katna-server";
+
+    /// The user name of the key of the user's own AI service.
+    pub const AI_KEY: &str = "ai-key";
 
     /// The user name of an account's password.
     pub fn account(account: AccountId) -> String {

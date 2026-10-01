@@ -895,6 +895,35 @@ macro_rules! pim_proxy {
             /// while this computer is not signed in to a Katna account).
             fn translation_sources(&self, target: &str) -> zbus::Result<(Vec<String>, String)>;
 
+            /// Rephrases `text`, the text the user selected in a message
+            /// being written, in `tone` (a `katna_ai::Tone` id such as
+            /// `clearer`; `instruction` is the user's own for `custom`),
+            /// with the AI service the settings name. Returns the new text,
+            /// the account's plan with Katna AI (`trial`, `paid`, or `own`
+            /// for the user's own service) and the free days left, and a
+            /// `katna_ai::wire::problem` when there is no text.
+            fn ai_rephrase(
+                &self,
+                text: &str,
+                tone: &str,
+                instruction: &str,
+            ) -> zbus::Result<(String, String, u32, String)>;
+
+            /// The rest of the sentence at the end of `before`, the
+            /// paragraph being written, with the space it needs first, or
+            /// empty when the service is unsure; and a
+            /// `katna_ai::wire::problem` when it could not be asked (`off`
+            /// unless AI autocomplete is on). `answered`, the mail being
+            /// answered, is sent only when the settings allow it.
+            fn ai_complete(&self, before: &str, answered: &str) -> zbus::Result<(String, String)>;
+
+            /// Saves the key of the user's own AI service in the Secret
+            /// Service; an empty key deletes it.
+            fn set_ai_key(&self, key: &str) -> zbus::Result<()>;
+
+            /// Whether a key of the user's own AI service is saved.
+            fn ai_key_saved(&self) -> zbus::Result<bool>;
+
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;

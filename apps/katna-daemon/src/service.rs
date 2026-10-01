@@ -502,6 +502,38 @@ macro_rules! pim_interface {
                 }
             }
 
+            async fn ai_rephrase(
+                &self,
+                text: String,
+                tone: String,
+                instruction: String,
+            ) -> (String, String, u32, String) {
+                match self.daemon.ai_rephrase(&text, &tone, &instruction).await {
+                    Ok(done) => (
+                        done.text,
+                        done.plan.kind,
+                        done.plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_complete(&self, before: String, answered: String) -> (String, String) {
+                match self.daemon.ai_complete(&before, &answered).await {
+                    Ok(done) => (done.text, String::new()),
+                    Err(err) => (String::new(), err.problem().to_owned()),
+                }
+            }
+
+            async fn set_ai_key(&self, key: String) -> fdo::Result<()> {
+                Ok(self.daemon.set_ai_key(&key).await?)
+            }
+
+            async fn ai_key_saved(&self) -> fdo::Result<bool> {
+                Ok(self.daemon.ai_key_saved().await?)
+            }
+
             async fn update_status(&self) -> UpdateStatus {
                 self.daemon.updates().status()
             }

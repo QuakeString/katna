@@ -99,6 +99,7 @@ katna/
 │   ├── katna-render/          # HTML sanitizing and message rendering
 │   ├── katna-preview/         # attachment previews: PDF, pictures, text, sheets, documents
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
+│   ├── katna-ai/              # writing help with AI: prompts, services, wire (§16.5)
 │   ├── katna-dbus/            # D-Bus API definitions (in.invenia.katna.Pim1), client + server sides
 │   ├── katna-notify/          # notification builder, actions, inline reply, grouping
 │   ├── katna-platform/        # portals, desktop detection, settings, tray, badges
@@ -3662,6 +3663,49 @@ owner's server, over on-device models or DeepL).
   language by default), languages always translated (none by default, one
   click from the bar) and languages never offered. The Settings text says
   the mail's text goes to Katna's server.
+
+### 16.5 Writing help with AI
+
+Katna Mail rephrases the text the user selects in a message and can finish
+the sentence being written (decided 1 October 2026: Katna AI on Katna
+Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
+
+- **Shared crate:** `katna-ai` (no network, no GPUI) holds the prompts
+  (`prompt`: the tones Clearer, Shorter, Friendlier, Formal, Fix grammar,
+  Longer and the user's own instruction; size limits; cleaning the
+  answer), the services a key can be brought for and the one HTTPS
+  request each takes (`provider`: Gemini, OpenAI, Claude, Mistral,
+  DeepSeek, OpenRouter, and Other for anything speaking OpenAI's API, such
+  as Ollama or LM Studio on `localhost`), and what the daemon and Katna
+  Server say to each other (`wire`). Katna Server uses the same crate.
+- **Settings** (`[ai]` in `config.toml`): `source` = `katna` (default),
+  `own` or `off`; `provider`, `model` (empty for the service's usual one)
+  and `address` (Other only); `autocomplete` (off) and
+  `autocomplete_answered` (off); `encrypted` (on: Rephrase is offered in
+  encrypted mail, asking each time). The key of the user's own service is
+  in the Secret Service (`ai-key`), saved and removed through the daemon
+  (`SetAiKey`, `AiKeySaved`), never in the settings file.
+- **Daemon:** `AiRephrase(text, tone, instruction)` and
+  `AiComplete(before, answered)` on D-Bus, read the settings per call and
+  send over rustls either to Katna Server (`POST /api/v1/ai/rephrase`,
+  `/api/v1/ai/complete`, with the Katna account's token; 401/403 = sign
+  in, 402 = the free month is over, 429 = over a limit) or to the user's
+  service with the key. They answer the text, the plan (`trial` with days
+  left, `paid`, `own`) and a problem name (`katna_ai::wire::problem`).
+  Nothing is logged but that it happened.
+- **App:** selecting text in the message's own paragraphs (not the quote,
+  signature, tables or pictures) shows a sparkle by its end; it or Ctrl+J
+  opens the Rephrase card: tones, a preview, Replace (one undo step, a
+  snackbar with Undo), Try again, Add below, Copy, and who answered.
+  Encrypted mail asks before sending the selection, once per message.
+  Longer suggestions use the grey writing suggestion and its Tab
+  (`katna_ui::rich::Complete`), after a 600 ms pause at the end of a paragraph, ending in
+  a small "✦ Tab" key; never for encrypted mail.
+- **Katna AI** (Katna Server, to come): 30 days free from the first use,
+  then $5 a month through Razorpay Subscriptions; a monthly cost cap per
+  account and an overall budget switch; the provider and model chosen on
+  a sign-in protected admin page; keys and the Razorpay secrets from
+  environment variables only.
 
 ## 17. Performance budget
 

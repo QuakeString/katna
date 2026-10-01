@@ -1,0 +1,16 @@
+[package]
+name = "katna-ai"
+description = "Rephrasing and sentence completion with an AI service: the prompts, the requests each kind of service takes, and the answers made usable."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

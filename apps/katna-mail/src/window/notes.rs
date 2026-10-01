@@ -1071,7 +1071,6 @@ impl MailWindow {
             .flex_none()
             .w(px(SIDE_WIDTH))
             .h_full()
-            .pt(px(8.0))
             .flex()
             .flex_col()
             .children(NotesView::ALL.into_iter().flat_map(|v| {
@@ -1496,6 +1495,11 @@ impl MailWindow {
         }
         self.remember(super::UndoStep::Command(Command::OrderNotes(drag.was)));
         self.send(Command::OrderNotes(drag.order), None, None, false, cx);
+    }
+
+    /// The left bar's New note: a new note over the page.
+    pub(super) fn new_note(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.open_note(None, false, None, window, cx);
     }
 
     /// Keep's "Take a note…" bar, with a new list at its right.

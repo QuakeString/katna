@@ -5913,6 +5913,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "katna-ai"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "katna-bench"
 version = "0.0.0"
 dependencies = [
@@ -5981,6 +5989,7 @@ dependencies = [
  "async-signal",
  "futures-lite",
  "jiff",
+ "katna-ai",
  "katna-core",
  "katna-dav",
  "katna-dbus",
@@ -6073,6 +6082,7 @@ dependencies = [
  "gpui-pre-platform",
  "harper-core",
  "jiff",
+ "katna-ai",
  "katna-chrome",
  "katna-core",
  "katna-crypto",

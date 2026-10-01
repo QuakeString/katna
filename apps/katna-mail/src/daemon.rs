@@ -38,6 +38,9 @@ pub enum Command {
     /// Puts back the quoted message just removed from a reply. The app does
     /// this itself; the daemon never sees it.
     RestoreQuote,
+    /// Takes back the text just rephrased in the message. The app does
+    /// this itself; the daemon never sees it.
+    UndoRephrase,
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
@@ -194,6 +197,7 @@ impl Command {
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
+            | Self::UndoRephrase
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
             | Self::ContactLabels(_)
@@ -369,6 +373,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
         Command::ReopenDraft
         | Command::RestoreQuote
+        | Command::UndoRephrase
         | Command::RestoreContacts(_)
         | Command::RestoreScheme(..) => {
             return Ok(());
@@ -703,6 +708,78 @@ pub async fn translation_sources(
     } else {
         Err(problem)
     }
+}
+
+/// What came back from rephrasing: the text, and the plan it was done
+/// under (`trial` with its days left, `paid`, or `own`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Rephrased {
+    pub text: String,
+    pub plan: String,
+    pub days_left: u32,
+}
+
+/// Rephrases `text` in `tone` with the AI service the settings name, or
+/// gives a `katna_ai::wire::problem`.
+pub async fn ai_rephrase(
+    connection: &Connection,
+    text: &str,
+    tone: &str,
+    instruction: &str,
+) -> Result<Rephrased, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (text, plan, days_left, problem) = pim
+        .ai_rephrase(text, tone, instruction)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// The rest of the sentence at the end of `before` (empty when unsure),
+/// or a `katna_ai::wire::problem`.
+pub async fn ai_complete(
+    connection: &Connection,
+    before: &str,
+    answered: &str,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (text, problem) = pim
+        .ai_complete(before, answered)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(text)
+    } else {
+        Err(problem)
+    }
+}
+
+/// Saves the key of the user's own AI service; empty deletes it.
+pub async fn set_ai_key(connection: &Connection, key: &str) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_ai_key(key).await.map_err(|err| describe(&err))
+}
+
+/// Whether a key of the user's own AI service is saved.
+pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.ai_key_saved().await.map_err(|err| describe(&err))
 }
 
 /// Deletes every saved copy of the draft `message_id` of `account`.
