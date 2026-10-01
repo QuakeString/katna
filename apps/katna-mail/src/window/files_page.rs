@@ -732,8 +732,7 @@ impl MailWindow {
             - shape.rail()
             - shape.card_margin()
             - self.page_side_width(NAV_WIDTH)
-            - 2.0 * pad
-            - 8.0;
+            - 2.0 * pad;
         let min = if shape.is_phone() {
             CARD_MIN_PHONE
         } else {
@@ -775,11 +774,10 @@ impl MailWindow {
 
     fn render_files_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.library;
-        let count = |n: usize| {
-            div()
-                .text_size(px(12.0))
-                .text_color(rgba(th.text_faint))
-                .child(katna_i18n::format::number(n as u64))
+        // The line's text color: see `side_row`.
+        let count = |n: usize, on: bool| {
+            let n = n as u64;
+            super::nav::count_pill(n, if on { th.nav_selected_text } else { th.text })
         };
         let rule = || {
             div()
@@ -807,7 +805,7 @@ impl MailWindow {
             let on = page.types == types;
             nav = nav.child(
                 super::nav::side_row(("files-type", n), types.icon(), types.label(), on, th)
-                    .when(page.counts[n] > 0, |d| d.child(count(page.counts[n])))
+                    .when(page.counts[n] > 0, |d| d.child(count(page.counts[n], on)))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.library.types = types;
                         this.library.changed();
@@ -833,7 +831,7 @@ impl MailWindow {
                         on,
                         th,
                     )
-                    .child(count(page.per_account.get(&id).copied().unwrap_or(0)))
+                    .child(count(page.per_account.get(&id).copied().unwrap_or(0), on))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         // A second click shows every account again.
                         this.library.account = (this.library.account != Some(id)).then_some(id);
@@ -1016,20 +1014,31 @@ impl MailWindow {
             .child(person_chip)
             .child(time_chip)
             .child(sort_chip);
+        // The rule under the bar lines up with the title and the cards
+        // rather than running to the card's edges.
+        let rule = div()
+            .flex_none()
+            .mx(px(pad))
+            .h(px(1.0))
+            .bg(rgba(th.divider));
         let bar = if desktop {
             div()
                 .flex_none()
-                .h(px(56.0))
-                .px(px(pad))
                 .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .border_b_1()
-                .border_color(rgba(th.divider))
-                .child(title)
-                .child(chips)
-                .child(views)
+                .flex_col()
+                .child(
+                    div()
+                        .h(px(56.0))
+                        .px(px(pad))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(title)
+                        .child(chips)
+                        .child(views),
+                )
+                .child(rule)
         } else {
             // Kinds of file as chips, as the side column is a drawer.
             let kinds = Types::ALL.into_iter().enumerate().map(|(n, types)| {
@@ -1075,8 +1084,6 @@ impl MailWindow {
                 .flex_none()
                 .flex()
                 .flex_col()
-                .border_b_1()
-                .border_color(rgba(th.divider))
                 .child(
                     div()
                         .h(px(52.0))
@@ -1100,6 +1107,7 @@ impl MailWindow {
                         .children(kinds)
                         .child(chips),
                 )
+                .child(rule)
         };
         let content = if page.shown.is_empty() {
             placeholder(&tr!("files-none-match"), th)
@@ -1165,13 +1173,19 @@ impl MailWindow {
                         self.render_file_card(shown[at], found, card_width, th, cx)
                     })
                     .collect();
+                // Every row has a slot per column, so the cards share the
+                // row's whole width exactly and a short row's cards keep
+                // their size.
+                let empty = self.library.columns.saturating_sub(cards.len());
                 div()
+                    .w_full()
                     .px(px(pad))
                     .pb(px(GAP))
                     .flex()
                     .flex_row()
                     .gap(px(GAP))
                     .children(cards)
+                    .children((0..empty).map(|_| div().flex_1().flex_basis(px(0.0)).min_w_0()))
                     .into_any_element()
             }
             Line::Row(at) => {
@@ -1323,8 +1337,9 @@ impl MailWindow {
             .id(("files-card", ix))
             .group(group)
             .relative()
-            .flex_none()
-            .w(px(width))
+            .flex_1()
+            .flex_basis(px(0.0))
+            .min_w_0()
             .h(px(thumb_height + CARD_FOOT))
             .flex()
             .flex_col()
