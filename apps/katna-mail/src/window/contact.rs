@@ -26,7 +26,9 @@ use katna_ui::{Ripple, px};
 
 use super::MailWindow;
 use super::attachments::kind_badge;
+use super::remote::logo;
 use super::select::{Pieces, selectable};
+use crate::daemon;
 use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
@@ -71,6 +73,9 @@ pub(super) struct ContactPanel {
     people: Option<(EntryKey, People)>,
     /// Profiles by address: `None` while one is read.
     profiles: HashMap<String, (Instant, Option<Rc<Profile>>)>,
+    /// Companies by address, once asked for: `None` while asked, or when
+    /// there is none.
+    companies: HashMap<String, Option<Rc<Company>>>,
     /// The person whose recent conversations show in full (More).
     more: Option<String>,
     /// 0 = the first few conversations, 1 = all of them.
@@ -90,6 +95,7 @@ impl ContactPanel {
             picked: None,
             people: None,
             profiles: HashMap::new(),
+            companies: HashMap::new(),
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
             folded_nav: false,
@@ -352,6 +358,53 @@ impl MailWindow {
         known.and_then(|(_, p)| p)
     }
 
+    /// Asks the daemon once for the company of the person at `email`:
+    /// in the chat view, under the Sender pictures switch (§12).
+    fn contact_company(&mut self, email: &str, website: Option<&str>, cx: &mut Context<Self>) {
+        if !self.chat_shown() || !(self.config.mail.sender_pictures || self.remote.trusts(email)) {
+            return;
+        }
+        let key = email.to_lowercase();
+        if self.contact.companies.contains_key(&key) {
+            return;
+        }
+        if self.contact.companies.len() >= KEEP_PROFILES {
+            self.contact.companies.clear();
+        }
+        self.contact.companies.insert(key.clone(), None);
+        let connection = self.daemon.clone();
+        let website = website.unwrap_or_default().to_owned();
+        cx.spawn(async move |this, cx| {
+            let json = cx
+                .background_executor()
+                .spawn({
+                    let key = key.clone();
+                    async move {
+                        let connection = match connection {
+                            Some(connection) => connection,
+                            None => daemon::connect().await?,
+                        };
+                        daemon::company_of(&connection, &key, &website).await
+                    }
+                })
+                .await;
+            let company = json
+                .ok()
+                .filter(|j| !j.is_empty())
+                .and_then(|j| serde_json::from_str::<Company>(&j).ok())
+                .filter(|c| !c.name.is_empty());
+            let Some(company) = company else {
+                return;
+            };
+            this.update(cx, |this, cx| {
+                this.contact.companies.insert(key, Some(Rc::new(company)));
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
     /// The panel, `t` of the way in, beside the cards.
     pub(super) fn render_contact_panel(
         &mut self,
@@ -412,6 +465,10 @@ impl MailWindow {
                 } else {
                     self.contact_profile(&email, cx)
                 };
+                // Asked for here; the body finds it once it comes.
+                if let Some(profile) = &profile {
+                    self.contact_company(&email, profile.card.website.as_deref(), cx);
+                }
                 self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
             }
             None => contact_empty(th),
@@ -535,6 +592,13 @@ impl MailWindow {
             && let Some(details) = self.contact_details(profile, &mut pieces, th, cx)
         {
             sections.push(details);
+        }
+        let company = self
+            .chat_shown()
+            .then(|| self.contact.companies.get(&email.to_lowercase())?.clone())
+            .flatten();
+        if let Some(company) = &company {
+            sections.push(self.contact_company_section(email, company, &mut pieces, th));
         }
         // The chat view leaves signatures out of the bubbles: the one they
         // signed with last shows here.
@@ -834,6 +898,142 @@ impl MailWindow {
                 }))
                 .into_any_element(),
         )
+    }
+
+    /// The Company section: its logo, name, where it is and since when,
+    /// what it does, Wikipedia's lines, and its pages.
+    fn contact_company_section(
+        &self,
+        email: &str,
+        company: &Company,
+        pieces: &mut Pieces,
+        th: &Theme,
+    ) -> AnyElement {
+        let initial = company
+            .name
+            .chars()
+            .find(|c| c.is_alphanumeric())
+            .map(|c| c.to_uppercase().to_string())
+            .unwrap_or_default();
+        let picture = match self.domain_logo(email) {
+            Some(picture) => logo(picture, 36.0),
+            None => div()
+                .size(px(36.0))
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded(px(9.0))
+                .bg(rgba(th.chip))
+                .text_size(px(15.0))
+                .font_weight(FontWeight::BOLD)
+                .text_color(rgba(th.text_dim))
+                .child(initial)
+                .into_any_element(),
+        };
+        let about = [
+            (!company.place.is_empty()).then(|| company.place.clone()),
+            company
+                .founded
+                .map(|year| tr!("contact-company-since", year = year.to_string())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join(" · ");
+        let text = |pieces: &mut Pieces, text: &str| {
+            words(pieces, text.to_owned())
+                .text_size(px(13.0))
+                .line_height(px(19.0))
+                .text_color(rgba(th.text))
+        };
+        let pages = std::iter::once((company.website.clone(), host_label(&company.website)))
+            .chain(
+                company
+                    .links
+                    .iter()
+                    .map(|url| (url.clone(), page_label(url))),
+            )
+            .enumerate()
+            .map(|(ix, (url, label))| {
+                div()
+                    .id(("contact-company-page", ix))
+                    .h(px(24.0))
+                    .px(px(10.0))
+                    .flex()
+                    .items_center()
+                    .rounded_full()
+                    .bg(rgba(th.chip))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .tooltip(tip(url.clone(), th))
+                    .on_click(move |_, _, cx| cx.open_url(&url))
+                    .child(label)
+            });
+        let now = jiff::Timestamp::now().as_second();
+        let checked = format::ago(company.checked, now).map(|when| {
+            words(
+                pieces,
+                tr!(
+                    "contact-company-from",
+                    site = host_label(&company.website),
+                    when = when
+                ),
+            )
+            .text_size(px(11.5))
+            .line_height(px(16.0))
+            .text_color(rgba(th.text_faint))
+        });
+        section(words(pieces, tr!("contact-company")), th)
+            .gap(px(8.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(10.0))
+                    .child(picture)
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .child(
+                                words(pieces, company.name.clone())
+                                    .text_size(px(14.0))
+                                    .line_height(px(20.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text)),
+                            )
+                            .when(!about.is_empty(), |d| {
+                                d.child(
+                                    words(pieces, about)
+                                        .text_size(px(12.0))
+                                        .line_height(px(16.0))
+                                        .text_color(rgba(th.text_dim)),
+                                )
+                            }),
+                    ),
+            )
+            .when(!company.description.is_empty(), |d| {
+                d.child(text(pieces, &company.description).text_color(rgba(th.text_dim)))
+            })
+            .when(!company.summary.is_empty(), |d| {
+                d.child(text(pieces, &company.summary).text_color(rgba(th.text_dim)))
+            })
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(6.0))
+                    .children(pages),
+            )
+            .children(checked)
+            .into_any_element()
     }
 
     /// Their phone number: a click calls it (the desktop hands `tel:` to
@@ -1341,6 +1541,48 @@ fn section(title: gpui::Div, th: &Theme) -> gpui::Div {
 fn words(pieces: &mut Pieces, text: impl Into<SharedString>) -> gpui::Div {
     let (styled, holder) = pieces.piece(text.into(), Vec::new());
     holder.child(styled)
+}
+
+/// A company as the daemon describes it
+/// (`katna_sync::pictures::Company`).
+#[derive(Debug, Default, serde::Deserialize)]
+#[serde(default)]
+struct Company {
+    name: String,
+    description: String,
+    place: String,
+    founded: Option<i32>,
+    website: String,
+    links: Vec<String>,
+    summary: String,
+    checked: i64,
+}
+
+/// `example.com` from `https://www.example.com/`.
+fn host_label(url: &str) -> String {
+    let rest = url.split_once("://").map_or(url, |(_, r)| r);
+    let host = rest.split(['/', '?', '#']).next().unwrap_or(rest);
+    host.strip_prefix("www.").unwrap_or(host).to_owned()
+}
+
+/// What a company page is called: the site's own name for the usual
+/// social sites, else its host.
+fn page_label(url: &str) -> String {
+    let host = host_label(url);
+    let known = [
+        ("linkedin.com", "LinkedIn"),
+        ("instagram.com", "Instagram"),
+        ("facebook.com", "Facebook"),
+        ("x.com", "X"),
+        ("twitter.com", "X"),
+        ("youtube.com", "YouTube"),
+        ("github.com", "GitHub"),
+        ("wikipedia.org", "Wikipedia"),
+    ];
+    known
+        .iter()
+        .find(|(site, _)| host == *site || host.ends_with(&format!(".{site}")))
+        .map_or(host.clone(), |(_, name)| (*name).to_owned())
 }
 
 /// `number` as a `tel:` URI wants it: its digits, after a `+` if it has one.

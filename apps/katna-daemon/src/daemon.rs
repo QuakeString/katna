@@ -742,24 +742,44 @@ impl Daemon {
     /// (DMARC or aligned DKIM in its `Authentication-Results`), so a forged
     /// `From` makes the daemon fetch nothing.
     pub async fn sender_picture(&self, address: &str) -> Result<Vec<u8>, CommandError> {
+        if !self.sender_authenticated(address) {
+            return Ok(Vec::new());
+        }
+        let pictures = Pictures::system(self.paths.cache_dir())
+            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        Ok(pictures.sender(address).await)
+    }
+
+    /// The company of the person at `address`, as JSON, or empty; under
+    /// the same rule as [`Self::sender_picture`].
+    pub async fn company_of(&self, address: &str, website: &str) -> Result<String, CommandError> {
+        if !self.sender_authenticated(address) {
+            return Ok(String::new());
+        }
+        let pictures = Pictures::system(self.paths.cache_dir())
+            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        Ok(pictures
+            .company(address, website)
+            .await
+            .and_then(|c| serde_json::to_string(&c).ok())
+            .unwrap_or_default())
+    }
+
+    /// Whether the user's provider authenticated mail from the domain of
+    /// `address`.
+    fn sender_authenticated(&self, address: &str) -> bool {
         let domain = address
             .rsplit_once('@')
             .map(|(_, domain)| domain.trim().trim_end_matches('.').to_ascii_lowercase())
             .unwrap_or_default();
-        let authenticated = !domain.is_empty()
+        !domain.is_empty()
             && self
                 .store()
                 .sender_domain_authenticated(&domain)
                 .unwrap_or_else(|err| {
                     tracing::warn!(%err, "reading sender authentication");
                     false
-                });
-        if !authenticated {
-            return Ok(Vec::new());
-        }
-        let pictures = Pictures::system(self.paths.cache_dir())
-            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
-        Ok(pictures.sender(address).await)
+                })
     }
 
     /// Translates `text`, the plain text of `message` in language `source`

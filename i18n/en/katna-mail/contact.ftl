@@ -55,6 +55,12 @@ contact-tasks = Tasks
 contact-meetings = Upcoming meetings
 # In the chat view: the signature they signed with last in the open conversation.
 contact-signature = Signature
+# The card's section on where they work, read from the company's home page.
+contact-company = Company
+# $year: when the company started.
+contact-company-since = since { $year }
+# $site: the company's website; $when: how long ago, as "2 days ago".
+contact-company-from = From { $site } · checked { $when }
 # The other people of the open conversation; a click shows one of them.
 contact-people = In this conversation
 # How the panel's details were found, at its foot.
