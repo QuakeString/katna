@@ -238,6 +238,7 @@ mod tests {
             [
                 "attachment",
                 "change_log",
+                "chat_pin",
                 "folder",
                 "folder_alert",
                 "message",
