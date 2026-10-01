@@ -27,7 +27,9 @@ impl MailWindow {
             unified: self.unified.map(|(view, _)| view.key().to_owned()),
             unified_account: self.unified.and_then(|(_, account)| account.map(|a| a.0)),
             tab: self.tab,
-            nav_folded: !self.nav_open,
+            // Folded only to make room for the contact panel, they come back
+            // open.
+            nav_folded: !self.nav_open && !self.nav_folded_for_contact(),
             expanded,
             accounts: self
                 .open_accounts

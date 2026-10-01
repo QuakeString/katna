@@ -75,6 +75,12 @@ pub(super) struct ContactPanel {
     more: Option<String>,
     /// 0 = the first few conversations, 1 = all of them.
     more_spring: Spring,
+    /// The panel folded the folders to make room: they unfold again when
+    /// it goes.
+    folded_nav: bool,
+    /// The folders were opened beside the panel by hand: the panel leaves
+    /// them be until it next opens.
+    nav_hold: bool,
 }
 
 impl ContactPanel {
@@ -86,6 +92,8 @@ impl ContactPanel {
             profiles: HashMap::new(),
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
+            folded_nav: false,
+            nav_hold: false,
         }
     }
 
@@ -111,6 +119,64 @@ impl MailWindow {
             && rest >= if self.split() { KEEP_SPLIT } else { KEEP_ALONE }
     }
 
+    /// Whether the panel would show, room aside.
+    fn contact_wanted(&self) -> bool {
+        self.config.mail.contact_panel
+            && !self.agenda_open()
+            && self.reading
+            && self.reader.is_some()
+            && self.settings_page.is_none()
+            && !self.detached
+            && self.layout.shape.is_desktop()
+    }
+
+    /// Whether the panel can show beside the cards as they are now, with
+    /// the folders folded if they are open: where its button is offered.
+    pub(super) fn contact_offered(&self) -> bool {
+        let folders = super::NAV_WIDTH * self.reserve_spring.value().clamp(0.0, 1.0);
+        self.contact_fits(self.cards_width + self.contact_room() + folders)
+    }
+
+    /// Before a frame's springs: folds the folders when the panel is wanted
+    /// and fits only without them, and unfolds them once the panel goes or
+    /// the window has room for both. `room` is what the folders, the cards
+    /// and the panel share.
+    pub(super) fn fold_nav_for_contact(&mut self, room: f32) {
+        let wanted = self.contact_wanted();
+        if !wanted {
+            self.contact.nav_hold = false;
+        }
+        let beside = self.contact_fits(room - super::NAV_WIDTH);
+        if self.contact.folded_nav {
+            if !wanted || beside || !self.layout.shape.is_desktop() {
+                self.contact.folded_nav = false;
+                self.nav_open = true;
+            }
+        } else if wanted
+            && self.app == super::apps::App::Mail
+            && self.nav_docked()
+            && !self.contact.nav_hold
+            && !beside
+            && self.contact_fits(room)
+        {
+            self.contact.folded_nav = true;
+            self.nav_open = false;
+        }
+    }
+
+    /// The folders were folded or unfolded by hand.
+    pub(super) fn nav_toggled_by_hand(&mut self) {
+        // Opened beside the panel: they stay until the panel next opens.
+        self.contact.nav_hold = self.nav_open && self.contact_wanted();
+        self.contact.folded_nav = false;
+    }
+
+    /// Whether the folders are folded only for the panel, so a restart
+    /// shows them open.
+    pub(super) fn nav_folded_for_contact(&self) -> bool {
+        self.contact.folded_nav
+    }
+
     /// Moves the panel toward shown or hidden for this frame, and returns
     /// the width it takes from cards `available` wide.
     pub(super) fn tick_contact(
@@ -119,12 +185,16 @@ impl MailWindow {
         window: &Window,
         reduce: bool,
     ) -> (f32, f32) {
+        // As the folders fold for it, it opens with them, against the room
+        // it will have.
+        let folding = super::NAV_WIDTH
+            * (self.reserve_spring.value() - self.reserve_spring.target()).max(0.0);
         let open = self.config.mail.contact_panel
             && !self.agenda_open()
             && self.reading
             && self.reader.is_some()
             && self.settings_page.is_none()
-            && self.contact_fits(available);
+            && self.contact_fits(available + folding);
         self.contact.spring.set(if open { 1.0 } else { 0.0 });
         let t = self.contact.spring.tick(window, reduce).clamp(0.0, 1.0);
         let more = self.contact.more.is_some();
@@ -132,11 +202,6 @@ impl MailWindow {
         self.contact.more_spring.tick(window, reduce);
         let room = |t: f32| (CONTACT_WIDTH + GAP) * t;
         (room(t), room(self.contact.spring.target()))
-    }
-
-    /// Whether the panel has room beside the open mail now.
-    pub(super) fn contact_room_now(&self) -> bool {
-        self.contact_fits(self.cards_width + self.contact_room())
     }
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
@@ -153,13 +218,13 @@ impl MailWindow {
     /// second click on the person whose card shows puts the panel away.
     pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
         let email = email.to_lowercase();
-        let shown = self.config.mail.contact_panel && self.contact_room_now();
+        let shown = self.config.mail.contact_panel && self.contact_offered();
         if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
             self.toggle_contact_panel(cx);
             return;
         }
         self.contact.picked = Some((key, email));
-        if !self.config.mail.contact_panel && self.contact_room_now() {
+        if !self.config.mail.contact_panel && self.contact_offered() {
             self.toggle_contact_panel(cx);
         }
         cx.notify();
@@ -181,13 +246,15 @@ impl MailWindow {
     /// Shows or hides the panel, from the reader's toolbar.
     pub(super) fn toggle_contact_panel(&mut self, cx: &mut Context<Self>) {
         self.config.mail.contact_panel = !self.config.mail.contact_panel;
+        // Asked for, it may fold folders opened beside it by hand.
+        self.contact.nav_hold = false;
         self.save_config();
         cx.notify();
     }
 
     /// The reader toolbar's button for the panel, where it fits.
     pub(super) fn contact_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        if !self.contact_room_now() {
+        if !self.contact_offered() {
             return None;
         }
         let on = self.config.mail.contact_panel;

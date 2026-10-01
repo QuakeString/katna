@@ -42,6 +42,21 @@ services:
       # "log" (codes go to `docker compose logs server`; trying it alone).
       KATNA_SERVER_DEV_MAILER: ${KATNA_SERVER_DEV_MAILER:-}
       KATNA_SERVER_BLOCKED_HOSTS: ${KATNA_SERVER_BLOCKED_HOSTS:-}
+      # Katna AI (writing help): the AI service and its key; empty is off.
+      KATNA_SERVER_AI_PROVIDER: ${KATNA_SERVER_AI_PROVIDER:-}
+      KATNA_SERVER_AI_MODEL: ${KATNA_SERVER_AI_MODEL:-}
+      KATNA_SERVER_AI_KEY: ${KATNA_SERVER_AI_KEY:-}
+      KATNA_SERVER_AI_BASE: ${KATNA_SERVER_AI_BASE:-}
+      KATNA_SERVER_AI_FALLBACK_PROVIDER: ${KATNA_SERVER_AI_FALLBACK_PROVIDER:-}
+      KATNA_SERVER_AI_FALLBACK_MODEL: ${KATNA_SERVER_AI_FALLBACK_MODEL:-}
+      KATNA_SERVER_AI_FALLBACK_KEY: ${KATNA_SERVER_AI_FALLBACK_KEY:-}
+      KATNA_SERVER_AI_FALLBACK_BASE: ${KATNA_SERVER_AI_FALLBACK_BASE:-}
+      KATNA_SERVER_AI_TRIAL_DAYS: ${KATNA_SERVER_AI_TRIAL_DAYS:-}
+      KATNA_SERVER_AI_ACCOUNT_CAP_USD: ${KATNA_SERVER_AI_ACCOUNT_CAP_USD:-}
+      KATNA_SERVER_AI_BUDGET_USD: ${KATNA_SERVER_AI_BUDGET_USD:-}
+      KATNA_SERVER_AI_PRICE_IN_USD: ${KATNA_SERVER_AI_PRICE_IN_USD:-}
+      KATNA_SERVER_AI_PRICE_OUT_USD: ${KATNA_SERVER_AI_PRICE_OUT_USD:-}
+      KATNA_SERVER_AI_PER_HOUR: ${KATNA_SERVER_AI_PER_HOUR:-}
       RUST_LOG: ${RUST_LOG:-info}
     networks:
       - edge
@@ -101,7 +116,8 @@ services:
       - server
 
 networks:
-  # Caddy and Katna Server; the internet (the server's SMTP relay).
+  # Caddy and Katna Server; the internet (the server's SMTP relay and
+  # Katna AI's service).
   edge:
   # Katna Server and PostgreSQL only; no way out.
   db:

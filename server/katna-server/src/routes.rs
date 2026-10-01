@@ -23,6 +23,8 @@
 //!   `?after=`).
 //! - `GET /api/v1/languages`, `POST /api/v1/translate`, `POST
 //!   /api/v1/detect`: LibreTranslate, passed through ([`crate::translate`]).
+//! - `POST /api/v1/ai/rephrase`, `POST /api/v1/ai/complete`: Katna AI
+//!   ([`crate::ai`]).
 
 use std::collections::HashMap;
 use std::convert::Infallible;
@@ -42,6 +44,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::{Semaphore, broadcast};
 
 use crate::accounts::{self, AccountLimits};
+use crate::ai;
 use crate::auth::SignedIn;
 use crate::classify::{self, Kind, Source};
 use crate::config::Config;
@@ -120,6 +123,10 @@ pub struct AppState {
     signed_out: broadcast::Sender<Arc<str>>,
     mailer: Mailer,
     account_limits: Arc<AccountLimits>,
+    /// Katna AI requests per account and hour.
+    ai_requests: Arc<WindowLimit<String>>,
+    /// Katna AI requests passed on at once.
+    ai_calls: Arc<Semaphore>,
 }
 
 impl AppState {
@@ -138,6 +145,7 @@ impl AppState {
         let translations =
             WindowLimit::new(config.translations_per_day, Duration::from_secs(86_400));
         let translating = Semaphore::new(config.translate_concurrency.max(1));
+        let ai_requests = WindowLimit::new(config.ai.per_hour, Duration::from_secs(3600));
         Self {
             db,
             config: Arc::new(config),
@@ -152,6 +160,8 @@ impl AppState {
             signed_out,
             mailer,
             account_limits: Arc::default(),
+            ai_requests: Arc::new(ai_requests),
+            ai_calls: Arc::new(Semaphore::new(ai::CONCURRENCY)),
         }
     }
 
@@ -189,6 +199,16 @@ impl AppState {
     pub(crate) fn translations(&self) -> &WindowLimit<String> {
         &self.translations
     }
+
+    /// Katna AI requests per account and hour.
+    pub(crate) fn ai_requests(&self) -> &WindowLimit<String> {
+        &self.ai_requests
+    }
+
+    /// Katna AI requests passed on at once.
+    pub(crate) fn ai_calls(&self) -> &Arc<Semaphore> {
+        &self.ai_calls
+    }
 }
 
 /// The server's routes.
@@ -207,6 +227,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/v1/translate", post(translate::translate))
         .route("/api/v1/detect", post(translate::detect))
         .merge(accounts::routes())
+        .merge(ai::routes())
         .with_state(state)
 }
 
@@ -237,6 +258,10 @@ pub enum ApiError {
     TooMany(&'static str),
     /// Too busy just now; try again shortly.
     Busy(&'static str),
+    /// Katna AI's free month is over and no time is paid for.
+    PaymentNeeded,
+    /// A service the server passes requests to failed.
+    Upstream(&'static str),
     /// The database failed.
     Internal(DbError),
 }
@@ -277,6 +302,12 @@ impl IntoResponse for ApiError {
             ApiError::NotFound => (StatusCode::NOT_FOUND, "not_found", "not found"),
             ApiError::TooMany(message) => (StatusCode::TOO_MANY_REQUESTS, "too_many", message),
             ApiError::Busy(message) => (StatusCode::SERVICE_UNAVAILABLE, "busy", message),
+            ApiError::PaymentNeeded => (
+                StatusCode::PAYMENT_REQUIRED,
+                "pay",
+                "the free month of Katna AI is over",
+            ),
+            ApiError::Upstream(message) => (StatusCode::BAD_GATEWAY, "upstream", message),
             ApiError::MailFailed => (
                 StatusCode::BAD_GATEWAY,
                 "mail_failed",

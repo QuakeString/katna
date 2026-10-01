@@ -149,6 +149,10 @@ http-body-util = "0.1.5"
 # Katna Server passing translation requests to LibreTranslate.
 hyper = { version = "1.11", features = ["client", "http1"] }
 hyper-util = { version = "0.1.21", features = ["tokio"] }
+# Katna Server asking the AI service for Katna AI over HTTPS (lettre
+# already brings these in).
+tokio-rustls = { version = "0.26.5", default-features = false, features = ["ring", "tls12", "logging"] }
+webpki-roots = "1.0.9"
 tower = { version = "0.5.3", features = ["util"] }
 
 # Pimalaya protocol crates: exact versions, because they break often

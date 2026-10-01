@@ -1490,7 +1490,10 @@ GPUI global):
   acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
-- The same switch frosts floating panels in every window: menus (the
+- A second switch, *Frosted menus and dialogs*
+  (`experimental.frosted_popups`, on by default and independent of the
+  window blur, which needs no compositor since Katna draws it), frosts
+  floating panels in every window: menus (the
   right-click menu and its folder list, dropdowns), Search options and its
   date popover, and the account menu. Their color is 78 % opaque over a
   20 px blur of what is behind them in the window
@@ -2373,7 +2376,11 @@ Gemini or confidential mode):
   company facts) is left for the Katna Server plan. It shows only while
   the list and reader keep 900 px (600 px with the reader alone), never on
   tablets and phones or in a conversation window; a button on the reader
-  toolbar turns it off (`mail.contact_panel`).
+  toolbar turns it off (`mail.contact_panel`). When it fits only with the
+  folder pane folded, it folds the pane as it slides in and unfolds it once
+  it goes (hidden, the mail closed, or the window grown wide enough for
+  both); a pane folded by hand stays folded, and one opened by hand beside
+  it wins until the panel is next shown (`fold_nav_for_contact`).
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
   (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it
@@ -3701,11 +3708,21 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   Longer suggestions use the grey writing suggestion and its Tab
   (`katna_ui::rich::Complete`), after a 600 ms pause at the end of a paragraph, ending in
   a small "✦ Tab" key; never for encrypted mail.
-- **Katna AI** (Katna Server, to come): 30 days free from the first use,
-  then $5 a month through Razorpay Subscriptions; a monthly cost cap per
-  account and an overall budget switch; the provider and model chosen on
-  a sign-in protected admin page; keys and the Razorpay secrets from
-  environment variables only.
+- **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
+  confirmed Katna accounts, 30 days free from the first use, then $5 a
+  month through Razorpay Subscriptions (to come; until then the server
+  answers 402 after the free month). The server builds the prompt with
+  `katna_ai::prompt` from the request, so a client cannot send the
+  service anything else, and asks the service set in
+  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 2.5 Flash-Lite by
+  default), then `KATNA_SERVER_AI_FALLBACK_*` when that fails. It counts
+  each answer's cost from the tokens the service reports at the prices
+  set (`_PRICE_IN_USD`, `_PRICE_OUT_USD`) per account and calendar month
+  (UTC): an account stops at `_ACCOUNT_CAP_USD` (1.00) and everyone at
+  `_BUDGET_USD` (50; 0 is off), with 300 requests an hour per account.
+  Text and answers are neither logged nor kept. Keys and the Razorpay
+  secrets come from environment variables only; a sign-in protected
+  admin page to change the service, model and budget is to come.
 
 ## 17. Performance budget
 

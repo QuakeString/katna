@@ -1079,12 +1079,9 @@ impl MailWindow {
             accent: th.accent,
         }));
         chrome.set_backdrop(Some(th.page));
-        // Menus and popovers are frosted with the blurred background, in
-        // every window, blurred or not.
-        let th = if self.config.experimental.blur
-            && katna_chrome::Look::blur_available()
-            && katna_ui::frost::supported()
-        {
+        // Menus and popovers are frosted on their own switch, whether the
+        // window is blurred or not: Katna draws their blur itself.
+        let th = if self.config.experimental.frosted_popups && katna_ui::frost::supported() {
             th.frosted(FROST_BLUR * window.scale_factor())
         } else {
             th
@@ -1848,6 +1845,7 @@ impl MailWindow {
         }
         // One fold for Mail's folders and every page's side column.
         self.nav_open = !self.nav_open;
+        self.nav_toggled_by_hand();
         self.nav_peek = false;
         self.peek_hover = (false, false);
         self.peek_task = None;
@@ -3302,6 +3300,13 @@ impl Render for MailWindow {
         let shape = self.layout.shape;
         let width = shape.width;
 
+        // The contact panel folds the folders when it needs their room.
+        let settings_room = if self.settings_open && !shape.is_phone() {
+            SETTINGS_WIDTH
+        } else {
+            0.0
+        };
+        self.fold_nav_for_contact(width - shape.rail() - shape.card_margin() - settings_room);
         self.nav_spring.set(
             if self.nav_docked() || self.nav_peek || self.layout.drawer {
                 1.0
