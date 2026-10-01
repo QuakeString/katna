@@ -41,6 +41,7 @@ pub struct Config {
     pub updates: Updates,
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
+    pub ai: Ai,
 }
 
 /// The Contacts page's own choices.
@@ -130,6 +131,56 @@ impl Default for Feedback {
             dsn: None,
         }
     }
+}
+
+/// Writing help from an AI service (`docs/ARCHITECTURE.md` §16.5):
+/// rephrasing selected text, and finishing sentences. Keys live in the
+/// Secret Service, never here.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Ai {
+    /// Where requests go.
+    pub source: AiSource,
+    /// The user's own service, a `katna_ai::provider::PRESETS` id.
+    pub provider: String,
+    /// The model of the user's own service; empty for its usual one.
+    pub model: String,
+    /// The address of an `other` service (OpenAI's API, such as Ollama).
+    pub address: String,
+    /// AI finishes the sentence being written, after a pause, as a
+    /// longer writing suggestion ([`Sending::writing_suggestions`]).
+    pub autocomplete: bool,
+    /// Autocomplete also sends the mail being answered.
+    pub autocomplete_answered: bool,
+    /// Rephrase is offered for encrypted mail, asking each time.
+    pub encrypted: bool,
+}
+
+impl Default for Ai {
+    fn default() -> Self {
+        Self {
+            source: AiSource::default(),
+            provider: "gemini".to_owned(),
+            model: String::new(),
+            address: String::new(),
+            autocomplete: false,
+            autocomplete_answered: false,
+            encrypted: true,
+        }
+    }
+}
+
+/// [`Ai::source`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AiSource {
+    /// Katna AI, on Katna Server with the Katna account.
+    #[default]
+    Katna,
+    /// The user's own service and key.
+    Own,
+    /// No writing help.
+    Off,
 }
 
 /// Settings > Experimental: features still being tried out.

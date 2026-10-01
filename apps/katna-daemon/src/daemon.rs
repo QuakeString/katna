@@ -817,6 +817,47 @@ impl Daemon {
         Ok(done)
     }
 
+    /// Rephrases `text` in `tone` (a `katna_ai::Tone` id) with the AI
+    /// service the settings name ([`crate::ai::rephrase`]).
+    pub async fn ai_rephrase(
+        &self,
+        text: &str,
+        tone: &str,
+        instruction: &str,
+    ) -> Result<katna_ai::wire::AiAnswer, crate::ai::AiError> {
+        let settings = settings(&self.paths).ai;
+        crate::ai::rephrase(&settings, &self.secrets, text, tone, instruction)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "rephrasing"))
+    }
+
+    /// The rest of the sentence at the end of `before`
+    /// ([`crate::ai::complete`]).
+    pub async fn ai_complete(
+        &self,
+        before: &str,
+        answered: &str,
+    ) -> Result<katna_ai::wire::AiAnswer, crate::ai::AiError> {
+        let settings = settings(&self.paths).ai;
+        crate::ai::complete(&settings, &self.secrets, before, answered)
+            .await
+            .inspect_err(|err| tracing::debug!(%err, "finishing a sentence"))
+    }
+
+    /// Saves the key of the user's own AI service; empty deletes it.
+    pub async fn set_ai_key(&self, key: &str) -> Result<(), CommandError> {
+        Ok(self.secrets.set_ai_key(key.trim()).await?)
+    }
+
+    /// Whether a key of the user's own AI service is saved.
+    pub async fn ai_key_saved(&self) -> Result<bool, CommandError> {
+        Ok(self
+            .secrets
+            .ai_key()
+            .await?
+            .is_some_and(|key| !key.is_empty()))
+    }
+
     /// The languages Katna Server can translate into `target`.
     pub async fn translation_sources(&self, target: &str) -> Result<Vec<String>, TranslateError> {
         let server = KatnaServer::connect(&self.secrets).await?;

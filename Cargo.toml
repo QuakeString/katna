@@ -33,6 +33,7 @@ katna-chrome = { path = "crates/katna-chrome" }
 katna-ui = { path = "crates/katna-ui" }
 katna-i18n = { path = "crates/katna-i18n" }
 katna-translate = { path = "crates/katna-translate" }
+katna-ai = { path = "crates/katna-ai" }
 
 # Third-party crates. Pin minor versions; upgrade deliberately.
 async-channel = "2.5"

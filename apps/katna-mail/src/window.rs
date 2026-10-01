@@ -143,6 +143,7 @@ actions!(
         NextPane,
         PreviousPane,
         SendMail,
+        RephraseSelection,
         OpenContextMenu,
         SelectFirst,
         SelectLast,
@@ -2885,6 +2886,10 @@ impl MailWindow {
         }
         if undo == Command::RestoreQuote {
             self.restore_quote(window, cx);
+            return;
+        }
+        if undo == Command::UndoRephrase {
+            self.undo_rephrase(window, cx);
             return;
         }
         if let Command::Event(change) = undo {
