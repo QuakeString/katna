@@ -509,7 +509,9 @@ impl MailWindow {
                     let height = katna_ui::unpx(bounds.size.height);
                     if (drawn.get() - height).abs() > 0.5 {
                         drawn.set(height);
-                        window.refresh();
+                        // GPUI ignores `refresh` while it draws: the next
+                        // frame redraws this view instead.
+                        window.request_animation_frame();
                     }
                 },
                 |_, _, _, _| {},
@@ -563,7 +565,7 @@ impl MailWindow {
                                                 let max = unpx(scroll.max_offset().y);
                                                 if held.get() && off < max - 4.0 {
                                                     scroll.scroll_to_bottom();
-                                                    window.refresh();
+                                                    window.request_animation_frame();
                                                 }
                                             },
                                             |_, _, _, _| {},
