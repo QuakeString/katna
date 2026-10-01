@@ -185,6 +185,19 @@ fn bells_turn_folders_and_tabs_on_and_off() {
     batch.commit().unwrap();
     assert_eq!(r.store.folder_bells().unwrap().len(), 1);
     assert_eq!(ringing(&r.store, r.account, NOW), [plain]);
+
+    // An inbox's own bell is its Primary tab's.
+    let mut batch = r.store.mail_batch().unwrap();
+    batch.set_bell(r.inbox, None, Bell::OFF).unwrap();
+    batch.commit().unwrap();
+    assert!(ringing(&r.store, r.account, NOW).is_empty());
+    assert!(
+        r.store
+            .folder_bells()
+            .unwrap()
+            .iter()
+            .any(|b| b.category == Some(MailCategory::Primary) && b.bell == Bell::OFF)
+    );
 }
 
 #[test]

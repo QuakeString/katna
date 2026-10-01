@@ -372,8 +372,8 @@ impl MailBatch<'_> {
             .execute([now])?)
     }
 
-    /// Sets the bell of `folder`, or of one of its inbox tabs. A bell like
-    /// the default is not kept.
+    /// Sets the bell of `folder`, or of one of its inbox tabs (`None`:
+    /// an inbox's Primary tab). A bell like the default is not kept.
     pub fn set_bell(
         &mut self,
         folder: FolderId,
@@ -386,6 +386,14 @@ impl MailBatch<'_> {
             .query_row([folder.0], |row| row.get(0))
             .optional()?
             .flatten();
+        // An inbox's bell is its Primary tab's (unclassified mail
+        // included); other folders have one bell.
+        let inbox = role.as_deref() == Some(FolderRole::Inbox.as_str());
+        let category = if inbox {
+            Some(category.unwrap_or_default())
+        } else {
+            None
+        };
         let column = category_column(category);
         if bell == Bell::default_for(role.as_deref(), category) {
             tx.prepare_cached("DELETE FROM folder_alert WHERE folder_id = ?1 AND category = ?2")?
