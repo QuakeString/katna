@@ -82,6 +82,10 @@ const TABS_ROW_PAD: f32 = 12.0;
 const PHONE_TABS_SIDE: f32 = 8.0;
 const PHONE_TABS_MORE: f32 = TAB_SPACING + TAB_HEIGHT + TABS_INSET;
 
+/// The gap around the list toolbar's select pill: the toolbar's height
+/// less the pill's, halved, so its left end sits as far in as its top.
+const SELECT_PILL_GAP: f32 = (TOOLBAR_HEIGHT - 40.0) / 2.0;
+
 /// An inbox tab's unread chip: how much of it shows, folding away once
 /// the tab has nothing unread; how quiet it is, faint on the open tab and
 /// in color on the others, changing slowly so a click doesn't flash it;
@@ -438,15 +442,21 @@ impl MailWindow {
             _ if page_checked || self.checked_all => crate::widgets::Check::On,
             _ => crate::widgets::Check::Partial,
         };
+        let select_radius =
+            (self.layout.shape.card_radius() - SELECT_PILL_GAP).max(SELECT_PILL_GAP);
         let select = div()
             .id("select")
             .flex()
             .flex_row()
             .items_center()
+            // As tall as the round buttons beside it, as far from the
+            // card's edge as from its top, its corners the card's corner
+            // less that gap, so the two curves nest.
             .h(px(40.0))
-            .pl(px(8.0))
-            .pr(px(2.0))
-            .rounded(px(4.0))
+            .ml(px(SELECT_PILL_GAP - 8.0))
+            .pl(px((40.0 - 28.0) / 2.0))
+            .pr(px(4.0))
+            .rounded(px(select_radius))
             .hover(|s| s.bg(rgba(th.hover)))
             .child(
                 div()
