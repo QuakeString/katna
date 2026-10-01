@@ -21,7 +21,8 @@ use katna_ui::motion;
 use katna_ui::px;
 
 use super::{CARD_GAP, MailWindow, SETTINGS_WIDTH};
-use crate::theme::{Theme, mix};
+use crate::schemes;
+use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
     CARD_SHADOW_ROOM, ScaledEdge, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
@@ -38,7 +39,11 @@ pub(super) enum Change {
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
+    /// The desktop's color scheme (on), or Katna's own (off).
     DesktopColors(bool),
+    /// The color scheme, by id (`crate::schemes`).
+    Colors(&'static str),
+    Accent(Accent),
     Tabs(bool),
     Conversations(bool),
     AppLabels(bool),
@@ -248,8 +253,8 @@ impl MailWindow {
                                 "desktop-colors",
                                 tr!("quick-desktop-colors"),
                                 tr!("quick-desktop-colors-detail"),
-                                view.desktop_colors,
-                                Change::DesktopColors(!view.desktop_colors),
+                                view.colors() == schemes::SYSTEM,
+                                Change::DesktopColors(view.colors() != schemes::SYSTEM),
                                 th,
                                 cx,
                             ))
@@ -463,7 +468,11 @@ impl MailWindow {
                 cx.refresh_windows();
             }
             Change::Theme(theme) => view.theme = theme,
-            Change::DesktopColors(on) => view.desktop_colors = on,
+            Change::DesktopColors(on) => {
+                view.set_colors(if on { schemes::SYSTEM } else { schemes::KATNA });
+            }
+            Change::Colors(id) => view.set_colors(id),
+            Change::Accent(accent) => view.accent = accent.setting(),
             Change::AppLabels(on) => view.app_labels = on,
             Change::SenderPictures(on) => view.sender_pictures = on,
             Change::NewestFirst(on) => view.newest_first = on,

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Color schemes and accent colors"
+text = """
+Settings > Appearance now has Mode, Colors and Accent as separate choices.
+Pick light or dark, then any of 14 color schemes, such as Clear, Nord,
+Solarized or Catppuccin, or keep your desktop's. Each one works in light and
+dark, and any accent color can go on top.
+"""
