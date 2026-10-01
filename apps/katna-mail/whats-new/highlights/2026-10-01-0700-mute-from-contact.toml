@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mute a sender from their contact card"
+text = """
+The contact card beside a mail has a bell first among its buttons: it mutes
+everything from that sender, and a crossed bell after their name shows it.
+Click it again to hear from them.
+"""

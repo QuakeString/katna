@@ -50,5 +50,7 @@ quiet-conversation-unmuted = { $count ->
     [one] Conversation unmuted
    *[other] { $count } conversations unmuted
 }
+# Under the buttons of a muted sender's contact card.
+quiet-sender-strip = Muted. Their mail won't notify or count.
 quiet-sender-muted = Mail from { $address } muted
 quiet-sender-unmuted = Mail from { $address } notifies again

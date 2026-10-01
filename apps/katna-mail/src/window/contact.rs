@@ -343,6 +343,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let own = self.is_own(email);
+        let muted = !own && self.sender_muted(email);
         let name = profile
             .as_ref()
             .and_then(|p| p.summary.name.clone())
@@ -365,11 +366,27 @@ impl MailWindow {
                     .flex_col()
                     .gap(px(2.0))
                     .child(
-                        words(&mut pieces, shown_name.clone())
-                            .text_size(px(16.0))
-                            .line_height(px(22.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text)),
+                        div()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(6.0))
+                            .child(
+                                words(&mut pieces, shown_name.clone())
+                                    .min_w_0()
+                                    .text_size(px(16.0))
+                                    .line_height(px(22.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text)),
+                            )
+                            // Their mail is muted (§15.1.1).
+                            .when(muted, |d| {
+                                d.child(div().flex_none().child(icon(
+                                    "bell-off",
+                                    th.text_dim,
+                                    16.0,
+                                )))
+                            }),
                     )
                     .when(name.is_some(), |d| {
                         d.child(
@@ -450,6 +467,17 @@ impl MailWindow {
             .pb(px(16.0))
             .child(header.mx(px(4.0)))
             .child(actions.mx(px(4.0)).mb(px(4.0)))
+            .when(muted, |d| {
+                d.child(
+                    div()
+                        .mx(px(4.0))
+                        .mt(px(-4.0))
+                        .text_size(px(13.0))
+                        .line_height(px(18.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("quiet-sender-strip")),
+                )
+            })
             .children(sections.into_iter().map(|section| {
                 div()
                     .rounded(px(16.0))
@@ -505,11 +533,42 @@ impl MailWindow {
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
+        // Mute their mail, or unmute it: filled while muted.
+        let mute =
+            (!self.is_own(email)).then(|| {
+                let muted = self.sender_muted(email);
+                let address = email.to_owned();
+                let (fill, glyph, label) = if muted {
+                    (th.accent | 0xff, th.on_accent, tr!("quiet-unmute-sender"))
+                } else {
+                    (bg, th.accent, tr!("quiet-mute-sender"))
+                };
+                div()
+                    .id("contact-mute")
+                    .relative()
+                    .overflow_hidden()
+                    .size(px(40.0))
+                    .flex_none()
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .cursor_pointer()
+                    .bg(rgba(fill))
+                    .when(!muted, |d| d.hover(move |s| s.bg(rgba(bg_hover))))
+                    .tooltip(tip(label, th))
+                    .child(Ripple::new(("contact-mute", 0usize), rgba(th.ripple)).centered())
+                    .child(icon("bell-off", glyph, 20.0))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.mute_sender(address.clone(), !muted, cx)
+                    }))
+            });
         div()
             .flex()
             .flex_row()
             .justify_end()
             .gap(px(12.0))
+            .children(mute)
             .child(
                 button("contact-email", "mail", tr!("contact-email")).on_click(cx.listener(
                     move |this, _, window, cx| {
