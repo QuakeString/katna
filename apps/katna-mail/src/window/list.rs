@@ -2827,7 +2827,7 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
 /// The faint line between mail rows: well under the app's other dividers,
 /// so the rows read as one calm list.
 pub(super) fn row_line(th: &Theme) -> u32 {
-    fade(th.divider, 0.4)
+    fade(th.divider, 0.6)
 }
 
 /// A thin vertical line between toolbar groups.

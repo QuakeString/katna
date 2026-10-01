@@ -2,6 +2,6 @@
 
 title = "Quieter lines between mails"
 text = """
-The lines between mails in the list are much fainter now, so the list
+The lines between mails in the list are fainter now, so the list
 reads as one calm column in light and dark.
 """
