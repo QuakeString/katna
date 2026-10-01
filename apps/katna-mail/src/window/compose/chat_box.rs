@@ -286,8 +286,8 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.opacity(0.9))
             .tooltip(tip(tr!("chat-send"), th))
-            .on_click(cx.listener(|this, _, window, cx| {
-                if this.compose.as_ref().is_some_and(|c| c.chat.is_some()) {
+            .on_click(cx.listener(move |this, _, window, cx| {
+                if this.chat_compose(key).is_some() {
                     this.send_compose_default(window, cx);
                 }
             }))
