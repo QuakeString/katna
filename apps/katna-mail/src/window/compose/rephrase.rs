@@ -32,7 +32,7 @@ use crate::widgets::{
 };
 
 /// The card's width.
-const CARD_WIDTH: f32 = 460.0;
+const CARD_WIDTH: f32 = 488.0;
 /// The tones on the card's first row; the rest wait behind "⋯".
 const FIRST_TONES: [Tone; 5] = [
     Tone::Clearer,
@@ -400,6 +400,7 @@ impl MailWindow {
                     .child(
                         div()
                             .flex_1()
+                            .min_w_0()
                             .text_color(rgba(th.text_dim))
                             .child(tr!("compose-ai-encrypted", service = service)),
                     ),

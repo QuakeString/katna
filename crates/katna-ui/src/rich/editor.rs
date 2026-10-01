@@ -700,7 +700,8 @@ impl RichEditor {
     }
 
     /// Puts plain `text` in new paragraphs after the one the selection
-    /// ends in, as one step Undo takes back, leaving the cursor after it.
+    /// ends in, an empty one between, as one step Undo takes back, leaving
+    /// the cursor after it.
     pub fn insert_below_selection(&mut self, text: &str, cx: &mut Context<Self>) {
         let (_, end) = self.ordered();
         let Some(para) = self.doc.para(end.path) else {
@@ -712,7 +713,8 @@ impl RichEditor {
         let text = text.replace("\r\n", "\n");
         let mut first = para_end;
         self.edit(EditKind::Other, cx, |doc, _| {
-            first = doc.split(para_end);
+            let gap = doc.split(para_end);
+            first = doc.split(gap);
             doc.insert_text(first, &text, &style)
         });
         self.flash = Some((first, self.head, Instant::now()));
