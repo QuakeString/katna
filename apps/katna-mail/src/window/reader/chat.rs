@@ -94,6 +94,10 @@ pub(in crate::window) struct ChatState {
     /// The feed keeps to its end: it reached it and was not scrolled up
     /// since, so whatever grows or shrinks around it, it stays there.
     stuck: bool,
+    /// [`Self::stuck`] as the feed's last drawn frame reads it: checked
+    /// once the layout is final, so a change landing after this view
+    /// drew still brings the feed back to its end.
+    held: Rc<Cell<bool>>,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -450,6 +454,9 @@ impl MailWindow {
         } else if reader.chat.stuck && reader.chat.settle == 0 {
             reader.chat.settle = 1;
         }
+        reader.chat.held.set(reader.chat.stuck);
+        let held = reader.chat.held.clone();
+        let scroll = self.reader_scroll.clone();
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
             self.reader_scroll.scroll_to_bottom();
@@ -488,7 +495,9 @@ impl MailWindow {
         self.adopt_chat_reply(key, cx);
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
-        let reply = self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), th, cx);
+        let slide = self.chat_format_slide(key, cx);
+        let reply =
+            self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), slide, th, cx);
         let drawn = self
             .reader
             .as_ref()
@@ -530,6 +539,7 @@ impl MailWindow {
                                         && let Some(reader) = &mut this.reader
                                     {
                                         reader.chat.stuck = false;
+                                        reader.chat.held.set(false);
                                         reader.chat.settle = 0;
                                     }
                                 },
@@ -545,7 +555,22 @@ impl MailWindow {
                                     .px(px(16.0))
                                     .pt(px(12.0))
                                     .pb(px(8.0))
-                                    .children(feed),
+                                    .children(feed)
+                                    .child(
+                                        gpui::canvas(
+                                            move |_, window, _| {
+                                                let off = -unpx(scroll.offset().y);
+                                                let max = unpx(scroll.max_offset().y);
+                                                if held.get() && off < max - 4.0 {
+                                                    scroll.scroll_to_bottom();
+                                                    window.refresh();
+                                                }
+                                            },
+                                            |_, _, _, _| {},
+                                        )
+                                        .absolute()
+                                        .size_0(),
+                                    ),
                             ),
                     )
                     .children(self.render_chat_people(th, cx))

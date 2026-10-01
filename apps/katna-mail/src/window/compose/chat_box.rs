@@ -10,10 +10,12 @@
 //! older bubble aims the reply at that mail, keeping what was written.
 
 use gpui::{
-    AnyElement, Context, ExternalPaths, Focusable, FontWeight, Window, div, prelude::*, rgba,
+    AnyElement, Context, ExternalPaths, Focusable, FontWeight, Window, canvas, div, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
 use katna_store::MessageId;
+use katna_ui::motion::lerp;
 use katna_ui::px;
 use katna_ui::rich::{Block, Doc};
 
@@ -29,6 +31,11 @@ use super::super::MailWindow;
 
 /// The field's text grows to this height, then scrolls.
 const MAX_TEXT: f32 = 180.0;
+/// The formatting bar's height, and its gap above the box.
+const BAR: f32 = 44.0;
+const GAP: f32 = 6.0;
+/// The tight corners where the formatting bar meets the box.
+const JOINED: f32 = 4.0;
 
 /// A reply written in the chat's reply box.
 pub(in crate::window) struct ChatReply {
@@ -61,6 +68,25 @@ impl MailWindow {
         self.compose
             .as_ref()
             .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))
+    }
+
+    /// How far the chat reply's formatting bar has slid in, 0 to 1, moved
+    /// on toward whether it shows; and whether it is still moving.
+    pub(in crate::window) fn chat_format_slide(
+        &mut self,
+        key: EntryKey,
+        cx: &Context<Self>,
+    ) -> (f32, bool) {
+        let reduce = cx.reduce_motion();
+        let ours = self.chat_compose(key).is_some();
+        let Some(compose) = self.compose.as_mut().filter(|_| ours) else {
+            return (0.0, false);
+        };
+        compose
+            .format_slide
+            .set(if compose.format_bar { 1.0 } else { 0.0 });
+        let t = compose.format_slide.step(reduce);
+        (t.clamp(0.0, 1.0), !compose.format_slide.settled())
     }
 
     /// The mail the chat's reply answers, and whether it goes to everyone.
@@ -169,6 +195,7 @@ impl MailWindow {
         key: EntryKey,
         names: &str,
         aimed: Option<(String, String)>,
+        (slide, sliding): (f32, bool),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -286,7 +313,10 @@ impl MailWindow {
             .flex_row()
             .items_end()
             .gap(px(6.0))
-            .rounded(px(20.0))
+            // With the formatting bar above, the two read as one piece:
+            // the corners where they meet tighten as the bar slides in.
+            .rounded_b(px(20.0))
+            .rounded_t(px(lerp(20.0, JOINED, slide)))
             .bg(rgba(th.bubble_other()))
             .child(div().pb(px(6.0)).child(emoji))
             .child(text)
@@ -375,18 +405,40 @@ impl MailWindow {
             })
             // The formatting bar sits above the box, pushing the feed up
             // rather than covering it; a narrow pane scrolls it sideways.
-            .when(format_on, |d| {
+            // It grows and fades in from the box, and back into it.
+            .when(slide > 0.0, |d| {
                 d.child(
                     div()
-                        .id("chat-format-bar")
                         .ml(px(8.0))
                         // Over the field, not the Send button.
                         .mr(px(12.0 + 6.0 + 40.0))
-                        .mb(px(6.0))
-                        .rounded(px(12.0))
+                        .mb(px(GAP * slide))
+                        .h(px(BAR * slide))
+                        .overflow_hidden()
+                        .flex()
+                        .flex_col()
+                        .justify_end()
+                        .rounded_t(px(12.0))
+                        .rounded_b(px(JOINED))
                         .bg(rgba(th.bubble_other()))
-                        .overflow_x_scroll()
-                        .child(self.render_chat_format_bar(th, cx)),
+                        .opacity(slide)
+                        .child(
+                            div()
+                                .id("chat-format-bar")
+                                .flex_none()
+                                .overflow_x_scroll()
+                                .child(self.render_chat_format_bar(th, cx)),
+                        ),
+                )
+            })
+            .when(sliding, |d| {
+                d.child(
+                    canvas(
+                        |_, window, _| window.request_animation_frame(),
+                        |_, _, _, _| {},
+                    )
+                    .absolute()
+                    .size_0(),
                 )
             })
             .child(

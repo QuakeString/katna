@@ -171,6 +171,8 @@ pub(super) struct Compose {
     signature: Option<u32>,
     /// The formatting bar (Aa) shows.
     format_bar: bool,
+    /// The chat reply box's formatting bar sliding in (1) or out (0).
+    format_slide: Spring,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
     /// Seconds after sending to remind if nobody replies; 0 for never.
@@ -1286,6 +1288,7 @@ impl MailWindow {
             sealing: Sealing::new_message(),
             signature,
             format_bar: false,
+            format_slide: Spring::new(motion::SMOOTH, 0.0),
             popup: None,
             follow_up: 0,
             dialog,
