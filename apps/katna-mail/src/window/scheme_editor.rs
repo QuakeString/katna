@@ -743,7 +743,8 @@ impl MailWindow {
             .overflow_hidden()
             .border_1()
             .border_color(rgba(th.divider))
-            .child(scheme_picture(&Theme::from_scheme(side)));
+            // Rounded itself: GPUI clips children to a rectangle.
+            .child(scheme_picture(&Theme::from_scheme(side)).rounded(px(9.0)));
         let one_side = editor.side(!dark).is_none();
         let heading = heading.when(!one_side, |d| {
             d.child(
