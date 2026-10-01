@@ -16,7 +16,7 @@ use gpui::{
 use katna_core::config::Density;
 use katna_i18n::tr;
 use katna_ui::Ripple;
-use katna_ui::motion::{self, lerp};
+use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 
 /// The lift of the line under the pointer: critically damped and slower
@@ -69,6 +69,10 @@ const TAB_TEXT: f32 = 13.0;
 const BADGE_HEIGHT: f32 = 18.0;
 const BADGE_PAD: f32 = 6.0;
 const BADGE_TEXT: f32 = 11.0;
+/// The open tab's quiet count: how much of the highlight's text color tints
+/// its badge and colors its number.
+const CHIP_QUIET_BG: f32 = 0.12;
+const CHIP_QUIET_TEXT: f32 = 0.7;
 const TOP_ROW_LEFT: f32 = 152.0;
 const TOP_ROW_LEFT_CHECKED: f32 = 340.0;
 const TOP_ROW_RIGHT: f32 = 185.0;
@@ -77,6 +81,17 @@ const TABS_ROW_PAD: f32 = 12.0;
 /// room the More button at the end of their pill takes.
 const PHONE_TABS_SIDE: f32 = 8.0;
 const PHONE_TABS_MORE: f32 = TAB_SPACING + TAB_HEIGHT + TABS_INSET;
+
+/// An inbox tab's unread chip: how much of it shows, folding away once
+/// the tab has nothing unread; how quiet it is, faint on the open tab and
+/// in color on the others, changing slowly so a click doesn't flash it;
+/// and the width and count it last had, kept while it folds away.
+pub(super) struct TabChip {
+    shown: Spring,
+    quiet: Spring,
+    width: f32,
+    count: u64,
+}
 
 /// Where the inbox tabs go (see [`MailWindow::tabs_fit`]).
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -1524,6 +1539,50 @@ impl MailWindow {
         self.tab_sizes = sizes;
     }
 
+    /// Moves each inbox tab's chip toward how it should look: shown while
+    /// its tab has unread mail, quiet on the open tab.
+    pub(super) fn tick_tab_chips(&mut self, window: &gpui::Window, reduce: bool) {
+        let open = self.tab;
+        let counts: Vec<u64> = self.tabs.iter().map(|t| self.tab_unread(t)).collect();
+        self.tab_chips.truncate(counts.len());
+        for (ix, &count) in counts.iter().enumerate() {
+            let shown = if count > 0 { 1.0 } else { 0.0 };
+            let quiet = if ix == open { 1.0 } else { 0.0 };
+            if ix == self.tab_chips.len() {
+                // A new tab starts as it should look, without a fade.
+                self.tab_chips.push(TabChip {
+                    shown: Spring::new(motion::SMOOTH, shown),
+                    quiet: Spring::new(motion::GENTLE, quiet),
+                    width: 0.0,
+                    count,
+                });
+            }
+            let width = self.tab_sizes.get(ix).map_or(0.0, |s| s.1);
+            let chip = &mut self.tab_chips[ix];
+            if count > 0 {
+                chip.width = width;
+                chip.count = count;
+            }
+            chip.shown.set(shown);
+            chip.quiet.set(quiet);
+            chip.shown.tick(window, reduce);
+            chip.quiet.tick(window, reduce);
+        }
+    }
+
+    /// Tab `ix`'s chip: how much shows (0 to 1), how quiet it is (0 to
+    /// 1), its width and its count.
+    fn tab_chip(&self, ix: usize) -> (f32, f32, f32, u64) {
+        self.tab_chips.get(ix).map_or((0.0, 0.0, 0.0, 0), |c| {
+            (
+                c.shown.value().clamp(0.0, 1.0),
+                c.quiet.value().clamp(0.0, 1.0),
+                c.width,
+                c.count,
+            )
+        })
+    }
+
     /// The unread mail of a tab's categories.
     fn tab_unread(&self, tab: &crate::tabs::Tab) -> u64 {
         tab.categories
@@ -1539,8 +1598,8 @@ impl MailWindow {
     }
 
     /// How much tab `ix` shows its label and its badge, 0 to 1, with the
-    /// tabs folded `fold` steps: the open tab keeps its label longest,
-    /// and only the others have badges.
+    /// tabs folded `fold` steps: the open tab keeps its label longest;
+    /// a badge shows while its tab has unread mail, the open tab's too.
     fn tab_shares(&self, ix: usize, fold: f32) -> (f32, f32) {
         let on = self.tab_on(ix);
         let step = |from: f32| (fold - from).clamp(0.0, 1.0);
@@ -1549,7 +1608,7 @@ impl MailWindow {
         let badge = if ix == 0 {
             0.0
         } else {
-            (1.0 - on) * (1.0 - step(FOLD_OPEN_LABEL))
+            self.tab_chip(ix).0 * (1.0 - step(FOLD_OPEN_LABEL))
         };
         (label, badge)
     }
@@ -1564,7 +1623,8 @@ impl MailWindow {
 
     /// Tab `ix`'s width in the pill bar.
     fn tab_width(&self, ix: usize, fold: f32) -> f32 {
-        let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
+        let label_w = self.tab_sizes.get(ix).map_or(0.0, |s| s.0);
+        let badge_w = self.tab_chip(ix).2;
         let (label, badge) = self.tab_shares(ix, fold);
         let (pad, icon) = self.tab_pad_icon(ix, fold);
         let badge = if badge_w > 0.0 { badge } else { 0.0 };
@@ -1663,12 +1723,18 @@ impl MailWindow {
             _ => (TABS_INSET, 0.0),
         };
         let tabs = self.tabs.iter().enumerate().map(|(ix, tab)| {
-            let (label_w, badge_w) = self.tab_sizes.get(ix).copied().unwrap_or_default();
+            let label_w = self.tab_sizes.get(ix).map_or(0.0, |s| s.0);
+            let (_, quiet, badge_w, unread) = self.tab_chip(ix);
             let (label, badge) = self.tab_shares(ix, fold);
             let (pad, icon_size) = self.tab_pad_icon(ix, fold);
             let on = self.tab_on(ix);
             let color = mix(th.text_dim, th.nav_selected_text, on);
-            let unread = self.tab_unread(tab);
+            // The open tab's count goes quiet: a faint tint of its
+            // highlight's text color, under the tab's own color, which
+            // fades out over it so the number stays readable throughout.
+            let quiet_bg = mix(th.nav_selected, th.nav_selected_text, CHIP_QUIET_BG);
+            let quiet_text = mix(th.nav_selected, th.nav_selected_text, CHIP_QUIET_TEXT);
+            let count = format::thousands(unread);
             div()
                 .id(("tab", ix))
                 .relative()
@@ -1726,11 +1792,27 @@ impl MailWindow {
                                     .items_center()
                                     .justify_center()
                                     .rounded_full()
-                                    .bg(rgba(th.tabs[tab.color]))
-                                    .text_color(rgba(th.on_accent))
+                                    .relative()
+                                    .bg(rgba(quiet_bg))
+                                    .text_color(rgba(quiet_text))
                                     .text_size(px(BADGE_TEXT))
                                     .font_weight(FontWeight::BOLD)
-                                    .child(format::thousands(unread)),
+                                    .child(count.clone())
+                                    .when(quiet < 0.999, |d| {
+                                        d.child(
+                                            div()
+                                                .absolute()
+                                                .inset_0()
+                                                .flex()
+                                                .items_center()
+                                                .justify_center()
+                                                .rounded_full()
+                                                .bg(rgba(th.tabs[tab.color]))
+                                                .text_color(rgba(th.on_accent))
+                                                .opacity(1.0 - quiet)
+                                                .child(count),
+                                        )
+                                    }),
                             ),
                     )
                 })
