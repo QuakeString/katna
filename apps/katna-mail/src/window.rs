@@ -66,6 +66,7 @@ mod onboarding;
 mod popovers;
 mod print;
 mod print_preview;
+mod quiet;
 mod reader;
 mod remote;
 mod reply_row;
@@ -392,6 +393,8 @@ enum Menu {
     CalendarZones,
     /// The views, when the bar is too narrow for their buttons.
     CalendarViews,
+    /// The list toolbar's bell: how long to mute the open folder or tab.
+    Quiet,
 }
 
 /// A change the user asks for on some lines of the list.
@@ -507,6 +510,8 @@ pub struct MailWindow {
     tree: Tree,
     /// Unread mail per folder, counted in the background.
     unread: HashMap<FolderId, u64>,
+    /// What notifies and counts: folder bells and mutes.
+    alerts: data::Alerts,
     unread_task: Option<Task<()>>,
     expanded: HashSet<String>,
     /// Accounts folded or opened in the folder pane by their arrow; the
@@ -583,6 +588,8 @@ pub struct MailWindow {
     context_menu: Option<context_menu::ContextMenu>,
     /// The right-click menu of the folder pane.
     nav_menu: Option<nav_menu::NavMenu>,
+    /// The mute choices opened from a folder's or account's menu.
+    quiet_menu: Option<quiet::QuietMenu>,
     /// Checks for new mail under way; the refresh arrow turns meanwhile.
     checking: Vec<nav_menu::Check>,
     check_seq: u64,
@@ -870,6 +877,7 @@ impl MailWindow {
             config_path,
             tree: Tree::default(),
             unread: HashMap::new(),
+            alerts: data::Alerts::default(),
             unread_task: None,
             expanded: HashSet::new(),
             open_accounts: HashMap::new(),
@@ -907,6 +915,7 @@ impl MailWindow {
             menu: None,
             context_menu: None,
             nav_menu: None,
+            quiet_menu: None,
             checking: Vec::new(),
             check_seq: 0,
             snooze_menu: None,
@@ -1149,12 +1158,13 @@ impl MailWindow {
         self.unread_task = Some(cx.spawn(async move |this, cx| {
             // The folders are read there too, so the window never waits
             // for their counts.
-            let (folders, unread) = cx
+            let (folders, unread, alerts) = cx
                 .background_executor()
                 .spawn(async move { data::folders_and_unread(&paths) })
                 .await;
             this.update(cx, |this, cx| {
                 this.unread = unread;
+                this.alerts = alerts;
                 if let Ok(mail) = &this.mail {
                     let folders = folders.unwrap_or_else(|| mail.folders());
                     this.tree = Tree::build(&this.accounts, &folders, &this.unread);
@@ -3587,6 +3597,7 @@ impl Render for MailWindow {
         let context_menu = self.render_context_menu(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         let snooze_menu = self.render_snooze_menu(&th, cx);
+        let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let crash_notice = if onboarding {
             None
@@ -3623,6 +3634,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(nav_menu)
             .children(snooze_menu)
+            .children(quiet_menu)
             .children(danger)
             .children(delete_ask)
             .children(new_label)

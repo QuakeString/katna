@@ -481,7 +481,8 @@ impl MailWindow {
         let select = self.with_menu(select, Menu::Select, th, cx);
         let mut bar = toolbar(th).child(select);
         if checked == 0 {
-            bar = bar.child(self.refresh_button("refresh", th, cx)).child({
+            bar = bar.child(self.refresh_button("refresh", th, cx));
+            bar = bar.children(self.quiet_button(th, cx)).child({
                 let more = icon_button("list-more", "more", 20.0, th)
                     .when(self.menu != Some(Menu::ListMore), |d| {
                         d.tooltip(tip(tr!("list-more"), th))
@@ -918,6 +919,7 @@ impl MailWindow {
             Menu::CalendarOptions => self.calendar_options_menu(th, cx),
             Menu::CalendarZones => self.calendar_zones_menu(th, cx),
             Menu::CalendarViews => self.calendar_views_menu(th, cx),
+            Menu::Quiet => self.quiet_toolbar_items(th, cx),
             Menu::Select => menu(th).children(
                 [
                     (Pick::All, tr!("list-pick-all")),

@@ -91,6 +91,18 @@ pub(super) fn presets(now: &Zoned) -> Vec<Preset> {
     presets
 }
 
+/// Tomorrow at 8 in the morning in `tz`, as Unix seconds: a mute's end.
+pub(super) fn tomorrow_morning(tz: &TimeZone) -> Option<i64> {
+    let now = Timestamp::now().to_zoned(tz.clone());
+    now.date()
+        .tomorrow()
+        .ok()?
+        .to_datetime(Time::constant(8, 0, 0, 0))
+        .to_zoned(tz.clone())
+        .ok()
+        .map(|at| at.timestamp().as_second())
+}
+
 /// When snoozed mail comes back, for the snackbar and tooltips:
 /// "Sun, Sep 27, 2026, 8:00 AM".
 pub(super) fn describe(at: i64, tz: &TimeZone) -> String {

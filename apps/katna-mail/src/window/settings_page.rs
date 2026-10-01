@@ -41,6 +41,7 @@ use crate::tabs::{self, Provider};
 use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
+mod notifications;
 mod templates;
 
 /// A signature edit is saved this long after the last key.
@@ -66,6 +67,8 @@ const SHORTCUT_COLUMN: f32 = 440.0;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Section {
     General,
+    /// What notifies and counts on the taskbar, and what is muted.
+    Notifications,
     Inbox,
     Accounts,
     /// Subscription: the Katna account, sign-in for Katna Server's features.
@@ -83,8 +86,9 @@ pub(super) enum Section {
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 12] = [
+    pub(super) const ALL: [Self; 13] = [
         Self::General,
+        Self::Notifications,
         Self::Inbox,
         Self::Accounts,
         Self::Subscriptions,
@@ -101,6 +105,7 @@ impl Section {
     pub(super) fn label(self) -> String {
         match self {
             Self::General => tr!("settings-tab-general"),
+            Self::Notifications => tr!("settings-tab-notifications"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Accounts => tr!("settings-tab-accounts"),
             Self::Subscriptions => tr!("settings-tab-subscriptions"),
@@ -449,6 +454,7 @@ impl MailWindow {
         let body = match section {
             _ if !query.is_empty() => self.render_settings_results(&query, th, cx),
             Section::General => self.general_section(th, cx),
+            Section::Notifications => self.notifications_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
@@ -658,12 +664,6 @@ impl MailWindow {
                 tr!("settings-general-offline"),
                 Some(&tr!("settings-general-offline-detail")),
                 self.offline_choice(th, cx),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-general-notifications"),
-                Some(&tr!("settings-general-notifications-detail")),
-                self.notification_switches(th, cx),
                 th,
             ))
             .when(
@@ -915,7 +915,7 @@ impl MailWindow {
     }
 
     /// New-mail notifications and their sound, which the daemon shows.
-    fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let notifications = &self.config.notifications;
         div()
             .flex()
@@ -1344,15 +1344,6 @@ impl MailWindow {
                 tr!("settings-general-tray-detail"),
                 general.show_in_tray,
                 Change::Tray(!general.show_in_tray),
-                th,
-                cx,
-            ))
-            .child(self.switch_row(
-                "page-unread-badge",
-                tr!("settings-general-unread-badge"),
-                tr!("settings-general-unread-badge-detail"),
-                general.unread_badge,
-                Change::UnreadBadge(!general.unread_badge),
                 th,
                 cx,
             ))
