@@ -11,6 +11,7 @@ mod backfill;
 pub mod blob;
 mod cache;
 pub mod calendar;
+mod chat_pins;
 mod contact;
 pub mod contacts;
 mod db;
@@ -46,6 +47,7 @@ pub use alerts::{Bell, FolderBell, Mute, MuteTarget};
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
+pub use chat_pins::{ChatPin, MAX_CHAT_PINS, Pinned};
 pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use contacts::{
     AddressBook, BookSource, BookState, BookSync, ContactLabel, ContactRef, SavedContact,

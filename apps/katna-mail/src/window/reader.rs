@@ -470,6 +470,7 @@ impl Conversation {
             .extend(old.into_iter().filter(|p| p.pending.is_some()));
         self.read_tracking(mail);
         self.read_drafts(mail);
+        self.chat.pins.forget();
     }
 
     /// The `Message-ID`s of the user's stored messages in it.

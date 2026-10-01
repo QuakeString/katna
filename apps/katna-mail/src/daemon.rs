@@ -82,6 +82,13 @@ pub enum Command {
     /// Mutes something until then (Unix seconds), or until unmuted (0).
     Mute(Muted, i64),
     Unmute(Muted),
+    /// Pins something of a mail to the top of its chat, with the pin bar's
+    /// label, in place of another pin (`Pim1.PinInChat`).
+    PinInChat(MessageId, katna_store::Pinned, String, Option<i64>),
+    /// Takes off a chat pin, by its ID.
+    UnpinInChat(i64),
+    /// Puts a chat's pins in this order.
+    OrderChatPins(Vec<i64>),
     /// Sets whether a folder (or an inbox tab) notifies and counts.
     SetBell(
         FolderId,
@@ -216,6 +223,9 @@ impl Command {
             | Self::Calendar(_)
             | Self::Mute(..)
             | Self::Unmute(_)
+            | Self::PinInChat(..)
+            | Self::UnpinInChat(_)
+            | Self::OrderChatPins(_)
             | Self::SetBell(..) => {
                 return None;
             }
@@ -347,6 +357,22 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
         Command::OrderNotes(ids) => pim.order_notes(ids).await.map(|_| ()),
+        Command::PinInChat(message, what, label, replace) => {
+            let (kind, file, text) = match what {
+                katna_store::Pinned::Mail => ("mail", 0, ""),
+                katna_store::Pinned::File(n) => ("file", *n as i64, ""),
+                katna_store::Pinned::Text(text) => ("text", 0, text.as_str()),
+            };
+            match pim
+                .pin_in_chat(message.0, kind, file, text, label, replace.unwrap_or(0))
+                .await
+            {
+                Ok(0) => return Err(katna_i18n::tr!("chat-pins-full")),
+                other => other.map(|_| ()),
+            }
+        }
+        Command::UnpinInChat(id) => pim.unpin_in_chat(*id).await,
+        Command::OrderChatPins(ids) => pim.order_chat_pins(ids).await,
         Command::ContactLabels(cards) => {
             for (card, labels) in cards {
                 pim.set_contact_labels(*card, labels)

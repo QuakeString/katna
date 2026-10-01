@@ -841,6 +841,15 @@ impl Mail {
         self.store.message_with_header(header).ok().flatten()
     }
 
+    /// The chat pins of the conversation of `messages` (all of them), in
+    /// their order.
+    pub fn chat_pins(&self, messages: &[MessageId]) -> Vec<katna_store::ChatPin> {
+        self.store.chat_pins(messages).unwrap_or_else(|err| {
+            tracing::warn!("reading chat pins: {err}");
+            Vec::new()
+        })
+    }
+
     /// The conversation of message `id`, if it has one.
     pub fn message_thread(&self, id: MessageId) -> Option<ThreadId> {
         self.store

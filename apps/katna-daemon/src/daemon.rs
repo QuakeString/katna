@@ -49,6 +49,7 @@ use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secre
 
 pub(crate) mod alarms;
 mod calendar;
+mod chat_pins;
 mod contact_labels;
 mod contacts;
 mod contacts_import;

@@ -609,6 +609,29 @@ macro_rules! pim_proxy {
             /// Undoes [`Self::mute`]; nothing happens when it was not muted.
             fn unmute(&self, kind: &str, id: i64, address: &str) -> zbus::Result<()>;
 
+            /// Pins something of `message` to the top of its conversation's
+            /// chat: `kind` "mail" (the whole mail), "file" (its attachment
+            /// number `file`) or "text" (`text`, picked from it). `label` is
+            /// what the pin bar shows; `replace` a pin taken off first, or
+            /// 0. Pins stay on this computer. Returns the pin's ID, or 0
+            /// when the conversation holds five pins or the same thing is
+            /// pinned already. `MailChanged` follows.
+            fn pin_in_chat(
+                &self,
+                message: i64,
+                kind: &str,
+                file: i64,
+                text: &str,
+                label: &str,
+                replace: i64,
+            ) -> zbus::Result<i64>;
+
+            /// Takes off a pin [`Self::pin_in_chat`] made.
+            fn unpin_in_chat(&self, id: i64) -> zbus::Result<()>;
+
+            /// Puts a conversation's pins in this order.
+            fn order_chat_pins(&self, ids: &[i64]) -> zbus::Result<()>;
+
             /// Sets whether new mail in `folder` notifies and whether its
             /// unread mail counts on the taskbar and tray. `category` is an
             /// inbox tab (`MailCategory` storage number), or 0 for the whole

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The language picker (`docs/ARCHITECTURE.md` §13.10): the flag button
+//! The language picker (`docs/ARCHITECTURE.md`, the chat view): the flag button
 //! left of Settings in the top bar, the popover it opens (search, System
 //! default, then every language with its flag, own name and English name),
 //! and the phone drawer's Language row, which opens the same list over the

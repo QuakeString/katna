@@ -1699,7 +1699,7 @@ impl MailWindow {
     /// go back to the list, and the conversation stays shown.
     fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
         // Esc first folds the chat's list of people or its attach picker.
-        if self.fold_chat_people(cx) || self.fold_files_picker(cx) {
+        if self.fold_chat_people(cx) || self.fold_chat_pins(cx) || self.fold_files_picker(cx) {
             return;
         }
         window.focus(&self.list_focus, cx);
@@ -1778,7 +1778,7 @@ impl MailWindow {
 
     fn close_message(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
         // Esc first folds the chat's list of people or its attach picker.
-        if self.fold_chat_people(cx) || self.fold_files_picker(cx) {
+        if self.fold_chat_people(cx) || self.fold_chat_pins(cx) || self.fold_files_picker(cx) {
             return;
         }
         if self.detached {

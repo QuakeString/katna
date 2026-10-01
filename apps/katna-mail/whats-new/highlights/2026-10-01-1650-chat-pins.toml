@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pin up to 5 things in a chat"
+text = """
+In a chat (Settings > Experimental), hover a bubble and press the pin, or
+right-click a file, to keep it at the top. A thin bar under the header shows
+your pins: click it to jump to each in turn, or open the list to drag them
+into order or unpin. Pins stay on this computer.
+"""
