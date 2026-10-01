@@ -466,6 +466,7 @@ mod tests {
             user: "u".repeat(400),
             max_tokens: 64,
             temperature: 0.4,
+            quick: false,
         };
         // Counted by the service: 1000 in at $0.10/M, 500 out at $0.40/M.
         let body = br#"{"usageMetadata":{"promptTokenCount":1000,"candidatesTokenCount":500}}"#;

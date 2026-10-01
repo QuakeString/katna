@@ -77,7 +77,7 @@ enum Fix {
 impl MailWindow {
     /// Whether writing help may be used for the open message: it is on,
     /// and the message is not encrypted unless Settings allows that.
-    fn ai_allowed(&self) -> bool {
+    pub(super) fn ai_allowed(&self) -> bool {
         let ai = &self.config.ai;
         ai.source != AiSource::Off
             && self
@@ -134,26 +134,20 @@ impl MailWindow {
         )
     }
 
-    /// Ctrl+J: opens the card for the selection, or closes it.
+    /// The sparkle and Ctrl+J: the card for the selection, or for all the
+    /// user wrote when nothing is selected; closes an open card.
     pub(super) fn toggle_rephrase(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.compose.as_ref().is_some_and(|c| c.rephrase.is_some()) {
-            self.close_rephrase(window, cx);
-        } else {
-            self.open_rephrase(window, cx);
-        }
-    }
-
-    /// The chat reply box's sparkle: the card for the selection, or for
-    /// the whole reply when nothing is selected.
-    pub(super) fn rephrase_reply(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if self.compose.as_ref().is_some_and(|c| c.rephrase.is_some()) {
             self.close_rephrase(window, cx);
             return;
         }
-        if self.rephrase_selection(cx).is_none()
-            && let Some(c) = &self.compose
+        if !self.ai_allowed() {
+            return;
+        }
+        if let Some(c) = &self.compose
+            && !c.body.read(cx).has_selection()
         {
-            c.body.update(cx, |editor, cx| editor.select_whole(cx));
+            c.body.update(cx, |editor, cx| editor.select_own_text(cx));
         }
         self.open_rephrase(window, cx);
     }
@@ -164,7 +158,7 @@ impl MailWindow {
             && self
                 .compose
                 .as_ref()
-                .is_some_and(|c| !c.body.read(cx).doc().is_blank())
+                .is_some_and(|c| c.body.read(cx).own_text_end().is_some())
     }
 
     fn open_rephrase(&mut self, window: &mut Window, cx: &mut Context<Self>) {

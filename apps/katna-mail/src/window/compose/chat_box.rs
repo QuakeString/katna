@@ -22,11 +22,11 @@ use katna_ui::unpx;
 use super::recipients::Field;
 use super::tools::{Popup, above, format_active, format_bar_bg, menu_divider};
 use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_quote};
-use crate::window::RephraseSelection;
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::Theme;
 use crate::widgets::{icon, icon_button_colored, menu, menu_item_icon, tip};
+use crate::window::RephraseSelection;
 
 use super::super::MailWindow;
 
@@ -262,7 +262,7 @@ impl MailWindow {
             .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
             // The text keeps its selection.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
-            .on_click(cx.listener(|this, _, window, cx| this.rephrase_reply(window, cx)))
+            .on_click(cx.listener(|this, _, window, cx| this.toggle_rephrase(window, cx)))
         });
         let text = match compose {
             Some(compose) => div()

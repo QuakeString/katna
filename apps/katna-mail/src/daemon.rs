@@ -782,6 +782,27 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
     pim.ai_key_saved().await.map_err(|err| describe(&err))
 }
 
+/// The models the user's own AI service `provider` offers to the saved
+/// key, or a `katna_ai::wire::problem`.
+pub async fn ai_models(
+    connection: &Connection,
+    provider: &str,
+    address: &str,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (models, problem) = pim
+        .ai_models(provider, address)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(models)
+    } else {
+        Err(problem)
+    }
+}
+
 /// Deletes every saved copy of the draft `message_id` of `account`.
 pub async fn discard_draft(
     connection: &Connection,

@@ -4,9 +4,12 @@
 //! §16.5): where Rephrase and the longer suggestions go (Katna AI, the
 //! user's own service, or nowhere), the own service's model, address and
 //! key (kept by the daemon in the Secret Service), and encrypted mail.
+//! The model field takes any name and suggests the models the service
+//! offers to the saved key, as typed.
 
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, Subscription, Window, div, prelude::*, rgba,
+    AnyElement, Context, Div, Entity, Focusable, Subscription, Window, deferred, div, prelude::*,
+    rgba,
 };
 use katna_ai::provider::{OTHER, PRESETS, preset};
 use katna_core::config::{Ai, AiSource};
@@ -17,8 +20,11 @@ use katna_ui::{InputEvent, TextInput};
 use super::{MailWindow, SAVE_DELAY, chip, control_column, field_box};
 use crate::daemon;
 use crate::theme::Theme;
-use crate::widgets::{icon, outlined_button};
+use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button, tip};
 use crate::window::settings::Change;
+
+/// Models suggested under the model field at most.
+const MODELS_SHOWN: usize = 12;
 
 /// The fields of the user's own service.
 pub(super) struct AiFields {
@@ -27,6 +33,11 @@ pub(super) struct AiFields {
     key: Entity<TextInput>,
     /// Whether a key is saved, once the daemon has said.
     key_saved: Option<bool>,
+    /// The models the service offers to the saved key, once it has said,
+    /// for the service named.
+    models: Option<(String, Vec<String>)>,
+    /// The models list under the field shows.
+    models_open: bool,
     _subscriptions: [Subscription; 3],
 }
 
@@ -46,11 +57,13 @@ impl AiFields {
         let key = input(tr!("settings-ai-key-paste"), "", cx);
         key.update(cx, |input, cx| input.set_masked(true, cx));
         let subscriptions = [
-            cx.subscribe(&model, |this, input, event: &InputEvent, cx| {
-                if *event == InputEvent::Changed {
+            cx.subscribe(&model, |this, input, event: &InputEvent, cx| match event {
+                InputEvent::Changed => {
                     let text = input.read(cx).text().trim().to_owned();
                     this.set_ai_text(|ai| &mut ai.model, text, cx);
+                    this.open_ai_models(true, cx);
                 }
+                InputEvent::Submit | InputEvent::Cancel => this.open_ai_models(false, cx),
             }),
             cx.subscribe(&address, |this, input, event: &InputEvent, cx| {
                 if *event == InputEvent::Changed {
@@ -69,6 +82,8 @@ impl AiFields {
             address,
             key,
             key_saved: None,
+            models: None,
+            models_open: false,
             _subscriptions: subscriptions,
         }
     }
@@ -98,6 +113,80 @@ impl MailWindow {
             .ok();
         })
         .detach();
+    }
+
+    /// Asks the daemon which models the chosen service offers to the
+    /// saved key, for the suggestions under the model field.
+    pub(super) fn load_ai_models(&mut self, cx: &mut Context<Self>) {
+        let provider = self.config.ai.provider.clone();
+        let address = self.config.ai.address.clone();
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let asked = provider.clone();
+            let models = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::ai_models(&connection, &asked, &address).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Some(page) = &mut this.settings_page {
+                    page.ai.models = Some((provider, models.unwrap_or_default()));
+                    cx.notify();
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Shows or hides the models under the model field.
+    fn open_ai_models(&mut self, open: bool, cx: &mut Context<Self>) {
+        if let Some(page) = &mut self.settings_page
+            && page.ai.models_open != open
+        {
+            page.ai.models_open = open;
+            cx.notify();
+        }
+    }
+
+    /// Puts the model picked from the list in the field.
+    fn pick_ai_model(&mut self, model: String, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(page) = &mut self.settings_page else {
+            return;
+        };
+        page.ai.models_open = false;
+        let input = page.ai.model.clone();
+        input.update(cx, |input, cx| input.set_text(model.clone(), cx));
+        window.focus(&input.focus_handle(cx), cx);
+        self.set_ai_text(|ai| &mut ai.model, model, cx);
+        cx.notify();
+    }
+
+    /// The models matching what is typed, at most [`MODELS_SHOWN`]; all
+    /// of them while the field holds a whole name.
+    fn ai_model_matches(&self, cx: &Context<Self>) -> Vec<String> {
+        let Some(page) = &self.settings_page else {
+            return Vec::new();
+        };
+        let Some((provider, models)) = &page.ai.models else {
+            return Vec::new();
+        };
+        if *provider != self.config.ai.provider {
+            return Vec::new();
+        }
+        let typed = page.ai.model.read(cx).text().trim().to_lowercase();
+        let whole = models.iter().any(|m| m.to_lowercase() == typed);
+        models
+            .iter()
+            .filter(|m| whole || m.to_lowercase().contains(&typed))
+            .take(MODELS_SHOWN)
+            .cloned()
+            .collect()
     }
 
     /// Saves the key typed (or, with `remove`, deletes the saved one).
@@ -132,6 +221,7 @@ impl MailWindow {
                             page.ai.key_saved = Some(!remove);
                             page.ai.key.update(cx, |input, cx| input.set_text("", cx));
                         }
+                        this.load_ai_models(cx);
                         let text = if remove {
                             tr!("settings-ai-key-removed")
                         } else {
@@ -183,12 +273,18 @@ impl MailWindow {
                 ai.provider = id.to_owned();
                 // The model was the last service's.
                 ai.model.clear();
-                if let Some(page) = &self.settings_page {
+                if let Some(page) = &mut self.settings_page {
+                    page.ai.models = None;
+                    page.ai.models_open = false;
                     page.ai.model.update(cx, |input, cx| {
                         input.set_placeholder(preset(id).model);
                         input.set_text("", cx);
                     });
                 }
+                self.save_config();
+                self.load_ai_models(cx);
+                cx.notify();
+                return;
             }
             Change::AiAutocomplete(on) => ai.autocomplete = on,
             Change::AiAnswered(on) => ai.autocomplete_answered = on,
@@ -370,34 +466,28 @@ impl MailWindow {
             ),
             _ => None,
         };
+        let model_field = field("page-ai-model", tr!("settings-ai-model"), &page.ai.model);
+        let address_field = field(
+            "page-ai-address",
+            tr!("settings-ai-address"),
+            &page.ai.address,
+        );
+        let key_field = field("page-ai-key", tr!("settings-ai-key"), &page.ai.key);
+        let model_field = self.ai_model_field(model_field, th, cx);
         control_column(240.0)
             .flex()
             .flex_col()
             .gap(px(12.0))
             .child(services)
-            .when(chosen.id == OTHER, |d| {
-                d.child(field(
-                    "page-ai-address",
-                    tr!("settings-ai-address"),
-                    &page.ai.address,
-                ))
-            })
-            .child(field(
-                "page-ai-model",
-                tr!("settings-ai-model"),
-                &page.ai.model,
-            ))
+            .when(chosen.id == OTHER, |d| d.child(address_field))
+            .child(model_field)
             .child(
                 div()
                     .flex()
                     .flex_row()
                     .items_end()
                     .gap(px(8.0))
-                    .child(div().flex_1().child(field(
-                        "page-ai-key",
-                        tr!("settings-ai-key"),
-                        &page.ai.key,
-                    )))
+                    .child(div().flex_1().child(key_field))
                     .child(
                         outlined_button("page-ai-key-save", tr!("settings-ai-key-save"), th)
                             .map(|d| self.page_control(d, th, cx))
@@ -407,5 +497,49 @@ impl MailWindow {
             )
             .children(key_state)
             .into_any_element()
+    }
+
+    /// The model field with a button for the list, and the list of models
+    /// matching what is typed under it while it is open.
+    fn ai_model_field(&self, field: Div, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let matches = self.ai_model_matches(cx);
+        let open = self
+            .settings_page
+            .as_ref()
+            .is_some_and(|p| p.ai.models_open)
+            && !matches.is_empty();
+        let toggle = (!matches.is_empty() || open).then(|| {
+            icon_button_colored("page-ai-models", "drop-down", 20.0, th.text_dim, th)
+                .size(px(32.0))
+                .tooltip(tip(tr!("settings-ai-models"), th))
+                .on_click(cx.listener(move |this, _, _, cx| this.open_ai_models(!open, cx)))
+        });
+        let list = open.then(|| {
+            deferred(
+                div()
+                    .absolute()
+                    .top(px(70.0))
+                    .left_0()
+                    .right_0()
+                    .occlude()
+                    .on_mouse_down_out(cx.listener(|this, _, _, cx| this.open_ai_models(false, cx)))
+                    .child(menu(th).max_h(px(320.0)).children(
+                        matches.into_iter().enumerate().map(|(n, model)| {
+                            let picked = model.clone();
+                            menu_item(("page-ai-model-item", n), &model, th).on_click(cx.listener(
+                                move |this, _, window, cx| {
+                                    this.pick_ai_model(picked.clone(), window, cx)
+                                },
+                            ))
+                        }),
+                    )),
+            )
+            .with_priority(1)
+        });
+        div()
+            .relative()
+            .child(field)
+            .children(toggle.map(|t| div().absolute().right(px(4.0)).top(px(26.0)).child(t)))
+            .children(list)
     }
 }

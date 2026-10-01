@@ -82,6 +82,9 @@ pub struct Prompt {
     pub max_tokens: u32,
     /// How much the answer may vary, 0 to 1.
     pub temperature: f32,
+    /// Wanted at once (finishing a sentence as the user types): the model
+    /// thinks as little as it allows.
+    pub quick: bool,
 }
 
 const REPHRASE_SYSTEM: &str = "You rewrite a passage from an email the user is writing. \
@@ -123,6 +126,7 @@ pub fn rephrase(text: &str, tone: Tone, instruction: &str) -> Option<Prompt> {
         user: format!("Instruction: {how}\n\nPassage:\n<<<\n{text}\n>>>"),
         max_tokens,
         temperature: 0.4,
+        quick: false,
     })
 }
 
@@ -150,6 +154,7 @@ pub fn complete(before: &str, answered: &str) -> Option<Prompt> {
         user,
         max_tokens: 32,
         temperature: 0.2,
+        quick: true,
     })
 }
 

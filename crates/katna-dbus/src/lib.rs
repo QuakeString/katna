@@ -924,6 +924,13 @@ macro_rules! pim_proxy {
             /// Whether a key of the user's own AI service is saved.
             fn ai_key_saved(&self) -> zbus::Result<bool>;
 
+            /// The models the user's own AI service `provider` (a
+            /// `katna_ai::provider` id; `address` for `other`) offers to
+            /// the saved key, and a `katna_ai::wire::problem` when it
+            /// could not be asked.
+            fn ai_models(&self, provider: &str, address: &str)
+            -> zbus::Result<(Vec<String>, String)>;
+
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
