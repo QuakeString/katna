@@ -382,7 +382,8 @@ impl MailWindow {
                         .border_color(rgba(th.divider))
                         .bg(rgba(format_bar_bg(th)))
                         .overflow_x_scroll()
-                        .child(div().flex_none().child(self.render_format_bar(
+                        // Room for the last button inside the round end.
+                        .child(div().flex_none().pr(px(12.0)).child(self.render_format_bar(
                             th,
                             width - 96.0,
                             cx,

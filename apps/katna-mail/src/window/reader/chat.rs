@@ -42,6 +42,8 @@ use crate::widgets::{icon, icon_button_colored, tip};
 /// The header's pictures, and how far each overlaps the one before.
 const STACK_PICTURE: f32 = 26.0;
 const STACK_STEP: f32 = 22.0;
+/// Frames the feed is kept at its end after mail comes or is sent.
+const SETTLE_FRAMES: u8 = 4;
 /// Mail from one person this close together joins their group.
 const GROUP_SECONDS: i64 = 10 * 60;
 /// The picture beside a group.
@@ -70,6 +72,9 @@ pub(in crate::window) struct ChatState {
     said: RefCell<HashMap<MessageId, (usize, Rc<Said>)>>,
     /// Messages shown when the chat last scrolled to its end.
     shown: usize,
+    /// Frames left to keep the feed at its end: the newest bubble and the
+    /// reply box settle over a few frames.
+    settle: u8,
 }
 
 /// One mail as a bubble shows it.
@@ -388,7 +393,12 @@ impl MailWindow {
         // sent.
         if reader.chat.shown != reader.parts.len() {
             reader.chat.shown = reader.parts.len();
+            reader.chat.settle = SETTLE_FRAMES;
+        }
+        if reader.chat.settle > 0 {
+            reader.chat.settle -= 1;
             self.reader_scroll.scroll_to_bottom();
+            cx.notify();
         }
         let header = self.chat_header(th, cx);
         let feed: Vec<AnyElement> = lines
