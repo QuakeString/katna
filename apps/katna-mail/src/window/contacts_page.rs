@@ -538,7 +538,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(2.0))
-            .child(self.create_contact_button(th, cx))
             .child(item(
                 ("contacts-nav", 0),
                 "contacts",
@@ -746,25 +745,6 @@ impl MailWindow {
                     .child(tr!("contacts-accounts")),
             )
             .children(rows)
-            .into_any_element()
-    }
-
-    /// "Create contact", at the top of the column like Compose in Mail.
-    fn create_contact_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        div()
-            .flex()
-            .child(
-                super::nav::side_create_button(
-                    "contact-create",
-                    "person-add",
-                    tr!("contacts-create"),
-                    th,
-                )
-                .on_click(cx.listener(|this, _, window, cx| {
-                    this.contacts.open = None;
-                    this.start_contact_edit(None, window, cx)
-                })),
-            )
             .into_any_element()
     }
 

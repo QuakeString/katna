@@ -1550,26 +1550,27 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The left bar's New task: a new task in the open list, or due
+    /// today in the default list from Today.
+    pub(super) fn tasks_create(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let list = match self.tasks.view {
+            View::List(id) => Some(id),
+            View::Today => {
+                let due = today().to_string();
+                return self.task_start_adding(0, None, due, window, cx);
+            }
+            _ => self.tasks.columns().first().map(|c| c.list.id),
+        };
+        if let Some(list) = list {
+            self.task_start_adding(list, None, String::new(), window, cx);
+        }
+    }
+
     fn render_tasks_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let row = |id: SharedString, icon_name: &'static str, label: String, on: bool| {
             super::nav::side_row(id, icon_name, label, on, th)
         };
-        let create = super::nav::side_create_button("tasks-create", "add", tr!("tasks-create"), th)
-            .on_click(cx.listener(|this, _, window, cx| {
-                let list = match this.tasks.view {
-                    View::List(id) => Some(id),
-                    // Today's go to the default list, due today.
-                    View::Today => {
-                        let due = today().to_string();
-                        return this.task_start_adding(0, None, due, window, cx);
-                    }
-                    _ => this.tasks.columns().first().map(|c| c.list.id),
-                };
-                if let Some(list) = list {
-                    this.task_start_adding(list, None, String::new(), window, cx);
-                }
-            }));
         let open_count = |column: &Column| {
             column
                 .tasks
@@ -1594,7 +1595,6 @@ impl MailWindow {
             .pb(px(16.0))
             .flex()
             .flex_col()
-            .child(div().flex().child(create))
             .child(
                 row(
                     "tasks-all".into(),

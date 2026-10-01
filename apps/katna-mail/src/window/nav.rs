@@ -18,7 +18,7 @@ use katna_ui::px;
 use super::apps::APP_RAIL_WIDTH;
 use super::tour::Spot;
 use super::{
-    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
+    FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
     SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
 use katna_core::AccountKind;
@@ -50,50 +50,6 @@ const SEARCH_HEIGHT: f32 = 40.0;
 const SEARCH_GLASS_ALPHA: f32 = 0.4;
 /// How strong the idle glass search box's faint edge is.
 const SEARCH_GLASS_EDGE: f32 = 0.22;
-
-/// The button at the top of a page's side panel (Create contact, Create
-/// task), in the size, shape and colours of Mail's Compose over the
-/// folders: only its icon and word change. Wrap it in a flex `div` so a
-/// column does not stretch it.
-pub(super) fn side_create_button(
-    id: &'static str,
-    icon_name: &str,
-    label: String,
-    th: &Theme,
-) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(id)
-        .relative()
-        .flex_none()
-        .ml(px(NAV_ROW_INSET))
-        .mt(px(super::COMPOSE_TOP))
-        .mb(px(super::COMPOSE_NAV_ROOM
-            - super::COMPOSE_TOP
-            - super::COMPOSE_HEIGHT))
-        .h(px(super::COMPOSE_HEIGHT))
-        .pl(px(16.0))
-        .pr(px(24.0))
-        .flex()
-        .flex_row()
-        .items_center()
-        .overflow_hidden()
-        .rounded(px(super::COMPOSE_RADIUS))
-        .bg(rgba(th.compose))
-        .text_color(rgba(th.compose_text))
-        .hover(|s| s.shadow(elevation(th, 1.5)))
-        .cursor_pointer()
-        .child(Ripple::new(id, rgba(th.ripple)).rounded(super::COMPOSE_RADIUS))
-        .child(icon(icon_name, th.compose_text, 24.0))
-        .child(
-            div()
-                .flex_none()
-                .pl(px(12.0))
-                .text_size(px(super::COMPOSE_TEXT_SIZE))
-                .font_weight(FontWeight::MEDIUM)
-                .whitespace_nowrap()
-                .child(label),
-        )
-}
 
 /// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
 /// shape of Mail's folders: a full pill inset from both edges of the pane,
@@ -323,9 +279,11 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// Compose: a pill at the top of the folders while they are open
-    /// beside the list, a square at the top of the app rail while they are
-    /// folded, in a tablet's drawer, or on another app's page. It slides
+    /// The big button at the top of the left bar (Compose in Mail, New
+    /// event, New contact, New task, New note on their pages): a pill at
+    /// the top of the folders or the page's side column while it is open,
+    /// a square at the top of the app rail while it is folded or in a
+    /// tablet's drawer. It slides
     /// between the two as the folders open or fold, and the rail's apps
     /// move down to make room.
     pub(super) fn render_compose_button(
@@ -341,6 +299,9 @@ impl MailWindow {
         }
         // 0 = in the rail, 1 = over the folders.
         let dock = self.compose_dock.value().clamp(0.0, 1.0);
+        // Each page's own action, in the same button and place.
+        let mail = self.app == super::RailApp::Mail;
+        let (icon_name, label) = self.app.primary();
         let left = lerp(
             super::COMPOSE_RAIL_LEFT,
             APP_RAIL_WIDTH + NAV_ROW_INSET,
@@ -367,10 +328,13 @@ impl MailWindow {
                 .cursor_pointer()
                 // In the rail, resting on it opens the folded folders over
                 // the list, as resting on Mail does.
-                .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
-                    this.hover_navigation(Hover::Compose, *hovered, cx)
-                }))
-                .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
+                .when(mail, |d| {
+                    d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                        this.hover_navigation(Hover::Compose, *hovered, cx)
+                    }))
+                })
+                .when(dock < 0.5, |d| d.tooltip(tip(label.clone(), th)))
+                .on_click(cx.listener(|this, _, window, cx| this.primary_action(window, cx)))
                 .child(
                     Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
                 )
@@ -379,7 +343,7 @@ impl MailWindow {
                     div()
                         .flex_none()
                         .pl(px(16.0))
-                        .child(icon("compose", th.compose_text, 24.0)),
+                        .child(icon(icon_name, th.compose_text, 24.0)),
                 )
                 .child(
                     div()
@@ -389,7 +353,7 @@ impl MailWindow {
                         .text_size(px(super::COMPOSE_TEXT_SIZE))
                         .font_weight(FontWeight::MEDIUM)
                         .whitespace_nowrap()
-                        .child(tr!("compose")),
+                        .child(label),
                 )
                 .into_any_element(),
         )

@@ -96,7 +96,8 @@ contacts-print-none = No contacts to print
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Birthday: { $day }
 contacts-print-nickname = Nickname: { $name }
-contacts-create = Create contact
+# The big button at the top of the left bar on Contacts.
+contacts-create = New contact
 
 ## Search and the list
 

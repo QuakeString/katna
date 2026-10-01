@@ -557,6 +557,15 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// The left bar's New event: the small card for an event at the next
+    /// hour on the day on show, in the middle of the window.
+    pub(super) fn create_event_button(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let size = window.viewport_size();
+        let at = gpui::point(size.width / 2.0 - px(QUICK_WIDTH / 2.0), size.height / 3.0);
+        let day = self.calendar.view_day();
+        self.start_new_event(day, None, false, at, window, cx);
+    }
+
     /// C: a new event at the next hour, in the whole editor.
     pub(super) fn create_event_key(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let size = window.viewport_size();

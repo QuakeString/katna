@@ -282,14 +282,9 @@ fn text_width(
     unpx(line.width).ceil() + 1.0
 }
 
-fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
-    text_width(
-        &katna_i18n::tr!("compose"),
-        COMPOSE_TEXT_SIZE,
-        FontWeight::MEDIUM,
-        font,
-        window,
-    )
+/// How wide `label` is drawn on the big button at the top of the left bar.
+fn compose_text_width(label: &str, font: Option<&SharedString>, window: &Window) -> f32 {
+    text_width(label, COMPOSE_TEXT_SIZE, FontWeight::MEDIUM, font, window)
 }
 
 /// The widths of "Katna" and of the longest app name after it, so the
@@ -615,7 +610,6 @@ pub struct MailWindow {
     /// The pages other than Mail whose side column (calendars, lists,
     /// labels) is folded away on a desktop, and how far the one on show
     /// is open.
-    page_sides_folded: HashSet<RailApp>,
     page_side_spring: Spring,
     page_side_t: f32,
     /// 0 = folded, 1 = open: the space the navigation takes from the card.
@@ -932,7 +926,6 @@ impl MailWindow {
             peek_from: Hover::Mail,
             peek_task: None,
             nav_spring: Spring::new(motion::SLIDE, 1.0),
-            page_sides_folded: HashSet::new(),
             page_side_spring: Spring::new(motion::SLIDE, 1.0),
             page_side_t: 1.0,
             reserve_spring: Spring::new(motion::SLIDE, 1.0),
@@ -1842,14 +1835,7 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        // The other pages fold their own side column, each on its own.
-        if self.app != RailApp::Mail {
-            if !self.page_sides_folded.remove(&self.app) {
-                self.page_sides_folded.insert(self.app);
-            }
-            cx.notify();
-            return;
-        }
+        // One fold for Mail's folders and every page's side column.
         self.nav_open = !self.nav_open;
         self.nav_peek = false;
         self.peek_hover = (false, false);
@@ -3314,11 +3300,8 @@ impl Render for MailWindow {
         );
         self.reserve_spring
             .set(if self.nav_docked() { 1.0 } else { 0.0 });
-        self.page_side_spring.set(if self.page_side_open(self.app) {
-            1.0
-        } else {
-            0.0
-        });
+        self.page_side_spring
+            .set(if self.page_side_open() { 1.0 } else { 0.0 });
         self.page_side_t = self.page_side_spring.tick(window, reduce);
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
@@ -3438,9 +3421,10 @@ impl Render for MailWindow {
             },
         );
         self.compose_shown.tick(window, reduce);
-        // The other apps have no folders: Compose waits in the rail there.
+        // The big button heads the folders or the page's side column while
+        // it is open beside the page, and waits in the rail otherwise.
         self.compose_dock
-            .set(if self.app == RailApp::Mail && self.nav_docked() {
+            .set(if self.app.has_side() && self.nav_docked() {
                 1.0
             } else {
                 0.0
@@ -3448,7 +3432,7 @@ impl Render for MailWindow {
         self.compose_dock.tick(window, reduce);
         self.title_roll.tick(window, reduce);
         self.avatar_turn.tick(window, reduce);
-        let compose_text = compose_text_width(self.font.as_ref(), window);
+        let compose_text = compose_text_width(&self.app.primary().1, self.font.as_ref(), window);
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
             Err(err) => self.render_error(err, &th),
