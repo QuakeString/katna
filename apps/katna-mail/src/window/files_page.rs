@@ -1241,6 +1241,31 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// How much lower the baseline of a line of `big` text sits than one
+    /// of `small` text when both start at the same top, in the font the
+    /// app draws with: what puts the two on one baseline. Measured, as
+    /// it differs from font to font by a pixel or two.
+    fn baseline_drop(&self, window: &Window, big: Pixels, small: Pixels) -> Pixels {
+        let style = window.text_style();
+        let family = self.font.clone().unwrap_or(style.font_family.clone());
+        let text = window.text_system();
+        let id = text.resolve_font(&gpui::font(family));
+        let rem = window.rem_size();
+        // As GPUI lays a line out: the ascent and descent centred in the
+        // line's height. Fonts give the descent either way up; the line
+        // layout takes it as a positive length.
+        let baseline = |size: Pixels| {
+            let line = style.line_height.to_pixels(size.into(), rem);
+            let (ascent, descent) = (text.ascent(id, size), text.descent(id, size).abs());
+            (line - ascent - descent) / 2.0 + ascent
+        };
+        // In whole device pixels, as the glyphs land on them: lowering by
+        // the exact difference can still round the two a pixel apart.
+        let scale = window.scale_factor();
+        let device = |size: Pixels| (baseline(size) * scale).round();
+        (device(big) - device(small)) / scale
+    }
+
     /// The bar over the files, then the files.
     fn render_files_body(
         &mut self,
@@ -1425,12 +1450,13 @@ impl MailWindow {
             count = page.shown.len(),
             size = format::size(page.shown_bytes)
         );
+        let drop = self.baseline_drop(window, px(20.0), px(13.0));
         let title = div()
             .flex_1()
             .min_w_0()
             .flex()
             .flex_row()
-            .items_baseline()
+            .items_start()
             .gap(px(10.0))
             .child(
                 div()
@@ -1442,11 +1468,9 @@ impl MailWindow {
             .child(
                 div()
                     .min_w_0()
-                    // GPUI lines the two up by their boxes' first lines
-                    // rather than by the letters, which leaves the smaller
-                    // text 3 px low; this puts it on the title's baseline.
+                    // Lowered from the title's top onto its baseline.
                     .relative()
-                    .top(px(-3.0))
+                    .top(drop)
                     .truncate()
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_faint))
