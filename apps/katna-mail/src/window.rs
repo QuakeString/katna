@@ -634,6 +634,8 @@ pub struct MailWindow {
     tab_fold: Spring,
     /// Each inbox tab's label and count badge widths, measured each frame.
     tab_sizes: Vec<(f32, f32)>,
+    /// Each inbox tab's unread chip as it shows, fades and folds away.
+    tab_chips: Vec<list::TabChip>,
     snackbar: Option<Snackbar>,
     /// What Ctrl+Z takes back, newest last: this window's actions since
     /// it opened.
@@ -931,6 +933,7 @@ impl MailWindow {
             settings_spring: Spring::new(motion::SLIDE, 0.0),
             tab_fold: Spring::new(motion::SMOOTH, 0.0),
             tab_sizes: Vec::new(),
+            tab_chips: Vec::new(),
             snackbar: None,
             undo_history: Vec::new(),
             crash_notice: None,
@@ -3313,6 +3316,7 @@ impl Render for MailWindow {
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
         self.measure_tabs(window);
+        self.tick_tab_chips(window, reduce);
         self.tick_reorder(window, reduce, cx);
         self.tick_nav_fold(window, reduce);
         self.sync_nav_list();
