@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A tidier select button"
+text = """
+The hover behind the select checkbox at the top of the mail list is now as
+tall as the buttons beside it, sits as far from the card's edge as from its
+top, and its corners follow the card's own corner.
+"""
