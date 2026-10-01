@@ -79,6 +79,7 @@ icons!(
     "event",
     "expand",
     "eye",
+    "eyedropper",
     "feeds",
     "file",
     "fit-page",
