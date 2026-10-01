@@ -6,6 +6,9 @@
 //! out, and a file sent again (the same name and size, also a copy of
 //! its message in another account) shows once, at its newest.
 
+use std::collections::hash_map::Entry;
+use std::collections::{HashMap, HashSet};
+
 use katna_core::{Account, AccountId};
 use rusqlite::{Connection, params};
 
@@ -35,6 +38,9 @@ pub struct LibraryFile {
     /// message, and its place among the message's named attachments.
     pub nth: usize,
     pub order: usize,
+    /// In how many conversations its sender sent the same file (name and
+    /// size): a picture in many is a signature logo, not a file.
+    pub conversations: usize,
 }
 
 /// See [`crate::Store::library_files`].
@@ -61,7 +67,7 @@ pub(crate) fn files(
          SELECT n.message_id, m.account_id, n.name, n.mime, n.size, m.date, m.subject,
                 f.display_name, coalesce(f.email_norm, ''),
                 f.email_norm IN (SELECT email FROM own),
-                m.blob_hash IS NOT NULL, n.nth, n.ord
+                m.blob_hash IS NOT NULL, n.nth, n.ord, coalesce(m.thread_id, -m.id)
          FROM named n
          JOIN message m ON m.id = n.message_id
          LEFT JOIN participant f ON f.rowid = (
@@ -81,30 +87,47 @@ pub(crate) fn files(
     let rows = stmt.query_map(params![own, scan], |row| {
         let index = |n: i64| usize::try_from(n).unwrap_or_default();
         let name: Option<String> = row.get(7)?;
-        Ok(LibraryFile {
-            message: MessageId(row.get(0)?),
-            account: AccountId(row.get(1)?),
-            name: row.get(2)?,
-            mime: row.get(3)?,
-            size: row.get::<_, i64>(4)?.try_into().unwrap_or_default(),
-            date: row.get(5)?,
-            subject: row.get(6)?,
-            from_name: name.map(|n| n.trim().to_owned()).filter(|n| !n.is_empty()),
-            from_email: row.get(8)?,
-            mine: row.get::<_, Option<bool>>(9)?.unwrap_or(false),
-            downloaded: row.get(10)?,
-            nth: index(row.get(11)?),
-            order: index(row.get(12)?),
-        })
+        let thread: i64 = row.get(13)?;
+        Ok((
+            thread,
+            LibraryFile {
+                message: MessageId(row.get(0)?),
+                account: AccountId(row.get(1)?),
+                name: row.get(2)?,
+                mime: row.get(3)?,
+                size: row.get::<_, i64>(4)?.try_into().unwrap_or_default(),
+                date: row.get(5)?,
+                subject: row.get(6)?,
+                from_name: name.map(|n| n.trim().to_owned()).filter(|n| !n.is_empty()),
+                from_email: row.get(8)?,
+                mine: row.get::<_, Option<bool>>(9)?.unwrap_or(false),
+                downloaded: row.get(10)?,
+                nth: index(row.get(11)?),
+                order: index(row.get(12)?),
+                conversations: 1,
+            },
+        ))
     })?;
-    let mut seen = std::collections::HashSet::new();
-    let mut out = Vec::new();
+    // Each file once (the newest copy), with the conversations its sender
+    // sent it in.
+    let mut seen: HashMap<(String, u64), (usize, HashSet<i64>)> = HashMap::new();
+    let mut out: Vec<LibraryFile> = Vec::new();
     for row in rows {
-        let row = row?;
-        if seen.insert((row.name.clone(), row.size)) {
-            out.push(row);
-            if out.len() == limit {
-                break;
+        let (thread, row) = row?;
+        match seen.entry((row.name.clone(), row.size)) {
+            Entry::Occupied(mut first) => {
+                let (at, threads) = first.get_mut();
+                let kept = &mut out[*at];
+                if kept.from_email == row.from_email && threads.insert(thread) {
+                    kept.conversations = threads.len();
+                }
+            }
+            Entry::Vacant(slot) => {
+                // Past the limit, rows only count copies of files kept.
+                if out.len() < limit {
+                    slot.insert((out.len(), HashSet::from([thread])));
+                    out.push(row);
+                }
             }
         }
     }
@@ -216,6 +239,9 @@ mod tests {
             ]
         );
         assert_eq!(files[0].mime, "application/pdf");
+        // Ada sent the plan in two conversations; one photo copy is a file.
+        assert_eq!(files[0].conversations, 2);
+        assert_eq!(files[1].conversations, 1);
         assert_eq!(files[0].from_email, "ada@example.net");
         assert_eq!(files[0].from_name.as_deref(), Some("Someone"));
         assert!(files[0].downloaded);
