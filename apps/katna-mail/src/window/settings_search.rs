@@ -132,12 +132,6 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
-        "settings-general-notifications",
-        "settings-general-notifications-summary",
-        "notify alert sound chime popup new mail",
-    ),
-    entry(
-        Section::General,
         "settings-general-updates",
         "settings-general-updates-summary",
         "update upgrade new version download install automatic",
@@ -152,7 +146,25 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-desktop",
         "settings-general-desktop-summary",
-        "tray badge unread count taskbar dock panel startup start login autostart launch boot",
+        "tray panel startup start login autostart launch boot",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-general-notifications",
+        "settings-general-notifications-summary",
+        "notify alert sound chime popup new mail bell folder tab",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-count",
+        "settings-notifications-count-summary",
+        "badge unread count taskbar dock tray number folder",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-muted",
+        "settings-notifications-muted-summary",
+        "mute unmute silence quiet bell conversation thread sender account folder",
     ),
     entry(
         Section::General,

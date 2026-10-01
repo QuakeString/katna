@@ -6,6 +6,8 @@
 ## Settings page: its tabs
 
 settings-tab-general = General
+# What notifies and counts on the taskbar, and what is muted.
+settings-tab-notifications = Notifications
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
 # The tab with the Katna account (an account on Katna's own server, for
@@ -97,7 +99,7 @@ settings-general-offline-years = { $count ->
 settings-general-offline-all = All mail
 settings-general-offline-note = Choosing fewer days keeps mail already downloaded. Nothing changes on the server.
 settings-general-notifications = Notifications
-settings-general-notifications-detail = For new mail in the Inbox, even while Katna Mail is closed.
+settings-general-notifications-detail = For new mail in the folders that notify, even while Katna Mail is closed.
 settings-general-new-mail = Notify me about new mail
 # The buttons a new-mail notification has.
 settings-general-new-mail-detail = With Reply all, Mark as read and Archive
@@ -120,7 +122,23 @@ settings-general-login-window-detail = The window opens at login as well
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 settings-general-unread-badge = Unread count on the taskbar icon
-settings-general-unread-badge-detail = How many Inbox messages are unread
+settings-general-unread-badge-detail = Unread mail in the folders that count
+## Settings › Notifications (the bells of folders and inbox tabs, and mutes)
+
+# The row with the taskbar count's switch.
+settings-notifications-count = Taskbar count
+settings-notifications-count-detail = Also the tray icon's count.
+# The two columns of each account's table of folders and inbox tabs.
+settings-notifications-notify = Notify
+settings-notifications-counts = Count
+settings-notifications-muted = Muted
+settings-notifications-muted-detail = Folders, accounts, conversations and senders whose new mail does not notify or count.
+settings-notifications-nothing-muted = Nothing is muted. Mute a folder from its right-click menu or the bell over the list.
+# When a mute ends; { $when } is a date and time.
+settings-notifications-until = Until { $when }
+settings-notifications-until-unmuted = Until you turn it back on
+# A muted conversation whose subject is not known.
+settings-notifications-a-conversation = A conversation
 # The row with the words that, typed first in KRunner or GNOME's search,
 # search the mail. The field holds words like "k, m".
 settings-general-search-triggers = Search from the desktop
@@ -318,7 +336,9 @@ settings-general-offline-summary = How many days of recent mail are downloaded w
 settings-general-notifications-summary = New-mail notifications and their sound
 settings-general-updates-summary = Download new versions of Katna by themselves
 settings-general-reset-cache-summary = Delete downloaded mail, sender pictures and the search index, and download them again
-settings-general-desktop-summary = Start Katna at login, the system tray icon and the unread count on the taskbar icon
+settings-general-desktop-summary = Start Katna at login and the system tray icon
+settings-notifications-count-summary = The unread count on the taskbar icon
+settings-notifications-muted-summary = Unmute folders, accounts, conversations and senders
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
