@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy from a mail's details"
+text = """
+The details under "to me" can now be selected and copied like the mail
+itself. Click an address to see that person's card beside the mail, or
+right-click it for Copy address. Muted people show their crossed bell there
+too.
+"""

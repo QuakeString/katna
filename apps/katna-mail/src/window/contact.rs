@@ -134,6 +134,23 @@ impl MailWindow {
         (room(t), room(self.contact.spring.target()))
     }
 
+    /// Whether the panel has room beside the open mail now.
+    pub(super) fn contact_room_now(&self) -> bool {
+        self.contact_fits(self.cards_width + self.contact_room())
+    }
+
+    /// Shows `email` (lower case) in the panel, opening it if it was put
+    /// away: an address clicked in the open mail's details.
+    pub(super) fn show_person(&mut self, email: &str, cx: &mut Context<Self>) {
+        if let Some(key) = self.reader.as_ref().map(|r| r.key) {
+            self.contact.picked = Some((key, email.to_owned()));
+        }
+        if !self.config.mail.contact_panel && self.contact_room_now() {
+            self.toggle_contact_panel(cx);
+        }
+        cx.notify();
+    }
+
     /// Shows or hides the panel, from the reader's toolbar.
     pub(super) fn toggle_contact_panel(&mut self, cx: &mut Context<Self>) {
         self.config.mail.contact_panel = !self.config.mail.contact_panel;
@@ -143,7 +160,7 @@ impl MailWindow {
 
     /// The reader toolbar's button for the panel, where it fits.
     pub(super) fn contact_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        if !self.contact_fits(self.cards_width + self.contact_room()) {
+        if !self.contact_room_now() {
             return None;
         }
         let on = self.config.mail.contact_panel;

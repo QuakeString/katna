@@ -40,6 +40,10 @@ actions!(katna_mail, [CopyText, SelectAllText]);
 /// The key context of the conversation's text once it was clicked.
 pub(super) const TEXT_CONTEXT: &str = "MessageText";
 
+/// The first part of the open mail's header details: the details of the
+/// message shown `n`th are part `DETAILS_PART + n`.
+pub(super) const DETAILS_PART: usize = usize::MAX / 4;
+
 /// A run of text drawn by `part` of the text (a message of the
 /// conversation, a page of a PDF), the `piece`th in it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -151,6 +155,8 @@ pub(super) struct TextSelection {
     origin: Option<(Spot, Spot)>,
     /// The right-click menu, where the pointer was.
     pub(super) menu: Option<Point<Pixels>>,
+    /// The address the right-click menu was opened on, for Copy address.
+    pub(super) menu_address: Option<SharedString>,
 }
 
 impl TextSelection {
@@ -168,6 +174,7 @@ impl TextSelection {
             unit: Unit::Char,
             origin: None,
             menu: None,
+            menu_address: None,
         }
     }
 
@@ -202,6 +209,7 @@ impl TextSelection {
         self.selecting = false;
         self.origin = None;
         self.menu = None;
+        self.menu_address = None;
     }
 
     /// The selection, start first; `None` when nothing is selected.
@@ -675,13 +683,20 @@ pub(super) fn text_menu<T: SelectHost>(
     Some(copy_menu(
         at,
         !this.selection().is_empty(),
+        this.selection().menu_address.is_some(),
         th,
         cx,
         |this: &mut T, act, cx| {
+            let address = this.selection_mut().menu_address.take();
             this.selection_mut().menu = None;
             match act {
                 MenuAct::Close => {}
                 MenuAct::Copy => copy(this, cx),
+                MenuAct::CopyAddress => {
+                    if let Some(address) = address {
+                        cx.write_to_clipboard(ClipboardItem::new_string(address.to_string()));
+                    }
+                }
                 MenuAct::SelectAll => this.selection_mut().select_all(),
             }
             cx.notify();
@@ -694,14 +709,18 @@ pub(super) fn text_menu<T: SelectHost>(
 pub(super) enum MenuAct {
     Close,
     Copy,
+    /// Only offered when the menu was opened on an address.
+    CopyAddress,
     SelectAll,
 }
 
-/// A right-click menu at `at` with Copy (greyed without a selection) and
-/// Select all; `act` does what was chosen, or closes it.
+/// A right-click menu at `at` with Copy address (when `on_address`), Copy
+/// (greyed without a selection) and Select all; `act` does what was
+/// chosen, or closes it.
 pub(super) fn copy_menu<T: 'static>(
     at: Point<Pixels>,
     can_copy: bool,
+    on_address: bool,
     th: &Theme,
     cx: &mut Context<T>,
     act: fn(&mut T, MenuAct, &mut Context<T>),
@@ -718,6 +737,13 @@ pub(super) fn copy_menu<T: 'static>(
         .map(|d| raised(d, th, 8.0, 3.0))
         .text_size(px(14.0))
         .text_color(rgba(th.text))
+        .when(on_address, |d| {
+            d.child(
+                menu_item("text-copy-address", &tr!("text-copy-address"), th).on_click(
+                    cx.listener(move |this, _, _, cx| act(this, MenuAct::CopyAddress, cx)),
+                ),
+            )
+        })
         .child(
             menu_item("text-copy", &tr!("text-copy"), th)
                 .when(!can_copy, |d| d.text_color(rgba(th.text_faint)))
