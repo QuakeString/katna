@@ -254,6 +254,10 @@ mod tests {
                 assert_eq!(side.scheme("").dark(), dark, "{} {dark}", scheme.id);
                 let ratio = contrast(side.text, side.card);
                 assert!(ratio >= 4.5, "{} {dark}: text {ratio}", scheme.id);
+                // The open folder or contact is a soft grey of the text,
+                // never the accent.
+                let th = crate::theme::Theme::from_scheme(&side.scheme(""));
+                assert_eq!(th.row_selected >> 8, side.text >> 8, "{}", scheme.id);
             }
             assert_ne!(katna_i18n::tr!(scheme.name), scheme.name, "no English name");
         }

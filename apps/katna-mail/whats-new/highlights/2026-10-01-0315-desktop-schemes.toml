@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your desktop's color schemes"
+text = """
+Settings > Appearance > Colors also lists your desktop's own schemes: every
+color scheme installed on KDE Plasma, and on Windows its own colors and
+Contrast themes. System now works in light and dark on KDE too, using the
+light or dark partner of your scheme, and Katna follows Windows' accent color.
+"""
