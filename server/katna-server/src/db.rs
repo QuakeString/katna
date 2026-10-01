@@ -127,6 +127,18 @@ const MIGRATIONS: &[&str] = &[
          updated_at BIGINT NOT NULL,
          updated_by TEXT NOT NULL
      );",
+    // 7: the admin page's own sign-in, apart from Katna accounts: a
+    // password set on the server (`katna-server admin-password`), and the
+    // code mailed for the second step with its wrong guesses.
+    "CREATE TABLE admins (
+         email TEXT PRIMARY KEY,
+         password_hash TEXT NOT NULL,
+         code_hash BYTEA,
+         code_expires_at BIGINT,
+         code_attempts INTEGER NOT NULL DEFAULT 0,
+         failures BIGINT[] NOT NULL DEFAULT '{}',
+         updated_at BIGINT NOT NULL
+     );",
 ];
 
 /// Wrong guesses allowed for one emailed code.
@@ -969,6 +981,120 @@ impl Db {
         .await?;
         tx.commit().await?;
         Ok(())
+    }
+
+    /// Sets the admin page password of `email` (a hash), dropping any
+    /// code mailed before.
+    pub async fn set_admin_password(
+        &self,
+        email: &str,
+        password_hash: &str,
+        now: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO admins (email, password_hash, updated_at) VALUES ($1, $2, $3)
+                 ON CONFLICT (email) DO UPDATE SET password_hash = $2, updated_at = $3,
+                     code_hash = NULL, code_expires_at = NULL, code_attempts = 0",
+                &[&email, &password_hash, &now],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// The admin page password hash of `email`, if one is set.
+    pub async fn admin_password(&self, email: &str) -> Result<Option<String>, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query_opt(
+                "SELECT password_hash FROM admins WHERE email = $1",
+                &[&email],
+            )
+            .await?
+            .map(|row| row.get(0)))
+    }
+
+    /// Keeps the hash of a code mailed to the admin `email`.
+    pub async fn put_admin_code(
+        &self,
+        email: &str,
+        code_hash: &[u8],
+        expires_at: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "UPDATE admins SET code_hash = $2, code_expires_at = $3, code_attempts = 0
+                 WHERE email = $1",
+                &[&email, &code_hash, &expires_at],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// Checks a code typed by the admin `email`, within the same limits as
+    /// [`Db::check_code`]: [`CODE_ATTEMPTS`] per code and
+    /// [`CODE_FAILURES_PER_DAY`] for the address.
+    pub async fn check_admin_code(
+        &self,
+        email: &str,
+        code_hash: &[u8],
+        now: i64,
+    ) -> Result<CodeCheck, DbError> {
+        let mut client = self.pool.get().await?;
+        let tx = client.transaction().await?;
+        let row = tx
+            .query_opt(
+                "SELECT code_hash, code_expires_at, code_attempts,
+                     (SELECT count(*) FROM unnest(failures) AS at WHERE at > $2)
+                 FROM admins WHERE email = $1 FOR UPDATE",
+                &[&email, &(now - 86_400_000)],
+            )
+            .await?;
+        let Some(row) = row else {
+            return Ok(CodeCheck::Gone);
+        };
+        let stored: Option<Vec<u8>> = row.get(0);
+        let expires_at: Option<i64> = row.get(1);
+        let attempts: i32 = row.get(2);
+        let failures: i64 = row.get(3);
+        if failures >= CODE_FAILURES_PER_DAY {
+            return Ok(CodeCheck::Locked);
+        }
+        let check = match (stored, expires_at) {
+            (Some(stored), Some(expires_at)) if expires_at >= now && attempts < CODE_ATTEMPTS => {
+                if constant_time_eq(&stored, code_hash) {
+                    CodeCheck::Right
+                } else {
+                    CodeCheck::Wrong
+                }
+            }
+            _ => CodeCheck::Gone,
+        };
+        if check == CodeCheck::Wrong {
+            tx.execute(
+                "UPDATE admins SET code_attempts = code_attempts + 1,
+                     failures = array_append(
+                         ARRAY(SELECT at FROM unnest(failures) AS at WHERE at > $3), $2)
+                 WHERE email = $1",
+                &[&email, &now, &(now - 86_400_000)],
+            )
+            .await?;
+        } else {
+            tx.execute(
+                "UPDATE admins SET code_hash = NULL, code_expires_at = NULL, code_attempts = 0
+                 WHERE email = $1",
+                &[&email],
+            )
+            .await?;
+        }
+        tx.commit().await?;
+        Ok(check)
     }
 
     /// Katna AI's settings saved from the admin page, as JSON.

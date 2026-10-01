@@ -18,7 +18,12 @@ async fn main() -> ExitCode {
             EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
         )
         .init();
-    match run().await {
+    let result = match std::env::args().nth(1).as_deref() {
+        None => run().await,
+        Some("admin-password") => admin_password(std::env::args().nth(2)).await,
+        Some(other) => Err(format!("{other:?}: the only command is admin-password").into()),
+    };
+    match result {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             tracing::error!("{error}");
@@ -72,6 +77,41 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             tokio::time::sleep(Duration::from_secs(5)).await;
         } => {}
     }
+    Ok(())
+}
+
+/// `katna-server admin-password [address]`: sets the admin page password
+/// of one of the addresses in `KATNA_SERVER_ADMIN_EMAILS`, asked twice on
+/// the terminal and stored as a hash.
+async fn admin_password(email: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
+    let config = Config::from_env()?;
+    let email = match (email, config.admin_emails.as_slice()) {
+        (Some(email), _) => katna_server::auth::normalize_email(&email)
+            .ok_or_else(|| format!("{email:?} is not an address"))?,
+        (None, [only]) => only.clone(),
+        (None, []) => return Err("set KATNA_SERVER_ADMIN_EMAILS first".into()),
+        (None, _) => {
+            return Err("name the address: katna-server admin-password <address>".into());
+        }
+    };
+    if !config.admin_emails.contains(&email) {
+        return Err(format!("{email} is not in KATNA_SERVER_ADMIN_EMAILS").into());
+    }
+    println!("Admin page password for {email}");
+    let password = rpassword::prompt_password("New password: ")?;
+    if katna_server::auth::check_password(&password).is_err() {
+        return Err("the password needs 8 to 256 characters".into());
+    }
+    if rpassword::prompt_password("Again: ")? != password {
+        return Err("the two passwords differ; nothing changed".into());
+    }
+    let hash = katna_server::auth::hash_password(password)
+        .await
+        .map_err(|_| "could not hash the password")?;
+    let db = Db::connect(&config.database_url)?;
+    db.migrate().await?;
+    db.set_admin_password(&email, &hash, now_ms()).await?;
+    println!("Saved. Sign in at /admin with {email} and this password.");
     Ok(())
 }
 

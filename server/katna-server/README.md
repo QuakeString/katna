@@ -136,7 +136,7 @@ log could reset any account.
 | `POST /api/v1/translate` `{"q", "source", "target"}` | Plain text translated by LibreTranslate: `{"translatedText"}`. `source` may be `auto`. 2000 requests per account per day; `503` when `KATNA_SERVER_TRANSLATE_CONCURRENCY` (8) requests are already being translated. |
 | `POST /api/v1/detect` `{"q"}` | The language of a text, as LibreTranslate answers. |
 | `POST /api/v1/ai/rephrase` `{"text", "tone", "instruction"}` | Katna AI rewrites the text: `{"text", "plan": {"kind": "trial"\|"paid", "days_left"}}`. 30 days free from the first use, then `402` (`pay`) until paid; `429` past the account's monthly cap (`KATNA_SERVER_AI_ACCOUNT_CAP_USD`), everyone's (`_BUDGET_USD`) or 300 an hour; `503` when no AI service is set; `502` (`upstream`) when it and the fallback fail. |
-| `GET /admin` | The admin page (only with `KATNA_SERVER_ADMIN_EMAILS`; 404 otherwise): Katna AI's service, model, limits and use. Its calls under `/admin/api/` take a session cookie from signing in with a Katna password and a mailed code, and an `X-Katna-Admin: 1` header. |
+| `GET /admin` | The admin page (only with `KATNA_SERVER_ADMIN_EMAILS`; 404 otherwise): Katna AI's service, model, limits and use. Its calls under `/admin/api/` take a session cookie from signing in with the admin password (set with `katna-server admin-password`, not a Katna account) and a mailed code, and an `X-Katna-Admin: 1` header. |
 | `POST /api/v1/ai/complete` `{"before", "answered"}` | The rest of the sentence, the same way; `""` when there is too little to go on. |
 | `GET /healthz` | `ok` when the database answers. |
 
@@ -213,8 +213,19 @@ tokens, Gemini 2.5 Flash-Lite's), `_AI_PER_HOUR` (300),
 `MISTRAL`, `DEEPSEEK`, `OPENROUTER` and `OTHER` (with
 `KATNA_SERVER_AI_OTHER_BASE`): the services the admin page may choose
 among; what it saves wins over the `_AI_*` lines above,
-`KATNA_SERVER_ADMIN_EMAILS` (Katna accounts that may open `/admin`; empty
-turns the page off), `RUST_LOG`.
+`KATNA_SERVER_ADMIN_EMAILS` (who may open `/admin`; empty turns the page
+off), `RUST_LOG`.
+
+The admin page is for whoever runs the server; Katna accounts can never
+open it. Set each admin's password on the server, asked twice and stored
+as a hash (run it again to change it):
+
+```sh
+docker compose exec -it server katna-server admin-password [address]
+```
+
+Then sign in at `https://<tracking domain>/admin` with that address and
+password, and the code mailed to the address.
 Neither the text sent to Katna AI nor its answer is logged or kept; only
 the number of requests and their cost per account and month.
 

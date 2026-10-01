@@ -3722,9 +3722,11 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   `_BUDGET_USD` (50; 0 is off), with 300 requests an hour per account.
   Text and answers are neither logged nor kept. Keys and the Razorpay
   secrets come from environment variables only.
-- **Admin page** (`/admin`, `server/katna-server/src/admin.rs`): for the
-  Katna accounts in `KATNA_SERVER_ADMIN_EMAILS` (none: 404). Sign-in is the
-  Katna password, then a code mailed to the account; the session is a
+- **Admin page** (`/admin`, `server/katna-server/src/admin.rs`): for
+  whoever runs the server, never a Katna account. The addresses in
+  `KATNA_SERVER_ADMIN_EMAILS` (none: 404) sign in with a password set on
+  the server with `katna-server admin-password` (an Argon2 hash in
+  `admins`), then a code mailed to that address; the session is a
   12-hour `__Host-` cookie (`Secure`, `HttpOnly`, `SameSite=Strict`) kept
   in memory, and every call also carries `X-Katna-Admin: 1`. It shows this
   month's cost against the budget, requests, accounts in the free month,

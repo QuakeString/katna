@@ -169,7 +169,8 @@ fn text(purpose: Purpose, code: &str) -> (String, String) {
             format!(
                 "Type this code on the Katna Server admin page to sign in:\n\n    {code}\n\n\
                  It works for 30 minutes. If you did not just sign in there, someone \
-                 knows your Katna password: change it in Katna now.\n"
+                 knows the admin password: set a new one on the server with \
+                 `katna-server admin-password`.\n"
             ),
         ),
     }
