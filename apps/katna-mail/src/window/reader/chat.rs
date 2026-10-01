@@ -494,7 +494,8 @@ impl MailWindow {
                                     .children(feed),
                             ),
                     )
-                    .children(self.render_chat_people(th, cx)),
+                    .children(self.render_chat_people(th, cx))
+                    .children(self.render_files_picker(key, th, cx)),
             )
             .child(reply)
             .children(self.render_text_menu(th, cx))

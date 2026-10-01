@@ -21,7 +21,7 @@
 //! pictures, `schedule` the times of schedule send, `popout` the message
 //! in a window of its own.
 
-mod attach;
+pub(super) mod attach;
 mod chat_box;
 mod checks;
 mod chips;

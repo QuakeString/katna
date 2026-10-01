@@ -202,6 +202,11 @@ impl Body {
 }
 
 impl Conversation {
+    /// The ids of its messages.
+    pub(super) fn message_ids(&self) -> HashSet<MessageId> {
+        self.parts.iter().map(|p| p.id).collect()
+    }
+
     /// Its subject, a message of it, and the sender of its newest
     /// message, for muting it or its sender.
     pub(super) fn mute_info(&self) -> Option<(String, MessageId, String)> {

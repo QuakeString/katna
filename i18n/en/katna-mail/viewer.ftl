@@ -80,3 +80,6 @@ viewer-marks-save = Save a copy
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (marked)
+# The viewer's bar, opened from the attach picker: ticks the file shown.
+viewer-pick = Select
+viewer-picked = Selected
