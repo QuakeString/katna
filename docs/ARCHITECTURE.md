@@ -1490,7 +1490,10 @@ GPUI global):
   acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
-- The same switch frosts floating panels in every window: menus (the
+- A second switch, *Frosted menus and dialogs*
+  (`experimental.frosted_popups`, on by default and independent of the
+  window blur, which needs no compositor since Katna draws it), frosts
+  floating panels in every window: menus (the
   right-click menu and its folder list, dropdowns), Search options and its
   date popover, and the account menu. Their color is 78 % opaque over a
   20 px blur of what is behind them in the window
@@ -2373,7 +2376,11 @@ Gemini or confidential mode):
   company facts) is left for the Katna Server plan. It shows only while
   the list and reader keep 900 px (600 px with the reader alone), never on
   tablets and phones or in a conversation window; a button on the reader
-  toolbar turns it off (`mail.contact_panel`).
+  toolbar turns it off (`mail.contact_panel`). When it fits only with the
+  folder pane folded, it folds the pane as it slides in and unfolds it once
+  it goes (hidden, the mail closed, or the window grown wide enough for
+  both); a pane folded by hand stays folded, and one opened by hand beside
+  it wins until the panel is next shown (`fold_nav_for_contact`).
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
   (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it

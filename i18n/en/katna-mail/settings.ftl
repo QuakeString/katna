@@ -530,7 +530,7 @@ settings-compose-templates-summary = Save mail you write often, and start new ma
 settings-feedback-crash-reports-summary = Save crash reports on this computer when Katna Mail or its background service crashes
 settings-feedback-saved-summary = View, copy or delete the crash reports saved on this computer
 settings-feedback-help-improve-summary = Send crash reports to help fix what went wrong; off unless you turn it on
-settings-experimental-blur-summary = The desktop shows through the top bar, blurred, and menus are frosted
+settings-experimental-blur-summary = Blur the window background, frost menus and dialogs, or both
 # The line under a keyboard shortcut found by the settings search.
 settings-search-shortcut = Keyboard shortcut
 # The line under a tab of the Settings page found by the search.

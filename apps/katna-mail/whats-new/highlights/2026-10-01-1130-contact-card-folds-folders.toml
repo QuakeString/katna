@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Contact card makes its own room"
+text = """
+In a window too narrow for the folder pane and the contact card side by
+side, the card now folds the folders away as it opens, and they come back
+when the card closes. Folders you fold yourself stay folded.
+"""
