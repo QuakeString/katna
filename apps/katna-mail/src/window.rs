@@ -1800,6 +1800,10 @@ impl MailWindow {
     }
 
     fn focus_list(&mut self, _: &FocusList, window: &mut Window, cx: &mut Context<Self>) {
+        if self.app == RailApp::Files {
+            self.focus_files(window, cx);
+            return;
+        }
         window.focus(&self.list_focus, cx);
         if self.selected.is_none() && !self.entries.is_empty() {
             self.select(0, cx);
