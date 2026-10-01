@@ -46,6 +46,7 @@ const RULE_HEIGHT: f32 = 2.0 * RULE_MARGIN + 1.0;
 const MARGIN: f32 = 8.0;
 
 use super::calendar::menu::CalTarget;
+use katna_core::config::SoundEvent;
 
 /// The open right-click menu.
 pub(super) struct ContextMenu {
@@ -69,6 +70,8 @@ enum MenuFor {
     Calendar(CalTarget),
     /// A color scheme's card in Settings > Appearance > Colors.
     Scheme(&'static str),
+    /// The sounds to pick for an event in Settings > Notifications.
+    Sound(SoundEvent),
 }
 
 impl ContextMenu {
@@ -85,7 +88,7 @@ impl ContextMenu {
     fn line(&self) -> Option<(usize, EntryKey)> {
         match &self.what {
             MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
-            MenuFor::Calendar(_) | MenuFor::Scheme(_) => None,
+            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) => None,
         }
     }
 }
@@ -142,13 +145,25 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of sounds for `event`.
+    pub(super) fn open_sound_context_menu(
+        &mut self,
+        event: SoundEvent,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Sound(event), at));
+        cx.notify();
+    }
+
     /// Closes the menu; returns the Calendar thing it was for and where
     /// it opened.
     pub(super) fn take_calendar_target(&mut self) -> Option<(CalTarget, Point<Pixels>)> {
         let menu = self.context_menu.take()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
-            MenuFor::Mail { .. } | MenuFor::Scheme(_) => None,
+            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) => None,
         }
     }
 
@@ -372,6 +387,7 @@ impl MailWindow {
             MenuFor::Mail { ix, .. } => format!("context-menu-{ix}"),
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
             MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
+            MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
         };
         let key = match (menu.open, drills) {
             (Some(sub), true) => format!("{base}-{sub:?}"),
@@ -425,6 +441,7 @@ impl MailWindow {
             Some(MenuFor::Mail { row, .. }) => self.mail_menu_rows(row, rh, th, cx),
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
             Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
+            Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
             None => (Rows::new(rh), Vec::new()),
         }
     }
@@ -653,7 +670,7 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => {
                 return self.calendar_sub_rows(target, sub, rh, th, cx);
             }
-            Some(MenuFor::Scheme(_)) | None => None,
+            Some(MenuFor::Scheme(_) | MenuFor::Sound(_)) | None => None,
         };
         let act = |act: Act| {
             cx.listener(

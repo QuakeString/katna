@@ -81,8 +81,6 @@ settings-general-remote-images-always-detail = In every message, not only from s
 settings-general-sending = Sending
 settings-general-sending-detail = How long a sent message waits, so it can be taken back.
 # A switch under the undo-send choice.
-settings-general-sent-sound = Sound when mail is sent
-settings-general-sent-sound-detail = A short sound plays once a message has gone out.
 settings-general-video-calls = Video calls
 settings-general-video-calls-detail = Start a video call uses Google Meet for Gmail accounts. Other accounts get a Jitsi Meet room on this server; anyone with the link can join.
 settings-general-offline = Offline mail
@@ -103,8 +101,34 @@ settings-general-notifications-detail = For new mail in the folders that notify,
 settings-general-new-mail = Notify me about new mail
 # The buttons a new-mail notification has.
 settings-general-new-mail-detail = With Reply all, Mark as read and Archive
-settings-general-new-mail-sound = Play a sound
-settings-general-new-mail-sound-detail = The desktop's new-mail sound
+# The Sounds row of Settings > Notifications: a line per event, with a
+# sound to pick, a button that plays it and a switch.
+settings-notifications-sounds = Sounds
+settings-notifications-sounds-detail = From your desktop's sound theme. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
+sounds-new-mail = New mail
+sounds-new-mail-detail = In the folders that notify
+sounds-reminders = Reminders
+sounds-reminders-detail = Calendar events and tasks
+sounds-mail-back = Mail back in the inbox
+sounds-mail-back-detail = Snoozed mail, and mail nobody answered
+sounds-sent = Mail sent
+sounds-sent-detail = Once a message has gone out
+sounds-not-sent = Mail not sent
+sounds-not-sent-detail = When sending fails
+# Tooltip of the button that plays a sound.
+sounds-play = Play
+# The sounds to pick from (the desktop's own).
+sound-new-email = New email
+sound-new-message = New message
+sound-sent = Sent
+sound-alarm = Alarm
+sound-bell = Bell
+sound-complete = Complete
+sound-information = Information
+sound-warning = Warning
+sound-error = Error
+sound-reminder = Reminder
+sound-default = Notification
 # The row about updates of Katna (only in packages that update themselves).
 settings-general-updates = Updates
 settings-general-updates-detail = Install a new version from About, or from the notification that it is ready.
@@ -430,7 +454,8 @@ settings-general-remote-images-summary = Always show the images of every message
 settings-general-sending-summary = Undo send: how long a sent message waits, so it can be taken back
 settings-general-video-calls-summary = The Jitsi Meet server for new video calls from accounts without Google Meet
 settings-general-offline-summary = How many days of recent mail are downloaded whole, to read without a connection
-settings-general-notifications-summary = New-mail notifications and their sound
+settings-general-notifications-summary = New-mail notifications
+settings-notifications-sounds-summary = The sound for new mail, reminders, and mail sent or not sent
 settings-general-updates-summary = Download new versions of Katna by themselves
 settings-general-reset-cache-summary = Delete downloaded mail, sender pictures and the search index, and download them again
 settings-general-desktop-summary = Start Katna at login and the system tray icon

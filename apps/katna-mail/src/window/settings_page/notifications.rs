@@ -59,6 +59,12 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
+                tr!("settings-notifications-sounds"),
+                Some(&tr!("settings-notifications-sounds-detail")),
+                self.sound_lines(th, cx),
+                th,
+            ))
+            .child(self.row(
                 tr!("settings-notifications-count"),
                 Some(&tr!("settings-notifications-count-detail")),
                 self.switch_row(

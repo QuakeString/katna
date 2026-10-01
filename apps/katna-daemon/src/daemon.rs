@@ -362,8 +362,8 @@ impl Daemon {
     /// server on `connection` (the session bus), as `notifications.new_mail`
     /// says. Call before [`Daemon::start`].
     pub async fn notify_new_mail(self: &Arc<Self>, connection: &zbus::Connection) {
-        let notifications = settings(&self.paths).notifications;
-        match NewMailNotices::new(connection, &notifications).await {
+        let config = settings(&self.paths);
+        match NewMailNotices::new(connection, &config.notifications, &config.sounds).await {
             Ok(notices) => {
                 if self.new_mail.set(Arc::new(notices)).is_ok() {
                     smol::spawn(NewMailNotices::serve_actions(Arc::downgrade(self))).detach();
@@ -1134,7 +1134,7 @@ impl Daemon {
     }
 
     /// Reads the settings file again and applies what the daemon uses from
-    /// it (`sync.metered`, `sync.offline_days`, `notifications`,
+    /// it (`sync.metered`, `sync.offline_days`, `notifications`, `sounds`,
     /// the `general` language, tray and badge switches, search trigger words,
     /// `feedback.send_crash_reports`). Katna Mail calls this after saving
     /// settings.
@@ -1145,7 +1145,7 @@ impl Daemon {
             metered = ?config.sync.metered,
             offline_days = config.sync.offline_days,
             new_mail = config.notifications.new_mail,
-            sound = config.notifications.sound,
+            sounds = ?config.sounds,
             "settings reloaded"
         );
         *self.metered_setting.lock().unwrap() = config.sync.metered;
@@ -1156,7 +1156,7 @@ impl Daemon {
             }
         }
         if let Some(notices) = self.new_mail_notices() {
-            notices.set(&config.notifications);
+            notices.set(&config.notifications, &config.sounds);
         }
         // Before the tray hears of it, so it rebuilds in the new language.
         let language = &config.general.language;

@@ -13,7 +13,7 @@ use gpui::{
 };
 use katna_core::config::{
     AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
-    ReadingPane, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
+    ReadingPane, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -35,7 +35,10 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
-    SentSound(bool),
+    /// An event's sound on or off.
+    Sound(SoundEvent, bool),
+    /// The sound an event plays, by its `katna_platform::sound` name.
+    SoundChoice(SoundEvent, &'static str),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
@@ -97,8 +100,6 @@ pub(super) enum Change {
     SmallPicturePx(u32),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
-    /// Their sound.
-    NotificationSound(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
     AutoDownloadUpdates(bool),
     PlainText(bool),
@@ -462,7 +463,6 @@ impl MailWindow {
                 }
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
-            Change::SentSound(on) => sending.sent_sound = on,
             Change::Density(density) => view.density = density,
             Change::Scale(percent) => {
                 if view.scale == percent {
@@ -572,12 +572,21 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
-            Change::NewMailNotices(on) | Change::NotificationSound(on) => {
-                let notifications = &mut self.config.notifications;
-                if matches!(change, Change::NewMailNotices(_)) {
-                    notifications.new_mail = on;
-                } else {
-                    notifications.sound = on;
+            Change::NewMailNotices(_) | Change::Sound(..) | Change::SoundChoice(..) => {
+                match change {
+                    Change::NewMailNotices(on) => self.config.notifications.new_mail = on,
+                    Change::Sound(event, on) => self.config.sounds.get_mut(event).on = on,
+                    Change::SoundChoice(event, id) => {
+                        // The usual sound stays unnamed, so it follows a
+                        // change of the usual one.
+                        self.config.sounds.get_mut(event).sound =
+                            if id == katna_platform::sound::usual(event) {
+                                String::new()
+                            } else {
+                                id.to_owned()
+                            };
+                    }
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
@@ -920,6 +929,22 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        self.switch_row_with(id, label, detail, on, change, None, th, cx)
+    }
+
+    /// A [`Self::switch_row`] with `extra` controls just before the switch.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn switch_row_with(
+        &self,
+        id: &'static str,
+        label: impl Into<SharedString>,
+        detail: impl Into<SharedString>,
+        on: bool,
+        change: Change,
+        extra: Option<AnyElement>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
@@ -948,6 +973,7 @@ impl MailWindow {
                             .child(detail.into()),
                     ),
             )
+            .children(extra)
             .child(div().with_spring(
                 (id, 3_usize),
                 SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),

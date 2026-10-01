@@ -1851,9 +1851,9 @@ Gemini or confidential mode):
   order: General (language, 12- or 24-hour time, conversation view,
   reading order and headers, when mail
   is marked read, what the reply button does, images from the web, undo
-  send, offline mail,
-  new-mail notifications and their sound, starting at login, tray and
-  badge), Inbox, Accounts, Subscription, Appearance (reading pane,
+  send, offline mail, starting at login, tray and badge), Notifications
+  (new-mail notifications, Sounds, taskbar count, which folders notify
+  and count, muted list), Inbox, Accounts, Subscription, Appearance (reading pane,
   density, scaling, theme, desktop colors, app names, sender pictures,
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
@@ -1878,8 +1878,23 @@ Gemini or confidential mode):
   the Katna Mail window too" is on;
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
-  still wait to be asked for; and the new-mail sound is the notification's
-  `sound-name` hint, or `suppress-sound` when off. Open and click
+  still wait to be asked for. Sounds (`[sounds]`, `window/sounds.rs`)
+  has a line per event: new mail, event and task reminders, mail back in
+  the inbox (snooze, no reply), mail sent and mail not sent, each with a
+  sound to pick (a menu that plays each as it is picked), a play button
+  and a switch. The sounds are the desktop's own (`katna_platform::sound`):
+  on Linux freedesktop names found in the KDE sound theme, Ocean or
+  freedesktop (with fallbacks, e.g. New email falls back to
+  `message-new-instant`), played with `pw-play`, `paplay` or
+  `canberra-gtk-play`; on Windows the toast sounds (Mail, Reminder, …),
+  whose `.wav` in `%SystemRoot%\Media` a `MediaPlayer` plays outside a
+  toast. Katna plays a notification's sound itself on Linux, because
+  servers such as Plasma's leave `sound-name` unplayed, and sends
+  `suppress-sound`; it stays silent while the server's `Inhibited` (Do not
+  disturb) is true. On Windows the toast plays it, so Focus Assist
+  silences it. Muted folders, conversations and senders never notify, so
+  they make no sound. Older `notifications.sound` and `sending.sent_sound`
+  switches carry over when off. Open and click
   tracking is not a setting: it, a read receipt and a delivery receipt
   are on for every new message and reply and turned off per message in compose (§16.1), so
   Mailspring's tracking defaults have no counterpart.
@@ -3057,7 +3072,8 @@ Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
 Content and behavior:
 
 - Hints: `desktop-entry`, `category=email.arrived`, `image-data` (sender
-  avatar or organization logo), `sound-name=message-new-email`,
+  avatar or organization logo), the Sounds setting's sound (§13 Settings;
+  Katna plays it itself on Linux and sends `suppress-sound`),
   `x-kde-origin-name` (account name).
 - **Grouping:** bursts become one notification ("5 new emails from Acme").
 - **Filtering:** notify for Inbox / important categories only by default;
@@ -3101,7 +3117,7 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   it starts ("In 10 minutes"; the daemon has no ICU, so no clock times)
   and the place, with Open (the Calendar page), Join (the event's
   `https://` video link, in the browser) and Snooze 5 min.
-  `category=x-katna.event`, `sound-name=alarm-clock-elapsed`, no timeout.
+  `category=x-katna.event`, the Reminders sound (Alarm unless picked), no timeout.
   One task reads the next eight days of events, sleeps until the next
   reminder (at most a minute, so edits count) and keeps up to when it
   looked in `pim.db` meta (`calendar`/`alarms`), so a restart repeats

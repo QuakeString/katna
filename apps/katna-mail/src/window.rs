@@ -83,6 +83,7 @@ mod share_ask;
 mod sign_in_again;
 mod skeleton;
 mod snooze;
+mod sounds;
 mod storage;
 mod tab_strip;
 mod tasks_page;
@@ -1258,6 +1259,7 @@ impl MailWindow {
                         detail,
                     } => {
                         this.send_failed(id, cx);
+                        this.play_event_sound(katna_core::config::SoundEvent::NotSent);
                         let subject = if subject.trim().is_empty() {
                             "(no subject)".to_owned()
                         } else {

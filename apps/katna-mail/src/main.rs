@@ -25,7 +25,6 @@ mod receipts;
 mod schemes;
 mod sidebar;
 mod signatures;
-mod sound;
 mod spell;
 mod suggest;
 mod tabs;
