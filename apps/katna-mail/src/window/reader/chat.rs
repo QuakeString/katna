@@ -91,9 +91,9 @@ pub(in crate::window) struct ChatState {
     /// there.
     reply_drawn: Rc<Cell<f32>>,
     reply_seen: f32,
-    /// The feed was at its end when the chat last drew: the frame after
-    /// the reply box grows, the feed has already shrunk.
-    was_at_end: bool,
+    /// The feed keeps to its end: it reached it and was not scrolled up
+    /// since, so whatever grows or shrinks around it, it stays there.
+    stuck: bool,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -434,21 +434,21 @@ impl MailWindow {
                 reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
             }
         }
-        // A feed at its end stays there as the reply box grows or shrinks.
-        // The box may have changed before the feed's last layout or
-        // after it, so "at the end" allows for the change, and the frames
-        // around a change keep what the feed was before it.
+        // A feed kept to its end stays there as the reply box or the
+        // bubbles grow or shrink, whichever frame the change lands in;
+        // scrolling up lets go of the end.
         let reply_height = reader.chat.reply_drawn.get();
         let change = reply_height - reader.chat.reply_seen;
         if change.abs() > 0.5 {
             reader.chat.reply_seen = reply_height;
             let near_end = -unpx(self.reader_scroll.offset().y)
                 >= unpx(self.reader_scroll.max_offset().y) - 4.0 - change.abs();
-            if near_end || reader.chat.was_at_end {
-                reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
-            }
-        } else if reader.chat.settle == 0 {
-            reader.chat.was_at_end = at_end;
+            reader.chat.stuck |= near_end;
+        }
+        if at_end {
+            reader.chat.stuck = true;
+        } else if reader.chat.stuck && reader.chat.settle == 0 {
+            reader.chat.settle = 1;
         }
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
@@ -523,6 +523,17 @@ impl MailWindow {
                             .id("reader")
                             .size_full()
                             .overflow_y_scroll()
+                            .on_scroll_wheel(cx.listener(
+                                |this, e: &gpui::ScrollWheelEvent, window, _| {
+                                    let up = e.delta.pixel_delta(window.line_height()).y;
+                                    if unpx(up) > 0.0
+                                        && let Some(reader) = &mut this.reader
+                                    {
+                                        reader.chat.stuck = false;
+                                        reader.chat.settle = 0;
+                                    }
+                                },
+                            ))
                             .track_scroll(&self.reader_scroll)
                             .child(
                                 div()
