@@ -2338,12 +2338,20 @@ Gemini or confidential mode):
   text and text on the accent). *Customize…* copies the selected scheme,
   as drawn in the picked accent, into the editor; *Import…* reads a Katna
   file or a KDE `.colors` file (one side). The editor shows both sides
-  next to each other, each color with a hex field and a palette, the mail
+  next to each other, each color with a hex field and a swatch, the mail
   window drawn in them and what reads badly (text under 4.5:1, faint text
   and text on the accent under 3:1); *Make dark from light* works a dark
   side out from the light one's hues. A card's right-click menu has
   Customize, or for one's own Edit, Duplicate, Export and Delete (with
   Undo: the file comes back, in use again if it was).
+  A swatch opens a color picker beside it (a popover, its notch pointing
+  at the swatch, so the dialog keeps its size): a saturation and
+  brightness square, a hue bar, a hex field, the side's colors and the
+  ones picked lately. Linux has no portal for a color dialog, so the
+  picker is Katna's own; its dropper is the Screenshot portal's
+  PickColor (KDE, GNOME), and *System picker…* runs `kdialog --getcolor`
+  or `zenity --color-selection` where installed. Windows has neither yet
+  (ChooseColor needs unsafe FFI, and there is no system dropper).
 - **Contact panel.** On a desktop, a card beside the open conversation
   (300 px, the usual 16 px card gap, sliding in with the reading pane's
   spring) shows one of its people: the newest sender other than the user,

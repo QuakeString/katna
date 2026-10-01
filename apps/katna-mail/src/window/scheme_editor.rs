@@ -4,15 +4,17 @@
 //! Customize copies the selected scheme into a new one and opens it in the
 //! editor; Import reads a Katna or KDE (`.colors`) file. The editor shows
 //! the eight colors of the light and the dark side next to each other,
-//! each with a hex field and a palette, the mail window drawn in them, and
+//! each with a hex field and a color picker (`super::scheme_color`), the
+//! mail window drawn in them, and
 //! what reads badly. A card's right-click menu edits, duplicates, exports
 //! or deletes it, with Undo. The files are `crate::user_schemes`'.
 
 use std::path::PathBuf;
+use std::rc::Rc;
 
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, PathPromptOptions, SharedString,
-    Subscription, Window, div, prelude::*, rgba,
+    Subscription, Window, canvas, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_platform::colors::{DesktopScheme, Scheme};
@@ -21,28 +23,17 @@ use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
 use super::context_menu::Rows;
+use super::scheme_color::{ColorPicker, Swatches};
 use super::scheme_picker::{intern, scheme_picture};
 use super::settings::Change;
 use crate::daemon::Command;
 use crate::schemes::{self, SideScheme};
-use crate::theme::{Accent, Theme, fade, mix};
+use crate::theme::{Accent, Theme, fade};
 use crate::user_schemes::{self, Seed};
 use crate::widgets::{elevation, filled_button, icon};
 
 const DIALOG_WIDTH: f32 = 760.0;
 const SWATCH: f32 = 22.0;
-/// The palette under a color: hues across, light to dark down, then greys.
-const HUES: [f32; 10] = [
-    0.0, 25.0, 45.0, 90.0, 140.0, 175.0, 200.0, 220.0, 265.0, 320.0,
-];
-const TONES: [(f32, f32); 5] = [
-    (0.9, 0.9),
-    (0.75, 0.7),
-    (0.55, 0.6),
-    (0.4, 0.65),
-    (0.22, 0.5),
-];
-
 /// The open editor.
 pub(super) struct SchemeEditor {
     /// The scheme, its id `user:<file stem>`; a new one's stem comes from
@@ -53,20 +44,24 @@ pub(super) struct SchemeEditor {
     name: Entity<TextInput>,
     /// The hex fields, light side first, in [`Seed::ALL`]'s order.
     fields: [Vec<Entity<TextInput>>; 2],
-    /// The color whose palette is open.
-    palette: Option<(bool, Seed)>,
+    /// The open color picker.
+    pub(super) picker: Option<ColorPicker>,
+    /// Where the swatches were drawn, for the picker's place.
+    pub(super) swatches: Swatches,
+    /// Colors picked lately, newest first.
+    pub(super) recent: Vec<u32>,
     error: Option<String>,
     closing: bool,
     shown: Spring,
     _subscriptions: Vec<Subscription>,
 }
 
-fn hex(color: u32) -> String {
+pub(super) fn hex(color: u32) -> String {
     format!("#{:06x}", color >> 8)
 }
 
 impl SchemeEditor {
-    fn side(&self, dark: bool) -> Option<&Scheme> {
+    pub(super) fn side(&self, dark: bool) -> Option<&Scheme> {
         if dark {
             self.scheme.dark.as_ref()
         } else {
@@ -207,6 +202,7 @@ impl MailWindow {
                                 && let Some(side) = editor.side_mut(dark)
                             {
                                 seed.set(side, color);
+                                this.sync_color_picker(dark, seed, color | 0xff, cx);
                                 cx.notify();
                             }
                         }
@@ -225,7 +221,9 @@ impl MailWindow {
             saved,
             name,
             fields,
-            palette: None,
+            picker: None,
+            swatches: Rc::default(),
+            recent: Vec::new(),
             error: None,
             closing: false,
             shown,
@@ -243,7 +241,13 @@ impl MailWindow {
     }
 
     /// Sets `seed` of a side to `color`, in its hex field too.
-    fn set_scheme_seed(&mut self, dark: bool, seed: Seed, color: u32, cx: &mut Context<Self>) {
+    pub(super) fn set_scheme_seed(
+        &mut self,
+        dark: bool,
+        seed: Seed,
+        color: u32,
+        cx: &mut Context<Self>,
+    ) {
         let Some(editor) = &mut self.scheme_editor else {
             return;
         };
@@ -280,7 +284,7 @@ impl MailWindow {
             && editor.side(!dark).is_some()
         {
             *editor.side_mut(dark) = None;
-            editor.palette = None;
+            editor.picker = None;
             cx.notify();
         }
     }
@@ -655,6 +659,7 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .child(body);
+        let picker = self.render_color_picker(th, window, cx);
         Some(
             div()
                 .absolute()
@@ -675,6 +680,7 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.close_scheme_editor(cx))),
                 )
                 .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
+                .children(picker)
                 .into_any_element(),
         )
     }
@@ -743,7 +749,8 @@ impl MailWindow {
             .overflow_hidden()
             .border_1()
             .border_color(rgba(th.divider))
-            .child(scheme_picture(&Theme::from_scheme(side)));
+            // Rounded itself: GPUI clips children to a rectangle.
+            .child(scheme_picture(&Theme::from_scheme(side)).rounded(px(9.0)));
         let one_side = editor.side(!dark).is_none();
         let heading = heading.when(!one_side, |d| {
             d.child(
@@ -771,7 +778,8 @@ impl MailWindow {
             let field = editor.fields[usize::from(dark)][ix].clone();
             let focus = field.focus_handle(cx);
             let focused = focus.is_focused(window);
-            let open = editor.palette == Some((dark, seed));
+            let open = editor.picker.as_ref().is_some_and(|p| p.is_for(dark, seed));
+            let swatches = editor.swatches.clone();
             rows = rows.child(
                 div()
                     .h(px(34.0))
@@ -786,15 +794,24 @@ impl MailWindow {
                             .flex_none()
                             .rounded(px(6.0))
                             .bg(rgba(color))
+                            .relative()
                             .border_1()
                             .border_color(rgba(fade(th.text, 0.25)))
+                            .when(open, |d| d.border_2().border_color(rgba(th.accent)))
                             .cursor_pointer()
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                if let Some(editor) = &mut this.scheme_editor {
-                                    editor.palette = (!open).then_some((dark, seed));
-                                }
-                                cx.notify();
-                            })),
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.toggle_color_picker(dark, seed, window, cx)
+                            }))
+                            .child(
+                                canvas(
+                                    move |bounds, _, _| {
+                                        swatches.borrow_mut().insert((dark, seed), bounds);
+                                    },
+                                    |_, _, _, _| {},
+                                )
+                                .absolute()
+                                .size_full(),
+                            ),
                     )
                     .child(
                         div()
@@ -822,9 +839,6 @@ impl MailWindow {
                             .child(div().flex_1().child(field)),
                     ),
             );
-            if open {
-                rows = rows.child(palette(dark, seed, color, th, cx));
-            }
         }
         let low = user_schemes::low_contrast(side);
         let check = div()
@@ -894,55 +908,4 @@ fn text_button(id: &'static str, label: String, color: u32) -> gpui::Stateful<Di
         .cursor_pointer()
         .hover(move |s| s.bg(rgba(fade(color, 0.08))))
         .child(label)
-}
-
-/// The palette under a color: tones of ten hues and greys, the current
-/// color ringed.
-fn palette(dark: bool, seed: Seed, current: u32, th: &Theme, cx: &mut Context<MailWindow>) -> Div {
-    let mut colors: Vec<Vec<u32>> = TONES
-        .iter()
-        .map(|&(l, s)| {
-            HUES.iter()
-                .map(|&h| user_schemes::hsl_color(h, s, l))
-                .collect()
-        })
-        .collect();
-    colors.push(
-        (0..10)
-            .map(|i| {
-                let v = (255.0 * (1.0 - i as f32 / 9.0)).round() as u32;
-                (v << 24) | (v << 16) | (v << 8) | 0xff
-            })
-            .collect(),
-    );
-    let mut grid = div()
-        .my(px(6.0))
-        .p(px(6.0))
-        .flex()
-        .flex_col()
-        .gap(px(4.0))
-        .rounded(px(10.0))
-        .bg(rgba(mix(th.surface, th.text, 0.04)));
-    for (row, line) in colors.into_iter().enumerate() {
-        let mut cells = div().flex().flex_row().gap(px(4.0));
-        for (col, color) in line.into_iter().enumerate() {
-            let on = color == current;
-            cells = cells.child(
-                div()
-                    .id(SharedString::from(format!("palette-{dark}-{row}-{col}")))
-                    .flex_1()
-                    .h(px(20.0))
-                    .rounded(px(5.0))
-                    .bg(rgba(color))
-                    .border_2()
-                    .border_color(rgba(if on { th.text } else { fade(th.text, 0.08) }))
-                    .cursor_pointer()
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.set_scheme_seed(dark, seed, color, cx)
-                    })),
-            );
-        }
-        grid = grid.child(cells);
-    }
-    grid
 }
