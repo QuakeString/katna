@@ -259,7 +259,7 @@ impl MailWindow {
             .flex_col()
             .overflow_hidden()
             .rounded(px(28.0))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::frosted(d, th, th.surface, 28.0))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .child(body);

@@ -3,24 +3,26 @@
 //! The chat view's reply box: a rounded field at the foot of the chat that
 //! always answers everyone, as a group chat does. It is the inline reply
 //! underneath, so drafts, Ctrl+Enter, spelling and undo send work as
-//! they do there; Aa opens the full formatting bar above it, and the
-//! paperclip offers pictures, files, a template or another signature; the
-//! sparkle (or Ctrl+J) opens the Rephrase card of the compose window for
-//! the selection or the whole reply, and AI autocomplete works as there. The
+//! they do there; Aa opens a slim formatting bar above it, and the
+//! paperclip offers pictures, files (from the computer or the Files
+//! page), a template or another signature; the sparkle (or Ctrl+J) opens
+//! the Rephrase card of the compose window for the selection or the whole
+//! reply, and AI autocomplete works as there. The
 //! signature is kept out of sight and added on Send. Replying to an
 //! older bubble aims the reply at that mail, keeping what was written.
 
 use gpui::{
-    AnyElement, Context, ExternalPaths, Focusable, FontWeight, Window, div, prelude::*, rgba,
+    AnyElement, Context, ExternalPaths, Focusable, FontWeight, Window, canvas, div, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
 use katna_store::MessageId;
+use katna_ui::motion::lerp;
 use katna_ui::px;
 use katna_ui::rich::{Block, Doc};
-use katna_ui::unpx;
 
 use super::recipients::Field;
-use super::tools::{Popup, above, format_active, format_bar_bg, menu_divider};
+use super::tools::{Popup, above, format_active, menu_divider};
 use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_quote};
 use crate::data::EntryKey;
 use crate::format;
@@ -32,6 +34,11 @@ use super::super::MailWindow;
 
 /// The field's text grows to this height, then scrolls.
 const MAX_TEXT: f32 = 180.0;
+/// The formatting bar's height, and its gap above the box.
+const BAR: f32 = 44.0;
+const GAP: f32 = 6.0;
+/// The tight corners where the formatting bar meets the box.
+const JOINED: f32 = 4.0;
 
 /// A reply written in the chat's reply box.
 pub(in crate::window) struct ChatReply {
@@ -54,11 +61,35 @@ pub(super) fn held_signature(signature: Option<Doc>) -> Vec<Block> {
 }
 
 impl MailWindow {
+    /// What takes the keys in the reply being written, if any.
+    pub(in crate::window) fn chat_reply_focus(&self, cx: &gpui::App) -> Option<gpui::FocusHandle> {
+        Some(self.compose.as_ref()?.body.focus_handle(cx))
+    }
+
     /// The reply being written in the chat of conversation `key`.
     fn chat_compose(&self, key: EntryKey) -> Option<&super::Compose> {
         self.compose
             .as_ref()
             .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))
+    }
+
+    /// How far the chat reply's formatting bar has slid in, 0 to 1, moved
+    /// on toward whether it shows; and whether it is still moving.
+    pub(in crate::window) fn chat_format_slide(
+        &mut self,
+        key: EntryKey,
+        cx: &Context<Self>,
+    ) -> (f32, bool) {
+        let reduce = cx.reduce_motion();
+        let ours = self.chat_compose(key).is_some();
+        let Some(compose) = self.compose.as_mut().filter(|_| ours) else {
+            return (0.0, false);
+        };
+        compose
+            .format_slide
+            .set(if compose.format_bar { 1.0 } else { 0.0 });
+        let t = compose.format_slide.step(reduce);
+        (t.clamp(0.0, 1.0), !compose.format_slide.settled())
     }
 
     /// The mail the chat's reply answers, and whether it goes to everyone.
@@ -167,13 +198,13 @@ impl MailWindow {
         key: EntryKey,
         names: &str,
         aimed: Option<(String, String)>,
+        (slide, sliding): (f32, bool),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let compose = self.chat_compose(key);
         let popup = compose.and_then(|c| c.popup.clone());
         let format_on = compose.is_some_and(|c| c.format_bar);
-        let width = unpx(self.reader_scroll.bounds().size.width).max(320.0);
         // Opens the reply first when nothing is written yet.
         let start = move |this: &mut Self, window: &mut Window, cx: &mut Context<Self>| {
             if this.chat_compose(key).is_none() {
@@ -184,8 +215,8 @@ impl MailWindow {
             .relative()
             .flex_none()
             .child(
-                icon_button_colored("chat-attach", "attachment", 20.0, th.text_dim, th)
-                    .size(px(38.0))
+                icon_button_colored("chat-attach", "attachment", 20.0, th.text_faint, th)
+                    .size(px(28.0))
                     .tooltip(tip(tr!("chat-attach"), th))
                     .on_click(cx.listener(move |this, _, window, cx| {
                         start(this, window, cx);
@@ -265,17 +296,27 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| this.toggle_rephrase(window, cx)))
         });
         let text = match compose {
+            // Once as tall as it grows, the text scrolls, following the
+            // cursor, with a thin bar showing where it is.
             Some(compose) => div()
-                .id("chat-text")
                 .flex_1()
                 .min_w_0()
-                .max_h(px(MAX_TEXT))
-                .overflow_y_scroll()
-                .py(px(9.0))
-                .text_size(px(14.0))
-                .line_height(px(20.0))
-                .cursor_text()
-                .child(compose.body.clone())
+                .relative()
+                .child(
+                    div()
+                        .id("chat-text")
+                        .w_full()
+                        .max_h(px(MAX_TEXT))
+                        .overflow_y_scroll()
+                        .track_scroll(&compose.body_scroll)
+                        .py(px(9.0))
+                        .pr(px(6.0))
+                        .text_size(px(14.0))
+                        .line_height(px(20.0))
+                        .cursor_text()
+                        .child(compose.body.clone()),
+                )
+                .children(super::chips::scrollbar(&compose.body_scroll, th))
                 .into_any_element(),
             None => div()
                 .id("chat-placeholder")
@@ -296,17 +337,21 @@ impl MailWindow {
             .min_w_0()
             .min_h(px(40.0))
             .pl(px(6.0))
-            .pr(px(10.0))
+            .pr(px(6.0))
             .flex()
             .flex_row()
             .items_end()
             .gap(px(6.0))
-            .rounded(px(20.0))
+            // With the formatting bar above, the two read as one piece:
+            // the corners where they meet tighten as the bar slides in.
+            .rounded_b(px(20.0))
+            .rounded_t(px(lerp(20.0, JOINED, slide)))
             .bg(rgba(th.bubble_other()))
             .child(div().pb(px(6.0)).child(emoji))
             .child(text)
             .children(sparkle.map(|s| div().pb(px(6.0)).child(s)))
-            .child(div().pb(px(8.0)).child(aa));
+            .child(div().pb(px(8.0)).child(aa))
+            .child(div().pb(px(6.0)).child(clip));
         let send = div()
             .id("chat-send")
             .flex_none()
@@ -393,24 +438,40 @@ impl MailWindow {
             })
             // The formatting bar sits above the box, pushing the feed up
             // rather than covering it; a narrow pane scrolls it sideways.
-            .when(format_on, |d| {
+            // It grows and fades in from the box, and back into it.
+            .when(slide > 0.0, |d| {
                 d.child(
                     div()
-                        .id("chat-format-bar")
-                        .mx(px(16.0))
-                        .mb(px(6.0))
-                        .max_w(px(width - 32.0))
-                        .rounded_full()
-                        .border_1()
-                        .border_color(rgba(th.divider))
-                        .bg(rgba(format_bar_bg(th)))
-                        .overflow_x_scroll()
-                        // Room for the last button inside the round end.
-                        .child(div().flex_none().pr(px(12.0)).child(self.render_format_bar(
-                            th,
-                            width - 96.0,
-                            cx,
-                        ))),
+                        .ml(px(8.0))
+                        // Over the field, not the Send button.
+                        .mr(px(12.0 + 6.0 + 40.0))
+                        .mb(px(GAP * slide))
+                        .h(px(BAR * slide))
+                        .overflow_hidden()
+                        .flex()
+                        .flex_col()
+                        .justify_end()
+                        .rounded_t(px(12.0))
+                        .rounded_b(px(JOINED))
+                        .bg(rgba(th.bubble_other()))
+                        .opacity(slide)
+                        .child(
+                            div()
+                                .id("chat-format-bar")
+                                .flex_none()
+                                .overflow_x_scroll()
+                                .child(self.render_chat_format_bar(th, cx)),
+                        ),
+                )
+            })
+            .when(sliding, |d| {
+                d.child(
+                    canvas(
+                        |_, window, _| window.request_animation_frame(),
+                        |_, _, _, _| {},
+                    )
+                    .absolute()
+                    .size_0(),
                 )
             })
             .child(
@@ -421,7 +482,6 @@ impl MailWindow {
                     .flex_row()
                     .items_end()
                     .gap(px(6.0))
-                    .child(clip)
                     .child(field)
                     .child(send),
             )
@@ -436,7 +496,8 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// The paperclip's menu: a picture, a file, a template, a signature.
+    /// The paperclip's menu: a picture, a file from the computer or the
+    /// Files page, a template, a signature.
     fn chat_attach_menu(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
         let item = |id: &'static str, name: &'static str, label: String| {
             menu_item_icon(id, name, &label, th)
@@ -450,6 +511,16 @@ impl MailWindow {
             .child(
                 item("chat-attach-file", "attachment", tr!("chat-attach-file"))
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
+            )
+            .child(
+                item("chat-attach-library", "folder", tr!("chat-attach-library")).on_click(
+                    cx.listener(|this, _, window, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.popup = None;
+                        }
+                        this.open_files_picker(window, cx);
+                    }),
+                ),
             )
             .child(menu_divider(th))
             .child(

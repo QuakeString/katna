@@ -12,7 +12,7 @@
 //! The reply box at the bottom is the inline reply (`compose/chat_box.rs`);
 //! a reply just sent shows its undo countdown beside its bubble.
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::time::Instant;
@@ -86,6 +86,18 @@ pub(in crate::window) struct ChatState {
     /// opening it is, so each one plays its slide again.
     people: Option<usize>,
     people_runs: usize,
+    /// The reply box's height as last drawn, and as the feed last saw
+    /// it: chips or the formatting bar growing it keep a feed at its end
+    /// there.
+    reply_drawn: Rc<Cell<f32>>,
+    reply_seen: f32,
+    /// The feed keeps to its end: it reached it and was not scrolled up
+    /// since, so whatever grows or shrinks around it, it stays there.
+    stuck: bool,
+    /// [`Self::stuck`] as the feed's last drawn frame reads it: checked
+    /// once the layout is final, so a change landing after this view
+    /// drew still brings the feed back to its end.
+    held: Rc<Cell<bool>>,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -131,6 +143,20 @@ impl Said {
         }
     }
 
+    /// Moves the lines this mail ends with to its signature when another
+    /// of the sender's mails (`others`) ends with them too.
+    fn cut_shared_tail<'a>(&mut self, others: impl Iterator<Item = &'a str>) {
+        for other in others {
+            let other = trim::plain(other).said;
+            if let Some(at) = trim::shared_tail(&self.text, &other) {
+                self.signature = Some(self.text[at..].trim().to_owned());
+                self.text.truncate(at);
+                self.text.truncate(self.text.trim_end().len());
+                return;
+            }
+        }
+    }
+
     /// Something waits behind its ··· pill.
     fn hides(&self) -> bool {
         self.quoted.is_some() || self.signature.is_some()
@@ -163,16 +189,39 @@ impl Conversation {
 
     /// What message `part` says, trimmed; `None` while it is not read.
     fn said(&self, part: &Part) -> Option<Rc<Said>> {
-        let body = &part.body.as_ref()?.view.as_ref()?.body;
-        let mut cache = self.chat.said.borrow_mut();
-        match cache.get(&part.id) {
-            Some((len, said)) if *len == body.len() => Some(said.clone()),
-            _ => {
-                let said = Rc::new(Said::of(body));
-                cache.insert(part.id, (body.len(), said.clone()));
-                Some(said)
-            }
+        let view = part.body.as_ref()?.view.as_ref()?;
+        let body = &view.body;
+        if let Some((len, said)) = self.chat.said.borrow().get(&part.id)
+            && *len == body.len()
+        {
+            return Some(said.clone());
         }
+        let mut said = Said::of(body);
+        if said.signature.is_none()
+            && let Some(from) = view.from.first()
+        {
+            said.cut_shared_tail(self.bodies_from(&from.email, part.id));
+        }
+        let said = Rc::new(said);
+        self.chat
+            .said
+            .borrow_mut()
+            .insert(part.id, (body.len(), said.clone()));
+        Some(said)
+    }
+
+    /// The bodies of the other mail `email` sent in this conversation.
+    fn bodies_from<'a>(&'a self, email: &'a str, not: MessageId) -> impl Iterator<Item = &'a str> {
+        self.parts
+            .iter()
+            .filter(move |p| p.id != not)
+            .filter_map(move |p| {
+                let view = p.body.as_ref()?.view.as_ref()?;
+                let from = view.from.first()?;
+                from.email
+                    .eq_ignore_ascii_case(email)
+                    .then_some(view.body.as_str())
+            })
     }
 
     /// The signature `email` last signed with in this conversation.
@@ -182,7 +231,7 @@ impl Conversation {
             if !from.email.eq_ignore_ascii_case(email) {
                 return None;
             }
-            self.said(part)?.signature.clone()
+            trim::contact_lines(self.said(part)?.signature.as_deref()?)
         })
     }
 }
@@ -426,6 +475,25 @@ impl MailWindow {
                 reader.chat.settle = reader.chat.settle.max(SETTLE_FRAMES);
             }
         }
+        // A feed kept to its end stays there as the reply box or the
+        // bubbles grow or shrink, whichever frame the change lands in;
+        // scrolling up lets go of the end.
+        let reply_height = reader.chat.reply_drawn.get();
+        let change = reply_height - reader.chat.reply_seen;
+        if change.abs() > 0.5 {
+            reader.chat.reply_seen = reply_height;
+            let near_end = -unpx(self.reader_scroll.offset().y)
+                >= unpx(self.reader_scroll.max_offset().y) - 4.0 - change.abs();
+            reader.chat.stuck |= near_end;
+        }
+        if at_end {
+            reader.chat.stuck = true;
+        } else if reader.chat.stuck && reader.chat.settle == 0 {
+            reader.chat.settle = 1;
+        }
+        reader.chat.held.set(reader.chat.stuck);
+        let held = reader.chat.held.clone();
+        let scroll = self.reader_scroll.clone();
         if reader.chat.settle > 0 {
             reader.chat.settle -= 1;
             self.reader_scroll.scroll_to_bottom();
@@ -464,7 +532,30 @@ impl MailWindow {
         self.adopt_chat_reply(key, cx);
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
-        let reply = self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), th, cx);
+        let slide = self.chat_format_slide(key, cx);
+        let reply =
+            self.render_chat_reply(key, &names.join(", "), self.chat_aimed(key), slide, th, cx);
+        let drawn = self
+            .reader
+            .as_ref()
+            .map(|r| r.chat.reply_drawn.clone())
+            .unwrap_or_default();
+        let reply = div().relative().flex_none().child(reply).child(
+            gpui::canvas(
+                move |bounds, window, _| {
+                    let height = katna_ui::unpx(bounds.size.height);
+                    if (drawn.get() - height).abs() > 0.5 {
+                        drawn.set(height);
+                        // GPUI ignores `refresh` while it draws: the next
+                        // frame redraws this view instead.
+                        window.request_animation_frame();
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .size_full(),
+        );
         div()
             .size_full()
             .flex()
@@ -480,6 +571,18 @@ impl MailWindow {
                             .id("reader")
                             .size_full()
                             .overflow_y_scroll()
+                            .on_scroll_wheel(cx.listener(
+                                |this, e: &gpui::ScrollWheelEvent, window, _| {
+                                    let up = e.delta.pixel_delta(window.line_height()).y;
+                                    if unpx(up) > 0.0
+                                        && let Some(reader) = &mut this.reader
+                                    {
+                                        reader.chat.stuck = false;
+                                        reader.chat.held.set(false);
+                                        reader.chat.settle = 0;
+                                    }
+                                },
+                            ))
                             .track_scroll(&self.reader_scroll)
                             .child(
                                 div()
@@ -491,10 +594,26 @@ impl MailWindow {
                                     .px(px(16.0))
                                     .pt(px(12.0))
                                     .pb(px(8.0))
-                                    .children(feed),
+                                    .children(feed)
+                                    .child(
+                                        gpui::canvas(
+                                            move |_, window, _| {
+                                                let off = -unpx(scroll.offset().y);
+                                                let max = unpx(scroll.max_offset().y);
+                                                if held.get() && off < max - 4.0 {
+                                                    scroll.scroll_to_bottom();
+                                                    window.request_animation_frame();
+                                                }
+                                            },
+                                            |_, _, _, _| {},
+                                        )
+                                        .absolute()
+                                        .size_0(),
+                                    ),
                             ),
                     )
-                    .children(self.render_chat_people(th, cx)),
+                    .children(self.render_chat_people(th, cx))
+                    .children(self.render_files_picker(key, th, cx)),
             )
             .child(reply)
             .children(self.render_text_menu(th, cx))
@@ -1578,6 +1697,21 @@ mod tests {
     fn says_only_what_was_written() {
         let said = Said::of("Sounds good!\n\nOn Mon, Ana wrote:\n> Lunch?\n");
         assert_eq!(said.text, "Sounds good!");
+        assert!(said.hides());
+    }
+
+    #[test]
+    fn a_signature_said_twice_is_a_signature() {
+        let mut said = Said::of("Done, invite sent.\n\nArjun Mehta\nDemo Travel Co\n");
+        assert_eq!(said.signature, None);
+        said.cut_shared_tail(
+            ["Can we move the call to 4?\n\nArjun Mehta\nDemo Travel Co"].into_iter(),
+        );
+        assert_eq!(said.text, "Done, invite sent.");
+        assert_eq!(
+            said.signature.as_deref(),
+            Some("Arjun Mehta\nDemo Travel Co")
+        );
         assert!(said.hides());
     }
 

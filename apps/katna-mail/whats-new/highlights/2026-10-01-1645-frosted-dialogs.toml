@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Frosted dialogs"
+text = """
+With frosted menus and dialogs on, dialogs are frosted glass too: Add a mail
+account, About, What's new, updates, sharing, print preview, labels, delete
+and remove questions, the first-run card and Compose's link dialog.
+"""

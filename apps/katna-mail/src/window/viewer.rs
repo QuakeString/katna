@@ -124,6 +124,8 @@ pub(super) enum ViewerEvent {
     /// Shift and an arrow showed another of this mail's attachments
     /// (this one, by its index): opened from the Files page.
     Paged(usize),
+    /// Tick or untick the file shown (opened from the attach picker).
+    Pick,
 }
 
 pub(super) struct Viewer {
@@ -194,6 +196,9 @@ pub(super) struct Viewer {
     /// shows, and how many there are. The arrows then page through
     /// those; with Shift, through this mail's attachments.
     pub(super) library: Option<(usize, usize)>,
+    /// Opened from the attach picker: whether the file shown is ticked,
+    /// for the bar's Select button.
+    pub(super) pick: Option<bool>,
     pub(super) th: Theme,
 }
 
@@ -354,6 +359,7 @@ impl Viewer {
             can_reply,
             can_show_mail: false,
             library: None,
+            pick: None,
             th,
         };
         this.show(current, cx);
@@ -1748,6 +1754,40 @@ impl Render for Viewer {
                         self.file.is_some() && matches!(self.content, Content::Pdf(_)),
                         |d| d.child(self.markup_button(&th, cx)),
                     )
+                    .when_some(self.pick, |d, on| {
+                        d.child(
+                            div()
+                                .id("viewer-pick")
+                                .flex_none()
+                                .h(px(32.0))
+                                .pl(px(10.0))
+                                .pr(px(14.0))
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .rounded_full()
+                                .cursor_pointer()
+                                .text_size(px(13.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .map(|d| {
+                                    if on {
+                                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
+                                    } else {
+                                        d.bg(rgba(HOVER))
+                                            .text_color(rgba(INK))
+                                            .hover(|s| s.bg(rgba(PILL)))
+                                    }
+                                })
+                                .on_click(cx.listener(|_, _, _, cx| cx.emit(ViewerEvent::Pick)))
+                                .child(icon("check", if on { th.on_accent } else { INK_DIM }, 18.0))
+                                .child(if on {
+                                    tr!("viewer-picked")
+                                } else {
+                                    tr!("viewer-pick")
+                                }),
+                        )
+                    })
                     .when(self.can_show_mail, |d| {
                         d.child(
                             bar_button_tip(

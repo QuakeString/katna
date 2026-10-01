@@ -492,6 +492,8 @@ pub struct MailWindow {
     tasks: tasks_page::TasksPage,
     /// The Files page: every attachment in one place.
     library: files_page::Library,
+    /// The attach picker over the chat (paperclip > From Files).
+    picker: Option<files_page::picker::Picker>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
     /// How far text in a pill goes up to look centred in it, per pixel
@@ -865,6 +867,7 @@ impl MailWindow {
             contacts: Default::default(),
             tasks: Default::default(),
             library: Default::default(),
+            picker: None,
             font,
             pill_text_lift: 0.0,
             mail: Mail::open(&paths),
@@ -1695,8 +1698,8 @@ impl MailWindow {
     /// Esc (or U, Backspace) in the conversation beside the list: the keys
     /// go back to the list, and the conversation stays shown.
     fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
-        // Esc first folds the chat's list of people.
-        if self.fold_chat_people(cx) {
+        // Esc first folds the chat's list of people or its attach picker.
+        if self.fold_chat_people(cx) || self.fold_files_picker(cx) {
             return;
         }
         window.focus(&self.list_focus, cx);
@@ -1774,8 +1777,8 @@ impl MailWindow {
     }
 
     fn close_message(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
-        // Esc first folds the chat's list of people.
-        if self.fold_chat_people(cx) {
+        // Esc first folds the chat's list of people or its attach picker.
+        if self.fold_chat_people(cx) || self.fold_files_picker(cx) {
             return;
         }
         if self.detached {

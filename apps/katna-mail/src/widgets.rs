@@ -508,12 +508,24 @@ const FROST_ALPHA: f32 = 0.78;
 /// a blur of what is behind. Call it before adding the panel's children,
 /// which must draw over the glass.
 pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, level: f32) -> E {
-    let panel = panel.rounded(px(radius)).shadow(elevation(th, level));
+    frosted(
+        panel.rounded(px(radius)).shadow(elevation(th, level)),
+        th,
+        th.menu,
+        radius,
+    )
+}
+
+/// Fills a dialog or floating card with `fill`, as frosted glass when
+/// [`Theme::frost`] is on, like [`raised`] does for menus. `radius` is
+/// the card's corner radius. Call it before adding the card's children,
+/// which must draw over the glass.
+pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radius: f32) -> E {
     if th.frost == 0 {
-        return panel.bg(rgba(th.menu));
+        return panel.bg(rgba(fill));
     }
     panel.child(katna_ui::frost::glass(
-        rgba(fade(th.menu, FROST_ALPHA)).into(),
+        rgba(fade(fill, FROST_ALPHA)).into(),
         px(radius),
         th.frost as f32,
     ))
@@ -787,17 +799,18 @@ pub fn radio(t: f32, th: &Theme) -> AnyElement {
 mod tests {
     use std::path::Path;
 
-    /// Every `raised(...)` gets its panel before any child: the frost is
+    /// Every `raised(...)` and `frosted(...)` panel gets its glass before
+    /// any child: the frost is
     /// added as a child, and a child added earlier draws under the glass,
     /// so the panel looks empty with frosted menus on.
     #[test]
-    fn raised_panels_take_children_after_the_glass() {
+    fn frosted_panels_take_children_after_the_glass() {
         let mut wrong = Vec::new();
         walk(
             &Path::new(env!("CARGO_MANIFEST_DIR")).join("src"),
             &mut wrong,
         );
-        assert!(wrong.is_empty(), "children before raised(): {wrong:?}");
+        assert!(wrong.is_empty(), "children before the glass: {wrong:?}");
     }
 
     fn walk(dir: &Path, wrong: &mut Vec<String>) {
@@ -816,40 +829,73 @@ mod tests {
         }
     }
 
-    /// The lines of `raised(` calls whose first argument adds children.
+    /// The lines of `raised(` and `frosted(` calls whose panel already has
+    /// children: in their first argument, or, for `.map(|d| raised(d, ...))`,
+    /// earlier in the chain the call is part of.
     fn children_before_glass(text: &str) -> Vec<usize> {
         let mut lines = Vec::new();
-        for (at, _) in text.match_indices("raised(") {
-            let before = &text[..at];
-            if before.ends_with("fn ")
-                || before.ends_with(|c: char| c.is_alphanumeric() || c == '_')
-            {
-                continue;
-            }
-            let rest = &text[at + "raised(".len()..];
-            let mut depth = 0;
-            let mut end = rest.len();
-            for (i, c) in rest.char_indices() {
-                match c {
-                    '(' | '[' | '{' => depth += 1,
-                    ')' | ']' | '}' if depth == 0 => {
-                        end = i;
-                        break;
-                    }
-                    ')' | ']' | '}' => depth -= 1,
-                    ',' if depth == 0 => {
-                        end = i;
-                        break;
-                    }
-                    _ => {}
+        for name in ["raised(", "frosted("] {
+            for (at, _) in text.match_indices(name) {
+                let before = &text[..at];
+                if before.ends_with("fn ")
+                    || before.ends_with(|c: char| c.is_alphanumeric() || c == '_' || c == '.')
+                {
+                    continue;
+                }
+                let panel = first_argument(&text[at + name.len()..]);
+                let panel = if panel.chars().all(|c| c.is_alphanumeric() || c == '_') {
+                    chain_before(before)
+                } else {
+                    panel
+                };
+                if panel.contains(".child(") || panel.contains(".children(") {
+                    lines.push(before.matches('\n').count() + 1);
                 }
             }
-            let panel = &rest[..end];
-            if panel.contains(".child(") || panel.contains(".children(") {
-                lines.push(before.matches('\n').count() + 1);
+        }
+        lines.sort_unstable();
+        lines
+    }
+
+    /// The first argument of a call, from just after its `(`.
+    fn first_argument(rest: &str) -> &str {
+        let mut depth = 0;
+        for (i, c) in rest.char_indices() {
+            match c {
+                '(' | '[' | '{' => depth += 1,
+                ')' | ']' | '}' | ',' if depth == 0 => return &rest[..i],
+                ')' | ']' | '}' => depth -= 1,
+                _ => {}
             }
         }
-        lines
+        rest
+    }
+
+    /// The method chain that ends at the `.map(` a call sits in: back to
+    /// the `div()` that starts it, skipping `div()`s nested in arguments.
+    fn chain_before(before: &str) -> &str {
+        let Some(map) = before.rfind(".map(") else {
+            return "";
+        };
+        let head = &before[..map];
+        let mut from = head.len();
+        while let Some(at) = head[..from].rfind("div()") {
+            let chain = &head[at..];
+            let mut depth = 0i32;
+            let nested = chain.chars().any(|c| {
+                match c {
+                    '(' | '[' | '{' => depth += 1,
+                    ')' | ']' | '}' => depth -= 1,
+                    _ => {}
+                }
+                depth < 0
+            });
+            if !nested {
+                return chain;
+            }
+            from = at;
+        }
+        ""
     }
 
     #[test]
@@ -858,5 +904,11 @@ mod tests {
         let bad = "\nraised(div().child(body), th, 8.0, 3.0)";
         assert!(children_before_glass(good).is_empty());
         assert_eq!(children_before_glass(bad), [2]);
+        let good = "div()\n.p(px(4.0))\n.map(|d| frosted(d, th, f, 8.0))";
+        assert!(children_before_glass(good).is_empty());
+        let good = ".child(div().p(px(1.0)))\n.child(\ndiv()\n.map(|d| raised(d, th, 8.0, 3.0))";
+        assert!(children_before_glass(good).is_empty());
+        let bad = "div()\n.child(body)\n.map(|d| frosted(d, th, f, 8.0))";
+        assert_eq!(children_before_glass(bad), [3]);
     }
 }

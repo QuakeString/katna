@@ -8,7 +8,10 @@
 //! conventions clients write: `>` lines under an "On … wrote:" line, the
 //! `-- ` signature line, Outlook's "-----Original Message-----" and
 //! "From: / Sent: / Subject:" blocks, and the "Forwarded message" lines of
-//! Gmail, Apple Mail and Thunderbird. A quote or a forward is only cut
+//! Gmail, Apple Mail and Thunderbird. Signatures without a `-- ` line
+//! are read from sign-offs, rules over contact details, blocks of contact
+//! details and unsubscribe or confidentiality footers. A quote or a
+//! forward is only cut
 //! when nothing the sender wrote comes after it, so replies written
 //! between quoted lines stay whole. [`plain`] reads text; the HTML side is
 //! [`crate::html::trimmed`].
@@ -144,7 +147,8 @@ fn quote(lines: &[&str]) -> Option<Quote> {
     }
 }
 
-/// Whether `lines` hold nothing but blank lines and a signature.
+/// Whether `lines` hold nothing but blank lines and a signature (or a
+/// footer).
 fn only_signature(lines: &[&str]) -> bool {
     match lines.iter().position(|l| !blank(l)) {
         None => true,
@@ -153,17 +157,450 @@ fn only_signature(lines: &[&str]) -> bool {
                 || lines[first..]
                     .iter()
                     .all(|l| blank(l) || mobile_signature(l))
+                || tail_at(lines, first)
+                || contact_block(lines).is_some_and(|(start, _)| start == first)
         }
     }
 }
 
 /// Where the signature at the end of `lines` starts: the last `-- ` line,
-/// or a "Sent from my iPhone" line at the very end.
+/// or a "Sent from my iPhone" line at the very end; above either, a
+/// sign-off, rule, contact block or footer ([`tail_start`]).
 fn signature_start(lines: &[&str]) -> Option<usize> {
-    lines.iter().rposition(|l| delimiter(l)).or_else(|| {
+    let marked = lines.iter().rposition(|l| delimiter(l)).or_else(|| {
         let last = lines.iter().rposition(|l| !blank(l))?;
         mobile_signature(lines[last]).then_some(last)
-    })
+    });
+    tail_start(&lines[..marked.unwrap_or(lines.len())]).or(marked)
+}
+
+/// How far up from the end a signature or footer is looked for, in lines
+/// with text.
+const TAIL_LINES: usize = 60;
+/// A signature under a sign-off or a rule has at most this many lines of
+/// at most `SIGNATURE_WIDTH` characters, and more than `NAME_LINES` only
+/// with contact details among them.
+const SIGNATURE_LINES: usize = 25;
+const SIGNATURE_WIDTH: usize = 90;
+const NAME_LINES: usize = 6;
+
+/// Where the signature or footer at the end of `lines` starts when no
+/// `-- ` line marks it, read from what people write: a sign-off ("Best
+/// regards,") over a name, a rule (`_____`, `-----`) over contact details
+/// or a footer, a block of contact details, or a footer that offers to
+/// unsubscribe or says the mail is confidential. Something the sender
+/// wrote always stays above it.
+fn tail_start(lines: &[&str]) -> Option<usize> {
+    let text: Vec<usize> = (0..lines.len()).filter(|&i| !blank(lines[i])).collect();
+    let from = text.len().saturating_sub(TAIL_LINES).max(1);
+    text.get(from..)?
+        .iter()
+        .copied()
+        .find(|&i| tail_at(lines, i))
+        .or_else(|| {
+            contact_block(lines)
+                .map(|(_, block)| block)
+                .filter(|&b| text[0] < b)
+        })
+}
+
+/// Whether a signature or footer starts at line `i` and runs to the end.
+fn tail_at(lines: &[&str], i: usize) -> bool {
+    let line = lines[i];
+    if sign_off(line) {
+        let rest = &lines[i + 1..];
+        rest.iter().any(|l| !blank(l)) && signed(rest)
+    } else if rule(line) {
+        // A rule between parts of a mail is no signature: contact
+        // details, a sign-off or a footer must follow it.
+        let rest = &lines[i + 1..];
+        let first = rest.iter().position(|l| !blank(l) && !rule(l));
+        first.is_some_and(|f| signed(&rest[f..]))
+            && rest
+                .iter()
+                .any(|l| contact(l) != 0 || footer_line(l) || sign_off(l))
+    } else {
+        (i == 0 || blank(lines[i - 1])) && footer(&lines[i..])
+    }
+}
+
+/// Whether `lines` are a signature, a footer or both: name, title and
+/// contact lines, then perhaps a rule or a footer.
+fn signed(lines: &[&str]) -> bool {
+    let end = lines
+        .iter()
+        .position(|l| rule(l) || footer_line(l))
+        .map_or(lines.len(), |b| paragraph_start(lines, b));
+    let own: Vec<&str> = lines[..end]
+        .iter()
+        .map(|l| l.trim())
+        .filter(|l| !l.is_empty())
+        .collect();
+    let short = own.len() <= SIGNATURE_LINES
+        && own.iter().all(|l| {
+            let lower = l.to_lowercase();
+            l.chars().count() <= SIGNATURE_WIDTH
+                && !l.ends_with('?')
+                && !lower.starts_with("p.s")
+                && !lower.starts_with("ps:")
+        })
+        && (own.iter().any(|l| contact(l) != 0)
+            || own.len() <= NAME_LINES && own.first().is_none_or(|l| name_line(l)));
+    if !short {
+        return false;
+    }
+    let rest = &lines[end..];
+    match rest.iter().position(|l| !blank(l)) {
+        None => !own.is_empty(),
+        Some(f) if rule(rest[f]) => {
+            let after = rest[f..].iter().position(|l| !blank(l) && !rule(l));
+            after.is_none_or(|a| signed(&rest[f + a..]))
+        }
+        Some(f) => footer(&rest[f..]),
+    }
+}
+
+/// The first line of the paragraph that line `i` is in.
+fn paragraph_start(lines: &[&str], i: usize) -> usize {
+    lines[..i]
+        .iter()
+        .rposition(|l| blank(l))
+        .map_or(0, |b| b + 1)
+}
+
+/// Whether `lines` are a footer: paragraphs of notices, links and
+/// addresses, one of them a notice ("unsubscribe", "you have received
+/// this", a confidentiality notice).
+fn footer(lines: &[&str]) -> bool {
+    let mut notice = false;
+    for paragraph in lines.split(|l| blank(l)).filter(|p| !p.is_empty()) {
+        if paragraph.iter().any(|l| footer_line(l)) {
+            notice = true;
+        } else if !(paragraph.iter().any(|l| contact(l) != 0)
+            || (paragraph.len() <= 2 && paragraph.iter().all(|l| l.trim().chars().count() <= 40)))
+        {
+            return false;
+        }
+    }
+    notice
+}
+
+/// A block of contact details at the end of `lines`, with the name,
+/// title and company over them: where its short lines start, and where
+/// the block starts, below the first line with text. It needs two kinds
+/// of detail (a phone number and an address, say), so a phone number
+/// given in a mail is not taken for a signature.
+fn contact_block(lines: &[&str]) -> Option<(usize, usize)> {
+    // The short lines at the end, none of them a sentence.
+    let mut start = lines.len();
+    let mut kinds = 0;
+    let mut first_contact = None;
+    let mut count = 0;
+    for i in (0..lines.len()).rev() {
+        let line = lines[i].trim();
+        if line.is_empty() {
+            continue;
+        }
+        if line.chars().count() > SIGNATURE_WIDTH || sentence(line) || count == SIGNATURE_LINES {
+            break;
+        }
+        let kind = contact(line);
+        if kind != 0 {
+            first_contact = Some(i);
+        }
+        kinds |= kind;
+        count += 1;
+        start = i;
+    }
+    if kinds.count_ones() < 2 {
+        return None;
+    }
+    // From the paragraph of the first contact line, and the name, title
+    // and company over it when each is a paragraph of its own (as HTML
+    // mail reads in text).
+    let first_text = lines.iter().position(|l| !blank(l))?;
+    let mut block = paragraph_start(lines, first_contact?).max(start);
+    for _ in 0..3 {
+        let Some(above) = lines[..block].iter().rposition(|l| !blank(l)) else {
+            break;
+        };
+        let own_paragraph = above > 0 && blank(lines[above - 1]);
+        if above < start || above == first_text || !own_paragraph || !name_like(lines[above]) {
+            break;
+        }
+        block = above;
+    }
+    Some((start, block))
+}
+
+/// A line that could be a name, a title or a company.
+fn name_like(line: &str) -> bool {
+    let line = line.trim();
+    let words = line.split_whitespace().count();
+    words <= 5 && !line.ends_with(['!', '?', ':', ',']) && !(line.ends_with('.') && words >= 3)
+}
+
+/// A line that could start a signature: a name ("Omar Haddad", "Dr. A.
+/// Rao"), not the start of something more to say.
+fn name_line(line: &str) -> bool {
+    let line = line.trim();
+    line.split_whitespace().count() <= 4 && !line.ends_with(['.', '!', '?', ':', ','])
+}
+
+/// A line that reads as a sentence rather than a name or an address.
+fn sentence(line: &str) -> bool {
+    line.ends_with(['.', '!', '?', ':']) && line.split_whitespace().count() >= 5
+}
+
+/// A line drawn across: `_____`, `-----`, `=====`, `*****`.
+fn rule(line: &str) -> bool {
+    let line = line.trim();
+    line.chars().count() >= 5
+        && line.chars().all(|c| {
+            matches!(
+                c,
+                '_' | '-' | '=' | '*' | '~' | '\u{2014}' | '\u{2500}' | '\u{2013}'
+            )
+        })
+}
+
+/// A line that closes a mail, like "Best regards,".
+pub(crate) fn sign_off(line: &str) -> bool {
+    const SIGN_OFFS: &[&str] = &[
+        "all the best",
+        "best",
+        "best regards",
+        "best wishes",
+        "br",
+        "cheers",
+        "cordially",
+        "kind regards",
+        "many thanks",
+        "regards",
+        "regards and thanks",
+        "regards & thanks",
+        "respectfully",
+        "rgds",
+        "sincerely",
+        "sincerely yours",
+        "take care",
+        "thank you",
+        "thanking you",
+        "thanks",
+        "thanks again",
+        "thanks and regards",
+        "thanks & regards",
+        "thanks and best regards",
+        "thanks & best regards",
+        "thanks in advance",
+        "thanks n regards",
+        "thx",
+        "warm regards",
+        "warmest regards",
+        "warm wishes",
+        "warmly",
+        "with best regards",
+        "with best wishes",
+        "with kind regards",
+        "with regards",
+        "with thanks",
+        "with warm regards",
+        "yours",
+        "yours faithfully",
+        "yours sincerely",
+        "yours truly",
+        // German, French, Spanish, Italian, Dutch.
+        "beste grüße",
+        "freundliche grüße",
+        "liebe grüße",
+        "mit freundlichen grüßen",
+        "viele grüße",
+        "bien cordialement",
+        "cordialement",
+        "bien à vous",
+        "atentamente",
+        "saludos",
+        "un saludo",
+        "cordiali saluti",
+        "met vriendelijke groet",
+    ];
+    let line = line
+        .trim()
+        .trim_end_matches([',', '.', '!', ' ', '\u{a0}'])
+        .to_lowercase();
+    let line = line.split_whitespace().collect::<Vec<_>>().join(" ");
+    SIGN_OFFS.contains(&line.as_str())
+}
+
+/// The kinds of contact detail a line holds, as bits.
+const PHONE: u8 = 1;
+const EMAIL: u8 = 2;
+const WEB: u8 = 4;
+const PLACE: u8 = 8;
+
+fn contact(line: &str) -> u8 {
+    let lower = line.to_lowercase();
+    let mut kinds = 0;
+    if lower.split_whitespace().any(|w| {
+        w.split_once('@')
+            .is_some_and(|(user, host)| !user.is_empty() && host.contains('.'))
+    }) {
+        kinds |= EMAIL;
+    }
+    if lower.contains("www.") || lower.contains("http://") || lower.contains("https://") {
+        kinds |= WEB;
+    }
+    if line.split(['/', '|', ',']).any(phone) {
+        kinds |= PHONE;
+    }
+    let label = lower.trim_start_matches(['|', '\u{2022}', '\u{b7}', '-', '*', ' ']);
+    if label.ends_with("office:")
+        || [
+            "address",
+            "office",
+            "regd",
+            "registered office",
+            "head office",
+            "hq",
+        ]
+        .iter()
+        .any(|w| label.starts_with(w) && label[w.len()..].trim_start().starts_with(':'))
+        || postal(line) && line.contains(',')
+    {
+        kinds |= PLACE;
+    }
+    kinds
+}
+
+/// Whether `text` holds a phone number: 7 to 15 digits with spaces,
+/// dashes, dots and brackets, not a date.
+fn phone(text: &str) -> bool {
+    let chars: Vec<char> = text.chars().collect();
+    let mut at = 0;
+    while at < chars.len() {
+        let c = chars[at];
+        if !(c.is_ascii_digit() || c == '+' || c == '(')
+            || (at > 0 && chars[at - 1].is_alphanumeric())
+        {
+            at += 1;
+            continue;
+        }
+        let mut end = at + 1;
+        while end < chars.len()
+            && (chars[end].is_ascii_digit() || " +-.()\u{a0}".contains(chars[end]))
+        {
+            end += 1;
+        }
+        let run: String = chars[at..end].iter().collect();
+        let digits = run.chars().filter(char::is_ascii_digit).count();
+        let letter_after = chars.get(end).is_some_and(|c| c.is_alphabetic());
+        let run = run.trim();
+        let date =
+            run.len() == 10 && run.chars().filter(|c| matches!(c, '-' | '/' | '.')).count() == 2;
+        if (7..=15).contains(&digits) && !letter_after && !date {
+            return true;
+        }
+        at = end;
+    }
+    false
+}
+
+/// Whether `line` holds a postal code: five or six digits on their own.
+fn postal(line: &str) -> bool {
+    line.split(|c: char| !c.is_ascii_alphanumeric())
+        .any(|w| (5..=6).contains(&w.len()) && w.chars().all(|c| c.is_ascii_digit()))
+}
+
+/// A line of a footer: unsubscribing, why the mail came, a
+/// confidentiality notice, copyright.
+fn footer_line(line: &str) -> bool {
+    const NOTICES: &[&str] = &[
+        "unsubscribe",
+        "you have received this",
+        "you received this",
+        "you are receiving this",
+        "you're receiving this",
+        "you\u{2019}re receiving this",
+        "this email was sent to",
+        "this e-mail was sent to",
+        "this message was sent to",
+        "to stop receiving",
+        "no longer wish to receive",
+        "manage your preferences",
+        "update your preferences",
+        "email preferences",
+        "notification settings",
+        "opt out",
+        "opt-out",
+        "view this email in your browser",
+        "view in browser",
+        "all rights reserved",
+        "privacy policy",
+        "please do not reply",
+        "do not reply to this",
+        "this is an automated",
+        "this is a system generated",
+        "this is a system-generated",
+        "this email and any",
+        "this e-mail and any",
+        "this message and any",
+        "this message is intended",
+        "this email is intended",
+        "this e-mail is intended",
+        "intended recipient",
+        "intended solely",
+        "disclaimer",
+    ];
+    let lower = line.to_lowercase();
+    NOTICES.iter().any(|n| lower.contains(n))
+        || lower.contains('\u{a9}')
+        || (lower.contains("confidential")
+            && ["privileged", "recipient", "notify", "intended"]
+                .iter()
+                .any(|w| lower.contains(w)))
+}
+
+/// Where the lines `text` ends with, the same as at the end of `other`
+/// (another mail from the same person), start in `text`: a signature no
+/// sign-off, rule or `-- ` line gives away. At least two lines, and both
+/// mails keep something of their own above them.
+pub fn shared_tail(text: &str, other: &str) -> Option<usize> {
+    let lines = |s: &str| -> Vec<(usize, String)> {
+        let mut at = 0;
+        let mut out = Vec::new();
+        for line in s.split_inclusive('\n') {
+            let words = line.split_whitespace().collect::<Vec<_>>().join(" ");
+            if !words.is_empty() {
+                out.push((at, words));
+            }
+            at += line.len();
+        }
+        out
+    };
+    let ours = lines(text);
+    let theirs = lines(other);
+    let same = ours
+        .iter()
+        .rev()
+        .zip(theirs.iter().rev())
+        .take_while(|(a, b)| a.1 == b.1)
+        .count();
+    let own = ours.len() - same;
+    let chars: usize = ours[own..].iter().map(|(_, l)| l.chars().count()).sum();
+    (same >= 2 && chars >= 16 && own > 0 && theirs.len() > same).then(|| ours[own].0)
+}
+
+/// The lines of a signature as a contact card shows them: without its
+/// `-- ` line, its sign-off and a footer under it. `None` when nothing is
+/// left.
+pub fn contact_lines(signature: &str) -> Option<String> {
+    let lines: Vec<&str> = signature
+        .lines()
+        .skip_while(|l| blank(l) || delimiter(l) || sign_off(l))
+        .take_while(|l| !rule(l) && !footer_line(l))
+        .collect();
+    let text = join(&lines);
+    (!text.is_empty()).then_some(text)
 }
 
 /// The signature delimiter, `-- ` (or `--` from clients that trim it).
@@ -427,11 +864,11 @@ wrote:\r\n\r\n> Could we meet on Friday?\r\n>\r\n> Priya\r\n",
 From: Priya Nair <priya@demo.example>\nSent: Tuesday, September 30, 2026 6:02 PM\n\
 To: Omar Haddad <omar@demo.example>\nSubject: Budget\n\nPlease approve the budget.\n",
         );
-        assert_eq!(t.said, "Approved.\n\nRegards\nOmar");
+        assert_eq!(t.said, "Approved.");
         let quoted = t.quoted.unwrap();
         assert!(quoted.starts_with("-----Original Message-----\nFrom: Priya"));
         assert!(quoted.ends_with("Please approve the budget."));
-        assert_eq!(t.signature, None);
+        assert_eq!(t.signature.as_deref(), Some("Regards\nOmar"));
     }
 
     #[test]
@@ -525,6 +962,173 @@ Your flight is booked.\n",
                 ..Trimmed::default()
             }
         );
+    }
+
+    #[test]
+    fn sign_off_and_name() {
+        let t = plain("The slides are attached.\n\nBest regards,\nOmar Haddad\nDemo Travel Co\n");
+        assert_eq!(t.said, "The slides are attached.");
+        assert_eq!(
+            t.signature.as_deref(),
+            Some("Best regards,\nOmar Haddad\nDemo Travel Co")
+        );
+
+        // Thanks that start a sentence, or close a mail of nothing else,
+        // stay.
+        let body = "Thanks for the slides.\n\nSee you Friday.\nOmar";
+        assert_eq!(plain(body).said, body);
+        assert_eq!(plain("Thanks!\nOmar").said, "Thanks!\nOmar");
+        let body = "Lunch is booked.\n\nThanks,\nCan you bring the slides?";
+        assert_eq!(plain(body).said, body);
+        let body = "Lunch is booked.\n\nThanks!\nWill send the menu later.";
+        assert_eq!(plain(body).said, body);
+        // A rule between parts of a mail.
+        let body = "The agenda:\n\n-----\nBudget\nHiring";
+        assert_eq!(plain(body).said, body);
+    }
+
+    #[test]
+    fn company_signature_under_rules() {
+        let t = plain(
+            "Dear Sir/Madam,\n\nPlease send your quotation for the maintenance contract.\n\n\
+For the scope of work, please see the attached document.\n\n\n\n\n\
+______________________________________________\n\
+______________________________________________\n______________\n\
+DEMO NAME.MANAGER\nPROCUREMENT Demo Carbide & Chemicals Ltd\nDemo Complex Building\n\
+Post Box No.103, Demo Town\n(ISO 9001: 2015 Certified Company)\n\
+Contact Number: +975 0000 1111/ 0000 2222\nEmail ID: buyer@demo.example\n",
+        );
+        assert_eq!(
+            t.said,
+            "Dear Sir/Madam,\n\nPlease send your quotation for the maintenance contract.\n\n\
+For the scope of work, please see the attached document."
+        );
+        let signature = t.signature.unwrap();
+        assert!(signature.starts_with("_____"));
+        assert!(signature.ends_with("Email ID: buyer@demo.example"));
+    }
+
+    #[test]
+    fn notification_footer() {
+        let t = plain(
+            "Hello Admin,\n\nYour payment of 1,200.00 is due on 5 October 2026. Pay it from \
+the billing page to keep your services running.\n\nSincerely,\nDemo Cloud Billing\n\n\
+-------------------------------------------------------------------\n\n\
+Help\nCentre<https://help.demo.example/billing\n/understand-your-bill>\n\n\
+Contact us<https://admin.demo.example/support>\n\n\
+Demo Cloud customer ID:  demo.example\nPayments profile ID:  1111-2222-3333\n\n\
+Demo Cloud LLC 1 Example Way, Springfield, CA 90000\n\n\
+To stop receiving emails about this payments profile, you can\n\
+unsubscribe<https://demo.example/u/AAuDWvkxpsoZogOwBhri52usKAJlUPpQUuhka8d3gzdYLZHav2y0sNs2HOjMzmxBjX6mbVuEu>.\n\n\n\
+You have received this mandatory service announcement to update you about\n\
+important changes to Demo Cloud or your account.\n\nDemo Cloud\n",
+        );
+        assert_eq!(
+            t.said,
+            "Hello Admin,\n\nYour payment of 1,200.00 is due on 5 October 2026. Pay it from \
+the billing page to keep your services running."
+        );
+        let signature = t.signature.unwrap();
+        assert!(signature.starts_with("Sincerely,\nDemo Cloud Billing\n\n-----"));
+        assert!(signature.ends_with("\n\nDemo Cloud"));
+    }
+
+    #[test]
+    fn contact_block_as_html_reads() {
+        // HTML mail in text: every line a paragraph.
+        let t = plain(
+            "Dear Sir,\n\nPlease find the revised quotation attached.\n\nThanks & Regards\n\n\
+Demo Basu\n\nK. G. Demo Services\n\n\n\nCorporate Office:\n\n\
+Demo IT Park, Phase - I, Module no. 201, New Town\n\nAction Area 1, Kolkata 700000, India\n\n\
+Registered Office:\n\n1 Demo Road, Kolkata 700001, India\n\n\
+| M    :  + 91 90000 00000 / 90000 00001\n\n| E     : sales@demo.example\n\n\
+| W    : www.demo.example <http://www.demo.example/>\n",
+        );
+        assert_eq!(
+            t.said,
+            "Dear Sir,\n\nPlease find the revised quotation attached."
+        );
+        assert!(
+            t.signature
+                .unwrap()
+                .starts_with("Thanks & Regards\n\nDemo Basu")
+        );
+
+        // No sign-off: the details and the name over them.
+        let t = plain(
+            "Dear Sir,\n\nPlease find the revised quotation attached.\n\nDemo Basu\n\n\
+K. G. Demo Services\n\nCorporate Office:\n\nAction Area 1, Kolkata 700000, India\n\n\
+| M    :  + 91 90000 00000\n\n| E     : sales@demo.example\n",
+        );
+        assert_eq!(
+            t.said,
+            "Dear Sir,\n\nPlease find the revised quotation attached."
+        );
+        assert!(t.signature.unwrap().starts_with("Demo Basu"));
+
+        // A phone number someone asks to be called on stays.
+        let body = "Can you call me?\n\nMy numbers:\n+91 90000 00000\n+91 90000 00001";
+        assert_eq!(plain(body).said, body);
+    }
+
+    #[test]
+    fn disclaimer_under_a_reply() {
+        let t = plain(
+            "Approved, go ahead.\n\nOn Tue, 30 Sep 2026 at 18:02, Priya Nair <priya@demo.example> \
+wrote:\n> Can I order the parts?\n\n\
+DISCLAIMER: This email and any files sent with it are confidential and intended solely \
+for the use of the addressee.\n",
+        );
+        assert_eq!(t.said, "Approved, go ahead.");
+        assert!(t.quoted.is_some());
+        assert!(t.signature.unwrap().starts_with("DISCLAIMER:"));
+    }
+
+    #[test]
+    fn contact_lines_leave_out_the_sign_off_and_footer() {
+        assert_eq!(
+            contact_lines("Best regards,\nOmar Haddad\nDemo Travel Co\n\n-----\nYou have received this mail because…")
+                .as_deref(),
+            Some("Omar Haddad\nDemo Travel Co")
+        );
+        assert_eq!(contact_lines("-- \nRajat").as_deref(), Some("Rajat"));
+        assert_eq!(contact_lines("Thanks\n"), None);
+    }
+
+    #[test]
+    fn a_signature_two_mails_share() {
+        let first = "Can we move the call to 4?\n\nArjun Mehta\nDemo Travel Co\n";
+        let second = "Done, invite sent.\n\nArjun Mehta\nDemo Travel Co";
+        let at = shared_tail(second, first).unwrap();
+        assert_eq!(&second[..at], "Done, invite sent.\n\n");
+        // One line in common is a coincidence; the same mail twice is no
+        // signature.
+        assert_eq!(shared_tail("Done.\nSee you", "Sure.\nSee you"), None);
+        assert_eq!(shared_tail(first, first), None);
+    }
+
+    #[test]
+    fn html_company_mail_in_text() {
+        // HTML mail reaches the chat as text.
+        let raw = "From: Demo Supplies <sales@demo.example>\r\nTo: buyer@demo.example\r\n\
+Subject: Offer\r\nContent-Type: text/html; charset=utf-8\r\n\r\n\
+<html><body><p>Hello,</p><p>Our offer for the spare parts is attached; prices hold until \
+31 October.</p><p>Warm Regards,</p><p><b>Demo Sharma</b><br>Sales Head</p>\
+<p>Demo Supplies Pvt. Ltd.<br>12 Example Street, Pune 411000, India<br>\
+Tel: +91 20 0000 0000 | www.demo.example</p>\
+<p style=\"font-size:10px\">This e-mail and any attachments are confidential and intended \
+only for the addressee. If you are not the intended recipient, please notify the sender.</p>\
+<p><a href=\"https://demo.example/u\">Unsubscribe</a> | &copy; 2026 Demo Supplies</p>\
+</body></html>\r\n";
+        let view = crate::plain::message_view(raw.as_bytes());
+        let t = plain(&view.body);
+        assert_eq!(
+            t.said.split_whitespace().collect::<Vec<_>>().join(" "),
+            "Hello, Our offer for the spare parts is attached; prices hold until 31 October."
+        );
+        let signature = t.signature.unwrap();
+        assert!(signature.starts_with("Warm Regards,"), "{signature}");
+        assert!(signature.contains("Unsubscribe"), "{signature}");
     }
 
     #[test]

@@ -1497,7 +1497,12 @@ GPUI global):
   right-click menu and its folder list, dropdowns), Search options and its
   date popover, and the account menu. Their color is 78 % opaque over a
   20 px blur of what is behind them in the window
-  (`katna_mail::widgets::raised`, `katna_ui::frost`). GPUI has no backdrop
+  (`katna_mail::widgets::raised`, `katna_ui::frost`). Dialogs and
+  floating cards (Add account, About, What's new, confirmations, label and
+  share dialogs, the first-run card) frost the same way with their own
+  color (`katna_mail::widgets::frosted`); a test keeps every frosted
+  panel's glass ahead of its content. The compose window, notes and the
+  task details (a scrolling card) stay opaque. GPUI has no backdrop
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
@@ -1514,7 +1519,14 @@ within ten minutes; days, and people a mail brings in, show between them.
 `katna_render::trim` splits a body into what was said, the quoted mail, the
 signature and a forwarded mail (`trim::plain`, and `html::trimmed` for HTML
 bodies, cutting at Gmail, Outlook, Apple Mail and Thunderbird quote markers
-and the usual attribution, forward and `-- ` lines); the quote and
+and the usual attribution, forward and `-- ` lines). Signatures without a
+`-- ` line are read from what people write: a sign-off ("Best regards,")
+over a short name block, a rule (`_____`, `-----`) over contact details, a
+block of contact details of two kinds (phone, address, email, web), and
+footers that offer to unsubscribe, say why the mail came or carry a
+confidentiality notice; lines a person ends two of their mails in the
+conversation with are their signature too (`trim::shared_tail`). HTML
+mail reaches the chat as its text and is read the same way. The quote and
 signature wait behind a ··· pill, a forward is a small card. Attachments are
 chat media: pictures in a grid of their thumbnails, other files as cards,
 both opening the viewer; inline pictures under 12 KB (logos) are left out.

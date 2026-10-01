@@ -22,6 +22,12 @@ use crate::widgets::{ScaledEdge, icon, tip};
 /// pictures in the text.
 pub(in crate::window) const MAX_TOTAL: usize = 25 * 1024 * 1024;
 
+/// The limit as mail services name it ("25 MB"); [`format::size`] of
+/// [`MAX_TOTAL`] would round its mebibytes up to 26 MB.
+pub(in crate::window) fn limit_text() -> String {
+    format::size(25 * 1000 * 1000)
+}
+
 /// Files that reach the app this soon after a file manager opened a new
 /// message with files join that message: Explorer starts Katna Mail once
 /// for each file chosen.
@@ -263,7 +269,7 @@ impl MailWindow {
                                 problem = Some(tr!(
                                     "compose-file-too-large",
                                     name = name,
-                                    limit = format::size(MAX_TOTAL as u64)
+                                    limit = limit_text()
                                 ));
                             }
                         }
@@ -306,11 +312,7 @@ impl MailWindow {
                 if let (Some((_, name, ..)), Some((_, provider))) =
                     (to_drive.first(), drive_account)
                 {
-                    let note = super::drive::drive_note(
-                        provider,
-                        name.clone(),
-                        format::size(MAX_TOTAL as u64),
-                    );
+                    let note = super::drive::drive_note(provider, name.clone(), limit_text());
                     this.show_snackbar(note, None, cx);
                 }
                 for (path, name, size, account) in to_drive {
@@ -582,12 +584,112 @@ impl MailWindow {
         }
         compose.attach_scroll.scroll_to_bottom();
         if let Some(name) = left_out {
-            let problem = tr!(
-                "compose-file-too-large",
-                name = name,
-                limit = format::size(MAX_TOTAL as u64)
-            );
+            let problem = tr!("compose-file-too-large", name = name, limit = limit_text());
             self.show_snackbar(problem, None, cx);
+        }
+        cx.notify();
+    }
+}
+
+/// Which of files `sizes` go through the cloud so the rest fit with the
+/// `used` bytes under `limit`: the biggest first, as few as need to.
+pub(in crate::window) fn cloud_bound(sizes: &[u64], used: u64, limit: u64) -> Vec<bool> {
+    let mut bound = vec![false; sizes.len()];
+    let mut total = used + sizes.iter().sum::<u64>();
+    let mut order: Vec<usize> = (0..sizes.len()).collect();
+    order.sort_by_key(|&ix| std::cmp::Reverse(sizes[ix]));
+    for ix in order {
+        if total <= limit {
+            break;
+        }
+        bound[ix] = true;
+        total -= sizes[ix];
+    }
+    bound
+}
+
+impl MailWindow {
+    /// What the message being written carries against the 25 MB limit,
+    /// and the cloud larger files would go to (Google Drive or OneDrive
+    /// of the account it goes out from).
+    pub(in crate::window) fn compose_room(
+        &self,
+        cx: &gpui::App,
+    ) -> (u64, Option<katna_core::OAuthProvider>) {
+        let Some(compose) = &self.compose else {
+            return (0, None);
+        };
+        (
+            compose.used_bytes(cx) as u64,
+            self.compose_cloud().map(|(_, p)| p),
+        )
+    }
+
+    fn compose_cloud(&self) -> Option<(katna_core::AccountId, katna_core::OAuthProvider)> {
+        let compose = self.compose.as_ref()?;
+        let id = compose
+            .from
+            .or_else(|| self.compose_account(compose.kind).map(|a| a.id))?;
+        Some((id, super::drive::drive_provider(self, id)?))
+    }
+
+    /// Attaches files picked on the Files page (each with whether its mail
+    /// was decrypted). Those that do not fit go through the account's
+    /// cloud, biggest first; with none, they are left out. `failed` files
+    /// could not be read.
+    pub(in crate::window) fn attach_picked(
+        &mut self,
+        files: Vec<(katna_render::AttachmentFile, bool)>,
+        failed: usize,
+        cx: &mut Context<Self>,
+    ) {
+        let cloud = self.compose_cloud();
+        let cache = self.paths.cache_dir().join("attach");
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        let used = compose.used_bytes(cx) as u64;
+        let sizes: Vec<u64> = files.iter().map(|(f, _)| f.bytes.len() as u64).collect();
+        let bound = cloud_bound(&sizes, used, MAX_TOTAL as u64);
+        let mut left_out = None;
+        let mut to_cloud = Vec::new();
+        for ((file, encrypted), bound) in files.into_iter().zip(bound) {
+            if !bound {
+                compose.attachments.push(Attachment {
+                    name: file.name,
+                    mime: file.mime,
+                    data: Arc::new(file.bytes),
+                });
+                continue;
+            }
+            // A decrypted file never reaches the disk unasked.
+            match cloud {
+                Some((account, _)) if !encrypted => to_cloud.push((file, account)),
+                _ => {
+                    left_out.get_or_insert(file.name);
+                }
+            }
+        }
+        compose.attach_scroll.scroll_to_bottom();
+        for (file, account) in to_cloud {
+            let dir = cache.join(format!("picked-{}", jiff::Timestamp::now().as_nanosecond()));
+            let path = dir.join(&file.name);
+            let size = file.bytes.len() as u64;
+            let written =
+                std::fs::create_dir_all(&dir).and_then(|()| std::fs::write(&path, &file.bytes));
+            match written {
+                Ok(()) => self.upload_to_drive(path, file.name, size, account, cx),
+                Err(err) => {
+                    let problem = format!("{}: {err}", file.name);
+                    self.show_snackbar(problem, None, cx);
+                }
+            }
+        }
+        if let Some(name) = left_out {
+            let problem = tr!("compose-file-too-large", name = name, limit = limit_text());
+            self.show_snackbar(problem, None, cx);
+        } else if failed > 0 {
+            self.show_snackbar(tr!("picker-some-failed", count = failed), None, cx);
         }
         cx.notify();
     }
@@ -630,6 +732,21 @@ impl super::Compose {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_biggest_files_go_to_the_cloud() {
+        const MB: u64 = 1024 * 1024;
+        let limit = 25 * MB;
+        assert_eq!(cloud_bound(&[MB, 2 * MB], 0, limit), [false, false]);
+        assert_eq!(
+            cloud_bound(&[5 * MB, 31 * MB, 10 * MB, 4 * MB], 0, limit),
+            [false, true, false, false]
+        );
+        assert_eq!(
+            cloud_bound(&[20 * MB, 12 * MB], 3 * MB, limit),
+            [true, false]
+        );
+    }
 
     #[test]
     fn guesses_types() {
