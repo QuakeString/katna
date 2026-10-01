@@ -6232,6 +6232,7 @@ dependencies = [
  "hyper-util",
  "katna-ai",
  "lettre",
+ "rpassword",
  "serde",
  "serde_json",
  "sha2 0.10.9",

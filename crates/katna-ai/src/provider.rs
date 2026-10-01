@@ -49,7 +49,7 @@ pub const PRESETS: &[Preset] = &[
         name: "Google Gemini",
         kind: Kind::Gemini,
         base: "https://generativelanguage.googleapis.com",
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-3.5-flash-lite",
         needs_key: true,
     },
     Preset {
@@ -207,6 +207,13 @@ pub fn answer(kind: Kind, status: u16, body: &[u8]) -> Result<String, ProviderEr
         200 => {}
         401 | 403 => return Err(ProviderError::Key),
         429 => return Err(ProviderError::TooMany),
+        // Gemini answers a wrong key with 400 rather than 401.
+        400 if body
+            .windows(b"API_KEY_INVALID".len())
+            .any(|w| w == b"API_KEY_INVALID") =>
+        {
+            return Err(ProviderError::Key);
+        }
         status => {
             let message = serde_json::from_slice::<Value>(body)
                 .ok()
@@ -368,6 +375,11 @@ mod tests {
     fn answers_are_read() {
         let openai = br#"{"choices":[{"message":{"content":"Hello"}}]}"#;
         assert_eq!(answer(Kind::OpenAi, 200, openai).unwrap(), "Hello");
+        let bad_key = br#"{"error":{"code":400,"message":"API key not valid. Please pass a valid API key.","status":"INVALID_ARGUMENT","details":[{"reason":"API_KEY_INVALID"}]}}"#;
+        assert!(matches!(
+            answer(Kind::Gemini, 400, bad_key),
+            Err(ProviderError::Key)
+        ));
         let gemini = br#"{"candidates":[{"content":{"parts":[{"text":"a","thought":true},{"text":"Hi"}]}}]}"#;
         assert_eq!(answer(Kind::Gemini, 200, gemini).unwrap(), "Hi");
         let claude = br#"{"content":[{"type":"text","text":"Yo"}]}"#;
