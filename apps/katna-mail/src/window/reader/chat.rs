@@ -131,6 +131,20 @@ impl Said {
         }
     }
 
+    /// Moves the lines this mail ends with to its signature when another
+    /// of the sender's mails (`others`) ends with them too.
+    fn cut_shared_tail<'a>(&mut self, others: impl Iterator<Item = &'a str>) {
+        for other in others {
+            let other = trim::plain(other).said;
+            if let Some(at) = trim::shared_tail(&self.text, &other) {
+                self.signature = Some(self.text[at..].trim().to_owned());
+                self.text.truncate(at);
+                self.text.truncate(self.text.trim_end().len());
+                return;
+            }
+        }
+    }
+
     /// Something waits behind its ··· pill.
     fn hides(&self) -> bool {
         self.quoted.is_some() || self.signature.is_some()
@@ -163,16 +177,39 @@ impl Conversation {
 
     /// What message `part` says, trimmed; `None` while it is not read.
     fn said(&self, part: &Part) -> Option<Rc<Said>> {
-        let body = &part.body.as_ref()?.view.as_ref()?.body;
-        let mut cache = self.chat.said.borrow_mut();
-        match cache.get(&part.id) {
-            Some((len, said)) if *len == body.len() => Some(said.clone()),
-            _ => {
-                let said = Rc::new(Said::of(body));
-                cache.insert(part.id, (body.len(), said.clone()));
-                Some(said)
-            }
+        let view = part.body.as_ref()?.view.as_ref()?;
+        let body = &view.body;
+        if let Some((len, said)) = self.chat.said.borrow().get(&part.id)
+            && *len == body.len()
+        {
+            return Some(said.clone());
         }
+        let mut said = Said::of(body);
+        if said.signature.is_none()
+            && let Some(from) = view.from.first()
+        {
+            said.cut_shared_tail(self.bodies_from(&from.email, part.id));
+        }
+        let said = Rc::new(said);
+        self.chat
+            .said
+            .borrow_mut()
+            .insert(part.id, (body.len(), said.clone()));
+        Some(said)
+    }
+
+    /// The bodies of the other mail `email` sent in this conversation.
+    fn bodies_from<'a>(&'a self, email: &'a str, not: MessageId) -> impl Iterator<Item = &'a str> {
+        self.parts
+            .iter()
+            .filter(move |p| p.id != not)
+            .filter_map(move |p| {
+                let view = p.body.as_ref()?.view.as_ref()?;
+                let from = view.from.first()?;
+                from.email
+                    .eq_ignore_ascii_case(email)
+                    .then_some(view.body.as_str())
+            })
     }
 
     /// The signature `email` last signed with in this conversation.
@@ -182,7 +219,7 @@ impl Conversation {
             if !from.email.eq_ignore_ascii_case(email) {
                 return None;
             }
-            self.said(part)?.signature.clone()
+            trim::contact_lines(self.said(part)?.signature.as_deref()?)
         })
     }
 }
@@ -1578,6 +1615,21 @@ mod tests {
     fn says_only_what_was_written() {
         let said = Said::of("Sounds good!\n\nOn Mon, Ana wrote:\n> Lunch?\n");
         assert_eq!(said.text, "Sounds good!");
+        assert!(said.hides());
+    }
+
+    #[test]
+    fn a_signature_said_twice_is_a_signature() {
+        let mut said = Said::of("Done, invite sent.\n\nArjun Mehta\nDemo Travel Co\n");
+        assert_eq!(said.signature, None);
+        said.cut_shared_tail(
+            ["Can we move the call to 4?\n\nArjun Mehta\nDemo Travel Co"].into_iter(),
+        );
+        assert_eq!(said.text, "Done, invite sent.");
+        assert_eq!(
+            said.signature.as_deref(),
+            Some("Arjun Mehta\nDemo Travel Co")
+        );
         assert!(said.hides());
     }
 

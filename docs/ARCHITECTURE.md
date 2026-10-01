@@ -1519,7 +1519,14 @@ within ten minutes; days, and people a mail brings in, show between them.
 `katna_render::trim` splits a body into what was said, the quoted mail, the
 signature and a forwarded mail (`trim::plain`, and `html::trimmed` for HTML
 bodies, cutting at Gmail, Outlook, Apple Mail and Thunderbird quote markers
-and the usual attribution, forward and `-- ` lines); the quote and
+and the usual attribution, forward and `-- ` lines). Signatures without a
+`-- ` line are read from what people write: a sign-off ("Best regards,")
+over a short name block, a rule (`_____`, `-----`) over contact details, a
+block of contact details of two kinds (phone, address, email, web), and
+footers that offer to unsubscribe, say why the mail came or carry a
+confidentiality notice; lines a person ends two of their mails in the
+conversation with are their signature too (`trim::shared_tail`). HTML
+mail reaches the chat as its text and is read the same way. The quote and
 signature wait behind a ··· pill, a forward is a small card. Attachments are
 chat media: pictures in a grid of their thumbnails, other files as cards,
 both opening the viewer; inline pictures under 12 KB (logos) are left out.
