@@ -905,8 +905,10 @@ pub mod windows {
                 let text = match bytes.as_slice() {
                     [0xff, 0xfe, rest @ ..] => String::from_utf16_lossy(
                         &rest
-                            .chunks_exact(2)
-                            .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                            .as_chunks::<2>()
+                            .0
+                            .iter()
+                            .map(|&c| u16::from_le_bytes(c))
                             .collect::<Vec<_>>(),
                     ),
                     _ => String::from_utf8_lossy(&bytes).into_owned(),
