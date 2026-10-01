@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Files leaves out signature logos"
+text = """
+The Files page no longer fills up with the small logos and icons that come in
+email signatures: pictures under 12 KB, or under 100 pixels wide or tall, stay
+under their mail. Change both limits, or show every picture, in Settings >
+Default apps > Files page.
+"""

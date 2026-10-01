@@ -69,8 +69,9 @@ const ROW: f32 = 34.0;
 const PAD: f32 = 16.0;
 const BETWEEN: f32 = 28.0;
 const CALENDAR_WIDTH: f32 = 14.0 * DAY + BETWEEN + 2.0 * PAD;
-/// Pictures smaller than this are signature logos and the like, not files.
-const SMALL_PICTURE: u64 = 12 * 1024;
+/// Pictures whose pixel size is read in one background run; the rest wait
+/// for the next time the page opens.
+const MEASURE_BATCH: usize = 200;
 /// Thumbnails kept in memory; those drawn longest ago go first.
 const THUMBS_KEPT: usize = 96;
 /// Thumbnails made in one background run.
@@ -448,6 +449,11 @@ pub(super) struct Library {
     wanted: Vec<(RowFile, Kind)>,
     _thumbs: Option<Task<()>>,
     frame: u64,
+    /// Pixel sizes of the pictures read so far, kept between runs.
+    sizes: crate::data::PictureSizes,
+    /// Downloaded pictures whose size is not read yet.
+    unmeasured: Vec<RowFile>,
+    _measure: Option<Task<()>>,
 }
 
 impl Default for Library {
@@ -484,6 +490,9 @@ impl Default for Library {
             wanted: Vec::new(),
             _thumbs: None,
             frame: 0,
+            sizes: HashMap::new(),
+            unmeasured: Vec::new(),
+            _measure: None,
         }
     }
 }
@@ -618,13 +627,69 @@ impl MailWindow {
     pub(super) fn load_library(&mut self, cx: &mut Context<Self>) {
         let paths = self.paths.clone();
         self.library._load = Some(cx.spawn(async move |this, cx| {
-            let files = cx
+            let (files, sizes) = cx
                 .background_executor()
-                .spawn(async move { crate::data::library(&paths, LIMIT) })
+                .spawn(async move {
+                    (
+                        crate::data::library(&paths, LIMIT),
+                        crate::data::picture_sizes(&paths),
+                    )
+                })
                 .await;
             this.update(cx, |this, cx| {
+                this.library.sizes = sizes;
                 this.set_library(files);
+                this.measure_pictures(cx);
                 cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    /// The page has read its files, since it last opened.
+    pub(super) fn library_loaded(&self) -> bool {
+        self.library.files.is_some()
+    }
+
+    /// Reads the pixel sizes of downloaded pictures not read before, in the
+    /// background, and keeps them for the next time the page opens: the
+    /// cards showing now stay where they are.
+    fn measure_pictures(&mut self, cx: &mut Context<Self>) {
+        let mut batch = std::mem::take(&mut self.library.unmeasured);
+        if batch.is_empty() {
+            return;
+        }
+        batch.truncate(MEASURE_BATCH);
+        let paths = self.paths.clone();
+        let mut sizes = self.library.sizes.clone();
+        self.library._measure = Some(cx.spawn(async move |this, cx| {
+            let sizes = cx
+                .background_executor()
+                .spawn(async move {
+                    // A few mails at a time, so memory stays small.
+                    for chunk in batch.chunks(16) {
+                        let mut ids: Vec<MessageId> = chunk.iter().map(|f| f.message).collect();
+                        ids.sort_unstable();
+                        ids.dedup();
+                        let raws = crate::data::raw_messages(&paths, &ids);
+                        for file in chunk {
+                            let Some(raw) = raws.get(&file.message) else {
+                                continue;
+                            };
+                            let view = katna_render::message_view(raw);
+                            let size = row_file_index(&view.attachments, file)
+                                .and_then(|index| katna_render::attachment_file(raw, index))
+                                .and_then(|got| katna_preview::picture::dimensions(&got.bytes));
+                            sizes.insert((file.message, file.order), size.unwrap_or((0, 0)));
+                        }
+                    }
+                    crate::data::save_picture_sizes(&paths, &sizes);
+                    sizes
+                })
+                .await;
+            this.update(cx, |this, _| {
+                this.library.sizes = sizes;
+                this.library._measure = None;
             })
             .ok();
         }));
@@ -641,13 +706,35 @@ impl MailWindow {
         let now = jiff::Timestamp::now().as_second();
         let mut senders: HashMap<String, Sender> = HashMap::new();
         let mut per_account = HashMap::new();
+        let rule = self.config.mail.files.clone();
+        let library = &mut self.library;
+        // Sizes of files no longer on the page are forgotten.
+        let present: HashSet<(MessageId, usize)> =
+            files.iter().map(|f| (f.message, f.order)).collect();
+        library.sizes.retain(|key, _| present.contains(key));
+        library.unmeasured.clear();
         let found: Vec<Found> = files
             .into_iter()
             .filter_map(|file| {
                 let kind = katna_preview::kind(&file.mime, &file.name);
                 // Signature logos and the like.
-                if matches!(kind, Kind::Picture(_)) && file.size < SMALL_PICTURE {
-                    return None;
+                if matches!(kind, Kind::Picture(_)) {
+                    let key = (file.message, file.order);
+                    let size = library.sizes.get(&key).copied();
+                    if size.is_none() && file.downloaded {
+                        library.unmeasured.push(RowFile {
+                            message: file.message,
+                            name: file.name.clone(),
+                            mime: file.mime.clone(),
+                            size: file.size,
+                            nth: file.nth,
+                            order: file.order,
+                        });
+                    }
+                    let size = size.filter(|&(w, h)| w > 0 && h > 0);
+                    if rule.leaves_out(file.size, size) {
+                        return None;
+                    }
                 }
                 let hay = format!(
                     "{}\n{}\n{}\n{}",

@@ -12,8 +12,8 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
+    AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
+    ReadingPane, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -89,6 +89,12 @@ pub(super) enum Change {
     DarkMail(bool),
     AttachmentPreviews(bool),
     OpenSavedFolder(bool),
+    /// The Files page leaves out small pictures (signature logos).
+    LeaveOutSmallPictures(bool),
+    /// Pictures under this many KB are small.
+    SmallPictureKb(u32),
+    /// Pictures under this many pixels wide or tall are small.
+    SmallPicturePx(u32),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
     /// Their sound.
@@ -525,6 +531,30 @@ impl MailWindow {
                 self.request_thumbnails(cx);
             }
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::LeaveOutSmallPictures(_)
+            | Change::SmallPictureKb(_)
+            | Change::SmallPicturePx(_) => {
+                let files = &mut view.files;
+                match change {
+                    Change::LeaveOutSmallPictures(on) => files.leave_out_small = on,
+                    Change::SmallPictureKb(kb) => {
+                        files.small_kb =
+                            kb.clamp(*FilesPage::KB_RANGE.start(), *FilesPage::KB_RANGE.end());
+                    }
+                    Change::SmallPicturePx(side) => {
+                        files.small_px =
+                            side.clamp(*FilesPage::PX_RANGE.start(), *FilesPage::PX_RANGE.end());
+                    }
+                    _ => {}
+                }
+                self.save_config();
+                // The page read once is read again with the new rule.
+                if self.library_loaded() {
+                    self.load_library(cx);
+                }
+                cx.notify();
+                return;
+            }
             Change::PlainText(on) => sending.plain_text = on,
             Change::SpellCheck(on) => sending.spell_check = on,
             Change::StartAtLogin(start) => {
