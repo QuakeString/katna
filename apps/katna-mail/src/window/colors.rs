@@ -37,6 +37,7 @@ impl DesktopColors {
     /// already has them; the portal's accent color follows.
     pub(super) fn new(desktop: &Desktop) -> Self {
         let kind = match desktop {
+            _ if cfg!(windows) => DesktopKind::Windows,
             Desktop::Kde => DesktopKind::Kde,
             Desktop::Gnome => DesktopKind::Gnome,
             Desktop::Other(_) => DesktopKind::Other,
@@ -60,6 +61,7 @@ fn read(
     portal_accent: Option<u32>,
 ) -> SystemColors {
     match config_home {
+        _ if kind == DesktopKind::Windows => colors::windows::read(),
         Some(home) => colors::read(kind, home, portal_accent),
         None => SystemColors::accent_only(portal_accent),
     }

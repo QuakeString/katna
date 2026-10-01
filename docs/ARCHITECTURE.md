@@ -2271,10 +2271,22 @@ Gemini or confidential mode):
   before schemes have no `colors`: `mail.desktop_colors` decides (on is
   `system`, off is `katna`), and every pick keeps it in step for older
   versions. The quick setting *Desktop colors* switches between `system`
-  and `katna`. Still to come: the desktop's other installed schemes and
-  their light/dark partners, Windows' accent and Contrast themes, the
-  editor for one's own schemes (Yours), and schemes with one side
-  setting light or dark itself.
+  and `katna`.
+
+  *From your system* lists the desktop's other schemes
+  (`DesktopScheme` in `katna_platform::colors`): on KDE every installed
+  `*.colors` file (`$XDG_DATA_HOME` and `$XDG_DATA_DIRS`, `color-schemes/`),
+  with a light and a dark scheme whose file names differ only by `Light`
+  and `Dark` paired into one (`kde:Breeze`); on Windows its own light and
+  dark colors and the Contrast themes in `%WINDIR%\Resources\Ease of
+  Access Themes`. The scheme in use on KDE gets its installed partner, so
+  System works in either mode (Breeze Dark on the desktop and Mode Light
+  draws Breeze Light). Windows' accent is `DWM\AccentColor`; while a
+  Contrast theme is on, System draws its colors. A scheme with one side
+  (a Contrast theme, a KDE scheme without a partner) decides light or
+  dark itself, whatever Mode says (`Theme::forced_dark`), as KDE does.
+  Windows' colors are read at startup. Still to come: the editor for
+  one's own schemes (Yours).
 - **Contact panel.** On a desktop, a card beside the open conversation
   (300 px, the usual 16 px card gap, sliding in with the reading pane's
   spring) shows one of its people: the newest sender other than the user,

@@ -190,6 +190,7 @@ settings-appearance-theme = Mode
 settings-appearance-theme-system = System
 settings-appearance-theme-light = Light
 settings-appearance-theme-dark = Dark
+settings-appearance-theme-forced = The color scheme picked below has only a light or a dark side, so it decides.
 settings-appearance-colors = Colors
 settings-appearance-colors-detail = Every scheme has a light and a dark side, so Mode works with each one. The previews show both sides in the accent color picked below.
 # Heading over the color schemes that come with Katna.
@@ -199,6 +200,9 @@ settings-appearance-colors-from-system = From your system
 # The desktop's own color scheme, whatever it is.
 settings-appearance-colors-system = System
 settings-appearance-colors-system-detail = Follows the desktop
+# Under a color scheme that has a light side only, so Mode does not change it.
+settings-appearance-colors-light-only = Light only
+settings-appearance-colors-dark-only = Dark only
 settings-appearance-accent = Accent
 settings-appearance-accent-detail = The color of the selected folder, Compose, counts and highlights
 # An accent choice: the color scheme's own accent color.
