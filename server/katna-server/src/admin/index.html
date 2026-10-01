@@ -59,17 +59,17 @@
       <h2>AI service</h2>
       <div class="field">
         <label for="main-provider">Asked first</label>
-        <div class="pair"><select id="main-provider"></select><input id="main-model" aria-label="Model asked first" spellcheck="false"></div>
+        <div class="pair"><select id="main-provider"></select><input id="main-model" list="main-models" aria-label="Model asked first" spellcheck="false" autocomplete="off"></div>
+        <datalist id="main-models"></datalist>
+        <p id="main-models-problem" class="small bad" hidden></p>
       </div>
       <div class="field">
         <label for="fallback-provider">When that fails</label>
-        <div class="pair"><select id="fallback-provider"></select><input id="fallback-model" aria-label="Model asked when the first fails" spellcheck="false"></div>
+        <div class="pair"><select id="fallback-provider"></select><input id="fallback-model" list="fallback-models" aria-label="Model asked when the first fails" spellcheck="false" autocomplete="off"></div>
+        <datalist id="fallback-models"></datalist>
+        <p id="fallback-models-problem" class="small bad" hidden></p>
       </div>
-      <div class="field">
-        <span class="label">Keys in the server's .env</span>
-        <div id="keys" class="chips"></div>
-        <p class="muted small">Keys never show here and can't be typed here. A service is offered once its key is in .env.</p>
-      </div>
+      <p class="muted small">Type a model, or pick one the service offers to its key. A service is offered once it has a key below.</p>
       <div class="row">
         <button type="button" id="test" class="quiet">Test both</button>
         <span id="test-result" class="small" role="status"></span>
@@ -91,6 +91,14 @@
         <span class="muted small">Off stops every request at once</span>
         <input id="on" type="checkbox">
       </div>
+    </section>
+
+    <section class="card wide">
+      <div class="row baseline">
+        <h2>Keys</h2>
+        <span class="muted small">Saved here, or in the server's .env. A key saved here is used over .env's, and never shows again.</span>
+      </div>
+      <div id="keys" class="keys"></div>
     </section>
 
     <section class="card wide months">

@@ -140,6 +140,15 @@ const MIGRATIONS: &[&str] = &[
          failures BIGINT[] NOT NULL DEFAULT '{}',
          updated_at BIGINT NOT NULL
      );",
+    // 8: keys of Katna AI's services saved on the admin page, used over
+    // the environment's; `base` is the address of the "other" service.
+    "CREATE TABLE ai_keys (
+         provider TEXT PRIMARY KEY,
+         key TEXT NOT NULL,
+         base TEXT,
+         updated_at BIGINT NOT NULL,
+         updated_by TEXT NOT NULL
+     );",
 ];
 
 /// Wrong guesses allowed for one emailed code.
@@ -153,6 +162,25 @@ pub const CODE_FAILURES_PER_DAY: i64 = 10;
 const POOL_WAIT: Duration = Duration::from_secs(5);
 
 /// An install as a request's token finds it.
+/// A key of a Katna AI service saved on the admin page.
+#[derive(Clone, PartialEq, Eq)]
+pub struct SavedAiKey {
+    /// A `katna_ai::provider::PRESETS` id.
+    pub provider: String,
+    pub key: String,
+    /// The address of the "other" service.
+    pub base: Option<String>,
+}
+
+impl std::fmt::Debug for SavedAiKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SavedAiKey")
+            .field("provider", &self.provider)
+            .field("base", &self.base)
+            .finish_non_exhaustive()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct InstallAuth {
     /// The install.
@@ -1184,6 +1212,61 @@ impl Db {
             )
             .await?;
         Ok(())
+    }
+
+    /// The keys of Katna AI's services saved on the admin page.
+    pub async fn ai_keys(&self) -> Result<Vec<SavedAiKey>, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query(
+                "SELECT provider, key, base FROM ai_keys ORDER BY provider",
+                &[],
+            )
+            .await?
+            .into_iter()
+            .map(|row| SavedAiKey {
+                provider: row.get(0),
+                key: row.get(1),
+                base: row.get(2),
+            })
+            .collect())
+    }
+
+    /// Saves the key of `provider` (and the address of the "other"
+    /// service), put there by `by`.
+    pub async fn set_ai_key(
+        &self,
+        provider: &str,
+        key: &str,
+        base: Option<&str>,
+        by: &str,
+        now: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO ai_keys (provider, key, base, updated_at, updated_by)
+                 VALUES ($1, $2, $3, $4, $5)
+                 ON CONFLICT (provider) DO UPDATE
+                 SET key = $2, base = $3, updated_at = $4, updated_by = $5",
+                &[&provider, &key, &base, &now, &by],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// Forgets the saved key of `provider`; false when there was none.
+    pub async fn remove_ai_key(&self, provider: &str) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .execute("DELETE FROM ai_keys WHERE provider = $1", &[&provider])
+            .await?
+            > 0)
     }
 
     /// Katna AI's use in `months` (yyyymm, the last one this month) at

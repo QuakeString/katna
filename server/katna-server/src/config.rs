@@ -143,6 +143,38 @@ impl AiConfig {
     }
 }
 
+impl AiConfig {
+    /// These settings with the keys `saved` on the admin page over the
+    /// environment's, for the services chosen too.
+    pub fn with_saved_keys(&self, saved: &[crate::db::SavedAiKey]) -> AiConfig {
+        let mut ai = self.clone();
+        for saved in saved {
+            let Some(preset) = katna_ai::PRESETS.iter().find(|p| p.id == saved.provider) else {
+                continue;
+            };
+            let base = match saved.base.as_deref().map(str::trim) {
+                Some(base) if !base.is_empty() => base.to_owned(),
+                _ if preset.base.is_empty() => continue,
+                _ => preset.base.to_owned(),
+            };
+            for service in &mut ai.services {
+                if service.provider == preset.id {
+                    service.base = base.clone();
+                    service.key = Secret(saved.key.clone());
+                }
+            }
+            ai.keys.retain(|known| known.provider != preset.id);
+            ai.keys.push(AiService {
+                provider: preset.id,
+                base,
+                model: preset.model.to_owned(),
+                key: Secret(saved.key.clone()),
+            });
+        }
+        ai
+    }
+}
+
 impl AiService {
     /// The kind of API it speaks.
     pub fn kind(&self) -> katna_ai::Kind {
@@ -445,6 +477,37 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn saved_keys_go_over_the_environments() {
+        let env_key = |provider: &'static str, key: &str| AiService {
+            provider,
+            base: katna_ai::provider::preset(provider).base.to_owned(),
+            model: "m".into(),
+            key: Secret(key.into()),
+        };
+        let env = AiConfig {
+            services: vec![env_key("gemini", "from-env")],
+            keys: vec![env_key("gemini", "from-env")],
+            ..AiConfig::default()
+        };
+        let saved = |provider: &str, key: &str, base: Option<&str>| crate::db::SavedAiKey {
+            provider: provider.into(),
+            key: key.into(),
+            base: base.map(Into::into),
+        };
+        let ai = env.with_saved_keys(&[
+            saved("gemini", "from-page", None),
+            saved("other", "", Some("http://ollama:11434/v1")),
+            saved("other-no-base", "k", None),
+        ]);
+        assert_eq!(ai.services[0].key.0, "from-page");
+        let gemini = ai.keys.iter().find(|k| k.provider == "gemini").unwrap();
+        assert_eq!(gemini.key.0, "from-page");
+        let other = ai.keys.iter().find(|k| k.provider == "other").unwrap();
+        assert_eq!(other.base, "http://ollama:11434/v1");
+        assert_eq!(ai.keys.len(), 2);
+    }
     use std::collections::HashMap;
 
     #[test]

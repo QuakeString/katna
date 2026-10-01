@@ -16,9 +16,11 @@
 //! carries an `X-Katna-Admin` header, which another site's page cannot add
 //! without the server's leave.
 //!
-//! Keys stay in the environment: the page shows which services have one
-//! and chooses among those, and never shows or takes a key. Its settings
-//! are saved in the database over the environment's.
+//! Keys come from the environment (`KATNA_SERVER_AI_<SERVICE>_KEY`) or
+//! are saved on the page, in the database, which is then used over the
+//! environment's. A key never comes back out: the page shows only where it
+//! is from and its last four characters. Its settings are saved in the
+//! database over the environment's too.
 //!
 //! - `GET /admin`, `/admin/app.js`, `/admin/app.css`: the page.
 //! - `GET /admin/api/status`: `{setup}`, true while an admin has no
@@ -33,6 +35,12 @@
 //! - `GET /admin/api/state`: settings, services and use.
 //! - `POST /admin/api/settings`: saves [`AiSettings`]; answers the state.
 //! - `POST /admin/api/test`: asks each chosen service a short question.
+//! - `POST /admin/api/key` `{provider, key, base}`: saves a service's key
+//!   (and the "other" service's address); answers the state.
+//! - `POST /admin/api/key/remove` `{provider}`: forgets a saved key, so the
+//!   environment's is used again, if any; answers the state.
+//! - `POST /admin/api/models` `{provider}`: the models the service offers
+//!   to its key, `{models}`, or `{problem}`.
 
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -45,11 +53,12 @@ use axum::http::{Method, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
+use katna_ai::provider::{self, ProviderError};
 use katna_ai::{PRESETS, Tone, prompt};
 use serde::{Deserialize, Serialize};
 
 use crate::accounts::limited;
-use crate::ai::{AiSettings, ask_one};
+use crate::ai::{AiSettings, ask_one, send};
 use crate::auth::{
     self, CODE_LIFETIME_MS, DUMMY_HASH, clean_code, code_hash, normalize_email, verify_password,
 };
@@ -70,6 +79,9 @@ const MAX_SESSIONS: usize = 32;
 
 /// The header every call of the page carries.
 const HEADER: &str = "x-katna-admin";
+
+/// How long the list of a service's models may take.
+const MODELS_TIMEOUT: Duration = Duration::from_secs(15);
 
 /// How long "Test" waits for each service.
 const TEST_TIMEOUT: Duration = Duration::from_secs(20);
@@ -217,6 +229,9 @@ pub fn routes() -> Router<AppState> {
         .route("/admin/api/state", get(show))
         .route("/admin/api/settings", post(save))
         .route("/admin/api/test", post(test))
+        .route("/admin/api/key", post(save_key))
+        .route("/admin/api/key/remove", post(remove_key))
+        .route("/admin/api/models", post(models))
 }
 
 /// `body` as `content_type`, not cached, under the page's rules.
@@ -501,8 +516,17 @@ struct Service {
     name: &'static str,
     /// Its usual model.
     model: &'static str,
-    /// Whether its key is in the environment.
+    /// Whether it has a key (or, for the "other" service, an address).
     has_key: bool,
+    /// Where that is from: `page` (saved here) or `env`.
+    key_from: Option<&'static str>,
+    /// The key's last four characters, when it is long enough to hide the
+    /// rest.
+    key_end: Option<String>,
+    /// The "other" service's address.
+    base: Option<String>,
+    /// Whether it works without a key.
+    key_optional: bool,
 }
 
 /// What the page shows.
@@ -518,7 +542,6 @@ struct PageState {
 
 async fn page_state(state: &AppState, email: String) -> Result<PageState, ApiError> {
     let ai = state.ai();
-    let env = &state.config().ai;
     let now = now_ms();
     let stats = state
         .db()
@@ -529,22 +552,37 @@ async fn page_state(state: &AppState, email: String) -> Result<PageState, ApiErr
             ai.account_cap_micros as i64,
         )
         .await?;
+    let saved = state.db().ai_keys().await?;
     Ok(PageState {
         email,
         settings: AiSettings::of(&ai),
         services: PRESETS
             .iter()
-            .map(|preset| Service {
-                id: preset.id,
-                // The app translates the last one's name; the page is in
-                // English.
-                name: if preset.name.is_empty() {
-                    "Other (OpenAI-like)"
-                } else {
-                    preset.name
-                },
-                model: preset.model,
-                has_key: env.keys.iter().any(|known| known.provider == preset.id),
+            .map(|preset| {
+                let known = ai.keys.iter().find(|known| known.provider == preset.id);
+                let from_page = saved.iter().any(|key| key.provider == preset.id);
+                let key = known.map_or("", |known| known.key.0.as_str());
+                Service {
+                    id: preset.id,
+                    // The app translates the last one's name; the page is in
+                    // English.
+                    name: if preset.name.is_empty() {
+                        "Other (OpenAI-like)"
+                    } else {
+                        preset.name
+                    },
+                    model: preset.model,
+                    has_key: known.is_some(),
+                    key_from: known.map(|_| if from_page { "page" } else { "env" }),
+                    key_end: (key.chars().count() >= 16).then(|| {
+                        let end: Vec<char> = key.chars().rev().take(4).collect();
+                        end.into_iter().rev().collect()
+                    }),
+                    base: (preset.id == katna_ai::provider::OTHER)
+                        .then(|| known.map(|known| known.base.clone()))
+                        .flatten(),
+                    key_optional: !preset.needs_key,
+                }
             })
             .collect(),
         month: month_of(now),
@@ -562,7 +600,7 @@ async fn save(
     Json(settings): Json<AiSettings>,
 ) -> Result<Json<PageState>, ApiError> {
     let ai = settings
-        .apply(&state.config().ai)
+        .apply(&state.ai_base().await?)
         .map_err(|problem| ApiError::Invalid("bad_settings", problem))?;
     let json = serde_json::to_string(&settings).map_err(|_| ApiError::Hash)?;
     state
@@ -611,6 +649,129 @@ async fn test(State(state): State<AppState>, _admin: Admin) -> Json<Vec<Tested>>
         });
     }
     Json(results)
+}
+
+/// A key typed on the page.
+#[derive(Deserialize)]
+struct NewKey {
+    provider: String,
+    #[serde(default)]
+    key: String,
+    /// The "other" service's address.
+    #[serde(default)]
+    base: String,
+}
+
+/// A service named on the page.
+#[derive(Deserialize)]
+struct Named {
+    provider: String,
+}
+
+fn known_preset(id: &str) -> Result<&'static katna_ai::provider::Preset, ApiError> {
+    PRESETS
+        .iter()
+        .find(|preset| preset.id == id)
+        .ok_or(ApiError::Invalid("bad_provider", "no such service"))
+}
+
+async fn save_key(
+    State(state): State<AppState>,
+    admin: Admin,
+    Json(new): Json<NewKey>,
+) -> Result<Json<PageState>, ApiError> {
+    let preset = known_preset(&new.provider)?;
+    let key = new.key.trim();
+    if key.len() > 1000 || key.chars().any(|c| c.is_whitespace() || c.is_control()) {
+        return Err(ApiError::Invalid("bad_key", "that is not a key"));
+    }
+    if key.is_empty() && preset.needs_key {
+        return Err(ApiError::Invalid("bad_key", "type the key"));
+    }
+    let base = new.base.trim().trim_end_matches('/');
+    let base = if preset.id == katna_ai::provider::OTHER {
+        if !(base.starts_with("https://") || base.starts_with("http://"))
+            || base.len() > 300
+            || base.chars().any(|c| c.is_whitespace() || c.is_control())
+        {
+            return Err(ApiError::Invalid(
+                "bad_address",
+                "the address starts with https://",
+            ));
+        }
+        Some(base)
+    } else {
+        None
+    };
+    state
+        .db()
+        .set_ai_key(preset.id, key, base, &admin.email, now_ms())
+        .await?;
+    state.load_ai_settings().await?;
+    tracing::info!(
+        provider = preset.id,
+        "a Katna AI key was saved on the admin page"
+    );
+    Ok(Json(page_state(&state, admin.email).await?))
+}
+
+async fn remove_key(
+    State(state): State<AppState>,
+    admin: Admin,
+    Json(named): Json<Named>,
+) -> Result<Json<PageState>, ApiError> {
+    let preset = known_preset(&named.provider)?;
+    if state.db().remove_ai_key(preset.id).await? {
+        state.load_ai_settings().await?;
+        tracing::info!(
+            provider = preset.id,
+            "a Katna AI key was removed on the admin page"
+        );
+    }
+    Ok(Json(page_state(&state, admin.email).await?))
+}
+
+/// The models of a service, or why there are none.
+#[derive(Serialize)]
+struct Models {
+    models: Vec<String>,
+    problem: Option<&'static str>,
+}
+
+async fn models(
+    State(state): State<AppState>,
+    _admin: Admin,
+    Json(named): Json<Named>,
+) -> Result<Json<Models>, ApiError> {
+    let preset = known_preset(&named.provider)?;
+    let ai = state.ai();
+    let Some(service) = ai.keys.iter().find(|known| known.provider == preset.id) else {
+        return Ok(Json(Models {
+            models: Vec::new(),
+            problem: Some("has no key"),
+        }));
+    };
+    let call = provider::models_call(service.kind(), &service.base, &service.key.0);
+    let answer = match tokio::time::timeout(MODELS_TIMEOUT, send(&call)).await {
+        Ok(Ok((status, body))) => match provider::models(service.kind(), status, &body) {
+            Ok(models) => Ok(models),
+            Err(ProviderError::Key) => Err("refused the key"),
+            Err(ProviderError::TooMany) => Err("is over its limits"),
+            Err(ProviderError::Failed(_)) => Err("did not list its models"),
+        },
+        Ok(Err(_)) => Err("could not be reached"),
+        Err(_) => Err("took too long"),
+    };
+    Ok(Json(match answer {
+        Ok(models) => Models {
+            models,
+            problem: None,
+        },
+        Err(problem) => Models {
+            models: Vec::new(),
+            problem: Some(problem),
+        },
+    }))
 }
 
 #[cfg(test)]
