@@ -1,0 +1,106 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Katna Server admin</title>
+<link rel="stylesheet" href="/admin/app.css">
+<script src="/admin/app.js" defer></script>
+</head>
+<body>
+<div id="signin" class="center" hidden>
+  <form id="signin-form" class="card signin" novalidate>
+    <div class="brand"><span class="logo" aria-hidden="true">K</span><span class="brand-name">Katna Server admin</span></div>
+    <p class="muted">Sign in with your Katna account. Only addresses listed in the server's .env can open this page.</p>
+    <div class="field"><label for="email">Address</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="field" id="password-field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+    <div class="field" id="code-field" hidden><label for="code">Code we just mailed you</label><input id="code" inputmode="numeric" autocomplete="one-time-code" class="code"></div>
+    <p id="signin-problem" class="problem" role="alert" hidden></p>
+    <button type="submit" id="signin-button" class="primary">Continue</button>
+    <p class="muted small centered">Signed in for 12 hours on this browser.</p>
+  </form>
+</div>
+
+<div id="admin" hidden>
+  <header class="bar">
+    <span class="logo" aria-hidden="true">K</span>
+    <span class="brand-name">Katna Server</span>
+    <span class="muted">· Katna AI</span>
+    <span class="grow"></span>
+    <span id="who" class="muted"></span>
+    <button type="button" id="sign-out" class="quiet">Sign out</button>
+  </header>
+  <main class="grid">
+    <section class="card wide">
+      <div class="row baseline">
+        <h2 id="month-name"></h2>
+        <span class="muted">so far, in US dollars</span>
+        <span class="grow"></span>
+        <span id="status" class="status"><span class="dot"></span><span id="status-text"></span></span>
+      </div>
+      <div>
+        <div class="row baseline"><span id="spent" class="big"></span><span id="budget-of" class="muted"></span></div>
+        <div class="meter" role="meter" id="meter" aria-label="Budget used" aria-valuemin="0" aria-valuemax="100"><div id="meter-fill"></div></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="muted small">Requests</div><div id="requests" class="tile-value"></div></div>
+        <div class="tile"><div class="muted small">Accounts in the free month</div><div id="trial" class="tile-value"></div></div>
+        <div class="tile"><div class="muted small">Paid accounts</div><div id="paid" class="tile-value"></div></div>
+        <div class="tile"><div class="muted small">At their monthly cap</div><div id="capped" class="tile-value"></div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>AI service</h2>
+      <div class="field">
+        <label for="main-provider">Asked first</label>
+        <div class="pair"><select id="main-provider"></select><input id="main-model" aria-label="Model asked first" spellcheck="false"></div>
+      </div>
+      <div class="field">
+        <label for="fallback-provider">When that fails</label>
+        <div class="pair"><select id="fallback-provider"></select><input id="fallback-model" aria-label="Model asked when the first fails" spellcheck="false"></div>
+      </div>
+      <div class="field">
+        <span class="label">Keys in the server's .env</span>
+        <div id="keys" class="chips"></div>
+        <p class="muted small">Keys never show here and can't be typed here. A service is offered once its key is in .env.</p>
+      </div>
+      <div class="row">
+        <button type="button" id="test" class="quiet">Test both</button>
+        <span id="test-result" class="small" role="status"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Limits and price</h2>
+      <div class="fields">
+        <div class="field"><label for="budget">Monthly budget, everyone ($)</label><input id="budget" inputmode="decimal"></div>
+        <div class="field"><label for="cap">Monthly cap per account ($)</label><input id="cap" inputmode="decimal"></div>
+        <div class="field"><label for="trial-days">Free days from first use</label><input id="trial-days" inputmode="numeric"></div>
+        <div class="field"><label for="per-hour">Requests per account per hour</label><input id="per-hour" inputmode="numeric"></div>
+        <div class="field"><label for="price-in">Model price in, per 1M tokens ($)</label><input id="price-in" inputmode="decimal"></div>
+        <div class="field"><label for="price-out">Model price out, per 1M tokens ($)</label><input id="price-out" inputmode="decimal"></div>
+      </div>
+      <div class="switch-row">
+        <label for="on" class="grow">Katna AI on</label>
+        <span class="muted small">Off stops every request at once</span>
+        <input id="on" type="checkbox">
+      </div>
+    </section>
+
+    <section class="card wide months">
+      <h2 class="small-title">Last 6 months</h2>
+      <div id="months" class="bars"></div>
+    </section>
+
+    <div class="wide actions">
+      <span id="save-result" class="small" role="status"></span>
+      <button type="button" id="undo" class="quiet">Undo changes</button>
+      <button type="button" id="save" class="primary">Save</button>
+    </div>
+  </main>
+</div>
+</body>
+</html>

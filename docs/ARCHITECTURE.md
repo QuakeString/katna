@@ -3721,8 +3721,20 @@ Server and the user's own key, both; Gemini 2.5 Flash-Lite by default).
   (UTC): an account stops at `_ACCOUNT_CAP_USD` (1.00) and everyone at
   `_BUDGET_USD` (50; 0 is off), with 300 requests an hour per account.
   Text and answers are neither logged nor kept. Keys and the Razorpay
-  secrets come from environment variables only; a sign-in protected
-  admin page to change the service, model and budget is to come.
+  secrets come from environment variables only.
+- **Admin page** (`/admin`, `server/katna-server/src/admin.rs`): for the
+  Katna accounts in `KATNA_SERVER_ADMIN_EMAILS` (none: 404). Sign-in is the
+  Katna password, then a code mailed to the account; the session is a
+  12-hour `__Host-` cookie (`Secure`, `HttpOnly`, `SameSite=Strict`) kept
+  in memory, and every call also carries `X-Katna-Admin: 1`. It shows this
+  month's cost against the budget, requests, accounts in the free month,
+  paid and at their cap, and the last six months; it chooses the service
+  asked first and the fallback, with a model each, among those with a key
+  in the environment (`KATNA_SERVER_AI_<SERVICE>_KEY`; keys never show
+  there), the limits and prices, and an off switch; "Test" asks each
+  chosen service a short question. Its settings are saved in the database
+  (`ai_settings`) over the environment's. The page is static HTML, CSS
+  and script served by the server under a strict Content Security Policy.
 
 ## 17. Performance budget
 

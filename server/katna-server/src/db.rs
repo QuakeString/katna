@@ -119,6 +119,14 @@ const MIGRATIONS: &[&str] = &[
          requests BIGINT NOT NULL DEFAULT 0,
          cost_micros BIGINT NOT NULL DEFAULT 0
      );",
+    // 6: Katna AI's settings from the admin page (JSON), over those of the
+    // environment.
+    "CREATE TABLE ai_settings (
+         id INTEGER PRIMARY KEY CHECK (id = 1),
+         value TEXT NOT NULL,
+         updated_at BIGINT NOT NULL,
+         updated_by TEXT NOT NULL
+     );",
 ];
 
 /// Wrong guesses allowed for one emailed code.
@@ -250,6 +258,23 @@ pub struct AiSpent {
     pub account: i64,
     /// For all accounts together.
     pub everyone: i64,
+}
+
+/// Katna AI's use, for the admin page.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub struct AiStats {
+    /// Requests this month.
+    pub requests: i64,
+    /// What they cost, in millionths of a US dollar.
+    pub cost_micros: i64,
+    /// Accounts in their free month.
+    pub trial_accounts: i64,
+    /// Accounts with paid time left.
+    pub paid_accounts: i64,
+    /// Accounts at their monthly cap.
+    pub capped_accounts: i64,
+    /// Cost per month, oldest first: `(yyyymm, millionths)`.
+    pub months: Vec<(i32, i64)>,
 }
 
 /// The database.
@@ -946,6 +971,80 @@ impl Db {
         Ok(())
     }
 
+    /// Katna AI's settings saved from the admin page, as JSON.
+    pub async fn ai_settings(&self) -> Result<Option<String>, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query_opt("SELECT value FROM ai_settings WHERE id = 1", &[])
+            .await?
+            .map(|row| row.get(0)))
+    }
+
+    /// Saves Katna AI's settings (JSON), changed by `by`.
+    pub async fn set_ai_settings(&self, value: &str, by: &str, now: i64) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO ai_settings (id, value, updated_at, updated_by) VALUES (1, $1, $2, $3)
+                 ON CONFLICT (id) DO UPDATE SET value = $1, updated_at = $2, updated_by = $3",
+                &[&value, &now, &by],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// Katna AI's use in `months` (yyyymm, the last one this month) at
+    /// `now`, with a free time of `trial_ms` and a cap per account of
+    /// `cap_micros`.
+    pub async fn ai_stats(
+        &self,
+        months: &[i32],
+        now: i64,
+        trial_ms: i64,
+        cap_micros: i64,
+    ) -> Result<AiStats, DbError> {
+        let month = *months.last().unwrap_or(&month_of(now));
+        let client = self.pool.get().await?;
+        let row = client
+            .query_one(
+                "SELECT
+                     COALESCE((SELECT requests FROM ai_spend WHERE month = $1), 0),
+                     COALESCE((SELECT cost_micros FROM ai_spend WHERE month = $1), 0),
+                     (SELECT count(*) FROM ai_plans
+                      WHERE (paid_until IS NULL OR paid_until <= $2) AND first_use > $2 - $3),
+                     (SELECT count(*) FROM ai_plans WHERE paid_until > $2),
+                     (SELECT count(*) FROM ai_usage WHERE month = $1 AND cost_micros >= $4)",
+                &[&month, &now, &trial_ms, &cap_micros],
+            )
+            .await?;
+        let spent: Vec<(i32, i64)> = client
+            .query(
+                "SELECT month, cost_micros FROM ai_spend WHERE month = ANY($1)",
+                &[&months],
+            )
+            .await?
+            .iter()
+            .map(|row| (row.get(0), row.get(1)))
+            .collect();
+        Ok(AiStats {
+            requests: row.get(0),
+            cost_micros: row.get(1),
+            trial_accounts: row.get(2),
+            paid_accounts: row.get(3),
+            capped_accounts: row.get(4),
+            months: months
+                .iter()
+                .map(|m| {
+                    let cost = spent.iter().find(|(s, _)| s == m).map_or(0, |(_, c)| *c);
+                    (*m, cost)
+                })
+                .collect(),
+        })
+    }
+
     /// Deletes tracking IDs created before `before` (with their events) and
     /// installs not seen since then. Returns how many of each went.
     pub async fn purge(&self, before: i64) -> Result<(u64, u64), DbError> {
@@ -992,6 +1091,24 @@ pub fn month_of(ms: i64) -> i32 {
     (year * 100 + month) as i32
 }
 
+/// The `count` calendar months up to and including that of `ms`, oldest
+/// first, as yyyymm.
+pub fn months_to(ms: i64, count: usize) -> Vec<i32> {
+    let last = month_of(ms);
+    let (mut year, mut month) = (last / 100, last % 100);
+    let mut months = vec![last];
+    while months.len() < count {
+        month -= 1;
+        if month == 0 {
+            month = 12;
+            year -= 1;
+        }
+        months.push(year * 100 + month);
+    }
+    months.reverse();
+    months
+}
+
 /// Milliseconds since the Unix epoch.
 pub fn now_ms() -> i64 {
     std::time::SystemTime::now()
@@ -1013,5 +1130,9 @@ mod tests {
         // 2024-02-29.
         assert_eq!(month_of(1_709_164_800_000), 202_402);
         assert_eq!(month_of(1_709_251_200_000), 202_403);
+        assert_eq!(
+            months_to(1_709_251_200_000, 6),
+            [202_310, 202_311, 202_312, 202_401, 202_402, 202_403]
+        );
     }
 }

@@ -60,14 +60,24 @@ pub struct Config {
     pub mail_from: String,
     /// Katna AI: writing help for Katna accounts (`crate::ai`).
     pub ai: AiConfig,
+    /// Katna accounts that may open the admin page at `/admin`
+    /// (`KATNA_SERVER_ADMIN_EMAILS`, split by commas or spaces,
+    /// lowercased); empty turns the page off.
+    pub admin_emails: Vec<String>,
 }
 
 /// Katna AI's settings (`KATNA_SERVER_AI_*`).
 #[derive(Clone, Debug)]
 pub struct AiConfig {
+    /// Whether Katna AI answers at all (the admin page's switch).
+    pub on: bool,
     /// The services asked, in order: the first, then the fallback when the
     /// first fails. Empty turns Katna AI off.
     pub services: Vec<AiService>,
+    /// Every service with a key in the settings, which the admin page may
+    /// choose from: `KATNA_SERVER_AI_<PROVIDER>_KEY` (and
+    /// `KATNA_SERVER_AI_OTHER_BASE`), and those of [`AiConfig::services`].
+    pub keys: Vec<AiService>,
     /// Days free from an account's first use (`KATNA_SERVER_AI_TRIAL_DAYS`,
     /// default 30).
     pub trial_days: u32,
@@ -90,7 +100,9 @@ pub struct AiConfig {
 impl Default for AiConfig {
     fn default() -> Self {
         Self {
+            on: true,
             services: Vec::new(),
+            keys: Vec::new(),
             trial_days: 30,
             account_cap_micros: 1_000_000,
             budget_micros: 50_000_000,
@@ -111,6 +123,23 @@ pub struct AiService {
     pub base: String,
     pub model: String,
     pub key: Secret,
+}
+
+impl AiConfig {
+    /// `model` of the service `provider`, when its key is set.
+    pub fn service(&self, provider: &str, model: &str) -> Option<AiService> {
+        let model = model.trim();
+        if model.is_empty() || model.len() > 200 || model.chars().any(char::is_control) {
+            return None;
+        }
+        self.keys
+            .iter()
+            .find(|service| service.provider == provider)
+            .map(|service| AiService {
+                model: model.to_owned(),
+                ..service.clone()
+            })
+    }
 }
 
 impl AiService {
@@ -147,6 +176,7 @@ impl Default for Config {
             blocked_hosts: Vec::new(),
             mail_from: "Katna <no-reply@katna.invenia.in>".into(),
             ai: AiConfig::default(),
+            admin_emails: Vec::new(),
         }
     }
 }
@@ -251,6 +281,12 @@ impl Config {
             (None, None) => None,
         };
         config.ai = ai_config(&set)?;
+        if let Some(value) = set("KATNA_SERVER_ADMIN_EMAILS") {
+            config.admin_emails = value
+                .split(|c: char| c == ',' || c.is_whitespace())
+                .filter_map(crate::auth::normalize_email)
+                .collect();
+        }
         if let Some(value) = set("KATNA_SERVER_MAIL_FROM") {
             config.mail_from = value;
         } else if let Some(address) = username.filter(|u| u.contains('@')) {
@@ -303,6 +339,42 @@ fn ai_config(set: &dyn Fn(&str) -> Option<String>) -> Result<AiConfig, ConfigErr
             model,
             key: Secret(key),
         });
+    }
+    // Keys for the admin page to choose from: one per service.
+    for preset in katna_ai::PRESETS {
+        let upper = preset.id.to_uppercase();
+        let key = set(&format!("KATNA_SERVER_AI_{upper}_KEY")).unwrap_or_default();
+        let base = if preset.id == katna_ai::provider::OTHER {
+            match set("KATNA_SERVER_AI_OTHER_BASE") {
+                Some(base) if base.starts_with("https://") || base.starts_with("http://") => base,
+                Some(base) => {
+                    return Err(ConfigError {
+                        name: "KATNA_SERVER_AI_OTHER_BASE",
+                        problem: format!("{base:?}: an https:// address (http:// only inside)"),
+                    });
+                }
+                None => continue,
+            }
+        } else if key.is_empty() {
+            continue;
+        } else {
+            preset.base.to_owned()
+        };
+        ai.keys.push(AiService {
+            provider: preset.id,
+            base,
+            model: preset.model.to_owned(),
+            key: Secret(key),
+        });
+    }
+    for service in &ai.services {
+        if !ai
+            .keys
+            .iter()
+            .any(|known| known.provider == service.provider)
+        {
+            ai.keys.push(service.clone());
+        }
     }
     let usd = |name: &'static str, default: u64| -> Result<u64, ConfigError> {
         match set(name) {
@@ -429,6 +501,8 @@ mod tests {
             ("KATNA_SERVER_AI_FALLBACK_PROVIDER", "mistral"),
             ("KATNA_SERVER_AI_FALLBACK_KEY", "m-secret"),
             ("KATNA_SERVER_AI_BUDGET_USD", "12.5"),
+            ("KATNA_SERVER_AI_OPENROUTER_KEY", "o-secret"),
+            ("KATNA_SERVER_ADMIN_EMAILS", "Mz@Invenia.in, nope"),
         ]);
         let config = Config::from_lookup(|name| env.get(name).map(|v| v.to_string())).unwrap();
         let ai = &config.ai;
@@ -438,7 +512,15 @@ mod tests {
         assert_eq!(ai.services[1].base, "https://api.mistral.ai/v1");
         assert_eq!(ai.budget_micros, 12_500_000);
         assert_eq!(ai.trial_days, 30);
+        assert_eq!(config.admin_emails, ["mz@invenia.in"]);
+        let providers: Vec<_> = ai.keys.iter().map(|s| s.provider).collect();
+        assert_eq!(providers, ["openrouter", "gemini", "mistral"]);
         assert!(!format!("{config:?}").contains("secret"));
+        // The two services' keys can be chosen on the admin page.
+        let chosen = ai.service("mistral", "mistral-large-latest").unwrap();
+        assert_eq!(chosen.key.0, "m-secret");
+        assert_eq!(chosen.model, "mistral-large-latest");
+        assert!(ai.service("openai", "gpt-5-mini").is_none());
         // No key: Katna AI is off.
         let off = Config::from_lookup(|name| (name == "DATABASE_URL").then(|| "x".into())).unwrap();
         assert!(off.ai.services.is_empty());

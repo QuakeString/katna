@@ -59,8 +59,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let listener = tokio::net::TcpListener::bind(config.listen).await?;
     tracing::info!(address = %config.listen, "listening");
-    let app = router(AppState::with_mailer(db, config, mailer))
-        .into_make_service_with_connect_info::<SocketAddr>();
+    let state = AppState::with_mailer(db, config, mailer);
+    state.load_ai_settings().await?;
+    let app = router(state).into_make_service_with_connect_info::<SocketAddr>();
     // Event streams never end on their own, so shutdown waits for them only
     // briefly.
     let server = axum::serve(listener, app).with_graceful_shutdown(shutdown_signal());
