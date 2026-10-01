@@ -462,8 +462,14 @@ impl MailWindow {
             compose.body.focus_handle(cx)
         };
         window.focus(&focus, cx);
+        if old == Kind::Forward {
+            compose.drop_forwarded();
+        }
         self.chips_changed(Field::To, cx);
         self.chips_changed(Field::Cc, cx);
+        if kind == Kind::Forward {
+            self.attach_forwarded(cx);
+        }
         cx.notify();
     }
 }

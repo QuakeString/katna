@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Forward keeps the files"
+text = """
+Forwarding a message now brings its attachments along, shown under the
+message so you can take any of them off before sending. Switching the
+forward to a reply leaves them out again.
+"""
