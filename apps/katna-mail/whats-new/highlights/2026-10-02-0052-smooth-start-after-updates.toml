@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Smooth start after updates"
+text = """
+After an update, Katna Mail no longer says the mail store could not be
+opened while it gets your mail ready for the new version. It shows the
+usual loading picture for those few seconds, then your mail.
+"""

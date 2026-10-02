@@ -30,7 +30,7 @@ use katna_ui::px;
 
 use super::account_status::{AccountStatus, Of, Say};
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
-use super::{MailWindow, Menu, MenuKey};
+use super::{MIGRATION_RETRY, MailWindow, Menu, MenuKey};
 use menu::CalTarget;
 
 mod birthdays;
@@ -482,12 +482,10 @@ pub(super) fn read(
     to: i64,
     tz: &TimeZone,
     birthdays: bool,
-) -> Result<(Vec<Calendar>, Vec<Occurrence>), String> {
-    let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
-    let mut calendars = store.calendars().map_err(|err| err.to_string())?;
-    let rows = store
-        .event_rows_in_range(from, to)
-        .map_err(|err| err.to_string())?;
+) -> katna_store::Result<(Vec<Calendar>, Vec<Occurrence>)> {
+    let store = Store::open(paths, Mode::ReadOnly)?;
+    let mut calendars = store.calendars()?;
+    let rows = store.event_rows_in_range(from, to)?;
     let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
     birthdays::add_birthdays(
         &store,
@@ -540,9 +538,19 @@ impl MailWindow {
                         });
                         page.error = None;
                     }
+                    // The daemon is moving the store up to this version,
+                    // as it does as it starts after an update: the page
+                    // keeps loading and reads it again shortly.
+                    Err(katna_store::Error::SchemaOutdated { .. }) => {
+                        page.loading = true;
+                        page.task = Some(cx.spawn(async move |this, cx| {
+                            cx.background_executor().timer(MIGRATION_RETRY).await;
+                            this.update(cx, |this, cx| this.load_calendar(cx)).ok();
+                        }));
+                    }
                     Err(err) => {
                         tracing::warn!(%err, "reading the calendar failed");
-                        page.error = Some(err);
+                        page.error = Some(err.to_string());
                     }
                 }
                 cx.notify();

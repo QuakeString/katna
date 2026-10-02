@@ -342,6 +342,9 @@ pub enum OpenError {
     NoStore {
         data_dir: String,
     },
+    /// The daemon has not yet moved a database up to this version's
+    /// schema, as just after an update: it does so as it starts.
+    Migrating(String),
     Other(String),
 }
 
@@ -532,6 +535,9 @@ impl Mail {
             katna_store::Error::NotFound { .. } => OpenError::NoStore {
                 data_dir: paths.data_dir().display().to_string(),
             },
+            err @ katna_store::Error::SchemaOutdated { .. } => {
+                OpenError::Migrating(err.to_string())
+            }
             err => OpenError::Other(err.to_string()),
         })?;
         let index_dir = paths.index_dir();
@@ -1856,6 +1862,23 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
         let tmp = tempfile::tempdir().unwrap();
         let paths = Paths::with_root(tmp.path());
         assert!(matches!(Mail::open(&paths), Err(OpenError::NoStore { .. })));
+    }
+
+    #[test]
+    fn store_waiting_for_the_daemon() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        // As an update leaves it: a schema one version behind. SQLite keeps
+        // `user_version` at byte 60 of the header.
+        let db = paths.pim_db();
+        let mut bytes = std::fs::read(&db).unwrap();
+        let version = u32::from_be_bytes(bytes[60..64].try_into().unwrap());
+        bytes[60..64].copy_from_slice(&(version - 1).to_be_bytes());
+        std::fs::write(&db, bytes).unwrap();
+        assert!(matches!(Mail::open(&paths), Err(OpenError::Migrating(_))));
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        assert!(Mail::open(&paths).is_ok());
     }
 
     #[test]
