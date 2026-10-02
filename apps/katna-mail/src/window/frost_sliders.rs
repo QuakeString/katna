@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Settings > Experimental > Blur > Custom blur amount: how far the
-//! frosted menus and dialogs blur what is under them, and how opaque their
-//! tint is. Dragging shows the frost change as it goes and saves on
-//! letting go; the arrow keys, Home, End and the mouse wheel step it. With
-//! the switch off, the frost follows KDE's blur strength, or Katna's own
-//! when there is none (`katna_platform::blur`).
+//! The sliders of Settings > Experimental. Blur > Custom blur amount: how
+//! far the frosted menus and dialogs blur what is under them, and how
+//! opaque their tint and a blurred window background are. With the switch
+//! off, the frost follows KDE's blur strength, or Katna's own when there is
+//! none (`katna_platform::blur`). Window frame > Katna: the corners'
+//! roundness and the border's opacity. Dragging shows the change as it goes
+//! and saves on letting go; the arrow keys, Home, End and the mouse wheel
+//! step it.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -33,13 +35,17 @@ const KNOB: f32 = 18.0;
 /// (and default) is Katna's default, [`FROST_BLUR`].
 const KDE_LIGHT: f32 = 4.0;
 
-/// One of the two sliders.
+/// One of the sliders.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub(super) enum Amount {
     /// The blur, in pixels.
     Blur,
     /// The tint's opacity, in percent.
     Opacity,
+    /// The window's corner radius, in pixels.
+    Radius,
+    /// The window border's opacity, in percent.
+    BorderOpacity,
 }
 
 impl Amount {
@@ -48,13 +54,17 @@ impl Amount {
         match self {
             Amount::Blur => (4, 48, 2),
             Amount::Opacity => (10, 95, 5),
+            Amount::Radius => (0, 16, 1),
+            Amount::BorderOpacity => (5, 100, 5),
         }
     }
 
-    fn default(self) -> u8 {
+    /// Katna's own value, where it does not depend on the desktop.
+    fn default(self) -> Option<u8> {
         match self {
-            Amount::Blur => FROST_BLUR,
-            Amount::Opacity => FROST_OPACITY,
+            Amount::Blur => Some(FROST_BLUR),
+            Amount::Opacity => Some(FROST_OPACITY),
+            Amount::Radius | Amount::BorderOpacity => None,
         }
     }
 
@@ -62,6 +72,17 @@ impl Amount {
         match self {
             Amount::Blur => Change::FrostBlur(value),
             Amount::Opacity => Change::FrostOpacity(value),
+            Amount::Radius => Change::WindowRadius(value),
+            Amount::BorderOpacity => Change::WindowBorderOpacity(value),
+        }
+    }
+
+    fn id(self) -> &'static str {
+        match self {
+            Amount::Blur => "page-frost-blur",
+            Amount::Opacity => "page-frost-opacity",
+            Amount::Radius => "page-window-radius",
+            Amount::BorderOpacity => "page-window-border-opacity",
         }
     }
 
@@ -94,13 +115,13 @@ impl Amount {
     }
 }
 
-/// Drags and wheel turns on the two sliders.
+/// Drags and wheel turns on the sliders.
 #[derive(Default)]
 pub(super) struct FrostDrag {
     /// The slider being dragged, and the value under the pointer.
     dragging: Option<(Amount, u8)>,
     /// The tracks, as last laid out.
-    tracks: [Rc<Cell<Option<Bounds<Pixels>>>>; 2],
+    tracks: [Rc<Cell<Option<Bounds<Pixels>>>>; 4],
     wheel: Notches,
 }
 
@@ -138,10 +159,48 @@ impl MailWindow {
 
     fn saved_amount(&self, amount: Amount) -> u8 {
         let experimental = &self.config.experimental;
+        let (radius, border) = self.natural_corners();
         match amount {
             Amount::Blur => experimental.frost_blur,
             Amount::Opacity => experimental.frost_opacity,
+            Amount::Radius => experimental.window_radius.unwrap_or(radius),
+            Amount::BorderOpacity => experimental.window_border_opacity.unwrap_or(border),
         }
+    }
+
+    /// The frame's own corner radius and border opacity, before the
+    /// settings change them.
+    fn natural_corners(&self) -> (u8, u8) {
+        let (radius, border) = self.chrome.natural_corners();
+        (radius.round().clamp(0.0, 255.0) as u8, border)
+    }
+
+    /// Where the slider's mark goes: Katna's default, or the frame's own.
+    fn mark(&self, amount: Amount) -> u8 {
+        let (radius, border) = self.natural_corners();
+        amount.default().unwrap_or(match amount {
+            Amount::Radius => radius,
+            _ => border,
+        })
+    }
+
+    /// The window's look with the slider being dragged, so the frame and a
+    /// blurred background change as it moves.
+    fn look_now(&self) -> katna_chrome::Look {
+        let mut look = super::look(&self.config);
+        let dragging = self
+            .settings_page
+            .as_ref()
+            .and_then(|page| page.frost.dragging);
+        match dragging {
+            Some((Amount::Radius, value)) => look.radius = Some(value),
+            Some((Amount::BorderOpacity, value)) => look.border_opacity = Some(value),
+            Some((Amount::Opacity, value)) if self.config.experimental.custom_frost => {
+                look.blur_opacity = Some(super::look::window_opacity(value));
+            }
+            _ => {}
+        }
+        look
     }
 
     /// Moves `amount` by `steps` steps and saves it.
@@ -179,6 +238,40 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The corners' roundness slider, or the border's opacity
+    /// (`border`), under Window frame > Katna.
+    pub(super) fn frame_sliders(
+        &self,
+        border: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let slider = if border {
+            self.frost_slider(
+                Amount::BorderOpacity,
+                tr!("look-window-border-opacity"),
+                tr!("look-window-border-faint"),
+                tr!("look-window-border-strong"),
+                th,
+                cx,
+            )
+        } else {
+            self.frost_slider(
+                Amount::Radius,
+                tr!("look-window-radius"),
+                tr!("look-window-radius-square"),
+                tr!("look-window-radius-round"),
+                th,
+                cx,
+            )
+        };
+        div()
+            .px(px(8.0))
+            .pb(px(4.0))
+            .child(slider)
+            .into_any_element()
+    }
+
     fn frost_slider(
         &self,
         amount: Amount,
@@ -200,12 +293,9 @@ impl MailWindow {
         let entity = cx.entity().downgrade();
         let down_track = track.clone();
         let paint_track = track.clone();
-        let id = match amount {
-            Amount::Blur => "page-frost-blur",
-            Amount::Opacity => "page-frost-opacity",
-        };
+        let mark = amount.fraction(self.mark(amount));
         let slider = self
-            .page_control(div().id(id), th, cx)
+            .page_control(div().id(amount.id()), th, cx)
             .h(px(36.0))
             .px(px(KNOB / 2.0 + 4.0))
             .rounded(px(8.0))
@@ -274,7 +364,7 @@ impl MailWindow {
                     .child(
                         div()
                             .absolute()
-                            .left(relative(amount.fraction(amount.default())))
+                            .left(relative(mark))
                             .top(px(6.0))
                             .w(px(1.0))
                             .h(px(24.0))
@@ -321,6 +411,8 @@ impl MailWindow {
                                                     && page.frost.value(amount) != Some(value)
                                                 {
                                                     page.frost.dragging = Some((amount, value));
+                                                    let look = this.look_now();
+                                                    cx.set_global(look);
                                                     cx.notify();
                                                 }
                                             })
@@ -384,12 +476,19 @@ mod tests {
     #[test]
     fn values_snap_to_steps_inside_the_range() {
         let track = Bounds::new(point(px(100.0), px(0.0)), size(px(220.0), px(10.0)));
-        for amount in [Amount::Blur, Amount::Opacity] {
+        for amount in [
+            Amount::Blur,
+            Amount::Opacity,
+            Amount::Radius,
+            Amount::BorderOpacity,
+        ] {
             let (min, max, step) = amount.range();
             assert_eq!((max - min) % step, 0);
             assert_eq!(amount.value_at(track, px(0.0)), min);
             assert_eq!(amount.value_at(track, px(400.0)), max);
-            let default = amount.default();
+            let Some(default) = amount.default() else {
+                continue;
+            };
             assert_eq!((default - min) % step, 0);
             let x = px(100.0 + 220.0 * amount.fraction(default));
             assert_eq!(amount.value_at(track, x), default);
