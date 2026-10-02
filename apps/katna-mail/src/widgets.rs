@@ -543,6 +543,26 @@ fn dialog_frost(tint: f32, blur: f32) -> (f32, f32) {
     (tint + (1.0 - tint) * DIALOG_TINT, blur * DIALOG_BLUR)
 }
 
+/// A strip along the top of a card, frosted as [`frosted`] is when
+/// [`Theme::frost`] is on, else `fill`: rounded at the top only, by the
+/// card's inner `radius`, for a bar that content scrolls under.
+pub fn frosted_top<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radius: f32) -> E {
+    let corners = gpui::Corners {
+        top_left: px(radius),
+        top_right: px(radius),
+        ..Default::default()
+    };
+    if th.frost == 0 {
+        return panel.bg(rgba(fill)).rounded_t(px(radius));
+    }
+    let (tint, blur) = dialog_frost(f32::from(th.frost_tint) / 100.0, th.frost as f32);
+    panel.child(katna_ui::frost::glass(
+        rgba(fade(fill, tint)).into(),
+        corners,
+        blur,
+    ))
+}
+
 fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32, blur: f32) -> E {
     panel.child(katna_ui::frost::glass(
         rgba(fade(fill, tint)).into(),
