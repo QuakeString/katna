@@ -1355,12 +1355,28 @@ pub async fn drive_share_with_link(
         .map_err(|err| describe(&err))
 }
 
-/// Whether the sign-in of `account` lets Katna browse its drive.
-pub async fn cloud_readable(connection: &Connection, account: i64) -> Result<bool, String> {
+/// Whether the sign-in of `account` lets Katna upload into its drive.
+pub async fn cloud_writable(connection: &Connection, account: i64) -> Result<bool, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    pim.cloud_readable(account)
+    pim.cloud_writable(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Starts uploading file or folder `path` into folder `folder` of the
+/// drive of `account`; returns the upload's id.
+pub async fn cloud_upload(
+    connection: &Connection,
+    account: i64,
+    folder: &str,
+    path: &str,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_upload(account, folder, path)
         .await
         .map_err(|err| describe(&err))
 }

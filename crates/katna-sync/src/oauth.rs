@@ -40,9 +40,13 @@ pub const GOOGLE_MAIL: &str = "https://mail.google.com/";
 /// attachments too large to send by mail.
 pub const GOOGLE_DRIVE_FILE: &str = "https://www.googleapis.com/auth/drive.file";
 
-/// Google Drive, read only, all of it: for the drive in Files
-/// ([`crate::drive`]). Google calls it restricted; a published app needs
-/// its review.
+/// Google Drive, all of it: to browse the drive in Files and upload into
+/// any of its folders ([`crate::drive`]). Google calls it restricted; a
+/// published app needs its review.
+pub const GOOGLE_DRIVE: &str = "https://www.googleapis.com/auth/drive";
+
+/// Google Drive, read only, all of it: what Katna asked for before
+/// [`GOOGLE_DRIVE`]; a sign-in that granted it still browses.
 pub const GOOGLE_DRIVE_READ: &str = "https://www.googleapis.com/auth/drive.readonly";
 
 /// OneDrive, through Microsoft Graph: for attachments too large to send
@@ -263,13 +267,13 @@ impl Provider {
                 },
                 client_secret: katna_core::ids::GOOGLE_OAUTH_CLIENT_SECRET.into(),
                 // Full IMAP and SMTP, the files Katna puts in Drive for
-                // large attachments, the whole Drive to read in Files,
+                // large attachments, the whole Drive for Files,
                 // the calendars, the contacts (People API, other
                 // contacts, CardDAV), the task lists, the meetings Katna
                 // makes, and who signed in (address, name, picture) in
                 // the ID token.
                 scope: format!(
-                    "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_DRIVE_READ} {GOOGLE_CALENDAR} \
+                    "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_DRIVE} {GOOGLE_CALENDAR} \
                      {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} \
                      {GOOGLE_TASKS} {GOOGLE_MEET} openid email profile"
                 ),

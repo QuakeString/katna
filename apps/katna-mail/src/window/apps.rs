@@ -223,7 +223,21 @@ impl MailWindow {
     }
 
     /// The big button's action on the page on show.
+    /// The icon and words of the big button at the top of the side
+    /// column: the page's own action, or Upload while a drive is open.
+    pub(super) fn primary_button(&self) -> (&'static str, String) {
+        if self.drive_upload_here() {
+            ("upload", tr!("files-drive-upload"))
+        } else {
+            self.app.primary()
+        }
+    }
+
     pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.drive_upload_here() {
+            self.upload_into_drive(false, cx);
+            return;
+        }
         match self.app {
             App::Calendar => self.create_event_button(window, cx),
             App::Contacts => {

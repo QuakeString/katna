@@ -154,3 +154,14 @@ files-drive-get-failed = Couldn’t get { $name }: { $error }
 # Google's own documents and files over the mail limit are attached as a
 # link, which comes in the next update.
 files-drive-link-later = This file is too big to attach, or is a Google document. Open it in Google Drive to share its link.
+# The big button at the top of the side column while a drive is open, and
+# its arrow's menu.
+files-drive-upload = Upload
+files-drive-upload-files = Upload files
+files-drive-upload-folder = Upload folder
+# $name is a file or folder, $drive "Google Drive".
+files-drive-uploading = Uploading { $name } to { $drive }…
+files-drive-uploading-many = Uploading { $count } items to { $drive }…
+files-drive-uploaded = { $name } is in { $drive }
+files-drive-upload-failed = Couldn’t upload { $name }: { $error }
+files-drive-upload-needs = To upload, Katna needs your permission once: press Allow in Settings › Default apps › Files page.

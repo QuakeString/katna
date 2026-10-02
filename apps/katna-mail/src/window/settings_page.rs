@@ -1565,7 +1565,7 @@ impl MailWindow {
         cx.spawn(async move |this, cx| {
             let mut readable = Vec::new();
             for (id, _) in google {
-                if let Ok(can) = crate::daemon::cloud_readable(&connection, id.0).await {
+                if let Ok(can) = crate::daemon::cloud_writable(&connection, id.0).await {
                     readable.push((id, can));
                 }
             }

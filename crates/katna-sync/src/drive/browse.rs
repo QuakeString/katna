@@ -2,8 +2,9 @@
 
 //! Browsing a whole Google Drive for Files (`docs/ARCHITECTURE.md`
 //! §13.8): folders, what was shared with the account, search, thumbnails
-//! and downloads. Needs [`GOOGLE_DRIVE_READ`], which accounts signed in
-//! before Katna asked for it don't have yet.
+//! downloads, new folders and uploads into any folder. Needs
+//! [`GOOGLE_DRIVE`] (or, to browse only, [`GOOGLE_DRIVE_READ`]), which
+//! accounts signed in before Katna asked for it don't have yet.
 
 use std::path::Path;
 
@@ -14,7 +15,7 @@ use crate::{
     Error, Result,
     autoconfig::http,
     cloud::{CloudItem, CloudPage, Fetched, MAX_FETCH, MAX_THUMBNAIL, Place},
-    oauth::GOOGLE_DRIVE_READ,
+    oauth::{GOOGLE_DRIVE, GOOGLE_DRIVE_READ},
 };
 
 const FOLDER: &str = "application/vnd.google-apps.folder";
@@ -102,7 +103,34 @@ fn quoted(text: &str) -> String {
 impl Drive {
     /// Whether the account's sign-in lets Katna browse the whole Drive.
     pub async fn readable(&self) -> Result<bool> {
-        self.tokens.has_scope(GOOGLE_DRIVE_READ).await
+        Ok(self.writable().await? || self.tokens.has_scope(GOOGLE_DRIVE_READ).await?)
+    }
+
+    /// Whether the account's sign-in lets Katna put files in any folder.
+    pub async fn writable(&self) -> Result<bool> {
+        self.tokens.has_scope(GOOGLE_DRIVE).await
+    }
+
+    /// Makes folder `name` in folder `parent` (empty for the top of My
+    /// Drive) and returns its id.
+    pub async fn create_folder(&self, name: &str, parent: &str) -> Result<String> {
+        let mut metadata = serde_json::json!({ "name": name, "mimeType": FOLDER });
+        if !parent.is_empty() {
+            metadata["parents"] = serde_json::json!([parent]);
+        }
+        let body = metadata.to_string();
+        let url = format!("{}/drive/v3/files?fields=id", self.api);
+        let reply = self
+            .call(
+                "POST",
+                &url,
+                &[],
+                Some(("application/json; charset=UTF-8", body.as_bytes())),
+                None,
+            )
+            .await?;
+        check(&reply, "making a folder")?;
+        Ok(super::parse(&reply.body)?.id)
     }
 
     /// One page of `place`; `page` is the last page's `next`, or empty
@@ -398,5 +426,31 @@ mod tests {
         let link = format!("{api}/thumb/abc=s220");
         assert_eq!(smol::block_on(drive.thumbnail(&link, 400)).unwrap(), b"png");
         assert_eq!(seen.lock().unwrap()[0].path, "/thumb/abc=s400");
+    }
+
+    #[test]
+    fn reading_and_writing_follow_the_grant() {
+        let full = drive("http://127.0.0.1:1", GOOGLE_DRIVE);
+        assert!(smol::block_on(full.readable()).unwrap());
+        assert!(smol::block_on(full.writable()).unwrap());
+        let read = drive("http://127.0.0.1:1", GOOGLE_DRIVE_READ);
+        assert!(smol::block_on(read.readable()).unwrap());
+        assert!(!smol::block_on(read.writable()).unwrap());
+        let mine = drive("http://127.0.0.1:1", GOOGLE_DRIVE_FILE);
+        assert!(!smol::block_on(mine.readable()).unwrap());
+    }
+
+    #[test]
+    fn makes_a_folder_in_a_folder() {
+        let (api, seen) = serve(|_, _| (200, Vec::new(), r#"{"id": "new-1"}"#.into()));
+        let drive = drive(&api, GOOGLE_DRIVE);
+        let id = smol::block_on(drive.create_folder("Site photos", "parent-1")).unwrap();
+        assert_eq!(id, "new-1");
+        let seen = seen.lock().unwrap();
+        assert_eq!(seen[0].path, "/drive/v3/files?fields=id");
+        let body: serde_json::Value = serde_json::from_slice(&seen[0].body).unwrap();
+        assert_eq!(body["name"], "Site photos");
+        assert_eq!(body["mimeType"], FOLDER);
+        assert_eq!(body["parents"], serde_json::json!(["parent-1"]));
     }
 }

@@ -626,7 +626,9 @@ impl MailWindow {
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
         let label = self.layout.fab_label.value().clamp(0.0, 1.0);
-        let (icon_name, word) = self.app.primary();
+        let (icon_name, word) = self.primary_button();
+        // Upload asks first whether files or a folder go up.
+        let upload = self.drive_upload_here();
         Some(
             div()
                 .absolute()
@@ -645,9 +647,13 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .shadow(elevation(th, 3.0))
                         .when(label < 0.5, |d| d.tooltip(tip(word.clone(), th)))
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.primary_action(window, cx)),
-                        )
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, window, cx| {
+                            if upload {
+                                this.open_upload_menu(e.position(), cx);
+                            } else {
+                                this.primary_action(window, cx);
+                            }
+                        }))
                         .child(icon(icon_name, th.compose_text, 24.0))
                         .child(
                             div()

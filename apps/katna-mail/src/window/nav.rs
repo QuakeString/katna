@@ -139,6 +139,9 @@ pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
 
+/// The width of the Upload button's arrow, beside its words.
+const UPLOAD_ARROW: f32 = 44.0;
+
 impl MailWindow {
     pub(super) fn render_top_start(
         &self,
@@ -325,7 +328,11 @@ impl MailWindow {
         }
         // Each page's own action, in the same button and place.
         let mail = self.app == super::RailApp::Mail;
-        let (icon_name, label) = self.app.primary();
+        let (icon_name, label) = self.primary_button();
+        // While a drive is open the button uploads, with an arrow beside
+        // it for files or a folder.
+        let upload = self.drive_upload_here();
+        let arrow = if upload { UPLOAD_ARROW * dock } else { 0.0 };
         let left = lerp(
             super::COMPOSE_RAIL_LEFT,
             APP_RAIL_WIDTH + NAV_ROW_INSET,
@@ -339,7 +346,7 @@ impl MailWindow {
                 .left(px(left))
                 .top(px(top))
                 .h(px(super::COMPOSE_HEIGHT))
-                .w(px(super::compose_width(dock, text)))
+                .w(px(super::compose_width(dock, text) + arrow))
                 .opacity(shown)
                 .flex()
                 .flex_row()
@@ -379,6 +386,29 @@ impl MailWindow {
                         .whitespace_nowrap()
                         .child(label),
                 )
+                .when(arrow > 0.5, |d| {
+                    d.child(
+                        div()
+                            .id("upload-arrow")
+                            .absolute()
+                            .top_0()
+                            .right_0()
+                            .h_full()
+                            .w(px(UPLOAD_ARROW))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .opacity(dock * dock)
+                            .border_l_1()
+                            .border_color(rgba(fade(th.compose_text, 0.25)))
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
+                                cx.stop_propagation();
+                                this.open_upload_menu(e.position(), cx);
+                            }))
+                            .child(icon("drop-down", th.compose_text, 24.0)),
+                    )
+                })
                 .into_any_element(),
         )
     }
