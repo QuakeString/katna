@@ -11,9 +11,9 @@ use gpui::{
     MouseButton, MouseDownEvent, PathBuilder, SharedString, SpringAnimation, Transformation,
     canvas, div, list, point, prelude::*, radians, rgba, svg,
 };
-use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::{Glow, Ripple};
 
 use super::apps::APP_RAIL_WIDTH;
 use super::tour::Spot;
@@ -366,6 +366,23 @@ impl MailWindow {
                 })
                 .when(dock < 0.5, |d| d.tooltip(tip(label.clone(), th)))
                 .on_click(cx.listener(|this, _, window, cx| this.primary_action(window, cx)))
+                // Split, each half has its own hover.
+                .when(arrow > 0.5, |d| {
+                    d.child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .bottom_0()
+                            .left_0()
+                            .right(px(UPLOAD_ARROW))
+                            .child(Glow::new("upload-glow", rgba(th.hover)).corners([
+                                super::COMPOSE_RADIUS,
+                                0.0,
+                                0.0,
+                                super::COMPOSE_RADIUS,
+                            ])),
+                    )
+                })
                 .child(
                     Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
                 )
@@ -401,7 +418,14 @@ impl MailWindow {
                             .opacity(dock * dock)
                             .border_l_1()
                             .border_color(rgba(fade(th.compose_text, 0.25)))
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            // Its hover fades in within the pill: square at
+                            // the line, round at the button's end.
+                            .child(Glow::new("upload-arrow-glow", rgba(th.hover)).corners([
+                                0.0,
+                                super::COMPOSE_RADIUS,
+                                super::COMPOSE_RADIUS,
+                                0.0,
+                            ]))
                             .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
                                 cx.stop_propagation();
                                 this.open_upload_menu(e.position(), cx);
