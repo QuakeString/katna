@@ -128,6 +128,8 @@ pub(super) enum ViewerEvent {
     Paged(usize),
     /// Tick or untick the file shown (opened from the attach picker).
     Pick,
+    /// The half-moon button turned dark pages on or off.
+    DarkPages(bool),
 }
 
 pub(super) struct Viewer {
@@ -204,6 +206,8 @@ pub(super) struct Viewer {
     /// Opened before its file is here (a drive file still downloading):
     /// it waits, turning, for `arrived`.
     fetching: bool,
+    /// Show bright pages dark (in a dark theme): Settings' `dark_pages`.
+    pub(super) dark_pages: bool,
     pub(super) th: Theme,
 }
 
@@ -248,6 +252,8 @@ struct PdfView {
     text: Vec<Rc<Vec<TextLine>>>,
     /// Logical pixels per point at the last frame, to find a page's place.
     z: f32,
+    /// Whether `pages` are drawn dark.
+    dark: bool,
     _reading: Option<Task<()>>,
 }
 
@@ -366,6 +372,7 @@ impl Viewer {
             library: None,
             pick: None,
             fetching: false,
+            dark_pages: false,
             th,
         };
         this.show(current, cx);
@@ -451,6 +458,7 @@ impl Viewer {
         }
         let risky = item.risky;
         let (vw, scale_factor) = self.frame;
+        let dark = self.dark_pages_shown();
         let waiting = self.seq;
         let slow = cx.background_executor().timer(SLOW_LOAD);
         self._wait = Some(cx.spawn(async move |this, cx| {
@@ -471,7 +479,12 @@ impl Viewer {
                     let loaded = match loaded {
                         Loaded::Pdf(doc, _) if vw > 0.0 => {
                             let scale = pdf_fit(&doc, vw) * ZOOMS[fit_step()] * scale_factor;
-                            let page = doc.render(0, scale).map(|p| (scale, bitmap(p)));
+                            let page = if dark {
+                                doc.render_dark(0, scale)
+                            } else {
+                                doc.render(0, scale)
+                            };
+                            let page = page.map(|p| (scale, bitmap(p)));
                             Loaded::Pdf(doc, page)
                         }
                         loaded => loaded,
@@ -499,6 +512,7 @@ impl Viewer {
                             pages: page.into_iter().map(|page| (0, page)).collect(),
                             text: Vec::new(),
                             z: 1.0,
+                            dark,
                         })
                     }
                     Loaded::Bitmap(image, size) => Content::Bitmap(image, size),
@@ -884,6 +898,19 @@ impl Viewer {
         cx.notify();
     }
 
+    /// Whether pages show dark: turned on, in a dark theme.
+    pub(super) fn dark_pages_shown(&self) -> bool {
+        self.dark_pages && self.th.dark
+    }
+
+    /// The half-moon button: pages dark, or as they are. The window keeps
+    /// the choice for later files and restarts.
+    fn toggle_dark_pages(&mut self, cx: &mut Context<Self>) {
+        self.dark_pages = !self.dark_pages;
+        cx.emit(ViewerEvent::DarkPages(self.dark_pages));
+        cx.notify();
+    }
+
     /// What the controls offer for the file on show.
     fn tools(&self, pages: Option<(usize, usize)>) -> Tools {
         let slides = matches!(&self.content, Content::Document(_)) && pages.is_some();
@@ -894,12 +921,19 @@ impl Viewer {
             Content::Document(_) | Content::Sheet(_) => (Some(Fit::Width), false, false),
             _ => (None, false, false),
         };
+        // Pages, not pictures; only a dark theme makes bright pages glare.
+        let dark_pages = self.th.dark
+            && matches!(
+                &self.content,
+                Content::Pdf(_) | Content::Document(_) | Content::Sheet(_) | Content::Text(..)
+            );
         Tools {
             pages,
             slides,
             fit,
             real_size,
             rotate,
+            dark_pages,
         }
     }
 
@@ -1121,9 +1155,17 @@ impl Viewer {
     /// Draws the next page that is on screen at the wrong scale (or not
     /// at all), and frees pages far from the screen.
     fn draw_pages(&mut self, scale: f32, cx: &mut Context<Self>) {
+        let dark = self.dark_pages_shown();
         let Content::Pdf(pdf) = &mut self.content else {
             return;
         };
+        // Dark pages turned on or off: every page is drawn again.
+        if pdf.dark != dark {
+            pdf.dark = dark;
+            self.released
+                .extend(pdf.pages.drain().map(|(_, (_, image))| image));
+            self.drawing = None;
+        }
         let count = pdf.doc.pages();
         let top = self.scroll.top_item().min(count - 1);
         let bottom = self.scroll.bottom_item().clamp(top, count - 1);
@@ -1157,7 +1199,14 @@ impl Viewer {
         let task = cx.spawn(async move |this, cx| {
             let image = cx
                 .background_executor()
-                .spawn(async move { doc.render(page, scale).map(bitmap) })
+                .spawn(async move {
+                    if dark {
+                        doc.render_dark(page, scale)
+                    } else {
+                        doc.render(page, scale)
+                    }
+                    .map(bitmap)
+                })
                 .await;
             this.update(cx, |this, cx| {
                 this.drawing = None;
@@ -1190,6 +1239,8 @@ struct Tools {
     /// Real size, for a picture.
     real_size: bool,
     rotate: bool,
+    /// The half-moon button that shows pages dark.
+    dark_pages: bool,
 }
 
 /// What the Fit button fits.
@@ -1379,6 +1430,15 @@ fn bar_button_tip(
     round_button(id, name, tooltip, HOVER, th)
 }
 
+/// A page's own `color`, flipped when pages show dark.
+fn page_color(color: u32, dark: bool) -> gpui::Rgba {
+    rgba(if dark {
+        katna_preview::dark::flip_rgba(color)
+    } else {
+        color
+    })
+}
+
 /// A round button with `hover` under the pointer.
 fn round_button(
     id: &'static str,
@@ -1450,6 +1510,7 @@ impl Render for Viewer {
         // The PDF's page at the middle of the screen and its page count.
         let mut pages = None;
         let mut pdf_z = None;
+        let dark = self.dark_pages_shown();
         let body: AnyElement = if matches!(self.content, Content::Document(_)) {
             let body = self.document_body(zoom, vw, cx);
             if let Content::Document(view) = &self.content {
@@ -1557,8 +1618,8 @@ impl Render for Viewer {
                             .w(px(width))
                             .h_full()
                             .rounded(px(8.0))
-                            .bg(rgba(0xffffffff))
-                            .text_color(rgba(0x202124ff))
+                            .bg(page_color(0xffffffff, dark))
+                            .text_color(page_color(0x202124ff, dark))
                             .font_family("monospace")
                             .text_size(px(size)),
                         None,
@@ -1629,7 +1690,7 @@ impl Render for Viewer {
                                 .flex_none()
                                 .w(px(w))
                                 .h(px(h))
-                                .bg(rgba(0xffffffff))
+                                .bg(page_color(0xffffffff, dark))
                                 .capture_any_mouse_down(cx.listener(on_paper))
                                 .shadow(vec![gpui::BoxShadow {
                                     color: rgba(0x00000080).into(),
@@ -2152,6 +2213,20 @@ impl Viewer {
                         .size(px(button))
                         .on_click(cx.listener(|this, _, _, cx| this.rotate(true, cx))),
                     )
+            })
+            .when(tools.dark_pages, |d| {
+                let on = self.dark_pages;
+                let tip = if on {
+                    tr!("viewer-light-pages-tip")
+                } else {
+                    tr!("viewer-dark-pages-tip")
+                };
+                d.child(separator()).child(
+                    bar_button_tip("viewer-dark-pages", "contrast", tip.into(), &th)
+                        .size(px(button))
+                        .when(on, |d| d.bg(rgba(0xffffff29)))
+                        .on_click(cx.listener(|this, _, _, cx| this.toggle_dark_pages(cx))),
+                )
             })
     }
 }

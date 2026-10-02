@@ -893,7 +893,12 @@ impl MailWindow {
         self.files.viewer_message = message;
         let th = self.theme(window);
         let reply = message.is_some();
-        let viewer = cx.new(|cx| Viewer::new(raw, items, index, reply, th, window, cx));
+        let dark_pages = self.config.mail.dark_pages;
+        let viewer = cx.new(|cx| {
+            let mut viewer = Viewer::new(raw, items, index, reply, th, window, cx);
+            viewer.dark_pages = dark_pages;
+            viewer
+        });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer);
         cx.notify();
@@ -912,7 +917,12 @@ impl MailWindow {
         self.files.viewer_encrypted = false;
         self.files.viewer_message = None;
         let th = self.theme(window);
-        let viewer = cx.new(|cx| Viewer::fetching(item, th, window, cx));
+        let dark_pages = self.config.mail.dark_pages;
+        let viewer = cx.new(|cx| {
+            let mut viewer = Viewer::fetching(item, th, window, cx);
+            viewer.dark_pages = dark_pages;
+            viewer
+        });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer.clone());
         cx.notify();
@@ -952,6 +962,10 @@ impl MailWindow {
                 if let Some(id) = mail {
                     self.show_file_mail(id, window, cx);
                 }
+            }
+            ViewerEvent::DarkPages(on) => {
+                self.config.mail.dark_pages = *on;
+                self.save_config();
             }
             ViewerEvent::Forward(file) => {
                 let file = file.clone();
