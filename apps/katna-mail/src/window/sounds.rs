@@ -32,6 +32,7 @@ fn event_text(event: SoundEvent) -> (&'static str, &'static str) {
 /// The name people see of sound `id`.
 fn sound_name(id: &str) -> String {
     tr!(match id {
+        "katna-chime" => "sound-katna-chime",
         "message-new-email" | "Mail" => "sound-new-email",
         "message-new-instant" | "IM" => "sound-new-message",
         "message-sent-email" => "sound-sent",

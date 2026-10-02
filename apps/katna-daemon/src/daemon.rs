@@ -1726,6 +1726,9 @@ impl Daemon {
                 }
                 // A tracked message may have gone out: follow its events.
                 self.wake_tracking();
+                if let Some(notices) = self.new_mail_notices() {
+                    notices.went_out(event.id).await;
+                }
             }
             let _ = self.notices.try_send(Notice::OutboxChanged(event.id));
         }

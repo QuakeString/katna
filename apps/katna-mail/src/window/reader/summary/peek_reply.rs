@@ -291,6 +291,12 @@ impl MailWindow {
         self.summaries.kept_replies.remove(&key)
     }
 
+    /// Keeps `text` as the start of the next reply to `key`: a reply typed
+    /// into a notification, to write on in Katna Mail.
+    pub(in crate::window) fn keep_reply(&mut self, key: EntryKey, text: String) {
+        self.summaries.kept_replies.insert(key, text);
+    }
+
     fn peek_reply_back(&mut self, cx: &mut Context<Self>) {
         if let Some(r) = self.peek_reply_mut() {
             r.draft = Drafted::No;
