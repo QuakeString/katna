@@ -21,7 +21,8 @@ use super::super::super::compose::address_suggestions;
 use crate::outgoing;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    Check, avatar, checkbox, elevation, filled_button, icon, menu, menu_item, outlined_button,
+    Check, avatar, checkbox, elevation, filled_button, icon, icon_button, menu, menu_item,
+    outlined_button, tip,
 };
 
 const WIDTH: f32 = 520.0;
@@ -828,10 +829,26 @@ impl MailWindow {
             .pb(px(18.0))
             .child(
                 div()
-                    .text_size(px(22.0))
-                    .line_height(px(30.0))
-                    .truncate()
-                    .child(tr!("files-share-title", name = sharing.entry.name.as_str())),
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    // The close button sits in the corner, like other dialogs'.
+                    .mr(px(-12.0))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .text_size(px(22.0))
+                            .line_height(px(30.0))
+                            .truncate()
+                            .child(tr!("files-share-title", name = sharing.entry.name.as_str())),
+                    )
+                    .child(
+                        icon_button("files-share-close", "close", 20.0, th)
+                            .tooltip(tip(tr!("files-share-close"), th))
+                            .on_click(cx.listener(|this, _, _, cx| this.close_drive_share(cx))),
+                    ),
             )
             .child(field)
             .children(suggestions)

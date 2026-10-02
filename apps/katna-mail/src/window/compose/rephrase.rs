@@ -914,7 +914,6 @@ pub(in crate::window) fn problem_text(problem: &str, service: &str) -> (String, 
 
 /// Grey lines breathing while the text is rewritten.
 pub(in crate::window) fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
-    use gpui::{Animation, AnimationExt};
     let line = |width: f32| {
         div()
             .h(px(10.0))
@@ -929,12 +928,39 @@ pub(in crate::window) fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
         .child(line(0.92))
         .child(line(0.78))
         .child(line(0.55));
+    pulsing("compose-rephrase-wait", lines, reduce)
+}
+
+/// Pills standing in for the reply ideas while they are asked, breathing
+/// like [`placeholder`]: in the Write reply card and the summary card.
+pub(in crate::window) fn idea_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    pulsing(
+        "compose-ideas-wait",
+        div()
+            .flex()
+            .flex_row()
+            .gap(px(6.0))
+            .children([150.0, 120.0, 140.0].map(|width| {
+                div()
+                    .w(px(width))
+                    .h(px(28.0))
+                    .rounded_full()
+                    .bg(rgba(fade(th.text_faint, 0.18)))
+            })),
+        reduce,
+    )
+}
+
+/// `shapes` standing in for text still on its way, breathing slowly
+/// (still with reduced motion): the waiting look of every AI card.
+pub(in crate::window) fn pulsing(id: &'static str, shapes: gpui::Div, reduce: bool) -> AnyElement {
+    use gpui::{Animation, AnimationExt};
     if reduce {
-        return lines.into_any_element();
+        return shapes.into_any_element();
     }
-    lines
+    shapes
         .with_animation(
-            "compose-rephrase-wait",
+            id,
             Animation::new(std::time::Duration::from_millis(1800)).repeat(),
             |el, t| {
                 let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();

@@ -56,6 +56,8 @@ list-results-corrected = Showing results for “{ $query }”
 list-search-instead = Search instead for “{ $query }”
 # The "+3" button after a line's attachment chips: $count more files.
 list-files-more = +{ $count }
+# Tooltip of the reply arrow on a line the user has answered.
+list-replied = You replied
 
 ## Mail list: Select menu (which lines to tick)
 

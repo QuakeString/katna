@@ -29,7 +29,7 @@ use katna_store::{MessageId, SummaryKind};
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
-use super::super::compose::rephrase::{Fix, placeholder, problem_text};
+use super::super::compose::rephrase::{Fix, idea_placeholder, placeholder, problem_text};
 use super::first_name;
 use crate::daemon::{self, Rephrased};
 use crate::data::EntryKey;
@@ -81,6 +81,9 @@ struct Peek {
     /// How tall the card was last drawn, to know whether it fits below.
     height: Rc<Cell<f32>>,
     subject: String,
+    /// How many mails the conversation has, shown until the summary
+    /// says how many it read.
+    mails: usize,
     people: usize,
     files: Vec<String>,
     /// Writing a reply in the card.
@@ -509,7 +512,7 @@ impl MailWindow {
             return;
         };
         let row = entry.and_then(|e| mail.rows(&[e], folder, false).pop().flatten());
-        let (subject, people, files) = match &row {
+        let (subject, mails, people, files) = match &row {
             Some(row) => {
                 let people = row
                     .people
@@ -523,9 +526,14 @@ impl MailWindow {
                         files.push(file.name.clone());
                     }
                 }
-                (row.subject.clone(), people, files)
+                (
+                    row.subject.clone(),
+                    (row.count as usize).max(1),
+                    people,
+                    files,
+                )
             }
-            None => (String::new(), 0, Vec::new()),
+            None => (String::new(), 1, 0, Vec::new()),
         };
         self.summaries.peek = Some(Peek {
             key,
@@ -534,6 +542,7 @@ impl MailWindow {
             height: Rc::new(Cell::new(PEEK_GUESS)),
             reply: None,
             subject,
+            mails,
             people,
             files,
         });
@@ -966,7 +975,7 @@ impl MailWindow {
                     )
                     .child(div().flex_none().child(tr!(
                         "summary-peek-count",
-                        mails = done.map_or(0, |d| d.mails.len()) as u64,
+                        mails = done.map_or(peek.mails, |d| d.mails.len()) as u64,
                         people = done.map_or(peek.people, |d| {
                             let mut seen: Vec<String> = Vec::new();
                             for sent in &d.mails {

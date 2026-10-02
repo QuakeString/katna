@@ -98,6 +98,10 @@ pub struct Row {
     pub snippet: String,
     /// For mail sent with open and click tracking, what its recipients did.
     pub tracking: Option<Tracked>,
+    /// The user answered: they wrote the conversation's newest mail, or
+    /// the newest mail they got is marked answered (a reply whose sent
+    /// copy is not here). Never set in sent and draft folders.
+    pub replied: bool,
 }
 
 /// What the recipients of a tracked message did, for its line.
@@ -240,6 +244,7 @@ impl Row {
             attachments: message.has_attachments,
             files: Vec::new(),
             tracking: None,
+            replied: !show_recipients && message.flags.contains(MessageFlags::ANSWERED),
             snippet: message
                 .snippet
                 .as_deref()
@@ -271,6 +276,12 @@ impl Row {
                 self.people = senders(&summary.senders, me);
                 self.correspondent = joined(&self.people);
             }
+            self.replied = !show_recipients
+                && (summary.last_answered
+                    || summary
+                        .last_from
+                        .iter()
+                        .any(|a| me.iter().any(|m| m.eq_ignore_ascii_case(a))));
         }
         self
     }
@@ -1978,6 +1989,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),
                 tracking: None,
+                replied: false,
             }
         );
         assert_eq!(rows[1], None);
