@@ -92,6 +92,7 @@ impl MailBatch<'_> {
     /// Keeps a summary of `kind` of the conversation of `siblings` (all
     /// its messages) whose newest covered mail is `message`, in place of
     /// the one of that kind kept before.
+    #[allow(clippy::too_many_arguments)]
     pub fn save_summary(
         &mut self,
         message: MessageId,
