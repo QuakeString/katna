@@ -999,6 +999,137 @@ fn queues_undoes_and_retries_outgoing_mail() {
     });
 }
 
+#[test]
+fn saves_mail_rules_and_applies_them_to_recent_mail() {
+    use katna_store::FolderRole;
+    use katna_store::rules::{Action, Rule};
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Local, "me", "me@local")
+        .unwrap()
+        .id;
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+    let mut batch = store.mail_batch().unwrap();
+    let inbox = batch
+        .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+        .unwrap();
+    let bills = batch.upsert_folder(account, "Bills", None).unwrap();
+    let invoice = add_mail(
+        &mut batch,
+        account,
+        inbox,
+        "<invoice@bank.test>",
+        now - 86_400,
+        None,
+        MessageFlags::empty(),
+    );
+    batch.commit().unwrap();
+    drop(store);
+
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let mut changed = pim.receive_rules_changed().await.unwrap();
+        let rule = |actions: serde_json::Value| {
+            serde_json::json!({
+                "name": "Offers",
+                "accounts": [account.0],
+                "conditions": [{"field": "subject", "comparator": "begins_with", "value": "offer"}],
+                "actions": actions,
+            })
+            .to_string()
+        };
+
+        let invalid = |err: zbus::Error| error_name(&err);
+        assert_eq!(
+            invalid(pim.save_rule("{").await.unwrap_err()),
+            "org.freedesktop.DBus.Error.InvalidArgs"
+        );
+        assert_eq!(
+            invalid(
+                pim.save_rule(&rule(serde_json::json!([])))
+                    .await
+                    .unwrap_err()
+            ),
+            "org.freedesktop.DBus.Error.InvalidArgs"
+        );
+        assert_eq!(
+            invalid(
+                pim.save_rule(&rule(serde_json::json!([{"type": "move", "folder": 999}])))
+                    .await
+                    .unwrap_err()
+            ),
+            "org.freedesktop.DBus.Error.UnknownObject"
+        );
+        let id = pim
+            .save_rule(&rule(serde_json::json!([
+                {"type": "move", "folder": bills.0},
+                {"type": "mark_read"}
+            ])))
+            .await
+            .unwrap();
+        within("RulesChanged", 5, changed.next()).await.unwrap();
+        let saved = reader.rule(id).unwrap().unwrap();
+        assert_eq!(
+            saved.actions,
+            [Action::Move { folder: bills.0 }, Action::MarkRead]
+        );
+        assert_eq!(reader.rule_preview(&saved, 30, now, |_| None).unwrap(), 1);
+
+        let other = pim
+            .save_rule(
+                &serde_json::to_string(&Rule {
+                    id: 0,
+                    name: "Second".into(),
+                    enabled: false,
+                    ..saved.clone()
+                })
+                .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_ne!(other, id);
+        pim.reorder_rules(&[other, id]).await.unwrap();
+        let names: Vec<String> = reader
+            .rules()
+            .unwrap()
+            .into_iter()
+            .map(|r| r.name)
+            .collect();
+        assert_eq!(names, ["Second", "Offers"]);
+        pim.set_rule_enabled(id, false).await.unwrap();
+        assert!(!reader.rule(id).unwrap().unwrap().enabled);
+
+        // "Also apply to these", on or off.
+        assert_eq!(
+            invalid(pim.apply_rule(id, 0).await.unwrap_err()),
+            "org.freedesktop.DBus.Error.InvalidArgs"
+        );
+        assert_eq!(pim.apply_rule(id, 30).await.unwrap(), 1);
+        let moved = &reader.messages_by_id(&[invoice]).unwrap()[0];
+        assert_eq!(moved.flags, MessageFlags::SEEN);
+        assert_eq!(reader.messages_in_folder(bills).unwrap()[0].id, invoice);
+        assert!(reader.messages_in_folder(inbox).unwrap().is_empty());
+        assert_eq!(pim.apply_rule(id, 30).await.unwrap(), 0);
+
+        pim.delete_rule(id).await.unwrap();
+        assert_eq!(
+            invalid(pim.delete_rule(id).await.unwrap_err()),
+            "org.freedesktop.DBus.Error.InvalidArgs"
+        );
+        assert_eq!(reader.rules().unwrap().len(), 1);
+        instance.shutdown().await;
+    });
+}
+
 fn port(var: &str, default: u16) -> u16 {
     std::env::var(var)
         .ok()

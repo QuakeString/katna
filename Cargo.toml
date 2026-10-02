@@ -88,6 +88,9 @@ windows = "0.62"
 # Katna Setup: the Start menu shortcut, and the icon of Windows programs.
 mslnk = "0.1.8"
 winresource = "0.1.31"
+# The "matches regex" condition of mail rules (katna-store); already in the
+# tree through tantivy.
+regex = { version = "1.13", default-features = false, features = ["std", "unicode"] }
 rusqlite = { version = "0.40", features = ["bundled"] }
 # Password prompts without echo (katnactl).
 rpassword = "7.5"

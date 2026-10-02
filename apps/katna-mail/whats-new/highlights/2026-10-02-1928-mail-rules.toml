@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mail rules"
+text = """
+Rules sort new mail by themselves: by sender, subject or words, they move,
+label, star, forward or quiet it. Make one in Settings > Folders & rules,
+or right-click a mail and choose Make a rule…, and see how many recent
+mails it matches before you save. In Move to, tick "Always move mail
+from … here" to move a sender's mail and their future mail in one click.
+"""

@@ -1133,7 +1133,13 @@ impl MailWindow {
                             role_icon(*role)
                         },
                         label,
-                        unread: *unread,
+                        // Settings > Folders & rules can keep the counts
+                        // to the inbox.
+                        unread: if self.config.mail.folder_unread_counts || *role == Role::Inbox {
+                            *unread
+                        } else {
+                            0
+                        },
                         selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
                         bold: true,
                         chevron: has_children.then_some(*expanded),

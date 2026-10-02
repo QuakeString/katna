@@ -1614,6 +1614,33 @@ pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>,
         .map_err(|err| format!("Reading a template failed: {err}"))
 }
 
+/// The mail rules, in the order they run (Settings > Folders & rules).
+pub fn rules(paths: &Paths) -> Result<Vec<katna_store::rules::Rule>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.rules())
+        .map_err(|err| format!("Reading the mail rules failed: {err}"))
+}
+
+/// How many messages in the inboxes of `rule`'s accounts from the last
+/// `days` days before `now` it matches, as the daemon would match them:
+/// with the stored text of each message when a condition needs it.
+pub fn rule_preview(
+    paths: &Paths,
+    rule: &katna_store::rules::Rule,
+    days: u32,
+    now: i64,
+) -> Result<u32, String> {
+    let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
+    let blobs = store.blobs();
+    store
+        .rule_preview(rule, days, now, |message| {
+            let hash = message.blob_hash.as_ref()?;
+            let raw = blobs.get(hash).ok()??;
+            Some(katna_search::document::message_text(&raw).body)
+        })
+        .map_err(|err| format!("Counting the rule's mail failed: {err}"))
+}
+
 /// The address book for recipient suggestions, read from the store (a
 /// few seconds on a big mailbox). Opens its own connection, for a
 /// background thread.

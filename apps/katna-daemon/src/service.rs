@@ -378,6 +378,30 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_template(id)?)
             }
 
+            // ---- Mail rules (docs/ARCHITECTURE.md §9.4) ----
+
+            async fn save_rule(&self, json: String) -> fdo::Result<i64> {
+                Ok(self.daemon.save_rule(&json)?)
+            }
+
+            async fn delete_rule(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.delete_rule(id)?)
+            }
+
+            async fn reorder_rules(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.reorder_rules(&ids)?)
+            }
+
+            async fn set_rule_enabled(&self, id: i64, on: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_rule_enabled(id, on)?)
+            }
+
+            async fn apply_rule(&self, id: i64, days: u32) -> fdo::Result<u32> {
+                Ok(self.daemon.apply_rule(id, days)?)
+            }
+
+            // ---- End of mail rules ----
+
             async fn save_contact(
                 &self,
                 contact: i64,
@@ -909,6 +933,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn rules_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -994,6 +1021,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             }
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
+            Notice::RulesChanged => PimService::rules_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

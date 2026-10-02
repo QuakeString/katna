@@ -762,6 +762,9 @@ pub struct MailView {
     pub reply_all: bool,
     /// Show the Important marker in the message list.
     pub important_markers: bool,
+    /// Show how many are unread beside every folder in the folder pane;
+    /// off, only the inbox shows its count.
+    pub folder_unread_counts: bool,
     /// Keep the lines of a message no wider than is easy to read.
     pub limit_width: bool,
     /// In a dark theme, give HTML mail dark colors too; off, mail keeps the
@@ -949,6 +952,7 @@ impl Default for MailView {
             remote_images: false,
             reply_all: false,
             important_markers: true,
+            folder_unread_counts: true,
             limit_width: false,
             dark_mail: true,
             dark_pages: false,

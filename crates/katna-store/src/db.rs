@@ -69,6 +69,7 @@ impl DbKind {
                 include_str!("schema/pim_v10.sql"),
                 include_str!("schema/pim_v11.sql"),
                 include_str!("schema/pim_v12.sql"),
+                include_str!("schema/pim_v13.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -273,6 +274,7 @@ mod tests {
                 "contact_group_member",
                 "contact_photo",
                 "event",
+                "mail_rule",
                 "meta",
                 "note",
                 "note_gone",
@@ -329,7 +331,7 @@ mod tests {
         drop(conn);
 
         let conn = open(&path, DbKind::Pim, Mode::ReadWrite).unwrap();
-        assert_eq!(user_version(&conn).unwrap(), 12);
+        assert_eq!(user_version(&conn).unwrap(), DbKind::Pim.schema_version());
         conn.execute(
             "INSERT INTO calendar (source, name) VALUES ('zoho', 'Z')",
             [],

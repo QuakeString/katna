@@ -1317,20 +1317,27 @@ impl MailWindow {
                 } else {
                     PickMode::Move
                 };
-                let rows = self
-                    .folder_pick_in(PickFrom::Toolbar, mode)
+                let pick = self.folder_pick_in(PickFrom::Toolbar, mode);
+                let rows = pick
                     .map(|pick| self.render_folder_pick(pick, 32.0, th, cx))
                     .unwrap_or_default();
+                let always = pick
+                    .and_then(|pick| self.render_always_move(pick, th, cx))
+                    .map(|(el, _)| el);
                 let mut rows = rows.into_iter().map(|(el, _)| el);
-                menu(th).w(px(260.0)).children(rows.next()).child(
-                    div()
-                        .id("move-to-list")
-                        .max_h(px(360.0))
-                        .overflow_y_scroll()
-                        .flex()
-                        .flex_col()
-                        .children(rows),
-                )
+                menu(th)
+                    .w(px(260.0))
+                    .children(rows.next())
+                    .child(
+                        div()
+                            .id("move-to-list")
+                            .max_h(px(360.0))
+                            .overflow_y_scroll()
+                            .flex()
+                            .flex_col()
+                            .children(rows),
+                    )
+                    .children(always)
             }
         }
     }

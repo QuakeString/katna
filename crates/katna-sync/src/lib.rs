@@ -27,6 +27,7 @@
 //! - [`pictures`]: remote images and sender pictures for the reading pane,
 //!   which never uses the network itself.
 //! - [`quick_reply`]: short plain-text replies typed into a notification.
+//! - [`rules`]: mail rules run on new incoming mail.
 //! - [`pop3`]: our own POP3 client, and downloading a maildrop into the
 //!   store (task 1.10).
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
@@ -63,6 +64,7 @@ pub mod outbox;
 pub mod pictures;
 pub mod pop3;
 pub mod quick_reply;
+pub mod rules;
 pub mod smtp;
 pub mod tasks;
 pub mod tracking;

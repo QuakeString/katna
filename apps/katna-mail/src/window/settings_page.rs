@@ -7,7 +7,8 @@
 //! delete all data), Appearance (reading pane, density, mode, color scheme
 //! and accent, pictures),
 //! Shortcuts (every one, each can be changed by pressing the new keys),
-//! Default apps (where each kind of attachment opens), Compose (signatures,
+//! Default apps (where each kind of attachment opens), Folders & rules
+//! (mail rules, and unread counts on folders), Compose (signatures,
 //! with defaults for new mail and replies, and templates), User feedback (crash reports
 //! and feedback) and Experimental, with pages for
 //! the tabs still to come. The top bar's search box finds settings while
@@ -46,6 +47,7 @@ use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outline
 
 mod ai;
 mod notifications;
+mod rules;
 mod templates;
 
 /// A signature edit is saved this long after the last key.
@@ -181,6 +183,8 @@ pub(super) struct SettingsPage {
     drives: Vec<(katna_core::AccountId, String, Option<bool>)>,
     /// Writing help with AI: the user's own service.
     ai: ai::AiFields,
+    /// Settings > Folders & rules: the mail rules and their filter.
+    rules: rules::RulesList,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -319,6 +323,7 @@ impl MailWindow {
                 _small: small_subscriptions,
                 drives: Vec::new(),
                 ai,
+                rules: Default::default(),
             }
         });
         page.mail_app = opens_mail_links();
@@ -345,6 +350,10 @@ impl MailWindow {
             self.load_templates(cx);
             self.load_ai_key_saved(cx);
             self.load_ai_models(cx);
+        }
+        if section == Section::MailRules {
+            self.load_rules(cx);
+            self.watch_rules(cx);
         }
         // The page opens over the app on show, which stays picked in the
         // rail and comes back as it was when the page closes. The search
@@ -513,7 +522,8 @@ impl MailWindow {
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
-            Section::MailRules | Section::McpServer => self.coming_soon_section(section, th),
+            Section::MailRules => self.rules_section(th, cx),
+            Section::McpServer => self.coming_soon_section(section, th),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, and its sides come in closer.

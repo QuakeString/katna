@@ -1037,6 +1037,41 @@ macro_rules! pim_proxy {
             /// Deletes a template. Returns whether it existed.
             fn delete_template(&self, id: i64) -> zbus::Result<bool>;
 
+            // ---- Mail rules (docs/ARCHITECTURE.md §9.4) ----
+            // Apps read rules from the store (`katna_store::rules`) and
+            // preview them there (`Store::rule_preview`); `RulesChanged`
+            // says to read them again.
+
+            /// Saves a mail rule: `json` is a `katna_store::rules::Rule`.
+            /// ID 0 adds one at the end of the list; another ID replaces
+            /// that rule, keeping its place, and clears its last error.
+            /// `InvalidArgs` for a rule without a name, conditions,
+            /// actions or accounts, a bad regular expression or address,
+            /// or more than one action that moves mail; `UnknownObject`
+            /// for an account, or a folder in the rule's accounts, that
+            /// doesn't exist. Returns its ID.
+            fn save_rule(&self, json: &str) -> zbus::Result<i64>;
+
+            /// Deletes rule `id`.
+            fn delete_rule(&self, id: i64) -> zbus::Result<()>;
+
+            /// Puts rules `ids` first, in this order (they run in list
+            /// order); the others follow in the order they had.
+            fn reorder_rules(&self, ids: &[i64]) -> zbus::Result<()>;
+
+            /// Switches rule `id` on or off. Switching it on clears the
+            /// error it was switched off with.
+            fn set_rule_enabled(&self, id: i64, on: bool) -> zbus::Result<()>;
+
+            /// "Also apply to these": runs rule `id` (on or off) once over
+            /// the inbox mail of its accounts from the last `days` days
+            /// (1 to 3650), except forwarding. Returns how many messages
+            /// it changed. `Failed` when an action fails (the rule stays
+            /// as it is).
+            fn apply_rule(&self, id: i64, days: u32) -> zbus::Result<u32>;
+
+            // ---- End of mail rules ----
+
             /// Saves a note in place of the one with its ID (0: a new one,
             /// on top). A note of a mail account goes to that account's
             /// Notes folder too. Returns its ID. Apps read notes from the
@@ -1291,6 +1326,12 @@ macro_rules! pim_proxy {
             /// Saved contacts changed; read them from the store again.
             #[zbus(signal)]
             fn contacts_changed(&self) -> zbus::Result<()>;
+
+            /// Mail rules changed, or the daemon switched one off because
+            /// an action failed (its `last_error` says why); read them from
+            /// the store again.
+            #[zbus(signal)]
+            fn rules_changed(&self) -> zbus::Result<()>;
         }
     };
 }

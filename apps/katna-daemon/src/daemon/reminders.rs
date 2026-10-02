@@ -119,6 +119,7 @@ impl Daemon {
                 Due::Surfaced(message) => {
                     let _ = katna_meta::clear_surfaced(&mut self.store(), message);
                 }
+                Due::ReadAfter(message) => self.read_after_due(message),
                 Due::Other(row) => {
                     // A value of a newer version: kept, but not due again.
                     tracing::info!(plugin = row.plugin, "unknown metadata expired");

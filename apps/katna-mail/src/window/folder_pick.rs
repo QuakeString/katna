@@ -7,6 +7,10 @@
 //! as" ticks the labels the mail carries; a click puts one on or takes it
 //! off and leaves the menu open. Both the right-click menu's submenus and
 //! the toolbar's menus show it.
+//!
+//! Under Move to's folders, when all the mail is from one sender, a tick
+//! "Always move mail from … here" also saves a rule (§9.4) with the click
+//! that moves it: from that address, move to that folder.
 
 use std::cell::Cell;
 use std::collections::HashMap;
@@ -14,6 +18,7 @@ use std::collections::HashMap;
 use gpui::{AnyElement, Context, Entity, Focusable, Subscription, Window, div, prelude::*, rgba};
 use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
+use katna_store::rules::{Action, Comparator, Condition, Field, Rule};
 use katna_store::{FolderId, MessageId};
 use katna_ui::px;
 use katna_ui::text_input::{Down, Up};
@@ -22,7 +27,7 @@ use katna_ui::{InputEvent, TextInput};
 use super::context_menu::{menu_row, menu_row_with};
 use super::{Act, MailWindow};
 use crate::daemon::{self, Command};
-use crate::data::EntryKey;
+use crate::data::{Entry, EntryKey};
 use crate::format;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
@@ -34,6 +39,10 @@ pub(super) const SEARCH_HEIGHT: f32 = 44.0;
 pub(super) const NONE_HEIGHT: f32 = 24.0;
 /// Labels whose state is read for a tick, at most.
 const MAX_LABEL_LOOKUPS: usize = 200;
+/// The "Always move mail from" line, two lines of text tall.
+const ALWAYS_HEIGHT: f32 = 52.0;
+/// The divider over it, with its room.
+const ALWAYS_RULE: f32 = 13.0;
 
 /// What the list under the search box does.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -65,9 +74,38 @@ pub(super) struct FolderPick {
     highlight: usize,
     /// Labels ticked or unticked here, until the store shows it.
     toggled: HashMap<FolderId, bool>,
+    /// Move to on mail all from one sender: who, for "Always move mail
+    /// from … here".
+    always: Option<Sender>,
+    /// "Always move mail from … here" is ticked.
+    always_on: bool,
     /// Focused, with the theme's accent, once drawn.
     ready: Cell<bool>,
     _subscription: Subscription,
+}
+
+/// The one sender of the mail Move to acts on.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Sender {
+    /// Their name, else their address.
+    name: String,
+    address: String,
+}
+
+/// The rule "Always move mail from … here" saves: mail of `account` from
+/// `sender`'s address goes to `folder`.
+fn always_move_rule(sender: &Sender, account: AccountId, folder: FolderId) -> Rule {
+    Rule {
+        name: sender.name.clone(),
+        conditions: vec![Condition {
+            field: Field::From,
+            comparator: Comparator::Contains,
+            value: sender.address.clone(),
+        }],
+        actions: vec![Action::Move { folder: folder.0 }],
+        accounts: vec![account.0],
+        ..Rule::default()
+    }
 }
 
 /// A line under the search box.
@@ -139,6 +177,10 @@ impl MailWindow {
             InputEvent::Submit => this.pick_highlighted(cx),
             InputEvent::Cancel => this.cancel_folder_pick(cx),
         });
+        let always = match mode {
+            PickMode::Move => self.one_sender(account, &keys),
+            PickMode::Label => None,
+        };
         self.folder_pick = Some(FolderPick {
             mode,
             from,
@@ -147,10 +189,76 @@ impl MailWindow {
             query,
             highlight: 0,
             toggled: HashMap::new(),
+            always,
+            always_on: false,
             ready: Cell::new(false),
             _subscription: subscription,
         });
         cx.notify();
+    }
+
+    /// The one sender of all the lines `keys` of `account`, if they have
+    /// one that isn't the account's own address.
+    fn one_sender(&mut self, account: AccountId, keys: &[EntryKey]) -> Option<Sender> {
+        if keys.is_empty() || keys.len() > MAX_LABEL_LOOKUPS {
+            return None;
+        }
+        let reading = self.reader.as_ref().and_then(|r| r.entry());
+        let entries: Vec<Entry> = keys
+            .iter()
+            .map(|key| {
+                self.entries
+                    .iter()
+                    .find(|e| e.key == *key)
+                    .copied()
+                    .or(reading.filter(|e| e.key == *key))
+            })
+            .collect::<Option<_>>()?;
+        let folder = self.listed_folder();
+        let rows = match &mut self.mail {
+            Ok(mail) => mail.rows(&entries, folder, self.show_recipients),
+            Err(_) => return None,
+        };
+        let mut found: Option<Sender> = None;
+        for row in rows {
+            let row = row?;
+            let address = row.sender.as_str();
+            // Sent mail and drafts show their recipients.
+            if row.account != account || address.is_empty() || row.correspondent.starts_with("To: ")
+            {
+                return None;
+            }
+            // A conversation others wrote in too isn't one sender's.
+            let named = |a: &Option<String>| a.as_deref().map(|a| a.eq_ignore_ascii_case(address));
+            if row.people.iter().any(|(_, a)| named(a) == Some(false)) {
+                return None;
+            }
+            match &found {
+                Some(sender) if !sender.address.eq_ignore_ascii_case(address) => return None,
+                Some(_) => {}
+                None => {
+                    let name = row
+                        .people
+                        .iter()
+                        .find(|(_, a)| named(a) == Some(true))
+                        .map(|(name, _)| name.trim().to_owned())
+                        .or_else(|| (row.count == 1).then(|| row.correspondent.trim().to_owned()))
+                        .filter(|name| !name.is_empty())
+                        .unwrap_or_else(|| address.to_owned());
+                    found = Some(Sender {
+                        name,
+                        address: address.to_owned(),
+                    });
+                }
+            }
+        }
+        // The account's own mail never meets a rule.
+        let sender = found?;
+        let own = self
+            .accounts
+            .iter()
+            .any(|a| a.id == account && a.address.eq_ignore_ascii_case(&sender.address));
+        (!own).then_some(sender)
     }
 
     /// The open search, if `from` holds it.
@@ -341,10 +449,15 @@ impl MailWindow {
             return;
         };
         let (mode, account, keys) = (pick.mode, pick.account, pick.keys.clone());
+        let always = pick.always.clone().filter(|_| pick.always_on);
         match (mode, item) {
-            (PickMode::Move, PickItem::Folder { id, .. }) => {
+            (PickMode::Move, PickItem::Folder { id, role, .. }) => {
                 self.close_folder_pick(cx);
                 self.act(Act::MoveTo(id), keys, cx);
+                // Rules look at inbox mail: one moving it there does nothing.
+                if let Some(sender) = always.filter(|_| role != Role::Inbox) {
+                    self.save_always_move(&sender, account, id, cx);
+                }
             }
             (PickMode::Label, PickItem::Folder { id, name, .. }) => {
                 let on = self.label_state(pick, id) != Check::On;
@@ -355,7 +468,7 @@ impl MailWindow {
             }
             (mode, PickItem::Create(name)) => {
                 self.close_folder_pick(cx);
-                self.create_and_pick(mode, account, keys, name, cx);
+                self.create_and_pick(mode, account, keys, name, always, cx);
             }
         }
     }
@@ -398,6 +511,7 @@ impl MailWindow {
         account: AccountId,
         keys: Vec<EntryKey>,
         name: String,
+        always: Option<Sender>,
         cx: &mut Context<Self>,
     ) {
         let connection = self.daemon.clone();
@@ -418,7 +532,12 @@ impl MailWindow {
                     let id = FolderId(id);
                     this.refresh(false, cx);
                     match mode {
-                        PickMode::Move => this.act(Act::MoveTo(id), keys, cx),
+                        PickMode::Move => {
+                            this.act(Act::MoveTo(id), keys, cx);
+                            if let Some(sender) = &always {
+                                this.save_always_move(sender, account, id, cx);
+                            }
+                        }
                         PickMode::Label => this.toggle_label(keys, id, &name, true, cx),
                     }
                 }
@@ -427,6 +546,102 @@ impl MailWindow {
             .ok();
         })
         .detach();
+    }
+
+    /// Saves the rule "Always move mail from `sender` here": mail of
+    /// `account` from them goes to `folder`. Only a failure is told: the
+    /// move's own message, with its Undo, stays.
+    fn save_always_move(
+        &mut self,
+        sender: &Sender,
+        account: AccountId,
+        folder: FolderId,
+        cx: &mut Context<Self>,
+    ) {
+        let rule = always_move_rule(sender, account, folder);
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::rules::save(&connection, &rule).await
+                })
+                .await;
+            this.update(cx, |this, cx| match result {
+                Ok(_) => this.load_rules(cx),
+                Err(err) => {
+                    let error = format::sentence(&err);
+                    this.show_snackbar(tr!("toast-always-move-failed", error = error), None, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Under Move to's folders, after a divider: "Always move mail from …
+    /// here", when the mail has one sender. With its height.
+    pub(super) fn render_always_move(
+        &self,
+        pick: &FolderPick,
+        th: &Theme,
+        cx: &Context<Self>,
+    ) -> Option<(AnyElement, f32)> {
+        let sender = pick.always.as_ref()?;
+        let row = div()
+            .id("pick-always")
+            .flex_none()
+            .h(px(ALWAYS_HEIGHT))
+            .pl(px(16.0))
+            .pr(px(16.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(16.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .child(
+                div()
+                    .flex_none()
+                    .size(px(20.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .child(checkbox("pick-always-box", Check::from(pick.always_on), th)),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .text_size(px(13.0))
+                    .line_height(px(16.0))
+                    .line_clamp(2)
+                    .child(tr!("menu-always-move", name = sender.name.as_str())),
+            )
+            .on_click(cx.listener(|this, _, _, cx| {
+                cx.stop_propagation();
+                if let Some(pick) = &mut this.folder_pick {
+                    pick.always_on = !pick.always_on;
+                }
+                cx.notify();
+            }));
+        let line = div()
+            .flex_none()
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .flex_none()
+                    .my(px((ALWAYS_RULE - 1.0) / 2.0))
+                    .h(px(1.0))
+                    .bg(rgba(th.divider)),
+            )
+            .child(row);
+        Some((line.into_any_element(), ALWAYS_RULE + ALWAYS_HEIGHT))
     }
 
     /// The search box and the lines under it, each with its height; lines
@@ -575,5 +790,28 @@ mod tests {
         assert!(none);
         let (items, none) = pick_items(&folders(), &taken, "Travel", false);
         assert!(items.is_empty() && none, "nowhere to make it");
+    }
+
+    #[test]
+    fn always_move_makes_a_rule_named_after_the_sender() {
+        let sender = Sender {
+            name: "Bob Example".to_owned(),
+            address: "bob@example.com".to_owned(),
+        };
+        let rule = always_move_rule(&sender, AccountId(3), FolderId(9));
+        assert_eq!(rule.name, "Bob Example");
+        assert_eq!(rule.id, 0, "a new rule");
+        assert!(rule.enabled && !rule.stop);
+        assert_eq!(rule.accounts, [3]);
+        assert_eq!(
+            rule.conditions,
+            [Condition {
+                field: Field::From,
+                comparator: Comparator::Contains,
+                value: "bob@example.com".to_owned(),
+            }]
+        );
+        assert_eq!(rule.actions, [Action::Move { folder: 9 }]);
+        assert!(rule.validate().is_ok());
     }
 }

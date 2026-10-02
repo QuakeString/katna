@@ -63,6 +63,7 @@ mod mutes;
 mod notes;
 mod other_contacts;
 mod reminders;
+mod rules;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -122,6 +123,8 @@ pub enum Notice {
     ContactsChanged,
     /// Task sync brought changes from a task service.
     TasksChanged,
+    /// Mail rules changed, or one was switched off because it failed.
+    RulesChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -301,6 +304,8 @@ pub struct Daemon {
     keyring_waiting: Mutex<std::collections::HashSet<AccountId>>,
     /// Tells [`keyring::run`] that an account waits.
     keyring_wake: (Sender<()>, Receiver<()>),
+    /// Which mail of each account is new, for its mail rules ([`rules`]).
+    rule_watches: Mutex<HashMap<AccountId, katna_sync::rules::Watch>>,
 }
 
 /// A refresh token that replaced the account's old one.
@@ -365,6 +370,7 @@ impl Daemon {
             tasks_status: Mutex::default(),
             keyring_waiting: Mutex::default(),
             keyring_wake: async_channel::bounded(1),
+            rule_watches: Mutex::default(),
         });
         Ok((daemon, receiver))
     }
@@ -1057,6 +1063,7 @@ impl Daemon {
         if let Some(notices) = self.new_mail_notices() {
             notices.forget(id);
         }
+        self.forget_rules(id);
         if existed {
             tracing::info!(account = %id, "account removed");
             let _ = self.notices.try_send(Notice::AccountsChanged);
@@ -1921,6 +1928,7 @@ impl Daemon {
         if let Some(notices) = self.new_mail_notices() {
             notices.watch(&self.store(), id);
         }
+        self.watch_rules(id);
         let (handle, control) = worker::control();
         handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
@@ -1980,12 +1988,19 @@ impl Daemon {
                     if changed && self.follow_server_mutes() {
                         self.mail_changed_everywhere();
                     }
-                    if let Some(notices) = self.new_mail_notices() {
-                        notices.synced(&self.store, id).await;
-                    }
+                    // Rules first: what they move or quiet doesn't ring.
+                    self.rules_then_notices(id).await;
                 }
-                Event::Stored(_) | Event::BodiesStored(_) => {
+                Event::Stored(_) => {
                     let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
+                }
+                Event::BodiesStored(_) => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    // Mail that waited for its body for a rule.
+                    if self.rules_waiting(id) {
+                        self.rules_then_notices(id).await;
+                    }
                     continue;
                 }
                 Event::ChangesSent(report) => {

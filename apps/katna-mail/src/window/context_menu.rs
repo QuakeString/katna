@@ -3,7 +3,8 @@
 //! The right-click menu of the mail list, as in webmail: reply and
 //! forward, archive, delete, read, snooze and star, then submenus: "Move
 //! to" with the folders, "Follow up" (tasks, notes, meetings, calls) and
-//! "More" (spam, importance, pin), and "Find emails from" the sender. It
+//! "More" (spam, importance, pin), "Find emails from" the sender and
+//! "Make a rule…" (the rule editor, filled in with the sender). It
 //! opens where the pointer is and always fits the window. It acts on the
 //! ticked lines when the clicked line is one of them, else on the clicked
 //! line.
@@ -724,9 +725,27 @@ impl MailWindow {
                     th,
                     cx,
                 )
+                .on_click({
+                    let sender = sender.clone();
+                    cx.listener(move |this, _, window, cx| {
+                        this.close_context_menu(cx);
+                        this.search_for(format!("from:{sender}"), window, cx);
+                    })
+                }),
+            );
+            // The rule editor, filled in with the sender.
+            let account = row.account;
+            main.item(
+                self.context_item(
+                    "context-make-rule",
+                    "filter",
+                    tr!("menu-make-rule"),
+                    rh,
+                    th,
+                    cx,
+                )
                 .on_click(cx.listener(move |this, _, window, cx| {
-                    this.close_context_menu(cx);
-                    this.search_for(format!("from:{sender}"), window, cx);
+                    this.make_rule_from(name.clone(), sender.clone(), account, window, cx)
                 })),
             );
         }
@@ -816,6 +835,9 @@ impl MailWindow {
                 if let Some(pick) = self.folder_pick_in(PickFrom::Context, sub.pick_mode()) {
                     for (el, h) in self.render_folder_pick(pick, rh, th, cx) {
                         rows.line(el, h, h == rh);
+                    }
+                    if let Some((el, h)) = self.render_always_move(pick, th, cx) {
+                        rows.line(el, h, false);
                     }
                 }
             }
