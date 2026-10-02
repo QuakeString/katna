@@ -1994,7 +1994,7 @@ title = "Teams- und Zoom-Anrufen aus dem Kalender beitreten"
 text = """
 Die Karte eines Termins findet den Anruf jetzt in Beschreibung oder Ort,
 sodass eine Einladung zu Microsoft Teams, Zoom, Webex, Jitsi oder Google
-Meet oben eine Schaltfläche „Beitreten mit“ bekommt. Webadressen in der
+Meet oben eine Schaltfläche „Mit … teilnehmen“ bekommt. Webadressen in der
 Beschreibung sind Links, die Zeilen aus Unterstrichen sind verschwunden,
 und Teilnehmen? bleibt unten, während die Details scrollen.
 """
@@ -2031,7 +2031,7 @@ bei PDFs, Bildern, Textdateien, Tabellen und Dokumenten.
 title = "Die E-Mail hinter einem Termin öffnen"
 text = """
 Termine, die Gmail aus einer E-Mail angelegt hat, etwa Züge, Flüge und
-Hotels, bekommen auf ihrer Karte die Schaltfläche Die E-Mail öffnen. Sie
+Hotels, bekommen auf ihrer Karte die Schaltfläche E-Mail öffnen. Sie
 öffnet diese E-Mail in Katna, oder in Gmail, wenn Katna sie nicht hat.
 Eine aus einer E-Mail angelegte Aufgabe öffnet ihre E-Mail auch von
 ihrer Karte im Kalender aus, und Besprechungsnotizen erstellen öffnet
@@ -2127,7 +2127,7 @@ Die neue Seite Dateien, unten in der App-Leiste, zeigt jeden Anhang aus
 jedem Konto, die neuesten zuerst. Schränken Sie sie auf Bilder, PDFs
 oder Dokumente, auf ein Konto, eine Person oder einen Zeitraum ein, oder
 suchen Sie nach Name, Absender oder Betreff. Ein Rechtsklick auf eine
-Datei bietet mehr, und Die E-Mail anzeigen führt zur E-Mail, mit der sie
+Datei bietet mehr, und E-Mail anzeigen führt zur E-Mail, mit der sie
 kam.
 """
 
@@ -2232,7 +2232,7 @@ Während Sie Katna Mail einrichten, ist das Fenster hinter den
 Einrichtungsseiten unter einem hellen Schleier zu sehen: die Apps,
 Schreiben und das Suchfeld, mit sanften Platzhaltern, wo Ihre Ordner und
 E-Mails erscheinen werden. Ein neuer Schritt bietet ein Katna-Konto an
-und nennt, was es einschaltet (Lesebestätigungen, Link-Tracking,
+und nennt, was es einschaltet (Lesebestätigungen, Link-Verfolgung,
 Aktivität und Übersetzung), oder Sie überspringen ihn.
 """
 
@@ -2522,7 +2522,7 @@ Ein Bild, das jemand in drei oder mehr Konversationen schickt, etwa das
 Banner oder Foto in seiner Signatur, erscheint nicht mehr auf der Seite
 Dateien, ebenso wenig Symbole sozialer Netzwerke, egal wie groß. Unter
 ihrer E-Mail sind sie weiterhin zu sehen, und wer „Kleine Bilder
-weglassen“ ausschaltet, bekommt sie alle zurück.
+auslassen“ ausschaltet, bekommt sie alle zurück.
 """
 
 ["2026-10-01-0830-muted-contact-mark"]
@@ -3040,7 +3040,7 @@ beim Senden für die Empfänger freigegeben.
 ["2026-10-02-0734-peek-and-reply-in-notifications"]
 title = "Aus der Benachrichtigung hineinschauen und antworten"
 text = """
-Eine Benachrichtigung über neue E-Mails hat jetzt Hineinschauen, das die
+Eine Benachrichtigung über neue E-Mails hat jetzt Vorschau, die die
 E-Mail selbst in derselben Benachrichtigung zeigt, und Antworten, wo Sie
 Ihre Antwort direkt dort tippen und Senden drücken. Sie geht von dem
 Konto aus, an das die E-Mail kam, nach Ihrer Zeit für Senden rückgängig
@@ -3100,7 +3100,7 @@ Einstellungen > Posteingang eine andere Auswahl.
 title = "Feeds ist aus der linken Leiste verschwunden"
 text = """
 Katna wird RSS- und Atom-Feeds nun doch nicht lesen, deshalb haben die
-Taste Feeds und ihre Seite „Demnächst“ die linke Leiste verlassen.
+Taste Feeds und ihre Seite „Demnächst verfügbar“ die linke Leiste verlassen.
 Dateien behält Strg+7.
 """
 

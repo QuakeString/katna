@@ -1871,7 +1871,7 @@ title = "Zegt welke Google-API uit staat"
 text = """
 Als Google een API voor Katna heeft uitgezet, zeggen Contacten, Agenda,
 Taken en Drive-bestanden nu in een korte regel welke, met een knop
-Inschakelen die de pagina van Google ervoor opent, in plaats van de kale
+Aanzetten die de pagina van Google ervoor opent, in plaats van de kale
 foutmelding van Google.
 """
 
@@ -2059,7 +2059,7 @@ zoals Inbox, doet hetzelfde, net als in Gmail, en Home ook.
 title = "Bestanden verzenden vanuit je bestandsbeheerder"
 text = """
 Klik met rechts op bestanden of mappen in Dolphin, GNOME Bestanden of
-Windows Verkenner en kies Verzenden met Katna Mail: er opent een nieuw
+Windows Verkenner en kies Versturen met Katna Mail: er opent een nieuw
 bericht met ze als bijlage, en een map gaat mee als zip. Met meer dan
 één e-mailaccount kies je in het submenu het account om vanaf te
 verzenden.
@@ -2256,7 +2256,7 @@ title = "Passend, paginapijlen en meer in de viewer"
 text = """
 De bijlageviewer heeft een knop Passend: een pdf-pagina past in de hoogte
 van het venster, een afbeelding in het venster, en documenten, dia's en
-spreadsheets in de breedte. Afbeeldingen krijgen ook Ware grootte en
+spreadsheets in de breedte. Afbeeldingen krijgen ook Werkelijke grootte en
 kunnen worden gedraaid. Wijs het paginavak aan voor kleine pijltjes om een
 pagina terug of verder te gaan, en dia's krijgen een eigen vak.
 """
@@ -2282,7 +2282,7 @@ tabbladen te laten schuiven.
 title = "Een opgeruimdere pagina Bestanden"
 text = """
 De aantallen naast elk soort bestand en elk account staan nu in dezelfde
-kleine pillen als de mapaantallen in Mail. De lijn onder de titel van de
+kleine pillen als de mapaantallen in E-mail. De lijn onder de titel van de
 pagina en de rijen bestanden beginnen en eindigen ook op dezelfde randen.
 """
 
@@ -2343,7 +2343,7 @@ je Inbox. Reclame, Sociaal, Updates en Forums tellen niet meer mee.
 ["2026-10-01-0312-quiet-selected-row"]
 title = "Een rustigere open map"
 text = """
-De open map in Mail, en de open weergave in Contacten, Taken, Notities en
+De open map in E-mail, en de open weergave in Contacten, Taken, Notities en
 Bestanden, is nu gemarkeerd in een zacht grijs in plaats van de
 accentkleur, zodat Opstellen en de appbalk opvallen en de mappictogrammen
 hun eigen kleuren houden.
@@ -2408,7 +2408,7 @@ Maand, Dag, Jaar en de andere zijn een klik verwijderd in de bovenbalk.
 ["2026-10-01-0552-lighter-count-on-open-row"]
 title = "Aantallen vallen op bij de open map"
 text = """
-Het aantal naast de open map in Mail, en naast het open soort in
+Het aantal naast de open map in E-mail, en naast het open soort in
 Bestanden, staat nu in een pil die lichter is dan het grijs van de regel,
 zodat het er niet meer in wegzakt, in licht en donker.
 """
@@ -2420,7 +2420,7 @@ De pagina Bestanden loopt niet meer vol met de kleine logo's en
 pictogrammen uit e-mailhandtekeningen: afbeeldingen onder 12 KB, of minder
 dan 100 pixels breed of hoog, blijven onder hun e-mail. Wijzig beide
 grenzen, of toon elke afbeelding, in Instellingen > Standaardapps >
-Pagina Bestanden.
+Bestandenpagina.
 """
 
 ["2026-10-01-0700-mute-from-contact"]
@@ -2479,7 +2479,7 @@ chatmedia. De geciteerde e-mail en handtekeningen wachten achter ··· in
 elke ballon, en een klik op een naam toont diens kaart met handtekening.
 Antwoord vanuit het vak onderaan, met Ctrl+Enter, de opmaakbalk achter Aa
 en de paperclip voor bestanden, sjablonen en handtekeningen. Nieuwsbrieven
-houden de gewone weergave, en de schakelaar Chat | Mail zet elk gesprek om
+houden de gewone weergave, en de schakelaar Chat | E-mail zet elk gesprek om
 naar de andere kant.
 """
 
@@ -2525,7 +2525,7 @@ title = "Eén grote knop, één keer inklappen, op elke pagina"
 text = """
 De grote knop bovenaan de linkerbalk ziet er nu op elke pagina hetzelfde
 uit, staat op dezelfde plek en doet wat bij die pagina hoort: Opstellen in
-Mail en Bestanden, Nieuwe afspraak, Nieuw contact, Nieuwe taak en Nieuwe
+E-mail en Bestanden, Nieuwe afspraak, Nieuw contact, Nieuwe taak en Nieuwe
 notitie. De linkerbalk inklappen klapt hem overal in, en zolang hij
 ingeklapt is, wacht de knop van elke pagina bovenaan de zijbalk. Op een
 telefoon is het de zwevende knop.
@@ -2638,7 +2638,7 @@ gedimd, zodat de afzender en het onderwerp opvallen, in licht en donker.
 ["2026-10-01-1645-frosted-dialogs"]
 title = "Matglazen dialoogvensters"
 text = """
-Met matglazen menu's en dialoogvensters aan zijn dialoogvensters ook van
+Met Menu's en dialogen van matglas aan zijn dialoogvensters ook van
 matglas: Een e-mailaccount toevoegen, Over, Wat is er nieuw, updates,
 delen, afdrukvoorbeeld, labels, vragen over verwijderen, de kaart bij de
 eerste start en het linkvenster van Opstellen.
@@ -2668,7 +2668,7 @@ herhaalt.
 title = "Kies hoe matglazen menu's eruitzien"
 text = """
 Matglazen menu's en dialoogvensters zijn nu helderder en volgen de
-vervagingssterkte van KDE. Zet Eigen vervaging aan in Instellingen,
+vervagingssterkte van KDE. Zet Eigen mate van vervaging aan in Instellingen,
 Experimenteel, Vervaging om de sterkte en dekking van de vervaging zelf in
 te stellen.
 """
@@ -2826,9 +2826,9 @@ gaat. Beantwoorden, Doorsturen en andere pilknoppen vervagen zacht in.
 """
 
 ["2026-10-02-0425-chat-draft-to-mail"]
-title = "Je chatantwoord volgt je naar Mail"
+title = "Je chatantwoord volgt je naar E-mail"
 text = """
-Een chat omzetten naar Mail terwijl je een antwoord schrijft, scrolt nu
+Een chat omzetten naar E-mail terwijl je een antwoord schrijft, scrolt nu
 omlaag naar het antwoord met je cursor er nog in, en terugschakelen houdt
 het ook.
 """
@@ -2913,7 +2913,7 @@ text = """
 De samenvattingskaart die je via een rechtsklik opent, heeft nu
 Beantwoorden. Dat maakt van dezelfde kaart een antwoord: kies een idee of
 zeg wat erin moet staan, pas het concept aan als je wilt, en kies dan
-Verzenden, of Openen in het gesprek om verder te schrijven. Een antwoord
+Versturen, of Openen in het gesprek om verder te schrijven. Een antwoord
 dat je sluit zonder te verzenden, wacht in het antwoordvak. De kaart opent
 nu ook waar je klikte.
 """
@@ -2943,7 +2943,7 @@ title = "Bekijken en beantwoorden vanuit de melding"
 text = """
 Een melding van nieuwe e-mail heeft nu Bekijken, dat de e-mail zelf in
 dezelfde melding toont, en Beantwoorden, waar je je antwoord meteen daar
-typt en op Verzenden drukt. Het gaat vanaf het account waar de e-mail
+typt en op Versturen drukt. Het gaat vanaf het account waar de e-mail
 binnenkwam, na je wachttijd voor Verzenden ongedaan maken; Ongedaan maken
 opent het in Katna Mail om verder te schrijven. Op Linux heeft nieuwe
 e-mail ook een eigen, luider belletje; kies een ander in Instellingen >
@@ -3006,9 +3006,9 @@ Bestanden houdt Ctrl+7.
 title = "Drive-bestanden hernoemen en naar de prullenbak"
 text = """
 In Bestanden heeft een bestand of map in je Google Drive of OneDrive nu
-Naam wijzigen en Naar prullenbak in het menu. Naam wijzigen laat je de
-naam ter plekke overtypen (F2), en Naar prullenbak (Del) komt met Ongedaan
-maken.
+Hernoemen en Naar prullenbak verplaatsen in het menu. Hernoemen laat je
+de naam ter plekke overtypen (F2), en Naar prullenbak verplaatsen (Del)
+komt met Ongedaan maken.
 """
 
 ["2026-10-02-0827-files-chips-on-phones"]
@@ -3033,7 +3033,7 @@ in, en klik op een voltooid bestand om de map ervan te openen.
 title = "Drive-bestanden delen vanuit Katna"
 text = """
 Delen… in het menu van een Google Drive- of OneDrive-bestand in Bestanden
-opent een venster Delen: voeg mensen toe als Lezer, Reageerder of Bewerker,
+opent een venster Delen: voeg mensen toe als Kijker, Reageerder of Bewerker,
 wijzig of verwijder wie al toegang heeft, en open het voor iedereen met
 de link. De drive mailt hen alleen als je dat aanvinkt.
 """

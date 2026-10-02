@@ -2201,7 +2201,7 @@ title = "Più visibile con i colori scuri"
 text = """
 Con i colori scuri, ciò che fluttua sopra l’elenco della posta ora è di una
 tonalità più chiara con un tenue bordo chiaro, perché le ombre si vedono
-appena su uno sfondo scuro. Il pulsante Torna in cima, i menu, la finestra
+appena su uno sfondo scuro. Il pulsante Torna all’inizio, i menu, la finestra
 Scrivi e le finestre di dialogo risaltano chiaramente. I colori chiari
 restano come prima.
 """
@@ -2342,7 +2342,7 @@ intervallo di tempo prima o dopo.
 ["2026-10-01-0256-color-schemes"]
 title = "Schemi di colori e colori d’accento"
 text = """
-Impostazioni > Aspetto ora ha Modalità, Colori e Accento come scelte
+Impostazioni > Aspetto ora ha Modalità, Colori e Colore di risalto come scelte
 separate. Scegli chiaro o scuro, poi uno dei 14 schemi di colori, come
 Clear, Nord, Solarized o Catppuccin, oppure mantieni quello del desktop.
 Ognuno funziona in chiaro e in scuro, e ci si può abbinare qualsiasi
@@ -2500,7 +2500,7 @@ multimediali della chat. La posta citata e le firme attendono dietro ··· in
 ogni bolla, e un clic su un nome mostra la sua scheda con la firma.
 Rispondi dalla casella in basso, con Ctrl+Invio, la barra di formattazione
 dietro Aa e la graffetta per file, modelli e firme. Le newsletter mantengono
-la vista consueta, e l’interruttore Chat | Posta passa ogni conversazione
+la vista consueta, e l’interruttore Chat | Email passa ogni conversazione
 da una vista all’altra.
 """
 
@@ -2854,9 +2854,9 @@ dissolvenza leggera.
 """
 
 ["2026-10-02-0425-chat-draft-to-mail"]
-title = "La tua risposta in chat ti segue in Posta"
+title = "La tua risposta in chat ti segue in Email"
 text = """
-Passare da una chat a Posta mentre scrivi una risposta ora scorre fino
+Passare da una chat a Email mentre scrivi una risposta ora scorre fino
 alla risposta con il cursore ancora dentro, e anche tornare indietro la
 mantiene.
 """
@@ -2901,7 +2901,7 @@ in arrivo è più chiaro.
 ["2026-10-02-0453-google-drive-in-files"]
 title = "Il tuo Google Drive in File"
 text = """
-File ora mostra il drive di ogni account Google sotto Drive nella colonna
+File ora mostra il drive di ogni account Google sotto Unità nella colonna
 laterale. Apri le sue cartelle, cercaci dentro, e apri, allega o scarica
 un file direttamente lì. La prima volta, premi Consenti perché Katna possa
 leggere il drive.
@@ -2969,9 +2969,9 @@ quando invii.
 """
 
 ["2026-10-02-0734-peek-and-reply-in-notifications"]
-title = "Sbircia e rispondi dalla notifica"
+title = "Anteprima e risposta dalla notifica"
 text = """
-La notifica di una nuova email ora ha Sbircia, che mostra l’email stessa
+La notifica di una nuova email ora ha Anteprima, che mostra l’email stessa
 nella stessa notifica, e Rispondi, dove scrivi la tua risposta
 direttamente lì e premi Invia. Parte dall’account a cui è arrivata
 l’email, dopo il tempo di Annulla invio; Annulla la apre in Katna Mail per

@@ -1833,7 +1833,7 @@ title = "Säger vilket Google-API som är avstängt"
 text = """
 När Google har ett API avstängt för Katna säger Kontakter, Kalender,
 Uppgifter och Drive-filer nu vilket på en kort rad, med en knapp
-Aktivera som öppnar Googles sida för det, i stället för Googles råa
+Slå på som öppnar Googles sida för det, i stället för Googles råa
 felmeddelande.
 """
 
@@ -2147,8 +2147,8 @@ title = "Lättare att se i mörka färger"
 text = """
 I mörka färger är saker som svävar över e-postlistan nu en nyans ljusare
 med en svag ljus kant, eftersom skuggor knappt syns mot en mörk
-bakgrund. Knappen Till början, menyer, skrivfönstret och dialogrutor
-framträder tydligt. Ljusa färger ser ut som förut.
+bakgrund. Knappen Tillbaka till toppen, menyer, skrivfönstret och
+dialogrutor framträder tydligt. Ljusa färger ser ut som förut.
 """
 
 ["2026-09-30-1911-files-scrollbar"]
@@ -2283,8 +2283,8 @@ senare.
 ["2026-10-01-0256-color-schemes"]
 title = "Färgscheman och accentfärger"
 text = """
-Inställningar > Utseende har nu Tema, Färger och Accent som separata
-val. Välj ljust eller mörkt, sedan något av 14 färgscheman, som Clear,
+Inställningar > Utseende har nu Läge, Färger och Accent som separata
+val. Välj ljust eller mörkt, sedan något av 14 färgscheman, som Klar,
 Nord, Solarized eller Catppuccin, eller behåll skrivbordets. Varje
 schema fungerar i ljust och mörkt, och vilken accentfärg som helst kan
 läggas ovanpå.
@@ -2328,9 +2328,9 @@ och allt som är tystat.
 """
 
 ["2026-10-01-0335-tray-style"]
-title = "Ikon i systemfältet i färg eller en färg"
+title = "Systemfältsikon i färg eller en färg"
 text = """
-Inställningar > Allmänt > Skrivbord > Ikon i systemfältet i färg väljer
+Inställningar > Allmänt > Skrivbord > Systemfältsikon i färg väljer
 Katnas färger eller en färg som panelens andra ikoner. En färg förblir
 en färg med oläst e-post, och antalet olästa är alltid rött. På Linux är
 ikonen i systemfältet enfärgad som standard; på Windows är den i färg.
@@ -2341,8 +2341,8 @@ title = "Tysta en konversation eller en avsändare"
 text = """
 Klockan över en öppen konversation tystar den: nya svar aviserar dig
 inte längre och räknas inte i aktivitetsfältet, och en överstruken
-klocka markerar den i listan. Högerklicka på en konversation för Tysta
-konversation eller Tysta avsändare, eller tryck på M.
+klocka markerar den i listan. Högerklicka på en konversation för Gör
+konversationen ljudlös eller Gör avsändaren ljudlös, eller tryck på M.
 """
 
 ["2026-10-01-0410-your-color-schemes"]
@@ -2377,7 +2377,7 @@ text = """
 Sidan Filer fylls inte längre av de små logotyper och ikoner som kommer
 i e-postsignaturer: bilder under 12 kB, eller under 100 pixlar breda
 eller höga, stannar under sitt meddelande. Ändra båda gränserna, eller
-visa alla bilder, i Inställningar > Standardappar > Sidan Filer.
+visa alla bilder, i Inställningar > Standardappar > Filsidan.
 """
 
 ["2026-10-01-0700-mute-from-contact"]
@@ -2629,7 +2629,7 @@ som någon upprepar i varje meddelande.
 title = "Välj hur frostade menyer ser ut"
 text = """
 Frostade menyer och dialogrutor är tydligare nu och följer KDE:s
-oskärpestyrka. Slå på Anpassad oskärpa i Inställningar, Experimentellt,
+oskärpestyrka. Slå på Egen oskärpa i Inställningar, Experimentellt,
 Oskärpa för att själv ställa in oskärpans styrka och opacitet.
 """
 
@@ -2702,7 +2702,7 @@ den. Det kräver att skrivhjälp med AI är på i Inställningar > Skriva.
 title = "Ljust och mörkt fungerar med Systemfärger"
 text = """
 Med Färger inställt på System och ett skrivbordsschema som bara är mörkt
-(eller bara ljust) växlar Inställningar > Utseende > Tema nu Katna
+(eller bara ljust) växlar Inställningar > Utseende > Läge nu Katna
 mellan ljust och mörkt igen: den andra sidan använder Katnas egna färger
 i skrivbordets accentfärg.
 """
@@ -2832,7 +2832,7 @@ också ljusare.
 ["2026-10-02-0453-google-drive-in-files"]
 title = "Din Google Drive i Filer"
 text = """
-Filer visar nu varje Google-kontos lagringsutrymme under Enheter i
+Filer visar nu varje Google-kontos lagringsutrymme under Molnlagring i
 sidokolumnen. Öppna dess mappar, sök i det och öppna, bifoga eller ladda
 ned en fil direkt där. Första gången trycker du på Tillåt så att Katna
 får läsa din Drive.
@@ -2898,9 +2898,9 @@ skickar.
 """
 
 ["2026-10-02-0734-peek-and-reply-in-notifications"]
-title = "Titta och svara från aviseringen"
+title = "Kika och svara från aviseringen"
 text = """
-En avisering om ny e-post har nu Titta, som visar själva meddelandet i
+En avisering om ny e-post har nu Kika, som visar själva meddelandet i
 samma avisering, och Svara, där du skriver ditt svar direkt där och
 trycker på Skicka. Det skickas från kontot meddelandet kom till, efter
 din tid för Ångra skicka; Ångra öppnar det i Katna Mail så att du kan

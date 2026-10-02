@@ -2338,7 +2338,7 @@ periodo antes o después.
 ["2026-10-01-0256-color-schemes"]
 title = "Esquemas de color y colores de acento"
 text = """
-Ajustes > Apariencia tiene ahora Tema, Colores y Acento como opciones
+Ajustes > Apariencia tiene ahora Modo, Colores y Acento como opciones
 separadas. Elige claro u oscuro, luego cualquiera de 14 esquemas de
 color, como Clear, Nord, Solarized o Catppuccin, o quédate con el de tu
 escritorio. Cada uno funciona en claro y en oscuro, y se le puede poner
@@ -2350,7 +2350,7 @@ title = "El recuento de la barra de tareas coincide con tus notificaciones"
 text = """
 El recuento de no leídos en la barra de tareas y en la bandeja cuenta
 ahora el mismo correo que te notifica: la pestaña Principal de tus
-Recibidos. Promociones, Social, Actualizaciones y Foros ya no suman.
+Recibidos. Promociones, Social, Notificaciones y Foros ya no suman.
 """
 
 ["2026-10-01-0312-quiet-selected-row"]
@@ -2398,7 +2398,8 @@ text = """
 La campana sobre una conversación abierta la silencia: las respuestas
 nuevas ya no te notifican ni suman al recuento de la barra de tareas, y
 una campana tachada la marca en la lista. Haz clic derecho en una
-conversación para Silenciar conversación o Silenciar remitente, o pulsa M.
+conversación para Silenciar la conversación o Silenciar al remitente, o
+pulsa M.
 """
 
 ["2026-10-01-0410-your-color-schemes"]
@@ -2461,7 +2462,7 @@ text = """
 Una imagen que alguien envía en tres o más conversaciones, como el
 banner o la foto de su firma, ya no aparece en la página Archivos, ni
 tampoco los iconos de redes sociales, por grandes que sean. Siguen
-apareciendo bajo su correo, y desactivar «Dejar fuera las imágenes
+apareciendo bajo su correo, y desactivar «Omitir las imágenes
 pequeñas» las recupera todas.
 """
 
@@ -2470,7 +2471,7 @@ title = "Mira quién está silenciado"
 text = """
 Una campana tachada sigue ahora al nombre de un remitente silenciado
 dondequiera que aparezca: la lista de correo, un correo abierto,
-Contactos, los campos Para y CC y sus sugerencias, la página Archivos,
+Contactos, los campos Para y Cc y sus sugerencias, la página Archivos,
 los invitados de los eventos y el informe de Actividad. Se acabó
 preguntarse por qué su correo no hace ruido.
 """
@@ -2524,7 +2525,7 @@ para que se reescriba más claro, más corto, más amable o más formal, y
 luego Reemplazar. Katna AI es gratis durante 30 días, o usa tu propia
 clave de Google Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter o
 un modelo en este ordenador. La IA también puede terminar tus frases en
-gris; actívalo en Ajustes > Redactar.
+gris; actívalo en Ajustes > Redacción.
 """
 
 ["2026-10-01-1043-header-details-selectable"]
@@ -2644,7 +2645,7 @@ Un destello junto a Formato, abajo en un mensaje nuevo y en el cuadro de
 respuesta de la vista de chat, reformula todo lo que has escrito cuando
 no hay nada seleccionado, o solo la selección cuando la hay; Ctrl+J hace
 lo mismo. Las sugerencias más largas con IA llegan mucho antes, y el
-campo Modelo de Ajustes > Redactar enumera los modelos que ofrece tu
+campo Modelo de Ajustes > Redacción enumera los modelos que ofrece tu
 servicio mientras escribes.
 """
 
@@ -2691,8 +2692,8 @@ repite en cada correo.
 title = "Elige cómo se ven los menús esmerilados"
 text = """
 Los menús y diálogos esmerilados son ahora más claros y siguen la
-intensidad de desenfoque de KDE. Activa Cantidad de desenfoque
-personalizada en Ajustes, Experimental, Desenfoque para ajustar tú mismo
+intensidad de desenfoque de KDE. Activa Desenfoque personalizado
+en Ajustes, Experimental, Desenfoque para ajustar tú mismo
 la intensidad del desenfoque y la opacidad.
 """
 
@@ -2761,14 +2762,14 @@ abierta, el destello de arriba pone el resumen bajo el asunto; en la
 vista de chat va en una franja bajo la cabecera. Cada punto nombra el
 correo del que sale, y cuando ha llegado correo nuevo desde tu última
 lectura, el resumen cubre solo eso. Necesita la ayuda para escribir con
-IA activada en Ajustes > Redactar.
+IA activada en Ajustes > Redacción.
 """
 
 ["2026-10-02-0215-system-colors-follow-mode"]
 title = "Claro y Oscuro funcionan con los colores del Sistema"
 text = """
 Con Colores en Sistema y un esquema de escritorio que solo es oscuro (o
-solo claro), Ajustes > Apariencia > Tema vuelve a cambiar Katna entre
+solo claro), Ajustes > Apariencia > Modo vuelve a cambiar Katna entre
 claro y oscuro: el otro lado usa los colores propios de Katna con el
 acento de tu escritorio.
 """
@@ -2868,7 +2869,7 @@ Formato (o Ctrl+J) lo escribe por ti. Elige una de tres ideas sacadas de
 la conversación, o di con tus palabras lo que debe decir, luego Inserta
 el borrador y cambia lo que quieras. En cuanto escribes, el destello
 vuelve a reformular. Necesita la ayuda para escribir con IA activada en
-Ajustes > Redactar.
+Ajustes > Redacción.
 """
 
 ["2026-10-02-0430-compose-beside-reply"]
@@ -2913,14 +2914,14 @@ En cuanto escribes un asunto, un destello al final de su línea ofrece
 otras tres formas de decirlo, escritas a partir del asunto y de lo que
 dice tu mensaje hasta ahora. Elige una para usarla; Deshacer devuelve lo
 que escribiste. Necesita la ayuda para escribir con IA activada en
-Ajustes > Redactar.
+Ajustes > Redacción.
 """
 
 ["2026-10-02-0525-quieter-compose"]
 title = "Una ventana Redactar más tranquila"
 text = """
 La ventana Mensaje nuevo flota con un margen uniforme respecto a los
-bordes de la ventana. Para, CC, CCO y De van juntos sin líneas entre
+bordes de la ventana. Para, Cc, Cco y De van juntos sin líneas entre
 ellos, los destinatarios son etiquetas suaves rellenas, y De es una sola
 línea discreta. El cifrado, la firma, el seguimiento y las
 confirmaciones comparten un pequeño grupo, y las herramientas de
@@ -3018,7 +3019,7 @@ resumen, la etiqueta de firma bajo el texto elige cuál, como en Redactar.
 title = "Pestañas en los Recibidos unificados"
 text = """
 Los Recibidos de todas tus cuentas ahora también tienen pestañas:
-Principal, Promociones, Social, Actualizaciones y Foros, con el correo de
+Principal, Promociones, Social, Notificaciones y Foros, con el correo de
 cada cuenta en la pestaña de su tipo. Un punto junto a cada remitente
 muestra de qué cuenta llegó un correo. Elige una cuenta debajo para ver
 sus propias pestañas, o escoge otro conjunto en Ajustes > Recibidos.
@@ -3036,8 +3037,7 @@ conserva Ctrl+7.
 title = "Cambia el nombre de archivos de la unidad o llévalos a la papelera"
 text = """
 En Archivos, un archivo o una carpeta de tu Google Drive o OneDrive tiene
-ahora Cambiar nombre y Mover a la papelera en su menú. Cambiar nombre
-escribe sobre el nombre en su sitio (F2), y Mover a la papelera (Supr)
+ahora Renombrar y Mover a la papelera en su menú. Renombrar escribe sobre el nombre en su sitio (F2), y Mover a la papelera (Supr)
 viene con Deshacer.
 """
 
@@ -3064,7 +3064,7 @@ title = "Comparte archivos de la unidad desde Katna"
 text = """
 Compartir… en el menú de un archivo de Google Drive o OneDrive en
 Archivos abre un diálogo Compartir: añade personas como Lector,
-Comentarista o Editor, cambia o quita a quien ya tiene acceso, y ábrelo a
+Comentador o Editor, cambia o quita a quien ya tiene acceso, y ábrelo a
 cualquiera que tenga el enlace. La unidad les envía un correo solo si lo
 marcas.
 """

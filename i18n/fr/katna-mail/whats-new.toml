@@ -2016,7 +2016,7 @@ La fiche d’un événement trouve désormais l’appel dans sa description ou
 son lieu : une invitation Microsoft Teams, Zoom, Webex, Jitsi ou Google
 Meet obtient un bouton « Rejoindre avec » en haut. Les adresses web de
 la description sont des liens, les lignes de tirets bas ont disparu, et
-Vous participez ? reste en bas pendant que les détails défilent.
+Participez-vous ? reste en bas pendant que les détails défilent.
 """
 
 ["2026-09-30-0715-click-away-closes-viewer"]
@@ -2080,8 +2080,8 @@ jusqu’à ce que vous la fermiez ou en ouvriez une autre.
 ["2026-09-30-1045-tracked-mail-arrives"]
 title = "Les messages suivis arrivent de nouveau"
 text = """
-Un message envoyé avec le suivi activé pouvait apparaître dans Envoyés
-sans atteindre personne. Il part désormais à chaque destinataire. Les
+Un message envoyé avec le suivi activé pouvait apparaître dans Messages
+envoyés sans atteindre personne. Il part désormais à chaque destinataire. Les
 messages perdus de cette façon doivent être renvoyés.
 """
 
@@ -2183,7 +2183,7 @@ text = """
 ne vérifie désormais que ce dossier, et c’est donc rapide. Sur la Boîte
 de réception d’un compte sous Tous les comptes, il vérifie la Boîte de
 réception de ce compte, et sur une liste comme Boîte de réception ou
-Envoyés sous Tous les comptes, il vérifie ce dossier dans chaque compte.
+Messages envoyés sous Tous les comptes, il vérifie ce dossier dans chaque compte.
 """
 
 ["2026-09-30-1742-frosted-viewer"]
@@ -2272,7 +2272,7 @@ title = "Plus lisible en couleurs sombres"
 text = """
 En couleurs sombres, ce qui flotte au-dessus de la liste des messages
 est désormais un peu plus clair, avec un léger bord lumineux, car les
-ombres se voient à peine sur un fond sombre. Le bouton Retour en haut,
+ombres se voient à peine sur un fond sombre. Le bouton Revenir en haut,
 les menus, la fenêtre Nouveau message et les boîtes de dialogue
 ressortent clairement. Les couleurs claires restent comme avant.
 """
@@ -2353,7 +2353,7 @@ title = "Des icônes de dossiers en couleur"
 text = """
 Les icônes du volet des dossiers ont désormais des couleurs qui disent
 ce que contient chaque dossier : Non lus en bleu, Messages suivis en
-jaune, Importants en ambre, Envoyés en vert, Spam en rouge, Brouillons
+jaune, Importants en ambre, Messages envoyés en vert, Spam en rouge, Brouillons
 en violet, et Boîte de réception dans la couleur d’accentuation de
 votre bureau. Les compteurs de messages tiennent dans de petites
 pastilles discrètes.
@@ -2551,7 +2551,7 @@ Une image qu’une personne envoie dans trois conversations ou plus, comme
 la bannière ou la photo de sa signature, n’apparaît plus sur la page
 Fichiers, pas plus que les icônes de réseaux sociaux, quelle que soit
 leur taille. Elles restent visibles sous leur message, et désactiver
-« Écarter les petites images » les fait toutes revenir.
+« Exclure les petites images » les fait toutes revenir.
 """
 
 ["2026-10-01-0830-muted-contact-mark"]
@@ -2578,7 +2578,7 @@ sourdine et pendant Ne pas déranger.
 ["2026-10-01-0925-chat-view"]
 title = "Lisez les conversations comme des discussions (expérimental)"
 text = """
-Activez Paramètres > Expérimental > Conversations en discussions, et les
+Activez Paramètres > Expérimental > Conversations en mode discussion, et les
 messages entre personnes se lisent comme une discussion de groupe : une
 bulle par message avec seulement ce qui a été écrit, les vôtres à
 droite, images et fichiers comme médias de discussion. Les citations et
@@ -2587,7 +2587,7 @@ un nom affiche la fiche de la personne avec sa signature. Répondez
 depuis le champ en bas, avec Ctrl+Enter, la barre de mise en forme
 derrière Aa et le trombone pour les fichiers, les modèles et les
 signatures. Les newsletters gardent l’affichage habituel, et le
-sélecteur Discussion | Courrier bascule n’importe quelle conversation
+sélecteur Discussion | Message bascule n’importe quelle conversation
 dans un sens ou dans l’autre.
 """
 
@@ -2793,7 +2793,7 @@ répète dans chaque message.
 title = "Choisissez l’aspect des menus dépolis"
 text = """
 Les menus et boîtes de dialogue dépolis sont désormais plus clairs et
-suivent l’intensité du flou de KDE. Activez Intensité du flou
+suivent l’intensité du flou de KDE. Activez Intensité de flou
 personnalisée dans Paramètres, Expérimental, Flou pour régler vous-même
 l’intensité du flou et l’opacité.
 """
@@ -2962,7 +2962,7 @@ boutons en pastille apparaissent en douceur.
 ["2026-10-02-0425-chat-draft-to-mail"]
 title = "Votre réponse de discussion vous suit dans Courrier"
 text = """
-Passer une discussion en Courrier pendant que vous écrivez une réponse
+Passer une discussion en Message pendant que vous écrivez une réponse
 fait désormais défiler jusqu’à la réponse, avec votre curseur toujours
 dedans, et revenir en arrière la conserve aussi.
 """
@@ -3151,8 +3151,8 @@ garde Ctrl+7.
 title = "Renommez et mettez à la corbeille les fichiers du drive"
 text = """
 Dans Fichiers, un fichier ou dossier de votre Google Drive ou OneDrive
-a désormais Renommer et Placer dans la corbeille dans son menu. Renommer
-permet de retaper le nom sur place (F2), et Placer dans la corbeille
+a désormais Renommer et Mettre à la corbeille dans son menu. Renommer
+permet de retaper le nom sur place (F2), et Mettre à la corbeille
 (Suppr) s’accompagne d’Annuler.
 """
 

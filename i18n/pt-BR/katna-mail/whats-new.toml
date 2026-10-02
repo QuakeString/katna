@@ -2324,7 +2324,7 @@ mesmo intervalo de tempo para antes ou para depois.
 ["2026-10-01-0256-color-schemes"]
 title = "Esquemas de cores e cores de destaque"
 text = """
-Configurações > Aparência agora tem Tema, Cores e Destaque como escolhas
+Configurações > Aparência agora tem Modo, Cores e Destaque como escolhas
 separadas. Escolha claro ou escuro, depois qualquer um de 14 esquemas de
 cores, como Clear, Nord, Solarized ou Catppuccin, ou mantenha o da sua
 área de trabalho. Cada um funciona no claro e no escuro, e qualquer cor
@@ -2504,7 +2504,7 @@ cartões de anexo sob um e-mail aberto, ao lado de Salvar.
 """
 
 ["2026-10-01-1039-rephrase-with-ai"]
-title = "Reescrever com IA"
+title = "Reformular com IA"
 text = """
 Selecione um texto numa mensagem e pressione o brilho ao lado dele, ou
 Ctrl+J, para que seja reescrito de forma mais clara, mais curta, mais
@@ -2605,7 +2605,7 @@ levantado acima dela.
 ["2026-10-01-1541-chat-attach-from-files"]
 title = "Anexe de Arquivos num chat"
 text = """
-Num chat (Configurações > Experimental), o clipe tem Dos arquivos:
+Num chat (Configurações > Experimental), o clipe tem De Arquivos:
 escolha qualquer arquivo que veio ou foi com seus e-mails, com os desta
 conversa primeiro. Marque vários, olhe um deles com o olho e veja quanto
 pesam em relação aos 25 MB que um e-mail pode levar. O clipe agora fica
@@ -2614,9 +2614,9 @@ de que um chat precisa.
 """
 
 ["2026-10-01-1553-rephrase-card-text"]
-title = "Reescrever funciona com novas chaves do Gemini"
+title = "Reformular funciona com novas chaves do Gemini"
 text = """
-Com os menus foscos ativados, o cartão Reescrever (Ctrl+J) abria vazio;
+Com os menus foscos ativados, o cartão Reformular (Ctrl+J) abria vazio;
 as sugestões agora aparecem sobre o vidro fosco. O Google Gemini agora
 usa o gemini-3.5-flash-lite, a menos que você digite outro modelo, já
 que novas chaves do Gemini não podem mais usar o 2.5 Flash-Lite, e uma
@@ -2624,10 +2624,10 @@ chave errada avisa isso.
 """
 
 ["2026-10-01-1624-rephrase-button"]
-title = "Reescrever sem selecionar e sugestões mais rápidas"
+title = "Reformular sem selecionar e sugestões mais rápidas"
 text = """
 Um brilho ao lado de Formatação na parte de baixo de uma nova mensagem,
-e na caixa de resposta da visualização de chat, reescreve tudo o que
+e na caixa de resposta da visualização de chat, reformula tudo o que
 você escreveu quando nada está selecionado, ou só a seleção quando há
 uma; Ctrl+J faz o mesmo. Sugestões mais longas com IA chegam bem mais
 cedo, e o campo Modelo em Configurações > Escrever lista os modelos que
@@ -2745,14 +2745,14 @@ Numa conversa aberta, o brilho acima dela coloca o resumo sob o assunto;
 na visualização de chat, ele fica numa faixa sob o cabeçalho. Cada ponto
 indica o e-mail de onde veio, e quando chegaram novos e-mails desde a
 sua última leitura, o resumo cobre só eles. É preciso ativar a ajuda
-para escrever com IA em Configurações > Escrever.
+de escrita com IA em Configurações > Escrever.
 """
 
 ["2026-10-02-0215-system-colors-follow-mode"]
 title = "Claro e Escuro funcionam com as cores do Sistema"
 text = """
 Com Cores definido como Sistema e um esquema da área de trabalho que é
-só escuro (ou só claro), Configurações > Aparência > Tema agora volta a
+só escuro (ou só claro), Configurações > Aparência > Modo agora volta a
 alternar o Katna entre claro e escuro: o outro lado usa as cores
 próprias do Katna com o destaque da sua área de trabalho.
 """
@@ -2803,9 +2803,9 @@ o fundo fosco agora fica no lugar enquanto as linhas rolam sobre ele.
 """
 
 ["2026-10-02-0301-rephrase-card-above-tools"]
-title = "Reescrever fica acima da barra de formatação"
+title = "Reformular fica acima da barra de formatação"
 text = """
-O cartão Reescrever agora abre logo acima da barra de formatação, na
+O cartão Reformular agora abre logo acima da barra de formatação, na
 caixa de resposta e em Escrever, em vez de sobre a lista de e-mails.
 Arraste-o pela pequena alça no topo para tirá-lo do caminho; da próxima
 vez ele abre no lugar de sempre.
@@ -2849,8 +2849,8 @@ Enquanto uma resposta ou um encaminhamento ainda está vazio, o brilho ao
 lado de Formatação (ou Ctrl+J) o escreve para você. Escolha uma de três
 ideias tiradas da conversa, ou diga com suas palavras o que ele deve
 dizer, depois Inserir o rascunho e mude o que quiser. Assim que você
-digita, o brilho volta a reescrever. É preciso ativar a ajuda para
-escrever com IA em Configurações > Escrever.
+digita, o brilho volta a reformular. É preciso ativar a ajuda de
+escrita com IA em Configurações > Escrever.
 """
 
 ["2026-10-02-0430-compose-beside-reply"]
@@ -2889,12 +2889,12 @@ possa ler o drive.
 """
 
 ["2026-10-02-0515-rephrase-subject"]
-title = "Reescreva o assunto"
+title = "Reformule o assunto"
 text = """
 Assim que você digita um assunto, um brilho no fim da linha oferece três
 outras formas de dizê-lo, escritas a partir do assunto e do que sua
 mensagem diz até agora. Escolha uma para usá-la; Desfazer devolve o que
-você digitou. É preciso ativar a ajuda para escrever com IA em
+você digitou. É preciso ativar a ajuda de escrita com IA em
 Configurações > Escrever.
 """
 
@@ -2912,8 +2912,8 @@ Enviar.
 ["2026-10-02-0553-upload-to-drive"]
 title = "Envie para o Google Drive pela página Arquivos"
 text = """
-Com um Google Drive aberto em Arquivos, o botão Escrever vira Enviar
-arquivos. Clique nele para enviar arquivos para a pasta aberta, ou use a
+Com um Google Drive aberto em Arquivos, o botão Escrever vira Enviar.
+Clique nele para enviar arquivos para a pasta aberta, ou use a
 seta dele para enviar uma pasta inteira. Na primeira vez, pressione
 Permitir para que o Katna possa adicionar arquivos ao seu drive.
 """
@@ -2942,8 +2942,8 @@ com o cartão ao lado.
 ["2026-10-02-0654-attach-from-drive"]
 title = "Anexe do Google Drive"
 text = """
-O clipe de Escrever agora abre o seletor de Arquivos, o mesmo do Dos
-arquivos do chat, com seu Google Drive ao lado dos arquivos dos seus
+O clipe de Escrever agora abre o seletor de Arquivos, o mesmo de De
+Arquivos do chat, com seu Google Drive ao lado dos arquivos dos seus
 e-mails e Este computador… para todo o resto. Arquivos que cabem vão no
 e-mail; arquivos grandes e Documentos Google vão como link,
 compartilhado com os destinatários quando você envia.

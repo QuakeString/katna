@@ -2307,7 +2307,7 @@ title = "Schematy kolorów i kolory akcentu"
 text = """
 Ustawienia > Wygląd mają teraz osobne wybory Tryb, Kolory i Akcent.
 Wybierz jasny lub ciemny, potem jeden z 14 schematów kolorów, takich jak
-Clear, Nord, Solarized czy Catppuccin, albo zostaw schemat pulpitu. Każdy
+Przejrzysty, Nord, Solarized czy Catppuccin, albo zostaw schemat pulpitu. Każdy
 działa w wersji jasnej i ciemnej, a na wierzch może trafić dowolny kolor
 akcentu.
 """
@@ -2453,7 +2453,7 @@ oraz w trybie Nie przeszkadzać.
 ["2026-10-01-0925-chat-view"]
 title = "Czytaj wątki jak czat (eksperymentalne)"
 text = """
-Włącz Ustawienia > Eksperymentalne > Wątki jako czat, a poczta między
+Włącz Ustawienia > Eksperymentalne > Wątki jako czaty, a poczta między
 ludźmi czyta się jak czat grupowy: dymek dla każdej wiadomości tylko z
 tym, co napisano, twoje po prawej, obrazy i pliki jako multimedia czatu.
 Cytowana poczta i podpisy czekają za ··· w każdym dymku, a kliknięcie
@@ -2474,10 +2474,10 @@ przekazania na odpowiedź znowu je pomija.
 ["2026-10-01-1009-forward-a-file"]
 title = "Przekaż sam plik"
 text = """
-Przeglądarka załączników ma na górnym pasku przycisk Przekaż: tworzy nową
-wiadomość tylko z tym plikiem w załączniku, bez wiadomości, z którą
-przyszedł. Pliki bez podglądu też oferują Przekaż, podobnie jak karty
-załączników pod otwartą wiadomością, obok Zapisz.
+Przeglądarka załączników ma na górnym pasku przycisk Przekaż dalej:
+tworzy nową wiadomość tylko z tym plikiem w załączniku, bez wiadomości,
+z którą przyszedł. Pliki bez podglądu też oferują Przekaż dalej, podobnie
+jak karty załączników pod otwartą wiadomością, obok Zapisz.
 """
 
 ["2026-10-01-1039-rephrase-with-ai"]
@@ -2616,7 +2616,7 @@ więc nadawca i temat się wyróżniają, w jasnej i ciemnej wersji.
 title = "Matowe okna dialogowe"
 text = """
 Przy włączonych matowych menu i okienkach okna dialogowe też są z
-matowego szkła: Dodaj konto pocztowe, O programie, Co nowego, aktualizacje,
+matowego szkła: Dodaj konto pocztowe, O Katna, Co nowego, aktualizacje,
 udostępnianie, podgląd wydruku, etykiety, pytania o usunięcie, karta
 pierwszego uruchomienia i okno linku w tworzeniu wiadomości.
 """
@@ -2670,7 +2670,7 @@ tych kilka sekund pokazuje zwykły obrazek ładowania, a potem twoją pocztę.
 title = "Spokojniejsze okna dialogowe"
 text = """
 Matowe okna dialogowe są mniej przezroczyste niż menu, więc ruchliwa
-lista poczty już przez nie nie prześwituje. O programie, Co nowego i
+lista poczty już przez nie nie prześwituje. O Katna, Co nowego i
 Sprawdź aktualizacje otwierają się bez przyciemniania okna za nimi.
 """
 
@@ -2717,7 +2717,7 @@ z AI w Ustawienia > Tworzenie.
 ["2026-10-02-0215-system-colors-follow-mode"]
 title = "Jasny i ciemny działają z kolorami systemowymi"
 text = """
-Gdy Kolory są ustawione na Systemowe, a schemat pulpitu jest tylko ciemny
+Gdy Kolory są ustawione na Systemowy, a schemat pulpitu jest tylko ciemny
 (lub tylko jasny), Ustawienia > Wygląd > Tryb znowu przełącza Katna między
 jasnym i ciemnym: druga wersja używa własnych kolorów Katna w kolorze
 akcentu twojego pulpitu.
@@ -2743,7 +2743,7 @@ kiedy ktoś zmienił temat, tak jak mówi, kto kogo dodał.
 ["2026-10-02-0225-no-blur-ghost"]
 title = "Bez rozmytego ducha po zamknięciu okna"
 text = """
-Zamknięcie O programie, Co nowego, Sprawdź aktualizacje albo dowolnego
+Zamknięcie O Katna, Co nowego, Sprawdź aktualizacje albo dowolnego
 matowego okna dialogowego czy menu nie zostawia już na chwilę rozmytej
 plamy: rozmycie znika razem z oknem.
 """
@@ -2794,7 +2794,7 @@ title = "Płynne podświetlanie przycisków"
 text = """
 Gdy wskażesz przycisk, jego okrągłe tło rośnie teraz od środka i płynnie
 się pojawia, jak w Gmailu, a gdy odejdziesz, szybko znika. Odpowiedz,
-Przekaż i inne przyciski w kształcie dymku pojawiają się łagodnie.
+Przekaż dalej i inne przyciski w kształcie dymku pojawiają się łagodnie.
 """
 
 ["2026-10-02-0425-chat-draft-to-mail"]
@@ -2836,7 +2836,7 @@ wygląda już jak zwykła ikona poczty.
 title = "Spokojniejsze paski narzędzi i karty"
 text = """
 W trybie jasnym linie pod paskami narzędzi i nagłówkiem otwartej
-wiadomości oraz nad Odpowiedz i Przekaż są tak blade jak linie między
+wiadomości oraz nad Odpowiedz i Przekaż dalej są tak blade jak linie między
 wiadomościami. Tło za kartami Odebranych też jest jaśniejsze.
 """
 
@@ -2909,10 +2909,10 @@ odbiorcom przy wysyłaniu.
 ["2026-10-02-0734-peek-and-reply-in-notifications"]
 title = "Podejrzyj i odpowiedz z powiadomienia"
 text = """
-Powiadomienie o nowej poczcie ma teraz Podejrzyj, które pokazuje samą
+Powiadomienie o nowej poczcie ma teraz Podgląd, który pokazuje samą
 wiadomość w tym samym powiadomieniu, oraz Odpowiedz, gdzie wpisujesz
 odpowiedź od razu tam i naciskasz Wyślij. Idzie ona z konta, na które
-przyszła wiadomość, po upływie czasu cofania wysyłki; Cofnij otwiera ją w
+przyszła wiadomość, po upływie czasu z Cofnij wysłanie; Cofnij otwiera ją w
 Katna Mail, aby pisać dalej. W Linuksie nowa poczta ma też własny,
 głośniejszy dźwięk; inny wybierzesz w Ustawienia > Powiadomienia.
 """
