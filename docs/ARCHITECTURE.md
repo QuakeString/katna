@@ -765,7 +765,9 @@ Free text that matches an organization name or alias is expanded to
 Results replace the list and close the open conversation. The list, its
 scroll place, the cursor and the open conversation are kept as the search
 starts: cancelling it (Escape or clearing the box) with no result opened
-brings them back; opening a result drops them.
+brings them back; opening a result drops them. A result opened and then
+cleared with the box's X stays open, picked in the folder when it lies
+there; deleting the text away instead goes back to the list.
 
 ### 7.4 Ranking
 
