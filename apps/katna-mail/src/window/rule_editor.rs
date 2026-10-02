@@ -21,7 +21,7 @@ use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::FolderId;
 use katna_store::rules::{
-    Action, Comparator, Condition, Field, MAX_READ_AFTER_DAYS, MatchMode, Rule, RunsOn,
+    Action, Comparator, Condition, Field, MAX_READ_AFTER_DAYS, MatchMode, Rule, RunsNote, RunsOn,
 };
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
@@ -217,26 +217,96 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
         })
         .collect();
     let when = join(conditions);
-    let named = |id: i64| folder(id).unwrap_or_else(|| tr!("rules-summary-folder-gone"));
     let then = rule
         .actions
         .iter()
-        .map(|a| match a {
-            Action::Move { folder } => tr!("rules-summary-move", folder = named(*folder)),
-            Action::Archive => tr!("rules-summary-archive"),
-            Action::Trash => tr!("rules-summary-trash"),
-            Action::MarkRead => tr!("rules-summary-mark-read"),
-            Action::Star => tr!("rules-summary-star"),
-            Action::MarkImportant => tr!("rules-summary-important"),
-            Action::AddLabel { folder } => tr!("rules-summary-label", label = named(*folder)),
-            Action::Forward { to } => tr!("rules-summary-forward", address = to.trim()),
-            Action::DontNotify => tr!("rules-summary-dont-notify"),
-            Action::MarkReadAfter { days } => tr!("rules-summary-read-after", count = *days),
-        })
+        .map(|a| action_text(a, &folder))
         .reduce(|first, next| tr!("rules-summary-list", first = first, next = next));
     match (when, then) {
         (Some(when), Some(then)) => tr!("rules-summary", when = when, then = then),
         (when, then) => when.or(then).unwrap_or_default(),
+    }
+}
+
+/// One action as a rule's summary says it: "move to Receipts".
+fn action_text(action: &Action, folder: &impl Fn(i64) -> Option<String>) -> String {
+    let named = |id: i64| folder(id).unwrap_or_else(|| tr!("rules-summary-folder-gone"));
+    match action {
+        Action::Move { folder } => tr!("rules-summary-move", folder = named(*folder)),
+        Action::Archive => tr!("rules-summary-archive"),
+        Action::Trash => tr!("rules-summary-trash"),
+        Action::MarkRead => tr!("rules-summary-mark-read"),
+        Action::Star => tr!("rules-summary-star"),
+        Action::MarkImportant => tr!("rules-summary-important"),
+        Action::AddLabel { folder } => tr!("rules-summary-label", label = named(*folder)),
+        Action::Forward { to } => tr!("rules-summary-forward", address = to.trim()),
+        Action::DontNotify => tr!("rules-summary-dont-notify"),
+        Action::MarkReadAfter { days } => tr!("rules-summary-read-after", count = *days),
+    }
+}
+
+/// The line under the editor's preview: where the rule runs, and why it
+/// runs in Katna when the account's mail service runs rules.
+pub(super) fn runs_text(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> String {
+    match (rule.runs_on, &rule.runs_note) {
+        (RunsOn::Gmail, _) => tr!("rules-editor-runs-gmail"),
+        (RunsOn::Sieve, _) => tr!("rules-editor-runs-sieve"),
+        (RunsOn::Katna, Some(note)) => note_text(note, &folder),
+        (RunsOn::Katna, None) => tr!("rules-editor-runs-katna"),
+    }
+}
+
+/// Why a rule runs in Katna: "Runs in Katna: Gmail filters can't do
+/// “don't notify”."
+pub(super) fn note_text(note: &RunsNote, folder: &impl Fn(i64) -> Option<String>) -> String {
+    let gmail = |service: &RunsOn| *service == RunsOn::Gmail;
+    match note {
+        RunsNote::Action { service, action } => {
+            let action = action_text(action, folder);
+            if gmail(service) {
+                tr!("rules-note-gmail-action", action = action)
+            } else {
+                tr!("rules-note-sieve-action", action = action)
+            }
+        }
+        RunsNote::Condition {
+            service,
+            field,
+            comparator,
+        } => {
+            let test = if *field == Field::HasAttachment {
+                field_label(*field)
+            } else {
+                tr!(
+                    "rules-note-test",
+                    field = field_label(*field),
+                    comparator = comparator_label(*comparator)
+                )
+            };
+            if gmail(service) {
+                tr!("rules-note-gmail-condition", test = test)
+            } else {
+                tr!("rules-note-sieve-condition", test = test)
+            }
+        }
+        RunsNote::Order { .. } => tr!("rules-note-order"),
+        RunsNote::Stop { .. } => tr!("rules-note-gmail-stop"),
+        RunsNote::ForwardAddress { to } => tr!("rules-note-gmail-forward", address = to.as_str()),
+        RunsNote::Folder { service } if gmail(service) => tr!("rules-note-gmail-folder"),
+        RunsNote::Folder { .. } => tr!("rules-note-sieve-folder"),
+        RunsNote::SignIn => tr!("rules-note-gmail-sign-in"),
+        RunsNote::OtherScript { name } => {
+            tr!("rules-note-sieve-other-script", name = name.as_str())
+        }
+        RunsNote::Failed { service, error } => {
+            let error = format::sentence(error);
+            let error = error.trim_end_matches('.');
+            if gmail(service) {
+                tr!("rules-note-gmail-failed", error = error)
+            } else {
+                tr!("rules-note-sieve-failed", error = error)
+            }
+        }
     }
 }
 
@@ -1453,7 +1523,7 @@ impl MailWindow {
                     .text_size(px(12.0))
                     .line_height(px(17.0))
                     .text_color(rgba(th.text_faint))
-                    .child(tr!("rules-editor-runs-katna")),
+                    .child(runs_text(&e.rule, |id| self.rule_folder_name(id))),
             )
             .into_any_element()
     }
@@ -2061,6 +2131,71 @@ mod tests {
         assert!(error_text("folder 9999 no longer exists").contains("no longer exists"));
         assert!(error_text("the account cannot send mail").contains("can't send"));
         assert!(error_text("something odd").starts_with("Something odd"));
+    }
+
+    #[test]
+    fn says_where_a_rule_runs_and_why() {
+        let folder = |id: i64| (id == 7).then(|| "Receipts".to_owned());
+        let mut rule = Rule {
+            name: "R".into(),
+            ..Rule::default()
+        };
+        assert_eq!(
+            runs_text(&rule, folder),
+            "Runs in Katna, while this computer is on."
+        );
+        rule.runs_on = RunsOn::Gmail;
+        assert!(runs_text(&rule, folder).starts_with("Runs on Gmail, so it also works"));
+        rule.runs_on = RunsOn::Sieve;
+        assert!(runs_text(&rule, folder).starts_with("Runs on your mail server"));
+        rule.runs_on = RunsOn::Katna;
+        rule.runs_note = Some(RunsNote::Action {
+            service: RunsOn::Gmail,
+            action: Action::DontNotify,
+        });
+        assert_eq!(
+            runs_text(&rule, folder),
+            "Runs in Katna: Gmail filters can't do “don't notify”."
+        );
+        let note = |note| note_text(&note, &folder);
+        assert_eq!(
+            note(RunsNote::Action {
+                service: RunsOn::Sieve,
+                action: Action::AddLabel { folder: 7 },
+            }),
+            "Runs in Katna: your mail server's rules can't do “label Receipts”."
+        );
+        assert_eq!(
+            note(RunsNote::Condition {
+                service: RunsOn::Gmail,
+                field: Field::From,
+                comparator: Comparator::BeginsWith,
+            }),
+            "Runs in Katna: Gmail filters can't test “From begins with” as Katna does."
+        );
+        assert!(
+            note(RunsNote::Failed {
+                service: RunsOn::Sieve,
+                error: "line 3: unknown command".into(),
+            })
+            .ends_with("didn't take it (Line 3: unknown command).")
+        );
+        for other in [
+            RunsNote::Order {
+                service: RunsOn::Sieve,
+            },
+            RunsNote::Stop {
+                service: RunsOn::Gmail,
+            },
+            RunsNote::ForwardAddress { to: "a@b.c".into() },
+            RunsNote::Folder {
+                service: RunsOn::Gmail,
+            },
+            RunsNote::SignIn,
+            RunsNote::OtherScript { name: "old".into() },
+        ] {
+            assert!(note(other).starts_with("Runs in Katna"));
+        }
     }
 
     #[test]

@@ -64,6 +64,7 @@ mod notes;
 mod other_contacts;
 mod reminders;
 mod rules;
+mod rules_server;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -306,6 +307,11 @@ pub struct Daemon {
     keyring_wake: (Sender<()>, Receiver<()>),
     /// Which mail of each account is new, for its mail rules ([`rules`]).
     rule_watches: Mutex<HashMap<AccountId, katna_sync::rules::Watch>>,
+    /// Has [`rules_server::run`] put the rules of an account (every
+    /// account: `None`) on its mail service.
+    rules_wake: (Sender<Option<AccountId>>, Receiver<Option<AccountId>>),
+    /// Where each account last ran each rule, since the daemon started.
+    rules_placed: Mutex<HashMap<AccountId, rules_server::Placed>>,
 }
 
 /// A refresh token that replaced the account's old one.
@@ -371,6 +377,8 @@ impl Daemon {
             keyring_waiting: Mutex::default(),
             keyring_wake: async_channel::bounded(1),
             rule_watches: Mutex::default(),
+            rules_wake: async_channel::unbounded(),
+            rules_placed: Mutex::default(),
         });
         Ok((daemon, receiver))
     }
@@ -466,6 +474,10 @@ impl Daemon {
             notes::run(Arc::downgrade(self), self.notes_wake.1.clone()),
         );
         threads::detach("katna-alarms", alarms::run(Arc::downgrade(self)));
+        threads::detach(
+            "katna-rules",
+            rules_server::run(Arc::downgrade(self), self.rules_wake.1.clone()),
+        );
         Ok(())
     }
 
@@ -1984,6 +1996,8 @@ impl Daemon {
                     }
                     if first {
                         self.name_from_mail(id);
+                        // Online: its rules go to its mail service.
+                        self.place_rules_soon(Some(id));
                     }
                     if changed && self.follow_server_mutes() {
                         self.mail_changed_everywhere();

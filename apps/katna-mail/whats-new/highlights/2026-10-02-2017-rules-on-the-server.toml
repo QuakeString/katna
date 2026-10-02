@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rules that run with your computer off"
+text = """
+Mail rules now run on Gmail, or on your mail server when it takes Sieve
+rules, so they sort mail on your phone too and while this computer is
+off. Settings > Folders & rules shows where each rule runs, and why one
+stays in Katna.
+"""

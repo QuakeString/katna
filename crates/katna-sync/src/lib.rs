@@ -51,6 +51,7 @@ mod error;
 #[cfg(test)]
 mod fake_http;
 pub mod folders;
+pub mod gmail_filters;
 mod google_api;
 pub mod imap;
 pub mod meet;
@@ -65,6 +66,8 @@ pub mod pictures;
 pub mod pop3;
 pub mod quick_reply;
 pub mod rules;
+pub mod rules_remote;
+pub mod sieve;
 pub mod smtp;
 pub mod tasks;
 pub mod tracking;

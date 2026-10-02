@@ -462,7 +462,14 @@ impl MailWindow {
         } else {
             rule_editor::runs_on_label(rule.runs_on)
         };
-        let gmail = rule.runs_on == katna_store::rules::RunsOn::Gmail && !failed;
+        // On the mail service: the blue tag.
+        let remote = rule.runs_on != katna_store::rules::RunsOn::Katna && !failed;
+        // Why it stays in Katna, on the tag's tooltip.
+        let why = rule
+            .runs_note
+            .as_ref()
+            .filter(|_| !remote && !failed)
+            .map(|note| rule_editor::note_text(note, &|id| self.rule_folder_name(id)));
         let side = div()
             .flex_none()
             .flex()
@@ -472,22 +479,24 @@ impl MailWindow {
             .child(div().flex().flex_row().gap(px(4.0)).children(dots))
             .child(
                 div()
+                    .id(("rule-runs", ix))
                     .px(px(8.0))
                     .h(px(22.0))
                     .flex()
                     .items_center()
                     .rounded(px(6.0))
-                    .bg(rgba(if gmail {
+                    .bg(rgba(if remote {
                         th.nav_selected
                     } else {
                         fade(th.text_faint, 0.16)
                     }))
-                    .text_color(rgba(if gmail {
+                    .text_color(rgba(if remote {
                         th.nav_selected_text
                     } else {
                         th.text_dim
                     }))
                     .text_size(px(12.0))
+                    .when_some(why, |d, why| d.tooltip(tip(why, th)))
                     .child(tag),
             )
             .child(

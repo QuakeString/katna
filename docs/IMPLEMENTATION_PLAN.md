@@ -610,7 +610,8 @@ Status (27 September 2026): done early: labels and folders created on the
 server (#58), Gmail labels stored once (#34), Gmail's inbox tabs (#31),
 send later (#53, handed to the server with FUTURERELEASE in #167), pins
 (#57), Undo on every action (#125), templates (#168), snooze and
-follow-up reminders (#172). Not started: rules and Sieve, vacation
+follow-up reminders (#172), mail rules (#608) and rules on the mail
+service (Sieve over ManageSieve, Gmail filters). Not started: vacation
 responder, one-click unsubscribe, a local category classifier,
 phishing warnings. Mute is done as part of notification rules (4.2, A.5:
 mutes for accounts, folders, conversations and senders). **OAuth2** for Google and Microsoft is merged (#163): the

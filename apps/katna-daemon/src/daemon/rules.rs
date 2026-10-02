@@ -8,7 +8,9 @@
 //! and mail a rule moves out of the inbox never rings. Their changes go
 //! through `katna_sync::ops`, as the user's own do, so the workers send
 //! them to the servers. A rule whose action fails is switched off with the
-//! reason; `RulesChanged` tells the apps.
+//! reason; `RulesChanged` tells the apps. Rules the account's mail
+//! service runs (Gmail filters, Sieve: [`super::rules_server`]) don't
+//! run here on that account's mail.
 //!
 //! Undo: the app's Undo history is kept per window for the user's own
 //! changes; a rule's changes are not in it. They are logged here with the
@@ -153,6 +155,7 @@ impl Daemon {
         let id = self.store().save_rule(&rule)?;
         tracing::info!(id, name = rule.name, "rule saved");
         let _ = self.notices.try_send(Notice::RulesChanged);
+        self.place_rules_soon(None);
         Ok(id)
     }
 
@@ -197,6 +200,7 @@ impl Daemon {
         }
         tracing::info!(id, "rule deleted");
         let _ = self.notices.try_send(Notice::RulesChanged);
+        self.place_rules_soon(None);
         Ok(())
     }
 
@@ -204,6 +208,7 @@ impl Daemon {
     pub fn reorder_rules(&self, ids: &[i64]) -> Result<(), CommandError> {
         self.store().reorder_rules(ids)?;
         let _ = self.notices.try_send(Notice::RulesChanged);
+        self.place_rules_soon(None);
         Ok(())
     }
 
@@ -213,6 +218,7 @@ impl Daemon {
             return Err(CommandError::InvalidArgs(format!("no rule {id}")));
         }
         let _ = self.notices.try_send(Notice::RulesChanged);
+        self.place_rules_soon(None);
         Ok(())
     }
 

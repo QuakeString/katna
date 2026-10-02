@@ -154,7 +154,7 @@ are testable and benchmarkable without a GUI.
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Languages | Fluent (`fluent-bundle`) + ICU4X | UI text in `.ftl` files per language, dates, numbers and plurals from CLDR; RTL mirroring in the vendored GPUI (§13.10). |
-| Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
+| Mail rules on the server | ManageSieve (own client, `katna_sync::sieve`) + Gmail API filters | The server checks a script when it is written (`PUTSCRIPT`), so no Sieve compiler ships in the daemon (§9.4). |
 | OpenPGP and S/MIME | The user's GnuPG: `gpg` and `gpgsm` (`katna-crypto`) | Like KMail: existing keys, trust, gpg-agent, pinentry and smartcards work unchanged (§19.1). Sequoia/rPGP kept in reserve. |
 | Server | `axum`, PostgreSQL (`sqlx`) | |
 | Plasma extensions | C++ / Qt 6 / QML, KF6, libplasma | Only in `integrations/plasma-*` (§15.6). |
@@ -1165,10 +1165,10 @@ KRunner and GNOME search suggest saved people too, with their saved names
 ### 9.4 Mail rules
 
 Decided October 2026: rules ("when new mail matches these, do that") run
-**in the daemon**, on this computer, for every account kind. Later a rule
-whose account supports it is pushed to the server instead (Gmail filters,
-or Sieve over ManageSieve), so it runs with the computer off; the
-`runs_on` column (`katna`, `gmail`, `sieve`) is there for that.
+**on the mail service** when the account's service can run them as Katna
+does (Gmail filters, or Sieve over ManageSieve), so they work on the phone
+and with the computer off, and **in the daemon** otherwise, for every
+account kind. `runs_on` (`katna`, `gmail`, `sieve`) says which.
 
 - **Model** (`katna_store::rules`, `mail_rule` in `pim.db`, schema v13):
   name, on/off, position (rules run in list order), match all or any,
@@ -1205,11 +1205,57 @@ or Sieve over ManageSieve), so it runs with the computer off; the
   user's own changes. An action that fails (its folder is gone, no archive
   or Trash folder, an account that can't send) switches the rule off with
   the reason in `last_error`, and `RulesChanged` tells the apps.
+- **On the service** (`katna_sync::rules_remote`, `sieve`,
+  `gmail_filters`; the daemon's `rules_server`): a few seconds after the
+  rules change, and when an account first syncs, the daemon puts each
+  account's rules on its service. Rules run in list order and the service
+  runs its rules before Katna sees the mail, so an account's rules on the
+  service are the first of its list: from the first rule that stays in
+  Katna, the later ones stay too. `mail_rule_remote` (pim.db v14) holds
+  what is on each account's service, by rule; such a rule doesn't run in
+  Katna on that account's mail. A rule shows the service when every
+  account it covers runs it there, else "in Katna" with the reason
+  (`mail_rule_note`, `RunsNote`): an action or test the service can't do,
+  the order, a sign-in without the scope, a failed upload.
+  - **Sieve**: IMAP accounts whose IMAP host answers ManageSieve
+    (RFC 5804) on port 4190, after STARTTLS, logging in as IMAP does
+    (PLAIN, or XOAUTH2/OAUTHBEARER). Whether it answers is kept per
+    account (`mail_rule_server`, asked again after a day when it didn't).
+    Katna writes one script, `katna`, and makes it active; it never
+    changes or deletes another. A script already active is run first with
+    `include :personal` (the `include` extension); without it the rules
+    stay in Katna. Tests: `header :contains/:is/:matches` (an address
+    field's header holds the name and the address, as Katna matches),
+    `address :all` for values that are addresses, `body :text` with
+    `body`, `:regex` with `regex` for patterns that mean the same in POSIX
+    and Rust; `i;unicode-casemap` for non-ASCII values when the server has
+    it. Actions: `fileinto` (move, archive, trash), `addflag` `\Seen` and
+    `\Flagged` (`imap4flags`), `redirect :copy` (forward, `copy`), `stop`.
+    Attachment tests, mark important, labels, "don't notify" and "mark
+    read after" stay in Katna. The server checks the script when it is
+    written; a refusal leaves the rules in Katna with its words.
+  - **Gmail**: Google sign-ins, through `users.settings.filters`, scope
+    `gmail.settings.basic` (accounts signed in before it was asked for keep
+    their rules in Katna until they sign in again). Criteria are a Gmail
+    search: an address field holding an address or a domain
+    (`from:(x@y.org)`), a subject phrase (`subject:"words"`; Gmail matches
+    whole words where Katna matches text), "doesn't contain" as `-op:`,
+    `has:attachment`. An "any of" rule becomes a filter per condition.
+    Actions are labels: `INBOX` off (archive), `TRASH`, `SPAM`, `STARRED`,
+    `IMPORTANT`, `UNREAD` off (mark read), the user's labels; forwarding
+    only to an address Gmail verified. Gmail runs every filter that
+    matches, so a rule with "stop" stays in Katna unless it is the
+    account's last. Katna keeps the IDs of the filters it made, with what
+    it sent; a changed rule's filters are deleted and made again (Gmail
+    can't change one), and filters Katna didn't make are never touched.
+    Reading the filters and scripts already on the service is a later
+    step.
 - **D-Bus**: `SaveRule(json) → id` (0 adds one; validates), `DeleteRule`,
   `ReorderRules(ids)`, `SetRuleEnabled(id, on)`, `ApplyRule(id, days) →
   changed` ("also apply to these": once over the inbox mail of the last
   `days` days, forwarding nothing) and the `RulesChanged` signal. The app
-  reads rules from the store.
+  reads rules from the store; `runs_on` and the reason are the daemon's,
+  and saving keeps them.
 
 ## 10. Metadata with expiration (`katna-meta`)
 

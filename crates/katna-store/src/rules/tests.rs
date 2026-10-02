@@ -459,3 +459,65 @@ fn candidates_and_preview_look_at_recent_inbox_mail_from_others() {
     body.conditions[0].value = "snippet".into();
     assert_eq!(store.rule_preview(&body, 30, NOW, |_| None).unwrap(), 2);
 }
+
+#[test]
+fn keeps_where_rules_run_and_why() {
+    let (_dir, mut store) = store();
+    let account = store
+        .add_account(AccountKind::Imap, "Alice", "alice@katna.test")
+        .unwrap()
+        .id;
+    let mut saved = rule(vec![condition(Field::Subject, Comparator::Contains, "x")]);
+    saved.accounts = vec![account.0];
+    // What an app sends is not where it runs: the daemon says.
+    saved.runs_on = RunsOn::Sieve;
+    let id = store.save_rule(&saved).unwrap();
+    assert_eq!(store.rule(id).unwrap().unwrap().runs_on, RunsOn::Katna);
+
+    let note = RunsNote::Action {
+        service: RunsOn::Gmail,
+        action: Action::DontNotify,
+    };
+    assert!(store.set_rule_runs(id, RunsOn::Katna, Some(&note)).unwrap());
+    let read = store.rule(id).unwrap().unwrap();
+    assert_eq!(read.runs_note, Some(note.clone()));
+    assert_eq!(store.rules().unwrap()[0].runs_note, Some(note));
+
+    assert!(store.set_rule_runs(id, RunsOn::Sieve, None).unwrap());
+    let read = store.rule(id).unwrap().unwrap();
+    assert_eq!((read.runs_on, read.runs_note), (RunsOn::Sieve, None));
+    // Saving keeps it.
+    store
+        .save_rule(&Rule {
+            id,
+            ..saved.clone()
+        })
+        .unwrap();
+    assert_eq!(store.rule(id).unwrap().unwrap().runs_on, RunsOn::Sieve);
+    assert!(!store.set_rule_runs(999, RunsOn::Katna, None).unwrap());
+
+    let remote = RemoteRule {
+        rule_id: id,
+        runs_on: RunsOn::Gmail,
+        remote_ids: vec!["f1".into(), "f2".into()],
+        spec: "spec".into(),
+    };
+    store.put_remote_rule(account, &remote).unwrap();
+    store.put_remote_rule(account, &remote).unwrap();
+    assert_eq!(store.remote_rules(account).unwrap(), [remote]);
+    assert_eq!(store.rules_on_service(account).unwrap(), [id]);
+    // The filters of a deleted rule stay known, to be deleted.
+    store.delete_rule(id).unwrap();
+    assert_eq!(store.rules_on_service(account).unwrap(), [id]);
+    store.drop_remote_rule(account, id).unwrap();
+    assert!(store.remote_rules(account).unwrap().is_empty());
+
+    assert_eq!(store.rule_server(account).unwrap(), None);
+    let server = RuleServer {
+        sieve: true,
+        extensions: vec!["fileinto".into(), "imap4flags".into()],
+        checked_at: 5,
+    };
+    store.set_rule_server(account, &server).unwrap();
+    assert_eq!(store.rule_server(account).unwrap(), Some(server));
+}
