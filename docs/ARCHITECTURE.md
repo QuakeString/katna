@@ -1579,7 +1579,15 @@ pages), adds Wikipedia's first lines when Wikidata lists the same website,
 and keeps the answer a week beside the sender pictures
 (`katna_sync::pictures::Company`, `Pim1.CompanyOf`). It follows the Sender
 pictures switch and the same authentication rule; nothing goes through
-Katna Server.
+Katna Server. On a phone the chat's header takes the toolbar's place, with
+Back before it and the reading pane's More menu after it (archive, delete
+and the rest, and Show as mail for the switch); bubbles take up to 82% of
+the width; there is no hover bar, and a long press (450 ms, the finger kept
+within 10 px) or a right-click opens the bubble's menu as a sheet rising
+from the bottom, with rows tall enough for a finger. A name or picture
+raises the person's card the same way (`window/sheet.rs`: a faint veil, a
+grab handle, a tap outside or a swipe down puts it away). The people list
+spans the chat, and the Files picker fills it edge to edge.
 
 **Window state.** The mail window opens as it closed: its size, maximized
 state and place (`katna_chrome::placement`), and what it showed: the app of

@@ -19,7 +19,7 @@ use std::time::Instant;
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, MouseDownEvent,
-    SharedString, div, prelude::*, relative, rgba,
+    SharedString, Window, div, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
 use katna_preview::Kind as FileKind;
@@ -28,16 +28,16 @@ use katna_render::trim::{self, Forwarded};
 use katna_store::{MessageId, Pinned};
 use katna_ui::{px, unpx};
 
-use super::super::MailWindow;
 use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
 use super::super::context_menu::Rows;
+use super::super::{MailWindow, Menu};
 use super::{Conversation, Part, first_name, key_number, read};
 use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
 use crate::theme::{Theme, avatar_color, fade, mix};
-use crate::widgets::{icon, icon_button_colored, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, tip};
 
 mod pins;
 
@@ -63,6 +63,10 @@ const JOINED: f32 = 6.0;
 const GRID: usize = 4;
 /// Inline pictures smaller than this are logos and signature icons.
 const SMALL_PICTURE: u64 = 12 * 1024;
+/// How long a bubble is held on a phone before its menu opens, and how far
+/// the finger may stray meanwhile.
+const LONG_PRESS: std::time::Duration = std::time::Duration::from_millis(450);
+const PRESS_SLOP: f32 = 10.0;
 
 /// How the open conversation shows as a chat.
 #[derive(Default)]
@@ -102,6 +106,10 @@ pub(in crate::window) struct ChatState {
     held: Rc<Cell<bool>>,
     /// Up to five things pinned to the top.
     pub(super) pins: pins::Pins,
+    /// A bubble held down on a phone, and which press that is: held long
+    /// enough, it opens the bubble's menu.
+    press: Option<(MessageId, usize)>,
+    presses: usize,
 }
 
 /// Someone in the chat, as the header's list shows them.
@@ -303,7 +311,7 @@ impl MailWindow {
     }
 
     /// Shows the open conversation as a chat (`true`) or as mail.
-    fn pick_chat(&mut self, chat: bool, cx: &mut Context<Self>) {
+    pub(in crate::window) fn pick_chat(&mut self, chat: bool, cx: &mut Context<Self>) {
         if let Some(reader) = &mut self.reader {
             reader.chat.pick = Some(chat);
             reader.chat.shown = 0;
@@ -460,6 +468,7 @@ impl MailWindow {
     pub(super) fn render_chat(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let lines = self.chat_lines();
         let room = self.contact_room();
+        let phone = self.layout.shape.is_phone();
         let at_end =
             -unpx(self.reader_scroll.offset().y) >= unpx(self.reader_scroll.max_offset().y) - 4.0;
         let Some(reader) = &mut self.reader else {
@@ -598,7 +607,7 @@ impl MailWindow {
                                     .flex_col()
                                     .justify_end()
                                     .gap(px(2.0))
-                                    .px(px(16.0))
+                                    .px(px(if phone { 10.0 } else { 16.0 }))
                                     .pt(px(12.0))
                                     .pb(px(8.0))
                                     .children(feed)
@@ -733,6 +742,7 @@ impl MailWindow {
     /// The list of everyone in the chat, dropped over the feed from the
     /// header; the people slide in one after another.
     fn render_chat_people(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let phone = self.layout.shape.is_phone();
         let reader = self.reader.as_ref()?;
         let run = reader.chat.people?;
         let key = reader.key;
@@ -829,9 +839,10 @@ impl MailWindow {
             .id("chat-people")
             .absolute()
             .top(px(6.0))
-            .left(px(12.0))
-            .w(px(360.0))
-            .max_w(relative(0.9))
+            .left(px(if phone { 8.0 } else { 12.0 }))
+            // A phone's spans the chat.
+            .when(phone, |d| d.right(px(8.0)))
+            .when(!phone, |d| d.w(px(360.0)).max_w(relative(0.9)))
             .max_h(relative(0.8))
             .overflow_y_scroll()
             .map(|d| crate::widgets::raised(d, th, 14.0, 3.0))
@@ -934,17 +945,39 @@ impl MailWindow {
                 .bg(rgba(th.surface))
                 .child(self.person_avatar(name, email, STACK_PICTURE))
         });
+        // A phone's header takes the toolbar's place: Back before it, More
+        // after it, and the Chat | Mail switch in More.
+        let phone = self.layout.shape.is_phone();
+        let back = phone.then(|| {
+            icon_button("chat-back", "back", 20.0, th)
+                .tooltip(tip(tr!("reader-back"), th))
+                .on_click(cx.listener(|this, _, window, cx| {
+                    this.close_message(&super::super::CloseMessage, window, cx)
+                }))
+        });
+        let end = if phone {
+            let more = icon_button("chat-more", "more", 20.0, th)
+                .when(self.menu != Some(Menu::ReaderMore), |d| {
+                    d.tooltip(tip(tr!("reader-more"), th))
+                })
+                .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
+            self.with_menu(more, Menu::ReaderMore, th, cx)
+                .into_any_element()
+        } else {
+            self.chat_switch(true, th, cx)
+        };
         div()
             .flex_none()
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(10.0))
-            .pl(px(16.0))
-            .pr(px(12.0))
-            .py(px(10.0))
+            .gap(px(if phone { 4.0 } else { 10.0 }))
+            .pl(px(if phone { 8.0 } else { 16.0 }))
+            .pr(px(if phone { 8.0 } else { 12.0 }))
+            .py(px(if phone { 6.0 } else { 10.0 }))
             .border_b_1()
             .border_color(rgba(th.divider))
+            .children(back)
             .child(
                 div()
                     .id("chat-header-people")
@@ -1014,7 +1047,7 @@ impl MailWindow {
                             ),
                     ),
             )
-            .child(self.chat_switch(true, th, cx))
+            .child(end)
             .into_any_element()
     }
 
@@ -1046,8 +1079,10 @@ impl MailWindow {
             }
         });
         let pending = bubble.pending.is_some();
-        // The hover buttons sit on the bubble's inner side.
-        let hover = (!pending).then(|| self.bubble_hover(bubble, group.clone(), th, cx));
+        // The hover buttons sit on the bubble's inner side. A phone has no
+        // hover: a long press opens the menu instead.
+        let phone = self.layout.shape.is_phone();
+        let hover = (!pending && !phone).then(|| self.bubble_hover(bubble, group.clone(), th, cx));
         let (before, after) = if bubble.mine {
             (hover, None)
         } else {
@@ -1083,6 +1118,22 @@ impl MailWindow {
                         this.open_bubble_menu(id, None, e.position, cx);
                     }),
                 )
+            })
+            // Held anywhere on it, text included, before the text takes
+            // the press.
+            .when(!pending && phone, |d| {
+                d.capture_any_mouse_down(cx.listener(
+                    move |this, e: &MouseDownEvent, window, cx| {
+                        if e.button == MouseButton::Left {
+                            this.press_bubble(id, e.position, window, cx);
+                        }
+                    },
+                ))
+                .capture_any_mouse_up(cx.listener(|this, _, _, _| {
+                    if let Some(reader) = &mut this.reader {
+                        reader.chat.press = None;
+                    }
+                }))
             })
             .children(picture)
             .children(before)
@@ -1227,7 +1278,11 @@ impl MailWindow {
         let meta = self.bubble_meta(bubble, th);
         div()
             .id(("chat-bubble", bubble.ix))
-            .max_w(relative(0.72))
+            .max_w(relative(if self.layout.shape.is_phone() {
+                0.82
+            } else {
+                0.72
+            }))
             .min_w_0()
             .flex()
             .flex_col()
@@ -1602,6 +1657,41 @@ impl MailWindow {
                 }))
                 .into_any_element(),
         )
+    }
+
+    /// Bubble `id` was pressed on a phone at `at`: held there long enough,
+    /// its menu rises.
+    fn press_bubble(
+        &mut self,
+        id: MessageId,
+        at: gpui::Point<gpui::Pixels>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(reader) = &mut self.reader else {
+            return;
+        };
+        reader.chat.presses += 1;
+        let run = reader.chat.presses;
+        reader.chat.press = Some((id, run));
+        cx.spawn_in(window, async move |this, cx| {
+            cx.background_executor().timer(LONG_PRESS).await;
+            let _ = this.update_in(cx, |this, window, cx| {
+                let Some(reader) = &mut this.reader else {
+                    return;
+                };
+                if reader.chat.press != Some((id, run)) {
+                    return;
+                }
+                reader.chat.press = None;
+                let now = window.mouse_position();
+                let strayed = (unpx(now.x) - unpx(at.x)).hypot(unpx(now.y) - unpx(at.y));
+                if strayed <= PRESS_SLOP {
+                    this.open_bubble_menu(id, None, at, cx);
+                }
+            });
+        })
+        .detach();
     }
 
     /// Opens the right-click menu of bubble `id`, or of its file `file`.

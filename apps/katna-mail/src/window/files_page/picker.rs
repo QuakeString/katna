@@ -517,6 +517,24 @@ impl MailWindow {
             .on_click(move |_, window, cx| window.focus(&focus, cx))
             .child(icon("search", th.text_dim, 18.0))
             .child(div().flex_1().min_w_0().text_size(px(14.0)).child(input));
+        // A phone's picker fills the chat edge to edge, its search on a row
+        // of its own.
+        let phone = self.layout.shape.is_phone();
+        let (search, search_row) = if phone {
+            (
+                None,
+                Some(
+                    div()
+                        .flex_none()
+                        .px(px(PAD))
+                        .pb(px(10.0))
+                        .flex()
+                        .child(search),
+                ),
+            )
+        } else {
+            (Some(search), None)
+        };
         let head = div()
             .flex_none()
             .h(px(56.0))
@@ -528,12 +546,13 @@ impl MailWindow {
             .child(
                 div()
                     .flex_none()
+                    .when(phone, |d| d.flex_1())
                     .text_size(px(16.0))
                     .font_weight(FontWeight::SEMIBOLD)
                     .text_color(rgba(th.text))
                     .child(tr!("picker-title")),
             )
-            .child(search)
+            .children(search)
             .child(
                 icon_button("picker-close", "close", 20.0, th)
                     .tooltip(tip(tr!("picker-cancel"), th))
@@ -574,24 +593,26 @@ impl MailWindow {
         };
         let foot = self.render_picker_foot(th, cx);
         let menu = self.render_files_menu(th, cx);
+        let inset = if phone { 0.0 } else { INSET };
         let panel = raised(
             div()
                 .id("files-picker")
                 .absolute()
-                .top(px(INSET))
-                .left(px(INSET))
-                .right(px(INSET))
-                .bottom(px(INSET))
+                .top(px(inset))
+                .left(px(inset))
+                .right(px(inset))
+                .bottom(px(inset))
                 .occlude()
                 .overflow_hidden()
                 .flex()
                 .flex_col()
                 .bg(rgba(th.menu)),
             th,
-            16.0,
+            if phone { 0.0 } else { 16.0 },
             3.0,
         )
         .child(head)
+        .children(search_row)
         .child(chips)
         .child(div().flex_1().min_h_0().child(content))
         .child(foot)
@@ -795,9 +816,11 @@ impl MailWindow {
         } else {
             (th.accent, limit)
         };
+        let phone = self.layout.shape.is_phone();
         let meter = div()
             .relative()
             .w(px(160.0))
+            .when(phone, |d| d.w_full())
             .h(px(4.0))
             .rounded_full()
             .bg(rgba(th.divider))
@@ -890,6 +913,40 @@ impl MailWindow {
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(|this, _, _, cx| this.close_files_picker(cx)))
             .child(tr!("picker-cancel"));
+        let weight = div()
+            .flex_1()
+            .min_w_0()
+            .flex()
+            .flex_col()
+            .gap(px(6.0))
+            .child(line)
+            .child(meter);
+        // A phone has no room for the size beside the buttons: it goes
+        // above them.
+        if phone {
+            return div()
+                .flex_none()
+                .px(px(PAD))
+                .pt(px(10.0))
+                .pb(px(10.0))
+                .flex()
+                .flex_col()
+                .gap(px(10.0))
+                .border_t_1()
+                .border_color(rgba(th.divider))
+                .child(weight.flex_none())
+                .child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .justify_end()
+                        .items_center()
+                        .gap(px(12.0))
+                        .child(cancel)
+                        .child(attach),
+                )
+                .into_any_element();
+        }
         div()
             .flex_none()
             .h(px(60.0))
@@ -900,16 +957,7 @@ impl MailWindow {
             .gap(px(12.0))
             .border_t_1()
             .border_color(rgba(th.divider))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .flex()
-                    .flex_col()
-                    .gap(px(6.0))
-                    .child(line)
-                    .child(meter),
-            )
+            .child(weight)
             .child(cancel)
             .child(attach)
             .into_any_element()
