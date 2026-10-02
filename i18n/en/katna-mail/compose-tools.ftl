@@ -40,6 +40,8 @@ compose-tool-bold = Bold (Ctrl+B)
 compose-tool-italic = Italic (Ctrl+I)
 compose-tool-underline = Underline (Ctrl+U)
 compose-tool-text-color = Text color
+# The colour button: the text colour and the highlight, side by side.
+compose-tool-colors = Text and highlight color
 compose-tool-background-color = Background color
 compose-tool-default-color = Default color
 compose-tool-no-background = No background

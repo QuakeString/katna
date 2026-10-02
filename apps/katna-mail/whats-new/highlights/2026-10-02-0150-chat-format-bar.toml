@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A fuller Aa bar in chats"
+text = """
+The chat reply box's Aa bar now has Compose's tools: undo, font, size,
+alignment and indents, beside the styles it had. In a narrow window it
+wraps onto a second line. The colour button shows your text colour and
+highlight side by side, in Compose too.
+"""
