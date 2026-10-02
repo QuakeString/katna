@@ -354,6 +354,28 @@ pub(super) enum DriveMenu {
 }
 
 impl MailWindow {
+    /// Whether the drive of `account` is OneDrive (it signs in with
+    /// Microsoft) rather than Google Drive.
+    pub(in crate::window) fn drive_is_onedrive(&self, account: AccountId) -> bool {
+        self.mail
+            .as_ref()
+            .is_ok_and(|mail| mail.sign_in_provider(account) == Some(OAuthProvider::Microsoft))
+    }
+
+    /// "Google Drive" or "OneDrive", for the drive of `account`.
+    pub(in crate::window) fn drive_name(&self, account: AccountId) -> String {
+        if self.drive_is_onedrive(account) {
+            tr!("files-drive-onedrive")
+        } else {
+            tr!("files-drive-google")
+        }
+    }
+
+    /// The mark of the drive of `account`.
+    pub(in crate::window) fn drive_mark_of(&self, account: AccountId, size: f32) -> AnyElement {
+        drive_mark(self.drive_is_onedrive(account), size)
+    }
+
     /// Reads which accounts have a drive Files can show, as the page opens.
     pub(in crate::window) fn load_drives(&mut self) {
         let off = &self.config.mail.files.drives_off;
@@ -362,7 +384,12 @@ impl MailWindow {
                 .accounts
                 .iter()
                 .filter(|a| !off.contains(&a.id.0))
-                .filter(|a| mail.sign_in_provider(a.id) == Some(OAuthProvider::Google))
+                .filter(|a| {
+                    matches!(
+                        mail.sign_in_provider(a.id),
+                        Some(OAuthProvider::Google | OAuthProvider::Microsoft)
+                    )
+                })
                 .map(|a| (a.id, a.address.clone()))
                 .collect(),
             Err(_) => Vec::new(),
@@ -614,6 +641,11 @@ impl MailWindow {
         let Some(connection) = self.daemon.clone() else {
             return;
         };
+        let provider = if self.drive_is_onedrive(account) {
+            OAuthProvider::Microsoft
+        } else {
+            OAuthProvider::Google
+        };
         let address = self
             .accounts
             .iter()
@@ -621,13 +653,8 @@ impl MailWindow {
             .map(|a| a.address.clone())
             .unwrap_or_default();
         cx.spawn(async move |this, cx| {
-            let signed_in = crate::daemon::sign_in(
-                &connection,
-                OAuthProvider::Google,
-                Some(account.0),
-                &address,
-            )
-            .await;
+            let signed_in =
+                crate::daemon::sign_in(&connection, provider, Some(account.0), &address).await;
             this.update(cx, |this, cx| {
                 match signed_in {
                     Ok(_) => this.load_drive(true, cx),
@@ -703,7 +730,7 @@ impl MailWindow {
                 }
             }
             this.update(cx, |this, cx| {
-                let drive = tr!("files-drive-google");
+                let drive = this.drive_name(account);
                 let text = match started.as_slice() {
                     [] => None,
                     [(_, name)] => Some(tr!(
@@ -784,7 +811,7 @@ impl MailWindow {
         let Some(upload) = self.library.cloud.uploads.remove(&status.id) else {
             return;
         };
-        let drive = tr!("files-drive-google");
+        let drive = self.drive_name(upload.key.0);
         let text = match status.state.as_str() {
             drive_state::DONE => {
                 tr!(
@@ -864,13 +891,23 @@ impl MailWindow {
         if !self.library.cloud.fetching.insert(entry.id.clone()) {
             return;
         }
-        let provider = tr!("files-drive-google");
+        let provider = self.drive_name(account);
         let getting = SharedString::from(tr!(
             "files-drive-getting",
             name = entry.name.as_str(),
             drive = provider.as_str()
         ));
-        self.show_snackbar(getting.clone(), None, cx);
+        // A file for the viewer opens it at once, turning until the file
+        // is here; anything else says it is coming.
+        let waiting =
+            (act == Act::Open && entry.size <= VIEWER_MAX && self.open_in(&item) == OpenIn::Katna)
+                .then(|| {
+                    self.show_fetching_viewer(item.clone(), window, cx)
+                        .downgrade()
+                });
+        if waiting.is_none() {
+            self.show_snackbar(getting.clone(), None, cx);
+        }
         cx.notify();
         cx.spawn_in(window, async move |this, cx| {
             let target = match target {
@@ -911,9 +948,21 @@ impl MailWindow {
                     snackbar.shown.set(0.0);
                 }
                 cx.notify();
+                // The viewer waiting for it, unless it was closed meanwhile.
+                let viewer = waiting.as_ref().map(|waiting| {
+                    waiting
+                        .upgrade()
+                        .filter(|v| this.files.viewer.as_ref() == Some(v))
+                });
+                if matches!(viewer, Some(None)) {
+                    return;
+                }
                 let path = match fetched {
                     Ok(path) => std::path::PathBuf::from(path),
                     Err(err) => {
+                        if viewer.is_some() {
+                            this.close_viewer(window, cx);
+                        }
                         let text = tr!(
                             "files-drive-get-failed",
                             name = entry.name.as_str(),
@@ -972,6 +1021,11 @@ impl MailWindow {
                             name: item.name.clone(),
                             ..item
                         };
+                        if let Some(Some(viewer)) = viewer {
+                            let raw = std::sync::Arc::new(raw);
+                            viewer.update(cx, |viewer, cx| viewer.arrived(raw, vec![item], cx));
+                            return;
+                        }
                         this.show_viewer(
                             std::sync::Arc::new(raw),
                             false,
@@ -1172,6 +1226,7 @@ impl MailWindow {
         let mut nav = nav.child(rule()).child(heading(tr!("files-drives")));
         let view = cloud.view.as_ref();
         for (n, (account, address)) in cloud.drives.iter().enumerate() {
+            let name = self.drive_name(*account);
             for shared in [false, true] {
                 let on = view.is_some_and(|v| v.account == *account && v.shared == shared);
                 let account = *account;
@@ -1181,7 +1236,7 @@ impl MailWindow {
                     .child(div().truncate().child(if shared {
                         tr!("files-drive-shared")
                     } else {
-                        tr!("files-drive-google")
+                        name.clone()
                     }))
                     .child(
                         div()
@@ -1202,8 +1257,8 @@ impl MailWindow {
                         20.0,
                     )
                 } else {
-                    // The drive itself wears Google Drive's mark.
-                    drive_mark(20.0)
+                    // The drive itself wears its maker's mark.
+                    self.drive_mark_of(account, 20.0)
                 };
                 let row = super::super::nav::side_row_with(
                     ("files-drive", n * 2 + usize::from(shared)),
@@ -1255,7 +1310,12 @@ impl MailWindow {
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.allow_drive_reading(account, cx);
                     }));
-                drive_notice(tr!("files-drive-needs-permission"), allow, th)
+                drive_notice(
+                    tr!("files-drive-needs-permission"),
+                    allow,
+                    self.drive_mark_of(account, 40.0),
+                    th,
+                )
             }
             Listing::Failed(err) => {
                 let again = outlined_button("files-drive-again", tr!("files-drive-try-again"), th)
@@ -1263,12 +1323,14 @@ impl MailWindow {
                         this.load_drive(true, cx);
                         cx.notify();
                     }));
+                let drive = self.drive_name(account);
+                let unreachable = tr!("files-drive-unreachable", drive = drive.as_str());
                 let text = if err.is_empty() {
-                    tr!("files-drive-unreachable")
+                    unreachable
                 } else {
-                    format!("{}\n{err}", tr!("files-drive-unreachable"))
+                    format!("{unreachable}\n{err}")
                 };
-                drive_notice(text, again, th)
+                drive_notice(text, again, self.drive_mark_of(account, 40.0), th)
             }
             Listing::Ready if view.order.is_empty() => placeholder(
                 &if view.searched.is_empty() {
@@ -1344,6 +1406,8 @@ impl MailWindow {
         let crumb_size = if self.picker.is_some() { 16.0 } else { 20.0 };
         let root = if view.shared {
             tr!("files-drive-shared")
+        } else if self.drive_is_onedrive(view.account) {
+            tr!("files-drive-mine-onedrive")
         } else {
             tr!("files-drive-mine")
         };
@@ -1978,6 +2042,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<(Point<Pixels>, Vec<AnyElement>)> {
         let view = self.library.cloud.view.as_ref()?;
+        let drive_name = self.drive_name(view.account);
         match *menu {
             DriveMenu::Upload(at) => {
                 let items = [
@@ -2075,7 +2140,7 @@ impl MailWindow {
                         item(
                             "files-drive-menu-web".into(),
                             "open-external",
-                            tr!("files-drive-open-web"),
+                            tr!("files-drive-open-web", drive = drive_name.as_str()),
                             false,
                         )
                         .on_click(cx.listener(move |this, _, _, cx| {
@@ -2107,8 +2172,12 @@ impl MailWindow {
     }
 }
 
-/// Google Drive's mark, `size` px square, in its three colours.
-pub(in crate::window) fn drive_mark(size: f32) -> AnyElement {
+/// Google Drive's mark, `size` px square, in its three colours, or
+/// OneDrive's blue cloud.
+fn drive_mark(onedrive: bool, size: f32) -> AnyElement {
+    if onedrive {
+        return super::super::mail_providers::layered(size, &[("onedrive", 0x0a62_c9ff)]);
+    }
     super::super::mail_providers::layered(
         size,
         &[
@@ -2120,7 +2189,12 @@ pub(in crate::window) fn drive_mark(size: f32) -> AnyElement {
 }
 
 /// A note in place of the drive's files, with a button.
-fn drive_notice(text: String, button: gpui::Stateful<gpui::Div>, th: &Theme) -> AnyElement {
+fn drive_notice(
+    text: String,
+    button: gpui::Stateful<gpui::Div>,
+    mark: AnyElement,
+    th: &Theme,
+) -> AnyElement {
     div()
         .size_full()
         .flex()
@@ -2129,7 +2203,7 @@ fn drive_notice(text: String, button: gpui::Stateful<gpui::Div>, th: &Theme) -> 
         .justify_center()
         .gap(px(16.0))
         .p(px(24.0))
-        .child(drive_mark(40.0))
+        .child(mark)
         .child(
             div()
                 .max_w(px(420.0))

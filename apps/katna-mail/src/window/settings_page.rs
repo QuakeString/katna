@@ -1537,14 +1537,22 @@ impl MailWindow {
         .into_any_element()
     }
 
-    /// Asks the daemon which Google accounts let Katna read their drive,
-    /// for Drives in Files.
+    /// Asks the daemon which Google and Microsoft accounts let Katna use
+    /// their drive, for Drives in Files.
     fn read_drives(&mut self, cx: &mut Context<Self>) {
         let google: Vec<(katna_core::AccountId, String)> = match self.mail.as_ref() {
             Ok(mail) => self
                 .accounts
                 .iter()
-                .filter(|a| mail.sign_in_provider(a.id) == Some(katna_core::OAuthProvider::Google))
+                .filter(|a| {
+                    matches!(
+                        mail.sign_in_provider(a.id),
+                        Some(
+                            katna_core::OAuthProvider::Google
+                                | katna_core::OAuthProvider::Microsoft
+                        )
+                    )
+                })
                 .map(|a| (a.id, a.address.clone()))
                 .collect(),
             Err(_) => Vec::new(),
@@ -1584,11 +1592,16 @@ impl MailWindow {
         .detach();
     }
 
-    /// Signs a Google account in again, now allowing Katna to read its
-    /// drive.
+    /// Signs a Google or Microsoft account in again, now allowing Katna to
+    /// use its drive.
     fn allow_drive_in_files(&mut self, id: katna_core::AccountId, cx: &mut Context<Self>) {
         let Some(connection) = self.daemon.clone() else {
             return;
+        };
+        let provider = if self.drive_is_onedrive(id) {
+            katna_core::OAuthProvider::Microsoft
+        } else {
+            katna_core::OAuthProvider::Google
         };
         let address = self
             .accounts
@@ -1597,13 +1610,8 @@ impl MailWindow {
             .map(|a| a.address.clone())
             .unwrap_or_default();
         cx.spawn(async move |this, cx| {
-            let signed_in = crate::daemon::sign_in(
-                &connection,
-                katna_core::OAuthProvider::Google,
-                Some(id.0),
-                &address,
-            )
-            .await;
+            let signed_in =
+                crate::daemon::sign_in(&connection, provider, Some(id.0), &address).await;
             this.update(cx, |this, cx| {
                 if signed_in.is_err() {
                     this.show_snackbar(tr!("files-drive-allow-failed"), None, cx);
@@ -1675,14 +1683,14 @@ impl MailWindow {
                     this.apply(Change::DriveInFiles(id.0, !on), cx)
                 }))
                 .child(Ripple::new(("page-files-drive-ripple", n), rgba(th.ripple)).rounded(8.0))
-                .child(super::files_page::drive_mark(22.0))
+                .child(self.drive_mark_of(id, 22.0))
                 .child(
                     div()
                         .flex_1()
                         .min_w_0()
                         .flex()
                         .flex_col()
-                        .child(div().text_size(px(14.0)).child(tr!("files-drive-google")))
+                        .child(div().text_size(px(14.0)).child(self.drive_name(id)))
                         .child(
                             div()
                                 .truncate()

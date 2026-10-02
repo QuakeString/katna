@@ -24,7 +24,7 @@ use katna_sync::{
     onedrive::OneDrive,
 };
 
-use super::{CommandError, Daemon, Notice};
+use super::{CommandError, Daemon, Notice, cloud::Cloud};
 
 /// The uploads of this run of the daemon.
 #[derive(Default)]
@@ -182,7 +182,7 @@ impl Daemon {
         })?;
         let Some(drive) = self.cloud(account).await? else {
             return Err(CommandError::InvalidArgs(
-                "only accounts signed in with Google have a drive in Files".into(),
+                "only accounts signed in with Google or Microsoft have a drive in Files".into(),
             ));
         };
         let name = path
@@ -462,7 +462,7 @@ fn plan_upload(path: &std::path::Path) -> Option<Plan> {
 
 /// Uploads what `plan` lists into folder `into`, keeping upload `id` up
 /// to date with the bytes sent of all its files.
-async fn upload_tree(daemon: Weak<Daemon>, drive: Drive, id: i64, into: String, plan: Plan) {
+async fn upload_tree(daemon: Weak<Daemon>, drive: Cloud, id: i64, into: String, plan: Plan) {
     let update = |change: &dyn Fn(&mut Upload)| {
         if let Some(daemon) = daemon.upgrade() {
             daemon.update_upload(id, change);
@@ -517,10 +517,7 @@ async fn upload_tree(daemon: Weak<Daemon>, drive: Drive, id: i64, into: String, 
                 update(&|u| u.status.sent = sent);
             }
         };
-        match drive
-            .upload_into(path, name, mime_of(name), parent, &progress)
-            .await
-        {
+        match drive.upload_into(path, name, parent, &progress).await {
             Ok(file) => {
                 done += std::fs::metadata(path).map_or(0, |m| m.len());
                 if plan.folders.is_empty() {
@@ -548,7 +545,7 @@ async fn upload_tree(daemon: Weak<Daemon>, drive: Drive, id: i64, into: String, 
 
 /// The type Drive files a file under, from its name; Drive works out
 /// the rest itself.
-fn mime_of(name: &str) -> &'static str {
+pub(super) fn mime_of(name: &str) -> &'static str {
     let ext = name
         .rsplit_once('.')
         .map(|(_, e)| e.to_ascii_lowercase())

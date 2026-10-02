@@ -7,6 +7,7 @@
 //! in an upload session, are shared with the recipients, and the mail
 //! carries their links. Graph's tokens come from the account's refresh
 //! token ([`TokenSource::access_token_for`], scope [`MICROSOFT_FILES`]).
+//! Files browses the whole drive through [`browse`].
 
 use std::{path::Path, sync::Arc, time::Duration};
 
@@ -125,17 +126,28 @@ impl OneDrive {
         name: &str,
         progress: &(dyn Fn(u64, u64) + Sync),
     ) -> Result<DriveFile> {
-        let size = std::fs::metadata(path)?.len();
         let url = format!(
             "{}/me/drive/special/approot:/{}:/createUploadSession",
             self.api,
             http::escape(name)
         );
+        self.upload_at(&url, path, progress).await
+    }
+
+    /// Uploads the file at `path` through the upload session that `url`
+    /// (a `createUploadSession`) starts.
+    async fn upload_at(
+        &self,
+        url: &str,
+        path: &Path,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> Result<DriveFile> {
+        let size = std::fs::metadata(path)?.len();
         let body = serde_json::json!({
             "item": { "@microsoft.graph.conflictBehavior": "rename" }
         })
         .to_string();
-        let started = self.call("POST", &url, Some(body.as_bytes())).await?;
+        let started = self.call("POST", url, Some(body.as_bytes())).await?;
         check(&started, "starting the upload")?;
         let session: Session = parse(&started.body)?;
         // The session's address carries its own authorisation; Graph
@@ -218,7 +230,7 @@ impl OneDrive {
     /// Lets each of `addresses` view item `id`, without Microsoft's own
     /// sharing mail. Returns the addresses OneDrive would not share with.
     pub async fn share(&self, id: &str, addresses: &[String]) -> Result<Vec<String>> {
-        let url = format!("{}/me/drive/items/{}/invite", self.api, http::escape(id));
+        let url = format!("{}/invite", self.item_url(id));
         let mut refused = Vec::new();
         for address in addresses {
             let body = serde_json::json!({
@@ -244,11 +256,7 @@ impl OneDrive {
     /// Lets anyone with the link view item `id`; returns that link, which
     /// replaces the item's own in the message.
     pub async fn share_with_link(&self, id: &str) -> Result<String> {
-        let url = format!(
-            "{}/me/drive/items/{}/createLink",
-            self.api,
-            http::escape(id)
-        );
+        let url = format!("{}/createLink", self.item_url(id));
         let body = br#"{"type":"view","scope":"anonymous"}"#;
         let reply = self.call("POST", &url, Some(body.as_slice())).await?;
         check(&reply, "sharing the link")?;
@@ -329,6 +337,8 @@ fn failure(reply: &Reply, doing: &str) -> Error {
     };
     Error::Rejected(format!("OneDrive, {doing}: {detail}"))
 }
+
+mod browse;
 
 #[cfg(test)]
 mod tests;

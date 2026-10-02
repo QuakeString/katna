@@ -869,6 +869,26 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the viewer on `item` before its file is here (a drive file
+    /// still downloading): it turns until the file is handed to it.
+    pub(super) fn show_fetching_viewer(
+        &mut self,
+        item: Item,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<Viewer> {
+        self.close_viewer(window, cx);
+        self.files.restore = window.focused(cx);
+        self.files.viewer_encrypted = false;
+        self.files.viewer_message = None;
+        let th = self.theme(window);
+        let viewer = cx.new(|cx| Viewer::fetching(item, th, window, cx));
+        self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.files.viewer = Some(viewer.clone());
+        cx.notify();
+        viewer
+    }
+
     fn on_viewer(
         &mut self,
         _: &Entity<Viewer>,
