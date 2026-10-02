@@ -2897,3 +2897,63 @@ title = "Ahịrị dị nro na ọnọdụ Ọchịchịrị kwa"
 text = """
 Na ọnọdụ Ọchịchịrị, ahịrị dị n'etiti ozi, n'okpuru isiokwu na gburugburu kaadị dị nro ugbu a dịka na ọnọdụ Ìhè. Ogige, mpekere na bọtịnụ ka nwere ahịrị gburugburu ha doro anya.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Mmelite pere mpe mgbe ezumike gasịrị"
+text = """
+Mmelite na-anọgide na-adị pere mpe ọ bụrụgodị na ị gafere otu ụbọchị ma ọ bụ abụọ nke ụdị ọhụrụ. Katna na-esi ugbu a n'ụdị ị nwere gafee ndị bịara n'etiti, megabaịt ole na ole nke ọ bụla, kama ibudata ngwugwu niile ọzọ.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Hụ ozi ị zara"
+text = """
+Obere akụ nzaghachi n'ahịrị nke ndepụta ozi na-egosi na ị zara ya: ọ bụ gị dere ozi kacha ọhụrụ nke mkparịta ụka ahụ, ebe a ma ọ bụ na webụ. Ọ na-apụ mgbe ha zaghachiri.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Akara ngosi tree na-eso ìhè na ọchịchịrị"
+text = """
+Akara ngosi tree nwere otu agba na-agbanwe ugbu a na panel gị ozugbo ị gbanwere n'etiti ìhè na ọchịchịrị, kama ichere ozi ọhụrụ.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Echiche nzaghachi na-egosi na ha na-abịa"
+text = """
+Mgbe a na-arịọ echiche nzaghachi, na Zaa nke nchịkọta ma ọ bụ na Dee nzaghachi, ọdịdị ha na-eku ume ugbu a dị ka nke nchịkọta n'onwe ya mgbe a na-ede ya. Kaadị nchịkọta na-egosikwa ole ozi mkparịta ụka ahụ nwere mgbe a na-arịọ ya, ọ bụghị 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Nkuku dị ọcha na Faịlụ"
+text = """
+Ịnọ n'elu faịlụ nwere nlele mbụ ọcha anaghịzi ekwe ka ọcha pụta na nkuku elu kaadị ahụ, tree mbugo apịajiri apịaji nwekwara nkuku gbara gburugburu n'elu, igbe mkparịta Kekọrịta nwekwara bọtịnụ Mechie na nkuku ya.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Ikpochapụ ọchụchọ na-edobe ozi gị ka o mepere"
+text = """
+Mepee ozi site na nsonaazụ ọchụchọ ma kpochapụ ọchụchọ ahụ site na X: ozi ahụ na-anọgide na-emeghe ka folda gị na-alọghachi, kama ịlaghachi na ndepụta.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Nkuku gbara gburugburu na spredshiit"
+text = """
+Spredshiit n'ihe nlele mgbakwunye gbara gburugburu ugbu a na nkuku anọ ya niile. Mkpụrụ akwụkwọ kọlụm ntụ dị n'elu na taabụ mpempe dị n'okpuru na-eme ka ha bụrụ akụkụ anọ na mbụ.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Nkọwa kọntaktị dị ọcha na kaadị"
+text = """
+Nọmba ekwentị, adreesị na nkọwa ndị ọzọ e wepụtara na mbinye aka anaghịzi egosi kpakpando efu ma ọ bụ akara njikọ n'ime akara akụkụ. Mgbe onye ọrụ ibe gị binyere aka n'ozi site na adreesị a na-ekerịta dị ka accounts@, kaadị ahụ na-edobe naanị nkọwa ụlọ ọrụ ahụ, ọ bụghị nọmba ma ọ bụ aha ọkwa onye ọrụ ibe ahụ.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Lelee ihe ị tinyere"
+text = """
+Pịa faịlụ etinyere n'ozi ị na-ede iji mepee ya n'ihe nlele Katna, otu ihe ahụ faịlụ ndị a natara na-emepe na ya, ma jide n'aka na ọ bụ faịlụ ziri ezi. Faịlụ e zipụrụ dị ka njikọ Google Drive ma ọ bụ OneDrive na-emepe na draịv ahụ.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Ogwe ịkpụgharị na Ntọala"
+text = """
+Taabụ ọ bụla nke Ntọala nwere otu ogwe ịkpụgharị dị gịrịgịrị dị ka ozi mepere emepe na Faịlụ: ọ na-apụta mgbe ị na-akpụgharị ma ọ bụ tụọ aka na peeji ahụ, ị nwekwara ike ịdọrọ ya.
+"""

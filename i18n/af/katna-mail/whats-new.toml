@@ -2598,3 +2598,63 @@ title = "Ligte lyne ook in donker modus"
 text = """
 In donker modus is die lyne tussen e-posse, onder opskrifte en om kaarte nou net so lig soos in ligte modus. Velde, skyfies en knoppies behou hul duidelike buitelyn.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Klein opdaterings ná 'n ruskans"
+text = """
+Opdaterings bly klein selfs wanneer jy 'n dag of twee se nuwe weergawes oorslaan. Katna stap nou van die weergawe wat jy het deur die vorige weergawes, elk 'n paar megagrepe, eerder as om die hele pakket weer af te laai.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Sien watter e-pos jy beantwoord het"
+text = """
+'n Klein antwoordpyl op 'n reël van die e-poslys wys dat jy dit beantwoord het: jy het die nuutste e-pos van die gesprek geskryf, hier of op die web. Dit verdwyn wanneer hulle terugskryf.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Stelselbalkikoon volg lig en donker"
+text = """
+Die eenkleurige stelselbalkikoon verander nou saam met jou paneel sodra jy tussen lig en donker wissel, eerder as om vir nuwe e-pos te wag.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Antwoordidees wys dat hulle op pad is"
+text = """
+Terwyl antwoordidees gevra word, in 'n opsomming se Antwoord of in Skryf 'n antwoord, asem hul vorms nou soos die opsomming s'n terwyl dit geskryf word. Die opsommingskaart wys ook hoeveel e-posse die gesprek het terwyl dit gevra word, nie 0 nie.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Netter hoeke in Lêers"
+text = """
+Wanneer die wyser oor 'n lêer met 'n wit voorskou is, wys wit nie meer by die kaart se boonste hoeke nie, die opgevoude oplaailaai is bo ook afgerond, en die Deel-venster het 'n Maak toe-knoppie in sy hoek.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Om 'n soektog uit te vee hou jou e-pos oop"
+text = """
+Maak 'n e-pos uit die soekresultate oop en vee die soektog uit met die X: die e-pos bly oop terwyl jou vouer terugkom, eerder as om terug na die lys te vou.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Ronde hoeke op sigblaaie"
+text = """
+'n Sigblad in die aanhegselkyker is nou by al vier hoeke afgerond. Die grys kolomletters bo en die bladoortjies onderaan het hulle vroeër vierkantig gemaak.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Skoon kontakbesonderhede op kaarte"
+text = """
+Telefoonnommers, adresse en ander besonderhede uit 'n handtekening wys nie meer verdwaalde sterretjies of skakeltekens tussen hoekhakies nie. Wanneer 'n kollega e-pos van 'n gedeelde adres soos accounts@ onderteken, hou die kaart net die maatskappy se besonderhede, nie daardie kollega se nommer of titel nie.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Gaan na wat jy aangeheg het"
+text = """
+Klik op 'n lêer wat aan 'n boodskap wat jy skryf geheg is om dit in Katna se kyker oop te maak, dieselfde een waarin ontvangde lêers oopmaak, en maak seker dit is die regte lêer. 'n Lêer wat as 'n Google Drive- of OneDrive-skakel gestuur is, maak op die drive oop.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "'n Rolstaaf in Instellings"
+text = """
+Elke oortjie van Instellings het dieselfde dun rolstaaf as 'n oop e-pos en Lêers: dit wys terwyl jy rol of na die bladsy wys, en jy kan dit sleep.
+"""

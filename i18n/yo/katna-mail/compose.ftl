@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé t
 compose-forward-files-missing = A kò tíì gba àwọn fáìlì ìfiránṣẹ́ tí a fi ránṣẹ́ síwájú sílẹ̀, nítorí náà a kò so wọ́n mọ́ ọn.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
+compose-attachment-open-tip = Ṣí i láti ṣàyẹ̀wò rẹ̀
 compose-attachments-total = Fáìlì { $count }, { $size }
 compose-drive-note = { $name } tóbi ju { $limit } lọ, nítorí náà ó ń lọ sí Google Drive rẹ, ìfiránṣẹ́ náà sì ní ìjápọ̀.
 compose-drive-tip = Nínú Google Drive rẹ; ìfiránṣẹ́ náà ní ìjápọ̀

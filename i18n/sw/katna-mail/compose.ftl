@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $l
 compose-forward-files-missing = Faili za ujumbe unaosambazwa hazijapakuliwa, kwa hivyo hazijaambatishwa.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ondoa kiambatisho
+compose-attachment-open-tip = Fungua ili ukiangalie
 compose-attachments-total = { $count ->
     [one] Faili { $count }, { $size }
    *[other] Faili { $count }, { $size }

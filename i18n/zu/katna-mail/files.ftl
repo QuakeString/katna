@@ -166,6 +166,7 @@ files-share-remove = Susa ukufinyelela
 files-share-copy-link = Kopisha isixhumanisi
 files-share-share = Yabelana
 files-share-done = Kwenziwe
+files-share-close = Vala
 files-share-sharing = Kwabelwana…
 files-share-shared = { $count ->
     [one] Kwabelwe nomuntu o-{ $count }
