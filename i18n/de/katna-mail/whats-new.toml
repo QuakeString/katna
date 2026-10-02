@@ -3165,3 +3165,91 @@ Im dunklen Modus sind die Linien zwischen E-Mails, unter Überschriften
 und um Karten so dezent wie im hellen Modus. Felder, Chips und Knöpfe
 behalten ihren deutlichen Rand.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Kleine Updates auch nach einer Pause"
+text = """
+Updates bleiben klein, auch wenn Sie ein oder zwei Tage mit neuen
+Versionen auslassen. Katna geht jetzt von Ihrer Version aus über die
+dazwischenliegenden Versionen, jeweils ein paar Megabyte, statt das
+ganze Paket erneut herunterzuladen.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Sehen, welche E-Mails Sie beantwortet haben"
+text = """
+Ein kleiner Antwortpfeil auf einer Zeile der E-Mail-Liste zeigt, dass
+Sie geantwortet haben: Die neueste E-Mail der Konversation stammt von
+Ihnen, hier oder im Web geschrieben. Er verschwindet, sobald die andere
+Seite zurückschreibt.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Das Symbol im Systemabschnitt folgt Hell und Dunkel"
+text = """
+Das einfarbige Symbol im Systemabschnitt passt sich jetzt sofort Ihrer
+Leiste an, wenn Sie zwischen hell und dunkel wechseln, statt auf neue
+E-Mails zu warten.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Antwortideen zeigen, dass sie unterwegs sind"
+text = """
+Während Antwortideen angefragt werden, unter Antworten in einer
+Zusammenfassung oder in Antwort schreiben, atmen ihre Platzhalter jetzt
+wie die der Zusammenfassung, während sie geschrieben wird. Die
+Zusammenfassungskarte zeigt außerdem schon während der Anfrage, wie
+viele E-Mails die Konversation hat, statt 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Saubere Ecken in Dateien"
+text = """
+Fährt der Mauszeiger über eine Datei mit weißer Vorschau, scheint an den
+oberen Ecken der Karte kein Weiß mehr durch, die eingeklappte
+Upload-Ablage ist auch oben abgerundet, und der Dialog Teilen hat eine
+Schaltfläche zum Schließen in seiner Ecke.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Eine Suche leeren lässt Ihre E-Mail offen"
+text = """
+Öffnen Sie eine E-Mail aus den Suchergebnissen und leeren Sie die Suche
+mit dem X: Die E-Mail bleibt offen, während Ihr Ordner zurückkommt,
+statt zur Liste zurückzuklappen.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Runde Ecken bei Tabellen"
+text = """
+Eine Tabelle im Anhangsbetrachter ist jetzt an allen vier Ecken
+abgerundet. Die grauen Spaltenbuchstaben oben und die Blattreiter unten
+haben sie bisher eckig gemacht.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Saubere Kontaktdaten auf Karten"
+text = """
+Telefonnummern, Adressen und andere Angaben aus einer Signatur zeigen
+keine verirrten Sternchen oder Linkzeichen in spitzen Klammern mehr.
+Unterschreibt eine Kollegin oder ein Kollege E-Mails von einer
+gemeinsamen Adresse wie accounts@, behält die Karte nur die Angaben der
+Firma, nicht die Nummer oder den Titel dieser Person.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Prüfen, was Sie angehängt haben"
+text = """
+Klicken Sie auf eine Datei, die an eine Nachricht im Entwurf angehängt
+ist, um sie in Katnas Betrachter zu öffnen, demselben wie für empfangene
+Dateien, und sicherzugehen, dass es die richtige ist. Eine als
+Google-Drive- oder OneDrive-Link gesendete Datei öffnet sich im Drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Eine Bildlaufleiste in den Einstellungen"
+text = """
+Jeder Tab der Einstellungen hat dieselbe schmale Bildlaufleiste wie eine
+geöffnete E-Mail und Dateien: Sie erscheint, während Sie scrollen oder
+der Mauszeiger über der Seite ist, und Sie können sie ziehen.
+"""

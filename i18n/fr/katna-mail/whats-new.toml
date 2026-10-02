@@ -3209,3 +3209,91 @@ En mode sombre, les lignes entre les messages, sous les en-têtes et autour
 des cartes sont aussi discrètes qu’en mode clair. Les champs, les puces et
 les boutons gardent un contour net.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Des mises à jour légères même après une pause"
+text = """
+Les mises à jour restent légères même si vous sautez un jour ou deux de
+nouvelles versions. Katna passe désormais de la version que vous avez par
+les précédentes, quelques mégaoctets chacune, au lieu de télécharger à
+nouveau le paquet entier.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Voyez à quels messages vous avez répondu"
+text = """
+Une petite flèche de réponse sur une ligne de la liste des messages
+indique que vous y avez répondu : vous avez écrit le dernier message de
+la conversation, ici ou sur le web. Elle disparaît quand on vous répond.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "L’icône de notification suit le mode clair et sombre"
+text = """
+L’icône monochrome de la zone de notification change désormais avec
+votre panneau dès que vous passez du mode clair au mode sombre, au lieu
+d’attendre un nouveau message.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Les idées de réponse montrent qu’elles arrivent"
+text = """
+Pendant que les idées de réponse sont demandées, dans Répondre d’un
+résumé ou dans Rédiger la réponse, leurs formes respirent désormais
+comme celles du résumé pendant sa rédaction. La fiche de résumé indique
+aussi le nombre de messages de la conversation pendant la demande, et
+non plus 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Des coins plus nets dans Fichiers"
+text = """
+Survoler un fichier dont l’aperçu est blanc ne laisse plus apparaître de
+blanc aux coins supérieurs de la carte, le panneau des imports replié est
+lui aussi arrondi en haut, et la boîte de dialogue Partager a un bouton
+Fermer dans son coin.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Effacer une recherche garde votre message ouvert"
+text = """
+Ouvrez un message depuis les résultats de recherche et effacez la
+recherche avec le X : le message reste ouvert pendant que votre dossier
+revient, au lieu de se replier sur la liste.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Des coins arrondis pour les feuilles de calcul"
+text = """
+Une feuille de calcul dans la visionneuse de pièces jointes est
+désormais arrondie aux quatre coins. Les lettres de colonne grises en
+haut et les onglets de feuille en bas les rendaient carrés.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Des coordonnées propres sur les cartes"
+text = """
+Les numéros de téléphone, adresses et autres coordonnées tirés d’une
+signature n’affichent plus d’astérisques égarés ni de liens entre
+chevrons. Quand un collègue signe un message envoyé depuis une adresse
+partagée comme accounts@, la carte ne garde que les coordonnées de
+l’entreprise, pas le numéro ni le poste de ce collègue.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Vérifiez ce que vous avez joint"
+text = """
+Cliquez sur un fichier joint au message que vous rédigez pour l’ouvrir
+dans la visionneuse de Katna, la même que pour les fichiers reçus, et
+vérifier que c’est le bon fichier. Un fichier envoyé comme lien Google
+Drive ou OneDrive s’ouvre sur le drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Une barre de défilement dans Paramètres"
+text = """
+Chaque onglet de Paramètres a la même fine barre de défilement qu’un
+message ouvert et Fichiers : elle apparaît pendant que vous faites
+défiler ou que le pointeur est sur la page, et vous pouvez la faire
+glisser.
+"""

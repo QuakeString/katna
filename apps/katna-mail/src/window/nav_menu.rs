@@ -27,7 +27,7 @@ use crate::daemon;
 use crate::format;
 use crate::sidebar::{self, Role};
 use crate::theme::Theme;
-use crate::widgets::{avatar, icon, raised};
+use crate::widgets::{icon, raised};
 use futures_lite::FutureExt;
 use katna_core::AccountKind;
 use katna_core::OAuthProvider;
@@ -340,7 +340,12 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .gap(px(12.0))
-                .child(div().flex_none().child(avatar(&name, &info.address, 36.0)))
+                .child(div().flex_none().child(self.account_ring(
+                    &info.address,
+                    self.person_avatar(&name, &info.address, 36.0),
+                    36.0,
+                    th,
+                )))
                 .child(
                     div()
                         .flex_1()
@@ -573,6 +578,30 @@ impl MailWindow {
             .text_size(px(14.0))
             .text_color(rgba(th.text))
             .when_some(card, |d, card| d.child(card).child(divider()))
+            .when_some(
+                about.and_then(|a| self.accounts.iter().find(|x| x.id == a)),
+                |d, info| {
+                    // The account's color, worn at once as it is picked.
+                    d.child(
+                        div()
+                            .pl(px(16.0))
+                            .pr(px(12.0))
+                            .py(px(2.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(14.0))
+                            .child(icon("palette", th.text_dim, 20.0))
+                            .child(self.account_color_strip(
+                                "nav-menu-color",
+                                &info.address,
+                                th,
+                                cx,
+                            )),
+                    )
+                    .child(divider())
+                },
+            )
             .when_some(sign_in, |d, (id, address, provider)| {
                 d.child(
                     item(

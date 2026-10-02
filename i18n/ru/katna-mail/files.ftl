@@ -188,6 +188,7 @@ files-share-remove = Закрыть доступ
 files-share-copy-link = Копировать ссылку
 files-share-share = Открыть доступ
 files-share-done = Готово
+files-share-close = Закрыть
 files-share-sharing = Открытие доступа…
 files-share-shared = { $count ->
     [one] Доступ открыт { $count } человеку

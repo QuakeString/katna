@@ -158,6 +158,7 @@ files-share-remove = Wepụ ohere
 files-share-copy-link = Detuo njikọ
 files-share-share = Kekọrịta
 files-share-done = O mechara
+files-share-close = Mechie
 files-share-sharing = Na-ekekọrịta…
 files-share-shared = { $count ->
    *[other] E kekọrịtara ya na mmadụ { $count }

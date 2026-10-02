@@ -1768,8 +1768,18 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   tab it turned off, or no tabs) counts as Primary there too
   (`Store::spread_inbox_threads` with `SpreadTabs`). One account's line
   under it shows that account's own tabs. Lines of the whole unified
-  inbox carry a dot in the account's picture colour after the names, and
-  the account's name where the line stacks.
+  inbox carry a dot in the account's colour after the names (hovering it
+  names the account), and the account's name where the line stacks.
+  Each account has one colour (`mail.account_colors`: a name of one of
+  seven standard colours, none of them a tab's in light or dark, or
+  `#rrggbb` from the colour picker that the rainbow wheel after them
+  opens, as on Settings > Appearance > Accent), picked in Settings >
+  Accounts or the account's right-click menu. An account without one gets
+  one no other account wears when the folder pane loads: its old
+  letter-picture colour when that is a free standard one, else the next
+  free standard one, then six more of the app's own. The same colour
+  rings the account's picture in the account menu and fills its letter
+  picture (`window/account_color.rs`).
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and
@@ -2415,6 +2425,16 @@ Gemini or confidential mode):
   `system`, off is `katna`), and every pick keeps it in step for older
   versions. The quick setting *Desktop colors* switches between `system`
   and `katna`.
+
+  After the seven accent swatches a rainbow wheel opens the color picker
+  (`window/scheme_color.rs`, the scheme editor's) for any other accent,
+  and is ringed while such a custom accent is in use; the swatch and the
+  wheel are shared widgets (`widgets::color_swatch`, `color_wheel`) for
+  any row of colors to pick from. The logo inside the window (top bar,
+  About, welcome, What's new) draws its disc in the accent and the k in
+  `on_accent`, which the theme keeps readable on it; `assets.rs` serves it
+  tinted (`logo/small-32-<disc>-<mark>.svg`). The app icon and the tray
+  keep Katna's teal.
 
   *From your system* lists the desktop's other schemes
   (`DesktopScheme` in `katna_platform::colors`): on KDE every installed

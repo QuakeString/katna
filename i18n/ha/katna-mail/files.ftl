@@ -166,6 +166,7 @@ files-share-remove = Cire dama
 files-share-copy-link = Kwafa mahaɗi
 files-share-share = Raba
 files-share-done = An gama
+files-share-close = Rufe
 files-share-sharing = Ana rabawa…
 files-share-shared = { $count ->
     [one] An raba da mutum 1

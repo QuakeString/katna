@@ -158,6 +158,7 @@ files-share-remove = Yọ ààyè kúrò
 files-share-copy-link = Ṣẹ̀dà ìjápọ̀
 files-share-share = Pín
 files-share-done = Ti parí
+files-share-close = Pa á dé
 files-share-sharing = Ń pín in…
 files-share-shared = { $count ->
    *[other] A ti pín in pẹ̀lú ènìyàn { $count }

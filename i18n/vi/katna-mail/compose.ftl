@@ -58,6 +58,7 @@ compose-file-too-large = { $name } quá lớn: một thư chỉ mang được t�
 compose-forward-files-missing = Tệp của thư được chuyển tiếp chưa được tải xuống, nên chưa được đính kèm.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
+compose-attachment-open-tip = Mở để kiểm tra
 compose-attachments-total = { $count } tệp, { $size }
 compose-drive-note = { $name } vượt quá { $limit }, nên tệp sẽ được đưa lên Google Drive của bạn và thư sẽ kèm một liên kết.
 compose-drive-tip = Trong Google Drive của bạn; thư kèm một liên kết

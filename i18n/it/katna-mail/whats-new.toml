@@ -3092,3 +3092,88 @@ In modalità scura, le linee tra le email, sotto le intestazioni e attorno
 alle schede sono tenui come in modalità chiara. Campi, chip e pulsanti
 mantengono un contorno ben visibile.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Aggiornamenti piccoli anche dopo una pausa"
+text = """
+Gli aggiornamenti restano piccoli anche quando salti un giorno o due di
+nuove versioni. Katna ora passa dalla versione che hai attraverso quelle
+precedenti, pochi megabyte ciascuna, invece di scaricare di nuovo l’intero
+pacchetto.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Vedi a quali email hai risposto"
+text = """
+Una piccola freccia di risposta su una riga dell’elenco della posta mostra
+che hai risposto: hai scritto l’email più recente della conversazione,
+qui o sul web. Scompare quando ti rispondono.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "L’icona nell’area di notifica segue chiaro e scuro"
+text = """
+L’icona monocromatica nell’area di notifica ora cambia insieme al tuo
+pannello non appena passi tra modalità chiara e scura, invece di aspettare
+nuova posta.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Le idee di risposta mostrano che stanno arrivando"
+text = """
+Mentre le idee di risposta vengono richieste, in Rispondi di un riassunto o
+in Scrivi risposta, le loro forme ora respirano come quelle del riassunto
+mentre viene scritto. La scheda del riassunto mostra anche quante email ha
+la conversazione mentre viene richiesto, non 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Angoli più puliti in File"
+text = """
+Passare sopra un file con un’anteprima bianca non lascia più vedere il
+bianco agli angoli superiori della scheda, anche il vassoio dei caricamenti
+ripiegato è arrotondato in alto, e la finestra Condividi ha un pulsante di
+chiusura nel suo angolo.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Cancellare una ricerca lascia aperta l’email"
+text = """
+Apri un’email dai risultati di ricerca e cancella la ricerca con la X:
+l’email resta aperta mentre torna la tua cartella, invece di richiudersi
+nell’elenco.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Angoli arrotondati sui fogli di calcolo"
+text = """
+Un foglio di calcolo nel visualizzatore degli allegati ora è arrotondato a
+tutti e quattro gli angoli. Le lettere grigie delle colonne in alto e le
+schede dei fogli in basso prima li rendevano squadrati.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Dati di contatto puliti sulle schede"
+text = """
+Numeri di telefono, indirizzi e altri dati presi da una firma non mostrano
+più asterischi sparsi o segni di link tra parentesi angolari. Quando un
+collega firma un’email da un indirizzo condiviso come accounts@, la scheda
+mantiene solo i dati dell’azienda, non il numero o il ruolo del collega.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Controlla cosa hai allegato"
+text = """
+Fai clic su un file allegato a un messaggio che stai scrivendo per aprirlo
+nel visualizzatore di Katna, lo stesso in cui si aprono i file ricevuti, e
+assicurarti che sia il file giusto. Un file inviato come link di Google
+Drive o OneDrive si apre sul drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Una barra di scorrimento in Impostazioni"
+text = """
+Ogni scheda di Impostazioni ha la stessa sottile barra di scorrimento di
+un’email aperta e di File: compare mentre scorri o punti la pagina, e puoi
+trascinarla.
+"""

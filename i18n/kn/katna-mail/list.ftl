@@ -39,6 +39,7 @@ list-results = “{ $query }” ಗಾಗಿ ಫಲಿತಾಂಶಗಳು
 list-results-corrected = “{ $query }” ಗಾಗಿ ಫಲಿತಾಂಶಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ
 list-search-instead = ಬದಲಿಗೆ “{ $query }” ಗಾಗಿ ಹುಡುಕಿ
 list-files-more = +{ $count }
+list-replied = ನೀವು ಪ್ರತ್ಯುತ್ತರಿಸಿದ್ದೀರಿ
 
 ## Mail list: Select menu (which lines to tick)
 

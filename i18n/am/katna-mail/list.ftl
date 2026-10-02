@@ -39,6 +39,7 @@ list-results = የ«{ $query }» ውጤቶች
 list-results-corrected = የ«{ $query }» ውጤቶችን በማሳየት ላይ
 list-search-instead = በምትኩ «{ $query }»ን ፈልግ
 list-files-more = +{ $count }
+list-replied = መልሰዋል
 
 ## Mail list: Select menu (which lines to tick)
 

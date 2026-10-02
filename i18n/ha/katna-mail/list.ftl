@@ -39,6 +39,7 @@ list-results = Sakamakon “{ $query }”
 list-results-corrected = Ana nuna sakamakon “{ $query }”
 list-search-instead = Maimakon haka bincika “{ $query }”
 list-files-more = +{ $count }
+list-replied = Kun amsa
 
 ## Mail list: Select menu (which lines to tick)
 

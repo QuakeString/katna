@@ -58,6 +58,7 @@ compose-file-too-large = { $name } terlalu besar: satu pesan hanya dapat memuat 
 compose-forward-files-missing = File pesan yang diteruskan belum didownload, jadi tidak dilampirkan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Hapus lampiran
+compose-attachment-open-tip = Buka untuk memeriksanya
 compose-attachments-total = { $count } file, { $size }
 compose-drive-note = { $name } melebihi { $limit }, jadi file dikirim ke Google Drive Anda dan pesan membawa link.
 compose-drive-tip = Di Google Drive Anda; pesan membawa link

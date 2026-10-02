@@ -39,6 +39,7 @@ list-results = “{ $query }” အတွက် ရလဒ်များ
 list-results-corrected = “{ $query }” အတွက် ရလဒ်များကို ပြနေသည်
 list-search-instead = “{ $query }” ကို အစားထိုး ရှာရန်
 list-files-more = +{ $count }
+list-replied = သင် ပြန်စာရေးပြီး
 
 ## Mail list: Select menu (which lines to tick)
 

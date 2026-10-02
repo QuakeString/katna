@@ -39,6 +39,7 @@ list-results = Imiphumela ye-“{ $query }”
 list-results-corrected = Kuboniswa imiphumela ye-“{ $query }”
 list-search-instead = Esikhundleni salokho sesha u-“{ $query }”
 list-files-more = +{ $count }
+list-replied = Uphendulile
 
 ## Mail list: Select menu (which lines to tick)
 

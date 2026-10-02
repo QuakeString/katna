@@ -58,6 +58,7 @@ compose-file-too-large = { $name } é grande demais: uma mensagem pode levar at�
 compose-forward-files-missing = Os arquivos da mensagem encaminhada não foram baixados, então não estão anexados.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remover anexo
+compose-attachment-open-tip = Abrir para conferir
 compose-attachments-total = { $count ->
     [one] { $count } arquivo, { $size }
     [many] { $count } de arquivos, { $size }

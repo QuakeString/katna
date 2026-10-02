@@ -68,6 +68,7 @@ icons!(
     "close",
     "cloud",
     "coffee",
+    "color-wheel",
     "compose",
     "contacts",
     "contrast",
@@ -141,6 +142,7 @@ icons!(
     "onedrive",
     "open-external",
     "open-full",
+    "palette",
     "pen-sparkle",
     "pen",
     "people",
@@ -236,27 +238,48 @@ const WORDMARK: &[u8] = include_bytes!("../../../packaging/icons/src/katna-wordm
 /// The wordmark's own width and height, as its `<svg>` gives them.
 pub const WORDMARK_SIZE: (u32, u32) = (527, 506);
 
+/// The logo's own disc and mark colours, which [`logo_path`] and
+/// [`wordmark_path`] swap for a tint's.
+const DISC: &str = "#008080";
+const MARK: &str = "#f9f9f9";
+
+/// The disc and mark colours to draw the logo in, as 0xRRGGBBAA; `None`
+/// keeps Katna's teal and white.
+pub type Tint = Option<(u32, u32)>;
+
 /// Where [`Assets`] serves the logo for a `size` px square (GPUI pixels).
-pub fn logo_path(size: f32) -> String {
+pub fn logo_path(size: f32, tint: Tint) -> String {
     let size = size.round().clamp(1.0, 1024.0) as u32;
     let form = if size < 48 { "small" } else { "full" };
-    format!("logo/{form}-{size}.svg")
+    format!("logo/{form}-{size}{}.svg", tint_suffix(tint))
 }
 
 /// Where [`Assets`] serves the wordmark `height` px tall (GPUI pixels).
-pub fn wordmark_path(height: f32) -> String {
+pub fn wordmark_path(height: f32, tint: Tint) -> String {
     let height = height.round().clamp(1.0, 1024.0) as u32;
-    format!("logo/wordmark-{height}.svg")
+    format!("logo/wordmark-{height}{}.svg", tint_suffix(tint))
+}
+
+fn tint_suffix(tint: Tint) -> String {
+    tint.map(|(disc, mark)| format!("-{:06x}-{:06x}", disc >> 8, mark >> 8))
+        .unwrap_or_default()
 }
 
 /// The logo for `logo/{full,small}-<size>.svg` and the wordmark for
-/// `logo/wordmark-<height>.svg`. GPUI draws an SVG picture at twice its
+/// `logo/wordmark-<height>.svg`, each with an optional `-<disc>-<mark>`
+/// tint in RRGGBB before `.svg`. GPUI draws an SVG picture at twice its
 /// own size, so giving it the size it is shown at renders it sharp on
 /// double-density screens without sampling it down much.
 fn logo(path: &str) -> Option<Vec<u8>> {
     let rest = path.strip_prefix("logo/")?.strip_suffix(".svg")?;
-    let (form, size) = rest.split_once('-')?;
+    let mut parts = rest.split('-');
+    let (form, size) = (parts.next()?, parts.next()?);
     let size: u32 = size.parse().ok().filter(|s| (1..=1024).contains(s))?;
+    let tint = match (parts.next(), parts.next(), parts.next()) {
+        (None, None, None) => None,
+        (Some(disc), Some(mark), None) if is_rgb(disc) && is_rgb(mark) => Some((disc, mark)),
+        _ => return None,
+    };
     let (data, from, to) = match form {
         "full" => (LOGO, (128, 128), (size, size)),
         "small" => (LOGO_SMALL, (128, 128), (size, size)),
@@ -266,7 +289,12 @@ fn logo(path: &str) -> Option<Vec<u8>> {
         }
         _ => return None,
     };
-    let text = String::from_utf8_lossy(data);
+    let mut text = String::from_utf8_lossy(data).into_owned();
+    if let Some((disc, mark)) = tint {
+        text = text
+            .replace(DISC, &format!("#{disc}"))
+            .replace(MARK, &format!("#{mark}"));
+    }
     Some(
         text.replacen(
             &format!(r#"width="{}" height="{}""#, from.0, from.1),
@@ -275,6 +303,10 @@ fn logo(path: &str) -> Option<Vec<u8>> {
         )
         .into_bytes(),
     )
+}
+
+fn is_rgb(part: &str) -> bool {
+    part.len() == 6 && part.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
 pub struct Assets;
@@ -338,19 +370,45 @@ mod tests {
 
     #[test]
     fn logo_is_served_at_its_size_in_the_form_for_it() {
-        assert_eq!(logo_path(32.0), "logo/small-32.svg");
-        assert_eq!(logo_path(64.0), "logo/full-64.svg");
-        let small = Assets.load(&logo_path(40.0)).unwrap().unwrap();
+        assert_eq!(logo_path(32.0, None), "logo/small-32.svg");
+        assert_eq!(logo_path(64.0, None), "logo/full-64.svg");
+        let small = Assets.load(&logo_path(40.0, None)).unwrap().unwrap();
         let small = String::from_utf8_lossy(&small);
         assert!(small.contains(r#"width="40" height="40""#));
         assert!(!small.contains("<filter"));
         let full = Assets.load("logo/full-96.svg").unwrap().unwrap();
         let full = String::from_utf8_lossy(&full);
         assert!(full.contains(r#"width="96" height="96""#) && full.contains("<filter"));
-        let wordmark = Assets.load(&wordmark_path(120.0)).unwrap().unwrap();
+        let wordmark = Assets.load(&wordmark_path(120.0, None)).unwrap().unwrap();
         assert!(String::from_utf8_lossy(&wordmark).contains(r#"width="125" height="120""#));
-        for bad in ["logo/full-0.svg", "logo/big-64.svg", "logo/full.svg"] {
+        for bad in [
+            "logo/full-0.svg",
+            "logo/big-64.svg",
+            "logo/full.svg",
+            "logo/full-64-123456.svg",
+            "logo/full-64-12345g-ffffff.svg",
+            "logo/full-64-123456-ffffff-000000.svg",
+        ] {
             assert!(Assets.load(bad).unwrap().is_none(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn tinted_logo_swaps_disc_and_mark_colours() {
+        let tint = Some((0x0b57d0ff, 0xffffffff));
+        assert_eq!(logo_path(32.0, tint), "logo/small-32-0b57d0-ffffff.svg");
+        for path in [
+            logo_path(32.0, tint),
+            logo_path(96.0, tint),
+            wordmark_path(96.0, tint),
+        ] {
+            let svg = Assets.load(&path).unwrap().unwrap();
+            let svg = String::from_utf8_lossy(&svg);
+            assert!(
+                svg.contains(r##"fill="#0b57d0""##) && svg.contains(r##"fill="#ffffff""##),
+                "{path}"
+            );
+            assert!(!svg.contains(DISC) && !svg.contains(MARK), "{path}");
         }
     }
 

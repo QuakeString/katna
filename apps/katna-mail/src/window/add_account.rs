@@ -1306,7 +1306,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(centered_header(
-                logo(),
+                logo(th),
                 tr!("add-account-title"),
                 tr!("add-account-providers-intro"),
                 th,
@@ -2113,7 +2113,12 @@ impl MailWindow {
                     this.account_menu = false;
                     this.pick_account(id, cx);
                 }))
-                .child(self.person_avatar(&name, &account.address, 32.0))
+                .child(self.account_ring(
+                    &account.address,
+                    self.person_avatar(&name, &account.address, 32.0),
+                    32.0,
+                    th,
+                ))
                 .child(
                     div()
                         .flex_1()
@@ -2279,8 +2284,8 @@ impl MailWindow {
 }
 
 /// The Katna Mail mark, as in the top bar.
-pub(super) fn logo() -> AnyElement {
-    crate::widgets::katna_mark(40.0)
+pub(super) fn logo(th: &Theme) -> AnyElement {
+    crate::widgets::katna_mark(40.0, th)
 }
 
 /// A step's mark, title and the line under it, centred.

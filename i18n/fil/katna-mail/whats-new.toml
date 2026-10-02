@@ -3157,3 +3157,87 @@ title = "Malalabong linya rin sa dark mode"
 text = """
 Sa dark mode, kasinlabo na ng sa light mode ang mga linya sa pagitan ng mga mail, sa ilalim ng mga header at sa paligid ng mga card. Nananatiling malinaw ang outline ng mga field, chip at button.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Maliliit na update kahit lumaktaw ka"
+text = """
+Nananatiling maliit ang mga update kahit lumaktaw ka ng isa o dalawang araw
+ng mga bagong bersyon. Humahakbang na ang Katna mula sa bersyong nasa iyo
+sa mga naunang bersyon, ilang megabyte bawat isa, sa halip na i-download
+muli ang buong package.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Tingnan kung aling mail ang nasagot mo"
+text = """
+Ipinapakita ng maliit na arrow ng pagsagot sa isang linya ng listahan ng
+mail na sinagot mo ito: ikaw ang sumulat ng pinakabagong mail sa pag-uusap,
+dito man o sa web. Nawawala ito kapag sumagot sila ulit.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Sumusunod sa light at dark ang tray icon"
+text = """
+Nagbabago na ang isang-kulay na tray icon kasabay ng iyong panel sa sandaling
+lumipat ka sa pagitan ng light at dark, sa halip na maghintay ng bagong mail.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Makikitang paparating na ang mga ideya ng sagot"
+text = """
+Habang hinihingi ang mga ideya ng sagot, sa Sumagot ng isang buod o sa
+Sumulat ng sagot, humihinga na ang mga hugis nila gaya ng sa buod mismo
+habang isinusulat ito. Ipinapakita rin ng card ng buod kung ilang mail ang
+nasa pag-uusap habang hinihingi ito, hindi 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Mas malinis na sulok sa Mga File"
+text = """
+Kapag itinapat ang pointer sa file na may puting preview, hindi na sumisilip
+ang puti sa itaas na mga sulok ng card, bilugan na rin sa itaas ang nakatuping
+tray ng mga upload, at may button na pansara sa sulok ang dialog na Ibahagi.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Nananatiling bukas ang mail mo kapag ni-clear ang paghahanap"
+text = """
+Magbukas ng mail mula sa mga resulta ng paghahanap at i-clear ang paghahanap
+gamit ang X: nananatiling bukas ang mail habang bumabalik ang iyong folder,
+sa halip na tumiklop pabalik sa listahan.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Bilugang sulok sa mga spreadsheet"
+text = """
+Bilugan na sa lahat ng apat na sulok ang spreadsheet sa viewer ng
+attachment. Dati, pinaparisukat ang mga ito ng abong letra ng column sa
+itaas at ng mga tab ng sheet sa ibaba.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Malinis na detalye ng contact sa mga card"
+text = """
+Hindi na nagpapakita ng ligaw na asterisk o marka ng link sa angle bracket
+ang mga numero ng telepono, address at iba pang detalyeng kinuha sa lagda.
+Kapag pumirma ang isang katrabaho sa mail mula sa pinagsasaluhang address
+gaya ng accounts@, detalye lang ng kumpanya ang itinatago ng card, hindi ang
+numero o titulo ng katrabahong iyon.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Tingnan ang inilakip mo"
+text = """
+I-click ang file na nakalakip sa mensaheng isinusulat mo para buksan ito sa
+viewer ng Katna, kung saan din nabubuksan ang mga natanggap na file, at
+tiyaking tamang file ito. Ang file na ipinadala bilang link ng Google Drive
+o OneDrive ay nabubuksan sa drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Scroll bar sa Mga setting"
+text = """
+May parehong manipis na scroll bar na ngayon ang bawat tab ng Mga setting
+gaya ng sa bukas na mail at sa Mga File: lumalabas ito habang nag-i-scroll
+ka o itinatapat ang pointer sa pahina, at puwede mo itong i-drag.
+"""

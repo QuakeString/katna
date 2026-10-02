@@ -58,6 +58,7 @@ compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에
 compose-forward-files-missing = 전달할 메일의 파일이 다운로드되지 않아 첨부되지 않았습니다.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
+compose-attachment-open-tip = 열어서 확인
 compose-attachments-total = 파일 { $count }개, { $size }
 compose-drive-note = { $name } 파일이 { $limit } 제한을 넘어 Google Drive에 저장되며, 메일에는 링크가 포함됩니다.
 compose-drive-tip = Google Drive에 있습니다. 메일에는 링크가 포함됩니다

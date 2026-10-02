@@ -58,6 +58,7 @@ compose-file-too-large = { $name } بیش از حد بزرگ است: هر پیا
 compose-forward-files-missing = فایل‌های پیام بازارسال‌شده بارگیری نشده‌اند، پس پیوست نشده‌اند.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = حذف پیوست
+compose-attachment-open-tip = باز کنید تا بررسی‌اش کنید
 compose-attachments-total = { $count ->
     [one] { $count } پرونده، { $size }
    *[other] { $count } پرونده، { $size }

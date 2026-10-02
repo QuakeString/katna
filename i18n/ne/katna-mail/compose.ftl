@@ -58,6 +58,7 @@ compose-file-too-large = { $name } धेरै ठूलो छ: एउटा �
 compose-forward-files-missing = फर्वार्ड गरिएको सन्देशका फाइलहरू डाउनलोड भएका छैनन्, त्यसैले संलग्न गरिएका छैनन्।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = संलग्नक हटाउनुहोस्
+compose-attachment-open-tip = जाँच्न खोल्नुहोस्
 compose-attachments-total = { $count ->
     [one] { $count } फाइल, { $size }
    *[other] { $count } फाइलहरू, { $size }

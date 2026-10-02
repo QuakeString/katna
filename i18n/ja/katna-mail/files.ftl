@@ -154,6 +154,7 @@ files-share-remove = アクセス権を削除
 files-share-copy-link = リンクをコピー
 files-share-share = 共有
 files-share-done = 完了
+files-share-close = 閉じる
 files-share-sharing = 共有しています…
 files-share-shared = { $count ->
    *[other] { $count } 人と共有しました

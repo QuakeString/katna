@@ -39,6 +39,7 @@ list-results = ຜົນການຊອກຫາ “{ $query }”
 list-results-corrected = ກຳລັງສະແດງຜົນການຊອກຫາ “{ $query }”
 list-search-instead = ຊອກຫາ “{ $query }” ແທນ
 list-files-more = +{ $count }
+list-replied = ທ່ານຕອບກັບແລ້ວ
 
 ## Mail list: Select menu (which lines to tick)
 

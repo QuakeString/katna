@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click opens the folder"
+text = """
+Right-clicking a folder in the folder pane now selects and opens it before
+its menu shows, so the menu plainly acts on the folder you see.
+"""

@@ -548,7 +548,7 @@ impl MailWindow {
             .flex_col()
             .items_center()
             .gap(px(12.0))
-            .child(crate::widgets::katna_mark(48.0))
+            .child(crate::widgets::katna_mark(48.0, th))
             .child(super::onboarding::title(title, th))
             .child(super::onboarding::lead(&lead, th))
             .child(

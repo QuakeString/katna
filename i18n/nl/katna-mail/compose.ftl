@@ -58,6 +58,7 @@ compose-file-too-large = { $name } is te groot: een bericht kan maximaal { $limi
 compose-forward-files-missing = De bestanden van het doorgestuurde bericht zijn niet gedownload, dus ze zijn niet bijgevoegd.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Bijlage verwijderen
+compose-attachment-open-tip = Openen om te controleren
 compose-attachments-total = { $count ->
     [one] { $count } bestand, { $size }
    *[other] { $count } bestanden, { $size }

@@ -324,7 +324,7 @@ impl MailWindow {
             .flex()
             .flex_row()
             .items_center()
-            .child(katna_mark(super::TITLE_MARK))
+            .child(katna_mark(super::TITLE_MARK, th))
             .child(
                 div()
                     .flex_none()
@@ -730,7 +730,7 @@ impl MailWindow {
                 div()
                     .id("top-account")
                     .relative()
-                    .p(px(4.0))
+                    .p(px(1.0))
                     .rounded_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
@@ -753,7 +753,12 @@ impl MailWindow {
                         this.app_menu = None;
                         cx.notify();
                     }))
-                    .child(self.render_rolling_avatar(32.0))
+                    .child(self.account_ring(
+                        &account.address,
+                        self.render_rolling_avatar(32.0),
+                        32.0,
+                        th,
+                    ))
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }
@@ -1270,8 +1275,9 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
             .on_mouse_down(
                 MouseButton::Right,
-                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                cx.listener(move |this, event: &MouseDownEvent, window, cx| {
                     cx.stop_propagation();
+                    this.select_nav_row_for_menu(ix, window, cx);
                     this.open_nav_menu(ix, event.position, cx);
                 }),
             )
@@ -1396,6 +1402,27 @@ impl MailWindow {
             }
             _ => self.toggle_nav_row(ix, cx),
         }
+    }
+
+    /// Before line `ix`'s right-click menu opens: the folder is picked and
+    /// shown, as in KMail, so the menu plainly acts on what is on show.
+    /// The pane stays open under the menu.
+    fn select_nav_row_for_menu(
+        &mut self,
+        ix: usize,
+        window: &mut gpui::Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(next) = self.nav_rows.get(ix).and_then(listing_of) else {
+            return;
+        };
+        if self.listing.as_ref() == Some(&next) {
+            return;
+        }
+        let (peek, drawer) = (self.nav_peek, self.layout.drawer);
+        self.click_nav_row(ix, window, cx);
+        self.nav_peek = peek;
+        self.layout.drawer = drawer;
     }
 
     /// Whether `listing` is on show as it is, with nothing over it: no

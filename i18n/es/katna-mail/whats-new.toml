@@ -3093,3 +3093,89 @@ En modo oscuro, las líneas entre correos, bajo los encabezados y alrededor
 de las tarjetas son tan suaves como en modo claro. Los campos, las fichas
 y los botones mantienen un contorno nítido.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Actualizaciones pequeñas tras una pausa"
+text = """
+Las actualizaciones siguen siendo pequeñas aunque te saltes un día o dos
+de versiones nuevas. Katna ahora avanza desde la versión que tienes a
+través de las anteriores, unos pocos megabytes cada una, en vez de volver
+a descargar el paquete completo.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Mira a qué correos has respondido"
+text = """
+Una pequeña flecha de respuesta en una línea de la lista de correo indica
+que lo respondiste: escribiste el correo más reciente de la conversación,
+aquí o en la web. Desaparece cuando te vuelven a escribir.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "El icono de la bandeja sigue el modo claro y oscuro"
+text = """
+El icono de la bandeja de un solo color cambia ahora con tu panel en
+cuanto pasas de claro a oscuro o al revés, en vez de esperar a que llegue
+correo nuevo.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Las ideas de respuesta muestran que están en camino"
+text = """
+Mientras se piden las ideas de respuesta, en Responder de un resumen o en
+Escribir respuesta, sus formas ahora respiran como las del propio resumen
+mientras se escribe. La tarjeta del resumen también muestra cuántos
+correos tiene la conversación mientras se pide, no 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Esquinas más limpias en Archivos"
+text = """
+Al pasar el puntero sobre un archivo con una vista previa blanca ya no se
+ve blanco en las esquinas superiores de la tarjeta, la bandeja de subidas
+plegada también está redondeada arriba, y el diálogo Compartir tiene un
+botón para cerrar en su esquina.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Borrar una búsqueda mantiene tu correo abierto"
+text = """
+Abre un correo desde los resultados de búsqueda y borra la búsqueda con
+la X: el correo sigue abierto mientras vuelve tu carpeta, en vez de
+plegarse de nuevo a la lista.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Esquinas redondeadas en las hojas de cálculo"
+text = """
+Una hoja de cálculo en el visor de archivos adjuntos tiene ahora las
+cuatro esquinas redondeadas. Las letras grises de las columnas arriba y
+las pestañas de las hojas abajo antes las dejaban en ángulo recto.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Datos de contacto limpios en las tarjetas"
+text = """
+Los números de teléfono, las direcciones y otros datos sacados de una
+firma ya no muestran asteriscos sueltos ni marcas de enlace entre
+corchetes angulares. Cuando un compañero firma correos desde una
+dirección compartida como accounts@, la tarjeta conserva solo los datos
+de la empresa, no el número ni el cargo de ese compañero.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Comprueba lo que adjuntaste"
+text = """
+Haz clic en un archivo adjunto a un mensaje que estás escribiendo para
+abrirlo en el visor de Katna, el mismo en el que se abren los archivos
+recibidos, y asegúrate de que es el archivo correcto. Un archivo enviado
+como enlace de Google Drive o OneDrive se abre en la unidad.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Una barra de desplazamiento en Ajustes"
+text = """
+Todas las pestañas de Ajustes tienen la misma barra de desplazamiento fina
+que un correo abierto y Archivos: aparece mientras te desplazas o señalas
+la página, y puedes arrastrarla.
+"""

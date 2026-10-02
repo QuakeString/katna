@@ -2538,3 +2538,63 @@ title = "Àwọn ìlà fífúyẹ́ nínú ipò Òkùnkùn náà"
 text = """
 Nínú ipò Òkùnkùn, àwọn ìlà láàrin àwọn lẹ́tà, lábẹ́ àwọn àkọlé àti yí àwọn káàdì ká ti fúyẹ́ báyìí bí ti ipò Ìmọ́lẹ̀. Àwọn àpótí ìkọ̀wé, àwọn ṣíìpù àti àwọn bọ́tìnnì ṣì ní ìlà ìlà-etí wọn tí ó hàn kedere.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Àwọn ìmúdójúìwọ̀n kékeré lẹ́yìn ìsinmi"
+text = """
+Àwọn ìmúdójúìwọ̀n máa ń kéré ṣáá bí o tilẹ̀ fo ẹ̀yà tuntun ọjọ́ kan tàbí méjì. Katna ń gbé ìgbésẹ̀ láti ẹ̀yà tí o ní kọjá àwọn ẹ̀yà ti tẹ́lẹ̀ báyìí, mẹ́gábáìtì díẹ̀ fún ọ̀kọ̀ọ̀kan, dípò kí ó tún gba gbogbo àpò náà sílẹ̀.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Wo lẹ́tà tí o ti fèsì sí"
+text = """
+Ọfà èsì kékeré lórí ìlà kan nínú àkójọ lẹ́tà fi hàn pé o ti fèsì sí i: ìwọ ni o kọ lẹ́tà tuntun jù lọ nínú ìjíròrò náà, níbí tàbí lórí wẹ́ẹ̀bù. Ó máa ń lọ nígbà tí wọ́n bá kọ̀wé padà.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Àmì-àwòrán àtẹ ń tẹ̀lé Ìmọ́lẹ̀ àti Òkùnkùn"
+text = """
+Àmì-àwòrán àtẹ ní àwọ̀ kan ń yí padà pẹ̀lú pánẹ́ẹ̀lì rẹ báyìí ní kété tí o bá yí láàrin Ìmọ́lẹ̀ àti Òkùnkùn, dípò kí ó dúró de lẹ́tà tuntun.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Àwọn èrò èsì ń fi hàn pé wọ́n ń bọ̀"
+text = """
+Nígbà tí a bá ń béèrè àwọn èrò èsì, nínú Fèsì ti Àkópọ̀ kan tàbí nínú Kọ èsì, àwọn àwòrán wọn ń mí báyìí bí ti Àkópọ̀ fúnra rẹ̀ nígbà tí a ń kọ ọ́. Káàdì Àkópọ̀ náà tún ń fi iye lẹ́tà tí ìjíròrò náà ní hàn nígbà tí a ń béèrè rẹ̀, kì í ṣe 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Àwọn igun tó mọ́ nínú Fáìlì"
+text = """
+Fífi ìtọ́ka sórí fáìlì tí àyẹ̀wò ṣáájú rẹ̀ funfun kò jẹ́ kí funfun hàn ní àwọn igun òkè káàdì mọ́, àtẹ àwọn ohun tí a ń gbé sókè tí a ká kúrò ti ní igun yíká lókè pẹ̀lú, fèrèsé Pín sì ní bọ́tìnnì Pa á dé ní igun rẹ̀.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Pípa àwárí rẹ́ ń jẹ́ kí lẹ́tà rẹ wà ní ṣíṣí"
+text = """
+Ṣí lẹ́tà kan láti inú àwọn àbájáde ìwádìí kí o sì pa àwárí rẹ́ pẹ̀lú X: lẹ́tà náà ń wà ní ṣíṣí bí fódà rẹ ṣe ń padà dé, dípò kí ó ká padà sí àkójọ.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Àwọn igun yíká lórí spreadsheet"
+text = """
+Spreadsheet nínú olùwò àfikún ní igun yíká ní gbogbo igun mẹ́rẹ̀ẹ̀rin báyìí. Àwọn lẹ́tà ọ̀wọ̀n eérú lókè àti àwọn táàbù ìwé ní ìsàlẹ̀ ni wọ́n máa ń sọ wọ́n di onígun mẹ́rin tẹ́lẹ̀.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Àwọn àlàyé olùbásọ̀rọ̀ tó mọ́ lórí káàdì"
+text = """
+Àwọn nọ́mbà fóònù, àdírẹ́sì àti àwọn àlàyé mìíràn tí a mú láti inú ìbuwọ́lù kò fi àwọn àmì ìràwọ̀ tí kò yẹ tàbí àmì ìjápọ̀ nínú àkámọ́ onígun hàn mọ́. Nígbà tí alábàáṣiṣẹ́pọ̀ kan bá fi ọwọ́ sí lẹ́tà láti àdírẹ́sì àjùmọ̀lò bí accounts@, káàdì náà ń pa àwọn àlàyé ilé-iṣẹ́ nìkan mọ́, kì í ṣe nọ́mbà tàbí oyè alábàáṣiṣẹ́pọ̀ náà.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Ṣàyẹ̀wò ohun tí o fi kún un"
+text = """
+Tẹ fáìlì tí o fi kún lẹ́tà tí o ń kọ láti ṣí i nínú olùwò Katna, èyí kan náà tí àwọn fáìlì tí o gbà ń ṣí sí, kí o sì rí i dájú pé fáìlì tó tọ́ ni. Fáìlì tí a fi ránṣẹ́ bí ìjápọ̀ Google Drive tàbí OneDrive ń ṣí lórí dráìfù náà.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Ọ̀pá yíyí nínú Ètò"
+text = """
+Gbogbo táàbù Ètò ní ọ̀pá yíyí tín-ínrín kan náà bí lẹ́tà tó ṣí àti Fáìlì: ó ń hàn nígbà tí o bá ń yí lọ tàbí tí o tọ́ka sí ojú-ìwé náà, o sì lè fà á.
+"""

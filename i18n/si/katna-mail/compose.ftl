@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ඉතා විශාලයි: පණිව
 compose-forward-files-missing = ඉදිරියට යවන පණිවිඩයේ ගොනු බාගත කර නැති නිසා ඒවා අමුණා නැත.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ඇමුණුම ඉවත් කරන්න
+compose-attachment-open-tip = පරීක්ෂා කිරීමට විවෘත කරන්න
 compose-attachments-total = { $count ->
     [one] ගොනු { $count }, { $size }
    *[other] ගොනු { $count }, { $size }
