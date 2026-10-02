@@ -4,7 +4,8 @@
 //! far the frosted menus and dialogs blur what is under them, and how
 //! opaque their tint and a blurred window background are. With the switch
 //! off, the frost follows KDE's blur strength, or Katna's own when there is
-//! none (`katna_platform::blur`). Window frame > Katna: the corners'
+//! none (`katna_platform::blur`). Under the window blur, how opaque the
+//! frosted cards are. Window frame > Katna: the corners'
 //! roundness and the border's opacity. Dragging shows the change as it goes
 //! and saves on letting go; the arrow keys, Home, End and the mouse wheel
 //! step it.
@@ -18,7 +19,7 @@ use gpui::{
     MouseMoveEvent, MouseUpEvent, Pixels, ScrollWheelEvent, canvas, div, prelude::*, relative,
     rgba,
 };
-use katna_core::config::{FROST_BLUR, FROST_OPACITY};
+use katna_core::config::{FROST_BLUR, FROST_OPACITY, PANE_OPACITY};
 use katna_i18n::tr;
 use katna_platform::blur;
 use katna_ui::px;
@@ -34,6 +35,14 @@ const KNOB: f32 = 18.0;
 /// The frost's blur at KDE's lightest strength, in pixels; KDE's strongest
 /// (and default) is Katna's default, [`FROST_BLUR`].
 const KDE_LIGHT: f32 = 4.0;
+/// How much clearer than the cards the room behind a chat's bubbles is,
+/// in percent: the bubbles carry their own fill.
+const CHAT_CLEARER: u8 = 5;
+/// How opaque that room is, in percent, when the cards are solid.
+const CHAT_OPACITY: u8 = 70;
+/// How opaque the open search box is, in percent, like a menu's glass a
+/// little more solid, so what is typed stays clear.
+const SEARCH_OPACITY: u8 = 62;
 
 /// One of the sliders.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -46,6 +55,8 @@ pub(super) enum Amount {
     Radius,
     /// The window border's opacity, in percent.
     BorderOpacity,
+    /// The frosted cards' opacity, in percent.
+    PaneOpacity,
 }
 
 impl Amount {
@@ -56,6 +67,7 @@ impl Amount {
             Amount::Opacity => (10, 95, 5),
             Amount::Radius => (0, 16, 1),
             Amount::BorderOpacity => (5, 100, 5),
+            Amount::PaneOpacity => (30, 95, 5),
         }
     }
 
@@ -64,6 +76,7 @@ impl Amount {
         match self {
             Amount::Blur => Some(FROST_BLUR),
             Amount::Opacity => Some(FROST_OPACITY),
+            Amount::PaneOpacity => Some(PANE_OPACITY),
             Amount::Radius | Amount::BorderOpacity => None,
         }
     }
@@ -74,6 +87,7 @@ impl Amount {
             Amount::Opacity => Change::FrostOpacity(value),
             Amount::Radius => Change::WindowRadius(value),
             Amount::BorderOpacity => Change::WindowBorderOpacity(value),
+            Amount::PaneOpacity => Change::PaneOpacity(value),
         }
     }
 
@@ -83,6 +97,7 @@ impl Amount {
             Amount::Opacity => "page-frost-opacity",
             Amount::Radius => "page-window-radius",
             Amount::BorderOpacity => "page-window-border-opacity",
+            Amount::PaneOpacity => "page-pane-opacity",
         }
     }
 
@@ -121,7 +136,7 @@ pub(super) struct FrostDrag {
     /// The slider being dragged, and the value under the pointer.
     dragging: Option<(Amount, u8)>,
     /// The tracks, as last laid out.
-    tracks: [Rc<Cell<Option<Bounds<Pixels>>>>; 4],
+    tracks: [Rc<Cell<Option<Bounds<Pixels>>>>; 5],
     wheel: Notches,
 }
 
@@ -157,6 +172,26 @@ impl MailWindow {
         (blur, FROST_OPACITY)
     }
 
+    /// How opaque the cards, the room behind a chat and the open search
+    /// box are in a blurred window, in percent, each `None` while solid:
+    /// the switches under Blur the window background, with the cards'
+    /// slider as dragged.
+    pub(super) fn pane_frost(&self) -> (Option<u8>, Option<u8>, Option<u8>) {
+        let experimental = &self.config.experimental;
+        let dragged = self
+            .settings_page
+            .as_ref()
+            .and_then(|page| page.frost.value(Amount::PaneOpacity));
+        let pane = experimental
+            .frosted_panes
+            .then(|| dragged.unwrap_or(experimental.pane_opacity));
+        let chat = experimental
+            .frosted_chat
+            .then(|| pane.map_or(CHAT_OPACITY, |p| p.saturating_sub(CHAT_CLEARER)));
+        let search = experimental.frosted_search.then_some(SEARCH_OPACITY);
+        (pane, chat, search)
+    }
+
     fn saved_amount(&self, amount: Amount) -> u8 {
         let experimental = &self.config.experimental;
         let (radius, border) = self.natural_corners();
@@ -165,6 +200,7 @@ impl MailWindow {
             Amount::Opacity => experimental.frost_opacity,
             Amount::Radius => experimental.window_radius.unwrap_or(radius),
             Amount::BorderOpacity => experimental.window_border_opacity.unwrap_or(border),
+            Amount::PaneOpacity => experimental.pane_opacity,
         }
     }
 
@@ -230,6 +266,22 @@ impl MailWindow {
             .child(self.frost_slider(
                 Amount::Opacity,
                 tr!("look-frost-opacity"),
+                tr!("look-frost-opacity-clear"),
+                tr!("look-frost-opacity-solid"),
+                th,
+                cx,
+            ))
+            .into_any_element()
+    }
+
+    /// The frosted cards' opacity slider, under its switch.
+    pub(super) fn pane_slider(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .px(px(8.0))
+            .pb(px(4.0))
+            .child(self.frost_slider(
+                Amount::PaneOpacity,
+                tr!("look-pane-opacity"),
                 tr!("look-frost-opacity-clear"),
                 tr!("look-frost-opacity-solid"),
                 th,
@@ -481,6 +533,7 @@ mod tests {
             Amount::Opacity,
             Amount::Radius,
             Amount::BorderOpacity,
+            Amount::PaneOpacity,
         ] {
             let (min, max, step) = amount.range();
             assert_eq!((max - min) % step, 0);

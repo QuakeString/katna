@@ -226,7 +226,14 @@ impl MailWindow {
             .relative()
             .rounded(px(radius))
             .overflow_hidden()
-            .bg(rgba(th.surface))
+            .map(|d| {
+                let fill = if reading_context && self.chat_shown() {
+                    th.chat_pane()
+                } else {
+                    th.pane()
+                };
+                crate::widgets::pane(d, fill, th.surface, radius)
+            })
             .shadow(card_shadow(th, shadow))
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
@@ -378,6 +385,9 @@ impl MailWindow {
         let page = self.layout.shape.page;
         let shown = page.clamp(0.0, 1.0);
         let has_reader = self.reader.is_some();
+        // On a card the blur shows through, the list fades out under the
+        // conversation rather than showing through it.
+        let see_through = th.pane_tint < 100;
         let list = (shown < 0.999 || !has_reader).then(|| {
             let (toolbar, body) = self.render_list_parts(th, cx);
             div()
@@ -390,6 +400,7 @@ impl MailWindow {
                 .flex_col()
                 .child(toolbar)
                 .child(fade_in(body, self.card_seq))
+                .when(see_through && has_reader, |d| d.opacity(1.0 - shown))
                 .when(has_reader && shown > 0.001, |d| {
                     d.child(
                         div()
@@ -410,7 +421,7 @@ impl MailWindow {
                 .w_full()
                 .flex()
                 .flex_col()
-                .bg(rgba(th.surface))
+                .when(!see_through, |d| d.bg(rgba(th.surface)))
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })
@@ -1580,7 +1591,7 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .gap(px(8.0))
-                .bg(rgba(th.read_row))
+                .bg(rgba(th.on_pane(th.read_row)))
                 .border_b_1()
                 .border_color(rgba(th.divider))
                 .text_size(px(13.0))
@@ -2068,7 +2079,7 @@ impl MailWindow {
         // The cursor is grey while the conversation beside has the keys.
         let keys_here = !self.reader_keys;
         let unread = row.as_ref().is_some_and(|r| r.unread);
-        let background = if checked {
+        let background = th.on_pane(if checked {
             th.checked_row
         } else if open {
             mix(th.surface, th.accent, if keys_here { 0.12 } else { 0.07 })
@@ -2076,7 +2087,7 @@ impl MailWindow {
             th.surface
         } else {
             th.read_row
-        };
+        });
         let base = div()
             .id(("row", ix))
             .relative()
@@ -2730,7 +2741,7 @@ impl MailWindow {
                 .rounded_full()
                 .border_1()
                 .border_color(rgba(th.outline))
-                .bg(rgba(th.surface))
+                .bg(rgba(th.on_pane(th.surface)))
                 .when(!downloading, |d| {
                     d.cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
@@ -2773,7 +2784,11 @@ impl MailWindow {
                 .rounded_full()
                 .border_1()
                 .border_color(rgba(th.outline))
-                .bg(rgba(if open { th.hover } else { th.surface }))
+                .bg(rgba(if open {
+                    th.hover
+                } else {
+                    th.on_pane(th.surface)
+                }))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .text_size(px(12.0))
@@ -3004,9 +3019,15 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
 }
 
 /// The preview text of a mail row: the faint text a third of the way
-/// toward the list's background, quieter than the sender and subject.
+/// toward the list's background, quieter than the sender and subject. On a
+/// see-through card it is the dim text, which stays readable over a bright
+/// wallpaper ([`Theme::frosted_panes`]).
 pub(super) fn preview_color(th: &Theme) -> u32 {
-    mix(th.text_faint, th.surface, 0.35)
+    if th.pane_tint < 100 {
+        th.text_dim
+    } else {
+        mix(th.text_faint, th.surface, 0.35)
+    }
 }
 
 /// The faint line between mail rows.

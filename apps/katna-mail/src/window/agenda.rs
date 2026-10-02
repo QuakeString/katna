@@ -348,7 +348,7 @@ impl MailWindow {
             .relative()
             .size_full()
             .rounded(px(radius))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::pane(d, th.pane(), th.surface, radius))
             .shadow(card_shadow(th, shadow))
             .flex()
             .flex_col()

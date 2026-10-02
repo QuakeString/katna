@@ -48,6 +48,53 @@ pub fn glass(fill: Hsla, radius: impl Into<Corners<Pixels>>, blur: f32) -> impl 
     .size_full()
 }
 
+/// A see-through card's fill, as the card's first child: what is drawn
+/// under the card (a blurred window's tint) is cleared first, so the card
+/// shows the desktop through `fill` alone rather than through the tint as
+/// well. `solid` is what a renderer that cannot clear draws instead: the
+/// card's colour, opaque. The card itself paints no background.
+pub fn clear_fill(fill: Hsla, solid: Hsla, radius: impl Into<Corners<Pixels>>) -> impl IntoElement {
+    let radius = radius.into();
+    canvas(
+        |_, _, _| (),
+        move |bounds, (), window, _| {
+            if let Some(eraser) = eraser() {
+                window.paint_quad(quad(
+                    bounds,
+                    radius,
+                    solid,
+                    px(0.0),
+                    eraser,
+                    BorderStyle::Solid,
+                ));
+            }
+            window.paint_quad(quad(
+                bounds,
+                radius,
+                fill,
+                px(0.0),
+                gpui::transparent_black(),
+                BorderStyle::Solid,
+            ));
+        },
+    )
+    .absolute()
+    .top_0()
+    .left_0()
+    .size_full()
+}
+
+#[cfg(not(windows))]
+fn eraser() -> Option<Hsla> {
+    Some(gpui_wgpu::erase_marker())
+}
+
+/// Windows has no blurred window to clear.
+#[cfg(windows)]
+fn eraser() -> Option<Hsla> {
+    None
+}
+
 /// Where the glass goes for `bounds` inside a panel clipped to `clip`. A
 /// panel that scrolls its content moves its children, the glass too, but
 /// clips them to itself: a clip the glass's size at another place is the

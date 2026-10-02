@@ -92,6 +92,15 @@ pub(super) enum Change {
     WindowBorder(bool),
     /// That line's opacity, in percent.
     WindowBorderOpacity(u8),
+    /// In a blurred window, the cards let the blur through.
+    FrostedPanes(bool),
+    /// How opaque those cards are, in percent.
+    PaneOpacity(u8),
+    /// In a blurred window, the room behind a chat's bubbles lets the
+    /// blur through.
+    FrostedChat(bool),
+    /// In a blurred window, the open search box lets the blur through.
+    FrostedSearch(bool),
     /// Conversations between people open as a group chat.
     ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
@@ -169,7 +178,14 @@ impl MailWindow {
                     t.min(1.0) * self.layout.shape.card_outline(),
                 ))
             })
-            .bg(rgba(th.surface))
+            .map(|d| {
+                crate::widgets::pane(
+                    d,
+                    th.pane(),
+                    th.surface,
+                    if phone { 0.0 } else { super::PANEL_RADIUS },
+                )
+            })
             .child(
                 div()
                     .flex_none()
@@ -569,6 +585,10 @@ impl MailWindow {
                 self.config.experimental.window_border_opacity = Some(opacity);
                 cx.set_global(super::look(&self.config));
             }
+            Change::FrostedPanes(on) => self.config.experimental.frosted_panes = on,
+            Change::PaneOpacity(opacity) => self.config.experimental.pane_opacity = opacity,
+            Change::FrostedChat(on) => self.config.experimental.frosted_chat = on,
+            Change::FrostedSearch(on) => self.config.experimental.frosted_search = on,
             Change::ChatView(on) => {
                 self.config.experimental.chat_view = on;
                 self.open_chat_as_set();

@@ -102,7 +102,7 @@ impl TabStrip {
         let strip = self.clone();
         let arrow = |dir: f32| {
             let strip = self.clone();
-            let solid = rgba(th.surface);
+            let solid = rgba(th.pane());
             let clear = rgba(fade(th.surface, 0.0));
             div()
                 .id(ElementId::Name(if dir < 0.0 {
