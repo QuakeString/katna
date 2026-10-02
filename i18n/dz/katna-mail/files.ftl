@@ -158,6 +158,7 @@ files-share-remove = འཛུལ་སྤྱོད་བཏོན།
 files-share-copy-link = འབྲེལ་མཐུད་འདྲ་བཤུས་རྐྱབ།
 files-share-share = བརྗེ་སོར་འབད།
 files-share-done = ཚར་ཡི།
+files-share-close = ཁ་བསྡམས།
 files-share-sharing = བརྗེ་སོར་འབད་དོ…
 files-share-shared = { $count ->
    *[other] མི་ { $count } དང་ བརྗེ་སོར་འབད་ཡི

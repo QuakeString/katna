@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ખૂબ મોટી છે: એક મે�
 compose-forward-files-missing = ફૉરવર્ડ કરેલા મેસેજની ફાઇલો ડાઉનલોડ થઈ નથી, તેથી તે જોડાઈ નથી.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = જોડાણ દૂર કરો
+compose-attachment-open-tip = તપાસવા માટે ખોલો
 compose-attachments-total = { $count ->
     [one] { $count } ફાઇલ, { $size }
    *[other] { $count } ફાઇલ, { $size }

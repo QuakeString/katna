@@ -166,6 +166,7 @@ files-share-remove = প্ৰৱেশাধিকাৰ আঁতৰাওক
 files-share-copy-link = লিংক কপি কৰক
 files-share-share = শ্বেয়াৰ কৰক
 files-share-done = হ'ল
+files-share-close = বন্ধ কৰক
 files-share-sharing = শ্বেয়াৰ কৰি আছে…
 files-share-shared = { $count ->
     [one] 1 জন ব্যক্তিৰ সৈতে শ্বেয়াৰ কৰা হ'ল

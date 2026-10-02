@@ -58,6 +58,7 @@ compose-file-too-large = { $name } འདི་ སྦོམ་དྲགས་�
 compose-forward-files-missing = མདུན་སྐྱེལ་འབད་མི་འཕྲིན་དོན་གྱི་ཡིག་སྣོད་ཚུ་ ཕབ་ལེན་མ་འབད་བས་ མཉམ་སྦྲགས་མ་འབད།
 compose-attachment-size = ({ $size })
 compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
+compose-attachment-open-tip = ཞིབ་དཔྱད་འབད་ནི་ལུ་ ཁ་ཕྱེ།
 compose-attachments-total = { $count ->
    *[other] ཡིག་སྣོད་ { $count }། { $size }
 }
