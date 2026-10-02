@@ -505,26 +505,49 @@ pub fn menu(th: &Theme) -> Div {
 /// a blur of what is behind. Call it before adding the panel's children,
 /// which must draw over the glass.
 pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, level: f32) -> E {
-    frosted(
-        panel.rounded(px(radius)).shadow(elevation(th, level)),
-        th,
+    let panel = panel.rounded(px(radius)).shadow(elevation(th, level));
+    if th.frost == 0 {
+        return panel.bg(rgba(th.menu));
+    }
+    glass(
+        panel,
         th.menu,
         radius,
+        f32::from(th.frost_tint) / 100.0,
+        th.frost as f32,
     )
 }
 
+/// How much more of the way to solid a dialog's tint goes than a menu's.
+/// A dialog covers much more of the window, and a busy list showing
+/// through all of it reads as clutter, not glass.
+const DIALOG_TINT: f32 = 0.5;
+/// How much further than a menu a dialog blurs, for the same reason.
+const DIALOG_BLUR: f32 = 1.5;
+
 /// Fills a dialog or floating card with `fill`, as frosted glass when
-/// [`Theme::frost`] is on, like [`raised`] does for menus. `radius` is
-/// the card's corner radius. Call it before adding the card's children,
-/// which must draw over the glass.
+/// [`Theme::frost`] is on, like [`raised`] does for menus but more
+/// opaque and more blurred, since it is larger. `radius` is the card's
+/// corner radius. Call it before adding the card's children, which must
+/// draw over the glass.
 pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radius: f32) -> E {
     if th.frost == 0 {
         return panel.bg(rgba(fill));
     }
+    let (tint, blur) = dialog_frost(f32::from(th.frost_tint) / 100.0, th.frost as f32);
+    glass(panel, fill, radius, tint, blur)
+}
+
+/// A dialog's tint opacity and blur for a menu's.
+fn dialog_frost(tint: f32, blur: f32) -> (f32, f32) {
+    (tint + (1.0 - tint) * DIALOG_TINT, blur * DIALOG_BLUR)
+}
+
+fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32, blur: f32) -> E {
     panel.child(katna_ui::frost::glass(
-        rgba(fade(fill, f32::from(th.frost_tint) / 100.0)).into(),
+        rgba(fade(fill, tint)).into(),
         px(radius),
-        th.frost as f32,
+        blur,
     ))
 }
 
@@ -800,6 +823,15 @@ mod tests {
     /// any child: the frost is
     /// added as a child, and a child added earlier draws under the glass,
     /// so the panel looks empty with frosted menus on.
+    #[test]
+    fn dialogs_frost_more_than_menus() {
+        let (tint, blur) = dialog_frost(0.45, 24.0);
+        assert!((tint - 0.725).abs() < 1e-6);
+        assert_eq!(blur, 36.0);
+        // Solid stays solid.
+        assert_eq!(dialog_frost(1.0, 24.0).0, 1.0);
+    }
+
     #[test]
     fn frosted_panels_take_children_after_the_glass() {
         let mut wrong = Vec::new();
