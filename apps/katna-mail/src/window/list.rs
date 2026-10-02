@@ -2927,10 +2927,9 @@ pub(super) fn preview_color(th: &Theme) -> u32 {
     mix(th.text_faint, th.surface, 0.35)
 }
 
-/// The faint line between mail rows: well under the app's other dividers
-/// in dark mode, so the rows read as one calm list.
+/// The faint line between mail rows.
 pub(super) fn row_line(th: &Theme) -> u32 {
-    th.faint_line(0.6)
+    th.divider
 }
 
 /// The background behind the inbox tabs: the search box's colour in dark

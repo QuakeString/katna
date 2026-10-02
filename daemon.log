@@ -1,0 +1,1 @@
+katna-daemon: session bus: Failed to connect to address `unix:path=/run/user/0/bus`: No such file or directory (os error 2)
