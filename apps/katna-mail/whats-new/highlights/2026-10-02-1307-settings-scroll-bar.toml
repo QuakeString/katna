@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A scroll bar in Settings"
+text = """
+Every tab of Settings has the same thin scroll bar as an open mail and Files:
+it shows while you scroll or point at the page, and you can drag it.
+"""
