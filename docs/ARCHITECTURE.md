@@ -1848,8 +1848,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   the body, attachments as cards, and Reply/Forward buttons. Opening or
   folding a message of a conversation animates its height from the old
   one; the sender picture stays in place and only the text fades.
-- **Conversation windows.** Shift+click on a line, "Open in new window"
-  on its right-click menu, or the "In new window" button on the open
+- **Conversation windows.** "Open in new window" on a line's right-click
+  menu, or the "In new window" button on the open
   conversation's toolbar opens it in a window of its own, as in Gmail. A
   plain click or double-click always opens it in place (a double-click
   opening a window felt like a glitch: its first click had already opened
@@ -1973,8 +1973,11 @@ Gemini or confidential mode):
 - **List toolbar.** A select-all checkbox with a menu (all, none, read,
   unread, starred, unstarred), refresh and more; with lines ticked it shows
   archive, report spam, delete, mark read or unread, move to and more.
-  Hovering a row shows archive, delete and mark read. Changes are shown at
-  once and sent to the daemon; the snackbar offers Undo.
+  Hovering a row shows archive, delete and mark read. Ctrl+click ticks or
+  unticks a line (with the open line too when nothing is ticked yet), and
+  Shift+click, on the line or its checkbox, ticks every line from the last
+  one clicked, as in Gmail, Thunderbird and file managers. Changes are
+  shown at once and sent to the daemon; the snackbar offers Undo.
 - **Open conversation.** A toolbar with back (or close with three panes),
   archive, spam, delete, mark unread, move to, more, and "3 of 72" with
   previous and next; the subject with folder chips; each message with an
