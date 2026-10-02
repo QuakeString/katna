@@ -3707,6 +3707,7 @@ impl Render for MailWindow {
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
+        let upload_tray = self.render_upload_tray(&th, window, cx);
         let crash_notice = if onboarding {
             None
         } else {
@@ -3760,6 +3761,7 @@ impl Render for MailWindow {
             .children(about)
             .children(update_dialog)
             .children(print_preview)
+            .children(upload_tray)
             .children(snackbar)
             .children(tour)
             .into_any_element();
@@ -3940,7 +3942,6 @@ fn page_card(th: &Theme) -> gpui::Div {
 /// whose line runs back as time passes, `share` of it left, with the
 /// `seconds` left inside.
 fn countdown_ring(share: f32, seconds: u64, color: u32, track: u32, size: f32) -> AnyElement {
-    let line = size / 12.0;
     div()
         .relative()
         .flex_none()
@@ -3948,44 +3949,15 @@ fn countdown_ring(share: f32, seconds: u64, color: u32, track: u32, size: f32) -
         .flex()
         .items_center()
         .justify_center()
-        .child(
-            gpui::canvas(
-                |_, _, _| {},
-                move |bounds, _, window, _| {
-                    let radius = (size - line) / 2.0;
-                    let center = bounds.center();
-                    let at = |turn: f32| {
-                        // From the top, clockwise.
-                        let angle = std::f32::consts::TAU * turn - std::f32::consts::FRAC_PI_2;
-                        gpui::point(
-                            center.x + px(radius * angle.cos()),
-                            center.y + px(radius * angle.sin()),
-                        )
-                    };
-                    let arc = |from: f32, to: f32| {
-                        let mut path = gpui::PathBuilder::stroke(px(line));
-                        let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
-                        path.move_to(at(from));
-                        for step in 1..=steps {
-                            path.line_to(at(from + (to - from) * step as f32 / steps as f32));
-                        }
-                        path.build().ok()
-                    };
-                    if let Some(path) = arc(0.0, 1.0) {
-                        window.paint_path(path, rgba(track));
-                    }
-                    // The line left runs from the top clockwise and shrinks
-                    // back towards it.
-                    if share > 0.0
-                        && let Some(path) = arc(1.0 - share.min(1.0), 1.0)
-                    {
-                        window.paint_path(path, rgba(color));
-                    }
-                },
-            )
-            .absolute()
-            .size_full(),
-        )
+        // The line left runs from the top clockwise and shrinks back
+        // towards it.
+        .child(crate::widgets::ring(
+            1.0 - share.min(1.0),
+            1.0,
+            color,
+            track,
+            size,
+        ))
         .child(
             div()
                 .text_size(px(size * 0.43))

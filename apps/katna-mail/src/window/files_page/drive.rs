@@ -43,6 +43,7 @@ use crate::widgets::{filled_button, icon, icon_button, outlined_button, placehol
 use katna_core::config::OpenIn;
 
 mod manage;
+mod tray;
 
 /// How long a folder's listing is used again without asking the drive.
 const FRESH: Duration = Duration::from_secs(3 * 60);
@@ -86,17 +87,41 @@ pub(in crate::window) struct Cloud {
     /// Files being fetched, by id: their cards say so.
     fetching: HashSet<String>,
     /// Uploads under way, by the daemon's id.
-    uploads: HashMap<i64, Upload>,
+    /// Uploads since the tray was last closed, oldest first, by the
+    /// daemon's id.
+    uploads: Vec<(i64, Upload)>,
     _uploads: Option<Task<()>>,
+    /// The uploads tray shows only its head.
+    tray_folded: bool,
     /// The item whose name is being typed over.
     renaming: Option<manage::Renaming>,
 }
 
-/// A file or folder going up into a drive.
+/// A file or folder going up into a drive, shown in the uploads tray.
 struct Upload {
     name: String,
     /// The listing it lands in, read again once it is there.
     key: (AccountId, String),
+    /// The folders from the top to where it goes, id and name, to show it
+    /// there.
+    crumbs: Vec<(String, String)>,
+    /// Bytes the drive has, and the size.
+    sent: u64,
+    size: u64,
+    state: Going,
+    started: Instant,
+}
+
+/// Where an upload stands.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum Going {
+    Uploading,
+    Done,
+    /// Why it failed.
+    Failed(String),
+    /// The sign-in does not allow uploads yet.
+    NeedsPermission,
+    Cancelled,
 }
 
 struct Cached {
@@ -704,6 +729,7 @@ impl MailWindow {
             return;
         };
         let account = view.account;
+        let crumbs = view.crumbs.clone();
         let folder = view
             .crumbs
             .last()
@@ -729,34 +755,31 @@ impl MailWindow {
                     |n| n.to_string_lossy().into_owned(),
                 );
                 let text = path.to_string_lossy();
+                let size = std::fs::metadata(path).map_or(0, |m| m.len());
                 match crate::daemon::cloud_upload(&connection, account.0, &folder, &text).await {
-                    Ok(id) => started.push((id, name)),
+                    Ok(id) => started.push((id, name, size)),
                     Err(err) => failed.push((name, err)),
                 }
             }
             this.update(cx, |this, cx| {
-                let drive = this.drive_name(account);
-                let text = match started.as_slice() {
-                    [] => None,
-                    [(_, name)] => Some(tr!(
-                        "files-drive-uploading",
-                        name = name.as_str(),
-                        drive = drive.as_str()
-                    )),
-                    many => Some(tr!(
-                        "files-drive-uploading-many",
-                        count = many.len(),
-                        drive = drive.as_str()
-                    )),
-                };
-                for (id, name) in started {
-                    this.library.cloud.uploads.insert(
+                // The tray shows them going up.
+                let cloud = &mut this.library.cloud;
+                if !started.is_empty() {
+                    cloud.tray_folded = false;
+                }
+                for (id, name, size) in started {
+                    cloud.uploads.push((
                         id,
                         Upload {
                             name,
                             key: key.clone(),
+                            crumbs: crumbs.clone(),
+                            sent: 0,
+                            size,
+                            state: Going::Uploading,
+                            started: Instant::now(),
                         },
-                    );
+                    ));
                 }
                 if let Some((name, error)) = failed.into_iter().next() {
                     let text = tr!(
@@ -764,8 +787,6 @@ impl MailWindow {
                         name = name.as_str(),
                         error = error
                     );
-                    this.show_snackbar(text, None, cx);
-                } else if let Some(text) = text {
                     this.show_snackbar(text, None, cx);
                 }
                 cx.notify();
@@ -790,7 +811,9 @@ impl MailWindow {
             };
             while let Some(id) = changes.next().await {
                 let ours = this
-                    .read_with(cx, |this, _| this.library.cloud.uploads.contains_key(&id))
+                    .read_with(cx, |this, _| {
+                        this.library.cloud.uploads.iter().any(|(u, _)| *u == id)
+                    })
                     .unwrap_or(false);
                 if !ours {
                     continue;
@@ -810,40 +833,40 @@ impl MailWindow {
 
     fn drive_upload_changed(&mut self, status: katna_dbus::DriveUpload, cx: &mut Context<Self>) {
         use katna_dbus::drive_state;
-        if status.state == drive_state::UPLOADING {
+        let Some((_, upload)) = self
+            .library
+            .cloud
+            .uploads
+            .iter_mut()
+            .find(|(id, _)| *id == status.id)
+        else {
             return;
+        };
+        upload.sent = status.sent;
+        if status.size > 0 {
+            upload.size = status.size;
         }
-        let Some(upload) = self.library.cloud.uploads.remove(&status.id) else {
-            return;
+        upload.state = match status.state.as_str() {
+            drive_state::UPLOADING => Going::Uploading,
+            drive_state::DONE => Going::Done,
+            drive_state::NEEDS_PERMISSION => Going::NeedsPermission,
+            _ => Going::Failed(status.error),
         };
-        let drive = self.drive_name(upload.key.0);
-        let text = match status.state.as_str() {
-            drive_state::DONE => {
-                tr!(
-                    "files-drive-uploaded",
-                    name = upload.name.as_str(),
-                    drive = drive.as_str()
-                )
+        if upload.state != Going::Uploading {
+            let key = upload.key.clone();
+            let done = upload.state == Going::Done;
+            // The folder it went into is read again when next on show.
+            self.library.cloud.cache.remove(&key);
+            if done
+                && self
+                    .library
+                    .cloud
+                    .view
+                    .as_ref()
+                    .is_some_and(|v| v.key() == key)
+            {
+                self.drive_listing_changed(key.0, cx);
             }
-            drive_state::NEEDS_PERMISSION => tr!("files-drive-upload-needs"),
-            _ => tr!(
-                "files-drive-upload-failed",
-                name = upload.name.as_str(),
-                error = status.error
-            ),
-        };
-        self.show_snackbar(text, None, cx);
-        // The folder it went into is read again when next on show.
-        self.library.cloud.cache.remove(&upload.key);
-        if status.state == drive_state::DONE
-            && self
-                .library
-                .cloud
-                .view
-                .as_ref()
-                .is_some_and(|v| v.key() == upload.key)
-        {
-            self.load_drive(true, cx);
         }
         cx.notify();
     }

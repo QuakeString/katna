@@ -2712,7 +2712,12 @@ desktop's own app stays one click away.
   account's own drive (not Shared with me): the item menu's **Rename**
   types over the name in place (the part before the extension selected;
   F2), **Move to bin** (Del) sends it to the drive's bin with Undo
-  (Google untrashes; OneDrive restores only on personal drives). The app
+  (Google untrashes; OneDrive restores only on personal drives).
+  Uploads from Files show in the **uploads tray** at the bottom right
+  over every page (`files_page/drive/tray.rs`): a ring per file from
+  `DriveChanged`, the time left, Cancel per file and Cancel all
+  (`DriveCancel`); it folds to its head, stays once everything is done
+  (a click on a finished file opens its folder) and goes when closed. The app
   keeps listings for 3 minutes. Settings >
   Default apps > Files page > **Drives in Files** turns a drive off per
   account (`mail.files.drives_off`).

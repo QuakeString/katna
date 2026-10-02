@@ -169,9 +169,34 @@ files-drive-get-failed = Couldn’t get { $name }: { $error }
 files-drive-upload = Upload
 files-drive-upload-files = Upload files
 files-drive-upload-folder = Upload folder
-# $name is a file or folder, $drive "Google Drive".
-files-drive-uploading = Uploading { $name } to { $drive }…
-files-drive-uploading-many = Uploading { $count } items to { $drive }…
-files-drive-uploaded = { $name } is in { $drive }
 files-drive-upload-failed = Couldn’t upload { $name }: { $error }
 files-drive-upload-needs = To upload, Katna needs your permission once: press Allow in Settings › Default apps › Files page.
+
+## The uploads tray, at the bottom right while files go up to a drive
+
+files-tray-uploading = { $count ->
+    [one] Uploading 1 item
+   *[other] Uploading { $count } items
+}
+files-tray-done = { $count ->
+    [one] 1 upload done
+   *[other] { $count } uploads done
+}
+files-tray-some-failed = { $done } uploaded, { $failed } failed
+files-tray-minutes-left = { $minutes ->
+    [one] About a minute left
+   *[other] About { $minutes } minutes left
+}
+files-tray-seconds-left = Less than a minute left
+files-tray-starting = Starting…
+files-tray-cancel-all = Cancel all
+files-tray-cancel = Cancel
+files-tray-fold = Hide the list
+files-tray-unfold = Show the list
+files-tray-close = Close
+# Under a file going up: the folder it goes to, and how much is there,
+# such as "Trip · 61 MB of 104 MB".
+files-tray-progress = { $place } · { $sent } of { $size }
+# Under a file that went up: the folder it is in. A click opens it.
+files-tray-in = In { $place }
+files-tray-cancelled = Cancelled

@@ -173,7 +173,11 @@ impl MailWindow {
 
     /// A change to the drive of `account` went through (or failed): its
     /// listings are read again, the one on show without blanking it.
-    pub(in crate::window) fn drive_listing_changed(&mut self, account: AccountId, cx: &mut Context<Self>) {
+    pub(in crate::window) fn drive_listing_changed(
+        &mut self,
+        account: AccountId,
+        cx: &mut Context<Self>,
+    ) {
         let cloud = &mut self.library.cloud;
         cloud.cache.retain(|(a, _), _| *a != account);
         let Some(connection) = self.daemon.clone() else {
