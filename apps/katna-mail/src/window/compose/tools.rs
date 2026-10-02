@@ -477,6 +477,11 @@ pub(super) fn below(popup: impl IntoElement) -> AnyElement {
 /// `popup` just under its parent's bottom right corner, its right edge
 /// lined up with the parent's.
 pub(in crate::window) fn below_end(popup: impl IntoElement) -> AnyElement {
+    below_end_over(popup, 2)
+}
+
+/// [`below_end`] over a card itself drawn on top, at `priority`.
+pub(in crate::window) fn below_end_over(popup: impl IntoElement, priority: usize) -> AnyElement {
     deferred(
         div().absolute().bottom_0().right_0().child(
             anchored()
@@ -486,7 +491,7 @@ pub(in crate::window) fn below_end(popup: impl IntoElement) -> AnyElement {
                 .child(div().occlude().child(popup)),
         ),
     )
-    .with_priority(2)
+    .with_priority(priority)
     .into_any_element()
 }
 
