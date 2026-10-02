@@ -1553,7 +1553,13 @@ offices and pages, beside or instead of what its home page says).
 Pictures, banners, "Follow us" lines, taglines, "print only when
 necessary" lines and footers are left out. Pages on LinkedIn, X,
 Facebook, Instagram, YouTube, GitHub, WhatsApp and Telegram show as
-Katna's one-colour marks. In a chat the signature is the one the person
+Katna's one-colour marks. Each line is read as written
+(`signature::unmark`): the `*bold*` asterisks and the "text <target>"
+link marks of a text version of HTML mail go, and the pieces Gmail splits
+a link into are joined. A signature whose first line names someone other
+than the card's person (a colleague on a shared address such as
+accounts@, `signature::someone_else`) gives only its company's details.
+In a chat the signature is the one the person
 signed the conversation with; elsewhere, their newest stored one. Attachments are
 chat media: pictures in a grid of their thumbnails, other files as cards,
 both opening the viewer; inline pictures under 12 KB (logos) are left out.
