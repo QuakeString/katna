@@ -819,10 +819,8 @@ pub fn radio(t: f32, th: &Theme) -> AnyElement {
 mod tests {
     use std::path::Path;
 
-    /// Every `raised(...)` and `frosted(...)` panel gets its glass before
-    /// any child: the frost is
-    /// added as a child, and a child added earlier draws under the glass,
-    /// so the panel looks empty with frosted menus on.
+    use super::dialog_frost;
+
     #[test]
     fn dialogs_frost_more_than_menus() {
         let (tint, blur) = dialog_frost(0.45, 24.0);
@@ -831,6 +829,11 @@ mod tests {
         // Solid stays solid.
         assert_eq!(dialog_frost(1.0, 24.0).0, 1.0);
     }
+
+    /// Every `raised(...)` and `frosted(...)` panel gets its glass before
+    /// any child: the frost is
+    /// added as a child, and a child added earlier draws under the glass,
+    /// so the panel looks empty with frosted menus on.
 
     #[test]
     fn frosted_panels_take_children_after_the_glass() {
