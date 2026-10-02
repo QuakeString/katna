@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Activity report fits the window"
+text = """
+The Activity report now stays inside the window with even margins, and
+scrolls when the window is short, so its last rows are never cut off.
+"""
