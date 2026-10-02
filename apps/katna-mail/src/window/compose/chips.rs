@@ -358,6 +358,22 @@ impl Chips {
         self.editing = None;
     }
 
+    /// Who the chips of `field` are, by name (an address's part before
+    /// the @ when it has none).
+    pub fn names(&self, field: Field) -> Vec<String> {
+        self.get(field)
+            .iter()
+            .filter(|chip| chip.valid)
+            .map(|chip| match &chip.name {
+                Some(name) => name.clone(),
+                None => chip
+                    .email
+                    .split_once('@')
+                    .map_or(chip.email.clone(), |(local, _)| local.to_owned()),
+            })
+            .collect()
+    }
+
     /// The field as text, the chips first, then what is still being typed.
     pub fn text(&self, field: Field, typing: &str) -> String {
         let mut parts: Vec<String> = self.get(field).iter().map(Chip::text).collect();

@@ -7,8 +7,9 @@ use std::sync::Arc;
 use async_channel::Receiver;
 use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
-    AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag, mute,
+    AccountStatus, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
+    NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus,
+    flag, mute,
 };
 use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -467,6 +468,39 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
+            async fn cloud_readable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_readable(AccountId(account)).await?)
+            }
+
+            async fn cloud_list(
+                &self,
+                account: i64,
+                place: String,
+                what: String,
+                page: String,
+            ) -> fdo::Result<CloudListing> {
+                Ok(self
+                    .daemon
+                    .cloud_list(AccountId(account), &place, &what, &page)
+                    .await?)
+            }
+
+            async fn cloud_fetch(&self, account: i64, entry: CloudEntry) -> fdo::Result<String> {
+                Ok(self.daemon.cloud_fetch(AccountId(account), entry).await?)
+            }
+
+            async fn cloud_thumbnail(
+                &self,
+                account: i64,
+                link: String,
+                width: u32,
+            ) -> fdo::Result<Vec<u8>> {
+                Ok(self
+                    .daemon
+                    .cloud_thumbnail(AccountId(account), &link, width)
+                    .await?)
+            }
+
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
                 Ok(self.daemon.meeting_link(AccountId(account)).await?)
             }
@@ -589,6 +623,26 @@ macro_rules! pim_interface {
                         summary,
                         plan.kind,
                         plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_draft(&self, request: String) -> (String, String, u32, String) {
+                let Ok(request) = serde_json::from_str(&request) else {
+                    return (
+                        String::new(),
+                        String::new(),
+                        0,
+                        katna_ai::wire::problem::FAILED.to_owned(),
+                    );
+                };
+                match self.daemon.ai_draft(&request).await {
+                    Ok(done) => (
+                        done.text,
+                        done.plan.kind,
+                        done.plan.days_left.unwrap_or(0),
                         String::new(),
                     ),
                     Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),

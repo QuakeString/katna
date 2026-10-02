@@ -24,6 +24,8 @@ use katna_ui::px;
 use katna_ui::rich::Complete;
 use katna_ui::{InputEvent, TextInput};
 
+mod write;
+
 use super::super::MailWindow;
 use super::super::search_panel::chip;
 use super::super::settings_page::Section;
@@ -63,6 +65,8 @@ pub(in crate::window) struct Rephrase {
     custom: Entity<TextInput>,
     _custom: Subscription,
     _task: Option<Task<()>>,
+    /// Writing a first draft rather than rephrasing ([`write`]).
+    write: Option<write::Write>,
 }
 
 enum State {
@@ -153,7 +157,8 @@ impl MailWindow {
     }
 
     /// The sparkle and Ctrl+J: the card for the selection, or for all the
-    /// user wrote when nothing is selected; closes an open card.
+    /// user wrote when nothing is selected, or for writing a reply when
+    /// nothing is written yet; closes an open card.
     pub(super) fn toggle_rephrase(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if self.compose.as_ref().is_some_and(|c| c.rephrase.is_some()) {
             self.close_rephrase(window, cx);
@@ -162,12 +167,31 @@ impl MailWindow {
         if !self.ai_allowed() {
             return;
         }
+        if let Some(kind) = self.write_kind(cx) {
+            self.open_write(kind, window, cx);
+            return;
+        }
         if let Some(c) = &self.compose
             && !c.body.read(cx).has_selection()
         {
             c.body.update(cx, |editor, cx| editor.select_own_text(cx));
         }
         self.open_rephrase(window, cx);
+    }
+
+    /// How the sparkle in the tools looks now: Write reply (or note)
+    /// while a reply or forward is empty, else Rephrase, faded while there
+    /// is nothing to rephrase. Its icon, tooltip and whether it does
+    /// anything.
+    pub(super) fn sparkle_look(&self, cx: &App) -> (&'static str, String, bool) {
+        match self.write_kind(cx) {
+            Some(katna_ai::draft::DraftKind::Forward) => {
+                ("pen-sparkle", tr!("compose-ai-write-note-tip"), true)
+            }
+            Some(_) => ("pen-sparkle", tr!("compose-ai-write-reply-tip"), true),
+            None if self.can_rephrase(cx) => ("sparkle", tr!("compose-ai-rephrase-tip"), true),
+            None => ("sparkle", tr!("compose-ai-rephrase-empty-tip"), false),
+        }
     }
 
     /// Whether the sparkle can rephrase something in the open message.
@@ -218,6 +242,7 @@ impl MailWindow {
             custom,
             _custom: subscription,
             _task: None,
+            write: None,
         });
         if !ask {
             self.start_rephrase(Tone::Clearer, cx);
@@ -357,6 +382,13 @@ impl MailWindow {
             return;
         };
         c.ai_encrypted_ok = true;
+        if let Some(r) = &mut c.rephrase
+            && r.write.is_some()
+        {
+            r.state = State::Loading;
+            self.start_ideas(cx);
+            return;
+        }
         let tone = c.rephrase.as_ref().map_or(Tone::Clearer, |r| r.tone);
         self.start_rephrase(tone, cx);
     }
@@ -384,8 +416,9 @@ impl MailWindow {
     pub(super) fn render_rephrase(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let r = self.compose.as_ref()?.rephrase.as_ref()?;
         let service = self.ai_service_name();
-        let body = match &r.state {
-            State::Ask => self.render_rephrase_ask(&service, th, cx),
+        let body = match (&r.state, &r.write) {
+            (State::Ask, _) => self.render_rephrase_ask(&service, th, cx),
+            (_, Some(w)) => self.render_write_body(r, w, &service, th, cx),
             _ => self.render_rephrase_body(r, &service, th, cx),
         };
         // The card is moved by the grip along its top.
@@ -509,6 +542,22 @@ impl MailWindow {
 
     /// Encrypted mail: what rephrasing sends, and a choice.
     fn render_rephrase_ask(&self, service: &str, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let writing = self
+            .compose
+            .as_ref()
+            .and_then(|c| c.rephrase.as_ref())
+            .is_some_and(|r| r.write.is_some());
+        let (text, go) = if writing {
+            (
+                tr!("compose-ai-write-encrypted", service = service),
+                tr!("compose-ai-write-anyway"),
+            )
+        } else {
+            (
+                tr!("compose-ai-encrypted", service = service),
+                tr!("compose-ai-rephrase"),
+            )
+        };
         div()
             .flex()
             .flex_col()
@@ -524,7 +573,7 @@ impl MailWindow {
                             .flex_1()
                             .min_w_0()
                             .text_color(rgba(th.text_dim))
-                            .child(tr!("compose-ai-encrypted", service = service)),
+                            .child(text),
                     ),
             )
             .child(
@@ -540,7 +589,7 @@ impl MailWindow {
                             ),
                     )
                     .child(
-                        filled_button("compose-rephrase-anyway", tr!("compose-ai-rephrase"), th)
+                        filled_button("compose-rephrase-anyway", go, th)
                             .on_click(cx.listener(|this, _, _, cx| this.allow_encrypted(cx))),
                     ),
             )

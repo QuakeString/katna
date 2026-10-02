@@ -252,7 +252,7 @@ impl MailProvider {
 }
 
 /// A mark in several colours: one single-colour icon per colour, stacked.
-fn layered(size: f32, parts: &[(&'static str, u32)]) -> AnyElement {
+pub(super) fn layered(size: f32, parts: &[(&'static str, u32)]) -> AnyElement {
     div()
         .relative()
         .size(px(size))

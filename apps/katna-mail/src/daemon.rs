@@ -798,6 +798,27 @@ pub async fn ai_summarize(
     }
 }
 
+/// A first draft of a reply or a forward's note, or ideas for one (a
+/// JSON array of strings), with its plan, or a `katna_ai::wire::problem`.
+pub async fn ai_draft(
+    connection: &Connection,
+    request: &katna_ai::draft::DraftRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim.ai_draft(&request).await.map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
 /// The rest of the sentence at the end of `before` (empty when unsure),
 /// or a `katna_ai::wire::problem`.
 pub async fn ai_complete(
@@ -1330,6 +1351,62 @@ pub async fn drive_share_with_link(
         .await
         .map_err(|err| describe(&err))?;
     pim.drive_share_with_link(uploads)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Whether the sign-in of `account` lets Katna browse its drive.
+pub async fn cloud_readable(connection: &Connection, account: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_readable(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// One page of the drive of `account`: `place` is one of
+/// `katna_dbus::cloud_place`, `what` the folder id or the words.
+pub async fn cloud_list(
+    connection: &Connection,
+    account: i64,
+    place: &str,
+    what: &str,
+    page: &str,
+) -> Result<katna_dbus::CloudListing, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_list(account, place, what, page)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Downloads a drive file into Katna's cache; returns its path.
+pub async fn cloud_fetch(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_fetch(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// The picture of a drive file, about `width` pixels wide.
+pub async fn cloud_thumbnail(
+    connection: &Connection,
+    account: i64,
+    link: &str,
+    width: u32,
+) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_thumbnail(account, link, width)
         .await
         .map_err(|err| describe(&err))
 }

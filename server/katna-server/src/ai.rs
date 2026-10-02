@@ -10,6 +10,10 @@
 //! - `POST /api/v1/ai/summarize` `{"subject", "mails", "catch_up"}`
 //!   ([`katna_ai::summary::SummarizeRequest`]): one request, however long
 //!   the conversation; the prompt keeps its newest mails.
+//! - `POST /api/v1/ai/draft` `{"kind", "subject", "mails", "me", "to",
+//!   "ideas", "idea", "length", "manner"}`
+//!   ([`katna_ai::draft::DraftRequest`]): ideas for a reply or a
+//!   forward's note, or its first draft; one request each.
 //!
 //! All answer `{"text", "plan": {"kind", "days_left"}}`
 //! ([`katna_ai::wire`]): the service's text as it came (the daemon
@@ -35,6 +39,7 @@ use http_body_util::{BodyExt, Full};
 use hyper::Uri;
 use hyper::header;
 use hyper_util::rt::TokioIo;
+use katna_ai::draft::{self, DraftRequest};
 use katna_ai::summary::{self, SummarizeRequest};
 use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, RephraseRequest, plan};
 use katna_ai::{Prompt, ProviderError, Tone, prompt, provider};
@@ -61,8 +66,10 @@ const MAX_ANSWER: usize = 1024 * 1024;
 /// (the suggestion is useless once the user has typed on).
 const REPHRASE_TIMEOUT: Duration = Duration::from_secs(60);
 const COMPLETE_TIMEOUT: Duration = Duration::from_secs(10);
-/// How long a service may take to sum up a conversation.
+/// How long a service may take to sum up a conversation, and to write a
+/// draft.
 const SUMMARIZE_TIMEOUT: Duration = Duration::from_secs(60);
+const DRAFT_TIMEOUT: Duration = Duration::from_secs(45);
 
 /// Requests passed on at once, for everyone together.
 pub const CONCURRENCY: usize = 64;
@@ -74,6 +81,7 @@ pub fn routes() -> Router<AppState> {
         .route("/api/v1/ai/rephrase", post(rephrase))
         .route("/api/v1/ai/complete", post(complete))
         .route("/api/v1/ai/summarize", post(summarize))
+        .route("/api/v1/ai/draft", post(draft))
 }
 
 async fn rephrase(
@@ -129,6 +137,24 @@ async fn summarize(
     };
     let plan = admit(&state, &account).await?;
     let text = ask(&state, &account, &prompt, SUMMARIZE_TIMEOUT).await?;
+    Ok(Json(AiAnswer { text, plan }))
+}
+
+async fn draft(
+    State(state): State<AppState>,
+    SignedIn { account, .. }: SignedIn,
+    body: Bytes,
+) -> Result<Json<AiAnswer>, ApiError> {
+    if body.len() > MAX_SUMMARIZE_REQUEST {
+        return Err(ApiError::BadRequest("conversation too long"));
+    }
+    let request: DraftRequest = serde_json::from_slice(&body)
+        .map_err(|_| ApiError::BadRequest("expected subject and mails"))?;
+    let Some(prompt) = draft::draft(&request) else {
+        return Err(ApiError::BadRequest("nothing to answer"));
+    };
+    let plan = admit(&state, &account).await?;
+    let text = ask(&state, &account, &prompt, DRAFT_TIMEOUT).await?;
     Ok(Json(AiAnswer { text, plan }))
 }
 

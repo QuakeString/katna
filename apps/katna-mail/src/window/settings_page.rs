@@ -21,15 +21,16 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, Keystroke,
-    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
+    AnimationExt, AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight,
+    Keystroke, ScrollHandle, SharedString, SpringAnimation, Stateful, Subscription, Task, Window,
+    div, prelude::*, rgba,
 };
 use katna_core::config::{
     AccountTabs, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn, ReadingPane,
     SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
-use katna_ui::motion::lerp;
+use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
@@ -173,6 +174,9 @@ pub(super) struct SettingsPage {
     small_kb: Entity<TextInput>,
     small_px: Entity<TextInput>,
     _small: [Subscription; 2],
+    /// The Google accounts, each with whether its sign-in lets Katna
+    /// read its drive (`None` until the daemon says), for Drives in Files.
+    drives: Vec<(katna_core::AccountId, String, Option<bool>)>,
     /// Writing help with AI: the user's own service.
     ai: ai::AiFields,
 }
@@ -310,6 +314,7 @@ impl MailWindow {
                 small_kb,
                 small_px,
                 _small: small_subscriptions,
+                drives: Vec::new(),
                 ai,
             }
         });
@@ -344,6 +349,7 @@ impl MailWindow {
         if fresh {
             self.swap_app_search(false, cx);
         }
+        self.read_drives(cx);
         self.card_seq += 1;
         cx.notify();
     }
@@ -1508,6 +1514,7 @@ impl MailWindow {
                     .text_color(rgba(th.text_faint))
                     .child(tr!("settings-files-sizes-note")),
             );
+        let drives = self.drives_rows(th, cx);
         self.row(
             tr!("settings-files-page"),
             Some(tr!("settings-files-page-detail").as_str()),
@@ -1523,10 +1530,179 @@ impl MailWindow {
                     th,
                     cx,
                 ))
-                .child(limits),
+                .child(limits)
+                .children(drives),
             th,
         )
         .into_any_element()
+    }
+
+    /// Asks the daemon which Google accounts let Katna read their drive,
+    /// for Drives in Files.
+    fn read_drives(&mut self, cx: &mut Context<Self>) {
+        let google: Vec<(katna_core::AccountId, String)> = match self.mail.as_ref() {
+            Ok(mail) => self
+                .accounts
+                .iter()
+                .filter(|a| mail.sign_in_provider(a.id) == Some(katna_core::OAuthProvider::Google))
+                .map(|a| (a.id, a.address.clone()))
+                .collect(),
+            Err(_) => Vec::new(),
+        };
+        let Some(page) = &mut self.settings_page else {
+            return;
+        };
+        page.drives = google
+            .iter()
+            .map(|(id, address)| {
+                let known = page.drives.iter().find(|d| d.0 == *id).and_then(|d| d.2);
+                (*id, address.clone(), known)
+            })
+            .collect();
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        cx.spawn(async move |this, cx| {
+            let mut readable = Vec::new();
+            for (id, _) in google {
+                if let Ok(can) = crate::daemon::cloud_readable(&connection, id.0).await {
+                    readable.push((id, can));
+                }
+            }
+            this.update(cx, |this, cx| {
+                if let Some(page) = &mut this.settings_page {
+                    for (id, can) in readable {
+                        if let Some(drive) = page.drives.iter_mut().find(|d| d.0 == id) {
+                            drive.2 = Some(can);
+                        }
+                    }
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Signs a Google account in again, now allowing Katna to read its
+    /// drive.
+    fn allow_drive_in_files(&mut self, id: katna_core::AccountId, cx: &mut Context<Self>) {
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        let address = self
+            .accounts
+            .iter()
+            .find(|a| a.id == id)
+            .map(|a| a.address.clone())
+            .unwrap_or_default();
+        cx.spawn(async move |this, cx| {
+            let signed_in = crate::daemon::sign_in(
+                &connection,
+                katna_core::OAuthProvider::Google,
+                Some(id.0),
+                &address,
+            )
+            .await;
+            this.update(cx, |this, cx| {
+                if signed_in.is_err() {
+                    this.show_snackbar(tr!("files-drive-allow-failed"), None, cx);
+                }
+                this.read_drives(cx);
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Drives in Files: a switch per account's drive, with Allow while
+    /// the account's sign-in doesn't let Katna read it.
+    fn drives_rows(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let page = self.settings_page.as_ref()?;
+        if page.drives.is_empty() {
+            return None;
+        }
+        let off = &self.config.mail.files.drives_off;
+        let mut rows = div().mt(px(8.0)).flex().flex_col().child(
+            div()
+                .px(px(8.0))
+                .pt(px(8.0))
+                .flex()
+                .flex_col()
+                .child(
+                    div()
+                        .text_size(px(14.0))
+                        .child(tr!("settings-files-drives")),
+                )
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("settings-files-drives-detail")),
+                ),
+        );
+        for (n, (id, address, readable)) in page.drives.iter().enumerate() {
+            let id = *id;
+            let on = !off.contains(&id.0);
+            let needs = *readable == Some(false);
+            let detail = if needs {
+                tr!("settings-files-drive-needs", address = address.as_str())
+            } else {
+                address.clone()
+            };
+            let allow = needs.then(|| {
+                outlined_button(("page-files-drive-allow", n), tr!("files-drive-allow"), th)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.allow_drive_in_files(id, cx);
+                    }))
+                    .into_any_element()
+            });
+            let row = self
+                .page_control(div().id(("page-files-drive", n)), th, cx)
+                .relative()
+                .overflow_hidden()
+                .py(px(8.0))
+                .px(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .rounded(px(8.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::DriveInFiles(id.0, !on), cx)
+                }))
+                .child(Ripple::new(("page-files-drive-ripple", n), rgba(th.ripple)).rounded(8.0))
+                .child(super::files_page::drive_mark(22.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(div().text_size(px(14.0)).child(tr!("files-drive-google")))
+                        .child(
+                            div()
+                                .truncate()
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(detail),
+                        ),
+                )
+                .children(allow)
+                .child(div().with_spring(
+                    ("page-files-drive-switch", n),
+                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                    {
+                        let th = *th;
+                        move |el, s: f32| el.child(crate::widgets::switch(s.clamp(0.0, 1.0), &th))
+                    },
+                ));
+            rows = rows.child(row);
+        }
+        Some(rows.into_any_element())
     }
 
     /// A small-picture limit typed or stepped: applied once typing pauses,

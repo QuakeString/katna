@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your Google Drive in Files"
+text = """
+Files now shows each Google account's drive under Drives in the side
+column. Open its folders, search it, and open, attach or download a file
+right there. The first time, press Allow so Katna may read the drive.
+"""

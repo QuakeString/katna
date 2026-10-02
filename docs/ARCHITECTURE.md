@@ -530,10 +530,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   redirects under `localhost`, so `::1` is listened on too), opens the
   provider's page in the default browser (the OpenURI portal, else
   `xdg-open`), and trades the code for tokens with our own HTTPS client
-  (rustls). Scopes: Google `https://mail.google.com/ drive.file openid
-  email profile` (with `access_type=offline` and `prompt=consent`, so every
-  sign-in brings a refresh token; `drive.file` is for large attachments,
-  §6.6, and Google refreshes are sent without scopes so grants from before
+  (rustls). Scopes: Google `https://mail.google.com/ drive.file
+  drive.readonly openid email profile` (with `access_type=offline` and
+  `prompt=consent`, so every sign-in brings a refresh token; `drive.file`
+  is for large attachments, §6.6, `drive.readonly` for the drive in Files,
+  §13.8, and Google refreshes are sent without scopes so grants from before
   it keep working); Microsoft `IMAP.AccessAsUser.All SMTP.Send
   offline_access openid email profile` on `outlook.office.com`, and Graph
   `Files.ReadWrite` allowed on the same screen for OneDrive (§6.6). The ID token
@@ -2672,6 +2673,26 @@ desktop's own app stays one click away.
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only
   for cards on show whose mail is downloaded, and at most 96 are kept.
+- **Drives in Files** (study "Drives in Files", 2026-10-02): a **Drives**
+  group under Accounts in the side column lists each Google account's
+  drive (Google Drive mark; OneDrive later, behind Microsoft's
+  `Files.ReadWrite`; Dropbox and others after). A drive shows a folder
+  path, folder tiles (one sideways-scrolling row on a phone) and the same
+  cards and list as mail files, with Shared with me as its own row; the
+  type, date and sort chips stay and the search box searches the drive.
+  Cards offer Open (the built-in viewer), Attach (a new mail) and ⋯
+  (Download, Open in Google Drive, Copy link). **All files stays
+  mail-only.** Reading needs Google's `drive.readonly`; an account
+  without it shows a notice with **Allow** (signs in again).
+  `katna_sync::drive::browse` lists (`files.list`, folders first, 100 a
+  page), downloads (Google Docs export as PDF, at most 10 MB) and fetches
+  thumbnails from Google's hosts only; the daemon answers `CloudReadable`,
+  `CloudList`, `CloudFetch` and `CloudThumbnail` over D-Bus, Google only
+  for now, and keeps fetched files in `cache/drives/` for 24 hours (gone
+  on Reset cache). The app keeps listings for 3 minutes. Settings >
+  Default apps > Files page > **Drives in Files** turns a drive off per
+  account (`mail.files.drives_off`). Next: the Compose and chat pickers
+  attach a copy under 25 MB, bigger files and Google Docs as a link.
 
 ### 13.9 Window sizes
 
@@ -3765,7 +3786,8 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   in the Secret Service (`ai-key`), saved and removed through the daemon
   (`SetAiKey`, `AiKeySaved`), never in the settings file.
 - **Daemon:** `AiRephrase(text, tone, instruction)`,
-  `AiComplete(before, answered)` and `AiSummarize(newest, request)` on D-Bus, read the settings per call and
+  `AiComplete(before, answered)`, `AiSummarize(newest, request)` and
+  `AiDraft(request)` on D-Bus, read the settings per call and
   send over rustls either to Katna Server (`POST /api/v1/ai/rephrase`,
   `/api/v1/ai/complete`, with the Katna account's token; 401/403 = sign
   in, 402 = the free month is over, 429 = over a limit) or to the user's
@@ -3807,6 +3829,20 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   help out of encrypted mail. On Katna AI a summary is one request
   (`POST /api/v1/ai/summarize`). With writing help off, no sparkle,
   menu item or summary shows.
+- **Write reply** (decided 2 October 2026): while a reply, reply all
+  or forward is empty (signature and quote aside), the sparkle and
+  Ctrl+J write rather than rephrase (pen-and-spark icon, "Write reply"
+  or "Write note"); once there is text they rephrase again, and in a new
+  mail the sparkle stays faded until there is text. The Rephrase card
+  opens with three ideas from the conversation (one request) and a box
+  for the user's own words, Short or Longer, Friendly or Formal; picking
+  one writes the draft (one more request), which Insert puts at the start
+  of the message as one undo step. The chat view's drafts are a short
+  message without greeting or sign-off; a forward gets a note for the new
+  person. Katna Mail sends the conversation as for a summary, with the
+  user's and the recipients' names, as `katna_ai::draft::DraftRequest`
+  over `AiDraft` (Katna AI: `POST /api/v1/ai/draft`). Encrypted
+  conversations ask first.
 - **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
   confirmed Katna accounts, 30 days free from the first use, then $5 a
   month through Razorpay Subscriptions (to come; until then the server

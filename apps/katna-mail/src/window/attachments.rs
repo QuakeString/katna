@@ -37,7 +37,7 @@ use crate::widgets::{icon, tip};
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
-const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+pub(super) const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
 /// The card's corner radius; its contents are rounded one pixel less, to
 /// sit inside its border.
 pub(super) const CARD_RADIUS: f32 = 8.0;
@@ -154,6 +154,15 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
     Arc::new(RenderImage::new([Frame::new(image)]))
 }
 
+/// A picture as a card's top: sharp, and blurred for the hover panel.
+pub(super) fn picture_thumb(sharp: RgbaImage) -> Thumb {
+    let frosted = bitmap(frosted(&sharp));
+    Thumb::Picture {
+        sharp: bitmap(sharp),
+        frosted,
+    }
+}
+
 /// `thumb` made small and blurred. Drawn stretched over the whole card,
 /// it reads as the thumbnail seen through frosted glass (GPUI has no
 /// backdrop blur).
@@ -239,13 +248,7 @@ const GLANCE_MAX_BYTES: usize = 20 * 1024 * 1024;
 pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
     let file = katna_render::attachment_file(raw, index)?;
     let (w, h) = THUMB_PIXELS;
-    let picture = |sharp: RgbaImage| {
-        let frosted = bitmap(frosted(&sharp));
-        Thumb::Picture {
-            sharp: bitmap(sharp),
-            frosted,
-        }
-    };
+    let picture = picture_thumb;
     match kind {
         Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h).map(picture),
         Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
@@ -835,7 +838,7 @@ impl MailWindow {
     /// file Katna has no preview for goes straight to the desktop's default
     /// app, unless it could run a program (the viewer then offers only
     /// Save).
-    fn open_in(&self, item: &Item) -> OpenIn {
+    pub(super) fn open_in(&self, item: &Item) -> OpenIn {
         match group(item.kind) {
             Some(group) => self.config.mail.open.get(group),
             None if item.risky => OpenIn::Katna,

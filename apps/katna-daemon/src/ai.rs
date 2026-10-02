@@ -3,13 +3,14 @@
 //! Writing help from an AI service (`docs/ARCHITECTURE.md` §16.5): Katna
 //! Mail sends the text the user selected to rephrase, the paragraph
 //! being written to finish its sentence, or a conversation's mails to sum
-//! up, and the daemon asks the service
+//! up or answer, and the daemon asks the service
 //! the settings name (`[ai]`): Katna AI on Katna Server with this
 //! computer's Katna account, or the user's own service with its key from
 //! the Secret Service. Nothing is kept or logged but that it happened.
 
 use std::time::Duration;
 
+use katna_ai::draft::{self, DraftRequest};
 use katna_ai::provider::{self, OTHER, ProviderError};
 use katna_ai::summary::{self, SummarizeRequest, Summary};
 use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, RephraseRequest, problem};
@@ -27,6 +28,9 @@ const REPHRASE_TIMEOUT: Duration = Duration::from_secs(45);
 const COMPLETE_TIMEOUT: Duration = Duration::from_secs(8);
 /// How long summing up a conversation may take.
 const SUMMARIZE_TIMEOUT: Duration = Duration::from_secs(60);
+/// How long writing a draft may take, and finding ideas for one.
+const DRAFT_TIMEOUT: Duration = Duration::from_secs(45);
+const IDEAS_TIMEOUT: Duration = Duration::from_secs(20);
 
 /// [`Plan::kind`] when the user's own service answered.
 pub const OWN: &str = "own";
@@ -163,6 +167,45 @@ pub async fn summarize(
         "conversation summed up"
     );
     Ok((summary, answer.plan))
+}
+
+/// A first draft for `request`, or its ideas as a JSON array of strings,
+/// and where the account stands.
+pub async fn draft(
+    settings: &Ai,
+    secrets: &Secrets,
+    request: &DraftRequest,
+) -> Result<AiAnswer, AiError> {
+    let prompt =
+        draft::draft(request).ok_or_else(|| AiError::Failed("nothing to answer".into()))?;
+    let timeout = if request.ideas {
+        IDEAS_TIMEOUT
+    } else {
+        DRAFT_TIMEOUT
+    };
+    let asked = std::time::Instant::now();
+    let answer = match settings.source {
+        AiSource::Off => return Err(AiError::Off),
+        AiSource::Katna => katna("/api/v1/ai/draft", request, secrets, timeout).await?,
+        AiSource::Own => own(settings, secrets, &prompt, timeout).await?,
+    };
+    let text = if request.ideas {
+        let ideas = draft::parse_ideas(&answer.text);
+        if ideas.is_empty() {
+            return Err(AiError::Failed("the answer held no ideas".into()));
+        }
+        serde_json::to_string(&ideas).map_err(|err| AiError::Failed(err.to_string()))?
+    } else {
+        draft::clean_draft(&answer.text)
+            .ok_or_else(|| AiError::Failed("the answer was empty".into()))?
+    };
+    tracing::info!(
+        ms = asked.elapsed().as_millis() as u64,
+        ideas = request.ideas,
+        mails = request.mails.len(),
+        "draft written"
+    );
+    Ok(AiAnswer { text, ..answer })
 }
 
 /// TLS for the AI services, set up once: loading the system's
@@ -379,6 +422,21 @@ mod tests {
         let done = futures_lite::future::block_on(summarize(&off, &secrets, &request));
         assert_eq!(done, Err(AiError::Off));
         let done = futures_lite::future::block_on(summarize(&own, &secrets, &request));
+        assert_eq!(done, Err(AiError::NoKey));
+        let request = DraftRequest {
+            kind: draft::DraftKind::Reply,
+            subject: request.subject,
+            mails: request.mails,
+            me: String::new(),
+            to: String::new(),
+            ideas: true,
+            idea: String::new(),
+            length: draft::Length::Short,
+            manner: draft::Manner::Friendly,
+        };
+        let done = futures_lite::future::block_on(draft(&off, &secrets, &request));
+        assert_eq!(done, Err(AiError::Off));
+        let done = futures_lite::future::block_on(draft(&own, &secrets, &request));
         assert_eq!(done, Err(AiError::NoKey));
     }
 }

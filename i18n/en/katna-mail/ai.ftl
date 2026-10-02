@@ -42,6 +42,28 @@ compose-ai-off = Writing help with AI is off in Settings.
 compose-ai-failed = { $service } could not be reached. Try again.
 compose-ai-try-again = Try again
 compose-ai-open-settings = Open Settings
+# Writing a first draft of a reply or a forward's note, while it is empty.
+compose-ai-write-reply-tip = Write reply (Ctrl+J)
+compose-ai-write-note-tip = Write note (Ctrl+J)
+compose-ai-rephrase-empty-tip = Type something to rephrase
+compose-ai-write-reply = Write a reply
+compose-ai-write-note = Write a note
+compose-ai-write-from = { $count ->
+    [one] from 1 mail
+   *[other] from { $count } mails
+}
+compose-ai-write-ideas = Ideas from the conversation
+compose-ai-write-own = Or say what it should say…
+compose-ai-write-short = Short
+compose-ai-write-longer = Longer
+compose-ai-write-friendly = Friendly
+compose-ai-write-formal = Formal
+compose-ai-write-insert = Insert
+compose-ai-write-back = Other ideas
+compose-ai-written = Draft added
+compose-ai-write-encrypted = This conversation is encrypted. Writing a reply sends its mails to { $service } unencrypted. Write anyway?
+compose-ai-write-anyway = Write
+compose-ai-write-encrypted-off = This conversation is encrypted, and Settings keeps writing help out of encrypted mail.
 
 ## Summing up a conversation: the list's right-click menu, the reading
 ## pane's sparkle, the chat's strip and the card each opens.

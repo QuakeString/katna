@@ -281,21 +281,38 @@ impl MailWindow {
             .when(popup == Some(Popup::Emoji), |d| {
                 d.child(above(self.render_emoji_picker(th, cx)))
             });
-        // Writing help, once there is text to rephrase.
-        let sparkle = self.can_rephrase(cx).then(|| {
+        // Writing help: a reply written while the box is empty, then the
+        // text rephrased.
+        // Before the box is clicked there is no reply yet: the sparkle
+        // starts one and writes it.
+        let (name, label, works) = match compose {
+            Some(_) => self.sparkle_look(cx),
+            None => (
+                "pen-sparkle",
+                tr!("compose-ai-write-reply-tip"),
+                self.config.ai.source != katna_core::config::AiSource::Off,
+            ),
+        };
+        let started = compose.is_some();
+        let sparkle = ((!started || self.ai_allowed()) && works).then(|| {
             let open = compose.is_some_and(|c| c.rephrase.is_some());
             icon_button_colored(
                 "chat-rephrase",
-                "sparkle",
+                name,
                 18.0,
                 if open { th.accent } else { th.text_faint },
                 th,
             )
             .size(px(28.0))
-            .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
+            .tooltip(tip(label, th))
             // The text keeps its selection.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
-            .on_click(cx.listener(|this, _, window, cx| this.toggle_rephrase(window, cx)))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                if !started {
+                    start(this, window, cx);
+                }
+                this.toggle_rephrase(window, cx)
+            }))
         });
         let text = match compose {
             // Once as tall as it grows, the text scrolls, following the

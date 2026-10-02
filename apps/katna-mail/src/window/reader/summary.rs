@@ -110,10 +110,11 @@ struct Sent {
 }
 
 /// A conversation's mails, gathered to be summed up.
-struct Gathered {
-    request: SummarizeRequest,
+pub(in crate::window) struct Gathered {
+    pub request: SummarizeRequest,
     sent: Vec<Sent>,
-    encrypted: bool,
+    /// Some of its mails are encrypted.
+    pub encrypted: bool,
 }
 
 impl MailWindow {
@@ -195,7 +196,11 @@ impl MailWindow {
     /// The conversation's mails as they are sent to be summed up: the
     /// newest [`summary::MAX_MAILS`], drafts left out, each trimmed to
     /// what its sender wrote.
-    fn gather_summary(&mut self, key: EntryKey, catch_up: bool) -> Option<Gathered> {
+    pub(in crate::window) fn gather_summary(
+        &mut self,
+        key: EntryKey,
+        catch_up: bool,
+    ) -> Option<Gathered> {
         // Opening a conversation marks it read: what was unread then is
         // what the open conversation remembers.
         let came_unread = self
