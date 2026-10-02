@@ -836,6 +836,9 @@ impl MailWindow {
                     for (el, h) in self.render_folder_pick(pick, rh, th, cx) {
                         rows.line(el, h, h == rh);
                     }
+                    if let Some((el, h)) = self.render_always_move(pick, th, cx) {
+                        rows.line(el, h, false);
+                    }
                 }
             }
             Sub::FollowUp => {

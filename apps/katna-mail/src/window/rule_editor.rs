@@ -508,10 +508,9 @@ impl MailWindow {
         self.open_rule_editor(rule, window, cx);
     }
 
-    /// Make a rule… on a mail: the editor filled in with its sender.
-    // TODO: "Always move mail from <sender> here" in the Move to submenu
-    // (mockup 10-always-move.png): moves the mail and saves a Move to rule
-    // in one click. Waits for the Move to submenu being rewritten.
+    /// Make a rule… on a mail: the editor filled in with its sender. (Move
+    /// to's "Always move mail from … here" makes such a rule in one click:
+    /// `folder_pick`.)
     pub(super) fn make_rule_from(
         &mut self,
         name: String,
@@ -1657,9 +1656,7 @@ impl MailWindow {
                 .filter(|(_, kind)| {
                     *kind != ActionKind::AddLabel
                         || e.actions.get(ix).is_some_and(|r| r.kind == *kind)
-                        || e.accounts
-                            .iter()
-                            .any(|a| self.tree.is_gmail(AccountId(*a)))
+                        || e.accounts.iter().any(|a| self.tree.is_gmail(AccountId(*a)))
                 })
                 .map(|(n, kind)| {
                     let on = e.actions.get(ix).is_some_and(|r| r.kind == kind);

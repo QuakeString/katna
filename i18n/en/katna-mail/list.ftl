@@ -465,6 +465,13 @@ menu-no-label = No label called “{ $name }”
 # Makes a folder (or Gmail label) with the typed name and moves the mail
 # there (or puts the label on it). $name: the typed text.
 menu-create-folder = Create “{ $name }”
+# Under Move to's folders, when all the mail is from one sender: ticked, a
+# click on a folder also makes a rule that moves their new mail there.
+# $name: the sender's name, or their address.
+menu-always-move = Always move mail from { $name } here
+# When that rule could not be saved; the mail was moved anyway.
+# $error: why.
+toast-always-move-failed = The mail was moved, but the rule wasn't made: { $error }
 # The card that follows the pointer while mail is dragged onto a folder,
 # for several lines (one shows its subject).
 drag-mail = { $kind ->

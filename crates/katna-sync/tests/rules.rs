@@ -405,7 +405,10 @@ fn a_label_on_an_account_without_labels_fails_the_rule() {
     server.deliver("INBOX", "News");
     sync(&server, &mut store, account);
     let out = watch.run(&mut store, account, &live(NOW), true).unwrap();
-    assert_eq!(out.failed, [(id, "only Gmail accounts have labels".to_owned())]);
+    assert_eq!(
+        out.failed,
+        [(id, "only Gmail accounts have labels".to_owned())]
+    );
     assert!(!store.rule(id).unwrap().unwrap().enabled);
 }
 
