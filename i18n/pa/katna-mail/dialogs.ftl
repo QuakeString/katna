@@ -66,6 +66,7 @@ about-credit-resvg = SVG ਤਸਵੀਰਾਂ
 about-credit-jiff = ਮਿਤੀਆਂ ਅਤੇ ਸਮਾਂ ਖੇਤਰ
 about-credit-spellbook = ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ, Helix ਐਡੀਟਰ ਵੱਲੋਂ
 about-credit-smol = ਇੱਕੋ ਸਮੇਂ ਕਈ ਕੰਮ ਕਰਨਾ
+about-credit-color-schemes = ਬਿਲਟ-ਇਨ ਰੰਗ ਸਕੀਮਾਂ ਦੇ ਪੈਲੇਟ
 about-all-libraries = Katna ਵੱਲੋਂ ਵਰਤੀਆਂ ਜਾਂਦੀਆਂ ਸਾਰੀਆਂ ਲਾਇਬ੍ਰੇਰੀਆਂ ({ $count })
 about-library-authors = { $authors } ਵੱਲੋਂ
 about-license = Katna GNU GPL, ਵਰਜਨ 3 ਜਾਂ ਬਾਅਦ ਵਾਲੇ ਅਧੀਨ ਮੁਫ਼ਤ ਸਾਫ਼ਟਵੇਅਰ ਹੈ।
@@ -123,6 +124,21 @@ onboarding-density-default = ਪੂਰਵ-ਨਿਰਧਾਰਿਤ
 onboarding-density-compact = ਸੰਖੇਪ
 onboarding-continue = ਜਾਰੀ ਰੱਖੋ
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna ਖਾਤੇ ਨਾਲ ਹੋਰ ਪਾਓ
+onboarding-katna-lead = ਇਹ ਵਿਕਲਪਿਕ ਹੈ। ਇਹ Katna ਦੀਆਂ ਔਨਲਾਈਨ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਚਾਲੂ ਕਰਦਾ ਹੈ, ਅਤੇ ਤੁਸੀਂ ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ > ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ ਬਣਾ ਸਕਦੇ ਹੋ।
+onboarding-katna-receipts-title = ਪੜ੍ਹਨ ਦੀਆਂ ਰਸੀਦਾਂ
+onboarding-katna-receipts-text = ਦੇਖੋ ਕਿ ਲੋਕ ਤੁਹਾਡੀ ਭੇਜੀ ਮੇਲ ਕਦੋਂ ਖੋਲ੍ਹਦੇ ਹਨ।
+onboarding-katna-links-title = ਲਿੰਕ ਟ੍ਰੈਕਿੰਗ
+onboarding-katna-links-text = ਦੇਖੋ ਕਿ ਤੁਹਾਡੀ ਮੇਲ ਦੇ ਕਿਹੜੇ ਲਿੰਕਾਂ ’ਤੇ ਕਲਿੱਕ ਹੁੰਦਾ ਹੈ।
+onboarding-katna-activity-title = ਗਤੀਵਿਧੀ
+onboarding-katna-activity-text = ਤੁਹਾਡੀ ਭੇਜੀ ਹਰ ਚੀਜ਼ ਦੇ ਖੋਲ੍ਹਣੇ ਅਤੇ ਕਲਿੱਕ, ਇੱਕੋ ਥਾਂ।
+onboarding-katna-translate-title = ਆਪਣੇ-ਆਪ ਅਨੁਵਾਦ
+onboarding-katna-translate-text = ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਲਿਖੀ ਮੇਲ ਆਪਣੀ ਭਾਸ਼ਾ ਵਿੱਚ ਪੜ੍ਹੋ।
+onboarding-katna-private = ਇਸਦਾ ਆਪਣਾ ਪਾਸਵਰਡ ਹੈ। ਤੁਹਾਡੇ ਮੇਲ ਲੌਗਇਨ ਕਦੇ ਇਸ ਕੰਪਿਊਟਰ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦੇ।
+
 ## First run: done
 
 onboarding-ready-title = ਸਭ ਤਿਆਰ ਹੈ
@@ -166,6 +182,7 @@ tour-search-text = ਖੋਜ ਆਫ਼ਲਾਈਨ ਵੀ ਕੰਮ ਕਰਦੀ
 tour-menu-title = ਫੋਲਡਰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ
 tour-menu-text = ਇਹ ਬਟਨ ਫੋਲਡਰ ਸੂਚੀ ਨੂੰ ਸਮੇਟ ਦਿੰਦਾ ਹੈ। ਜਦੋਂ ਇਹ ਲੁਕੀ ਹੋਵੇ, ਫੋਲਡਰ ਦੇਖਣ ਲਈ ਖੱਬੇ ਪਾਸੇ ਮੇਲ ’ਤੇ ਪੁਆਇੰਟਰ ਰੱਖੋ।
 tour-apps-title = ਤੁਹਾਡੀਆਂ ਐਪਾਂ
+tour-apps-text = ਮੇਲ ਇੱਥੇ ਰਹਿੰਦੀ ਹੈ, ਕੈਲੰਡਰ, ਸੰਪਰਕ, ਕਾਰਜ, ਨੋਟ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦੇ ਨਾਲ।
 tour-tabs-title = ਇਨਬਾਕਸ ਟੈਬਾਂ
 tour-tabs-text = ਨਵੀਂ ਮੇਲ ਮੁੱਖ, ਪ੍ਰੋਮੋਸ਼ਨ, ਸੋਸ਼ਲ, ਅੱਪਡੇਟ ਅਤੇ ਫੋਰਮ ਵਿੱਚ ਛਾਂਟੀ ਜਾਂਦੀ ਹੈ। ਤੁਸੀਂ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਟੈਬਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।
 tour-list-title = ਤੁਹਾਡੇ ਸੁਨੇਹੇ
@@ -196,6 +213,9 @@ sign-in-again-button = ਸਾਈਨ ਇਨ ਕਰੋ
 sign-in-again-tooltip = ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ { $provider } ਦਾ ਸਾਈਨ-ਇਨ ਪੰਨਾ ਖੋਲ੍ਹੋ
 sign-in-again-waiting = ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਉਡੀਕ ਹੋ ਰਹੀ ਹੈ…
 sign-in-again-close = ਬੰਦ ਕਰੋ
+google-api-off = Katna ਦੇ Google Cloud ਪ੍ਰੋਜੈਕਟ ਵਿੱਚ { $api } ਬੰਦ ਹੈ।
+google-api-turn-on = ਚਾਲੂ ਕਰੋ
+google-api-turn-on-tooltip = { $api } ਚਾਲੂ ਕਰਨ ਲਈ Google Cloud ਖੋਲ੍ਹੋ, ਫਿਰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਦਬਾਓ
 sign-in-again-done = { $address } ਵਿੱਚ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਹੋ ਗਿਆ। ਤੁਹਾਡੀ ਮੇਲ ਲਿਆ ਰਿਹਾ ਹੈ…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

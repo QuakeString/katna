@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “ସମସ୍ତ ଆକାଉଣ୍ଟ” ଫ
 accounts-row = ଆକାଉଣ୍ଟ
 accounts-row-detail = ଫୋଲ୍ଡର ପେନ ଓ ଆକାଉଣ୍ଟ ମେନୁ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ଏହି କ୍ରମରେ ଦେଖାଏ; ପ୍ରଥମଟି ଡିଫଲ୍ଟ। ଏକ ଆକାଉଣ୍ଟ କାଢ଼ିଲେ ଏହି କମ୍ପ୍ୟୁଟରରେ ଥିବା ଏହାର ମେଲର Katna କପି ଡିଲିଟ ହୁଏ। ମେଲ ସର୍ଭରରେ ରହେ।
 accounts-none = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଆକାଉଣ୍ଟ ନାହିଁ।
+accounts-pop3-row = ସର୍ଭରରେ ଥିବା ମେଲ
+accounts-pop3-row-detail = POP3 ଆକାଉଣ୍ଟ ମେଲକୁ ଏହି କମ୍ପ୍ୟୁଟରକୁ ଡାଉନଲୋଡ କରେ। ତା'ପରେ ସର୍ଭରରେ ଥିବା କପି ସହ କ'ଣ ହେବ ତାହା ବାଛନ୍ତୁ।
+accounts-pop3-with-katna = ମୁଁ Katnaରେ ଡିଲିଟ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ରଖନ୍ତୁ
+accounts-pop3-at-once = ଡାଉନଲୋଡ ହେବା ମାତ୍ରେ ଡିଲିଟ କରନ୍ତୁ
+accounts-pop3-after-days = { $count ->
+    [one] { $count } ଦିନ ପରେ ଡିଲିଟ କରନ୍ତୁ
+   *[other] { $count } ଦିନ ପରେ ଡିଲିଟ କରନ୍ତୁ
+}
+accounts-pop3-never = କେବେ ବି ଡିଲିଟ କରନ୍ତୁ ନାହିଁ
+accounts-pop3-days-less = କମ ଦିନ
+accounts-pop3-days-more = ଅଧିକ ଦିନ
 accounts-kind-imported = ଇମ୍ପୋର୍ଟ କରାଯାଇଛି
 accounts-picture-reset = ଡେସ୍କଟପ ଛବି ବ୍ୟବହାର କରନ୍ତୁ
 accounts-picture-change = ଛବି ବଦଳାନ୍ତୁ

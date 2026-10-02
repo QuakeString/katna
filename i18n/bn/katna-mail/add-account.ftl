@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = মেল অ্যাকাউন্ট যোগ করুন
+add-account-providers-intro = আপনার মেল প্রদানকারী বেছে নিন। বাকিটা Katna খুঁজে নেবে।
+add-account-provider-other = অন্য মেল
+add-account-provider-other-detail = যেকোনো IMAP বা POP3 অ্যাকাউন্ট
+add-account-provider-google-detail = Gmail ও Google Workspace
+add-account-provider-microsoft-detail = Outlook ও Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider }-এ সাইন ইন করুন
+add-account-form-title-other = আপনার মেল অ্যাকাউন্ট
+add-account-form-intro = Katna আপনার পাসওয়ার্ড সিস্টেমের কীরিং-এ রাখে।
 add-account-looking = { $address }-এর মেল সার্ভার খোঁজা হচ্ছে…
 add-account-address-intro = আপনার ইমেল ঠিকানা লিখুন। Katna আপনার জন্য সার্ভার খুঁজে দেবে।
 add-account-servers-title = সার্ভারের সেটিংস
@@ -13,10 +22,18 @@ add-account-signing-in = সাইন ইন করা হচ্ছে…
 add-account-browser-title = আপনার ব্রাউজারে চালিয়ে যান
 add-account-browser-intro = Katna আপনার ব্রাউজারে { $provider }-এর সাইন-ইন পৃষ্ঠা খুলেছে। সেখানে সাইন ইন করুন এবং Katna-কে আপনার মেল পড়তে ও পাঠাতে অনুমতি দিন, তারপর এখানে ফিরে আসুন।
 add-account-browser-hint = কোনো পৃষ্ঠা খোলেনি? আপনার ব্রাউজারের উইন্ডোগুলি দেখুন, অথবা ফিরে গিয়ে আবার চেষ্টা করুন।
+add-account-stage-browser = আপনার ব্রাউজারে সাইন ইন করার অপেক্ষায়…
+add-account-stage-signing-in-at = { $server }-এ সাইন ইন করা হচ্ছে…
+add-account-help-app-password-link = কীভাবে অ্যাপ পাসওয়ার্ড তৈরি করবেন
+add-account-help-turn-on-imap = { $provider } মেল অ্যাপগুলিকে তখনই ঢুকতে দেয়, যখন তার ওয়েব মেলের সেটিংসে IMAP ও POP3 অ্যাক্সেস চালু থাকে।
+add-account-help-turn-on-imap-link = কীভাবে চালু করবেন
 
 ## Add a mail account: fields
 
 add-account-field-address = ইমেল ঠিকানা
+add-account-receive-with = মেল গ্রহণ করুন যা দিয়ে
+add-account-imap-about = IMAP আপনার মেল ও ফোল্ডার সার্ভারে রাখে, প্রতিটি ডিভাইসে একই রকম। সম্ভব হলে এটিই বেছে নিন।
+add-account-pop3-about = POP3 আপনার মেল এই কম্পিউটারে ডাউনলোড করে। এখানে যে মেল পড়েন বা সরান, তা সার্ভারে ও আপনার অন্য ডিভাইসে যেমন ছিল তেমনই থাকে।
 add-account-incoming = আগত মেল ({ $protocol })
 add-account-outgoing = বহির্গামী মেল ({ $protocol })
 add-account-field-server = সার্ভার
@@ -46,6 +63,8 @@ add-account-sign-in-instead = এর বদলে { $provider } দিয়ে 
 add-account-servers-button = সার্ভারের সেটিংস
 add-account-back = ফিরে যান
 add-account-add = অ্যাকাউন্ট যোগ করুন
+add-account-done = হয়ে গেছে
+add-account-another = আরেকটি অ্যাকাউন্ট যোগ করুন
 add-account-cancel = বাতিল করুন
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna-র এই কপিটি এখনও Google অ্যাকাউন্টে সাইন ইন করতে পারে না।
    *[other] এই প্রোভাইডার শুধু নিজের পৃষ্ঠাতেই সাইন ইন করতে দেয়, যা Katna এর জন্য এখনও করতে পারে না।
 }
+add-account-smtp-not-found = Katna আপনার মেল কোথা থেকে পড়তে হবে তা খুঁজে পেয়েছে, কিন্তু কোথা থেকে পাঠাতে হবে তা পায়নি। আউটগোয়িং সার্ভার লিখুন।
+
+## Add a mail account: the last step
+
+add-account-done-title = আপনার অ্যাকাউন্ট প্রস্তুত
+add-account-done-intro = Katna এখন আপনার মেল আনছে। নতুন মেল আসার সাথে সাথে দেখা যাবে।
+add-account-done-sign-in = সাইন ইন
+add-account-done-signed-in-with = { $provider } দিয়ে, আপনার ব্রাউজারে
+add-account-done-receiving = মেল গ্রহণ
+add-account-done-sending = মেল পাঠানো
+add-account-done-on-server = সার্ভারে থাকা মেল
+add-account-done-kept = Katna-তে না মোছা পর্যন্ত রাখা হয়
+add-account-done-pop3-hint = সার্ভারের মেলের কী হবে তা সেটিংস > অ্যাকাউন্ট-এ বদলান।
+add-account-done-zoho-title = টাস্ক ও ক্যালেন্ডার
+add-account-done-zoho-about = Zoho এগুলি মেল থেকে আলাদা রাখে। Katna-তে আনতে একবার Zoho দিয়ে সাইন ইন করুন।
+add-account-done-linked = টাস্ক ও ক্যালেন্ডার যুক্ত হয়েছে
 
 ## The account menu (from the account button on the top bar)
 

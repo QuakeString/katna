@@ -66,6 +66,7 @@ about-credit-resvg = SVG चित्र
 about-credit-jiff = तारीख और टाइम ज़ोन
 about-credit-spellbook = वर्तनी जाँच, Helix एडिटर से
 about-credit-smol = एक साथ कई काम करना
+about-credit-color-schemes = बिल्ट-इन कलर स्कीम के पैलेट
 about-all-libraries = Katna में इस्तेमाल हर लाइब्रेरी ({ $count })
 about-library-authors = { $authors } द्वारा
 about-license = Katna, GNU GPL संस्करण 3 या उसके बाद के संस्करण के तहत फ़्री सॉफ़्टवेयर है।
@@ -123,6 +124,21 @@ onboarding-density-default = डिफ़ॉल्ट
 onboarding-density-compact = कॉम्पैक्ट
 onboarding-continue = जारी रखें
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna खाते के साथ और भी पाएं
+onboarding-katna-lead = यह ज़रूरी नहीं है। इससे Katna की ऑनलाइन सुविधाएं चालू होती हैं, और आप इसे बाद में सेटिंग > सदस्यता में बना सकते हैं।
+onboarding-katna-receipts-title = पढ़ने की रसीद
+onboarding-katna-receipts-text = देखें कि लोग आपका भेजा मेल कब खोलते हैं।
+onboarding-katna-links-title = लिंक ट्रैकिंग
+onboarding-katna-links-text = देखें कि आपके मेल के किन लिंक पर क्लिक होता है।
+onboarding-katna-activity-title = गतिविधि
+onboarding-katna-activity-text = आपके भेजे हर मेल के खुलने और क्लिक, एक ही जगह।
+onboarding-katna-translate-title = अपने-आप अनुवाद
+onboarding-katna-translate-text = दूसरी भाषाओं में लिखा मेल अपनी भाषा में पढ़ें।
+onboarding-katna-private = इसका अपना पासवर्ड होता है। आपके मेल के लॉगिन कभी इस कंप्यूटर से बाहर नहीं जाते।
+
 ## First run: done
 
 onboarding-ready-title = सब तैयार है
@@ -166,6 +182,7 @@ tour-search-text = खोज ऑफ़लाइन भी काम करती
 tour-menu-title = फ़ोल्डर दिखाएँ या छिपाएँ
 tour-menu-text = यह बटन फ़ोल्डर सूची को समेट देता है। जब वह छिपी हो, तो फ़ोल्डर देखने के लिए पॉइंटर को बाईं ओर मेल पर रखें।
 tour-apps-title = आपके ऐप
+tour-apps-text = मेल यहां रहता है, कैलेंडर, संपर्क, टास्क, नोट और फ़ाइलों के बगल में।
 tour-tabs-title = इनबॉक्स टैब
 tour-tabs-text = नया मेल मुख्य, प्रमोशन, सामाजिक, अपडेट और फ़ोरम में बँट जाता है। आप क्विक सेटिंग में टैब बंद कर सकते हैं।
 tour-list-title = आपके मैसेज
@@ -196,6 +213,9 @@ sign-in-again-button = साइन इन करें
 sign-in-again-tooltip = अपने ब्राउज़र में { $provider } का साइन-इन पेज खोलें
 sign-in-again-waiting = आपके ब्राउज़र का इंतज़ार है…
 sign-in-again-close = बंद करें
+google-api-off = Katna के Google Cloud प्रोजेक्ट में { $api } बंद है।
+google-api-turn-on = चालू करें
+google-api-turn-on-tooltip = { $api } चालू करने के लिए Google Cloud खोलें, फिर “फिर से कोशिश करें” दबाएं
 sign-in-again-done = { $address } में फिर से साइन इन हो गया। आपका मेल लाया जा रहा है…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

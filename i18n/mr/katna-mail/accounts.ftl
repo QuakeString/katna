@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “सर्व खाती” फोल्ड
 accounts-row = खाती
 accounts-row-detail = फोल्डर पेन आणि खाते मेनू खाती याच क्रमाने दाखवतात; पहिले खाते डीफॉल्ट असते. खाते काढल्यास या कॉम्प्युटरवरील त्याच्या मेलची Katna ची प्रत हटवली जाते. मेल सर्व्हरवर राहतो.
 accounts-none = अजून कोणतेही खाते नाही.
+accounts-pop3-row = सर्व्हरवरील मेल
+accounts-pop3-row-detail = POP3 खाती मेल या कॉम्प्युटरवर डाउनलोड करतात. त्यानंतर सर्व्हरवरील प्रतीचे काय व्हावे ते निवडा.
+accounts-pop3-with-katna = मी Katna मध्ये हटवेपर्यंत ठेवा
+accounts-pop3-at-once = डाउनलोड होताच हटवा
+accounts-pop3-after-days = { $count ->
+    [one] { $count } दिवसानंतर हटवा
+   *[other] { $count } दिवसांनंतर हटवा
+}
+accounts-pop3-never = कधीही हटवू नका
+accounts-pop3-days-less = कमी दिवस
+accounts-pop3-days-more = जास्त दिवस
 accounts-kind-imported = आयात केलेले
 accounts-picture-reset = डेस्कटॉपचे चित्र वापरा
 accounts-picture-change = चित्र बदला

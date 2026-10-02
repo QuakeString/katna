@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “બધાં એકાઉન્ટ” ફો
 accounts-row = એકાઉન્ટ
 accounts-row-detail = ફોલ્ડર પેન અને એકાઉન્ટ મેનૂ એકાઉન્ટને આ ક્રમમાં બતાવે છે; પહેલું ડિફૉલ્ટ છે. એકાઉન્ટ કાઢી નાખવાથી આ કમ્પ્યુટર પરની Katna ની તેના મેઇલની કૉપિ ડિલીટ થાય છે. મેઇલ સર્વર પર રહે છે.
 accounts-none = હજી કોઈ એકાઉન્ટ નથી.
+accounts-pop3-row = સર્વર પરના મેઇલ
+accounts-pop3-row-detail = POP3 એકાઉન્ટ મેઇલને આ કમ્પ્યુટર પર ડાઉનલોડ કરે છે. પછી સર્વર પરની નકલનું શું થાય તે પસંદ કરો.
+accounts-pop3-with-katna = હું Katna માં ડિલીટ કરું ત્યાં સુધી રાખો
+accounts-pop3-at-once = ડાઉનલોડ થતાં જ ડિલીટ કરો
+accounts-pop3-after-days = { $count ->
+    [one] { $count } દિવસ પછી ડિલીટ કરો
+   *[other] { $count } દિવસ પછી ડિલીટ કરો
+}
+accounts-pop3-never = ક્યારેય ડિલીટ ન કરો
+accounts-pop3-days-less = ઓછા દિવસ
+accounts-pop3-days-more = વધુ દિવસ
 accounts-kind-imported = આયાત કરેલું
 accounts-picture-reset = ડેસ્કટૉપ ચિત્રનો ઉપયોગ કરો
 accounts-picture-change = ચિત્ર બદલો

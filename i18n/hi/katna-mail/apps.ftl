@@ -9,6 +9,7 @@ rail-calendar = कैलेंडर
 rail-contacts = संपर्क
 rail-tasks = टास्क
 rail-notes = नोट
+rail-files = फ़ाइलें
 
 ## Pages of apps still to come
 

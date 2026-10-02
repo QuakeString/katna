@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] { $count }টা সংলগ্নক
 }
 attachment-save = ছেভ কৰক
+attachment-forward = ফৰৱাৰ্ড কৰক
 attachment-save-all = সকলো ছেভ কৰক
 attachment-save-all-tooltip = সকলো সংলগ্নক এটা ফ'ল্ডাৰত ছেভ কৰক
 attachment-save-here = ইয়াত ছেভ কৰক
@@ -177,6 +178,11 @@ print-not-downloaded = (এতিয়াও ডাউনল'ড কৰা হ�
 print-encrypted = (এনক্ৰিপ্ট কৰা। ইয়াৰ পাঠ প্ৰিণ্ট কৰিবলৈ ইয়াক Katna Mailত খোলক।)
 print-to = প্ৰাপক: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = ওপৰত পিন কৰক
+text-copy-address = ঠিকনা কপি কৰক
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 
