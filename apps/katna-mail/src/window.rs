@@ -16,6 +16,7 @@
 //! layouts, by the window's width).
 
 mod about;
+mod account_color;
 mod account_roll;
 mod account_status;
 mod account_view;
@@ -1178,6 +1179,7 @@ impl MailWindow {
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.expanded = self.tree.initially_expanded();
+        self.settle_account_colors();
         self.rebuild_nav();
     }
 
@@ -3738,6 +3740,14 @@ impl Render for MailWindow {
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
+        // An account's own color, from Settings > Accounts or its
+        // right-click menu.
+        let account_picker = self.render_color_picker(
+            |t| matches!(t, scheme_color::Target::Account(_)),
+            &th,
+            window,
+            cx,
+        );
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
@@ -3798,6 +3808,7 @@ impl Render for MailWindow {
             .children(new_label)
             .children(contact_label)
             .children(scheme_editor)
+            .children(account_picker)
             .children(contact_qr)
             .children(crash_notice)
             .children(sign_in_again)

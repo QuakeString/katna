@@ -730,7 +730,7 @@ impl MailWindow {
                 div()
                     .id("top-account")
                     .relative()
-                    .p(px(4.0))
+                    .p(px(1.0))
                     .rounded_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
@@ -753,7 +753,12 @@ impl MailWindow {
                         this.app_menu = None;
                         cx.notify();
                     }))
-                    .child(self.render_rolling_avatar(32.0))
+                    .child(self.account_ring(
+                        &account.address,
+                        self.render_rolling_avatar(32.0),
+                        32.0,
+                        th,
+                    ))
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }

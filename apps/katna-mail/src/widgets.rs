@@ -416,6 +416,11 @@ pub fn toolbar(th: &Theme) -> Div {
 /// A letter avatar for `name`, colored by `address`.
 pub fn avatar(name: &str, address: &str, size: f32) -> AnyElement {
     let key = if address.is_empty() { name } else { address };
+    avatar_filled(name, avatar_color(key), size)
+}
+
+/// A letter avatar for `name` on `color`.
+pub fn avatar_filled(name: &str, color: u32, size: f32) -> AnyElement {
     div()
         .size(px(size))
         .flex_none()
@@ -423,7 +428,7 @@ pub fn avatar(name: &str, address: &str, size: f32) -> AnyElement {
         .items_center()
         .justify_center()
         .rounded_full()
-        .bg(rgba(avatar_color(key)))
+        .bg(rgba(color))
         .text_color(rgba(0xffffffff))
         .text_size(px(size * 0.45))
         .font_weight(FontWeight::MEDIUM)
