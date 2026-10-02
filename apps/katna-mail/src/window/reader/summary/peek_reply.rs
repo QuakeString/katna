@@ -273,7 +273,12 @@ impl MailWindow {
         } else {
             Kind::Reply
         };
-        self.open_compose(kind, None, window, cx);
+        // In the chat view the draft goes into the chat's reply box.
+        if self.chat_shown() {
+            self.chat_reply(None, kind, window, cx);
+        } else {
+            self.open_compose(kind, None, window, cx);
+        }
         // Taken in: send it as it is.
         if send && !self.summaries.kept_replies.contains_key(&key) {
             self.send_compose_default(window, cx);
