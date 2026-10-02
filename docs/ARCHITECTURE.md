@@ -530,10 +530,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   redirects under `localhost`, so `::1` is listened on too), opens the
   provider's page in the default browser (the OpenURI portal, else
   `xdg-open`), and trades the code for tokens with our own HTTPS client
-  (rustls). Scopes: Google `https://mail.google.com/ drive.file openid
-  email profile` (with `access_type=offline` and `prompt=consent`, so every
-  sign-in brings a refresh token; `drive.file` is for large attachments,
-  §6.6, and Google refreshes are sent without scopes so grants from before
+  (rustls). Scopes: Google `https://mail.google.com/ drive.file
+  drive.readonly openid email profile` (with `access_type=offline` and
+  `prompt=consent`, so every sign-in brings a refresh token; `drive.file`
+  is for large attachments, §6.6, `drive.readonly` for the drive in Files,
+  §13.8, and Google refreshes are sent without scopes so grants from before
   it keep working); Microsoft `IMAP.AccessAsUser.All SMTP.Send
   offline_access openid email profile` on `outlook.office.com`, and Graph
   `Files.ReadWrite` allowed on the same screen for OneDrive (§6.6). The ID token
@@ -2672,6 +2673,26 @@ desktop's own app stays one click away.
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only
   for cards on show whose mail is downloaded, and at most 96 are kept.
+- **Drives in Files** (study "Drives in Files", 2026-10-02): a **Drives**
+  group under Accounts in the side column lists each Google account's
+  drive (Google Drive mark; OneDrive later, behind Microsoft's
+  `Files.ReadWrite`; Dropbox and others after). A drive shows a folder
+  path, folder tiles (one sideways-scrolling row on a phone) and the same
+  cards and list as mail files, with Shared with me as its own row; the
+  type, date and sort chips stay and the search box searches the drive.
+  Cards offer Open (the built-in viewer), Attach (a new mail) and ⋯
+  (Download, Open in Google Drive, Copy link). **All files stays
+  mail-only.** Reading needs Google's `drive.readonly`; an account
+  without it shows a notice with **Allow** (signs in again).
+  `katna_sync::drive::browse` lists (`files.list`, folders first, 100 a
+  page), downloads (Google Docs export as PDF, at most 10 MB) and fetches
+  thumbnails from Google's hosts only; the daemon answers `CloudReadable`,
+  `CloudList`, `CloudFetch` and `CloudThumbnail` over D-Bus, Google only
+  for now, and keeps fetched files in `cache/drives/` for 24 hours (gone
+  on Reset cache). The app keeps listings for 3 minutes. Settings >
+  Default apps > Files page > **Drives in Files** turns a drive off per
+  account (`mail.files.drives_off`). Next: the Compose and chat pickers
+  attach a copy under 25 MB, bigger files and Google Docs as a link.
 
 ### 13.9 Window sizes
 

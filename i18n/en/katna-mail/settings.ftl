@@ -357,6 +357,10 @@ settings-files-px = px
 settings-files-more-tip = More
 settings-files-less-tip = Less
 settings-files-sizes-note = Pixel sizes are read once a mail is downloaded; until then its pictures go by file size alone.
+settings-files-drives = Drives in Files
+settings-files-drives-detail = Each account’s own drive, shown on the Files page
+# Under a drive whose account was signed in before Katna asked to read it.
+settings-files-drive-needs = { $address } · Katna needs permission once
 
 ## Settings > Compose
 
@@ -515,7 +519,7 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
-settings-files-page-summary = Leave small pictures, like signature logos, off the Files page
+settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line

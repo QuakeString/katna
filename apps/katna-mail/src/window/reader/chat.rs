@@ -37,7 +37,7 @@ use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
 use crate::theme::{Theme, avatar_color, fade, mix};
-use crate::widgets::{icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, pane_line, tip};
 
 mod pins;
 
@@ -1030,7 +1030,7 @@ impl MailWindow {
             .pr(px(if phone { 8.0 } else { 12.0 }))
             .py(px(if phone { 6.0 } else { 10.0 }))
             .border_b_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(pane_line(th)))
             .children(back)
             .child(
                 div()

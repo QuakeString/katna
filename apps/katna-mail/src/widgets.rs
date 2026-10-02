@@ -242,6 +242,17 @@ pub fn outlined_button(
         .child(label.into())
 }
 
+/// The line under a pane's toolbar and header and above its footer, and
+/// between an open mail's messages: the plain divider in dark mode, a
+/// quarter of it in light mode, where lines show more.
+pub fn pane_line(th: &Theme) -> u32 {
+    if th.dark {
+        th.divider
+    } else {
+        fade(th.divider, 0.25)
+    }
+}
+
 pub fn toolbar(th: &Theme) -> Div {
     div()
         .flex_none()
@@ -252,7 +263,7 @@ pub fn toolbar(th: &Theme) -> Div {
         .items_center()
         .gap(px(2.0))
         .border_b_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(pane_line(th)))
 }
 
 /// A letter avatar for `name`, colored by `address`.

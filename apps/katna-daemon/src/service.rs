@@ -7,8 +7,9 @@ use std::sync::Arc;
 use async_channel::Receiver;
 use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
-    AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag, mute,
+    AccountStatus, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
+    NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus,
+    flag, mute,
 };
 use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -465,6 +466,39 @@ macro_rules! pim_interface {
 
             async fn drive_share_with_link(&self, uploads: Vec<i64>) -> fdo::Result<Vec<String>> {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
+            }
+
+            async fn cloud_readable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_readable(AccountId(account)).await?)
+            }
+
+            async fn cloud_list(
+                &self,
+                account: i64,
+                place: String,
+                what: String,
+                page: String,
+            ) -> fdo::Result<CloudListing> {
+                Ok(self
+                    .daemon
+                    .cloud_list(AccountId(account), &place, &what, &page)
+                    .await?)
+            }
+
+            async fn cloud_fetch(&self, account: i64, entry: CloudEntry) -> fdo::Result<String> {
+                Ok(self.daemon.cloud_fetch(AccountId(account), entry).await?)
+            }
+
+            async fn cloud_thumbnail(
+                &self,
+                account: i64,
+                link: String,
+                width: u32,
+            ) -> fdo::Result<Vec<u8>> {
+                Ok(self
+                    .daemon
+                    .cloud_thumbnail(AccountId(account), &link, width)
+                    .await?)
             }
 
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
