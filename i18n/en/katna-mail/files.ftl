@@ -21,6 +21,11 @@ files-slides = Slides
 files-other = Other
 # Heading over the accounts, each of which narrows the page to its files.
 files-accounts = Accounts
+# Heading over the accounts' cloud drives.
+files-drives = Drives
+files-drive-google = Google Drive
+# What other people shared with the account, in its drive.
+files-drive-shared = Shared with me
 # Heading over "Received" and "Sent by me".
 files-shown = Shown
 files-received = Received
@@ -98,3 +103,54 @@ files-name-copied = File name copied
 # The file's mail is being downloaded before the file is saved or sent.
 files-downloading = Downloading the mail…
 files-download-failed = Could not download this mail.
+
+## A cloud drive in place of the mail files
+
+# The top of the drive, first in the folder path.
+files-drive-mine = My Drive
+# The last part of the folder path while the drive is searched.
+files-drive-results = “{ $words }”
+files-drive-count = { $folders ->
+    [0] { $files ->
+        [one] 1 file
+       *[other] { $files } files
+    }
+    [one] 1 folder · { $files ->
+        [one] 1 file
+       *[other] { $files } files
+    }
+   *[other] { $folders } folders · { $files ->
+        [one] 1 file
+       *[other] { $files } files
+    }
+}
+files-drive-folders = Folders
+files-drive-files = Files
+files-drive-folder = Folder
+# A drive file's size or kind and when it last changed, such as
+# "2.4 MB · Edited Sep 30".
+files-drive-meta = { $what } · Edited { $date }
+files-drive-google-doc = Google Doc
+files-drive-google-sheet = Google Sheet
+files-drive-google-slides = Google Slides
+files-drive-google-drawing = Google Drawing
+files-drive-fetching = Getting it…
+files-drive-loading = Opening the drive…
+files-drive-empty = This folder is empty.
+files-drive-unreachable = Can’t reach Google Drive.
+files-drive-try-again = Try again
+files-drive-needs-permission = Katna needs your permission once to show this drive. Sign in with Google again and allow Katna to see your Drive files.
+files-drive-allow = Allow
+files-drive-allow-failed = The sign-in didn’t finish, so the drive stays closed.
+files-drive-attach = Attach
+files-drive-more = More
+files-drive-download = Download…
+files-drive-open-web = Open in Google Drive
+files-drive-copy-link = Copy link
+files-drive-link-copied = Link copied
+# $name from $drive, such as "Getting report.pdf from Google Drive…".
+files-drive-getting = Getting { $name } from { $drive }…
+files-drive-get-failed = Couldn’t get { $name }: { $error }
+# Google's own documents and files over the mail limit are attached as a
+# link, which comes in the next update.
+files-drive-link-later = This file is too big to attach, or is a Google document. Open it in Google Drive to share its link.

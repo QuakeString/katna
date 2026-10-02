@@ -109,11 +109,33 @@ pub async fn download(
     max_size: u64,
     sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
 ) -> Result<u64> {
+    match download_with(url, &[], tls, max_size, sink).await? {
+        Ok(size) => Ok(size),
+        Err(status) => Err(Error::Protocol(format!("{url}: HTTP status {status}"))),
+    }
+}
+
+/// Like [`download`], sending `headers` (a token) to `url` only, never on
+/// to where it redirects, and allowing plain HTTP to the loopback for
+/// tests. A status other than `200` or a redirect comes back as `Err` in
+/// the `Ok`, for the caller to read: for drive files.
+pub async fn download_with(
+    url: &str,
+    headers: &[(&str, &str)],
+    tls: &Tls,
+    max_size: u64,
+    sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
+) -> Result<std::result::Result<u64, u16>> {
     let mut url = url.to_owned();
+    let mut headers = headers;
     for _ in 0..=MAX_REDIRECTS {
-        match download_once(&url, tls, max_size, sink).await? {
-            Downloaded::Done(size) => return Ok(size),
-            Downloaded::Redirect(to) => url = resolve(&url, &to)?,
+        match download_once(&url, headers, tls, max_size, sink).await? {
+            Downloaded::Done(size) => return Ok(Ok(size)),
+            Downloaded::Refused(status) => return Ok(Err(status)),
+            Downloaded::Redirect(to) => {
+                url = resolve(&url, &to)?;
+                headers = &[];
+            }
         }
     }
     Err(Error::Protocol(format!("{url}: too many redirects")))
@@ -122,22 +144,44 @@ pub async fn download(
 enum Downloaded {
     Done(u64),
     Redirect(String),
+    Refused(u16),
 }
 
 async fn download_once(
     url: &str,
+    headers: &[(&str, &str)],
     tls: &Tls,
     max_size: u64,
     sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
 ) -> Result<Downloaded> {
-    let parts = parse_url(url)?;
+    let (parts, plain) = match url.strip_prefix("http://") {
+        Some(rest) => {
+            let parts = parse_url_loopback(rest)?;
+            if !matches!(parts.host, "localhost" | "127.0.0.1") {
+                return Err(Error::Protocol(format!("{url}: http only to localhost")));
+            }
+            (parts, true)
+        }
+        None => (parse_url(url)?, false),
+    };
     let mut conn = Conn::new(tls.clone());
-    conn.connect_tls(parts.host, parts.port).await?;
-    let request = format!(
+    if plain {
+        conn.connect_tcp(parts.host, parts.port).await?;
+    } else {
+        conn.connect_tls(parts.host, parts.port).await?;
+    }
+    let mut request = format!(
         "GET {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nAccept: */*\r\n\
-         Connection: close\r\n\r\n",
+         Connection: close\r\n",
         parts.path, parts.host
     );
+    for (name, value) in headers {
+        if name.contains(['\r', '\n', ':']) || value.contains(['\r', '\n']) {
+            return Err(Error::Protocol(format!("{url}: bad header {name}")));
+        }
+        request.push_str(&format!("{name}: {value}\r\n"));
+    }
+    request.push_str("\r\n");
     conn.write_all(request.as_bytes()).await?;
     let mut response = Vec::new();
     while !response.windows(4).any(|w| w == b"\r\n\r\n") {
@@ -160,7 +204,10 @@ async fn download_once(
                 .map(Downloaded::Redirect)
                 .ok_or_else(|| Error::Protocol("HTTP: redirect without Location".into()));
         }
-        other => return Err(Error::Protocol(format!("{url}: HTTP status {other}"))),
+        other => {
+            let _ = conn.close().await;
+            return Ok(Downloaded::Refused(other));
+        }
     }
     if head.chunked {
         return Err(Error::Protocol(format!("{url}: no Content-Length")));

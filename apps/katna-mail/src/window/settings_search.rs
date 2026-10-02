@@ -344,7 +344,8 @@ const ENTRIES: &[Entry] = &[
         Section::DefaultApps,
         "settings-files-page",
         "settings-files-page-summary",
-        "files page attachments small pictures images signature logo icon size kb pixels hide",
+        "files page attachments small pictures images signature logo icon size kb pixels hide \
+         drives google drive onedrive cloud allow",
     ),
     entry(
         Section::Signatures,

@@ -97,6 +97,29 @@ impl Drive {
         }
     }
 
+    /// A `GET`-like [`Self::call`] without a body, reading answers of up
+    /// to `max_body` bytes: listings, thumbnails and PDFs.
+    async fn call_limited(&self, method: &str, url: &str, max_body: usize) -> Result<Reply> {
+        loop {
+            let token = format!("Bearer {}", self.tokens.access_token().await?);
+            let reply = http::exchange_limited(
+                method,
+                url,
+                &[("Authorization", token.as_str())],
+                None,
+                None,
+                &self.tls,
+                TIMEOUT,
+                max_body,
+            )
+            .await?;
+            if reply.status == 401 && self.tokens.forget_access_token() {
+                continue;
+            }
+            return Ok(reply);
+        }
+    }
+
     /// Uploads the file at `path` as `name`, calling `progress` with the
     /// bytes Drive has and the size as they go up. A dropped connection
     /// resumes where Drive stopped rather than starting over.
@@ -398,6 +421,8 @@ fn failure(reply: &Reply, doing: &str) -> Error {
     };
     Error::Rejected(format!("Google Drive, {doing}: {detail}"))
 }
+
+mod browse;
 
 #[cfg(test)]
 mod tests;

@@ -1334,6 +1334,62 @@ pub async fn drive_share_with_link(
         .map_err(|err| describe(&err))
 }
 
+/// Whether the sign-in of `account` lets Katna browse its drive.
+pub async fn cloud_readable(connection: &Connection, account: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_readable(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// One page of the drive of `account`: `place` is one of
+/// `katna_dbus::cloud_place`, `what` the folder id or the words.
+pub async fn cloud_list(
+    connection: &Connection,
+    account: i64,
+    place: &str,
+    what: &str,
+    page: &str,
+) -> Result<katna_dbus::CloudListing, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_list(account, place, what, page)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Downloads a drive file into Katna's cache; returns its path.
+pub async fn cloud_fetch(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_fetch(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// The picture of a drive file, about `width` pixels wide.
+pub async fn cloud_thumbnail(
+    connection: &Connection,
+    account: i64,
+    link: &str,
+    width: u32,
+) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_thumbnail(account, link, width)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// A new video call link from the mail service of `account`; empty when
 /// it has none Katna may make.
 pub async fn meeting_link(connection: &Connection, account: i64) -> Result<String, String> {

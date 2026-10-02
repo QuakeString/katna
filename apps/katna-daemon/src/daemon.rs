@@ -50,6 +50,7 @@ use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secre
 pub(crate) mod alarms;
 mod calendar;
 mod chat_pins;
+mod cloud;
 mod contact_labels;
 mod contacts;
 mod contacts_import;
@@ -1944,7 +1945,7 @@ enum Link {
 
 /// Drops the handle and waits for the worker to log out.
 /// Forgets the downloaded mail of every IMAP account and the translations,
-/// and deletes the sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
+/// and deletes the sender pictures and fetched drive files, for [`Daemon::reset_cache`]. POP3 servers may no longer
 /// have their mail, and imported mail has no server.
 fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
     let mut store = Store::open(paths, Mode::ReadWrite)?;
@@ -1956,6 +1957,13 @@ fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
         .collect();
     let forgotten = store.forget_downloaded_mail(&accounts)?;
     store.forget_translations()?;
+    let drives = paths.cache_dir().join("drives");
+    match std::fs::remove_dir_all(&drives) {
+        Err(err) if err.kind() != std::io::ErrorKind::NotFound => {
+            tracing::warn!(path = %drives.display(), %err, "deleting fetched drive files");
+        }
+        _ => {}
+    }
     let pictures = Pictures::cache_dir(paths.cache_dir());
     match std::fs::remove_dir_all(&pictures) {
         Err(err) if err.kind() != std::io::ErrorKind::NotFound => {

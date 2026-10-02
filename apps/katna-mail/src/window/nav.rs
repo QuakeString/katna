@@ -62,6 +62,24 @@ pub(super) fn side_row(
     on: bool,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
+    let text = if on { th.row_selected_text } else { th.text };
+    side_row_with(
+        id,
+        icon(icon_name, if on { text } else { th.text_dim }, 20.0),
+        label,
+        on,
+        th,
+    )
+}
+
+/// A [`side_row`] with its own mark in place of an icon: a drive's.
+pub(super) fn side_row_with(
+    id: impl Into<ElementId>,
+    mark: AnyElement,
+    label: impl IntoElement,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
     let id = id.into();
     let text = if on { th.row_selected_text } else { th.text };
     div()
@@ -85,7 +103,7 @@ pub(super) fn side_row(
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
-        .child(icon(icon_name, if on { text } else { th.text_dim }, 20.0))
+        .child(mark)
         .child(
             div()
                 .flex_1()
@@ -95,6 +113,7 @@ pub(super) fn side_row(
                 .child(label),
         )
 }
+
 /// A side line's count, in a tight, faint pill of the line's text color:
 /// Mail's folders and the Files page's kinds and accounts. On the open
 /// line the pill is lighter than the line's grey.
