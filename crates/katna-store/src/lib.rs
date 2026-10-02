@@ -34,6 +34,7 @@ mod quota;
 mod receipts;
 pub mod remote;
 mod sender_auth;
+mod summaries;
 pub mod tasks;
 pub mod templates;
 mod thread;
@@ -79,6 +80,7 @@ pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
 pub use receipts::{Receipt, ReceiptKind};
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use summaries::{StoredSummary, SummaryKind};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{
     ActivityItem, MessageActivity, NewRecipient, RecipientActivity, TrackedMessage,

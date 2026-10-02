@@ -525,6 +525,25 @@ impl MailWindow {
         ))
     }
 
+    /// An item whose icon is in the accent: AI's sparkle, as Rephrase's.
+    fn context_item_tinted(
+        &self,
+        id: impl Into<ElementId>,
+        name: &str,
+        label: impl Into<SharedString>,
+        rh: f32,
+        th: &Theme,
+        cx: &Context<Self>,
+    ) -> Stateful<Div> {
+        menu_row_with(id, icon(name, th.accent, 20.0), label.into(), th, rh).on_hover(cx.listener(
+            |this, hovered: &bool, _, cx| {
+                if *hovered {
+                    this.open_context_sub(None, cx);
+                }
+            },
+        ))
+    }
+
     /// The mail list's menu.
     fn mail_menu_rows(
         &self,
@@ -585,6 +604,23 @@ impl MailWindow {
                 plain("context-forward", "forward", &tr!("menu-forward"))
                     .on_click(reply(Kind::Forward)),
             );
+            if self.summaries_on() {
+                main.item(
+                    self.context_item_tinted(
+                        "context-summarize",
+                        "sparkle",
+                        tr!("summary-summarize"),
+                        rh,
+                        th,
+                        cx,
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some((ix, key)) = this.take_context_line() {
+                            this.summarize_line(ix, key, cx);
+                        }
+                    })),
+                );
+            }
             main.rule(th);
         }
         if archives {

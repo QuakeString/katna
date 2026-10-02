@@ -771,6 +771,33 @@ pub async fn ai_rephrase(
     }
 }
 
+/// Sums up a conversation: `request` is a
+/// `katna_ai::summary::SummarizeRequest` and `newest` the newest of its
+/// mails sent. Gives the summary (as JSON) with its plan, or a
+/// `katna_ai::wire::problem`.
+pub async fn ai_summarize(
+    connection: &Connection,
+    newest: MessageId,
+    request: &katna_ai::summary::SummarizeRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim
+        .ai_summarize(newest.0, &request)
+        .await
+        .map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
 /// The rest of the sentence at the end of `before` (empty when unsure),
 /// or a `katna_ai::wire::problem`.
 pub async fn ai_complete(
