@@ -16,6 +16,10 @@ pub mod text_area;
 pub mod text_input;
 pub mod tooltip;
 
+/// How strongly hint text in an empty field shows, against the field's
+/// own text colour: faint, so it never reads as something typed.
+pub const PLACEHOLDER_OPACITY: f32 = 0.42;
+
 pub use glow::Glow;
 pub use motion::Spring;
 pub use rich::RichEditor;
