@@ -39,7 +39,19 @@ notify-task-done = علامت‌گذاری به‌عنوان انجام‌شده
 ## Its buttons
 
 notify-open = باز کردن
+notify-peek = نگاه سریع
+notify-reply = پاسخ
+notify-reply-placeholder = پاسخ به { $name }…
+notify-send = ارسال
 notify-reply-all = پاسخ به همه
 notify-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده
 notify-mark-all-read = علامت‌گذاری همه به‌عنوان خوانده‌شده
 notify-archive = بایگانی
+notify-archived = بایگانی شد
+notify-archived-count = { $count ->
+    [one] { $count } پیام از صندوق ورودی بیرون برده شد
+   *[other] { $count } پیام از صندوق ورودی بیرون برده شد
+}
+notify-undo = واگرد
+notify-reply-sent = پاسخ برای { $name } ارسال شد
+notify-open-in-katna = باز کردن در Katna

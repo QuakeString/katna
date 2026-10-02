@@ -15,6 +15,7 @@ notes-loading = در حال باز کردن یادداشت‌های شما…
 
 notes-take-a-note = یادداشتی بنویسید…
 notes-new-list = فهرست جدید
+notes-new-note = یادداشت جدید
 notes-pinned = سنجاق‌شده
 notes-others = سایر
 notes-empty = یادداشت‌هایی که اضافه می‌کنید اینجا نشان داده می‌شوند

@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] { $count } پیوست
 }
 attachment-save = ذخیره
+attachment-forward = بازارسال
 attachment-save-all = ذخیرهٔ همه
 attachment-save-all-tooltip = ذخیرهٔ همهٔ پیوست‌ها در یک پوشه
 attachment-save-here = ذخیره در اینجا
@@ -177,6 +178,8 @@ print-not-downloaded = (هنوز بارگیری نشده است.)
 print-encrypted = (رمزگذاری‌شده. برای چاپ متن آن، آن را در Katna Mail باز کنید.)
 print-to = به: { $addresses }
 print-cc = رونوشت: { $addresses }
+text-pin = سنجاق کردن به بالا
+text-copy-address = کپی نشانی
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

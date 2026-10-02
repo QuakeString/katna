@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = פותחים…
 viewer-unreadable = לא ניתן היה לקרוא את הקובץ המצורף הזה.
 viewer-pdf-locked = קובץ ה־PDF הזה מוגן בסיסמה.
 viewer-pdf-unreadable = לא ניתן היה לקרוא את קובץ ה־PDF הזה.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = לא ניתן היה לקרוא את השקפים ה�
 viewer-no-preview = אין תצוגה מקדימה
 viewer-slide = שקף { $number }
 viewer-page = עמוד
+viewer-slide-box = שקף
 viewer-page-count = מתוך { $count }
 viewer-go-to-page-tip = הקלידו מספר עמוד ולחצו על Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = סיבוב עם כיוון השעון (Ctrl+R)
+viewer-rotate-anticlockwise-tip = סיבוב נגד כיוון השעון (Ctrl+Shift+R)
+viewer-fit-page-tip = התאמה לעמוד
+viewer-fit-picture-tip = התאמה לחלון
+viewer-fit-width-tip = התאמה לרוחב
+viewer-real-size-tip = גודל אמיתי (1:1)
+viewer-page-back-tip = העמוד הקודם
+viewer-page-on-tip = העמוד הבא
 
 ## Marking up a PDF
 
@@ -41,6 +51,10 @@ viewer-marks-undo-tip = ביטול (Ctrl+Z)
 viewer-marks-redo-tip = ביצוע מחדש (Ctrl+Shift+Z)
 viewer-save-marked-tip = שמירת עותק עם הסימונים שלך (Ctrl+S)
 viewer-reply-marked-tip = תשובה עם העותק המסומן
+viewer-forward-tip = העברת הקובץ
+viewer-forward = העברה
+viewer-open-with = פתיחה באמצעות…
+viewer-save = שמירה
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = כתיבת פתק
 viewer-text-placeholder = הקלדה כאן
@@ -58,3 +72,5 @@ viewer-marks-save = שמירת עותק
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (מסומן)
+viewer-pick = בחירה
+viewer-picked = נבחר

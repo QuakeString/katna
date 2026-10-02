@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Календарь
 desktop-menu-page-contacts = Ко_нтакты
 desktop-menu-page-tasks = _Задачи
 desktop-menu-page-notes = За_метки
+desktop-menu-page-files = _Файлы
 desktop-menu-next = _Следующая цепочка
 desktop-menu-previous = П_редыдущая цепочка
 desktop-menu-message = П_исьмо

@@ -15,6 +15,7 @@ notes-loading = פותח את ההערות שלך…
 
 notes-take-a-note = יצירת הערה…
 notes-new-list = רשימה חדשה
+notes-new-note = הערה חדשה
 notes-pinned = מוצמדות
 notes-others = אחרות
 notes-empty = הערות שתוסיפו יופיעו כאן

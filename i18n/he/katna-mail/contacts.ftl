@@ -98,7 +98,7 @@ contacts-print-none = אין אנשי קשר להדפסה
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = יום הולדת: { $day }
 contacts-print-nickname = כינוי: { $name }
-contacts-create = יצירת איש קשר
+contacts-create = איש קשר חדש
 
 ## Search and the list
 

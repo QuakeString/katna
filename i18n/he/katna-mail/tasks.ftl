@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = יצירה
+tasks-create = משימה חדשה
 tasks-all = כל המשימות
 tasks-today = היום
 tasks-starred = משימות מסומנות בכוכב

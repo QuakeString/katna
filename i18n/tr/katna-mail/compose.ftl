@@ -46,6 +46,7 @@ compose-sent-archived = Gönderildi ve arşivlendi
 compose-sent = İleti gönderildi
 compose-discarded = Taslak silindi
 compose-draft-saved = Taslak kaydedildi
+compose-draft-saving = Kaydediliyor…
 compose-draft-failed = Taslak kaydedilemedi: { $error }
 compose-draft-not-opened = Taslak açılamadı.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = Taslak açılamadı.
 compose-picker-insert = Ekle
 compose-picker-attach = Ekle
 compose-file-too-large = { $name } çok büyük: bir ileti en fazla { $limit } taşıyabilir.
+compose-forward-files-missing = İletilen iletinin dosyaları indirilmedi, bu yüzden eklenmedi.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Eki kaldır
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = Bağlantıyla paylaş
 compose-drive-send-without = Paylaşmadan gönder
 compose-drive-share-cancel = İptal
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit } sınırını aşıyor; bu yüzden OneDrive'ınıza gider ve ileti bir bağlantı taşır.
 compose-onedrive-tip = OneDrive'ınızda; ileti bir bağlantı taşır
 compose-onedrive-allow = OneDrive'a izin ver
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive, dosyaları { $addresses } ile paylaşamıyor. Bunun yerine bağlantıya sahip herkes dosyaları açabilir.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Dosyaları buraya bırakın
 compose-drop-here = Buraya bırakın
 compose-paste-keep-formatting = Biçimlendirmeyi koru

@@ -53,6 +53,7 @@ compose-sent-archived = تم الإرسال والأرشفة
 compose-sent = تم إرسال الرسالة
 compose-discarded = تم تجاهل المسودة
 compose-draft-saved = تم حفظ المسودة
+compose-draft-saving = جارٍ الحفظ…
 compose-draft-failed = تعذّر حفظ المسودة: { $error }
 compose-draft-not-opened = تعذّر فتح المسودة.
 
@@ -61,6 +62,7 @@ compose-draft-not-opened = تعذّر فتح المسودة.
 compose-picker-insert = إدراج
 compose-picker-attach = إرفاق
 compose-file-too-large = الملف { $name } كبير جدًا: يمكن أن تحمل الرسالة حتى { $limit }.
+compose-forward-files-missing = لم يتم تنزيل ملفات الرسالة المُعاد توجيهها، لذا لم يتم إرفاقها.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = إزالة المرفق
 compose-attachments-total = { $count ->
@@ -93,6 +95,7 @@ compose-drive-share-link = مشاركة عبر الرابط
 compose-drive-send-without = إرسال بدون مشاركة
 compose-drive-share-cancel = إلغاء
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } يتجاوز { $limit }، لذا يُرفع إلى OneDrive الخاص بك وتحمل الرسالة رابطًا.
 compose-onedrive-tip = في OneDrive الخاص بك؛ تحمل الرسالة رابطًا
 compose-onedrive-allow = السماح بـ OneDrive
@@ -108,6 +111,7 @@ compose-onedrive-share-text = { $count ->
    *[other] لا يستطيع OneDrive مشاركة الملفات مع { $addresses }. بدلًا من ذلك، يستطيع أي شخص لديه الرابط فتحها.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = أفلت الملفات هنا
 compose-drop-here = أفلت هنا
 compose-paste-keep-formatting = الإبقاء على التنسيق

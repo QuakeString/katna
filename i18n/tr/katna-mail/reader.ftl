@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] { $count } ek
 }
 attachment-save = Kaydet
+attachment-forward = İlet
 attachment-save-all = Tümünü kaydet
 attachment-save-all-tooltip = Tüm ekleri bir klasöre kaydet
 attachment-save-here = Buraya kaydet
@@ -177,6 +178,8 @@ print-not-downloaded = (Henüz indirilmedi.)
 print-encrypted = (Şifreli. Metnini yazdırmak için Katna Mail'de açın.)
 print-to = Kime: { $addresses }
 print-cc = Bilgi: { $addresses }
+text-pin = En üste sabitle
+text-copy-address = Adresi kopyala
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

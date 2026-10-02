@@ -66,6 +66,7 @@ about-credit-resvg = صور SVG
 about-credit-jiff = التواريخ والمناطق الزمنية
 about-credit-spellbook = التدقيق الإملائي، من محرر Helix
 about-credit-smol = إنجاز أشياء كثيرة في وقت واحد
+about-credit-color-schemes = لوحات ألوان أنظمة الألوان المضمَّنة
 about-all-libraries = كل المكتبات التي يستخدمها Katna ({ $count })
 about-library-authors = من تأليف { $authors }
 about-license = Katna برنامج حر بموجب رخصة GNU GPL، الإصدار 3 أو أحدث.
@@ -126,6 +127,17 @@ onboarding-density = الكثافة
 onboarding-density-default = تلقائية
 onboarding-density-compact = مضغوطة
 onboarding-continue = متابعة
+onboarding-katna-title = احصل على المزيد مع حساب Katna
+onboarding-katna-lead = إنه اختياري. يفعّل ميزات Katna عبر الإنترنت، ويمكنك إنشاؤه لاحقًا من الإعدادات > الاشتراك.
+onboarding-katna-receipts-title = إيصالات القراءة
+onboarding-katna-receipts-text = اعرف متى يفتح الأشخاص البريد الذي ترسله.
+onboarding-katna-links-title = تتبّع الروابط
+onboarding-katna-links-text = اعرف أي الروابط في بريدك يتم النقر عليها.
+onboarding-katna-activity-title = النشاط
+onboarding-katna-activity-text = مرات الفتح والنقر لكل ما أرسلته، في مكان واحد.
+onboarding-katna-translate-title = الترجمة التلقائية
+onboarding-katna-translate-text = اقرأ البريد المكتوب بلغات أخرى بلغتك.
+onboarding-katna-private = له كلمة مرور خاصة به. لا تغادر بيانات تسجيل دخولك إلى البريد هذا الكمبيوتر أبدًا.
 
 ## First run: done
 
@@ -170,6 +182,7 @@ tour-search-text = يعمل البحث دون اتصال أيضًا. يضيف ا
 tour-menu-title = إظهار المجلدات أو إخفاؤها
 tour-menu-text = يطوي هذا الزر قائمة المجلدات. وأثناء إخفائها، أبقِ المؤشر على «البريد» في الشريط الجانبي لترى المجلدات.
 tour-apps-title = تطبيقاتك
+tour-apps-text = يوجد البريد هنا، بجانب التقويم وجهات الاتصال والمهام والملاحظات والملفات.
 tour-tabs-title = علامات تبويب البريد الوارد
 tour-tabs-text = يُفرز البريد الجديد في الأساسية والعروض الترويجية والشبكات الاجتماعية والتحديثات والمنتديات. يمكنك إيقاف علامات التبويب من الإعدادات السريعة.
 tour-list-title = رسائلك
@@ -206,6 +219,9 @@ sign-in-again-button = تسجيل الدخول
 sign-in-again-tooltip = فتح صفحة تسجيل الدخول إلى { $provider } في متصفحك
 sign-in-again-waiting = في انتظار متصفحك…
 sign-in-again-close = إغلاق
+google-api-off = { $api } متوقف في مشروع Google Cloud الخاص بـ Katna.
+google-api-turn-on = تفعيل
+google-api-turn-on-tooltip = افتح Google Cloud لتفعيل { $api }، ثم اضغط «المحاولة مجددًا»
 sign-in-again-done = تم تسجيل الدخول إلى { $address } مجددًا. جارٍ جلب بريدك…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

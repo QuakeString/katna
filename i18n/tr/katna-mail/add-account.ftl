@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = Posta hesabı ekle
+add-account-providers-intro = Posta sağlayıcınızı seçin. Gerisini Katna bulur.
+add-account-provider-other = Diğer posta
+add-account-provider-other-detail = Herhangi bir IMAP veya POP3 hesabı
+add-account-provider-google-detail = Gmail ve Google Workspace
+add-account-provider-microsoft-detail = Outlook ve Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider } hesabında oturum açın
+add-account-form-title-other = Posta hesabınız
+add-account-form-intro = Katna parolanızı sisteminizin anahtarlığında saklar.
 add-account-looking = { $address } için posta sunucuları aranıyor…
 add-account-address-intro = E-posta adresinizi girin. Katna sunucuları sizin için bulur.
 add-account-servers-title = Sunucu ayarları
@@ -13,10 +22,18 @@ add-account-signing-in = Oturum açılıyor…
 add-account-browser-title = Tarayıcınızda devam edin
 add-account-browser-intro = Katna, tarayıcınızda { $provider } oturum açma sayfasını açtı. Orada oturum açın ve Katna'nın postalarınızı okumasına ve göndermesine izin verin, ardından buraya dönün.
 add-account-browser-hint = Sayfa açılmadı mı? Tarayıcınızın pencerelerine bakın ya da geri dönüp yeniden deneyin.
+add-account-stage-browser = Tarayıcınızda oturum açmanız bekleniyor…
+add-account-stage-signing-in-at = { $server } sunucusunda oturum açılıyor…
+add-account-help-app-password-link = Uygulama parolası nasıl oluşturulur
+add-account-help-turn-on-imap = { $provider }, posta uygulamalarının girişine yalnızca web postasının ayarlarında IMAP ve POP3 erişimi açıldıktan sonra izin verir.
+add-account-help-turn-on-imap-link = Nasıl açılır
 
 ## Add a mail account: fields
 
 add-account-field-address = E-posta adresi
+add-account-receive-with = Postaları şununla al
+add-account-imap-about = IMAP postalarınızı ve klasörlerinizi sunucuda, her cihazda aynı şekilde tutar. Mümkünse bunu seçin.
+add-account-pop3-about = POP3 postalarınızı bu bilgisayara indirir. Burada okuduğunuz veya taşıdığınız postalar sunucuda ve diğer cihazlarınızda olduğu gibi kalır.
 add-account-incoming = Gelen posta ({ $protocol })
 add-account-outgoing = Giden posta ({ $protocol })
 add-account-field-server = Sunucu
@@ -46,6 +63,8 @@ add-account-sign-in-instead = Bunun yerine { $provider } ile oturum aç
 add-account-servers-button = Sunucu ayarları
 add-account-back = Geri
 add-account-add = Hesap ekle
+add-account-done = Bitti
+add-account-another = Başka bir hesap ekle
 add-account-cancel = İptal
 
 ## Add a mail account: problems
@@ -75,6 +94,19 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna'nın bu kopyası henüz Google hesaplarında oturum açamıyor.
    *[other] Bu sağlayıcı yalnızca kendi sayfasında oturum açmaya izin veriyor ve Katna bunu henüz bu sağlayıcı için yapamıyor.
 }
+add-account-smtp-not-found = Katna postalarınızı nereden okuyacağını buldu ama nereden göndereceğini bulamadı. Giden posta sunucusunu girin.
+add-account-done-title = Hesabınız hazır
+add-account-done-intro = Katna postalarınızı şimdi alıyor. Yeni postalar geldikçe görünür.
+add-account-done-sign-in = Oturum açma
+add-account-done-signed-in-with = { $provider } ile, tarayıcınızda
+add-account-done-receiving = Posta alma
+add-account-done-sending = Posta gönderme
+add-account-done-on-server = Sunucudaki postalar
+add-account-done-kept = Katna'da silene kadar saklanır
+add-account-done-pop3-hint = Sunucudaki postalara ne olacağını Ayarlar > Hesaplar'dan değiştirin.
+add-account-done-zoho-title = Görevler ve takvimler
+add-account-done-zoho-about = Zoho bunları postadan ayrı tutar. Katna'ya getirmek için bir kez Zoho ile oturum açın.
+add-account-done-linked = Görevler ve takvimler bağlandı
 
 ## The account menu (from the account button on the top bar)
 

@@ -66,6 +66,7 @@ about-credit-resvg = SVG resimleri
 about-credit-jiff = Tarihler ve saat dilimleri
 about-credit-spellbook = Yazım denetimi, Helix düzenleyicisinden
 about-credit-smol = Aynı anda birçok iş yapma
+about-credit-color-schemes = Yerleşik renk şemalarının paletleri
 about-all-libraries = Katna'nın kullandığı tüm kütüphaneler ({ $count })
 about-library-authors = Yazarlar: { $authors }
 about-license = Katna, GNU GPL sürüm 3 veya sonrası altında özgür yazılımdır.
@@ -122,6 +123,17 @@ onboarding-density = Yoğunluk
 onboarding-density-default = Varsayılan
 onboarding-density-compact = Sıkışık
 onboarding-continue = Devam
+onboarding-katna-title = Katna hesabıyla daha fazlasını elde edin
+onboarding-katna-lead = İsteğe bağlıdır. Katna'nın çevrimiçi özelliklerini açar; daha sonra Ayarlar > Abonelik'ten de oluşturabilirsiniz.
+onboarding-katna-receipts-title = Okundu bilgisi
+onboarding-katna-receipts-text = Gönderdiğiniz postaların ne zaman açıldığını görün.
+onboarding-katna-links-title = Bağlantı izleme
+onboarding-katna-links-text = Postalarınızdaki hangi bağlantılara tıklandığını görün.
+onboarding-katna-activity-title = Etkinlik
+onboarding-katna-activity-text = Gönderdiğiniz her şeyin açılmaları ve tıklamaları tek bir yerde.
+onboarding-katna-translate-title = Otomatik çeviri
+onboarding-katna-translate-text = Başka dillerde yazılmış postaları kendi dilinizde okuyun.
+onboarding-katna-private = Kendi parolası vardır. Posta oturum açma bilgileriniz bu bilgisayardan asla çıkmaz.
 
 ## First run: done
 
@@ -166,6 +178,7 @@ tour-search-text = Arama çevrimdışı da çalışır. Sağ uçtaki düğme fil
 tour-menu-title = Klasörleri göster veya gizle
 tour-menu-text = Bu düğme klasör listesini katlar. Gizliyken klasörleri görmek için işaretçiyi soldaki Posta'nın üzerinde tutun.
 tour-apps-title = Uygulamalarınız
+tour-apps-text = Posta burada; Takvim, Kişiler, Görevler, Notlar ve Dosyalar'ın yanında.
 tour-tabs-title = Gelen Kutusu sekmeleri
 tour-tabs-text = Yeni postalar Birincil, Tanıtımlar, Sosyal, Güncellemeler ve Forumlar olarak sıralanır. Sekmeleri hızlı ayarlardan kapatabilirsiniz.
 tour-list-title = İletileriniz
@@ -196,6 +209,9 @@ sign-in-again-button = Oturum aç
 sign-in-again-tooltip = { $provider } oturum açma sayfasını tarayıcınızda aç
 sign-in-again-waiting = Tarayıcınız bekleniyor…
 sign-in-again-close = Kapat
+google-api-off = { $api }, Katna'nın Google Cloud projesinde kapalı.
+google-api-turn-on = Aç
+google-api-turn-on-tooltip = { $api } hizmetini açmak için Google Cloud'u açın, ardından Yeniden dene'ye basın
 sign-in-again-done = { $address } hesabında yeniden oturum açıldı. Postalarınız alınıyor…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

@@ -14,6 +14,21 @@ accounts-unified-switch-detail = يتصدّر «كل الحسابات» جزء �
 accounts-row = الحسابات
 accounts-row-detail = يعرض جزء المجلدات وقائمة الحساب الحسابات بهذا الترتيب، والأول هو الافتراضي. تؤدي إزالة حساب إلى حذف نسخة Katna من بريده على هذا الكمبيوتر. يبقى البريد على الخادم.
 accounts-none = لا توجد حسابات بعد.
+accounts-pop3-row = البريد على الخادم
+accounts-pop3-row-detail = تنزّل حسابات POP3 البريد إلى هذا الكمبيوتر. اختر ما يحدث بعد ذلك للنسخة الموجودة على الخادم.
+accounts-pop3-with-katna = الاحتفاظ بها حتى أحذفها في Katna
+accounts-pop3-at-once = حذفها فور تنزيلها
+accounts-pop3-after-days = { $count ->
+    [zero] حذفها بعد { $count } يوم
+    [one] حذفها بعد يوم واحد
+    [two] حذفها بعد يومين
+    [few] حذفها بعد { $count } أيام
+    [many] حذفها بعد { $count } يومًا
+   *[other] حذفها بعد { $count } يوم
+}
+accounts-pop3-never = عدم حذفها أبدًا
+accounts-pop3-days-less = أيام أقل
+accounts-pop3-days-more = أيام أكثر
 accounts-kind-imported = مستورَد
 accounts-picture-reset = استخدام صورة سطح المكتب
 accounts-picture-change = تغيير الصورة
