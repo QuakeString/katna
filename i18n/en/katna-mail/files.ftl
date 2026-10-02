@@ -214,6 +214,7 @@ files-share-remove = Remove access
 files-share-copy-link = Copy link
 files-share-share = Share
 files-share-done = Done
+files-share-close = Close
 files-share-sharing = Sharing…
 files-share-shared = { $count ->
     [one] Shared with 1 person

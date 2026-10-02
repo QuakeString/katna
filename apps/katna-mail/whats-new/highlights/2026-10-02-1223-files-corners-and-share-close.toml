@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Cleaner corners in Files"
+text = """
+Hovering a file with a white preview no longer lets white show at the
+card's top corners, the folded uploads tray is rounded at the top as well,
+and the Share dialog has a close button in its corner.
+"""

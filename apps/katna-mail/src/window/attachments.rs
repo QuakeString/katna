@@ -267,10 +267,18 @@ pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
 }
 
 /// The top of a card: its thumbnail, else the file type's badge `badge`
-/// wide on a tinted ground.
-pub(super) fn card_top(thumb: Option<Thumb>, kind: Kind, badge: f32, th: &Theme) -> gpui::Div {
+/// wide on a tinted ground. Under a hover panel (`panel`, the card's
+/// group) it goes while the panel shows: two curves drawn over each other
+/// let a hair of a white page through at the rounded corners.
+pub(super) fn card_top(
+    thumb: Option<Thumb>,
+    kind: Kind,
+    badge: f32,
+    panel: Option<SharedString>,
+    th: &Theme,
+) -> gpui::Div {
     let inner = px(CARD_RADIUS - 1.0);
-    match thumb {
+    let top = match thumb {
         Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
             img(ImageSource::Render(sharp))
                 .size_full()
@@ -285,6 +293,10 @@ pub(super) fn card_top(thumb: Option<Thumb>, kind: Kind, badge: f32, th: &Theme)
             .justify_center()
             .bg(rgba(th.read_row))
             .child(kind_badge(kind, badge)),
+    };
+    match panel {
+        Some(group) => top.group_hover(group, |s| s.opacity(0.0)),
+        None => top,
     }
 }
 
@@ -445,9 +457,12 @@ pub(super) fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
                     .flex_row()
                     .border_b_1()
                     .border_color(rgba(GRID_LINE))
-                    .when(header, |r| r.bg(rgba(GRID_HEADER)))
+                    // The header's corners follow the page's, else they
+                    // poke out past the card's rounded ones.
+                    .when(header, |r| r.rounded_t(radius).bg(rgba(GRID_HEADER)))
                     .child(
                         div()
+                            .when(header, |c| c.rounded_tl(radius))
                             .w(px(numbers))
                             .flex_none()
                             .h_full()
@@ -616,7 +631,7 @@ impl MailWindow {
                 .cloned();
             let name = item.name.clone();
             let frost = thumb.as_ref().and_then(Thumb::frosted);
-            let top = card_top(thumb, item.kind, 36.0, th);
+            let top = card_top(thumb, item.kind, 36.0, Some(group.clone()), th);
             let save_name = name.clone();
             let save = panel_button(
                 ("attachment-save", ix),

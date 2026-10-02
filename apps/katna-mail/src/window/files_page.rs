@@ -2132,12 +2132,13 @@ impl MailWindow {
             .h(px(thumb_height + NAME_HEIGHT))
             .flex()
             .flex_col()
-            .child(
-                div()
-                    .h(px(thumb_height))
-                    .w_full()
-                    .child(card_top(thumb, found.kind, 44.0, th)),
-            )
+            .child(div().h(px(thumb_height)).w_full().child(card_top(
+                thumb,
+                found.kind,
+                44.0,
+                Some(group.clone()),
+                th,
+            )))
             .child(
                 div()
                     .relative()
