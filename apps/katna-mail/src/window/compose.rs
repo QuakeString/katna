@@ -374,6 +374,9 @@ pub(super) struct Writing {
     /// When a file manager last opened a new message with files, which
     /// the files that follow straight after join.
     files_opened: Option<std::time::Instant>,
+    /// A reply put aside while a new message is written; it comes back
+    /// when that message is sent or closed.
+    pub(super) parked: Option<Compose>,
 }
 
 impl Writing {
@@ -653,6 +656,8 @@ struct Existing {
     here: bool,
     /// Its window of its own is still there.
     window_open: bool,
+    /// It is a reply or forward, and the message started is a new one.
+    answer_then_new: bool,
 }
 
 /// What starting another message does with the one being written.
@@ -669,12 +674,17 @@ enum OnNew {
     SaveAndReplace,
     /// Nothing was written in it: the new message takes its place.
     Replace,
+    /// A reply being written when Compose is pressed: it is put aside,
+    /// as written, until the new message is sent or closed.
+    Park,
 }
 
 impl Existing {
     fn on_new_message(self) -> OnNew {
         if self.closing || !self.touched {
             OnNew::Replace
+        } else if self.answer_then_new && self.mode != Mode::Window {
+            OnNew::Park
         } else if self.mode == Mode::Inline && self.here {
             OnNew::Focus
         } else if self.mode == Mode::Window {
@@ -781,8 +791,35 @@ impl MailWindow {
             touched: c.touched(cx),
             here: c.conversation == open,
             window_open,
+            answer_then_new: c.kind != Kind::New && kind == Kind::New,
         });
-        match existing.map(Existing::on_new_message) {
+        let outcome = existing.map(Existing::on_new_message);
+        // Answering the conversation whose reply was put aside: that reply
+        // comes back as it was written.
+        if kind != Kind::New
+            && matches!(outcome, Some(OnNew::Replace) | None)
+            && open.is_some()
+            && self
+                .writing
+                .parked
+                .as_ref()
+                .is_some_and(|p| p.conversation == open)
+        {
+            self.compose = self.writing.parked.take();
+            if let Some(c) = &self.compose {
+                window.focus(&c.body.focus_handle(cx), cx);
+            }
+            if self
+                .compose
+                .as_ref()
+                .is_some_and(|c| c.mode == Mode::Inline)
+            {
+                self.reveal_inline_reply(cx);
+            }
+            cx.notify();
+            return;
+        }
+        match outcome {
             Some(OnNew::Focus) => {
                 if let Some(c) = &self.compose {
                     window.focus(&c.body.focus_handle(cx), cx);
@@ -806,6 +843,12 @@ impl MailWindow {
                 return;
             }
             Some(OnNew::SaveAndReplace) => self.close_compose_saving(cx),
+            Some(OnNew::Park) => {
+                if let Some(mut reply) = self.compose.take() {
+                    reply.popup = None;
+                    self.writing.parked = Some(reply);
+                }
+            }
             Some(OnNew::Replace) | None => {}
         }
         let date = |d: Option<i64>| {
@@ -1942,11 +1985,19 @@ impl MailWindow {
             compose.closing = true;
             compose.popup = None;
             if compose.mode == Mode::Window {
-                self.compose = None;
+                self.compose_gone(cx);
             }
         }
         self.close_compose_window(cx);
         cx.notify();
+    }
+
+    /// The message is gone: a reply put aside for it comes back.
+    fn compose_gone(&mut self, cx: &mut Context<Self>) {
+        self.compose = self.writing.parked.take();
+        if self.compose.is_some() {
+            chips::notify_soon(cx);
+        }
     }
 
     fn compose_mode(&mut self, mode: Mode, cx: &mut Context<Self>) {
@@ -1980,7 +2031,7 @@ impl MailWindow {
             .map(|c| (c.mode, c.conversation, c.closing))?;
         if mode == Mode::Window {
             if closing {
-                self.compose = None;
+                self.compose_gone(cx);
             }
             return None;
         }
@@ -1992,7 +2043,7 @@ impl MailWindow {
                     .is_some_and(|r| Some(r.key) == conversation);
             let touched = self.compose.as_ref().is_some_and(|c| c.touched(cx));
             if closing || (!here && !touched) {
-                self.compose = None;
+                self.compose_gone(cx);
                 return None;
             }
             if here {
@@ -2009,7 +2060,7 @@ impl MailWindow {
         compose.shown.set(if compose.closing { 0.0 } else { 1.0 });
         let t = compose.shown.tick(window, reduce);
         if compose.closing && compose.shown.settled() {
-            self.compose = None;
+            self.compose_gone(cx);
             return None;
         }
         let t = t.clamp(0.0, 1.0);
@@ -2815,7 +2866,23 @@ mod tests {
             touched: true,
             here,
             window_open,
+            answer_then_new: false,
         }
+    }
+
+    #[test]
+    fn compose_puts_a_reply_aside() {
+        // Compose while a reply is half written, inline here or docked:
+        // the reply waits and the new message opens.
+        for mode in [Mode::Inline, Mode::Open, Mode::Minimized] {
+            let mut e = existing(mode, false, true);
+            e.answer_then_new = true;
+            assert_eq!(e.on_new_message(), OnNew::Park);
+        }
+        // In its own window it comes forward, as before.
+        let mut e = existing(Mode::Window, true, false);
+        e.answer_then_new = true;
+        assert_eq!(e.on_new_message(), OnNew::RaiseWindow);
     }
 
     #[test]
