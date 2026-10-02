@@ -1467,13 +1467,22 @@ impl MailWindow {
 
     /// After a line of the folder pane opened a list.
     pub(super) fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        // Picked in the pane beside the list, the keys stay in the pane,
+        // as in Thunderbird, Outlook and KDE's apps; Tab or Enter goes on
+        // to the list.
+        let stays = self.nav_docked() && !self.nav_peek && !self.layout.drawer;
         self.leave_settings(window, cx);
         self.reader = None;
         // A folder picked from the opened navigation closes it.
         self.nav_peek = false;
         self.layout.drawer = false;
         self.peek_task = None;
-        window.focus(&self.list_focus, cx);
+        let keys = if stays {
+            &self.nav_focus
+        } else {
+            &self.list_focus
+        };
+        window.focus(keys, cx);
     }
 
     /// A list picked in the folder pane while Settings is open takes its
@@ -1792,15 +1801,14 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
     }
 }
 
-/// The key context of the folder pane while it has the keys.
-const NAV_CONTEXT: &str = "Navigation";
 /// The hover group of a folder's line, for its arrow.
 const NAV_PILL: &str = "nav-pill";
 
 /// The folder pane by keyboard, as in Thunderbird, Outlook and KDE's
 /// apps: F6 or Tab gives it the keys; Up and Down go through its lines and
 /// open each list at once; Right opens what a line holds and Left folds
-/// it; Enter (or Space) goes on to the list, or folds a heading.
+/// it, and Space does either; Enter goes on to the list, or folds a
+/// heading.
 impl MailWindow {
     /// Gives the pane its keys.
     fn nav_keys(
@@ -1809,7 +1817,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         panel
-            .key_context(NAV_CONTEXT)
+            .key_context(super::NAV_CONTEXT)
             .track_focus(&self.nav_focus)
             .on_key_down(cx.listener(Self::nav_key))
     }
@@ -1870,7 +1878,11 @@ impl MailWindow {
             "right" => self.nav_move(at, 1, window, cx),
             "left" if expanded == Some(true) => self.toggle_nav_row(at, cx),
             "left" => self.nav_move(at, -1, window, cx),
-            "enter" | "space" => {
+            // Space folds or opens a line that holds others, as clicking
+            // its arrow does, and does nothing on the rest.
+            "space" if expanded.is_some() => self.toggle_nav_row(at, cx),
+            "space" => {}
+            "enter" => {
                 if listing_of(&self.nav_rows[at]).is_some() {
                     self.click_nav_row(at, window, cx);
                     window.focus(&self.list_focus, cx);
