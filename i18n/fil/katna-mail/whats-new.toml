@@ -3145,3 +3145,15 @@ Mas magaan ang search box sa itaas: napakalabong gilid at laman habang hindi
 mo ito ginagamit, at puting field na may malambot na accent na gilid habang
 nagta-type ka, sa halip na abong pill na may makapal na may-kulay na singsing.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Mas maagang dumarating ang mga update"
+text = """
+Tumitingin na ang Katna ng bagong bersyon bawat oras at kaagad pagkagising ng iyong computer mula sa sleep, kaya mabilis na dumarating ang notification ng update pagkatapos ng release.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Malalabong linya rin sa dark mode"
+text = """
+Sa dark mode, kasinlabo na ng sa light mode ang mga linya sa pagitan ng mga mail, sa ilalim ng mga header at sa paligid ng mga card. Nananatiling malinaw ang outline ng mga field, chip at button.
+"""

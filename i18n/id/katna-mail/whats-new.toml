@@ -3033,3 +3033,15 @@ Kotak pencarian di atas kini lebih ringan: tepi dan isian yang sangat samar
 saat tidak dipakai, dan kolom putih dengan tepi aksen lembut saat Anda
 mengetik, bukan kapsul abu-abu dengan cincin berwarna yang tebal.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Pembaruan datang lebih cepat"
+text = """
+Katna kini memeriksa versi baru setiap jam dan tepat setelah komputer Anda bangun dari mode tidur, sehingga notifikasi pembaruan muncul tak lama setelah rilis.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Garis tipis di mode gelap juga"
+text = """
+Di mode gelap, garis di antara email, di bawah header, dan di sekitar kartu kini sama tipisnya dengan di mode terang. Kolom isian, chip, dan tombol tetap memiliki garis tepi yang jelas.
+"""

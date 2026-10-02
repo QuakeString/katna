@@ -3070,3 +3070,15 @@ samar semasa anda tidak menggunakannya, dan medan putih dengan tepi aksen
 yang lembut semasa anda menaip, dan bukan lagi pil kelabu dengan cincin
 berwarna yang tebal.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Kemas kini tiba lebih awal"
+text = """
+Katna kini mencari versi baharu setiap jam dan sebaik sahaja komputer anda bangun daripada mod tidur, jadi pemberitahuan kemas kini tiba tidak lama selepas keluaran.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Garisan pudar dalam mod gelap juga"
+text = """
+Dalam mod gelap, garisan di antara mel, di bawah pengepala dan di sekeliling kad kini sepudar dalam mod cerah. Medan, cip dan butang mengekalkan garis luar yang jelas.
+"""

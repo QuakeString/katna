@@ -2943,3 +2943,15 @@ text = """
 dùng, và là ô trắng với viền màu nhấn nhẹ khi bạn gõ, thay vì thanh bo
 tròn màu xám với vòng màu dày.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Bản cập nhật đến sớm hơn"
+text = """
+Katna giờ kiểm tra phiên bản mới mỗi giờ và ngay khi máy tính thức dậy từ chế độ ngủ, nên thông báo cập nhật sẽ đến ngay sau khi có bản phát hành.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Đường kẻ mờ cả ở chế độ tối"
+text = """
+Ở chế độ tối, các đường kẻ giữa các thư, dưới tiêu đề và quanh các thẻ giờ mờ như ở chế độ sáng. Ô nhập, chip và nút vẫn giữ đường viền rõ ràng.
+"""
