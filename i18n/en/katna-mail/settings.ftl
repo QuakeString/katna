@@ -188,6 +188,8 @@ settings-inbox-tabs-detail = Sort the inbox into tabs, as your mail provider's w
 settings-inbox-tabs-show = Show inbox tabs
 settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
+settings-inbox-unified = Unified inbox
+settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs

@@ -668,6 +668,10 @@ pub struct MailView {
     /// Which tabs each account's inbox has, by lower-case address.
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
+    /// Which tabs the unified inbox has, shared by every account: each
+    /// mail shows in the tab of its category. [`TabStyle::Auto`] is
+    /// Gmail's five.
+    pub unified_tabs: TabStyle,
     pub density: Density,
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
@@ -884,6 +888,7 @@ impl Default for MailView {
             conversations: true,
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
+            unified_tabs: TabStyle::Auto,
             density: Density::Default,
             scale: 100,
             theme: Theme::System,

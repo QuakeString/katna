@@ -191,6 +191,12 @@ const ENTRIES: &[Entry] = &[
         "primary promotions social updates forums focused other categories",
     ),
     entry(
+        Section::Inbox,
+        "settings-inbox-unified",
+        "settings-inbox-unified-detail",
+        "unified all accounts tabs shared combined categories",
+    ),
+    entry(
         Section::Accounts,
         "accounts-folder-pane",
         "accounts-folder-pane-detail",
