@@ -14,6 +14,7 @@
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, Pixels, Point,
@@ -41,6 +42,9 @@ mod peek_reply;
 const PEEK_WIDTH: f32 = 420.0;
 /// The room kept between a card and the window's edge.
 const MARGIN: f32 = 8.0;
+/// How soon after a press outside folded the dropped card a click on
+/// its strip counts as that same press.
+const JUST_FOLDED: Duration = Duration::from_millis(400);
 /// How tall the card is taken to be before it is first drawn.
 const PEEK_GUESS: f32 = 360.0;
 /// A point's label column.
@@ -60,6 +64,9 @@ pub(in crate::window) struct Summaries {
     /// Replies written in that card and not sent, by conversation: the
     /// card and the conversation's reply box take them up again.
     kept_replies: HashMap<EntryKey, String>,
+    /// When a press outside last folded the chat's dropped card, so the
+    /// same press on its strip does not drop it again.
+    drop_folded: Option<Instant>,
 }
 
 /// The card beside a line of the list.
@@ -755,10 +762,19 @@ impl MailWindow {
                 .left(px(12.0))
                 .right(px(12.0))
                 .occlude()
+                .on_mouse_down_out(cx.listener(move |this, _, _, cx| {
+                    if let Some(sum) = this.summaries.by_key.get_mut(&key)
+                        && sum.dropped
+                    {
+                        sum.dropped = false;
+                        this.summaries.drop_folded = Some(Instant::now());
+                        cx.notify();
+                    }
+                }))
                 .child(content)
                 .with_animation(
                     "chat-summary-drop",
-                    gpui::Animation::new(std::time::Duration::from_millis(180))
+                    gpui::Animation::new(Duration::from_millis(180))
                         .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                 )
@@ -826,7 +842,7 @@ impl MailWindow {
                     d.rounded(px(12.0))
                         .bg(rgba(summary_surface(th)))
                         .border_1()
-                        .border_color(rgba(summary_line(th)))
+                        .border_color(rgba(th.divider))
                         .hover(|s| s.bg(rgba(mix(summary_surface(th), th.hover, 0.6))))
                 } else {
                     d.bg(rgba(summary_surface(th)))
@@ -839,7 +855,12 @@ impl MailWindow {
                 if let Some(sum) = this.summaries.by_key.get_mut(&key) {
                     if card {
                         sum.folded = false;
-                    } else {
+                    } else if !this
+                        .summaries
+                        .drop_folded
+                        .take()
+                        .is_some_and(|at| at.elapsed() < JUST_FOLDED)
+                    {
                         sum.dropped = !sum.dropped;
                     }
                     cx.notify();
@@ -1103,7 +1124,7 @@ impl MailWindow {
                         .items_center()
                         .pt(px(6.0))
                         .border_t_1()
-                        .border_color(rgba(summary_line(th)))
+                        .border_color(rgba(th.divider))
                         .text_size(px(12.0))
                         .text_color(rgba(th.text_faint))
                         .child(
@@ -1178,7 +1199,7 @@ impl MailWindow {
                         .rounded(px(14.0))
                         .bg(rgba(summary_surface(th)))
                         .border_1()
-                        .border_color(rgba(summary_line(th))),
+                        .border_color(rgba(th.divider)),
                     Place::Drop | Place::Peek => raised(d, th, 16.0, 3.0),
                 })
                 .text_color(rgba(th.text))
@@ -1306,7 +1327,7 @@ impl MailWindow {
                                 .py(px(2.0))
                                 .rounded_full()
                                 .border_1()
-                                .border_color(rgba(summary_line(th)))
+                                .border_color(rgba(th.divider))
                                 .bg(rgba(th.surface))
                                 .text_size(px(12.5))
                                 .child(name)
@@ -1371,7 +1392,7 @@ impl MailWindow {
             .gap(px(4.0))
             .pt(px(6.0))
             .border_t_1()
-            .border_color(rgba(summary_line(th)))
+            .border_color(rgba(th.divider))
             .text_size(px(12.0))
             .text_color(rgba(th.text_faint))
             .child(div().flex_1().min_w_0().child(footer_text))
@@ -1556,7 +1577,7 @@ impl MailWindow {
                                     .child(measure)
                                     .with_animation(
                                         "summary-peek",
-                                        gpui::Animation::new(std::time::Duration::from_millis(160))
+                                        gpui::Animation::new(Duration::from_millis(160))
                                             .with_easing(gpui::ease_out_quint()),
                                         |el, t| el.opacity(t).ml(px(-6.0 * (1.0 - t))),
                                     ),
@@ -1617,14 +1638,10 @@ fn kind_label(kind: PointKind) -> String {
     }
 }
 
-/// The summary's own surface: a soft grey on the card, a quiet line
-/// round it.
+/// The summary's own surface: a soft grey on the card; its lines are
+/// the theme's divider.
 fn summary_surface(th: &Theme) -> u32 {
     mix(th.surface, th.text, if th.dark { 0.04 } else { 0.025 })
-}
-
-fn summary_line(th: &Theme) -> u32 {
-    mix(th.surface, th.text, if th.dark { 0.1 } else { 0.07 })
 }
 
 /// The mails `ids` as a kept summary's points name them.
