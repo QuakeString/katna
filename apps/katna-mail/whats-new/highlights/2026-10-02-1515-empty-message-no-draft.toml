@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "No empty drafts"
+text = """
+A new message you emptied again before closing it no longer stays in
+Drafts, the same as an empty reply in a conversation.
+"""

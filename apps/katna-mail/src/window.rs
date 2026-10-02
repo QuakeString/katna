@@ -480,6 +480,9 @@ pub struct MailWindow {
     /// The search box's X was clicked: the conversation opened from the
     /// results stays open as the folder comes back.
     clear_keeps_open: bool,
+    /// A press landed on the search box or its options panel, so the
+    /// window's own press handler leaves the box focused.
+    search_pressed: bool,
     /// The app whose name rolls away at the top left, and how far the
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
@@ -878,6 +881,7 @@ impl MailWindow {
             reopen_after_undo: None,
             before_search: None,
             clear_keeps_open: false,
+            search_pressed: false,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
@@ -3883,6 +3887,26 @@ impl Render for MailWindow {
         // that is no longer drawn (the list while Settings or a
         // conversation fills the page), where GPUI starts from the root.
         let frame = frame
+            // A press anywhere that takes no keys itself (the top bar's
+            // empty room, a gap between panes) still takes them from the
+            // search box, as a press on the list does.
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, _, window, cx| {
+                    if std::mem::take(&mut this.search_pressed)
+                        || window.default_prevented()
+                        || !this.search.focus_handle(cx).is_focused(window)
+                    {
+                        return;
+                    }
+                    match &this.settings_page {
+                        Some(page) => window.focus(&page.focus, cx),
+                        None if this.mail.is_ok() => window.focus(&this.list_focus, cx),
+                        None => window.focus(&this.window_focus, cx),
+                    }
+                    cx.notify();
+                }),
+            )
             .on_action(cx.listener(Self::focus_next))
             .on_action(cx.listener(Self::focus_previous))
             .on_action(cx.listener(Self::next_pane))
