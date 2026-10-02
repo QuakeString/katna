@@ -1404,6 +1404,69 @@ pub async fn cloud_upload(
         .map_err(|err| describe(&err))
 }
 
+/// Who may open item `id` of the drive of `account`.
+pub async fn cloud_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+) -> Result<Vec<katna_dbus::CloudAccess>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_access(account, id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Shares item `id` with `addresses` as `role`; returns those the drive
+/// refused.
+pub async fn cloud_grant(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    addresses: &[String],
+    role: &str,
+    notify: bool,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_grant(account, id, addresses, role, notify)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Changes grant `permission` of item `id` to `role`; empty takes it away.
+pub async fn cloud_set_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    permission: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_access(account, id, permission, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Opens item `id` to anyone with the link as `role`; empty closes it.
+pub async fn cloud_set_link(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_link(account, id, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Links a file already in the drive of `account` to a message; returns
 /// an upload id that is shared at Send like an uploaded file's.
 pub async fn cloud_link(

@@ -3708,6 +3708,7 @@ impl Render for MailWindow {
         let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let upload_tray = self.render_upload_tray(&th, window, cx);
+        let drive_share = self.render_share_dialog(&th, window, reduce, cx);
         let crash_notice = if onboarding {
             None
         } else {
@@ -3762,6 +3763,7 @@ impl Render for MailWindow {
             .children(update_dialog)
             .children(print_preview)
             .children(upload_tray)
+            .children(drive_share)
             .children(snackbar)
             .children(tour)
             .into_any_element();

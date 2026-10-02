@@ -43,6 +43,7 @@ use crate::widgets::{filled_button, icon, icon_button, outlined_button, placehol
 use katna_core::config::OpenIn;
 
 mod manage;
+mod share;
 mod tray;
 
 /// How long a folder's listing is used again without asking the drive.
@@ -95,6 +96,8 @@ pub(in crate::window) struct Cloud {
     tray_folded: bool,
     /// The item whose name is being typed over.
     renaming: Option<manage::Renaming>,
+    /// The Share dialog, while it is open.
+    sharing: Option<share::Sharing>,
 }
 
 /// A file or folder going up into a drive, shown in the uploads tray.
@@ -2250,6 +2253,19 @@ impl MailWindow {
                 }
                 if self.drive_owned() {
                     items.push(separator());
+                    let e = entry.clone();
+                    items.push(
+                        item(
+                            "files-drive-menu-share".into(),
+                            "person-add",
+                            tr!("files-drive-share"),
+                            false,
+                        )
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.open_drive_share(&e, window, cx);
+                        }))
+                        .into_any_element(),
+                    );
                     let e = entry.clone();
                     items.push(
                         item(

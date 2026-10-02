@@ -7,7 +7,7 @@ use std::sync::Arc;
 use async_channel::Receiver;
 use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
-    AccountStatus, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
+    AccountStatus, CloudAccess, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
     NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus,
     flag, mute,
 };
@@ -530,6 +530,53 @@ macro_rules! pim_interface {
                 Ok(self
                     .daemon
                     .cloud_trash(AccountId(account), &ids, trashed)
+                    .await?)
+            }
+
+            async fn cloud_access(
+                &self,
+                account: i64,
+                id: String,
+            ) -> fdo::Result<Vec<CloudAccess>> {
+                Ok(self.daemon.cloud_access(AccountId(account), &id).await?)
+            }
+
+            async fn cloud_grant(
+                &self,
+                account: i64,
+                id: String,
+                addresses: Vec<String>,
+                role: String,
+                notify: bool,
+            ) -> fdo::Result<Vec<String>> {
+                Ok(self
+                    .daemon
+                    .cloud_grant(AccountId(account), &id, &addresses, &role, notify)
+                    .await?)
+            }
+
+            async fn cloud_set_access(
+                &self,
+                account: i64,
+                id: String,
+                permission: String,
+                role: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_set_access(AccountId(account), &id, &permission, &role)
+                    .await?)
+            }
+
+            async fn cloud_set_link(
+                &self,
+                account: i64,
+                id: String,
+                role: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_set_link(AccountId(account), &id, &role)
                     .await?)
             }
 

@@ -154,6 +154,7 @@ files-drive-download = Download…
 files-drive-open-web = Open in { $drive }
 files-drive-copy-link = Copy link
 files-drive-link-copied = Link copied
+files-drive-share = Share…
 files-drive-rename = Rename
 files-drive-trash = Move to bin
 # $drive: Google Drive or OneDrive.
@@ -171,6 +172,56 @@ files-drive-upload-files = Upload files
 files-drive-upload-folder = Upload folder
 files-drive-upload-failed = Couldn’t upload { $name }: { $error }
 files-drive-upload-needs = To upload, Katna needs your permission once: press Allow in Settings › Default apps › Files page.
+
+
+## The Share dialog of a drive file or folder
+
+# $name: the file or folder.
+files-share-title = Share “{ $name }”
+files-share-add = Add people by name or address
+files-share-not-address = “{ $text }” isn’t an email address
+# A tick under the field once people are added; off unless ticked.
+# $drive: Google Drive or OneDrive.
+files-share-notify = Let { $drive } email them too
+files-share-people = People with access
+files-share-general = General access
+files-share-loading = Reading who has access…
+files-share-restricted = Restricted
+files-share-restricted-about = Only people with access can open it with the link
+files-share-anyone = Anyone with the link
+# $role: owner, editor, commenter or viewer.
+files-share-anyone-can = { $role ->
+    [editor] Anyone with the link can edit
+    [commenter] Anyone with the link can comment
+   *[viewer] Anyone with the link can view
+}
+# Under "Anyone with the link".
+files-share-anyone-about = { $role ->
+    [editor] Anyone on the internet with the link can edit
+    [commenter] Anyone on the internet with the link can comment
+   *[viewer] Anyone on the internet with the link can view
+}
+files-share-role-owner = Owner
+files-share-role-editor = Editor
+files-share-role-commenter = Commenter
+files-share-role-viewer = Viewer
+# Your own line in the list.
+files-share-you = { $name } (you)
+# Everyone at a company or school, $domain such as invenia.in.
+files-share-domain = Everyone at { $domain }
+files-share-inherited = Access from a folder it is in
+files-share-remove = Remove access
+files-share-copy-link = Copy link
+files-share-share = Share
+files-share-done = Done
+files-share-sharing = Sharing…
+files-share-shared = { $count ->
+    [one] Shared with 1 person
+   *[other] Shared with { $count } people
+}
+# $addresses: the addresses $drive turned down.
+files-share-refused = { $drive } couldn’t share with { $addresses }
+files-share-failed = Couldn’t change sharing: { $error }
 
 ## The uploads tray, at the bottom right while files go up to a drive
 

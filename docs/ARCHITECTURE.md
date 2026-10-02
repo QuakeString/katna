@@ -2718,6 +2718,14 @@ desktop's own app stays one click away.
   `DriveChanged`, the time left, Cancel per file and Cancel all
   (`DriveCancel`); it folds to its head, stays once everything is done
   (a click on a finished file opens its folder) and goes when closed. The app
+  **Share…** in the same menu opens the Share dialog
+  (`files_page/drive/share.rs`; `CloudAccess`, `CloudGrant`,
+  `CloudSetAccess`, `CloudSetLink`): people added by address or from the
+  address book get Viewer, Commenter (Google only) or Editor; the drive's
+  own sharing email is off unless "Let … email them too" is ticked;
+  each grant's role can change or go (the owner and access from a parent
+  folder are fixed); General access is Restricted or Anyone with the link
+  (a Google `anyone` permission; a OneDrive anonymous view or edit link).
   keeps listings for 3 minutes. Settings >
   Default apps > Files page > **Drives in Files** turns a drive off per
   account (`mail.files.drives_off`).

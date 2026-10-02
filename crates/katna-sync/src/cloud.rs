@@ -64,3 +64,73 @@ pub const MAX_FETCH: u64 = 2 * 1024 * 1024 * 1024;
 
 /// The biggest thumbnail it reads.
 pub const MAX_THUMBNAIL: usize = 4 * 1024 * 1024;
+
+/// What someone may do with a shared item.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Role {
+    Owner,
+    Editor,
+    /// Views and comments; Google Drive only.
+    Commenter,
+    Viewer,
+}
+
+impl Role {
+    /// Its name over D-Bus.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Owner => "owner",
+            Self::Editor => "editor",
+            Self::Commenter => "commenter",
+            Self::Viewer => "viewer",
+        }
+    }
+
+    pub fn parse(text: &str) -> Option<Self> {
+        Some(match text {
+            "owner" => Self::Owner,
+            "editor" => Self::Editor,
+            "commenter" => Self::Commenter,
+            "viewer" => Self::Viewer,
+            _ => return None,
+        })
+    }
+}
+
+/// Who a grant of access is for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Who {
+    Person,
+    Group,
+    /// Everyone in an organisation.
+    Domain,
+    /// Anyone with the link.
+    Anyone,
+}
+
+impl Who {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Person => "person",
+            Self::Group => "group",
+            Self::Domain => "domain",
+            Self::Anyone => "anyone",
+        }
+    }
+}
+
+/// One grant of access to an item: who, and what they may do.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Access {
+    /// The drive's id for the grant, to change or take it away.
+    pub id: String,
+    pub who: Who,
+    pub role: Role,
+    /// The person's or group's address, or the organisation's domain.
+    pub address: String,
+    pub name: String,
+    /// Given on a folder above; changed there, not here.
+    pub inherited: bool,
+    /// The link it opens with, for anyone with the link.
+    pub link: String,
+}
