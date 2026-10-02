@@ -1521,7 +1521,25 @@ GPUI global):
   live as they are dragged; unset, the frame keeps its preset's radius and
   outline (`Look::radius`, `Look::border`, `Look::border_opacity`). The
   title bar and content round their corners less the border's width so
-  they nest. Dialogs and
+  they nest.
+  With the window blur on, three more switches (on by default) let it
+  through what sits on the window: *Frosted panes*
+  (`experimental.frosted_panes`) makes the cards (mail list, open mail,
+  person card, agenda, Settings) `pane_opacity` percent opaque over the
+  blurred desktop (30 to 95, default 75), with a slider: each card first
+  clears the window's tint under it (`widgets::pane`, the renderer's
+  erase marker in `vendor/gpui-pre-wgpu/KATNA.md`), so the opacity is the
+  card's own and the cards are clearer than the folders' 78 %; *Frosted chat
+  background* (`frosted_chat`) makes the open mail's card 5 points
+  clearer while it shows a chat (70 % with solid panes), bubbles staying
+  solid; *Frosted search box* (`frosted_search`) keeps the focused search
+  field 62 % opaque, clearing the bar's tint under it as it opens. The theme carries them (`Theme::frosted_panes`,
+  `pane`, `chat_pane`, `on_pane`): rows and chips that match the card
+  draw nothing, others go as see-through as the card. Over see-through
+  cards dim and faint text move closer to the text colour (a fifth and
+  0.38 of the way to the card at most), so dim previews keep 4.5:1 at the
+  default over a bright wallpaper; at the old default of 60 % they fell to
+  about 2.7:1. Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
   color, more solid and more blurred than menus since they cover more of

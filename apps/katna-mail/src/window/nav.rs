@@ -95,12 +95,16 @@ fn blend(a: u32, b: u32, t: f32) -> u32 {
 /// box sits on, not from the cards: a desktop scheme's cards can be darker
 /// than its window (Breeze Dark), and a field lifted from them looked no
 /// different from the idle box.
+///
+/// In a blurred window with the frosted search box on, the field lets the
+/// blur through ([`Theme::search_tint`]).
 fn search_focused_fill(th: &Theme) -> u32 {
-    if th.dark {
+    let fill = if th.dark {
         over(fade(th.text, SEARCH_FOCUSED_LIFT), th.page | 0xff)
     } else {
         th.search_focused
-    }
+    };
+    fade(fill, f32::from(th.search_tint) / 100.0)
 }
 
 /// The search box's 1 px edge, `t` from idle (0) to focused (1).
@@ -598,7 +602,19 @@ impl MailWindow {
             // blurred window the blur shows through it). Focused, it turns
             // into a solid field, its edge takes a soft accent and it lifts
             // a little.
-            .bg(rgba(search_fill(th, t)))
+            .map(|d| {
+                let fill = search_fill(th, t);
+                if th.search_tint >= 100 {
+                    return d.bg(rgba(fill));
+                }
+                // A frosted box clears the bar's tint under it as it opens,
+                // so it is as see-through as its own fill says.
+                d.child(katna_ui::frost::clear_fill(
+                    rgba(fill).into(),
+                    rgba(fade(th.page | 0xff, t.clamp(0.0, 1.0))).into(),
+                    px(lerp(SEARCH_HEIGHT, 48.0, phone) / 2.0),
+                ))
+            })
             .border_1()
             .border_color(rgba(search_edge(th, t)))
             // Under the pointer the idle edge is a touch stronger; it fades
