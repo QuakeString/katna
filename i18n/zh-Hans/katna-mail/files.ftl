@@ -154,6 +154,7 @@ files-share-remove = 移除访问权限
 files-share-copy-link = 复制链接
 files-share-share = 共享
 files-share-done = 完成
+files-share-close = 关闭
 files-share-sharing = 正在共享…
 files-share-shared = { $count ->
    *[other] 已与 { $count } 人共享

@@ -39,6 +39,7 @@ list-results = Kết quả cho “{ $query }”
 list-results-corrected = Đang hiển thị kết quả cho “{ $query }”
 list-search-instead = Thay vào đó, tìm “{ $query }”
 list-files-more = +{ $count }
+list-replied = Bạn đã trả lời
 
 ## Mail list: Select menu (which lines to tick)
 
