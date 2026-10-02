@@ -272,6 +272,25 @@ fn without_sign_off(text: &str) -> String {
     }
 }
 
+/// `text` without the user's name, `me`, alone on its last line: the
+/// signature signs it.
+pub fn without_name(text: &str, me: &str) -> String {
+    let me = me.trim().to_lowercase();
+    let first = me.split_whitespace().next().unwrap_or_default();
+    if first.is_empty() {
+        return text.to_owned();
+    }
+    let Some((before, last)) = text.trim_end().rsplit_once('\n') else {
+        return text.to_owned();
+    };
+    let last = last.trim().trim_end_matches(['.', ',', '!']).to_lowercase();
+    if (last == me || last == first) && !before.trim().is_empty() {
+        without_sign_off(before.trim_end())
+    } else {
+        text.to_owned()
+    }
+}
+
 /// Whether `line` could be a name under a sign-off: a few words, no
 /// sentence.
 fn is_name(line: &str) -> bool {
@@ -396,6 +415,17 @@ mod tests {
         let kept = "Hi Tom,\n\nThanks\nfor the route, it works for me.";
         assert_eq!(clean_draft(kept).unwrap(), kept);
         assert_eq!(clean_draft("Thanks!").unwrap(), "Thanks!");
+    }
+
+    #[test]
+    fn drafts_lose_the_name_on_their_last_line() {
+        let text = "Hi Tom,\n\nSee you at 7.\n\nThanks for the heads-up!\nAlex";
+        assert_eq!(
+            without_name(text, "Alex Rivera"),
+            "Hi Tom,\n\nSee you at 7.\n\nThanks for the heads-up!"
+        );
+        assert_eq!(without_name(text, "Sam"), text);
+        assert_eq!(without_name("Alex", "Alex"), "Alex");
     }
 
     #[test]

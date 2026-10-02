@@ -196,8 +196,9 @@ pub async fn draft(
         }
         serde_json::to_string(&ideas).map_err(|err| AiError::Failed(err.to_string()))?
     } else {
-        draft::clean_draft(&answer.text)
-            .ok_or_else(|| AiError::Failed("the answer was empty".into()))?
+        let text = draft::clean_draft(&answer.text)
+            .ok_or_else(|| AiError::Failed("the answer was empty".into()))?;
+        draft::without_name(&text, &request.me)
     };
     tracing::info!(
         ms = asked.elapsed().as_millis() as u64,

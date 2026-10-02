@@ -89,7 +89,7 @@ use security::Sealing;
 pub(super) use sent::{Sending, SentCard};
 pub(super) use signature_editor::signature_content;
 use tools::Popup;
-pub(super) use tools::below_end;
+pub(super) use tools::below_end_over;
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
