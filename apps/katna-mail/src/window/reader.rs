@@ -33,8 +33,7 @@ use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, pane_line, placeholder, tip,
-    toolbar,
+    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
 };
 
 mod chat;
@@ -1317,7 +1316,7 @@ impl MailWindow {
                 div()
                     .flex_none()
                     .border_t_1()
-                    .border_color(rgba(pane_line(th)))
+                    .border_color(rgba(th.divider))
                     .child(footer)
             }))
             .children(self.render_text_menu(th, cx))
@@ -1378,7 +1377,7 @@ impl MailWindow {
                 .pr(px(24.0))
                 .py(px(12.0))
                 .border_t_1()
-                .border_color(rgba(pane_line(th)))
+                .border_color(rgba(th.divider))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
@@ -1734,7 +1733,7 @@ impl MailWindow {
                 .gap(px(4.0))
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
                 .child(line(tr!("reader-details-from"), from))
@@ -1862,7 +1861,7 @@ impl MailWindow {
                                     .when(*quoted, |d| {
                                         d.pl(px(12.0))
                                             .border_l_2()
-                                            .border_color(rgba(th.divider))
+                                            .border_color(rgba(th.outline))
                                             .text_color(rgba(th.text_faint))
                                     })
                                     .child(styled)
@@ -1885,7 +1884,7 @@ impl MailWindow {
             .pr(px(16.0))
             .pt(px(12.0))
             .pb(px(if last { 0.0 } else { 16.0 }))
-            .when(ix > 0, |d| d.border_t_1().border_color(rgba(pane_line(th))))
+            .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
             .child(
                 div()
                     .w(px(PICTURE_COLUMN))

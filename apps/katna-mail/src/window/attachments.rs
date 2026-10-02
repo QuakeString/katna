@@ -658,7 +658,7 @@ impl MailWindow {
                 .overflow_hidden()
                 .rounded(px(CARD_RADIUS))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .cursor_pointer()
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();

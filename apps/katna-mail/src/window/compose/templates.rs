@@ -365,7 +365,7 @@ impl MailWindow {
                             .items_center()
                             .rounded(px(6.0))
                             .border_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(th.outline))
                             .text_size(px(14.0))
                             .child(compose.dialog.template_name.clone()),
                     ),

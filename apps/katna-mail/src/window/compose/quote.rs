@@ -384,7 +384,7 @@ impl MailWindow {
             .rounded_full()
             .bg(rgba(th.surface))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(tip(tr!("compose-remove-trimmed"), th))

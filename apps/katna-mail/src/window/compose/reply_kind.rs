@@ -292,7 +292,7 @@ impl MailWindow {
                 .relative()
                 .min_w(px(200.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .occlude()
                 .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                 .on_mouse_down_out(cx.listener(|this, _, _, cx| {

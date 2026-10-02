@@ -329,7 +329,7 @@ impl Render for ChipDrag {
             .items_center()
             .rounded_full()
             .border_1()
-            .border_color(rgba(if self.valid { th.divider } else { th.error }))
+            .border_color(rgba(if self.valid { th.outline } else { th.error }))
             .bg(rgba(th.raised))
             .shadow(elevation(th, 3.0))
             .text_size(px(14.0))
@@ -836,7 +836,7 @@ impl MailWindow {
                             .px(px(6.0))
                             .rounded(px(4.0))
                             .border_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(th.outline))
                             .text_size(px(13.0))
                             .text_color(rgba(th.text_dim))
                             .child(tr!("compose-more-recipients", count = list.len() - shown)),

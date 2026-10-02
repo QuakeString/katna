@@ -92,7 +92,7 @@ pub(super) fn flag(code: &str, th: &Theme) -> AnyElement {
         .rounded(px(3.0))
         .overflow_hidden()
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .child(
             img(SharedString::from(format!("flags/{code}.svg")))
                 .w(px(24.0))

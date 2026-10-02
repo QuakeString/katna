@@ -475,7 +475,7 @@ impl MailWindow {
             .gap(px(12.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
@@ -526,7 +526,7 @@ impl MailWindow {
                         .gap(px(4.0))
                         .rounded(px(8.0))
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .text_size(px(13.0))
                         .child(language_name(code))
                         .child(

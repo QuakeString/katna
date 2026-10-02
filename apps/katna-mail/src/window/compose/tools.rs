@@ -764,7 +764,7 @@ impl MailWindow {
                 .mx(px(3.0))
                 .w(px(1.0))
                 .h(px(16.0))
-                .bg(rgba(fade(th.divider, super::FAINT_LINE)))
+                .bg(rgba(th.faint_line(super::FAINT_LINE)))
         };
         let tray = div()
             .flex_none()
@@ -1126,7 +1126,7 @@ impl MailWindow {
                         // scroll sideways.
                         .rounded_full()
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .bg(rgba(format_bar_bg(th)))
                         .shadow(crate::widgets::elevation(th, 1.0))
                         .overflow_x_scroll()
@@ -1719,7 +1719,7 @@ impl MailWindow {
                 .justify_center()
                 .rounded(px(3.0))
                 .bg(rgba((c << 8) | 0xff))
-                .when(light, |d| d.border_1().border_color(rgba(th.divider)))
+                .when(light, |d| d.border_1().border_color(rgba(th.outline)))
                 .when(selected, |d| d.border_1().border_color(rgba(th.text)))
                 .cursor_pointer()
                 .hover(|s| s.border_1().border_color(rgba(th.text)))
@@ -1796,7 +1796,7 @@ impl MailWindow {
                 .size(px(18.0))
                 .rounded(px(2.0))
                 .border_1()
-                .border_color(rgba(if on { th.accent } else { th.divider }))
+                .border_color(rgba(if on { th.accent } else { th.outline }))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.25))))
                 .cursor_pointer()
                 .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2979,7 +2979,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(6.0))
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .text_size(px(14.0))
                         .child(input.clone()),
                 )
@@ -3224,7 +3224,7 @@ impl MailWindow {
                             .items_center()
                             .rounded(px(6.0))
                             .border_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(th.outline))
                             .text_size(px(14.0))
                             .child(format::day_month_year(
                                 day.to_datetime(jiff::civil::Time::midnight()),
