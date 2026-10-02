@@ -416,8 +416,11 @@ pub mod app_action {
     /// Open one message; the parameter is its ID (`x`).
     pub const OPEN_MESSAGE: &str = "open-message";
     /// Open one message and start a reply to all; the parameter is its ID
-    /// (`x`).
+    /// (`x`), then, if any, the text the reply starts with (`s`).
     pub const REPLY_ALL: &str = "reply-all";
+    /// Open one message and start a reply to its sender; the parameters
+    /// as for [`REPLY_ALL`].
+    pub const REPLY: &str = "reply";
     /// Put a query in the search box and search; the parameter is the
     /// query (`s`).
     pub const SEARCH: &str = "search";
@@ -439,7 +442,8 @@ pub mod app_action {
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
-    /// message ID, those of [`takes_text`] actions by the text.
+    /// message ID (for a reply, then [`TEXT_FLAG`] and the text it starts
+    /// with), those of [`takes_text`] actions by the text.
     pub fn flag(action: &str) -> Option<&'static str> {
         match action {
             OPEN_INBOX => Some("--inbox"),
@@ -448,6 +452,7 @@ pub mod app_action {
             OPEN_MESSAGE => Some("--message"),
             INSTALL_UPDATE => Some("--update"),
             REPLY_ALL => Some("--reply-all"),
+            REPLY => Some("--reply"),
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
             ATTACH => Some("--attach"),
@@ -488,9 +493,13 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
     }
 
+    /// After a reply's message ID on the command line: the text the reply
+    /// starts with follows.
+    pub const TEXT_FLAG: &str = "--text";
+
     /// Whether `action`'s parameter is a message ID.
     pub fn takes_message(action: &str) -> bool {
-        matches!(action, OPEN_MESSAGE | REPLY_ALL)
+        matches!(action, OPEN_MESSAGE | REPLY_ALL | REPLY)
     }
 
     /// Whether `action`'s parameter is text.
@@ -834,7 +843,7 @@ macro_rules! pim_proxy {
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
 
             /// Whether the sign-in of `account` lets Katna browse its whole
-            /// drive in Files (Google Drive for now). Asks no server.
+            /// drive in Files (Google Drive or OneDrive). Asks no server.
             fn cloud_readable(&self, account: i64) -> zbus::Result<bool>;
 
             /// One page of the drive of `account`: a folder, what was

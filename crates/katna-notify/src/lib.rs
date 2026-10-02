@@ -5,7 +5,9 @@
 //!
 //! Talks to the desktop's `org.freedesktop.Notifications` server directly
 //! (Plasma, GNOME Shell, mako, dunst, …). So far: new-mail notifications
-//! with Open, Reply all, Mark as read and Archive, reminders (snooze,
+//! with Peek, Reply (typed into the notification where the server can,
+//! §15.1.2), Mark as read and Archive, the note that a reply typed there
+//! is on its way, with Undo, reminders (snooze,
 //! follow-up) with Open, Mark as read and Archive, and event reminders
 //! with Join and Snooze, and a note with Undo after Archive.
 
@@ -19,6 +21,16 @@ use zbus::zvariant::Value;
 pub mod action {
     /// A click on the notification itself.
     pub const OPEN: &str = "default";
+    /// Only on a notification about one message: show more of it, in the
+    /// same notification.
+    pub const PEEK: &str = "peek";
+    /// Only on a notification about one message, where the server takes
+    /// replies typed into it: Plasma's key for its reply field. The text
+    /// comes back in `NotificationReplied`.
+    pub const INLINE_REPLY: &str = "inline-reply";
+    /// Only on a notification about one message, where the server takes no
+    /// typed replies: Katna Mail's reply window.
+    pub const REPLY: &str = "reply";
     /// Only on a notification about one message.
     pub const REPLY_ALL: &str = "reply-all";
     pub const MARK_READ: &str = "mark-read";
@@ -32,16 +44,24 @@ pub mod action {
     /// On a task's reminder: tick the task off.
     pub const DONE: &str = "done";
     /// On the note that mail was archived from a notification: put it
-    /// back in the inbox.
+    /// back in the inbox; on the note that a reply is on its way: keep it
+    /// from going, and write it on in Katna Mail.
     pub const UNDO: &str = "undo";
+    /// On the note that a reply is on its way: show the conversation in
+    /// Katna Mail.
+    pub const SHOW: &str = "show";
 }
 
 /// At most this many messages are listed in a grouped notification.
 const LISTED: usize = 4;
 /// Longest preview of a single message's text, in characters.
 const PREVIEW_CHARS: usize = 160;
+/// Longest text of a peeked message, in characters.
+const PEEK_CHARS: usize = 1200;
 /// How long the note that mail was archived stays, in milliseconds.
 const ARCHIVED_SHOWN_MS: i32 = 8000;
+/// The server capability of replies typed into a notification.
+const INLINE_REPLY_CAPABILITY: &str = "inline-reply";
 
 #[zbus::proxy(
     interface = "org.freedesktop.Notifications",
@@ -76,6 +96,10 @@ pub trait Notifications {
 
     #[zbus(signal)]
     fn notification_closed(&self, id: u32, reason: u32) -> zbus::Result<()>;
+
+    /// A reply typed into notification `id` (Plasma's inline reply).
+    #[zbus(signal)]
+    fn notification_replied(&self, id: u32, text: &str) -> zbus::Result<()>;
 }
 
 /// One new message, as a notification shows it.
@@ -86,6 +110,15 @@ pub struct NewMail {
     pub subject: String,
     /// The start of the text, when the body is downloaded.
     pub preview: Option<String>,
+}
+
+/// How a new-mail notification shows its mail.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum View<'a> {
+    /// Sender, subject and the start of the text, with Peek.
+    Short,
+    /// One message peeked at: `text` is its body, as much as fits.
+    Peek { text: &'a str },
 }
 
 /// Summary and body of a notification for `mails` (not empty), in the
@@ -129,6 +162,33 @@ fn escape(text: &str) -> String {
         .replace('>', "&gt;")
 }
 
+/// Body of a peeked message: its subject, then `text` with its line
+/// breaks, blank lines run together and cut at [`PEEK_CHARS`].
+pub fn peek_text(mail: &NewMail, text: &str) -> String {
+    let subject = if mail.subject.trim().is_empty() {
+        tr!("notify-no-subject")
+    } else {
+        mail.subject.clone()
+    };
+    let mut lines: Vec<&str> = Vec::new();
+    for line in text.lines().map(str::trim_end) {
+        if line.trim().is_empty() && lines.last().is_none_or(|l| l.is_empty()) {
+            continue;
+        }
+        lines.push(if line.trim().is_empty() { "" } else { line });
+    }
+    let text = lines.join("\n");
+    let text = match text.char_indices().nth(PEEK_CHARS) {
+        Some((at, _)) => format!("{}…", text[..at].trim_end()),
+        None => text,
+    };
+    let text = text.trim();
+    if text.is_empty() {
+        return escape(&subject);
+    }
+    format!("{}\n\n{}", escape(&subject), escape(text))
+}
+
 fn shorten(text: &str, max: usize) -> String {
     let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
     match text.char_indices().nth(max) {
@@ -143,6 +203,9 @@ pub struct Notifier {
     proxy: NotificationsProxy<'static>,
 }
 
+/// What a new-mail notification's actions read as: key, then label.
+type Actions = Vec<(&'static str, String)>;
+
 impl Notifier {
     pub async fn new(connection: &zbus::Connection) -> zbus::Result<Self> {
         Ok(Self {
@@ -150,39 +213,74 @@ impl Notifier {
         })
     }
 
+    /// Whether the server takes replies typed into a notification. Asked
+    /// each time: the desktop's server can be restarted, or replaced.
+    pub async fn takes_replies(&self) -> bool {
+        self.proxy
+            .get_capabilities()
+            .await
+            .is_ok_and(|caps| caps.iter().any(|c| c == INLINE_REPLY_CAPABILITY))
+    }
+
+    /// The buttons of a notification about `mails` shown as `view`.
+    /// Peek needs a notification that can grow: not a Windows toast.
+    fn new_mail_actions(mails: &[NewMail], view: View<'_>, replies: bool) -> Actions {
+        let mut actions = vec![(action::OPEN, tr!("notify-open"))];
+        let reply = if replies {
+            (action::INLINE_REPLY, tr!("notify-reply"))
+        } else {
+            (action::REPLY, tr!("notify-reply"))
+        };
+        match (mails.len(), view) {
+            (1, View::Peek { .. }) => actions.extend([
+                reply,
+                (action::REPLY_ALL, tr!("notify-reply-all")),
+                (action::ARCHIVE, tr!("notify-archive")),
+            ]),
+            (1, View::Short) => {
+                if !cfg!(windows) {
+                    actions.push((action::PEEK, tr!("notify-peek")));
+                }
+                actions.extend([
+                    reply,
+                    (action::MARK_READ, tr!("notify-mark-read")),
+                    (action::ARCHIVE, tr!("notify-archive")),
+                ]);
+            }
+            _ => actions.extend([
+                (action::MARK_READ, tr!("notify-mark-all-read")),
+                (action::ARCHIVE, tr!("notify-archive")),
+            ]),
+        }
+        actions
+    }
+
     /// The server's proxy, for its signals.
     pub fn proxy(&self) -> &NotificationsProxy<'static> {
         &self.proxy
     }
 
-    /// Shows `mails` (not empty) of the account `origin` (its address),
+    /// Shows `mails` (not empty) of the account `origin` as `view`,
     /// replacing notification `replaces` if not 0, with `sound` (a
-    /// `katna_platform::sound` name the server plays) or silently.
-    /// Returns its ID.
+    /// `katna_platform::sound` name the server plays) or silently. Reply
+    /// is typed into the notification when `replies` (see
+    /// [`Self::takes_replies`]). Returns its ID.
     pub async fn new_mail(
         &self,
         origin: &str,
         mails: &[NewMail],
+        view: View<'_>,
+        replies: bool,
         replaces: u32,
         sound: Option<&str>,
     ) -> zbus::Result<u32> {
-        let (summary, body) = new_mail_text(mails);
-        let one = mails.len() == 1;
-        let mut actions = vec![(action::OPEN, tr!("notify-open"))];
-        if one {
-            actions.push((action::REPLY_ALL, tr!("notify-reply-all")));
-        }
-        let mark_read = if one {
-            tr!("notify-mark-read")
-        } else {
-            tr!("notify-mark-all-read")
+        let (summary, body) = match (mails, view) {
+            ([mail], View::Peek { text }) => (mail.sender.clone(), peek_text(mail, text)),
+            _ => new_mail_text(mails),
         };
-        actions.extend([
-            (action::MARK_READ, mark_read),
-            (action::ARCHIVE, tr!("notify-archive")),
-        ]);
+        let labels = Self::new_mail_actions(mails, view, replies);
         // Key, label, key, label, … as the specification has them.
-        let actions: Vec<&str> = actions
+        let actions: Vec<&str> = labels
             .iter()
             .flat_map(|(key, label)| [*key, label.as_str()])
             .collect();
@@ -191,12 +289,38 @@ impl Notifier {
             ("category", Value::from("email.arrived")),
             ("x-kde-origin-name", Value::from(origin)),
             ("urgency", Value::U8(1)),
+            // Peek replaces the notification in place: it must still be
+            // there once its button is pressed. Katna closes it after the
+            // other buttons.
+            ("resident", Value::Bool(true)),
         ]);
+        if let ([mail], true) = (mails, replies) {
+            hints.extend([
+                (
+                    "x-kde-reply-placeholder-text",
+                    Value::from(tr!("notify-reply-placeholder", name = mail.sender.clone())),
+                ),
+                (
+                    "x-kde-reply-submit-button-text",
+                    Value::from(tr!("notify-send")),
+                ),
+                (
+                    "x-kde-reply-submit-button-icon-name",
+                    Value::from("document-send"),
+                ),
+            ]);
+        }
         if let Some(sound) = sound {
             hints.insert("sound-name", Value::from(sound));
         } else {
             hints.insert("suppress-sound", Value::Bool(true));
         }
+        // A peek stays until closed: it was asked for, to be read.
+        let timeout = if matches!(view, View::Peek { .. }) {
+            0
+        } else {
+            -1
+        };
         self.proxy
             .notify(
                 "Katna Mail",
@@ -206,7 +330,48 @@ impl Notifier {
                 &body,
                 &actions,
                 hints,
-                -1,
+                timeout,
+            )
+            .await
+    }
+
+    /// Says, in place of notification `replaces` if not 0, that the reply `text`
+    /// to `name` is on its way: for `undo_seconds` with Undo (none for
+    /// 0), and Open in Katna. Returns its ID.
+    pub async fn reply_sent(
+        &self,
+        name: &str,
+        text: &str,
+        undo_seconds: u32,
+        replaces: u32,
+    ) -> zbus::Result<u32> {
+        let mut labels = Vec::new();
+        if undo_seconds > 0 {
+            labels.push((action::UNDO, tr!("notify-undo")));
+        }
+        labels.push((action::SHOW, tr!("notify-open-in-katna")));
+        let actions: Vec<&str> = labels
+            .iter()
+            .flat_map(|(key, label)| [*key, label.as_str()])
+            .collect();
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("category", Value::from("email")),
+            ("urgency", Value::U8(0)),
+            ("suppress-sound", Value::Bool(true)),
+            ("transient", Value::Bool(true)),
+        ]);
+        let shown_ms = i32::try_from(undo_seconds.max(5).saturating_mul(1000)).unwrap_or(i32::MAX);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                replaces,
+                ids::MAIL_APP_ID,
+                &tr!("notify-reply-sent", name = name),
+                &escape(&shorten(text, PREVIEW_CHARS)),
+                &actions,
+                hints,
+                shown_ms,
             )
             .await
     }
@@ -487,6 +652,54 @@ mod tests {
         assert_eq!(
             body,
             "Acme: Order 0\nAcme: Order 1\nAcme: Order 2\nAcme: Order 3\nand 2 more"
+        );
+    }
+
+    #[test]
+    fn a_peek_keeps_paragraphs() {
+        let one = mail("Alex", "Q3 & plans");
+        assert_eq!(
+            peek_text(&one, "Hi Kay,\n\n\n\nCan we <meet>?  \nAt 3\n\n"),
+            "Q3 &amp; plans\n\nHi Kay,\n\nCan we &lt;meet&gt;?\nAt 3"
+        );
+        assert_eq!(peek_text(&one, "  "), "Q3 &amp; plans");
+        let long = peek_text(&one, &"word ".repeat(1000));
+        assert!(long.ends_with('…') && long.chars().count() < PEEK_CHARS + 20);
+    }
+
+    #[test]
+    fn one_message_has_peek_and_reply() {
+        let keys = |actions: Actions| actions.into_iter().map(|(k, _)| k).collect::<Vec<_>>();
+        let one = [mail("Alex", "Hi")];
+        let short = keys(Notifier::new_mail_actions(&one, View::Short, true));
+        let peek = if cfg!(windows) {
+            None
+        } else {
+            Some(action::PEEK)
+        };
+        let expected: Vec<&str> = [Some(action::OPEN), peek, Some(action::INLINE_REPLY)]
+            .into_iter()
+            .flatten()
+            .chain([action::MARK_READ, action::ARCHIVE])
+            .collect();
+        assert_eq!(short, expected);
+        assert_eq!(
+            keys(Notifier::new_mail_actions(
+                &one,
+                View::Peek { text: "" },
+                false
+            )),
+            [
+                action::OPEN,
+                action::REPLY,
+                action::REPLY_ALL,
+                action::ARCHIVE
+            ]
+        );
+        let two = [mail("Alex", "Hi"), mail("Bo", "Yo")];
+        assert_eq!(
+            keys(Notifier::new_mail_actions(&two, View::Short, true)),
+            [action::OPEN, action::MARK_READ, action::ARCHIVE]
         );
     }
 

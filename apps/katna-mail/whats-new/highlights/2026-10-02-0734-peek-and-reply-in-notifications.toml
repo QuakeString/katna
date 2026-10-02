@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Peek and reply from the notification"
+text = """
+A new-mail notification now has Peek, which shows the mail itself in the
+same notification, and Reply, where you type your answer right there and
+press Send. It goes from the account the mail came to, after your Undo
+send time; Undo opens it in Katna Mail to write on. On Linux, new mail
+also has a louder chime of its own; pick another in Settings >
+Notifications.
+"""

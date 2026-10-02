@@ -199,6 +199,9 @@ pub(super) struct Viewer {
     /// Opened from the attach picker: whether the file shown is ticked,
     /// for the bar's Select button.
     pub(super) pick: Option<bool>,
+    /// Opened before its file is here (a drive file still downloading):
+    /// it waits, turning, for `arrived`.
+    fetching: bool,
     pub(super) th: Theme,
 }
 
@@ -360,10 +363,35 @@ impl Viewer {
             can_show_mail: false,
             library: None,
             pick: None,
+            fetching: false,
             th,
         };
         this.show(current, cx);
         this
+    }
+
+    /// A viewer open on `item` while its file is still on the way: it
+    /// waits, turning, until `arrived` hands it over.
+    pub(super) fn fetching(
+        item: Item,
+        th: Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Self {
+        let mut this = Self::new(Arc::new(Vec::new()), Vec::new(), 0, false, th, window, cx);
+        this.items = vec![item];
+        this.enter(0);
+        this.fetching = true;
+        this
+    }
+
+    /// The file a `fetching` viewer waits for is here.
+    pub(super) fn arrived(&mut self, raw: Arc<Vec<u8>>, items: Vec<Item>, cx: &mut Context<Self>) {
+        self.raw = raw;
+        self.items = items;
+        self.seq = 0;
+        self.fetching = false;
+        self.show(0, cx);
     }
 
     /// Shows attachment `ix` of `raw`, another mail's or this one's,
@@ -1418,9 +1446,14 @@ impl Render for Viewer {
                 Content::Sheet(view) => self.sheet_body(view, zoom, vw, cx),
                 Content::Loading => centered(
                     div()
+                        .flex()
+                        .flex_col()
+                        .items_center()
+                        .gap(px(14.0))
                         .text_color(rgba(INK_DIM))
                         .text_size(px(14.0))
-                        .child("Opening…"),
+                        .child(crate::widgets::spinner("viewer-opening", INK_DIM, 32.0))
+                        .child(katna_i18n::tr!("viewer-opening")),
                 ),
                 Content::Nothing(why) => {
                     let why = why.clone();

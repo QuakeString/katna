@@ -30,6 +30,21 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
+/// A turning arc for something that is on its way, `size` px square.
+pub fn spinner(id: impl Into<ElementId>, color: u32, size: f32) -> AnyElement {
+    svg()
+        .path("icons/spinner.svg")
+        .size(px(size))
+        .flex_none()
+        .text_color(rgba(color))
+        .with_animation(
+            id,
+            gpui::Animation::new(std::time::Duration::from_millis(900)).repeat(),
+            |arc, t| arc.with_transformation(gpui::Transformation::rotate(gpui::percentage(t))),
+        )
+        .into_any_element()
+}
+
 /// Katna's logo, the k on its teal disc, `size` px square. Below 48 px it
 /// leaves out the shadow, which blurs to mush that small
 /// (`packaging/icons/src/`).

@@ -24,6 +24,7 @@ files-accounts = Accounts
 # Heading over the accounts' cloud drives.
 files-drives = Drives
 files-drive-google = Google Drive
+files-drive-onedrive = OneDrive
 # What other people shared with the account, in its drive.
 files-drive-shared = Shared with me
 # Heading over "Received" and "Sent by me".
@@ -108,6 +109,8 @@ files-download-failed = Could not download this mail.
 
 # The top of the drive, first in the folder path.
 files-drive-mine = My Drive
+# The top of a OneDrive, as Microsoft names it.
+files-drive-mine-onedrive = My files
 # The last part of the folder path while the drive is searched.
 files-drive-results = “{ $words }”
 files-drive-count = { $folders ->
@@ -139,15 +142,16 @@ files-drive-google-drawing = Google Drawing
 files-drive-fetching = Getting it…
 files-drive-loading = Opening the drive…
 files-drive-empty = This folder is empty.
-files-drive-unreachable = Can’t reach Google Drive.
+# $drive: Google Drive or OneDrive.
+files-drive-unreachable = Can’t reach { $drive }.
 files-drive-try-again = Try again
-files-drive-needs-permission = Katna needs your permission once to show this drive. Sign in with Google again and allow Katna to see your Drive files.
+files-drive-needs-permission = Katna needs your permission once to show this drive. Sign in again and allow Katna to see your files.
 files-drive-allow = Allow
 files-drive-allow-failed = The sign-in didn’t finish, so the drive stays closed.
 files-drive-attach = Attach
 files-drive-more = More
 files-drive-download = Download…
-files-drive-open-web = Open in Google Drive
+files-drive-open-web = Open in { $drive }
 files-drive-copy-link = Copy link
 files-drive-link-copied = Link copied
 # $name from $drive, such as "Getting report.pdf from Google Drive…".

@@ -51,7 +51,8 @@ use katna_ui::scale::desktop_px;
 
 const USAGE: &str = "\
 Usage: katna-mail [--data-dir DIR] [--search QUERY | --compose | --inbox | --settings |
-                  --message ID | --reply-all ID | --page PAGE]
+                  --message ID | --reply ID [--text TEXT] |
+                  --reply-all ID [--text TEXT] | --page PAGE]
        katna-mail --attach [--from ADDRESS] FILE...
        katna-mail --background
 
@@ -70,7 +71,10 @@ Options:
                    calendar:YYYY-MM-DD:new starts an event on it
   --settings       Open the settings
   --message ID     Open the message with this ID (as notifications do)
+  --reply ID       Open the message with this ID and reply to its sender
   --reply-all ID   Open the message with this ID and reply to all
+  --text TEXT      After --reply ID or --reply-all ID: the reply starts
+                   with TEXT (as a reply typed into a notification does)
   --update         Show the downloaded update of Katna, ready to install
   --attach FILE... Write a new message with the files attached; a folder
                    goes as a zip (Send with Katna Mail in the file
@@ -131,9 +135,16 @@ fn main() -> ExitCode {
             Some(flag @ ("--compose" | "--inbox" | "--settings" | "--update")) => {
                 request = instance::Request::from_flag(flag);
             }
-            Some(flag @ ("--message" | "--reply-all")) => {
+            Some(flag @ ("--message" | "--reply-all" | "--reply")) => {
                 match args.next().and_then(|id| id.to_str()?.parse().ok()) {
                     Some(id) => request = instance::Request::for_message(flag, id),
+                    None => return usage_error(),
+                }
+            }
+            // After `--reply ID`: the text the reply starts with.
+            Some(katna_dbus::app_action::TEXT_FLAG) => {
+                match args.next().and_then(|text| text.into_string().ok()) {
+                    Some(text) => request = request.map(|r| r.with_text(text)),
                     None => return usage_error(),
                 }
             }

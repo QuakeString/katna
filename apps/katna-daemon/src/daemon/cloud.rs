@@ -13,10 +13,11 @@ use std::{
 use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::{CloudEntry, CloudListing, cloud_place, cloud_state};
 use katna_sync::{
-    Error,
-    cloud::{CloudItem, Place, ROOT},
-    drive::Drive,
+    Error, Result as SyncResult,
+    cloud::{CloudItem, CloudPage, Fetched, Place, ROOT},
+    drive::{Drive, DriveFile},
     net::Tls,
+    onedrive::OneDrive,
 };
 
 use super::{CommandError, Daemon};
@@ -27,20 +28,90 @@ const KEEP: Duration = Duration::from_secs(24 * 60 * 60);
 /// The biggest thumbnail asked for.
 const MAX_WIDTH: u32 = 1600;
 
-impl Daemon {
-    /// The Google Drive of `account` to browse, or `None` when it has no
-    /// drive Katna can browse.
-    pub(super) async fn cloud(&self, account: AccountId) -> Result<Option<Drive>, CommandError> {
-        let settings = self.store().account_settings(account)?.unwrap_or_default();
-        if settings.oauth != Some(OAuthProvider::Google) {
-            return Ok(None);
+/// An account's drive in Files: Google Drive or OneDrive.
+pub(super) enum Cloud {
+    Google(Drive),
+    Microsoft(OneDrive),
+}
+
+impl Cloud {
+    async fn readable(&self) -> SyncResult<bool> {
+        match self {
+            Self::Google(drive) => drive.readable().await,
+            Self::Microsoft(onedrive) => onedrive.readable().await,
         }
+    }
+
+    pub(super) async fn writable(&self) -> SyncResult<bool> {
+        match self {
+            Self::Google(drive) => drive.writable().await,
+            Self::Microsoft(onedrive) => onedrive.writable().await,
+        }
+    }
+
+    async fn list(&self, place: &Place, page: &str) -> SyncResult<CloudPage> {
+        match self {
+            Self::Google(drive) => drive.list(place, page).await,
+            Self::Microsoft(onedrive) => onedrive.list(place, page).await,
+        }
+    }
+
+    async fn fetch(&self, item: &CloudItem, to: &Path) -> SyncResult<Fetched> {
+        match self {
+            Self::Google(drive) => drive.fetch(item, to).await,
+            Self::Microsoft(onedrive) => onedrive.fetch(item, to).await,
+        }
+    }
+
+    async fn thumbnail(&self, link: &str, width: u32) -> SyncResult<Vec<u8>> {
+        match self {
+            Self::Google(drive) => drive.thumbnail(link, width).await,
+            Self::Microsoft(onedrive) => onedrive.thumbnail(link, width).await,
+        }
+    }
+
+    pub(super) async fn create_folder(&self, name: &str, parent: &str) -> SyncResult<String> {
+        match self {
+            Self::Google(drive) => drive.create_folder(name, parent).await,
+            Self::Microsoft(onedrive) => onedrive.create_folder(name, parent).await,
+        }
+    }
+
+    pub(super) async fn upload_into(
+        &self,
+        path: &Path,
+        name: &str,
+        parent: &str,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> SyncResult<DriveFile> {
+        match self {
+            Self::Google(drive) => {
+                let mime = super::drive::mime_of(name);
+                drive.upload_into(path, name, mime, parent, progress).await
+            }
+            Self::Microsoft(onedrive) => onedrive.upload_into(path, name, parent, progress).await,
+        }
+    }
+}
+
+impl Daemon {
+    /// The Google Drive or OneDrive of `account` to browse, or `None` when
+    /// it has no drive Katna can browse.
+    pub(super) async fn cloud(&self, account: AccountId) -> Result<Option<Cloud>, CommandError> {
+        let settings = self.store().account_settings(account)?.unwrap_or_default();
+        let provider = match settings.oauth {
+            Some(provider @ (OAuthProvider::Google | OAuthProvider::Microsoft)) => provider,
+            _ => return Ok(None),
+        };
         let tokens = self
-            .oauth_tokens(account, OAuthProvider::Google)
+            .oauth_tokens(account, provider)
             .await
             .map_err(CommandError::AuthFailed)?;
         let tls = Tls::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
-        Ok(Some(Drive::new(tokens, tls)))
+        Ok(Some(match provider {
+            OAuthProvider::Microsoft => Cloud::Microsoft(OneDrive::new(tokens, tls)),
+            _ => Cloud::Google(Drive::new(tokens, tls)),
+        }))
     }
 
     pub async fn cloud_readable(&self, account: AccountId) -> Result<bool, CommandError> {

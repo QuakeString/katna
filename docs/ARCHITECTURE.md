@@ -1994,7 +1994,11 @@ Gemini or confidential mode):
   has a line per event: new mail, event and task reminders, mail back in
   the inbox (snooze, no reply), mail sent and mail not sent, each with a
   sound to pick (a menu that plays each as it is picked), a play button
-  and a switch. The sounds are the desktop's own (`katna_platform::sound`):
+  and a switch. New mail's usual sound on Linux is Katna's own chime
+  (`sound/chime.rs`: three bell notes rising, G5, C6, E6, 1.5 s, peak at
+  -1 dB), made in code and written once to `cache/sounds/`, because the
+  sound themes' new-mail sounds can be too faint to hear. The other sounds
+  are the desktop's own (`katna_platform::sound`):
   on Linux freedesktop names found in the KDE sound theme, Ocean or
   freedesktop (with fallbacks, e.g. New email falls back to
   `message-new-instant`), played with `pw-play`, `paplay` or
@@ -2685,16 +2689,18 @@ desktop's own app stays one click away.
   for cards on show whose mail is downloaded, and at most 96 are kept.
 - **Drives in Files** (study "Drives in Files", 2026-10-02): a **Drives**
   group under Accounts in the side column lists each Google account's
-  drive (Google Drive mark; OneDrive later, behind Microsoft's
-  `Files.ReadWrite`; Dropbox and others after). A drive shows a folder
+  Google Drive and each Microsoft account's OneDrive (with its mark;
+  Dropbox and others later). A drive shows a folder
   path, folder tiles (one sideways-scrolling row on a phone) and the same
   cards and list as mail files, with Shared with me as its own row; the
   type, date and sort chips stay and the search box searches the drive.
   Cards offer Open (the built-in viewer), Attach (a new mail) and ⋯
-  (Download, Open in Google Drive, Copy link). **All files stays
-  mail-only.** Browsing needs Google's `drive` (an older
-  `drive.readonly` grant still browses); an account without it shows a
-  notice with **Allow** (signs in again). While a drive of the account's
+  (Download, Open in Google Drive or OneDrive, Copy link). **All files
+  stays mail-only.** Browsing needs Google's `drive` (an older
+  `drive.readonly` grant still browses) or Microsoft's `Files.ReadWrite`
+  (asked at sign-in, §6.6); an account without it shows a notice with
+  **Allow** (signs in again with its provider). OneDrive shows only once
+  Microsoft sign-in is offered (it waits for Katna's Microsoft app ID). While a drive of the account's
   own is on show, the side column's Compose button becomes **Upload**,
   with an arrow for Upload files or Upload folder (on a phone the button
   opens that menu); files and folders go into the open folder through
@@ -2703,9 +2709,14 @@ desktop's own app stays one click away.
   folder is read again when done.
   `katna_sync::drive::browse` lists (`files.list`, folders first, 100 a
   page), downloads (Google Docs export as PDF, at most 10 MB) and fetches
-  thumbnails from Google's hosts only; the daemon answers `CloudReadable`,
-  `CloudList`, `CloudFetch` and `CloudThumbnail` over D-Bus, Google only
-  for now, and keeps fetched files in `cache/drives/` for 24 hours (gone
+  thumbnails from Google's hosts only; `katna_sync::onedrive::browse` does
+  the same through Microsoft Graph (`children`, `sharedWithMe` and
+  `search`, items shared from another drive as `drive/item` ids; files
+  through their `downloadUrl` without the token; thumbnails `medium`).
+  The daemon's `Cloud` (`daemon/cloud.rs`) picks the provider by the
+  account's sign-in and answers `CloudReadable`, `CloudList`,
+  `CloudFetch`, `CloudThumbnail`, `CloudWritable` and `CloudUpload`
+  over D-Bus, and keeps fetched files in `cache/drives/` for 24 hours (gone
   on Reset cache). The app keeps listings for 3 minutes. Settings >
   Default apps > Files page > **Drives in Files** turns a drive off per
   account (`mail.files.drives_off`).
@@ -3237,7 +3248,8 @@ Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
 | Interaction | Behavior |
 |---|---|
 | **Click** (`default` action) | Opens Katna Mail on that message (`org.freedesktop.Application.ActivateAction("open-message", id)`), starting the app if needed. The **activation token** from the notification (`ActivationToken` signal) is passed to the app so Wayland focuses the window instead of only flashing it. |
-| **Reply all** | On Plasma: action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to all…") and `x-kde-reply-submit-button-text` ("Send"). The `NotificationReplied(id, text)` signal gives the text; the daemon builds the reply-all (recipients = From + To + Cc minus own addresses, `Re:` subject, `In-Reply-To`/`References`, quoted original), queues it with the undo delay, and shows "Reply sent · Undo". Elsewhere: a normal "Reply all" button that opens the quick-reply window (§13.4). Support is detected at runtime with `GetCapabilities` (`inline-reply`). |
+| **Peek** | One message only, not on Windows: the same notification (`replaces_id`, `resident` so the server keeps it after the button) shows the subject and the mail's text, up to 1200 characters with its paragraphs, with Reply, Reply all and Archive, and stays until closed (timeout 0). |
+| **Reply** | One message only. Where `GetCapabilities` lists `inline-reply` (Plasma; Katna's own toasts on Windows): action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to Bob…"), `x-kde-reply-submit-button-text` ("Send") and `x-kde-reply-submit-button-icon-name`. The `NotificationReplied(id, text)` signal gives the text; the daemon builds a plain-text reply to the sender (§15.1.2), queues it with the undo delay, marks the mail read and shows "Reply sent to Bob" with Undo and Open in Katna. Elsewhere: a Reply button that opens Katna Mail's reply (`ActivateAction("reply", [id])`). Reply all (in Peek) opens Katna Mail's reply to all. |
 | **Archive / Mark read** | Buttons handled by the daemon without opening the app. |
 
 Content and behavior:
@@ -3267,21 +3279,21 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
   sync, are not news.
-- Buttons: Open (click), Reply all (one message only), Mark as read / Mark
-  all as read, Archive. Open calls `ActivateAction("open-message", [id])`
-  on the app's `org.freedesktop.Application` object
-  (`/in/invenia/katna/Mail`) with the activation token; Reply all calls
-  `reply-all`, which opens the message with an inline reply to all. When
-  the app does not answer, the daemon starts `katna-mail --message ID` (or
-  `--reply-all ID`) with `XDG_ACTIVATION_TOKEN`. The app looks for the
-  message in every inbox tab. The Plasma inline-reply field in the table
-  above is not built yet.
+- Buttons: Open (click), Peek and Reply (one message only), Mark as read /
+  Mark all as read, Archive; Peek shows Reply, Reply all and Archive.
+  Open calls `ActivateAction("open-message", [id])` on the app's
+  `org.freedesktop.Application` object (`/in/invenia/katna/Mail`) with the
+  activation token; Reply all calls `reply-all` and a Reply that opens the
+  app `reply`, which open the message in a window of its own with the
+  reply started. When the app does not answer, the daemon starts
+  `katna-mail --message ID` (or `--reply ID`, `--reply-all ID`) with
+  `XDG_ACTIVATION_TOKEN`. The app looks for the message in every inbox
+  tab.
 - A notification closes when all its mail is read or out of the inbox, from
   a sync or from a change made in the app, and a new-mail notification
   also when its mail is muted or its folder stops notifying.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
-- Not yet: inline reply, sender pictures (`image-data`), per-organization
-  policy.
+- Not yet: sender pictures (`image-data`), per-organization policy.
 - **Event reminders** (`apps/katna-daemon/src/daemon/alarms.rs`): each
   reminder of an event in a shown calendar (not cancelled, not declined)
   becomes a "Katna Calendar" notification at its time: the title, how soon
@@ -3337,6 +3349,35 @@ notified).
   (the apps and the taskbar count look again) and wakes the scheduler,
   which drops timed mutes when they end. A muted conversation follows
   thread merges.
+
+#### 15.1.2 Replies typed into a notification
+
+`katna_sync::quick_reply` reads the answered message from its stored body
+(sender, `Reply-To`, `Message-ID`, `References`, subject, text) and builds a
+plain-text, quoted-printable reply from the account's name and address:
+`Re:` subject, `In-Reply-To` and `References`, the typed text, the reply
+signature (`sending.reply_signature`) after `-- `, then the original quoted
+under "On <date>, <sender> wrote:" (English, as Katna Mail's own quotes;
+the date as headers write it, since the daemon has no ICU). The outbox adds
+`Date` and `Message-ID`. A message whose body is not downloaded opens in
+Katna Mail with the reply started and the text in it instead.
+
+The "Reply sent" note is a new notification (some servers close the one a
+reply was typed into), transient, shown for the undo time (at least 5 s),
+with Undo only when the undo time is not 0. Undo cancels the outbox entry
+and opens Katna Mail's reply with the text (`reply` with `[id, text]`;
+`--reply ID --text TEXT` when starting it), where it waits as a kept reply
+(the summary card's mechanism) for the reply box to take in. Open in Katna
+shows the conversation. When the reply goes out, the daemon plays the Sent
+sound, as Katna Mail does for its own.
+
+On Windows the toast server (`katna_platform::toasts`) builds each toast
+from Windows' toast XML: an `inline-reply` action becomes a text box
+(`<input>`) with a Send button (`hint-inputId`), whose text it sends as
+`NotificationReplied`; toasts carry their notification ID as tag (group
+`katna`), so a replacing notification replaces its toast and
+`CloseNotification` removes it from the notification center. A toast
+cannot grow, so Windows gets no Peek.
 
 ### 15.2 Taskbar, tray and global menu
 
