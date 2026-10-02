@@ -670,7 +670,7 @@ impl MailWindow {
             .p(px(10.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .line_height(px(20.0))
             .child(match &r.state {

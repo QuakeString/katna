@@ -62,7 +62,11 @@ pub struct Theme {
     pub text: u32,
     pub text_dim: u32,
     pub text_faint: u32,
+    /// Lines between things: rows, toolbars, headers, sections. A quarter
+    /// of [`Theme::outline`] in light mode, where lines show more.
     pub divider: u32,
+    /// The edge of a box: fields, chips, buttons, cards and quote bars.
+    pub outline: u32,
     /// Laid over an element under the pointer.
     pub hover: u32,
     /// The ink of click ripples.
@@ -176,6 +180,12 @@ impl Theme {
     /// clouds' own blue, whatever the accent.
     pub fn cloud(&self) -> u32 {
         if self.dark { 0x8ab4f8ff } else { 0x1a73e8ff }
+    }
+
+    /// A line `t` of the outline's strength in dark mode; in light mode
+    /// never stronger than [`Theme::divider`].
+    pub fn faint_line(&self, t: f32) -> u32 {
+        fade(self.outline, if self.dark { t } else { t.min(LIGHT_LINE) })
     }
 
     /// Katna's own palette.
@@ -349,7 +359,8 @@ impl Theme {
             text,
             text_dim: mix(text, surface, 0.18),
             text_faint: readable(s.inactive_fg, surface, 3.0),
-            divider: fade(text, 0.14),
+            divider: fade(text, if dark { 0.14 } else { 0.14 * LIGHT_LINE }),
+            outline: fade(text, 0.14),
             hover: fade(text, if dark { 0.08 } else { 0.07 }),
             ripple: fade(text, if dark { 0.16 } else { 0.14 }),
             nav_selected: mix(page, accent, if dark { 0.34 } else { 0.22 }),
@@ -472,6 +483,9 @@ fn tone(color: u32, l: f32) -> u32 {
     byte(hue(h + 1.0 / 3.0)) << 24 | byte(hue(h)) << 16 | byte(hue(h - 1.0 / 3.0)) << 8 | 0xff
 }
 
+/// How much of the outline's strength lines keep in light mode.
+const LIGHT_LINE: f32 = 0.25;
+
 const LIGHT: Theme = Theme {
     dark: false,
     page: 0xf6f8fcff,
@@ -481,7 +495,8 @@ const LIGHT: Theme = Theme {
     text: 0x1f1f1fff,
     text_dim: 0x444746ff,
     text_faint: 0x5e6368ff,
-    divider: 0x64798f24,
+    divider: 0x64798f09,
+    outline: 0x64798f24,
     hover: 0x1f1f1f12,
     ripple: 0x1f1f1f24,
     nav_selected: 0xd3e3fdff,
@@ -532,6 +547,7 @@ const DARK: Theme = Theme {
     text_dim: 0xc4c7c5ff,
     text_faint: 0x9aa0a6ff,
     divider: 0xffffff17,
+    outline: 0xffffff17,
     hover: 0xffffff14,
     ripple: 0xffffff29,
     nav_selected: 0x004a77ff,

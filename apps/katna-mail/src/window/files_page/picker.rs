@@ -1252,7 +1252,7 @@ impl MailWindow {
             .overflow_hidden()
             .rounded(px(CARD_RADIUS))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .cursor_pointer()
             .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))

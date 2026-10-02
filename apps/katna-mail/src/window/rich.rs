@@ -211,7 +211,7 @@ impl<'a> Painter<'a> {
                     .rounded(px(8.0))
                     .p(px(8.0))
                     .when(!self.th.dark, |d| {
-                        d.border_1().border_color(rgba(self.th.divider))
+                        d.border_1().border_color(rgba(self.th.outline))
                     })
             })
             .children(children)
@@ -791,7 +791,7 @@ pub(super) fn link_status(link: &str, th: &Theme) -> AnyElement {
         .rounded(px(6.0))
         .bg(rgba(th.read_row))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .shadow_sm()
         .text_size(px(12.0))
         .line_height(px(18.0))

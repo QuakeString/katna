@@ -479,7 +479,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(6.0))
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .text_size(px(12.0))
                         .line_height(px(16.0))
                         .font_weight(FontWeight::MEDIUM)

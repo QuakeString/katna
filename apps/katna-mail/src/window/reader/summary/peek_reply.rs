@@ -455,7 +455,7 @@ impl MailWindow {
             .gap(px(8.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .text_size(px(13.0))
             .cursor_text()
@@ -537,7 +537,7 @@ impl MailWindow {
                     .items_center()
                     .pt(px(6.0))
                     .border_t_1()
-                    .border_color(rgba(fade(th.divider, 0.6)))
+                    .border_color(rgba(th.faint_line(0.6)))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_faint))
                     .child(
@@ -632,7 +632,7 @@ impl MailWindow {
             .gap(px(6.0))
             .pt(px(8.0))
             .border_t_1()
-            .border_color(rgba(fade(th.divider, 0.6)))
+            .border_color(rgba(th.faint_line(0.6)))
             .child(
                 filled_button("summary-reply-send", tr!("summary-reply-send"), th)
                     .h(px(30.0))

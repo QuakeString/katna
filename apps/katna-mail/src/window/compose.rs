@@ -2525,7 +2525,7 @@ impl MailWindow {
                             .flex_none()
                             .mx(px(12.0))
                             .h(px(1.0))
-                            .bg(rgba(fade(th.divider, FAINT_LINE))),
+                            .bg(rgba(th.faint_line(FAINT_LINE))),
                     );
                 self.glide_rows(rows, rows_shown, cx)
             });
@@ -2577,7 +2577,7 @@ impl MailWindow {
             .rounded(px(12.0))
             .bg(rgba(th.surface))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .shadow(elevation(th, 1.5))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
@@ -2717,7 +2717,7 @@ impl MailWindow {
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
         let to = self.recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx);
-        let line = rgba(fade(th.divider, FAINT_LINE));
+        let line = rgba(th.faint_line(FAINT_LINE));
         div()
             .flex_none()
             .flex()

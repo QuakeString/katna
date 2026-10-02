@@ -47,7 +47,7 @@ use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
-    menu, menu_item, menu_item_icon, pane_line, placeholder, tip, toolbar,
+    menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 
 /// The inbox tabs' pill bar: its height and inset, and each tab's height,
@@ -285,7 +285,7 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .border_b_1()
-                    .border_color(rgba(pane_line(th)))
+                    .border_color(rgba(th.divider))
                     .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
@@ -1535,7 +1535,7 @@ impl MailWindow {
                 .gap(px(8.0))
                 .bg(rgba(th.read_row))
                 .border_b_1()
-                .border_color(rgba(pane_line(th)))
+                .border_color(rgba(th.divider))
                 .text_size(px(13.0))
                 .child(text)
                 .child(
@@ -2613,7 +2613,7 @@ impl MailWindow {
                 .pr(px(14.0))
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .bg(rgba(th.surface))
                 .when(!downloading, |d| {
                     d.cursor_pointer()
@@ -2656,7 +2656,7 @@ impl MailWindow {
                 .justify_center()
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .bg(rgba(if open { th.hover } else { th.surface }))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
@@ -2893,15 +2893,10 @@ pub(super) fn preview_color(th: &Theme) -> u32 {
     mix(th.text_faint, th.surface, 0.35)
 }
 
-/// The faint line between mail rows: well under the app's other dividers,
-/// so the rows read as one calm list. In light mode it matches the pane
-/// lines.
+/// The faint line between mail rows: well under the app's other dividers
+/// in dark mode, so the rows read as one calm list.
 pub(super) fn row_line(th: &Theme) -> u32 {
-    if th.dark {
-        fade(th.divider, 0.6)
-    } else {
-        pane_line(th)
-    }
+    th.faint_line(0.6)
 }
 
 /// The background behind the inbox tabs: the search box's colour in dark

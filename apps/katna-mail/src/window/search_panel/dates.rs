@@ -476,7 +476,7 @@ impl MailWindow {
             .flex_col()
             .gap(px(GAP))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .map(|d| raised(d, th, RADIUS, 4.0))
             .text_color(rgba(th.text))
             .occlude()

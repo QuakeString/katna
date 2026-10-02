@@ -1414,7 +1414,7 @@ impl MailWindow {
                         })
                         .when(!tonal, |d| {
                             d.border_1()
-                                .border_color(rgba(th.divider))
+                                .border_color(rgba(th.outline))
                                 .hover(|s| s.bg(rgba(th.hover)))
                         })
                         .text_color(rgba(th.text))

@@ -1025,7 +1025,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(8.0))
                         .border_1()
-                        .border_color(rgba(if report.error { th.error } else { th.divider }))
+                        .border_color(rgba(if report.error { th.error } else { th.outline }))
                         .text_size(px(14.0))
                         .child(report.dates[ix].clone()),
                 )
@@ -1353,7 +1353,7 @@ impl MailWindow {
             .gap(px(6.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .text_size(px(13.0))

@@ -335,7 +335,7 @@ impl MailWindow {
             .flex_none()
             .rounded(px(12.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .py(px(8.0))
             .flex()
             .flex_col()

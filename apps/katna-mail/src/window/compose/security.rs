@@ -10,7 +10,7 @@ use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
 use katna_i18n::tr;
 use katna_ui::px;
 
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
 use crate::widgets::{icon_button_colored, tip};
 use crate::window::MailWindow;
 
@@ -139,7 +139,7 @@ impl MailWindow {
                     .mx(px(2.0))
                     .w(px(1.0))
                     .h(px(14.0))
-                    .bg(rgba(fade(th.divider, super::FAINT_LINE))),
+                    .bg(rgba(th.faint_line(super::FAINT_LINE))),
             )
             .children(self.render_tracking(th, cx))
             .into_any_element()
