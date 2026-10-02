@@ -765,7 +765,9 @@ Free text that matches an organization name or alias is expanded to
 Results replace the list and close the open conversation. The list, its
 scroll place, the cursor and the open conversation are kept as the search
 starts: cancelling it (Escape or clearing the box) with no result opened
-brings them back; opening a result drops them.
+brings them back; opening a result drops them. A result opened and then
+cleared with the box's X stays open, picked in the folder when it lies
+there; deleting the text away instead goes back to the list.
 
 ### 7.4 Ranking
 
@@ -1551,7 +1553,13 @@ offices and pages, beside or instead of what its home page says).
 Pictures, banners, "Follow us" lines, taglines, "print only when
 necessary" lines and footers are left out. Pages on LinkedIn, X,
 Facebook, Instagram, YouTube, GitHub, WhatsApp and Telegram show as
-Katna's one-colour marks. In a chat the signature is the one the person
+Katna's one-colour marks. Each line is read as written
+(`signature::unmark`): the `*bold*` asterisks and the "text <target>"
+link marks of a text version of HTML mail go, and the pieces Gmail splits
+a link into are joined. A signature whose first line names someone other
+than the card's person (a colleague on a shared address such as
+accounts@, `signature::someone_else`) gives only its company's details.
+In a chat the signature is the one the person
 signed the conversation with; elsewhere, their newest stored one. Attachments are
 chat media: pictures in a grid of their thumbnails, other files as cards,
 both opening the viewer; inline pictures under 12 KB (logos) are left out.
@@ -2413,6 +2421,16 @@ Gemini or confidential mode):
   `system`, off is `katna`), and every pick keeps it in step for older
   versions. The quick setting *Desktop colors* switches between `system`
   and `katna`.
+
+  After the seven accent swatches a rainbow wheel opens the color picker
+  (`window/scheme_color.rs`, the scheme editor's) for any other accent,
+  and is ringed while such a custom accent is in use; the swatch and the
+  wheel are shared widgets (`widgets::color_swatch`, `color_wheel`) for
+  any row of colors to pick from. The logo inside the window (top bar,
+  About, welcome, What's new) draws its disc in the accent and the k in
+  `on_accent`, which the theme keeps readable on it; `assets.rs` serves it
+  tinted (`logo/small-32-<disc>-<mark>.svg`). The app icon and the tray
+  keep Katna's teal.
 
   *From your system* lists the desktop's other schemes
   (`DesktopScheme` in `katna_platform::colors`): on KDE every installed

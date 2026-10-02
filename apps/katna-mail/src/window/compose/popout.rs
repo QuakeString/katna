@@ -18,6 +18,7 @@ use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::unpx;
 
+use super::super::attachments::ViewerPlace;
 use super::super::{MailWindow, RephraseSelection, SendMail};
 use super::Mode;
 use super::recipients::Field;
@@ -223,7 +224,13 @@ impl MailWindow {
             .children(self.render_floating_format_bar(th, width - 24.0, cx))
             .child(self.render_compose_actions(th, width, cx))
             .child(self.render_drop_target(th))
-            .children(self.render_compose_dialog(th, window, cx));
+            .children(self.render_compose_dialog(th, window, cx))
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| self.files.viewer_place == ViewerPlace::Popout),
+            );
         Some(panel.into_any_element())
     }
 }

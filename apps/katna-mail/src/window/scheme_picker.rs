@@ -10,17 +10,19 @@ use std::sync::Mutex;
 
 use gpui::{
     AnimationExt, AnyElement, Context, Div, ElementId, MouseButton, MouseDownEvent, SharedString,
-    SpringAnimation, div, prelude::*, rgba,
+    SpringAnimation, Window, canvas, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::motion;
 use katna_ui::{Ripple, px};
 
 use super::MailWindow;
+use super::scheme_color::Target;
 use super::settings::Change;
 use crate::schemes::{self, BUILT_IN};
 use crate::theme::{Accent, Theme, fade, mix};
 use crate::user_schemes;
+use crate::widgets::{color_swatch, color_wheel};
 
 /// The accent colors offered besides the scheme's and the desktop's:
 /// blue, teal, green, yellow, orange, pink and violet.
@@ -264,7 +266,7 @@ impl MailWindow {
     }
 
     /// The accent choices of Settings > Appearance > Accent.
-    pub(super) fn accent_picker(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
+    pub(super) fn accent_picker(&self, th: &Theme, window: &Window, cx: &mut Context<Self>) -> Div {
         let picked = Accent::parse(&self.config.mail.accent);
         div()
             .flex()
@@ -287,6 +289,8 @@ impl MailWindow {
                 cx,
             ))
             .children(ACCENTS.map(|color| self.accent_swatch(color, picked, th, cx)))
+            .child(self.accent_wheel(picked, th, cx))
+            .children(self.render_color_picker(|t| t == Target::Accent, th, window, cx))
     }
 
     fn accent_chip(
@@ -338,28 +342,40 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let accent = Accent::Color(color);
-        let on = accent == picked;
         let id = ElementId::Name(format!("accent-{}", accent.setting()).into());
-        // A ring in the accent color around the picked one, with a gap of
-        // the card's color between.
-        self.page_control(div().id(id), th, cx)
-            .size(px(SWATCH + 6.0))
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .cursor_pointer()
-            .border_2()
-            .border_color(rgba(if on { color } else { 0x00000000 }))
-            .hover(|s| s.bg(rgba(th.hover)))
+        let swatch = color_swatch(id, color, accent == picked, SWATCH + 6.0, th);
+        self.page_control(swatch, th, cx)
             .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::Accent(accent), cx)))
+            .into_any_element()
+    }
+
+    /// The wheel after the accent swatches: the color picker, for any
+    /// other accent.
+    fn accent_wheel(&self, picked: Accent, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let custom = match picked {
+            Accent::Color(color) if !ACCENTS.contains(&color) => Some(color),
+            _ => None,
+        };
+        let swatches = self.color_swatches.clone();
+        let wheel = color_wheel("accent-wheel", custom, SWATCH + 6.0, th);
+        self.page_control(wheel, th, cx)
+            .relative()
+            .tooltip(crate::widgets::tip(
+                tr!("settings-appearance-accent-more"),
+                th,
+            ))
+            .on_click(cx.listener(|this, _, window, cx| {
+                this.toggle_color_picker(Target::Accent, window, cx)
+            }))
             .child(
-                div()
-                    .size(px(SWATCH - 4.0))
-                    .rounded_full()
-                    .bg(rgba(color))
-                    .border_1()
-                    .border_color(rgba(fade(th.text, 0.12))),
+                canvas(
+                    move |bounds, _, _| {
+                        swatches.borrow_mut().insert(Target::Accent, bounds);
+                    },
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .size_full(),
             )
             .into_any_element()
     }

@@ -185,6 +185,58 @@ const LABELS: &[&str] = &[
     "c",
 ];
 
+/// Words of a role or a team, not of a person's name.
+const ROLE_WORDS: &[&str] = &[
+    "accounts",
+    "account",
+    "admin",
+    "administrator",
+    "analyst",
+    "assistant",
+    "associate",
+    "care",
+    "ceo",
+    "cfo",
+    "chief",
+    "consultant",
+    "coo",
+    "coordinator",
+    "cto",
+    "customer",
+    "department",
+    "dept",
+    "desk",
+    "designer",
+    "developer",
+    "director",
+    "engineer",
+    "executive",
+    "finance",
+    "founder",
+    "general",
+    "head",
+    "hr",
+    "lead",
+    "manager",
+    "marketing",
+    "officer",
+    "operations",
+    "partner",
+    "president",
+    "product",
+    "project",
+    "projects",
+    "proprietor",
+    "purchase",
+    "sales",
+    "senior",
+    "service",
+    "specialist",
+    "support",
+    "team",
+    "technical",
+];
+
 /// Words that end a company's name.
 const COMPANY_WORDS: &[&str] = &[
     "inc",
@@ -286,8 +338,10 @@ pub fn details(signature: &str, known: &Known) -> Option<Details> {
     let mut last_other: Option<usize> = None;
     // The line read last was their name.
     let mut after_name = false;
-    let lines = signature
-        .lines()
+    let theirs = !someone_else(signature, known.name);
+    let lines: Vec<String> = signature.lines().map(unmark).collect();
+    let lines = lines
+        .iter()
         .skip_while(|l| blank(l) || delimiter(l) || sign_off(l));
     for raw in lines {
         let previous_other = last_other.take();
@@ -404,6 +458,14 @@ pub fn details(signature: &str, known: &Known) -> Option<Details> {
         out.other.push(text);
         last_other = Some(out.other.len() - 1);
     }
+    if !theirs {
+        // A colleague's signature on mail from a shared address: their
+        // company's details hold, theirs are not this person's.
+        out = Details {
+            company: out.company,
+            ..Details::default()
+        };
+    }
     out.company.offices.retain(|o| !o.lines.is_empty());
     out.pages.truncate(MOST_LINKS);
     out.company.pages.truncate(MOST_LINKS);
@@ -414,6 +476,116 @@ pub fn details(signature: &str, known: &Known) -> Option<Details> {
         && out.other.is_empty()
         && out.company == CompanyDetails::default();
     (!empty).then_some(out)
+}
+
+/// `line` as its sender wrote it, without what a text version of HTML
+/// mail adds: `*bold*` asterisks, and the address or number a link goes
+/// to when its text already says one ("+91 90000 00000 <+919000000000>",
+/// "accounts@x.example <info@x.example>"). Gmail splits a link where its
+/// formatting changes ("accounts@inv <info@x>eni <info@x>…"); the pieces
+/// are joined again. Web links stay, for [`links`].
+pub fn unmark(line: &str) -> String {
+    let line = line.replace('*', "");
+    let alnum = |c: Option<char>| c.is_some_and(char::is_alphanumeric);
+    let mut out = String::with_capacity(line.len());
+    let mut rest = line.as_str();
+    while let Some(start) = rest.find('<') {
+        let Some(len) = rest[start..].find('>') else {
+            break;
+        };
+        let inner = &rest[start + 1..start + len];
+        let target = inner
+            .strip_prefix("mailto:")
+            .or_else(|| inner.strip_prefix("tel:"))
+            .unwrap_or(inner)
+            .trim();
+        let email = email_like(target) && !target.contains(char::is_whitespace);
+        let number = !email
+            && phone(target)
+            && target
+                .chars()
+                .all(|c| c.is_ascii_digit() || " +-.()".contains(c));
+        let (before, after) = (&rest[..start], &rest[start + len + 1..]);
+        out.push_str(before);
+        rest = after;
+        if !email && !number {
+            out.push('<');
+            out.push_str(inner);
+            out.push('>');
+            continue;
+        }
+        let said = if email {
+            out.contains('@')
+        } else {
+            out.chars().any(|c| c.is_ascii_digit())
+        };
+        if said {
+            if out.ends_with(' ') {
+                // Gmail's " <target>" after the link's text.
+                out.pop();
+            } else if alnum(out.chars().last()) && alnum(after.chars().next()) {
+                out.push(' ');
+            }
+        } else {
+            // "Rakib <rakib@x.example>": the address is all there is.
+            if !out.is_empty() && !out.ends_with(' ') {
+                out.push(' ');
+            }
+            out.push_str(target);
+            if alnum(after.chars().next()) {
+                out.push(' ');
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
+/// Whether `signature` is signed by someone other than `name`: a
+/// colleague signing mail from a shared address ("accounts@").
+pub fn someone_else(signature: &str, name: Option<&str>) -> bool {
+    let Some(name) = name else {
+        return false;
+    };
+    let name: Vec<String> = words(name).filter(|w| w.chars().count() > 1).collect();
+    if name.is_empty() {
+        return false;
+    }
+    let Some(first) = signature
+        .lines()
+        .map(unmark)
+        .map(|l| l.trim().trim_end_matches(',').to_owned())
+        .find(|l| !(blank(l) || delimiter(l) || sign_off(l)))
+    else {
+        return false;
+    };
+    person_name(&first) && !words(&first).any(|w| name.iter().any(|n| akin(&w, n)))
+}
+
+/// "Rakib Alam", "R. K. Demo": two to four capitalised words, at least
+/// two of them not initials, naming no company, role or label.
+fn person_name(text: &str) -> bool {
+    let parts: Vec<&str> = text.split_whitespace().collect();
+    (2..=4).contains(&parts.len())
+        && parts.iter().all(|w| {
+            w.chars().next().is_some_and(char::is_uppercase)
+                && w.chars()
+                    .all(|c| c.is_alphabetic() || matches!(c, '.' | '\'' | '-'))
+        })
+        && parts
+            .iter()
+            .filter(|w| w.trim_end_matches('.').chars().count() > 1)
+            .count()
+            >= 2
+        && !company_name(text)
+        && !office_label(text)
+        && !site_names(text)
+        && !words(text).any(|w| ROLE_WORDS.contains(&w.as_str()) || LABELS.contains(&w.as_str()))
+}
+
+/// The same name, or one short for it: "Moz" for "Mozammel".
+fn akin(a: &str, b: &str) -> bool {
+    a == b || a.chars().zip(b.chars()).take_while(|(x, y)| x == y).count() >= 3
 }
 
 /// Files `url` as the company's website, one of its pages or one of the
@@ -882,6 +1054,94 @@ mod tests {
         };
         assert_eq!(details("Omar Haddad\nProduct Manager", &known), None);
         assert_eq!(details("", &known), None);
+    }
+
+    /// Gmail's text version of a signature written in HTML: bold as
+    /// asterisks, each link's target after its text, and links split
+    /// where their formatting changes.
+    fn gmail_marks() -> &'static str {
+        "Thanks & Regards,\n*Demo Alam*\n*Accounts*\n\
+         *M: *+9 <+919000012345>1 90000 12345 <+919000012345> / 90000 54321\n\
+         *E: *accounts@de <info@demosys.example>mo <info@demosys.example>sys.example\n\
+         *www.demosys.example <http://www.demosys.example>*\n\
+         53/1, Example Road, Kadamtala,\nHowrah-711101, West Bengal, India"
+    }
+
+    #[test]
+    fn unmarked() {
+        assert_eq!(
+            unmark("*M: *+9 <+919000012345>1 90000 12345 <+919000012345> / 90000 54321"),
+            "M: +91 90000 12345 / 90000 54321"
+        );
+        assert_eq!(
+            unmark("*E: *accounts@de <info@demosys.example>mo <info@demosys.example>sys.example"),
+            "E: accounts@demosys.example"
+        );
+        assert_eq!(
+            unmark("Demo Alam <alam@demosys.example>"),
+            "Demo Alam alam@demosys.example"
+        );
+        assert_eq!(
+            unmark("sales@demo.example<mailto:sales@demo.example> | Ext<tel:+15550100>"),
+            "sales@demo.example | Ext +15550100"
+        );
+        assert_eq!(
+            unmark("Web <https://demo.example> <Demo>"),
+            "Web <https://demo.example> <Demo>"
+        );
+    }
+
+    #[test]
+    fn gmail_marks_cleaned() {
+        let known = Known {
+            name: Some("Demo Alam"),
+            email: "accounts@demosys.example",
+            shown: &[],
+            company: None,
+        };
+        let d = details(gmail_marks(), &known).unwrap();
+        let numbers: Vec<&str> = d.phones.iter().map(|p| p.number.as_str()).collect();
+        assert_eq!(numbers, ["+91 90000 12345", "90000 54321"]);
+        assert!(d.phones.iter().all(|p| p.kind == PhoneKind::Mobile));
+        assert!(d.emails.is_empty(), "{d:?}");
+        assert_eq!(d.title.as_deref(), Some("Accounts"));
+        assert!(d.other.is_empty(), "{d:?}");
+        assert_eq!(
+            d.company.website.as_deref(),
+            Some("http://www.demosys.example")
+        );
+        assert_eq!(
+            d.company.offices[0].lines,
+            [
+                "53/1, Example Road, Kadamtala,",
+                "Howrah-711101, West Bengal, India"
+            ]
+        );
+    }
+
+    #[test]
+    fn a_colleagues_signature() {
+        // Mail from a shared address, signed by someone else.
+        let known = Known {
+            name: Some("Niyaz Mollah"),
+            email: "accounts@demosys.example",
+            shown: &[],
+            company: None,
+        };
+        assert!(someone_else(gmail_marks(), known.name));
+        let d = details(gmail_marks(), &known).unwrap();
+        assert!(d.phones.is_empty() && d.title.is_none() && d.other.is_empty());
+        assert_eq!(d.company.offices.len(), 1);
+        assert!(d.company.website.is_some());
+        // Their own, by a short name or with initials.
+        assert!(!someone_else("Regards,\nMoz Haque", Some("Mozammel Haque")));
+        assert!(!someone_else("Regards,\nN. Mollah", Some("Niyaz Mollah")));
+        assert!(!someone_else("Regards,\nSales Team", Some("Niyaz Mollah")));
+        assert!(!someone_else(
+            "Regards,\nDemo Systems Pvt. Ltd.",
+            Some("Niyaz Mollah")
+        ));
+        assert!(!someone_else(gmail_marks(), None));
     }
 
     #[test]

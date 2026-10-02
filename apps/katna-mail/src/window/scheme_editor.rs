@@ -10,7 +10,6 @@
 //! or deletes it, with Undo. The files are `crate::user_schemes`'.
 
 use std::path::PathBuf;
-use std::rc::Rc;
 
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, PathPromptOptions, SharedString,
@@ -23,7 +22,7 @@ use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
 use super::context_menu::Rows;
-use super::scheme_color::{ColorPicker, Swatches};
+use super::scheme_color::Target;
 use super::scheme_picker::{intern, scheme_picture};
 use super::settings::Change;
 use crate::daemon::Command;
@@ -44,12 +43,6 @@ pub(super) struct SchemeEditor {
     name: Entity<TextInput>,
     /// The hex fields, light side first, in [`Seed::ALL`]'s order.
     fields: [Vec<Entity<TextInput>>; 2],
-    /// The open color picker.
-    pub(super) picker: Option<ColorPicker>,
-    /// Where the swatches were drawn, for the picker's place.
-    pub(super) swatches: Swatches,
-    /// Colors picked lately, newest first.
-    pub(super) recent: Vec<u32>,
     error: Option<String>,
     closing: bool,
     shown: Spring,
@@ -202,7 +195,7 @@ impl MailWindow {
                                 && let Some(side) = editor.side_mut(dark)
                             {
                                 seed.set(side, color);
-                                this.sync_color_picker(dark, seed, color | 0xff, cx);
+                                this.sync_color_picker(Target::Seed(dark, seed), color | 0xff, cx);
                                 cx.notify();
                             }
                         }
@@ -221,9 +214,6 @@ impl MailWindow {
             saved,
             name,
             fields,
-            picker: None,
-            swatches: Rc::default(),
-            recent: Vec::new(),
             error: None,
             closing: false,
             shown,
@@ -284,7 +274,7 @@ impl MailWindow {
             && editor.side(!dark).is_some()
         {
             *editor.side_mut(dark) = None;
-            editor.picker = None;
+            self.drop_color_picker(|t| matches!(t, Target::Seed(d, _) if d == dark));
             cx.notify();
         }
     }
@@ -552,6 +542,7 @@ impl MailWindow {
         let t = editor.shown.tick(window, reduce);
         if editor.closing && editor.shown.settled() {
             self.scheme_editor = None;
+            self.drop_color_picker(|t| matches!(t, Target::Seed(..)));
             return None;
         }
         let t = t.clamp(0.0, 1.0);
@@ -659,7 +650,7 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .child(body);
-        let picker = self.render_color_picker(th, window, cx);
+        let picker = self.render_color_picker(|t| matches!(t, Target::Seed(..)), th, window, cx);
         Some(
             div()
                 .absolute()
@@ -778,8 +769,12 @@ impl MailWindow {
             let field = editor.fields[usize::from(dark)][ix].clone();
             let focus = field.focus_handle(cx);
             let focused = focus.is_focused(window);
-            let open = editor.picker.as_ref().is_some_and(|p| p.is_for(dark, seed));
-            let swatches = editor.swatches.clone();
+            let target = Target::Seed(dark, seed);
+            let open = self
+                .color_picker
+                .as_ref()
+                .is_some_and(|p| p.target() == target);
+            let swatches = self.color_swatches.clone();
             rows = rows.child(
                 div()
                     .h(px(34.0))
@@ -800,12 +795,12 @@ impl MailWindow {
                             .when(open, |d| d.border_2().border_color(rgba(th.accent)))
                             .cursor_pointer()
                             .on_click(cx.listener(move |this, _, window, cx| {
-                                this.toggle_color_picker(dark, seed, window, cx)
+                                this.toggle_color_picker(target, window, cx)
                             }))
                             .child(
                                 canvas(
                                     move |bounds, _, _| {
-                                        swatches.borrow_mut().insert((dark, seed), bounds);
+                                        swatches.borrow_mut().insert(target, bounds);
                                     },
                                     |_, _, _, _| {},
                                 )
