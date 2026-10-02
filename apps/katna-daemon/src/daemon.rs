@@ -32,6 +32,7 @@ use katna_sync::{
     autoconfig::{Discovered, Discovery},
     bodies,
     connection::Connection,
+    folders::{self, FolderError},
     net::Tls,
     oauth::TokenSource,
     ops::{self, ChangeError},
@@ -148,8 +149,20 @@ impl From<ChangeError> for CommandError {
         match err {
             ChangeError::UnknownMessage(id) => Self::UnknownMessage(id),
             ChangeError::UnknownFolder(id) => Self::UnknownFolder(id),
+            ChangeError::Invalid(reason) => Self::InvalidArgs(reason),
             ChangeError::NotPossible(reason) => Self::Failed(reason),
             ChangeError::Store(err) => err.into(),
+        }
+    }
+}
+
+impl From<FolderError> for CommandError {
+    fn from(err: FolderError) -> Self {
+        match err {
+            FolderError::Invalid(reason) => Self::InvalidArgs(reason),
+            FolderError::UnknownFolder(id) => Self::UnknownFolder(id),
+            FolderError::Failed(reason) => Self::Failed(reason),
+            FolderError::Store(err) => err.into(),
         }
     }
 }
@@ -1393,15 +1406,7 @@ impl Daemon {
         name: &str,
         parent: Option<FolderId>,
     ) -> Result<FolderId, CommandError> {
-        let name = name.trim();
-        if name.is_empty() {
-            return Err(CommandError::InvalidArgs("the name is empty".into()));
-        }
-        if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
-            return Err(CommandError::InvalidArgs(format!(
-                "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
-            )));
-        }
+        let name = folder_name(name)?;
         let account = self.account(account)?;
         let parent = match parent {
             Some(id) => Some(
@@ -1413,18 +1418,7 @@ impl Daemon {
             ),
             None => None,
         };
-        let connector = match self.connector(&account).await {
-            Ok(Some(Link::Imap(connector))) => connector,
-            Ok(_) => {
-                return Err(CommandError::InvalidArgs(
-                    "only IMAP accounts have folders on the server".into(),
-                ));
-            }
-            Err(detail) => return Err(CommandError::Failed(detail)),
-        };
-        let mut backend = connector.connect().await.map_err(|err| {
-            CommandError::Failed(format!("could not reach the mail server: {err}"))
-        })?;
+        let mut backend = self.folder_server(&account).await?;
         let created =
             create_on_server(&mut backend, name, parent.as_ref().map(|f| &f.path[..])).await;
         let _ = backend.logout().await;
@@ -1437,11 +1431,95 @@ impl Daemon {
             id
         };
         tracing::info!(account = %account.id, path, "folder created");
-        let _ = self.notices.try_send(Notice::MailChanged(account.id));
-        if let Some(running) = self.workers().get(&account.id) {
+        self.folders_changed(account.id);
+        Ok(id)
+    }
+
+    /// Renames `folder` (a label, on Gmail) to `name` on its account's
+    /// server, keeping it where it is, and in the store; the folders
+    /// inside it move along. Needs the server: fails while offline.
+    /// Special folders keep their names.
+    pub async fn rename_folder(&self, folder: FolderId, name: &str) -> Result<(), CommandError> {
+        let name = folder_name(name)?;
+        let account = self.editable_folder(folder)?;
+        let mut backend = self.folder_server(&account).await?;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let renamed = folders::rename_folder(&mut backend, &mut store, folder, name).await;
+        let _ = backend.logout().await;
+        renamed?;
+        self.folders_changed(account.id);
+        Ok(())
+    }
+
+    /// Deletes `folder` (a label, on Gmail) and the folders inside it on
+    /// its account's server, then in the store. Elsewhere than on Gmail
+    /// their mail goes to the Trash first, when there is one; on Gmail it
+    /// stays in All Mail and its other labels. Needs the server: fails
+    /// while offline. Special folders stay. Returns how many messages went
+    /// to the Trash.
+    pub async fn delete_folder(&self, folder: FolderId) -> Result<u32, CommandError> {
+        let account = self.editable_folder(folder)?;
+        let mut backend = self.folder_server(&account).await?;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let deleted = folders::delete_folder(&mut backend, &mut store, folder).await;
+        let _ = backend.logout().await;
+        let moved = deleted?;
+        self.folders_changed(account.id);
+        Ok(moved)
+    }
+
+    /// Puts Gmail labels on messages and takes others off (folder IDs),
+    /// without moving them otherwise.
+    pub fn set_labels(
+        &self,
+        messages: &[MessageId],
+        add: &[FolderId],
+        remove: &[FolderId],
+    ) -> Result<(), CommandError> {
+        self.change(|store| ops::set_labels(store, messages, add, remove))
+    }
+
+    /// The account of `folder`, unless the folder must keep its name and
+    /// stay (special folders, and Snoozed).
+    fn editable_folder(&self, folder: FolderId) -> Result<Account, CommandError> {
+        let (account, found) = folders::editable(&self.store(), folder)?;
+        if is_snoozed_path(&found.path) {
+            return Err(CommandError::InvalidArgs(format!(
+                "\u{201c}{}\u{201d} holds snoozed mail; it cannot be renamed or deleted",
+                found.path
+            )));
+        }
+        self.account(account)
+    }
+
+    /// A new connection to the IMAP server of `account`, for changes to
+    /// its folders.
+    async fn folder_server(
+        &self,
+        account: &Account,
+    ) -> Result<<ImapConnector as Connector>::Backend, CommandError> {
+        let connector = match self.connector(account).await {
+            Ok(Some(Link::Imap(connector))) => connector,
+            Ok(_) => {
+                return Err(CommandError::InvalidArgs(
+                    "only IMAP accounts have folders on the server".into(),
+                ));
+            }
+            Err(detail) => return Err(CommandError::Failed(detail)),
+        };
+        connector
+            .connect()
+            .await
+            .map_err(|err| CommandError::Failed(format!("could not reach the mail server: {err}")))
+    }
+
+    /// The folders of `account` changed on its server: the apps redraw and
+    /// the worker syncs.
+    fn folders_changed(&self, account: AccountId) {
+        let _ = self.notices.try_send(Notice::MailChanged(account));
+        if let Some(running) = self.workers().get(&account) {
             running.handle.sync_now();
         }
-        Ok(id)
     }
 
     /// Moves messages to another folder of their account.
@@ -2199,6 +2277,20 @@ fn unix_now() -> i64 {
 
 /// Longest folder name, in characters (Gmail's limit for labels).
 const MAX_FOLDER_NAME: usize = 225;
+
+/// `name` trimmed, if it can name a folder.
+fn folder_name(name: &str) -> Result<&str, CommandError> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(CommandError::InvalidArgs("the name is empty".into()));
+    }
+    if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
+        return Err(CommandError::InvalidArgs(format!(
+            "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
+        )));
+    }
+    Ok(name)
+}
 
 /// Creates `name` inside `parent` (a path) with the server's separator,
 /// and subscribes to it. Returns its path.

@@ -26,6 +26,9 @@ pub enum Command {
     Archive(Vec<MessageId>),
     Delete(Vec<MessageId>),
     Move(Vec<MessageId>, FolderId),
+    /// Gmail: puts the labels (folders) of the first list on messages and
+    /// takes those of the second off, leaving them where they are.
+    Labels(Vec<MessageId>, Vec<FolderId>, Vec<FolderId>),
     /// Snoozes messages until then (Unix seconds).
     Snooze(Vec<MessageId>, i64),
     /// Brings snoozed messages back now.
@@ -184,6 +187,9 @@ impl Command {
             Self::Archive(ids) if ids.len() > size => split(ids, &Self::Archive),
             Self::Delete(ids) if ids.len() > size => split(ids, &Self::Delete),
             Self::Move(ids, to) if ids.len() > size => split(ids, &|ids| Self::Move(ids, *to)),
+            Self::Labels(ids, add, remove) if ids.len() > size => {
+                split(ids, &|ids| Self::Labels(ids, add.clone(), remove.clone()))
+            }
             Self::Snooze(ids, until) if ids.len() > size => {
                 split(ids, &|ids| Self::Snooze(ids, *until))
             }
@@ -244,7 +250,9 @@ impl Command {
             | Self::OrderChatPins(_)
             | Self::CloudTrash(..)
             | Self::CloudRename(..)
-            | Self::SetBell(..) => {
+            | Self::SetBell(..)
+            // The window names the label.
+            | Self::Labels(..) => {
                 return None;
             }
         })
@@ -362,6 +370,11 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Archive(messages) => pim.archive_messages(&ids(messages)).await,
         Command::Delete(messages) => pim.delete_messages(&ids(messages)).await,
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
+        Command::Labels(messages, add, remove) => {
+            let folders = |list: &[FolderId]| list.iter().map(|f| f.0).collect::<Vec<i64>>();
+            pim.set_labels(&ids(messages), &folders(add), &folders(remove))
+                .await
+        }
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
         Command::ReloadConfig => pim.reload_config().await,
@@ -1217,6 +1230,32 @@ pub async fn create_folder(
         .await
         .map_err(|err| describe(&err))?;
     pim.create_folder(account, name, parent.unwrap_or(0))
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Renames folder `folder` (a label, on Gmail) on its account's server;
+/// it stays inside the same parent.
+pub async fn rename_folder(
+    connection: &Connection,
+    folder: i64,
+    new_name: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.rename_folder(folder, new_name)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes folder `folder` (a label, on Gmail) and the folders inside it
+/// on its account's server. Returns how many messages went to the Trash.
+pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_folder(folder)
         .await
         .map_err(|err| describe(&err))
 }

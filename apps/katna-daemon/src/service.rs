@@ -272,6 +272,29 @@ macro_rules! pim_interface {
                     .0)
             }
 
+            async fn rename_folder(&self, folder: i64, new_name: &str) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .rename_folder(FolderId(folder), new_name)
+                    .await?)
+            }
+
+            async fn delete_folder(&self, folder: i64) -> fdo::Result<u32> {
+                Ok(self.daemon.delete_folder(FolderId(folder)).await?)
+            }
+
+            async fn set_labels(
+                &self,
+                messages: Vec<i64>,
+                add: Vec<i64>,
+                remove: Vec<i64>,
+            ) -> fdo::Result<()> {
+                let folders = |ids: &[i64]| ids.iter().map(|&id| FolderId(id)).collect::<Vec<_>>();
+                Ok(self
+                    .daemon
+                    .set_labels(&ids(&messages), &folders(&add), &folders(&remove))?)
+            }
+
             async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
                 Ok(self
                     .daemon

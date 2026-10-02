@@ -156,8 +156,9 @@ impl Daemon {
         Ok(id)
     }
 
-    /// The accounts a rule names exist, and the folders it names are in
-    /// them.
+    /// The accounts a rule names exist, the folders it names are in
+    /// them, and a label it adds is a Gmail account's own label (as
+    /// `SetLabels` takes).
     fn check_rule_places(&self, rule: &Rule) -> Result<(), CommandError> {
         let store = self.store();
         let accounts = store.accounts()?;
@@ -166,13 +167,24 @@ impl Daemon {
             if !accounts.iter().any(|a| a.id.0 == id) {
                 return Err(CommandError::UnknownAccount(id));
             }
-            folders.extend(store.folders(AccountId(id))?.into_iter().map(|f| f.id.0));
+            let own = store.folders(AccountId(id))?;
+            let gmail = katna_sync::folders::is_gmail(&own);
+            folders.extend(own.into_iter().map(|f| (f, gmail)));
         }
         for action in &rule.actions {
-            if let Some(folder) = action.folder()
-                && !folders.contains(&folder)
-            {
+            let Some(folder) = action.folder() else {
+                continue;
+            };
+            let Some((stored, gmail)) = folders.iter().find(|(f, _)| f.id.0 == folder) else {
                 return Err(CommandError::UnknownFolder(folder));
+            };
+            if matches!(action, katna_store::rules::Action::AddLabel { .. })
+                && (!gmail || katna_sync::folders::is_special(stored, Some('/')))
+            {
+                return Err(CommandError::InvalidArgs(format!(
+                    "\u{201c}{}\u{201d} is not a Gmail label",
+                    stored.path
+                )));
             }
         }
         Ok(())

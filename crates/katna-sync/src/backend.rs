@@ -395,6 +395,27 @@ pub trait MailBackend: Send + 'static {
     /// Creates `folder` (a full path) and subscribes to it.
     fn create_folder(&mut self, folder: &str) -> impl Future<Output = Result<()>> + Send;
 
+    /// Renames `from` to `to` (full paths), folders inside it included,
+    /// and subscribes to the new name.
+    fn rename_folder(&mut self, from: &str, to: &str) -> impl Future<Output = Result<()>> + Send;
+
+    /// Deletes `folder` (a full path) with the messages in it. Some
+    /// servers refuse while folders are inside it: delete those first.
+    fn delete_folder(&mut self, folder: &str) -> impl Future<Output = Result<()>> + Send;
+
+    /// Gmail: adds (`add`) or removes the label `label` (a folder path)
+    /// on `uids` of the selected folder (`X-GM-LABELS`), without moving
+    /// them. [`Error::Rejected`] when the server is not Gmail.
+    fn gmail_label(
+        &mut self,
+        uids: &[u32],
+        label: &str,
+        add: bool,
+    ) -> impl Future<Output = Result<()>> + Send {
+        let _ = (uids, label, add);
+        async { Err(Error::Rejected("the server has no Gmail labels".into())) }
+    }
+
     /// Stores `message` in `folder` with `flags`.
     fn append_with_flags(
         &mut self,

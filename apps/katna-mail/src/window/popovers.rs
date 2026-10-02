@@ -76,7 +76,8 @@ impl MailWindow {
     /// Up, Down, Home or End while a menu is open: its items in turn.
     /// Returns whether the key was taken.
     fn menu_arrow(&self, key: &str, window: &mut Window, cx: &mut gpui::App) -> bool {
-        if !self.menu_open() {
+        // Move to's search box goes through its own lines.
+        if !self.menu_open() || self.folder_pick_typing(window, cx) {
             return false;
         }
         let inside = |window: &Window| {

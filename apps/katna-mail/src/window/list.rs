@@ -39,7 +39,9 @@ const MORE_SIZE: f32 = 30.0;
 const TO_TOP_SIZE: f32 = 40.0;
 
 use super::attachments::kind_badge;
+use super::folder_pick::{PickFrom, PickMode};
 use super::layout::FAB_SIZE;
+use super::mail_drag::MailDrag;
 use super::reader::Squeeze;
 use super::{Act, LIST_CONTEXT, Listing, MailWindow, Menu, READER_CONTEXT, Reload, STACKED_BELOW};
 use crate::data::{EntryKey, Row, RowFile};
@@ -50,6 +52,7 @@ use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
     menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
+use gpui::DragMoveEvent;
 
 /// The inbox tabs' pill bar: its height and inset, and each tab's height,
 /// padding (with labels, and icons only), icon (larger with no label),
@@ -544,6 +547,19 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
                 })
+                .when(
+                    self.account().is_some_and(|a| self.tree.is_gmail(a)),
+                    |bar| {
+                        let label_as = icon_button("list-label-as", "tag", 20.0, th)
+                            .when(self.menu != Some(Menu::LabelAs), |d| {
+                                d.tooltip(tip(tr!("menu-label-as"), th))
+                            })
+                            .on_click(
+                                cx.listener(|this, _, _, cx| this.toggle_menu(Menu::LabelAs, cx)),
+                            );
+                        bar.child(self.with_menu(label_as, Menu::LabelAs, th, cx))
+                    },
+                )
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
                         .when(self.menu != Some(Menu::ListMore), |d| {
@@ -878,6 +894,7 @@ impl MailWindow {
         } else {
             Some(menu)
         };
+        self.sync_folder_pick(cx);
         cx.notify();
     }
 
@@ -1045,10 +1062,32 @@ impl MailWindow {
                                 menu_item_icon("more-move-to", "move-to", &tr!("menu-move-to"), th)
                                     .on_click(cx.listener(|this, _, _, cx| {
                                         this.menu = Some(Menu::MoveTo);
+                                        this.sync_folder_pick(cx);
                                         cx.notify();
                                     })),
                             )
                         })
+                        .when(
+                            squeeze.is_some_and(|s| s.move_to)
+                                && self.account().is_some_and(|a| self.tree.is_gmail(a)),
+                            |d| {
+                                d.child(
+                                    menu_item_icon(
+                                        "more-label-as",
+                                        "tag",
+                                        &tr!("menu-label-as"),
+                                        th,
+                                    )
+                                    .on_click(cx.listener(
+                                        |this, _, _, cx| {
+                                            this.menu = Some(Menu::LabelAs);
+                                            this.sync_folder_pick(cx);
+                                            cx.notify();
+                                        },
+                                    )),
+                                )
+                            },
+                        )
                         .child(
                             menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
@@ -1272,54 +1311,26 @@ impl MailWindow {
                         }),
                 }
             }
-            Menu::MoveTo => {
-                let current = self.folder;
-                let folders = self
-                    .account()
-                    .map(|a| self.tree.folders_of(a))
+            Menu::MoveTo | Menu::LabelAs => {
+                let mode = if which == Menu::LabelAs {
+                    PickMode::Label
+                } else {
+                    PickMode::Move
+                };
+                let rows = self
+                    .folder_pick_in(PickFrom::Toolbar, mode)
+                    .map(|pick| self.render_folder_pick(pick, 32.0, th, cx))
                     .unwrap_or_default();
-                menu(th)
-                    .child(
-                        div()
-                            .px(px(16.0))
-                            .pb(px(6.0))
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(tr!("menu-move-to-heading")),
-                    )
-                    .child(
-                        div()
-                            .id("move-to-list")
-                            .max_h(px(360.0))
-                            .overflow_y_scroll()
-                            .children(
-                                folders
-                                    .into_iter()
-                                    .filter(|(id, ..)| Some(*id) != current)
-                                    .map(|(id, name, role)| {
-                                        div()
-                                            .id(("move", id.0 as usize))
-                                            .h(px(32.0))
-                                            .px(px(16.0))
-                                            .flex()
-                                            .flex_row()
-                                            .items_center()
-                                            .gap(px(12.0))
-                                            .cursor_pointer()
-                                            .keeps_press()
-                                            .hover(|s| s.bg(rgba(th.hover)))
-                                            .on_click(cx.listener(move |this, _, _, cx| {
-                                                this.act_on_targets(Act::MoveTo(id), cx)
-                                            }))
-                                            .child(icon(
-                                                super::nav::role_icon(role),
-                                                th.text_dim,
-                                                18.0,
-                                            ))
-                                            .child(name)
-                                    }),
-                            ),
-                    )
+                let mut rows = rows.into_iter().map(|(el, _)| el);
+                menu(th).w(px(260.0)).children(rows.next()).child(
+                    div()
+                        .id("move-to-list")
+                        .max_h(px(360.0))
+                        .overflow_y_scroll()
+                        .flex()
+                        .flex_col()
+                        .children(rows),
+                )
             }
         }
     }
@@ -2138,6 +2149,21 @@ impl MailWindow {
                     this.open_context_menu(ix, key, event.position, cx)
                 }),
             )
+            // Dragged onto a folder in the folder pane, it moves there.
+            .when_some(
+                row.as_ref()
+                    .filter(|_| !self.layout.shape.is_phone())
+                    .map(|r| self.mail_drag(key, r.account, &r.subject, th)),
+                |d, drag| {
+                    d.on_drag(drag, |drag, offset, _, cx| {
+                        cx.new(|_| MailWindow::start_mail_drag(drag, offset))
+                    })
+                },
+            )
+            .on_drag_move(cx.listener(|this, event: &DragMoveEvent<MailDrag>, _, cx| {
+                this.mail_drag_moved(event, cx)
+            }))
+            .when(self.mail_dragged(key, cx), |d| d.opacity(0.45))
             .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
             // The shadow of the lifted row above, which this row would
             // otherwise paint over.

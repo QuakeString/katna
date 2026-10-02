@@ -728,6 +728,38 @@ macro_rules! pim_proxy {
             /// server cannot be reached, and when the name is taken.
             fn create_folder(&self, account: i64, name: &str, parent: i64) -> zbus::Result<i64>;
 
+            /// Renames folder `folder` (a label, on Gmail) to `new_name` on
+            /// its account's server, then in the store; `MailChanged`
+            /// follows. Only the last part of its path changes: it stays
+            /// inside the same parent, and the folders inside it move
+            /// along. Fails while the server cannot be reached, when the
+            /// name is taken or holds the server's separator, and for
+            /// special folders (Inbox, Sent, Drafts, Trash, Junk, Archive,
+            /// All Mail, Gmail's system labels, Snoozed, Notes).
+            fn rename_folder(&self, folder: i64, new_name: &str) -> zbus::Result<()>;
+
+            /// Deletes folder `folder` (a label, on Gmail) and the folders
+            /// inside it on its account's server, deepest first, then in
+            /// the store; `MailChanged` follows. Elsewhere than on Gmail
+            /// their mail is moved to the account's Trash first, so it can
+            /// be recovered (without a Trash it is deleted with them); on
+            /// Gmail only the labels go, and the mail stays in All Mail and
+            /// its other labels. Returns how many messages went to the
+            /// Trash. Fails while the server cannot be reached, and for
+            /// special folders and folders holding one.
+            fn delete_folder(&self, folder: i64) -> zbus::Result<u32>;
+
+            /// Gmail: puts the labels `add` on messages and takes the
+            /// labels `remove` off them (folder IDs of the messages'
+            /// account), without moving them otherwise: the mail stays in
+            /// All Mail and its other labels. Like [`Self::set_flags`] it
+            /// shows in the store at once and reaches the server when the
+            /// account is online. Fails for accounts that are not Gmail,
+            /// for special folders (Inbox, Sent, All Mail, …), and when a
+            /// message would be left in no folder.
+            fn set_labels(&self, messages: &[i64], add: &[i64], remove: &[i64])
+                -> zbus::Result<()>;
+
             /// Moves messages to `folder` of the same account.
             fn move_messages(&self, messages: &[i64], folder: i64) -> zbus::Result<()>;
 

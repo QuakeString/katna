@@ -17,6 +17,7 @@ use katna_ui::px;
 use katna_ui::{Glow, Ripple};
 
 use super::apps::APP_RAIL_WIDTH;
+use super::mail_drag::MailDrag;
 use super::tour::Spot;
 use super::{
     FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
@@ -1252,6 +1253,23 @@ impl MailWindow {
             bell,
         } = pill;
         let indent = 12.0 * depth as f32;
+        let drop_folder = match self.nav_rows.get(ix) {
+            Some(
+                sidebar::Row::Folder {
+                    folder: Some(folder),
+                    ..
+                }
+                | sidebar::Row::UnifiedAccount {
+                    folder: Some(folder),
+                    ..
+                },
+            ) => self
+                .tree
+                .account_of(*folder)
+                .zip(self.tree.node(*folder))
+                .map(|(to, node)| (*folder, to, node.role)),
+            _ => None,
+        };
         let text = if selected {
             th.row_selected_text
         } else {
@@ -1306,6 +1324,22 @@ impl MailWindow {
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             .cursor_pointer()
             .keeps_press()
+            // Mail dragged from the list lands here.
+            .when_some(drop_folder, |d, (folder, to, role)| {
+                let (fill, ring) = (th.row_selected, keys_ring(th));
+                d.drag_over::<MailDrag>(move |s, drag, _, _| {
+                    if drag.takes(to, folder, role) {
+                        s.bg(rgba(fill)).shadow(ring.clone())
+                    } else {
+                        s
+                    }
+                })
+                .on_drop(
+                    cx.listener(move |this, drag: &MailDrag, _, cx| {
+                        this.drop_mail(drag, folder, cx)
+                    }),
+                )
+            })
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
             .on_mouse_down(
                 MouseButton::Right,

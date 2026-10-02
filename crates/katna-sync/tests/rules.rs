@@ -342,7 +342,13 @@ fn a_rule_whose_folder_is_gone_is_switched_off_with_the_reason() {
 
 #[test]
 fn label_forward_and_trash() {
-    let (_tmp, mut store, account, server, mut watch) = synced();
+    // Labels are Gmail's.
+    let (_tmp, mut store, account) = setup();
+    let server = server();
+    server.create("[Gmail]/All Mail", 1);
+    server.deliver("INBOX", "Seed");
+    sync(&server, &mut store, account);
+    let mut watch = Watch::new(&store, account).unwrap();
     let bills = folder(&store, account, "Bills");
     store
         .save_rule(&subject_has(
@@ -383,6 +389,24 @@ fn label_forward_and_trash() {
     let out = watch.run(&mut store, account, &cannot, true).unwrap();
     assert_eq!(out.failed.len(), 1);
     assert_eq!(out.failed[0].1, "the account cannot send mail");
+}
+
+#[test]
+fn a_label_on_an_account_without_labels_fails_the_rule() {
+    let (_tmp, mut store, account, server, mut watch) = synced();
+    let bills = folder(&store, account, "Bills");
+    let id = store
+        .save_rule(&subject_has(
+            "news",
+            vec![Action::AddLabel { folder: bills.0 }],
+            account,
+        ))
+        .unwrap();
+    server.deliver("INBOX", "News");
+    sync(&server, &mut store, account);
+    let out = watch.run(&mut store, account, &live(NOW), true).unwrap();
+    assert_eq!(out.failed, [(id, "only Gmail accounts have labels".to_owned())]);
+    assert!(!store.rule(id).unwrap().unwrap().enabled);
 }
 
 #[test]

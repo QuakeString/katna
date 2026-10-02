@@ -50,6 +50,7 @@ pub mod engine;
 mod error;
 #[cfg(test)]
 mod fake_http;
+pub mod folders;
 mod google_api;
 pub mod imap;
 pub mod meet;

@@ -336,9 +336,9 @@ fn apply(
             Action::MarkImportant => {
                 ops::set_flags(store, &ids, MessageFlags::IMPORTANT, MessageFlags::empty())
             }
-            // On Gmail a copy into a label's folder is that label.
+            // As Label as does (`SetLabels`): Gmail accounts only.
             Action::AddLabel { folder } => match place(store, rule, *folder, account)? {
-                Place::Here(to) => ops::copy_messages(store, &ids, to),
+                Place::Here(to) => ops::set_labels(store, &ids, &[to], &[]),
                 Place::Elsewhere => continue,
                 Place::Gone => return Ok(Err(gone(*folder))),
             },
@@ -456,7 +456,7 @@ fn done(
         Err(ChangeError::UnknownFolder(folder)) => {
             Ok(Err(format!("folder {folder} no longer exists")))
         }
-        Err(ChangeError::NotPossible(reason)) => Ok(Err(reason)),
+        Err(ChangeError::NotPossible(reason) | ChangeError::Invalid(reason)) => Ok(Err(reason)),
         Err(ChangeError::Store(err)) => Err(err),
     }
 }

@@ -611,6 +611,24 @@ fn changes_imported_mail_in_the_store() {
         let err = pim.archive_messages(&[ids[0].0]).await.unwrap_err();
         assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.Failed");
         assert!(err.to_string().contains("no archive folder"), "{err}");
+
+        // Labels are Gmail's; folders of imported mail are not on a server.
+        let err = pim
+            .set_labels(&[ids[0].0], &[inbox.0], &[])
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        for folder in [inbox, old] {
+            let err = pim.rename_folder(folder.0, "New").await.unwrap_err();
+            assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+            let err = pim.delete_folder(folder.0).await.unwrap_err();
+            assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        }
+        let err = pim.rename_folder(old.0, " ").await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        let err = pim.delete_folder(999_999).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.UnknownObject");
+        assert_eq!(reader.messages_in_folder(old).unwrap()[0].id, ids[0]);
         instance.shutdown().await;
     });
 }

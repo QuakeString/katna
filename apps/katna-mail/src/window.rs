@@ -49,6 +49,7 @@ mod download;
 mod event_edit;
 mod feedback_page;
 mod files_page;
+mod folder_pick;
 mod frost_sliders;
 mod katna_account;
 mod keymap;
@@ -58,6 +59,7 @@ mod layout;
 mod lines;
 mod list;
 mod look;
+mod mail_drag;
 mod mail_providers;
 mod meeting;
 mod nav;
@@ -395,6 +397,8 @@ enum Menu {
     ListMore,
     /// "Move to" with the folders of the account.
     MoveTo,
+    /// Gmail's "Label as" with the account's labels.
+    LabelAs,
     /// The open conversation's "more" button.
     ReaderMore,
     /// The calendar bar's options: density, second time zone.
@@ -747,6 +751,10 @@ pub struct MailWindow {
     new_label: Option<labels::NewLabel>,
     /// The rule editor (Settings > Folders & rules, Make a rule…).
     rule_editor: Option<rule_editor::RuleEditor>,
+    /// The search over the folders in Move to or Label as.
+    folder_pick: Option<folder_pick::FolderPick>,
+    /// The lines a drag onto a folder carries, while it is under way.
+    mail_dragging: Vec<EntryKey>,
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
@@ -1026,6 +1034,8 @@ impl MailWindow {
             delete_confirmed: false,
             new_label: None,
             rule_editor: None,
+            folder_pick: None,
+            mail_dragging: Vec::new(),
             downloads: HashMap::new(),
             chip_download: None,
             nav_t: 1.0,
@@ -1947,6 +1957,7 @@ impl MailWindow {
         }
         if !self.checked.is_empty() || self.reading {
             self.menu = Some(Menu::MoveTo);
+            self.sync_folder_pick(cx);
             cx.notify();
         }
     }
@@ -3737,6 +3748,7 @@ impl Render for MailWindow {
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
+        self.ready_folder_pick(&th, window, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
         let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);

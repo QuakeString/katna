@@ -920,6 +920,10 @@ impl MailWindow {
             let id = AccountId(account);
             let address = self.account_address(id).unwrap_or_default();
             let folders: Vec<i64> = if kind == ActionKind::AddLabel {
+                // Labels are Gmail's (`SetLabels`).
+                if !self.tree.is_gmail(id) {
+                    continue;
+                }
                 self.tree
                     .nest_targets(id)
                     .into_iter()
@@ -1649,6 +1653,14 @@ impl MailWindow {
             Pick::Action(ix) => ActionKind::ALL
                 .into_iter()
                 .enumerate()
+                // Add label only where there are labels: a Gmail account.
+                .filter(|(_, kind)| {
+                    *kind != ActionKind::AddLabel
+                        || e.actions.get(ix).is_some_and(|r| r.kind == *kind)
+                        || e.accounts
+                            .iter()
+                            .any(|a| self.tree.is_gmail(AccountId(*a)))
+                })
                 .map(|(n, kind)| {
                     let on = e.actions.get(ix).is_some_and(|r| r.kind == kind);
                     item(("rule-pick-action", n).into(), kind.label(), on)
