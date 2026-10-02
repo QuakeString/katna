@@ -39,6 +39,7 @@ list-results = نتائج «{ $query }»
 list-results-corrected = يتم عرض نتائج «{ $query }»
 list-search-instead = البحث عن «{ $query }» بدلًا من ذلك
 list-files-more = +{ $count }
+list-replied = لقد رددت
 
 ## Mail list: Select menu (which lines to tick)
 

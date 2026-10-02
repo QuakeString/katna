@@ -176,6 +176,7 @@ files-share-remove = הסרת הגישה
 files-share-copy-link = העתקת הקישור
 files-share-share = שיתוף
 files-share-done = סיום
+files-share-close = סגירה
 files-share-sharing = משתפים…
 files-share-shared = { $count ->
     [one] שותף עם אדם אחד

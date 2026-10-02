@@ -58,6 +58,7 @@ compose-file-too-large = { $name } بہت بڑی ہے: ایک پیغام زیا�
 compose-forward-files-missing = آگے بھیجے گئے پیغام کی فائلیں ڈاؤن لوڈ نہیں ہوئیں، اس لیے وہ منسلک نہیں ہیں۔
 compose-attachment-size = ({ $size })
 compose-remove-attachment = اٹیچمنٹ ہٹائیں
+compose-attachment-open-tip = جانچنے کے لیے کھولیں
 compose-attachments-total = { $count ->
     [one] { $count } فائل، { $size }
    *[other] { $count } فائلیں، { $size }

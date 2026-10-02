@@ -39,6 +39,7 @@ list-results = “{ $query }” için sonuçlar
 list-results-corrected = “{ $query }” için sonuçlar gösteriliyor
 list-search-instead = Bunun yerine “{ $query }” için ara
 list-files-more = +{ $count }
+list-replied = Yanıtladınız
 
 ## Mail list: Select menu (which lines to tick)
 

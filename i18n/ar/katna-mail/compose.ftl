@@ -65,6 +65,7 @@ compose-file-too-large = الملف { $name } كبير جدًا: يمكن أن �
 compose-forward-files-missing = لم يتم تنزيل ملفات الرسالة المُعاد توجيهها، لذا لم يتم إرفاقها.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = إزالة المرفق
+compose-attachment-open-tip = افتحه للتحقق منه
 compose-attachments-total = { $count ->
     [zero] { $count } ملف، { $size }
     [one] ملف واحد، { $size }

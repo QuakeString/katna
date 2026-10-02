@@ -58,6 +58,7 @@ compose-file-too-large = Файл { $name } слишком большой: пи�
 compose-forward-files-missing = Файлы пересылаемого письма не загружены, поэтому они не прикреплены.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Удалить вложение
+compose-attachment-open-tip = Открыть, чтобы проверить
 compose-attachments-total = { $count ->
     [one] { $count } файл, { $size }
     [few] { $count } файла, { $size }
