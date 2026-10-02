@@ -33,7 +33,8 @@ use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
+    card_outline, card_shadow, icon, icon_button, icon_button_colored, pane_line, placeholder, tip,
+    toolbar,
 };
 
 mod chat;
@@ -1316,7 +1317,7 @@ impl MailWindow {
                 div()
                     .flex_none()
                     .border_t_1()
-                    .border_color(rgba(th.divider))
+                    .border_color(rgba(pane_line(th)))
                     .child(footer)
             }))
             .children(self.render_text_menu(th, cx))
@@ -1377,7 +1378,7 @@ impl MailWindow {
                 .pr(px(24.0))
                 .py(px(12.0))
                 .border_t_1()
-                .border_color(rgba(super::list::message_line(th)))
+                .border_color(rgba(pane_line(th)))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
@@ -1884,10 +1885,7 @@ impl MailWindow {
             .pr(px(16.0))
             .pt(px(12.0))
             .pb(px(if last { 0.0 } else { 16.0 }))
-            .when(ix > 0, |d| {
-                d.border_t_1()
-                    .border_color(rgba(super::list::message_line(th)))
-            })
+            .when(ix > 0, |d| d.border_t_1().border_color(rgba(pane_line(th))))
             .child(
                 div()
                     .w(px(PICTURE_COLUMN))
