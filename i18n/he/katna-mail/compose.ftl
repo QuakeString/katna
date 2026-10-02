@@ -58,6 +58,7 @@ compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכ
 compose-forward-files-missing = הקבצים של ההודעה המועברת לא הורדו, ולכן הם לא צורפו.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
+compose-attachment-open-tip = פתיחה לבדיקה
 compose-attachments-total = { $count ->
     [one] קובץ אחד, { $size }
    *[other] { $count } קבצים, { $size }

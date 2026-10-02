@@ -39,6 +39,7 @@ list-results = תוצאות עבור „{ $query }”
 list-results-corrected = מוצגות תוצאות עבור „{ $query }”
 list-search-instead = חיפוש „{ $query }” במקום זאת
 list-files-more = +{ $count }
+list-replied = עניתם
 
 ## Mail list: Select menu (which lines to tick)
 

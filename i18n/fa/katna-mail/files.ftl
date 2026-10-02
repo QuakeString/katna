@@ -166,6 +166,7 @@ files-share-remove = حذف دسترسی
 files-share-copy-link = کپی پیوند
 files-share-share = اشتراک‌گذاری
 files-share-done = تمام
+files-share-close = بستن
 files-share-sharing = در حال اشتراک‌گذاری…
 files-share-shared = { $count ->
     [one] با 1 نفر به اشتراک گذاشته شد

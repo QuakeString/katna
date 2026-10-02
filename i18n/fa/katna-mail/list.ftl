@@ -39,6 +39,7 @@ list-results = نتایج برای «{ $query }»
 list-results-corrected = نمایش نتایج برای «{ $query }»
 list-search-instead = به‌جای آن «{ $query }» را جستجو کنید
 list-files-more = +{ $count }
+list-replied = پاسخ داده‌اید
 
 ## Mail list: Select menu (which lines to tick)
 

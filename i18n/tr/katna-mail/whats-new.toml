@@ -3021,3 +3021,84 @@ title = "Koyu modda da soluk çizgiler"
 text = """
 Koyu modda postalar arasındaki, başlıkların altındaki ve kartların çevresindeki çizgiler açık moddaki kadar soluktur. Alanlar, etiketler ve düğmeler net kenarlıklarını korur.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Ara verdikten sonra da küçük güncellemeler"
+text = """
+Bir iki günlük yeni sürümleri atlasanız bile güncellemeler küçük kalır.
+Katna artık tüm paketi yeniden indirmek yerine sizdeki sürümden önceki
+sürümler üzerinden, her biri birkaç megabaytlık adımlarla ilerler.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Hangi postayı yanıtladığınızı görün"
+text = """
+Posta listesindeki bir satırda küçük bir yanıt oku, onu yanıtladığınızı
+gösterir: ileti dizisinin en yeni postasını burada ya da web'de siz
+yazmışsınızdır. Karşı taraf yanıt verince ok kaybolur.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Tepsi simgesi açık ve koyuya uyar"
+text = """
+Tek renkli tepsi simgesi artık yeni posta beklemeden, açık ve koyu arasında
+geçiş yaptığınız anda panelinizle birlikte değişir.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Yanıt fikirleri yolda olduklarını gösterir"
+text = """
+Bir özetin Yanıtla bölümünde ya da Yanıt yaz'da yanıt fikirleri istenirken,
+şekilleri artık özet yazılırkenki gibi nefes alır. Özet kartı da özet
+istenirken 0 yerine ileti dizisinde kaç posta olduğunu gösterir.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Dosyalar'da daha temiz köşeler"
+text = """
+Önizlemesi beyaz olan bir dosyanın üzerine gelince kartın üst köşelerinde
+artık beyaz görünmüyor, katlanmış yüklemeler tepsisinin üstü de yuvarlak
+ve Paylaş iletişim kutusunun köşesinde bir kapatma düğmesi var.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Aramayı temizlemek postanızı açık tutar"
+text = """
+Arama sonuçlarından bir posta açıp aramayı X ile temizleyin: klasörünüz
+geri gelirken posta listeye geri katlanmak yerine açık kalır.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Elektronik tablolarda yuvarlak köşeler"
+text = """
+Ek görüntüleyicideki bir elektronik tablonun artık dört köşesi de
+yuvarlak. Önceden üstteki gri sütun harfleri ve alttaki sayfa sekmeleri
+köşeleri keskinleştiriyordu.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Kartlarda temiz kişi bilgileri"
+text = """
+İmzadan alınan telefon numaraları, adresler ve diğer bilgiler artık fazladan
+yıldız işaretleri ya da açılı ayraç içinde bağlantı işaretleri göstermiyor.
+Bir iş arkadaşı accounts@ gibi paylaşılan bir adresten posta imzaladığında,
+kart o iş arkadaşının numarasını veya unvanını değil, yalnızca şirketin
+bilgilerini tutar.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Eklediğiniz dosyayı kontrol edin"
+text = """
+Yazdığınız iletiye eklenmiş bir dosyaya tıklayarak onu Katna'nın
+görüntüleyicisinde, gelen dosyaların açıldığı aynı görüntüleyicide açın
+ve doğru dosya olduğundan emin olun. Google Drive veya OneDrive bağlantısı
+olarak gönderilen bir dosya, sürücüde açılır.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Ayarlar'da kaydırma çubuğu"
+text = """
+Ayarlar'ın her sekmesinde artık açık bir postadaki ve Dosyalar'daki ile
+aynı ince kaydırma çubuğu var: siz kaydırırken ya da sayfanın üzerine
+gelirken görünür ve onu sürükleyebilirsiniz.
+"""
