@@ -34,6 +34,8 @@ chat-today = Today
 chat-yesterday = Yesterday
 # Between bubbles, when a mail brings new people in. $who: a first name, or chat-you; $names: the first names of the new people.
 chat-added = { $who } added { $names }
+# A mail in the conversation changed its subject. $who: who sent it.
+chat-renamed = { $who } changed the subject to “{ $subject }”
 # Who added people, when it was the user.
 chat-you = You
 # A bubble whose mail is not downloaded yet.

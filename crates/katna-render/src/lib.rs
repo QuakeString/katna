@@ -7,13 +7,15 @@
 //! [`message_document`] lays out its HTML body for the reading pane (see
 //! [`html`]). [`sender_authenticated`] reads what the user's provider
 //! found of the sender's DKIM and DMARC. [`trim`] splits a body into what
-//! the sender wrote and the quote, signature or forward under it.
+//! the sender wrote and the quote, signature or forward under it;
+//! [`signature`] picks out what a signature tells about its sender.
 
 mod auth;
 pub mod html;
 mod plain;
 pub mod print;
 mod rich;
+pub mod signature;
 pub mod trim;
 
 pub use auth::sender_authenticated;

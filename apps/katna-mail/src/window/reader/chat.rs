@@ -243,7 +243,7 @@ impl Conversation {
             if !from.email.eq_ignore_ascii_case(email) {
                 return None;
             }
-            trim::contact_lines(self.said(part)?.signature.as_deref()?)
+            self.said(part)?.signature.clone()
         })
     }
 }
@@ -271,6 +271,8 @@ enum Line {
     Day(String),
     /// "Arjun added Sara".
     Joined(String, Vec<String>),
+    /// "Sara changed the subject to “Goa, final plan”".
+    Renamed(String, String),
     Bubble(Bubble),
 }
 
@@ -384,6 +386,7 @@ impl MailWindow {
         let mut lines = Vec::new();
         let mut day = None;
         let mut people: HashSet<String> = HashSet::new();
+        let mut subject: Option<String> = None;
         for (ix, part) in reader.parts.iter().enumerate() {
             let view = part.body.as_ref().and_then(|b| b.view.as_ref());
             let row = part.row.as_ref();
@@ -418,6 +421,23 @@ impl MailWindow {
                     lines.push(Line::Joined(who, new));
                 }
                 people.insert(email.to_lowercase());
+            }
+            // A new subject, not just "Re:" added, shows as a line.
+            let said = view
+                .map(|v| v.subject.as_str())
+                .or(row.map(|r| r.subject.as_str()))
+                .unwrap_or_default();
+            let key = katna_core::subject::normalize_subject(said).text;
+            if !key.is_empty() {
+                if subject.as_ref().is_some_and(|before| *before != key) {
+                    let who = if mine {
+                        tr!("chat-you")
+                    } else {
+                        first_name(&name).to_owned()
+                    };
+                    lines.push(Line::Renamed(who, bare_subject(said, &key)));
+                }
+                subject = Some(key);
             }
             let files = view
                 .map(|v| {
@@ -539,6 +559,18 @@ impl MailWindow {
                         "chat-added",
                         who = who.clone(),
                         names = names.join(", ")
+                    ))
+                    .into_any_element(),
+                Line::Renamed(who, subject) => div()
+                    .self_center()
+                    .max_w(relative(0.8))
+                    .my(px(4.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!(
+                        "chat-renamed",
+                        who = who.clone(),
+                        subject = subject.clone()
                     ))
                     .into_any_element(),
                 Line::Bubble(bubble) => self.render_bubble_row(bubble, th, cx),
@@ -1809,6 +1841,18 @@ impl MailWindow {
 }
 
 /// A signature without its `-- ` line; `None` when nothing is left.
+/// `subject` without its "Re:" and "Fwd:" prefixes and list tags: the
+/// shortest end of it that normalizes to `key`.
+fn bare_subject(subject: &str, key: &str) -> String {
+    subject
+        .char_indices()
+        .map(|(at, _)| subject[at..].trim())
+        .rev()
+        .find(|rest| katna_core::subject::normalize_subject(rest).text == key)
+        .unwrap_or(subject.trim())
+        .to_owned()
+}
+
 fn signature_lines(signature: &str) -> Option<String> {
     let lines: Vec<&str> = signature
         .trim()
@@ -1928,6 +1972,14 @@ mod tests {
             Some("Arjun Mehta\nDemo Travel Co")
         );
         assert_eq!(signature_lines("--"), None);
+    }
+
+    #[test]
+    fn a_new_subject_drops_its_prefixes() {
+        let key = |s: &str| katna_core::subject::normalize_subject(s).text;
+        let said = "Re: Fwd: [trip] Goa, final plan";
+        assert_eq!(bare_subject(said, &key(said)), "Goa, final plan");
+        assert_eq!(bare_subject("Goa", &key("Goa")), "Goa");
     }
 
     #[test]

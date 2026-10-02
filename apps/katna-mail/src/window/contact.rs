@@ -20,6 +20,7 @@ use gpui::{
 };
 use katna_dav::Occurrence;
 use katna_i18n::tr;
+use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
 use katna_ui::{Ripple, px};
@@ -638,37 +639,75 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
-        if let Some(profile) = &profile
-            && let Some(details) = self.contact_details(profile, &mut pieces, th, cx)
-        {
-            sections.push(details);
-        }
-        let company = self
+        let looked_up = self
             .contact
             .companies
             .get(&email.to_lowercase())
             .cloned()
             .flatten();
-        if let Some(company) = &company {
-            sections.push(self.contact_company_section(email, company, &mut pieces, th));
-        }
-        // The chat view leaves signatures out of the bubbles: the one they
-        // signed with last shows here.
-        if let Some(signature) = self
+        // What their latest signature says: in a chat, the one they signed
+        // this conversation with.
+        let signature = self
             .chat_shown()
             .then(|| self.reader.as_ref()?.signature_of(email))
             .flatten()
+            .or_else(|| profile.as_ref()?.signature.clone());
+        let card = profile.as_ref().map(|p| &p.card);
+        let details = signature.and_then(|signature| {
+            let shown: Vec<&str> = card
+                .into_iter()
+                .flat_map(|c| [&c.title, &c.phone])
+                .flatten()
+                .map(String::as_str)
+                .collect();
+            let known_company = card
+                .and_then(|c| c.company.as_deref())
+                .or(looked_up.as_deref().map(|c| c.name.as_str()));
+            signature::details(
+                &signature,
+                &signature::Known {
+                    name: name.as_deref(),
+                    email,
+                    shown: &shown,
+                    company: known_company,
+                },
+            )
+        });
+        if let Some(profile) = &profile
+            && let Some(details) =
+                self.contact_details(profile, details.as_ref(), &mut pieces, th, cx)
         {
-            sections.push(
-                section(words(&mut pieces, tr!("contact-signature")), th)
-                    .child(
-                        words(&mut pieces, signature)
-                            .text_size(px(13.0))
-                            .line_height(px(19.0))
-                            .text_color(rgba(th.text)),
-                    )
-                    .into_any_element(),
-            );
+            sections.push(details);
+        }
+        // The company as its home page describes it, else as the
+        // signature does.
+        let company = looked_up.or_else(|| {
+            let from = details.as_ref().map(|d| &d.company);
+            let name = from
+                .and_then(|c| c.name.clone().or_else(|| c.logo.clone()))
+                .or_else(|| card.and_then(|c| c.company.clone()))?;
+            let says_more = from.is_some_and(|c| {
+                c.website.is_some()
+                    || !c.pages.is_empty()
+                    || !c.offices.is_empty()
+                    || c.group.is_some()
+            });
+            says_more.then(|| {
+                Rc::new(Company {
+                    name,
+                    website: from.and_then(|c| c.website.clone()).unwrap_or_default(),
+                    ..Company::default()
+                })
+            })
+        });
+        if let Some(company) = &company {
+            sections.push(self.contact_company_section(
+                email,
+                company,
+                details.as_ref().map(|d| &d.company),
+                &mut pieces,
+                th,
+            ));
         }
         if let Some(profile) = &profile {
             sections.push(self.contact_mail(profile, &mut pieces, th));
@@ -889,14 +928,19 @@ impl MailWindow {
     fn contact_details(
         &self,
         profile: &Profile,
+        details: Option<&signature::Details>,
         pieces: &mut Pieces,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let card = &profile.card;
         // The title, with the company under it in a quieter color.
-        let work = card.title.as_ref().or(card.company.as_ref()).map(|first| {
-            let under = card.title.as_ref().and(card.company.clone());
+        let title = card
+            .title
+            .as_ref()
+            .or_else(|| details.and_then(|d| d.title.as_ref()));
+        let work = title.or(card.company.as_ref()).map(|first| {
+            let under = title.and(card.company.clone());
             div()
                 .flex()
                 .flex_col()
@@ -904,10 +948,43 @@ impl MailWindow {
                 .children(under.map(|company| words(pieces, company).text_color(rgba(th.text_dim))))
                 .into_any_element()
         });
-        let phone = card
-            .phone
-            .clone()
-            .map(|number| self.contact_phone(number, th, cx));
+        // Every number their signature gives, with its kind; the one read
+        // from older mail too, when it is another.
+        let mut numbers: Vec<(String, Option<signature::PhoneKind>)> = details
+            .into_iter()
+            .flat_map(|d| &d.phones)
+            .map(|p| (p.number.clone(), Some(p.kind)))
+            .collect();
+        if let Some(number) = &card.phone
+            && !numbers.iter().any(|(n, _)| same_number(n, number))
+        {
+            numbers.insert(0, (number.clone(), None));
+        }
+        let phones: Vec<AnyElement> = numbers
+            .into_iter()
+            .enumerate()
+            .map(|(ix, (number, kind))| self.contact_phone(ix, number, kind, th, cx))
+            .collect();
+        let phone = (!phones.is_empty()).then(|| {
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(4.0))
+                .children(phones)
+                .into_any_element()
+        });
+        let emails = details
+            .filter(|d| !d.emails.is_empty())
+            .map(|d| words(pieces, d.emails.join("\n")).into_any_element());
+        // Any other line their signature has, quietly.
+        let other = details.filter(|d| !d.other.is_empty()).map(|d| {
+            words(pieces, d.other.join("\n"))
+                .text_color(rgba(th.text_dim))
+                .into_any_element()
+        });
+        let pages = details
+            .filter(|d| !d.pages.is_empty())
+            .map(|d| page_chips("contact-own-page", &d.pages, th));
         let time = profile.offset.and_then(|minutes| {
             let offset = jiff::tz::Offset::from_seconds(minutes * 60).ok()?;
             let now = jiff::Timestamp::now().as_second();
@@ -919,10 +996,17 @@ impl MailWindow {
             ))
         });
         let time = time.map(|t| words(pieces, t).into_any_element());
-        let rows: Vec<(&str, AnyElement)> = [("work", work), ("phone", phone), ("schedule", time)]
-            .into_iter()
-            .filter_map(|(icon, text)| Some((icon, text?)))
-            .collect();
+        let rows: Vec<(&str, AnyElement)> = [
+            ("work", work),
+            ("phone", phone),
+            ("mail", emails),
+            ("link", pages),
+            ("info", other),
+            ("schedule", time),
+        ]
+        .into_iter()
+        .filter_map(|(icon, text)| Some((icon, text?)))
+        .collect();
         if rows.is_empty() {
             return None;
         }
@@ -958,6 +1042,7 @@ impl MailWindow {
         &self,
         email: &str,
         company: &Company,
+        from_signature: Option<&signature::CompanyDetails>,
         pieces: &mut Pieces,
         th: &Theme,
     ) -> AnyElement {
@@ -999,45 +1084,95 @@ impl MailWindow {
                 .line_height(px(19.0))
                 .text_color(rgba(th.text))
         };
-        let pages = std::iter::once((company.website.clone(), host_label(&company.website)))
-            .chain(
-                company
-                    .links
-                    .iter()
-                    .map(|url| (url.clone(), page_label(url))),
-            )
-            .enumerate()
-            .map(|(ix, (url, label))| {
-                div()
-                    .id(("contact-company-page", ix))
-                    .h(px(24.0))
-                    .px(px(10.0))
-                    .flex()
-                    .items_center()
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_dim))
-                    .tooltip(tip(url.clone(), th))
-                    .on_click(move |_, _, cx| cx.open_url(&url))
-                    .child(label)
+        // Its pages: the home page's, then the signature's it lacks.
+        let mut pages: Vec<signature::Link> = std::iter::once(&company.website)
+            .chain(from_signature.and_then(|c| c.website.as_ref()))
+            .chain(&company.links)
+            .filter(|url| !url.is_empty())
+            .map(|url| signature::Link {
+                site: signature::Site::of(url),
+                url: url.clone(),
+            })
+            .collect();
+        for link in from_signature.into_iter().flat_map(|c| &c.pages) {
+            let host = signature::host(&link.url);
+            let known = pages.iter().any(|p| {
+                signature::host(&p.url) == host
+                    && (p.site == signature::Site::Web
+                        || p.url.trim_end_matches('/') == link.url.trim_end_matches('/'))
             });
-        let now = jiff::Timestamp::now().as_second();
-        let checked = format::ago(company.checked, now).map(|when| {
-            words(
-                pieces,
-                tr!(
-                    "contact-company-from",
-                    site = host_label(&company.website),
-                    when = when
-                ),
-            )
-            .text_size(px(11.5))
-            .line_height(px(16.0))
-            .text_color(rgba(th.text_faint))
+            if !known {
+                pages.push(link.clone());
+            }
+        }
+        let mut seen = Vec::new();
+        pages.retain(|p| {
+            let key = (
+                p.site,
+                signature::host(&p.url),
+                p.site != signature::Site::Web,
+            );
+            let key = if key.2 {
+                p.url.trim_end_matches('/').to_owned()
+            } else {
+                key.1
+            };
+            if seen.contains(&key) {
+                false
+            } else {
+                seen.push(key);
+                true
+            }
         });
+        let group = from_signature.and_then(|c| c.group.clone());
+        let offices = from_signature
+            .map(|c| c.offices.as_slice())
+            .unwrap_or_default()
+            .iter()
+            .map(|office| {
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_start()
+                    .gap(px(8.0))
+                    .child(
+                        div()
+                            .pt(px(1.0))
+                            .child(icon("location", th.text_faint, 16.0)),
+                    )
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .children(office.label.clone().map(|label| {
+                                words(pieces, label)
+                                    .text_size(px(12.0))
+                                    .line_height(px(17.0))
+                                    .text_color(rgba(th.text_dim))
+                            }))
+                            .child(text(pieces, &office.lines.join("\n"))),
+                    )
+            })
+            .collect::<Vec<_>>();
+        let now = jiff::Timestamp::now().as_second();
+        let checked = (company.checked > 0)
+            .then(|| format::ago(company.checked, now))
+            .flatten()
+            .map(|when| {
+                words(
+                    pieces,
+                    tr!(
+                        "contact-company-from",
+                        site = host_label(&company.website),
+                        when = when
+                    ),
+                )
+                .text_size(px(11.5))
+                .line_height(px(16.0))
+                .text_color(rgba(th.text_faint))
+            });
         section(words(pieces, tr!("contact-company")), th)
             .gap(px(8.0))
             .child(
@@ -1067,7 +1202,14 @@ impl MailWindow {
                                         .line_height(px(16.0))
                                         .text_color(rgba(th.text_dim)),
                                 )
-                            }),
+                            })
+                            // "Part of the Demo Group", from the signature.
+                            .children(group.map(|group| {
+                                words(pieces, group)
+                                    .text_size(px(12.0))
+                                    .line_height(px(16.0))
+                                    .text_color(rgba(th.text_dim))
+                            })),
                     ),
             )
             .when(!company.description.is_empty(), |d| {
@@ -1076,33 +1218,46 @@ impl MailWindow {
             .when(!company.summary.is_empty(), |d| {
                 d.child(text(pieces, &company.summary).text_color(rgba(th.text_dim)))
             })
-            .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap(px(6.0))
-                    .children(pages),
-            )
+            .children(offices)
+            .when(!pages.is_empty(), |d| {
+                d.child(page_chips("contact-company-page", &pages, th))
+            })
             .children(checked)
             .into_any_element()
     }
 
     /// Their phone number: a click calls it (the desktop hands `tel:` to
     /// the phone app or KDE Connect), and a copy button shows on hover.
-    fn contact_phone(&self, number: String, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn contact_phone(
+        &self,
+        ix: usize,
+        number: String,
+        kind: Option<signature::PhoneKind>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        use signature::PhoneKind;
         let dial = format!("tel:{}", dialable(&number));
         let copied = number.clone();
+        let group = SharedString::from(format!("contact-phone-{ix}"));
+        let kind = kind.and_then(|kind| match kind {
+            PhoneKind::Phone => None,
+            PhoneKind::Mobile => Some(tr!("contact-phone-mobile")),
+            PhoneKind::Direct => Some(tr!("contact-phone-direct")),
+            PhoneKind::Office => Some(tr!("contact-phone-office")),
+            PhoneKind::Fax => Some(tr!("contact-phone-fax")),
+            PhoneKind::WhatsApp => Some(tr!("contact-phone-whatsapp")),
+        });
         div()
-            .id("contact-phone")
-            .group("contact-phone")
+            .id(("contact-phone", ix))
+            .group(group.clone())
             .flex()
             .flex_row()
             .items_center()
             .gap(px(4.0))
             .child(
                 div()
-                    .id("contact-call")
+                    .id(("contact-call", ix))
                     .min_w_0()
                     .cursor_pointer()
                     .text_color(rgba(th.accent))
@@ -1111,9 +1266,17 @@ impl MailWindow {
                     .on_click(move |_, _, cx| cx.open_url(&dial))
                     .child(number),
             )
+            // "Mobile", "Direct", quietly after the number.
+            .children(kind.map(|kind| {
+                div()
+                    .flex_none()
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(kind)
+            }))
             .child(
                 div()
-                    .id("contact-copy-number")
+                    .id(("contact-copy-number", ix))
                     .flex_none()
                     .size(px(24.0))
                     .my(px(-2.0))
@@ -1123,7 +1286,7 @@ impl MailWindow {
                     .rounded_full()
                     .cursor_pointer()
                     .opacity(0.0)
-                    .group_hover("contact-phone", |s| s.opacity(1.0))
+                    .group_hover(group, |s| s.opacity(1.0))
                     .hover(|s| s.bg(rgba(th.hover)))
                     .tooltip(tip(tr!("contact-copy-number"), th))
                     .on_click(cx.listener(move |this, _, _, cx| {
@@ -1610,31 +1773,84 @@ struct Company {
     checked: i64,
 }
 
+/// A row of pages: a site the card has a mark for as a round chip with
+/// Katna's one-colour mark, any other as a chip with its host.
+fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyElement {
+    div()
+        .flex()
+        .flex_row()
+        .flex_wrap()
+        .gap(px(6.0))
+        .children(pages.iter().enumerate().map(|(ix, link)| {
+            let url = link.url.clone();
+            let chip = div()
+                .id((id, ix))
+                .h(px(24.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .bg(rgba(th.chip))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip(link.url.clone(), th))
+                .on_click(move |_, _, cx| cx.open_url(&url));
+            match brand_icon(link.site) {
+                Some(name) => chip.w(px(24.0)).child(icon(name, th.text_dim, 14.0)),
+                None => chip
+                    .px(px(10.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(page_label(&link.url)),
+            }
+        }))
+        .into_any_element()
+}
+
+/// What a page with no mark of its own is called: Wikipedia, else its
+/// host.
+fn page_label(url: &str) -> String {
+    let host = host_label(url);
+    if host == "wikipedia.org" || host.ends_with(".wikipedia.org") {
+        "Wikipedia".to_owned()
+    } else {
+        host
+    }
+}
+
+/// Whether two phone numbers are one: the same last ten digits.
+fn same_number(a: &str, b: &str) -> bool {
+    let tail = |n: &str| {
+        let digits: Vec<char> = n.chars().filter(char::is_ascii_digit).collect();
+        digits[digits.len().saturating_sub(10)..]
+            .iter()
+            .collect::<String>()
+    };
+    let (a, b) = (tail(a), tail(b));
+    a.len() >= 7 && a == b
+}
+
+/// Katna's one-colour mark for a site a signature links to.
+fn brand_icon(site: signature::Site) -> Option<&'static str> {
+    use signature::Site;
+    Some(match site {
+        Site::Web => return None,
+        Site::LinkedIn => "brand-linkedin",
+        Site::X => "brand-x",
+        Site::Facebook => "brand-facebook",
+        Site::Instagram => "brand-instagram",
+        Site::YouTube => "brand-youtube",
+        Site::GitHub => "brand-github",
+        Site::WhatsApp => "brand-whatsapp",
+        Site::Telegram => "brand-telegram",
+    })
+}
+
 /// `example.com` from `https://www.example.com/`.
 fn host_label(url: &str) -> String {
     let rest = url.split_once("://").map_or(url, |(_, r)| r);
     let host = rest.split(['/', '?', '#']).next().unwrap_or(rest);
     host.strip_prefix("www.").unwrap_or(host).to_owned()
-}
-
-/// What a company page is called: the site's own name for the usual
-/// social sites, else its host.
-fn page_label(url: &str) -> String {
-    let host = host_label(url);
-    let known = [
-        ("linkedin.com", "LinkedIn"),
-        ("instagram.com", "Instagram"),
-        ("facebook.com", "Facebook"),
-        ("x.com", "X"),
-        ("twitter.com", "X"),
-        ("youtube.com", "YouTube"),
-        ("github.com", "GitHub"),
-        ("wikipedia.org", "Wikipedia"),
-    ];
-    known
-        .iter()
-        .find(|(site, _)| host == *site || host.ends_with(&format!(".{site}")))
-        .map_or(host.clone(), |(_, name)| (*name).to_owned())
 }
 
 /// `number` as a `tel:` URI wants it: its digits, after a `+` if it has one.
