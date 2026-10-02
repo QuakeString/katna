@@ -90,6 +90,7 @@ icons!(
     "fit-page",
     "fit-width",
     "flight",
+    "folder-add",
     "folder",
     "folders-pane-fill",
     "folders-pane",

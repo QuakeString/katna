@@ -1032,6 +1032,7 @@ impl MailWindow {
         );
         let phone = self.layout.shape.is_phone();
         let squeeze = self.reader_squeeze(th);
+        let gmail = self.account().is_some_and(|a| self.tree.is_gmail(a));
         let separators = !phone && !squeeze.separators;
         // A phone moves between conversations from the list; a
         // conversation window shows only its own.
@@ -1040,14 +1041,18 @@ impl MailWindow {
         let more = {
             let more = icon_button("reader-more", "more", 20.0, th)
                 .when(
-                    !matches!(self.menu, Some(Menu::ReaderMore | Menu::MoveTo)),
+                    !matches!(
+                        self.menu,
+                        Some(Menu::ReaderMore | Menu::MoveTo | Menu::LabelAs)
+                    ),
                     |d| d.tooltip(tip(tr!("reader-more"), th)),
                 )
                 .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
             let more = self.with_menu(more, Menu::ReaderMore, th, cx);
             // Move to, from the More menu, opens under it.
             if squeeze.move_to {
-                self.with_menu(more, Menu::MoveTo, th, cx)
+                let more = self.with_menu(more, Menu::MoveTo, th, cx);
+                self.with_menu(more, Menu::LabelAs, th, cx)
             } else {
                 more
             }
@@ -1084,6 +1089,16 @@ impl MailWindow {
                         })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
+                })
+                .when(gmail, |d| {
+                    let label_as = icon_button("reader-label-as", "tag", 20.0, th)
+                        .when(self.menu != Some(Menu::LabelAs), |d| {
+                            d.tooltip(tip(tr!("menu-label-as"), th))
+                        })
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_menu(Menu::LabelAs, cx)),
+                        );
+                    d.child(self.with_menu(label_as, Menu::LabelAs, th, cx))
                 })
             })
             .when(!squeeze.mute, |d| d.child(self.reader_mute_button(th, cx)))
