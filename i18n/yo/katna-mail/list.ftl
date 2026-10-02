@@ -39,6 +39,7 @@ list-results = Àbájáde fún “{ $query }”
 list-results-corrected = Ó ń fi àbájáde hàn fún “{ $query }”
 list-search-instead = Ṣàwárí “{ $query }” dípò
 list-files-more = +{ $count }
+list-replied = O ti fèsì
 
 ## Mail list: Select menu (which lines to tick)
 

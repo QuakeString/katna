@@ -39,6 +39,7 @@ list-results = Resultate vir “{ $query }”
 list-results-corrected = Wys resultate vir “{ $query }”
 list-search-instead = Soek eerder vir “{ $query }”
 list-files-more = +{ $count }
+list-replied = Jy het geantwoord
 
 ## Mail list: Select menu (which lines to tick)
 

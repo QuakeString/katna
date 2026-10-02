@@ -58,6 +58,7 @@ compose-file-too-large = { $name } is te groot: 'n boodskap kan tot { $limit } d
 compose-forward-files-missing = Die aangestuurde boodskap se lêers is nie afgelaai nie, dus is hulle nie aangeheg nie.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Verwyder aanhegsel
+compose-attachment-open-tip = Maak oop om dit na te gaan
 compose-attachments-total = { $count ->
     [one] { $count } lêer, { $size }
    *[other] { $count } lêers, { $size }

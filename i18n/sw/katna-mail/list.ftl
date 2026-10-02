@@ -39,6 +39,7 @@ list-results = Matokeo ya “{ $query }”
 list-results-corrected = Inaonyesha matokeo ya “{ $query }”
 list-search-instead = Badala yake tafuta “{ $query }”
 list-files-more = +{ $count }
+list-replied = Ulijibu
 
 ## Mail list: Select menu (which lines to tick)
 

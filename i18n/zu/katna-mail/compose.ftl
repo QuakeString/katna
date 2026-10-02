@@ -58,6 +58,7 @@ compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika k
 compose-forward-files-missing = Amafayela omlayezo odluliselwayo awakalandwa, ngakho awanamathiselwanga.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Susa okunamathiselwe
+compose-attachment-open-tip = Vula ukuze ulihlole
 compose-attachments-total = { $count ->
     [one] Ifayela elingu-{ $count }, { $size }
    *[other] Amafayela angu-{ $count }, { $size }

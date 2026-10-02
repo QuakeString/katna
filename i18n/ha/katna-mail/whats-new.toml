@@ -2881,3 +2881,84 @@ title = "Layuka marasa ƙarfi a yanayin Duhu ma"
 text = """
 A yanayin Duhu, layukan da ke tsakanin wasiƙu, ƙarƙashin kanun labarai da kewayen katuna yanzu ba su da ƙarfi kamar a yanayin Haske. Filaye, guntu da maɓallai suna riƙe da iyakarsu a fili.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Ƙananan sabuntawa bayan hutu"
+text = """
+Sabuntawa suna zama ƙanana ko da ka tsallake sabbin sigogi na kwana ɗaya
+ko biyu. Yanzu Katna tana tafiya daga sigar da kake da ita ta cikin na
+baya, 'yan megabytes kowanne, maimakon sake sauke dukan kunshin.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Ga wasiƙun da ka amsa"
+text = """
+Ƙaramar kibiyar amsa a kan layi a jerin wasiƙu tana nuna cewa ka amsa ta:
+kai ne ka rubuta sabuwar wasiƙar tattaunawar, a nan ko a yanar gizo. Tana
+ɓacewa idan sun sake rubuto maka.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Gunkin tire yana bin Haske da Duhu"
+text = """
+Gunkin tire mai launi ɗaya yanzu yana canzawa tare da panel ɗinka nan take
+da ka sauya tsakanin Haske da Duhu, maimakon jiran sabuwar wasiƙa.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Ra'ayoyin amsa suna nuna suna zuwa"
+text = """
+Yayin da ake neman ra'ayoyin amsa, a Amsa na taƙaitawa ko a Rubuta amsa,
+siffofinsu yanzu suna numfashi kamar na taƙaitawar kanta yayin da ake
+rubuta ta. Katin taƙaitawa kuma yana nuna yawan wasiƙun da tattaunawar ke
+da su yayin da ake nema, ba 0 ba.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Kusurwoyi masu tsabta a Fayiloli"
+text = """
+Ɗora alamar linzami a kan fayil mai hoton gani fari ba ya sake barin fari
+ya bayyana a kusurwoyin saman katin, tiren ɗorawa da aka naɗe ma yana da
+zagaye a sama, kuma maganganun Raba yana da maɓallin Rufe a kusurwarsa.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Share bincike yana barin wasiƙarka a buɗe"
+text = """
+Buɗe wasiƙa daga sakamakon bincike kuma share binciken da X: wasiƙar tana
+nan a buɗe yayin da foldarka ke dawowa, maimakon komawa jerin.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Kusurwoyi masu zagaye a maƙunsar bayanai"
+text = """
+Maƙunsar bayanai a mai duba abubuwan haɗawa yanzu tana da zagaye a duka
+kusurwoyi huɗu. Haruffan ginshiƙi masu toka a sama da shafukan takarda a
+ƙasa a da suna mai da su murabba'i.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Bayanan lamba masu tsabta a katuna"
+text = """
+Lambobin waya, adireshi da sauran bayanan da aka ɗauko daga sa hannu ba sa
+sake nuna taurari ko alamomin mahaɗi a cikin baka mai kusurwa. Idan abokin
+aiki ya sa hannu a wasiƙa daga adireshin da aka raba kamar accounts@, katin
+yana riƙe bayanan kamfanin kaɗai, ba lambar abokin aikin ko muƙaminsa ba.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Duba abin da ka haɗa"
+text = """
+Danna fayil da aka haɗa a saƙon da kake rubutawa don buɗe shi a mai duba
+na Katna, wanda fayilolin da aka karɓa ke buɗewa a ciki, ka tabbata fayil
+ɗin da ya dace ne. Fayil da aka aika a matsayin mahaɗin Google Drive ko
+OneDrive yana buɗewa a kan drive ɗin.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Sandar gungurawa a Saituna"
+text = """
+Kowane shafi na Saituna yana da sandar gungurawa sirara iri ɗaya da ta
+wasiƙa a buɗe da Fayiloli: tana bayyana yayin da kake gungurawa ko nuna
+shafin, kuma za ka iya jan ta.
+"""

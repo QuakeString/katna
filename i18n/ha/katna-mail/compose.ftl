@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har 
 compose-forward-files-missing = Ba a sauke fayilolin saƙon da aka tura ba, don haka ba a haɗa su ba.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
+compose-attachment-open-tip = Buɗe don dubawa
 compose-attachments-total = { $count ->
     [one] fayil { $count }, { $size }
    *[other] fayiloli { $count }, { $size }

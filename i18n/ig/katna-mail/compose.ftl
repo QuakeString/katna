@@ -58,6 +58,7 @@ compose-file-too-large = { $name } buru oke ibu: ozi nwere ike ibu ruo { $limit 
 compose-forward-files-missing = E budatabeghị faịlụ nke ozi e zigara, ya mere a gbakwunyeghị ha.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Wepụ mgbakwunye
+compose-attachment-open-tip = Mepee ya iji lelee ya
 compose-attachments-total = faịlụ { $count }, { $size }
 compose-drive-note = { $name } karịrị { $limit }, ya mere ọ na-aga na Google Drive gị, ozi ahụ ga-ebukwa njikọ.
 compose-drive-tip = Na Google Drive gị; ozi ahụ na-ebu njikọ

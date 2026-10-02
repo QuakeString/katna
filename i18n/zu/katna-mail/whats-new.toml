@@ -3177,3 +3177,63 @@ title = "Imigqa efiphele nakumodi Emnyama"
 text = """
 Kumodi Emnyama, imigqa ephakathi kwamameyili, ngaphansi kwezihloko nasezungeze amakhadi manje ifiphele njengakumodi Ekhanyayo. Izinkambu, ama-chip nezinkinobho zigcina umugqa wazo ocacile.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Izibuyekezo ezincane ngemva kwekhefu"
+text = """
+Izibuyekezo zihlala zincane ngisho noma weqa usuku noma ezimbili zezinguqulo ezintsha. I-Katna manje ihamba isuka enguqulweni onayo idlule kwezangaphambili, ama-megabyte ambalwa ngayinye, esikhundleni sokulanda yonke iphakheji futhi.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Bona ukuthi iyiphi imeyili oyiphendulile"
+text = """
+Umcibisholo omncane wokuphendula emugqeni wohlu lwemeyili ukhombisa ukuthi uyiphendulile: nguwe owabhala imeyili yakamuva yengxoxo, lapha noma kuwebhu. Uyanyamalala lapho bephendula.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Isithonjana sethreyi silandela ukukhanya nokumnyama"
+text = """
+Isithonjana sethreyi esinombala owodwa manje sishintsha nephaneli yakho ngokushesha nje lapho ushintsha phakathi kokukhanya nokumnyama, esikhundleni sokulinda imeyili entsha.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Imibono yokuphendula ikhombisa ukuthi isendleleni"
+text = """
+Ngenkathi imibono yokuphendula iceliwe, ku-Phendula yesifinyezo noma ku-Bhala impendulo, izimo zayo manje ziyaphefumula njengezesifinyezo uqobo ngenkathi sibhalwa. Ikhadi lesifinyezo nalo likhombisa ukuthi ingxoxo inamameyili amangaki ngenkathi sicelwa, hhayi u-0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Amakhona ahlanzekile ku-Amafayela"
+text = """
+Ukukhomba ifayela elinokubuka kuqala okumhlophe akusavumeli okumhlophe kubonakale emakhoneni aphezulu ekhadi, ithreyi yokulayisha egoqiwe nayo iyindilinga phezulu, futhi ibhokisi lengxoxo elithi Yabelana inenkinobho ethi Vala ekhoneni layo.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Ukusula usesho kugcina imeyili yakho ivulekile"
+text = """
+Vula imeyili emiphumeleni yosesho bese usula usesho nge-X: imeyili ihlala ivulekile njengoba ifolda yakho ibuya, esikhundleni sokugoqeka ibuyele ohlwini.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Amakhona ayindilinga kumaspredishithi"
+text = """
+Ispredishithi esibukisini sokunamathiselwe manje siyindilinga kuwo wonke amakhona amane. Izinhlamvu ezimpunga zamakholomu phezulu namathebhu amashidi ezansi bekuyenza ibe nezikwele.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Imininingwane yoxhumana naye ehlanzekile emakhadini"
+text = """
+Izinombolo zocingo, amakheli neminye imininingwane ethathwe kusiginesha akusabonisi izinkanyezi ezingadingeki noma izimpawu zezixhumanisi kubakaki abangama-engeli. Lapho uzakwenu esayina imeyili esuka ekhelini elabiwe njenge-accounts@, ikhadi ligcina imininingwane yenkampani kuphela, hhayi inombolo noma isikhundla salowo zakwenu.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Hlola okunamathiselile"
+text = """
+Chofoza ifayela elinamathiselwe emlayezweni owubhalayo ukuze ulivule esibukisini se-Katna, yisona esivula amafayela owatholile, bese uqiniseka ukuthi yifayela elifanele. Ifayela elithunyelwe njengesixhumanisi se-Google Drive noma se-OneDrive livuleka kudrayivu.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Ibha yokuskrola ku-Izilungiselelo"
+text = """
+Ithebhu ngayinye ye-Izilungiselelo inebha yokuskrola encane efanayo neyemeyili evuliwe neye-Amafayela: iyavela ngenkathi uskrola noma ukhomba ikhasi, futhi ungayidonsa.
+"""
