@@ -854,6 +854,18 @@ impl Daemon {
             .inspect_err(|err| tracing::info!(%err, "rephrasing"))
     }
 
+    /// A first draft of a reply or a forward's note, or ideas for one
+    /// ([`crate::ai::draft`]).
+    pub async fn ai_draft(
+        &self,
+        request: &katna_ai::draft::DraftRequest,
+    ) -> Result<katna_ai::wire::AiAnswer, crate::ai::AiError> {
+        let settings = settings(&self.paths).ai;
+        crate::ai::draft(&settings, &self.secrets, request)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "writing a draft"))
+    }
+
     /// The rest of the sentence at the end of `before`
     /// ([`crate::ai::complete`]).
     pub async fn ai_complete(

@@ -720,6 +720,24 @@ impl RichEditor {
         self.flash = Some((first, self.head, Instant::now()));
     }
 
+    /// Puts plain `text` at the start of the message, where the user
+    /// writes, as one step Undo takes back, leaving the cursor after it
+    /// and tinting it for a moment. Newlines start paragraphs.
+    pub fn insert_at_start(&mut self, text: &str, cx: &mut Context<Self>) {
+        let start = self.doc.start();
+        let mut style = self
+            .doc
+            .para(start.path)
+            .map(|p| p.style_at(0))
+            .unwrap_or_default();
+        style.link = None;
+        let text = text.replace("\r\n", "\n");
+        self.edit(EditKind::Other, cx, |doc, _| {
+            doc.insert_text(start, &text, &style)
+        });
+        self.flash = Some((start, self.head, Instant::now()));
+    }
+
     /// The tinted range in paragraph `path` and how strong the tint is
     /// now (1 to 0), while it fades.
     pub(crate) fn flash_in(&self, path: Path) -> Option<(Range<usize>, f32)> {
@@ -1568,12 +1586,12 @@ impl RichEditor {
     }
 
     /// Where what the user wrote ends: the last paragraph with text above
-    /// the signature, the quoted mail, a table or a picture.
+    /// the signature, the quoted or forwarded mail, a table or a picture.
     pub fn own_text_end(&self) -> Option<Pos> {
         let mut last = None;
         for (ix, block) in self.doc.blocks.iter().enumerate() {
             match block {
-                Block::Para(para) if !self.plain_blocked(para) => {
+                Block::Para(para) if !self.plain_blocked(para) && !quote_start(para) => {
                     if para.text.chars().any(char::is_alphabetic) {
                         last = Some(Pos::new(Path::top(ix), para.len()));
                     }
@@ -2643,15 +2661,18 @@ fn style_without_link(style: &CharStyle) -> CharStyle {
     }
 }
 
+/// Whether `p` opens a quoted message or a forwarded header.
+fn quote_start(p: &Para) -> bool {
+    p.style.quote > 0
+        || p.text.contains("Forwarded message")
+        || (p.text.starts_with("On ") && p.text.trim_end().ends_with("wrote:"))
+}
+
 /// Where a new signature goes: after the last paragraph the user wrote,
 /// before a quoted message or forwarded header.
 fn signature_place(doc: &Doc) -> usize {
     let quote = doc.blocks.iter().position(|b| match b {
-        Block::Para(p) => {
-            p.style.quote > 0
-                || p.text.contains("Forwarded message")
-                || (p.text.starts_with("On ") && p.text.trim_end().ends_with("wrote:"))
-        }
+        Block::Para(p) => quote_start(p),
         _ => false,
     });
     let end = quote.unwrap_or(doc.blocks.len());

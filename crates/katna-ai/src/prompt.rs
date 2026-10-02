@@ -162,6 +162,18 @@ pub fn complete(before: &str, answered: &str) -> Option<Prompt> {
 /// wrapping, quotes or introduction some models add. `None` when nothing
 /// usable came back.
 pub fn clean_rephrase(original: &str, answer: &str) -> Option<String> {
+    let text = unwrap(answer)?;
+    // A model that ran on and on is not a rephrasing.
+    let limit = original.chars().count().max(40) * 4;
+    if text.chars().count() > limit {
+        return None;
+    }
+    Some(text)
+}
+
+/// `answer` without the wrapping, quotes or introduction some models
+/// add. `None` when it is empty.
+pub(crate) fn unwrap(answer: &str) -> Option<String> {
     let mut text = answer.trim().replace("\r\n", "\n");
     for (open, close) in [("<<<", ">>>"), ("```", "```")] {
         if let Some(inner) = text.strip_prefix(open).and_then(|t| t.strip_suffix(close)) {
@@ -180,15 +192,7 @@ pub fn clean_rephrase(original: &str, answer: &str) -> Option<String> {
         }
     }
     let text = unquote(&text);
-    if text.is_empty() {
-        return None;
-    }
-    // A model that ran on and on is not a rephrasing.
-    let limit = original.chars().count().max(40) * 4;
-    if text.chars().count() > limit {
-        return None;
-    }
-    Some(text.to_owned())
+    (!text.is_empty()).then(|| text.to_owned())
 }
 
 /// The rest of the sentence as it shows grey after the cursor, with the

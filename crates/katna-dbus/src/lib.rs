@@ -1041,6 +1041,13 @@ macro_rules! pim_proxy {
                 request: &str,
             ) -> zbus::Result<(String, String, u32, String)>;
 
+            /// Writes a first draft of a reply or a forward's note, or
+            /// ideas for one: `request` is a `katna_ai::draft::DraftRequest`
+            /// as JSON. Returns the draft (ideas as a JSON array of
+            /// strings), the plan and free days left as for `AiRephrase`,
+            /// and a `katna_ai::wire::problem` when there is none.
+            fn ai_draft(&self, request: &str) -> zbus::Result<(String, String, u32, String)>;
+
             /// Saves the key of the user's own AI service in the Secret
             /// Service; an empty key deletes it.
             fn set_ai_key(&self, key: &str) -> zbus::Result<()>;

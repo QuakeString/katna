@@ -141,6 +141,7 @@ icons!(
     "notes",
     "open-external",
     "open-full",
+    "pen-sparkle",
     "pen",
     "people",
     "person-add",
