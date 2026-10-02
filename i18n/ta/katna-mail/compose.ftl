@@ -58,6 +58,7 @@ compose-file-too-large = { $name } மிகப் பெரியது: ஒர
 compose-forward-files-missing = முன்னனுப்பிய மெசேஜின் ஃபைல்கள் பதிவிறக்கப்படவில்லை, எனவே அவை இணைக்கப்படவில்லை.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = இணைப்பை அகற்று
+compose-attachment-open-tip = சரிபார்க்கத் திறக்கவும்
 compose-attachments-total = { $count ->
     [one] { $count } கோப்பு, { $size }
    *[other] { $count } கோப்புகள், { $size }
