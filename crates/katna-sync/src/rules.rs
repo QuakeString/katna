@@ -15,7 +15,7 @@ use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 
 use katna_core::AccountId;
-use katna_store::rules::{Action, MailFacts, Matcher, Rule, RunsOn, matching};
+use katna_store::rules::{Action, MailFacts, Matcher, Rule, matching};
 use katna_store::{FolderId, FolderRole, MessageFlags, MessageId, Store, StoredMessage};
 use mail_parser::{MessageParser, MimeHeaders};
 
@@ -210,16 +210,18 @@ impl Watch {
     }
 }
 
-/// The rules that run here on mail of `account`, compiled. A rule that
-/// no longer compiles is switched off.
+/// The rules that run here on mail of `account`, compiled: not those its
+/// mail service runs ([`crate::rules_remote`]). A rule that no longer
+/// compiles is switched off.
 fn compile(
     store: &mut Store,
     account: AccountId,
     out: &mut Outcome,
 ) -> katna_store::Result<Vec<Matcher>> {
     let mut matchers = Vec::new();
+    let elsewhere = store.rules_on_service(account)?;
     for rule in store.rules()? {
-        if !rule.enabled || rule.runs_on != RunsOn::Katna || !rule.covers(account) {
+        if !rule.enabled || !rule.covers(account) || elsewhere.contains(&rule.id) {
             continue;
         }
         let id = rule.id;

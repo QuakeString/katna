@@ -152,6 +152,30 @@ rules-editor-counting = Counting the mail it matches…
 rules-editor-show = Show them
 rules-editor-also-apply = Also apply to these { $count }
 rules-editor-runs-katna = Runs in Katna, while this computer is on.
+rules-editor-runs-gmail = Runs on Gmail, so it also works on your phone and with this computer off.
+rules-editor-runs-sieve = Runs on your mail server, so it also works on your phone and with this computer off.
+# Why a rule runs in Katna although Gmail or the mail server runs rules:
+# under the editor's preview, and on the tooltip of the rule's tag.
+# $action: what the rule does, as its summary says it ("don't notify").
+rules-note-gmail-action = Runs in Katna: Gmail filters can't do “{ $action }”.
+rules-note-sieve-action = Runs in Katna: your mail server's rules can't do “{ $action }”.
+# $field and $comparator: as the editor shows them ("From", "begins with").
+rules-note-test = { $field } { $comparator }
+# $test: a condition, as rules-note-test says it, or "Has attachment".
+rules-note-gmail-condition = Runs in Katna: Gmail filters can't test “{ $test }” as Katna does.
+rules-note-sieve-condition = Runs in Katna: your mail server's rules can't test “{ $test }” as Katna does.
+rules-note-order = Runs in Katna, as an earlier rule of the account does: rules run in list order.
+rules-note-gmail-stop = Runs in Katna: Gmail filters can't keep later rules from running.
+# $address: where the rule forwards to.
+rules-note-gmail-forward = Runs in Katna: Gmail forwards only to addresses verified in its settings, and { $address } isn't one.
+rules-note-gmail-folder = Runs in Katna: Gmail has no label for a folder this rule uses.
+rules-note-sieve-folder = Runs in Katna: your mail server has no folder this rule uses.
+rules-note-gmail-sign-in = Runs in Katna until you sign in to Google again and let Katna make Gmail filters.
+# $name: the name of the other script.
+rules-note-sieve-other-script = Runs in Katna: another rule script (“{ $name }”) is active on your mail server.
+# $error: the service's own words.
+rules-note-gmail-failed = Runs in Katna: Gmail didn't take it ({ $error }).
+rules-note-sieve-failed = Runs in Katna: your mail server didn't take it ({ $error }).
 rules-editor-cancel = Cancel
 rules-editor-save = Save
 rules-editor-saving = Saving…

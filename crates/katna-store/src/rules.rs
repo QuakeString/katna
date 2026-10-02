@@ -165,20 +165,53 @@ impl Action {
 }
 
 /// Where a rule runs.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RunsOn {
     /// In `katna-daemon`, on this computer.
     #[default]
     Katna,
-    /// As a Gmail filter (later).
+    /// As Gmail filters.
     Gmail,
-    /// As a Sieve script on the server (later).
+    /// In the account's Sieve script on its mail server (ManageSieve).
     Sieve,
 }
 
+/// Why a rule runs in Katna although its account's mail service runs
+/// rules ([`Rule::runs_note`]). `service` is [`RunsOn::Gmail`] or
+/// [`RunsOn::Sieve`]. Set by the daemon.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum RunsNote {
+    /// The service can't do this action.
+    Action { service: RunsOn, action: Action },
+    /// The service can't test this condition the way Katna does.
+    Condition {
+        service: RunsOn,
+        field: Field,
+        comparator: Comparator,
+    },
+    /// An earlier rule of the account runs in Katna, so this one does
+    /// too: rules run in list order.
+    Order { service: RunsOn },
+    /// Gmail runs every filter that matches: "stop" can't keep later
+    /// rules from running.
+    Stop { service: RunsOn },
+    /// Gmail forwards only to addresses verified in its settings.
+    ForwardAddress { to: String },
+    /// A folder or label the rule names isn't on the service.
+    Folder { service: RunsOn },
+    /// The account signed in before Katna asked to make Gmail filters.
+    SignIn,
+    /// Another script is active on the server, and the server can't run
+    /// Katna's beside it.
+    OtherScript { name: String },
+    /// Sending the rule to the service failed.
+    Failed { service: RunsOn, error: String },
+}
+
 impl RunsOn {
-    fn as_str(self) -> &'static str {
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::Katna => "katna",
             Self::Gmail => "gmail",
@@ -221,11 +254,42 @@ pub struct Rule {
     pub stop: bool,
     /// The accounts (`account.id`) whose mail it looks at.
     pub accounts: Vec<i64>,
+    /// Where it runs: on the mail service of every account it covers, or
+    /// in Katna. Set by the daemon; saving keeps it.
     #[serde(default)]
     pub runs_on: RunsOn,
+    /// Why it runs in Katna although the service runs rules. Set by the
+    /// daemon.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub runs_note: Option<RunsNote>,
     /// Why it was switched off, when an action failed. Set by the daemon.
     #[serde(default)]
     pub last_error: Option<String>,
+}
+
+/// What the daemon put on one account's mail service for a rule
+/// (`mail_rule_remote`). The rule doesn't run in Katna on that
+/// account's mail.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoteRule {
+    pub rule_id: i64,
+    /// [`RunsOn::Gmail`] or [`RunsOn::Sieve`].
+    pub runs_on: RunsOn,
+    /// Gmail's IDs of the filters made for it.
+    pub remote_ids: Vec<String>,
+    /// What was sent, to see when it changed.
+    pub spec: String,
+}
+
+/// Whether an account's server takes Sieve scripts (`mail_rule_server`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RuleServer {
+    /// ManageSieve answered on the IMAP host.
+    pub sieve: bool,
+    /// Its Sieve extensions, lowercase.
+    pub extensions: Vec<String>,
+    /// Unix seconds.
+    pub checked_at: i64,
 }
 
 impl Default for Rule {
@@ -241,6 +305,7 @@ impl Default for Rule {
             stop: false,
             accounts: Vec::new(),
             runs_on: RunsOn::Katna,
+            runs_note: None,
             last_error: None,
         }
     }
@@ -484,8 +549,10 @@ pub fn matching<'a>(matchers: &'a [Matcher], mail: &MailFacts) -> Vec<&'a Matche
     out
 }
 
-const RULE_COLUMNS: &str = "id, name, enabled, position, match_mode, conditions_json,
-                            actions_json, stop, accounts_json, runs_on, last_error";
+const RULE_COLUMNS: &str = "r.id, r.name, r.enabled, r.position, r.match_mode, r.conditions_json,
+                            r.actions_json, r.stop, r.accounts_json, r.runs_on, r.last_error,
+                            n.note";
+const RULE_TABLES: &str = "mail_rule r LEFT JOIN mail_rule_note n ON n.rule_id = r.id";
 
 fn rule_row(row: &Row<'_>) -> rusqlite::Result<Result<Rule>> {
     let id: i64 = row.get(0)?;
@@ -502,6 +569,10 @@ fn rule_row(row: &Row<'_>) -> rusqlite::Result<Result<Rule>> {
     let position = row.get(3)?;
     let stop = row.get(7)?;
     let last_error = row.get(10)?;
+    // A note this build can't read is no reason to lose the rule.
+    let runs_note = row
+        .get::<_, Option<String>>(11)?
+        .and_then(|note| serde_json::from_str(&note).ok());
     Ok((|| {
         Ok(Rule {
             id,
@@ -514,6 +585,7 @@ fn rule_row(row: &Row<'_>) -> rusqlite::Result<Result<Rule>> {
             stop,
             accounts: serde_json::from_str(&accounts).map_err(|e| json("accounts", e))?,
             runs_on: RunsOn::parse(&runs_on)?,
+            runs_note,
             last_error,
         })
     })())
@@ -527,7 +599,7 @@ impl Store {
     /// Every rule, in the order they run.
     pub fn rules(&self) -> Result<Vec<Rule>> {
         let mut stmt = self.pim.prepare_cached(&format!(
-            "SELECT {RULE_COLUMNS} FROM mail_rule ORDER BY position, id"
+            "SELECT {RULE_COLUMNS} FROM {RULE_TABLES} ORDER BY r.position, r.id"
         ))?;
         stmt.query_map([], rule_row)?.map(|row| row?).collect()
     }
@@ -536,7 +608,7 @@ impl Store {
     pub fn rule(&self, id: i64) -> Result<Option<Rule>> {
         self.pim
             .prepare_cached(&format!(
-                "SELECT {RULE_COLUMNS} FROM mail_rule WHERE id = ?1"
+                "SELECT {RULE_COLUMNS} FROM {RULE_TABLES} WHERE r.id = ?1"
             ))?
             .query_row([id], rule_row)
             .optional()?
@@ -544,9 +616,11 @@ impl Store {
     }
 
     /// Saves `rule`: a new one at the end of the list when its ID is 0 (or
-    /// no longer exists), else in place of the old one, keeping its place.
-    /// Saving clears `last_error`. Returns its ID. Does not validate: the
-    /// daemon does ([`Rule::validate`]).
+    /// no longer exists), else in place of the old one, keeping its place
+    /// and where it runs (a new one runs in Katna until the daemon puts
+    /// it on the mail service: [`Self::set_rule_runs`]). Saving clears
+    /// `last_error`. Returns its ID. Does not validate: the daemon does
+    /// ([`Rule::validate`]).
     pub fn save_rule(&mut self, rule: &Rule) -> Result<i64> {
         self.check_writable()?;
         let tx = self
@@ -558,7 +632,7 @@ impl Store {
                 "UPDATE mail_rule SET name = :name, enabled = :enabled,
                         match_mode = :match_mode, conditions_json = :conditions,
                         actions_json = :actions, stop = :stop, accounts_json = :accounts,
-                        runs_on = :runs_on, last_error = NULL, updated_at = :now
+                        last_error = NULL, updated_at = :now
                  WHERE id = :id",
                 named_params! {
                     ":id": rule.id,
@@ -569,7 +643,6 @@ impl Store {
                     ":actions": to_json(&rule.actions),
                     ":stop": rule.stop,
                     ":accounts": to_json(&rule.accounts),
-                    ":runs_on": rule.runs_on.as_str(),
                     ":now": now,
                 },
             )? > 0;
@@ -582,7 +655,7 @@ impl Store {
                                         created_at, updated_at)
                  VALUES (:name, :enabled,
                          (SELECT coalesce(max(position) + 1, 0) FROM mail_rule),
-                         :match_mode, :conditions, :actions, :stop, :accounts, :runs_on,
+                         :match_mode, :conditions, :actions, :stop, :accounts, 'katna',
                          :now, :now)",
                 named_params! {
                     ":name": rule.name.trim(),
@@ -592,7 +665,6 @@ impl Store {
                     ":actions": to_json(&rule.actions),
                     ":stop": rule.stop,
                     ":accounts": to_json(&rule.accounts),
-                    ":runs_on": rule.runs_on.as_str(),
                     ":now": now,
                 },
             )?;
@@ -666,6 +738,143 @@ impl Store {
             "UPDATE mail_rule SET enabled = 0, last_error = ?2, updated_at = ?3 WHERE id = ?1",
             params![id, error, unix_now()],
         )? > 0)
+    }
+
+    /// Sets where rule `id` runs, and why it runs in Katna when `note`
+    /// says. Returns whether it exists.
+    pub fn set_rule_runs(
+        &mut self,
+        id: i64,
+        runs_on: RunsOn,
+        note: Option<&RunsNote>,
+    ) -> Result<bool> {
+        self.check_writable()?;
+        let tx = self
+            .pim
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let found = tx.execute(
+            "UPDATE mail_rule SET runs_on = ?2 WHERE id = ?1 AND runs_on <> ?2",
+            params![id, runs_on.as_str()],
+        )? > 0
+            || tx
+                .query_row("SELECT 1 FROM mail_rule WHERE id = ?1", [id], |_| Ok(()))
+                .optional()?
+                .is_some();
+        if found {
+            match note {
+                Some(note) => tx.execute(
+                    "INSERT INTO mail_rule_note (rule_id, note) VALUES (?1, ?2)
+                     ON CONFLICT (rule_id) DO UPDATE SET note = excluded.note",
+                    params![id, to_json(note)],
+                )?,
+                None => tx.execute("DELETE FROM mail_rule_note WHERE rule_id = ?1", [id])?,
+            };
+        }
+        tx.commit()?;
+        Ok(found)
+    }
+
+    /// What the daemon put on the mail service of `account`, by rule.
+    pub fn remote_rules(&self, account: AccountId) -> Result<Vec<RemoteRule>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT rule_id, runs_on, remote_ids, spec FROM mail_rule_remote
+             WHERE account_id = ?1 ORDER BY rule_id",
+        )?;
+        let rows = stmt.query_map([account.0], |row| {
+            Ok((
+                row.get::<_, i64>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, String>(2)?,
+                row.get::<_, String>(3)?,
+            ))
+        })?;
+        rows.map(|row| {
+            let (rule_id, runs_on, ids, spec) = row?;
+            Ok(RemoteRule {
+                rule_id,
+                runs_on: RunsOn::parse(&runs_on)?,
+                remote_ids: serde_json::from_str(&ids).map_err(|err| {
+                    Error::InvalidData(format!("rule {rule_id}: remote IDs: {err}"))
+                })?,
+                spec,
+            })
+        })
+        .collect()
+    }
+
+    /// The rules that run on the mail service of `account`, not in Katna.
+    pub fn rules_on_service(&self, account: AccountId) -> Result<Vec<i64>> {
+        Ok(self
+            .remote_rules(account)?
+            .into_iter()
+            .map(|r| r.rule_id)
+            .collect())
+    }
+
+    /// Records that `remote` is on the mail service of `account`.
+    pub fn put_remote_rule(&mut self, account: AccountId, remote: &RemoteRule) -> Result<()> {
+        self.check_writable()?;
+        self.pim.execute(
+            "INSERT INTO mail_rule_remote (account_id, rule_id, runs_on, remote_ids, spec)
+             VALUES (?1, ?2, ?3, ?4, ?5)
+             ON CONFLICT (account_id, rule_id) DO UPDATE SET
+                 runs_on = excluded.runs_on, remote_ids = excluded.remote_ids,
+                 spec = excluded.spec",
+            params![
+                account.0,
+                remote.rule_id,
+                remote.runs_on.as_str(),
+                to_json(&remote.remote_ids),
+                remote.spec
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// Forgets that rule `rule_id` is on the mail service of `account`:
+    /// it runs in Katna there again.
+    pub fn drop_remote_rule(&mut self, account: AccountId, rule_id: i64) -> Result<()> {
+        self.check_writable()?;
+        self.pim.execute(
+            "DELETE FROM mail_rule_remote WHERE account_id = ?1 AND rule_id = ?2",
+            params![account.0, rule_id],
+        )?;
+        Ok(())
+    }
+
+    /// Whether the server of `account` takes Sieve scripts, when known.
+    pub fn rule_server(&self, account: AccountId) -> Result<Option<RuleServer>> {
+        Ok(self
+            .pim
+            .prepare_cached(
+                "SELECT sieve, extensions, checked_at FROM mail_rule_server WHERE account_id = ?1",
+            )?
+            .query_row([account.0], |row| {
+                let extensions: String = row.get(1)?;
+                Ok(RuleServer {
+                    sieve: row.get(0)?,
+                    extensions: extensions.split_whitespace().map(str::to_owned).collect(),
+                    checked_at: row.get(2)?,
+                })
+            })
+            .optional()?)
+    }
+
+    pub fn set_rule_server(&mut self, account: AccountId, server: &RuleServer) -> Result<()> {
+        self.check_writable()?;
+        self.pim.execute(
+            "INSERT INTO mail_rule_server (account_id, sieve, extensions, checked_at)
+             VALUES (?1, ?2, ?3, ?4)
+             ON CONFLICT (account_id) DO UPDATE SET sieve = excluded.sieve,
+                 extensions = excluded.extensions, checked_at = excluded.checked_at",
+            params![
+                account.0,
+                server.sieve,
+                server.extensions.join(" "),
+                server.checked_at
+            ],
+        )?;
+        Ok(())
     }
 
     /// Mail of `account` that rules look at: in its inbox, newer than
