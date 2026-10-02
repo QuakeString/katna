@@ -717,16 +717,9 @@ impl Squeeze {
     /// Fits the items `shown` into a toolbar `width` wide, leaving off
     /// those `start` already does and then the least used.
     fn fit(width: f32, shown: &Toolbar, start: Self) -> Self {
-        let mut squeeze = start;
-        let mut need = shown.width(&squeeze);
-        for drop in Self::DROP_ORDER {
-            if need <= width {
-                break;
-            }
-            drop(&mut squeeze);
-            need = shown.width(&squeeze);
-        }
-        squeeze
+        crate::widgets::fold(start, &Self::DROP_ORDER, |squeeze| {
+            shown.width(squeeze) <= width
+        })
     }
 
     const DROP_ORDER: [fn(&mut Self); 12] = [

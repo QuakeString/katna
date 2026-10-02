@@ -897,6 +897,7 @@ impl MailWindow {
         let viewer = cx.new(|cx| {
             let mut viewer = Viewer::new(raw, items, index, reply, th, window, cx);
             viewer.dark_pages = dark_pages;
+            viewer.start(cx);
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));

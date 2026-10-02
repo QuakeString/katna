@@ -641,6 +641,22 @@ pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
+/// A toolbar too narrow for all its items folds some into its More menu:
+/// from `start`, each of `steps` in turn (least needed first) moves more
+/// into the menu until `fits` says the rest fit. Shared by the reading
+/// pane's toolbar and the viewer's controls, each with its own `S` of
+/// what is folded.
+pub fn fold<S: Copy>(start: S, steps: &[fn(&mut S)], fits: impl Fn(&S) -> bool) -> S {
+    let mut folded = start;
+    for step in steps {
+        if fits(&folded) {
+            break;
+        }
+        step(&mut folded);
+    }
+    folded
+}
+
 /// The key context of a menu, whose items the arrow keys go through
 /// (`window::MenuKey`).
 pub const MENU_CONTEXT: &str = "Menu";
