@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drafts save as you write"
+text = """
+A message you are writing now saves itself to Drafts every few seconds,
+and "Draft saved" shows quietly beside its title. A faint tag beside
+your signature names it; click it to pick another one. The Compose
+window's corner also lines up with the card beside it.
+"""

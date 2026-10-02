@@ -53,6 +53,9 @@ pub(in crate::window) enum Popup {
     Emoji,
     Link,
     Signature,
+    /// The signatures, opened from the faint tag beside the one in the
+    /// text.
+    SignatureTag,
     /// The templates to put in the message.
     Templates,
     /// The paperclip of the chat view's reply box: pictures, files, a
@@ -462,6 +465,22 @@ pub(super) fn below(popup: impl IntoElement) -> AnyElement {
     deferred(
         div().absolute().bottom_0().left_0().child(
             anchored()
+                .offset(point(px(0.0), px(4.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
+    )
+    .with_priority(2)
+    .into_any_element()
+}
+
+/// `popup` just under its parent's bottom right corner, its right edge
+/// lined up with the parent's.
+pub(super) fn below_end(popup: impl IntoElement) -> AnyElement {
+    deferred(
+        div().absolute().bottom_0().right_0().child(
+            anchored()
+                .anchor(Anchor::TopRight)
                 .offset(point(px(0.0), px(4.0)))
                 .snap_to_window_with_margin(px(8.0))
                 .child(div().occlude().child(popup)),
