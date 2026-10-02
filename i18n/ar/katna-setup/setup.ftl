@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = الإرسال باستخدام Katna Mail
 setup-tagline = بريد إلكتروني سريع وخاص يعيش على الكمبيوتر الخاص بك.
 setup-update-where = يحدّث Katna Mail في { $path }. يبقى بريدك وإعداداتك واختصاراتك كما هي.
 setup-for = التثبيت لـ

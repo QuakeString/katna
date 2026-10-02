@@ -9,6 +9,7 @@ rail-calendar = Календар
 rail-contacts = Контакти
 rail-tasks = Завдання
 rail-notes = Нотатки
+rail-files = Файли
 
 ## Pages of apps still to come
 

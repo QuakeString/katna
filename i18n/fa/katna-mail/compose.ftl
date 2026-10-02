@@ -46,6 +46,7 @@ compose-sent-archived = ارسال و بایگانی شد
 compose-sent = پیام ارسال شد
 compose-discarded = پیش‌نویس دور انداخته شد
 compose-draft-saved = پیش‌نویس ذخیره شد
+compose-draft-saving = در حال ذخیره…
 compose-draft-failed = پیش‌نویس ذخیره نشد: { $error }
 compose-draft-not-opened = پیش‌نویس باز نشد.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = پیش‌نویس باز نشد.
 compose-picker-insert = درج
 compose-picker-attach = پیوست
 compose-file-too-large = { $name } بیش از حد بزرگ است: هر پیام تا { $limit } جا دارد.
+compose-forward-files-missing = فایل‌های پیام بازارسال‌شده بارگیری نشده‌اند، پس پیوست نشده‌اند.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = حذف پیوست
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = اشتراک‌گذاری با پیوند
 compose-drive-send-without = ارسال بدون اشتراک‌گذاری
 compose-drive-share-cancel = لغو
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } بیشتر از { $limit } است؛ بنابراین در OneDrive شما ذخیره می‌شود و پیام یک پیوند همراه دارد.
 compose-onedrive-tip = در OneDrive شما؛ پیام یک پیوند همراه دارد
 compose-onedrive-allow = اجازه به OneDrive
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive نمی‌تواند پرونده‌ها را با { $addresses } به اشتراک بگذارد. در عوض هر کسی که پیوند را داشته باشد می‌تواند آن‌ها را باز کند.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = پرونده‌ها را اینجا رها کنید
 compose-drop-here = اینجا رها کنید
 compose-paste-keep-formatting = حفظ قالب‌بندی

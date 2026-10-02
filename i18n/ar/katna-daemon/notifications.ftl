@@ -64,7 +64,23 @@ notify-task-done = وضع علامة كمكتمل
 ## Its buttons
 
 notify-open = فتح
+notify-peek = إلقاء نظرة
+notify-reply = رد
+notify-reply-placeholder = الرد على { $name }…
+notify-send = إرسال
 notify-reply-all = الرد على الكل
 notify-mark-read = وضع علامة «مقروءة»
 notify-mark-all-read = وضع علامة «مقروءة» على الكل
 notify-archive = أرشفة
+notify-archived = تمت الأرشفة
+notify-archived-count = { $count ->
+    [zero] تم نقل { $count } رسالة من البريد الوارد
+    [one] تم نقل رسالة واحدة من البريد الوارد
+    [two] تم نقل رسالتين من البريد الوارد
+    [few] تم نقل { $count } رسائل من البريد الوارد
+    [many] تم نقل { $count } رسالة من البريد الوارد
+   *[other] تم نقل { $count } رسالة من البريد الوارد
+}
+notify-undo = تراجع
+notify-reply-sent = تم إرسال الرد إلى { $name }
+notify-open-in-katna = الفتح في Katna

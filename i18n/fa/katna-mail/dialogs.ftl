@@ -66,6 +66,7 @@ about-credit-resvg = تصویرهای SVG
 about-credit-jiff = تاریخ‌ها و منطقه‌های زمانی
 about-credit-spellbook = غلط‌یابی املایی، از ویرایشگر Helix
 about-credit-smol = انجام چند کار هم‌زمان
+about-credit-color-schemes = پالت‌های طرح‌های رنگی داخلی
 about-all-libraries = همهٔ کتابخانه‌هایی که Katna به کار می‌برد ({ $count })
 about-library-authors = از { $authors }
 about-license = Katna نرم‌افزار آزاد است، تحت GNU GPL نسخهٔ ۳ یا بالاتر.
@@ -122,6 +123,17 @@ onboarding-density = تراکم
 onboarding-density-default = پیش‌فرض
 onboarding-density-compact = فشرده
 onboarding-continue = ادامه
+onboarding-katna-title = با حساب Katna بیشتر بگیرید
+onboarding-katna-lead = اختیاری است. ویژگی‌های آنلاین Katna را روشن می‌کند و می‌توانید بعداً در تنظیمات > اشتراک یکی بسازید.
+onboarding-katna-receipts-title = رسید خواندن
+onboarding-katna-receipts-text = ببینید افراد چه زمانی ایمیلی را که فرستاده‌اید باز می‌کنند.
+onboarding-katna-links-title = ردیابی پیوندها
+onboarding-katna-links-text = ببینید روی کدام پیوندهای ایمیل‌تان کلیک می‌شود.
+onboarding-katna-activity-title = فعالیت
+onboarding-katna-activity-text = باز شدن‌ها و کلیک‌ها برای هر چیزی که فرستاده‌اید، در یک جا.
+onboarding-katna-translate-title = ترجمهٔ خودکار
+onboarding-katna-translate-text = ایمیل‌هایی را که به زبان‌های دیگر نوشته شده‌اند به زبان خودتان بخوانید.
+onboarding-katna-private = گذرواژهٔ خودش را دارد. اطلاعات ورود ایمیل‌های شما هرگز از این رایانه بیرون نمی‌رود.
 
 ## First run: done
 
@@ -166,6 +178,7 @@ tour-search-text = جستجو بدون اینترنت هم کار می‌کند.
 tour-menu-title = نمایش یا پنهان کردن پوشه‌ها
 tour-menu-text = این دکمه فهرست پوشه‌ها را جمع می‌کند. وقتی پنهان است، نشانگر را روی «ایمیل» در نوار کناری نگه دارید تا پوشه‌ها را ببینید.
 tour-apps-title = برنامه‌های شما
+tour-apps-text = ایمیل این‌جاست، کنار تقویم، مخاطبین، کارها، یادداشت‌ها و فایل‌ها.
 tour-tabs-title = برگه‌های صندوق ورودی
 tour-tabs-text = ایمیل‌های تازه در اصلی، تبلیغات، اجتماعی، به‌روزرسانی‌ها و انجمن‌ها دسته‌بندی می‌شوند. می‌توانید برگه‌ها را در تنظیمات سریع خاموش کنید.
 tour-list-title = پیام‌های شما
@@ -196,6 +209,9 @@ sign-in-again-button = ورود
 sign-in-again-tooltip = باز کردن صفحهٔ ورود { $provider } در مرورگر
 sign-in-again-waiting = در انتظار مرورگر شما…
 sign-in-again-close = بستن
+google-api-off = { $api } در پروژهٔ Google Cloud مربوط به Katna خاموش است.
+google-api-turn-on = روشن کردن
+google-api-turn-on-tooltip = Google Cloud را باز کنید تا { $api } را روشن کنید، سپس «دوباره امتحان کنید» را بزنید
 sign-in-again-done = دوباره به { $address } وارد شدید. در حال دریافت ایمیل‌های شما…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

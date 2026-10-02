@@ -9,6 +9,7 @@ rail-calendar = Takvim
 rail-contacts = Kişiler
 rail-tasks = Görevler
 rail-notes = Notlar
+rail-files = Dosyalar
 
 ## Pages of apps still to come
 

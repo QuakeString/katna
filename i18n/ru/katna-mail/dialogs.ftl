@@ -66,6 +66,7 @@ about-credit-resvg = Изображения SVG
 about-credit-jiff = Даты и часовые пояса
 about-credit-spellbook = Проверка орфографии, из редактора Helix
 about-credit-smol = Много дел одновременно
+about-credit-color-schemes = Палитры встроенных цветовых схем
 about-all-libraries = Все библиотеки, которые использует Katna ({ $count })
 about-library-authors = авторы: { $authors }
 about-license = Katna — свободное ПО под лицензией GNU GPL версии 3 или более поздней.
@@ -124,6 +125,17 @@ onboarding-density = Плотность
 onboarding-density-default = Обычная
 onboarding-density-compact = Компактная
 onboarding-continue = Продолжить
+onboarding-katna-title = Больше возможностей с аккаунтом Katna
+onboarding-katna-lead = Это необязательно. Он включает онлайн-функции Katna, а создать его можно и позже в «Настройки» → «Подписка».
+onboarding-katna-receipts-title = Уведомления о прочтении
+onboarding-katna-receipts-text = Узнавайте, когда открывают отправленные вами письма.
+onboarding-katna-links-title = Отслеживание ссылок
+onboarding-katna-links-text = Узнавайте, по каким ссылкам в ваших письмах переходят.
+onboarding-katna-activity-title = Активность
+onboarding-katna-activity-text = Открытия и переходы по всему, что вы отправили, в одном месте.
+onboarding-katna-translate-title = Автоматический перевод
+onboarding-katna-translate-text = Читайте письма на других языках на своём.
+onboarding-katna-private = У него свой пароль. Данные для входа в почту никогда не покидают этот компьютер.
 
 ## First run: done
 
@@ -168,6 +180,7 @@ tour-search-text = Поиск работает и без сети. Кнопка 
 tour-menu-title = Показ и скрытие папок
 tour-menu-text = Эта кнопка сворачивает список папок. Пока он скрыт, задержите указатель на «Почте» слева, чтобы увидеть папки.
 tour-apps-title = Ваши приложения
+tour-apps-text = Почта живёт здесь, рядом с Календарём, Контактами, Задачами, Заметками и Файлами.
 tour-tabs-title = Вкладки «Входящих»
 tour-tabs-text = Новая почта раскладывается по вкладкам «Несортированные», «Промоакции», «Соцсети», «Оповещения» и «Форумы». Вкладки можно отключить в быстрых настройках.
 tour-list-title = Ваши письма
@@ -202,6 +215,9 @@ sign-in-again-button = Войти
 sign-in-again-tooltip = Открыть страницу входа { $provider } в браузере
 sign-in-again-waiting = Ожидание браузера…
 sign-in-again-close = Закрыть
+google-api-off = { $api } выключен в проекте Google Cloud приложения Katna.
+google-api-turn-on = Включить
+google-api-turn-on-tooltip = Откройте Google Cloud, чтобы включить { $api }, затем нажмите «Повторить»
 sign-in-again-done = Снова выполнен вход в { $address }. Получаем почту…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

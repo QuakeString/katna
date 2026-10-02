@@ -15,6 +15,7 @@ notes-loading = Открываем ваши заметки…
 
 notes-take-a-note = Создать заметку…
 notes-new-list = Новый список
+notes-new-note = Новая заметка
 notes-pinned = Закреплённые
 notes-others = Другие
 notes-empty = Здесь будут ваши заметки

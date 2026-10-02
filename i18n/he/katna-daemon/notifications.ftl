@@ -46,7 +46,20 @@ notify-task-done = סימון כבוצע
 ## Its buttons
 
 notify-open = פתיחה
+notify-peek = הצצה
+notify-reply = תשובה
+notify-reply-placeholder = תשובה ל־{ $name }…
+notify-send = שליחה
 notify-reply-all = תשובה לכולם
 notify-mark-read = סימון כנקראו
 notify-mark-all-read = סימון של הכול כנקרא
 notify-archive = העברה לארכיון
+notify-archived = הועבר לארכיון
+notify-archived-count = { $count ->
+    [one] הודעה אחת הועברה מהדואר הנכנס
+    [two] { $count } הודעות הועברו מהדואר הנכנס
+   *[other] { $count } הודעות הועברו מהדואר הנכנס
+}
+notify-undo = ביטול
+notify-reply-sent = התשובה נשלחה אל { $name }
+notify-open-in-katna = פתיחה ב־Katna

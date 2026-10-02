@@ -9,6 +9,7 @@ rail-calendar = التقويم
 rail-contacts = جهات الاتصال
 rail-tasks = المهام
 rail-notes = الملاحظات
+rail-files = الملفات
 
 ## Pages of apps still to come
 

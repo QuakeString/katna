@@ -42,7 +42,19 @@ notify-task-done = مکمل کے بطور نشان زد کریں
 ## Its buttons
 
 notify-open = کھولیں
+notify-peek = جھلک دیکھیں
+notify-reply = جواب دیں
+notify-reply-placeholder = { $name } کو جواب دیں…
+notify-send = بھیجیں
 notify-reply-all = سب کو جواب دیں
 notify-mark-read = بطور پڑھا ہوا نشان زد کریں
 notify-mark-all-read = سب کو بطور پڑھا ہوا نشان زد کریں
 notify-archive = آرکائیو کریں
+notify-archived = آرکائیو ہو گئی
+notify-archived-count = { $count ->
+    [one] { $count } پیغام ان باکس سے باہر منتقل ہو گیا
+   *[other] { $count } پیغامات ان باکس سے باہر منتقل ہو گئے
+}
+notify-undo = کالعدم کریں
+notify-reply-sent = جواب { $name } کو بھیج دیا گیا
+notify-open-in-katna = Katna میں کھولیں

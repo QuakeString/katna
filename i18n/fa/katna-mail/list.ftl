@@ -20,6 +20,7 @@ tab-provider-other = مرتب‌شده توسط Katna
 
 list-select = انتخاب
 list-refresh = بازخوانی
+list-back-to-top = بازگشت به بالا
 list-checking = در حال بررسی ایمیل جدید…
 list-more = بیشتر
 list-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده

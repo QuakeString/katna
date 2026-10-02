@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = بنائیں
+tasks-create = نیا کام
 tasks-all = تمام کام
 tasks-today = آج
 tasks-starred = ستارے والے
