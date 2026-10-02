@@ -1758,6 +1758,14 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .when(on && self.shows_unified(), |d| {
+                d.child(self.row(
+                    tr!("settings-inbox-unified"),
+                    Some(&tr!("settings-inbox-unified-detail")),
+                    self.unified_tabs_choice(th, cx),
+                    th,
+                ))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
@@ -1882,6 +1890,39 @@ impl MailWindow {
                 )
                 .children(checks)
             })
+            .into_any_element()
+    }
+
+    /// The unified inbox's tabs, shared by every account.
+    fn unified_tabs_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let current = match self.config.mail.unified_tabs {
+            TabStyle::Gmail => TabStyle::Auto,
+            style => style,
+        };
+        let styles = [
+            TabStyle::Auto,
+            TabStyle::Focused,
+            TabStyle::Zoho,
+            TabStyle::Off,
+        ];
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .children(styles.into_iter().enumerate().map(|(n, style)| {
+                self.choice_row(
+                    ("page-unified-tab-style", n),
+                    style_name(style),
+                    current == style,
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.config.mail.unified_tabs = style;
+                    this.save_config();
+                    this.relist(cx);
+                }))
+            }))
             .into_any_element()
     }
 

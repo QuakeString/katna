@@ -1924,10 +1924,12 @@ impl MailWindow {
                 Some(Listing::Folder(_)) if self.first_sync => {
                     return first_sync_placeholder(th);
                 }
-                Some(Listing::Folder(_)) if self.shows_tabs() => match self.tabs.get(self.tab) {
-                    Some(tab) => tr!("list-empty-tab", tab = tab.label()),
-                    None => tr!("list-empty-tab-unknown"),
-                },
+                Some(Listing::Folder(_) | Listing::Unified { .. }) if self.shows_tabs() => {
+                    match self.tabs.get(self.tab) {
+                        Some(tab) => tr!("list-empty-tab", tab = tab.label()),
+                        None => tr!("list-empty-tab-unknown"),
+                    }
+                }
                 Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
@@ -1974,6 +1976,22 @@ impl MailWindow {
         )
         .size_full()
         .into_any_element()
+    }
+
+    /// The account of a line of the whole unified inbox, which mixes
+    /// accounts: its color and its name as the folder pane shows it.
+    fn line_account(&self, row: &Row) -> Option<(u32, String)> {
+        let Some(Listing::Unified { account: None, .. }) = &self.listing else {
+            return None;
+        };
+        let account = self.accounts.iter().find(|a| a.id == row.account)?;
+        let name = self
+            .tree
+            .accounts
+            .iter()
+            .find(|a| a.id == row.account)
+            .map_or_else(|| account.address.clone(), |a| a.name.clone());
+        Some((crate::theme::avatar_color(account.address.trim()), name))
     }
 
     fn render_row(
@@ -2259,6 +2277,7 @@ impl MailWindow {
                     off("row-important-rest", "important", 18.0)
                 })
         });
+        let account = self.line_account(&row);
         let correspondent = div()
             .flex()
             .flex_row()
@@ -2332,7 +2351,22 @@ impl MailWindow {
                         .child(icon("forum", th.text_faint, 14.0))
                         .child(row.count.to_string()),
                 )
-            });
+            })
+            // The account of a line of the whole unified inbox: its dot
+            // after the names, with its name where the line has room.
+            .children(account.map(|(color, name)| {
+                div()
+                    .flex_none()
+                    .pl(px(4.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(5.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
+                    .when(stacked, |d| d.child(name))
+            }));
         // The quick actions fade in over the date.
         let actions = hovered.then(|| {
             div()

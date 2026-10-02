@@ -324,6 +324,87 @@ pub(crate) fn spread_message_ids(
         .collect())
 }
 
+/// Which inbox tab of the unified inbox to list. Each account files its
+/// mail in its own tabs; here every message takes the tab of its category,
+/// except where its account lists that category in its first tab (a tab
+/// turned off, or tabs off altogether): there it counts as Primary.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct SpreadTabs {
+    /// The tab's categories; `None` lists every tab.
+    pub categories: Option<Vec<MailCategory>>,
+    /// Per account, the categories it lists in its first tab.
+    pub folded: Vec<(AccountId, Vec<MailCategory>)>,
+}
+
+impl SpreadTabs {
+    /// The tab a message of `account` with `category` shows in.
+    fn tab_of(&self, account: i64, category: Option<MailCategory>) -> MailCategory {
+        let category = tab(category);
+        let folded = self
+            .folded
+            .iter()
+            .any(|(a, folded)| a.0 == account && folded.contains(&category));
+        if folded {
+            MailCategory::Primary
+        } else {
+            category
+        }
+    }
+
+    fn keeps(&self, tab: MailCategory) -> bool {
+        self.categories
+            .as_ref()
+            .is_none_or(|wanted| wanted.contains(&tab))
+    }
+}
+
+/// The unified inbox's conversations in one tab, as [`spread_threads`]
+/// lists them, and its unread conversations per tab: in each, the newest
+/// message picks the tab, as in one account's inbox.
+pub(crate) fn spread_inbox_threads(
+    conn: &Connection,
+    folders: &[FolderId],
+    tabs: &SpreadTabs,
+) -> Result<InboxThreads> {
+    let rows = spread_rows(conn, folders, FlagFilter::default())?;
+    let mut seen = HashSet::new();
+    let mut entries = Vec::new();
+    let mut tabbed = Vec::new();
+    for r in &rows {
+        let row = FolderRow {
+            category: Some(tabs.tab_of(r.account, r.row.category)),
+            ..r.row
+        };
+        if row.thread.is_none_or(|thread| seen.insert(thread)) && tabs.keeps(tab(row.category)) {
+            entries.push(ThreadEntry {
+                thread: row.thread.map(ThreadId),
+                latest: MessageId(row.id),
+            });
+        }
+        tabbed.push(row);
+    }
+    Ok((entries, unread_by_category(&tabbed)))
+}
+
+/// The unified inbox's messages in one tab, as [`spread_message_ids`]
+/// lists them.
+pub(crate) fn spread_inbox_message_ids(
+    conn: &Connection,
+    folders: &[FolderId],
+    tabs: &SpreadTabs,
+) -> Result<Vec<MessageId>> {
+    let mut seen = HashSet::new();
+    Ok(spread_rows(conn, folders, FlagFilter::default())?
+        .into_iter()
+        .filter(|r| match &r.message_id_hdr {
+            Some(hdr) => seen.insert((r.account, hdr.clone())),
+            None => true,
+        })
+        .filter(|r| tabs.keeps(tabs.tab_of(r.account, r.row.category)))
+        .map(|r| MessageId(r.row.id))
+        .collect())
+}
+
 /// The messages of `thread` that are in `folder`, oldest first.
 pub(crate) fn folder_thread_messages(
     conn: &Connection,

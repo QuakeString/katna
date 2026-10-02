@@ -15,8 +15,8 @@ use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
     Bell, FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId,
-    Mode, Mute, MuteTarget, ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender,
-    ThreadSummary,
+    Mode, Mute, MuteTarget, ParticipantRole, SpreadTabs, Store, StoredMessage, ThreadId,
+    ThreadSender, ThreadSummary,
 };
 
 mod preload;
@@ -65,6 +65,9 @@ pub struct Row {
     pub key: EntryKey,
     /// The message the line shows: the newest of a conversation.
     pub id: MessageId,
+    /// The account the message is in, marked on lines of the unified
+    /// inbox.
+    pub account: AccountId,
     /// Sender, or the recipients in sent and draft folders; for a
     /// conversation, its senders.
     pub correspondent: String,
@@ -218,6 +221,7 @@ impl Row {
         Self {
             key: EntryKey::Message(message.id),
             id: message.id,
+            account: message.account,
             count: 1,
             correspondent,
             people,
@@ -745,6 +749,48 @@ impl Mail {
         });
         let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
         pinned_first(entries, &self.pins)
+    }
+
+    /// The unified inbox's lines in one tab ([`SpreadTabs`]), with its
+    /// unread conversations per tab, as [`Mail::inbox_entries`] gives an
+    /// inbox's.
+    pub fn spread_inbox_entries(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+        conversations: bool,
+    ) -> (Vec<Entry>, HashMap<MailCategory, u64>) {
+        let (entries, unread) = if conversations {
+            let read = self.list_read(ListRead::SpreadInbox {
+                folders: folders.to_vec(),
+                tabs: tabs.clone(),
+            });
+            match read {
+                Ok((threads, unread)) => (Ok(thread_entries(threads)), unread),
+                Err(err) => (Err(err), Vec::new()),
+            }
+        } else {
+            self.other_list.set(true);
+            let unread = self
+                .store
+                .spread_inbox_threads(folders, tabs)
+                .map(|(_, unread)| unread)
+                .unwrap_or_default();
+            let ids = self.store.spread_inbox_message_ids(folders, tabs);
+            (
+                ids.map(|ids| ids.into_iter().map(Entry::message).collect()),
+                unread,
+            )
+        };
+        let entries = entries.unwrap_or_else(|err| {
+            tracing::warn!("reading {} inboxes: {err}", folders.len());
+            Vec::new()
+        });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
+        (
+            pinned_first(entries, &self.pins),
+            unread.into_iter().collect(),
+        )
     }
 
     /// Search hits as lines: grouped into conversations when asked, each
@@ -1916,6 +1962,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
             Row {
                 key: EntryKey::Message(id),
                 id,
+                account: mail.accounts()[0].id,
                 count: 1,
                 correspondent: "Ada".into(),
                 people: vec![("Ada".into(), Some("ada@example.org".into()))],

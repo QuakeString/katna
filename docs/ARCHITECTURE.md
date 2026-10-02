@@ -1752,7 +1752,16 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   and spam. Each opens to one line per account. The lists are read like
   search results (no one listed folder), merged by date in
   `Store::spread_threads` and `spread_message_ids`, which show server
-  copies of one message once.
+  copies of one message once. The unified Inbox has inbox tabs shared by
+  every account (Settings > Inbox > Unified inbox, `mail.unified_tabs`:
+  Gmail's five by default, or Focused and Other, Inbox, Newsletters and
+  Notifications, or none): each mail shows in the tab of its stored
+  category, except that a category an account lists in its first tab (a
+  tab it turned off, or no tabs) counts as Primary there too
+  (`Store::spread_inbox_threads` with `SpreadTabs`). One account's line
+  under it shows that account's own tabs. Lines of the whole unified
+  inbox carry a dot in the account's picture colour after the names, and
+  the account's name where the line stacks.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and
