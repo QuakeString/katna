@@ -3432,7 +3432,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   coloured pixels), and only the badge is red. Panels can't be asked their
   colour, so it is inferred (`colors::panel_text`): Plasma's from the
   scheme's window text, white on GNOME and other panels, and on Windows
-  from `SystemUsesLightTheme`; it is read again with each count. Left click raises the
+  from `SystemUsesLightTheme`; it is read again on the Settings portal's
+  `SettingChanged`, every second (Windows, or `kdeglobals` written after
+  the signal) and with each count, so the icon follows a light/dark switch
+  at once. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
