@@ -3078,3 +3078,88 @@ No modo escuro, as linhas entre os e-mails, sob os cabeçalhos e ao redor
 dos cartões são tão suaves quanto no modo claro. Campos, chips e botões
 mantêm o contorno nítido.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Atualizações pequenas mesmo após uma pausa"
+text = """
+As atualizações continuam pequenas mesmo quando você pula um ou dois dias
+de novas versões. O Katna agora avança da versão que você tem passando
+pelas anteriores, poucos megabytes cada, em vez de baixar o pacote
+inteiro de novo.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Veja quais e-mails você respondeu"
+text = """
+Uma pequena seta de resposta numa linha da lista de e-mails mostra que
+você respondeu: você escreveu o e-mail mais recente da conversa, aqui ou
+na web. Ela some quando a outra pessoa responde.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "O ícone da bandeja segue o claro e o escuro"
+text = """
+O ícone monocromático da bandeja agora muda junto com o seu painel assim
+que você alterna entre claro e escuro, em vez de esperar um novo e-mail.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Ideias de resposta mostram que estão a caminho"
+text = """
+Enquanto as ideias de resposta são pedidas, em Responder de um resumo ou
+em Escrever resposta, as formas delas agora pulsam como as do próprio
+resumo enquanto ele é escrito. O cartão de resumo também mostra quantos
+e-mails a conversa tem enquanto é pedido, e não 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Cantos mais limpos em Arquivos"
+text = """
+Passar o mouse sobre um arquivo com prévia branca não deixa mais o branco
+aparecer nos cantos superiores do cartão, a bandeja de envios recolhida
+também é arredondada em cima, e a caixa de diálogo Compartilhar tem um
+botão de fechar no canto.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Limpar a pesquisa mantém o e-mail aberto"
+text = """
+Abra um e-mail nos resultados da pesquisa e limpe a pesquisa com o X: o
+e-mail continua aberto enquanto sua pasta volta, em vez de recolher de
+volta para a lista.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Cantos arredondados nas planilhas"
+text = """
+Uma planilha no visualizador de anexos agora é arredondada nos quatro
+cantos. As letras cinza das colunas no topo e as abas das planilhas
+embaixo deixavam os cantos retos.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Dados de contato limpos nos cartões"
+text = """
+Telefones, endereços e outros dados tirados de uma assinatura não
+mostram mais asteriscos soltos nem marcas de link entre sinais de menor e
+maior. Quando um colega assina um e-mail de um endereço compartilhado
+como accounts@, o cartão mantém só os dados da empresa, e não o telefone
+ou o cargo desse colega.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Confira o que você anexou"
+text = """
+Clique num arquivo anexado a uma mensagem que você está escrevendo para
+abri-lo no visualizador do Katna, o mesmo em que os arquivos recebidos
+abrem, e confirmar que é o arquivo certo. Um arquivo enviado como link do
+Google Drive ou do OneDrive abre no drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Uma barra de rolagem nas Configurações"
+text = """
+Todas as abas das Configurações têm a mesma barra de rolagem fina de um
+e-mail aberto e de Arquivos: ela aparece enquanto você rola ou aponta
+para a página, e você pode arrastá-la.
+"""

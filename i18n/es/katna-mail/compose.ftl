@@ -58,6 +58,7 @@ compose-file-too-large = { $name } es demasiado grande: un mensaje puede llevar 
 compose-forward-files-missing = Los archivos del mensaje reenviado no están descargados, así que no se adjuntan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Quitar archivo adjunto
+compose-attachment-open-tip = Ábrelo para comprobarlo
 compose-attachments-total = { $count ->
     [one] { $count } archivo, { $size }
     [many] { $count } de archivos, { $size }
