@@ -634,9 +634,10 @@ fn address_hash(address: &str) -> u64 {
 /// tab's color, so a dot never reads as a tab. By name (as kept in
 /// `mail.account_colors`): its light-mode color, readable with white
 /// text, and its dark-mode one.
-pub const ACCOUNT_COLORS: [(&str, u32, u32); 7] = [
+pub const ACCOUNT_COLORS: [(&str, u32, u32); 8] = [
     ("red", 0xd93025ff, 0xf28b82ff),
     ("pink", 0xc2185bff, 0xf48fb1ff),
+    ("magenta", 0xa0189bff, 0xe68ae0ff),
     ("brown", 0x8d6e63ff, 0xbcaaa4ff),
     ("olive", 0x827717ff, 0xc0ca33ff),
     ("teal", 0x007b83ff, 0x4fb8c0ff),
@@ -661,7 +662,7 @@ pub fn default_account_color(address: &str) -> &'static str {
 /// Colors of one's own that accounts get, in turn, once every one of
 /// [`ACCOUNT_COLORS`] is taken: light-mode colors, none a tab's.
 pub const MORE_ACCOUNT_COLORS: [u32; 6] = [
-    0x8e2430ff, 0xa87b00ff, 0xa0189bff, 0x5b7f1bff, 0x6d4c41ff, 0x455a64ff,
+    0x8e2430ff, 0xa87b00ff, 0x00695cff, 0x5b7f1bff, 0x6d4c41ff, 0x455a64ff,
 ];
 
 /// The dark-mode color of an account color of one's own `light`.

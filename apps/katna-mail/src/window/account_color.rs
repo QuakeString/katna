@@ -11,7 +11,7 @@
 //! An account without a color gets one no other account wears when the
 //! folder pane loads ([`crate::theme::settle_account_colors`]).
 
-use gpui::{AnyElement, Context, canvas, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, Window, canvas, div, prelude::*, rgba};
 use katna_i18n::tr;
 use katna_platform::colors::parse_css_color;
 use katna_ui::px;
@@ -22,7 +22,6 @@ use crate::theme::{
     ACCOUNT_COLORS, Theme, account_color, account_dark, default_account_color,
     settle_account_colors,
 };
-use crate::widgets::{color_swatch, color_wheel, tip};
 
 /// The color an account wears.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -33,8 +32,8 @@ enum Wears {
     Own(u32),
 }
 
-/// Each color of the strip, across, with its ring.
-const SWATCH: f32 = 26.0;
+/// The dot of the account's color, across.
+const DOT: f32 = 16.0;
 
 impl MailWindow {
     /// The color the account at `address` wears.
@@ -76,22 +75,20 @@ impl MailWindow {
         self.account_light(address)
     }
 
-    fn set_account_color(&mut self, address: &str, name: &'static str, cx: &mut Context<Self>) {
+    /// Gives the account at `address` `color` from the picker: by name
+    /// when it is a standard one, else as a color of its own.
+    pub(super) fn set_account_custom(&mut self, address: &str, color: u32, cx: &mut Context<Self>) {
+        let value = ACCOUNT_COLORS
+            .iter()
+            .find(|(_, light, _)| *light == color | 0xff)
+            .map_or_else(
+                || format!("#{:06x}", color >> 8),
+                |(name, ..)| (*name).to_owned(),
+            );
         self.config
             .mail
             .account_colors
-            .insert(address.trim().to_lowercase(), name.to_owned());
-        self.save_config();
-        cx.notify();
-    }
-
-    /// Gives the account at `address` the color of its own `color`, from
-    /// the picker.
-    pub(super) fn set_account_custom(&mut self, address: &str, color: u32, cx: &mut Context<Self>) {
-        self.config.mail.account_colors.insert(
-            address.trim().to_lowercase(),
-            format!("#{:06x}", color >> 8),
-        );
+            .insert(address.trim().to_lowercase(), value);
         self.save_config();
         cx.notify();
     }
@@ -116,69 +113,50 @@ impl MailWindow {
         }
     }
 
-    /// The colors to pick from for the account at `address`, the one it
-    /// wears ringed. Clicking one wears it at once.
-    pub(super) fn account_color_strip(
+    /// The account's color as a dot, for the end of the "Colour" button
+    /// (Settings > Accounts, the right-click menu) that opens the color
+    /// picker beside it, and what the picker colors.
+    pub(super) fn account_color_dot(
         &self,
-        id: &'static str,
         address: &str,
         th: &Theme,
-        cx: &mut Context<Self>,
-    ) -> AnyElement {
-        let wears = self.account_wears(address);
-        let own = match wears {
-            Wears::Own(_) => Some(self.account_color(address, th)),
-            Wears::Named(_) => None,
-        };
-        let wheel = self
+    ) -> Option<(Target, AnyElement)> {
+        let account = self
             .accounts
             .iter()
-            .find(|a| a.address.eq_ignore_ascii_case(address))
-            .map(|account| {
-                let target = Target::Account(account.id);
-                let swatches = self.color_swatches.clone();
-                color_wheel((id, ACCOUNT_COLORS.len()), own, SWATCH, th)
-                    .relative()
-                    .tooltip(tip(tr!("account-color-own"), th))
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        // Popovers never stack: the right-click menu
-                        // makes way.
-                        this.close_nav_menu(cx);
-                        this.toggle_color_picker(target, window, cx)
-                    }))
-                    .child(
-                        canvas(
-                            move |bounds, _, _| {
-                                swatches.borrow_mut().insert(target, bounds);
-                            },
-                            |_, _, _, _| {},
-                        )
-                        .absolute()
-                        .size_full(),
-                    )
-            });
-        div()
-            .flex()
-            .flex_row()
-            .flex_wrap()
-            .items_center()
-            .gap(px(2.0))
-            .children(
-                ACCOUNT_COLORS
-                    .iter()
-                    .enumerate()
-                    .map(|(n, &(name, light, dark))| {
-                        let color = if th.dark { dark } else { light };
-                        let address = address.to_owned();
-                        color_swatch((id, n), color, wears == Wears::Named(name), SWATCH, th)
-                            .tooltip(tip(color_label(name), th))
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                this.set_account_color(&address, name, cx)
-                            }))
-                    }),
+            .find(|a| a.address.eq_ignore_ascii_case(address))?;
+        let target = Target::Account(account.id);
+        let swatches = self.color_swatches.clone();
+        let dot = div()
+            .relative()
+            .flex_none()
+            .size(px(DOT))
+            .rounded_full()
+            .bg(rgba(self.account_color(address, th)))
+            .child(
+                canvas(
+                    move |bounds, _, _| {
+                        swatches.borrow_mut().insert(target, bounds);
+                    },
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .size_full(),
             )
-            .children(wheel)
-            .into_any_element()
+            .into_any_element();
+        Some((target, dot))
+    }
+
+    /// Opens the color picker on the account's color (closing the
+    /// right-click menu: popovers never stack), or closes it.
+    pub(super) fn pick_account_color(
+        &mut self,
+        target: Target,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.close_nav_menu(cx);
+        self.toggle_color_picker(target, window, cx);
     }
 
     /// `picture` of the account at `address`, `size` across, in a ring
@@ -205,10 +183,11 @@ impl MailWindow {
 }
 
 /// A color's name, for its swatch's tooltip.
-fn color_label(name: &str) -> String {
+pub(super) fn color_label(name: &str) -> String {
     match name {
         "red" => tr!("account-color-red"),
         "pink" => tr!("account-color-pink"),
+        "magenta" => tr!("account-color-magenta"),
         "brown" => tr!("account-color-brown"),
         "olive" => tr!("account-color-olive"),
         "teal" => tr!("account-color-teal"),

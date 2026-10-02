@@ -1776,10 +1776,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   inbox carry a dot in the account's colour after the names (hovering it
   names the account), and the account's name where the line stacks.
   Each account has one colour (`mail.account_colors`: a name of one of
-  seven standard colours, none of them a tab's in light or dark, or
-  `#rrggbb` from the colour picker that the rainbow wheel after them
-  opens, as on Settings > Appearance > Accent), picked in Settings >
-  Accounts or the account's right-click menu. An account without one gets
+  eight standard colours, none of them a tab's in light or dark, or
+  `#rrggbb` from the free picker). Settings > Accounts and the account's
+  right-click menu show only a "Colour" button with the account's dot;
+  it opens the shared colour picker beside it, with the eight standard
+  colours over the free picker (`Target::Account`). The dot on a list
+  line only names the account on hover. An account without one gets
   one no other account wears when the folder pane loads: its old
   letter-picture colour when that is a free standard one, else the next
   free standard one, then six more of the app's own. The same colour
