@@ -834,7 +834,7 @@ macro_rules! pim_proxy {
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
 
             /// Whether the sign-in of `account` lets Katna browse its whole
-            /// drive in Files (Google Drive for now). Asks no server.
+            /// drive in Files (Google Drive or OneDrive). Asks no server.
             fn cloud_readable(&self, account: i64) -> zbus::Result<bool>;
 
             /// One page of the drive of `account`: a folder, what was

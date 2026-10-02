@@ -717,10 +717,18 @@ impl MailWindow {
             .map(|((size, _), _)| size)
             .sum();
         let links = uploaded.iter().chain(&linked).filter(|b| **b).count();
-        // Picked drive files are Google's; uploads go to the account's.
-        let onedrive = provider == Some(OAuthProvider::Microsoft)
-            && linked.iter().all(|link| !link)
-            && uploaded.iter().any(|up| *up);
+        // Links come from each file's own drive; uploads go to the
+        // account's.
+        let linked_onedrive = self
+            .picker
+            .iter()
+            .flat_map(|p| &p.drive_ticked)
+            .zip(&linked)
+            .any(|((account, _), link)| *link && self.drive_is_onedrive(*account));
+        let onedrive = linked_onedrive
+            || (provider == Some(OAuthProvider::Microsoft)
+                && linked.iter().all(|link| !link)
+                && uploaded.iter().any(|up| *up));
         Weight {
             count: mail.len() + drive.len(),
             total: used + mail.iter().sum::<u64>() + drive.iter().map(|(s, _)| s).sum::<u64>(),
@@ -1005,7 +1013,7 @@ impl MailWindow {
         sources.extend(self.library.cloud.drives.iter().map(|(account, address)| {
             (
                 Source::Drive(*account),
-                tr!("files-drive-google"),
+                self.drive_name(*account),
                 Some(address.clone()),
             )
         }));
@@ -1058,7 +1066,7 @@ impl MailWindow {
             let mark = match source {
                 Source::Mail => icon("attachment", color, 20.0),
                 Source::Chat => icon("chat", color, 20.0),
-                Source::Drive(_) => super::drive::drive_mark(20.0),
+                Source::Drive(account) => self.drive_mark_of(account, 20.0),
             };
             if matches!(source, Source::Drive(_)) && !std::mem::replace(&mut drives, true) {
                 column = column.child(

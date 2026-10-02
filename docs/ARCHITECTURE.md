@@ -2676,16 +2676,18 @@ desktop's own app stays one click away.
   for cards on show whose mail is downloaded, and at most 96 are kept.
 - **Drives in Files** (study "Drives in Files", 2026-10-02): a **Drives**
   group under Accounts in the side column lists each Google account's
-  drive (Google Drive mark; OneDrive later, behind Microsoft's
-  `Files.ReadWrite`; Dropbox and others after). A drive shows a folder
+  Google Drive and each Microsoft account's OneDrive (with its mark;
+  Dropbox and others later). A drive shows a folder
   path, folder tiles (one sideways-scrolling row on a phone) and the same
   cards and list as mail files, with Shared with me as its own row; the
   type, date and sort chips stay and the search box searches the drive.
   Cards offer Open (the built-in viewer), Attach (a new mail) and ⋯
-  (Download, Open in Google Drive, Copy link). **All files stays
-  mail-only.** Browsing needs Google's `drive` (an older
-  `drive.readonly` grant still browses); an account without it shows a
-  notice with **Allow** (signs in again). While a drive of the account's
+  (Download, Open in Google Drive or OneDrive, Copy link). **All files
+  stays mail-only.** Browsing needs Google's `drive` (an older
+  `drive.readonly` grant still browses) or Microsoft's `Files.ReadWrite`
+  (asked at sign-in, §6.6); an account without it shows a notice with
+  **Allow** (signs in again with its provider). OneDrive shows only once
+  Microsoft sign-in is offered (it waits for Katna's Microsoft app ID). While a drive of the account's
   own is on show, the side column's Compose button becomes **Upload**,
   with an arrow for Upload files or Upload folder (on a phone the button
   opens that menu); files and folders go into the open folder through
@@ -2694,9 +2696,14 @@ desktop's own app stays one click away.
   folder is read again when done.
   `katna_sync::drive::browse` lists (`files.list`, folders first, 100 a
   page), downloads (Google Docs export as PDF, at most 10 MB) and fetches
-  thumbnails from Google's hosts only; the daemon answers `CloudReadable`,
-  `CloudList`, `CloudFetch` and `CloudThumbnail` over D-Bus, Google only
-  for now, and keeps fetched files in `cache/drives/` for 24 hours (gone
+  thumbnails from Google's hosts only; `katna_sync::onedrive::browse` does
+  the same through Microsoft Graph (`children`, `sharedWithMe` and
+  `search`, items shared from another drive as `drive/item` ids; files
+  through their `downloadUrl` without the token; thumbnails `medium`).
+  The daemon's `Cloud` (`daemon/cloud.rs`) picks the provider by the
+  account's sign-in and answers `CloudReadable`, `CloudList`,
+  `CloudFetch`, `CloudThumbnail`, `CloudWritable` and `CloudUpload`
+  over D-Bus, and keeps fetched files in `cache/drives/` for 24 hours (gone
   on Reset cache). The app keeps listings for 3 minutes. Settings >
   Default apps > Files page > **Drives in Files** turns a drive off per
   account (`mail.files.drives_off`).

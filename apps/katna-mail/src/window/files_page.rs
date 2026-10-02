@@ -47,7 +47,6 @@ use crate::widgets::{icon, icon_button, placeholder, raised, tip};
 use katna_ui::text_input::{InputEvent, TextInput};
 
 mod drive;
-pub(super) use drive::drive_mark;
 pub(super) mod picker;
 
 const NAV_WIDTH: f32 = 256.0;

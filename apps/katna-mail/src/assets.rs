@@ -139,6 +139,7 @@ icons!(
     "no-fill",
     "notch",
     "notes",
+    "onedrive",
     "open-external",
     "open-full",
     "pen-sparkle",
