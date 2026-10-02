@@ -35,6 +35,8 @@ use crate::widgets::ScaledEdge;
 
 // Paper colors, the same in light and dark themes, like a printed page.
 const PAPER: u32 = 0xffffffff;
+/// The corners of the spreadsheet's panel.
+const PANEL_RADIUS: f32 = 8.0;
 const INK: u32 = 0x202124ff;
 const INK_DIM: u32 = 0x5f6368ff;
 const GRID: u32 = 0xe0e3e7ff;
@@ -368,6 +370,9 @@ impl Viewer {
             .flex_none()
             .h(px(row_height))
             .overflow_hidden()
+            // GPUI does not clip to the panel's rounded corners: the
+            // letters' grey rounds its own.
+            .rounded_t(px(PANEL_RADIUS))
             .bg(rgba(HEADER))
             .border_b_1()
             .border_color(rgba(GRID))
@@ -503,6 +508,7 @@ impl Viewer {
                 .items_center()
                 .gap(px(2.0))
                 .overflow_x_scroll()
+                .rounded_b(px(PANEL_RADIUS))
                 .bg(rgba(HEADER))
                 .border_t_1()
                 .border_color(rgba(GRID))
@@ -556,7 +562,7 @@ impl Viewer {
             .flex()
             .flex_col()
             .overflow_hidden()
-            .rounded(px(8.0))
+            .rounded(px(PANEL_RADIUS))
             .bg(rgba(PAPER))
             .text_color(rgba(INK))
             .text_size(px(text_size))
