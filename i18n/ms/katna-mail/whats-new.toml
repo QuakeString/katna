@@ -3082,3 +3082,87 @@ title = "Garisan pudar dalam mod gelap juga"
 text = """
 Dalam mod gelap, garisan di antara mel, di bawah pengepala dan di sekeliling kad kini sepudar dalam mod cerah. Medan, cip dan butang mengekalkan garis luar yang jelas.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Kemas kini kecil selepas berehat"
+text = """
+Kemas kini kekal kecil walaupun anda terlepas satu atau dua hari versi
+baharu. Katna kini melangkah daripada versi yang anda ada melalui versi
+sebelumnya, beberapa megabait setiap satu, dan bukan memuat turun seluruh
+pakej sekali lagi.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Lihat mel yang telah anda jawab"
+text = """
+Anak panah balas yang kecil pada baris senarai mel menunjukkan anda telah
+menjawabnya: anda menulis mel terbaharu perbualan itu, di sini atau di web.
+Ia hilang apabila mereka membalas semula.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikon dulang mengikut cerah dan gelap"
+text = """
+Ikon dulang satu warna kini berubah bersama panel anda sebaik sahaja anda
+bertukar antara cerah dan gelap, dan tidak lagi menunggu mel baharu.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Idea balasan menunjukkan ia sedang tiba"
+text = """
+Semasa idea balasan diminta, dalam Balas pada ringkasan atau dalam Tulis
+balasan, bentuknya kini bernafas seperti ringkasan itu sendiri semasa ia
+ditulis. Kad ringkasan juga menunjukkan bilangan mel dalam perbualan semasa
+ia diminta, dan bukan 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Bucu yang lebih kemas dalam Fail"
+text = """
+Menuding pada fail dengan pratonton putih tidak lagi menampakkan warna putih
+di bucu atas kad, dulang muat naik yang dilipat juga dibulatkan di bahagian
+atas, dan dialog Kongsi mempunyai butang tutup di bucunya.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Mengosongkan carian membiarkan mel anda terbuka"
+text = """
+Buka mel daripada hasil carian dan kosongkan carian dengan X: mel itu kekal
+terbuka semasa folder anda kembali, dan tidak lagi dilipat kembali ke
+senarai.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Bucu bulat pada hamparan"
+text = """
+Hamparan dalam pemapar lampiran kini dibulatkan pada keempat-empat bucunya.
+Huruf lajur kelabu di atas dan tab helaian di bawah dahulu menjadikannya
+bersegi.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Butiran kenalan yang bersih pada kad"
+text = """
+Nombor telefon, alamat dan butiran lain yang diambil daripada tandatangan
+tidak lagi menunjukkan asterisk yang tersasar atau tanda pautan dalam
+kurungan sudut. Apabila rakan sekerja menandatangani mel daripada alamat
+kongsi seperti accounts@, kad hanya menyimpan butiran syarikat, bukan nombor
+atau jawatan rakan sekerja itu.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Semak apa yang anda lampirkan"
+text = """
+Klik fail yang dilampirkan pada mesej yang sedang anda tulis untuk
+membukanya dalam pemapar Katna, yang sama digunakan untuk membuka fail yang
+diterima, dan pastikan ia fail yang betul. Fail yang dihantar sebagai pautan
+Google Drive atau OneDrive dibuka pada drive itu.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Bar tatal dalam Tetapan"
+text = """
+Setiap tab Tetapan mempunyai bar tatal nipis yang sama seperti mel yang
+dibuka dan Fail: ia dipaparkan semasa anda menatal atau menuding pada
+halaman, dan anda boleh menyeretnya.
+"""

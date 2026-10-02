@@ -39,6 +39,7 @@ list-results = Hasil untuk “{ $query }”
 list-results-corrected = Menunjukkan hasil untuk “{ $query }”
 list-search-instead = Cari “{ $query }” sahaja
 list-files-more = +{ $count }
+list-replied = Anda telah membalas
 
 ## Mail list: Select menu (which lines to tick)
 

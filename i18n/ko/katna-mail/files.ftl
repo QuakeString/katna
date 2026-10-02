@@ -154,6 +154,7 @@ files-share-remove = 액세스 권한 삭제
 files-share-copy-link = 링크 복사
 files-share-share = 공유
 files-share-done = 완료
+files-share-close = 닫기
 files-share-sharing = 공유하는 중…
 files-share-shared = { $count ->
    *[other] { $count }명과 공유했습니다

@@ -2955,3 +2955,83 @@ title = "Đường kẻ mờ cả ở chế độ tối"
 text = """
 Ở chế độ tối, các đường kẻ giữa các thư, dưới tiêu đề và quanh các thẻ giờ mờ như ở chế độ sáng. Ô nhập, chip và nút vẫn giữ đường viền rõ ràng.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Bản cập nhật nhỏ sau thời gian vắng mặt"
+text = """
+Bản cập nhật vẫn nhỏ ngay cả khi bạn bỏ qua một hai ngày phiên bản mới.
+Katna giờ đi từng bước từ phiên bản bạn đang có qua các phiên bản trước đó,
+mỗi bước vài megabyte, thay vì tải lại toàn bộ gói.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Biết thư nào bạn đã trả lời"
+text = """
+Một mũi tên trả lời nhỏ trên dòng của danh sách thư cho biết bạn đã trả lời
+thư đó: bạn đã viết thư mới nhất của cuộc hội thoại, tại đây hoặc trên web.
+Mũi tên biến mất khi người kia viết lại.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Biểu tượng khay theo chế độ sáng và tối"
+text = """
+Biểu tượng khay một màu giờ đổi theo bảng điều khiển ngay khi bạn chuyển
+giữa chế độ sáng và tối, thay vì đợi đến khi có thư mới.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Gợi ý trả lời cho biết chúng đang đến"
+text = """
+Trong khi đang yêu cầu gợi ý trả lời, ở Trả lời của bản tóm tắt hoặc trong
+Viết thư trả lời, các khung hình của chúng giờ nhấp nhô như của chính bản
+tóm tắt khi nó đang được viết. Thẻ tóm tắt cũng hiện số thư của cuộc hội
+thoại trong khi đang yêu cầu, chứ không phải 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Góc gọn gàng hơn trong Tệp"
+text = """
+Di chuột qua một tệp có bản xem trước màu trắng không còn làm lộ màu trắng
+ở hai góc trên của thẻ, khay tải lên khi thu gọn cũng được bo tròn ở phía
+trên, và hộp thoại Chia sẻ có nút đóng ở góc.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Xóa tìm kiếm vẫn giữ thư đang mở"
+text = """
+Mở một thư từ kết quả tìm kiếm rồi xóa tìm kiếm bằng nút X: thư vẫn mở
+khi thư mục của bạn hiện trở lại, thay vì thu về danh sách.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Góc bo tròn cho bảng tính"
+text = """
+Bảng tính trong trình xem tệp đính kèm giờ được bo tròn ở cả bốn góc. Các
+chữ cái cột màu xám ở trên cùng và các thẻ trang tính ở dưới cùng trước đây
+làm các góc bị vuông.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Thông tin liên hệ gọn gàng trên thẻ"
+text = """
+Số điện thoại, địa chỉ và các thông tin khác lấy từ chữ ký không còn hiện
+dấu sao thừa hay dấu liên kết trong ngoặc nhọn. Khi một đồng nghiệp ký thư
+từ một địa chỉ dùng chung như accounts@, thẻ chỉ giữ thông tin của công ty,
+không giữ số điện thoại hay chức danh của đồng nghiệp đó.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Kiểm tra tệp bạn đã đính kèm"
+text = """
+Nhấp vào một tệp đính kèm trong thư bạn đang viết để mở nó trong trình xem
+của Katna, cũng là trình xem dùng để mở tệp nhận được, và chắc chắn đó là
+đúng tệp. Tệp gửi dưới dạng liên kết Google Drive hay OneDrive sẽ mở trên
+ổ lưu trữ.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Thanh cuộn trong Cài đặt"
+text = """
+Mọi thẻ của Cài đặt đều có thanh cuộn mảnh giống như thư đang mở và Tệp:
+thanh này hiện khi bạn cuộn hoặc trỏ chuột vào trang, và bạn có thể kéo nó.
+"""
