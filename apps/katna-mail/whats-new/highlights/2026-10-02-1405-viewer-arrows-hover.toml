@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Viewer arrows stay visible"
+text = """
+The arrows at the sides of the attachment viewer no longer fade to
+almost white when you point at them. They turn a shade lighter grey
+instead, so they stay easy to see over a white page.
+"""
