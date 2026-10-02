@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The logo takes your colors, and any accent you like"
+text = """
+The Katna logo in the window now wears your accent color, in light and in
+dark. And Settings > Appearance > Accent now ends in a color wheel: click it
+to pick any accent you like.
+"""

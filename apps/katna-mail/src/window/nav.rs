@@ -324,7 +324,7 @@ impl MailWindow {
             .flex()
             .flex_row()
             .items_center()
-            .child(katna_mark(super::TITLE_MARK))
+            .child(katna_mark(super::TITLE_MARK, th))
             .child(
                 div()
                     .flex_none()

@@ -254,7 +254,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(16.0))
-            .child(crate::widgets::katna_mark(48.0))
+            .child(crate::widgets::katna_mark(48.0, th))
             .child(
                 div()
                     .flex_1()

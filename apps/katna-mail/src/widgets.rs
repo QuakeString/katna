@@ -85,29 +85,132 @@ pub fn spinner(id: impl Into<ElementId>, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
-/// Katna's logo, the k on its teal disc, `size` px square. Below 48 px it
-/// leaves out the shadow, which blurs to mush that small
-/// (`packaging/icons/src/`).
-pub fn katna_mark(size: f32) -> AnyElement {
+/// Katna's logo, the k on its disc in the colour scheme's accent,
+/// `size` px square. Below 48 px it leaves out the shadow, which blurs to
+/// mush that small (`packaging/icons/src/`). The app icon and the tray
+/// keep the teal.
+pub fn katna_mark(size: f32, th: &Theme) -> AnyElement {
     img(SharedString::from(crate::assets::logo_path(
         size * katna_ui::scale::scale(),
+        logo_tint(th),
     )))
     .size(px(size))
     .flex_none()
     .into_any_element()
 }
 
-/// Katna Mail's wordmark, "katna mail" in script on the teal disc,
-/// `height` px tall.
-pub fn katna_wordmark(height: f32) -> AnyElement {
+/// Katna Mail's wordmark, "katna mail" in script on its disc in the
+/// colour scheme's accent, `height` px tall.
+pub fn katna_wordmark(height: f32, th: &Theme) -> AnyElement {
     let (w, h) = crate::assets::WORDMARK_SIZE;
     img(SharedString::from(crate::assets::wordmark_path(
         height * katna_ui::scale::scale(),
+        logo_tint(th),
     )))
     .w(px(height * w as f32 / h as f32))
     .h(px(height))
     .flex_none()
     .into_any_element()
+}
+
+/// A round color swatch `size` px across. The picked one is ringed in
+/// its own color, with a gap of the card's color between, and carries a
+/// check. Rows of colors to pick from use it, ending in [`color_wheel`].
+pub fn color_swatch(
+    id: impl Into<gpui::ElementId>,
+    color: u32,
+    on: bool,
+    size: f32,
+    th: &Theme,
+) -> Stateful<Div> {
+    swatch_ring(id, on.then_some(color), size, th).child(
+        div()
+            .size(px(size - 10.0))
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .bg(rgba(color))
+            .border_1()
+            .border_color(rgba(fade(th.text, 0.12)))
+            .when(on, |d| d.child(swatch_check(color, size))),
+    )
+}
+
+/// The rainbow wheel at the end of a row of [`color_swatch`]es, which
+/// opens the color picker for any other color. `custom`: the color picked
+/// with it, when that is the one in use: the wheel is then ringed in it
+/// and shows it in its middle with a check, like a picked swatch.
+pub fn color_wheel(
+    id: impl Into<gpui::ElementId>,
+    custom: Option<u32>,
+    size: f32,
+    th: &Theme,
+) -> Stateful<Div> {
+    let inner = size - 10.0;
+    swatch_ring(id, custom, size, th).child(
+        div()
+            .relative()
+            .size(px(inner))
+            .flex()
+            .items_center()
+            .justify_center()
+            .child(
+                img(SharedString::from("icons/color-wheel.svg"))
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .size(px(inner))
+                    .rounded_full(),
+            )
+            .when_some(custom, |d, color| {
+                d.child(
+                    div()
+                        .size(px(inner * 0.62))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .bg(rgba(color))
+                        .child(swatch_check(color, size * 0.85)),
+                )
+            }),
+    )
+}
+
+/// The check on a picked swatch, black or white to read on `color`.
+fn swatch_check(color: u32, size: f32) -> AnyElement {
+    icon(
+        "check",
+        crate::theme::on(color | 0xff),
+        (size * 0.5).round(),
+    )
+}
+
+fn swatch_ring(
+    id: impl Into<gpui::ElementId>,
+    ring: Option<u32>,
+    size: f32,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .size(px(size))
+        .flex_none()
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .cursor_pointer()
+        .border_2()
+        .border_color(rgba(ring.unwrap_or(0x00000000)))
+        .hover(|s| s.bg(rgba(th.hover)))
+}
+
+/// The logo's disc takes the accent and its mark the accent's text
+/// colour, which the theme keeps readable on it.
+fn logo_tint(th: &Theme) -> crate::assets::Tint {
+    Some((th.accent, th.on_accent))
 }
 
 /// A tooltip saying `text`, for `.tooltip()`: it shows once the pointer
