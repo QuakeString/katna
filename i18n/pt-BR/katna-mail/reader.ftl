@@ -86,6 +86,10 @@ security-missing-key = Assinada com uma chave que você não tem, por isso não 
 security-missing-key-id = Assinada com uma chave que você não tem ({ $key }), por isso não pode ser verificada
 security-signature-unavailable = Assinada; instale { $tool } para verificar a assinatura
 security-signature-error = Não foi possível verificar a assinatura.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } abriu { $count ->
     [one] uma vez
     [many] { $count } de vezes
@@ -132,10 +136,12 @@ attachment-count = { $count ->
    *[other] { $count } anexos
 }
 attachment-save = Salvar
+attachment-forward = Encaminhar
 attachment-save-all = Salvar tudo
 attachment-save-all-tooltip = Salvar todos os anexos em uma pasta
 attachment-save-here = Salvar aqui
 attachment-not-downloaded = Esta mensagem não foi baixada.
+attachment-open-message = Abra esta mensagem para ler os anexos.
 attachment-not-found = Este anexo não foi encontrado na mensagem.
 attachment-read-failed = Não foi possível ler { $name }
 attachment-numbered = anexo { $number }
@@ -160,6 +166,7 @@ attachment-encrypted-open = Este arquivo veio criptografado. Salve-o para abri-l
 print-failed = Não foi possível imprimir: { $error }
 print-no-font = nenhuma fonte foi encontrada
 print-opened-as-pdf = Aberto como PDF para imprimir a partir dele.
+
 print-preview-title = Visualização de impressão
 print-preview-laying-out = Diagramando as páginas…
 print-preview-pages = { $count ->
@@ -187,8 +194,9 @@ print-encrypted = (Criptografada. Abra no Katna Mail para imprimir o texto.)
 print-to = Para: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Abra esta mensagem para ler os anexos.
+text-pin = Fixar no topo
+text-copy-address = Copiar endereço
 text-copy = Copiar
 text-select-all = Selecionar tudo

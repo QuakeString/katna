@@ -9,7 +9,7 @@ tray-new-message = _Nytt meddelande
 tray-preferences = _Inställningar
 tray-quit = A_vsluta
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] Inga olästa mejl

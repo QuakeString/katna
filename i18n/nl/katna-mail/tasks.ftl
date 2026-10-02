@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Maken
+tasks-create = Nieuwe taak
 tasks-all = Alle taken
 tasks-today = Vandaag
 tasks-starred = Met ster

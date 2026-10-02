@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Versturen met Katna Mail
 setup-tagline = Snelle, privé e-mail die op je eigen computer staat.
 setup-update-where = Werkt Katna Mail in { $path } bij. Je e-mail, instellingen en snelkoppelingen blijven zoals ze zijn.
 setup-for = Installeren voor

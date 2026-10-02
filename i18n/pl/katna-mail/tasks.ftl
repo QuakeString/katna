@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Utwórz
+tasks-create = Nowe zadanie
 tasks-all = Wszystkie zadania
 tasks-today = Dziś
 tasks-starred = Oznaczone gwiazdką

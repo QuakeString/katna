@@ -15,6 +15,7 @@ notes-loading = Ouverture de vos notes…
 
 notes-take-a-note = Créer une note…
 notes-new-list = Nouvelle liste
+notes-new-note = Nouvelle note
 notes-pinned = Épinglées
 notes-others = Autres
 notes-empty = Les notes que vous ajoutez s’affichent ici

@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = Poczta
@@ -9,6 +13,7 @@ rail-calendar = Kalendarz
 rail-contacts = Kontakty
 rail-tasks = Zadania
 rail-notes = Notatki
+rail-files = Pliki
 
 ## Pages of apps still to come
 
@@ -41,4 +46,3 @@ app-contacts-messages = { $count ->
    *[other] { $count } wiadomości
 }
 app-contacts-last = ostatnio { $date }
-top-brand = Katna

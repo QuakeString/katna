@@ -14,6 +14,18 @@ accounts-unified-switch-detail = « Tous les comptes » est en tête du volet 
 accounts-row = Comptes
 accounts-row-detail = Le volet des dossiers et le menu du compte affichent les comptes dans cet ordre ; le premier est celui par défaut. Supprimer un compte efface la copie de ses messages que Katna conserve sur cet ordinateur. Les messages restent sur le serveur.
 accounts-none = Aucun compte pour l’instant.
+accounts-pop3-row = Messages sur le serveur
+accounts-pop3-row-detail = Les comptes POP3 téléchargent les messages sur cet ordinateur. Choisissez ce qu’il advient ensuite de la copie sur le serveur.
+accounts-pop3-with-katna = La conserver jusqu’à ce que je la supprime dans Katna
+accounts-pop3-at-once = La supprimer une fois téléchargée
+accounts-pop3-after-days = { $count ->
+    [one] La supprimer après { $count } jour
+    [many] La supprimer après { $count } de jours
+   *[other] La supprimer après { $count } jours
+}
+accounts-pop3-never = Ne jamais la supprimer
+accounts-pop3-days-less = Moins de jours
+accounts-pop3-days-more = Plus de jours
 accounts-kind-imported = Importé
 accounts-picture-reset = Utiliser la photo du bureau
 accounts-picture-change = Changer de photo
@@ -74,6 +86,9 @@ accounts-confirm-word = supprimer
 accounts-confirm-placeholder = Saisissez « { accounts-confirm-word } »
 accounts-confirm-prompt = Pour confirmer, saisissez « { accounts-confirm-word } » :
 accounts-cancel = Annuler
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Supprime les messages et pièces jointes téléchargés par Katna, les photos des expéditeurs et l’index de recherche, puis télécharge à nouveau les messages récents. Les comptes, les paramètres et les messages qui ne se trouvent que sur cet ordinateur sont conservés.
 reset-cache-button = Réinitialiser le cache
 reset-cache-title = Réinitialiser le cache ?

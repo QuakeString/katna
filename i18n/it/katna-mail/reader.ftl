@@ -86,6 +86,10 @@ security-missing-key = Firmato con una chiave che non possiedi, quindi non può 
 security-missing-key-id = Firmato con una chiave che non possiedi ({ $key }), quindi non può essere verificato
 security-signature-unavailable = Firmato; installa { $tool } per verificare la firma
 security-signature-error = Impossibile verificare la firma.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } l’ha aperto { $count ->
     [one] una volta
     [many] { $count } di volte
@@ -132,10 +136,12 @@ attachment-count = { $count ->
    *[other] { $count } allegati
 }
 attachment-save = Salva
+attachment-forward = Inoltra
 attachment-save-all = Salva tutto
 attachment-save-all-tooltip = Salva tutti gli allegati in una cartella
 attachment-save-here = Salva qui
 attachment-not-downloaded = Questo messaggio non è stato scaricato.
+attachment-open-message = Apri questo messaggio per leggerne gli allegati.
 attachment-not-found = Impossibile trovare questo allegato nel messaggio.
 attachment-read-failed = Impossibile leggere { $name }
 attachment-numbered = allegato { $number }
@@ -160,6 +166,7 @@ attachment-encrypted-open = Questo file è arrivato crittografato. Salvalo per a
 print-failed = Impossibile stampare: { $error }
 print-no-font = nessun carattere trovato
 print-opened-as-pdf = Aperto come PDF per stamparlo da lì.
+
 print-preview-title = Anteprima di stampa
 print-preview-laying-out = Impaginazione in corso…
 print-preview-pages = { $count ->
@@ -187,8 +194,9 @@ print-encrypted = (Crittografato. Aprilo in Katna Mail per stamparne il testo.)
 print-to = A: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Apri questo messaggio per leggerne gli allegati.
+text-pin = Fissa in alto
+text-copy-address = Copia indirizzo
 text-copy = Copia
 text-select-all = Seleziona tutto

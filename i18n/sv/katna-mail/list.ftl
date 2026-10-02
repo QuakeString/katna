@@ -20,6 +20,7 @@ tab-provider-other = sorteras av Katna
 
 list-select = Markera
 list-refresh = Uppdatera
+list-back-to-top = Tillbaka till toppen
 list-checking = Söker efter ny e-post…
 list-more = Mer
 list-mark-read = Markera som läst

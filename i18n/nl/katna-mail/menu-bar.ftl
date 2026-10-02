@@ -27,6 +27,7 @@ desktop-menu-page-calendar = A_genda
 desktop-menu-page-contacts = C_ontacten
 desktop-menu-page-tasks = _Taken
 desktop-menu-page-notes = _Notities
+desktop-menu-page-files = _Bestanden
 desktop-menu-next = V_olgend gesprek
 desktop-menu-previous = Vo_rig gesprek
 desktop-menu-message = _Bericht

@@ -32,6 +32,7 @@ compose-tool-bold = Fet (Ctrl+B)
 compose-tool-italic = Kursiv (Ctrl+I)
 compose-tool-underline = Understruken (Ctrl+U)
 compose-tool-text-color = Textfärg
+compose-tool-colors = Text- och markeringsfärg
 compose-tool-background-color = Bakgrundsfärg
 compose-tool-default-color = Standardfärg
 compose-tool-no-background = Ingen bakgrund
@@ -126,6 +127,10 @@ compose-tool-signature = Infoga signatur
 compose-tool-signature-none = Ingen signatur
 compose-tool-signature-untitled = Namnlös
 compose-tool-signature-manage = Hantera signaturer
+compose-signature-tag-tip = Välj en annan signatur
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Mallar
 compose-tool-templates-none = Inga mallar än
 compose-tool-template-save = Spara som mall…
